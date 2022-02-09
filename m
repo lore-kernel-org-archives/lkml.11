@@ -2,242 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C28EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 244B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:26:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiBIN0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:26:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
+        id S232787AbiBIN0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:26:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232613AbiBIN00 (ORCPT
+        with ESMTP id S231146AbiBIN0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:26:26 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD5BC06157B;
-        Wed,  9 Feb 2022 05:26:28 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id m18so4166264lfq.4;
-        Wed, 09 Feb 2022 05:26:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=IW3027pfUSm8X8tmMTkWj4yWyhv91/JivfpJiyQLiBg=;
-        b=dJGf5y1jbDEGB+Vn9qR3NLT7COhV84jva29kDfvj+l7eW9998iE9RpMNz+X2TeNY9C
-         mvEHNWx6P8ftvXRNLa4e3yf9gVinvu6TqF+CzK/eHU5XqbjhAjbo9f2bH3UnqbQCldtD
-         W4tsgVV/gTDaY4pz4V4T7isDXPUu1ce4oaeZ3mAZIsvPd0MPRkZuNu1TfyK6Z8Tkq9RB
-         IxROrQSnJvgWra3iiqeakdqaHvKxMBa22GAABo1exSwghIM5alZG3pJg4BFbGq5/37OA
-         RKuM52e9KeuvqCh0uI8CBto3jGCP+yprlJMUk+YX+RRxtuWKPgebgo+yZF+AqXQ2bFsb
-         xolw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=IW3027pfUSm8X8tmMTkWj4yWyhv91/JivfpJiyQLiBg=;
-        b=M7CcQ1QotiwVNtyArI0VxNcDaqoEOci+/gQXDF7htc0zPZOtHWtXqJkh6rWy5T9Rt2
-         m8HO2r4TFOhk3Gl6u4rHiJ/G64cRf1I+A4VK9htaMrH4cPP0yD8xsajqgNFb9MrSdIqa
-         N0o8Vr5ufJOrdvc1PlcmFEkZXoRpTENJwibuPE1/eutiITZzZP4UBXS4sSDiddCneS4z
-         81ez5KilDlLR8iOrro7313yG0ros0pbhQMG/mY0xwG19gJVxvvYdtoKMbK6bT/SfF9Xe
-         mRytP9ff4i7J7Kt/OciZrjHnXYY8edvLX/YvIluzwA3D9mk6UHy/d/gUUFHNY4KBoQoy
-         R9RA==
-X-Gm-Message-State: AOAM533RFpsLc1+12ou9LuANvNqJmoHOUO6gdG68O2NWzndgksGPaH1r
-        ITA1B2GPAxm0HI/2xviN5ile7Jfz1mLPypSJ+8gcp1Khav0=
-X-Google-Smtp-Source: ABdhPJyPmCW0fruoHVDhJ8leSBxkGo9GErvI0neCMAQe/rZMisBmm0gPz/T5q89klmonQ+tV1p151TLatMpLwEMiPTc=
-X-Received: by 2002:a05:6512:e9e:: with SMTP id bi30mr1716853lfb.554.1644413186402;
- Wed, 09 Feb 2022 05:26:26 -0800 (PST)
+        Wed, 9 Feb 2022 08:26:46 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E75AC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:26:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644413210; x=1675949210;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6DKxCFQJ9oU5QPYSOOtg3CCeMrAr4BbVYfGJoLooKVs=;
+  b=nTFaeOLLY84ikTJTAQZUH9oTgXTWAWK48uSB61a+YGIbgQdquwRG8utd
+   dnWtXfi7EuVajVtGSI1NskxYauKSo8i81XtMF2K+XmHpCyMo13doi2FlR
+   pMTiVXb1tWvLwvRZnRdrg6KjTsB6RMbHQz+OaFYp2Us9Yu48LT0reOKuu
+   hRspMrQq9MzZiUdGUvJ7udTC/8WQslVUKrGP4rW8c8d1714Li+RQ6DbFB
+   IaUv4VPDalzMTIHmoN5JzmkGNFguKRVc0KHo66svnD/goxMsJK9e/1jNI
+   GXU6lwTqFqhcwDiOhTD+SE1X7KEbsYORWiWSxQ/4XIe8HrHRUOWCr0OHl
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229849497"
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="229849497"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 05:26:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="585560489"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Feb 2022 05:26:48 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHmzf-0001rX-V6; Wed, 09 Feb 2022 13:26:47 +0000
+Date:   Wed, 9 Feb 2022 21:26:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Zhen Ni <nizhen@uniontech.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [peterz-queue:sched/core 29/29] kernel/sched/fair.c:230:9: error:
+ implicit declaration of function 'sched_cfs_bandwidth_sysctl_init'
+Message-ID: <202202092104.f0q3gfHV-lkp@intel.com>
 MIME-Version: 1.0
-References: <1644246970-18305-1-git-send-email-u0084500@gmail.com>
- <1644246970-18305-3-git-send-email-u0084500@gmail.com> <YgO4+mB5xJ5DbX61@kuha.fi.intel.com>
-In-Reply-To: <YgO4+mB5xJ5DbX61@kuha.fi.intel.com>
-From:   ChiYuan Huang <u0084500@gmail.com>
-Date:   Wed, 9 Feb 2022 21:26:14 +0800
-Message-ID: <CADiBU3_GuHapJMUen+Ag_JaapzbN6CaAm+RNxN8E16yg5k-O0g@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] usb: typec: rt1719: Add support for Richtek RT1719
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux USB List <linux-usb@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        cy_huang <cy_huang@richtek.com>, will_lin@richtek.com,
-        th_chuang@richtek.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Heikki Krogerus <heikki.krogerus@linux.intel.com> =E6=96=BC 2022=E5=B9=B42=
-=E6=9C=889=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=888:52=E5=AF=AB=E9=
-=81=93=EF=BC=9A
->
-> Hi,
->
-> Sorry, there is still one more problem that I realised - not your
-> problem, but a problem with fw_devlink_purge_absent_suppliers()...
->
-> On Mon, Feb 07, 2022 at 11:16:10PM +0800, cy_huang wrote:
-> > +static int rt1719_probe(struct i2c_client *i2c)
-> > +{
-> > +     struct rt1719_data *data;
-> > +     struct fwnode_handle *fwnode;
-> > +     struct typec_capability typec_cap =3D { };
-> > +     int ret;
-> > +
-> > +     data =3D devm_kzalloc(&i2c->dev, sizeof(*data), GFP_KERNEL);
-> > +     if (!data)
-> > +             return -ENOMEM;
-> > +
-> > +     data->dev =3D &i2c->dev;
-> > +     init_completion(&data->req_completion);
-> > +
-> > +     data->regmap =3D devm_regmap_init_i2c(i2c, &rt1719_regmap_config)=
-;
-> > +     if (IS_ERR(data->regmap)) {
-> > +             ret =3D PTR_ERR(data->regmap);
-> > +             dev_err(&i2c->dev, "Failed to init regmap (%d)\n", ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     ret =3D rt1719_check_exist(data);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     ret =3D rt1719_get_caps(data);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     /*
-> > +      * This fwnode has a "compatible" property, but is never populate=
-d as a
-> > +      * struct device. Instead we simply parse it to read the properti=
-es.
-> > +      * This it breaks fw_devlink=3Don. To maintain backward compatibi=
-lity
-> > +      * with existing DT files, we work around this by deleting any
-> > +      * fwnode_links to/from this fwnode.
-> > +      */
-> > +     fwnode =3D device_get_named_child_node(&i2c->dev, "connector");
-> > +     if (!fwnode)
-> > +             return -ENODEV;
-> > +
-> > +     fw_devlink_purge_absent_suppliers(fwnode);
->
-> So don't use that function unless you really see some issue that it's
-> fixing yourself.
->
-> That function is broken. It breaks at least if the fwnode is shared -
-> fwnodes can be, and are, shared - most likely it's broken in
-> some other ways too. That function seems to be a hack for some
-> individual problem that was caused by some deeper problem with the
-> device links.
->
-> We really need to figure out a fix for the core problem now instead of
-> trying to come up with these hacks for every single separate scenario
-> that is breaking because of the core problem, what ever that core
-> problem may be.
->
-OK, I'll remove it.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git sched/core
+head:   bf8d9ef490e0600b3b30ac2244858ecd327123ab
+commit: bf8d9ef490e0600b3b30ac2244858ecd327123ab [29/29] sched: Move cfs_bandwidth_slice sysctls to fair.c
+config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220209/202202092104.f0q3gfHV-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=bf8d9ef490e0600b3b30ac2244858ecd327123ab
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue sched/core
+        git checkout bf8d9ef490e0600b3b30ac2244858ecd327123ab
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash kernel/sched/
 
-Originally, I think the others use it to solve fwlink problem.
-But I didn't realize actually it's a workaround.
-> > +     data->role_sw =3D fwnode_usb_role_switch_get(fwnode);
-> > +     if (IS_ERR(data->role_sw)) {
-> > +             ret =3D PTR_ERR(data->role_sw);
-> > +             dev_err(&i2c->dev, "Failed to get usb role switch (%d)\n"=
-, ret);
-> > +             goto err_fwnode_put;
-> > +     }
-> > +
-> > +     ret =3D devm_rt1719_psy_register(data);
-> > +     if (ret) {
-> > +             dev_err(&i2c->dev, "Failed to register psy (%d)\n", ret);
-> > +             goto err_role_put;
-> > +     }
-> > +
-> > +     typec_cap.revision =3D USB_TYPEC_REV_1_2;
-> > +     typec_cap.pd_revision =3D 0x300;  /* USB-PD spec release 3.0 */
-> > +     typec_cap.type =3D TYPEC_PORT_SNK;
-> > +     typec_cap.data =3D TYPEC_PORT_DRD;
-> > +     typec_cap.ops =3D &rt1719_port_ops;
-> > +     typec_cap.fwnode =3D fwnode;
-> > +     typec_cap.driver_data =3D data;
-> > +     typec_cap.accessory[0] =3D TYPEC_ACCESSORY_DEBUG;
-> > +
-> > +     data->partner_desc.identity =3D &data->partner_ident;
-> > +
-> > +     data->port =3D typec_register_port(&i2c->dev, &typec_cap);
-> > +     if (IS_ERR(data->port)) {
-> > +             ret =3D PTR_ERR(data->port);
-> > +             dev_err(&i2c->dev, "Failed to register typec port (%d)\n"=
-, ret);
-> > +             goto err_role_put;
-> > +     }
-> > +
-> > +     ret =3D rt1719_init_attach_state(data);
-> > +     if (ret) {
-> > +             dev_err(&i2c->dev, "Failed to init attach state (%d)\n", =
-ret);
-> > +             goto err_role_put;
-> > +     }
-> > +
-> > +     ret =3D rt1719_irq_init(data);
-> > +     if (ret) {
-> > +             dev_err(&i2c->dev, "Failed to init irq\n");
-> > +             goto err_role_put;
-> > +     }
-> > +
-> > +     fwnode_handle_put(fwnode);
-> > +
-> > +     i2c_set_clientdata(i2c, data);
-> > +
-> > +     return 0;
-> > +
-> > +err_role_put:
-> > +     usb_role_switch_put(data->role_sw);
-> > +err_fwnode_put:
-> > +     fwnode_handle_put(fwnode);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> > +static int rt1719_remove(struct i2c_client *i2c)
-> > +{
-> > +     struct rt1719_data *data =3D i2c_get_clientdata(i2c);
-> > +
-> > +     typec_unregister_port(data->port);
-> > +     usb_role_switch_put(data->role_sw);
-> > +
-> > +     return 0;
-> > +}
-> > +
-> > +static const struct of_device_id __maybe_unused rt1719_device_table[] =
-=3D {
-> > +     { .compatible =3D "richtek,rt1719", },
-> > +     { }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, rt1719_device_table);
-> > +
-> > +static struct i2c_driver rt1719_driver =3D {
-> > +     .driver =3D {
-> > +             .name =3D "rt1719",
-> > +             .of_match_table =3D rt1719_device_table,
-> > +     },
-> > +     .probe_new =3D rt1719_probe,
-> > +     .remove =3D rt1719_remove,
-> > +};
-> > +module_i2c_driver(rt1719_driver);
-> > +
-> > +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
-> > +MODULE_DESCRIPTION("Richtek RT1719 Sink Only USBPD Controller Driver")=
-;
-> > +MODULE_LICENSE("GPL v2");
->
-> Oh, you probable want the make that "GPL" instead. See
-> Documentation/process/license-rules.rst.
->
-Ack in next.
-> thanks,
->
-> --
-> heikki
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   kernel/sched/fair.c: In function 'sched_init_granularity':
+>> kernel/sched/fair.c:230:9: error: implicit declaration of function 'sched_cfs_bandwidth_sysctl_init' [-Werror=implicit-function-declaration]
+     230 |         sched_cfs_bandwidth_sysctl_init();
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c: At top level:
+   kernel/sched/fair.c:652:5: warning: no previous prototype for 'sched_update_scaling' [-Wmissing-prototypes]
+     652 | int sched_update_scaling(void)
+         |     ^~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:5469:6: warning: no previous prototype for 'init_cfs_bandwidth' [-Wmissing-prototypes]
+    5469 | void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
+         |      ^~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11694:6: warning: no previous prototype for 'free_fair_sched_group' [-Wmissing-prototypes]
+   11694 | void free_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11696:5: warning: no previous prototype for 'alloc_fair_sched_group' [-Wmissing-prototypes]
+   11696 | int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11701:6: warning: no previous prototype for 'online_fair_sched_group' [-Wmissing-prototypes]
+   11701 | void online_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11703:6: warning: no previous prototype for 'unregister_fair_sched_group' [-Wmissing-prototypes]
+   11703 | void unregister_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/sched_cfs_bandwidth_sysctl_init +230 kernel/sched/fair.c
+
+   226	
+   227	void __init sched_init_granularity(void)
+   228	{
+   229		update_sysctl();
+ > 230		sched_cfs_bandwidth_sysctl_init();
+   231	}
+   232	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
