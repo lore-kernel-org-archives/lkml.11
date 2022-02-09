@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E132C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:38:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbiBIMih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:38:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+        id S232475AbiBIMil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:38:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233349AbiBIMi1 (ORCPT
+        with ESMTP id S233363AbiBIMi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 07:38:27 -0500
 Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFDFC05CB86;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA529C05CB9A;
         Wed,  9 Feb 2022 04:38:27 -0800 (PST)
 Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nHmEi-0001Mv-Cm; Wed, 09 Feb 2022 13:38:16 +0100
+        id 1nHmEo-0001Mv-88; Wed, 09 Feb 2022 13:38:22 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -33,125 +33,85 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         jscheid@ventanamicro.com, rtrauben@gmail.com, samuel@sholland.org,
         cmuellner@linux.com, philipp.tomsich@vrull.eu,
         Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v6 00/14] riscv: support for Svpbmt and D1 memory types
-Date:   Wed,  9 Feb 2022 13:37:46 +0100
-Message-Id: <20220209123800.269774-1-heiko@sntech.de>
+Subject: [PATCH v6 06/14] riscv: extend concatenated alternatives-lines to the same length
+Date:   Wed,  9 Feb 2022 13:37:52 +0100
+Message-Id: <20220209123800.269774-7-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220209123800.269774-1-heiko@sntech.de>
+References: <20220209123800.269774-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
-for things like non-cacheable pages or I/O memory pages.
+ALT_NEW_CONTENT already uses same-length assembler lines, so
+extend this to the other elements as well.
 
+This makes it more readable when these elements need to be extended
+in the future.
 
-So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
-types) using the alternatives framework.
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+---
+ arch/riscv/include/asm/alternative-macros.h | 30 ++++++++++-----------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-This includes a number of changes to the alternatives mechanism itself.
-The biggest one being the move to a more central location, as I expect
-in the future, nearly every chip needing some sort of patching, be it
-either for erratas or for optional features (svpbmt or others).
-
-The dt-binding for svpbmt itself is of course not finished and is still
-using the binding introduced in previous versions, as where to put
-a svpbmt-property in the devicetree is still under dicussion.
-Atish seems to be working on a framework for extensions [0],
-
-The series also introduces support for the memory types of the D1
-which are implemented differently to svpbmt. But when patching anyway
-it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
-location.
-
-The only slightly bigger difference is that the "normal" type is not 0
-as with svpbmt, so kernel patches for this PMA type need to be applied
-even before the MMU is brought up, so the series introduces a separate
-stage for that.
-
-
-In theory this series is 3 parts:
-- sbi cache-flush / null-ptr
-- alternatives improvements
-- svpbmt+d1
-
-So expecially patches from the first 2 areas could be applied when
-deemed ready, I just thought to keep it together to show-case where
-the end-goal is and not requiring jumping between different series.
-
-
-The sbi cache-flush patch is based on Atish's sparse-hartid patch [1],
-as it touches a similar area in mm/cacheflush.c
-
-
-I picked the recipient list from the previous version, hopefully
-I didn't forget anybody.
-
-changes in v6:
-- rebase onto 5.17-rc1
-- handle sbi null-ptr differently
-- improve commit messages
-- use riscv,mmu as property name
-
-changes in v5:
-- move to use alternatives for runtime-patching
-- add D1 variant
-
-
-[0] https://lore.kernel.org/r/20211224211632.1698523-1-atishp@rivosinc.com
-[1] https://lore.kernel.org/r/20220120090918.2646626-1-atishp@rivosinc.com
-
-
-Heiko Stuebner (12):
-  riscv: prevent null-pointer dereference with sbi_remote_fence_i
-  riscv: integrate alternatives better into the main architecture
-  riscv: allow different stages with alternatives
-  riscv: implement module alternatives
-  riscv: implement ALTERNATIVE_2 macro
-  riscv: extend concatenated alternatives-lines to the same length
-  riscv: prevent compressed instructions in alternatives
-  riscv: move boot alternatives to a slightly earlier position
-  riscv: Fix accessing pfn bits in PTEs for non-32bit variants
-  riscv: add cpufeature handling via alternatives
-  riscv: remove FIXMAP_PAGE_IO and fall back to its default value
-  riscv: add memory-type errata for T-Head
-
-Wei Fu (2):
-  dt-bindings: riscv: add MMU Standard Extensions support for Svpbmt
-  riscv: add RISC-V Svpbmt extension support
-
- .../devicetree/bindings/riscv/cpus.yaml       |  10 ++
- arch/riscv/Kconfig.erratas                    |  29 ++--
- arch/riscv/Kconfig.socs                       |   1 -
- arch/riscv/Makefile                           |   2 +-
- arch/riscv/errata/Makefile                    |   2 +-
- arch/riscv/errata/sifive/errata.c             |  10 +-
- arch/riscv/errata/thead/Makefile              |   1 +
- arch/riscv/errata/thead/errata.c              |  85 +++++++++++
- arch/riscv/include/asm/alternative-macros.h   | 114 ++++++++-------
- arch/riscv/include/asm/alternative.h          |  16 ++-
- arch/riscv/include/asm/errata_list.h          |  52 +++++++
- arch/riscv/include/asm/fixmap.h               |   2 -
- arch/riscv/include/asm/pgtable-32.h           |  17 +++
- arch/riscv/include/asm/pgtable-64.h           |  79 +++++++++-
- arch/riscv/include/asm/pgtable-bits.h         |  10 --
- arch/riscv/include/asm/pgtable.h              |  53 +++++--
- arch/riscv/include/asm/vendorid_list.h        |   1 +
- arch/riscv/kernel/Makefile                    |   1 +
- arch/riscv/{errata => kernel}/alternative.c   |  48 ++++++-
- arch/riscv/kernel/cpufeature.c                | 136 +++++++++++++++++-
- arch/riscv/kernel/head.S                      |   2 +
- arch/riscv/kernel/module.c                    |  29 ++++
- arch/riscv/kernel/sbi.c                       |  10 +-
- arch/riscv/kernel/smpboot.c                   |   4 -
- arch/riscv/kernel/traps.c                     |   2 +-
- arch/riscv/mm/init.c                          |   1 +
- 26 files changed, 606 insertions(+), 111 deletions(-)
- create mode 100644 arch/riscv/errata/thead/Makefile
- create mode 100644 arch/riscv/errata/thead/errata.c
- rename arch/riscv/{errata => kernel}/alternative.c (59%)
-
+diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
+index baf649293288..c0fb11fad631 100644
+--- a/arch/riscv/include/asm/alternative-macros.h
++++ b/arch/riscv/include/asm/alternative-macros.h
+@@ -56,14 +56,14 @@
+ #include <asm/asm.h>
+ #include <linux/stringify.h>
+ 
+-#define ALT_ENTRY(oldptr, newptr, vendor_id, errata_id, newlen) \
+-	RISCV_PTR " " oldptr "\n" \
+-	RISCV_PTR " " newptr "\n" \
+-	REG_ASM " " vendor_id "\n" \
+-	REG_ASM " " newlen "\n" \
++#define ALT_ENTRY(oldptr, newptr, vendor_id, errata_id, newlen)		\
++	RISCV_PTR " " oldptr "\n"					\
++	RISCV_PTR " " newptr "\n"					\
++	REG_ASM " " vendor_id "\n"					\
++	REG_ASM " " newlen "\n"						\
+ 	".word " errata_id "\n"
+ 
+-#define ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c) \
++#define ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)		\
+ 	".if " __stringify(enable) " == 1\n"				\
+ 	".pushsection .alternative, \"a\"\n"				\
+ 	ALT_ENTRY("886b", "888f", __stringify(vendor_id), __stringify(errata_id), "889f - 888f") \
+@@ -77,21 +77,21 @@
+ 	".org	. - (889b - 888b) + (887b - 886b)\n"			\
+ 	".endif\n"
+ 
+-#define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable) \
+-	"886 :\n"	\
+-	old_c "\n"	\
+-	"887 :\n"	\
++#define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)	\
++	"886 :\n"							\
++	old_c "\n"							\
++	"887 :\n"							\
+ 	ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+ 
+-#define _ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, CONFIG_k)	\
++#define _ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, CONFIG_k) \
+ 	__ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, IS_ENABLED(CONFIG_k))
+ 
+ #define __ALTERNATIVE_CFG_2(old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
+ 				  new_c_2, vendor_id_2, errata_id_2, enable_2) \
+-	"886 :\n"	\
+-	old_c "\n"	\
+-	"887 :\n"	\
+-	ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1) \
++	"886 :\n"							\
++	old_c "\n"							\
++	"887 :\n"							\
++	ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1)	\
+ 	ALT_NEW_CONTENT(vendor_id_2, errata_id_2, enable_2, new_c_2)
+ 
+ #define _ALTERNATIVE_CFG_2(old_c, new_c_1, vendor_id_1, errata_id_1, CONFIG_k_1,		\
 -- 
 2.30.2
 
