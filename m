@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C664BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241276AbiBII13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:27:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34284 "EHLO
+        id S241239AbiBII2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:28:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241085AbiBII1O (ORCPT
+        with ESMTP id S241387AbiBII1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:27:14 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860D3C0613CA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:27:18 -0800 (PST)
+        Wed, 9 Feb 2022 03:27:51 -0500
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2073.outbound.protection.outlook.com [40.107.212.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92648C05CBB9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:27:38 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gfLBW/6TgWRB7MugzkLCtWVN3P1G6DMmE7k6nCfnCvNGk3GK4MjWH+zBUnpUAeHAAILx0hWCHNkGFCcGd5q9ZPmGMkG5pjktAUVnBDt7/wEONdU88nQU2gJ4THIAn+cufQUkvSAxFw3xQX3vqV0JsqI2L1XEkCBjObMsmiDhI5gOTyJe34oO2nFSo1mBO54CGBeVy3tAjueYoHkYI3mO1R2Mv1hna/dZjJBQdEGNYPSmkij0E9LoRHG7qA99+OPm0xeFbcPuF+I7/Tnz7uYKpa/xv00R2ZnpR7pUy8k9zGv/xWCU8t1Iu7z4ae4Dxro6K9ufvfi65HERr6TkBpv17Q==
+ b=aozV1DZodN49KUQQTG3sDYu68PWERUBxZf03oI0zT6hpPL4TeQDY32RyCMB6pKMvWKp5T8yy5W2AtFfmOMFdUWDKw7yBhSydJVBnZLsHwWTRX+iz9jr2GFPhObpG4n33gho11ov04P8QS7q/5Z6IUEJePUa3gp+sR8Do3UEnqvL/LecPkP/3K/54HDMd1W/2YEVrZTShm3HI7fqIcDtbtaNCG3XbAE0Qjo3/Ib7t6T1YNjKy93PBDyy+EIQR3ags8NZleehEa5hYIeayVDhMDCuAwUURO/YaPKKM7oyidpw08irPk6vr5j6qb2TrPoL65S+IS7W+865C+nWaou4g6A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qjuchD44P/5PkxHuJbQ27b3bs9bb9qfdjlVHF227NLY=;
- b=i9g3WZ/svilc+TNQtEg9M3TzRvI7Psdp7FvoW3ZUiZb7Galpo3vdFaNHEmMmWe1/3gLdxN+dfTz0KN/ahrdmTUnskhtsYzqnIhz9uJORfR0U2htp/MZPgSk8CGVc1C42YafQsQpLZra9cIcenuxPS9naTy/ZrDMQr71TJL0DtUPkFBdCZRftKc7dLpU9kXmSi7XE7lWNA6/YRnKq82619JH0z9lnz799opgZflBiLqq64C5pb0XlPmL5xcEZRHh3ikMKOxcXvwDSJUSdSlt1MlsZwd1l86vTbMHXvGmCoV24vQsY5kMrKc9WzjO6AR+5WjaUbimnNCcTJ22Qcmo4Vg==
+ bh=4hEHYpCeIzyIxsQ3kFeZpjVqPsBV5OhXACBcFZTt08M=;
+ b=VhCqMavgkQUb4DQe5dE8znKUR/06lqPBhsCLEPjB84Wye4gRmJNjiwvFnFzdEjd6R2XfjeP/JVrm5ZXb5RaU6WRk3EO+OZmDVIWqb7kFmGgrV/bRGNw13bu+6OinTe8XrR8ToHL1kwNsx1Hc+V9h9yHLxVEXpwzWeG8rbaSBpbKvempP+v9bCjJH/O6aD5s3UQJ6Bz/tSdvDF+fHKYgtkSZZKJymUlj5kcv2qa1QXGetAGKUShGdv54eIJpyXjO9doZzoo/gsJbVYgDm+MAD1doCLP1Ba8VnHu4wIC0fh5M59In5PcaWhm4XHWFIVvqBnu8zQ24nZAYJZ59zrquKYA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,18 +29,17 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qjuchD44P/5PkxHuJbQ27b3bs9bb9qfdjlVHF227NLY=;
- b=TR8Vy1tM0l1Bcnds58zLsWfoa8sDrkH4gcnTh2jLEASZsHGznsQlRlSPaKlY2Zj/u0AtkEb/5g0rJq+gOlrcVBHIasavZHI2FesL2VLdcngDLJP5H62CRs5x+zh8xeKKqeG+NCzptyZ2achTshIxeTxpYTpUf2VQz2DqLFP9N3I=
-Received: from BN9PR03CA0321.namprd03.prod.outlook.com (2603:10b6:408:112::26)
- by SN1PR02MB3775.namprd02.prod.outlook.com (2603:10b6:802:27::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Wed, 9 Feb
- 2022 08:27:16 +0000
-Received: from BN1NAM02FT023.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:112:cafe::2b) by BN9PR03CA0321.outlook.office365.com
- (2603:10b6:408:112::26) with Microsoft SMTP Server (version=TLS1_2,
+ bh=4hEHYpCeIzyIxsQ3kFeZpjVqPsBV5OhXACBcFZTt08M=;
+ b=bLz+HZazjCZ6Ta0i6dybDoSp0GjYepoLkLYuN6QDLNtseaoyp2uqMIkVcutAmvfFFA/2AcazmBATho/OvUwRvxnuDauc8VpQyljmsoRiEdqQxx0xW8tS0NEa+4Skweij/eDuCoara9IYBFM0IvZKu/P87cwVt1U0UY4SYnhJ8Ok=
+Received: from BN9PR03CA0857.namprd03.prod.outlook.com (2603:10b6:408:13d::22)
+ by DM8PR02MB7973.namprd02.prod.outlook.com (2603:10b6:8:12::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4951.17; Wed, 9 Feb 2022 08:27:36 +0000
+Received: from BN1NAM02FT020.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::b) by BN9PR03CA0857.outlook.office365.com
+ (2603:10b6:408:13d::22) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
- Transport; Wed, 9 Feb 2022 08:27:16 +0000
+ Transport; Wed, 9 Feb 2022 08:27:36 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
@@ -48,9 +47,9 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.62.198 as permitted sender) receiver=protection.outlook.com;
  client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
 Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT023.mail.protection.outlook.com (10.13.2.137) with Microsoft SMTP
+ BN1NAM02FT020.mail.protection.outlook.com (10.13.2.135) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 08:27:15 +0000
+ 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 08:27:36 +0000
 Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
  xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -66,16 +65,16 @@ Envelope-to: linux-kernel@vger.kernel.org,
 Received: from [172.19.2.91] (port=40310 helo=xsjjollys50.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <ronak.jain@xilinx.com>)
-        id 1nHiJk-0003T0-D9; Wed, 09 Feb 2022 00:27:12 -0800
+        id 1nHiJk-0003T0-Ey; Wed, 09 Feb 2022 00:27:12 -0800
 From:   Ronak Jain <ronak.jain@xilinx.com>
 To:     <michal.simek@xilinx.com>, <linux-kernel@vger.kernel.org>
 CC:     <gregkh@linuxfoundation.org>, <rajan.vaja@xilinx.com>,
         <corbet@lwn.net>, <linux-arm-kernel@lists.infradead.org>,
         <arnd@arndb.de>, <lakshmi.sai.krishna.potthuri@xilinx.com>,
         Ronak Jain <ronak.jain@xilinx.com>
-Subject: [PATCH v5 1/3] firmware: xilinx: Add support for runtime features
-Date:   Wed, 9 Feb 2022 00:27:07 -0800
-Message-ID: <20220209082709.32378-2-ronak.jain@xilinx.com>
+Subject: [PATCH v5 3/3] firmware: xilinx: Add sysfs support for feature config
+Date:   Wed, 9 Feb 2022 00:27:09 -0800
+Message-ID: <20220209082709.32378-4-ronak.jain@xilinx.com>
 X-Mailer: git-send-email 2.32.0.93.g670b81a
 In-Reply-To: <20220209082709.32378-1-ronak.jain@xilinx.com>
 References: <20220209082709.32378-1-ronak.jain@xilinx.com>
@@ -84,150 +83,187 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9ab5c01f-d24e-44bf-8a33-08d9eba5faae
-X-MS-TrafficTypeDiagnostic: SN1PR02MB3775:EE_
-X-Microsoft-Antispam-PRVS: <SN1PR02MB3775F5CD8DE8A553838A252DA42E9@SN1PR02MB3775.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: cf61540a-463e-469e-0b69-08d9eba606e2
+X-MS-TrafficTypeDiagnostic: DM8PR02MB7973:EE_
+X-Microsoft-Antispam-PRVS: <DM8PR02MB7973BD9EFE6EB28782873CAAA42E9@DM8PR02MB7973.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:935;
+X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vRL881/QA04n/W5TSQBUUmwN6877x7J7GOuctoTkDRwayoiioQdlYmXQ0GF6pGz8S5k3rSPQa/bEzkBaIn015D5MThzVAv1sK/xeiMa7uHFD9CVoGxbzGPjAUXjB2f4xU0fIc9tm576F2JzgzB8jPXx+vCJlBr9iNZ3NRIfTP00chkijcU+x/Dd+KWXFNb5yzNi9/4xMC0u9Zh8dbQOJwc4S2xTplqBDTQQVjURIAfcv/Uf2kLmE6HhZpA9BO/TDkY+x32vLWw5rkB7Y9q5dxv5wCmYjfuaP3cEFn1hoinhNTQATh8BLfbzvwqku9IBSa7tcFNrA1E8qxC2Wz89027Kqq/gBjC+HiAU4whsnCOZMegPUJDJxoDrk7gD2fviPnUeqN8PN5reKagz+FG1M9owB42pw5GLcXnGtrUpKRyk2Z98ioK7JCZQXPLXYnav7No2I0cdty+uirBSq1X3pUapYbZj2WZNy3IViEjF1Znd0GbOoioI44JFeH2RWM9v8H0PoVZfLF1nd4bR4IC+7aV4dQUJIse2Bx4NLnsiiqlGS802VeIOyb+/XD+EjCt0Rkesc2ppuXJf3j8MprR7GtgsvNlZkD+/W+1hv8rlmhxcnHSXm8LOBfu/u7Ft161ppXiMEjxJmWhpfyi5a6dY6l/EzVvn+OoNgqEhTe7oGfd/q2gPvHC6UnUJ5HhKZy5kJZWM1VJDeDCMH681IG1s2WA==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(82310400004)(186003)(4326008)(70586007)(1076003)(6666004)(83380400001)(2616005)(7696005)(44832011)(9786002)(5660300002)(426003)(36756003)(8936002)(54906003)(2906002)(107886003)(8676002)(26005)(70206006)(7636003)(508600001)(110136005)(40460700003)(36860700001)(356005)(316002)(47076005)(336012)(102446001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: XX+fgG3WV7Ton9fDavsoJ+yXJueGOxDf4bZ2XztD5T+G5Znwf8Db74MkGVRrHiWovqZ6nK5rXm7bp+Kui+AXhK5lLzphE4hqiU6yIPh8If+PucaCYAI5YWBiwEngFHTENDOxZEIPsp+cXypBDIJAPaHjQBDrsI9V8AgK9sOEKO9kiiZ0NFvNjHWOP42TUt44jfEaJAvgNgu3qX9jbcE8C6iehm8UbapfRSCMNOTOqEqzS2bxaNid0sKUrUFo0J3NAasn51xBjbVN0ngIG66pJJBwetKDWcaKlJcBi2t+jxXfEcNPVI8K7BaDE8pSUl/F4cmbyerwQvCIGLAJt4A9bDr4j7n6ZQA9b7Qhvcmxv8mFRvgsJkQRS8/caUU0nlxz/MEtLSgbzvWTJoD8si1czAUbkwIB9kCUFrV36IybyGvC/5F188gX67/tBMaq0StM6ogqPWea7uqhxDrMBS2fTydR7/ax6ZtoDGyj3e9k8wIBsSrtCk363MIwBAnskeey7zKm4YVquGHEvVxRNSFcXInmxvZKitBoTN3a3SlclAU0TdUM8EXHRxu9Kl0RS485n6ms51s2ckMzQGe4yI1WV5UQxBwQ76hUq9iyB2KDXCIrKZ0bBdrdfNxcXQ0BAHiiuxvz6lO6W9UvIHd3TZ1fifGIiByGmxW4jyrUVsd3pmfN4IwVXKgj3D8C6FApDsYvCpmuuEdvt4NcFLXcGEtTxQ==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(40460700003)(36860700001)(426003)(70586007)(6666004)(7696005)(336012)(9786002)(8936002)(83380400001)(4326008)(8676002)(47076005)(316002)(70206006)(26005)(7636003)(54906003)(110136005)(356005)(82310400004)(36756003)(186003)(2616005)(44832011)(107886003)(508600001)(1076003)(5660300002)(2906002)(102446001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 08:27:15.6103
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 08:27:36.0649
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ab5c01f-d24e-44bf-8a33-08d9eba5faae
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf61540a-463e-469e-0b69-08d9eba606e2
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT023.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT020.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR02MB3775
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR02MB7973
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for runtime features by using an IOCTL call. The features
- can be enabled or disabled from the firmware as well as the features
- can be configured at runtime by querying IOCTL_SET_FEATURE_CONFIG id.
- Similarly, the user can get the configured values of features by
- querying IOCTL_GET_FEATURE_CONFIG id.
+Add support for sysfs interface for runtime features configuration.
+ The user can configure the features at runtime. First, the user need
+ to select the config id of the supported features and then the user
+ can configure the parameters of the feature based on the config id.
 
 Signed-off-by: Ronak Jain <ronak.jain@xilinx.com>
 ---
 Changes in v5:
-- Resolved merge conflicts
+- None
 
 Changes in v4:
 - Update commit message
 
 Changes in v3:
-- Resolved merged conflict
+- Added zynqmp_devinfo structure to store device instances
+- Modified feature_conf_id from atomic variable to u32
+- Update commit message
+- Resolved merge conflicts
 
 Changes in v2:
-- Resolved merged conflict
 - Update commit message
 ---
- drivers/firmware/xilinx/zynqmp.c     | 27 +++++++++++++++++++++++++++
- include/linux/firmware/xlnx-zynqmp.h | 25 +++++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
+ drivers/firmware/xilinx/zynqmp.c | 93 ++++++++++++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
 
 diff --git a/drivers/firmware/xilinx/zynqmp.c b/drivers/firmware/xilinx/zynqmp.c
-index 450c5f6a1cbf..0fa6cae4969d 100644
+index 0fa6cae4969d..7d8cb2ec6f8e 100644
 --- a/drivers/firmware/xilinx/zynqmp.c
 +++ b/drivers/firmware/xilinx/zynqmp.c
-@@ -1156,6 +1156,33 @@ int zynqmp_pm_system_shutdown(const u32 type, const u32 subtype)
- 				   0, 0, NULL);
- }
+@@ -41,6 +41,16 @@ static DEFINE_HASHTABLE(pm_api_features_map, PM_API_FEATURE_CHECK_MAX_ORDER);
+ 
+ static struct platform_device *em_dev;
  
 +/**
-+ * zynqmp_pm_set_feature_config - PM call to request IOCTL for feature config
-+ * @id:         The config ID of the feature to be configured
-+ * @value:      The config value of the feature to be configured
-+ *
-+ * Return:      Returns 0 on success or error value on failure.
++ * struct zynqmp_devinfo - Structure for Zynqmp device instance
++ * @dev:		Device Pointer
++ * @feature_conf_id:	Feature conf id
 + */
-+int zynqmp_pm_set_feature_config(enum pm_feature_config_id id, u32 value)
-+{
-+	return zynqmp_pm_invoke_fn(PM_IOCTL, 0, IOCTL_SET_FEATURE_CONFIG,
-+				   id, value, NULL);
-+}
-+
-+/**
-+ * zynqmp_pm_get_feature_config - PM call to get value of configured feature
-+ * @id:         The config id of the feature to be queried
-+ * @payload:    Returned value array
-+ *
-+ * Return:      Returns 0 on success or error value on failure.
-+ */
-+int zynqmp_pm_get_feature_config(enum pm_feature_config_id id,
-+				 u32 *payload)
-+{
-+	return zynqmp_pm_invoke_fn(PM_IOCTL, 0, IOCTL_GET_FEATURE_CONFIG,
-+				   id, 0, payload);
-+}
-+
- /**
-  * struct zynqmp_pm_shutdown_scope - Struct for shutdown scope
-  * @subtype:	Shutdown subtype
-diff --git a/include/linux/firmware/xlnx-zynqmp.h b/include/linux/firmware/xlnx-zynqmp.h
-index 907cb01890cf..cf557fbeb8c7 100644
---- a/include/linux/firmware/xlnx-zynqmp.h
-+++ b/include/linux/firmware/xlnx-zynqmp.h
-@@ -143,6 +143,9 @@ enum pm_ioctl_id {
- 	IOCTL_OSPI_MUX_SELECT = 21,
- 	/* Register SGI to ATF */
- 	IOCTL_REGISTER_SGI = 25,
-+	/* Runtime feature configuration */
-+	IOCTL_SET_FEATURE_CONFIG = 26,
-+	IOCTL_GET_FEATURE_CONFIG = 27,
- };
- 
- enum pm_query_id {
-@@ -376,6 +379,14 @@ enum ospi_mux_select_type {
- 	PM_OSPI_MUX_SEL_LINEAR = 1,
- };
- 
-+enum pm_feature_config_id {
-+	PM_FEATURE_INVALID = 0,
-+	PM_FEATURE_OVERTEMP_STATUS = 1,
-+	PM_FEATURE_OVERTEMP_VALUE = 2,
-+	PM_FEATURE_EXTWDT_STATUS = 3,
-+	PM_FEATURE_EXTWDT_VALUE = 4,
++struct zynqmp_devinfo {
++	struct device *dev;
++	u32 feature_conf_id;
 +};
 +
  /**
-  * struct zynqmp_pm_query_data - PM query data
-  * @qid:	query ID
-@@ -447,6 +458,8 @@ int zynqmp_pm_load_pdi(const u32 src, const u64 address);
- int zynqmp_pm_register_notifier(const u32 node, const u32 event,
- 				const u32 wake, const u32 enable);
- int zynqmp_pm_feature(const u32 api_id);
-+int zynqmp_pm_set_feature_config(enum pm_feature_config_id id, u32 value);
-+int zynqmp_pm_get_feature_config(enum pm_feature_config_id id, u32 *payload);
- #else
- static inline int zynqmp_pm_get_api_version(u32 *version)
- {
-@@ -689,6 +702,18 @@ static inline int zynqmp_pm_feature(const u32 api_id)
- {
- 	return -ENODEV;
- }
-+
-+static inline int zynqmp_pm_set_feature_config(enum pm_feature_config_id id,
-+					       u32 value)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int zynqmp_pm_get_feature_config(enum pm_feature_config_id id,
-+					       u32 *payload)
-+{
-+	return -ENODEV;
-+}
- #endif
+  * struct pm_api_feature_data - PM API Feature data
+  * @pm_api_id:		PM API Id, used as key to index into hashmap
+@@ -1451,6 +1461,78 @@ static DEVICE_ATTR_RW(pggs1);
+ static DEVICE_ATTR_RW(pggs2);
+ static DEVICE_ATTR_RW(pggs3);
  
- #endif /* __FIRMWARE_ZYNQMP_H__ */
++static ssize_t feature_config_id_show(struct device *device,
++				      struct device_attribute *attr,
++				      char *buf)
++{
++	struct zynqmp_devinfo *devinfo = dev_get_drvdata(device);
++
++	return sysfs_emit(buf, "%d\n", devinfo->feature_conf_id);
++}
++
++static ssize_t feature_config_id_store(struct device *device,
++				       struct device_attribute *attr,
++				       const char *buf, size_t count)
++{
++	u32 config_id;
++	int ret;
++	struct zynqmp_devinfo *devinfo = dev_get_drvdata(device);
++
++	if (!buf)
++		return -EINVAL;
++
++	ret = kstrtou32(buf, 10, &config_id);
++	if (ret)
++		return ret;
++
++	devinfo->feature_conf_id = config_id;
++
++	return count;
++}
++
++static DEVICE_ATTR_RW(feature_config_id);
++
++static ssize_t feature_config_value_show(struct device *device,
++					 struct device_attribute *attr,
++					 char *buf)
++{
++	int ret;
++	u32 ret_payload[PAYLOAD_ARG_CNT];
++	struct zynqmp_devinfo *devinfo = dev_get_drvdata(device);
++
++	ret = zynqmp_pm_get_feature_config(devinfo->feature_conf_id,
++					   ret_payload);
++	if (ret)
++		return ret;
++
++	return sysfs_emit(buf, "%d\n", ret_payload[1]);
++}
++
++static ssize_t feature_config_value_store(struct device *device,
++					  struct device_attribute *attr,
++					  const char *buf, size_t count)
++{
++	u32 value;
++	int ret;
++	struct zynqmp_devinfo *devinfo = dev_get_drvdata(device);
++
++	if (!buf)
++		return -EINVAL;
++
++	ret = kstrtou32(buf, 10, &value);
++	if (ret)
++		return ret;
++
++	ret = zynqmp_pm_set_feature_config(devinfo->feature_conf_id,
++					   value);
++	if (ret)
++		return ret;
++
++	return count;
++}
++
++static DEVICE_ATTR_RW(feature_config_value);
++
+ static struct attribute *zynqmp_firmware_attrs[] = {
+ 	&dev_attr_ggs0.attr,
+ 	&dev_attr_ggs1.attr,
+@@ -1462,6 +1544,8 @@ static struct attribute *zynqmp_firmware_attrs[] = {
+ 	&dev_attr_pggs3.attr,
+ 	&dev_attr_shutdown_scope.attr,
+ 	&dev_attr_health_status.attr,
++	&dev_attr_feature_config_id.attr,
++	&dev_attr_feature_config_value.attr,
+ 	NULL,
+ };
+ 
+@@ -1471,6 +1555,7 @@ static int zynqmp_firmware_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *np;
++	struct zynqmp_devinfo *devinfo;
+ 	int ret;
+ 
+ 	np = of_find_compatible_node(NULL, NULL, "xlnx,zynqmp");
+@@ -1487,6 +1572,14 @@ static int zynqmp_firmware_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
++	devinfo = devm_kzalloc(dev, sizeof(*devinfo), GFP_KERNEL);
++	if (!devinfo)
++		return -ENOMEM;
++
++	devinfo->dev = dev;
++
++	platform_set_drvdata(pdev, devinfo);
++
+ 	/* Check PM API version number */
+ 	ret = zynqmp_pm_get_api_version(&pm_api_version);
+ 	if (ret)
 -- 
 2.32.0.93.g670b81a
 
