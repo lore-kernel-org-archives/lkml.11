@@ -2,79 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93145C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A33C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347425AbiBIEKf (ORCPT
+        id S1347459AbiBIEKi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:10:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48510 "EHLO
+        Tue, 8 Feb 2022 23:10:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347395AbiBIDru (ORCPT
+        with ESMTP id S1347329AbiBIDlw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:47:50 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB47C0613CA;
-        Tue,  8 Feb 2022 19:47:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4FNyD7FBlj7mRyeBDsT28ONQDcfnipyspBXex6GKTiM=; b=jgEE2R6QBEb3QRI2GNqg6BZ0Wz
-        Yj2Sa55DzA6YkgxGZgWcAG+WM9st42nb3drftf6sGaRs8X87U0FpJ1WY9oqKzJr+CXBDLfICyTex2
-        xV8sWG05+3+eQuiSKHuUhWHbw3ShulDr85lELta/6SWKxOvz5FUVoZcgkAygNa7il2KJdETyYd64q
-        d1i2lABoxedJEpiUNnF60MEp1P8VqlMNxCLmgrwBRHJtnZ0yBrEgcL9BdxIIdb03WtRfYBfh6PRMS
-        rgGf0L2FYWCzgJyjlp3LJmBSNuEge6+AEhE7uQEC82jo5a0pq7a6DzaicZzCuJ1mMF/fsvrRMMoFF
-        2TXn+Iew==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nHdxH-006bl4-Tu; Wed, 09 Feb 2022 03:47:43 +0000
-Date:   Wed, 9 Feb 2022 03:47:43 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the folio tree
-Message-ID: <YgM5XzWoPI1NVdIU@casper.infradead.org>
-References: <20220207150621.0273b095@canb.auug.org.au>
- <20220209143804.33b5f08a@canb.auug.org.au>
+        Tue, 8 Feb 2022 22:41:52 -0500
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02801C06174F;
+        Tue,  8 Feb 2022 19:41:51 -0800 (PST)
+Received: by mail-oi1-f179.google.com with SMTP id q8so1240236oiw.7;
+        Tue, 08 Feb 2022 19:41:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2uBLFZ0bop4GNjuX3AfN0OvA74Zgje4mCs2rxqz1als=;
+        b=31aXIjLctDNLZLLgskwTD599B16SnHWgl/woimUvCZbB379m0VV0qvRWWM2hY9OYRu
+         uY7mECobfNoqzcyWM21dSbWMdSwdouvX2oqgHJj6Bs18l5X3R0ei7HH7OFCmaWqZZz2w
+         F+x983yhOjwfbqJR8GNi116/BWEu0fVHEIg5SBTGwjjedh+NimwGDue4KYHrfqebyIpJ
+         UWlztDvNkSNI+Nly0I2f3pvl0YO7IIwm0VjeZxmPrQbcM2vFlym2GsELVvjiiK3VWDge
+         +oQjajApK2g/4dkXyLeyR5Z5nSmLnxS9m8VknHdXBW0lfQy5jF5+qDBzo3U+4YTW6ZIQ
+         yqUw==
+X-Gm-Message-State: AOAM5326gJnxsVeYexnsaWxCUPazYzqkFM/Q2i7oZHWMzdocAGvdPXtk
+        irxzIijr2ZLEjKGx7m+LDA==
+X-Google-Smtp-Source: ABdhPJxHuCzQRSdgQbD/dpAHOEDefFhYMR9jsE8gC31ttWua2aUvf702XmQ5GzjfR7N8wqiNIbUWxg==
+X-Received: by 2002:a05:6808:1598:: with SMTP id t24mr478637oiw.50.1644378110345;
+        Tue, 08 Feb 2022 19:41:50 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id o1sm6591379oik.0.2022.02.08.19.41.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 19:41:49 -0800 (PST)
+Received: (nullmailer pid 3600805 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:41:48 -0000
+Date:   Tue, 8 Feb 2022 21:41:48 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Greg KH <greg@kroah.com>, Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v1 1/4] dt-bindings: net: add schema for ASIX
+ USB Ethernet controllers
+Message-ID: <YgM3/OHpGaIy+b/c@robh.at.kernel.org>
+References: <20220127104905.899341-1-o.rempel@pengutronix.de>
+ <20220127104905.899341-2-o.rempel@pengutronix.de>
+ <YfJ7JXrqEEybRLCi@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209143804.33b5f08a@canb.auug.org.au>
+In-Reply-To: <YfJ7JXrqEEybRLCi@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 02:38:04PM +1100, Stephen Rothwell wrote:
-> Hi all,
+On Thu, Jan 27, 2022 at 11:59:49AM +0100, Greg KH wrote:
+> On Thu, Jan 27, 2022 at 11:49:02AM +0100, Oleksij Rempel wrote:
+> > Create initial schema for ASIX USB Ethernet controllers and import all
+> > currently supported USB IDs form drivers/net/usb/asix_devices.c
 > 
-> On Mon, 7 Feb 2022 15:06:21 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > After merging the folio tree, today's linux-next build (arm
-> > multi_v7_defconfig) failed like this:
-> > 
-> > mm/page_vma_mapped.c: In function 'page_vma_mapped_walk':
-> > mm/page_vma_mapped.c:219:48: error: implicit declaration of function 'pmd_pfn'; did you mean 'pmd_off'? [-Werror=implicit-function-declaration]
-> >   219 |                                 if (!check_pmd(pmd_pfn(pmde), pvmw))
-> >       |                                                ^~~~~~~
-> >       |                                                pmd_off
-> > 
-> > Caused by commit
-> > 
-> >   02ecfe9b9580 ("mm: Convert page_vma_mapped_walk to work on PFNs")
-> > 
-> > Presumably you need to explicitly include <linux/pgtable.h>?
-> > 
-> > I have used the folio tree from next-20220204 for today.
-> 
-> I am still getting this build failure.
+> Again, you are setting yourself to play a game you are always going to
+> loose and be behind on.  This is not acceptable, sorry.
 
-I have it fixed in my tree, but haven't pushed it out yet.
-There's going to be a giant pile of conflicts between Hugh's rework
-of mlock which just landed in mm and my folioisation of mlock, which
-I haven't even started trying to redo yet.
+I would suggest adding just the IDs you need. There probably aren't many 
+which are hardwired. And if they aren't hardwired, what are they doing 
+in DT?
 
-We're back to the "it's hard to work with the mm tree" problem.
-Tempted to resolve it by taking Hugh's patches into my tree since
-there's no other way to create a stable base to work against.
-
+Rob
