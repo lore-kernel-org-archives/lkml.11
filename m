@@ -2,88 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4687BC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2BE0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237153AbiBIQd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:33:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
+        id S237154AbiBIQf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:35:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236367AbiBIQd4 (ORCPT
+        with ESMTP id S237244AbiBIQfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:33:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8562C0612BE;
-        Wed,  9 Feb 2022 08:33:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58E3A6173F;
-        Wed,  9 Feb 2022 16:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A36AC340E7;
-        Wed,  9 Feb 2022 16:33:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644424438;
-        bh=A3C28su2GZHYfO1uG6hQ8cQQJH4qr+JQ5ZUOFe6PLu4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SO/PkyjuoxW60tdmyRombK4TTlrUuwvcr0PZyxlW5yZxml0l4FIAUGSLU3JvJfQqQ
-         NGagnR3Gypm6RSWnahBf2FHq/JfYyr6oECie4w+YkQgZdTBdMDcPVRka8MiwQ24HRH
-         +ay4J2oUQU6ZduMuTebvtWKsz0DeElrGQR3cJpYmQJ6GT9Xl1CNT5HRxf+c3FRiO+2
-         dsrlfDKGZKQD2MnN0NrAleMzEBF4/trXnofZnXWvbu7mZ3pKbW/aCbASyjrGZTVZ/N
-         N7tepjI22myMHRkd3/HPGeuYAy16ijvNQ09MK2baYvZiscmlQFDkI4iXO7Zt31+Kx9
-         1Hf6rHBu4QCrg==
-Date:   Wed, 9 Feb 2022 16:33:53 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     trix@redhat.com
-Cc:     lhjeff911@gmail.com, nathan@kernel.org, ndesaulniers@google.com,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] spi: initialize ret variable
-Message-ID: <YgPs8U85ZFbDWYlx@sirena.org.uk>
-References: <20220209163029.2299009-1-trix@redhat.com>
+        Wed, 9 Feb 2022 11:35:52 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE1A6C0613C9;
+        Wed,  9 Feb 2022 08:35:53 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id y8so2254421qtn.8;
+        Wed, 09 Feb 2022 08:35:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VIQd4zPChyzCUCXWagCLUCs42aJXJ04YlLh4elTWbTg=;
+        b=Zcku7i3lXjZOuAom/GOkwZhqovFOc7qJd4cMsGYlvFaBYaT/XylJBapHFNs6JfhQfZ
+         nO6xUPiMclr6P3wSv4A9CyceOZTBDaMDDd7XqoEAlt8Blihl1cu51DvAcPUzzlVrGG31
+         qGJOGc1VizsZk+Bzy677E/6o3vlAdO774YFyacjiSzwhE01YYshEFCZZ7beqW5asAmxZ
+         EJMbY2SYzEa4jpe/LqI0vhAt5/TCiJmgG5dyHp8YDwlT6Gwdgiurh+n+WXIbL42jaWRT
+         N7NEUh/+nolJvlvXxVTltMrIOikbma2fvnXgKWVxQcham9OJ0rSe/j2yJiFmPoK7NoR/
+         51Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VIQd4zPChyzCUCXWagCLUCs42aJXJ04YlLh4elTWbTg=;
+        b=7FMSMlznUdMj9PbRNsppXl3vEBT5zVJCDvL1JdIE1hcDShYVcH8gGfWfPoeq5Ckvcd
+         2QzqAsPNBeip5y0VjythdMPo2h8y/tNTtqaPuWdI3Qw7xFeG7q7E+mJyIP3ZVDIxxvsY
+         nTs997zpP8VsiPDpF8tlZUQkWxHKkyYbEjxGkjVXiwis+cVtyZMmgyd9lCVUJMQ8anPU
+         W9R9xXiFXdJgLHLe/rqtJ/CwFyGXUgIyoNJMThOpp9MKIlYq3x540teU+y6ltBHdI5lr
+         dtdo3OhaEiCONKMnhYlXf+GLt9mEott8N+ZibF4zPt1B5a8NRYnRCThIWQzKRcNov7Jm
+         RUkQ==
+X-Gm-Message-State: AOAM530Fl8mtZIsNxCPzNmFfzqDXS9ZXH5SFpYSyD/+z7F1gh/tU+3w9
+        8qS0WpFymH2cqQUb2XwpD/JqIuEBQjg=
+X-Google-Smtp-Source: ABdhPJyp/mFi7actjWTN5uvus07lhuZuHrTCeYXQf09kWa9lay6uPLb3/ndJfWVfYb49WvWua+UvVA==
+X-Received: by 2002:a05:622a:1313:: with SMTP id v19mr1924456qtk.219.1644424553009;
+        Wed, 09 Feb 2022 08:35:53 -0800 (PST)
+Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id x18sm9395050qta.57.2022.02.09.08.35.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 08:35:52 -0800 (PST)
+Date:   Wed, 9 Feb 2022 11:35:50 -0500
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v14 03/11] iio: afe: rescale: add offset support
+Message-ID: <YgPtZpYGWvjX5c4U@shaak>
+References: <20220208020441.3081162-1-liambeguin@gmail.com>
+ <20220208020441.3081162-4-liambeguin@gmail.com>
+ <CAHp75Vd7OfLyfziraV4AHWrnTSCPPN9gzGNxaFa+V6uNe8-YUA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Mu0AE5F/1tDJX1na"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209163029.2299009-1-trix@redhat.com>
-X-Cookie: Disc space -- the final frontier!
+In-Reply-To: <CAHp75Vd7OfLyfziraV4AHWrnTSCPPN9gzGNxaFa+V6uNe8-YUA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Andy,
 
---Mu0AE5F/1tDJX1na
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Tue, Feb 08, 2022 at 03:42:22PM +0200, Andy Shevchenko wrote:
+> On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
+> >
+> > This is a preparatory change required for the addition of temperature
+> > sensing front ends.
+> 
+> ...
+> 
+> > +               if (iio_channel_has_info(rescale->source->channel,
+> > +                                        IIO_CHAN_INFO_OFFSET)) {
+> > +                       ret = iio_read_channel_offset(rescale->source,
+> > +                                                     &schan_off, NULL);
+> 
+> > +                       if (ret != IIO_VAL_INT)
+> > +                               return ret < 0 ? ret : -EOPNOTSUPP;
+> 
+> Wonder if this actually should be
+> 
+>    if (ret < 0)
+>        return ret;
+>    if (ret != ...)
+>        return -EOP...;
 
-On Wed, Feb 09, 2022 at 08:30:29AM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
->=20
-> Clang build fails with
-> spi-sunplus-sp7021.c:405:2: error: variable 'ret' is used
->   uninitialized whenever switch default is taken
->         default:
->         ^~~~~~~
->=20
-> Restore initializing ret.
+Unless someone has a stong objection, I'd rather keep it as is.
 
-Are you sure this is a good fix and that the compiler hasn't instead
-identifed that we should be returning an error in the default case?
+Cheers,
+Liam
 
---Mu0AE5F/1tDJX1na
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmID7PEACgkQJNaLcl1U
-h9DXDQf/d8oWsM8LqjI3JFg83YZWTgTnqvzABNlCFu6Pqc7x8gKpeLY76jEejVK3
-MwBzj34sZgjQNpo4Ah8Lze+CGJi3dK1Ic1nGK8woFMJJ7FX/vKWcMWQB49GQT4uv
-nt0HvfituvT8Rzic252jaGaQnMslhLH04vrFmjxgCMaQof/SKOYgLUECzdLP6x8x
-OSFGpC32VeuZaVwaJbmXIrsoNyZ9rp+AWjA1Xzcz321TwsB6Sja16pd+VcYTWA5i
-3Pv6T0mPVd345pG4blfqWUo2eaQPyem5ZtxrcGBq07BNGWnaxNOG0F0MDBA/Xe9E
-FdHPeuZBSNxjXY9liEcXkZTmrDRSoA==
-=pALL
------END PGP SIGNATURE-----
-
---Mu0AE5F/1tDJX1na--
+> > +               }
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
