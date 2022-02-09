@@ -2,169 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17449C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A46C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239640AbiBIShY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54812 "EHLO
+        id S239904AbiBIShc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239704AbiBISg5 (ORCPT
+        with ESMTP id S239606AbiBISfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:36:57 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C04FC05CB8E;
-        Wed,  9 Feb 2022 10:36:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644431805; x=1675967805;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=v+VXW5fj89kbBLw30Yb+JRBx/zHxa1O7fYiS2MIddBE=;
-  b=Q9hIZ2PjSWEyGiXCROtE2lwn853LbPMf/rTtNrVOwYae+CpBckUyd/L7
-   /SRyGWwITHmAuBt6UmsRt8/wXkJuuhnphYL3/kTlYIm0h+l2PRB3VprKu
-   FCmG9jhMgVS7agtSVHNTmdsQnhPd7izEdQe5aHtS46XLfCRlXehVoXCNU
-   AIYGbjY6rfDyApoFiB3Ww6NutAws8tv7G1l2Lt/A3P3rjZEywplhOwqvg
-   msVeUDvt9BtbNwxTTCYKCvAZmZ1iP4pqiPMzNnQLk5lzkiE2QpjoQMJFi
-   n9kKFIxQHUqYRe6QW73p+3kroRhOvgGLeHrZi53/3JXeSFwmWdu7JlCTe
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229270391"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="229270391"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:25:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="629374925"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Feb 2022 10:25:11 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 98AC4107; Wed,  9 Feb 2022 20:25:26 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH v1 1/1] media: c8sectpfe: Clean up handling of *_buffer_aligned
-Date:   Wed,  9 Feb 2022 20:25:21 +0200
-Message-Id: <20220209182521.55632-1-andriy.shevchenko@linux.intel.com>
+        Wed, 9 Feb 2022 13:35:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0D8C05CB98;
+        Wed,  9 Feb 2022 10:35:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5974061B86;
+        Wed,  9 Feb 2022 18:35:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00C2C340E7;
+        Wed,  9 Feb 2022 18:35:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644431751;
+        bh=XbJzmONg6PfFSqJz05Fe0uDUaA4SE1XLPthkybjldms=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h3s5pc8MkcW7k4yUHk1heSQnPlTxRsitzC1JEYr4nxS5NLGIAc8eyJ/6/EiXh5/+W
+         BBXONwoo+v5z8IbQlCH/jLAeXNvQdc79+f7/taRHzAcnBsLOBzsjvdi7cgDnaLVTkD
+         5t8zgnaRH8lY+ZRsdTAdluoKwuo0SQSYyl/cYvloi+f2P1rKLlj/kcmyFxLPG0Zj6x
+         WrvsXs3ouDxC1U3arGAuBUCA/tgmBUQj0F3Ke3+tPhd6Pz+xvewFlJyfRZuUGB8wu8
+         2r1v0CjQkSSf/ZNpNh4z7bnMv+pVtwR0zN4EPUKLqTU/VGXXxX4T1fQNXXSHrXd5a4
+         3kHvqnW/n5MuA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 22/42] vfs: make sync_filesystem return errors from ->sync_fs
+Date:   Wed,  9 Feb 2022 13:32:54 -0500
+Message-Id: <20220209183335.46545-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
+References: <20220209183335.46545-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a few cases where code is harder than needed to read.
-Improve those by:
-- dropping unnecessary castings (see note below)
-- use PTR_ALING() to be more explicit on what's going on there
-- use proper definitions instead of hard coded values
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-Note, dropping castings will allow to perform an additional check
-that type is not changed from void * to something else, e.g. u64,
-which may very well break the bitmap APIs.
+[ Upstream commit 5679897eb104cec9e99609c3f045a0c20603da4c ]
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Strangely, sync_filesystem ignores the return code from the ->sync_fs
+call, which means that syscalls like syncfs(2) never see the error.
+This doesn't seem right, so fix that.
+
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../platform/sti/c8sectpfe/c8sectpfe-core.c   | 30 +++++++------------
- 1 file changed, 11 insertions(+), 19 deletions(-)
+ fs/sync.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c b/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
-index 7bb1384e4bad..d60908ec9ea7 100644
---- a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
-+++ b/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
-@@ -107,7 +107,7 @@ static void channel_swdemux_tsklet(struct tasklet_struct *t)
- 				size,
- 				DMA_FROM_DEVICE);
+diff --git a/fs/sync.c b/fs/sync.c
+index 3ce8e2137f310..c7690016453e4 100644
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -29,7 +29,7 @@
+  */
+ int sync_filesystem(struct super_block *sb)
+ {
+-	int ret;
++	int ret = 0;
  
--	buf = (u8 *) channel->back_buffer_aligned;
-+	buf = channel->back_buffer_aligned;
- 
- 	dev_dbg(fei->dev,
- 		"chan=%d channel=%p num_packets = %d, buf = %p, pos = 0x%x\n\trp=0x%lx, wp=0x%lx\n",
-@@ -176,7 +176,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
- 
- 	channel = fei->channel_data[stdemux->tsin_index];
- 
--	bitmap = (unsigned long *) channel->pid_buffer_aligned;
-+	bitmap = channel->pid_buffer_aligned;
- 
- 	/* 8192 is a special PID */
- 	if (dvbdmxfeed->pid == 8192) {
-@@ -272,7 +272,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
- 
- 	channel = fei->channel_data[stdemux->tsin_index];
- 
--	bitmap = (unsigned long *) channel->pid_buffer_aligned;
-+	bitmap = channel->pid_buffer_aligned;
- 
- 	if (dvbdmxfeed->pid == 8192) {
- 		tmp = readl(fei->io + C8SECTPFE_IB_PID_SET(channel->tsin_id));
-@@ -333,8 +333,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
- 			__func__, __LINE__, stdemux, channel->tsin_id);
- 
- 		/* turn off all PIDS in the bitmap */
--		memset((void *)channel->pid_buffer_aligned
--			, 0x00, PID_TABLE_SIZE);
-+		memset(channel->pid_buffer_aligned, 0, PID_TABLE_SIZE);
- 
- 		/* manage cache so data is visible to HW */
- 		dma_sync_single_for_device(fei->dev,
-@@ -458,23 +457,19 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
- 
- 	init_completion(&tsin->idle_completion);
- 
--	tsin->back_buffer_start = kzalloc(FEI_BUFFER_SIZE +
--					FEI_ALIGNMENT, GFP_KERNEL);
--
-+	tsin->back_buffer_start = kzalloc(FEI_BUFFER_SIZE + FEI_ALIGNMENT, GFP_KERNEL);
- 	if (!tsin->back_buffer_start) {
- 		ret = -ENOMEM;
- 		goto err_unmap;
- 	}
- 
- 	/* Ensure backbuffer is 32byte aligned */
--	tsin->back_buffer_aligned = tsin->back_buffer_start
--		+ FEI_ALIGNMENT;
-+	tsin->back_buffer_aligned = tsin->back_buffer_start + FEI_ALIGNMENT;
- 
--	tsin->back_buffer_aligned = (void *)
--		(((uintptr_t) tsin->back_buffer_aligned) & ~0x1F);
-+	tsin->back_buffer_aligned = PTR_ALIGN(tsin->back_buffer_aligned, FEI_ALIGNMENT);
- 
- 	tsin->back_buffer_busaddr = dma_map_single(fei->dev,
--					(void *)tsin->back_buffer_aligned,
-+					tsin->back_buffer_aligned,
- 					FEI_BUFFER_SIZE,
- 					DMA_BIDIRECTIONAL);
- 
-@@ -489,8 +484,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
- 	 * per pid. By powers of deduction we conclude stih407 family
- 	 * is configured (at SoC design stage) for bit per pid.
+ 	/*
+ 	 * We need to be protected against the filesystem going from
+@@ -52,15 +52,21 @@ int sync_filesystem(struct super_block *sb)
+ 	 * at a time.
  	 */
--	tsin->pid_buffer_start = kzalloc(2048, GFP_KERNEL);
--
-+	tsin->pid_buffer_start = kzalloc(PID_TABLE_SIZE + PID_TABLE_SIZE, GFP_KERNEL);
- 	if (!tsin->pid_buffer_start) {
- 		ret = -ENOMEM;
- 		goto err_unmap;
-@@ -503,11 +497,9 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
- 	 * the register.
- 	 */
+ 	writeback_inodes_sb(sb, WB_REASON_SYNC);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 0);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 0);
++		if (ret)
++			return ret;
++	}
+ 	ret = sync_blockdev_nowait(sb->s_bdev);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
  
--	tsin->pid_buffer_aligned = tsin->pid_buffer_start +
--		PID_TABLE_SIZE;
-+	tsin->pid_buffer_aligned = tsin->pid_buffer_start + PID_TABLE_SIZE;
- 
--	tsin->pid_buffer_aligned = (void *)
--		(((uintptr_t) tsin->pid_buffer_aligned) & ~0x3ff);
-+	tsin->pid_buffer_aligned = PTR_ALIGN(tsin->pid_buffer_aligned, PID_TABLE_SIZE);
- 
- 	tsin->pid_buffer_busaddr = dma_map_single(fei->dev,
- 						tsin->pid_buffer_aligned,
+ 	sync_inodes_sb(sb);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
+ 	return sync_blockdev(sb->s_bdev);
+ }
+ EXPORT_SYMBOL(sync_filesystem);
 -- 
 2.34.1
 
