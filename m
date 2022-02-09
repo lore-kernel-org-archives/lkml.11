@@ -2,86 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F35C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239240AbiBIHmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:42:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40122 "EHLO
+        id S239501AbiBIHmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:42:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239253AbiBIHmH (ORCPT
+        with ESMTP id S238892AbiBIHmN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:42:07 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD88C05CBAD;
-        Tue,  8 Feb 2022 23:41:54 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2194W5l9007800;
-        Wed, 9 Feb 2022 07:41:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=ZkXPI2UT9qn/sC6SAeCRIQEO8OPOyXOWYppUZ0LUOxQ=;
- b=CvXtTBlodxgIs1wGI6dc9SwRpcULYaZEEwt9dBxRT3vDqYCswO7PuaDolZcwEcjgY1on
- pj+i+MYq5DX+7fPsto23xbeaQcBLoY1eHEgsYOB13MlnUj20nUpG55kHk7yRCEHaXWS+
- XcoAMCXf5qHEfq9cyi3OAlvquhImu2EB1DTLFSWxm6fKXhQ315Q+nmzbpc6Ome5f3/xd
- lN5NKcUdHiMJIrKUj7CQl0ySiuxM+hkajlYOYr9I9jOrXIjXThYtqkDgrP6m0oH35e/G
- aFT8r5hJy/0HLEnqfNo+6eksq17iqtwUqNnywj0yIQBpRtvVVZB/Dc8A2XLYSsS0n3F5 4g== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3tstdv08-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 07:41:44 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2197d4uA018757;
-        Wed, 9 Feb 2022 07:41:42 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv9cbkb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 07:41:42 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2197fdVQ31392118
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 07:41:39 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ABF575204E;
-        Wed,  9 Feb 2022 07:41:39 +0000 (GMT)
-Received: from localhost (unknown [9.43.124.244])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 2CC625204F;
-        Wed,  9 Feb 2022 07:41:38 +0000 (GMT)
-Date:   Wed, 9 Feb 2022 13:11:37 +0530
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     syzbot <syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com>
-Cc:     jack@suse.com, jack@suse.cz, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Subject: Re: [syzbot] KASAN: use-after-free Read in jbd2_journal_wait_updates
-Message-ID: <20220209074137.linx5qyi43hkclss@riteshh-domain>
-References: <20220209064338.vjhlaaav5dqb2hah@riteshh-domain>
- <000000000000f3f46005d7905312@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000f3f46005d7905312@google.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: EpAttfx4EXEZWiRKQRwp1t405Vz8ndiD
-X-Proofpoint-GUID: EpAttfx4EXEZWiRKQRwp1t405Vz8ndiD
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 9 Feb 2022 02:42:13 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E585DC0612C3;
+        Tue,  8 Feb 2022 23:42:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644392537; x=1675928537;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=7VeRspiyxXCh3lSSnfqh2HL4gkG0CHa04PfTnd3ABnE=;
+  b=Nn/D0ZbtZfD8wCEY4M2w2VN6mMc3NmfLpovlsgTTmVRYbZ228Eyohj+x
+   0b8rIrLkFggBXYOXKUiKrrRHqkqIUU1dgzKUl9tif2C6iiXLQUwabXOPd
+   aScOxMZ7yUzEjU0wHNNKgoyEZZGPf1HeHtoQ5/5FWVR56YPwGd+AzmdNy
+   ZG13aW6arNlMJE7imCYaiOln/NFDlsnHLlHIUSNAkXtCmSBN5ckqULZXj
+   Xos4FRZxRf6Cekd/w1LdLurBcbyBEiNOOH8HlJ7ph0UEwx3mFTgC6tJI3
+   bhNKeUb40cr4FeWESI1HGY4ZAzNTuLDn0BkMR2AUuDLI95LqenRMnTiF4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248907258"
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="248907258"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:41:51 -0800
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="540984661"
+Received: from hyperv-sh4.sh.intel.com ([10.239.48.22])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:41:40 -0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     kvm@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
+        kevin.tian@intel.com, tglx@linutronix.de
+Cc:     Chao Gao <chao.gao@intel.com>, Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Bharata B Rao <bharata@linux.ibm.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, kvm-riscv@lists.infradead.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org
+Subject: [PATCH v3 2/5] Partially revert "KVM: Pass kvm_init()'s opaque param to additional arch funcs"
+Date:   Wed,  9 Feb 2022 15:41:03 +0800
+Message-Id: <20220209074109.453116-3-chao.gao@intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209074109.453116-1-chao.gao@intel.com>
+References: <20220209074109.453116-1-chao.gao@intel.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_04,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- malwarescore=0 lowpriorityscore=0 priorityscore=1501 phishscore=0
- impostorscore=0 mlxlogscore=421 clxscore=1015 adultscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090051
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/08 10:56PM, syzbot wrote:
-> Hello,
->
-> syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-> KASAN: use-after-free Read in jbd2_journal_wait_updates
->
+This partially reverts commit b99040853738 ("KVM: Pass kvm_init()'s opaque
+param to additional arch funcs") remove opaque from
+kvm_arch_check_processor_compat because no one uses this opaque now.
+Address conflicts for ARM (due to file movement) and manually handle RISC-V
+which comes after the commit.
 
-#syz test: https://github.com/riteshharjani/linux.git jbd2-kill-t-handle-lock-t2
+And changes about kvm_arch_hardware_setup() in original commit are still
+needed so they are not reverted.
+
+Signed-off-by: Chao Gao <chao.gao@intel.com>
+---
+ arch/arm64/kvm/arm.c       |  2 +-
+ arch/mips/kvm/mips.c       |  2 +-
+ arch/powerpc/kvm/powerpc.c |  2 +-
+ arch/riscv/kvm/main.c      |  2 +-
+ arch/s390/kvm/kvm-s390.c   |  2 +-
+ arch/x86/kvm/x86.c         |  2 +-
+ include/linux/kvm_host.h   |  2 +-
+ virt/kvm/kvm_main.c        | 16 +++-------------
+ 8 files changed, 10 insertions(+), 20 deletions(-)
+
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index a069d5925f77..60494c576242 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -73,7 +73,7 @@ int kvm_arch_hardware_setup(void *opaque)
+ 	return 0;
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	return 0;
+ }
+diff --git a/arch/mips/kvm/mips.c b/arch/mips/kvm/mips.c
+index a25e0b73ee70..092d09fb6a7e 100644
+--- a/arch/mips/kvm/mips.c
++++ b/arch/mips/kvm/mips.c
+@@ -140,7 +140,7 @@ int kvm_arch_hardware_setup(void *opaque)
+ 	return 0;
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	return 0;
+ }
+diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
+index 2ad0ccd202d5..30c817f3fa0c 100644
+--- a/arch/powerpc/kvm/powerpc.c
++++ b/arch/powerpc/kvm/powerpc.c
+@@ -423,7 +423,7 @@ int kvm_arch_hardware_setup(void *opaque)
+ 	return 0;
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	return kvmppc_core_check_processor_compat();
+ }
+diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
+index 2e5ca43c8c49..992877e78393 100644
+--- a/arch/riscv/kvm/main.c
++++ b/arch/riscv/kvm/main.c
+@@ -20,7 +20,7 @@ long kvm_arch_dev_ioctl(struct file *filp,
+ 	return -EINVAL;
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	return 0;
+ }
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 9c6d45d0d345..99c70d881cb6 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -252,7 +252,7 @@ int kvm_arch_hardware_enable(void)
+ 	return 0;
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	return 0;
+ }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index b71549a52ae0..e9777ffc50c2 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -11548,7 +11548,7 @@ void kvm_arch_hardware_unsetup(void)
+ 	static_call(kvm_x86_hardware_unsetup)();
+ }
+ 
+-int kvm_arch_check_processor_compat(void *opaque)
++int kvm_arch_check_processor_compat(void)
+ {
+ 	struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
+ 
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index b3810976a27f..3c7b654e43fb 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1413,7 +1413,7 @@ int kvm_arch_hardware_enable(void);
+ void kvm_arch_hardware_disable(void);
+ int kvm_arch_hardware_setup(void *opaque);
+ void kvm_arch_hardware_unsetup(void);
+-int kvm_arch_check_processor_compat(void *opaque);
++int kvm_arch_check_processor_compat(void);
+ int kvm_arch_vcpu_runnable(struct kvm_vcpu *vcpu);
+ bool kvm_arch_vcpu_in_kernel(struct kvm_vcpu *vcpu);
+ int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu);
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 034c567a680c..be614a6325e4 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -5599,22 +5599,14 @@ struct kvm_vcpu * __percpu *kvm_get_running_vcpus(void)
+         return &kvm_running_vcpu;
+ }
+ 
+-struct kvm_cpu_compat_check {
+-	void *opaque;
+-	int *ret;
+-};
+-
+-static void check_processor_compat(void *data)
++static void check_processor_compat(void *rtn)
+ {
+-	struct kvm_cpu_compat_check *c = data;
+-
+-	*c->ret = kvm_arch_check_processor_compat(c->opaque);
++	*(int *)rtn = kvm_arch_check_processor_compat();
+ }
+ 
+ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 		  struct module *module)
+ {
+-	struct kvm_cpu_compat_check c;
+ 	int r;
+ 	int cpu;
+ 
+@@ -5642,10 +5634,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 	if (r < 0)
+ 		goto out_free_1;
+ 
+-	c.ret = &r;
+-	c.opaque = opaque;
+ 	for_each_online_cpu(cpu) {
+-		smp_call_function_single(cpu, check_processor_compat, &c, 1);
++		smp_call_function_single(cpu, check_processor_compat, &r, 1);
+ 		if (r < 0)
+ 			goto out_free_2;
+ 	}
+-- 
+2.25.1
+
