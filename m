@@ -2,207 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239315AbiBIHnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:43:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39776 "EHLO
+        id S237591AbiBIHpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:45:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239356AbiBIHm2 (ORCPT
+        with ESMTP id S231700AbiBIHp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:42:28 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACCDC05CB90;
-        Tue,  8 Feb 2022 23:42:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644392551; x=1675928551;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/DKEaaHy2+BNSJa66JF603f8foYnTYwUDIcXvB3wl7g=;
-  b=frLs+1gvHw9HyVf2UAKu6JB6h3OtO2KmlwR+Ezu4W8COdGU8ZG9aID++
-   aGNrRvnsZl8bPWO72dGZVhg7xP0tfUDhW7+rviFmGj84HglI+ckDHtFet
-   XdYqwqdsxchgGKIVHYBDr0mMTIMP5XEvoQpq4a286aTamRq9iwPqjAmtG
-   c2rRP0M/LAwbonCSuc/f/Kx1JyZdJsJA5Y/9YZwGeVedlG8npcIVR4jOx
-   JN5LlGMXIljGbeP066kCyZS0p1u4rMlIZKQ5cJCKIvKLF+JRtL2UZlXab
-   ePGREZ64F+tSSDSiwsngEMIkkHKmmVdfCIiK2IPWqO4bFjbpyQZxnMCeo
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248907365"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="248907365"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:42:02 -0800
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="540984776"
-Received: from hyperv-sh4.sh.intel.com ([10.239.48.22])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 23:41:58 -0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     kvm@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
-        kevin.tian@intel.com, tglx@linutronix.de
-Cc:     Chao Gao <chao.gao@intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 5/5] KVM: Do compatibility checks on hotplugged CPUs
-Date:   Wed,  9 Feb 2022 15:41:06 +0800
-Message-Id: <20220209074109.453116-6-chao.gao@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209074109.453116-1-chao.gao@intel.com>
-References: <20220209074109.453116-1-chao.gao@intel.com>
+        Wed, 9 Feb 2022 02:45:29 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD0C1C0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:45:32 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id o19so3460173ybc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 23:45:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rZt97/8ROY3+UKnKOkybgWpfp57iv+flrkhWaztw2B4=;
+        b=hjNPEUw9OlUPIk2B4S7HhB3hqe9U9AT7bF0Q+ofYKz+gn7Tit4EYniAacYbI8Ut2DR
+         sImSygPZsw2DdMFe6k/h3puZokb+ORZ/tqEi/CO2VbqgO7ZI4sa9YhKqKgeo5M6HzPCk
+         1hBQBzkRbptsJjjpKnecf9nOiDO0mP2eQMZ3VoHmrbfD+b47MiHA246ZqOnFS2Uk4Coc
+         l4amT4j7IO2ciSvjaSLS6qzWp2xzxvsf0qFFWuHepJGrt0wiq0F8fdTuGhKeNx2YcxBU
+         2DfUuPmKQjorZC0cZDfWjOV+yj1U5RrMmOD/JFmKV6JBRfCzPnjTAY9xXB/8HokbQILO
+         1Nmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rZt97/8ROY3+UKnKOkybgWpfp57iv+flrkhWaztw2B4=;
+        b=eg8a7xk8fnANcNwV/Yoo0VhQizspKA0LQmdYxBkRgZ+Pj3QEId+I3KslqwMBESmPgk
+         4/OdLJUM05E7R/VkP3LMlJprU7BuRLRKYFbXMQSOJB+5mnDLIT/J8KPpTVF+jdU/B0N4
+         UxFJ6sju9W67S1URAI0daWVG+E4GT+qastktmmv114DOTkRrP5S5H8TlpooGDTNqikfa
+         ew7WcaCh+PwU95iOpUjSs/2BGkEkowa/isg8PXUU4IAWfXuKig0YQnfkMe3ICGwhLixY
+         6y2mtg8qrEgoN/mh5lRzducTRpE9p1myYM01TzfEWy5d7MsYjkxBHVF3GuA6A6PXmUgb
+         e9TA==
+X-Gm-Message-State: AOAM532zzHMl4RqECcg5hboI1vjhjZizhbpNGHBi+gszE6gwJjWu8MVh
+        92T677KW7aFLUjj6Sa3NmikXLg+m3S8PkvpntEkn3Q==
+X-Google-Smtp-Source: ABdhPJxnnpaw8noZfnF3Z83h+7aPBZguIP6vpvycsBalPzDcqBtgoaWBC8+48r0zPplursG/0OyeH/mYz65iclJX4Ww=
+X-Received: by 2002:a25:c983:: with SMTP id z125mr1039624ybf.132.1644392731988;
+ Tue, 08 Feb 2022 23:45:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211101031651.75851-1-songmuchun@bytedance.com>
+ <CAMZfGtUeL45=WG3ceaZ_tALMGZTLtuD9jbfKEzeQv270OnaLYQ@mail.gmail.com>
+ <35c5217d-eb8f-6f70-544a-a3e8bd009a46@oracle.com> <CAMZfGtW=e___8kpe1B5a1rK+SV63bP_Nwucj89QKaX4ZOMUpaw@mail.gmail.com>
+ <CAMZfGtV0JKcjVL0qGoYCQJ-LsXdng7Z2UjBym5hf_WM0LcYi=Q@mail.gmail.com>
+ <20211123190952.7d1e0cac2d72acacd2df016c@linux-foundation.org> <CAMZfGtW+DoKp_gCcPSy33Urc86A58rRp8HJ+-GOuW9vFP-BwxQ@mail.gmail.com>
+In-Reply-To: <CAMZfGtW+DoKp_gCcPSy33Urc86A58rRp8HJ+-GOuW9vFP-BwxQ@mail.gmail.com>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Wed, 9 Feb 2022 15:44:54 +0800
+Message-ID: <CAMZfGtV-ODDGQ6dUuo_eSEDn2kDSiUjNDc=nyFwoRRSxNLsTeg@mail.gmail.com>
+Subject: Re: [PATCH v7 0/5] Free the 2nd vmemmap page associated with each
+ HugeTLB page
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     Oscar Salvador <osalvador@suse.de>,
+        David Hildenbrand <david@redhat.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Xiongchun duan <duanxiongchun@bytedance.com>,
+        Fam Zheng <fam.zheng@bytedance.com>,
+        Muchun Song <smuchun@gmail.com>,
+        Qi Zheng <zhengqi.arch@bytedance.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
+        Barry Song <21cnbao@gmail.com>,
+        "Bodeddula, Balasubramaniam" <bodeddub@amazon.com>,
+        Jue Wang <juew@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At init time, KVM does compatibility checks to ensure that all online
-CPUs support hardware virtualization and a common set of features. But
-KVM uses hotplugged CPUs without such compatibility checks. On Intel
-CPUs, this leads to #GP if the hotplugged CPU doesn't support VMX or
-vmentry failure if the hotplugged CPU doesn't meet minimal feature
-requirements.
+On Wed, Jan 26, 2022 at 4:04 PM Muchun Song <songmuchun@bytedance.com> wrote:
+>
+> On Wed, Nov 24, 2021 at 11:09 AM Andrew Morton
+> <akpm@linux-foundation.org> wrote:
+> >
+> > On Mon, 22 Nov 2021 12:21:32 +0800 Muchun Song <songmuchun@bytedance.com> wrote:
+> >
+> > > On Wed, Nov 10, 2021 at 2:18 PM Muchun Song <songmuchun@bytedance.com> wrote:
+> > > >
+> > > > On Tue, Nov 9, 2021 at 3:33 AM Mike Kravetz <mike.kravetz@oracle.com> wrote:
+> > > > >
+> > > > > On 11/8/21 12:16 AM, Muchun Song wrote:
+> > > > > > On Mon, Nov 1, 2021 at 11:22 AM Muchun Song <songmuchun@bytedance.com> wrote:
+> > > > > >>
+> > > > > >> This series can minimize the overhead of struct page for 2MB HugeTLB pages
+> > > > > >> significantly. It further reduces the overhead of struct page by 12.5% for
+> > > > > >> a 2MB HugeTLB compared to the previous approach, which means 2GB per 1TB
+> > > > > >> HugeTLB. It is a nice gain. Comments and reviews are welcome. Thanks.
+> > > > > >>
+> > > > > >
+> > > > > > Hi,
+> > > > > >
+> > > > > > Ping guys. Does anyone have any comments or suggestions
+> > > > > > on this series?
+> > > > > >
+> > > > > > Thanks.
+> > > > > >
+> > > > >
+> > > > > I did look over the series earlier.  I have no issue with the hugetlb and
+> > > > > vmemmap modifications as they are enhancements to the existing
+> > > > > optimizations.  My primary concern is the (small) increased overhead
+> > > > > for the helpers as outlined in your cover letter.  Since these helpers
+> > > > > are not limited to hugetlb and used throughout the kernel, I would
+> > > > > really like to get comments from others with a better understanding of
+> > > > > the potential impact.
+> > > >
+> > > > Thanks Mike. I'd like to hear others' comments about this as well.
+> > > > From my point of view, maybe the (small) overhead is acceptable
+> > > > since it only affects the head page, however Matthew Wilcox's folio
+> > > > series could reduce this situation as well.
+> >
+> > I think Mike was inviting you to run some tests to quantify the
+> > overhead ;)
+>
+> Hi Andrew,
+>
+> Sorry for the late reply.
+>
+> Specific overhead figures are already in the cover letter. Also,
+> I did some other tests, e.g. kernel compilation, sysbench. I didn't
+> see any regressions.
 
-Do compatibility checks when onlining a CPU and abort the online process
-if the hotplugged CPU is incompatible with online CPUs.
+The overhead is introduced by page_fixed_fake_head() which
+has an "if" statement and an access to a possible cold cache line.
+I think the main overhead is from the latter. However, probabilistically,
+only 1/64 of the pages need to do the latter.  And
+page_fixed_fake_head() is already simple (I mean the overhead
+is small enough) and many performance bottlenecks in mm are
+not in compound_head().  This also matches the tests I did.
+I didn't see any regressions after enabling this feature.
 
-CPU hotplug is disabled during hardware_enable_all() to prevent the corner
-case as shown below. A hotplugged CPU marks itself online in
-cpu_online_mask (1) and enables interrupt (2) before invoking callbacks
-registered in ONLINE section (3). So, if hardware_enable_all() is invoked
-on another CPU right after (2), then on_each_cpu() in hardware_enable_all()
-invokes hardware_enable_nolock() on the hotplugged CPU before
-kvm_online_cpu() is called. This makes the CPU escape from compatibility
-checks, which is risky.
+I knew Mike's concern is the increased overhead to use cases
+beyond HugeTLB. If we really want to avoid the access to
+a possible cold cache line, we can introduce a new page
+flag like PG_hugetlb and test if it is set in the page->flags,
+if so, then return the read head page struct. Then
+page_fixed_fake_head() looks like below.
 
-	start_secondary { ...
-		set_cpu_online(smp_processor_id(), true); <- 1
-		...
-		local_irq_enable();  <- 2
-		...
-		cpu_startup_entry(CPUHP_AP_ONLINE_IDLE); <- 3
-	}
+static __always_inline const struct page *page_fixed_fake_head(const
+struct page *page)
+{
+        if (!hugetlb_free_vmemmap_enabled())
+                return page;
 
-Keep compatibility checks at KVM init time. It can help to find
-incompatibility issues earlier and refuse to load arch KVM module
-(e.g., kvm-intel).
+        if (test_bit(PG_hugetlb, &page->flags)) {
+                unsigned long head = READ_ONCE(page[1].compound_head);
 
-Loosen the WARN_ON in kvm_arch_check_processor_compat so that it
-can be invoked from KVM's CPU hotplug callback (i.e., kvm_online_cpu).
+                if (likely(head & 1))
+                        return (const struct page *)(head - 1);
+        }
+        return page;
+}
 
-Opportunistically, add a pr_err() for setup_vmcs_config() path in
-vmx_check_processor_compatibility() so that each possible error path has
-its own error message. Convert printk(KERN_ERR ... to pr_err to please
-checkpatch.pl
+But I don't think it's worth doing this.
 
-Signed-off-by: Chao Gao <chao.gao@intel.com>
----
- arch/x86/kvm/vmx/vmx.c | 10 ++++++----
- arch/x86/kvm/x86.c     | 11 +++++++++--
- virt/kvm/kvm_main.c    | 18 +++++++++++++++++-
- 3 files changed, 32 insertions(+), 7 deletions(-)
+Hi Mike and Andrew,
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index fc94d7139f69..efde9faca02a 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7120,20 +7120,22 @@ static int vmx_check_processor_compatibility(void)
- {
- 	struct vmcs_config vmcs_conf;
- 	struct vmx_capability vmx_cap;
-+	int cpu = smp_processor_id();
- 
- 	if (!this_cpu_has(X86_FEATURE_MSR_IA32_FEAT_CTL) ||
- 	    !this_cpu_has(X86_FEATURE_VMX)) {
--		pr_err("kvm: VMX is disabled on CPU %d\n", smp_processor_id());
-+		pr_err("kvm: VMX is disabled on CPU %d\n", cpu);
- 		return -EIO;
- 	}
- 
--	if (setup_vmcs_config(&vmcs_conf, &vmx_cap) < 0)
-+	if (setup_vmcs_config(&vmcs_conf, &vmx_cap) < 0) {
-+		pr_err("kvm: failed to setup vmcs config on CPU %d\n", cpu);
- 		return -EIO;
-+	}
- 	if (nested)
- 		nested_vmx_setup_ctls_msrs(&vmcs_conf.nested, vmx_cap.ept);
- 	if (memcmp(&vmcs_config, &vmcs_conf, sizeof(struct vmcs_config)) != 0) {
--		printk(KERN_ERR "kvm: CPU %d feature inconsistency!\n",
--				smp_processor_id());
-+		pr_err("kvm: CPU %d feature inconsistency!\n", cpu);
- 		return -EIO;
- 	}
- 	return 0;
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index e9777ffc50c2..219df62115d2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11550,9 +11550,16 @@ void kvm_arch_hardware_unsetup(void)
- 
- int kvm_arch_check_processor_compat(void)
- {
--	struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
-+	int cpu = smp_processor_id();
-+	struct cpuinfo_x86 *c = &cpu_data(cpu);
- 
--	WARN_ON(!irqs_disabled());
-+	/*
-+	 * Compatibility checks are done when loading KVM or in KVM's CPU
-+	 * hotplug callback. It ensures all online CPUs are compatible to run
-+	 * vCPUs. For other cases, compatibility checks are unnecessary or
-+	 * even problematic. Try to detect improper usages here.
-+	 */
-+	WARN_ON(!irqs_disabled() && cpu_active(cpu));
- 
- 	if (__cr4_reserved_bits(cpu_has, c) !=
- 	    __cr4_reserved_bits(cpu_has, &boot_cpu_data))
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index f60724736cb1..96df789ecd4d 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4855,7 +4855,11 @@ static void hardware_enable_nolock(void *caller_name)
- 
- static int kvm_online_cpu(unsigned int cpu)
- {
--	int ret = 0;
-+	int ret;
-+
-+	ret = kvm_arch_check_processor_compat();
-+	if (ret)
-+		return ret;
- 
- 	raw_spin_lock(&kvm_count_lock);
- 	/*
-@@ -4915,6 +4919,17 @@ static int hardware_enable_all(void)
- {
- 	int r = 0;
- 
-+	/*
-+	 * During onlining a CPU, cpu_online_mask is set before kvm_online_cpu()
-+	 * is called. on_each_cpu() between them includes the CPU. As a result,
-+	 * hardware_enable_nolock() may get invoked before kvm_online_cpu().
-+	 * This would enable hardware virtualization on that cpu without
-+	 * compatibility checks, which can potentially crash system or break
-+	 * running VMs.
-+	 *
-+	 * Disable CPU hotplug to prevent this case from happening.
-+	 */
-+	cpus_read_lock();
- 	raw_spin_lock(&kvm_count_lock);
- 
- 	kvm_usage_count++;
-@@ -4929,6 +4944,7 @@ static int hardware_enable_all(void)
- 	}
- 
- 	raw_spin_unlock(&kvm_count_lock);
-+	cpus_read_unlock();
- 
- 	return r;
- }
--- 
-2.25.1
+Since these helpers are not limited to hugetlb and used throughout the
+kernel, I would really like to get comments from others with a better
+understanding of the potential impact. Do you have any appropriate
+reviewers to invite?
 
+Thanks.
+>
+> >
+> > > Ping guys.
+> > >
+> > > Hi Andrew,
+> > >
+> > > Do you have any suggestions on this series to move it on?
+> > >
+> >
+> > I tossed it in there for some testing but yes please, additional
+> > reviewing?
+>
+> It's already been in the next-tree (also in our ByteDance servers)
+> for several months, and I didn't receive any negative feedback.
+>
+> Do you think it is ready for 5.17?
+>
+> Thanks.
