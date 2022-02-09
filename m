@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB58DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50368C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232879AbiBIJRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:17:55 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48236 "EHLO
+        id S231583AbiBIJTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:19:32 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiBIJRv (ORCPT
+        with ESMTP id S229616AbiBIJT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:17:51 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8632BC0DE7E0;
-        Wed,  9 Feb 2022 01:17:43 -0800 (PST)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [80.241.60.233])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4JtvRG3HCWz9sq8;
-        Wed,  9 Feb 2022 10:17:30 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1644398248;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z0oOnGnZNW4E43AWDbU3YQ3rIFI9kV+U/+S0E/9n4M8=;
-        b=nH3ARItDa0KrY1Mq9FasHYsBBwiTdmGysdfN3UHtvWsPXXBSvuDo0U+lrsBvYhZHw5fqns
-        Nmnz90GqtyTzJipRnAkOky434kf6pXQseaXCp9oGwqRW8LGKIcZaEqDtr8l/ZHG5+o0jw1
-        /KrT3s7UNcBwo9w3nZ2AeSVMaKSUo5Vj2FIw1dzzhpd2Ix5FQnwbgfbHB66YE8WvaECObn
-        9uaF/TCpgtjIDp+tJGnZ8GIxRJResMHFydT89AftNz8dppSLSpz+b8ene2RDPtnBDdOgqi
-        I9Va0fBE13s1plv6SPZisVj+rVvZcLCyFDKsvlf5vYRbh7WBJ2GlsmYNz1s70Q==
-Message-ID: <45823dddd3cf4a93a640b646026a89d1b7fed7f3.camel@sylv.io>
-Subject: Re: [PATCH v1 1/4] dt-bindings: vendor-prefixes: add Vicor
- Corporation
-From:   sylv <sylv@sylv.io>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 09 Feb 2022 10:17:24 +0100
-In-Reply-To: <YgMr84b8BKHBNQwq@robh.at.kernel.org>
-References: <cover.1642434222.git.sylv@sylv.io>
-         <58d2c7501edf746f3677681327c283fc3faaf872.1642434222.git.sylv@sylv.io>
-         <YgMr84b8BKHBNQwq@robh.at.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 9 Feb 2022 04:19:29 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B14E04EC3F;
+        Wed,  9 Feb 2022 01:19:18 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V4-Yw8X_1644398037;
+Received: from 30.225.24.53(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V4-Yw8X_1644398037)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 17:13:58 +0800
+Message-ID: <c15e185e-3d92-e5ce-fc99-600b98bfe3dd@linux.alibaba.com>
+Date:   Wed, 9 Feb 2022 17:13:57 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
+To:     syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <0000000000006d045e05d78776f6@google.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <0000000000006d045e05d78776f6@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-08 at 20:50 -0600, Rob Herring wrote:
-> On Mon, Jan 17, 2022 at 05:12:47PM +0100, Marcello Sylvester Bauer
-> wrote:
-> > Add vendor prefix for Vicor Corporation.
-> > 
-> > Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
-> > ---
-> >  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > index 66d6432fd781..8a2a205d6d34 100644
-> > --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> > @@ -1273,6 +1273,8 @@ patternProperties:
-> >    "^vdl,.*":
-> >      description: Van der Laan b.v.
-> >    "^via,.*":
-> > +    description: Vicor Corporation
+
+
+On 2022/2/9 4:21 am, syzbot wrote:
+
+> The issue was bisected to:
 > 
-> You just changed the description for VIA.
-
-Indeed. My bad.
-
+> commit 341adeec9adad0874f29a0a1af35638207352a39
+> Author: Wen Gu <guwen@linux.alibaba.com>
+> Date:   Wed Jan 26 15:33:04 2022 +0000
 > 
-> > +  "^vicor,.*":
-> >      description: VIA Technologies, Inc.
-> >    "^videostrong,.*":
-> >      description: Videostrong Technology Co., Ltd.
-> > -- 
-> > 2.33.1
-> > 
-> > 
+>      net/smc: Forward wakeup to smc socket waitqueue after fallback
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
+> Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
 
+Thanks for all the details provided by syzbot.
+
+I reproduced this issue in my environment. It is caused by repeated calls to
+smc_switch_to_fallback().
+
+In 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback"),
+smc_switch_to_fallback() saves the original callback function of clcsock in
+smc->clcsk_error_report and set clcsk->sk_error_report as smc_fback_error_report().
+
+If smc_switch_to_fallback() is called repeatedly, the smc->clcsk_error_report will be
+reset as clcsk->sk_error_report, which now is smc_fback_error_report().
+
+And the call trace will be:
+
+clcsk->sk_error_report
+   |- smc_fback_error_report() <----------------|
+        |- smc_fback_forward_wakeup()           |
+             |- clcsock_callback()              |
+                  |- smc->clcsk_error_report() -|
+
+Thus resulting in this issue.
+
+I will send a patch to fix it.
