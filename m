@@ -2,116 +2,413 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D50C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 385D0C3525C
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241558AbiBIDEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        id S231162AbiBIDDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232662AbiBICwr (ORCPT
+        with ESMTP id S1359741AbiBICvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:52:47 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F17C0613CC;
-        Tue,  8 Feb 2022 18:52:47 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id v5-20020a17090a4ec500b001b8b702df57so3792263pjl.2;
-        Tue, 08 Feb 2022 18:52:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2whpxl+iWHDZgmDT6i5bR2ewH2KRNqLgWWFYpzHxiLY=;
-        b=dDW0LZ7dNOnFLGGCp0CcwhMtoHjLcJvd3dOUCh6PqTWY4vDWMz1UvdZNN2iDb38cyE
-         KwDnG8zRHUI9812Fu4fXDo/H2NVXQowotVvnIjgPeRC9UeQM04otNeSj3fQhuUwUMlt1
-         fH6k2QIqg+Q53spcCa+gTlrdk9CS9+7GvDQlAMr4CfkTeySC4o9nOIi6WMgxBo1z4+yk
-         J2L6URa37qwD9pKz8IeXHL0WUDxuWMSfxgnN/2G427QdBhAGXiBi5hWWxhH2L5MQNldi
-         ME0bb3BvP2lT09b5ir6raQ9bDxoGGYV5tQg1SwGskEIf+8cC76k8R7YEnk4J6ZehSa1R
-         wYMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2whpxl+iWHDZgmDT6i5bR2ewH2KRNqLgWWFYpzHxiLY=;
-        b=vvIs8eqVbjwpTw3uhgGiJOew7hUoyg2SEoCuZPmPFh27XDiPmvxB+WUXOMSv/m/FOr
-         fxdjXeiztrqI41aSGVZEdz2KfGXceQlWz1m338IQiXw14SSXxG5C29dxEVO5bCrE0qR7
-         jo8CTCLu8HDrqDlrpS2zrad2IPihNU5fpqXGBbJf2kf1YaKoMwvV0uP17JhzLm+ygv5h
-         UTudZ0PzlIibwwX+e2vsi4GVhx68CVsx4OhYyqddE3VfiMOj1NEozv62WcmaJiU2Ucw6
-         LjFKlVK64TeIJ4B4Uo/CPsj9J1Xv6tvZKeBe8Ei1rCth9V1AXYmao8nKMB1NiUgiMShM
-         uFNQ==
-X-Gm-Message-State: AOAM532SWV56bqml1oZBg4EBESfNaik457+6bPPixLDNoUm5e/zWVnuN
-        j/z1o7RN4YGpMSZTf/eE6Gw/JjmA2dSgr9vvh7s=
-X-Google-Smtp-Source: ABdhPJzQHsBfd4wlS1+EyrLw3I0I8GL3iXcN+u4lP4qQem2tMb0q6+WSy0DY+8e/CKm4fmL3rOWc1g==
-X-Received: by 2002:a17:902:ea06:: with SMTP id s6mr92442plg.163.1644375166589;
-        Tue, 08 Feb 2022 18:52:46 -0800 (PST)
-Received: from jason-ThinkPad-T14-Gen-1.lan ([66.187.5.142])
-        by smtp.gmail.com with ESMTPSA id q2sm4017176pjj.32.2022.02.08.18.52.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:52:46 -0800 (PST)
-From:   Hongyu Xie <xy521521@gmail.com>
-To:     gregkh@linuxfoundation.org, mathias.nyman@intel.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hongyu Xie <xiehongyu1@kylinos.cn>, stable@vger.kernel.org
-Subject: [PATCH -next v2] xhci: fix two places when dealing with return value of function xhci_check_args
-Date:   Wed,  9 Feb 2022 10:52:34 +0800
-Message-Id: <20220209025234.25230-1-xy521521@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 8 Feb 2022 21:51:24 -0500
+Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8564FC061353;
+        Tue,  8 Feb 2022 18:49:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644374988; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=kuc48FrmESli2C1YS1GIML8e/BiSZ1QUz6jM8pkp7jrwAJGCnyyuD6sk9VJbXqEGhLsoiP9hYR5Ss7qefk3Jsfx1U2GkAtyJblpFluLAaAmTb57NIw5tTAQVQJa5HXsjp8PQNG/GhXKBkO0fuuAL8hodq+7yvwmjWl2BlC+DW7s=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644374988; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=vrVxNXPVZAa+lXLCCCN4URRsfh4Y8/D9V9GK7c6ZZTk=; 
+        b=MX+8QGo4TtIyCMkQIDpke3lQ5ZcCPqd4Vra3eCxiFC16qOoXPEbytkg3vP6mbg7hGfmFV98aOthpKjcwAZbKmqRAQer/svRaHPcAywSzcmhdtRf60lKogGErTWVXWy04LECDRH8AdITOqy/A+ehOYJ43x1VTtqxMnkgrBgSTwVk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zohomail.com;
+        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
+        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644374988;
+        s=zm2020; d=zohomail.com; i=lchen.firstlove@zohomail.com;
+        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=vrVxNXPVZAa+lXLCCCN4URRsfh4Y8/D9V9GK7c6ZZTk=;
+        b=ECI5TwhrZ2bgVU78QKRoEhZhTH/ivzDLZgAn8f96sgD3FzdzAp5Ho2l8HcxuX8t2
+        uC4EHjIJjivwcqDWwyoaxxMoQ0etm4RQewoRwk/507q1RPfuJ8db0a58u4e4+EEcF5s
+        qBe9FLwNt5VxSqYhmqzN8/vKnEm9RL8azn5dei6A=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1644374986511392.386513141631; Tue, 8 Feb 2022 18:49:46 -0800 (PST)
+Received: from  [40.115.208.189] by mail.zoho.com
+        with HTTP;Tue, 8 Feb 2022 18:49:46 -0800 (PST)
+Date:   Tue, 08 Feb 2022 21:49:46 -0500
+From:   Li Chen <lchen.firstlove@zohomail.com>
+To:     "Bjorn Helgaas" <helgaas@kernel.org>
+Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Kishon Vijay Abraham I" <kishon@ti.com>,
+        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?=22Krzysztof_Wilczy=C5=84ski=22?= <kw@linux.com>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        "linux-pci" <linux-pci@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Message-ID: <17edc630ef0.11d8ab06115620.4524266185949873552@zohomail.com>
+In-Reply-To: <20220208152106.GA476995@bhelgaas>
+References: <20220208152106.GA476995@bhelgaas>
+Subject: [PATCH V7] misc: pci_endpoint_test: simplify endpoint test read and
+ write operations
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Xie <xiehongyu1@kylinos.cn>
+From: Li Chen <lchen@ambarella.com>
 
-xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This will cause a problem.
-For example, r8152_submit_rx calling usb_submit_urb in
-drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb
-when xHC is halted,
-because xhci_urb_enqueue returns -EINVAL in the very beginning.
+Introduce pci_endpoint_epf_transfer_data to simplify
+read and write operations.
 
-Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Li Chen <lchen@ambarella.com>
 ---
+Changes in V2:
+fix WARNING: line length of 108 exceeds 100 columns
+#128: FILE: drivers/misc/pci_endpoint_test.c:243:
+Changes in V3:
+This patch context doesn't change but resend with my Zoho mail account in that previous
+company mail will contain un-removeable proprietary messages.
+Changes in V4:
+Add "From:" to the first line of the message body.
+Changes in V5:
+tabify file
+replace enum EPF_WRITE/EPF_READ with WRITE/READ from linux/kernel.h
+get_random_bytes only when WRITE.
+Changes in V6:
+remove useless "Date:" and "Subject:" in message body, only preserve "From:" tag. 
+Changes in V7:
+use /* */ comments to match the prevailing kernel comment style
+capitalize "RC" and "EP" since they're not real words.
+remove tabify in that the original code have no style issue if tab is 8-width.
 
-v2: keep return value to -EINVAL for roothub urbs
+ drivers/misc/pci_endpoint_test.c | 286 ++++++++++++-------------------
+ 1 file changed, 106 insertions(+), 180 deletions(-)
 
- drivers/usb/host/xhci.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index dc357cabb265..948546b98af0 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1604,9 +1604,12 @@ static int xhci_urb_enqueue(struct usb_hcd *hcd, struct urb *urb, gfp_t mem_flag
- 	struct urb_priv	*urb_priv;
- 	int num_tds;
+diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_test.c
+index 8f786a225dcf8..30adf0e4c36a0 100644
+--- a/drivers/misc/pci_endpoint_test.c
++++ b/drivers/misc/pci_endpoint_test.c
+@@ -12,6 +12,7 @@
+ #include <linux/io.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
++#include <linux/kernel.h>
+ #include <linux/miscdevice.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+@@ -142,6 +143,109 @@ static inline u32 pci_endpoint_test_bar_readl(struct pci_endpoint_test *test,
+ {
+ 	return readl(test->bar[bar] + offset);
+ }
++static bool pci_endpoint_test_transfer_data(struct pci_endpoint_test *test,
++				unsigned long arg, const int operation)
++{
++	struct pci_endpoint_test_xfer_param param;
++	bool ret = false;
++	u32 flags = 0;
++	bool use_dma;
++	void *addr;
++	dma_addr_t phys_addr;
++	struct pci_dev *pdev = test->pdev;
++	struct device *dev = &pdev->dev;
++	void *orig_addr;
++	dma_addr_t orig_phys_addr;
++	size_t offset;
++	size_t alignment = test->alignment;
++	int irq_type = test->irq_type;
++	size_t size;
++	int err;
++
++	err = copy_from_user(&param, (void __user *)arg, sizeof(param));
++	if (err != 0) {
++		dev_err(dev, "Failed to get transfer param\n");
++		return false;
++	}
++
++	size = param.size;
++	if (size > SIZE_MAX - alignment)
++		goto err;
++
++	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
++	if (use_dma)
++		flags |= FLAG_USE_DMA;
++
++	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
++		dev_err(dev, "Invalid IRQ type option\n");
++		goto err;
++	}
++
++	orig_addr = kzalloc(size + alignment, GFP_KERNEL);
++	if (!orig_addr)
++		goto err;
++
++	if (operation == WRITE)
++		get_random_bytes(orig_addr, size + alignment);
++
++	orig_phys_addr = dma_map_single(dev, orig_addr, size + alignment,
++					operation == WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
++	if (dma_mapping_error(dev, orig_phys_addr)) {
++		dev_err(dev, "failed to map source buffer address\n");
++		goto err_phys_addr;
++	}
++
++	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
++		phys_addr = PTR_ALIGN(orig_phys_addr, alignment);
++		offset = phys_addr - orig_phys_addr;
++		addr = orig_addr + offset;
++	} else {
++		phys_addr = orig_phys_addr;
++		addr = orig_addr;
++	}
++
++	if (operation == WRITE) {
++
++		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_CHECKSUM,
++				 crc32_le(~0, addr, size));
++
++		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_SRC_ADDR,
++								lower_32_bits(phys_addr));
++		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_SRC_ADDR,
++								upper_32_bits(phys_addr));
++	} else {
++		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_DST_ADDR,
++								lower_32_bits(phys_addr));
++		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_DST_ADDR,
++								upper_32_bits(phys_addr));
++	}
++
++	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
++	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
++	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
++	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
++
++	/* if we ask RC to write to EP, then EP should do read operation, and vice versa. */
++	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
++				 operation == WRITE ? COMMAND_READ : COMMAND_WRITE);
++
++	wait_for_completion(&test->irq_raised);
++
++	dma_unmap_single(dev, orig_phys_addr, size + alignment,
++					 operation == WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
++
++	if (operation == WRITE)
++		ret = pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_STATUS) & STATUS_READ_SUCCESS;
++	else
++		ret = crc32_le(~0, addr, size) ==
++			pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_CHECKSUM);
++
++err_phys_addr:
++	kfree(orig_addr);
++
++err:
++	return ret;
++}
  
--	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
--					true, true, __func__) <= 0)
-+	if (!urb)
- 		return -EINVAL;
-+	ret = xhci_check_args(hcd, urb->dev, urb->ep,
-+					true, true, __func__);
-+	if (ret <= 0)
-+		return ret ? ret : -EINVAL;
+ static inline void pci_endpoint_test_bar_writel(struct pci_endpoint_test *test,
+ 						int bar, u32 offset, u32 value)
+@@ -473,191 +577,13 @@ static bool pci_endpoint_test_copy(struct pci_endpoint_test *test,
+ static bool pci_endpoint_test_write(struct pci_endpoint_test *test,
+ 				    unsigned long arg)
+ {
+-	struct pci_endpoint_test_xfer_param param;
+-	bool ret = false;
+-	u32 flags = 0;
+-	bool use_dma;
+-	u32 reg;
+-	void *addr;
+-	dma_addr_t phys_addr;
+-	struct pci_dev *pdev = test->pdev;
+-	struct device *dev = &pdev->dev;
+-	void *orig_addr;
+-	dma_addr_t orig_phys_addr;
+-	size_t offset;
+-	size_t alignment = test->alignment;
+-	int irq_type = test->irq_type;
+-	size_t size;
+-	u32 crc32;
+-	int err;
+-
+-	err = copy_from_user(&param, (void __user *)arg, sizeof(param));
+-	if (err != 0) {
+-		dev_err(dev, "Failed to get transfer param\n");
+-		return false;
+-	}
+-
+-	size = param.size;
+-	if (size > SIZE_MAX - alignment)
+-		goto err;
+-
+-	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+-	if (use_dma)
+-		flags |= FLAG_USE_DMA;
+-
+-	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
+-		dev_err(dev, "Invalid IRQ type option\n");
+-		goto err;
+-	}
+-
+-	orig_addr = kzalloc(size + alignment, GFP_KERNEL);
+-	if (!orig_addr) {
+-		dev_err(dev, "Failed to allocate address\n");
+-		ret = false;
+-		goto err;
+-	}
+-
+-	get_random_bytes(orig_addr, size + alignment);
+-
+-	orig_phys_addr = dma_map_single(dev, orig_addr, size + alignment,
+-					DMA_TO_DEVICE);
+-	if (dma_mapping_error(dev, orig_phys_addr)) {
+-		dev_err(dev, "failed to map source buffer address\n");
+-		ret = false;
+-		goto err_phys_addr;
+-	}
+-
+-	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
+-		phys_addr =  PTR_ALIGN(orig_phys_addr, alignment);
+-		offset = phys_addr - orig_phys_addr;
+-		addr = orig_addr + offset;
+-	} else {
+-		phys_addr = orig_phys_addr;
+-		addr = orig_addr;
+-	}
+-
+-	crc32 = crc32_le(~0, addr, size);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_CHECKSUM,
+-				 crc32);
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_SRC_ADDR,
+-				 lower_32_bits(phys_addr));
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_SRC_ADDR,
+-				 upper_32_bits(phys_addr));
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
+-				 COMMAND_READ);
+-
+-	wait_for_completion(&test->irq_raised);
+-
+-	reg = pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_STATUS);
+-	if (reg & STATUS_READ_SUCCESS)
+-		ret = true;
+-
+-	dma_unmap_single(dev, orig_phys_addr, size + alignment,
+-			 DMA_TO_DEVICE);
+-
+-err_phys_addr:
+-	kfree(orig_addr);
+-
+-err:
+-	return ret;
++	return pci_endpoint_test_transfer_data(test, arg, WRITE);
+ }
  
- 	slot_id = urb->dev->slot_id;
- 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
-@@ -3323,7 +3326,7 @@ static int xhci_check_streams_endpoint(struct xhci_hcd *xhci,
- 		return -EINVAL;
- 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
- 	if (ret <= 0)
--		return -EINVAL;
-+		return ret ? ret : -EINVAL;
- 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
- 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
- 				" descriptor for ep 0x%x does not support streams\n",
+ static bool pci_endpoint_test_read(struct pci_endpoint_test *test,
+ 				   unsigned long arg)
+ {
+-	struct pci_endpoint_test_xfer_param param;
+-	bool ret = false;
+-	u32 flags = 0;
+-	bool use_dma;
+-	size_t size;
+-	void *addr;
+-	dma_addr_t phys_addr;
+-	struct pci_dev *pdev = test->pdev;
+-	struct device *dev = &pdev->dev;
+-	void *orig_addr;
+-	dma_addr_t orig_phys_addr;
+-	size_t offset;
+-	size_t alignment = test->alignment;
+-	int irq_type = test->irq_type;
+-	u32 crc32;
+-	int err;
+-
+-	err = copy_from_user(&param, (void __user *)arg, sizeof(param));
+-	if (err) {
+-		dev_err(dev, "Failed to get transfer param\n");
+-		return false;
+-	}
+-
+-	size = param.size;
+-	if (size > SIZE_MAX - alignment)
+-		goto err;
+-
+-	use_dma = !!(param.flags & PCITEST_FLAGS_USE_DMA);
+-	if (use_dma)
+-		flags |= FLAG_USE_DMA;
+-
+-	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
+-		dev_err(dev, "Invalid IRQ type option\n");
+-		goto err;
+-	}
+-
+-	orig_addr = kzalloc(size + alignment, GFP_KERNEL);
+-	if (!orig_addr) {
+-		dev_err(dev, "Failed to allocate destination address\n");
+-		ret = false;
+-		goto err;
+-	}
+-
+-	orig_phys_addr = dma_map_single(dev, orig_addr, size + alignment,
+-					DMA_FROM_DEVICE);
+-	if (dma_mapping_error(dev, orig_phys_addr)) {
+-		dev_err(dev, "failed to map source buffer address\n");
+-		ret = false;
+-		goto err_phys_addr;
+-	}
+-
+-	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
+-		phys_addr = PTR_ALIGN(orig_phys_addr, alignment);
+-		offset = phys_addr - orig_phys_addr;
+-		addr = orig_addr + offset;
+-	} else {
+-		phys_addr = orig_phys_addr;
+-		addr = orig_addr;
+-	}
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_DST_ADDR,
+-				 lower_32_bits(phys_addr));
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_DST_ADDR,
+-				 upper_32_bits(phys_addr));
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
+-
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
+-	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
+-				 COMMAND_WRITE);
+-
+-	wait_for_completion(&test->irq_raised);
+-
+-	dma_unmap_single(dev, orig_phys_addr, size + alignment,
+-			 DMA_FROM_DEVICE);
+-
+-	crc32 = crc32_le(~0, addr, size);
+-	if (crc32 == pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_CHECKSUM))
+-		ret = true;
+-
+-err_phys_addr:
+-	kfree(orig_addr);
+-err:
+-	return ret;
++	return pci_endpoint_test_transfer_data(test, arg, READ);
+ }
+ 
+ static bool pci_endpoint_test_clear_irq(struct pci_endpoint_test *test)
 -- 
-2.25.1
+2.34.1
+
 
