@@ -2,98 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 898F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234238AbiBIGoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
+        id S233889AbiBIGoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:44:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233686AbiBIGnu (ORCPT
+        with ESMTP id S234367AbiBIGoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:43:50 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C4BC03E900;
-        Tue,  8 Feb 2022 22:43:54 -0800 (PST)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2196RJtj008756;
-        Wed, 9 Feb 2022 06:43:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=pp1; bh=pkrY0pIOU2e93AxmO7zanzB1euNrDknGvvrsBpHJO6Y=;
- b=T8dw8w7HtkntGTnxbtcLu/39GaMLA1MZD8zOczzniKYiVM1R3SpqZGm7WlVVX5X4SLsV
- 5qOIHB1QsvMih+jkrIe6hmYy9Vr1tiINIXlr1Sna1yFupQDBZ75xLKv4nUrT9j1XqN3D
- aPKKiQx6nVVd/c4tajBHlEmzg/oXBtQk5S2cta06URAxhfCNV2/7+jrp1WWXB6cVOU17
- qeulsU4ytT5ae26uNIUafgz5U01PPNShXOMq9o8zkcYlWV71hFsfRCyr/LA8/NObtB06
- qs1P5Pxk5ChGJiUuAYJNuUGpO10QJkMbXAqbbw8AR/rfP91efauS6rjK2dSGDud3LQIA dQ== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e48c10eta-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 06:43:44 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2196Stgs021263;
-        Wed, 9 Feb 2022 06:43:42 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04fra.de.ibm.com with ESMTP id 3e2ygq9ba3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 06:43:42 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2196hdsa46924138
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 06:43:39 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AAEB0AE04D;
-        Wed,  9 Feb 2022 06:43:39 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 39324AE056;
-        Wed,  9 Feb 2022 06:43:39 +0000 (GMT)
-Received: from localhost (unknown [9.43.124.244])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 06:43:38 +0000 (GMT)
-Date:   Wed, 9 Feb 2022 12:13:38 +0530
-From:   Ritesh Harjani <riteshh@linux.ibm.com>
-To:     syzbot <syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com>
-Cc:     jack@suse.com, jack@suse.cz, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
-Subject: Re: [syzbot] KASAN: use-after-free Read in jbd2_journal_wait_updates
-Message-ID: <20220209064338.vjhlaaav5dqb2hah@riteshh-domain>
-References: <00000000000040c94205d78125af@google.com>
- <00000000000040b9d905d78e23ee@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000040b9d905d78e23ee@google.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Frvx_ob8aDwvqi30tsfaj1ukMDePQumB
-X-Proofpoint-ORIG-GUID: Frvx_ob8aDwvqi30tsfaj1ukMDePQumB
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Wed, 9 Feb 2022 01:44:19 -0500
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6409EC0401C7;
+        Tue,  8 Feb 2022 22:44:18 -0800 (PST)
+Received: from [192.168.0.2] (ip5f5aee30.dynamic.kabel-deutschland.de [95.90.238.48])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 441A661E64846;
+        Wed,  9 Feb 2022 07:44:16 +0100 (CET)
+Message-ID: <b56fe3a2-b145-9d4e-acf2-4991204b3102@molgen.mpg.de>
+Date:   Wed, 9 Feb 2022 07:44:15 +0100
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_03,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=714
- malwarescore=0 spamscore=0 bulkscore=0 clxscore=1011 adultscore=0
- phishscore=0 mlxscore=0 suspectscore=0 priorityscore=1501
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202090046
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v5 2/6] powerpc/kexec_file: Add KEXEC_SIG support.
+Content-Language: en-US
+To:     Michal Suchanek <msuchanek@suse.de>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org
+Cc:     kexec@lists.infradead.org, Philipp Rudo <prudo@redhat.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
+        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        Frank van der Linden <fllinden@amazon.com>,
+        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
+        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Baoquan He <bhe@redhat.com>,
+        linux-security-module@vger.kernel.org
+References: <cover.1641900831.git.msuchanek@suse.de>
+ <d95f7c6865bcad5ee37dcbec240e79aa742f5e1d.1641900831.git.msuchanek@suse.de>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <d95f7c6865bcad5ee37dcbec240e79aa742f5e1d.1641900831.git.msuchanek@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/02/08 08:19PM, syzbot wrote:
-> syzbot has found a reproducer for the following issue on:
->
-> HEAD commit:    ef6b35306dd8 Add linux-next specific files for 20220204
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1390be28700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=e0431e0b00810b4f
-> dashboard link: https://syzkaller.appspot.com/bug?extid=afa2ca5171d93e44b348
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133db2b4700000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17beb4a4700000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com
->
+Dear Michal,
 
-#syz test: https://github.com/riteshharjani/linux.git jbd2-kill-t-handle-lock
+
+Thank you for the patch.
+
+
+Am 11.01.22 um 12:37 schrieb Michal Suchanek:
+
+Could you please remove the dot/period at the end of the git commit 
+message summary?
+
+> Copy the code from s390x
+> 
+> Both powerpc and s390x use appended signature format (as opposed to EFI
+> based patforms using PE format).
+
+patforms → platforms
+
+How can this be tested?
+
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> ---
+> v3: - Philipp Rudo <prudo@redhat.com>: Update the comit message with
+>        explanation why the s390 code is usable on powerpc.
+>      - Include correct header for mod_check_sig
+>      - Nayna <nayna@linux.vnet.ibm.com>: Mention additional IMA features
+>        in kconfig text
+> ---
+>   arch/powerpc/Kconfig        | 16 ++++++++++++++++
+>   arch/powerpc/kexec/elf_64.c | 36 ++++++++++++++++++++++++++++++++++++
+>   2 files changed, 52 insertions(+)
+> 
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index dea74d7717c0..1cde9b6c5987 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -560,6 +560,22 @@ config KEXEC_FILE
+>   config ARCH_HAS_KEXEC_PURGATORY
+>   	def_bool KEXEC_FILE
+>   
+> +config KEXEC_SIG
+> +	bool "Verify kernel signature during kexec_file_load() syscall"
+> +	depends on KEXEC_FILE && MODULE_SIG_FORMAT
+> +	help
+> +	  This option makes kernel signature verification mandatory for
+> +	  the kexec_file_load() syscall.
+> +
+> +	  In addition to that option, you need to enable signature
+> +	  verification for the corresponding kernel image type being
+> +	  loaded in order for this to work.
+> +
+> +	  Note: on powerpc IMA_ARCH_POLICY also implements kexec'ed kernel
+> +	  verification. In addition IMA adds kernel hashes to the measurement
+> +	  list, extends IMA PCR in the TPM, and implements kernel image
+> +	  blacklist by hash.
+
+So, what is the takeaway for the user? IMA_ARCH_POLICY is preferred? 
+What is the disadvantage, and two implementations(?) needed then? More 
+overhead?
+
+> +
+>   config RELOCATABLE
+>   	bool "Build a relocatable kernel"
+>   	depends on PPC64 || (FLATMEM && (44x || FSL_BOOKE))
+> diff --git a/arch/powerpc/kexec/elf_64.c b/arch/powerpc/kexec/elf_64.c
+> index eeb258002d1e..98d1cb5135b4 100644
+> --- a/arch/powerpc/kexec/elf_64.c
+> +++ b/arch/powerpc/kexec/elf_64.c
+> @@ -23,6 +23,7 @@
+>   #include <linux/of_fdt.h>
+>   #include <linux/slab.h>
+>   #include <linux/types.h>
+> +#include <linux/module_signature.h>
+>   
+>   static void *elf64_load(struct kimage *image, char *kernel_buf,
+>   			unsigned long kernel_len, char *initrd,
+> @@ -151,7 +152,42 @@ static void *elf64_load(struct kimage *image, char *kernel_buf,
+>   	return ret ? ERR_PTR(ret) : NULL;
+>   }
+>   
+> +#ifdef CONFIG_KEXEC_SIG
+> +int elf64_verify_sig(const char *kernel, unsigned long kernel_len)
+> +{
+> +	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
+> +	struct module_signature *ms;
+> +	unsigned long sig_len;
+
+Use size_t to match the signature of `verify_pkcs7_signature()`?
+
+> +	int ret;
+> +
+> +	if (marker_len > kernel_len)
+> +		return -EKEYREJECTED;
+> +
+> +	if (memcmp(kernel + kernel_len - marker_len, MODULE_SIG_STRING,
+> +		   marker_len))
+> +		return -EKEYREJECTED;
+> +	kernel_len -= marker_len;
+> +
+> +	ms = (void *)kernel + kernel_len - sizeof(*ms);
+> +	ret = mod_check_sig(ms, kernel_len, "kexec");
+> +	if (ret)
+> +		return ret;
+> +
+> +	sig_len = be32_to_cpu(ms->sig_len);
+> +	kernel_len -= sizeof(*ms) + sig_len;
+> +
+> +	return verify_pkcs7_signature(kernel, kernel_len,
+> +				      kernel + kernel_len, sig_len,
+> +				      VERIFY_USE_PLATFORM_KEYRING,
+> +				      VERIFYING_MODULE_SIGNATURE,
+> +				      NULL, NULL);
+> +}
+> +#endif /* CONFIG_KEXEC_SIG */
+> +
+>   const struct kexec_file_ops kexec_elf64_ops = {
+>   	.probe = kexec_elf_probe,
+>   	.load = elf64_load,
+> +#ifdef CONFIG_KEXEC_SIG
+> +	.verify_sig = elf64_verify_sig,
+> +#endif
+>   };
+
+
+Kind regards,
+
+Paul
