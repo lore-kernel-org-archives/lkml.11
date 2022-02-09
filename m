@@ -2,27 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA16C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBD09C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiBIKVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:21:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45352 "EHLO
+        id S234462AbiBIKV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:21:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234345AbiBIKVJ (ORCPT
+        with ESMTP id S234345AbiBIKVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:21:09 -0500
+        Wed, 9 Feb 2022 05:21:24 -0500
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F79EE08E7B7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:15:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDFCE08E798
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:15:51 -0800 (PST)
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Ma1LU-1nnj1f1f3U-00VyFm;
- Wed, 09 Feb 2022 11:01:27 +0100
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MMX5X-1nZgaN0dVf-00JeSf;
+ Wed, 09 Feb 2022 11:01:44 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -33,70 +32,64 @@ Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Olof Johansson <olof@lixom.net>,
         Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v5 02/12] arm64: defconfig: enable taskstats configuration
-Date:   Wed,  9 Feb 2022 11:00:45 +0100
-Message-Id: <20220209100055.181389-3-marcel@ziswiler.com>
+Subject: [PATCH v5 07/12] arm64: defconfig: enable imx8m pcie phy driver
+Date:   Wed,  9 Feb 2022 11:00:50 +0100
+Message-Id: <20220209100055.181389-8-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
 References: <20220209100055.181389-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:8vC0NplGUz3Mq/ThYyGvledPttIIUyaUn6qmHCAk/UZ+5N4EQsV
- g8PO5Qybfve9FRYC/kC0smblYLpUyWa5wjOjTw3Z59vBfkW6G0znO+WCWy69kuFnVU9xD1K
- wdCK/Nwd2LYpkjOTGll3M5wNo+F5vfgmSw3D9Pu+YA21qvdIuUhRdnBIGXVnUZERQP22yIV
- JTawx2IU6xBaL9dr4Dq4Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:k0twE7iPq08=:ja5PO1oU+zo4hKTRkL88fm
- fdoyEeamLU83xig87SiuqNxjvxocGJNjj0gBcc64kvCE2og+Us25G+wTKNqXpx0eLvbc5Rt7m
- 9hcgEN6VSODSrcREd5nN/MkCq8gzHOBljzFMnwzmW7TCAvD8APtZRZaZNMuTLQbx2homdrVn6
- z33aEl5amh72dwuJD2R0HR+MUiRYbcFDc6Bui7RXK+hFNnc6JwZHNqJdCZOefoI4Hb/0eFG9o
- 4p+XqFlEt6NGG6H8w6KmtePKFvzU6nmusBoW6VVXsyy/FtYVbz4dA+PsaCAe+C5Vul/prR6sB
- q1Nk5tzm/6OuEjAv81hO3Zmzlnk/eV+muehUUg1N0YayiOCbzy2lVtfK/0ODYus3xLBaGbQkM
- 7xOqn9XUizwgRNQltdS/Xdl2i+tcy18CYoRL+OeMrikthM06fTA+GbKpyDB+W8/RUK90CNc8u
- CIm70tO9oO/bW+2A5RAYu59LjkYLBOPoQqcwRmyaFPxco9jpsunKuEhABzAxdO3G0pmULLK7I
- YiUhkKl2snLqgUV6H8Gb+C20xq0ejYuzWOxx5t3QDwx+etatPtJTbuRsK177SwgsoTBprd4/9
- ES3bmIY/4OG9vkXZpAjoKvFDoOe8Can2RcC3zB+VG/HKgUywsZW3GmiuQhbVeUxD2kWiH4Lc2
- ZLRGFL983P+LbpimQdio9ibibF/SxTyKbjd12PAOXLp0o/VcXRW+nLQj1aFiSmmvy9fh6+wAD
- pv0JIyIuqhASsE5R+zE04nXwYFavbfOeB0AlmdJg1VXX/koFgasypWkAU1XgLMvwcglyXZU98
- Mm5mj5T6oCiuwyLHs4zXjqnBkYl9Q==
+X-Provags-ID: V03:K1:b8SxDQe9Yb+nS3ipl49PK5HYshZb8p5+G1Rd2UQm9N7ousmmQ2g
+ LRG+Upfp1tpC3xqPuysmqDGep2HL1khFHOCJHbIplt9mKpKOOygNFfFelL1Chqa5HawjDzh
+ 1zV6N+2J6ZK3NqxLy0sBQkwZkg0tN/0bCBaAkCiiYjvO0SZbW9ozndIzlW/e9l0q3byMGoZ
+ iXP4DdpiKmaWAQfoVPVyQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hBcK5ZOCS4k=:hq0GLYH8hEm4hucAtivki7
+ PE6YnXKhaAG9BaHC7OG93baGW0Pa2Wo6eWMVfuAqv9Z7ocWRMV/qLNwSmDCybE2OLcCNOs61A
+ BBUlwxhl+BZv7jcLLQOS0crOJ597Wh0qWyRq8JbYI67VEqFHFDK/bjmZbuSmuPKFbtYUjrbZO
+ +puGt9xnSYKWHEGMqn/FDPmfOWmVlXO/qFJ7DLzvcrsuooznXh+bo7ICeFvGoJOUpskt2lDyw
+ b5i5mFphva+OUEfyYyNLNEYz9HWByBt2R9DZFuHmbJX/m6y3e8lC8LzYIVXNc8G1BvyVbo/08
+ r2Ec/o6YUnBbvebFhQrSOJtKPPp8047dvXvgzLYVKpTdaGthSg2mHkYi3BSrfVrSqrndGLQHz
+ 59VT4RNmyjIA9CUMZ775+3QwCtCPWy2WzcWidVfhSLmXNvGHhFCyvBm5IFS3Pz2aWXlJSkBk0
+ SwyiNUOBHsh9DW7oDOfQQJHlu+1KYxJDYSsfIuXScLebskfuCzKBhub/xNzr7Uoiwa1cJJA3S
+ EZEzOzFGyVWPUc8chsRKsQuEg1VV1DBqhXTUiU+30z/7MUn6LQ7EQ9CgRGBMox2QjIZ3njMfI
+ 5sttxDrBiR0T+7eVkqDaSg7YJMRA0NgX4dJfZppurlw8j91RE1hSDxmZcP2CigjzoWV9kOim8
+ 4NnnUFmecq5tPtzMkUBkMlfBqEK06QrK+/DbIcdVql6Eroepy+5jY/U1d2+wuwQnBhldqKDrF
+ ld4l7ALV4Fc8reNeszR3ViucebvPTY+kqbEreEeHA0hrnZixg54oHHF3TNUabRu80pGdIdeGp
+ aoHI1Kr/af7eN2FgBOxLGJP363p6A==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Enable CONFIG_TASKSTATS which is required for CONFIG_TASK_XACCT (and
-subsequently CONFIG_TASK_IO_ACCOUNTING). Previously, taskstats got
-pulled in by KVM but that got changed in commit 63b3f96e1a98
-("kvm: Select SCHED_INFO instead of TASK_DELAY_ACCT").
+This enables the i.MX 8M PCIe PHY driver (CONFIG_PHY_FSL_IMX8M_PCIE)
+required for PCIe functionality.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 ---
 
 (no changes since v3)
 
 Changes in v3:
-- Add Krzysztof's reviewed-by tag.
-
-Changes in v2:
-- New patch following full defconfig analysis as requested by Krzysztof.
+- New patch enabling imx8m pcie phy driver in arm64 defconfig.
 
  arch/arm64/configs/defconfig | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 30516dc0b70e..b057b08c0fc2 100644
+index 444fec9ec73a..0fed8477e72e 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -7,6 +7,7 @@ CONFIG_PREEMPT=y
- CONFIG_IRQ_TIME_ACCOUNTING=y
- CONFIG_BSD_PROCESS_ACCT=y
- CONFIG_BSD_PROCESS_ACCT_V3=y
-+CONFIG_TASKSTATS=y
- CONFIG_TASK_XACCT=y
- CONFIG_TASK_IO_ACCOUNTING=y
- CONFIG_IKCONFIG=y
+@@ -1121,6 +1121,7 @@ CONFIG_RESET_TI_SCI=y
+ CONFIG_PHY_XGENE=y
+ CONFIG_PHY_SUN4I_USB=y
+ CONFIG_PHY_MIXEL_MIPI_DPHY=m
++CONFIG_PHY_FSL_IMX8M_PCIE=y
+ CONFIG_PHY_HI6220_USB=y
+ CONFIG_PHY_HISTB_COMBPHY=y
+ CONFIG_PHY_HISI_INNO_USB2=y
 -- 
 2.33.1
 
