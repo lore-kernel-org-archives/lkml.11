@@ -2,137 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C253C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235842AbiBIPa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45584 "EHLO
+        id S235855AbiBIPbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:31:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235551AbiBIPau (ORCPT
+        with ESMTP id S235830AbiBIPbA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:30:50 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 182ADC061355
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:30:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644420654; x=1675956654;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zauU5vkXPysXVgTYyd3mR2l2ZQGaxYzjdyZI9mEhceI=;
-  b=hBIKhoPu8m/pJ9+Id/XUk15aTimE6/QZm3QNHaqbOhGJ9b3tnMT/1zI0
-   l2XwNw3aAnSARij/VWY1vIwsTNQz0F1/d9hZUhLd2LQkV9cHjetWpJp97
-   We6DLbdX23Jar2mxt8NqfAAS8+l1nh+cfDq7c+YaDloR1TwYd2yr0qQ6C
-   VsKDYpaqbVuYakJnptSXOBwYpEbpArolbiZ7mrqLvRTaokfy0iQJ8c1EW
-   uSU8VeWoyFS4HpDthbJv7Q+HOdDFT0L0x80pnZprzyhGdJbO5r09IPkFK
-   aOXuRFChFb3Z9+81XDz812yUw84hgYZmLz7j+ca6QElUuen55Rv3RBBu6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="232793078"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="232793078"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:30:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="485277870"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 09 Feb 2022 07:30:52 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHovj-0001yX-AT; Wed, 09 Feb 2022 15:30:51 +0000
-Date:   Wed, 9 Feb 2022 23:29:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [norov:bitmap-20220204 10/48]
- drivers/net/ethernet/qlogic/qed/qed_rdma.c:332:7: error: use of undeclared
- identifier 'idx'
-Message-ID: <202202092311.nsDv5MPD-lkp@intel.com>
+        Wed, 9 Feb 2022 10:31:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D66EC061355
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:31:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644420662;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WPpvyB7McdG+sCGO6qQRcD8vYFMWX9f+Cg4663yTg2s=;
+        b=a8KbDlb4GGIEg9Cjf8Zl80Fpvi0/d8HvroNARdOX76rbAFY9QAEHiwUeqrFpfOJ5OoqQil
+        Hg/mKf1+rXxw7qo3j3C06HtwoW7mg1FRgfwGIJGvADgOnQYJIIeyr02QIAkWW7SjNF21zD
+        K1TqjYHfKaUlYx3uyAMfL1e28iHiOk4=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-296-rfBKSsnbM2iAJtxzjSRhpQ-1; Wed, 09 Feb 2022 10:31:01 -0500
+X-MC-Unique: rfBKSsnbM2iAJtxzjSRhpQ-1
+Received: by mail-wr1-f70.google.com with SMTP id r2-20020adfa142000000b001e176ac1ec3so1253866wrr.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 07:31:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=WPpvyB7McdG+sCGO6qQRcD8vYFMWX9f+Cg4663yTg2s=;
+        b=Xq/Z16Fhcg3ImTX72hlyMbJW6sojcYG9orFJNhU42lsj3w2BpejuIZaPQpr8wPIoXR
+         UeuyfJwNE3jZocB8S1l5O9ym22VMWdKi2PfTQOftt8mmMtkrEOh40Lxz5ty7dtxcxFrI
+         oA3JpZ6a1C0d9Sob60drLzRzxxMO3XjmsRMOi1JM9ioo1EZN+hFV+e77ns426RYTPRkW
+         ta5XQfn+zBDRblhputzf+sWceqXbsW6r4XCLVroNcvOmPhVZxCQs/Ihk7F8H5enKOcBC
+         sKXaxzjsXtqzpBWosao5xdiEnEcU7pnIk9B8wCp5jLlnfAiyHT0qWNZlFdLgz8xCidvQ
+         x8+g==
+X-Gm-Message-State: AOAM532T8RB8fo5viv/aSuwgdPOrZTBbaZSZsGaTlX2PnQy8RUTBmMOl
+        /b/D6edHcj/sZHGEeWo2Z5KJgnQbRuEvrQDDokRwfVQIk9bV1sUPBETZpnEubPdq/MGYQ9OsZWP
+        07fLDI7ekQ7tmeyxIrrT9grsW
+X-Received: by 2002:a5d:40ca:: with SMTP id b10mr2557998wrq.6.1644420659910;
+        Wed, 09 Feb 2022 07:30:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyUJ460salQYs6rWREOZPwbsIL73KBkIAP9a0luO40gtQzhT1NgjwQDGKwNSlhfORRzFqslOg==
+X-Received: by 2002:a5d:40ca:: with SMTP id b10mr2557983wrq.6.1644420659724;
+        Wed, 09 Feb 2022 07:30:59 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id c8sm6408714wmq.39.2022.02.09.07.30.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 07:30:59 -0800 (PST)
+Message-ID: <3b6fe640-47e5-8765-3a09-8f9f2f0a6329@redhat.com>
+Date:   Wed, 9 Feb 2022 16:30:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/7] drm/format-helper: Add drm_fb_{xrgb8888,
+ gray8}_to_mono_reversed()
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-3-javierm@redhat.com>
+ <6df9c28d-968d-ff16-988e-8e88e4734e49@suse.de>
+ <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
+ <d5fc654c-643a-7b20-85f1-54169a3aa889@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <d5fc654c-643a-7b20-85f1-54169a3aa889@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/norov/linux bitmap-20220204
-head:   6be3158022466595db078b4091472d0541e04bdc
-commit: 8bca8c2ba1a83d9ebf601431dab6c4ab05d9ca27 [10/48] qed: rework qed_rdma_bmap_free()
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20220209/202202092311.nsDv5MPD-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/norov/linux/commit/8bca8c2ba1a83d9ebf601431dab6c4ab05d9ca27
-        git remote add norov https://github.com/norov/linux
-        git fetch --no-tags norov bitmap-20220204
-        git checkout 8bca8c2ba1a83d9ebf601431dab6c4ab05d9ca27
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/net/ethernet/qlogic/qed/
+On 2/9/22 16:21, Thomas Zimmermann wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[snip]
 
-All errors (new ones prefixed by >>):
+>>
+>> It could be taken from this patch-set anyways if someone wants to wire the
+>> needed support for R8.
+> 
+> I think, policy is to not keep unused code around.
+>
 
->> drivers/net/ethernet/qlogic/qed/qed_rdma.c:332:7: error: use of undeclared identifier 'idx'
-           for (idx = 0; idx < bmap->max_count; idx += 512) {
-                ^
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:332:16: error: use of undeclared identifier 'idx'
-           for (idx = 0; idx < bmap->max_count; idx += 512) {
-                         ^
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:332:39: error: use of undeclared identifier 'idx'
-           for (idx = 0; idx < bmap->max_count; idx += 512) {
-                                                ^
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:333:37: error: use of undeclared identifier 'idx'
-                   b =  bmap->bitmap + BITS_TO_LONGS(idx);
-                                                     ^
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:334:33: error: use of undeclared identifier 'idx'
-                   nbits = min(bmap->max_count - idx, 512);
-                                                 ^
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:334:33: error: use of undeclared identifier 'idx'
-   drivers/net/ethernet/qlogic/qed/qed_rdma.c:338:30: error: use of undeclared identifier 'idx'
-                                     "line 0x%04x: %*pb\n", idx / 512, nbits, b);
-                                                            ^
-   7 errors generated.
+Ok, I'll drop it then. We can include it again when adding R8 formats.
+ 
+[snip]
 
+>>> If might be faster to allocate both buffers in one step and set the
+>>> pointers into the allocated buffer.
+>>>
+>>
+>> Not sure I got this. Do you mean to have a single buffer with length
+>> linepixels + len_src32 and point src32 and gray8 to the same buffer ?
+> 
+> That's the idea. I don't know the exact overhead for kalloc(), but at 
+> least the in userspace, malloc() in hot code paths is not a good idea. 
+> There's usually some searching for free space involved.
+>
 
-vim +/idx +332 drivers/net/ethernet/qlogic/qed/qed_rdma.c
+Sure, let's do it in one allocation then and I'll add some comments to
+make easier for people to follow the code.
+ 
+> In the long term, we could add a field in struct drm_framebuffer to keep 
+> such buffers around for reuse.
+> 
+>>
+>>>> +
+>>>> +	/*
+>>>> +	 * For damage handling, it is possible that only parts of the source
+>>>> +	 * buffer is copied and this could lead to start and end pixels that
+>>>> +	 * are not aligned to multiple of 8.
+>>>> +	 *
+>>>> +	 * Calculate if the start and end pixels are not aligned and set the
+>>>> +	 * offsets for the reversed mono line conversion function to adjust.
+>>>> +	 */
+>>>> +	start_offset = clip->x1 % 8;
+>>>> +	end_offset = clip->x2 % 8;
+>>>
+>>> end_len, again. If you have 1 single bit set in the final byte, the
+>>> offset is 0, but the length is 1.
+>>>
+>>
+>> Agreed, will change it too.
+> 
+> Feel free to add my
+> 
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+>
 
-   318	
-   319	void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
-   320				struct qed_bmap *bmap, bool check)
-   321	{
-   322		unsigned int pos, weight, nbits;
-   323		unsigned long *b;
-   324	
-   325		if (!check || !(weight = bitmap_weight(bmap->bitmap, bmap->max_count)))
-   326			goto end;
-   327	
-   328		DP_NOTICE(p_hwfn,
-   329			  "%s bitmap not free - size=%d, weight=%d, 512 bits per line\n",
-   330			  bmap->name, bmap->max_count, weight);
-   331	
- > 332		for (idx = 0; idx < bmap->max_count; idx += 512) {
-   333			b =  bmap->bitmap + BITS_TO_LONGS(idx);
-   334			nbits = min(bmap->max_count - idx, 512);
-   335	
-   336			if (!bitmap_empty(b, nbits))
-   337				DP_NOTICE(p_hwfn,
-   338					  "line 0x%04x: %*pb\n", idx / 512, nbits, b);
-   339		}
-   340	
-   341	end:
-   342		kfree(bmap->bitmap);
-   343		bmap->bitmap = NULL;
-   344	}
-   345	
+Thanks!
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best regards, -- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
