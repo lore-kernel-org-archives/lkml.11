@@ -2,114 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E869C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE80FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236154AbiBIPgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:36:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
+        id S236125AbiBIPgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:36:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235855AbiBIPf6 (ORCPT
+        with ESMTP id S236009AbiBIPgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:35:58 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6F1C0613C9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:36:01 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 9F84821106;
-        Wed,  9 Feb 2022 15:36:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644420960; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fiB/RLA6+TRPqiQcsJO/7jhpKwwOHhChnXu8OxtZJF8=;
-        b=Eg39W1KhWOahMF4A1WT7hIsLEiwE3gTmUaPCXZ5KqFrqA9wLmpSk/tyKevPPhJi2l7t7Qh
-        PApTRciEYxRKIqeSk0m4ZA4Hz1NNH+G0Ai83QbG1P/lrvUVagPrRvO5glCYzsj321l89f4
-        oSh5zJHH4LC/yD0pNAPM2pZ5wNsF8mQ=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 430AEA3B84;
-        Wed,  9 Feb 2022 15:36:00 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 16:35:59 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Hugh Dickins <hughd@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 00/13] mm/munlock: rework of mlock+munlock page handling
-Message-ID: <YgPfX+/f0ksBpx6G@dhcp22.suse.cz>
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
+        Wed, 9 Feb 2022 10:36:05 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 489D4C05CB8A
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:36:03 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C275311FB;
+        Wed,  9 Feb 2022 07:36:03 -0800 (PST)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A4AFB3F73B;
+        Wed,  9 Feb 2022 07:36:01 -0800 (PST)
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
+        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
+Subject: [PATCH v3 6/7] arm64: entry: centralize premeption decision
+Date:   Wed,  9 Feb 2022 15:35:34 +0000
+Message-Id: <20220209153535.818830-7-mark.rutland@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 06-02-22 13:27:41, Hugh Dickins wrote:
-> I wondered whether to post this munlocking rework in
-> https://lore.kernel.org/linux-mm/35c340a6-96f-28a0-2b7b-2f9fbddc01f@google.com/
-> 
-> There the discussion was OOM reaping, but the main reason for the rework
-> has been catastrophic contention on i_mmap_rwsem when exiting from
-> multiply mlocked files; and frustration with how contorted munlocking is.
+For historical reasons, the decision of whether or not to preempt is
+spread across arm64_preempt_schedule_irq() and __el1_irq(), and it would
+be clearer if this were all in one place.
 
-yeah, I do not think that too many care about oom_reaper stumbling over
-vast portions of the mlocked memory problem. So far I have seen only LTP
-oom02 hitting this and that one does mlockall and intentionally hits
-OOM. So far I haven't seen any actual workload hiting something similar.
-But hey, if we get a better and easier to maintain mlock code then the
-oom_reaper will surely add to a huge thanks.
+Also, arm64_preempt_schedule_irq() calls lockdep_assert_irqs_disabled(),
+but this is redundant, as we have a subsequent identical assertion in
+__exit_to_kernel_mode(), and preempt_schedule_irq() will
+BUG_ON(!irqs_disabled()) anyway.
 
-> Here it is based on 5.17-rc2, applies also to -rc3, almost cleanly to
-> mmotm 2022-02-03-21-58 (needs two easy fixups in mm/huge_memory.c); but
-> likely to conflict (I hope not fundamentally) with several concurrent
-> large patchsets.
-> 
-> tl;dr
->  mm/mlock.c  |  634 +++++++++++++++-----------------------
->  23 files changed, 510 insertions(+), 779 deletions(-)
+This patch removes the redundant assertion and centralizes the
+preemption decision making within arm64_preempt_schedule_irq().
 
-This is really impressive!
+Other than the slight change to assertion behaviour, there should be no
+functional change as a result of this patch.
 
-> In my own opinion, this is ready to go in: that whatever its defects,
-> it's a big practical improvement over what's presently there.  Others
-> may differ; and it may be too much to arrive at a quick opinion on.
-> My hope is that it will strike a chord with some who have laboured in
-> this area in the past: I'll be short of time to do much more with it,
-> so maybe someone else could take over if necessary.
-> 
-> At present there's no update to Documentation/vm/unevictable-lru.rst:
-> that always needs a different mindset, can follow later, please refer
-> to commit messages for now.
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: James Morse <james.morse@arm.com>
+Cc: Joey Gouly <joey.gouly@arm.com>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Cc: Will Deacon <will@kernel.org>
+---
+ arch/arm64/kernel/entry-common.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-Yes, that would help for sure.
-
-So far I have only managed to read through the series and trying to put
-all the pieces together (so far I have given up on the THP part) and my
-undestanding is far from complete. But I have to say I like the general
-approach and overall simplification.
-
-The only thing that is not entirely clear to me at the moment is why you
-have chosen to ignore already mapped LOCKONFAULT pages. They will
-eventually get sorted out during the reclaim/migration but this can
-backfire if too many pages have been pre-faulted before LOCKONFAULT
-call. Maybe not an interesting case in the first place but I am still
-wondering why you have chosen that way.
-
-I will be off next couple of days and plan to revisit this afterwards
-(should time allow). Anyway thanks a lot Hugh!
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index ef7fcefb96bd..2c639b6b676d 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -222,7 +222,16 @@ static void noinstr arm64_exit_el1_dbg(struct pt_regs *regs)
+ 
+ static void __sched arm64_preempt_schedule_irq(void)
+ {
+-	lockdep_assert_irqs_disabled();
++	if (!IS_ENABLED(CONFIG_PREEMPTION))
++		return;
++
++	/*
++	 * Note: thread_info::preempt_count includes both thread_info::count
++	 * and thread_info::need_resched, and is not equivalent to
++	 * preempt_count().
++	 */
++	if (READ_ONCE(current_thread_info()->preempt_count) != 0)
++		return;
+ 
+ 	/*
+ 	 * DAIF.DA are cleared at the start of IRQ/FIQ handling, and when GIC
+@@ -438,14 +447,7 @@ static __always_inline void __el1_irq(struct pt_regs *regs,
+ 	do_interrupt_handler(regs, handler);
+ 	irq_exit_rcu();
+ 
+-	/*
+-	 * Note: thread_info::preempt_count includes both thread_info::count
+-	 * and thread_info::need_resched, and is not equivalent to
+-	 * preempt_count().
+-	 */
+-	if (IS_ENABLED(CONFIG_PREEMPTION) &&
+-	    READ_ONCE(current_thread_info()->preempt_count) == 0)
+-		arm64_preempt_schedule_irq();
++	arm64_preempt_schedule_irq();
+ 
+ 	exit_to_kernel_mode(regs);
+ }
 -- 
-Michal Hocko
-SUSE Labs
+2.30.2
+
