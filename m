@@ -2,97 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A302C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CAFC43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234868AbiBIT1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:27:52 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47006 "EHLO
+        id S232550AbiBIT24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:28:56 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234327AbiBIT0r (ORCPT
+        with ESMTP id S234875AbiBIT1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:26:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AB7E00E266;
-        Wed,  9 Feb 2022 11:19:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A180B8238D;
-        Wed,  9 Feb 2022 19:15:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A48C340E7;
-        Wed,  9 Feb 2022 19:15:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434100;
-        bh=dCxPR4JBeSv02HURTnL42udmBp2yb2pJ1Ew0FokUAEM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zwE9JROxVTYQOo5PkARElkaSznCXNHyGVg3VjEtiNGl1HxJ4Fq8nsFP4xZerAvBN9
-         Ocn2OiF9JilSnRl05REjzCniWQPsxtdJYqUE2xj64fAyKPWn0m7f/1PmeOmB7FDMA9
-         plHbVrjJa7zaaAhnheXS5KIw3hbUWCkZEKZFHpto=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, whitehat002 <hackyzh002@gmail.com>
-Subject: [PATCH 4.14 2/3] moxart: fix potential use-after-free on remove path
-Date:   Wed,  9 Feb 2022 20:13:39 +0100
-Message-Id: <20220209191248.739254160@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209191248.659458918@linuxfoundation.org>
-References: <20220209191248.659458918@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 9 Feb 2022 14:27:23 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9987E00D0EB;
+        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 219J5EXu106008;
+        Wed, 9 Feb 2022 13:05:14 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644433514;
+        bh=QFBm9dNFfRX8TxQN2dJMx+RT6cga02Ei3ZZsy4WZF5s=;
+        h=Date:From:Subject:To:CC:References:In-Reply-To;
+        b=HOeiQQfuKXsCyBaoHMugen0B9oxTy6tWjU59P1ZXsEs2sqz3eiavj0smWjfbTe1mW
+         6HV9k+vo/7bINMw7ZDTsS7BCSYfU0vwx9CYx/nwCspZP9XYykX24o8QEugpPGYpFKh
+         Xd4o4qtMRWZ6N9JENjZJsj7La+DvWzQujxSJ5NEo=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 219J5EXB008632
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 9 Feb 2022 13:05:14 -0600
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Wed, 9
+ Feb 2022 13:05:14 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Wed, 9 Feb 2022 13:05:13 -0600
+Received: from [10.250.235.90] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 219J5AXB070883;
+        Wed, 9 Feb 2022 13:05:11 -0600
+Message-ID: <a2312248-f79d-4728-0257-5485d08dd6c9@ti.com>
+Date:   Thu, 10 Feb 2022 00:35:10 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+Subject: Re: [PATCH 5/5] arm64: dts: ti: Add support for AM62-SK
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220208131827.1430086-1-vigneshr@ti.com>
+ <20220208131827.1430086-6-vigneshr@ti.com>
+ <65bfa443-5117-9e69-8b6e-0c40099bd149@canonical.com>
+Content-Language: en-US
+In-Reply-To: <65bfa443-5117-9e69-8b6e-0c40099bd149@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-commit bd2db32e7c3e35bd4d9b8bbff689434a50893546 upstream.
-
-It was reported that the mmc host structure could be accessed after it
-was freed in moxart_remove(), so fix this by saving the base register of
-the device and using it instead of the pointer dereference.
-
-Cc: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-Cc: Xin Tan <tanxin.ctf@gmail.com>
-Cc: Tony Lindgren <tony@atomide.com>
-Cc: Yang Li <yang.lee@linux.alibaba.com>
-Cc: linux-mmc@vger.kernel.org
-Cc: stable <stable@vger.kernel.org>
-Reported-by: whitehat002 <hackyzh002@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220127071638.4057899-1-gregkh@linuxfoundation.org
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mmc/host/moxart-mmc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/mmc/host/moxart-mmc.c
-+++ b/drivers/mmc/host/moxart-mmc.c
-@@ -696,12 +696,12 @@ static int moxart_remove(struct platform
- 		if (!IS_ERR(host->dma_chan_rx))
- 			dma_release_channel(host->dma_chan_rx);
- 		mmc_remove_host(mmc);
--		mmc_free_host(mmc);
- 
- 		writel(0, host->base + REG_INTERRUPT_MASK);
- 		writel(0, host->base + REG_POWER_CONTROL);
- 		writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
- 		       host->base + REG_CLOCK_CONTROL);
-+		mmc_free_host(mmc);
- 	}
- 	return 0;
- }
 
 
+On 08/02/22 10:38 pm, Krzysztof Kozlowski wrote:
+> On 08/02/2022 14:18, Vignesh Raghavendra wrote:
+>> From: Nishanth Menon <nm@ti.com>
+>>
+[...]
+>> +	vmain_pd: fixed-regulator-vmain-pd {
+>> +		/* TPS65988 PD CONTROLLER OUTPUT */
+>> +		compatible = "regulator-fixed";
+>> +		regulator-name = "vmain_pd";
+>> +		regulator-min-microvolt = <5000000>;
+>> +		regulator-max-microvolt = <5000000>;
+>> +		regulator-always-on;
+>> +		regulator-boot-on;
+>> +	};
+>> +
+>> +	vcc_5v0: fixedregulator-vcc5v0 {
+>> +		/* Output of LM34936 */
+>> +		compatible = "regulator-fixed";
+>> +		regulator-name = "vcc_5v0";
+>> +		regulator-min-microvolt = <5000000>;
+>> +		regulator-max-microvolt = <5000000>;
+>> +		vin-supply = <&vmain_pd>;
+>> +		regulator-always-on;
+>> +		regulator-boot-on;
+>> +	};
+>> +
+>> +	vcc_3v3_sys: fixedregulator-vcc-3v3-sys {
+> 
+> Generic node names (as in DT spec), so regulator-[0-9]. The label and
+> regulator-name property describe it's user-friendly purpose.
+
+Ah, yes, missed it, will fix in v2
+
+Thanks for the review!
+
+Regards
+Vignesh
