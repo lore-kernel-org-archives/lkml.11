@@ -2,128 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 841A3C47084
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D90C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234769AbiBIDDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        id S236535AbiBIDId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:08:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348316AbiBIC4m (ORCPT
+        with ESMTP id S1344798AbiBIDFf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:56:42 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06623C0613CC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 18:56:42 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id y5so1848883pfe.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 18:56:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ekiKfPA3vcRw1iV2FBIhE5a6arm3Tvrg5Me+PHh03cY=;
-        b=Fb823xD+OPg8oUvrhV8BGzbq8e3RSEY2XutyZDs8PJpxhlr/4Qe0BElUTC89PgQMkY
-         623zf2SdaEU88tYvk6ZrlTtG5zAUBr8RwCTFadgKtdeHhLK5R4Km7lmGF6wVnHZhlxjD
-         xvAvfAF44IjSf/NEHZaRVthmZ67r/0HZRYOvg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ekiKfPA3vcRw1iV2FBIhE5a6arm3Tvrg5Me+PHh03cY=;
-        b=JSBt19Io/PXVv1tPtVuTG6A8aapSkc7mXfOgxL2FpqqrZ4a/zWvSd9FGwPgpaCVZuI
-         8Wu2F00nKbARuZYxTsSeIETHxIZh+B9VbdfOhFq9fSFsbApfnkHE79YtLTcZM3UXaLMI
-         8fp6KdP5JTtQsWgxmwQ+XIj22ekuD4xaTNNBabYhnC1FoZItSE0AFojo8SWM0vGrN+BR
-         +6baaeQ4rkL0SHQhYBkkvzxQnQ6vi1vAl7vQkm2lOdY65CVu2fKkeV0Vd4K+6qieLHVh
-         lK6FJe17qRXCliKmLqpPg8BsHT3MC7PanVzQ8Kpt7G37IBAJflG2NYTua8+7LO8N167T
-         Cn0Q==
-X-Gm-Message-State: AOAM533gcJAoaw7fQxrq9snjOpcituf2JD4zce3Bfva9EIItJV4WghCw
-        DLqyIsfdNioOX4wdCbQNNNcKhNeq45XRkw==
-X-Google-Smtp-Source: ABdhPJxDsFh8wX6St5F2jxMHqUnUysoQdi+sdBLdlcH97dRiKFzIyX4kThXNv882hmgMXCoYaAKnhA==
-X-Received: by 2002:a65:484b:: with SMTP id i11mr289858pgs.40.1644375401474;
-        Tue, 08 Feb 2022 18:56:41 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id z1sm17167545pfh.137.2022.02.08.18.56.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:56:41 -0800 (PST)
-Date:   Tue, 8 Feb 2022 18:56:40 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: Re: [PATCH v2 3/6] x86/cpu: Remove CONFIG_X86_SMAP and "nosmap"
-Message-ID: <202202081854.90ABA52F@keescook>
-References: <20220127115626.14179-1-bp@alien8.de>
- <20220127115626.14179-4-bp@alien8.de>
- <202202071405.FB72C07@keescook>
- <YgKHDBvQFVJhTBzN@zn.tnic>
- <YgLaERuGcefANHNi@zn.tnic>
+        Tue, 8 Feb 2022 22:05:35 -0500
+Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B91DCC03C18A;
+        Tue,  8 Feb 2022 19:04:19 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644375853; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=WorCt5jMIySyHwJfpNSzz2BrXyZMXUwt92IZ1gNlXewwjXjQXVwD5CZppyeHzpVk7fqUKWaGVQ7sIEsxk/N2LPnEGpABCF6Blf9w7INLGPZ1PEcBmTKk6DU0cbj3XQRReJjHjicwh7Uugy+dqLA9V63Mvmf6p6mwKv4/YayVlLg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644375853; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=BpG9nWuqxCMxY1RFXW3C20VB8eyjs61dDPVCp5q83Cs=; 
+        b=M0SjkpxK4vfQ8c+oHa7pBmsHdjV3D7Vg8VjJSEzhdtUrmiMaiPgUxP+HT8My+S/4wJ5S/o0y8hJRQh5EXA1DdLKqn5cmiUhsAZt5Ld7vyPdjc0AoxlZqqbAr6L4mtMGX+lHTvywMZGgJiwVUXN+erZV4qFZWNTGsmTrslQBuPSY=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=zohomail.com;
+        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
+        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644375853;
+        s=zm2020; d=zohomail.com; i=lchen.firstlove@zohomail.com;
+        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+        bh=BpG9nWuqxCMxY1RFXW3C20VB8eyjs61dDPVCp5q83Cs=;
+        b=Zut0zbRALsGiiLnSOS1fNPAHp52g5ifop74/Ol10NkX52UO8/vXLPdGrBaumu8hL
+        dz5OI5i1YnqXfGMq7mjjeDnqlPcFdYxzVOkagYGCIeGRyg9JCgsc93ayDcmpXyvOIcA
+        HVpyf9ZVy76az0bwz72yy6z5XneLGAIbHGLii5C8=
+Received: from mail.zoho.com by mx.zohomail.com
+        with SMTP id 1644375851138653.9630815206081; Tue, 8 Feb 2022 19:04:11 -0800 (PST)
+Received: from  [40.115.208.189] by mail.zoho.com
+        with HTTP;Tue, 8 Feb 2022 19:04:11 -0800 (PST)
+Date:   Tue, 08 Feb 2022 22:04:11 -0500
+From:   Li Chen <lchen.firstlove@zohomail.com>
+To:     "Bjorn Helgaas" <helgaas@kernel.org>
+Cc:     "Kishon Vijay Abraham I" <kishon@ti.com>,
+        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>,
+        "Bjorn Helgaas" <bhelgaas@google.com>,
+        "linux-pci" <linux-pci@vger.kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+Message-ID: <17edc704068.b7a8b7fd15807.1121272585658152695@zohomail.com>
+In-Reply-To: <17e7ad65ff5.d9de88b4962.1109678039880040918@zohomail.com>
+References: <17e7ad65ff5.d9de88b4962.1109678039880040918@zohomail.com>
+Subject: Re: [PATCH v4] PCI: endpoint: Add prefetch BAR support
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgLaERuGcefANHNi@zn.tnic>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 10:01:05PM +0100, Borislav Petkov wrote:
-> On Tue, Feb 08, 2022 at 04:06:52PM +0100, Borislav Petkov wrote:
-> > Hmm, I think you're right.
-> > 
-> > Mr. Z?
-> 
-> He says yes.
-> 
-> Ok, that was a good catch, thanks!
-> 
-> This chunk looks now like this - I'll send a new version later.
-> 
-> ---
-> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> index a4b89b757287..404ea669ecca 100644
-> --- a/scripts/Makefile.build
-> +++ b/scripts/Makefile.build
-> @@ -233,7 +233,7 @@ objtool_args =								\
->  	$(if $(CONFIG_FRAME_POINTER),, --no-fp)				\
->  	$(if $(CONFIG_GCOV_KERNEL)$(CONFIG_LTO_CLANG), --no-unreachable)\
->  	$(if $(CONFIG_RETPOLINE), --retpoline)				\
-> -	$(if $(CONFIG_X86_SMAP), --uaccess)				\
-> +	--uaccess							\
->  	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
->  	$(if $(CONFIG_SLS), --sls)
->  
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index 666f7bbc13eb..0fcba46fc10f 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -106,7 +106,7 @@ modpost_link()
->  objtool_link()
->  {
->  	local objtoolcmd;
-> -	local objtoolopt;
-> +	local objtoolopt="--uaccess"
->  
->  	if is_enabled CONFIG_LTO_CLANG && is_enabled CONFIG_STACK_VALIDATION; then
->  		# Don't perform vmlinux validation unless explicitly requested,
-> @@ -140,9 +140,6 @@ objtool_link()
->  		if is_enabled CONFIG_RETPOLINE; then
->  			objtoolopt="${objtoolopt} --retpoline"
->  		fi
-> -		if is_enabled CONFIG_X86_SMAP; then
-> -			objtoolopt="${objtoolopt} --uaccess"
-> -		fi
->  		if is_enabled CONFIG_SLS; then
->  			objtoolopt="${objtoolopt} --sls"
->  		fi
+ping. 
 
-Cool; yeah, that's kind of what I was expecting. I have a knee-jerk "I
-don't want to touch this again later" reaction to seeing it always
-applied instead of gated by CONFIG_X86 or something, but then, I doubt
-that'll be hard to change when/if objtool becomes multi-architecture.
+PS: this patch can be git am on 5.17-rc3 without confliction.
 
-Consider the update as:
-
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--- 
-Kees Cook
+ ---- On Thu, 20 Jan 2022 23:12:56 -0500 Li Chen <lchen.firstlove@zohomail.com> wrote ----
+ > From: Li Chen <lchen@ambarella.com>
+ > 
+ > Before this commit, epf cannot set BAR to be prefetchable.
+ > Prefetchable BAR can also help epf device to use bridge's
+ > prefetch memory window.
+ > 
+ > Signed-off-by: Li Chen <lchen@ambarella.com>
+ > ---
+ > Changes in v2:
+ > Remove Gerrit Change-id
+ > Changes in v3:
+ > capitalize "BAR" in the subject and commit log as suggested by Bjorn.
+ > Changes in v4:
+ > This patch context doesn't change but resend with my Zoho mail account in that previous
+ > company mail will contain un-removeable proprietary messages. 
+ > Add "From:" to the first line of the message body.
+ > 
+ >  drivers/pci/endpoint/functions/pci-epf-test.c | 4 ++++
+ >  include/linux/pci-epc.h                       | 2 ++
+ >  2 files changed, 6 insertions(+)
+ > 
+ > diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
+ > index 90d84d3bc868..96489cfdf58d 100644
+ > --- a/drivers/pci/endpoint/functions/pci-epf-test.c
+ > +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
+ > @@ -817,15 +817,19 @@ static void pci_epf_configure_bar(struct pci_epf *epf,
+ >  {
+ >      struct pci_epf_bar *epf_bar;
+ >      bool bar_fixed_64bit;
+ > +    bool bar_prefetch;
+ >      int i;
+ >  
+ >      for (i = 0; i < PCI_STD_NUM_BARS; i++) {
+ >          epf_bar = &epf->bar[i];
+ >          bar_fixed_64bit = !!(epc_features->bar_fixed_64bit & (1 << i));
+ > +        bar_prefetch = !!(epc_features->bar_prefetch & (1 << i));
+ >          if (bar_fixed_64bit)
+ >              epf_bar->flags |= PCI_BASE_ADDRESS_MEM_TYPE_64;
+ >          if (epc_features->bar_fixed_size[i])
+ >              bar_size[i] = epc_features->bar_fixed_size[i];
+ > +        if (bar_prefetch)
+ > +            epf_bar->flags |= PCI_BASE_ADDRESS_MEM_PREFETCH;
+ >      }
+ >  }
+ >  
+ > diff --git a/include/linux/pci-epc.h b/include/linux/pci-epc.h
+ > index a48778e1a4ee..825632d581d0 100644
+ > --- a/include/linux/pci-epc.h
+ > +++ b/include/linux/pci-epc.h
+ > @@ -161,6 +161,7 @@ struct pci_epc {
+ >   * @msix_capable: indicate if the endpoint function has MSI-X capability
+ >   * @reserved_bar: bitmap to indicate reserved BAR unavailable to function driver
+ >   * @bar_fixed_64bit: bitmap to indicate fixed 64bit BARs
+ > + * @bar_prefetch: bitmap to indicate prefetchable BARs
+ >   * @bar_fixed_size: Array specifying the size supported by each BAR
+ >   * @align: alignment size required for BAR buffer allocation
+ >   */
+ > @@ -171,6 +172,7 @@ struct pci_epc_features {
+ >      unsigned int    msix_capable : 1;
+ >      u8    reserved_bar;
+ >      u8    bar_fixed_64bit;
+ > +    u8    bar_prefetch;
+ >      u64    bar_fixed_size[PCI_STD_NUM_BARS];
+ >      size_t    align;
+ >  };
+ > -- 
+ > 2.34.1
+ > 
+ > 
+ > 
