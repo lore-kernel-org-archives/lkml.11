@@ -2,84 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17449C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239788AbiBIShP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53562 "EHLO
+        id S239640AbiBIShY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239783AbiBISgz (ORCPT
+        with ESMTP id S239704AbiBISg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:36:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BAEC050CC2;
-        Wed,  9 Feb 2022 10:36:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D2B461C2C;
-        Wed,  9 Feb 2022 18:36:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D572CC340E7;
-        Wed,  9 Feb 2022 18:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431797;
-        bh=uOGHB0PhJWRjRJyytDv6xrbR6xnITxBkeN0s7zIIQGY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agDiyi8/ppbrezpJ0YvzzzJoZi57pObPBBbx47LuSJ9zkiYSooCa4EaMDWOhpfuAq
-         NbOtVlgWZHkthtzPyhMnIPGP+S1hUhuH5xYz3m5xAir0+5B4Vw47LnPJia/Olr+yJ8
-         k+JGn2wH3w0YVzX7IRI0XocQSw4hMODu8gkhARL8akCI5JsWJd6JL7JaU500ZdNSlM
-         85p3NouMAZY8KZnq+9w4iPHCNgpW0X/+rZMqh14pN1OtjMfq233jTzE+Dzch4AWQNl
-         j6r3j8gO1oQgeHqZ6iTpE46HCmjkOW6Pd+fcaK39ItdJRvufRM1FLqa7l+6vXlQmSQ
-         27nPSOFiLRUYA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Sasha Levin <sashal@kernel.org>,
-        kbusch@kernel.org, axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 34/42] nvme-rdma: fix possible use-after-free in transport error_recovery work
-Date:   Wed,  9 Feb 2022 13:33:06 -0500
-Message-Id: <20220209183335.46545-34-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:36:57 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C04FC05CB8E;
+        Wed,  9 Feb 2022 10:36:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644431805; x=1675967805;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=v+VXW5fj89kbBLw30Yb+JRBx/zHxa1O7fYiS2MIddBE=;
+  b=Q9hIZ2PjSWEyGiXCROtE2lwn853LbPMf/rTtNrVOwYae+CpBckUyd/L7
+   /SRyGWwITHmAuBt6UmsRt8/wXkJuuhnphYL3/kTlYIm0h+l2PRB3VprKu
+   FCmG9jhMgVS7agtSVHNTmdsQnhPd7izEdQe5aHtS46XLfCRlXehVoXCNU
+   AIYGbjY6rfDyApoFiB3Ww6NutAws8tv7G1l2Lt/A3P3rjZEywplhOwqvg
+   msVeUDvt9BtbNwxTTCYKCvAZmZ1iP4pqiPMzNnQLk5lzkiE2QpjoQMJFi
+   n9kKFIxQHUqYRe6QW73p+3kroRhOvgGLeHrZi53/3JXeSFwmWdu7JlCTe
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229270391"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="229270391"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:25:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="629374925"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 09 Feb 2022 10:25:11 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 98AC4107; Wed,  9 Feb 2022 20:25:26 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH v1 1/1] media: c8sectpfe: Clean up handling of *_buffer_aligned
+Date:   Wed,  9 Feb 2022 20:25:21 +0200
+Message-Id: <20220209182521.55632-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
-References: <20220209183335.46545-1-sashal@kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+There are a few cases where code is harder than needed to read.
+Improve those by:
+- dropping unnecessary castings (see note below)
+- use PTR_ALING() to be more explicit on what's going on there
+- use proper definitions instead of hard coded values
 
-[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
+Note, dropping castings will allow to perform an additional check
+that type is not changed from void * to something else, e.g. u64,
+which may very well break the bitmap APIs.
 
-While nvme_rdma_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
-
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/nvme/host/rdma.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../platform/sti/c8sectpfe/c8sectpfe-core.c   | 30 +++++++------------
+ 1 file changed, 11 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
-index 850f84d204d05..9c55e4be8a398 100644
---- a/drivers/nvme/host/rdma.c
-+++ b/drivers/nvme/host/rdma.c
-@@ -1200,6 +1200,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
- 			struct nvme_rdma_ctrl, err_work);
+diff --git a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c b/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
+index 7bb1384e4bad..d60908ec9ea7 100644
+--- a/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
++++ b/drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c
+@@ -107,7 +107,7 @@ static void channel_swdemux_tsklet(struct tasklet_struct *t)
+ 				size,
+ 				DMA_FROM_DEVICE);
  
- 	nvme_stop_keep_alive(&ctrl->ctrl);
-+	flush_work(&ctrl->ctrl.async_event_work);
- 	nvme_rdma_teardown_io_queues(ctrl, false);
- 	nvme_start_queues(&ctrl->ctrl);
- 	nvme_rdma_teardown_admin_queue(ctrl, false);
+-	buf = (u8 *) channel->back_buffer_aligned;
++	buf = channel->back_buffer_aligned;
+ 
+ 	dev_dbg(fei->dev,
+ 		"chan=%d channel=%p num_packets = %d, buf = %p, pos = 0x%x\n\trp=0x%lx, wp=0x%lx\n",
+@@ -176,7 +176,7 @@ static int c8sectpfe_start_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 
+ 	channel = fei->channel_data[stdemux->tsin_index];
+ 
+-	bitmap = (unsigned long *) channel->pid_buffer_aligned;
++	bitmap = channel->pid_buffer_aligned;
+ 
+ 	/* 8192 is a special PID */
+ 	if (dvbdmxfeed->pid == 8192) {
+@@ -272,7 +272,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 
+ 	channel = fei->channel_data[stdemux->tsin_index];
+ 
+-	bitmap = (unsigned long *) channel->pid_buffer_aligned;
++	bitmap = channel->pid_buffer_aligned;
+ 
+ 	if (dvbdmxfeed->pid == 8192) {
+ 		tmp = readl(fei->io + C8SECTPFE_IB_PID_SET(channel->tsin_id));
+@@ -333,8 +333,7 @@ static int c8sectpfe_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
+ 			__func__, __LINE__, stdemux, channel->tsin_id);
+ 
+ 		/* turn off all PIDS in the bitmap */
+-		memset((void *)channel->pid_buffer_aligned
+-			, 0x00, PID_TABLE_SIZE);
++		memset(channel->pid_buffer_aligned, 0, PID_TABLE_SIZE);
+ 
+ 		/* manage cache so data is visible to HW */
+ 		dma_sync_single_for_device(fei->dev,
+@@ -458,23 +457,19 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
+ 
+ 	init_completion(&tsin->idle_completion);
+ 
+-	tsin->back_buffer_start = kzalloc(FEI_BUFFER_SIZE +
+-					FEI_ALIGNMENT, GFP_KERNEL);
+-
++	tsin->back_buffer_start = kzalloc(FEI_BUFFER_SIZE + FEI_ALIGNMENT, GFP_KERNEL);
+ 	if (!tsin->back_buffer_start) {
+ 		ret = -ENOMEM;
+ 		goto err_unmap;
+ 	}
+ 
+ 	/* Ensure backbuffer is 32byte aligned */
+-	tsin->back_buffer_aligned = tsin->back_buffer_start
+-		+ FEI_ALIGNMENT;
++	tsin->back_buffer_aligned = tsin->back_buffer_start + FEI_ALIGNMENT;
+ 
+-	tsin->back_buffer_aligned = (void *)
+-		(((uintptr_t) tsin->back_buffer_aligned) & ~0x1F);
++	tsin->back_buffer_aligned = PTR_ALIGN(tsin->back_buffer_aligned, FEI_ALIGNMENT);
+ 
+ 	tsin->back_buffer_busaddr = dma_map_single(fei->dev,
+-					(void *)tsin->back_buffer_aligned,
++					tsin->back_buffer_aligned,
+ 					FEI_BUFFER_SIZE,
+ 					DMA_BIDIRECTIONAL);
+ 
+@@ -489,8 +484,7 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
+ 	 * per pid. By powers of deduction we conclude stih407 family
+ 	 * is configured (at SoC design stage) for bit per pid.
+ 	 */
+-	tsin->pid_buffer_start = kzalloc(2048, GFP_KERNEL);
+-
++	tsin->pid_buffer_start = kzalloc(PID_TABLE_SIZE + PID_TABLE_SIZE, GFP_KERNEL);
+ 	if (!tsin->pid_buffer_start) {
+ 		ret = -ENOMEM;
+ 		goto err_unmap;
+@@ -503,11 +497,9 @@ static int configure_memdma_and_inputblock(struct c8sectpfei *fei,
+ 	 * the register.
+ 	 */
+ 
+-	tsin->pid_buffer_aligned = tsin->pid_buffer_start +
+-		PID_TABLE_SIZE;
++	tsin->pid_buffer_aligned = tsin->pid_buffer_start + PID_TABLE_SIZE;
+ 
+-	tsin->pid_buffer_aligned = (void *)
+-		(((uintptr_t) tsin->pid_buffer_aligned) & ~0x3ff);
++	tsin->pid_buffer_aligned = PTR_ALIGN(tsin->pid_buffer_aligned, PID_TABLE_SIZE);
+ 
+ 	tsin->pid_buffer_busaddr = dma_map_single(fei->dev,
+ 						tsin->pid_buffer_aligned,
 -- 
 2.34.1
 
