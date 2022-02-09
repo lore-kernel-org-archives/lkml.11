@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4963C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239652AbiBISgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:36:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
+        id S239660AbiBISgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:36:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiBISfq (ORCPT
+        with ESMTP id S239615AbiBISfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:35:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694F9C05CB88;
-        Wed,  9 Feb 2022 10:35:49 -0800 (PST)
+        Wed, 9 Feb 2022 13:35:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59153C05CBA5;
+        Wed,  9 Feb 2022 10:35:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE61F61C31;
-        Wed,  9 Feb 2022 18:35:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D71BC340EE;
-        Wed,  9 Feb 2022 18:35:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9C4C61C55;
+        Wed,  9 Feb 2022 18:35:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA08C340E7;
+        Wed,  9 Feb 2022 18:35:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431748;
-        bh=5oevNkWltuZ5z9s8IhiJQ2Gtu7X4d4URKOU16CHikIM=;
+        s=k20201202; t=1644431753;
+        bh=/DnXsTUdY9UKgrMCr9SyNOTRnny2u5Gw8C86zcdETZg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GFwS4+PfIXvz/DsOutjqOAd+IjH/PLsMT2/t5xZpqCDPBVl8wwQBzwb+orGT3AVcJ
-         B9LF67BNK59spcBWAXvIixb167WZHz0hNC97kerP7sQiJWB8Jb8uBNdcX4vorRrw3C
-         mTAHs9xGaxhRZgWRDvra3aAfpo8r/rzy0X4NKiP/9lE6AEcST7eeeLcAllG/BnSUzM
-         VgqSFD5TnHiOokmMR+ZBtTzUFhFLQ1Mp62hCda/IC8+QuaIYR3iEH1zs30XC7yyjeu
-         o0E8a5d7mC6gBz6Vw9Ni1j/LVGpzdMY1QkyDCoRpPlf8262XQUTWA3fPmQLr3kRyfF
-         CDkVRZahZCcDg==
+        b=NVgmaSkcJQPEul6yMiJE2JG3mvB50xi+TT81evFrmQkkn+1UIz9/gp72cATbzJAlx
+         B8jg6bBhKqWkKyPNy/kcYcO1SN3bPA9bPqSjcwoy2VvHYbEK5sb8QKssQE8d1a57px
+         vqvRnrJvMcSNdhuGGwiTssLOo/fyv8bMXLi/a6NFoC7pkhqf5XACg8n+vKh87pNPpL
+         rXHUvqm7U+cUpMB6AAi0hffbSbcMIJ0AksO9lreqnUmBHgyFYVtgRXucziybHJJr92
+         g7+xfteNCXswunzdsknBFf0zFTPsyHmHEB+MwGh1xIPP/Z/+ELHkfWl3IH7VjF+V2Y
+         5307vCEpdIJ9Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julian Braha <julianbraha@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, jonas.gorski@gmail.com,
-        noltari@gmail.com, rdunlap@infradead.org, nsaenz@kernel.org,
-        rafal@milecki.pl, f.fainelli@gmail.com, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 20/42] pinctrl: bcm63xx: fix unmet dependency on REGMAP for GPIO_REGMAP
-Date:   Wed,  9 Feb 2022 13:32:52 -0500
-Message-Id: <20220209183335.46545-20-sashal@kernel.org>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jack@suse.com
+Subject: [PATCH AUTOSEL 5.16 23/42] quota: make dquot_quota_sync return errors from ->sync_fs
+Date:   Wed,  9 Feb 2022 13:32:55 -0500
+Message-Id: <20220209183335.46545-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
 References: <20220209183335.46545-1-sashal@kernel.org>
@@ -53,47 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julian Braha <julianbraha@gmail.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit 3a5286955bf5febc3d151bcb2c5e272e383b64aa ]
+[ Upstream commit dd5532a4994bfda0386eb2286ec00758cee08444 ]
 
-When PINCTRL_BCM63XX is selected,
-and REGMAP is not selected,
-Kbuild gives the following warning:
+Strangely, dquot_quota_sync ignores the return code from the ->sync_fs
+call, which means that quotacalls like Q_SYNC never see the error.  This
+doesn't seem right, so fix that.
 
-WARNING: unmet direct dependencies detected for GPIO_REGMAP
-  Depends on [n]: GPIOLIB [=y] && REGMAP [=n]
-  Selected by [y]:
-  - PINCTRL_BCM63XX [=y] && PINCTRL [=y]
-
-This is because PINCTRL_BCM63XX
-selects GPIO_REGMAP without selecting or depending on
-REGMAP, despite GPIO_REGMAP depending on REGMAP.
-
-This unmet dependency bug was detected by Kismet,
-a static analysis tool for Kconfig. Please advise
-if this is not the appropriate solution.
-
-Signed-off-by: Julian Braha <julianbraha@gmail.com>
-Link: https://lore.kernel.org/r/20220117062557.89568-1-julianbraha@gmail.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/bcm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ fs/quota/dquot.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pinctrl/bcm/Kconfig b/drivers/pinctrl/bcm/Kconfig
-index 8fc1feedd8617..5116b014e2a4f 100644
---- a/drivers/pinctrl/bcm/Kconfig
-+++ b/drivers/pinctrl/bcm/Kconfig
-@@ -35,6 +35,7 @@ config PINCTRL_BCM63XX
- 	select PINCONF
- 	select GENERIC_PINCONF
- 	select GPIOLIB
-+	select REGMAP
- 	select GPIO_REGMAP
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 22d904bde6ab9..a74aef99bd3d6 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -690,9 +690,14 @@ int dquot_quota_sync(struct super_block *sb, int type)
+ 	/* This is not very clever (and fast) but currently I don't know about
+ 	 * any other simple way of getting quota data to disk and we must get
+ 	 * them there for userspace to be visible... */
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
+-	sync_blockdev(sb->s_bdev);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
++	ret = sync_blockdev(sb->s_bdev);
++	if (ret)
++		return ret;
  
- config PINCTRL_BCM6318
+ 	/*
+ 	 * Now when everything is written we can discard the pagecache so
 -- 
 2.34.1
 
