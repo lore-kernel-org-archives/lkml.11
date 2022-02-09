@@ -2,182 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AD2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AEAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:27:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiBII1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:27:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
+        id S241108AbiBII1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:27:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239126AbiBII04 (ORCPT
+        with ESMTP id S236318AbiBII1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:26:56 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21603C05CB82;
-        Wed,  9 Feb 2022 00:26:58 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id v67so1715694oie.9;
-        Wed, 09 Feb 2022 00:26:58 -0800 (PST)
+        Wed, 9 Feb 2022 03:27:12 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A3AC05CB85
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:27:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Mq8GQh4y4jc21cKeHAuWeaTFbXlITi9z1GtO6UDhve6b7P29MlGfB7nV7C34edRObL9b1Dv4azsy/BUvxexOLIfUAF9mLechBlQDtjZuiLUaYgUpVOkB6dJYQQs0SyMc7BCNOrCN9m1J/jhzXV7KyXFBySUY501IAAZTsxb+BueIfRmLrDSk0EBy63M/EPRfUufiyY8cjUsMeFtVpxmATVpys1+AyBFSl51hf38hA0oKrog/d1sD2MHfXkFaIkHc6rkSHU2kp9JJh1tOmvPQtAjgh+pnXW87I6REGcL+30y5TdkH+Z/uZTFSnbVafZ94ubsG3PY0r7GvDHRwXHzYQQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v4xkKo8LcBxnqo2hVPx4Tj8aAmM93UUPnAiSr2pifXo=;
+ b=Vj9bZB6GgZrkJs/UU0/krlVMCG0wPqnoQ9F4ojhGL8wTc3118frho1sf+7GupbX8tcPStJPQ83hAzZLTCV4lJYvbTOaJ+qyasfqtWebOmNE8whkzhHLvtdhuqwRNUKG7EsQwTEgg4KsM41WmAEbZpTUhfauUhly5Kg6q1EvA4MxdvV747SaAFz9SBUtm2tVgTQgZJVdVqeUwMxPSy3KbJTOwU8YHR+HAfqIqcYPneoAfy7gwfyLSVgqn9OCdSblMWzOcW3WN9TvUo+YSIaRTAIzhzqVpUJfeD9ttmeWh6N/6f3iOH6sl+EzMZ3dcfuzOdZHltIuBowYPCc5n/FXo6Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=41yfUpGIyxWzE/33BXhtKiam8iPGuUMqJkEcuWzBJGk=;
-        b=NtgOYfL3vJCpbYK1R1nJMegC9wNB9O6kJ91Sr0QFI8LCtyPNQfuC45mX1OgveNNonh
-         xVbPZpOXON00OTzUjyGKyohIxr8DbOGh/yS8NVCNh6PD6yCKn9N0tV9EnwyV8PoUMRUL
-         +DMidSutxTZacXH6TveYVzc5zFB8e/DobIOiErgQA5Weu6TKhX8INykhnguHjGNnkIlv
-         SURSDfP+B8onewzqRNZ8QIaMKu/L1QnOPhvWnY/xZrLzmR92Wwn3DunhrZQu2JMgm/wV
-         P2Y+zk154bIxYQ0NGcs+Btd0TUwvkRcKNcCebkcJ6w8hWBqYtu1ZYfFyCZJ8VbVP4Za9
-         p6DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=41yfUpGIyxWzE/33BXhtKiam8iPGuUMqJkEcuWzBJGk=;
-        b=18PTM2UBjV7kEHJQWhhBPXeKiyxaxrY1SJYuMnmDbDv/zT80YcU9rlFzD4MqWLr0iM
-         XhpJfkFc787S9UWlNX3JwsmztmWWkpSRGOENEDFBTOdiRPwqGkrM5ScjMotPBx7NiCuN
-         WckrNuOFCNnWcS90QcKl+2nl4B7quQVrOPJvoYB6nlQQAOt0TAAafkmK+KgkYxskhnBr
-         ylJ465reQgS1C6AFfgLa8LTepTBKMCaGUAEhm/O17kUAbJxrz4RwjkhTBNS5VB4DxbZX
-         3JZzRKor4gIlRbyB8R9e/txhAxKfPMR8IgjHImJZ3pwhbEvvx5YNt2KTwDI6qMAq5V1C
-         KkqQ==
-X-Gm-Message-State: AOAM533FR1fB9AOzLRlledJTxl+94W9VpcZyhbiRK2HsG9dd+M3OvIUW
-        EdOUsgtICbgkExdx8MwZOEHDEWv5aOAP8bbFlbg=
-X-Google-Smtp-Source: ABdhPJzfe5vGl2j6BxuI08oeOapu4bQlvHlvM+xVew2SOCIEFabIB/2jHMBSvI3ncvbhyUTR2woMzGCLUWUC3lgyu8w=
-X-Received: by 2002:a05:6808:1184:: with SMTP id j4mr497685oil.73.1644395217343;
- Wed, 09 Feb 2022 00:26:57 -0800 (PST)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v4xkKo8LcBxnqo2hVPx4Tj8aAmM93UUPnAiSr2pifXo=;
+ b=iDXF40HgyAm8L6KeZFe/0mSCURp0JhsJ8T8+4BFy9OHXaErM+1qabWl1OKq191fWxcEVfy+hflE2H2fgH6d7jCGbYBEDgDMw4rTHJZMsAXNTEEBiqfmADuB6w5dfzN/mhpaElAzfdS1/14Y+N3sSW2MLVwmlhxzwSTDzbdlrQGE=
+Received: from BN9PR03CA0899.namprd03.prod.outlook.com (2603:10b6:408:13c::34)
+ by SA0PR02MB7129.namprd02.prod.outlook.com (2603:10b6:806:eb::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
+ 2022 08:27:13 +0000
+Received: from BN1NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:13c:cafe::b4) by BN9PR03CA0899.outlook.office365.com
+ (2603:10b6:408:13c::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12 via Frontend
+ Transport; Wed, 9 Feb 2022 08:27:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT035.mail.protection.outlook.com (10.13.2.81) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 08:27:12 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 9 Feb 2022 00:27:12 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 9 Feb 2022 00:27:12 -0800
+Envelope-to: linux-kernel@vger.kernel.org,
+ gregkh@linuxfoundation.org,
+ corbet@lwn.net,
+ linux-arm-kernel@lists.infradead.org,
+ arnd@arndb.de
+Received: from [172.19.2.91] (port=40310 helo=xsjjollys50.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <ronak.jain@xilinx.com>)
+        id 1nHiJk-0003T0-E5; Wed, 09 Feb 2022 00:27:12 -0800
+From:   Ronak Jain <ronak.jain@xilinx.com>
+To:     <michal.simek@xilinx.com>, <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <rajan.vaja@xilinx.com>,
+        <corbet@lwn.net>, <linux-arm-kernel@lists.infradead.org>,
+        <arnd@arndb.de>, <lakshmi.sai.krishna.potthuri@xilinx.com>,
+        Ronak Jain <ronak.jain@xilinx.com>
+Subject: [PATCH v5 2/3] firmware: zynqmp: Add documentation for runtime feature config
+Date:   Wed, 9 Feb 2022 00:27:08 -0800
+Message-ID: <20220209082709.32378-3-ronak.jain@xilinx.com>
+X-Mailer: git-send-email 2.32.0.93.g670b81a
+In-Reply-To: <20220209082709.32378-1-ronak.jain@xilinx.com>
+References: <20220209082709.32378-1-ronak.jain@xilinx.com>
 MIME-Version: 1.0
-References: <cover.1644025661.git.iourit@linux.microsoft.com>
- <CADvTj4riwoFngTkAOTyc=SuZ3FeTwpyz3FteV_+3BiQ=uiLX7Q@mail.gmail.com> <YgDCnxsnqJ1gihLf@infradead.org>
-In-Reply-To: <YgDCnxsnqJ1gihLf@infradead.org>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Wed, 9 Feb 2022 01:26:46 -0700
-Message-ID: <CADvTj4q_-A9p2UkH975SPPYmSzVAv38VJxLDBQjEnHoCSERzOw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/24] Driver for Hyper-v virtual compute device
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Iouri Tarassov <iourit@linux.microsoft.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        spronovo@microsoft.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7d2b1bec-1975-43fd-180e-08d9eba5f917
+X-MS-TrafficTypeDiagnostic: SA0PR02MB7129:EE_
+X-Microsoft-Antispam-PRVS: <SA0PR02MB71295692E86491C034C88EE0A42E9@SA0PR02MB7129.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MfU5oq2aAXo7Sb+gg3TqQYPZbhpavPRr1mI/KqbX+RVOCATGoEhqdlgYU8NX35z9ZS/Ex0CLtJpieA96MmaCOKtk37/EJJbPgBEbSpApkEGjgNh/KY49GSrakftvl0i5kwU0F++l9DTIDv07fxwRvP/MWc7rfT6N7Z3X4l9RH1rMZ4R/AIMCgZoCoK8NuiaHq0OGs1doJcEdwpTUvDA0/iwLBaVW1XoFJQvPt6GV4gvBoY0cQXVT0A9GmmwvbAW9oqwAG3QNupvU6m1gRpK+Z9zUo6LimUsNR+nclS95+gXo8cybLXQVifjVcGkFsYcJApLBqXAsrY8gjG+czTz0Q3fdWkf0w5+mdKo9DloDtJt4NAVScyyCD3rDmgkamhRMVwREFG38jmWTxRra48tJbKabW6jhxVZ6dN9vGXklmjlLBrbLMiEBvrhv1dWY8WRtIwYAGisZxXnmxsP4TuAGvs+DffxTGw/nmXw6vIYxc3ZKZum1G0fQwZKHbMM7pmJnAQH7qkBS65icp4EgOjlubPTbsXwl1IwOAGNtsclLB6k2rUJdKkrLRP6Ifiw7uEiNho/tjfCmJJSBqjcn8elZU0kQHEuiHIGKY13D4ppibf7iMqSKiR9dp8vGlXXmE2GiM21zA7IJap6Xk5dI6xtMy8DH4/QucIeCd6d9YfL2B2cGSLi5rnRwwfT1gp68TdWlPyPxmYDAoy0cI/SMLnN0aQ==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(70206006)(54906003)(5660300002)(70586007)(6666004)(36860700001)(83380400001)(316002)(7696005)(110136005)(9786002)(508600001)(356005)(8936002)(36756003)(40460700003)(4326008)(107886003)(8676002)(2906002)(1076003)(26005)(2616005)(186003)(336012)(426003)(7636003)(82310400004)(44832011)(47076005)(102446001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 08:27:12.9401
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d2b1bec-1975-43fd-180e-08d9eba5f917
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT035.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR02MB7129
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 6, 2022 at 11:56 PM Christoph Hellwig <hch@infradead.org> wrote:
->
-> On Sat, Feb 05, 2022 at 09:15:27PM -0700, James Hilliard wrote:
-> > Does the fully open source user-space implementation actually use the entire
-> > user-space API exposed by this driver?
->
-> I think that is the abolute minimum.  But more importantly: I don't
-> think we'd want to expose interface in a virtual GPU driver that aren't
-> also supported by a native one.
+Add documentation for sysfs entries like feature_config_id and
+ feature_config_value for runtime feature configuration. The support is
+ added for an over temperature and external watchdog features.
 
-Yeah, that's one of the obvious huge issues with what is being done here, I mean
-it seems pretty clear that this is all designed to provide a way to
-run an effectively
-entirely closed source graphics/compute stack with Linux and sidestep the lack
-of a stable kernel driver API by letting vendors target the windows
-kernel instead
-for their closed source drivers.
+Signed-off-by: Ronak Jain <ronak.jain@xilinx.com>
+---
+Changes in v5:
+- Update kernel version for sysfs documentation
 
-I think the closed source and WSL specific user space components are the biggest
-problem with this whole graphics/compute stack potentially as that is what
-application developers are being encouraged to target.
+Changes in v4:
+- Add separate sysfs entries for runtime feature config
+- Update commit message
 
-I mean it's pretty clear this is being designed in a way to ultimately prevent
-users from running applications on non-WSL Linux systems, Microsoft isn't even
-hiding that at all as they even list it as a specific goal of the
-directx related changes
-being pushed to mesa(which are designed to interface with the closed
-source directx
-userspace libraries this kernel driver is designed to support):
-https://devblogs.microsoft.com/directx/in-the-works-opencl-and-opengl-mapping-layers-to-directx/
-> > Make it easier for developers to port their apps to D3D12. For developers looking
-> > to move from older OpenCL and OpenGL API versions to D3D12,
+Changes in v3:
+- None
 
-Notice that the mapping/compatibility work they are pushing is
-essentially entirely
-one way, it's designed to make Linux applications work on top of the
-closed source
-WSL directx userspace but does not allow applications targeting
-directx API's to work
-without a WSL system in any way.
+Changes in v2:
+- Update commit message
+---
+ .../ABI/stable/sysfs-driver-firmware-zynqmp   | 141 ++++++++++++++++++
+ 1 file changed, 141 insertions(+)
 
-It's basically classic
-EEE(https://en.wikipedia.org/wiki/Embrace,_extend,_and_extinguish)
-strategy except that it's targeting non-WSL Linux instead of Linux in
-general for the
-extinguish parts(by using a passthrough driver like this to bypass the kernel):
+diff --git a/Documentation/ABI/stable/sysfs-driver-firmware-zynqmp b/Documentation/ABI/stable/sysfs-driver-firmware-zynqmp
+index f5724bb5b462..c3fec3c835af 100644
+--- a/Documentation/ABI/stable/sysfs-driver-firmware-zynqmp
++++ b/Documentation/ABI/stable/sysfs-driver-firmware-zynqmp
+@@ -113,3 +113,144 @@ Description:
+ 		    # echo 0 > /sys/devices/platform/firmware\:zynqmp-firmware/health_status
+ 
+ Users:		Xilinx
++
++What:		/sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++Date:		Feb 2022
++KernelVersion:	5.18
++Contact:	"Ronak Jain" <ronak.jain@xilinx.com>
++Description:
++		This sysfs interface allows user to configure features at
++		runtime. The user can enable or disable features running at
++		firmware as well as the user can configure the parameters of
++		the features at runtime. The supported features are over
++		temperature and external watchdog. Here, the external watchdog
++		is completely different than the /dev/watchdog as the external
++		watchdog is running on the firmware and it is used to monitor
++		the health of firmware not APU(Linux). Also, the external
++		watchdog is interfaced outside of the zynqmp soc.
++
++		The supported config ids are for the feature configuration is,
++		1. PM_FEATURE_OVERTEMP_STATUS = 1, the user can enable or
++		disable the over temperature feature.
++		2. PM_FEATURE_OVERTEMP_VALUE = 2, the user can configure the
++		over temperature limit in Degree Celsius.
++		3. PM_FEATURE_EXTWDT_STATUS = 3, the user can enable or disable
++		the external watchdog feature.
++		4. PM_FEATURE_EXTWDT_VALUE = 4, the user can configure the
++		external watchdog feature.
++
++		Usage:
++
++		Select over temperature config ID to enable/disable feature
++		# echo 1 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++
++		Check over temperature config ID is selected or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		The expected result is 1.
++
++		Select over temperature config ID to configure OT limit
++		# echo 2 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++
++		Check over temperature config ID is selected or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		The expected result is 2.
++
++		Select external watchdog config ID to enable/disable feature
++		# echo 3 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++
++		Check external watchdog config ID is selected or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		The expected result is 3.
++
++		Select external watchdog config ID to configure time interval
++		# echo 4 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++
++		Check external watchdog config ID is selected or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		The expected result is 4.
++
++Users:		Xilinx
++
++What:		/sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++Date:		Feb 2022
++KernelVersion:	5.18
++Contact:	"Ronak Jain" <ronak.jain@xilinx.com>
++Description:
++		This sysfs interface allows to configure features at runtime.
++		The user can enable or disable features running at firmware.
++		Also, the user can configure the parameters of the features
++		at runtime. The supported features are over temperature and
++		external watchdog. Here, the external watchdog is completely
++		different than the /dev/watchdog as the external watchdog is
++		running on the firmware and it is used to monitor the health
++		of firmware not APU(Linux). Also, the external watchdog is
++		interfaced outside of the zynqmp soc.
++
++		By default the features are disabled in the firmware. The user
++		can enable features by querying appropriate config id of the
++		features.
++
++		The default limit for the over temperature is 90 Degree Celsius.
++		The default timer interval for the external watchdog is 570ms.
++
++		The supported config ids are for the feature configuration is,
++		1. PM_FEATURE_OVERTEMP_STATUS = 1, the user can enable or
++		disable the over temperature feature.
++		2. PM_FEATURE_OVERTEMP_VALUE = 2, the user can configure the
++		over temperature limit in Degree Celsius.
++		3. PM_FEATURE_EXTWDT_STATUS = 3, the user can enable or disable
++		the external watchdog feature.
++		4. PM_FEATURE_EXTWDT_VALUE = 4, the user can configure the
++		external watchdog feature.
++
++		Usage:
++
++		Enable over temperature feature
++		# echo 1 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 1 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the over temperature feature is enabled or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 1.
++
++		Disable over temperature feature
++		# echo 1 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 0 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the over temperature feature is disabled or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 0.
++
++		Configure over temperature limit to 50 Degree Celsius
++		# echo 2 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 50 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the over temperature limit is configured or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 50.
++
++		Enable external watchdog feature
++		# echo 3 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 1 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the external watchdog feature is enabled or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 1.
++
++		Disable external watchdog feature
++		# echo 3 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 0 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the external watchdog feature is disabled or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 0.
++
++		Configure external watchdog timer interval to 500ms
++		# echo 4 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_id
++		# echo 500 > /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++
++		Check whether the external watchdog timer interval is configured or not
++		# cat /sys/devices/platform/firmware\:zynqmp-firmware/feature_config_value
++		The expected result is 500.
++
++Users:		Xilinx
+-- 
+2.32.0.93.g670b81a
 
-* Embrace: provide OpenCL and OpenGL API compatibility layers so all existing
-  non-directx graphics/compute software works on WSL.
-
-* Extend: add the WSL-only directx graphics/compute user space to
-Linux and tie it to
-  a WSL kernel/host while maintaining backwards compatibility with OpenCL and
-  OpenGL API's for any software that doesn't get ported to directx
-
-* Extinguish: encourage application developers to migrate to new
-WSL-only directx
-  graphics/compute API's and away from non-WSL specific OpenGL/OpenCL API's
-
-> > We took this feedback to heart and we spent the last year working on a way
-> > to address this key piece of feedback. Working closely with our partner Intel,
-> > we're happy to say that we now have a fully open source user-space for the
-> > OpenCL, OpenVINO and OneAPI compute family of APIs on Intel GPU platforms.
-> > This is supported by this open source project
-> > (https://github.com/intel/compute-runtime).
-
-One would really want to see a mapping layer that translates directx
-API's to open API's,
-such as those exposed by the intel compute runtime instead of the
-other way around.
-
-Fundamentally I think the changes in this series do nothing to address
-the main issues
-in the original
-series(https://lore.kernel.org/lkml/20200519163234.226513-1-sashal@kernel.org/)
-as the DX12 userspace components(which are what microsoft wants apps
-to target) are
-still closed source. Having an open source consumer of this driver
-isn't going to help much
-if the main stack being used is closed source. Especially since this
-driver is designed to
-around the closed source DX12 driver constraints and not the open
-source user space
-constraints:
-https://lore.kernel.org/all/5493bb21-7c85-9a8a-07f6-983d1d5c425b@linux.microsoft.com/
-> > d3dkmthk.h defines a binary interface to the compute driver. It cannot
-> > be changed, because it must
-> > be binary compatible with the Windows display graphics model.
-
-Since the Windows and Linux compute-runtime drivers are developed together there
-should be no reason one needs to maintain binary compatibility with the Windows
-display model as opposed to just ensuring each side of the driver can
-talk with each
-other:
-https://github.com/intel/compute-runtime/blob/master/FAQ.md#does-neo-support-microsoft-windows
-> > Our closed-source driver for Windows is using the same codebase. At this time,
-> > we do not support compilation of the stack for Windows. It is our long-term intention
-> > to offer that option.
-
-The binary compatibility requirement with d3dkmthk.h is a constraint imposed
-by only the closed source stack effectively. So we should be able to tweak the
-kernel binary interface as needed for the purposes of the open source
-compute-runtime as the Linux side userspace is already effectively hardware
-specific, tweaking the host side would simply be a matter of getting an updated
-driver release with the host tweaks which is already a requirement for the
-compute-runtime. The binary compatibility seems to only be helpful for those
-wanting to port closed source drivers with minimal changes.
-
-The directx support could instead be built on top of an open source userspace on
-the Linux side which would allow for one to choose between either a WSL or
-non-WSL based graphics/compute stack via a reverse of the mapping layer
-(https://www.collabora.com/news-and-blog/news-and-events/introducing-opencl-and-opengl-on-directx.html).
-But that approach won't lock users into WSL like this one would so it
-seems unlikely
-to happen.
