@@ -2,121 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06941C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 364A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232906AbiBIMSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37694 "EHLO
+        id S229558AbiBIMTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232837AbiBIMRX (ORCPT
+        with ESMTP id S232784AbiBIMSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:17:23 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B652C002B5C;
-        Wed,  9 Feb 2022 04:06:01 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B10325801E7;
-        Wed,  9 Feb 2022 06:56:52 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Wed, 09 Feb 2022 06:56:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=sSoaJ00tNxOqOU
-        g8CEfFUrCk7rxbGJHvq0gr3bBADKY=; b=TtUBXU1CqcfqNeznPZk2WxfjhYiTNs
-        gMNqvDZWJN38DDEDERlnSUs9S18c55f6UIynjxuoVkEf8fH6Rg207EcxI6ty4SV3
-        ACAuuaZtZpLm9qWU5/v25nIGfMzgzXesCi/TWxrKw+kC90hYIAqZPtC+erttQ4UJ
-        lChn0v67/k+FInJz4kdPf2T/uNqP6xzYyYVaJJXgDYmdZGYrL02KBb6wHMLeCkLB
-        qBa6wVNSHBiGEeebzOrEQhmrj7PhWCHPFBe+/o6/LFWH55pP7FJx424PRkVQ/6jQ
-        B5dpgH3SoxQBoddzzBil3MkbTnFrNDZ5AGQP50LZtWwLZfYOsNNu2dPQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=sSoaJ00tNxOqOUg8CEfFUrCk7rxbGJHvq0gr3bBAD
-        KY=; b=V3ydhjnSDw12XaizGu576ElTKKtFuGCl5+Iq2cYUJ6YRk29dhASK4u8yG
-        78xoxVtDAqKJYVODzEnhKgoeWxQCmip9KyO3g8M2aA6Sq66FRuc3KJifp752qQIF
-        n3SJF4gytcrfLbMGtxSOJ7RSk0sKWNZ1sOkV/ImZ4Do5gYUEUllY9LVr3NTWkVm0
-        XFCWnR/txmwFFL/NUKkT8eJ7Rr9ljf00cY5hquBz5PYOG04d52UuRyemp9q73vdL
-        S3WK/P3+Q6JsfmUwR07/4CS36qlNPrCUj5BXVpM1ADsGvF/FyZizSnlvLiVOiQZD
-        LxIROXLJXQ2/MGQq3uNhjhviTnq+g==
-X-ME-Sender: <xms:A6wDYllVhj4Jcdf8XA97PwG2ut--DXQ_hlqlHlngkj8qtWCYMlBoDQ>
-    <xme:A6wDYg1p4nMD4nUgg_zoRLWxqyazVMKZRjYEeTbn3Afoys7mcUYc5dYQE9minibj_
-    K6C7N6UF_xlWWHh7UU>
-X-ME-Received: <xmr:A6wDYrrAJNdU8a2J1EPQLJZgdkiR3s_EM8B-mAhcdr-6kLpqo0JsLIej7Ja9__o>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgdeffecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkffggfgfuvfhfhfgjtgfgsehtkeertddtfeejnecuhfhrohhmpeflihgrgihu
-    nhcujggrnhhguceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomheqnecugg
-    ftrfgrthhtvghrnhepheeiuddvvefhkeejfedttdekieethfdukedvieeuueelgfelieej
-    geehvdekudelnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepjhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-X-ME-Proxy: <xmx:A6wDYlmXKNw9LxuBm1uBQMJNqUZ5zxIU5aNIex0LI-Hd0h0y0_7-hA>
-    <xmx:A6wDYj0rkiXLRM76CGJN3qEdLXnfX5bklk_oizUINjmMsTZ4jSPzUg>
-    <xmx:A6wDYkvTN5Wa9-7U0i_KAl0-maH4ohQ-7diZYVTw4097_tWOUvrnxg>
-    <xmx:BKwDYqvmkj0AfU5uCgbqM4dT0U2_7kqWqSFoMx81RDeCnbAHrJI7fg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 06:56:49 -0500 (EST)
-Message-ID: <8e7f7946-b9e5-7c4d-f5c9-e091bf5f814b@flygoat.com>
-Date:   Wed, 9 Feb 2022 11:56:48 +0000
+        Wed, 9 Feb 2022 07:18:52 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AF07C1DF8EA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:08:02 -0800 (PST)
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0B2983F1E9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 12:07:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644408475;
+        bh=pRag9cOIM4CLzsxK+XeyiBU0JF+YtVMAHEpcyJclBbk=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=eutYFcrDeQWYaWKeSxfij60ntNujIsdOmJn6dmAGzbtYz/wyAbht+ifROc2jobVXm
+         ZYCXHVMRSzc0aHSDRn+ElmFe7K/Cg5QxoPRs0zLGyMlwGAreTVXTTjCBpQOUPTsfHf
+         PerN3rV2uSf3nrxD/RNVLUr5Hifrb1ygENinXEfQ239kt57BEC927j/m4LEUk1seWQ
+         Ze+4idO4qkUQ5aNPISo5dFpfuqLjyCksb13JHu4irO+kZ0iJbrjJ9fGQLBC/fwKCEH
+         kq/N7RaR/hgJM+sN2cEwoP2vz1FQFl1gDpOfsW1l5BssQIjeT3IMADW3w3QhFJV7eS
+         h8DyV/liDHzrQ==
+Received: by mail-ej1-f69.google.com with SMTP id k16-20020a17090632d000b006ae1cdb0f07so1073075ejk.16
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 04:07:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=pRag9cOIM4CLzsxK+XeyiBU0JF+YtVMAHEpcyJclBbk=;
+        b=cop4Di3OgClW5PH1gukB3dWyHMP27mMv956mirr/voITdKRzNP/18T0i4NJ6ivWNmY
+         04N2eSg/ILuhCIoU3YbbhZ0ShHGZDUn6yH4xKoxix5u69DLfv1j/LB8nAsftHhywmXFk
+         V2yZXveDE1widcMcDd92f9B/s71EfwGn6p01jrtzFElAYYPLqFnhZqgyqGx3+psx3bnv
+         F+09EyOZDT3bx+raOsAbxkWKiXT5TiGnuojXpInUXIJq0vfmKSoKw3T3qXsWAgsHqwf8
+         ddW3k3PLGS0oAtaKW8a82aPuNoUkOHkFCd+hrdaM9uA0zKZKB5ymR5CWjg1k9+qRRk7K
+         NyLA==
+X-Gm-Message-State: AOAM532qpQRZCRIOP8UcX72VunT1x8Erzw7GtEp6PUIzw84wzMHuBZnX
+        7IesTzw6rDcF/XEFQWPFY7TdZigHeaBny8F5fBI3YxODtMJwnKnZQOilBLbD33yZgIcPKO2rlSO
+        rQncnLWDndSJJ3VUCd2fJ+On9tZj1OqRAmc3xL2lmfg==
+X-Received: by 2002:a05:6402:38e:: with SMTP id o14mr2091377edv.414.1644408474769;
+        Wed, 09 Feb 2022 04:07:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzp9D9NxZvABqtfCoI3O1I7fzjAY50tR61mEZ09BQntiUDHsfbJQz2CU099/mXih6rck2X3sw==
+X-Received: by 2002:a05:6402:38e:: with SMTP id o14mr2091370edv.414.1644408474596;
+        Wed, 09 Feb 2022 04:07:54 -0800 (PST)
+Received: from [192.168.0.94] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id g19sm3119597ejd.62.2022.02.09.04.07.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 04:07:53 -0800 (PST)
+Message-ID: <d4291c95-64dd-f860-da9a-0f11d44ecae3@canonical.com>
+Date:   Wed, 9 Feb 2022 13:07:53 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
- controller
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Sui Jingfeng <15330273260@189.cn>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Randy Dunlap <rdunlap@infradead.org>
-References: <20220203082546.3099-1-15330273260@189.cn>
- <20220203082546.3099-2-15330273260@189.cn>
- <20220203085851.yqstkfgt4dz7rcnw@houat>
- <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
- <20220209085215.65qbdsgwtnvujdng@houat>
-From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
-In-Reply-To: <20220209085215.65qbdsgwtnvujdng@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] ARM: dts: rk3288: fix a typo on crypto-controller
+Content-Language: en-US
+To:     Corentin Labbe <clabbe@baylibre.com>, heiko@sntech.de,
+        robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
+References: <20220209120355.1985707-1-clabbe@baylibre.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220209120355.1985707-1-clabbe@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 09/02/2022 13:03, Corentin Labbe wrote:
+> crypto-controller had a typo, fix it.
+> In the same time, rename it to just crypto
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+> Change since v1:
+> - rename crypto-controller to crypto
+> 
+>  arch/arm/boot/dts/rk3288.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
 
-在 2022/2/9 8:52, Maxime Ripard 写道:
-> On Thu, Feb 03, 2022 at 11:47:16PM +0800, Sui Jingfeng wrote:
-[...]
-> DT isn't really a solution either. Let's take the distribution
-> perspective there. Suppose you're a Fedora or Debian developer, and want
-> to make a single kernel image, and ship a DT to the user for their board
-> without any modification. How is either the Kconfig solution or DT flags
-> solution any good there? It doesn't help them at all.
-We are working in another way. As we can tell model of the board by strings
-passed from the firmware, we just built-in all poosible DTs into the kernel
-and then tell which DT to load at boot time. So we can ensure users has
-smmoth experience.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Thanks.
-- Jiaxun
 
->
-> Maxime
-
+Best regards,
+Krzysztof
