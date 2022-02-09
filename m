@@ -2,97 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DDFC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236140AbiBIPlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:41:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55038 "EHLO
+        id S236158AbiBIPlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:41:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbiBIPk6 (ORCPT
+        with ESMTP id S236255AbiBIPlK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:40:58 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2144AC0613CA;
-        Wed,  9 Feb 2022 07:40:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644421259; x=1675957259;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ybIpsMmv2oQsujciJTHbw6FLtIsdAI/tnWcB5Lvr0nM=;
-  b=Bio9/O6aEtJH15JzT6gNHEb+eI0GM8j4b1gPHk2gBAzSvAp4k8OVRniS
-   OnY9O+UV9+A5kXCj6RCUKx39J8uH3+JRMAerq+sVT83Mcc0obtXweEqBw
-   scCb0TmnP8EJN1lE073hvI4yCafe7c3+GbNO5S1pkyaf9h8LJRbJGMENk
-   fLhkDrdI3OF8VG/MgJJwy2CCi4/5dhWFxo+e2GO4mA71KpRmlzkYQ3MEa
-   GGEtgNBaJeVLGQnL+iGx1oKzKcUQlLNiARSYE2vS/KGUG6Wc/iitk6J3a
-   cHrfZb961p452lrubEeuMhMtfnaAfnuXK8yxApT+4lOL1pZMzLg8YU+RM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248988099"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="248988099"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:40:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="500003852"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 09 Feb 2022 07:40:53 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHp5Q-0001ym-K7; Wed, 09 Feb 2022 15:40:52 +0000
-Date:   Wed, 9 Feb 2022 23:40:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: [ambarus:spi-nor/next 9/9] drivers/mtd/spi-nor/macronix.c:20:
- warning: This comment starts with '/**', but isn't a kernel-doc comment.
- Refer Documentation/doc-guide/kernel-doc.rst
-Message-ID: <202202092342.YwAYnHF4-lkp@intel.com>
+        Wed, 9 Feb 2022 10:41:10 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F1098C0613C9;
+        Wed,  9 Feb 2022 07:41:11 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.41:55300.899968331
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
+        by 189.cn (HERMES) with SMTP id E409310020D;
+        Wed,  9 Feb 2022 23:41:08 +0800 (CST)
+Received: from  ([172.27.8.53])
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 9a8476fe4b9e405690dea299605a0bea for maxime@cerno.tech;
+        Wed, 09 Feb 2022 23:41:09 CST
+X-Transaction-ID: 9a8476fe4b9e405690dea299605a0bea
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 172.27.8.53
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <def50622-fe08-01f7-83bd-e6e0bc39fe1b@189.cn>
+Date:   Wed, 9 Feb 2022 23:41:06 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Content-Language: en-US
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <f5381561-25da-61e3-5025-fa6dd61dd730@189.cn>
+ <20220209084331.fpq5ng3yuqxmby4q@houat>
+From:   Sui Jingfeng <15330273260@189.cn>
+In-Reply-To: <20220209084331.fpq5ng3yuqxmby4q@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ambarus/linux-0day spi-nor/next
-head:   89a4d99e9d41b68d34943980943207b58c433256
-commit: 89a4d99e9d41b68d34943980943207b58c433256 [9/9] mtd: spi-nor: macronix: Add support for mx66lm1g45g
-config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220209/202202092342.YwAYnHF4-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/ambarus/linux-0day/commit/89a4d99e9d41b68d34943980943207b58c433256
-        git remote add ambarus https://github.com/ambarus/linux-0day
-        git fetch --no-tags ambarus spi-nor/next
-        git checkout 89a4d99e9d41b68d34943980943207b58c433256
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/mtd/spi-nor/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 2022/2/9 16:43, Maxime Ripard wrote:
+> On Fri, Feb 04, 2022 at 12:29:39AM +0800, Sui Jingfeng wrote:
+>>>> +static int lsdc_modeset = 1;
+>>>> +MODULE_PARM_DESC(modeset, "Enable/disable CMA-based KMS(1 = enabled(default), 0 = disabled)");
+>>>> +module_param_named(modeset, lsdc_modeset, int, 0644);
+>>>> +
+>>>> +static int lsdc_cached_coherent = 1;
+>>>> +MODULE_PARM_DESC(cached_coherent, "uss cached coherent mapping(1 = enabled(default), 0 = disabled)");
+>>>> +module_param_named(cached_coherent, lsdc_cached_coherent, int, 0644);
+>>>> +
+>>>> +static int lsdc_dirty_update = -1;
+>>>> +MODULE_PARM_DESC(dirty_update, "enable dirty update(1 = enabled, 0 = disabled(default))");
+>>>> +module_param_named(dirty_update, lsdc_dirty_update, int, 0644);
+>>>> +
+>>>> +static int lsdc_use_vram_helper = -1;
+>>>> +MODULE_PARM_DESC(use_vram_helper, "use vram helper based solution(1 = enabled, 0 = disabled(default))");
+>>>> +module_param_named(use_vram_helper, lsdc_use_vram_helper, int, 0644);
+>>>> +
+>>>> +static int lsdc_verbose = -1;
+>>>> +MODULE_PARM_DESC(verbose, "Enable/disable print some key information");
+>>>> +module_param_named(verbose, lsdc_verbose, int, 0644);
+>>> It's not really clear to me why you need any of those parameters. Why
+>>> would a user want to use a non coherent mapping for example?
+>>>
+>> Because we are Mips architecture. Paul Cercueil already explained it
+>> in his mmap GEM buffers cachedpatch  <https://lkml.kernel.org/lkml/20200822164233.71583-1-paul@crapouillou.net/T/>. I drag part of it to here for
+>> convenient to reading:
+>>
+>> /Traditionally, GEM buffers are mapped write-combine. Writes to the buffer
+>> are accelerated, and reads are slow. Application doing lots////of
+>> alpha-blending paint inside shadow buffers, which is then memcpy'd////into
+>> the final GEM buffer.///
+>> "non coherent mapping" is actually cached and it is for CMA helpers
+>> base driver, not for VRAM helper based driver. For Loongson CPU/SoCs.
+>> The cache coherency is maintained by hardware, therefore there no
+>> need to worry about coherency problems. This is true at least for
+>> ls3a3000, ls3a4000 and ls3a5000.
+>>
+>> "non coherent" or "coherent" is not important here, the key point is
+>> that the backing memory of the framebuffer is cached with non coherent
+>> mapping, you don't need a shadow buffer layer when using X server's
+>> modesetting driver.
+>>
+>> Read and write to the framebuffer in system memory is much faster than
+>> read and write to the framebuffer in the VRAM.
+>>
+>> Why CMA helper based solution is faster than the VRAM based solution on Mips platform?
+>>
+>> Partly because of the CPU have L1, L2 and L3 cache, especially L3 cache
+>> is as large as 8MB, read and write from the cache is fast.
+>>
+>> Another reason is as Paul Cercueil said, read from VRAM with write-combine
+>> cache mode is slow. it is just uncache read.
+>> Please note that we don't have a GPU here, we are just a display controller.
+>>
+>> For the VRAM helper based driver case, the backing memory of the framebuffer
+>> is located at VRAM, When using X server's modesetting driver, we have to enable
+>> the ShadowFB option, Uncache acceleration support(at the kernel size) should
+>> also be enabled. Otherwise the performance of graphic application is just slow.
+>>
+>> Beside write-combine cache mode have bugs on our platform, a kernel side
+>> developer have disabled it. Write-combine cache mode just boil down to uncached
+>> now. See [1] and [2]
+>>
+>> [1]https://lkml.org/lkml/2020/8/10/255
+>> [2]https://lkml.kernel.org/lkml/1617701112-14007-1-git-send-email-yangtiezhu@loongson.cn/T/
+>>
+>> This is the reason why we prefer CMA helper base solution with non coherent mapping,
+>> simply because it is fast.
+>>
+>> As far as I know, Loongson's CPU does not has the concept of write-combine,
+>> it only support three caching mode:  uncached, cached and uncache acceleration.
+>> write-combine is implemented with uncache acceleration on Mips.
+> My point wasn't just about the VRAM vs CMA stuff, it was about why do
+> you need all those switches in the first place?
+>
+> Take the verbose parameter for example: it's entirely redundant with the
+> already existing, documented, DRM logging infrastructure.
 
-All warnings (new ones prefixed by >>):
+Yes, verbose is redundant, we will use drm_dbg() instead of verbose.  
+thanks.
 
->> drivers/mtd/spi-nor/macronix.c:20: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Macronix SPI NOR flash operations.
+I am correcting.
 
+> Then, you have "modeset", and I'm not sure why it's supposed to be
+> there, at all. This is a modesetting driver, why would I want to disable
+> modesetting entirely?
 
-vim +20 drivers/mtd/spi-nor/macronix.c
+Something you want fbdev driver, for example simple-framebuffer driver which
+using the firmware passed fb (screeninfo).
 
-    18	
-    19	/**
-  > 20	 * Macronix SPI NOR flash operations.
-    21	 */
-    22	#define SPI_NOR_MX_READ_CR2_OP(ndummy, buf, ndata)			\
-    23		SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_READ_CR2, 0),		\
-    24			   SPI_MEM_OP_ADDR(4, SPINOR_REG_CR2_MODE_ADDR, 0),	\
-    25			   SPI_MEM_OP_DUMMY(ndummy, 0),				\
-    26			   SPI_MEM_OP_DATA_IN(ndata, buf, 0))
-    27	
+besides, text mode support.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> More fundamentally (and this extends to the CMA, caching and VRAM stuff
+> you explained above), why can't the driver pick the right decision all
+> the time and why would that be under the user control?
+
+The right decision for ls7a1000 is to use VRAM based helper, But sometimes
+we need CMA helper based solution. Because: The PRIME support is lost, use
+lsdc with etnaviv is not possible any more.
+
+  Buffer sharing with etnaviv is no longer possible, loongson display controllers
+  are simple which require scanout buffers to be physically contiguous.
+
+  We still need to develop userspace driver(say xf86-video-loongson)
+  on ls3a4000 + ls7a1000 platform then deploy those driver to ls2k1000 platform.
+
+  ls3a4000 and ls3a5000 is fast enough which can build the linux kernel directly.
+  Build mesa, libdrm, xf86-video-loongson just a piece of cake.
+
+  Is is so fast on ls3a5000+ls7a1000, developing driver on ls2k1000 is cumbersome,
+  embarrassing slow.
+
+  I means it(ls3a4000/ls3a5000 + ls7a1000) is not just target for end user, but
+  it is a platform which can be used to develop software for other platform.
+
+  The author of linux device driver told us that device driver is providing mechanism, not policy.
+
+  We are able to make the decision, but we want to give the user more choice.
+
+  "pick the right decision all the time" is also true, i am considering correct this,
+  thanks.
+
+> You were mentioning that you need to work-around MIPS memory management.
+> Then fine, just do that on MIPS, and don't it on the other architectures
+> that don't need it. There's no need for a knob.
+>
+> Maxime
