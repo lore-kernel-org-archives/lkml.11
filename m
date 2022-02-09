@@ -2,151 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980E8C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B98FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235293AbiBIOxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:53:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        id S235301AbiBIOxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:53:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235251AbiBIOxE (ORCPT
+        with ESMTP id S235264AbiBIOxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 09:53:04 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8ADC061355;
-        Wed,  9 Feb 2022 06:53:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644418386; x=1675954386;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=JcR2SqzgDfaiREjbB1UD/J9SsNencbetmBgZzpo5Kx4=;
-  b=cWIAAH5LlkmwRC1PIhLXnzIZgmvRSCrIr7FUJNJdX9Jec5zkiQRv8qIY
-   N99bBl9eVTvO02zjR1+N0bdydhKYSvVnCQCRYmJWgmzbw2p5Kem1JOL23
-   F4Hx2iE06fNMvlrRIJIEYX4C9FCD1G1+zajCqGLeH67VfIoYBdczHrUdh
-   l1zTlHa4VjrPzJd6uc/vrnLvN1S6fILV2pI7Ichu3zS0s3C42pGJoVlpM
-   8YpsSN9dsqE/n1iEEZkCsM6lDttjJmskTzzc97xT2vw2ACc8JvjG05wf5
-   ZcascRBbG+losQvOW/5z1U9t6g4gJVBSEDOCwI5XoD+aIvUM1x8Z7YSD7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249167860"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249167860"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 06:53:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="629294711"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 09 Feb 2022 06:53:04 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7E30B50D; Wed,  9 Feb 2022 16:53:19 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: [PATCH v1 1/1] ACPI: property: Get rid of redundant 'else'
-Date:   Wed,  9 Feb 2022 16:53:18 +0200
-Message-Id: <20220209145318.83405-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43B7C0612BE
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:53:07 -0800 (PST)
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 5AA283F1C6
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 14:53:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644418385;
+        bh=onzsmpCQRgb85GIJjW98hJcEB7Fnm+j4zs7gFVVnUu8=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=JaFAH+Mn5pDX92vHW8fwNIhHUnZ9frHiekxLfZ7+BGwjpdNaN08PVcZGP6gpUh9th
+         Zh0N0D3k6Exz5CrVNsTiAoHMz8HZZawZRJs4aRqHKGE1Vuhoos6vEnDU5yhXPLYMQD
+         PJHqba3sxMsKI0AHMFPL45t40iXr3s+zg8NfEot1rX2CNS1gcSZvPo6bHJtULXJGAC
+         73bSv5HoxnxozR7cmvil2d7SStePgdxoKvzErBxZs9pdbkfDCsDse5irtXsBGWcBpO
+         cieY9tbmMhzCCFWmMc7GGATiwkU38gYuSYEnVPJag5zYW7YF+x7efdFCSFA8OuPnzK
+         NkD+cgYo7heig==
+Received: by mail-ej1-f72.google.com with SMTP id l18-20020a1709063d3200b006a93f7d4941so1317557ejf.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 06:53:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=onzsmpCQRgb85GIJjW98hJcEB7Fnm+j4zs7gFVVnUu8=;
+        b=QdcXjZ11QE5k7AxtUJpQ5wkvXMEf83IJU8xL6r0IYsT4PxsQa3GcYtSQAnRkOS9mYl
+         pOVihC7VsKZNRELFOcWYDBWFhySquKMv5e3rpcweL8M9Vxe4X+M/zSNbaGbmVAUpI7E+
+         A/WB6tpyeNXK5UibW/1FvKUqHXFFHeAu9v8ZiNZtUlwPT9ZgVPkYw0/auNuRH8LxcmPw
+         KSB4oezTVKDynTVlcblkGHUhMnX0V8XmvJ2y8YfudCeAWE3nGe+pZpAK8LqN5YR7cyuQ
+         v84/HxPN7be0q1Z5Q4GVKzM+ANKBkvQKq5VKRIpB5SViU51HaZbxQk8MMGols9/lYh7i
+         +rgA==
+X-Gm-Message-State: AOAM530d0sNC3zjXAh+NYC7JenOPRYBtd/A1oVJQ1C/HBbHPNy7/Ejo1
+        GdENP5BzmrYThrl0Fpjzzjcmn9qaIWLuAw/zp++ve9Pzqe7GuXFJSf+gHrtKsQSfNh2IT2eXo5E
+        ZUm8VzZI7m3Ar0mKgAU9mBTbBi5zr1wCKdd3yFLw8MA==
+X-Received: by 2002:a17:907:1b0f:: with SMTP id mp15mr2283078ejc.493.1644418385015;
+        Wed, 09 Feb 2022 06:53:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwA9pA2uua5qmpzfkk8gPsTc68MfUtN9mYGVJc0g6plaESL7cEnVm/8ZAMV0jkvQ/RQWXCVgg==
+X-Received: by 2002:a17:907:1b0f:: with SMTP id mp15mr2283068ejc.493.1644418384761;
+        Wed, 09 Feb 2022 06:53:04 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id f18sm2839309ejl.12.2022.02.09.06.53.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 06:53:04 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [GIT PULL 1/2] ARM: dts: samsung: dts for v5.18
+Date:   Wed,  9 Feb 2022 15:52:25 +0100
+Message-Id: <20220209145226.184375-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the snippets like the following
+Hi,
 
-	if (...)
-		return / goto / break / continue ...;
-	else
-		...
+New platforms and a lot of dtschema cleanups.
 
-the 'else' is redundant. Get rid of it.
+Best regards,
+Krzysztof
 
-While at it, replace conditional '<= 0' for unsigned type by '== 0'
-in acpi_data_prop_read(); update comment in the
-__acpi_node_get_property_reference() on how we parse the reference.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/acpi/property.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-index 4744c191acee..928aa4f86344 100644
---- a/drivers/acpi/property.c
-+++ b/drivers/acpi/property.c
-@@ -541,7 +541,8 @@ acpi_device_data_of_node(const struct fwnode_handle *fwnode)
- 	if (is_acpi_device_node(fwnode)) {
- 		const struct acpi_device *adev = to_acpi_device_node(fwnode);
- 		return &adev->data;
--	} else if (is_acpi_data_node(fwnode)) {
-+	}
-+	if (is_acpi_data_node(fwnode)) {
- 		const struct acpi_data_node *dn = to_acpi_data_node(fwnode);
- 		return &dn->data;
- 	}
-@@ -739,14 +740,19 @@ int __acpi_node_get_property_reference(const struct fwnode_handle *fwnode,
- 					return -EINVAL;
- 			}
- 
--			/* assume following integer elements are all args */
-+			/*
-+			 * Assume the following integer elements are all args.
-+			 * Stop counting on the first reference or end of the
-+			 * package arguments. In case of neither reference,
-+			 * nor integer, return an error, we can't parse it.
-+			 */
- 			for (i = 0; element + i < end && i < num_args; i++) {
- 				int type = element[i].type;
- 
-+				if (type == ACPI_TYPE_LOCAL_REFERENCE)
-+					break;
- 				if (type == ACPI_TYPE_INTEGER)
- 					nargs++;
--				else if (type == ACPI_TYPE_LOCAL_REFERENCE)
--					break;
- 				else
- 					return -EINVAL;
- 			}
-@@ -938,7 +944,7 @@ static int acpi_data_prop_read(const struct acpi_device_data *data,
- 
- 	if (proptype != DEV_PROP_STRING && nval > obj->package.count)
- 		return -EOVERFLOW;
--	else if (nval <= 0)
-+	if (nval == 0)
- 		return -EINVAL;
- 
- 	items = obj->package.elements;
-@@ -1000,14 +1006,10 @@ struct fwnode_handle *acpi_get_next_subnode(const struct fwnode_handle *fwnode,
- 	const struct list_head *head;
- 	struct list_head *next;
- 
--	if (!child || is_acpi_device_node(child)) {
-+	if ((!child || is_acpi_device_node(child)) && adev) {
- 		struct acpi_device *child_adev;
- 
--		if (adev)
--			head = &adev->children;
--		else
--			goto nondev;
--
-+		head = &adev->children;
- 		if (list_empty(head))
- 			goto nondev;
- 
-@@ -1077,7 +1079,8 @@ acpi_node_get_parent(const struct fwnode_handle *fwnode)
- 	if (is_acpi_data_node(fwnode)) {
- 		/* All data nodes have parent pointer so just return that */
- 		return to_acpi_data_node(fwnode)->parent;
--	} else if (is_acpi_device_node(fwnode)) {
-+	}
-+	if (is_acpi_device_node(fwnode)) {
- 		struct device *dev = to_acpi_device_node(fwnode)->dev.parent;
- 
- 		if (dev)
--- 
-2.34.1
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git tags/samsung-dt-5.18
+
+for you to fetch changes up to f5b721d2c91144b7c494a05003fc840f1607e876:
+
+  ARM: dts: exynos: use generic node name for LPDDR3 timings in Odroid (2022-02-05 13:04:43 +0100)
+
+----------------------------------------------------------------
+Samsung DTS ARM changes for v5.18
+
+1. Minor improvements and dtschema fixes (node names, properties).
+2. Fix issues pointed out by DT schema checks:
+ - Add necessary clock controller inputs on Exynos5260.
+ - Drop unsupported regulators on Odroid XU.
+ - Add USB DWC3 supplies.
+ - Drop old thermal properties from Exynos4210.
+3. Add support for Samsung Chagall WiFi (Exynos5420, Samsung Galaxy Tab
+   S 10.5", SM-T800 ) and a similar Samsung Klimt WiFi (Samsung Galaxy
+   Tab S 8.4").
+4. Add battery to Samsung P4Nnote (Exynos4412, Samsung Galaxy Note
+   10.1).
+
+----------------------------------------------------------------
+Alim Akhtar (1):
+      ARM: dts: exynos: update dma node name with dtschema
+
+Henrik Grimler (4):
+      dt-bindings: arm: samsung: document Chagall WiFi board binding
+      ARM: dts: exynos: Add support for Samsung Chagall WiFi
+      dt-bindings: arm: samsung: document Klimt WiFi board binding
+      ARM: dts: exynos: Add support for Samsung Klimt WiFi
+
+Krzysztof Kozlowski (16):
+      ARM: dts: exynos: split dmas into array of phandles in Exynos5250
+      ARM: dts: exynos: Align MAX77836 nodes with dtschema on Monk and Rinato
+      ARM: dts: exynos: add necessary clock controller inputs in Exynos5260
+      ARM: dts: exynos: drop unsupported MAX77802 regulators on Odroid XU
+      ARM: dts: exynos: add USB DWC3 supplies to Arndale
+      ARM: dts: exynos: add USB DWC3 supplies to SMDK5250
+      ARM: dts: exynos: add USB DWC3 supplies to Chromebook Snow
+      ARM: dts: exynos: add USB DWC3 supplies to Chromebook Spring
+      ARM: dts: exynos: add USB DWC3 supplies to ArndaleOcta
+      ARM: dts: exynos: add USB DWC3 supplies to Chromebook Peach Pit
+      ARM: dts: exynos: add USB DWC3 supplies to Chromebook Peach Pi
+      ARM: dts: exynos: add USB DWC3 supplies to SMDK5420
+      ARM: dts: exynos: add fake USB DWC3 supplies to SMDK5410
+      ARM: dts: exynos: drop old thermal properties from Exynos4210
+      ARM: dts: exynos: use define for TMU clock on Exynos4412
+      ARM: dts: exynos: use generic node name for LPDDR3 timings in Odroid
+
+Martin Jücker (1):
+      ARM: dts: exynos: add charger and battery to p4note
+
+ .../bindings/arm/samsung/samsung-boards.yaml       |   2 +
+ arch/arm/boot/dts/Makefile                         |   2 +
+ arch/arm/boot/dts/exynos3250-monk.dts              |   2 +-
+ arch/arm/boot/dts/exynos3250-rinato.dts            |   2 +-
+ arch/arm/boot/dts/exynos3250.dtsi                  |   4 +-
+ arch/arm/boot/dts/exynos4.dtsi                     |   6 +-
+ arch/arm/boot/dts/exynos4210-universal_c210.dts    |   2 +-
+ arch/arm/boot/dts/exynos4210.dtsi                  |   2 -
+ arch/arm/boot/dts/exynos4412-p4note.dtsi           |  34 +
+ arch/arm/boot/dts/exynos4412.dtsi                  |   2 +-
+ arch/arm/boot/dts/exynos5250-arndale.dts           |   5 +
+ arch/arm/boot/dts/exynos5250-smdk5250.dts          |   5 +
+ arch/arm/boot/dts/exynos5250-snow-common.dtsi      |   5 +
+ arch/arm/boot/dts/exynos5250-spring.dts            |   5 +
+ arch/arm/boot/dts/exynos5250.dtsi                  |  19 +-
+ arch/arm/boot/dts/exynos5260-xyref5260.dts         |  21 +
+ arch/arm/boot/dts/exynos5260.dtsi                  | 128 ++++
+ arch/arm/boot/dts/exynos5410-odroidxu.dts          |  12 -
+ arch/arm/boot/dts/exynos5410-smdk5410.dts          |  23 +
+ arch/arm/boot/dts/exynos5410.dtsi                  |   4 +-
+ arch/arm/boot/dts/exynos5420-arndale-octa.dts      |  10 +
+ arch/arm/boot/dts/exynos5420-chagall-wifi.dts      |  75 +++
+ .../arm/boot/dts/exynos5420-galaxy-tab-common.dtsi | 691 +++++++++++++++++++++
+ arch/arm/boot/dts/exynos5420-klimt-wifi.dts        |  75 +++
+ arch/arm/boot/dts/exynos5420-peach-pit.dts         |  10 +
+ arch/arm/boot/dts/exynos5420-smdk5420.dts          |  10 +
+ arch/arm/boot/dts/exynos5420.dtsi                  |  10 +-
+ arch/arm/boot/dts/exynos5422-odroid-core.dtsi      |   2 +-
+ arch/arm/boot/dts/exynos5800-peach-pi.dts          |  10 +
+ 29 files changed, 1136 insertions(+), 42 deletions(-)
+ create mode 100644 arch/arm/boot/dts/exynos5420-chagall-wifi.dts
+ create mode 100644 arch/arm/boot/dts/exynos5420-galaxy-tab-common.dtsi
+ create mode 100644 arch/arm/boot/dts/exynos5420-klimt-wifi.dts
