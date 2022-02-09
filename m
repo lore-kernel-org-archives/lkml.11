@@ -2,157 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5840FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69B09C4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236338AbiBIGCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:02:53 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51868 "EHLO
+        id S236449AbiBIGCy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:02:54 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234305AbiBIGBM (ORCPT
+        with ESMTP id S234279AbiBIGBM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 01:01:12 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DFE1C050CC3;
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22F6C050CC2;
         Tue,  8 Feb 2022 22:01:14 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zaQQi_1644386471;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zaQQi_1644386471)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:01:11 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 02/22] fscache: add a method to support on-demand read semantics
-Date:   Wed,  9 Feb 2022 14:00:48 +0800
-Message-Id: <20220209060108.43051-3-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
-References: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644386474; x=1675922474;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4peUR/FlwKBQOuJfd2ZZpHK3WkZEECAcE1WpoWtMvdg=;
+  b=FOjcW4zE2r5tgp4QWaTHBUPV5Q+BLMpaJMdoH+RAzvZCjVzA/8ATbbp9
+   3N2VMZ7m+R/NjI48FcBEU5kHB+Q7/za/1fN31j+VlnRQOepcd1y27R+GY
+   69VLUE7FL7QBJk6UQy/ffLhtcKI1Rp5AdgRORXFOlau7Uf9+A+34dx3nI
+   o=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 08 Feb 2022 22:01:14 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 22:01:14 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 22:01:13 -0800
+Received: from [10.216.51.153] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
+ 22:01:10 -0800
+Message-ID: <d0048456-eb0a-cf91-fc28-f1dda69c1432@quicinc.com>
+Date:   Wed, 9 Feb 2022 11:31:06 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5] usb: host: xhci-plat: Set XHCI_SKIP_PHY_INIT quirk for
+ DWC3 controller
+Content-Language: en-US
+To:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Felipe Balbi <balbi@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        "Doug Anderson" <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>
+References: <1640153383-21036-1-git-send-email-quic_c_sanm@quicinc.com>
+ <Ydb79/twbxLDJB8/@kroah.com>
+ <d17330f1-d85e-b8c2-9e87-10d109c25abb@quicinc.com>
+ <YfE9s06CIv1P3bA/@kroah.com>
+ <f45f5952-e31c-5e9d-2560-064199beb29f@quicinc.com>
+ <ca306d7c-d816-3cbd-8c65-2c3619739d47@quicinc.com>
+ <YgJB6bGm/y7C0oo/@kroah.com>
+ <20220209055352.GA22550@hu-pkondeti-hyd.qualcomm.com>
+From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+In-Reply-To: <20220209055352.GA22550@hu-pkondeti-hyd.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add .ondemand_read() callback to netfs_cache_ops to implement on-demand
-read.
 
-The precondition for implementing on-demand read semantics is that,
-all blob files have been placed under corresponding directory with
-correct file size (sparse files) on the first beginning. When upper fs
-starts to access the blob file, it will "cache miss" (hit the hole).
-Then .ondemand_read() callback can be called to notify backend to
-prepare the data.
-
-The implementation of .ondemand_read() callback can be backend specific.
-The following patch will introduce the implementation for cachefiles,
-which will notify user daemon the requested file range to read. The
-.ondemand_read() callback will get blocked until the user daemon has
-prepared the corresponding data.
-
-Then once .ondemand_read() callback returns with 0, it is guaranteed
-that the requested data has been ready. In this case, users can retry to
-read from the backing file.
-
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
----
- Documentation/filesystems/netfs_library.rst | 18 +++++++++++++++
- include/linux/fscache.h                     | 25 +++++++++++++++++++++
- include/linux/netfs.h                       |  4 ++++
- 3 files changed, 47 insertions(+)
-
-diff --git a/Documentation/filesystems/netfs_library.rst b/Documentation/filesystems/netfs_library.rst
-index 4f373a8ec47b..e544d6688100 100644
---- a/Documentation/filesystems/netfs_library.rst
-+++ b/Documentation/filesystems/netfs_library.rst
-@@ -466,6 +466,8 @@ operation table looks like the following::
- 		int (*query_occupancy)(struct netfs_cache_resources *cres,
- 				       loff_t start, size_t len, size_t granularity,
- 				       loff_t *_data_start, size_t *_data_len);
-+		int (*ondemand_read)(struct netfs_cache_resources *cres,
-+				     loff_t start_pos, size_t len);
- 	};
- 
- With a termination handler function pointer::
-@@ -552,6 +554,22 @@ The methods defined in the table are:
-    It returns 0 if some data was found, -ENODATA if there was no usable data
-    within the region or -ENOBUFS if there is no caching on this file.
- 
-+ * ``ondemand_read()``
-+
-+   [Optional] Called to make cache prepare for the data. It shall be called only
-+   when on-demand read semantics is required. It will be called when a cache
-+   miss is encountered. The function will make the backend somehow prepare for
-+   the data in the region specified by @start_pos/@len of the cache file. It may
-+   get blocked until the backend has prepared the data in the cache file
-+   successfully, or error encountered.
-+
-+   Once it returns with 0, it is guaranteed that the requested data has been
-+   ready in the cache file. In this case, users can retry to read from the cache
-+   file.
-+
-+   It returns 0 if data has been ready in the cache file, or other error code
-+   from the cache, such as -ENOMEM.
-+
- Note that these methods are passed a pointer to the cache resource structure,
- not the read request structure as they could be used in other situations where
- there isn't a read request structure as well, such as writing dirty data to the
-diff --git a/include/linux/fscache.h b/include/linux/fscache.h
-index d2430da8aa67..efcd5d5c6726 100644
---- a/include/linux/fscache.h
-+++ b/include/linux/fscache.h
-@@ -514,6 +514,31 @@ int fscache_read(struct netfs_cache_resources *cres,
- 			 term_func, term_func_priv);
- }
- 
-+/**
-+ * fscache_ondemand_read - Make cache prepare for the data.
-+ * @cres: The cache resources to use
-+ * @start_pos: The beginning file offset in the cache file
-+ * @len: The length of the file offset range in the cache file
-+ *
-+ * This shall only be called when a cache miss is encountered. It will make
-+ * the backend somehow prepare for the data in the file offset range specified
-+ * by @start_pos/@len of the cache file. It may get blocked until the backend
-+ * has prepared the data in the cache file successfully, or error encountered.
-+ *
-+ * Returns:
-+ * * 0		- Success (Data is ready in the cache file)
-+ * * Other error code from the cache, such as -ENOMEM.
-+ */
-+static inline
-+int fscache_ondemand_read(struct netfs_cache_resources *cres,
-+			  loff_t start_pos, size_t len)
-+{
-+	const struct netfs_cache_ops *ops = fscache_operation_valid(cres);
-+	if (ops->ondemand_read)
-+		return ops->ondemand_read(cres, start_pos, len);
-+	return -EOPNOTSUPP;
-+}
-+
- /**
-  * fscache_begin_write_operation - Begin a write operation for the netfs lib
-  * @cres: The cache resources for the write being performed
-diff --git a/include/linux/netfs.h b/include/linux/netfs.h
-index 614f22213e21..81fe707ad38d 100644
---- a/include/linux/netfs.h
-+++ b/include/linux/netfs.h
-@@ -251,6 +251,10 @@ struct netfs_cache_ops {
- 	int (*query_occupancy)(struct netfs_cache_resources *cres,
- 			       loff_t start, size_t len, size_t granularity,
- 			       loff_t *_data_start, size_t *_data_len);
-+
-+	/* Make cache prepare for the data */
-+	int (*ondemand_read)(struct netfs_cache_resources *cres,
-+			     loff_t start_pos, size_t len);
- };
- 
- struct readahead_control;
--- 
-2.27.0
-
+On 2/9/2022 11:23 AM, Pavan Kondeti wrote:
+> On Tue, Feb 08, 2022 at 11:11:53AM +0100, Greg Kroah-Hartman wrote:
+>> On Tue, Feb 08, 2022 at 03:34:22PM +0530, Sandeep Maheswaram wrote:
+>>> Hi Greg,
+>>>
+>>> On 1/27/2022 10:28 AM, Sandeep Maheswaram wrote:
+>>>> On 1/26/2022 5:55 PM, Greg Kroah-Hartman wrote:
+>>>>> On Fri, Jan 07, 2022 at 10:27:59AM +0530, Sandeep Maheswaram wrote:
+>>>>>> On 1/6/2022 7:55 PM, Greg Kroah-Hartman wrote:
+>>>>>>> On Wed, Dec 22, 2021 at 11:39:43AM +0530, Sandeep Maheswaram wrote:
+>>>>>>>> Set XHCI_SKIP_PHY_INIT quirk to avoid phy initialization twice.
+>>>>>>>> Runtime suspend of phy drivers was failing from DWC3
+>>>>>>>> driver as runtime
+>>>>>>>> usage value is 2 because the phy is initialized from
+>>>>>>>> DWC3 and HCD core.
+>>>>>>>> DWC3 manages phy in their core drivers. Set this quirk to avoid phy
+>>>>>>>> initialization in HCD core.
+>>>>>>>>
+>>>>>>>> Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+>>>>>>>> ---
+>>>>>>>> v5:
+>>>>>>>> Added comment to explain the change done.
+>>>>>>>> v4:
+>>>>>>>> Changed pdev->dev.parent->of_node to sysdev->of_node
+>>>>>>>>
+>>>>>>>>     drivers/usb/host/xhci-plat.c | 8 ++++++++
+>>>>>>>>     1 file changed, 8 insertions(+)
+>>>>>>>>
+>>>>>>>> diff --git a/drivers/usb/host/xhci-plat.c
+>>>>>>>> b/drivers/usb/host/xhci-plat.c
+>>>>>>>> index c1edcc9..e6014d4 100644
+>>>>>>>> --- a/drivers/usb/host/xhci-plat.c
+>>>>>>>> +++ b/drivers/usb/host/xhci-plat.c
+>>>>>>>> @@ -327,6 +327,14 @@ static int xhci_plat_probe(struct
+>>>>>>>> platform_device *pdev)
+>>>>>>>>                          &xhci->imod_interval);
+>>>>>>>>         }
+>>>>>>>> +    /*
+>>>>>>>> +     * Set XHCI_SKIP_PHY_INIT quirk to avoid phy
+>>>>>>>> initialization twice.
+>>>>>>>> +     * DWC3 manages phy in their core drivers. Set this
+>>>>>>>> quirk to avoid phy
+>>>>>>>> +     * initialization in HCD core.
+>>>>>>>> +     */
+>>>>>>>> +    if (of_device_is_compatible(sysdev->of_node, "snps,dwc3"))
+>>>>>>>> +        xhci->quirks |= XHCI_SKIP_PHY_INIT;
+>>>>>>>> +
+>>>>>>> Why is this function caring about dwc3 stuff?  Shoudn't this be a
+>>>>>>> "generic" device property instead of this device-specific one?
+>>>>>>>
+>>>>>>> thanks,
+>>>>>>>
+>>>>>>> greg k-h
+>>>>>> This quirk is set only if required for some controllers (eg:
+>>>>>> dwc3 & cdns3).
+>>>>>>
+>>>>>> Please check below commit.
+>>>>>>
+>>>>>> https://lore.kernel.org/all/20200918131752.16488-5-mathias.nyman@linux.intel.com/
+>>>>>>
+>>>>> That commit has nothing to do with a specific "dwc3" quirk anywhere.
+>>>>> Why not set this flag in the specific platform xhci driver instead where
+>>>>> it belongs?
+>>>>>
+>>>>> thanks,
+>>>>>
+>>>>> greg k-h
+>>>> There is no specific xhci platform driver for dwc3 controllers.
+>>>>
+>>>> dwc3 controllers use xhci-plat driver .
+>>>>
+>>>> We can add this quirk in usb/dwc3/host.c as cdns3 does but that requires
+>>>> tying dwc3 and xhci driver .
+>>>>
+>>>> https://patchwork.kernel.org/project/linux-arm-msm/patch/1633946518-13906-1-git-send-email-sanm@codeaurora.org/
+>>>>
+>>>>
+>>>> Regards
+>>>>
+>>>> Sandeep
+>>>>
+>>>>
+>>> Can you suggest any other method to set this quirk for dwc3 controllers.
+>> No idea, sorry.
+> Sandeep,
+>
+> I agree with Greg's comments here. The compatible based check to detect dwc3
+> controller is not elegant. Your proposal of adding a device tree param is
+> overkill, I believe.
+>
+> Greg already gave us a pointer here [1] which I feel is the best approach going
+> forward. We know that xhci-plat is being used by drivers like dwc3, cdns3 and
+> these drivers need to expose their xhci quirks. As Greg suggested, why can't
+> we move xhci quirks definition to include/linux/usb/xhci-quriks.h and directly
+> access from the glue drivers? The attached is the patch (completely untested)
+> for your reference. It will prepare the setup for you to add the private data
+> and quirks in the dwc3 host glue driver.
+>
+> Thanks,
+> Pavan
+>
+> [1]
+> https://patchwork.kernel.org/project/linux-arm-msm/patch/1633946518-13906-1-git-send-email-sanm@codeaurora.org/
+>
+Thanks Pavan..will test the patch.
