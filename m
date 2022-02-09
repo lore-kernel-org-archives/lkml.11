@@ -2,134 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A94C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BC8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240131AbiBIIAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:00:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
+        id S240168AbiBIIAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:00:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235466AbiBIIAS (ORCPT
+        with ESMTP id S235466AbiBIIAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:00:18 -0500
-X-Greylist: delayed 363 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 00:00:21 PST
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1700C0613CA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:00:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644393256;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=sCy+BFzraB5UPCDrJqayTu4U5x2Azckr0KW+I3kfiQc=;
-    b=K9GgT2Gsq67ZGqFQdUZ6Ak/QSOAJogD90+bxmZUKtXDc9vR3k2qp07VDoEatKT9IwE
-    9/3OfmHeRCFkXwD0dr8TGh3G/GbG9EkmsQ0H2JlqmCOwGN2Q7SFWomKasV8ZSlL0X82k
-    CLciobQThGH4e9ehGnck7C/6iTqsAJZj+yWvQdr0eovdOcxLVQcstoqhqhZPmOuWbF/i
-    FRVZAT3wb/hdmYXLFVDCLteMTDMs3HJUzOpfUmaB5AdSNs4tTqOTGqmf4v2G+JrX56pa
-    gNmi2iDu1bP8M2Uecv4k/Xvb4iHhKNwVgyk8dykOaz+kcb0pstH1l88gmjStXW7ndRyF
-    /bCQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.39.0 AUTH)
-    with ESMTPSA id L7379cy197sFNsZ
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 9 Feb 2022 08:54:15 +0100 (CET)
-Message-ID: <b4be7878-e461-e2c3-2aaf-89598ac8a64f@hartkopp.net>
-Date:   Wed, 9 Feb 2022 08:54:09 +0100
+        Wed, 9 Feb 2022 03:00:32 -0500
+Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B88C05CB80;
+        Wed,  9 Feb 2022 00:00:35 -0800 (PST)
+Received: from g550jk.localnet (84-115-212-237.cable.dynamic.surfer.at [84.115.212.237])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 44725CDFCA;
+        Wed,  9 Feb 2022 08:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1644393634; bh=4FXw/m0qzG12tweb/SpzqvxhvTalonOAWhiKiVfi+U0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=vDuyTleEJgBCbkmvWKcbLvpyCp7hBGTI4BZVTpm7IdRqrvDBL3nRGisMJOhn+8xx8
+         jEDoW8C60Y6xIXcsExCaeXbtKPgfptE4EhsPU3EyZwqcbiBFFDcxUzg/VQNQQTWd58
+         zC1MtpWI0VpmkObfSvsUWRKjxD5e1W1zxbq+R54Q=
+From:   Luca Weiss <luca@z3ntu.xyz>
+To:     Jack Matthews <jm5112356@gmail.com>
+Cc:     jm5112356@gmail.com, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: qcom: pm8226: add node for RTC
+Date:   Wed, 09 Feb 2022 09:00:33 +0100
+Message-ID: <3306547.mvXUDI8C0e@g550jk>
+In-Reply-To: <20220209052929.651881-1-jm5112356@gmail.com>
+References: <20220209052929.651881-1-jm5112356@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
- <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
- <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
- <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
- <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
- <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
- <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
- <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
- <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
- <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
- <20220207081123.sdmczptqffwr64al@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220207081123.sdmczptqffwr64al@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
+Hi Jack,
 
-On 07.02.22 09:11, Marc Kleine-Budde wrote:
-> On 28.01.2022 15:48:05, Oliver Hartkopp wrote:
->> Hello Marc, hello William,
->>
->> On 28.01.22 09:46, Marc Kleine-Budde wrote:
->>> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
->>>>
->>>>
->>>> On 28.01.22 09:07, Marc Kleine-Budde wrote:
->>>>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
->>>>>> I've seen the frame processing sometimes freezes for one second when
->>>>>> stressing the isotp_rcv() from multiple sources. This finally freezes
->>>>>> the entire softirq which is either not good and not needed as we only
->>>>>> need to fix this race for stress tests - and not for real world usage
->>>>>> that does not create this case.
->>>>>
->>>>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
->>
->>
->>>> #
->>>> # Lock Debugging (spinlocks, mutexes, etc...)
->>>> #
->>>> CONFIG_LOCK_DEBUGGING_SUPPORT=y
->>>> # CONFIG_PROVE_LOCKING is not set
->>> CONFIG_PROVE_LOCKING=y
->>
->> Now enabled even more locking (seen relevant kernel config at the end).
->>
->> It turns out that there is no visible difference when using spin_lock() or
->> spin_trylock().
->>
->> I only got some of these kernel log entries
->>
->> Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too long
->> (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
->> Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too long
->> (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
->> Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too long
->> (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
->> Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too long
->> (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
->> Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too long
->> (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
->>
->> But I get these sporadically anyway. No other LOCKDEP splat.
->>
->> At least the issue reported by William should be fixed now - but I'm still
->> unclear whether spin_lock() or spin_trylock() is the best approach here in
->> the NET_RX softirq?!?
+On Mittwoch, 9. Februar 2022 06:29:28 CET Jack Matthews wrote:
+> Add a node for PM8226's real time clock.
 > 
-> With the !spin_trylock() -> return you are saying if something
-> concurrent happens, drop it. This doesn't sound correct.
+> Signed-off-by: Jack Matthews <jm5112356@gmail.com>
+> ---
+>  arch/arm/boot/dts/qcom-pm8226.dtsi | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi
+> b/arch/arm/boot/dts/qcom-pm8226.dtsi index 04d070d98f97..ecc38ab1dc4b
+> 100644
+> --- a/arch/arm/boot/dts/qcom-pm8226.dtsi
+> +++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
+> @@ -17,6 +17,13 @@ pwrkey@800 {
+>  			bias-pull-up;
+>  		};
+> 
+> +		rtc@6000 {
 
-Yes, I had the same feeling and did some extensive load tests using both 
-variants.
+Please keep the nodes sorted by address, so don't put @6000 between @800 and 
+@1000 please ;)
 
-It turned out the standard spin_lock() works excellent to fix the issue.
+Regards
+Luca
 
-Thanks for taking it for upstream here:
-https://lore.kernel.org/linux-can/20220209074818.3ylfz4zmuhit7orc@pengutronix.de/T/#t
+> +			compatible = "qcom,pm8941-rtc";
+> +			reg = <0x6000>, <0x6100>;
+> +			reg-names = "rtc", "alarm";
+> +			interrupts = <0x0 0x61 0x1 
+IRQ_TYPE_EDGE_RISING>;
+> +		};
+> +
+>  		smbb: charger@1000 {
+>  			compatible = "qcom,pm8226-charger";
+>  			reg = <0x1000>;
 
-Best regards,
-Oliver
+
+
 
