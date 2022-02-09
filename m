@@ -2,132 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241542AbiBIS6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:58:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
+        id S239031AbiBIS6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:58:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241345AbiBIS5D (ORCPT
+        with ESMTP id S241312AbiBIS5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:57:03 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23061C05CBB1;
-        Wed,  9 Feb 2022 10:57:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644433025; x=1675969025;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=H+HvKjK7GucUNuC/42zaLPvlOv+m7Cv0FfqTh3L74mI=;
-  b=GqNysNdRJ6gfgk1e3eV7YOgJayVduavEFEw49MtIewbsmCcu7HJuDTzP
-   drNv9Rx7FXzFbd7Qz7FBr8dQQuDrSoiUIBSr6nGI6lEr+4Yk4eChsTXrf
-   axoFKH2v105/ECQNMpmnYHb+X8lQ4UA+g9vUqjK6ISB/MiTb7rZaT8a/5
-   5uyhIMJL/zX+RJCHdHfdBrQbyfijRH4YgA/Mj5kaWPgxQk6tJiy8ogbQC
-   VnN4uz6aQjWYLgkvCgUgRYT+qz0OQJ3lGOeW1RBJbpOQbvsn8lJLZzRjh
-   fti5/QOInwk9JlSUXep+iTLpOJcJUuMbxX908LB061mJHduga0+BRnykZ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="249515715"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249515715"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:57:04 -0800
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="485375795"
-Received: from sanvery-mobl.amr.corp.intel.com (HELO [10.212.232.139]) ([10.212.232.139])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:57:04 -0800
-Message-ID: <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
-Date:   Wed, 9 Feb 2022 10:57:01 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Like Xu <like.xu.linux@gmail.com>,
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EC2C05CBA6;
+        Wed,  9 Feb 2022 10:57:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 343B6617DF;
+        Wed,  9 Feb 2022 18:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB36C340E7;
+        Wed,  9 Feb 2022 18:57:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644433022;
+        bh=9JqxdxS3FieQzWxDZYWx4qtMJ9OU9FYiIxMk7YLJRdM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jkoGJ8RGj/WJhl1eGW03PUd7YrzR3Fa9ECKQD3ZtEdcnIeuaFG8eJemezC+RerHsC
+         /u9dYkwjv67AnFH57lqq8XkZDPKu7ynbNJYB1+Y2/yuHSsWK80YZP8pX5P+wKUYLKH
+         aRK7oJ+CElc+GlU24JUGv7V4HLGzagcm5q0PAg/a7p9+wPligEmINNKCI/2uVlecY2
+         dgqt/3KBwMjZIPXXTDMv2WVLuI8Gamp+cH/7THPiXWlLvJUjnD0PhEXTA7y1iujjaO
+         +ztioyEJd8aj+nxRBWDENPQkGQMuUlp1NneIkOOTNSAw+c7ohyxn5/KeFeY/XMhcRi
+         Udo6MNfhqUGWg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Stephane Eranian <eranian@google.com>,
-        David Dunn <daviddunn@google.com>
-References: <20220117085307.93030-1-likexu@tencent.com>
- <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net>
- <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-In-Reply-To: <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.15 4/8] KVM: nVMX: WARN on any attempt to allocate shadow VMCS for vmcs02
+Date:   Wed,  9 Feb 2022 13:56:49 -0500
+Message-Id: <20220209185653.48833-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209185653.48833-1-sashal@kernel.org>
+References: <20220209185653.48833-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 10:47, Jim Mattson wrote:
-> On Wed, Feb 9, 2022 at 7:41 AM Dave Hansen <dave.hansen@intel.com> wrote:
->>
->> On 2/9/22 05:21, Peter Zijlstra wrote:
->>> On Wed, Feb 02, 2022 at 02:35:45PM -0800, Jim Mattson wrote:
->>>> 3) TDX is going to pull the rug out from under us anyway. When the TDX
->>>> module usurps control of the PMU, any active host counters are going
->>>> to stop counting. We are going to need a way of telling the host perf
->>>> subsystem what's happening, or other host perf clients are going to
->>>> get bogus data.
->>> That's not acceptible behaviour. I'm all for unilaterally killing any
->>> guest that does this.
->>
->> I'm not sure where the "bogus data" comes or to what that refers
->> specifically.  But, the host does have some level of control:
-> 
-> I was referring to gaps in the collection of data that the host perf
-> subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
-> guest. This can potentially be a problem if someone is trying to
-> measure events per unit of time.
+From: Sean Christopherson <seanjc@google.com>
 
-Ahh, that makes sense.
+[ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
 
-Does SGX cause problem for these people?  It can create some of the same
-collection gaps:
+WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
+VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
+a "real" shadow VMCS for L2.
 
-	performance monitoring activities are suppressed when entering
-	an opt-out (of performance monitoring) enclave.
+The previous code WARNed but continued anyway with the allocation,
+presumably in an attempt to avoid NULL pointer dereference.
+However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
+indeed the sole caller does:
 
->>> The host VMM controls whether a guest TD can use the performance
->>> monitoring ISA using the TD’s ATTRIBUTES.PERFMON bit...
->>
->> So, worst-case, we don't need to threaten to kill guests.  The host can
->> just deny access in the first place.
->>
->> I'm not too picky about what the PMU does, but the TDX behavior didn't
->> seem *that* onerous to me.  The gory details are all in "On-TD
->> Performance Monitoring" here:
->>
->>> https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-module-1.0-public-spec-v0.931.pdf
->>
->> My read on it is that TDX host _can_ cede the PMU to TDX guests if it
->> wants.  I assume the context-switching model Jim mentioned is along the
->> lines of what TDX is already doing on host<->guest transitions.
-> 
-> Right. If ATTRIBUTES.PERFMON is set, then "perfmon state is
-> context-switched by the Intel TDX module across TD entry and exit
-> transitions." Furthermore, the VMM has no access to guest perfmon
-> state.
-> 
-> If you're saying that setting this bit is unacceptable, then perhaps
-> the TDX folks need to redesign their in-guest PMU support.
+	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
+		goto out_shadow_vmcs;
 
-It's fine with *me*, but I'm not too picky about the PMU.  But, it
-sounded like Peter was pretty concerned about it.
+which makes it not a useful attempt.
 
-In any case, if we (Linux folks) need a change, it's *possible* because
-most of this policy is implemented in software in the TDX module.  It
-would just be painful for the folks who came up with the existing mechanism.
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220125220527.2093146-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index a0193b11c381d..42559c21fb2cc 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -4840,18 +4840,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
+ 	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
+ 
+ 	/*
+-	 * We should allocate a shadow vmcs for vmcs01 only when L1
+-	 * executes VMXON and free it when L1 executes VMXOFF.
+-	 * As it is invalid to execute VMXON twice, we shouldn't reach
+-	 * here when vmcs01 already have an allocated shadow vmcs.
++	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
++	 * when L1 executes VMXOFF or the vCPU is forced out of nested
++	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
++	 * should be impossible to already have an allocated shadow VMCS.  KVM
++	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
++	 * always be the loaded VMCS.
+ 	 */
+-	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
++	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
++		return loaded_vmcs->shadow_vmcs;
++
++	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
++	if (loaded_vmcs->shadow_vmcs)
++		vmcs_clear(loaded_vmcs->shadow_vmcs);
+ 
+-	if (!loaded_vmcs->shadow_vmcs) {
+-		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
+-		if (loaded_vmcs->shadow_vmcs)
+-			vmcs_clear(loaded_vmcs->shadow_vmcs);
+-	}
+ 	return loaded_vmcs->shadow_vmcs;
+ }
+ 
+-- 
+2.34.1
 
