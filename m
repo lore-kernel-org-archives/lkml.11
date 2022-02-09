@@ -2,431 +2,729 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24863C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94362C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:04:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237887AbiBIREa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        id S237905AbiBIREm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:04:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237795AbiBIREH (ORCPT
+        with ESMTP id S237899AbiBIREc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:04:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 39283C05CB8C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:04:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644426249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zu116mg0opc6Hve6tCnaZmfAZvjmDPpkF/dW1Iacd4Q=;
-        b=IZfccYTVBZXg6gaXQdLRn/c3dtKpxnVpCMxF9XePGqBQ6mTi8OWPHJqOETqtAQLnHjF+j+
-        EGzwdExlOfsVVO+KpHYf4gBn73gESFtkkkR6uzG/fXBJa6ql/HZvYNNkGu+lE7xoDPHJIc
-        M6u4+dsgPKQaZ8e5WogHfZVheQo/m3A=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-576-ivu4kReQMEu74Iz7nWxtzw-1; Wed, 09 Feb 2022 12:04:08 -0500
-X-MC-Unique: ivu4kReQMEu74Iz7nWxtzw-1
-Received: by mail-wr1-f71.google.com with SMTP id e11-20020adf9bcb000000b001e316b01456so1322863wrc.21
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 09:04:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Zu116mg0opc6Hve6tCnaZmfAZvjmDPpkF/dW1Iacd4Q=;
-        b=AvJhoy8baX87ZXEZGFS6/VpTDAlH7h4iGzU1UZPqgS9oqkMtFm8YBJ7C+gTt9MiSML
-         FlSCe29ynpKpsf2WFzd2m8SYu/+7t/itj7TxcdndyUrkli5EIo1lDQfZf5vOvGkLYgk3
-         +yUppM/fzFM9Jt06LLLwjYsp0EEc86vAtcV0iCkZKWCrvwgUGBCkGb01D2xCIzvcRt5T
-         UkvexIbFpCvZYY98hG1YxFR9EU/WHbuYl6IvZ+xhaQq2pzZiCN1qDMCH1LtfcvzdEmka
-         nPT9rHIFpmIVodztOL3qqRo08RBajaYtMq9eDm4bAUiWYv/KJHsXL8q9pfl87invb6vz
-         7jZA==
-X-Gm-Message-State: AOAM531kUmJ87zwUcYfnfXMYK8L/Z6zxYqEeAYSpMCtq4IARoqWgl1j6
-        3rR5ShGdFsIhc/HYb7fuotnYFUCEd6sbpqUwX8+PIJtF0CjXbb7R1LvZCczuxMHgubCe4zPPNpq
-        VjyygwsjISmoclRCVBWoaELE=
-X-Received: by 2002:a5d:5986:: with SMTP id n6mr2795707wri.574.1644426246670;
-        Wed, 09 Feb 2022 09:04:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyXyw4VQzsrdxK5LRdAEZYVOvmJhgJ2JBRTTQ9XSh6fKhHYYqW8JPjPFXoVpWksDdjv+xKVNg==
-X-Received: by 2002:a5d:5986:: with SMTP id n6mr2795684wri.574.1644426246442;
-        Wed, 09 Feb 2022 09:04:06 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id g6sm15793753wrq.97.2022.02.09.09.04.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 09:04:05 -0800 (PST)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     mcgrof@kernel.org
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        live-patching@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com, allen.lkml@gmail.com, void@manifault.com,
-        joe@perches.com, christophe.leroy@csgroup.eu, msuchanek@suse.de,
-        oleksandr@natalenko.name
-Subject: [PATCH v5 05/13] module: Move latched RB-tree support to a separate file
-Date:   Wed,  9 Feb 2022 17:03:50 +0000
-Message-Id: <20220209170358.3266629-6-atomlin@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209170358.3266629-1-atomlin@redhat.com>
-References: <20220209170358.3266629-1-atomlin@redhat.com>
-MIME-Version: 1.0
+        Wed, 9 Feb 2022 12:04:32 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE98C05CBB3;
+        Wed,  9 Feb 2022 09:04:31 -0800 (PST)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219GrPli028111;
+        Wed, 9 Feb 2022 17:04:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=iz1hViJ1VuZ0amMQDRev53XWSEnp5Z0yb6BMO0Vb5Tc=;
+ b=lcBfElolFpkLREfJ+K/iZjSXNiVniIucZfK9VierVoanPLYHuruXRKaMhNzfvRn+13i7
+ NByg5MmMC9lAfOKhB9G71tsEOVrKrKz++Xbu7yAuGKLJln9te1Bn6wyZ8vJ1Yh2hmozM
+ epTZoLUdD+E8eVi10yo1w+OBC2UtUHbNqKz82nQF94mhdzGDHCvZpFr9u2S2faY9ZlKP
+ b8dDy34xPnwz8vqZGVaiAwYKnCmw4Ita85MBSiHZa9fbf/+dC0dEeg2j+fUy1dmbqBxI
+ vKXJlKp2VxTJm+TRCRbOzgzDRyeunqpdT6bwoeJ/a20iezHPsimdmaz8GYPHVtYcAy5o nA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ehpw27e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 17:04:30 +0000
+Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 219EMMM6029218;
+        Wed, 9 Feb 2022 17:04:30 GMT
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ehpw26b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 17:04:30 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 219H3cQY031125;
+        Wed, 9 Feb 2022 17:04:27 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma02fra.de.ibm.com with ESMTP id 3e1gv9qaq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 17:04:27 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219H4OWB31392138
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 17:04:24 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F1F66A4064;
+        Wed,  9 Feb 2022 17:04:23 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6DF78A405B;
+        Wed,  9 Feb 2022 17:04:23 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 17:04:23 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH v3 00/10] KVM: s390: Do storage key checking
+Date:   Wed,  9 Feb 2022 18:04:12 +0100
+Message-Id: <20220209170422.1910690-1-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ARoz3y59cg2OWjnPtCFaDFsmG-3fxBXY
+X-Proofpoint-ORIG-GUID: G3wxIiefpyFCKViKOXWk9c6IrW6ibjMt
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_09,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ mlxlogscore=999 suspectscore=0 clxscore=1015 priorityscore=1501
+ spamscore=0 malwarescore=0 mlxscore=0 adultscore=0 lowpriorityscore=0
+ phishscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090091
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change.
+Check keys when emulating instructions and let user space do key checked
+accesses.
+User space can do so via an extension of the MEMOP IOCTL:
+* allow optional key checking
+* allow MEMOP on vm fd, so key checked accesses on absolute memory
+  become possible
 
-This patch migrates module latched RB-tree support
-(e.g. see __module_address()) from core module code
-into kernel/module/tree_lookup.c.
+v2: https://lore.kernel.org/kvm/20220207165930.1608621-1-scgl@linux.ibm.com/
 
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- include/linux/module.h      |   4 +-
- kernel/module/Makefile      |   1 +
- kernel/module/internal.h    |  34 ++++++++++
- kernel/module/main.c        | 129 +-----------------------------------
- kernel/module/tree_lookup.c | 109 ++++++++++++++++++++++++++++++
- 5 files changed, 148 insertions(+), 129 deletions(-)
- create mode 100644 kernel/module/tree_lookup.c
+v2 -> v3
+ * get rid of reserved bytes check in vm,vcpu memop
+ * minor documentation changes
+ * moved memop selftest patches to end of series and squashed them,
+   currently working on making the test pretty
 
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 680b31ff57fa..fd6161d78127 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -342,9 +342,9 @@ struct module_layout {
- #ifdef CONFIG_MODULES_TREE_LOOKUP
- /* Only touch one cacheline for common rbtree-for-core-layout case. */
- #define __module_layout_align ____cacheline_aligned
--#else
-+#else /* !CONFIG_MODULES_TREE_LOOKUP */
- #define __module_layout_align
--#endif
-+#endif /* CONFIG_MODULES_TREE_LOOKUP */
- 
- struct mod_kallsyms {
- 	Elf_Sym *symtab;
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index ee20d864ad19..fc6d7a053a62 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -9,4 +9,5 @@ obj-$(CONFIG_MODULE_SIG) += signing.o
- obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
- ifdef CONFIG_MODULES
- obj-$(CONFIG_LIVEPATCH) += livepatch.o
-+obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
- endif
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index d252e0af1c54..08b6be037b72 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -9,6 +9,7 @@
- #include <linux/compiler.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-+#include <linux/rculist.h>
- 
- #ifndef ARCH_SHF_SMALL
- #define ARCH_SHF_SMALL 0
-@@ -90,3 +91,36 @@ static inline void module_decompress_cleanup(struct load_info *info)
- {
- }
- #endif
-+
-+#ifdef CONFIG_MODULES_TREE_LOOKUP
-+struct mod_tree_root {
-+	struct latch_tree_root root;
-+	unsigned long addr_min;
-+	unsigned long addr_max;
-+};
-+
-+extern struct mod_tree_root mod_tree;
-+
-+void mod_tree_insert(struct module *mod);
-+void mod_tree_remove_init(struct module *mod);
-+void mod_tree_remove(struct module *mod);
-+struct module *mod_find(unsigned long addr);
-+#else /* !CONFIG_MODULES_TREE_LOOKUP */
-+static unsigned long module_addr_min = -1UL, module_addr_max;
-+
-+static void mod_tree_insert(struct module *mod) { }
-+static void mod_tree_remove_init(struct module *mod) { }
-+static void mod_tree_remove(struct module *mod) { }
-+static struct module *mod_find(unsigned long addr)
-+{
-+	struct module *mod;
-+
-+	list_for_each_entry_rcu(mod, &modules, list,
-+				lockdep_is_held(&module_mutex)) {
-+		if (within_module(addr, mod))
-+			return mod;
-+	}
-+
-+	return NULL;
-+}
-+#endif /* CONFIG_MODULES_TREE_LOOKUP */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 5f5bd7152b55..f733a719c65d 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -90,138 +90,13 @@ static DECLARE_WORK(init_free_wq, do_free_init);
- static LLIST_HEAD(init_free_list);
- 
- #ifdef CONFIG_MODULES_TREE_LOOKUP
--
--/*
-- * Use a latched RB-tree for __module_address(); this allows us to use
-- * RCU-sched lookups of the address from any context.
-- *
-- * This is conditional on PERF_EVENTS || TRACING because those can really hit
-- * __module_address() hard by doing a lot of stack unwinding; potentially from
-- * NMI context.
-- */
--
--static __always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
--{
--	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
--
--	return (unsigned long)layout->base;
--}
--
--static __always_inline unsigned long __mod_tree_size(struct latch_tree_node *n)
--{
--	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
--
--	return (unsigned long)layout->size;
--}
--
--static __always_inline bool
--mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
--{
--	return __mod_tree_val(a) < __mod_tree_val(b);
--}
--
--static __always_inline int
--mod_tree_comp(void *key, struct latch_tree_node *n)
--{
--	unsigned long val = (unsigned long)key;
--	unsigned long start, end;
--
--	start = __mod_tree_val(n);
--	if (val < start)
--		return -1;
--
--	end = start + __mod_tree_size(n);
--	if (val >= end)
--		return 1;
--
--	return 0;
--}
--
--static const struct latch_tree_ops mod_tree_ops = {
--	.less = mod_tree_less,
--	.comp = mod_tree_comp,
--};
--
--static struct mod_tree_root {
--	struct latch_tree_root root;
--	unsigned long addr_min;
--	unsigned long addr_max;
--} mod_tree __cacheline_aligned = {
-+struct mod_tree_root mod_tree __cacheline_aligned = {
- 	.addr_min = -1UL,
- };
- 
- #define module_addr_min mod_tree.addr_min
- #define module_addr_max mod_tree.addr_max
--
--static noinline void __mod_tree_insert(struct mod_tree_node *node)
--{
--	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
--}
--
--static void __mod_tree_remove(struct mod_tree_node *node)
--{
--	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
--}
--
--/*
-- * These modifications: insert, remove_init and remove; are serialized by the
-- * module_mutex.
-- */
--static void mod_tree_insert(struct module *mod)
--{
--	mod->core_layout.mtn.mod = mod;
--	mod->init_layout.mtn.mod = mod;
--
--	__mod_tree_insert(&mod->core_layout.mtn);
--	if (mod->init_layout.size)
--		__mod_tree_insert(&mod->init_layout.mtn);
--}
--
--static void mod_tree_remove_init(struct module *mod)
--{
--	if (mod->init_layout.size)
--		__mod_tree_remove(&mod->init_layout.mtn);
--}
--
--static void mod_tree_remove(struct module *mod)
--{
--	__mod_tree_remove(&mod->core_layout.mtn);
--	mod_tree_remove_init(mod);
--}
--
--static struct module *mod_find(unsigned long addr)
--{
--	struct latch_tree_node *ltn;
--
--	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
--	if (!ltn)
--		return NULL;
--
--	return container_of(ltn, struct mod_tree_node, node)->mod;
--}
--
--#else /* MODULES_TREE_LOOKUP */
--
--static unsigned long module_addr_min = -1UL, module_addr_max = 0;
--
--static void mod_tree_insert(struct module *mod) { }
--static void mod_tree_remove_init(struct module *mod) { }
--static void mod_tree_remove(struct module *mod) { }
--
--static struct module *mod_find(unsigned long addr)
--{
--	struct module *mod;
--
--	list_for_each_entry_rcu(mod, &modules, list,
--				lockdep_is_held(&module_mutex)) {
--		if (within_module(addr, mod))
--			return mod;
--	}
--
--	return NULL;
--}
--
--#endif /* MODULES_TREE_LOOKUP */
-+#endif
- 
- /*
-  * Bounds of module text, for speeding up __module_address.
-diff --git a/kernel/module/tree_lookup.c b/kernel/module/tree_lookup.c
-new file mode 100644
-index 000000000000..037d6eb2f56f
---- /dev/null
-+++ b/kernel/module/tree_lookup.c
-@@ -0,0 +1,109 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Modules tree lookup
-+ *
-+ * Copyright (C) 2015 Peter Zijlstra
-+ * Copyright (C) 2015 Rusty Russell
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/rbtree_latch.h>
-+#include "internal.h"
-+
-+/*
-+ * Use a latched RB-tree for __module_address(); this allows us to use
-+ * RCU-sched lookups of the address from any context.
-+ *
-+ * This is conditional on PERF_EVENTS || TRACING because those can really hit
-+ * __module_address() hard by doing a lot of stack unwinding; potentially from
-+ * NMI context.
-+ */
-+
-+__always_inline unsigned long __mod_tree_val(struct latch_tree_node *n)
-+{
-+	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
-+
-+	return (unsigned long)layout->base;
-+}
-+
-+__always_inline unsigned long __mod_tree_size(struct latch_tree_node *n)
-+{
-+	struct module_layout *layout = container_of(n, struct module_layout, mtn.node);
-+
-+	return (unsigned long)layout->size;
-+}
-+
-+__always_inline bool
-+mod_tree_less(struct latch_tree_node *a, struct latch_tree_node *b)
-+{
-+	return __mod_tree_val(a) < __mod_tree_val(b);
-+}
-+
-+__always_inline int
-+mod_tree_comp(void *key, struct latch_tree_node *n)
-+{
-+	unsigned long val = (unsigned long)key;
-+	unsigned long start, end;
-+
-+	start = __mod_tree_val(n);
-+	if (val < start)
-+		return -1;
-+
-+	end = start + __mod_tree_size(n);
-+	if (val >= end)
-+		return 1;
-+
-+	return 0;
-+}
-+
-+const struct latch_tree_ops mod_tree_ops = {
-+	.less = mod_tree_less,
-+	.comp = mod_tree_comp,
-+};
-+
-+static noinline void __mod_tree_insert(struct mod_tree_node *node)
-+{
-+	latch_tree_insert(&node->node, &mod_tree.root, &mod_tree_ops);
-+}
-+
-+static void __mod_tree_remove(struct mod_tree_node *node)
-+{
-+	latch_tree_erase(&node->node, &mod_tree.root, &mod_tree_ops);
-+}
-+
-+/*
-+ * These modifications: insert, remove_init and remove; are serialized by the
-+ * module_mutex.
-+ */
-+void mod_tree_insert(struct module *mod)
-+{
-+	mod->core_layout.mtn.mod = mod;
-+	mod->init_layout.mtn.mod = mod;
-+
-+	__mod_tree_insert(&mod->core_layout.mtn);
-+	if (mod->init_layout.size)
-+		__mod_tree_insert(&mod->init_layout.mtn);
-+}
-+
-+void mod_tree_remove_init(struct module *mod)
-+{
-+	if (mod->init_layout.size)
-+		__mod_tree_remove(&mod->init_layout.mtn);
-+}
-+
-+void mod_tree_remove(struct module *mod)
-+{
-+	__mod_tree_remove(&mod->core_layout.mtn);
-+	mod_tree_remove_init(mod);
-+}
-+
-+struct module *mod_find(unsigned long addr)
-+{
-+	struct latch_tree_node *ltn;
-+
-+	ltn = latch_tree_find((void *)addr, &mod_tree.root, &mod_tree_ops);
-+	if (!ltn)
-+		return NULL;
-+
-+	return container_of(ltn, struct mod_tree_node, node)->mod;
-+}
+v1 -> v2
+ * rebase
+ * storage key variants of _?copy_from/to_user instead of
+   __copy_from/to_user_key, with long key arg instead of char
+ * refactor protection override checks
+ * u8 instead of char for key argument in s390 KVM code
+ * add comments
+ * pass ar (access register) to trans_exec in access_guest_with_key
+ * check reserved/unused fields (backwards compatible)
+ * move key arg of MEMOP out of flags
+ * rename new MEMOP capability to KVM_CAP_S390_MEM_OP_EXTENSION
+ * minor changes
+
+Janis Schoetterl-Glausch (10):
+  s390/uaccess: Add copy_from/to_user_key functions
+  KVM: s390: Honor storage keys when accessing guest memory
+  KVM: s390: handle_tprot: Honor storage keys
+  KVM: s390: selftests: Test TEST PROTECTION emulation
+  KVM: s390: Add optional storage key checking to MEMOP IOCTL
+  KVM: s390: Add vm IOCTL for key checked guest absolute memory access
+  KVM: s390: Rename existing vcpu memop functions
+  KVM: s390: Add capability for storage key extension of MEM_OP IOCTL
+  KVM: s390: Update api documentation for memop ioctl
+  KVM: s390: selftests: Test memops with storage keys
+
+ Documentation/virt/kvm/api.rst            | 112 ++++-
+ arch/s390/include/asm/ctl_reg.h           |   2 +
+ arch/s390/include/asm/page.h              |   2 +
+ arch/s390/include/asm/uaccess.h           |  22 +
+ arch/s390/kvm/gaccess.c                   | 250 +++++++++-
+ arch/s390/kvm/gaccess.h                   |  84 +++-
+ arch/s390/kvm/intercept.c                 |  12 +-
+ arch/s390/kvm/kvm-s390.c                  | 129 ++++-
+ arch/s390/kvm/priv.c                      |  66 +--
+ arch/s390/lib/uaccess.c                   |  81 +++-
+ include/uapi/linux/kvm.h                  |  11 +-
+ tools/testing/selftests/kvm/.gitignore    |   1 +
+ tools/testing/selftests/kvm/Makefile      |   1 +
+ tools/testing/selftests/kvm/s390x/memop.c | 558 +++++++++++++++++++---
+ tools/testing/selftests/kvm/s390x/tprot.c | 227 +++++++++
+ 15 files changed, 1372 insertions(+), 186 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/s390x/tprot.c
+
+
+diff against v2, a bit more readable than the range-diff below:
+ diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+ index 7b28657fe9de..2d131af44576 100644
+ --- a/Documentation/virt/kvm/api.rst
+ +++ b/Documentation/virt/kvm/api.rst
+ @@ -3683,7 +3683,7 @@ The fields in each entry are defined as follows:
+  4.89 KVM_S390_MEM_OP
+  --------------------
+  
+ -:Capability: KVM_CAP_S390_MEM_OP, KVM_CAP_S390_MEM_OP_EXTENSION
+ +:Capability: KVM_CAP_S390_MEM_OP, KVM_CAP_S390_PROTECTED, KVM_CAP_S390_MEM_OP_EXTENSION
+  :Architectures: s390
+  :Type: vm ioctl, vcpu ioctl
+  :Parameters: struct kvm_s390_mem_op (in)
+ @@ -3706,10 +3706,10 @@ Parameters are specified via the following structure::
+  	union {
+  		struct {
+  			__u8 ar;	/* the access register number */
+ -			__u8 key;	/* access key to use for storage key protection */
+ +			__u8 key;	/* access key, ignored if flag unset */
+  		};
+  		__u32 sida_offset; /* offset into the sida */
+ -		__u8 reserved[32]; /* must be set to 0 */
+ +		__u8 reserved[32]; /* ignored */
+  	};
+    };
+  
+ @@ -3720,9 +3720,8 @@ KVM_CAP_S390_MEM_OP capability. "buf" is the buffer supplied by the
+  userspace application where the read data should be written to for
+  a read access, or where the data that should be written is stored for
+  a write access.  The "reserved" field is meant for future extensions.
+ -Reserved and unused bytes must be set to 0. If any of the following are used,
+ -this is enforced and -EINVAL will be returned:
+ -``KVM_S390_MEMOP_ABSOLUTE_READ/WRITE``, ``KVM_S390_MEMOP_F_SKEY_PROTECTION``.
+ +Reserved and unused values are ignored. Future extension that add members must
+ +introduce new flags.
+  
+  The type of operation is specified in the "op" field. Flags modifying
+  their behavior can be set in the "flags" field. Undefined flag bits must
+ @@ -3792,6 +3791,7 @@ SIDA read/write:
+  
+  Access the secure instruction data area which contains memory operands necessary
+  for instruction emulation for secure guests.
+ +SIDA accesses are available if the KVM_CAP_S390_PROTECTED capability is available.
+  SIDA accesses are permitted for the VCPU ioctl only.
+  SIDA accesses are permitted for secure guests only.
+  
+ diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+ index 4a502cac068c..5b387e75cb5b 100644
+ --- a/arch/s390/kvm/kvm-s390.c
+ +++ b/arch/s390/kvm/kvm-s390.c
+ @@ -2371,7 +2371,6 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+  	void __user *uaddr = (void __user *)mop->buf;
+  	u64 supported_flags;
+  	void *tmpbuf = NULL;
+ -	u8 access_key = 0;
+  	int r, srcu_idx;
+  
+  	supported_flags = KVM_S390_MEMOP_F_SKEY_PROTECTION
+ @@ -2382,19 +2381,15 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+  		return -E2BIG;
+  	if (kvm_s390_pv_is_protected(kvm))
+  		return -EINVAL;
+ +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+ +		if (access_key_invalid(mop->key))
+ +			return -EINVAL;
+ +	}
+  	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+  		tmpbuf = vmalloc(mop->size);
+  		if (!tmpbuf)
+  			return -ENOMEM;
+  	}
+ -	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+ -		access_key = mop->key;
+ -		mop->key = 0;
+ -		if (access_key_invalid(access_key))
+ -			return -EINVAL;
+ -	}
+ -	if (memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
+ -		return -EINVAL;
+  
+  	srcu_idx = srcu_read_lock(&kvm->srcu);
+  
+ @@ -2406,10 +2401,10 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+  	switch (mop->op) {
+  	case KVM_S390_MEMOP_ABSOLUTE_READ: {
+  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+ -			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, access_key);
+ +			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, mop->key);
+  		} else {
+  			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
+ -						      mop->size, GACC_FETCH, access_key);
+ +						      mop->size, GACC_FETCH, mop->key);
+  			if (r == 0) {
+  				if (copy_to_user(uaddr, tmpbuf, mop->size))
+  					r = -EFAULT;
+ @@ -2419,14 +2414,14 @@ static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
+  	}
+  	case KVM_S390_MEMOP_ABSOLUTE_WRITE: {
+  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+ -			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, access_key);
+ +			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, mop->key);
+  		} else {
+  			if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+  				r = -EFAULT;
+  				break;
+  			}
+  			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
+ -						      mop->size, GACC_STORE, access_key);
+ +						      mop->size, GACC_STORE, mop->key);
+  		}
+  		break;
+  	}
+ @@ -4779,54 +4774,37 @@ static long kvm_s390_vcpu_mem_op(struct kvm_vcpu *vcpu,
+  				 struct kvm_s390_mem_op *mop)
+  {
+  	void __user *uaddr = (void __user *)mop->buf;
+ -	u8 access_key = 0, ar = 0;
+  	void *tmpbuf = NULL;
+ -	bool check_reserved;
+  	int r = 0;
+  	const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+  				    | KVM_S390_MEMOP_F_CHECK_ONLY
+  				    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+  
+ -	if (mop->flags & ~supported_flags || !mop->size)
+ +	if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+  		return -EINVAL;
+  	if (mop->size > MEM_OP_MAX_SIZE)
+  		return -E2BIG;
+  	if (kvm_s390_pv_cpu_is_protected(vcpu))
+  		return -EINVAL;
+ +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+ +		if (access_key_invalid(mop->key))
+ +			return -EINVAL;
+ +	}
+  	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+  		tmpbuf = vmalloc(mop->size);
+  		if (!tmpbuf)
+  			return -ENOMEM;
+  	}
+ -	ar = mop->ar;
+ -	mop->ar = 0;
+ -	if (ar >= NUM_ACRS)
+ -		return -EINVAL;
+ -	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+ -		access_key = mop->key;
+ -		mop->key = 0;
+ -		if (access_key_invalid(access_key))
+ -			return -EINVAL;
+ -	}
+ -	/*
+ -	 * Check that reserved/unused == 0, but only for extensions,
+ -	 * so we stay backward compatible.
+ -	 * This gives us more design flexibility for future extensions, i.e.
+ -	 * we can add functionality without adding a flag.
+ -	 */
+ -	check_reserved = mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION;
+ -	if (check_reserved && memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
+ -		return -EINVAL;
+  
+  	switch (mop->op) {
+  	case KVM_S390_MEMOP_LOGICAL_READ:
+  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+ -			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
+ -					    GACC_FETCH, access_key);
+ +			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+ +					    GACC_FETCH, mop->key);
+  			break;
+  		}
+ -		r = read_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
+ -					mop->size, access_key);
+ +		r = read_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+ +					mop->size, mop->key);
+  		if (r == 0) {
+  			if (copy_to_user(uaddr, tmpbuf, mop->size))
+  				r = -EFAULT;
+ @@ -4834,16 +4812,16 @@ static long kvm_s390_vcpu_mem_op(struct kvm_vcpu *vcpu,
+  		break;
+  	case KVM_S390_MEMOP_LOGICAL_WRITE:
+  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+ -			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
+ -					    GACC_STORE, access_key);
+ +			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+ +					    GACC_STORE, mop->key);
+  			break;
+  		}
+  		if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+  			r = -EFAULT;
+  			break;
+  		}
+ -		r = write_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
+ -					 mop->size, access_key);
+ +		r = write_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+ +					 mop->size, mop->key);
+  		break;
+  	}
+  
+ diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+ index 50ce814267b3..fd01fe04a183 100644
+ --- a/include/uapi/linux/kvm.h
+ +++ b/include/uapi/linux/kvm.h
+ @@ -564,10 +564,10 @@ struct kvm_s390_mem_op {
+  	union {
+  		struct {
+  			__u8 ar;	/* the access register number */
+ -			__u8 key;	/* access key to use for storage key protection */
+ +			__u8 key;	/* access key, ignored if flag unset */
+  		};
+  		__u32 sida_offset; /* offset into the sida */
+ -		__u8 reserved[32]; /* must be set to 0 */
+ +		__u8 reserved[32]; /* ignored */
+  	};
+  };
+  /* types for kvm_s390_mem_op->op */
+
+Range-diff against v2:
+ 1:  bcbcf21bdc2f !  1:  0049c4412978 s390/uaccess: Add copy_from/to_user_key functions
+    @@ Commit message
+         existing implementation.
+     
+         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+    +    Acked-by: Heiko Carstens <hca@linux.ibm.com>
+    +    Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+    +    Acked-by: Janosch Frank <frankja@linux.ibm.com>
+     
+      ## arch/s390/include/asm/uaccess.h ##
+     @@ arch/s390/include/asm/uaccess.h: raw_copy_to_user(void __user *to, const void *from, unsigned long n);
+ 2:  d634b7e34245 !  2:  296096b9a7b9 KVM: s390: Honor storage keys when accessing guest memory
+    @@ Commit message
+     
+         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+         Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+    +    Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+     
+      ## arch/s390/include/asm/ctl_reg.h ##
+     @@
+ 3:  dc1f00356bf5 =  3:  a5976cb3a147 KVM: s390: handle_tprot: Honor storage keys
+ 4:  6eac8a0f969a !  4:  5f5e056e66df KVM: s390: selftests: Test TEST PROTECTION emulation
+    @@ Commit message
+         Trigger this by protecting the test pages via mprotect.
+     
+         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+    +    Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+     
+      ## tools/testing/selftests/kvm/.gitignore ##
+     @@
+ 5:  ccd4ec096613 !  5:  64fa17a83b26 KVM: s390: Add optional storage key checking to MEMOP IOCTL
+    @@ arch/s390/kvm/kvm-s390.c: static int kvm_s390_handle_pv(struct kvm *kvm, struct
+      		       unsigned int ioctl, unsigned long arg)
+      {
+     @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+    - 				  struct kvm_s390_mem_op *mop)
+    - {
+    - 	void __user *uaddr = (void __user *)mop->buf;
+    -+	u8 access_key = 0, ar = 0;
+      	void *tmpbuf = NULL;
+    -+	bool check_reserved;
+      	int r = 0;
+      	const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+     -				    | KVM_S390_MEMOP_F_CHECK_ONLY;
+     +				    | KVM_S390_MEMOP_F_CHECK_ONLY
+     +				    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+      
+    --	if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+    -+	if (mop->flags & ~supported_flags || !mop->size)
+    + 	if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+      		return -EINVAL;
+     -
+      	if (mop->size > MEM_OP_MAX_SIZE)
+    @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcp
+      	if (kvm_s390_pv_cpu_is_protected(vcpu))
+      		return -EINVAL;
+     -
+    - 	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+    - 		tmpbuf = vmalloc(mop->size);
+    - 		if (!tmpbuf)
+    - 			return -ENOMEM;
+    - 	}
+    -+	ar = mop->ar;
+    -+	mop->ar = 0;
+    -+	if (ar >= NUM_ACRS)
+    -+		return -EINVAL;
+     +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+    -+		access_key = mop->key;
+    -+		mop->key = 0;
+    -+		if (access_key_invalid(access_key))
+    ++		if (access_key_invalid(mop->key))
+     +			return -EINVAL;
+     +	}
+    -+	/*
+    -+	 * Check that reserved/unused == 0, but only for extensions,
+    -+	 * so we stay backward compatible.
+    -+	 * This gives us more design flexibility for future extensions, i.e.
+    -+	 * we can add functionality without adding a flag.
+    -+	 */
+    -+	check_reserved = mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION;
+    -+	if (check_reserved && memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
+    -+		return -EINVAL;
+    - 
+    + 	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+    + 		tmpbuf = vmalloc(mop->size);
+    + 		if (!tmpbuf)
+    +@@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+      	switch (mop->op) {
+      	case KVM_S390_MEMOP_LOGICAL_READ:
+      		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+     -			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+     -					    mop->size, GACC_FETCH, 0);
+    -+			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
+    -+					    GACC_FETCH, access_key);
+    ++			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+    ++					    GACC_FETCH, mop->key);
+      			break;
+      		}
+     -		r = read_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
+    -+		r = read_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
+    -+					mop->size, access_key);
+    ++		r = read_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+    ++					mop->size, mop->key);
+      		if (r == 0) {
+      			if (copy_to_user(uaddr, tmpbuf, mop->size))
+      				r = -EFAULT;
+    @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcp
+      		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+     -			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+     -					    mop->size, GACC_STORE, 0);
+    -+			r = check_gva_range(vcpu, mop->gaddr, ar, mop->size,
+    -+					    GACC_STORE, access_key);
+    ++			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+    ++					    GACC_STORE, mop->key);
+      			break;
+      		}
+      		if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+    @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcp
+      			break;
+      		}
+     -		r = write_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
+    -+		r = write_guest_with_key(vcpu, mop->gaddr, ar, tmpbuf,
+    -+					 mop->size, access_key);
+    ++		r = write_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+    ++					 mop->size, mop->key);
+      		break;
+      	}
+      
+    @@ include/uapi/linux/kvm.h: struct kvm_s390_mem_op {
+     -		__u8 ar;	/* the access register number */
+     +		struct {
+     +			__u8 ar;	/* the access register number */
+    -+			__u8 key;	/* access key to use for storage key protection */
+    ++			__u8 key;	/* access key, ignored if flag unset */
+     +		};
+      		__u32 sida_offset; /* offset into the sida */
+    --		__u8 reserved[32]; /* should be set to 0 */
+    -+		__u8 reserved[32]; /* must be set to 0 */
+    + 		__u8 reserved[32]; /* should be set to 0 */
+      	};
+    - };
+    - /* types for kvm_s390_mem_op->op */
+     @@ include/uapi/linux/kvm.h: struct kvm_s390_mem_op {
+      /* flags for kvm_s390_mem_op->flags */
+      #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
+ 6:  9b99399f7958 !  6:  57e3ad332677 KVM: s390: Add vm IOCTL for key checked guest absolute memory access
+    @@ arch/s390/kvm/kvm-s390.c: static bool access_key_invalid(u8 access_key)
+     +	void __user *uaddr = (void __user *)mop->buf;
+     +	u64 supported_flags;
+     +	void *tmpbuf = NULL;
+    -+	u8 access_key = 0;
+     +	int r, srcu_idx;
+     +
+     +	supported_flags = KVM_S390_MEMOP_F_SKEY_PROTECTION
+    @@ arch/s390/kvm/kvm-s390.c: static bool access_key_invalid(u8 access_key)
+     +		return -E2BIG;
+     +	if (kvm_s390_pv_is_protected(kvm))
+     +		return -EINVAL;
+    ++	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+    ++		if (access_key_invalid(mop->key))
+    ++			return -EINVAL;
+    ++	}
+     +	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+     +		tmpbuf = vmalloc(mop->size);
+     +		if (!tmpbuf)
+     +			return -ENOMEM;
+     +	}
+    -+	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+    -+		access_key = mop->key;
+    -+		mop->key = 0;
+    -+		if (access_key_invalid(access_key))
+    -+			return -EINVAL;
+    -+	}
+    -+	if (memchr_inv(&mop->reserved, 0, sizeof(mop->reserved)))
+    -+		return -EINVAL;
+     +
+     +	srcu_idx = srcu_read_lock(&kvm->srcu);
+     +
+    @@ arch/s390/kvm/kvm-s390.c: static bool access_key_invalid(u8 access_key)
+     +	switch (mop->op) {
+     +	case KVM_S390_MEMOP_ABSOLUTE_READ: {
+     +		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+    -+			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, access_key);
+    ++			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, mop->key);
+     +		} else {
+     +			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
+    -+						      mop->size, GACC_FETCH, access_key);
+    ++						      mop->size, GACC_FETCH, mop->key);
+     +			if (r == 0) {
+     +				if (copy_to_user(uaddr, tmpbuf, mop->size))
+     +					r = -EFAULT;
+    @@ arch/s390/kvm/kvm-s390.c: static bool access_key_invalid(u8 access_key)
+     +	}
+     +	case KVM_S390_MEMOP_ABSOLUTE_WRITE: {
+     +		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+    -+			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, access_key);
+    ++			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, mop->key);
+     +		} else {
+     +			if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+     +				r = -EFAULT;
+     +				break;
+     +			}
+     +			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
+    -+						      mop->size, GACC_STORE, access_key);
+    ++						      mop->size, GACC_STORE, mop->key);
+     +		}
+     +		break;
+     +	}
+ 7:  e3047ac90594 !  7:  1615f5ab6e30 KVM: s390: Rename existing vcpu memop functions
+    @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_sida_op(struct kvm_vcpu *vc
+     +				 struct kvm_s390_mem_op *mop)
+      {
+      	void __user *uaddr = (void __user *)mop->buf;
+    - 	u8 access_key = 0, ar = 0;
+    + 	void *tmpbuf = NULL;
+     @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+      	return r;
+      }
+ 9:  f93003ab633d !  8:  a8420e0f1b7f KVM: s390: Add capability for storage key extension of MEM_OP IOCTL
+    @@ Commit message
+         * The vm MEM_OP IOCTL exists.
+     
+         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+    +    Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+     
+      ## arch/s390/kvm/kvm-s390.c ##
+     @@ arch/s390/kvm/kvm-s390.c: int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+11:  20476660a710 !  9:  c59952ee362b KVM: s390: Update api documentation for memop ioctl
+    @@ Documentation/virt/kvm/api.rst: The fields in each entry are defined as follows:
+      --------------------
+      
+     -:Capability: KVM_CAP_S390_MEM_OP
+    -+:Capability: KVM_CAP_S390_MEM_OP, KVM_CAP_S390_MEM_OP_EXTENSION
+    ++:Capability: KVM_CAP_S390_MEM_OP, KVM_CAP_S390_PROTECTED, KVM_CAP_S390_MEM_OP_EXTENSION
+      :Architectures: s390
+     -:Type: vcpu ioctl
+     +:Type: vm ioctl, vcpu ioctl
+    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
+     +	union {
+     +		struct {
+     +			__u8 ar;	/* the access register number */
+    -+			__u8 key;	/* access key to use for storage key protection */
+    ++			__u8 key;	/* access key, ignored if flag unset */
+     +		};
+     +		__u32 sida_offset; /* offset into the sida */
+    -+		__u8 reserved[32]; /* must be set to 0 */
+    ++		__u8 reserved[32]; /* ignored */
+     +	};
+        };
+      
+    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
+     -register number to be used; the valid range is 0..15.
+     +a read access, or where the data that should be written is stored for
+     +a write access.  The "reserved" field is meant for future extensions.
+    -+Reserved and unused bytes must be set to 0. If any of the following are used,
+    -+this is enforced and -EINVAL will be returned:
+    -+``KVM_S390_MEMOP_ABSOLUTE_READ/WRITE``, ``KVM_S390_MEMOP_F_SKEY_PROTECTION``.
+    ++Reserved and unused values are ignored. Future extension that add members must
+    ++introduce new flags.
+     +
+     +The type of operation is specified in the "op" field. Flags modifying
+     +their behavior can be set in the "flags" field. Undefined flag bits must
+    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
+     +
+     +Access the secure instruction data area which contains memory operands necessary
+     +for instruction emulation for secure guests.
+    ++SIDA accesses are available if the KVM_CAP_S390_PROTECTED capability is available.
+     +SIDA accesses are permitted for the VCPU ioctl only.
+     +SIDA accesses are permitted for secure guests only.
+      
+    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
+      
+      4.90 KVM_S390_GET_SKEYS
+      -----------------------
+    +
+    + ## include/uapi/linux/kvm.h ##
+    +@@ include/uapi/linux/kvm.h: struct kvm_s390_mem_op {
+    + 			__u8 key;	/* access key, ignored if flag unset */
+    + 		};
+    + 		__u32 sida_offset; /* offset into the sida */
+    +-		__u8 reserved[32]; /* should be set to 0 */
+    ++		__u8 reserved[32]; /* ignored */
+    + 	};
+    + };
+    + /* types for kvm_s390_mem_op->op */
+ 8:  058a6fbaf7dc ! 10:  68752e1eca95 KVM: s390: selftests: Test memops with storage keys
+    @@ tools/testing/selftests/kvm/s390x/memop.c
+     +	};
+     +
+     +	return _vcpu_ioctl(vm, VCPU_ID, KVM_S390_MEM_OP, &ksmo);
+    - }
+    - 
+    ++}
+    ++
+     +static void vcpu_read_guest(struct kvm_vm *vm, void *host_addr,
+     +			    uintptr_t guest_addr, size_t len)
+     +{
+    @@ tools/testing/selftests/kvm/s390x/memop.c
+     +
+     +	rv = _vm_write_guest_key(vm, guest_addr, host_addr, len, access_key);
+     +	TEST_ASSERT(rv == 0, "vm memop write failed: reason = %d\n", rv);
+    -+}
+    -+
+    + }
+    + 
+     +enum access_mode {
+     +	ACCESS_READ,
+     +	ACCESS_WRITE
+    @@ tools/testing/selftests/kvm/s390x/memop.c
+      	struct kvm_run *run;
+      	struct kvm_s390_mem_op ksmo;
+     -	int rv, i, maxsize;
+    ++	bool has_skey_ext;
+     +	vm_vaddr_t guest_mem1;
+     +	vm_vaddr_t guest_mem2;
+     +	vm_paddr_t guest_mem1_abs;
+    @@ tools/testing/selftests/kvm/s390x/memop.c
+      	setbuf(stdout, NULL);	/* Tell stdout not to buffer its content */
+      
+     @@ tools/testing/selftests/kvm/s390x/memop.c: int main(int argc, char *argv[])
+    + 	}
+    + 	if (maxsize > sizeof(mem1))
+    + 		maxsize = sizeof(mem1);
+    ++	has_skey_ext = kvm_check_cap(KVM_CAP_S390_MEM_OP_EXTENSION);
+    ++	if (!has_skey_ext)
+    ++		print_skip("Storage key extension not supported");
+    + 
+      	/* Create VM */
+      	vm = vm_create_default(VCPU_ID, 0, guest_code);
+      	run = vcpu_state(vm, VCPU_ID);
+    @@ tools/testing/selftests/kvm/s390x/memop.c: int main(int argc, char *argv[])
+     -		    "Unexpected exit reason: %u (%s)\n",
+     -		    run->exit_reason,
+     -		    exit_reason_str(run->exit_reason));
+    -+	{
+    ++	if (has_skey_ext) {
+     +		vm_vaddr_t guest_0_page = vm_vaddr_alloc(vm, PAGE_SIZE, 0);
+     +		vm_vaddr_t guest_last_page = vm_vaddr_alloc(vm, PAGE_SIZE, last_page_addr);
+     +		vm_paddr_t guest_mem2_abs = addr_gva2gpa(vm, guest_mem2);
+    @@ tools/testing/selftests/kvm/s390x/memop.c: int main(int argc, char *argv[])
+     +		TEST_ASSERT(rv != 0, "Fetch should result in exception");
+     +		rv = _vm_read_guest_key(vm, mem2, addr_gva2gpa(vm, 0), 2048, 2);
+     +		TEST_ASSERT(rv == 4, "Fetch should result in protection exception");
+    ++	} else {
+    ++		struct ucall uc;
+    ++
+    ++		do {
+    ++			vcpu_run(vm, VCPU_ID);
+    ++			get_ucall(vm, VCPU_ID, &uc);
+    ++			ASSERT_EQ(uc.cmd, UCALL_SYNC);
+    ++		} while (uc.args[1] < 100);
+     +	}
+     +
+     +	/* Check error conditions */
+10:  2ff8d7f47ffd <  -:  ------------ KVM: s390: selftests: Make use of capability in MEM_OP test
+
+base-commit: dcb85f85fa6f142aae1fe86f399d4503d49f2b60
 -- 
-2.34.1
+2.32.0
 
