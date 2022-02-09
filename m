@@ -2,114 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF99C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237365AbiBIQpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52648 "EHLO
+        id S237448AbiBIQpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:45:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234808AbiBIQpK (ORCPT
+        with ESMTP id S237436AbiBIQpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:45:10 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024DC05CB87;
-        Wed,  9 Feb 2022 08:45:07 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id k1so5076763wrd.8;
-        Wed, 09 Feb 2022 08:45:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IIKca+pgE+DVR8rhfxr5EKDskUZ9sxowEB3ikdxaCSI=;
-        b=BRR/+prTqcPyhKOcNxACxLffWRrU10IAtO7nXjNVk8BQH5ARgPn9oNqrEEbq+EZ8g2
-         TAEzzKZBf2AwrP0hBMlRmIuH+AEBm1yq6Iva7Pd/qZd8j8Eli/X5HiGN5V4RedwM1/v2
-         0V92ufudv4BZNu21iXM0tlN1ZqWZCSQlFY34Z4BtX+/A/i2521NM61zQjsb3fL/z4F6Y
-         /jrobhHCnIz8WE+/VOWqC9mPJfGCuwGB4YVHNEQBbO7o+G8wHxp2DeePQS/f4HFNER0r
-         tAJPQkfrkwOPIRTTn2fr0gVqigmPJ2dUV8tOF85Fj9t5feNSQrRjMtgOsKXHuyNY12Fx
-         4VMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IIKca+pgE+DVR8rhfxr5EKDskUZ9sxowEB3ikdxaCSI=;
-        b=m2pY50vukyHaIwqW9fdf5+sbrKIEa+2ZcQ5CGjRSje8KpaRDho+0ILb2P+n6Sy7SJh
-         FVnO8jgpTbcTlyFLNqPAYh2M8H0i8u+Rt0EyjZARj6cP47Ke3WE7tKDtC6+CUMUPgDjY
-         D7TSAEGUUF59+6osbNQOuhNcGVuKkdlme4gM0k+uTvmCoHy3XZwOm1JuB462akHULQmR
-         ydFl3atuWr7Mke4rg2nAq3ewjYveGinN3c0orN5ViHr85UIni2LtmFeFWmJSJqn3OhFP
-         cZrBiFfe8eILXuKb/oDVCicuw8Dib5gRSEII4sB0hp1WCkbEV5llQk9O6r7cyTTCMVcU
-         5n8Q==
-X-Gm-Message-State: AOAM532bq4kTyjcMG5XsTgBel28tcljfTtXkrVpVSxQe6hlyskeisrVP
-        z82rWDArHNAeFd91NIruK0U=
-X-Google-Smtp-Source: ABdhPJyJhWDwdLFyIBIOyECqRXorSDaAx7tY8q9+77tiisyrSwclQOfW+GFKU0IdaPcdfvfQCR2PAQ==
-X-Received: by 2002:a05:6000:38e:: with SMTP id u14mr2766963wrf.638.1644425106542;
-        Wed, 09 Feb 2022 08:45:06 -0800 (PST)
-Received: from localhost.localdomain (host-95-245-2-16.retail.telecomitalia.it. [95.245.2.16])
-        by smtp.gmail.com with ESMTPSA id u15sm15948056wrs.18.2022.02.09.08.45.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 08:45:05 -0800 (PST)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com
-Subject: [PATCH v2] usb: core: Unregister device on component_add() failure
-Date:   Wed,  9 Feb 2022 17:45:00 +0100
-Message-Id: <20220209164500.8769-1-fmdefrancesco@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 9 Feb 2022 11:45:21 -0500
+X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:45:24 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC9FC0613C9;
+        Wed,  9 Feb 2022 08:45:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644425112;
+        bh=23VcDO1UBkUQfDfSRRv997yJv60exeA4uC8n5A+TDxE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=E6VWgl1hdzxhGU9Zr8EJ7+LuqCMotcq2Z9BYIn3nfVviWUMi1gnOlgVomLss/m602
+         g+RQFKHsEVQyxBINLERnum8B4kBaqoS2B/JOdefP73OF/nX0AHyEF7wrQnNfO8VxTZ
+         9YTQZyBWf25YeHW+dvNWuYTCeP59D5ypX5bXnfwY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.77.2] ([80.245.77.2]) by web-mail.gmx.net
+ (3c-app-gmx-bs62.server.lan [172.19.170.146]) (via HTTP); Wed, 9 Feb 2022
+ 17:39:21 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <trinity-15c80db0-29c1-4cea-be14-794d9a02debf-1644424761490@3c-app-gmx-bs62>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Cc:     heiko@sntech.de, robh+dt@kernel.org, jbx6244@gmail.com,
+        devicetree@vger.kernel.org, vkoul@kernel.org,
+        michael.riesch@wolfvision.net, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kishon@ti.com,
+        p.zabel@pengutronix.de, cl@rock-chips.com,
+        kever.yang@rock-chips.com, lee.jones@linaro.org,
+        wulf@rock-chips.com, david.wu@rock-chips.com,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Subject: Aw: [PATCH v8 0/4] Add Naneng combo PHY support for RK3568
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 9 Feb 2022 17:39:21 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
+References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:MM7Nx0+88CSi+CDhES/hxhcnP//1RXCCnodnqkxCyHMOIysSJnTzv+d82Mt13iCGAncX8
+ DgZq7W20vZbLm3xrY7uJN7LjQMf7VkEYdBuxa068oT0hSc7uaWya6GHwx0FG0exoqY9wfgQIvdtz
+ z/33dMmbL+E7IUjtCgMmZa1XUE7DeO1od88KOma67UbRir4X3wo24XXsrZ8wLyWJnt3cQlWVEEaT
+ sp0T2QHcIVYTwUfv5qMBAaQky7saSPMPuCJfKHnqB/DtCt3D5DgGhBR4tU3I4IbQIfi/3CGRJZTN
+ h8=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yO48XHWlAEg=:w/S5bj4TX2IHTk3QFbdfMl
+ 8UonBQztscoOoXdeO7Imuot6orUUq0viFsTTOfzJEOHhIoACPgID6EfU9Epoq+PqWxXV84fhv
+ N1qc3QfY26wFnvXje1EgRvaYsv7r+sECRIBQkS2+Su3SCVPhOJm6kEBShyAUjMDv5bKv3kle7
+ 01rgMNuYrDSPc1iC2lVQLY4duuWNIY41QTLppt6WSERfl98gwLoeObBU/erl9A9Iufzl9+uOc
+ ecv6I4dGmjGQWxh0Vh03g0tk8Cmf8Q/9XQUGLs04wNq0CdgZNaHNw1y2/7FKfSYx3va5oPe88
+ P5v85N3n2d1XxUd0OOx6hPzN9ZQLiQOMAL8dwYXd8fgWKYQN5oZ8sZT/JhbWBok6IZ3ao2psP
+ OgJZSsyebyKWcuR44TUJckyzFpwc3MYv64Bjze7rwxMNMWISnJd7Gn7VENFlf7ob5+V64D1dk
+ SczpxwQAiwV+H773x6X5tX2urZLQ4+co3ErfCkrmoIlXs7j0diZ3GdJXlt42rlCe+lbcIe4gl
+ DCSjHIfYGhzXY/fivYfAH00/z8ilSzN+tFGIUhgdDwZaFhh5ke14k3I9mXQKR4a7ZMKfsdGRA
+ ami+lD4knYeptm4IoSkyga5bwjBSkb41TSVUbFVEDciV6j5dMKrg/vI/YQ7g6McBtVATPjbI7
+ c36UYPhlmh8fOPRzymZpCS8JuUCgd6cKx2sydzP95vRZUQrgr28Z/EtwqjqS8AX0CS2r8IJ04
+ cpdAVOR4+nyUFYmk7JSY9vaXYEU2wPaIw6s83irMAQqc2MXO+dsBsjnG7Eu5qnmVzHt1cBNhm
+ vsykxOy
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 8c67d06f3fd9 ("usb: Link the ports to the connectors they are
-attached to") creates a link to the USB Type-C connector for every new
-port that is added when possible. If component_add() fails,
-usb_hub_create_port_device() prints a warning but does not unregister
-the device and does not return errors to the callers.
+Hi
 
-Syzbot reported a "WARNING in component_del()".
+Tested complete series on rk3568 based Bananapi R2 Pro
 
-Fix this issue in usb_hub_create_port_device by calling device_unregister()
-and returning the errors from component_add().
+combphy0: usb3 (usbdrd3_0)
+combphy1: usb3 (usbdrd3_1)
+combphy2: sata (sata2)
 
-Reported-and-tested-by: syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com
-Fixes: 8c67d06f3fd9 ("usb: Link the ports to the connectors they are attached to")
-Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
----
+Tested-by: Frank Wunderlich <frank-w@public-files.de>
 
-v1->v2: Move find_and_link_peer() soon after the 'if' test for "retval", 
-	as suggested by Heikki Krogerus with his review of v1.
-
- drivers/usb/core/port.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/core/port.c b/drivers/usb/core/port.c
-index c2bbf97a79be..d5bc36ca5b1f 100644
---- a/drivers/usb/core/port.c
-+++ b/drivers/usb/core/port.c
-@@ -602,11 +602,14 @@ int usb_hub_create_port_device(struct usb_hub *hub, int port1)
- 		return retval;
- 	}
- 
--	find_and_link_peer(hub, port1);
--
- 	retval = component_add(&port_dev->dev, &connector_ops);
--	if (retval)
-+	if (retval) {
- 		dev_warn(&port_dev->dev, "failed to add component\n");
-+		device_unregister(&port_dev->dev);
-+		return retval;
-+	}
-+
-+	find_and_link_peer(hub, port1);
- 
- 	/*
- 	 * Enable runtime pm and hold a refernce that hub_configure()
--- 
-2.34.1
-
+regards Frank
