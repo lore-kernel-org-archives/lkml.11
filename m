@@ -2,197 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E9EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:08:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7863FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233876AbiBIKIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:08:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58552 "EHLO
+        id S232907AbiBIKIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:08:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233140AbiBIKID (ORCPT
+        with ESMTP id S229475AbiBIKIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:08:03 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A5CC014A95;
-        Wed,  9 Feb 2022 02:07:11 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2198d1Kx014683;
-        Wed, 9 Feb 2022 08:49:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=cJD+Hr0UhnxLjBiyoVnf2N+zOF8DSd40RDY7Fo305Zs=;
- b=chZEeXBxyKk/HWnuSGCv6Q0MhHWXn755yxasV7J4XemPWlfKF3FmK1CC1G0Z5bmNXwoe
- vEgk9vApDSAnZUFIUVqHi6N3ppdGnHguVv5z75JLqDXc52W0Oyt1k3l5hqHcvgGtPL8x
- 4jmF9GpnF8oJtSqO5c1y6o5UsUcA0SSXpvJ+VAfxoiy3KjOw9Th0eQtEdsQ1QFAjl4SK
- Ne4HMF46ovlZz9N7EgYZp70GJupHRBLqGPu1ApqVfAdloqv19vMV3t5o/QROV+6GEZBE
- CW4VV29XPMUSPYvX+7x1nSl6SopDwLqYL59TcKINRQEXk5i7M4g5aS9LOHAIDNUdLD88 iw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e3fm5jywt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 08:49:28 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2198nS7B020171;
-        Wed, 9 Feb 2022 08:49:28 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e3fm5jyw1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 08:49:28 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2198n9ZW017773;
-        Wed, 9 Feb 2022 08:49:26 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv9cv45-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 08:49:26 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2198nNtA38142310
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 08:49:23 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DBA534C04A;
-        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 486854C050;
-        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
-Received: from [9.171.75.42] (unknown [9.171.75.42])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 08:49:22 +0000 (GMT)
-Message-ID: <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
-Date:   Wed, 9 Feb 2022 09:49:21 +0100
+        Wed, 9 Feb 2022 05:08:45 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7069E0FF9C7
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:07:43 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id y17so1770085plg.7
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:07:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fKd8rz2W2pUSkfaR34CkTXWCpF7wlT6fZ+O2u9SSHNA=;
+        b=m6B6FzVzBrghgCzIeKI9/sgasAhBfsY90I8yBaKLtzzd3yu55UV4mAEitc5SJn5ZN2
+         l9SWOJYnSsSt3vsfTf8NUIekS78zxGRKEUAmYiy088RZhQ1E6zufr4GZSoIbOaM5cL34
+         mC8wKd/C95bztRSgwYk2AIOS/j8Ml0xDTE4uo6oTfi6edNI63iPoofrggnHxLyi2s/YY
+         sIgvO/3BZTVfkncZl8iF5VMeMdCVJGdDnivqzmQ13aIbafT/vhAc6P2a+7lP8WcO/6Cn
+         rASoq+VZ5+ywBcy64hYbSxrNxF4pfr/zzlsi3vXg/CFU9q5cMLd9UoA83ZMC4hut8Nbi
+         exQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fKd8rz2W2pUSkfaR34CkTXWCpF7wlT6fZ+O2u9SSHNA=;
+        b=dUg2GqQUjJegWKKtO2VadDF5SoHlS8XRAf0J5p0sYpkjHbfZgnd0dBmF5Pa+UyiL12
+         y6mC6SR/RxPbxM62xkpn8uyZKYF4otMkCzGK5aTA9enzDswi+AVxFvyr1ZsPvNZLgTgy
+         Z0Hbc9fWdN5ZJBOOkBEbUwhZomzj0V1nmf9ldy4T950Huf5HfFIAGKxJcmOWApJ/SD7Q
+         x/8sDNyJ4JX5eoyP0M04+FodzGpQXgeOEWIoD0E/KgZ8gHdohzWfYzX2GQUS0qpA5JDv
+         UwtQ/5IvAuFCyi6Qfdos9hSglJ9w83yDcMiqvatxhNVme9zCVMqFmA30SBS+44UNiAy4
+         pRTA==
+X-Gm-Message-State: AOAM532JHT6snF4cwiPdq8yRNdXl7cK8bHup3VkNlgS3cya5QPxikB58
+        rwtQJq+m/Eql3uGIL2lis+/u
+X-Google-Smtp-Source: ABdhPJz1KHM4SyEbu0dU63ZeC7I6GtfKLK24sp+muKSVHMbE/pqUXLYW9W5RFPPg3VuC4mGPIgeL1g==
+X-Received: by 2002:a17:90a:5295:: with SMTP id w21mr2623783pjh.84.1644401219220;
+        Wed, 09 Feb 2022 02:06:59 -0800 (PST)
+Received: from localhost.localdomain ([117.217.179.178])
+        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.06.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 02:06:58 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        vbadigan@codeaurora.org, quic_cang@quicinc.com,
+        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, elder@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 19/23] bus: mhi: ep: Add support for handling SYS_ERR condition
+Date:   Wed,  9 Feb 2022 15:26:20 +0530
+Message-Id: <20220209095624.26389-20-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+References: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
- MEMOP IOCTL
-Content-Language: en-US
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
- <20220207165930.1608621-6-scgl@linux.ibm.com>
- <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-In-Reply-To: <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6H5ZBHzlShoJEgbn7yy_9fjsH2ZbRuer
-X-Proofpoint-GUID: lzPYz20MP0oCm-I0g6c1DlwDDIZ4H5Nu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_04,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- spamscore=0 bulkscore=0 impostorscore=0 priorityscore=1501 phishscore=0
- mlxlogscore=999 clxscore=1015 adultscore=0 lowpriorityscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 08:34, Christian Borntraeger wrote:
-> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
->> User space needs a mechanism to perform key checked accesses when
->> emulating instructions.
->>
->> The key can be passed as an additional argument.
->> Having an additional argument is flexible, as user space can
->> pass the guest PSW's key, in order to make an access the same way the
->> CPU would, or pass another key if necessary.
->>
->> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->> Acked-by: Janosch Frank <frankja@linux.ibm.com>
->> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
->> ---
->>   arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
->>   include/uapi/linux/kvm.h |  8 +++++--
->>   2 files changed, 44 insertions(+), 13 deletions(-)
->>
->> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->> index cf347e1a4f17..71e61fb3f0d9 100644
->> --- a/arch/s390/kvm/kvm-s390.c
->> +++ b/arch/s390/kvm/kvm-s390.c
->> @@ -32,6 +32,7 @@
->>   #include <linux/sched/signal.h>
->>   #include <linux/string.h>
->>   #include <linux/pgtable.h>
->> +#include <linux/bitfield.h>
->>     #include <asm/asm-offsets.h>
->>   #include <asm/lowcore.h>
->> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
->>       return r;
->>   }
->>   +static bool access_key_invalid(u8 access_key)
->> +{
->> +    return access_key > 0xf;
->> +}
->> +
->>   long kvm_arch_vm_ioctl(struct file *filp,
->>                  unsigned int ioctl, unsigned long arg)
->>   {
->> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
->>                     struct kvm_s390_mem_op *mop)
->>   {
->>       void __user *uaddr = (void __user *)mop->buf;
->> +    u8 access_key = 0, ar = 0;
->>       void *tmpbuf = NULL;
->> +    bool check_reserved;
->>       int r = 0;
->>       const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
->> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
->> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
->> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
->>   -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
->> +    if (mop->flags & ~supported_flags || !mop->size)
->>           return -EINVAL;
->> -
->>       if (mop->size > MEM_OP_MAX_SIZE)
->>           return -E2BIG;
->> -
->>       if (kvm_s390_pv_cpu_is_protected(vcpu))
->>           return -EINVAL;
->> -
->>       if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
->>           tmpbuf = vmalloc(mop->size);
->>           if (!tmpbuf)
->>               return -ENOMEM;
->>       }
->> +    ar = mop->ar;
->> +    mop->ar = 0;
-> 
-> Why this assignment to 0?
+Add support for handling SYS_ERR (System Error) condition in the MHI
+endpoint stack. The SYS_ERR flag will be asserted by the endpoint device
+when it detects an internal error. The host will then issue reset and
+reinitializes MHI to recover from the error state.
 
-It's so the check of reserved below works like that, they're all part of the anonymous union.
-> 
->> +    if (ar >= NUM_ACRS)
->> +        return -EINVAL;
->> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
->> +        access_key = mop->key;
->> +        mop->key = 0;
-> 
-> and this? I think we can leave mop unchanged.
-> 
-> In fact, why do we add the ar and access_key variable?
-> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
-> and it will create a memleak for tmpbuf.
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/internal.h |  1 +
+ drivers/bus/mhi/ep/main.c     | 24 ++++++++++++++++++++++++
+ drivers/bus/mhi/ep/sm.c       |  2 ++
+ 3 files changed, 27 insertions(+)
 
-I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
-First is simpler, but second makes handling that case more explicit and might help in the future.
-Patch 6 has the same issue in the vm ioctl handler.
-> 
-> Simply use mop->key and mop->ar below and get rid of the local variables.
-> The structure has no concurrency and gcc will handle that just as the local variable.
-> 
-> Other than that this looks good.
-
-[...]
+diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
+index ee8c5974f0c0..8654af7caf40 100644
+--- a/drivers/bus/mhi/ep/internal.h
++++ b/drivers/bus/mhi/ep/internal.h
+@@ -241,6 +241,7 @@ int mhi_ep_set_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state mhi_stat
+ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
+ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
+ int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
++void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
+ 
+ /* MHI EP memory management functions */
+ int mhi_ep_alloc_map(struct mhi_ep_cntrl *mhi_cntrl, u64 pci_addr, size_t size,
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index 7d7757784dde..b12c1f4ae8be 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -610,6 +610,30 @@ static void mhi_ep_reset_worker(struct work_struct *work)
+ 	}
+ }
+ 
++/*
++ * We don't need to do anything special other than setting the MHI SYS_ERR
++ * state. The host issue will reset all contexts and issue MHI RESET so that we
++ * could also recover from error state.
++ */
++void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl)
++{
++	struct device *dev = &mhi_cntrl->mhi_dev->dev;
++	int ret;
++
++	/* If MHI EP is not enabled, nothing to do */
++	if (!mhi_cntrl->is_enabled)
++		return;
++
++	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_SYS_ERR);
++	if (ret)
++		return;
++
++	/* Signal host that the device went to SYS_ERR state */
++	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_SYS_ERR);
++	if (ret)
++		dev_err(dev, "Failed sending SYS_ERR state change event: %d\n", ret);
++}
++
+ int mhi_ep_power_up(struct mhi_ep_cntrl *mhi_cntrl)
+ {
+ 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
+index 68e7f99b9137..9a75ecfe1adf 100644
+--- a/drivers/bus/mhi/ep/sm.c
++++ b/drivers/bus/mhi/ep/sm.c
+@@ -93,6 +93,7 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
+ 
+ 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
+ 	if (ret) {
++		mhi_ep_handle_syserr(mhi_cntrl);
+ 		spin_unlock_bh(&mhi_cntrl->state_lock);
+ 		return ret;
+ 	}
+@@ -128,6 +129,7 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
+ 	spin_lock_bh(&mhi_cntrl->state_lock);
+ 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M3);
+ 	if (ret) {
++		mhi_ep_handle_syserr(mhi_cntrl);
+ 		spin_unlock_bh(&mhi_cntrl->state_lock);
+ 		return ret;
+ 	}
+-- 
+2.25.1
 
