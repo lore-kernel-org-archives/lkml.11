@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE372C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CE1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 17:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237641AbiBIRAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 12:00:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33806 "EHLO
+        id S237716AbiBIRA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 12:00:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237535AbiBIRAp (ORCPT
+        with ESMTP id S237684AbiBIRAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 12:00:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2246C05CB8E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:00:48 -0800 (PST)
+        Wed, 9 Feb 2022 12:00:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02A1EC05CB87
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:00:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644426047;
+        s=mimecast20190719; t=1644426055;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jEqL6PLWr+bZ/5j2l/zElDfsDQbZUnnUlRxHORnTr6s=;
-        b=ivtfcwTEYb6XbxMi3EouTnlNO4IPsqekza5vYAnc2zVvErhfsyWm3VgxUIvSZvIPRup11b
-        WUrPIsWaLbde1cRRGIcRoUDXlreMLaEPN4FCrDmJV41KFBAnZFRB9icgvg6WkmBCEOGXa5
-        RJpIzycnqnUcrL1hUpt2LIOK61HocoU=
+        bh=8TYNwAs02vm4CDNx1aPCczbwgm5BVw9EzNs2ZbO9w3I=;
+        b=UrrGe7PFHEmI5PJR8GRocA1aGE/rF9a8jof+53L177wZABJvXK3WpoY0d0FQ5TIHcIjOsm
+        SQZ2PTcXkpuXYDx6EVkaT88ld8wAwZ91TVpPN3RKvFzbPtAIXV99wbsOaYScpcQ+d5TtUw
+        Ahz1GzI0EQfaLq7dnOEOAH0v86/glZE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-574-YSjKLW7EP7yxonBU0a_7RQ-1; Wed, 09 Feb 2022 12:00:42 -0500
-X-MC-Unique: YSjKLW7EP7yxonBU0a_7RQ-1
+ us-mta-155-QukTdJvoOv-PPolitsLQWQ-1; Wed, 09 Feb 2022 12:00:51 -0500
+X-MC-Unique: QukTdJvoOv-PPolitsLQWQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 649588145E2;
-        Wed,  9 Feb 2022 17:00:41 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 802E48145E0;
+        Wed,  9 Feb 2022 17:00:50 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8B5657D499;
-        Wed,  9 Feb 2022 17:00:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 03CF37CD66;
+        Wed,  9 Feb 2022 17:00:49 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com,
-        seanjc@google.com, stable@vger.kernel.org
-Subject: [PATCH 01/12] KVM: x86: host-initiated EFER.LME write affects the MMU
-Date:   Wed,  9 Feb 2022 12:00:09 -0500
-Message-Id: <20220209170020.1775368-2-pbonzini@redhat.com>
+        seanjc@google.com
+Subject: [PATCH 04/12] KVM: MMU: WARN if PAE roots linger after kvm_mmu_unload
+Date:   Wed,  9 Feb 2022 12:00:12 -0500
+Message-Id: <20220209170020.1775368-5-pbonzini@redhat.com>
 In-Reply-To: <20220209170020.1775368-1-pbonzini@redhat.com>
 References: <20220209170020.1775368-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,44 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While the guest runs, EFER.LME cannot change unless CR0.PG is clear, and therefore
-EFER.NX is the only bit that can affect the MMU role.  However, set_efer accepts
-a host-initiated change to EFER.LME even with CR0.PG=1.  In that case, the
-MMU has to be reset.
-
-Fixes: 11988499e62b ("KVM: x86: Skip EFER vs. guest CPUID checks for host-initiated writes")
-Cc: stable@vger.kernel.org
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/mmu.h | 1 +
- arch/x86/kvm/x86.c | 2 +-
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kvm/mmu/mmu.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index 51faa2c76ca5..a5a50cfeffff 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -48,6 +48,7 @@
- 			       X86_CR4_SMEP | X86_CR4_SMAP | X86_CR4_PKE)
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index e0c0f0bc2e8b..7b5765ced928 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -5065,12 +5065,21 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
+ 	return r;
+ }
  
- #define KVM_MMU_CR0_ROLE_BITS (X86_CR0_PG | X86_CR0_WP)
-+#define KVM_MMU_EFER_ROLE_BITS (EFER_LME | EFER_NX)
- 
- static __always_inline u64 rsvd_bits(int s, int e)
++static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
++{
++	int i;
++	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
++	WARN_ON(VALID_PAGE(mmu->root_hpa));
++	if (mmu->pae_root) {
++		for (i = 0; i < 4; ++i)
++			WARN_ON(IS_VALID_PAE_ROOT(mmu->pae_root[i]));
++	}
++}
++
+ void kvm_mmu_unload(struct kvm_vcpu *vcpu)
  {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 9a9006226501..5e1298aef9e2 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1647,7 +1647,7 @@ static int set_efer(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	}
+-	kvm_mmu_free_roots(vcpu, &vcpu->arch.root_mmu, KVM_MMU_ROOTS_ALL);
+-	WARN_ON(VALID_PAGE(vcpu->arch.root_mmu.root_hpa));
+-	kvm_mmu_free_roots(vcpu, &vcpu->arch.guest_mmu, KVM_MMU_ROOTS_ALL);
+-	WARN_ON(VALID_PAGE(vcpu->arch.guest_mmu.root_hpa));
++	__kvm_mmu_unload(vcpu, &vcpu->arch.root_mmu);
++	__kvm_mmu_unload(vcpu, &vcpu->arch.guest_mmu);
+ }
  
- 	/* Update reserved bits */
--	if ((efer ^ old_efer) & EFER_NX)
-+	if ((efer ^ old_efer) & KVM_MMU_EFER_ROLE_BITS)
- 		kvm_mmu_reset_context(vcpu);
- 
- 	return 0;
+ static bool need_remote_flush(u64 old, u64 new)
 -- 
 2.31.1
 
