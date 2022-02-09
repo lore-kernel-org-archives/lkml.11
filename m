@@ -2,140 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30821C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236710AbiBIJjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:39:37 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45504 "EHLO
+        id S234028AbiBIJjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:39:52 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238593AbiBIJdU (ORCPT
+        with ESMTP id S235516AbiBIJf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:33:20 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3960E05B1CC
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:33:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644399196; x=1675935196;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ijmXiHaC9NMp14wmzN7JkrQt24FQH775m1GD8fr5qsE=;
-  b=DQ9oWyuobaPvahxtmgVlsUtJEKwqmigVE8H3PbUn0Kf9/iEn5mIgzUbZ
-   jPsBD10QGmeL/mJAjm9nt0TMe8BeuHj1cmxAFR2yNLifGlAc7oXltKWxy
-   zxRdV4bd3N+KYzxgLvX7aWAicVCfDmQKeu0ngsxLYMXPfcGGgidQGLjb+
-   6gRsdauyNjoh7s7QLet2O4euGdH5N6tJEj+oobNy3ydvxgDaEpp9dNHsF
-   XlxlcHPsFJnedE1410UcluHyalnIUlVWE8M8xL9mIEjGVvRXz1LyyZmVm
-   xsTmYOoWwdiLTvNm5lit7U+cf9BeLH5ekYDhvgEpxaHi/3jVlqNum4/Ks
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="248925879"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="248925879"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:32:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="701195000"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 09 Feb 2022 01:32:38 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHjL3-0001a1-IN; Wed, 09 Feb 2022 09:32:37 +0000
-Date:   Wed, 9 Feb 2022 17:32:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vineet Gupta <vgupta@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org
-Subject: arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef
- expression
-Message-ID: <202202091740.HWwIjRT0-lkp@intel.com>
+        Wed, 9 Feb 2022 04:35:59 -0500
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE883E010917;
+        Wed,  9 Feb 2022 01:35:53 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nHj3m-0007nJ-En; Wed, 09 Feb 2022 10:14:46 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     Rob Herring <robh@kernel.org>,
+        =?utf-8?B?6LW15Luq5bOw?= <yifeng.zhao@rock-chips.com>,
+        "zyf@rock-chips.com" <zyf@rock-chips.com>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        linux-rockchip <linux-rockchip@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        robh+dt <robh+dt@kernel.org>, Lee Jones <lee.jones@linaro.org>,
+        =?utf-8?B?6ZmI5Lqu?= <cl@rock-chips.com>, kishon <kishon@ti.com>,
+        "Kever. Yang" <kever.yang@rock-chips.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "david.wu@rock-chips.com" <david.wu@rock-chips.com>,
+        "michael. riesch" <michael.riesch@wolfvision.net>,
+        linux-phy <linux-phy@lists.infradead.org>,
+        =?utf-8?B?5ZC06Imv5bOw?= <wulf@rock-chips.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Johan Jonker <jbx6244@gmail.com>
+Subject: Re: [PATCH v8 2/4] dt-bindings: phy: rockchip: Add Naneng combo PHY bindings
+Date:   Wed, 09 Feb 2022 10:14:45 +0100
+Message-ID: <6069846.8JqooZBoOc@diego>
+In-Reply-To: <2022020911371529703712@rock-chips.com>
+References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com> <1644352412.075016.2969144.nullmailer@robh.at.kernel.org> <2022020911371529703712@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e6251ab4551f51fa4cee03523e08051898c3ce82
-commit: e188f3330a13df904d77003846eafd3edf99009d ARC: cmpxchg/xchg: rewrite as macros to make type safe
-date:   6 months ago
-config: arc-randconfig-s032-20220209 (https://download.01.org/0day-ci/archive/20220209/202202091740.HWwIjRT0-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e188f3330a13df904d77003846eafd3edf99009d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e188f3330a13df904d77003846eafd3edf99009d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Am Mittwoch, 9. Februar 2022, 04:38:15 CET schrieb zyf@rock-chips.com:
+> Hi Rob,
+> 
+> We move "rockchip,rk3568-pipe-grf" from syscon.yaml to grf.yaml.
+> How to fix this compilation failed?
+
+as you can see in the example, there is already a
+	#include <dt-bindings/clock/rk3568-cru.h>
+so you probably just need to add another include for the grf.yaml
 
 
-sparse warnings: (new ones prefixed by >>)
-   arch/arc/kernel/smp.c:264:48: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected unsigned long [noderef] __percpu *ipi_data_ptr @@     got unsigned long * @@
-   arch/arc/kernel/smp.c:264:48: sparse:     expected unsigned long [noderef] __percpu *ipi_data_ptr
-   arch/arc/kernel/smp.c:264:48: sparse:     got unsigned long *
-   arch/arc/kernel/smp.c:279:18: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const volatile *v @@     got unsigned long [noderef] __percpu *__ai_ptr @@
-   arch/arc/kernel/smp.c:279:18: sparse:     expected void const volatile *v
-   arch/arc/kernel/smp.c:279:18: sparse:     got unsigned long [noderef] __percpu *__ai_ptr
-   arch/arc/kernel/smp.c:277:29: sparse: sparse: cast removes address space '__percpu' of expression
-   arch/arc/kernel/smp.c:413:72: sparse: sparse: incorrect type in argument 4 (different address spaces) @@     expected void [noderef] __percpu *percpu_dev_id @@     got int *dev @@
-   arch/arc/kernel/smp.c:413:72: sparse:     expected void [noderef] __percpu *percpu_dev_id
-   arch/arc/kernel/smp.c:413:72: sparse:     got int *dev
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
->> arch/arc/kernel/smp.c:279:18: sparse: sparse: dereference of noderef expression
+Heiko
 
-vim +279 arch/arc/kernel/smp.c
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
+> index fdd96e378df0..e9bb96ab9446 100644
+> --- a/Documentation/devicetree/bindings/mfd/syscon.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
+> @@ -52,6 +52,8 @@ properties:
+>                - rockchip,rk3288-qos
+>                - rockchip,rk3368-qos
+>                - rockchip,rk3399-qos
+> +              - rockchip,rk3568-pipe-grf
+> +              - rockchip,rk3568-pipe-phy-grf
+> 
+> 
+> >On Tue, 08 Feb 2022 17:13:24 +0800, Yifeng Zhao wrote:
+> >> Add the compatible strings for the Naneng combo PHY found on rockchip SoC.
+> >>
+> >> Reviewed-by: Rob Herring <robh@kernel.org>
+> >> Signed-off-by: Yifeng Zhao <yifeng.zhao@rock-chips.com>
+> >> Signed-off-by: Johan Jonker <jbx6244@gmail.com>
+> >> ---
+> >>
+> >> Changes in v8: None
+> >> Changes in v7:
+> >> - remove u3otg0_port_en, u3otg1_port_en and pipe_sgmii_mac_sel
+> >>
+> >> Changes in v5:
+> >> - modify description for ssc and ext-refclk
+> >> - remove apb reset
+> >>
+> >> Changes in v4:
+> >> - restyle
+> >> - remove some minItems
+> >> - add more properties
+> >> - remove reset-names
+> >> - move #phy-cells
+> >> - add rockchip,rk3568-pipe-grf
+> >> - add rockchip,rk3568-pipe-phy-grf
+> >>
+> >> Changes in v3: None
+> >> Changes in v2:
+> >> - Fix dtschema/dtc warnings/errors
+> >>
+> >>  .../phy/phy-rockchip-naneng-combphy.yaml      | 109 ++++++++++++++++++
+> >>  1 file changed, 109 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.yaml
+> >>
+> > 
+> >My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> >on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > 
+> >yamllint warnings/errors:
+> > 
+> >dtschema/dtc warnings/errors:
+> >Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc50000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-grf', 'syscon']
+> >Documentation/devicetree/bindings/phy/phy-rockchip-naneng-combphy.example.dt.yaml:0:0: /example-0/syscon@fdc70000: failed to match any schema with compatible: ['rockchip,rk3568-pipe-phy-grf', 'syscon']
+> > 
+> >doc reference errors (make refcheckdocs):
+> > 
+> >See https://patchwork.ozlabs.org/patch/1589719
+> > 
+> >This check can fail if there are any dependencies. The base for a patch
+> >series is generally the most recent rc1.
+> > 
+> >If you already ran 'make dt_binding_check' and didn't see the above
+> >error(s), then make sure 'yamllint' is installed and dt-schema is up to
+> >date:
+> > 
+> >pip3 install dtschema --upgrade
+> > 
+> >Please check and re-submit.
+>  
+>  
+> 
 
-41195d236e8445 Vineet Gupta    2013-01-18  261  
-ddf84433f411b6 Vineet Gupta    2013-11-25  262  static void ipi_send_msg_one(int cpu, enum ipi_msg_type msg)
-41195d236e8445 Vineet Gupta    2013-01-18  263  {
-f2a4aa5646687f Vineet Gupta    2013-11-26  264  	unsigned long __percpu *ipi_data_ptr = per_cpu_ptr(&ipi_data, cpu);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  265  	unsigned long old, new;
-41195d236e8445 Vineet Gupta    2013-01-18  266  	unsigned long flags;
-41195d236e8445 Vineet Gupta    2013-01-18  267  
-f2a4aa5646687f Vineet Gupta    2013-11-26  268  	pr_debug("%d Sending msg [%d] to %d\n", smp_processor_id(), msg, cpu);
-f2a4aa5646687f Vineet Gupta    2013-11-26  269  
-41195d236e8445 Vineet Gupta    2013-01-18  270  	local_irq_save(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  271  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  272  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  273  	 * Atomically write new msg bit (in case others are writing too),
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  274  	 * and read back old value
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  275  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  276  	do {
-6aa7de059173a9 Mark Rutland    2017-10-23  277  		new = old = READ_ONCE(*ipi_data_ptr);
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  278  		new |= 1U << msg;
-d8e8c7dda11f5d Vineet Gupta    2013-11-28 @279  	} while (cmpxchg(ipi_data_ptr, old, new) != old);
-41195d236e8445 Vineet Gupta    2013-01-18  280  
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  281  	/*
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  282  	 * Call the platform specific IPI kick function, but avoid if possible:
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  283  	 * Only do so if there's no pending msg from other concurrent sender(s).
-82a423053eb3cf Changcheng Deng 2021-08-14  284  	 * Otherwise, receiver will see this msg as well when it takes the
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  285  	 * IPI corresponding to that msg. This is true, even if it is already in
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  286  	 * IPI handler, because !@old means it has not yet dequeued the msg(s)
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  287  	 * so @new msg can be a free-loader
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  288  	 */
-d8e8c7dda11f5d Vineet Gupta    2013-11-28  289  	if (plat_smp_ops.ipi_send && !old)
-ddf84433f411b6 Vineet Gupta    2013-11-25  290  		plat_smp_ops.ipi_send(cpu);
-41195d236e8445 Vineet Gupta    2013-01-18  291  
-41195d236e8445 Vineet Gupta    2013-01-18  292  	local_irq_restore(flags);
-41195d236e8445 Vineet Gupta    2013-01-18  293  }
-41195d236e8445 Vineet Gupta    2013-01-18  294  
 
-:::::: The code at line 279 was first introduced by commit
-:::::: d8e8c7dda11f5d5cf90495f2e89d917a83509bc0 ARC: [SMP] optimize IPI send and receive
 
-:::::: TO: Vineet Gupta <vgupta@synopsys.com>
-:::::: CC: Vineet Gupta <vgupta@synopsys.com>
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
