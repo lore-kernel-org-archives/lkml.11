@@ -2,97 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09997C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F66C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240302AbiBIJCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:02:03 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47752 "EHLO
+        id S239249AbiBIJCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:02:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241264AbiBIJBw (ORCPT
+        with ESMTP id S236752AbiBIJBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:01:52 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A665E015664;
-        Wed,  9 Feb 2022 01:01:50 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id z13so3183304pfa.3;
-        Wed, 09 Feb 2022 01:01:50 -0800 (PST)
+        Wed, 9 Feb 2022 04:01:54 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39387E063CA8;
+        Wed,  9 Feb 2022 01:01:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=VH+A8xJEaUloO4mKzD8JGvj5AR88+tYefIL2An16MRk=;
-        b=WozUnmY9CDhyCgkAKyKhJYFx0T2j9sVRi5iXjd73tjpqESfHLQDC6z7Xv8t5gF7COQ
-         fZ/s8/Ltziy/6orG6v/wRObTsbiBW3xK6Rva0y4e1nHx8z5ruj4nqiptU/gBJLPHj25g
-         QPwVB93bhVwblFCisEsDkn6zLFKtH9g5yCcTjt324u0IlsNV+1I3A8IF3URtz0IetoJh
-         B3SsSKp5l67CZZzp/ZeQ4iPeDJx2Epi2VfdJBD5o5z+HD9QhJmdPMeK7IvgkIIdEbBkC
-         2Nj55aOsYN1wOlh3/7typty1qWFPvoDKEf2jcDeDpdTapkmkWUhXzMwxrUIpZXbAFV2q
-         Kbew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=VH+A8xJEaUloO4mKzD8JGvj5AR88+tYefIL2An16MRk=;
-        b=u2hvm+uVptqL5cl7IJXhnXr+kO/rLJHjWy6Me24APlyi45saWiCDfBCiE/KGj3hdLT
-         c8s2QGs8pXkqpP0EzIhHgH2DtCMOmMubzIRYp46RmMyofMymKzmHO9S+X4F0AZEtqdzk
-         Rgg10dwLjfxnAdInsX0M7iXyNNmykbWcg/2mwRLabXTkTS5aqWu9tPHmWF/5n1s9P3zm
-         vjqok3XiuZL27oUCmsiNFv66uNDX4HqMszyMYNsbrdh+GwbLI4XzaCH3c83kdPsXEPvd
-         T/ZW1gD+FsiWxdXnpCwvzQq3eA8DTpPeorUWRfvpeDwr6/CFMZLAbenDigDhkXA1Hl6z
-         +r4g==
-X-Gm-Message-State: AOAM531vd4o8To47ne/3wAY8Z5AGSFfEzW/W/sah+78Pq+C5PytPfBLx
-        YfvCMCvXK7f4eC6SD0CtCMg=
-X-Google-Smtp-Source: ABdhPJxxXvWNoMxfn7e3rxqaz81krZRXdIaswiGkABfOo7ZtIW61n31Ohr57+0oAIESF347QNNoVrw==
-X-Received: by 2002:a63:8849:: with SMTP id l70mr1056522pgd.437.1644397225928;
-        Wed, 09 Feb 2022 01:00:25 -0800 (PST)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id mu13sm6107068pjb.28.2022.02.09.01.00.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 01:00:25 -0800 (PST)
-Message-ID: <7de112b2-e6d1-1f9d-a040-1c4cfee40b22@gmail.com>
-Date:   Wed, 9 Feb 2022 17:00:16 +0800
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644397312; x=1675933312;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=W1vbGig1ggXixsjNE2mO6qoA8DXkKDyDegvqnRj1LrY=;
+  b=IljA1k1l6vqrivtRLoJOFz89KqLxdccSbW/3fKD8Drm1CsSovw8JarO7
+   BjJbc+u8odH83vGhQaizY+mjrUjmIsDdZZkHzxvOEU/5K9/66+bfYdiNW
+   LHwTTH+nqCLRpAzqI9tfEg0BaMLpsZBUpzs/2EHqBn3NSC+okB+Tx62a1
+   0=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 09 Feb 2022 00:55:59 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 00:55:58 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 00:55:58 -0800
+Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 00:55:51 -0800
+From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
+        <robdclark@gmail.com>, <seanpaul@chromium.org>,
+        <swboyd@chromium.org>, <dianders@chromium.org>,
+        <krzysztof.kozlowski@canonical.com>, <thierry.reding@gmail.com>,
+        <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        <quic_kalyant@quicinc.com>, <quic_abhinavk@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_mkrishn@quicinc.com>,
+        <quic_vproddut@quicinc.com>
+Subject: [PATCH v3 1/4] dt-bindings: display: simple: Add sharp LQ140M1JW46 panel
+Date:   Wed, 9 Feb 2022 14:25:29 +0530
+Message-ID: <1644396932-17932-2-git-send-email-quic_sbillaka@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
+References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/6] KVM: x86/pmu: Refactoring find_arch_event() to
- pmc_perf_hw_id()
-Content-Language: en-US
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>
-References: <20211130074221.93635-1-likexu@tencent.com>
- <20211130074221.93635-3-likexu@tencent.com>
- <CALMp9eQG7eqq+u3igApsRDV=tt0LdjZzmD_dC8zw=gt=f5NjSA@mail.gmail.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-In-Reply-To: <CALMp9eQG7eqq+u3igApsRDV=tt0LdjZzmD_dC8zw=gt=f5NjSA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/2/2022 9:55 am, Jim Mattson wrote:
->> +static unsigned int amd_pmc_perf_hw_id(struct kvm_pmc *pmc)
->>   {
->> +       u8 event_select = pmc->eventsel & ARCH_PERFMON_EVENTSEL_EVENT;
-> On AMD, the event select is 12 bits.
+Add support for sharp LQ140M1JW46 display panel. It is a 14" eDP panel
+with 1920x1080 display resolution.
 
-Out of your carefulness, we already know this fact.
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+---
 
-This function to get the perf_hw_id by the last 16 bits still works because we 
-currently
-do not have a 12-bits-select event defined in the amd_event_mapping[]. The 
-12-bits-select
-events (if any) will be programed in the type of PERF_TYPE_RAW.
+Changes in v3:
+  None
 
-IMO, a minor patch that renames some AMD variables and updates the relevant comments
-to avoid misunderstandings is quite acceptable.
+ Documentation/devicetree/bindings/display/panel/panel-simple.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks,
-Like Xu
+diff --git a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+index 9cf5588..1eb9dd4 100644
+--- a/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
++++ b/Documentation/devicetree/bindings/display/panel/panel-simple.yaml
+@@ -284,6 +284,8 @@ properties:
+       - sharp,lq101k1ly04
+         # Sharp 12.3" (2400x1600 pixels) TFT LCD panel
+       - sharp,lq123p1jx31
++        # Sharp 14" (1920x1080 pixels) TFT LCD panel
++      - sharp,lq140m1jw46
+         # Sharp LS020B1DD01D 2.0" HQVGA TFT LCD panel
+       - sharp,ls020b1dd01d
+         # Shelly SCA07010-BFN-LNN 7.0" WVGA TFT LCD panel
+-- 
+2.7.4
+
