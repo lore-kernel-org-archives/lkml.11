@@ -2,193 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBADC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233037AbiBJBcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:32:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39856 "EHLO
+        id S233099AbiBJBzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:55:47 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233043AbiBJBcK (ORCPT
+        with ESMTP id S231846AbiBJBzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:32:10 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F7D2252B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:32:06 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id ay7so4432496oib.8
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:32:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=JA8SYVMxaUyH4YyZJM0C21azBYEMmi2Y1kxP1Lk2Sfc=;
-        b=O3c6mAlIw3LJ6tHGeInotdtty8m394xV0O/zN1i5RWCIhhfLgZUgyenmomq+2yAdtF
-         lkBG5v1vqioAZDjPgTKmVulcUw7dq6qMEQs0O+YK8Al8OES0a8R9wNGRfl/NqhBso73B
-         aZdSh1Vr0PxzlbkLbNsRCwjITa6mtVVMmdZHU=
+        Wed, 9 Feb 2022 20:55:41 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 051C32B6B1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:45:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644457515;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QqS6aRbHUDdzpsG8gLAbed/VgqomfvLKE7ZO5PCIOxw=;
+        b=EAWUge6OpYCxHvMymJyzXL0u6KeNKQUU7UmOf3hbi6wNGumwmhGn5JElsE2ja4BUF7CKTk
+        tWV90Y9Iz8kOCpJDBcOWk+GdTEN4/DxWQvUL0LMEPMqlwoZQT5MxIet6fgh4z1SXxc4awf
+        wo4tIlJ5A3FTplwCKy4zT8zvpt8Bozs=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-364-Nf0j83U2PPCMUeuPK1h7bg-1; Wed, 09 Feb 2022 18:44:43 -0500
+X-MC-Unique: Nf0j83U2PPCMUeuPK1h7bg-1
+Received: by mail-io1-f71.google.com with SMTP id q7-20020a6bf207000000b006129589cb60so2892722ioh.4
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 15:44:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=JA8SYVMxaUyH4YyZJM0C21azBYEMmi2Y1kxP1Lk2Sfc=;
-        b=Iw1sT4eGRnR0b02Ki7QwuvjETE5Q6Yaj2G5nVfXIlJCL6mFHRrYnWxK4ZUi5GQSJE8
-         TB7W7SPjjU/VeJ9+nBoFRzqhwmk+5m+18cDc1ov8ibrRwTOnIpqQGRxcITsc0reojQCl
-         6K1qvWredOwBCxWDOdY5qgROeBkLDFnANI4QKxky8nI+8ZocuzQeikYgYvPU5tCkiXvF
-         IdWfJNw4bpP17jIypGlQgBO2jCBFe4IjRIuD21AT+ml+JO7eQeWFGrAFoymy5iiGZx5y
-         vTA3UulzOL1vTjvDsgjjfd9dqumOWMRrD+ZPbGqDD5wbWVOh6gLVRVXBkYSc0zSY2sgj
-         p3ow==
-X-Gm-Message-State: AOAM532SGpwtIVJHYZu9iYoozktrzO/tx97o1LNii7rraelgPLXWFEDp
-        ktae3FcdcUyc3EnaMf3X8CEfGbvjJ8yTSfWoNpeb4Q==
-X-Google-Smtp-Source: ABdhPJzzlx3EUJerFZaJLb5bo/Ioe6tDfoil/nNDn7PZlJm3As5kujrEC2xVsGqaKf2pGVwpd8IFLA4u8yQTkDzY6KU=
-X-Received: by 2002:aca:ad97:: with SMTP id w145mr76985oie.238.1644456725843;
- Wed, 09 Feb 2022 17:32:05 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Feb 2022 17:32:05 -0800
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=QqS6aRbHUDdzpsG8gLAbed/VgqomfvLKE7ZO5PCIOxw=;
+        b=6njCH4D30kIlTz5YY8LzOnGGtOyzHfX7VpfZoQ+ishFHhqUMHcV//NJ0BMSLQIYn2n
+         BXXlFVm9hgGaClBWIeB5qVfLDnvCUBisZ8qC5MVZ8NsUtfEH1Luje41JxWowxW1BNxhU
+         Whlp0hnWlAXNsEE6sUQnZ8G2R/wriVc19b3uuGHfchkWCCZn5jvOBiC7Gwpk2O/77Eel
+         I8WizMKAFZWLksIqUhGfysZzYtz5eWf+t0syUD+2XVVY86ZCCM/MlQsaBZKhPSpyyFWV
+         fcMYe0K144v9gbKGNn3OFUnDbuLDVy8aI9ihK/t75AN5wzKTyrEdO8LELqb8nqTj0cyd
+         vrVQ==
+X-Gm-Message-State: AOAM530KMlOsO4JOvu9EPOn/Uil334WCOzQPuvweXnhozrwy6G0hUiit
+        VyePMa6X/VVno2POrX3y5XakZXahv872fEPTkduXNof06Hcv89vVRjBhQmZqrCpJW2ZzV/hV/3g
+        /HHmDmsvpQ//meXdRpgrEgnxP
+X-Received: by 2002:a05:6602:2209:: with SMTP id n9mr2470393ion.106.1644450283117;
+        Wed, 09 Feb 2022 15:44:43 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxT6HD2F4lnfPsmgFD3PhnkTPzmCmvBRL9NupZBHsvlbk18vuDpteUdQty0XS8Ul8opPEqcow==
+X-Received: by 2002:a05:6602:2209:: with SMTP id n9mr2470381ion.106.1644450282952;
+        Wed, 09 Feb 2022 15:44:42 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id w19sm10870685iov.16.2022.02.09.15.44.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 15:44:42 -0800 (PST)
+Date:   Wed, 9 Feb 2022 16:44:40 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <jgg@nvidia.com>,
+        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>
+Subject: Re: [RFC v4 7/8] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Message-ID: <20220209164440.0d77284c.alex.williamson@redhat.com>
+In-Reply-To: <20220208133425.1096-8-shameerali.kolothum.thodi@huawei.com>
+References: <20220208133425.1096-1-shameerali.kolothum.thodi@huawei.com>
+        <20220208133425.1096-8-shameerali.kolothum.thodi@huawei.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <1644331940-18986-4-git-send-email-quic_c_skakit@quicinc.com>
-References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com> <1644331940-18986-4-git-send-email-quic_c_skakit@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 9 Feb 2022 17:32:05 -0800
-Message-ID: <CAE-0n52B4heY5fcbz71JPOqvMVvmqsXO94V+Z0qTTw_XXextJw@mail.gmail.com>
-Subject: Re: [PATCH V5 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya (2022-02-08 06:52:17)
-> diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
-> index c472d7f..e8569cc 100644
-> --- a/drivers/mfd/qcom-pm8008.c
-> +++ b/drivers/mfd/qcom-pm8008.c
-> @@ -8,6 +8,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
->  #include <linux/irqdomain.h>
-> +#include <linux/mfd/core.h>
->  #include <linux/module.h>
->  #include <linux/of_device.h>
->  #include <linux/of_platform.h>
-> @@ -27,6 +28,37 @@
->  #define INT_EN_CLR_OFFSET              0x16
->  #define INT_LATCHED_STS_OFFSET         0x18
->
-> +static const struct mfd_cell pm8008_regulator_devs[] = {
-
-Is there some way to not allocate this structure statically forever?
-
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 0,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 1,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 2,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 3,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 4,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 5,
-> +       },
-> +       {
-> +               .name = "qcom,pm8008-regulators",
-> +               .id = 6,
-> +       },
-> +};
+On Tue, 8 Feb 2022 13:34:24 +0000
+Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
 > +
->  enum {
->         PM8008_MISC,
->         pm8008_temp_alarm,
-> @@ -35,6 +67,17 @@ enum {
->         PM8008_NUM_PERIPHS,
->  };
->
-> +enum {
-> +       PM8008_INFRA,
-> +       PM8008_REGULATORS,
-> +};
+> +static struct hisi_acc_vf_migration_file *
+> +hisi_acc_vf_stop_copy(struct hisi_acc_vf_core_device *hisi_acc_vdev)
+> +{
+> +	struct hisi_qm *vf_qm = &hisi_acc_vdev->vf_qm;
+> +	struct device *dev = &hisi_acc_vdev->vf_dev->dev;
+> +	struct hisi_acc_vf_migration_file *migf;
+> +	int ret;
 > +
-> +static const struct of_device_id pm8008_match[] = {
-> +       { .compatible = "qcom,pm8008", .data = (void *)PM8008_INFRA},
-> +       { .compatible = "qcom,pm8008-regulators", .data = (void *)PM8008_REGULATORS},
-> +       { },
+> +	if (unlikely(qm_wait_dev_not_ready(vf_qm))) {
+> +		dev_info(dev, "QM device not ready, no data to transfer\n");
+> +		return 0;
+> +	}
 
-Nitpick: Drop , on {} so nothing can come after without causing compile
-error.
+This return value looks suspicious and I think would cause a segfault
+in the calling code:
 
-> +};
-> +
->  #define PM8008_PERIPH_0_BASE   0x900
->  #define PM8008_PERIPH_1_BASE   0x2400
->  #define PM8008_PERIPH_2_BASE   0xC000
-> @@ -221,6 +264,7 @@ static int pm8008_probe(struct i2c_client *client)
->  {
->         int rc;
->         struct pm8008_data *chip;
-> +       const struct of_device_id *id;
->
->         chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
->         if (!chip)
-> @@ -239,14 +283,19 @@ static int pm8008_probe(struct i2c_client *client)
->                         dev_err(chip->dev, "Failed to probe irq periphs: %d\n", rc);
->         }
->
-> +       id = of_match_node(pm8008_match, chip->dev->of_node);
++		migf = hisi_acc_vf_stop_copy(hisi_acc_vdev);
++		if (IS_ERR(migf))
++			return ERR_CAST(migf);
++		get_file(migf->filp);
++		hisi_acc_vdev->saving_migf = migf;
++		return migf->filp;
 
-Use device_get_match_data()? And then use (uintptr_t) casts to check for
-the enum? Using device_get_match_data() allows us to avoid moving the
-pm8008_match table.
+Thanks,
+Alex
 
-> +       if (id->data == (void *)PM8008_REGULATORS) {
-
-	enum <your_name_here> dev_type = device_get_match_data(dev);
-
-	if (dev_type == PM8008_REGULATORS)
-
-> +               rc = mfd_add_devices(chip->dev, 0, pm8008_regulator_devs,
-
-Why not devm_mfd_add_devices()?
-
-> +                               ARRAY_SIZE(pm8008_regulator_devs), NULL, 0, NULL);
-> +               if (rc) {
-> +                       dev_err(chip->dev, "Failed to add children: %d\n", rc);
-> +                       return rc;
-> +               }
-> +       }
-> +
->         return devm_of_platform_populate(chip->dev);
->  }
->
-> -static const struct of_device_id pm8008_match[] = {
-> -       { .compatible = "qcom,pm8008", },
-> -       { },
-> -};
-
-This should have a MODULE_DEVICE_TABLE(of, pm8008_match) here.
-
-> -
->  static struct i2c_driver pm8008_mfd_driver = {
->         .driver = {
->                 .name = "pm8008",
