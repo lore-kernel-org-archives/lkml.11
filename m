@@ -2,637 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB48C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230153AbiBILKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:10:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
+        id S230195AbiBILKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:10:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229913AbiBILKU (ORCPT
+        with ESMTP id S230094AbiBILKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:10:20 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7214E082897
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:05:50 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id y17so1767517plg.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:05:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QjsL5xWmyjzbWpkOC5DbKrBp9VWGAGrBXkR2uMhhkzk=;
-        b=fno35O5bCi0aQBOrBZuga60eu6cPFSVGOlU7zKFxuVWalioWL4dJM/iNUHP+0eq1Kc
-         XptoMV7h1YAdIpJ4NFS99vWXhKOh6kU4782xjFYITibJrekLF79ai7TI0ccc2vZIFY7y
-         HucWWjb7SI55lPf25XZlTMOe4HpCYybT70NCX2Mnpitna3+qCh3Iejam6eUVwg7JuuqZ
-         mRghWAVRKqyhttZplLxSvhFdDK+kjxVUTa0VILvrQKnSFT3bEg1ahTN/OvDG1iLJAwyU
-         8iMVGMxrfS0Be4fPBArg5ko+mblf+BlQsS/jNB7DcKM/RqbiEgIJZSLGfGQpo+Ve64Ny
-         AiiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QjsL5xWmyjzbWpkOC5DbKrBp9VWGAGrBXkR2uMhhkzk=;
-        b=m5/tRMFo4Tx4LC84OncYhV1Pc+rPBVv/Uk6Z92g75xmMNhlH322Ne/S68njPpccy1z
-         +Lh6AaLFrtdcT68ipH+p1GfPiJYC5axOad/eMPLEpfCqlKbqH0gbLghbUiSiGnqZ9hWn
-         UmvG8Is4XBPT+VGrva0RNrfZDqp+RReYiagVLuzOUc5ZhKJHztjYcm5L2wgjfgvu2wXw
-         XCUoFWYzVKf0VtyNsul2dvOnMXi9rFjAOpkTXz+PUOdSBi5ktPaG7QuvItR7aQDSHtkr
-         /BimK8JT85KCsaFoY1+betNgS1qAQXXpa0zPwFNp/HsSBWpvms4bQaySiVOCgQGKblUa
-         PWRw==
-X-Gm-Message-State: AOAM530q7D0NOwkp/gMwZCn/m2unECPCe1QqwIEcN8hOofR4ntX7x+YG
-        cpS/RwP4yy+1fzhKGDFdpwRJ
-X-Google-Smtp-Source: ABdhPJyvnAxREoT/IpflXn8cNxW1ulPYUf1pt5hoQZj+oEdneScKA0gWxKDPHhKtX4xIBkgNwRj2jQ==
-X-Received: by 2002:a17:90b:4ad2:: with SMTP id mh18mr2544941pjb.51.1644401143866;
-        Wed, 09 Feb 2022 02:05:43 -0800 (PST)
-Received: from localhost.localdomain ([117.217.179.178])
-        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.05.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:05:43 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        vbadigan@codeaurora.org, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 06/23] bus: mhi: Cleanup the register definitions used in headers
-Date:   Wed,  9 Feb 2022 15:26:07 +0530
-Message-Id: <20220209095624.26389-7-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
-References: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+        Wed, 9 Feb 2022 06:10:21 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C628E08289D;
+        Wed,  9 Feb 2022 02:05:52 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2196Rwg9037918;
+        Wed, 9 Feb 2022 09:08:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=85BTCYJ8b9wszDml7GMxnTAH4jTYLNfYsR9Ox7jzAdo=;
+ b=ZAaq/b+PpU6TXD/xA/7yRI5axFrpZEUUBYFqzXfoGD4vE1cySoxhieyWnLPStO3826qi
+ da6cKEPnM/Yi3+RwMSEl9TYu9BxsoZz6nUAJkygadAMP85HbF6X01N9jizzWpTVmCkNC
+ 6HKTgFem8auLO9eLH8OIr6M3rHDvhiD9bJpdSItYBb5S/HVxCQIQwwujBIZM1+Tj2r5S
+ x2fVoYG7iRkh4bOkNGissf8pYuzm70Cxd++fMr52ltqe0sxsmdbxxMm2gkLZz0cNGUNc
+ C1qkBt+2CzLKPcC9OXa8/qwWdSG2RjBUp9kBCXZZvjXfWE/RUEpXsjorJc5d+WPxOTaU oA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3wmk8q4f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:08:14 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2198f80c038886;
+        Wed, 9 Feb 2022 09:08:14 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3wmk8q3x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:08:14 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21996UWl008785;
+        Wed, 9 Feb 2022 09:08:12 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e1gv9d1e6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 09:08:12 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2198w0ts33030464
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 08:58:00 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9AF784C04E;
+        Wed,  9 Feb 2022 09:08:07 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E4F914C050;
+        Wed,  9 Feb 2022 09:08:06 +0000 (GMT)
+Received: from [9.171.87.52] (unknown [9.171.87.52])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 09:08:06 +0000 (GMT)
+Message-ID: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 10:08:06 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
+ MEMOP IOCTL
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+ <20220207165930.1608621-6-scgl@linux.ibm.com>
+ <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
+ <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Uw-uIbq5PPdoLNW5R3hzV1UaOdp6uQw_
+X-Proofpoint-ORIG-GUID: kVS-vx5uYUYvBhv00PO4UAaPlK59RC8q
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_04,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 adultscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 clxscore=1015 mlxscore=0
+ priorityscore=1501 phishscore=0 suspectscore=0 lowpriorityscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090060
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cleanup includes:
 
-1. Moving the MHI register definitions to common.h header with REG_ prefix
-   and using them in the host/internal.h file as an alias. This makes it
-   possible to reuse the register definitions in EP stack that differs by
-   a fixed offset.
-2. Using the GENMASK macro for masks
-3. Removing brackets for single values
-4. Using lowercase for hex values
-5. Using two digits for hex values where applicable
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/common.h        | 243 ++++++++++++++++++++++++-----
- drivers/bus/mhi/host/internal.h | 265 +++++++++-----------------------
- 2 files changed, 278 insertions(+), 230 deletions(-)
+Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
+> On 2/9/22 08:34, Christian Borntraeger wrote:
+>> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
+>>> User space needs a mechanism to perform key checked accesses when
+>>> emulating instructions.
+>>>
+>>> The key can be passed as an additional argument.
+>>> Having an additional argument is flexible, as user space can
+>>> pass the guest PSW's key, in order to make an access the same way the
+>>> CPU would, or pass another key if necessary.
+>>>
+>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+>>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
+>>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+>>> ---
+>>>    arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
+>>>    include/uapi/linux/kvm.h |  8 +++++--
+>>>    2 files changed, 44 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>>> index cf347e1a4f17..71e61fb3f0d9 100644
+>>> --- a/arch/s390/kvm/kvm-s390.c
+>>> +++ b/arch/s390/kvm/kvm-s390.c
+>>> @@ -32,6 +32,7 @@
+>>>    #include <linux/sched/signal.h>
+>>>    #include <linux/string.h>
+>>>    #include <linux/pgtable.h>
+>>> +#include <linux/bitfield.h>
+>>>      #include <asm/asm-offsets.h>
+>>>    #include <asm/lowcore.h>
+>>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+>>>        return r;
+>>>    }
+>>>    +static bool access_key_invalid(u8 access_key)
+>>> +{
+>>> +    return access_key > 0xf;
+>>> +}
+>>> +
+>>>    long kvm_arch_vm_ioctl(struct file *filp,
+>>>                   unsigned int ioctl, unsigned long arg)
+>>>    {
+>>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>>>                      struct kvm_s390_mem_op *mop)
+>>>    {
+>>>        void __user *uaddr = (void __user *)mop->buf;
+>>> +    u8 access_key = 0, ar = 0;
+>>>        void *tmpbuf = NULL;
+>>> +    bool check_reserved;
+>>>        int r = 0;
+>>>        const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+>>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
+>>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
+>>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+>>>    -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+>>> +    if (mop->flags & ~supported_flags || !mop->size)
+>>>            return -EINVAL;
+>>> -
+>>>        if (mop->size > MEM_OP_MAX_SIZE)
+>>>            return -E2BIG;
+>>> -
+>>>        if (kvm_s390_pv_cpu_is_protected(vcpu))
+>>>            return -EINVAL;
+>>> -
+>>>        if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+>>>            tmpbuf = vmalloc(mop->size);
+>>>            if (!tmpbuf)
+>>>                return -ENOMEM;
+>>>        }
+>>> +    ar = mop->ar;
+>>> +    mop->ar = 0;
+>>
+>> Why this assignment to 0?
+> 
+> It's so the check of reserved below works like that, they're all part of the anonymous union.
 
-diff --git a/drivers/bus/mhi/common.h b/drivers/bus/mhi/common.h
-index 897813c58ffb..d4ed2f3bd4dd 100644
---- a/drivers/bus/mhi/common.h
-+++ b/drivers/bus/mhi/common.h
-@@ -9,62 +9,223 @@
- 
- #include <linux/mhi.h>
- 
-+/* MHI registers */
-+#define REG_MHIREGLEN					0x00
-+#define REG_MHIVER					0x08
-+#define REG_MHICFG					0x10
-+#define REG_CHDBOFF					0x18
-+#define REG_ERDBOFF					0x20
-+#define REG_BHIOFF					0x28
-+#define REG_BHIEOFF					0x2c
-+#define REG_DEBUGOFF					0x30
-+#define REG_MHICTRL					0x38
-+#define REG_MHISTATUS					0x48
-+#define REG_CCABAP_LOWER				0x58
-+#define REG_CCABAP_HIGHER				0x5c
-+#define REG_ECABAP_LOWER				0x60
-+#define REG_ECABAP_HIGHER				0x64
-+#define REG_CRCBAP_LOWER				0x68
-+#define REG_CRCBAP_HIGHER				0x6c
-+#define REG_CRDB_LOWER					0x70
-+#define REG_CRDB_HIGHER					0x74
-+#define REG_MHICTRLBASE_LOWER				0x80
-+#define REG_MHICTRLBASE_HIGHER				0x84
-+#define REG_MHICTRLLIMIT_LOWER				0x88
-+#define REG_MHICTRLLIMIT_HIGHER				0x8c
-+#define REG_MHIDATABASE_LOWER				0x98
-+#define REG_MHIDATABASE_HIGHER				0x9c
-+#define REG_MHIDATALIMIT_LOWER				0xa0
-+#define REG_MHIDATALIMIT_HIGHER				0xa4
-+
-+/* MHI BHI registers */
-+#define REG_BHI_BHIVERSION_MINOR			0x00
-+#define REG_BHI_BHIVERSION_MAJOR			0x04
-+#define REG_BHI_IMGADDR_LOW				0x08
-+#define REG_BHI_IMGADDR_HIGH				0x0c
-+#define REG_BHI_IMGSIZE					0x10
-+#define REG_BHI_RSVD1					0x14
-+#define REG_BHI_IMGTXDB					0x18
-+#define REG_BHI_RSVD2					0x1c
-+#define REG_BHI_INTVEC					0x20
-+#define REG_BHI_RSVD3					0x24
-+#define REG_BHI_EXECENV					0x28
-+#define REG_BHI_STATUS					0x2c
-+#define REG_BHI_ERRCODE					0x30
-+#define REG_BHI_ERRDBG1					0x34
-+#define REG_BHI_ERRDBG2					0x38
-+#define REG_BHI_ERRDBG3					0x3c
-+#define REG_BHI_SERIALNU				0x40
-+#define REG_BHI_SBLANTIROLLVER				0x44
-+#define REG_BHI_NUMSEG					0x48
-+#define REG_BHI_MSMHWID(n)				(0x4c + (0x4 * (n)))
-+#define REG_BHI_OEMPKHASH(n)				(0x64 + (0x4 * (n)))
-+#define REG_BHI_RSVD5					0xc4
-+
-+/* BHI register bits */
-+#define BHI_TXDB_SEQNUM_BMSK				GENMASK(29, 0)
-+#define BHI_TXDB_SEQNUM_SHFT				0
-+#define BHI_STATUS_MASK					GENMASK(31, 30)
-+#define BHI_STATUS_SHIFT				30
-+#define BHI_STATUS_ERROR				0x03
-+#define BHI_STATUS_SUCCESS				0x02
-+#define BHI_STATUS_RESET				0x00
-+
-+/* MHI BHIE registers */
-+#define REG_BHIE_MSMSOCID_OFFS				0x00
-+#define REG_BHIE_TXVECADDR_LOW_OFFS			0x2c
-+#define REG_BHIE_TXVECADDR_HIGH_OFFS			0x30
-+#define REG_BHIE_TXVECSIZE_OFFS				0x34
-+#define REG_BHIE_TXVECDB_OFFS				0x3c
-+#define REG_BHIE_TXVECSTATUS_OFFS			0x44
-+#define REG_BHIE_RXVECADDR_LOW_OFFS			0x60
-+#define REG_BHIE_RXVECADDR_HIGH_OFFS			0x64
-+#define REG_BHIE_RXVECSIZE_OFFS				0x68
-+#define REG_BHIE_RXVECDB_OFFS				0x70
-+#define REG_BHIE_RXVECSTATUS_OFFS			0x78
-+
-+/* BHIE register bits */
-+#define BHIE_TXVECDB_SEQNUM_BMSK			GENMASK(29, 0)
-+#define BHIE_TXVECDB_SEQNUM_SHFT			0
-+#define BHIE_TXVECSTATUS_SEQNUM_BMSK			GENMASK(29, 0)
-+#define BHIE_TXVECSTATUS_SEQNUM_SHFT			0
-+#define BHIE_TXVECSTATUS_STATUS_BMSK			GENMASK(31, 30)
-+#define BHIE_TXVECSTATUS_STATUS_SHFT			30
-+#define BHIE_TXVECSTATUS_STATUS_RESET			0x00
-+#define BHIE_TXVECSTATUS_STATUS_XFER_COMPL		0x02
-+#define BHIE_TXVECSTATUS_STATUS_ERROR			0x03
-+#define BHIE_RXVECDB_SEQNUM_BMSK			GENMASK(29, 0)
-+#define BHIE_RXVECDB_SEQNUM_SHFT			0
-+#define BHIE_RXVECSTATUS_SEQNUM_BMSK			GENMASK(29, 0)
-+#define BHIE_RXVECSTATUS_SEQNUM_SHFT			0
-+#define BHIE_RXVECSTATUS_STATUS_BMSK			GENMASK(31, 30)
-+#define BHIE_RXVECSTATUS_STATUS_SHFT			30
-+#define BHIE_RXVECSTATUS_STATUS_RESET			0x00
-+#define BHIE_RXVECSTATUS_STATUS_XFER_COMPL		0x02
-+#define BHIE_RXVECSTATUS_STATUS_ERROR			0x03
-+
-+/* MHI register bits */
-+#define MHIREGLEN_MHIREGLEN_MASK			GENMASK(31, 0)
-+#define MHIREGLEN_MHIREGLEN_SHIFT			0
-+#define MHIVER_MHIVER_MASK				GENMASK(31, 0)
-+#define MHIVER_MHIVER_SHIFT				0
-+#define MHICFG_NHWER_MASK				GENMASK(31, 24)
-+#define MHICFG_NHWER_SHIFT				24
-+#define MHICFG_NER_MASK					GENMASK(23, 16)
-+#define MHICFG_NER_SHIFT				16
-+#define MHICFG_NHWCH_MASK				GENMASK(15, 8)
-+#define MHICFG_NHWCH_SHIFT				8
-+#define MHICFG_NCH_MASK					GENMASK(7, 0)
-+#define MHICFG_NCH_SHIFT				0
-+#define CHDBOFF_CHDBOFF_MASK				GENMASK(31, 0)
-+#define CHDBOFF_CHDBOFF_SHIFT				0
-+#define ERDBOFF_ERDBOFF_MASK				GENMASK(31, 0)
-+#define ERDBOFF_ERDBOFF_SHIFT				0
-+#define BHIOFF_BHIOFF_MASK				GENMASK(31, 0)
-+#define BHIOFF_BHIOFF_SHIFT				0
-+#define BHIEOFF_BHIEOFF_MASK				GENMASK(31, 0)
-+#define BHIEOFF_BHIEOFF_SHIFT				0
-+#define DEBUGOFF_DEBUGOFF_MASK				GENMASK(31, 0)
-+#define DEBUGOFF_DEBUGOFF_SHIFT				0
-+#define MHICTRL_MHISTATE_MASK				GENMASK(15, 8)
-+#define MHICTRL_MHISTATE_SHIFT				8
-+#define MHICTRL_RESET_MASK				BIT(1)
-+#define MHICTRL_RESET_SHIFT				1
-+#define MHISTATUS_MHISTATE_MASK				GENMASK(15, 8)
-+#define MHISTATUS_MHISTATE_SHIFT			8
-+#define MHISTATUS_SYSERR_MASK				BIT(2)
-+#define MHISTATUS_SYSERR_SHIFT				2
-+#define MHISTATUS_READY_MASK				BIT(0)
-+#define MHISTATUS_READY_SHIFT				0
-+#define CCABAP_LOWER_CCABAP_LOWER_MASK			GENMASK(31, 0)
-+#define CCABAP_LOWER_CCABAP_LOWER_SHIFT			0
-+#define CCABAP_HIGHER_CCABAP_HIGHER_MASK		GENMASK(31, 0)
-+#define CCABAP_HIGHER_CCABAP_HIGHER_SHIFT		0
-+#define ECABAP_LOWER_ECABAP_LOWER_MASK			GENMASK(31, 0)
-+#define ECABAP_LOWER_ECABAP_LOWER_SHIFT			0
-+#define ECABAP_HIGHER_ECABAP_HIGHER_MASK		GENMASK(31, 0)
-+#define ECABAP_HIGHER_ECABAP_HIGHER_SHIFT		0
-+#define CRCBAP_LOWER_CRCBAP_LOWER_MASK			GENMASK(31, 0)
-+#define CRCBAP_LOWER_CRCBAP_LOWER_SHIFT			0
-+#define CRCBAP_HIGHER_CRCBAP_HIGHER_MASK		GENMASK(31, 0)
-+#define CRCBAP_HIGHER_CRCBAP_HIGHER_SHIFT		0
-+#define CRDB_LOWER_CRDB_LOWER_MASK			GENMASK(31, 0)
-+#define CRDB_LOWER_CRDB_LOWER_SHIFT			0
-+#define CRDB_HIGHER_CRDB_HIGHER_MASK			GENMASK(31, 0)
-+#define CRDB_HIGHER_CRDB_HIGHER_SHIFT			0
-+#define MHICTRLBASE_LOWER_MHICTRLBASE_LOWER_MASK	GENMASK(31, 0)
-+#define MHICTRLBASE_LOWER_MHICTRLBASE_LOWER_SHIFT	0
-+#define MHICTRLBASE_HIGHER_MHICTRLBASE_HIGHER_MASK	GENMASK(31, 0)
-+#define MHICTRLBASE_HIGHER_MHICTRLBASE_HIGHER_SHIFT	0
-+#define MHICTRLLIMIT_LOWER_MHICTRLLIMIT_LOWER_MASK	GENMASK(31, 0)
-+#define MHICTRLLIMIT_LOWER_MHICTRLLIMIT_LOWER_SHIFT	0
-+#define MHICTRLLIMIT_HIGHER_MHICTRLLIMIT_HIGHER_MASK	GENMASK(31, 0)
-+#define MHICTRLLIMIT_HIGHER_MHICTRLLIMIT_HIGHER_SHIFT	0
-+#define MHIDATABASE_LOWER_MHIDATABASE_LOWER_MASK	GENMASK(31, 0)
-+#define MHIDATABASE_LOWER_MHIDATABASE_LOWER_SHIFT	0
-+#define MHIDATABASE_HIGHER_MHIDATABASE_HIGHER_MASK	GENMASK(31, 0)
-+#define MHIDATABASE_HIGHER_MHIDATABASE_HIGHER_SHIFT	0
-+#define MHIDATALIMIT_LOWER_MHIDATALIMIT_LOWER_MASK	GENMASK(31, 0)
-+#define MHIDATALIMIT_LOWER_MHIDATALIMIT_LOWER_SHIFT	0
-+#define MHIDATALIMIT_HIGHER_MHIDATALIMIT_HIGHER_MASK	GENMASK(31, 0)
-+#define MHIDATALIMIT_HIGHER_MHIDATALIMIT_HIGHER_SHIFT	0
-+
- /* Command Ring Element macros */
- /* No operation command */
--#define MHI_TRE_CMD_NOOP_PTR (0)
--#define MHI_TRE_CMD_NOOP_DWORD0 (0)
--#define MHI_TRE_CMD_NOOP_DWORD1 (cpu_to_le32(MHI_CMD_NOP << 16))
-+#define MHI_TRE_CMD_NOOP_PTR				0
-+#define MHI_TRE_CMD_NOOP_DWORD0				0
-+#define MHI_TRE_CMD_NOOP_DWORD1				cpu_to_le32(MHI_CMD_NOP << 16)
- 
- /* Channel reset command */
--#define MHI_TRE_CMD_RESET_PTR (0)
--#define MHI_TRE_CMD_RESET_DWORD0 (0)
--#define MHI_TRE_CMD_RESET_DWORD1(chid) (cpu_to_le32((chid << 24) | \
--					(MHI_CMD_RESET_CHAN << 16)))
-+#define MHI_TRE_CMD_RESET_PTR				0
-+#define MHI_TRE_CMD_RESET_DWORD0			0
-+#define MHI_TRE_CMD_RESET_DWORD1(chid)			(cpu_to_le32((chid << 24) | \
-+							(MHI_CMD_RESET_CHAN << 16)))
- 
- /* Channel stop command */
--#define MHI_TRE_CMD_STOP_PTR (0)
--#define MHI_TRE_CMD_STOP_DWORD0 (0)
--#define MHI_TRE_CMD_STOP_DWORD1(chid) (cpu_to_le32((chid << 24) | \
--				       (MHI_CMD_STOP_CHAN << 16)))
-+#define MHI_TRE_CMD_STOP_PTR				0
-+#define MHI_TRE_CMD_STOP_DWORD0				0
-+#define MHI_TRE_CMD_STOP_DWORD1(chid)			(cpu_to_le32((chid << 24) | \
-+							(MHI_CMD_STOP_CHAN << 16)))
- 
- /* Channel start command */
--#define MHI_TRE_CMD_START_PTR (0)
--#define MHI_TRE_CMD_START_DWORD0 (0)
--#define MHI_TRE_CMD_START_DWORD1(chid) (cpu_to_le32((chid << 24) | \
--					(MHI_CMD_START_CHAN << 16)))
-+#define MHI_TRE_CMD_START_PTR				0
-+#define MHI_TRE_CMD_START_DWORD0			0
-+#define MHI_TRE_CMD_START_DWORD1(chid)			(cpu_to_le32((chid << 24) | \
-+							(MHI_CMD_START_CHAN << 16)))
- 
--#define MHI_TRE_GET_DWORD(tre, word) (le32_to_cpu((tre)->dword[(word)]))
--#define MHI_TRE_GET_CMD_CHID(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
--#define MHI_TRE_GET_CMD_TYPE(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
-+#define MHI_TRE_GET_DWORD(tre, word)			le32_to_cpu((tre)->dword[(word)])
-+#define MHI_TRE_GET_CMD_CHID(tre)			((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-+#define MHI_TRE_GET_CMD_TYPE(tre)			((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
- 
- /* Event descriptor macros */
--#define MHI_TRE_EV_PTR(ptr) (cpu_to_le64(ptr))
--#define MHI_TRE_EV_DWORD0(code, len) (cpu_to_le32((code << 24) | len))
--#define MHI_TRE_EV_DWORD1(chid, type) (cpu_to_le32((chid << 24) | (type << 16)))
--#define MHI_TRE_GET_EV_PTR(tre) (le64_to_cpu((tre)->ptr))
--#define MHI_TRE_GET_EV_CODE(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
--#define MHI_TRE_GET_EV_LEN(tre) (MHI_TRE_GET_DWORD(tre, 0) & 0xFFFF)
--#define MHI_TRE_GET_EV_CHID(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
--#define MHI_TRE_GET_EV_TYPE(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
--#define MHI_TRE_GET_EV_STATE(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
--#define MHI_TRE_GET_EV_EXECENV(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
--#define MHI_TRE_GET_EV_SEQ(tre) MHI_TRE_GET_DWORD(tre, 0)
--#define MHI_TRE_GET_EV_TIME(tre) (MHI_TRE_GET_EV_PTR(tre))
--#define MHI_TRE_GET_EV_COOKIE(tre) lower_32_bits(MHI_TRE_GET_EV_PTR(tre))
--#define MHI_TRE_GET_EV_VEID(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 16) & 0xFF)
--#define MHI_TRE_GET_EV_LINKSPEED(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
--#define MHI_TRE_GET_EV_LINKWIDTH(tre) (MHI_TRE_GET_DWORD(tre, 0) & 0xFF)
-+/* Transfer completion event */
-+#define MHI_TRE_EV_PTR(ptr)				cpu_to_le64(ptr)
-+#define MHI_TRE_EV_DWORD0(code, len)			cpu_to_le32((code << 24) | len)
-+#define MHI_TRE_EV_DWORD1(chid, type)			cpu_to_le32((chid << 24) | (type << 16))
-+#define MHI_TRE_GET_EV_PTR(tre)				le64_to_cpu((tre)->ptr)
-+#define MHI_TRE_GET_EV_CODE(tre)			((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-+#define MHI_TRE_GET_EV_LEN(tre)				(MHI_TRE_GET_DWORD(tre, 0) & 0xFFFF)
-+#define MHI_TRE_GET_EV_CHID(tre)			((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-+#define MHI_TRE_GET_EV_TYPE(tre)			((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
-+#define MHI_TRE_GET_EV_STATE(tre)			((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-+#define MHI_TRE_GET_EV_EXECENV(tre)			((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-+#define MHI_TRE_GET_EV_SEQ(tre)				MHI_TRE_GET_DWORD(tre, 0)
-+#define MHI_TRE_GET_EV_TIME(tre)			MHI_TRE_GET_EV_PTR(tre)
-+#define MHI_TRE_GET_EV_COOKIE(tre)			lower_32_bits(MHI_TRE_GET_EV_PTR(tre))
-+#define MHI_TRE_GET_EV_VEID(tre)			((MHI_TRE_GET_DWORD(tre, 0) >> 16) & 0xFF)
-+#define MHI_TRE_GET_EV_LINKSPEED(tre)			((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-+#define MHI_TRE_GET_EV_LINKWIDTH(tre)			(MHI_TRE_GET_DWORD(tre, 0) & 0xFF)
- 
- /* Transfer descriptor macros */
--#define MHI_TRE_DATA_PTR(ptr) (cpu_to_le64(ptr))
--#define MHI_TRE_DATA_DWORD0(len) (cpu_to_le32(len & MHI_MAX_MTU))
--#define MHI_TRE_DATA_DWORD1(bei, ieot, ieob, chain) (cpu_to_le32((2 << 16) | (bei << 10) \
--	| (ieot << 9) | (ieob << 8) | chain))
-+#define MHI_TRE_DATA_PTR(ptr)				cpu_to_le64(ptr)
-+#define MHI_TRE_DATA_DWORD0(len)			cpu_to_le32(len & MHI_MAX_MTU)
-+#define MHI_TRE_DATA_DWORD1(bei, ieot, ieob, chain)	(cpu_to_le32((2 << 16) | (bei << 10) \
-+							| (ieot << 9) | (ieob << 8) | chain))
- 
- /* RSC transfer descriptor macros */
--#define MHI_RSCTRE_DATA_PTR(ptr, len) (cpu_to_le64(((u64)len << 48) | ptr))
--#define MHI_RSCTRE_DATA_DWORD0(cookie) (cpu_to_le32(cookie))
--#define MHI_RSCTRE_DATA_DWORD1 (cpu_to_le32(MHI_PKT_TYPE_COALESCING << 16))
-+#define MHI_RSCTRE_DATA_PTR(ptr, len)			cpu_to_le64(((u64)len << 48) | ptr)
-+#define MHI_RSCTRE_DATA_DWORD0(cookie)			cpu_to_le32(cookie)
-+#define MHI_RSCTRE_DATA_DWORD1				cpu_to_le32(MHI_PKT_TYPE_COALESCING << 16)
- 
- enum mhi_pkt_type {
- 	MHI_PKT_TYPE_INVALID = 0x0,
-diff --git a/drivers/bus/mhi/host/internal.h b/drivers/bus/mhi/host/internal.h
-index 622de6ba1a0b..762055a6ec9f 100644
---- a/drivers/bus/mhi/host/internal.h
-+++ b/drivers/bus/mhi/host/internal.h
-@@ -11,197 +11,84 @@
- 
- extern struct bus_type mhi_bus_type;
- 
--#define MHIREGLEN (0x0)
--#define MHIREGLEN_MHIREGLEN_MASK (0xFFFFFFFF)
--#define MHIREGLEN_MHIREGLEN_SHIFT (0)
--
--#define MHIVER (0x8)
--#define MHIVER_MHIVER_MASK (0xFFFFFFFF)
--#define MHIVER_MHIVER_SHIFT (0)
--
--#define MHICFG (0x10)
--#define MHICFG_NHWER_MASK (0xFF000000)
--#define MHICFG_NHWER_SHIFT (24)
--#define MHICFG_NER_MASK (0xFF0000)
--#define MHICFG_NER_SHIFT (16)
--#define MHICFG_NHWCH_MASK (0xFF00)
--#define MHICFG_NHWCH_SHIFT (8)
--#define MHICFG_NCH_MASK (0xFF)
--#define MHICFG_NCH_SHIFT (0)
--
--#define CHDBOFF (0x18)
--#define CHDBOFF_CHDBOFF_MASK (0xFFFFFFFF)
--#define CHDBOFF_CHDBOFF_SHIFT (0)
--
--#define ERDBOFF (0x20)
--#define ERDBOFF_ERDBOFF_MASK (0xFFFFFFFF)
--#define ERDBOFF_ERDBOFF_SHIFT (0)
--
--#define BHIOFF (0x28)
--#define BHIOFF_BHIOFF_MASK (0xFFFFFFFF)
--#define BHIOFF_BHIOFF_SHIFT (0)
--
--#define BHIEOFF (0x2C)
--#define BHIEOFF_BHIEOFF_MASK (0xFFFFFFFF)
--#define BHIEOFF_BHIEOFF_SHIFT (0)
--
--#define DEBUGOFF (0x30)
--#define DEBUGOFF_DEBUGOFF_MASK (0xFFFFFFFF)
--#define DEBUGOFF_DEBUGOFF_SHIFT (0)
--
--#define MHICTRL (0x38)
--#define MHICTRL_MHISTATE_MASK (0x0000FF00)
--#define MHICTRL_MHISTATE_SHIFT (8)
--#define MHICTRL_RESET_MASK (0x2)
--#define MHICTRL_RESET_SHIFT (1)
--
--#define MHISTATUS (0x48)
--#define MHISTATUS_MHISTATE_MASK (0x0000FF00)
--#define MHISTATUS_MHISTATE_SHIFT (8)
--#define MHISTATUS_SYSERR_MASK (0x4)
--#define MHISTATUS_SYSERR_SHIFT (2)
--#define MHISTATUS_READY_MASK (0x1)
--#define MHISTATUS_READY_SHIFT (0)
--
--#define CCABAP_LOWER (0x58)
--#define CCABAP_LOWER_CCABAP_LOWER_MASK (0xFFFFFFFF)
--#define CCABAP_LOWER_CCABAP_LOWER_SHIFT (0)
--
--#define CCABAP_HIGHER (0x5C)
--#define CCABAP_HIGHER_CCABAP_HIGHER_MASK (0xFFFFFFFF)
--#define CCABAP_HIGHER_CCABAP_HIGHER_SHIFT (0)
--
--#define ECABAP_LOWER (0x60)
--#define ECABAP_LOWER_ECABAP_LOWER_MASK (0xFFFFFFFF)
--#define ECABAP_LOWER_ECABAP_LOWER_SHIFT (0)
--
--#define ECABAP_HIGHER (0x64)
--#define ECABAP_HIGHER_ECABAP_HIGHER_MASK (0xFFFFFFFF)
--#define ECABAP_HIGHER_ECABAP_HIGHER_SHIFT (0)
--
--#define CRCBAP_LOWER (0x68)
--#define CRCBAP_LOWER_CRCBAP_LOWER_MASK (0xFFFFFFFF)
--#define CRCBAP_LOWER_CRCBAP_LOWER_SHIFT (0)
--
--#define CRCBAP_HIGHER (0x6C)
--#define CRCBAP_HIGHER_CRCBAP_HIGHER_MASK (0xFFFFFFFF)
--#define CRCBAP_HIGHER_CRCBAP_HIGHER_SHIFT (0)
--
--#define CRDB_LOWER (0x70)
--#define CRDB_LOWER_CRDB_LOWER_MASK (0xFFFFFFFF)
--#define CRDB_LOWER_CRDB_LOWER_SHIFT (0)
--
--#define CRDB_HIGHER (0x74)
--#define CRDB_HIGHER_CRDB_HIGHER_MASK (0xFFFFFFFF)
--#define CRDB_HIGHER_CRDB_HIGHER_SHIFT (0)
--
--#define MHICTRLBASE_LOWER (0x80)
--#define MHICTRLBASE_LOWER_MHICTRLBASE_LOWER_MASK (0xFFFFFFFF)
--#define MHICTRLBASE_LOWER_MHICTRLBASE_LOWER_SHIFT (0)
--
--#define MHICTRLBASE_HIGHER (0x84)
--#define MHICTRLBASE_HIGHER_MHICTRLBASE_HIGHER_MASK (0xFFFFFFFF)
--#define MHICTRLBASE_HIGHER_MHICTRLBASE_HIGHER_SHIFT (0)
--
--#define MHICTRLLIMIT_LOWER (0x88)
--#define MHICTRLLIMIT_LOWER_MHICTRLLIMIT_LOWER_MASK (0xFFFFFFFF)
--#define MHICTRLLIMIT_LOWER_MHICTRLLIMIT_LOWER_SHIFT (0)
--
--#define MHICTRLLIMIT_HIGHER (0x8C)
--#define MHICTRLLIMIT_HIGHER_MHICTRLLIMIT_HIGHER_MASK (0xFFFFFFFF)
--#define MHICTRLLIMIT_HIGHER_MHICTRLLIMIT_HIGHER_SHIFT (0)
--
--#define MHIDATABASE_LOWER (0x98)
--#define MHIDATABASE_LOWER_MHIDATABASE_LOWER_MASK (0xFFFFFFFF)
--#define MHIDATABASE_LOWER_MHIDATABASE_LOWER_SHIFT (0)
--
--#define MHIDATABASE_HIGHER (0x9C)
--#define MHIDATABASE_HIGHER_MHIDATABASE_HIGHER_MASK (0xFFFFFFFF)
--#define MHIDATABASE_HIGHER_MHIDATABASE_HIGHER_SHIFT (0)
--
--#define MHIDATALIMIT_LOWER (0xA0)
--#define MHIDATALIMIT_LOWER_MHIDATALIMIT_LOWER_MASK (0xFFFFFFFF)
--#define MHIDATALIMIT_LOWER_MHIDATALIMIT_LOWER_SHIFT (0)
--
--#define MHIDATALIMIT_HIGHER (0xA4)
--#define MHIDATALIMIT_HIGHER_MHIDATALIMIT_HIGHER_MASK (0xFFFFFFFF)
--#define MHIDATALIMIT_HIGHER_MHIDATALIMIT_HIGHER_SHIFT (0)
-+/* MHI registers */
-+#define MHIREGLEN			REG_MHIREGLEN
-+#define MHIVER				REG_MHIVER
-+#define MHICFG				REG_MHICFG
-+#define CHDBOFF				REG_CHDBOFF
-+#define ERDBOFF				REG_ERDBOFF
-+#define BHIOFF				REG_BHIOFF
-+#define BHIEOFF				REG_BHIEOFF
-+#define DEBUGOFF			REG_DEBUGOFF
-+#define MHICTRL				REG_MHICTRL
-+#define MHISTATUS			REG_MHISTATUS
-+#define CCABAP_LOWER			REG_CCABAP_LOWER
-+#define CCABAP_HIGHER			REG_CCABAP_HIGHER
-+#define ECABAP_LOWER			REG_ECABAP_LOWER
-+#define ECABAP_HIGHER			REG_ECABAP_HIGHER
-+#define CRCBAP_LOWER			REG_CRCBAP_LOWER
-+#define CRCBAP_HIGHER			REG_CRCBAP_HIGHER
-+#define CRDB_LOWER			REG_CRDB_LOWER
-+#define CRDB_HIGHER			REG_CRDB_HIGHER
-+#define MHICTRLBASE_LOWER		REG_MHICTRLBASE_LOWER
-+#define MHICTRLBASE_HIGHER		REG_MHICTRLBASE_HIGHER
-+#define MHICTRLLIMIT_LOWER		REG_MHICTRLLIMIT_LOWER
-+#define MHICTRLLIMIT_HIGHER		REG_MHICTRLLIMIT_HIGHER
-+#define MHIDATABASE_LOWER		REG_MHIDATABASE_LOWER
-+#define MHIDATABASE_HIGHER		REG_MHIDATABASE_HIGHER
-+#define MHIDATALIMIT_LOWER		REG_MHIDATALIMIT_LOWER
-+#define MHIDATALIMIT_HIGHER		REG_MHIDATALIMIT_HIGHER
- 
- /* Host request register */
--#define MHI_SOC_RESET_REQ_OFFSET (0xB0)
--#define MHI_SOC_RESET_REQ BIT(0)
--
--/* MHI BHI offfsets */
--#define BHI_BHIVERSION_MINOR (0x00)
--#define BHI_BHIVERSION_MAJOR (0x04)
--#define BHI_IMGADDR_LOW (0x08)
--#define BHI_IMGADDR_HIGH (0x0C)
--#define BHI_IMGSIZE (0x10)
--#define BHI_RSVD1 (0x14)
--#define BHI_IMGTXDB (0x18)
--#define BHI_TXDB_SEQNUM_BMSK (0x3FFFFFFF)
--#define BHI_TXDB_SEQNUM_SHFT (0)
--#define BHI_RSVD2 (0x1C)
--#define BHI_INTVEC (0x20)
--#define BHI_RSVD3 (0x24)
--#define BHI_EXECENV (0x28)
--#define BHI_STATUS (0x2C)
--#define BHI_ERRCODE (0x30)
--#define BHI_ERRDBG1 (0x34)
--#define BHI_ERRDBG2 (0x38)
--#define BHI_ERRDBG3 (0x3C)
--#define BHI_SERIALNU (0x40)
--#define BHI_SBLANTIROLLVER (0x44)
--#define BHI_NUMSEG (0x48)
--#define BHI_MSMHWID(n) (0x4C + (0x4 * (n)))
--#define BHI_OEMPKHASH(n) (0x64 + (0x4 * (n)))
--#define BHI_RSVD5 (0xC4)
--#define BHI_STATUS_MASK (0xC0000000)
--#define BHI_STATUS_SHIFT (30)
--#define BHI_STATUS_ERROR (3)
--#define BHI_STATUS_SUCCESS (2)
--#define BHI_STATUS_RESET (0)
--
--/* MHI BHIE offsets */
--#define BHIE_MSMSOCID_OFFS (0x0000)
--#define BHIE_TXVECADDR_LOW_OFFS (0x002C)
--#define BHIE_TXVECADDR_HIGH_OFFS (0x0030)
--#define BHIE_TXVECSIZE_OFFS (0x0034)
--#define BHIE_TXVECDB_OFFS (0x003C)
--#define BHIE_TXVECDB_SEQNUM_BMSK (0x3FFFFFFF)
--#define BHIE_TXVECDB_SEQNUM_SHFT (0)
--#define BHIE_TXVECSTATUS_OFFS (0x0044)
--#define BHIE_TXVECSTATUS_SEQNUM_BMSK (0x3FFFFFFF)
--#define BHIE_TXVECSTATUS_SEQNUM_SHFT (0)
--#define BHIE_TXVECSTATUS_STATUS_BMSK (0xC0000000)
--#define BHIE_TXVECSTATUS_STATUS_SHFT (30)
--#define BHIE_TXVECSTATUS_STATUS_RESET (0x00)
--#define BHIE_TXVECSTATUS_STATUS_XFER_COMPL (0x02)
--#define BHIE_TXVECSTATUS_STATUS_ERROR (0x03)
--#define BHIE_RXVECADDR_LOW_OFFS (0x0060)
--#define BHIE_RXVECADDR_HIGH_OFFS (0x0064)
--#define BHIE_RXVECSIZE_OFFS (0x0068)
--#define BHIE_RXVECDB_OFFS (0x0070)
--#define BHIE_RXVECDB_SEQNUM_BMSK (0x3FFFFFFF)
--#define BHIE_RXVECDB_SEQNUM_SHFT (0)
--#define BHIE_RXVECSTATUS_OFFS (0x0078)
--#define BHIE_RXVECSTATUS_SEQNUM_BMSK (0x3FFFFFFF)
--#define BHIE_RXVECSTATUS_SEQNUM_SHFT (0)
--#define BHIE_RXVECSTATUS_STATUS_BMSK (0xC0000000)
--#define BHIE_RXVECSTATUS_STATUS_SHFT (30)
--#define BHIE_RXVECSTATUS_STATUS_RESET (0x00)
--#define BHIE_RXVECSTATUS_STATUS_XFER_COMPL (0x02)
--#define BHIE_RXVECSTATUS_STATUS_ERROR (0x03)
--
--#define SOC_HW_VERSION_OFFS (0x224)
--#define SOC_HW_VERSION_FAM_NUM_BMSK (0xF0000000)
--#define SOC_HW_VERSION_FAM_NUM_SHFT (28)
--#define SOC_HW_VERSION_DEV_NUM_BMSK (0x0FFF0000)
--#define SOC_HW_VERSION_DEV_NUM_SHFT (16)
--#define SOC_HW_VERSION_MAJOR_VER_BMSK (0x0000FF00)
--#define SOC_HW_VERSION_MAJOR_VER_SHFT (8)
--#define SOC_HW_VERSION_MINOR_VER_BMSK (0x000000FF)
--#define SOC_HW_VERSION_MINOR_VER_SHFT (0)
-+#define MHI_SOC_RESET_REQ_OFFSET	0xb0
-+#define MHI_SOC_RESET_REQ		BIT(0)
-+
-+/* MHI BHI registers */
-+#define BHI_BHIVERSION_MINOR		REG_BHI_BHIVERSION_MINOR
-+#define BHI_BHIVERSION_MAJOR		REG_BHI_BHIVERSION_MAJOR
-+#define BHI_IMGADDR_LOW			REG_BHI_IMGADDR_LOW
-+#define BHI_IMGADDR_HIGH		REG_BHI_IMGADDR_HIGH
-+#define BHI_IMGSIZE			REG_BHI_IMGSIZE
-+#define BHI_RSVD1			REG_BHI_RSVD1
-+#define BHI_IMGTXDB			REG_BHI_IMGTXDB
-+#define BHI_RSVD2			REG_BHI_RSVD2
-+#define BHI_INTVEC			REG_BHI_INTVEC
-+#define BHI_RSVD3			REG_BHI_RSVD3
-+#define BHI_EXECENV			REG_BHI_EXECENV
-+#define BHI_STATUS			REG_BHI_STATUS
-+#define BHI_ERRCODE			REG_BHI_ERRCODE
-+#define BHI_ERRDBG1			REG_BHI_ERRDBG1
-+#define BHI_ERRDBG2			REG_BHI_ERRDBG2
-+#define BHI_ERRDBG3			REG_BHI_ERRDBG3
-+#define BHI_SERIALNU			REG_BHI_SERIALNU
-+#define BHI_SBLANTIROLLVER		REG_BHI_SBLANTIROLLVER
-+#define BHI_NUMSEG			REG_BHI_NUMSEG
-+#define BHI_MSMHWID(n)			REG_BHI_MSMHWID(n)
-+#define BHI_OEMPKHASH(n)		REG_BHI_OEMPKHASH(n)
-+#define BHI_RSVD5			REG_BHI_RSVD5
-+
-+/* MHI BHIE registers */
-+#define BHIE_MSMSOCID_OFFS		REG_BHIE_MSMSOCID_OFFS
-+#define BHIE_TXVECADDR_LOW_OFFS		REG_BHIE_TXVECADDR_LOW_OFFS
-+#define BHIE_TXVECADDR_HIGH_OFFS	REG_BHIE_TXVECADDR_HIGH_OFFS
-+#define BHIE_TXVECSIZE_OFFS		REG_BHIE_TXVECSIZE_OFFS
-+#define BHIE_TXVECDB_OFFS		REG_BHIE_TXVECDB_OFFS
-+#define BHIE_TXVECSTATUS_OFFS		REG_BHIE_TXVECSTATUS_OFFS
-+#define BHIE_RXVECADDR_LOW_OFFS		REG_BHIE_RXVECADDR_LOW_OFFS
-+#define BHIE_RXVECADDR_HIGH_OFFS	REG_BHIE_RXVECADDR_HIGH_OFFS
-+#define BHIE_RXVECSIZE_OFFS		REG_BHIE_RXVECSIZE_OFFS
-+#define BHIE_RXVECDB_OFFS		REG_BHIE_RXVECDB_OFFS
-+#define BHIE_RXVECSTATUS_OFFS		REG_BHIE_RXVECSTATUS_OFFS
-+
-+#define SOC_HW_VERSION_OFFS		0x224
-+#define SOC_HW_VERSION_FAM_NUM_BMSK	GENMASK(31, 28)
-+#define SOC_HW_VERSION_FAM_NUM_SHFT	28
-+#define SOC_HW_VERSION_DEV_NUM_BMSK	GENMASK(27, 16)
-+#define SOC_HW_VERSION_DEV_NUM_SHFT	16
-+#define SOC_HW_VERSION_MAJOR_VER_BMSK	GENMASK(15, 8)
-+#define SOC_HW_VERSION_MAJOR_VER_SHFT	8
-+#define SOC_HW_VERSION_MINOR_VER_BMSK	GENMASK(7, 0)
-+#define SOC_HW_VERSION_MINOR_VER_SHFT	0
- 
- struct mhi_ctxt {
- 	struct mhi_event_ctxt *er_ctxt;
--- 
-2.25.1
+Ah, I see. This is ugly :-)
 
+>>
+>>> +    if (ar >= NUM_ACRS)
+>>> +        return -EINVAL;
+>>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+>>> +        access_key = mop->key;
+>>> +        mop->key = 0;
+>>
+>> and this? I think we can leave mop unchanged.
+>>
+>> In fact, why do we add the ar and access_key variable?
+>> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
+>> and it will create a memleak for tmpbuf.
+> 
+> I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
+> First is simpler, but second makes handling that case more explicit and might help in the future.
+
+Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
+
+> Patch 6 has the same issue in the vm ioctl handler.
+>>
+>> Simply use mop->key and mop->ar below and get rid of the local variables.
+>> The structure has no concurrency and gcc will handle that just as the local variable.
+>>
+>> Other than that this looks good.
+> 
+> [...]
+> 
