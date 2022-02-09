@@ -2,152 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2133C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1B9C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242048AbiBICnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:43:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55902 "EHLO
+        id S245752AbiBICn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238107AbiBIBfD (ORCPT
+        with ESMTP id S244139AbiBICBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:35:03 -0500
-X-Greylist: delayed 197 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 17:34:59 PST
-Received: from smtpproxy21.qq.com (smtpbg702.qq.com [203.205.195.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3A7CC061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 17:34:59 -0800 (PST)
-X-QQ-mid: bizesmtp15t1644370492t7reyjc6
-Received: from localhost.localdomain (unknown [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 09 Feb 2022 09:34:46 +0800 (CST)
-X-QQ-SSF: 0140000000200010C000B00B0000000
-X-QQ-FEAT: B0D4DPF8NcT3//ST4v23tCQDQKKmBlflQxqxGxV6GBo9FaC2qaTUURrPUlaSm
-        kA2Gp1pQiHxPlUxAtFVkDAFJDvxfcxr6289vFk+NpjSaQjXo3Hf6x9u/NOf4SU4U8Ft7NEc
-        zY/2wXdIRm6hbGTPD7VgH820PfYUGUonuDb7bUHc5D2eVa6IwjdtneVbrUohuVT8CenMRsQ
-        tyHWO+AoQvWFNX11s2GaCCxsfYoqTUz5ydmxhXlCozPBMYZYHBKF0dGn6X1b/86ZwQK7VAw
-        Wgy1P7tfCgHThCCPUPK6i34IupUoe7ROVdgIdk3dX/ba66TYdGrxf75o8FtZXAB2WkFJkZQ
-        U/VdPHngRXXRfPVrHe8qBWm3AlAXvw2HkpQLZj+
-X-QQ-GoodBg: 2
-From:   Zhen Ni <nizhen@uniontech.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH] sched: move energy_aware sysctls to topology.c
-Date:   Wed,  9 Feb 2022 09:34:44 +0800
-Message-Id: <20220209013444.9522-1-nizhen@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Tue, 8 Feb 2022 21:01:48 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13150C06157B;
+        Tue,  8 Feb 2022 18:01:48 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id cf2so2103191edb.9;
+        Tue, 08 Feb 2022 18:01:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cWnnC6X/3LfUNvFejjOf/o+BhqQPL36rKux7esaUqwU=;
+        b=k3O5GQanRHIEkNhPqjnOuYe6aHao9DnrKOReuSxBQnvFZ+7kJ4ld9HSkvPcFdLwXVo
+         yqyNAC6PYUb5K1s9oF/yXHBqJWt5s8dAv4PwGG7HwiQ3+yU/5z7ctjiKMb+YfWclAgOk
+         wU8hOcidH7oOlj8TmXjkOAkyEVb/QvNxx/Jw4B7hQUhRLGE+Zdm/P04KUdc2WX9GqjAo
+         Qd0fT4gwCm9V3gMCL5qpAJ1+ctAa9xhVf4cIgk2S+6JXY9WgxlVOYPiKbpK8IUfAqJxq
+         JSfnQH9dls1YYKs/Z4yMwuA/NcdqMWfa/RpzfkILKLIjXM1U7nglBYZqBSmNb0XG47bJ
+         YhpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cWnnC6X/3LfUNvFejjOf/o+BhqQPL36rKux7esaUqwU=;
+        b=p7aBBjOrrzAFPKHDDtSbHGAbb4gmBD43BPx/twURg24jDZsllQA359XLBZk68RkBKv
+         YV24kzNfX2Tu3peia4DZ50gV9q4NGoxisWSBM2sLJb/ahImRkB+rktG89LDzSoO7fE2d
+         7nn288CGfOFuJGTAjygLmSGdxIhUB7okhSgsBAUO2Ft83yUTo5q/Rxe3kD8p5zrf0yqQ
+         IZLTKaU6rjZw071WdNzxxOzqzh7vX1O91yxKx40wbhoD9ilxsJ1lh3rdWhHkPhEYMtFa
+         HhxS0x1dEAjpl4HMa2JUUUXoYkiFz1QzRB1BGPUkcDmA4+kz2EH2soWo0ajGLKFfBYzN
+         T0zw==
+X-Gm-Message-State: AOAM530Aoi5HctSKIvi5PK7+w6JBjXEFYCx6zFXrS+2cCsNGe07X6Pc8
+        UUsNQgpV37liodgF2vg8hdF9y776V7nNd9S5zbk=
+X-Google-Smtp-Source: ABdhPJwuNUoPvXQy2DbyC89NZT6PfpXs+807StThbTX6vEtShDzyDKiD5rl4tnx5cTsfI98LYMsM7moX2a/KWHAlsZM=
+X-Received: by 2002:a05:6402:440a:: with SMTP id y10mr199806eda.215.1644372106542;
+ Tue, 08 Feb 2022 18:01:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
-X-QQ-Bgrelay: 1
+References: <1644290735-3797-1-git-send-email-hongxing.zhu@nxp.com>
+ <1644290735-3797-8-git-send-email-hongxing.zhu@nxp.com> <CAOMZO5ALthc7zZEYZX2YHam2f3C1RmOr4CHLRjHSip7-44tL6Q@mail.gmail.com>
+ <AS8PR04MB86768828ED6B984C674CE2298C2E9@AS8PR04MB8676.eurprd04.prod.outlook.com>
+In-Reply-To: <AS8PR04MB86768828ED6B984C674CE2298C2E9@AS8PR04MB8676.eurprd04.prod.outlook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Tue, 8 Feb 2022 23:01:36 -0300
+Message-ID: <CAOMZO5CUbY_SyjDpnFd-EPy+K+MYA6nn=hk_XpZnAFdJP53CFQ@mail.gmail.com>
+Subject: Re: [PATCH v6 7/8] PCI: imx6: Disable enabled clocks and regulators
+ after link is down
+To:     Hongxing Zhu <hongxing.zhu@nxp.com>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Sascha Hauer <kernel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-move energy_aware sysctls to topology.c and use the new
-register_sysctl_init() to register the sysctl interface.
+Hi Richard,
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
----
- include/linux/sched/sysctl.h |  6 ------
- kernel/sched/topology.c      | 26 ++++++++++++++++++++++++--
- kernel/sysctl.c              | 11 -----------
- 3 files changed, 24 insertions(+), 19 deletions(-)
+On Tue, Feb 8, 2022 at 10:56 PM Hongxing Zhu <hongxing.zhu@nxp.com> wrote:
 
-diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index d416d8f45186..2af92e71b027 100644
---- a/include/linux/sched/sysctl.h
-+++ b/include/linux/sched/sysctl.h
-@@ -59,10 +59,4 @@ int sysctl_numa_balancing(struct ctl_table *table, int write, void *buffer,
- int sysctl_schedstats(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
- 
--#if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
--extern unsigned int sysctl_sched_energy_aware;
--int sched_energy_aware_handler(struct ctl_table *table, int write,
--		void *buffer, size_t *lenp, loff_t *ppos);
--#endif
--
- #endif /* _LINUX_SCHED_SYSCTL_H */
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index d201a7052a29..af7ce40f1486 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -207,7 +207,7 @@ sd_parent_degenerate(struct sched_domain *sd, struct sched_domain *parent)
- 
- #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
- DEFINE_STATIC_KEY_FALSE(sched_energy_present);
--unsigned int sysctl_sched_energy_aware = 1;
-+static unsigned int sysctl_sched_energy_aware = 1;
- DEFINE_MUTEX(sched_energy_mutex);
- bool sched_energy_update;
- 
-@@ -221,7 +221,7 @@ void rebuild_sched_domains_energy(void)
- }
- 
- #ifdef CONFIG_PROC_SYSCTL
--int sched_energy_aware_handler(struct ctl_table *table, int write,
-+static int sched_energy_aware_handler(struct ctl_table *table, int write,
- 		void *buffer, size_t *lenp, loff_t *ppos)
- {
- 	int ret, state;
-@@ -240,6 +240,28 @@ int sched_energy_aware_handler(struct ctl_table *table, int write,
- }
- #endif
- 
-+#ifdef CONFIG_SYSCTL
-+static struct ctl_table sched_energy_aware_sysctls[] = {
-+	{
-+		.procname       = "sched_energy_aware",
-+		.data           = &sysctl_sched_energy_aware,
-+		.maxlen         = sizeof(unsigned int),
-+		.mode           = 0644,
-+		.proc_handler   = sched_energy_aware_handler,
-+		.extra1         = SYSCTL_ZERO,
-+		.extra2         = SYSCTL_ONE,
-+	},
-+	{}
-+};
-+
-+static int __init sched_energy_aware_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", sched_energy_aware_sysctls);
-+	return 0;
-+}
-+late_initcall(sched_energy_aware_sysctl_init);
-+#endif /* CONFIG_SYSCTL */
-+
- static void free_pd(struct perf_domain *pd)
- {
- 	struct perf_domain *tmp;
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 981a1902d7a4..81bb5901635b 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1761,17 +1761,6 @@ static struct ctl_table kern_table[] = {
- 		.extra2		= SYSCTL_ONE,
- 	},
- #endif
--#if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
--	{
--		.procname	= "sched_energy_aware",
--		.data		= &sysctl_sched_energy_aware,
--		.maxlen		= sizeof(unsigned int),
--		.mode		= 0644,
--		.proc_handler	= sched_energy_aware_handler,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_ONE,
--	},
--#endif
- #ifdef CONFIG_PROVE_LOCKING
- 	{
- 		.procname	= "prove_locking",
--- 
-2.20.1
+> Do you mean that we should ignore the return of dw_pcie_host_init() and
+> finish the _probe without an error return?
 
+Yes, we should not return an error on probe if the link is down.
 
-
+Thanks
