@@ -2,117 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8510C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241539AbiBIIxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:53:13 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44042 "EHLO
+        id S242359AbiBIIxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:53:16 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240072AbiBIIxF (ORCPT
+        with ESMTP id S240205AbiBIIxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:53:05 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEB5DF48F3D;
-        Wed,  9 Feb 2022 00:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644396780; x=1675932780;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=miD0Yf9C+MQxqIFghTdlVvKVbagPjG3BXOKwIH4J4CM=;
-  b=nUv1FqocQ81NKMPgW55BTvWZ9k3LEx0TAEUC2b4bW4sDaDHQpcYnm/p6
-   pY4a2RBr5Hm92t9ZOJyfYEmHx1PQbENY5lPhhHf/B2obcA8yC4v0ocepV
-   wcea2VHcfC93hAC+l9uyilzCshwm+KYQfMxmnDmWSfsdq78keT5Nmxpn7
-   pgILqXpbrAqSCRaptQPsfMi/rLb9/52+rDaADinpgcwD2cXf5NtmltJpE
-   V73x63eX+EREn7Kzw0JcDcLX8yl1E+7mDNeqByKx2HITaLdTdgeUydQEn
-   elbyZNd9DP/22mWDXElDTkZXaOZOYsCu3ZkXHbSkljhYxoQ7/HDmi9YTZ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="309903054"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="309903054"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 00:50:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="568169401"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga001.jf.intel.com with ESMTP; 09 Feb 2022 00:50:09 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        kvm@vger.kernel.org, H Peter Anvin <hpa@zytor.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH 09/11] perf intel-pt: Use CLOCK_PERF_HW_CLOCK_NS by default
-Date:   Wed,  9 Feb 2022 10:49:27 +0200
-Message-Id: <20220209084929.54331-10-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209084929.54331-1-adrian.hunter@intel.com>
-References: <20220209084929.54331-1-adrian.hunter@intel.com>
+        Wed, 9 Feb 2022 03:53:08 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637D6C001F74;
+        Wed,  9 Feb 2022 00:53:04 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id v186so4015881ybg.1;
+        Wed, 09 Feb 2022 00:53:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MDqRZpl2ZNEFfuQ7yfffHKzYxQqjEhCxkRDN1Sj78Ps=;
+        b=cbvyMiumfUXld/I/wxT1ueBd+qe8ToUeMv+ZNjiz7lR7v45FcEsPwEffVyuIq0tT82
+         PO6gTRk+UUrwcDPOCiOQhELlf1CnTZCFML/ogntfu//Gj1rn1Hw8xbZBBZhawqz4lRe0
+         fPEysu5H9/OMFsXJKwv532eD3Uorplm+HlN6ZkMInTqFv4N/oWjXR00xkrQlz755VqnQ
+         +9RwPvWz/ZE4p6iRjyGaHBGHNrvOHPePG4LjAMBboBIkdfYOujRcAJJvZzAwZCPQQk8h
+         sOCD0qAzLgG9OL4GxQFtmEsV0D53zPkAt9zuig+6maCHTtG1S5YcQDydcvzuigrdT8A4
+         uI5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MDqRZpl2ZNEFfuQ7yfffHKzYxQqjEhCxkRDN1Sj78Ps=;
+        b=762+I3SVgnRA1ziX0Qehppenf6aypn6bAuM+b2ivqHrsW/b1tX9yQ3jhsYk8HuIxQ0
+         iIwtyCruJ5yM0kavIPqUxW4J8zqEfc43ZpkCLFh+JAWcVg3Endidy030Qb4m17cUiUze
+         5MlmUdnf3+v9mh8n9tsQnDB5P3nZXNNLy0Tb0wdVbYeRz9hekzMS1KZ6Sa0O/GUf1xeJ
+         X4pd2v4YbF/qC7kYxW6JPxvBFK36knfUqf3FCajXJYNDKRUovuOSe5NG4rdulm94dTKZ
+         vyUT1XvY/U0Oi94ehMszEmiHgqZLg+uC/0omtihR7u07uNO+dWbOWNi0Ime9q9be+vHI
+         SFgQ==
+X-Gm-Message-State: AOAM533A5ACSn616GZtEDHSGmP3OtFV3tpRNEhChXsD6asyT6NSh3rzC
+        eaEdTNhnvBxe8XjjbsneiQgDo2FOIMXsAKTd1G0=
+X-Google-Smtp-Source: ABdhPJwTGByfa1hFDqkwYNeN4BOxA4JwlpvSmwyJQEuJ0ZwibgZOGsyGmRE+oHqgcMNxRgJbh40DHCBik+tp6+3Rk9s=
+X-Received: by 2002:a81:fd3:: with SMTP id 202mr1099770ywp.78.1644396779698;
+ Wed, 09 Feb 2022 00:52:59 -0800 (PST)
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <PH7PR19MB5562AC3C5E7BBB7730086CC1A02E9@PH7PR19MB5562.namprd19.prod.outlook.com>
+In-Reply-To: <PH7PR19MB5562AC3C5E7BBB7730086CC1A02E9@PH7PR19MB5562.namprd19.prod.outlook.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Wed, 9 Feb 2022 08:52:33 +0000
+Message-ID: <CA+V-a8tEwOR-r=+KDe2DhpTMwhXPTgbZYgOWepST3mnhBL_Hag@mail.gmail.com>
+Subject: Re: [EXT] [RFC PATCH 0/5] PCIe EPF support for internal DMAC handling
+ and driver update for R-Car PCIe EP to support DMAC
+To:     Li Chen <lchen@ambarella.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Rob Herring <robh@kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make CLOCK_PERF_HW_CLOCK_NS the default for Intel PT if it is supported.
-To allow that to be overridden, support also --no-clockid.
+Hi Chen-san,
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/arch/x86/util/intel-pt.c | 5 +++++
- tools/perf/util/clockid.c           | 1 +
- tools/perf/util/record.h            | 1 +
- 3 files changed, 7 insertions(+)
+On Wed, Feb 9, 2022 at 4:48 AM Li Chen <lchen@ambarella.com> wrote:
+>
+> Hi Prabhakar,
+>
+> > [0] https://urldefense.com/v3/__https://www.spinics.net/lists/linux-
+> > pci/msg92385.html__;!!PeEy7nZLVv0!yP0WqYs165riCjWRhZprjgMVVLfQLtkkPfv_
+> > R7XCoqkqgMsOyor90EZp0YAdxu0$
+>
+> Can your streaming DMA test case(-d) pass if you use EP's internal DMAC i=
+nstead of external DMAC?
+>
+Sorry I don't quite get you here.
 
-diff --git a/tools/perf/arch/x86/util/intel-pt.c b/tools/perf/arch/x86/util/intel-pt.c
-index ce5dc70e392a..d5cdc53471ff 100644
---- a/tools/perf/arch/x86/util/intel-pt.c
-+++ b/tools/perf/arch/x86/util/intel-pt.c
-@@ -926,6 +926,11 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
- 		evsel__reset_sample_bit(tracking_evsel, BRANCH_STACK);
- 	}
- 
-+	if (!opts->use_clockid && !opts->no_clockid && perf_can_perf_clock_hw_clock_ns()) {
-+		opts->use_clockid = true;
-+		opts->clockid = CLOCK_PERF_HW_CLOCK_NS;
-+	}
-+
- 	/*
- 	 * Warn the user when we do not have enough information to decode i.e.
- 	 * per-cpu with no sched_switch (except workload-only).
-diff --git a/tools/perf/util/clockid.c b/tools/perf/util/clockid.c
-index 380429725df1..e3500a254103 100644
---- a/tools/perf/util/clockid.c
-+++ b/tools/perf/util/clockid.c
-@@ -78,6 +78,7 @@ int parse_clockid(const struct option *opt, const char *str, int unset)
- 
- 	if (unset) {
- 		opts->use_clockid = 0;
-+		opts->no_clockid = true;
- 		return 0;
- 	}
- 
-diff --git a/tools/perf/util/record.h b/tools/perf/util/record.h
-index ef6c2715fdd9..20bcd4310146 100644
---- a/tools/perf/util/record.h
-+++ b/tools/perf/util/record.h
-@@ -67,6 +67,7 @@ struct record_opts {
- 	bool	      sample_transaction;
- 	int	      initial_delay;
- 	bool	      use_clockid;
-+	bool	      no_clockid;
- 	clockid_t     clockid;
- 	u64	      clockid_res_ns;
- 	int	      nr_cblocks;
--- 
-2.25.1
+This patch series adds support for EP to transfer using internal DMAC
+as no external DMAC is supported, so when "-d" option is passed and if
+EP has registered it has internal dmac it will use the same and run
+the pcitest.
 
+Cheers,
+Prabhakar
+
+> Regards,
+> Li
+>
+> **********************************************************************
+> This email and attachments contain Ambarella Proprietary and/or Confident=
+ial Information and is intended solely for the use of the individual(s) to =
+whom it is addressed. Any unauthorized review, use, disclosure, distribute,=
+ copy, or print is prohibited. If you are not an intended recipient, please=
+ contact the sender by reply email and destroy all copies of the original m=
+essage. Thank you.
