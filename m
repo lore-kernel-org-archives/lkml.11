@@ -2,52 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45FA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:36:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4963C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238962AbiBISgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:36:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S239652AbiBISgJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:36:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239591AbiBISfe (ORCPT
+        with ESMTP id S239565AbiBISfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:35:34 -0500
+        Wed, 9 Feb 2022 13:35:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFADC050CCC;
-        Wed,  9 Feb 2022 10:35:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694F9C05CB88;
+        Wed,  9 Feb 2022 10:35:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F7EE61C2C;
-        Wed,  9 Feb 2022 18:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC41C340E7;
-        Wed,  9 Feb 2022 18:35:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE61F61C31;
+        Wed,  9 Feb 2022 18:35:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D71BC340EE;
+        Wed,  9 Feb 2022 18:35:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431735;
-        bh=Y4lticyda0JJhfUxP3JKpsyz7hPDielaAkyHNjgAZRI=;
+        s=k20201202; t=1644431748;
+        bh=5oevNkWltuZ5z9s8IhiJQ2Gtu7X4d4URKOU16CHikIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JoAItjmaQFrVmgG3VVYU/bighMBjahF8rr7tzj0lD1RCEmBOZUyV5xZ4AlBV5BmJ5
-         FG3FuhldC7Ded6EXON3EYos/abxj0/56WU2BrmUmPPVXRZ62GgM/qcSQqWvNJUyiPf
-         Avr+tccg4DoNs2TgVay8kstbDBe+IlQzNZtB20Wcty5tHLhOsOL6B0ceClGB9evM/4
-         JaKMD2EZuUP6JdzHLj2ivjiwXq3Lgf7Tf2DmG12+gVuvD4ShsXLc6S7aSDqk9P48Va
-         kU8ATnLSX8HCrSeCg0F6d7jYkjqHq3Oga1vZVFOcPRKMtMmI3eiOUx5I0QJC0LhLpH
-         Ij9wJaOp8c4IQ==
+        b=GFwS4+PfIXvz/DsOutjqOAd+IjH/PLsMT2/t5xZpqCDPBVl8wwQBzwb+orGT3AVcJ
+         B9LF67BNK59spcBWAXvIixb167WZHz0hNC97kerP7sQiJWB8Jb8uBNdcX4vorRrw3C
+         mTAHs9xGaxhRZgWRDvra3aAfpo8r/rzy0X4NKiP/9lE6AEcST7eeeLcAllG/BnSUzM
+         VgqSFD5TnHiOokmMR+ZBtTzUFhFLQ1Mp62hCda/IC8+QuaIYR3iEH1zs30XC7yyjeu
+         o0E8a5d7mC6gBz6Vw9Ni1j/LVGpzdMY1QkyDCoRpPlf8262XQUTWA3fPmQLr3kRyfF
+         CDkVRZahZCcDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cristian Marussi <cristian.marussi@arm.com>,
-        =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        zhang.yunkai@zte.com.cn, akpm@linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 17/42] selftests: skip mincore.check_file_mmap when fs lacks needed support
-Date:   Wed,  9 Feb 2022 13:32:49 -0500
-Message-Id: <20220209183335.46545-17-sashal@kernel.org>
+Cc:     Julian Braha <julianbraha@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, jonas.gorski@gmail.com,
+        noltari@gmail.com, rdunlap@infradead.org, nsaenz@kernel.org,
+        rafal@milecki.pl, f.fainelli@gmail.com, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 20/42] pinctrl: bcm63xx: fix unmet dependency on REGMAP for GPIO_REGMAP
+Date:   Wed,  9 Feb 2022 13:32:52 -0500
+Message-Id: <20220209183335.46545-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183335.46545-1-sashal@kernel.org>
 References: <20220209183335.46545-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,64 +53,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cristian Marussi <cristian.marussi@arm.com>
+From: Julian Braha <julianbraha@gmail.com>
 
-[ Upstream commit dae1d8ac31896988e7313384c0370176a75e9b45 ]
+[ Upstream commit 3a5286955bf5febc3d151bcb2c5e272e383b64aa ]
 
-Report mincore.check_file_mmap as SKIP instead of FAIL if the underlying
-filesystem lacks support of O_TMPFILE or fallocate since such failures
-are not really related to mincore functionality.
+When PINCTRL_BCM63XX is selected,
+and REGMAP is not selected,
+Kbuild gives the following warning:
 
-Cc: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+WARNING: unmet direct dependencies detected for GPIO_REGMAP
+  Depends on [n]: GPIOLIB [=y] && REGMAP [=n]
+  Selected by [y]:
+  - PINCTRL_BCM63XX [=y] && PINCTRL [=y]
+
+This is because PINCTRL_BCM63XX
+selects GPIO_REGMAP without selecting or depending on
+REGMAP, despite GPIO_REGMAP depending on REGMAP.
+
+This unmet dependency bug was detected by Kismet,
+a static analysis tool for Kconfig. Please advise
+if this is not the appropriate solution.
+
+Signed-off-by: Julian Braha <julianbraha@gmail.com>
+Link: https://lore.kernel.org/r/20220117062557.89568-1-julianbraha@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/mincore/mincore_selftest.c      | 20 +++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/pinctrl/bcm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/mincore/mincore_selftest.c b/tools/testing/selftests/mincore/mincore_selftest.c
-index e54106643337b..4c88238fc8f05 100644
---- a/tools/testing/selftests/mincore/mincore_selftest.c
-+++ b/tools/testing/selftests/mincore/mincore_selftest.c
-@@ -207,15 +207,21 @@ TEST(check_file_mmap)
+diff --git a/drivers/pinctrl/bcm/Kconfig b/drivers/pinctrl/bcm/Kconfig
+index 8fc1feedd8617..5116b014e2a4f 100644
+--- a/drivers/pinctrl/bcm/Kconfig
++++ b/drivers/pinctrl/bcm/Kconfig
+@@ -35,6 +35,7 @@ config PINCTRL_BCM63XX
+ 	select PINCONF
+ 	select GENERIC_PINCONF
+ 	select GPIOLIB
++	select REGMAP
+ 	select GPIO_REGMAP
  
- 	errno = 0;
- 	fd = open(".", O_TMPFILE | O_RDWR, 0600);
--	ASSERT_NE(-1, fd) {
--		TH_LOG("Can't create temporary file: %s",
--			strerror(errno));
-+	if (fd < 0) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Can't create temporary file: %s",
-+			       strerror(errno));
-+		}
-+		SKIP(goto out_free, "O_TMPFILE not supported by filesystem.");
- 	}
- 	errno = 0;
- 	retval = fallocate(fd, 0, 0, FILE_SIZE);
--	ASSERT_EQ(0, retval) {
--		TH_LOG("Error allocating space for the temporary file: %s",
--			strerror(errno));
-+	if (retval) {
-+		ASSERT_EQ(errno, EOPNOTSUPP) {
-+			TH_LOG("Error allocating space for the temporary file: %s",
-+			       strerror(errno));
-+		}
-+		SKIP(goto out_close, "fallocate not supported by filesystem.");
- 	}
- 
- 	/*
-@@ -271,7 +277,9 @@ TEST(check_file_mmap)
- 	}
- 
- 	munmap(addr, FILE_SIZE);
-+out_close:
- 	close(fd);
-+out_free:
- 	free(vec);
- }
- 
+ config PINCTRL_BCM6318
 -- 
 2.34.1
 
