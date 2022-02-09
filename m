@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA51C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A01D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234595AbiBISme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S240247AbiBISmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:42:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240058AbiBISk2 (ORCPT
+        with ESMTP id S240159AbiBISkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:40:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E43AC03CA41;
-        Wed,  9 Feb 2022 10:39:52 -0800 (PST)
+        Wed, 9 Feb 2022 13:40:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D491C03E941;
+        Wed,  9 Feb 2022 10:40:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AEEB6006F;
-        Wed,  9 Feb 2022 18:39:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFBC1C340E9;
-        Wed,  9 Feb 2022 18:39:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFFF2B8238E;
+        Wed,  9 Feb 2022 18:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0557FC340EF;
+        Wed,  9 Feb 2022 18:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431991;
-        bh=SCjgZUPseZiXk1JOCXr5zzf1MO+cnX0xE3tmS9l3gLg=;
+        s=k20201202; t=1644432010;
+        bh=06AEE+dTILRtwDY8oQbRofaIwu30iB9WUEgyuAH6rvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hk6O1QSHrcwC1/bRc3YnyD2iKD+TFkEEgYsDjJc7ZmaGn5FHU7MSC8HI+D7ePIQMc
-         +wqUuaTYSoGpGUSPQ1dKXTC5Z2SBWUshQVG/Xrl/qeQAf4u1qic8beOpGWD5BkQMoO
-         pjw/qh9qc8STeKYMt7Uxl2d0upeZgswfTVAqHYidyXn0frX1CK+7UqhvX+V/yVtoFm
-         5tnepLN3VDFUwhrDKpZiINqMlzEJURlfSnqbAfZabFwShDmSCy097H+7QMc5iKCMku
-         TgOxxIqJ6a+b41iBeheLEiqz0fWHqmWs9/X8iJMk7JV2jZzoPcTC8Yjq4QmTyfjtft
-         FNr5xXfEvSBKA==
+        b=hteFlor3t86fgNkY2YFhewQuK9vhMWBn40QM2BrO5qrebYE1yPDgEW7dwCGMneTBz
+         OFDdWLKv+8fiIt2SjgKidAyglOGMIWCseqSd7gVLPKJgpwhWUPdJn5qwsWf1PQtK+T
+         ZSuJ2Gw4URcWjxRb9wSCoR0hDuvQqYAUpmS8y9I3ElIzunyzk9cLHFO1Stlg++yk/o
+         d7G8miyx3RmSje6o0NoBbpSFC7icUxAUHDzrHCUANqKgH50QP2AVZmiTkeBveCK4v1
+         dUdWajaYW8XbPlINV/fou6XnSdJUas5iXjF3hFD2dkGKYRJ4hI7ZnmB9GsmX/7rUkS
+         x+yADA+5cT84w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Sasha Levin <sashal@kernel.org>,
-        kbusch@kernel.org, axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 26/36] nvme: fix a possible use-after-free in controller reset during load
-Date:   Wed,  9 Feb 2022 13:37:49 -0500
-Message-Id: <20220209183759.47134-26-sashal@kernel.org>
+Cc:     Steen Hegelund <steen.hegelund@microchip.com>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        lars.povlsen@microchip.com, Steen.Hegelund@microchip.com,
+        UNGLinuxDriver@microchip.com, bjarni.jonasson@microchip.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 29/36] net: sparx5: do not refer to skb after passing it on
+Date:   Wed,  9 Feb 2022 13:37:52 -0500
+Message-Id: <20220209183759.47134-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
 References: <20220209183759.47134-1-sashal@kernel.org>
@@ -50,61 +56,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Steen Hegelund <steen.hegelund@microchip.com>
 
-[ Upstream commit 0fa0f99fc84e41057cbdd2efbfe91c6b2f47dd9d ]
+[ Upstream commit 81eb8b0b18789e647e65579303529fd52d861cc2 ]
 
-Unlike .queue_rq, in .submit_async_event drivers may not check the ctrl
-readiness for AER submission. This may lead to a use-after-free
-condition that was observed with nvme-tcp.
+Do not try to use any SKB fields after the packet has been passed up in the
+receive stack.
 
-The race condition may happen in the following scenario:
-1. driver executes its reset_ctrl_work
-2. -> nvme_stop_ctrl - flushes ctrl async_event_work
-3. ctrl sends AEN which is received by the host, which in turn
-   schedules AEN handling
-4. teardown admin queue (which releases the queue socket)
-5. AEN processed, submits another AER, calling the driver to submit
-6. driver attempts to send the cmd
-==> use-after-free
-
-In order to fix that, add ctrl state check to validate the ctrl
-is actually able to accept the AER submission.
-
-This addresses the above race in controller resets because the driver
-during teardown should:
-1. change ctrl state to RESETTING
-2. flush async_event_work (as well as other async work elements)
-
-So after 1,2, any other AER command will find the
-ctrl state to be RESETTING and bail out without submitting the AER.
-
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Link: https://lore.kernel.org/r/20220202083039.3774851-1-steen.hegelund@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index f8dd664b2eda5..8aa92ebb8b7c1 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -4187,7 +4187,14 @@ static void nvme_async_event_work(struct work_struct *work)
- 		container_of(work, struct nvme_ctrl, async_event_work);
- 
- 	nvme_aen_uevent(ctrl);
--	ctrl->ops->submit_async_event(ctrl);
-+
-+	/*
-+	 * The transport drivers must guarantee AER submission here is safe by
-+	 * flushing ctrl async_event_work after changing the controller state
-+	 * from LIVE and before freeing the admin queue.
-+	*/
-+	if (ctrl->state == NVME_CTRL_LIVE)
-+		ctrl->ops->submit_async_event(ctrl);
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+index dc7e5ea6ec158..148d431fcde42 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+@@ -145,9 +145,9 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
+ 	skb_put(skb, byte_cnt - ETH_FCS_LEN);
+ 	eth_skb_pad(skb);
+ 	skb->protocol = eth_type_trans(skb, netdev);
+-	netif_rx(skb);
+ 	netdev->stats.rx_bytes += skb->len;
+ 	netdev->stats.rx_packets++;
++	netif_rx(skb);
  }
  
- static bool nvme_ctrl_pp_status(struct nvme_ctrl *ctrl)
+ static int sparx5_inject(struct sparx5 *sparx5,
 -- 
 2.34.1
 
