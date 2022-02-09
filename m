@@ -2,166 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A35EC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF21C4167D
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344674AbiBICou (ORCPT
+        id S1344198AbiBICom (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57306 "EHLO
+        Tue, 8 Feb 2022 21:44:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239003AbiBIBk5 (ORCPT
+        with ESMTP id S243523AbiBIBo4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:40:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4CC1DC06157B
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 17:40:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644370852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dWZpiBwFvHriiqLF7YJSsOzfEesJqlN4uBW9D+dn/Yg=;
-        b=dv8tXFiF9R5Bcima/jM8UdB6E4hQHg30AtNTTQsAHnyMdlQMPFpShCHvz1F0eGwmtaMSkL
-        eZhp5eVqFNATkfGrjOvLWBioJ2vFPmraqeJ7vbPfgkgcGPdy34j1HglSc3l5GrKLlGUiHC
-        S1C22Zo+FfADylUeojcit84e82evJTA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-7tG8_LF7PVegFWNz7TEElA-1; Tue, 08 Feb 2022 20:40:49 -0500
-X-MC-Unique: 7tG8_LF7PVegFWNz7TEElA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8422D1091DA0;
-        Wed,  9 Feb 2022 01:40:47 +0000 (UTC)
-Received: from T590 (ovpn-8-25.pek2.redhat.com [10.72.8.25])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id CE0956107E;
-        Wed,  9 Feb 2022 01:39:59 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 09:39:54 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     tj@kernel.org, axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH v8] block: cancel all throttled bios in del_gendisk()
-Message-ID: <YgMbaqTD+ycFPAtM@T590>
-References: <20220208113808.1401601-1-yukuai3@huawei.com>
+        Tue, 8 Feb 2022 20:44:56 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55026C0613CB;
+        Tue,  8 Feb 2022 17:44:55 -0800 (PST)
+X-UUID: 9532a817f7c14ecba7370601d6ee006e-20220209
+X-UUID: 9532a817f7c14ecba7370601d6ee006e-20220209
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1952052706; Wed, 09 Feb 2022 09:44:50 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 9 Feb 2022 09:44:50 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Feb 2022 09:44:49 +0800
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Leilk Liu <leilk.liu@mediatek.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH V5 2/3] dt-bindings: spi: Convert spi-mt65xx to json-schema
+Date:   Wed, 9 Feb 2022 09:44:42 +0800
+Message-ID: <20220209014443.12443-3-leilk.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209014443.12443-1-leilk.liu@mediatek.com>
+References: <20220209014443.12443-1-leilk.liu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208113808.1401601-1-yukuai3@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 07:38:08PM +0800, Yu Kuai wrote:
-> Throttled bios can't be issued after del_gendisk() is done, thus
-> it's better to cancel them immediately rather than waiting for
-> throttle is done.
-> 
-> For example, if user thread is throttled with low bps while it's
-> issuing large io, and the device is deleted. The user thread will
-> wait for a long time for io to return.
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
-> Changes in v8:
->  - fold two patches into one
-> Changes in v7:
->  - use the new solution as suggested by Ming.
-> 
->  block/blk-throttle.c | 49 ++++++++++++++++++++++++++++++++++++++++----
->  block/blk-throttle.h |  2 ++
->  block/genhd.c        |  2 ++
->  3 files changed, 49 insertions(+), 4 deletions(-)
-> 
-> diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-> index 7c462c006b26..557d20796157 100644
-> --- a/block/blk-throttle.c
-> +++ b/block/blk-throttle.c
-> @@ -43,8 +43,12 @@
->  static struct workqueue_struct *kthrotld_workqueue;
->  
->  enum tg_state_flags {
-> -	THROTL_TG_PENDING	= 1 << 0,	/* on parent's pending tree */
-> -	THROTL_TG_WAS_EMPTY	= 1 << 1,	/* bio_lists[] became non-empty */
-> +	/* on parent's pending tree */
-> +	THROTL_TG_PENDING	= 1 << 0,
-> +	/* bio_lists[] became non-empty */
-> +	THROTL_TG_WAS_EMPTY	= 1 << 1,
-> +	/* starts to cancel all bios, will be set if the disk is deleted */
-> +	THROTL_TG_CANCELING	= 1 << 2,
->  };
->  
->  #define rb_entry_tg(node)	rb_entry((node), struct throtl_grp, rb_node)
-> @@ -871,7 +875,8 @@ static bool tg_may_dispatch(struct throtl_grp *tg, struct bio *bio,
->  	       bio != throtl_peek_queued(&tg->service_queue.queued[rw]));
->  
->  	/* If tg->bps = -1, then BW is unlimited */
-> -	if (bps_limit == U64_MAX && iops_limit == UINT_MAX) {
-> +	if ((bps_limit == U64_MAX && iops_limit == UINT_MAX) ||
-> +	    tg->flags & THROTL_TG_CANCELING) {
->  		if (wait)
->  			*wait = 0;
->  		return true;
-> @@ -974,6 +979,9 @@ static void tg_update_disptime(struct throtl_grp *tg)
->  	unsigned long read_wait = -1, write_wait = -1, min_wait = -1, disptime;
->  	struct bio *bio;
->  
-> +	if (tg->flags & THROTL_TG_CANCELING)
-> +		goto update;
-> +
->  	bio = throtl_peek_queued(&sq->queued[READ]);
->  	if (bio)
->  		tg_may_dispatch(tg, bio, &read_wait);
-> @@ -983,9 +991,10 @@ static void tg_update_disptime(struct throtl_grp *tg)
->  		tg_may_dispatch(tg, bio, &write_wait);
->  
->  	min_wait = min(read_wait, write_wait);
-> -	disptime = jiffies + min_wait;
->  
-> +update:
->  	/* Update dispatch time */
-> +	disptime = jiffies + min_wait;
+Convert Mediatek ARM SOC's SPI Master controller binding
+to json-schema format.
 
-As I mentioned on V7, the change in tg_update_disptime() isn't needed, please
-drop it.
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/spi/mediatek,spi-mt65xx.yaml     | 101 ++++++++++++++++++
+ .../devicetree/bindings/spi/spi-mt65xx.txt    |  68 ------------
+ 2 files changed, 101 insertions(+), 68 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-mt65xx.txt
 
->  	throtl_dequeue_tg(tg);
->  	tg->disptime = disptime;
->  	throtl_enqueue_tg(tg);
-> @@ -1763,6 +1772,38 @@ static bool throtl_hierarchy_can_upgrade(struct throtl_grp *tg)
->  	return false;
->  }
->  
-> +void blk_throtl_cancel_bios(struct request_queue *q)
-> +{
-> +	struct cgroup_subsys_state *pos_css;
-> +	struct blkcg_gq *blkg;
-> +
-> +	spin_lock_irq(&q->queue_lock);
-> +	/*
-> +	 * queue_lock is held, rcu lock is not needed here technically.
-> +	 * However, rcu lock is still held to emphasize that following
-> +	 * path need RCU protection and to prevent warning from lockdep.
-> +	 */
-> +	rcu_read_lock();
-> +	blkg_for_each_descendant_post(blkg, pos_css, q->root_blkg) {
-> +		struct throtl_grp *tg = blkg_to_tg(blkg);
-> +		struct throtl_service_queue *sq = &tg->service_queue;
-> +
-> +		/*
-> +		 * Set disptime in the past to make sure
-> +		 * throtl_select_dispatch() won't exit without dispatching.
-> +		 */
-> +		tg->disptime = jiffies - 1;
-
-It might be better to replace the above line with tg_update_disptime().
-
-Otherwise, the patch looks good.
-
-Thanks,
-Ming
+diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+new file mode 100644
+index 000000000000..ea977fba49a7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+@@ -0,0 +1,101 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spi/mediatek,spi-mt65xx.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: SPI Bus controller for MediaTek ARM SoCs
++
++maintainers:
++  - Leilk Liu <leilk.liu@mediatek.com>
++
++allOf:
++  - $ref: "/schemas/spi/spi-controller.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - mediatek,mt7629-spi
++          - const: mediatek,mt7622-spi
++      - items:
++          - enum:
++              - mediatek,mt8516-spi
++          - const: mediatek,mt2712-spi
++      - items:
++          - enum:
++              - mediatek,mt6779-spi
++              - mediatek,mt8192-spi
++              - mediatek,mt8195-spi
++          - const: mediatek,mt6765-spi
++      - items:
++          - enum:
++              - mediatek,mt2701-spi
++              - mediatek,mt2712-spi
++              - mediatek,mt6589-spi
++              - mediatek,mt6765-spi
++              - mediatek,mt6893-spi
++              - mediatek,mt7622-spi
++              - mediatek,mt8135-spi
++              - mediatek,mt8173-spi
++              - mediatek,mt8183-spi
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: clock used for the parent clock
++      - description: clock used for the muxes clock
++      - description: clock used for the clock gate
++
++  clock-names:
++    items:
++      - const: parent-clk
++      - const: sel-clk
++      - const: spi-clk
++
++  mediatek,pad-select:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    maxItems: 4
++    items:
++      enum: [0, 1, 2, 3]
++    description:
++      specify which pins group(ck/mi/mo/cs) spi controller used.
++      This is an array.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - '#address-cells'
++  - '#size-cells'
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8173-clk.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi@1100a000 {
++      compatible = "mediatek,mt8173-spi";
++      #address-cells = <1>;
++      #size-cells = <0>;
++      reg = <0x1100a000 0x1000>;
++      interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>;
++      clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
++               <&topckgen CLK_TOP_SPI_SEL>,
++               <&pericfg CLK_PERI_SPI0>;
++      clock-names = "parent-clk", "sel-clk", "spi-clk";
++      cs-gpios = <&pio 105 GPIO_ACTIVE_LOW>, <&pio 72 GPIO_ACTIVE_LOW>;
++      mediatek,pad-select = <1>, <0>;
++    };
+diff --git a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt b/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+deleted file mode 100644
+index 2a24969159cc..000000000000
+--- a/Documentation/devicetree/bindings/spi/spi-mt65xx.txt
++++ /dev/null
+@@ -1,68 +0,0 @@
+-Binding for MTK SPI controller
+-
+-Required properties:
+-- compatible: should be one of the following.
+-    - mediatek,mt2701-spi: for mt2701 platforms
+-    - mediatek,mt2712-spi: for mt2712 platforms
+-    - mediatek,mt6589-spi: for mt6589 platforms
+-    - mediatek,mt6765-spi: for mt6765 platforms
+-    - mediatek,mt7622-spi: for mt7622 platforms
+-    - "mediatek,mt7629-spi", "mediatek,mt7622-spi": for mt7629 platforms
+-    - mediatek,mt8135-spi: for mt8135 platforms
+-    - mediatek,mt8173-spi: for mt8173 platforms
+-    - mediatek,mt8183-spi: for mt8183 platforms
+-    - mediatek,mt6893-spi: for mt6893 platforms
+-    - "mediatek,mt8192-spi", "mediatek,mt6765-spi": for mt8192 platforms
+-    - "mediatek,mt8195-spi", "mediatek,mt6765-spi": for mt8195 platforms
+-    - "mediatek,mt8516-spi", "mediatek,mt2712-spi": for mt8516 platforms
+-    - "mediatek,mt6779-spi", "mediatek,mt6765-spi": for mt6779 platforms
+-
+-- #address-cells: should be 1.
+-
+-- #size-cells: should be 0.
+-
+-- reg: Address and length of the register set for the device
+-
+-- interrupts: Should contain spi interrupt
+-
+-- clocks: phandles to input clocks.
+-  The first should be one of the following. It's PLL.
+-   -  <&clk26m>: specify parent clock 26MHZ.
+-   -  <&topckgen CLK_TOP_SYSPLL3_D2>: specify parent clock 109MHZ.
+-				      It's the default one.
+-   -  <&topckgen CLK_TOP_SYSPLL4_D2>: specify parent clock 78MHZ.
+-   -  <&topckgen CLK_TOP_UNIVPLL2_D4>: specify parent clock 104MHZ.
+-   -  <&topckgen CLK_TOP_UNIVPLL1_D8>: specify parent clock 78MHZ.
+-  The second should be <&topckgen CLK_TOP_SPI_SEL>. It's clock mux.
+-  The third is <&pericfg CLK_PERI_SPI0>. It's clock gate.
+-
+-- clock-names: shall be "parent-clk" for the parent clock, "sel-clk" for the
+-  muxes clock, and "spi-clk" for the clock gate.
+-
+-Optional properties:
+--cs-gpios: see spi-bus.txt.
+-
+-- mediatek,pad-select: specify which pins group(ck/mi/mo/cs) spi
+-  controller used. This is an array, the element value should be 0~3,
+-  only required for MT8173.
+-    0: specify GPIO69,70,71,72 for spi pins.
+-    1: specify GPIO102,103,104,105 for spi pins.
+-    2: specify GPIO128,129,130,131 for spi pins.
+-    3: specify GPIO5,6,7,8 for spi pins.
+-
+-Example:
+-
+-- SoC Specific Portion:
+-spi: spi@1100a000 {
+-	compatible = "mediatek,mt8173-spi";
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	reg = <0 0x1100a000 0 0x1000>;
+-	interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_LOW>;
+-	clocks = <&topckgen CLK_TOP_SYSPLL3_D2>,
+-		 <&topckgen CLK_TOP_SPI_SEL>,
+-		 <&pericfg CLK_PERI_SPI0>;
+-	clock-names = "parent-clk", "sel-clk", "spi-clk";
+-	cs-gpios = <&pio 105 GPIO_ACTIVE_LOW>, <&pio 72 GPIO_ACTIVE_LOW>;
+-	mediatek,pad-select = <1>, <0>;
+-};
+-- 
+2.25.1
 
