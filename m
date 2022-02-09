@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1FEC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C81D2C3526F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236564AbiBIGC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:02:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51910 "EHLO
+        id S236853AbiBIGDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:03:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234380AbiBIGBO (ORCPT
+        with ESMTP id S234401AbiBIGB0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:01:14 -0500
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F370AC050CC4;
-        Tue,  8 Feb 2022 22:01:17 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zg5IE_1644386473;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zg5IE_1644386473)
+        Wed, 9 Feb 2022 01:01:26 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33FA3C033267;
+        Tue,  8 Feb 2022 22:01:28 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R701e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zaQT8_1644386484;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zaQT8_1644386484)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:01:14 +0800
+          Wed, 09 Feb 2022 14:01:25 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -27,9 +27,9 @@ Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
         joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
         tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
         eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 04/22] cachefiles: detect backing file size in on-demand read mode
-Date:   Wed,  9 Feb 2022 14:00:50 +0800
-Message-Id: <20220209060108.43051-5-jefflexu@linux.alibaba.com>
+Subject: [PATCH v3 12/22] erofs: add erofs_fscache_read_page() helper
+Date:   Wed,  9 Feb 2022 14:00:58 +0800
+Message-Id: <20220209060108.43051-13-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
 References: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
@@ -39,148 +39,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fscache/cachefiles used to serve as a local cache for remote fs. The
-following patches will introduce a new use case, in which local
-read-only fs could implement on-demand reading with fscache. Then in
-this case, the upper read-only fs may has no idea on the size of the
-backed file.
+Add erofs_fscache_read_page() helper reading from fscache. It supports
+on-demand read semantics. That is, it will make the backend prepare for
+the data when cache miss. Once data ready, it will reinitiate a read
+from the cache.
 
-It is worth nothing that, in this scenario, user daemon is responsible
-for preparing all backing files with correct file size in the first
-beginning. (Backing files are all sparse files in this case). And since
-it's read-only, we can get the backing file size at runtime as the
-object size.
-
-This patch also adds one flag bit to distinguish the new introduced
-on-demand read mode from the original mode. The following patch will
-introduce a user configures it.
+This helper can then be used to implement .readpage() of on-demand
+reading semantics.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/cachefiles/Kconfig    | 13 +++++++++
- fs/cachefiles/internal.h |  1 +
- fs/cachefiles/namei.c    | 60 +++++++++++++++++++++++++++++++++++++++-
- 3 files changed, 73 insertions(+), 1 deletion(-)
+ fs/erofs/fscache.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/fs/cachefiles/Kconfig b/fs/cachefiles/Kconfig
-index 719faeeda168..cef412cfd127 100644
---- a/fs/cachefiles/Kconfig
-+++ b/fs/cachefiles/Kconfig
-@@ -26,3 +26,16 @@ config CACHEFILES_ERROR_INJECTION
- 	help
- 	  This permits error injection to be enabled in cachefiles whilst a
- 	  cache is in service.
-+
-+config CACHEFILES_ONDEMAND
-+	bool "Support for on-demand reading"
-+	depends on CACHEFILES
-+	default n
-+	help
-+	  This permits on-demand read mode of cachefiles. In this mode, when
-+	  cache miss, the cachefiles backend instead of the upper fs using
-+	  fscache is responsible for fetching data, e.g. through user daemon.
-+	  Then after the data's ready, upper fs can reinitiate a read from the
-+	  cache.
-+
-+	  If unsure, say N.
-diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
-index 1a837de7b070..8400501bbd56 100644
---- a/fs/cachefiles/internal.h
-+++ b/fs/cachefiles/internal.h
-@@ -98,6 +98,7 @@ struct cachefiles_cache {
- #define CACHEFILES_DEAD			1	/* T if cache dead */
- #define CACHEFILES_CULLING		2	/* T if cull engaged */
- #define CACHEFILES_STATE_CHANGED	3	/* T if state changed (poll trigger) */
-+#define CACHEFILES_ONDEMAND_MODE	4	/* T if in on-demand read mode */
- 	char				*rootdirname;	/* name of cache root directory */
- 	char				*secctx;	/* LSM security context */
- 	char				*tag;		/* cache binding tag */
-diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
-index 7ebc29210b70..90479cb55e0a 100644
---- a/fs/cachefiles/namei.c
-+++ b/fs/cachefiles/namei.c
-@@ -510,15 +510,69 @@ struct file *cachefiles_create_tmpfile(struct cachefiles_object *object)
- 	return file;
- }
+diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
+index 3addd9aa549c..f4aade711664 100644
+--- a/fs/erofs/fscache.c
++++ b/fs/erofs/fscache.c
+@@ -6,6 +6,42 @@
  
-+#ifdef CONFIG_CACHEFILES_ONDEMAND
-+static inline bool cachefiles_can_create_file(struct cachefiles_cache *cache)
+ static struct fscache_volume *volume;
+ 
++static int erofs_fscache_read_page(struct fscache_cookie *cookie,
++				   struct page *page, loff_t start_pos)
 +{
++	struct netfs_cache_resources cres;
++	struct bio_vec bvec[1];
++	struct iov_iter iter;
++	int ret;
++
++	memset(&cres, 0, sizeof(cres));
++
++	ret = fscache_begin_read_operation(&cres, cookie);
++	if (ret)
++		return ret;
++
++	bvec[0].bv_page         = page;
++	bvec[0].bv_offset       = 0;
++	bvec[0].bv_len          = PAGE_SIZE;
++	iov_iter_bvec(&iter, READ, bvec, ARRAY_SIZE(bvec), PAGE_SIZE);
++
++	ret = fscache_read(&cres, start_pos, &iter,
++			   NETFS_READ_HOLE_FAIL, NULL, NULL);
 +	/*
-+	 * On-demand read mode requires that backing files have been prepared
-+	 * with correct file size under corresponding directory in the very
-+	 * first begginning. We can get here when the backing file doesn't exist
-+	 * under corresponding directory, or the file size is unexpected 0.
++	 * -ENODATA will be returned when cache miss. In this case, make the
++	 * backend prepare for the data and then reinitiate a read from cache.
 +	 */
-+	return !test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags);
++	if (ret == -ENODATA) {
++		ret = fscache_ondemand_read(&cres, start_pos, PAGE_SIZE);
++		if (ret == 0)
++			ret = fscache_read(&cres, start_pos, &iter,
++					   NETFS_READ_HOLE_FAIL, NULL, NULL);
++	}
 +
++	fscache_end_operation(&cres);
++	return ret;
 +}
 +
-+/*
-+ * Fs using fscache for on-demand reading may have no idea of the file size of
-+ * backing files. Thus the on-demand read mode requires that backing files shall
-+ * be prepared with correct file size under corresponding directory by the user
-+ * daemon in the first beginning. Then the backend is responsible for taking the
-+ * file size of the backing file as the object size at runtime.
-+ */
-+static int cachefiles_recheck_size(struct cachefiles_object *object,
-+				   struct file *file)
-+{
-+	loff_t size;
-+	struct cachefiles_cache *cache = object->volume->cache;
-+
-+	if (!test_bit(CACHEFILES_ONDEMAND_MODE, &cache->flags))
-+		return 0;
-+
-+	size = i_size_read(file_inode(file));
-+	if (!size)
-+		return -EINVAL;
-+
-+	object->cookie->object_size = size;
-+	return 0;
-+}
-+#else
-+static inline bool cachefiles_can_create_file(struct cachefiles_cache *cache)
-+{
-+	return true;
-+}
-+
-+static int cachefiles_recheck_size(struct cachefiles_object *object,
-+				   struct file *file)
-+{
-+	return 0;
-+}
-+#endif
-+
-+
- /*
-  * Create a new file.
-  */
- static bool cachefiles_create_file(struct cachefiles_object *object)
- {
-+	struct cachefiles_cache *cache = object->volume->cache;
- 	struct file *file;
- 	int ret;
+ static const struct address_space_operations erofs_fscache_blob_aops = {
+ };
  
--	ret = cachefiles_has_space(object->volume->cache, 1, 0,
-+	if (!cachefiles_can_create_file(cache))
-+		return false;
-+
-+	ret = cachefiles_has_space(cache, 1, 0,
- 				   cachefiles_has_space_for_create);
- 	if (ret < 0)
- 		return false;
-@@ -573,6 +627,10 @@ static bool cachefiles_open_file(struct cachefiles_object *object,
- 	}
- 	_debug("file -> %pd positive", dentry);
- 
-+	ret = cachefiles_recheck_size(object, file);
-+	if (ret < 0)
-+		goto check_failed;
-+
- 	ret = cachefiles_check_auxdata(object, file);
- 	if (ret < 0)
- 		goto check_failed;
 -- 
 2.27.0
 
