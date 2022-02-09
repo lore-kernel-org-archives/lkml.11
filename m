@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:37:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D2E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234208AbiBINhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:37:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55104 "EHLO
+        id S234223AbiBINhp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:37:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234240AbiBINh1 (ORCPT
+        with ESMTP id S233511AbiBINha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:37:27 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D52C05CBA2
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:37:19 -0800 (PST)
+        Wed, 9 Feb 2022 08:37:30 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8314EC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:37:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644413839; x=1675949839;
+  t=1644413854; x=1675949854;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nsTTGEHEMLT+hG0N17ACM28ae/UOHeO88gwXFA2N3WI=;
-  b=MouiQg3cynp8pgvspHvbiAr4b8biceWtmARNDrIx5Azrpuc9eXR1LSTY
-   vuMMrTx6YSYBJNC4i+1EKAiK2mgBk8UtKdEbxa07smUPjLkOFYogqadwZ
-   gz4mCJRUQxStzO5dInMGdIm/LH22hIc7Y0i1cQX57xNm8xCeGkQvFJip6
-   9FxMQyzuci+nSEjzXGaPLws5VD41wElkV7evUax2ZzMJ8RkiFcAj0DWu6
-   zzJVEPLy66xgKDQEYwTjJNpCc/YrxSAlWy4LvKDXpYNBO0cilFUBuCITY
-   EmgVZ2irPgia+aBjY6h6rHU96plSqOG57zTXSYfJctopyVkzG8C4MnxDs
-   g==;
-IronPort-SDR: AK/UwFO4PzbP0AtYFKVyw9EN/IHhm09P19SPCG6BR6p6cw1gUSiQxcPShOEyLFAdiNYWY2oFTK
- /CGNpSE0YENYC9jKPcqcdA1SduLy9+tcf4KFekUA7Jr2RzCGSN2QR6FvUAHeWeowUyUqBRGb7Z
- WBrkK7/sl4/KrY0PBiJdjC97uSnQktfwGrZAoJo7IPk7OuL5re/cZyj2eY3PDN6r7yOy/HNAiS
- KDEUdmWbWPZLdcK6hDQ6yFsVA9zxt9xeFF4bJGBdOBRzLtrvPNkKFga3Pog0Wo+oCz0/WziXCo
- M1LN596SxwhAXtmmw4dVaxs5
+  bh=MUu9/L6lnGiFuyCy5p1p/lvAWmdGRwL/eJMCRCgO/TI=;
+  b=UuvZcoZqCK1S6qvVNu4RLwkqdh3C1K0O2XJfRUZI5GzLdnjaqyLguH/h
+   +NghVbUYLkGlKgLg52a2FsoZ6HKpJjm3xf0OEQWAvgp0YkgpISM2FThMe
+   n0hcvmD1l5Y0rvdZ1AsT4UpKe5eCRUrbV8CS7jwi+UPNy1VZCQwP2Ubk9
+   YH5e9KV2G4Qhj7mymqSlId3vqnd/L7gDTWs9/KjW3JhvCllM59OHovm9J
+   tB6m/gRWbIR0rPrwS9uHsZxjPFjUdS/vkOu8RNy2IV8MV58pGVGtQBPk5
+   eoR3aS9/qJzA/8o37rXty18yz9jNeFZjXe0BmUG6fzWCTc8Oz50+bI/n8
+   Q==;
+IronPort-SDR: 7X/Ti2rbjDArxQVZLEIu3Ey5VmLWEUce0/lcbDtZlOnIs508TSYJl8vR5JKlKaAKFtgTH6URrs
+ gllc3TWzvhi/9Ap6b4qmJgG7qJOw7egEHXUrS+lr2lrg6J7kOrPAaODydhLriKBoKppoSps9Is
+ 2QIE0IMbrtz0ZOfIUOjExlztPeCkEvy3uasxsp4vrh+BviDWibKqKaasBP9cCmtWFab+6iNr71
+ PPRVJ+zVWiPSHbhALaAnxi+DGy7/ajJTBP2mq5XJGdHbiRDOXc6LconnyDNyK+j/S3H8BLOEhV
+ SqcuIDGrJlN3X9fX+mTE9o6X
 X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="145394818"
+   d="scan'208";a="152460182"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 06:37:18 -0700
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 06:37:34 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Feb 2022 06:37:18 -0700
+ 15.1.2375.17; Wed, 9 Feb 2022 06:37:32 -0700
 Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 9 Feb 2022 06:37:14 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 9 Feb 2022 06:37:28 -0700
 From:   Tudor Ambarus <tudor.ambarus@microchip.com>
 To:     <p.yadav@ti.com>, <michael@walle.cc>
 CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
@@ -51,9 +51,9 @@ CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
         <nicolas.ferre@microchip.com>, <zhengxunli@mxic.com.tw>,
         <jaimeliao@mxic.com.tw>,
         Tudor Ambarus <tudor.ambarus@microchip.com>
-Subject: [PATCH v6 3/7] mtd: spi-nor: core: Use auto-detection only once
-Date:   Wed, 9 Feb 2022 15:36:52 +0200
-Message-ID: <20220209133656.374903-4-tudor.ambarus@microchip.com>
+Subject: [PATCH v6 6/7] mtd: spi-nor: core: Introduce SPI_NOR_SOFT_RESET flash_info fixup_flag
+Date:   Wed, 9 Feb 2022 15:36:55 +0200
+Message-ID: <20220209133656.374903-7-tudor.ambarus@microchip.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220209133656.374903-1-tudor.ambarus@microchip.com>
 References: <20220209133656.374903-1-tudor.ambarus@microchip.com>
@@ -64,47 +64,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case spi_nor_match_name() returned NULL, the auto detection was
-issued twice. There's no reason to try to detect the same chip twice,
-do the auto detection only once.
+The Soft Reset and Rescue Sequence Support is defined in BFPT_DWORD(16)
+starting with JESD216A. The first version of SFDP, JESD216 (April 2011),
+defines just the first 9 BFPT DWORDS, thus it does not contain information
+about the Software Reset and Rescue Support. Since this support can not
+be discovered by parsing the first SFDP version, introduce a flash_info
+fixup_flag that will be used either by flashes that define
+JESD216 (April 2011) or by flashes that do not define SFDP at all.
+In case a flash defines BFPT_DWORD(16) but with wrong values, one should
+instead use a post_bfpt() hook and set SNOR_F_SOFT_RESET.
 
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
 ---
- drivers/mtd/spi-nor/core.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/mtd/spi-nor/core.c | 3 +++
+ drivers/mtd/spi-nor/core.h | 3 +++
+ 2 files changed, 6 insertions(+)
 
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 335170fc2438..9b740f77174e 100644
+index 35280994a179..7d5e3acb0ae7 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -3127,13 +3127,15 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
- static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
- 						       const char *name)
- {
--	const struct flash_info *info = NULL;
-+	const struct flash_info *info = NULL, *detected_info = NULL;
+@@ -2719,6 +2719,9 @@ static void spi_nor_init_fixup_flags(struct spi_nor *nor)
  
- 	if (name)
- 		info = spi_nor_match_name(nor, name);
- 	/* Try to auto-detect if chip name wasn't specified or not found */
--	if (!info)
--		info = spi_nor_read_id(nor);
-+	if (!info) {
-+		detected_info = spi_nor_read_id(nor);
-+		info = detected_info;
-+	}
- 	if (IS_ERR_OR_NULL(info))
- 		return ERR_PTR(-ENOENT);
+ 	if (fixup_flags & SPI_NOR_IO_MODE_EN_VOLATILE)
+ 		nor->flags |= SNOR_F_IO_MODE_EN_VOLATILE;
++
++	if (fixup_flags & SPI_NOR_SOFT_RESET)
++		nor->flags |= SNOR_F_SOFT_RESET;
+ }
  
-@@ -3141,7 +3143,7 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
- 	 * If caller has specified name of flash model that can normally be
- 	 * detected using JEDEC, let's verify it.
- 	 */
--	if (name && info->id_len) {
-+	if (name && !detected_info && info->id_len) {
- 		const struct flash_info *jinfo;
+ /**
+diff --git a/drivers/mtd/spi-nor/core.h b/drivers/mtd/spi-nor/core.h
+index 04d4cc13d13b..cbfb4fa7647f 100644
+--- a/drivers/mtd/spi-nor/core.h
++++ b/drivers/mtd/spi-nor/core.h
+@@ -382,6 +382,8 @@ struct spi_nor_fixups {
+  *                            memory size above 128Mib.
+  *   SPI_NOR_IO_MODE_EN_VOLATILE: flash enables the best available I/O mode
+  *                            via a volatile bit.
++ *   SPI_NOR_SOFT_RESET:      flash supports software reset enable, reset
++ *                            sequence.
+  * @mfr_flags:      manufacturer private flags. Used in the manufacturer fixup
+  *                  hooks to differentiate support between flashes of the same
+  *                  manufacturer.
+@@ -425,6 +427,7 @@ struct flash_info {
+ 	u8 fixup_flags;
+ #define SPI_NOR_4B_OPCODES		BIT(0)
+ #define SPI_NOR_IO_MODE_EN_VOLATILE	BIT(1)
++#define SPI_NOR_SOFT_RESET		BIT(2)
  
- 		jinfo = spi_nor_read_id(nor);
+ 	u8 mfr_flags;
+ 
 -- 
 2.25.1
 
