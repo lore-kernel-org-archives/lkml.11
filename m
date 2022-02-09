@@ -2,81 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC89C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC25C4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241302AbiBIS5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:57:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
+        id S241440AbiBIS5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242106AbiBIS4e (ORCPT
+        with ESMTP id S241662AbiBIS4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:56:34 -0500
-Received: from mx2.smtp.larsendata.com (mx2.smtp.larsendata.com [91.221.196.228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D82DC02B66F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:54:36 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx2.smtp.larsendata.com (Halon) with ESMTPS
-        id decf265d-89d9-11ec-ac19-0050568cd888;
-        Wed, 09 Feb 2022 18:55:38 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
+        Wed, 9 Feb 2022 13:56:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BEDC003677;
+        Wed,  9 Feb 2022 10:53:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 962EC194B52;
-        Wed,  9 Feb 2022 19:54:28 +0100 (CET)
-Date:   Wed, 9 Feb 2022 19:54:25 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     cgel.zte@gmail.com
-Cc:     deller@gmx.de, linux-fbdev@vger.kernel.org, ducheng2@gmail.com,
-        penguin-kernel@i-love.sakura.ne.jp, daniel.vetter@ffwll.ch,
-        Zeal Robot <zealci@zte.com.cn>, deng.changcheng@zte.com.cn,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        cssk@net-c.es, geert@linux-m68k.org, svens@stackframe.org
-Subject: Re: [PATCH] fbcon: use min() to make code cleaner
-Message-ID: <YgQN4WXXjSHVDiBK@ravnborg.org>
-References: <20220209084810.1561184-1-deng.changcheng@zte.com.cn>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3920DB82378;
+        Wed,  9 Feb 2022 18:53:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2C4EC340E7;
+        Wed,  9 Feb 2022 18:53:00 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 18:52:57 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Cc:     Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        gregkh <gregkh@linuxfoundation.org>, quic_psodagud@quicinc.com,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCHv9 1/5] arm64: io: Use asm-generic high level MMIO
+ accessors
+Message-ID: <YgQNiXsh4hC+5+O5@arm.com>
+References: <cover.1642482334.git.quic_saipraka@quicinc.com>
+ <87926437f2f9e72dd94f0b30c8784c2da5508644.1642482334.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209084810.1561184-1-deng.changcheng@zte.com.cn>
+In-Reply-To: <87926437f2f9e72dd94f0b30c8784c2da5508644.1642482334.git.quic_saipraka@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 08:48:10AM +0000, cgel.zte@gmail.com wrote:
-> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Mon, Jan 24, 2022 at 12:03:30PM +0530, Sai Prakash Ranjan wrote:
+> Remove custom arm64 MMIO accessors read{b,w,l,q} and their relaxed
+> versions in support to use asm-generic defined accessors. Also define
+> one set of IO barriers (ar/bw version) used by asm-generic code to
+> override the arm64 specific variants.
 > 
-> Use min() in order to make code cleaner.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
-Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+> Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 
-I had preferred in minmax.h was included, but it has an indirect include
-so shrug.
+I'm fine with this patch:
 
-I assume Daniel or Helge will pick it up.
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 
-	Sam
+> diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
+> index 7fd836bea7eb..1b436810d779 100644
+> --- a/arch/arm64/include/asm/io.h
+> +++ b/arch/arm64/include/asm/io.h
+[...]
+> +/* arm64-specific, don't use in portable drivers */
+> +#define __iormb(v)		__io_ar(v)
+> +#define __iowmb()		__io_bw()
+> +#define __iomb()		dma_mb()
 
-> ---
->  drivers/video/fbdev/core/fbcon.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-> index f36829eeb5a9..61171159fee2 100644
-> --- a/drivers/video/fbdev/core/fbcon.c
-> +++ b/drivers/video/fbdev/core/fbcon.c
-> @@ -602,7 +602,7 @@ static void fbcon_prepare_logo(struct vc_data *vc, struct fb_info *info,
->  		save = kmalloc(array3_size(logo_lines, new_cols, 2),
->  			       GFP_KERNEL);
->  		if (save) {
-> -			int i = cols < new_cols ? cols : new_cols;
-> +			int i = min(cols, new_cols);
->  			scr_memsetw(save, erase, array3_size(logo_lines, new_cols, 2));
->  			r = q - step;
->  			for (cnt = 0; cnt < logo_lines; cnt++, r += i)
-> -- 
-> 2.25.1
+However, I'd like to see a few subsequent patches that get rid of the
+__io*mb() uses in drivers/ (there don't seem to be that many).
+
+-- 
+Catalin
