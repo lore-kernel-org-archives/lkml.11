@@ -2,75 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E10CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 423BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346544AbiBIEIm (ORCPT
+        id S1346583AbiBIEIp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:08:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52524 "EHLO
+        Tue, 8 Feb 2022 23:08:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbiBIEFZ (ORCPT
+        with ESMTP id S239136AbiBIDYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:05:25 -0500
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21DAC061577;
-        Tue,  8 Feb 2022 20:05:24 -0800 (PST)
-Received: by mail-ot1-f53.google.com with SMTP id o9-20020a9d7189000000b0059ee49b4f0fso726643otj.2;
-        Tue, 08 Feb 2022 20:05:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2qiG7G2GNRQ6LqjEvueRABe8KlaGUPbqxlWckqcNpAQ=;
-        b=tf74ohZJaKRghj+XCDO0JZyg8sDNh8lzrUqW7K6h0fWEn6z5zDMwpnH6tEXHd8WGYW
-         XxO0SQL26kpZ9vokZ1zTNJV8jFO5hXL5Pq6h/v8ZvPdQUuOX8PDhZDcdgGgpmpNo69GW
-         Sl7QinJ1uLup7p6OWyJhQfdWJiXQ0GC4MEnBTqRwdxeg4QUdXEp+RcYFE8AfY46Nkj90
-         2q/30xZmceRvqJ4c28BrjSnh6vTB82+uQodc/mmHLJ+lrMl2bOQHBCQDywfd9RVp/9r9
-         IIAs8kXwgwhc54o4ZDbZZFVdXc7JdXAXOWCAeM83XYpgfrxJK3OD+OAojjggHkqsaocq
-         aY3w==
-X-Gm-Message-State: AOAM531qkLVhF3ymQZmhggu+wVnuYe3QdDTEBEUvjE5DxWFEzPKcRKow
-        nJl/P+Lrb0Fust20ychDjg==
-X-Google-Smtp-Source: ABdhPJynH5fEDWLtkyVZ8PCGjm16IhKQQhYktEgLlsd+uWoGQKCSWN+0Xt8uX2xw3Pvao+5XKQLBZg==
-X-Received: by 2002:a9d:6041:: with SMTP id v1mr216308otj.35.1644379523866;
-        Tue, 08 Feb 2022 20:05:23 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 128sm5696608oor.15.2022.02.08.20.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:05:22 -0800 (PST)
-Received: (nullmailer pid 3633432 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:05:21 -0000
-Date:   Tue, 8 Feb 2022 22:05:21 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Icenowy Zheng <icenowy@nucleisys.com>
-Cc:     linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-riscv@lists.infradead.org, Albert Ou <aou@eecs.berkeley.edu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 03/12] dt-bindings: riscv: add compatible strings for
- Nuclei UX600 series
-Message-ID: <YgM9gZ0e/yoiHys9@robh.at.kernel.org>
-References: <20220127151647.2375449-1-icenowy@nucleisys.com>
- <20220127151647.2375449-4-icenowy@nucleisys.com>
+        Tue, 8 Feb 2022 22:24:22 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13681C061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:24:22 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644377060;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=eoWIYOaZeRs/v2aMKLkHveIxx9A2/s6u9pylLwYovIg=;
+        b=OmnJp9CNrdZk/a9TzXx8vCi8716xgp/uNAup98z+s4zNeI6MSCvu3i6HL/4WElm+e0D2Cs
+        GKun9bntMjXpsUwydOlhlkJPAT8GMeUm394ER6vCl6/8h1rRh1Xfb+ksKxPtY9Fp8LCAaM
+        wTIe6JNRDNrjO16WhE7TX3WtHzvXTsU=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Roy Pledge <Roy.Pledge@nxp.com>, Li Yang <leoyang.li@nxp.com>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] oc: fsl: dpio: Make use of the helper macro LIST_HEAD()
+Date:   Wed,  9 Feb 2022 11:23:53 +0800
+Message-Id: <20220209032353.37610-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127151647.2375449-4-icenowy@nucleisys.com>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 23:16:38 +0800, Icenowy Zheng wrote:
-> Nuclei UX600 series are 64-bit, MMU-equipped CPUs, which can run Linux.
-> 
-> Add compatible strings for these CPU cores.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
-> ---
->  Documentation/devicetree/bindings/riscv/cpus.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
+Replace "struct list_head head = LIST_HEAD_INIT(head)" with
+"LIST_HEAD(head)" to simplify the code.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/soc/fsl/dpio/dpio-service.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/soc/fsl/dpio/dpio-service.c b/drivers/soc/fsl/dpio/dpio-service.c
+index 1d2b27e3ea63..36f0a9b799b1 100644
+--- a/drivers/soc/fsl/dpio/dpio-service.c
++++ b/drivers/soc/fsl/dpio/dpio-service.c
+@@ -51,7 +51,7 @@ struct dpaa2_io_store {
+ 
+ /* keep a per cpu array of DPIOs for fast access */
+ static struct dpaa2_io *dpio_by_cpu[NR_CPUS];
+-static struct list_head dpio_list = LIST_HEAD_INIT(dpio_list);
++static LIST_HEAD(dpio_list);
+ static DEFINE_SPINLOCK(dpio_list_lock);
+ 
+ static inline struct dpaa2_io *service_select_by_cpu(struct dpaa2_io *d,
+-- 
+2.25.1
+
