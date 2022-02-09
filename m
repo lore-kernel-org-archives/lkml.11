@@ -2,98 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BD9C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237302AbiBIQiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        id S237324AbiBIQi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:38:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbiBIQiU (ORCPT
+        with ESMTP id S235095AbiBIQi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:38:20 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72223C05CB86;
-        Wed,  9 Feb 2022 08:38:23 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id o5so2252614qvm.3;
-        Wed, 09 Feb 2022 08:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UiDGjAXge98sndCi//gMspGlqK9CQ0rnW1ogp58x2ps=;
-        b=L1pMsspBH0+fY9TcP+mb/z6ZEcA+7PIKwqG39N0YxdzIsvrcZseths0aZYOKQFkr1j
-         jRB3Q0GUDIUV8DiSZQNeqJG4ddEkddGBW8z/0McwrDwhIqDgih8Gv7pOH5QWVQkI/Jjm
-         CowY5ksaFVghP+u2nt2CtBZJRmGjIpfJaUXGIBIl0UAuQUq0yfP6mzGu1TiTelKE3bzq
-         bH3XZPxUWq4eCF05CCdPKgykTteAsqWlJRmgHAnTCtqRGVUQNdYrzOn+6Wrv5QTZaelt
-         Vc2eucNmiowalOng2Ixxh7MXuCBAj7aMOa1sVTzcZSQepMxxKrwjKCACrqLsnYj0jrGT
-         evrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UiDGjAXge98sndCi//gMspGlqK9CQ0rnW1ogp58x2ps=;
-        b=d1Jis4MmOux1y50DfYLB42PPoAN2LFEmxZG6RsG15sniOMk13Arbt6rRwWDHiPpOkk
-         RO1MuIPZxCxum6IoQ+47GkIX6gI6bBt1NNgUHlpjkZakClhJg41jfV/WvELf+zSmZmdm
-         wQIKr7t/6UAAQZO4PuuXmTWheLmNDay7vrumg6WBuiiqkBACUMtnn1r6RtjykkBG1sTb
-         nPcRPFBTccbP/wF1oyxa6Bj8JOpukoZbcKEjkMkAATyctB4vfwMiPR8paGYDN4Rkiztk
-         gnLo0ioq2Tr5o7Q1xmJwOj4dpoc/FIspc4APNZ1M95XELaqIXCSrmfTazcy3OB0K+ApR
-         9lwg==
-X-Gm-Message-State: AOAM533fWDAh9PBwu4/Z24Fw7ZWxv7pjItFrQiUCqS1VtAMdH+8/kxLR
-        dj+SmM2imgxiVKJkFv1hyh8=
-X-Google-Smtp-Source: ABdhPJwsX0Xi32lBOFhWLJxQrAM1pKPkOdKAQbS+/Ckq/iDNb9C1DsvDa69Nkuq5BlJyRv4A6h3azA==
-X-Received: by 2002:a05:6214:5298:: with SMTP id kj24mr2126321qvb.67.1644424702660;
-        Wed, 09 Feb 2022 08:38:22 -0800 (PST)
-Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id w5sm8623401qko.34.2022.02.09.08.38.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 08:38:21 -0800 (PST)
-Date:   Wed, 9 Feb 2022 11:38:20 -0500
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v14 09/11] iio: afe: rescale: add temperature transducers
-Message-ID: <YgPt/Hut4T4C86fX@shaak>
-References: <20220208020441.3081162-1-liambeguin@gmail.com>
- <20220208020441.3081162-10-liambeguin@gmail.com>
- <CAHp75Vf+FkofvC3_jvNadGed+eH7mQvVYXTOiWKCzwinJ3-2-w@mail.gmail.com>
+        Wed, 9 Feb 2022 11:38:57 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5379BC0613C9;
+        Wed,  9 Feb 2022 08:39:00 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD302ED1;
+        Wed,  9 Feb 2022 08:38:59 -0800 (PST)
+Received: from e123427-lin.arm.com (unknown [10.57.40.175])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 155163F70D;
+        Wed,  9 Feb 2022 08:38:57 -0800 (PST)
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Zhiqiang Hou <Zhiqiang.Hou@nxp.com>, kishon@ti.com,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH] PCI: endpoint: Fix alignment fault error in copy tests
+Date:   Wed,  9 Feb 2022 16:38:50 +0000
+Message-Id: <164442471484.32537.8057098991529121924.b4-ty@arm.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20211217094708.28678-1-Zhiqiang.Hou@nxp.com>
+References: <20211217094708.28678-1-Zhiqiang.Hou@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vf+FkofvC3_jvNadGed+eH7mQvVYXTOiWKCzwinJ3-2-w@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
-
-On Tue, Feb 08, 2022 at 03:46:27PM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
-> >
-> > A temperature transducer is a device that converts a thermal quantity
-> > into any other physical quantity. This patch adds support for
-> > temperature to voltage (like the LTC2997) and temperature to current
-> > (like the AD590) linear transducers.
-> > In both cases these are assumed to be connected to a voltage ADC.
+On Fri, 17 Dec 2021 17:47:08 +0800, Zhiqiang Hou wrote:
+> From: Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
 > 
-> ...
+> In the copy tests, it uses the memcpy() to copy data between
+> IO memory space. This can cause the alignment fualt error
+> (pasted the error logs below) due to the memcpy() may use
+> unaligned accesses.
 > 
-> > +       rescale->offset = div_s64((s64)offset * rescale->denominator,
-> > +                                 rescale->numerator);
-> 
-> Wonder if we can use mult_frac() here. Would it require 64-bit division?
+> [...]
 
-Same here, I'd rather keep it as is, especially if you plan on adding
-helpers later on for struct u32_fract.
+Applied to pci/endpoint, thanks!
 
-Cheers,
-Liam
+[1/1] PCI: endpoint: Fix alignment fault error in copy tests
+      https://git.kernel.org/lpieralisi/pci/c/829cc0e2ea
 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Thanks,
+Lorenzo
