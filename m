@@ -2,108 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236238AbiBIPng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:43:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
+        id S235627AbiBIPoN convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:44:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbiBIPnc (ORCPT
+        with ESMTP id S232680AbiBIPoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:43:32 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9FBC0613CA;
-        Wed,  9 Feb 2022 07:43:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644421415; x=1675957415;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=tT0ubbIOHy9IAuW3heCg9dBzqzLkwpWxBVD1B0pmpaQ=;
-  b=BimlXhnafmYZeRAnxWg3H1QUHe49YZWZ8WVj4XUYNhYY0TMlC8la1XUk
-   EewQqP+pJxFgBS8Mt+wQ6JbKaxIZgn2wZVKzFuOTKDIz0X0EDAbZq9qSu
-   Yt4kqx0515UDxcZkouXQn3giJq8Ny1aSsN0wDEw/71tRVY3kVXpRPAYCp
-   6Uz8HdT6h/9aNGBSKueBm/VrTd2xrlhwQpCGQc/Lx+7SejZnx8xXLLWlZ
-   Etb5ibPRyOscZV65RYrdKqTKyYpppmQwn/ewLLUIA+nTCHVWoCuNpSScz
-   +NiygLpxxOEr26fa8E/6F3xoYeuRuAMWomxroLWiiE+bbrDSQDzZd54t8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249435521"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="249435521"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:43:34 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="541143751"
-Received: from chenyu-dev.sh.intel.com ([10.239.158.61])
-  by orsmga008.jf.intel.com with ESMTP; 09 Feb 2022 07:43:28 -0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Todd Brandt <todd.e.brandt@intel.com>,
-        Len Brown <len.brown@intel.com>, Chen Yu <yu.c.chen@intel.com>
-Subject: [PATCH] e1000e: Print PHY register address when MDI read/write fails
-Date:   Thu, 10 Feb 2022 07:43:02 +0800
-Message-Id: <20220209234302.50833-1-yu.c.chen@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Feb 2022 10:44:10 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDD40C05CB8F;
+        Wed,  9 Feb 2022 07:44:13 -0800 (PST)
+Date:   Wed, 09 Feb 2022 15:44:02 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 0/3] Clock fixes for Ingenic SoCs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <EPN17R.TB21BVY3XDUH1@crapouillou.net>
+In-Reply-To: <20220208010048.211691-1-aidanmacdonald.0x0@gmail.com>
+References: <20220208010048.211691-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is occasional suspend error from e1000e which blocks the
-system from further suspending:
-[   20.078957] PM: pci_pm_suspend(): e1000e_pm_suspend+0x0/0x780 [e1000e] returns -2
-[   20.078970] PM: dpm_run_callback(): pci_pm_suspend+0x0/0x170 returns -2
-[   20.078974] e1000e 0000:00:1f.6: PM: pci_pm_suspend+0x0/0x170 returned -2 after 371012 usecs
-[   20.078978] e1000e 0000:00:1f.6: PM: failed to suspend async: error -2
-According to the code flow, this might be caused by broken MDI read/write to PHY registers.
-However currently the code does not tell us which register is broken. Thus enhance the debug
-information to print the offender PHY register for easier debugging.
+Hi Aidan,
 
-Reported-by: Todd Brandt <todd.e.brandt@intel.com>
-Signed-off-by: Chen Yu <yu.c.chen@intel.com>
----
- drivers/net/ethernet/intel/e1000e/phy.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Le mar., févr. 8 2022 at 01:00:45 +0000, Aidan MacDonald 
+<aidanmacdonald.0x0@gmail.com> a écrit :
+> I ran across a problem trying to get Linux running on an Ingenic 
+> X1000 SoC:
+> since the memory clock isn't referenced by any driver, it appears 
+> unused and
+> gets disabled automatically. After that, the system hangs on any RAM 
+> access.
+> 
+> There is a hack in board-ingenic.c to forcibly enable the CPU clock, 
+> but this
+> is insufficient for the X1000 since the memory clock has its own gate 
+> and mux
+> that isn't tied to the CPU.
+> 
+> This patch series fixes the bug by adding CLK_IS_CRITICAL flags to 
+> important
+> clocks, which seems to be the approach used in many other SoC clock 
+> drivers.
+> 
+> It's my first time submitting patches to the kernel so let me know if 
+> I
+> messed anything up.
 
-diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
-index 0f0efee5fc8e..fd07c3679bb1 100644
---- a/drivers/net/ethernet/intel/e1000e/phy.c
-+++ b/drivers/net/ethernet/intel/e1000e/phy.c
-@@ -146,11 +146,11 @@ s32 e1000e_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data)
- 			break;
- 	}
- 	if (!(mdic & E1000_MDIC_READY)) {
--		e_dbg("MDI Read did not complete\n");
-+		e_dbg("MDI Read PHY Reg Address %d did not complete\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (mdic & E1000_MDIC_ERROR) {
--		e_dbg("MDI Error\n");
-+		e_dbg("MDI Read PHY Reg Address %d Error\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
-@@ -210,11 +210,11 @@ s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
- 			break;
- 	}
- 	if (!(mdic & E1000_MDIC_READY)) {
--		e_dbg("MDI Write did not complete\n");
-+		e_dbg("MDI Write PHY Reg Address %d did not complete\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (mdic & E1000_MDIC_ERROR) {
--		e_dbg("MDI Error\n");
-+		e_dbg("MDI Write PHY Red Address %d Error\n", offset);
- 		return -E1000_ERR_PHY;
- 	}
- 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
--- 
-2.25.1
+You did everything good.
+
+I think the CI20 suffered from the same problem, it would only boot as 
+long as the "clk_ignore_unused" flag was added on the command line. I 
+will need to try it there to see if it improved the situation.
+
+I tested the patchset on JZ4770 and it works fine. So:
+
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+@Stephen: I don't see any changes pending on board-ingenic.c so it 
+should be safe for you to also take [PATCH 3/3] in the clk tree.
+
+Cheers,
+-Paul
+
+> Aidan MacDonald (3):
+>   clk: ingenic: Allow specifying common clock flags
+>   clk: ingenic: Mark critical clocks in Ingenic SoCs
+>   mips: ingenic: Do not manually reference the CPU clock
+> 
+>  arch/mips/generic/board-ingenic.c | 26 --------------------------
+>  drivers/clk/ingenic/cgu.c         |  2 +-
+>  drivers/clk/ingenic/cgu.h         |  3 +++
+>  drivers/clk/ingenic/jz4725b-cgu.c |  2 ++
+>  drivers/clk/ingenic/jz4740-cgu.c  |  2 ++
+>  drivers/clk/ingenic/jz4760-cgu.c  |  2 ++
+>  drivers/clk/ingenic/jz4770-cgu.c  |  1 +
+>  drivers/clk/ingenic/jz4780-cgu.c  |  3 +++
+>  drivers/clk/ingenic/x1000-cgu.c   |  3 +++
+>  drivers/clk/ingenic/x1830-cgu.c   |  3 +++
+>  10 files changed, 20 insertions(+), 27 deletions(-)
+> 
+> --
+> 2.34.1
+> 
+
 
