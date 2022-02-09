@@ -2,158 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53DDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiBIL7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
+        id S231293AbiBIL7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231688AbiBIL5l (ORCPT
+        with ESMTP id S231673AbiBIL5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:57:41 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29828C0068AD;
-        Wed,  9 Feb 2022 02:59:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644404343; x=1675940343;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Nzol2qAJ2pcwfsSlTz2txXFSTnV1hNw5G1nXpEt7930=;
-  b=iCZIZYBmq870bjyaIZewxEfZggcM8iOkwREt+PT9d45U1YXd5KFhnyI7
-   XFuhLE4z5kz5RKpSymQfiQM3BKrbZ67bv/k8c7WJJ1hWVrPo9V2jwtTbC
-   skRibFj7AAGxJ4zLNn1BLUlobSTf9gddtLnOmbO4rR5T5isg6SllELiSf
-   QD02wNiKt4t640XxPr5m5lok04p5OUAWG5e+PASK9NJC2hPFAB7WEgAJn
-   BGqiJlVTX7eitRf9WzTOxXMg6tQgwtwTUWGVblJKmniy6qdial2EyQ5ds
-   sw1bV8L3o/lST9Wd6Vk1GlZeXOXqJ6zuFICL/3cSxXUgIn0JGbw95G9ng
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229148803"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="229148803"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 02:59:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="678505057"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 09 Feb 2022 02:59:00 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 09 Feb 2022 12:58:59 +0200
-Date:   Wed, 9 Feb 2022 12:58:59 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Wed, 9 Feb 2022 06:57:40 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E493EC1038F1;
+        Wed,  9 Feb 2022 02:58:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644404285; x=1675940285;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=FgGVLLKzbuPBRNCztCvx+NV+dXwd+FE70X81iodajX8=;
+  b=j+0HXHB0kqFfdTXIB5h/jHl8Z+cjEWSnZLjJc8C1ehD7YyUSelGjbWV1
+   c5aTgSBSoSiOP0o+pxF9yyoL9/LKr98l3x4r1QoAR+rU63A/wNo9WYl+T
+   2hU1RzgztpBiwpvyjmvWOkl2AE1Zp4OvF52Kdx74UP7nvivNaX7yolaTI
+   Y=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Feb 2022 02:58:05 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 02:58:04 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 02:58:04 -0800
+Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 02:58:00 -0800
+From:   Mao Jinlong <quic_jinlmao@quicinc.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+CC:     Mao Jinlong <quic_jinlmao@quicinc.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] usb: typec: Factor out non-PD fwnode properties
-Message-ID: <YgOecxgyaMN+/3sN@kuha.fi.intel.com>
-References: <20220202221948.5690-1-samuel@sholland.org>
- <20220202221948.5690-4-samuel@sholland.org>
+        <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Trilok Soni <quic_tsoni@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>
+Subject: [PATCH v3 09/10] dt-bindings: arm: Adds CoreSight TPDA hardware definitions
+Date:   Wed, 9 Feb 2022 18:57:05 +0800
+Message-ID: <20220209105706.18852-10-quic_jinlmao@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220209105706.18852-1-quic_jinlmao@quicinc.com>
+References: <20220209105706.18852-1-quic_jinlmao@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220202221948.5690-4-samuel@sholland.org>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Adds new coresight-tpda.yaml file describing the bindings required
+to define tpda in the device trees.
 
-On Wed, Feb 02, 2022 at 04:19:46PM -0600, Samuel Holland wrote:
-> Basic programmable non-PD Type-C port controllers do not need the full
-> TCPM library, but they share the same devicetree binding and the same
-> typec_capability structure. Factor out a helper for parsing those
-> properties which map to fields in struct typec_capability, so the code
-> can be shared between TCPM and basic non-TCPM drivers.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
-> ---
-> 
-> Changes in v2:
->  - Always put the return values from typec_find_* in a signed variable
->    for error checking.
-> 
->  drivers/usb/typec/class.c     | 52 +++++++++++++++++++++++++++++++++++
->  drivers/usb/typec/tcpm/tcpm.c | 32 +--------------------
->  include/linux/usb/typec.h     |  3 ++
->  3 files changed, 56 insertions(+), 31 deletions(-)
-> 
-> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
-> index 45a6f0c807cb..b67ba9478c82 100644
-> --- a/drivers/usb/typec/class.c
-> +++ b/drivers/usb/typec/class.c
-> @@ -1894,6 +1894,58 @@ void *typec_get_drvdata(struct typec_port *port)
->  }
->  EXPORT_SYMBOL_GPL(typec_get_drvdata);
->  
-> +int typec_get_fw_cap(struct typec_capability *cap,
-> +		     struct fwnode_handle *fwnode)
-> +{
-> +	const char *cap_str;
-> +	int ret;
-> +
-> +	/*
-> +	 * This fwnode has a "compatible" property, but is never populated as a
-> +	 * struct device. Instead we simply parse it to read the properties.
-> +	 * This it breaks fw_devlink=on. To maintain backward compatibility
-> +	 * with existing DT files, we work around this by deleting any
-> +	 * fwnode_links to/from this fwnode.
-> +	 */
-> +	fw_devlink_purge_absent_suppliers(fwnode);
+Signed-off-by: Tao Zhang <quic_taozha@quicinc.com>
+Signed-off-by: Mao Jinlong <quic_jinlmao@quicinc.com>
+---
+ .../bindings/arm/coresight-tpda.yaml          | 129 ++++++++++++++++++
+ 1 file changed, 129 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/coresight-tpda.yaml
 
-Let's not put that call here. That function is broken. I think it in
-practice assumes that there can only be one device linked to fwnode,
-but that's not true. The fwnodes can be, and are, shared. So by using
-it we may end up doing things to some completely wrong devices.
-
-So let's keep that call in the drivers that really have to have it for
-now. I think that function - fw_devlink_purge_absent_suppliers() -
-needs some serious rethinking.
-
-There is some deeper problem. I have a feeling that all the functions
-that rely on the fwnode->dev member are broken. We need a proper
-reverce search mechanism that can be used to find the devices linked
-to fwnodes. But I have no idea how to that could be done.
-
-> +	cap->fwnode = fwnode;
-> +
-> +	ret = fwnode_property_read_string(fwnode, "power-role", &cap_str);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = typec_find_port_power_role(cap_str);
-> +	if (ret < 0)
-> +		return ret;
-> +	cap->type = ret;
-> +
-> +	/* USB data support is optional */
-> +	ret = fwnode_property_read_string(fwnode, "data-role", &cap_str);
-> +	if (ret == 0) {
-> +		ret = typec_find_port_data_role(cap_str);
-> +		if (ret < 0)
-> +			return ret;
-> +		cap->data = ret;
-> +	}
-> +
-> +	/* Get the preferred power role for a DRP */
-> +	if (cap->type == TYPEC_PORT_DRP) {
-> +		cap->prefer_role = TYPEC_NO_PREFERRED_ROLE;
-> +
-> +		ret = fwnode_property_read_string(fwnode, "try-power-role", &cap_str);
-> +		if (ret == 0) {
-> +			ret = typec_find_power_role(cap_str);
-> +			if (ret < 0)
-> +				return ret;
-> +			cap->prefer_role = ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(typec_get_fw_cap);
-
-thanks,
-
+diff --git a/Documentation/devicetree/bindings/arm/coresight-tpda.yaml b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+new file mode 100644
+index 000000000000..311a70a1fcc6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/coresight-tpda.yaml
+@@ -0,0 +1,129 @@
++# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
++# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/coresight-tpda.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Trace, Profiling and Diagnostics Aggregator - TPDA
++
++description: |
++  TPDAs are responsible for packetization and timestamping of data sets
++  utilizing the MIPI STPv2 packet protocol. Pulling data sets from one or
++  more attached TPDM and pushing the resultant (packetized) data out a
++  master ATB interface. Performing an arbitrated ATB interleaving (funneling)
++  task for free-flowing data from TPDM (i.e. CMB and DSB data set flows).
++
++maintainers:
++  - Suzuki K Poulose <suzuki.poulose@arm.com>
++  - Mathieu Poirier <mathieu.poirier@linaro.org>
++
++properties:
++  $nodename:
++    pattern: "^tpda(@[0-9a-f]+)$"
++  compatible:
++    items:
++      - const: qcom,coresight-tpda
++      - const: arm,primecell
++
++  reg:
++    maxItems: 1
++
++  qcom,tpda-atid:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    maxItems: 1
++    description: |
++      Use the ATID field for trace source identification. This allows
++      multiple TPDMs to be interleaved and formatted via the Coresight
++      trace formatter framing protocol and de-formatted/parsed on a host
++      or debugger.
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: apb_pclk
++
++  in-ports:
++    type: object
++    description: |
++      Input connections from TPDM to TPDA
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      "^port@[0-9a-f]+$":
++        type: object
++        required:
++          - reg
++
++    required:
++      - '#size-cells'
++      - '#address-cells'
++
++  out-ports:
++    type: object
++    description: |
++      Output connections from the TPDA to legacy CoreSight trace bus.
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++     port:
++       description:
++         Output connection from the TPDA to legacy CoreSight Trace bus.
++       $ref: /schemas/graph.yaml#/properties/port
++
++required:
++    - compatible
++    - reg
++    - qcom,tpda-atid
++    - clocks
++    - clock-names
++    - in-ports
++    - out-ports
++
++additionalProperties: false
++
++examples:
++  # minimum tpda definition.
++  - |
++    tpda@6004000 {
++       compatible = "qcom,coresight-tpda", "arm,primecell";
++       reg = <0x6004000 0x1000>;
++
++       qcom,tpda-atid = <65>;
++
++       clocks = <&aoss_qmp>;
++       clock-names = "apb_pclk";
++
++       in-ports {
++         #address-cells = <1>;
++         #size-cells = <0>;
++
++        port@0 {
++          reg = <0>;
++          tpda_qdss_0_in_tpdm_dcc: endpoint {
++            remote-endpoint =
++              <&tpdm_dcc_out_tpda_qdss_0>;
++            };
++        };
++      };
++
++       out-ports {
++         port {
++                 tpda_qdss_out_funnel_in0: endpoint {
++                    remote-endpoint =
++                    <&funnel_in0_in_tpda_qdss>;
++                  };
++          };
++       };
++    };
++
++...
 -- 
-heikki
+2.17.1
+
