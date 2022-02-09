@@ -2,84 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05259C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:57:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14249C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241581AbiBIS5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:57:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
+        id S240235AbiBIS50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:57:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241326AbiBIS4s (ORCPT
+        with ESMTP id S241373AbiBIS4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:56:48 -0500
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1104FC050CF8;
-        Wed,  9 Feb 2022 10:56:05 -0800 (PST)
-Received: by mail-oo1-f41.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so3504886oor.12;
-        Wed, 09 Feb 2022 10:56:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=U1a6J1Ei0HXyrs5g5n3HqCU8XGgHDhvfeppc0HOYcD4=;
-        b=gt3UtY37iC64UICYxNCT8l6JlQ/efR3xZAr5jhvX9mZiV6glqkpW2GpelKimZYeody
-         g6hMo7kFrtAgzx9eHCj2Jkr2GAfrdf+BBMTfBxJnc1Sxjrjb3xQquGio6dXPGlDHZEbW
-         zKoVMmcs6ab5HIIHlIPi50zxSJP4aIzLzKoAS8f4L4Cf95sXdAkrdTnn+B8J6UWjFE69
-         MjWduVo/ZuzDEEZzUaL3OYiKSQRrForDpVMtDLtnha8pEdCrx9kIkLwOL+X9wdoOQS1n
-         BMTMenDPUAJBV1vUR6T/ktNQueZA7/XW3Nm5UvhcucJyfB4JWrUUYPhKGwHOy8EVDfDQ
-         qfbA==
-X-Gm-Message-State: AOAM531kCxXk/mosNElg4CFIc3CO8y3fsEomr6mOEFuV4CGVR9f9y0VN
-        OOcUdNlnYma2XUZp7lrfTQ==
-X-Google-Smtp-Source: ABdhPJyvDSkFU1hxl/DhxagKGRQyWKE93eZjYQ3eZApgX/m0JXhMm6dM/Ah+IGAufOFalmSRhA1enw==
-X-Received: by 2002:a05:6870:c7a9:: with SMTP id dy41mr1296625oab.137.1644432964382;
-        Wed, 09 Feb 2022 10:56:04 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id ay42sm7402537oib.5.2022.02.09.10.56.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 10:56:03 -0800 (PST)
-Received: (nullmailer pid 689284 invoked by uid 1000);
-        Wed, 09 Feb 2022 18:56:02 -0000
-Date:   Wed, 9 Feb 2022 12:56:02 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-Cc:     kernel-list@raspberrypi.com, tomi.valkeinen@ideasonboard.com,
-        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        laurent.pinchart@ideasonboard.com, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        mchehab@kernel.org, naush@raspberrypi.com, stefan.wahren@i2se.com,
-        bcm-kernel-feedback-list@broadcom.com, lukasz@jany.st,
-        linux-rpi-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 03/11] dt-bindings: media: Add bindings for
- bcm2835-unicam
-Message-ID: <YgQOQneSD3+9eS37@robh.at.kernel.org>
-References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
- <20220208155027.891055-4-jeanmichel.hautbois@ideasonboard.com>
+        Wed, 9 Feb 2022 13:56:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC49EC03E940;
+        Wed,  9 Feb 2022 10:56:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D679612CC;
+        Wed,  9 Feb 2022 18:56:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85377C340E7;
+        Wed,  9 Feb 2022 18:56:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432999;
+        bh=paGR/fTnLUhrSaJbD5c1gmkz5uWTtOGJJZJk4wXLwB8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=nIkj9Jh4MPxiOPQkKOC0LVC3C2ia0IRIE9sY0ov9R4GsnQwOhWh8t03P67GP9oaUf
+         zHD1B/+nRmHJdIM2oAbTYSrYpYIy4Bvjj8G3AtAXTOPac0WA71Jfy95iS+DJhGzilq
+         tnq5XVM0q0WyHW+AgAJtcg019G7ud4/OW4cbNhEho3/FohbYxT7vGYOxXe7udhJ1IY
+         01Tz3gwXhrZovTCh3xnofRQhL7EA4r2KGSbku4Zr/NQ8psN6zqnD+6+ky/DsL/qP89
+         QKLwAlJq7rK4fBN+NQ3RIGgtQJ709itcCbLZUYAgtszOX1MHrX0Uz7/c9oMET3ggeU
+         hpagBOmT5tExQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+Subject: [PATCH MANUALSEL 5.16 2/8] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
+Date:   Wed,  9 Feb 2022 13:56:28 -0500
+Message-Id: <20220209185635.48730-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209185635.48730-1-sashal@kernel.org>
+References: <20220209185635.48730-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208155027.891055-4-jeanmichel.hautbois@ideasonboard.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 08 Feb 2022 16:50:19 +0100, Jean-Michel Hautbois wrote:
-> Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
-> camera interface.
-> 
-> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
-> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> 
-> ---
-> v4:
-> - make MAINTAINERS its own patch
-> - describe the reg and clocks correctly
-> - use a vendor entry for the number of data lanes
-> ---
->  .../bindings/media/brcm,bcm2835-unicam.yaml   | 117 ++++++++++++++++++
->  1 file changed, 117 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
-> 
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
+
+Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
+PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
+sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
+
+Note, none of the currently existing Windows/Hyper-V versions are known
+to enable 'save VMX-preemption timer value' when eVMCS is in use, the
+change is aimed at making the filtering future proof.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/x86/kvm/vmx/evmcs.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index 6255fa7167720..8d70f9aea94bc 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -59,7 +59,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ 	 SECONDARY_EXEC_SHADOW_VMCS |					\
+ 	 SECONDARY_EXEC_TSC_SCALING |					\
+ 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
+-#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
++#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
++	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
++	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+ 
+-- 
+2.34.1
+
