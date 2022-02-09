@@ -2,113 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D29C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235012AbiBIT3M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:29:12 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46708 "EHLO
+        id S235036AbiBIT3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:29:17 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236113AbiBIT2F (ORCPT
+        with ESMTP id S238091AbiBIT23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:28:05 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F01AE00ED68
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:26:42 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id r144so4520709iod.9
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:26:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=uJdZ7oqw+QQlIzr17qqdwzwfregbqFYC9sj7YzP1HYY=;
-        b=fYz8PGQMd29UOajQhZT2X83HUOpYoErPoGjRcNCM4yVnITAfRZgeDe7UMSvRLFe4oS
-         1k0WRleLPHEuUfcf6Ia64xTw2nV6RRaWj+2NboS6Cc4j+5N0sOvshg1GvERuJ5jICtiI
-         eslZtJUanhs7SqaFUnbPEbDHd79D+9p9fHxms=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uJdZ7oqw+QQlIzr17qqdwzwfregbqFYC9sj7YzP1HYY=;
-        b=Y7qS7KoOPt1G2hQlNd+39+uSDQgo2ViwCkGU+EySQVDiqo4LGZ8V3s4UfhkjspsXHf
-         pVpYVIqXeX8EX7yB9ngu3OQO6yy/Pqeyv419HPjnpthXn5jkVhxcC2FgVHbaTen84DzR
-         Ri/TigtqS47cI0y01xyyLSGRYXu9PrSgbAcvIezFGyk3NoKc67WV2h0UQMjrlRljFrcr
-         dp1V8Tn2IXWxXZme+4FkzHiBpwaUcLwNnv2eUnZKlBl12draIJANAUXU9QQLpwlXrG7e
-         egzCDd3v5KC7WCJtaAzbCbKZlpfCDlrMTAkKbn3Hq8VG3/S7UrqD7eYGK6+LpVS4u5aU
-         u9ww==
-X-Gm-Message-State: AOAM532VNzp/HGn4eenv6arJgma6UaiC6B9XvbfYEaPIqOw2EftiZl5k
-        L+Z+17z5TfYjwvMr3SpNlhAJsQ==
-X-Google-Smtp-Source: ABdhPJw5MU53uJwqzrLtiF140G+vIQQ1qVQ9YiU1UrUUC9dzqLmlqHS4jlfDiPOVYXjgDYKvgAj0iA==
-X-Received: by 2002:a6b:6f09:: with SMTP id k9mr1864423ioc.61.1644434801604;
-        Wed, 09 Feb 2022 11:26:41 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id o22sm9992022iow.37.2022.02.09.11.26.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 11:26:41 -0800 (PST)
-Subject: Re: [PATCH] selftests/ftrace: Do not trace do_softirq because of
- PREEMPT_RT
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220209162430.286578-1-krzysztof.kozlowski@canonical.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <aa0833ac-154e-9a66-c3f5-7c3b98f15f19@linuxfoundation.org>
-Date:   Wed, 9 Feb 2022 12:26:40 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 9 Feb 2022 14:28:29 -0500
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB0CC03FED5;
+        Wed,  9 Feb 2022 11:28:12 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 9169C3B494A;
+        Wed,  9 Feb 2022 14:28:11 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id Bq5hzq76zMBx; Wed,  9 Feb 2022 14:28:11 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id E99E43B4AC7;
+        Wed,  9 Feb 2022 14:28:10 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com E99E43B4AC7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1644434891;
+        bh=XjlwNl1On6TmPijh5BHJldK1Cy6f5rlPU65IQRBXecc=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=lcJ6LjDxmssvDwIKOUoMlicr5d+aywJSmXlRJTfbmH4xgmPoedFrQV6r3q9tKD4a/
+         1dpN6ymkorGYD/RLPPgIwIdyLfChfI76yVxI9JFrZhlPb9f0m8Oc9zLtHilxIKXZBQ
+         jwKiwRDxiDvRaUtKcxU1/za8f4GK7gbP62qkVEdK0YvR7hWR+wQ+zLFLMFuwjteyOH
+         cMGzzJ09LJP7kAVUHeFlpfr4ABMeEU0uDrDGCpZfG8rK+Cczk81jLml32FeeqyTNrq
+         bab+3bK6c37tOu2GAzhkpLNpJPKTcXxyJtwFznXm3SstTE8AhxT/olKl2Jd8w1Sndl
+         yJW42XHRsAMyQ==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id qTEEX-tAWWFU; Wed,  9 Feb 2022 14:28:10 -0500 (EST)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id D2A0A3B4B38;
+        Wed,  9 Feb 2022 14:28:10 -0500 (EST)
+Date:   Wed, 9 Feb 2022 14:28:10 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     Waiman Long <longman@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        paulmck <paulmck@kernel.org>
+Message-ID: <718973621.50447.1644434890744.JavaMail.zimbra@efficios.com>
+In-Reply-To: <CAM9d7ci=N2NVj57k=W0ebqBzfW+ThBqYSrx-CZbgwGcbOSrEGA@mail.gmail.com>
+References: <20220208184208.79303-1-namhyung@kernel.org> <20220209090908.GK23216@worktop.programming.kicks-ass.net> <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com> <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com> <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com> <CAM9d7ci=N2NVj57k=W0ebqBzfW+ThBqYSrx-CZbgwGcbOSrEGA@mail.gmail.com>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
 MIME-Version: 1.0
-In-Reply-To: <20220209162430.286578-1-krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF96 (Linux)/8.8.15_GA_4203)
+Thread-Topic: locking: Separate lock tracepoints from lockdep/lock_stat (v1)
+Thread-Index: XmneyW/Z8kaQOCvcLgzEg6AAvUOeRA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 9:24 AM, Krzysztof Kozlowski wrote:
-> The PREEMPT_RT patchset does not use soft IRQs thus trying to filter for
-> do_softirq fails for such kernel:
-> 
->    echo do_softirq
->    ftracetest: 81: echo: echo: I/O error
-> 
-> Choose some other externally visible function for the test.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> 
-> ---
-> 
-> I understand that the failure does not exist on mainline kernel (only
-> with PREEMPT_RT patchset) but the change does not harm it.
-> 
-> If it is not suitable alone, please consider it for RT patchset.
-> ---
->   .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> index e96e279e0533..1d0c7601865f 100644
-> --- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> +++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> @@ -19,7 +19,7 @@ fail() { # mesg
->   
->   FILTER=set_ftrace_filter
->   FUNC1="schedule"
-> -FUNC2="do_softirq"
-> +FUNC2="_printk"
->   
->   ALL_FUNCS="#### all functions enabled ####"
->   
-> 
+----- On Feb 9, 2022, at 2:22 PM, Namhyung Kim namhyung@kernel.org wrote:
 
-Change looks good to me.
+> Hello,
+> 
+> On Wed, Feb 9, 2022 at 11:02 AM Waiman Long <longman@redhat.com> wrote:
+>>
+>> On 2/9/22 13:29, Mathieu Desnoyers wrote:
+>> > ----- On Feb 9, 2022, at 1:19 PM, Waiman Long longman@redhat.com wrote:
+>> >
+>> >> On 2/9/22 04:09, Peter Zijlstra wrote:
+>> >>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
+>> >>>
+>> >>>> Eventually I'm mostly interested in the contended locks only and I
+>> >>>> want to reduce the overhead in the fast path.  By moving that, it'd be
+>> >>>> easy to track contended locks with timing by using two tracepoints.
+>> >>> So why not put in two new tracepoints and call it a day?
+>> >>>
+>> >>> Why muck about with all that lockdep stuff just to preserve the name
+>> >>> (and in the process continue to blow up data structures etc..). This
+>> >>> leaves distros in a bind, will they enable this config and provide
+>> >>> tracepoints while bloating the data structures and destroying things
+>> >>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
+>> >>> at all.
+>> >>>
+>> >>> Yes, the name is convenient, but it's just not worth it IMO. It makes
+>> >>> the whole proposition too much of a trade-off.
+>> >>>
+>> >>> Would it not be possible to reconstruct enough useful information from
+>> >>> the lock callsite?
+>> >>>
+>> >> I second that as I don't want to see the size of a spinlock exceeds 4
+>> >> bytes in a production system.
+>> >>
+>> >> Instead of storing additional information (e.g. lock name) directly into
+>> >> the lock itself. Maybe we can store it elsewhere and use the lock
+>> >> address as the key to locate it in a hash table. We can certainly extend
+>> >> the various lock init functions to do that. It will be trickier for
+>> >> statically initialized locks, but we can probably find a way to do that too.
+>> > If we go down that route, it would be nice if we can support a few different
+>> > use-cases for various tracers out there.
+>> >
+>> > One use-case (a) requires the ability to query the lock name based on its
+>> > address as key.
+>> > For this a hash table is a good fit. This would allow tracers like ftrace to
+>> > output lock names in its human-readable output which is formatted within the
+>> > kernel.
+>> >
+>> > Another use-case (b) is to be able to "dump" the lock { name, address } tuples
+>> > into the trace stream (we call this statedump events in lttng), and do the
+>> > translation from address to name at post-processing. This simply requires
+>> > that this information is available for iteration for both the core kernel
+>> > and module locks, so the tracer can dump this information on trace start
+>> > and module load.
+>> >
+>> > Use-case (b) is very similar to what is done for the kernel tracepoints. Based
+>> > on this, implementing the init code that iterates on those sections and
+>> > populates
+>> > a hash table for use-case (a) should be easy enough.
+>>
+>> Yes, that are good use cases for this type of functionality. I do need
+>> to think about how to do it for statically initialized lock first.
+> 
+> Thank you all for the review and good suggestions.
+> 
+> I'm also concerning dynamic allocated locks in a data structure.
+> If we keep the info in a hash table, we should delete it when the
+> lock is gone.  I'm not sure we have a good place to hook it up all.
 
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+I was wondering about this use case as well. Can we make it mandatory to
+declare the lock "class" (including the name) statically, even though the
+lock per-se is allocated dynamically ? Then the initialization of the lock
+embedded within the data structure would simply refer to the lock class
+definition.
 
-thanks,
--- Shuah
+But perhaps I am missing something here.
 
+Thanks,
+
+Mathieu
+
+
+-- 
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
