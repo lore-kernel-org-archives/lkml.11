@@ -2,206 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79AF2C3525C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C26C35270
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344899AbiBICo4 (ORCPT
+        id S1345638AbiBICpE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:44:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45034 "EHLO
+        Tue, 8 Feb 2022 21:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241003AbiBIAsJ (ORCPT
+        with ESMTP id S242735AbiBIBUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 19:48:09 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 544AFC061576;
-        Tue,  8 Feb 2022 16:48:08 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id y5so1405060pfe.4;
-        Tue, 08 Feb 2022 16:48:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DxejLyJZOr+Wj9kJP5Bh3+D+UCu71YvuxzkpYt5n3nQ=;
-        b=ArHH/2BI46pSXLM93jBgG29wqGQ8UCztyzoxY8wYh+tDQ+LWbFQO4mEOozYkwuhLD0
-         ct1V56llS6x6hlyWQWOT/Mrs2LCthjkG66S6QankTK071FrAmUZbYc5H1WMwk4HTKG0x
-         JQvJhNgc13yjToQM4r0cL9SH9qrG2oON+rEge6jK7WYIpaqT3AlnZsSU7qgDEXzfpSMz
-         3jXCd+k5ob9o9VE2/RHIvYLL2jgm0DLwp0LSZYWzF4+RKmmt0oX3u44EvSRmR6hxRWLC
-         0rPspknfR4ed4C8X3m0lpDx+522dO01k9EpahIaQuIwMnL2XypDlXwmYWAkSxnjCmhjI
-         laWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DxejLyJZOr+Wj9kJP5Bh3+D+UCu71YvuxzkpYt5n3nQ=;
-        b=UXRQIHHkYyROjIQK2bjT+JXKFmvfEGds3R6839psyHFgePfEFobjhn8kSClioe3igm
-         f+bF22p1uZLm0+Der4VLYW0u3VGft8EnCWPKqmq65tipyfkak0zLyCYiZ1s+HAJ4Txr/
-         ve72MbWH9SyWwaGkgKbdx0CJ/JBQXqRcLfruzjyuXn8GC7yJNGr4p/Y9jtdmyQtcPWiM
-         VZl8OX7Tew4J2ye+Uojh3+LTaHVs9a+iI1n+hdjJHjD7xcaPXe9SBnD5Q8KgiAMtWgFa
-         KEPTNsfyu7EZJq2Yss70bTngfLBocAbL/OOkW2N4211q3q0jsL/0nx9ctHz8VngRApd3
-         KHuw==
-X-Gm-Message-State: AOAM531hd1nbpNwXVIVY+diJc8nx5ytiLSVFUeulao8ya/nKfl32T1yg
-        3YVZzpkfvOiU9+zLEY9pv34=
-X-Google-Smtp-Source: ABdhPJzphsSMkiPhojvBatZrHfBuu0GRELRnZ5kBq4wN8yungzUl2GYKsMC8I3TevIAcEVFsPd27dA==
-X-Received: by 2002:a63:914b:: with SMTP id l72mr2989198pge.223.1644367687889;
-        Tue, 08 Feb 2022 16:48:07 -0800 (PST)
-Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
-        by smtp.gmail.com with ESMTPSA id t9sm3826518pjg.44.2022.02.08.16.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 16:48:07 -0800 (PST)
-From:   davidcomponentone@gmail.com
-To:     jejb@linux.ibm.com
-Cc:     davidcomponentone@gmail.com, martin.petersen@oracle.com,
-        yang.guang5@zte.com.cn, bvanassche@acm.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] scsi: arcmsr: replace snprintf with sysfs_emit
-Date:   Wed,  9 Feb 2022 08:47:55 +0800
-Message-Id: <1c5ade32e6e60c94dd357c4a159df64a7e311459.1644283712.git.yang.guang5@zte.com.cn>
-X-Mailer: git-send-email 2.30.2
+        Tue, 8 Feb 2022 20:20:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C79C061576;
+        Tue,  8 Feb 2022 17:20:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 144E0617E7;
+        Wed,  9 Feb 2022 01:20:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02137C004E1;
+        Wed,  9 Feb 2022 01:20:15 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="f3g58zfE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Epo8j6f82VaiElGEK+cLsKCLLv1wK/ngSXClGzK93nI=;
+        b=f3g58zfEZIQTrFf4x5mRH7JVgKrccFTPWeYFBA2Oo8yebDy+QRlHo3Z3cFQ4scSdGamyhL
+        wHR6p5y9eYFELn9MDC7NHtM8SePk1HrqavpcAZ/ZCNbNJIAKzYDZ6o9zYBU2d5WGyQzNKG
+        wsqMinQevWdxzvwP0PoKuvhVg6baThk=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a4f5ce73 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:20:14 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2 9/9] random: remove outdated INT_MAX >> 6 check in urandom_read()
+Date:   Wed,  9 Feb 2022 02:19:19 +0100
+Message-Id: <20220209011919.493762-10-Jason@zx2c4.com>
+In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Guang <yang.guang5@zte.com.cn>
+In 79a8468747c5 ("random: check for increase of entropy_count because of
+signed conversion"), a number of checks were added around what values
+were passed to account(), because account() was doing fancy fixed point
+fractional arithmetic, and a user had some ability to pass large values
+directly into it. One of things in that commit was limiting those values
+to INT_MAX >> 6.
 
-coccinelle report:
-./drivers/scsi/arcmsr/arcmsr_attr.c:297:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:273:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:285:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:261:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:374:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:309:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:348:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:335:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:361:8-16:
-WARNING: use scnprintf or sprintf
-./drivers/scsi/arcmsr/arcmsr_attr.c:322:8-16:
-WARNING: use scnprintf or sprintf
+However, for several years now, urandom reads no longer touch entropy
+accounting, and so this check serves no purpose. The current flow is:
 
-Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+urandom_read_nowarn()-->get_random_bytes_user()-->chacha20_block()
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
+We arrive at urandom_read_nowarn() in the first place either via
+ordinary fops, which limits reads to MAX_RW_COUNT, or via getrandom()
+which limits reads to INT_MAX.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- drivers/scsi/arcmsr/arcmsr_attr.c | 30 ++++++++++--------------------
- 1 file changed, 10 insertions(+), 20 deletions(-)
+ drivers/char/random.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/scsi/arcmsr/arcmsr_attr.c b/drivers/scsi/arcmsr/arcmsr_attr.c
-index baeb5e795690..e66d761926e9 100644
---- a/drivers/scsi/arcmsr/arcmsr_attr.c
-+++ b/drivers/scsi/arcmsr/arcmsr_attr.c
-@@ -258,8 +258,7 @@ static ssize_t
- arcmsr_attr_host_driver_version(struct device *dev,
- 				struct device_attribute *attr, char *buf)
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index f7f9cbfe13f7..e09874c511d0 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1305,7 +1305,6 @@ static ssize_t urandom_read_nowarn(struct file *file, char __user *buf,
  {
--	return snprintf(buf, PAGE_SIZE,
--			"%s\n",
-+	return sysfs_emit(buf, "%s\n",
- 			ARCMSR_DRIVER_VERSION);
- }
+ 	int ret;
  
-@@ -270,8 +269,7 @@ arcmsr_attr_host_driver_posted_cmd(struct device *dev,
- 	struct Scsi_Host *host = class_to_shost(dev);
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			atomic_read(&acb->ccboutstandingcount));
- }
- 
-@@ -282,8 +280,7 @@ arcmsr_attr_host_driver_reset(struct device *dev,
- 	struct Scsi_Host *host = class_to_shost(dev);
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->num_resets);
- }
- 
-@@ -294,8 +291,7 @@ arcmsr_attr_host_driver_abort(struct device *dev,
- 	struct Scsi_Host *host = class_to_shost(dev);
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->num_aborts);
- }
- 
-@@ -306,8 +302,7 @@ arcmsr_attr_host_fw_model(struct device *dev, struct device_attribute *attr,
- 	struct Scsi_Host *host = class_to_shost(dev);
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
--	return snprintf(buf, PAGE_SIZE,
--			"%s\n",
-+	return sysfs_emit(buf, "%s\n",
- 			acb->firm_model);
- }
- 
-@@ -319,8 +314,7 @@ arcmsr_attr_host_fw_version(struct device *dev,
- 	struct AdapterControlBlock *acb =
- 			(struct AdapterControlBlock *) host->hostdata;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"%s\n",
-+	return sysfs_emit(buf, "%s\n",
- 			acb->firm_version);
- }
- 
-@@ -332,8 +326,7 @@ arcmsr_attr_host_fw_request_len(struct device *dev,
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->firm_request_len);
- }
- 
-@@ -345,8 +338,7 @@ arcmsr_attr_host_fw_numbers_queue(struct device *dev,
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->firm_numbers_queue);
- }
- 
-@@ -358,8 +350,7 @@ arcmsr_attr_host_fw_sdram_size(struct device *dev,
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->firm_sdram_size);
- }
- 
-@@ -371,8 +362,7 @@ arcmsr_attr_host_fw_hd_channels(struct device *dev,
- 	struct AdapterControlBlock *acb =
- 		(struct AdapterControlBlock *) host->hostdata;
- 
--	return snprintf(buf, PAGE_SIZE,
--			"%4d\n",
-+	return sysfs_emit(buf, "%4d\n",
- 			acb->firm_hd_channels);
- }
- 
+-	nbytes = min_t(size_t, nbytes, INT_MAX >> 6);
+ 	ret = get_random_bytes_user(buf, nbytes);
+ 	trace_urandom_read(8 * nbytes, 0, input_pool.entropy_count);
+ 	return ret;
 -- 
-2.30.2
+2.35.0
 
