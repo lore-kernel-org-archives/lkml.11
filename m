@@ -2,125 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C05C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D497AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234304AbiBIKQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59218 "EHLO
+        id S234361AbiBIKRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232965AbiBIKQt (ORCPT
+        with ESMTP id S233809AbiBIKRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:16:49 -0500
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426D0E04AC97;
-        Wed,  9 Feb 2022 02:13:08 -0800 (PST)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id 776AF2B00246;
-        Wed,  9 Feb 2022 04:26:45 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 09 Feb 2022 04:26:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=Yst7o+x5EtjXnl33aAZq4gosVv6gXJnBpoVn39
-        4TOHM=; b=ZpBgYdgJXi4cgTd2jIrh7o0vMx/f5jSOVxlKfvr2bC/EVLUhib//y0
-        +9la+HhPPoaLIVv7YsYEPSFEdw/FAJg2YaNc99THHsSU97m6w6wjCXbFXmt3n3t5
-        vPE2WKMv5XYIfnxodrSruxN70ye9IZYtyhoKN+ajkooexyppjjfk1zw+yQju7ETN
-        5F5wr+Ev5qDDaM5J2/0Wx8QQIo7bPAV70m2R66gQS4F4ynVhSRLTBExxw+QyJWlU
-        +7TQqwGJafgyuZiTgehN9wLXxPb8pfr7nxmMXeYjS8n+SdF6EmbghkDB0enUlX17
-        vr4IQ4vQlCepHCrixpv8/QPGbMQUEJvg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Yst7o+x5EtjXnl33a
-        AZq4gosVv6gXJnBpoVn394TOHM=; b=VO8XXfMVkaKkzAcPxAOsWlpy9P2Mr7HoG
-        yDa+wCRtVfanK3hE58CxKm5hcLrf0HK5wAxIGZpU7reFl9WfR8K+uFY3SihJmyiX
-        E3eNUaHXhghVHkDK2xlXny4mDVbxPumcqjOh56DXJDTCbu+1hjd2GprCfjZwVGF+
-        frj8Po4MDFdlqYUbtFhi4N4OEkZfAGBVPKa5FSPVqHYE8M7BbWoG4O2hfDp1ZMbz
-        n7sUkkcdVuWMtFn/52mdV3Ror9VYTCMr6YMpVocRKffhPzWlzLq4cTEK3pwvJeuF
-        NegHi8sK4kWOgJOJ/+Is0WGnFn22Bxp393MhUM0MaXxsNsvhYySXA==
-X-ME-Sender: <xms:1IgDYlpg8b5Y9Y1oY42SMjSIkvdgXSlkdBypxcVIji9uGNkKoUmeJQ>
-    <xme:1IgDYnr-RFC1aprnWlg66CCuKOdNjSnY_mdYhGLehoqFzZWorRpPWmzyWCYXaxHEr
-    FtIRQ8BH5jWV6IoJIg>
-X-ME-Received: <xmr:1IgDYiNO2oX1EQXQ9eGbgFALH9i5cdo0M_mZlObzoGobEncfh14D5ML4ODtCUkrtTVyIVMe8AIYpblUns8B4JnLCOjMs-f2nbL_T3Hk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgddtfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
-    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
-    igihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:1IgDYg4jTsdQohGOtMnY_Lc8zeoijPD_7f_6iaTYCqE2MHR4apqggQ>
-    <xmx:1IgDYk5F78AtfFpKLVYDb2N7uP-p5iQKFtwqJUpSwJwH7V8Sb30Idg>
-    <xmx:1IgDYogy8ya_HjfxBgzv49dLXbHJ9OmTphMvcOniqYrE7W4L6nSTPw>
-    <xmx:1YgDYhwAvhIjkYEblBF7w5e6SrUg1tYL5CcwYRSJ4kAvqvcExhGQj58yfF4>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 04:26:43 -0500 (EST)
-Date:   Wed, 9 Feb 2022 10:26:42 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 32/66] media: sun6i-csi: Add capture state using vsync
- for page flip
-Message-ID: <20220209092642.hhppmrrekj7zrorj@houat>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-33-paul.kocialkowski@bootlin.com>
+        Wed, 9 Feb 2022 05:17:46 -0500
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0966FE0497A0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:13:32 -0800 (PST)
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MIxeQ-1nb4A344ks-00KTo4;
+ Wed, 09 Feb 2022 11:01:50 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 09/12] arm64: defconfig: build r8169 as a module
+Date:   Wed,  9 Feb 2022 11:00:52 +0100
+Message-Id: <20220209100055.181389-10-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
+References: <20220209100055.181389-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="jklumgcplfx32qie"
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-33-paul.kocialkowski@bootlin.com>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:zca5Ikn+zSTc0G04hEpk0h1B3qaKVnnooqQMUOAa1KckuGcu7lO
+ 3bKM0SlaI3YHnkvHVkj1iX8PoJKewteaHVRde4AVVkfjZPj9JwFon+T4jNIUO9A/CHAsSWK
+ 3GBSaYF4DWT7DGClM71AD2CQspSGaGyfdAIZUBeuQOKztX6rEtAOLcc4e7qSA/sy8LsFZAx
+ 3f3FuIys0px05z0i2qtTg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:m91hP4wkmAA=:0DIAMEQwN88GFQTxoZOe/2
+ D/Z2J1ellX3CPspjtKIOlviyYShtSNY8kzDsZ1+v8uX3HdfSXfjuAJt2GXKpMBA3hexKCMLWL
+ mZhDVeQDqGg0WAVlp9yitEigweMoa16DRLUpZ1BaGBjOPv+N9R+EkmYcbTE/jsHH61fy4Y/13
+ 5UDodxm5dEwJwBQn5zJEGGDzhoODhLZquiKmEIxQr7kecZM7/5Ux8alqF6Oxjv/pml0oIc+Ya
+ jMnDny+iKfFMGnt0Lj9HNhyLgu2Kn7wFY8km1He/9v64JacfFfP/NKmWDZPmTX2d7FXNaY0k8
+ dB2snYGgW0FQh3ThTOBrPK4cqiABNoZN4ZKJ3WR/jYXEnJjVVrZSu+5+BXZXikh04WNHv48iI
+ fN5Tku76t3R171GCDJ2ag+N+SSJkvVKV6F9E8//l+NsDFo5n9w2Zf76LdJHziybqJCubXonlr
+ 3oKEgXe+YcIAzX2Dmvua/LF16gvaZvWfjFfq28VNfhlvpoQo7tuZE+ptd2+NXYl3EaSeXdlRg
+ W+eN64/vMxEUjxKAE/TA4AWp6ikeADbSy/P7H6nIaX+7amaelevvlQCkc4+M4l5GO9JOmcMDM
+ W/wRrVmrl/vcFjX+BBt7eX4xekV5GOK3yvG06yr9vOfkUXvAGe0+k1wfenJ2BRsdOUXUGqM9T
+ fKiuOOEx/3nSWCWO4gWnAzpj8KZzgQjRUVW4jzn0ecZq2i4H2q04iz/9QdFbFcp8LtZDqeCbZ
+ 4x64jnU3YgW1ez4I5nxRKDdcAD4nHPUoZOXkHv2/E5Nqb93eQO3Z2GmEgug5ycTp2HWucSlCx
+ ceFPCqv+Y8i3YocqkJr17YQD7YSNQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
---jklumgcplfx32qie
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Build Realtek Gigabit Ethernet driver as a module.
 
-On Sat, Feb 05, 2022 at 07:53:55PM +0100, Paul Kocialkowski wrote:
-> This introduces a new state structure and associated helpers for
-> capture, which handles the buffer queue and state for each submitted
-> buffer.
->=20
-> Besides from the code refactoring, this changes the page flip point
-> to vsync instead of frame done, which allows working with only
-> two buffers without losing frames. This is apparently a more
-> appropriate thing to do with this controller.
+Network cards based on chipsets this driver supports are ubiquitous both
+in regular PCIe as well as mini-PCIe and nowadays even various M.2
+formats. It is therefore a suitable card to be used for any kind of PCIe
+and/or Gigabit Ethernet testing. As it is not designed in, just enabling
+it as a module seems most suitable.
 
-Why? What issues were you seeing before, how does using a separate
-interrupt addresses it, and what makes you think it's more appropriate?
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Maxime
+---
 
---jklumgcplfx32qie
-Content-Type: application/pgp-signature; name="signature.asc"
+(no changes since v3)
 
------BEGIN PGP SIGNATURE-----
+Changes in v3:
+- Add Krzysztof's reviewed-by tag.
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOI0gAKCRDj7w1vZxhR
-xYZPAQDrDko84tq9LXCvMRtIUy/RSXOSvfU/BhWGM/EPZPpjHAEArGovoU+NnCqt
-aFGVF658ZsgVaRo6Oorm0BIvOnUZLgg=
-=J6MU
------END PGP SIGNATURE-----
+Changes in v2:
+- Explain why enabling it may be a good idea as requested by Krzysztof.
 
---jklumgcplfx32qie--
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 27afe24a025a..76334cb698af 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -339,6 +339,7 @@ CONFIG_MLX5_CORE=m
+ CONFIG_MLX5_CORE_EN=y
+ CONFIG_QCOM_EMAC=m
+ CONFIG_RMNET=m
++CONFIG_R8169=m
+ CONFIG_SH_ETH=y
+ CONFIG_RAVB=y
+ CONFIG_SMC91X=y
+-- 
+2.33.1
+
