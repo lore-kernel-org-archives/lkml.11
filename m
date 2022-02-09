@@ -2,261 +2,383 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 365ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A728AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237759AbiBIHQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:16:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45498 "EHLO
+        id S237374AbiBIHRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:17:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236693AbiBIHPx (ORCPT
+        with ESMTP id S237074AbiBIHQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:15:53 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9039C05CB80
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:15:54 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2196ZEqp011044;
-        Wed, 9 Feb 2022 07:15:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=UdBq2s6qMDcvXEKVleD1sbDcH7B4+gB4oq3v6N+ryTs=;
- b=Ynaqt+wB48vCKd9t9YzT88Z9YcDinTzaPUaX7QZOdv1nLIQ1a0Wqc4F7DFAXzsHjHPv4
- GvvgWaXcLxmX5GA/+lchxcOUvMJsb5jfspDA8RoHyHcbNNaNkXkBT8kYHIdBlGQAc6pv
- U2Wl3pq/mJq4hc8v6VBgZ/nyOfsaSCuscP4bD6dLL9ek7BG57V+8jnMr3V0G84kuXgx2
- V6z8aQBAnd3KFqb4kjbOoMLLrZdNyRhGKEk9bYejRO48aPnaaZlDbNw0iCMlYC6LcB4Q
- IqjXxISL6wtAXBdIDpw5Am0LVfYPc+LQcDhh+VFd2IYd5x5rYeUuUpFonBSRSNlIE8n/ tQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e3hdsus5p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 07:15:46 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21976hQK177730;
-        Wed, 9 Feb 2022 07:15:45 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2049.outbound.protection.outlook.com [104.47.73.49])
-        by userp3020.oracle.com with ESMTP id 3e1jps9du0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 07:15:45 +0000
+        Wed, 9 Feb 2022 02:16:52 -0500
+X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 23:16:22 PST
+Received: from esa.hc3962-90.iphmx.com (esa.hc3962-90.iphmx.com [216.71.140.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9C4C050CF5;
+        Tue,  8 Feb 2022 23:16:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qccesdkim1;
+  t=1644390982; x=1644995782;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=39Sb2TxnON5mWWvVSZpa5p12dwGxRjGRlVOCsxXa3+8=;
+  b=qW0zyA0fv/lwcfno7QZZYRByUXBW2dxWXnpzMVc9wrb0EAnxdjCYGubC
+   OdGyazr2b8tvyZxknwKWRbqkurEeZLkT8IFv2+5yELpB7FMT/5h/2gEBQ
+   sIoBJQIuseBuxtjxJTDGxJstgABRH2hjQLsqkSLi0D6TAJ2ivZnYymFQU
+   E=;
+Received: from mail-dm6nam10lp2105.outbound.protection.outlook.com (HELO NAM10-DM6-obe.outbound.protection.outlook.com) ([104.47.58.105])
+  by ob1.hc3962-90.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:15:18 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MWSlpkOSGCysw0YmSrcG6m1AAISTW/+wXxeES5V+my1h3ea0if08o2lR+UsHR82GuC13DlU2C/RkS8b9L+OZDoJt4Ttx+dZLe47fbGaQeHqSj3Fd23Q90d2QPzPu6iFrclMP2wm5L9y8Vp2TbSlIiileGeDh7zVN8F6kZcCf1IV8GaMGcllpzBlrbggqazjcQK9GWcmQpuWt0WYBhxoOJlxQapRVoo7gzNFTvfedzTMbMsao+SluNsuEgxi0Sa5h7QHiBcGORecdOQkP1ikPe5dYxBK8xTrD9i3QXrlRRmrx4HSgabKEOkCpiccvn6vyUhgOVMHnRqPVPSIs82N0CQ==
+ b=cf++3pIm+itXeCKEPCoPDaALZ0nLRGC2J4UvbOcjDnpeEc5WP8EHowucMkeA8xT+FZzSGtFZfymRNYf1ok+uEPMpVsRxK7293zlPZXxVgDqjgn314EXc3/16VMCcbQLZ5NeOg2t8yqtKe8zLOXQPX3UtIGCW+5QznKzxQpqnsyKVaRUFrkDiewo+Sa6vBf7P+/KuAosQ26TCkwNEypFUePjv1hqXgfILnP3zJlbgT0VV5Ozx1gpxg7oTDbjUfePLvSa/aCuZVdYNtwaPgJyBmWuwPv2L+jlFbo4UTpwoN9j2kjouHev4bSlaukz/6Wm/ow5qxwIgrKkb4RxETKtviA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UdBq2s6qMDcvXEKVleD1sbDcH7B4+gB4oq3v6N+ryTs=;
- b=nM6bGNeDw1MPv2475nbNfRlF9f0KhxQjXaWzNhw3MFtTcQEojFk0ri0As8A98j4pMrskWUtPnGUurOsjJo9R+vda3R6KLoYpkeU/vJXvHN1nthVYoSRbpLcxjzGsXVARfiw2IizZcrLlpLa4WWunwlwt8+rEz1TYYTV2pQ66XESkwCf4Qxkf2LOWQi8EabCmipDjUyeZXL/Vp0faF1my+HbjoKM/xlQZmqI7aKenlNW8Hg1DWIdgIreN2eyfFfaIXWvqu2ok+7QjI2gZ2dxs5iWu4s3jtdw7t6jqUW6y+sn+FuLrKIiL04elVaVwhGbQYsIOeGtWjipYfexB34amMw==
+ bh=39Sb2TxnON5mWWvVSZpa5p12dwGxRjGRlVOCsxXa3+8=;
+ b=H/c3JQY7HuDXxJ0ASd0MjPhdABsKVM1pSwXMVvg27lt3O89I+jX3Iimp3FP0G/hPmT6dEyn1iF051hkaxBMTA9Ed1aboB7tAhf0iB1Ut5ZhYUKSUTVHQ++jpTqXJMQu0GQlZWDjlBUhpo40qJTq/btqKcT/L73bTvxxCgEm/9FYZSxbHEMp/jbOpwUjZNHB4PJw2o1WRVYorj4sTDp/zvE8xYfLwgCmyJ6aQJ90WpRR1AcRclYfC8OISzcKHRrnooIbhR0kl6+PqBjN9nUry3i1STE6ZGK1J8B+Dg/dgE6X+ZJcmsVUlSXyd8S5VpC/cM8b67NrAdyCChW40IohKjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UdBq2s6qMDcvXEKVleD1sbDcH7B4+gB4oq3v6N+ryTs=;
- b=ncu4Dvfi/18tHH6vhqyTlgY2ZbkspenXbTmPYmcRl4RQdH/oS54g7W9KuF4XIQ0rGkHa1iqrzcie+ufTumaBNU/hCIDq9e9bb21hf/Dff2wA4nu8YaxXCwlrHXhWHvkZyqgWjkdgNo658nK0BN8fbK5QalJdj3hGfn0IA2v9dw8=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by MWHPR10MB1920.namprd10.prod.outlook.com
- (2603:10b6:300:10d::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Wed, 9 Feb
- 2022 07:15:43 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4951.018; Wed, 9 Feb 2022
- 07:15:43 +0000
-Date:   Wed, 9 Feb 2022 10:15:23 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Thierry Reding <treding@nvidia.com>
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: drivers/gpu/drm/tegra/gem.c:153 tegra_bo_pin() error: 'map->sgt'
- dereferencing possible ERR_PTR()
-Message-ID: <202202090230.00iA3ozE-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0017.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::29)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+Received: from MW4PR02MB7186.namprd02.prod.outlook.com (2603:10b6:303:73::6)
+ by DM5PR02MB3147.namprd02.prod.outlook.com (2603:10b6:4:64::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.11; Wed, 9 Feb
+ 2022 07:15:15 +0000
+Received: from MW4PR02MB7186.namprd02.prod.outlook.com
+ ([fe80::2d87:6bad:f96d:9006]) by MW4PR02MB7186.namprd02.prod.outlook.com
+ ([fe80::2d87:6bad:f96d:9006%3]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
+ 07:15:15 +0000
+From:   "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+To:     "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "Sankeerth Billakanti (QUIC)" <quic_sbillaka@quicinc.com>
+CC:     "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "freedreno@lists.freedesktop.org" <freedreno@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "agross@kernel.org" <agross@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "robdclark@gmail.com" <robdclark@gmail.com>,
+        "seanpaul@chromium.org" <seanpaul@chromium.org>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "krzysztof.kozlowski@canonical.com" 
+        <krzysztof.kozlowski@canonical.com>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        "sam@ravnborg.org" <sam@ravnborg.org>,
+        "airlied@linux.ie" <airlied@linux.ie>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        quic_mkrishn <quic_mkrishn@quicinc.com>
+Subject: RE: [PATCH v2 2/4] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+Thread-Topic: [PATCH v2 2/4] arm64: dts: qcom: sc7280: Add support for eDP
+ panel on CRD
+Thread-Index: AQHYHP9CXGHnyqg4DUy0QOrgphcweKyKVAGAgAB7kDA=
+Date:   Wed, 9 Feb 2022 07:15:15 +0000
+Message-ID: <MW4PR02MB7186BD4BD997059678968DEBE12E9@MW4PR02MB7186.namprd02.prod.outlook.com>
+References: <1644333525-30920-1-git-send-email-quic_sbillaka@quicinc.com>
+ <1644333525-30920-3-git-send-email-quic_sbillaka@quicinc.com>
+ <YgMCW9GrY6SRteOU@ripper>
+In-Reply-To: <YgMCW9GrY6SRteOU@ripper>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quicinc.com;
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a76f0f6d-5821-4767-a32d-08d9eb9bebb8
+x-ms-traffictypediagnostic: DM5PR02MB3147:EE_
+x-ld-processed: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d,ExtAddr
+x-microsoft-antispam-prvs: <DM5PR02MB3147E0DB9B7471E277CA83C09D2E9@DM5PR02MB3147.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oMMeXQ0CE33Z4/MRKCupJX6TzXlAxFxIoHR/6B2tj3Jb2KAi6FQDGQtGIjhkVJQFWGq2hKPuaPYf72Nb7SuWZtNFOo6PsVZpoHZEilJ4NpXYTrYza7ne/Qy1gqLNYNEYRUwhh23jJZ33dZM5iFvQ5gRsf0wYzsrAGQ9zwdS7HxxuQHacv1deWf//y1K9FHo06h3KO+GfwM9JIi7Ltl7xx1ARramKfSBScKCkg+p4hQRhHT4FWq0KLyrrnygm2ncpp8IoUFksmKZu9PsQ8I3YR3FERDmYB5qcfkNnUajUOfztClnqsvHxk0xflAbXsmirEg8ukYJRtN5j83UeTfDKED9HrvpgTtSPVs2ZTgUioe//h3+QTvRX+FnnjG1emIx9+F0XuV5TuqNwwoJtiRPHivV3FvE5rhvYiCHyEh1xjS02ffRZJIFyHVdCz3h7IUcke7bkJy6hRdQ46yP+WzxAUK3Pd22jELWpUIptl3TuwtbO5cbwWjbS86exPmQesIcB+q0Pqacqii5LJy0V4hw9bR5Ffu8vD7ZJ7PD2yudoLEUi3BCjgWhGZoWL2QxxktDVSLbR+f1mIvuBtEQAG59IO7Hni4FCBc61/hB1ujNsF8kVdPW99SpEBV9tF4him1hzqrfKtgfbFO5woVEg3/HdsiFT3Awz3bv/EUnAdU2DaLKHc0fOihciNbqKClyrgCoHN9sNXiA5gRT6xAE91HKtVaZkaPatGzLHYweMxRFoCrQxKtiNHgGzsJMWQG4gXpx/w4JUQ/oPwDxVwejAJlG4EYacEU7RLZmB5QI1WvuOJBQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR02MB7186.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(4326008)(83380400001)(186003)(110136005)(33656002)(26005)(38070700005)(107886003)(55016003)(5660300002)(86362001)(71200400001)(53546011)(9686003)(7696005)(316002)(7416002)(76116006)(66946007)(64756008)(66476007)(66446008)(66556008)(8676002)(8936002)(966005)(6506007)(38100700002)(2906002)(508600001)(122000001)(52536014)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?DPQztoyiug20vj6kPUBsSV22TLhTO/jCRE3udBs5HI2jtrtyQ7wSV5E/0tPt?=
+ =?us-ascii?Q?slZktXJxW8uRfTTsgGbrYTHpEs/4gUMJYAIMvvDG0bK53ynOpKirZRqoWayl?=
+ =?us-ascii?Q?6sC6uMl/9pfUqf1Ksl9GYG5WgDTbgcLDJEjkCPEoKQdEsB+b6Z85cstwkaT0?=
+ =?us-ascii?Q?VD8H94HdGHfBYblRYBkqwu1uOFF3hh2fNh/hjJ6oroK61DNp/7DqGMqgJ58p?=
+ =?us-ascii?Q?/OAajcw/oA9FU7HDGValn0SZOEOB7LTjm/HEpjr+ISjXJjez03iXOdICfTH9?=
+ =?us-ascii?Q?DhYh6xndfwJBPb5cHfTUlk1aWeB57o5CKJ5KewG+JW0M5ny8cvFNa+eHM67D?=
+ =?us-ascii?Q?SZxY21eNPXlyhh3ivG0jC0pvNF8jPacdMYT5EUn2mjMI7irmZyQNlwzoCXI8?=
+ =?us-ascii?Q?4ZK8NT9Q+kG23T8QkYFrApl2Cb/ec2Vavm8rLq5DoSWN1uNEkUj5Xuq6p/sz?=
+ =?us-ascii?Q?TjRsxkl/ysUNktalO9cTjwH7eRtUX4+qNuUQUbB2SKGVnzz+XxPpxYWMfyIP?=
+ =?us-ascii?Q?k6zojCsT46Unem5yohpPdkaCHSoGO7nzlYPkY8jaffZG8WeSbcuj/KzCSJCG?=
+ =?us-ascii?Q?Dw4fZksKtOcXdLhVjIlI1B01Wf5Fqs3PLQs3UdAKs6Bz1b2YEuUzo0vaMWFx?=
+ =?us-ascii?Q?tPcl0khb3rjoYiA1uT0jlLAPWUiYv2xmsUqvvR0mfiMh0kzhB6PKcxIVYzz2?=
+ =?us-ascii?Q?e8HGSKhrthBCFMZ6Hw3ED+UiJqbEvPMErDgMAGI1zIuZhxKk1nLxpp941t6s?=
+ =?us-ascii?Q?aIVHaQeHwpQP5bpSEpnpfH4k+gFpky3QaF2/VinL82R8eEfwmiLxZUT3MMT1?=
+ =?us-ascii?Q?UyXr1AlhNFzitoIFd+M1SCEAkqV3AyesngFkh/VULFJes/16JlvSZiKzE09M?=
+ =?us-ascii?Q?Q9tL+kS8dBE3Ebpc+7ZM/rOWOwdrgfIVeHHiUrDQz4aKivgN33S5AtCOUp2f?=
+ =?us-ascii?Q?lTEEJYiiFodGk2Hr1AZnD6C/LIaOPUGeGYEhABY5iroifMiH4ylahf9Tp3XD?=
+ =?us-ascii?Q?YcXVVAecSYBSGiuDYXNFMeJAAotxx3MQYUEFr3AOxP6KsEvbgJQm8Fg6oZKw?=
+ =?us-ascii?Q?J++4BM0W0c9m/+kSWPJ1fnSZ78ktnMRKt+ixDk2JYitNXz7MsvmDt6aANIvF?=
+ =?us-ascii?Q?VQyUeCIfwN+0l+wuuGSokpKDM2nvCnz3bTd98/azF/f9zJ0FI0y6dzbQ1q2c?=
+ =?us-ascii?Q?OCZAkstc/qNI51PVp1LsJlmk+txpEC8RMnNRr9lME4Y9kV8q8lqp5g6gCvFb?=
+ =?us-ascii?Q?SBy2zpeYmw1DZODPol2tpNIxy48EOMjhZGM3zt9R65u69PpbIIQS9iK2bg5G?=
+ =?us-ascii?Q?TNyeqJxK7eCTGRj918MP+1ySztGGko9jk6ssLellOmvtbkuEeR5WX820RLS2?=
+ =?us-ascii?Q?qDoIDmviwsN01u2c9z2s3kTH/uoi5kjRx0mqz6PkA5/7pqZnx36Ir4os9kXQ?=
+ =?us-ascii?Q?ZDwJXByZIQnsrlO80ulhfGOlkBSpIO23nWy3HPrxXknZ43trfGXqYn3iGSvW?=
+ =?us-ascii?Q?vTjT4kS8QCQFmjaCe1lU2yqon2ly/d4DYVuP3j+ucjc3ZBceTXxpKnsat2kd?=
+ =?us-ascii?Q?g+E+YEIzNQbrAeGibIM7Yxw9xZ0/PpncxAh00lwFy/m/W4nFUQaCZe0j4ijN?=
+ =?us-ascii?Q?Kdju8YV+Fj1/EudXyZW9/Aomo82ukl/KQBlNxN0VeJymOGbALi5du2DACJaU?=
+ =?us-ascii?Q?iHFzWg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2f6c88f-43b2-4ddf-68c3-08d9eb9bfbd6
-X-MS-TrafficTypeDiagnostic: MWHPR10MB1920:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR10MB1920B002B0262C55057239C98E2E9@MWHPR10MB1920.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:913;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yptE4Qeuf0772KV6ezfDz6bC6GH/8b5hdpJGefopDlXDeqMvN4/tadcwK8sNZRBXby+umR5OlfneON09AglvjWjPxaLeVb2ZZkH7kGl9/wn0qAUAeTL6vDHuvIQbfQsB0v9uInicNZDbSCvgBbwbsGkG0g1ZYoD5pNervnpVSmbTm7g3cREun3UBC4q0QDL0N/YpAudth7smmxMOD8ylaEZ1lSiDEsMGJ8PesEZj08o/jOvMJjRE/aSHlxZRNaIyPg5FEipehQyBFBVlenSY1RruV05ZvUIoStivFweNjdXZI4xNE6gCtBOwVZ9ONjZGanuOWAMYnBP7sVLzouiaqM/IPEj4GP52UZ8FZHCMgONzGsYXTpI7BSWDoYmGsR30uTi2Sd374EEam2fctW3UZRxgPOL5xKg8epBTt8fzxMpjp5c01YSTYGpZwIC5VhzNkGR8uGDT1LJxUBWGuyfVtf8YzkXsxR7+QZKlwAdr1AvOt+lSf/6CkB3eIR6+FAe8TkD5PF2Kp7+/eAGU6SorF0WpQZR9BXA/sYmqxKtArgBSvsEUp/pOFe2QTf1Zw0tj4+Ig0M8eT0W4MmWsvPXCrdpFMcP5GHQuzr+K2zOjiRxDsmkuvrEugoLALpw4toZn3CZNLyWcTi95Bxx+lxg7QxB+OwQJbmd8RmutKj3QrIq+EBgqZY+kh2iGx4IO4zVRAYVAi+y8s9A1jNE8KKYyD9LvXP7Qj45H1oIDdq+YB4ARMc2HPHK/w15SO2v+wfJrl3SObh3vSWrT1ilCqqmaS4Vu/FCNfH5X8ZKGzEwQe2L6RkMPvzMecsU/gvlgVJm8bzJJgfDXnTVIyGlDEkcwxbO/vCcetaTbzmwpkgr/g6k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(186003)(5660300002)(26005)(30864003)(1076003)(4001150100001)(2906002)(6666004)(508600001)(36756003)(38350700002)(38100700002)(6486002)(4326008)(52116002)(44832011)(316002)(6512007)(66946007)(86362001)(9686003)(8676002)(966005)(8936002)(66476007)(66556008)(6916009)(6506007)(83380400001)(357404004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?84hk5gLZXLHzdaTFsWwrDmDQfCKKbR8kKQzN1ImI06tfYQHzpFLWzOQnWzmZ?=
- =?us-ascii?Q?VJT9TTrO79kjbzceBaAFbOsLe+8ijWCDCO4NOEfR8SJNZ/X29zzv+n4jdqgP?=
- =?us-ascii?Q?drw6yXFV4XSqgV/PJ5ZepSIlb4oRHUFkX7DWkob76MwCOEfww5OyjY7sal8G?=
- =?us-ascii?Q?YwBqA8BLMZ15NDiyRaSePm1Ltk8kk69DBU0+WLp9Eu3HjhqyJLs4tCH75t9G?=
- =?us-ascii?Q?YankxSrmlGLbnZpGY5oH6tXOMx3ZL4+2kJ6FlNQE+K70pSPElO4GOPnhY94K?=
- =?us-ascii?Q?NRzyhp+jeYerT39VJoaoj1EQ9s/ZjP8r5w8axk5X77r9vGE7Rg/TeklKNgDX?=
- =?us-ascii?Q?CPYfTLOzF3mJqCAJTtsUYJs9K3kOZwiQu6qEn7z8OWHoYv/FeudGBV053tMl?=
- =?us-ascii?Q?XBnvBNDrKu6T0FQ4Xs3gx+SrTVgrnaiUF9xHkfZgsCykQ8iDHTW5x677WwxA?=
- =?us-ascii?Q?G/UFgbIi/qRsM1P0gIO+XYgZN8k+p7j7EBKpjKTicTEWDTq3s90dkNzlzV1N?=
- =?us-ascii?Q?GQA0ao0QP8r3JbEuhG87xgGOC0t7oSjbQbD4rJP/Kk7c7U1tUMcJLYXeg9Te?=
- =?us-ascii?Q?lb3NY6Zx90LAFno/Vrg84G7/d30IwzanbvpUH6jAZ3KpfME3Uf5ze13WhKPu?=
- =?us-ascii?Q?JT31rRy/+m50rOeIwwpy/63uCr0f9kM1FDbIB8A8a0MZTE+nGjrp3BkMvLhv?=
- =?us-ascii?Q?gheDMY6FfTbwMfIDtGqnAdekMVr4RdZzCf7odZtDcvoi7LPpJsvwgG08ndpi?=
- =?us-ascii?Q?qrZqnTadc6p2RQlcMYjSAYErUYk6cGJKQjevmMNvW0PHHrkSdRcAwBHUjZC0?=
- =?us-ascii?Q?DLvCu0gKcj6UyHbDbXpynAI+ZPnJQvt0ZMAL+PSclign4TuEOKUkokQDGjh6?=
- =?us-ascii?Q?kUnG0CS67zzbE0On68Q9WsdeUyn3g/gx9vDmd7y/ndvEwlrJS3ERv7RAiAkK?=
- =?us-ascii?Q?/7xsWe7thedcvG/iO0bUN5RCF3cCgItyy8bUynh1q2JLiQlRJnWRIONsMqc8?=
- =?us-ascii?Q?LTkEfdQyt0aN3pFZ1635OMWhTKkqScvjAlg5aiQUu8K9OzWmotIAHnz5jHsH?=
- =?us-ascii?Q?11LfQ7Ym/DQn3+hv+3ojAawfde7TtAIU8BsUVQFruF5Bcu6zg3RDshJpefj9?=
- =?us-ascii?Q?BnjET8SEUVgU2i6gscnRKtOxKbsPkeNjXe9zgNwFA6DFCDrRE1uUWPHIYd/s?=
- =?us-ascii?Q?/5GAh1aHl+mN8VfUI9C85lPb++KwHzQgJwdzBqciCS/cv+VhMiGMh/UBHtZa?=
- =?us-ascii?Q?uSZyrBnE1/Jpt02uwCaDZ6BjUkrZIyoGJ+/UaX3IaKEzDIWUxWY+yPHSpi5p?=
- =?us-ascii?Q?L7cuRbQwv57NvFLB6VyZbXO3dg9xjcruXdRg8J9+Kqn8UkQH5qgNOn8c/128?=
- =?us-ascii?Q?8Dl/wM5hphxgAEAwsK9vBKdqd+Np1zkUFlVZ1044X0akNVnfSLe6Mh7TV9Jd?=
- =?us-ascii?Q?yaC5dLC8U5DMn8IW2vTQeDPu+hb/hF7+UIIg3NUS5k42L9GqWpOKascwvtJz?=
- =?us-ascii?Q?N7Mel9BMzXyg18l0mFaiGEVu9nHUhRtyKU1ok+LbQM2raX3zn3A1rV0787kT?=
- =?us-ascii?Q?Aq3II2mgC2GcpLVQ6dIK/o+21LHODLR51VoZ7ka3FqPiZCTE5xfSrizjwSFa?=
- =?us-ascii?Q?JTtp5lSLGQMALfWepf49JeYS78QwnWmUf7el8JQGmP/M5zVLiRanCJBlg/ux?=
- =?us-ascii?Q?eDDTRA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2f6c88f-43b2-4ddf-68c3-08d9eb9bfbd6
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-OriginatorOrg: quicinc.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 07:15:43.0664
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR02MB7186.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a76f0f6d-5821-4767-a32d-08d9eb9bebb8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2022 07:15:15.4809
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ItN3k9ixS26MdCSfWfb+hPHC/WTtnPRgEBg+G3WhMJ0Chrgp7avo9/AAWHqU9jC4WAynnlyagF2G9GGvTV5Cn8zJTimXiU7EdWEm+AuHNuY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1920
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10252 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 bulkscore=0
- malwarescore=0 suspectscore=0 phishscore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202090049
-X-Proofpoint-GUID: QLcgTqJJwZsnACmiK-zy2wlD33xSE2F-
-X-Proofpoint-ORIG-GUID: QLcgTqJJwZsnACmiK-zy2wlD33xSE2F-
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 98e9ba89-e1a1-4e38-9007-8bdabc25de1d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sAxcEKLbcCQAz1Sh97kgg/VWyyA6dfuKqAFRAKc0ZSaVQRz7p24obFY4w9a/GqJQkYkdo5Ba/g96bv5IIAXOgf9wxNr7mp/0nbg0wYx2FOc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB3147
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   555f3d7be91a873114c9656069f1a9fa476ec41a
-commit: c6aeaf56f468a565f6d2f27325fc07d35cdcd3cb drm/tegra: Implement correct DMA-BUF semantics
-config: arm-randconfig-m031-20220208 (https://download.01.org/0day-ci/archive/20220209/202202090230.00iA3ozE-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+Hi Bjorn,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+1. I will change the edp_out label to mdss_edp_out.
+2. The "pm8350c_pwm" node is part of the dependent series mentioned in the =
+cover letter. Below is the patch for the same:
+https://patchwork.kernel.org/project/linux-arm-msm/patch/1637917920-22041-4=
+-git-send-email-quic_c_skakit@quicinc.com/
+3. I will move the edp_backlight and edp_panel nodes to the root.
 
-smatch warnings:
-drivers/gpu/drm/tegra/gem.c:153 tegra_bo_pin() error: 'map->sgt' dereferencing possible ERR_PTR()
+Thank you,
+Sankeerth
 
-vim +153 drivers/gpu/drm/tegra/gem.c
+-----Original Message-----
+From: Bjorn Andersson <bjorn.andersson@linaro.org>=20
+Sent: Wednesday, February 9, 2022 5:23 AM
+To: Sankeerth Billakanti (QUIC) <quic_sbillaka@quicinc.com>
+Cc: dri-devel@lists.freedesktop.org; linux-arm-msm@vger.kernel.org; freedre=
+no@lists.freedesktop.org; linux-kernel@vger.kernel.org; devicetree@vger.ker=
+nel.org; agross@kernel.org; robh+dt@kernel.org; robdclark@gmail.com; seanpa=
+ul@chromium.org; swboyd@chromium.org; dianders@chromium.org; krzysztof.kozl=
+owski@canonical.com; thierry.reding@gmail.com; sam@ravnborg.org; airlied@li=
+nux.ie; daniel@ffwll.ch; quic_kalyant <quic_kalyant@quicinc.com>; Abhinav K=
+umar (QUIC) <quic_abhinavk@quicinc.com>; Kuogee Hsieh (QUIC) <quic_khsieh@q=
+uicinc.com>; quic_mkrishn <quic_mkrishn@quicinc.com>
+Subject: Re: [PATCH v2 2/4] arm64: dts: qcom: sc7280: Add support for eDP p=
+anel on CRD
 
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   58  static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_bo *bo,
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   59  					      enum dma_data_direction direction)
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   60  {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   61  	struct tegra_bo *obj = host1x_to_tegra_bo(bo);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   62  	struct drm_gem_object *gem = &obj->gem;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   63  	struct host1x_bo_mapping *map;
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   64  	int err;
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   65  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   66  	map = kzalloc(sizeof(*map), GFP_KERNEL);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   67  	if (!map)
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   68  		return ERR_PTR(-ENOMEM);
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   69  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   70  	map->bo = host1x_bo_get(bo);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   71  	map->direction = direction;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   72  	map->dev = dev;
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   73  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   74  	/*
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   75  	 * Imported buffers need special treatment to satisfy the semantics of DMA-BUF.
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   76  	 */
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   77  	if (gem->import_attach) {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   78  		struct dma_buf *buf = gem->import_attach->dmabuf;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   79  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   80  		map->attach = dma_buf_attach(buf, dev);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   81  		if (IS_ERR(map->attach)) {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   82  			err = PTR_ERR(map->attach);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   83  			goto free;
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   84  		}
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   85  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   86  		map->sgt = dma_buf_map_attachment(map->attach, direction);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   87  		if (IS_ERR(map->sgt)) {
-                                                                                                   ^^^^^^^^
+On Tue 08 Feb 07:18 PST 2022, Sankeerth Billakanti wrote:
 
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   88  			dma_buf_detach(buf, map->attach);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   89  			err = PTR_ERR(map->sgt);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   90  			goto free;
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   91  		}
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03   92  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   93  		err = sgt_dma_count_chunks(map->sgt);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   94  		map->size = gem->size;
-de2ba664c30fcdb drivers/gpu/host1x/drm/gem.c Arto Merilainen 2013-03-22   95  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09   96  		goto out;
-af1cbfb9bf0fe07 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28   97  	}
-585ee0f27ef7b8d drivers/gpu/drm/tegra/gem.c  Mikko Perttunen 2016-11-08   98  
-af1cbfb9bf0fe07 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28   99  	/*
-af1cbfb9bf0fe07 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  100  	 * If we don't have a mapping for this buffer yet, return an SG table
-af1cbfb9bf0fe07 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  101  	 * so that host1x can do the mapping for us via the DMA API.
-af1cbfb9bf0fe07 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  102  	 */
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  103  	map->sgt = kzalloc(sizeof(*map->sgt), GFP_KERNEL);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  104  	if (!map->sgt) {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  105  		err = -ENOMEM;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  106  		goto free;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  107  	}
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  108  
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  109  	if (obj->pages) {
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  110  		/*
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  111  		 * If the buffer object was allocated from the explicit IOMMU
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  112  		 * API code paths, construct an SG table from the pages.
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  113  		 */
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  114  		err = sg_alloc_table_from_pages(map->sgt, obj->pages, obj->num_pages, 0, gem->size,
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  115  						GFP_KERNEL);
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  116  		if (err < 0)
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  117  			goto free;
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  118  	} else {
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  119  		/*
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  120  		 * If the buffer object had no pages allocated and if it was
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  121  		 * not imported, it had to be allocated with the DMA API, so
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  122  		 * the DMA API helper can be used.
-1f16deac766926f drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-12-03  123  		 */
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  124  		err = dma_get_sgtable(dev, map->sgt, obj->vaddr, obj->iova, gem->size);
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  125  		if (err < 0)
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  126  			goto free;
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  127  	}
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  128  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  129  	err = dma_map_sgtable(dev, map->sgt, direction, 0);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  130  	if (err)
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  131  		goto free_sgt;
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  132  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  133  out:
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  134  	/*
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  135  	 * If we've manually mapped the buffer object through the IOMMU, make sure to return the
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  136  	 * existing IOVA address of our mapping.
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  137  	 */
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  138  	if (!obj->mm) {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  139  		map->phys = sg_dma_address(map->sgt->sgl);
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  140  		map->chunks = err;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  141  	} else {
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  142  		map->phys = obj->iova;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  143  		map->chunks = 1;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  144  	}
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  145  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  146  	map->size = gem->size;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  147  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  148  	return map;
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  149  
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  150  free_sgt:
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  151  	sg_free_table(map->sgt);
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  152  free:
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09 @153  	kfree(map->sgt);
+> Enable the eDP display panel support without HPD on sc7280 platform.
+>=20
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> ---
+>=20
+> Changes in v2:
+>   - sort node references alphabetically
+>   - improve readability
+>   - move the pwm pinctrl to pwm node
+>   - move the regulators to root
+>   - define backlight power
+>   - remove dummy regulator node
+>   - cleanup pinctrl definitions
+>=20
+>  arch/arm64/boot/dts/qcom/sc7280-crd.dts | 122 ++++++++++++++++++++++++++=
+++++++
+>  arch/arm64/boot/dts/qcom/sc7280.dtsi    |   2 -
+>  2 files changed, 122 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts=20
+> b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> index e2efbdd..bff2707 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+> @@ -21,6 +21,34 @@
+>  	chosen {
+>  		stdout-path =3D "serial0:115200n8";
+>  	};
+> +
+> +	backlight_power: backlight-power {
+> +		compatible =3D "regulator-fixed";
+> +		regulator-name =3D "backlight_power";
+> +
+> +		regulator-min-microvolt =3D <1800000>;
+> +		regulator-max-microvolt =3D <1800000>;
+> +
+> +		gpio =3D <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names =3D "default";
+> +		pinctrl-0 =3D <&edp_bl_power>;
+> +	};
+> +
+> +	edp_power: edp-power {
+> +		compatible =3D "regulator-fixed";
+> +		regulator-name =3D "edp_power";
+> +
+> +		regulator-min-microvolt =3D <3300000>;
+> +		regulator-max-microvolt =3D <3300000>;
+> +
+> +		gpio =3D <&tlmm 80 GPIO_ACTIVE_HIGH>;
+> +		enable-active-high;
+> +
+> +		pinctrl-names =3D "default";
+> +		pinctrl-0 =3D <&edp_panel_power>;
+> +	};
+>  };
+> =20
+>  &apps_rsc {
+> @@ -76,6 +104,42 @@ ap_ts_pen_1v8: &i2c13 {
+>  	};
+>  };
+> =20
+> +&edp_out {
 
-Error pointer dereference.
+Sorry for missing this while merging changes in sc7280.dtsi. But it would b=
+e really nice if this was labeled mdss_edp_out instead (or possibly defined=
+ within the &mdss_edp node).
 
-c6aeaf56f468a56 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2021-09-09  154  	kfree(map);
-80327ce3d4edaa9 drivers/gpu/drm/tegra/gem.c  Thierry Reding  2019-10-28  155  	return ERR_PTR(err);
-de2ba664c30fcdb drivers/gpu/host1x/drm/gem.c Arto Merilainen 2013-03-22  156  }
+Now you will have &edp_out and &dp_out floating around away from the edp an=
+d dp nodes...
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +	remote-endpoint =3D <&edp_panel_in>;
+> +};
+> +
+> +&mdss {
+> +	status =3D "okay";
+> +};
+> +
+> +&mdss_edp {
+> +	status =3D "okay";
+> +
+> +	vdda-1p2-supply =3D <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply =3D <&vreg_l10c_0p8>;
+> +};
+> +
+> +&mdss_edp_phy {
+> +	status =3D "okay";
+> +
+> +	vdda-1p2-supply =3D <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply =3D <&vreg_l10c_0p8>;
+> +};
+> +
+> +&mdss_dp {
+> +	status =3D "okay";
+> +
+> +	pinctrl-names =3D "default";
+> +	pinctrl-0 =3D <&dp_hot_plug_det>;
+> +	data-lanes =3D <0 1>;
+> +	vdda-1p2-supply =3D <&vreg_l6b_1p2>;
+> +	vdda-0p9-supply =3D <&vreg_l1b_0p8>;
+> +};
+> +
+> +&mdss_mdp {
+> +	status =3D "okay";
+> +};
+> +
+>  &nvme_3v3_regulator {
+>  	gpio =3D <&tlmm 51 GPIO_ACTIVE_HIGH>;
+>  };
+> @@ -84,7 +148,65 @@ ap_ts_pen_1v8: &i2c13 {
+>  	pins =3D "gpio51";
+>  };
+> =20
+> +&pm8350c_pwm {
 
+This label doesn't exist, so I won't be able to merge this patch.
+
+> +	status =3D "okay";
+> +
+> +	pinctrl-names =3D "default";
+> +	pinctrl-0 =3D <&edp_bl_pwm>;
+> +};
+> +
+> +&pm8350c_gpios {
+> +	edp_bl_power: edp-bl-power {
+> +		pins =3D "gpio7";
+> +		function =3D "normal";
+> +		qcom,drive-strength =3D <PMIC_GPIO_STRENGTH_LOW>;
+> +		bias-disable;
+> +		output-low;
+> +	};
+> +
+> +	edp_bl_pwm: edp-bl-pwm {
+> +		pins =3D "gpio8";
+> +		function =3D "func1";
+> +		qcom,drive-strength =3D <PMIC_GPIO_STRENGTH_LOW>;
+> +		bias-disable;
+> +		output-low;
+> +	};
+> +};
+> +
+> +&soc {
+> +	edp_backlight: edp-backlight {
+> +		compatible =3D "pwm-backlight";
+
+This is not a device on the mmio bus, so it should not love within the &soc=
+.
+
+> +
+> +		power-supply =3D <&backlight_power>;
+> +		pwms =3D <&pm8350c_pwm 3 65535>;
+> +	};
+> +
+> +	edp_panel: edp_panel {
+
+Ditto.
+
+Regards,
+Bjorn
+
+> +		compatible =3D "sharp,lq140m1jw46";
+> +
+> +		power-supply =3D <&edp_power>;
+> +		backlight =3D <&edp_backlight>;
+> +
+> +		ports {
+> +			#address-cells =3D <1>;
+> +			#size-cells =3D <0>;
+> +			port@0 {
+> +				reg =3D <0>;
+> +				edp_panel_in: endpoint {
+> +					remote-endpoint =3D <&edp_out>;
+> +				};
+> +			};
+> +		};
+> +	};
+> +};
+> +
+>  &tlmm {
+> +	edp_panel_power: edp-panel-power {
+> +		pins =3D "gpio80";
+> +		function =3D "gpio";
+> +		bias-pull-down;
+> +	};
+> +
+>  	tp_int_odl: tp-int-odl {
+>  		pins =3D "gpio7";
+>  		function =3D "gpio";
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi=20
+> b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 3572399..f8fa716 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -3012,8 +3012,6 @@
+> =20
+>  			mdss_edp: edp@aea0000 {
+>  				compatible =3D "qcom,sc7280-edp";
+> -				pinctrl-names =3D "default";
+> -				pinctrl-0 =3D <&edp_hot_plug_det>;
+> =20
+>  				reg =3D <0 0xaea0000 0 0x200>,
+>  				      <0 0xaea0200 0 0x200>,
+> --
+> 2.7.4
+>=20
