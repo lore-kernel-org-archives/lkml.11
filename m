@@ -2,98 +2,214 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A73C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86AADC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:21:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233759AbiBIPUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        id S235717AbiBIPVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:21:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235683AbiBIPUV (ORCPT
+        with ESMTP id S235683AbiBIPVH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:20:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4F1EC0613CA
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:20:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644420024;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Wed, 9 Feb 2022 10:21:07 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C687BC0613C9;
+        Wed,  9 Feb 2022 07:21:09 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 7F3F121102;
+        Wed,  9 Feb 2022 15:21:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644420068; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=HWJxSwYp7jtZ92shaLhTfEcqyJ4FcqxLKxSHScXMFmA=;
-        b=PyuTenbJ41dM5debF7w6Co+TKiLJfVBr8cyhYPUt4fu3dF08QvMM59PBa3YU3t17p2HsxK
-        vFbAgD2o6GVPyf86BefZ69if5ZvtmMZtWxa+4YzYM7zZJ2bIKSBLAgApQUAnrwC0eJKzGU
-        BY9JrygxUlbsn/uIpnzLeMZNAbu1B18=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-249-zb1mVJcgP2uMAOLwj5qykg-1; Wed, 09 Feb 2022 10:20:22 -0500
-X-MC-Unique: zb1mVJcgP2uMAOLwj5qykg-1
-Received: by mail-wm1-f72.google.com with SMTP id 125-20020a1c0283000000b0037bf720e6a8so448511wmc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 07:20:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HWJxSwYp7jtZ92shaLhTfEcqyJ4FcqxLKxSHScXMFmA=;
-        b=4P4BH9eRJtFeYXCSpn9AuwgRh3gAykRAmn32BUECZHZnyyAav0JR6JjEqh0zG44JNs
-         BDImuSVIO2y6c27vFIrBOhMCufUw0zZ1xIki1shMgcSliuoh3UJM9qoXs/zPCTNOaziL
-         nBuj9q4eDJEnl0Kc7HKFh3LqBqDDuKypDnewkd5slHeTkM/OOhKm17EdQ4/5v1zzYS1a
-         0d7YhqLwHdZjWqPIvBELxjyNj0gdyDWI9UkhBaHhbxkyciFjCFyYdWKSmDvvyqgaBHLz
-         XANqHjkVmWlmvxvWA+Oiy+ol2nv253raapiC1FM1Rw2mrpZjuL5WLyOm/6UgaY4Xo6nJ
-         gMDw==
-X-Gm-Message-State: AOAM533XsEBugy/ZwfBMVlwUb/SH1zlDpk9PJiNbJoGL4+Ti6pi6Af8m
-        0B98Q/irGts0Y+0YbnPtaRpn1otTkQi0T6gM2ADuqEj4CZMP5tjx1qmZ0wR9ggZ/7oFI8IvODIq
-        xoTzjRqnfojNQSh/Lm1D7veF+LJSeRDRI8g6virIQ
-X-Received: by 2002:a1c:2942:: with SMTP id p63mr2494643wmp.75.1644420021706;
-        Wed, 09 Feb 2022 07:20:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzBIOqCE7cDbpGvT5TmCSizl7rrPw18L3EY0Uy8onixaMONTzYS0XvUHUkxcZEdMAG886y96+4xK4BB/NuuR5w=
-X-Received: by 2002:a1c:2942:: with SMTP id p63mr2494623wmp.75.1644420021540;
- Wed, 09 Feb 2022 07:20:21 -0800 (PST)
+        bh=0gsG+OOopxEuh693BdcBnjh8UcladxYwrrkRHwJ7mBI=;
+        b=pBAnMmrGo81oQ8oybIUu1ItVqogsohn4Zts7JQUKEXvkobQ9wLow5hz5Om3Cbm9MZLcwXM
+        XYbC5wY7OhEp5lNn+yoALs/wJL1PmyX4H5UVyY9LeYbd5GcTqCtN8D1Zq/U0D85VeBfI7C
+        6K2S6BOEtVO2NlUzjzUzXu67cFwctpc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644420068;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0gsG+OOopxEuh693BdcBnjh8UcladxYwrrkRHwJ7mBI=;
+        b=SpTaNOjAwxnDTNd4Ycz8lGQrWa/3Y4JeC/YNVYwy8DGXiKllvIlZyJZofZay19Hgu/cKZk
+        YBJE8tEZ/MeV+QCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4490E13D4F;
+        Wed,  9 Feb 2022 15:21:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IsfAD+TbA2J6CAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 09 Feb 2022 15:21:08 +0000
+Message-ID: <d5fc654c-643a-7b20-85f1-54169a3aa889@suse.de>
+Date:   Wed, 9 Feb 2022 16:21:07 +0100
 MIME-Version: 1.0
-References: <20220209085243.3136536-1-lee.jones@linaro.org> <20220209150904.GA22025@lst.de>
-In-Reply-To: <20220209150904.GA22025@lst.de>
-From:   Andreas Gruenbacher <agruenba@redhat.com>
-Date:   Wed, 9 Feb 2022 16:20:10 +0100
-Message-ID: <CAHc6FU5e4GaQTfh6Z2_2vhcgxY+dbwUBOgazrXB3XW4=DRpLHQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] Revert "iomap: fall back to buffered writes for
- invalidation failures"
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-ext4 <linux-ext4@vger.kernel.org>,
-        cluster-devel <cluster-devel@redhat.com>,
-        syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/7] drm/format-helper: Add drm_fb_{xrgb8888,
+ gray8}_to_mono_reversed()
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-3-javierm@redhat.com>
+ <6df9c28d-968d-ff16-988e-8e88e4734e49@suse.de>
+ <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------wUsU9n6TUXoMmXjFd6Sl01Qi"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:09 PM Christoph Hellwig <hch@lst.de> wrote:
-> On Wed, Feb 09, 2022 at 08:52:43AM +0000, Lee Jones wrote:
-> > This reverts commit 60263d5889e6dc5987dc51b801be4955ff2e4aa7.
-> >
-> > Reverting since this commit opens a potential avenue for abuse.
-> >
-> > The C-reproducer and more information can be found at the link below.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------wUsU9n6TUXoMmXjFd6Sl01Qi
+Content-Type: multipart/mixed; boundary="------------SboH3Z97a8U5LshpeDClu6bl";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ Daniel Vetter <daniel.vetter@ffwll.ch>, dri-devel@lists.freedesktop.org,
+ =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Maxime Ripard
+ <maxime@cerno.tech>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Sam Ravnborg <sam@ravnborg.org>
+Message-ID: <d5fc654c-643a-7b20-85f1-54169a3aa889@suse.de>
+Subject: Re: [PATCH v3 2/7] drm/format-helper: Add drm_fb_{xrgb8888,
+ gray8}_to_mono_reversed()
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-3-javierm@redhat.com>
+ <6df9c28d-968d-ff16-988e-8e88e4734e49@suse.de>
+ <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
+In-Reply-To: <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
 
-This reproducer seems to be working fine on gfs2, but the locking in
-gfs2 differs hugely from that of other filesystems.
+--------------SboH3Z97a8U5LshpeDClu6bl
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-> > With this patch applied, I can no longer get the repro to trigger.
->
-> Well, maybe you should actually debug and try to understand what is
-> going on before blindly reverting random commits.
+SGkNCg0KQW0gMDkuMDIuMjIgdW0gMTQ6MjYgc2NocmllYiBKYXZpZXIgTWFydGluZXogQ2Fu
+aWxsYXM6DQo+IEhlbGxvIFRob21hcywNCj4gDQo+IFRoYW5rcyBhIGxvdCBmb3IgeW91ciBm
+ZWVkYmFjay4NCj4gDQo+IE9uIDIvOS8yMiAxMzo1MSwgVGhvbWFzIFppbW1lcm1hbm4gd3Jv
+dGU6DQo+PiBIaQ0KPj4NCj4gDQo+IFtzbmlwXQ0KPiANCj4+PiArDQo+Pj4gKwkJaWYgKHhi
+ID09IHBpeGVscyAtIDEgJiYgZW5kX29mZnNldCkNCj4+PiArCQkJZW5kID0gZW5kX29mZnNl
+dDsNCj4+DQo+PiBlbmRfb2Zmc2V0IHNob3VsZCBiZSBjYWxsZWQgZW5kX2xlbiwgYmVjYXVz
+ZSBpdCBpcyB0aGUgbnVtYmVyIG9mIGJpdHMgaW4NCj4+IHRoZSBmaW5hbCBieXRlOyBidXQg
+bm90IHRoZSBvZmZzZXQgb2YgdGhlIGZpbmFsIGJpdC4NCj4+DQo+IA0KPiBJbmRlZWQuDQo+
+IA0KPiBbc25pcF0NCj4gDQo+Pj4gK3ZvaWQgZHJtX2ZiX2dyYXk4X3RvX21vbm9fcmV2ZXJz
+ZWQodm9pZCAqZHN0LCB1bnNpZ25lZCBpbnQgZHN0X3BpdGNoLCBjb25zdCB2b2lkICp2YWRk
+ciwNCj4+PiArCQkJCSAgIGNvbnN0IHN0cnVjdCBkcm1fZnJhbWVidWZmZXIgKmZiLA0KPj4+
+ICsJCQkJICAgY29uc3Qgc3RydWN0IGRybV9yZWN0ICpjbGlwKQ0KPiANCj4gW3NuaXBdDQo+
+IA0KPj4NCj4+IERvIHlvdSByZWFsbHkgbmVlZCB0aGF0IGZ1bmN0aW9uLiBJdCdzIG5vdCBl
+eHBvcnRlZCBhbmQgaWYgaXQncyBub3QNCj4+IG90aGVyd2lzZSB1c2VkLCBJJ2QganVzdCBy
+ZW1vdmUgaXQuICBXZSBkb24ndCBrZWVwIHVudXNlZCBpbnRlcmZhY2VzIGFyb3VuZC4NCj4+
+DQo+IA0KPiBBdCB0aGUgZW5kIGFmdGVyIHlvdXIgc3VnZ2VzdGlvbiBvZiBkb2luZyBsaW5l
+LXBlci1saW5lIGNvbnZlcnNpb25zIGl0IGlzIG5vdA0KPiBuZWVkZWQsIGJ1dCBzaW5jZSBJ
+IGFscmVhZHkgdHlwZWQgaXQgYW5kIHdlIHdlcmUgdGFsa2luZyBhYm91dCBhZGRpbmcgb3Ro
+ZXINCj4gZm9ybWF0cyBiZXNpZGVzIHRoZSBmYWtlIFhSR0I4ODg4IGFzIGFuIG9wdGltaXph
+dGlvbiAoUjggZm9yIGdyYXlzY2FsZSBhbmQNCj4gRHggb3Igc29tZXRoaW5nIGxpa2UgdGhh
+dCBmb3IgcmV2ZXJzZWQgbW9ubyksIEkgdGhvdWdodCB0aGF0IHdvdWxkIGJlIHVzZWZ1bA0K
+PiB0byBoYXZlIGl0IGFzIGEgaGVscGVyLg0KPiANCj4gQWxzbyBvdGhlciBkcml2ZXJzIHRo
+YXQgd2FudCB0byBhZHZlcnRpc2UgYSBSOCBmb3JtYXQgY291bGQganVzdCB1c2UgaXQgYW5k
+DQo+IG5vdCBoYXZpbmcgdG8gYWRkIHRoZWlyIG93biBoZWxwZXIuIEJ1dCBJJ20gaGFwcHkg
+dG8gZHJvcCBpdCBpbiB2NCBpZiB5b3UNCj4gdGhpbmsgdGhhdCdzIGJldHRlciB0byBub3Qg
+aGF2ZSB1bnVzZWQgaGVscGVycy4NCj4gDQo+IEl0IGNvdWxkIGJlIHRha2VuIGZyb20gdGhp
+cyBwYXRjaC1zZXQgYW55d2F5cyBpZiBzb21lb25lIHdhbnRzIHRvIHdpcmUgdGhlDQo+IG5l
+ZWRlZCBzdXBwb3J0IGZvciBSOC4NCg0KSSB0aGluaywgcG9saWN5IGlzIHRvIG5vdCBrZWVw
+IHVudXNlZCBjb2RlIGFyb3VuZC4NCg0KPiANCj4gW3NuaXBdDQo+IA0KPj4+ICsNCj4+PiAr
+CS8qDQo+Pj4gKwkgKiBUaGUgcmV2ZXJzZWQgbW9ubyBkZXN0aW5hdGlvbiBidWZmZXIgY29u
+dGFpbnMgMSBiaXQgcGVyIHBpeGVsDQo+Pj4gKwkgKiBhbmQgZGVzdGluYXRpb24gc2Nhbmxp
+bmVzIGhhdmUgdG8gYmUgaW4gbXVsdGlwbGUgb2YgOCBwaXhlbHMuDQo+Pj4gKwkgKi8NCj4+
+PiArCWlmICghZHN0X3BpdGNoKQ0KPj4+ICsJCWRzdF9waXRjaCA9IERJVl9ST1VORF9VUChs
+aW5lcGl4ZWxzLCA4KTsNCj4+DQo+PiBJJ2QgZG8gYSB3YXJuX29uY2UgaWYgKGRzdF9waXRj
+aCAlIDggIT0gMCkuDQo+Pg0KPiANCj4gQWdyZWVkLiBJJ2xsIGFkZCBhIHdhcm5pbmcgYW4g
+bWVudGlvbiB0aGF0IHdpbGwgYmUgcm91bmRlZCB1cC4NCj4gDQo+Pg0KPj4+ICsNCj4+PiAr
+CS8qDQo+Pj4gKwkgKiBUaGUgY21hIG1lbW9yeSBpcyB3cml0ZS1jb21iaW5lZCBzbyByZWFk
+cyBhcmUgdW5jYWNoZWQuDQo+Pj4gKwkgKiBTcGVlZCB1cCBieSBmZXRjaGluZyBvbmUgbGlu
+ZSBhdCBhIHRpbWUuDQo+Pg0KPj4gSSBvbmNlIGhhZCBhIHBhdGNoc2V0IHRoYXQgYWRkcyBj
+YWNoaW5nIGluZm9ybWF0aW9uIHRvIHN0cnVjdA0KPj4gZG1hX2J1Zl9tYXAgKHNvb24gdG8g
+YmUgbmFtZWQgc3RydWN0IGlvc3lzX21hcCkuICBCbGl0dGluZyBoZWxwZXJzIHdvdWxkDQo+
+PiBiZSBhYmxlIHRvIGVuYWJsZS9kaXNhYmxlIHRoaXMgb3B0aW1pemF0aW9uIGFzIG5lZWRl
+ZC4NCj4+DQo+PiBIb3dldmVyLCB5b3VyIGRyaXZlciBkb2Vzbid0IHVzZSBDTUEuIEl0J3Mg
+YmFja2VkIGJ5IFNITUVNLiBEbyB5b3UNCj4+IHJlYWxseSB3YW50IHRvIGtlZXAgdGhhdCBj
+b2RlIGluPw0KPj4NCj4gDQo+IEl0IGRvZXNuJ3QgYnV0IHRoZSByZXBhcGVyIGRvZXMuIEFu
+ZCBzaW5jZSB0aGUgcGxhbiB3YXMgdG8gbWFrZSB0aGF0IGRyaXZlcg0KPiB0byB1c2UgdGhl
+IGhlbHBlciBpbnN0ZWFkIG9mIGhhdmluZyB0aGVpciBvd24sIEkgd2FudGVkIHRvIGFsc28g
+bWFrZSBzdXJlDQo+IHRoYXQgd291bGQgd29yayB3ZWxsIHdpdGggQ01BLg0KDQpUaGF0IG1h
+a2VzIHNlbnNlIHRoZW4uDQoNCj4gDQo+Pg0KPj4+ICsJICovDQo+Pj4gKwlzcmMzMiA9IGtt
+YWxsb2MobGVuX3NyYzMyLCBHRlBfS0VSTkVMKTsNCj4+PiArCWlmICghc3JjMzIpDQo+Pj4g
+KwkJcmV0dXJuOw0KPj4+ICsNCj4+PiArCS8qDQo+Pj4gKwkgKiBDb3BpZXMgYXJlIGRvbmUg
+bGluZS1ieS1saW5lLCBhbGxvY2F0ZSBhbiBpbnRlcm1lZGlhdGUNCj4+PiArCSAqIGJ1ZmZl
+ciB0byBjb3B5IHRoZSBncmF5OCBsaW5lcyBhbmQgdGhlbiBjb252ZXJ0IHRvIG1vbm8uDQo+
+Pj4gKwkgKi8NCj4+PiArCWdyYXk4ID0ga21hbGxvYyhsaW5lcGl4ZWxzLCBHRlBfS0VSTkVM
+KTsNCj4+PiArCWlmICghZ3JheTgpDQo+Pj4gKwkJZ290byBmcmVlX3NyYzMyOw0KPj4NCj4+
+IElmIG1pZ2h0IGJlIGZhc3RlciB0byBhbGxvY2F0ZSBib3RoIGJ1ZmZlcnMgaW4gb25lIHN0
+ZXAgYW5kIHNldCB0aGUNCj4+IHBvaW50ZXJzIGludG8gdGhlIGFsbG9jYXRlZCBidWZmZXIu
+DQo+Pg0KPiANCj4gTm90IHN1cmUgSSBnb3QgdGhpcy4gRG8geW91IG1lYW4gdG8gaGF2ZSBh
+IHNpbmdsZSBidWZmZXIgd2l0aCBsZW5ndGgNCj4gbGluZXBpeGVscyArIGxlbl9zcmMzMiBh
+bmQgcG9pbnQgc3JjMzIgYW5kIGdyYXk4IHRvIHRoZSBzYW1lIGJ1ZmZlciA/DQoNClRoYXQn
+cyB0aGUgaWRlYS4gSSBkb24ndCBrbm93IHRoZSBleGFjdCBvdmVyaGVhZCBmb3Iga2FsbG9j
+KCksIGJ1dCBhdCANCmxlYXN0IHRoZSBpbiB1c2Vyc3BhY2UsIG1hbGxvYygpIGluIGhvdCBj
+b2RlIHBhdGhzIGlzIG5vdCBhIGdvb2QgaWRlYS4gDQpUaGVyZSdzIHVzdWFsbHkgc29tZSBz
+ZWFyY2hpbmcgZm9yIGZyZWUgc3BhY2UgaW52b2x2ZWQuDQoNCkluIHRoZSBsb25nIHRlcm0s
+IHdlIGNvdWxkIGFkZCBhIGZpZWxkIGluIHN0cnVjdCBkcm1fZnJhbWVidWZmZXIgdG8ga2Vl
+cCANCnN1Y2ggYnVmZmVycyBhcm91bmQgZm9yIHJldXNlLg0KDQo+IA0KPj4+ICsNCj4+PiAr
+CS8qDQo+Pj4gKwkgKiBGb3IgZGFtYWdlIGhhbmRsaW5nLCBpdCBpcyBwb3NzaWJsZSB0aGF0
+IG9ubHkgcGFydHMgb2YgdGhlIHNvdXJjZQ0KPj4+ICsJICogYnVmZmVyIGlzIGNvcGllZCBh
+bmQgdGhpcyBjb3VsZCBsZWFkIHRvIHN0YXJ0IGFuZCBlbmQgcGl4ZWxzIHRoYXQNCj4+PiAr
+CSAqIGFyZSBub3QgYWxpZ25lZCB0byBtdWx0aXBsZSBvZiA4Lg0KPj4+ICsJICoNCj4+PiAr
+CSAqIENhbGN1bGF0ZSBpZiB0aGUgc3RhcnQgYW5kIGVuZCBwaXhlbHMgYXJlIG5vdCBhbGln
+bmVkIGFuZCBzZXQgdGhlDQo+Pj4gKwkgKiBvZmZzZXRzIGZvciB0aGUgcmV2ZXJzZWQgbW9u
+byBsaW5lIGNvbnZlcnNpb24gZnVuY3Rpb24gdG8gYWRqdXN0Lg0KPj4+ICsJICovDQo+Pj4g
+KwlzdGFydF9vZmZzZXQgPSBjbGlwLT54MSAlIDg7DQo+Pj4gKwllbmRfb2Zmc2V0ID0gY2xp
+cC0+eDIgJSA4Ow0KPj4NCj4+IGVuZF9sZW4sIGFnYWluLiBJZiB5b3UgaGF2ZSAxIHNpbmds
+ZSBiaXQgc2V0IGluIHRoZSBmaW5hbCBieXRlLCB0aGUNCj4+IG9mZnNldCBpcyAwLCBidXQg
+dGhlIGxlbmd0aCBpcyAxLg0KPj4NCj4gDQo+IEFncmVlZCwgd2lsbCBjaGFuZ2UgaXQgdG9v
+Lg0KDQpGZWVsIGZyZWUgdG8gYWRkIG15DQoNClJldmlld2VkLWJ5OiBUaG9tYXMgWmltbWVy
+bWFubiA8dHppbW1lcm1hbm5Ac3VzZS5kZT4NCg0KdG8gdGhlIG5leHQgdmVyc2lvbi4NCg0K
+QmVzdCByZWdhcmRzDQpUaG9tYXMNCg0KPiANCj4gQmVzdCByZWdhcmRzLA0KDQotLSANClRo
+b21hcyBaaW1tZXJtYW5uDQpHcmFwaGljcyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3
+YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdtYkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJu
+YmVyZywgR2VybWFueQ0KKEhSQiAzNjgwOSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bD
+vGhyZXI6IEl2byBUb3Rldg0K
 
-Andreas
+--------------SboH3Z97a8U5LshpeDClu6bl--
 
+--------------wUsU9n6TUXoMmXjFd6Sl01Qi
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmID2+MFAwAAAAAACgkQlh/E3EQov+CS
+nA//bppg88zizs6GVQYgs+Eirsf8zaZp2LGOvV941RQgPr7a45UIpIihJxxqVmNDW+D4yve5jn1g
+fRQ1ybGsu/7H6QBptrJwJUJ+3aSQSeEcCOtN6T9Na5ELm6CYu8HG/46cgjcIeMV9PpZNKSxeqPl9
+SqoJCgxLpkfn58HQ7L7B8aP36Ii1KHaQa414lLyhrsUJvgwVfmWHcQFQyXFn4w+IMGGRNwBx1J2z
+2AvQQhIN6y/89/RQZYfjeqBQzyEWT7IAO4RHfQnBbfr3PcdMTAFXgZOtVZLqn19Nn1Owlrk4hdhU
+2PDvJA1Tz5lqsK1i9MI9aP4cDOr8BtzRcIkjUnk8EdG1Gc3jqjSPLUjWodg9iMtkY1erVyorZiIt
+mc4oC1f/K/WXWrsKgYW4/k349TLihSj0o3IKeoQojMhe3nWczGfuQ9kY5qgzkEBjMPQKOWcjqhSx
+XMjw0me0pLCUhsckzE4wFzhkFaZu/CcsgrcAyMxNrC7y4XWPKgVPXFJUzIbGpCnVyZ574DTRWhlf
+FJ2+bwp1q63yAisdwNZs5pCpYP7KXqQWCqaZYb0KGLIIBr/n8gFMHi+UYgiBDQ28HGRBEoXZDWg8
+X/afCjUbIKWs/uVcBIncwJqTN3Mjit2J3XtknihvqdHeZwx0v4F4doSzGRJpXHt9/3ZSONEEA2je
+bYs=
+=OfCw
+-----END PGP SIGNATURE-----
+
+--------------wUsU9n6TUXoMmXjFd6Sl01Qi--
