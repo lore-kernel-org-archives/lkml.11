@@ -2,112 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68742C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEABC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236546AbiBIQHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:07:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42120 "EHLO
+        id S236561AbiBIQHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:07:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236535AbiBIQHF (ORCPT
+        with ESMTP id S236511AbiBIQHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:07:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D908C05CB86
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:07:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644422827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9GmtaJHp/xTHNMpzFHAgFBMiYKYYWVV2IEV+4sk5uqg=;
-        b=BaLjw1ZAJBsdZh+i7zjT4nOcKDwY6/ucTiVQbhKI9X1YNKubOYmc13EWduLcNLy3ppZifm
-        QdiYCvSqewJFT7F+LsvMtXCc7tCtSeXWC5iJnpiyu7YC5mr9yJjJCfnxh+N3p2JLqfykCB
-        L1EJVvwLBqeffO/YHLqQ0SnLPPPogLw=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-177-DHD782eFP2CcpyFflwyVgQ-1; Wed, 09 Feb 2022 11:07:06 -0500
-X-MC-Unique: DHD782eFP2CcpyFflwyVgQ-1
-Received: by mail-wm1-f69.google.com with SMTP id v190-20020a1cacc7000000b0034657bb6a66so254131wme.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 08:07:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9GmtaJHp/xTHNMpzFHAgFBMiYKYYWVV2IEV+4sk5uqg=;
-        b=0QoGTWxcJ5tS+XhEXgaiPpt6NCrFQi3hHRWrPYNlbcOSxwxyohh2utSh3/7lUnGBy5
-         ntyxgkSc0lWN5XtSvts7fTb6Xgt4vV2ZZoGoHLeIysOmuUCKTpaXMEHyMs+TgwvKVPVS
-         621QIqYkLlmQStvOuLzOtojr+VKMBarH6kA9vACN8jZDVo1/rHWUXz4qUbUniXR4nx+K
-         m4ltqflHSDgZCakADEUHXLF4oty/evYGHWZcRFau7xCFlQntwDVCwPM0SZWbhekNuFQJ
-         61RY8f9mzwOG21OAPV9ZkhMnR1w82db/XW/xcc5ncwIw6vIQicJF7dLUoKlClwEzmTW4
-         KWhQ==
-X-Gm-Message-State: AOAM531DkuAZPlOJfV202xtI4pDJJxK/dITnf5mW0SCYHuP0ZEaEgFRR
-        0AFvDzSAoWsmU73EPLPTSrZ4xN21iadfBke1ibne2WI1EUYnU3EslhnEstLTauWtCWQ+kApoRZA
-        1Cg5V743qHaUVGaUc2eHxcaKI
-X-Received: by 2002:a5d:6c67:: with SMTP id r7mr2694170wrz.518.1644422825078;
-        Wed, 09 Feb 2022 08:07:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzSOdYMsb8yEAJ80HG2zpe/vuSpys4t0RlhZKdpTZvQG5sQ5JJ8V2gZ2pWwI7Y/pRJze0jM/A==
-X-Received: by 2002:a5d:6c67:: with SMTP id r7mr2694154wrz.518.1644422824917;
-        Wed, 09 Feb 2022 08:07:04 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f20sm7148775wmg.2.2022.02.09.08.07.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 08:07:04 -0800 (PST)
-Message-ID: <d32c731b-c06f-2dcb-5a6d-1a84351719b2@redhat.com>
-Date:   Wed, 9 Feb 2022 17:07:03 +0100
+        Wed, 9 Feb 2022 11:07:21 -0500
+X-Greylist: delayed 3905 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:07:22 PST
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B6CC0613C9;
+        Wed,  9 Feb 2022 08:07:22 -0800 (PST)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 219EELie022353;
+        Wed, 9 Feb 2022 10:01:32 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e46jbtae8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 10:01:32 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 219F1VUx056491
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 9 Feb 2022 10:01:31 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 9 Feb 2022
+ 10:01:30 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 9 Feb 2022 10:01:30 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 219F1BGV030677;
+        Wed, 9 Feb 2022 10:01:14 -0500
+From:   <alexandru.tachici@analog.com>
+To:     <o.rempel@pengutronix.de>
+CC:     <alexandru.tachici@analog.com>, <andrew@lunn.ch>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <hkallweit1@gmail.com>, <kuba@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux@armlinux.org.uk>,
+        <netdev@vger.kernel.org>, <robh+dt@kernel.org>
+Subject: Re: [PATCH v4 4/7] net: phy: Add 10BASE-T1L support in phy-c45
+Date:   Wed, 9 Feb 2022 17:12:20 +0200
+Message-ID: <20220209151220.15154-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220207092753.GC23727@pengutronix.de>
+References: <20220207092753.GC23727@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI
- support
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209091204.2513437-1-javierm@redhat.com>
- <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
- <YgPbAL0I8Wn7nnNb@smile.fi.intel.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YgPbAL0I8Wn7nnNb@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: ecP3ea8MbRQPPDOZEkuMGLmXug0406tG
+X-Proofpoint-GUID: ecP3ea8MbRQPPDOZEkuMGLmXug0406tG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_08,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=793
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 malwarescore=0
+ suspectscore=0 impostorscore=0 bulkscore=0 clxscore=1011 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 16:17, Andy Shevchenko wrote:
-> On Wed, Feb 09, 2022 at 01:25:46PM +0100, Geert Uytterhoeven wrote:
->> On Wed, Feb 9, 2022 at 10:12 AM Javier Martinez Canillas
->> <javierm@redhat.com> wrote:
+> On Sat, Dec 11, 2021 at 10:07:49PM +0100, Andrew Lunn wrote:
+> > > +		ret = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_EXTABLE);
+> > > +		if (ret < 0)
+> > > +			return ret;
+> > > +
+> > > +		if (ret & MDIO_PMA_EXTABLE_BT1)
+> > 
+> > 
+> > This pattern of reading the MDIO_PMA_EXTABLE register and then looking
+> > for bit MDIO_PMA_EXTABLE_BT1 happens a lot. It is not something which
+> > is expected to change is it? So i wounder if it should be read once
+> > and stored away?
 > 
-> ...
-> 
->>> +               .compatible = "solomon,ssd1305fb-spi",
->>
->> This needs an update to the DT bindings.
->> Hence this may be a good time to deprecate the existing
->> "solomon,ssd130*fb-i2c" compatible values, and switch to
->> "solomon,ssd130*fb" instead, for both I2C and SPI.
-> 
-> Agree!
-> 
+> What is the state of this patches? Will you be able to make requested
+> changes and send new version?
 
-Did you see my comment about automatic module loading ? I think
-that would be an issue if we use the same compatible for both
-I2C and SPI drivers.
+I will come back with a V5 where I will add the requested changes.
 
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Regards,
+Alexandru
