@@ -2,249 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8075C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D392CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241108AbiBII3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:29:14 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36342 "EHLO
+        id S240043AbiBII36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:29:58 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241253AbiBII3H (ORCPT
+        with ESMTP id S236457AbiBII3x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:29:07 -0500
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com [209.85.217.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C853C05CBBE;
-        Wed,  9 Feb 2022 00:28:55 -0800 (PST)
-Received: by mail-vs1-f41.google.com with SMTP id f6so1731987vsa.5;
-        Wed, 09 Feb 2022 00:28:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dfJBTLXzI7eyNZEn87oG5nH5B0aw/JRn1EB0ZDzVuOc=;
-        b=0z5BLcjtUo+t9I9YQ2Qhc91zLqn1IDcK47A5ad3FCygnfMELZ3BXgQUmLlOMVNHuTz
-         fKBKdlcjWR1DmZlgZeVjYsxgqjHfIJlzq1mLOAyRTpt6PiuswfEzkQfRDGzwaB3j5Yy8
-         kSLRB/lr6QjjYQpHNFNqeq7Jh6gIvkEzH+MndWIYQltn9ijo4u6qdL1xjIl/el2QTt8y
-         SwttbiJ92xdTQ+DEoDQyp87V/G93XOR5uqtv5MJ2B9P4JNmUe03KyrI0sxQ7tVqOHoAz
-         MkvRk6NWVBvYFMRMPE/RpIwa9LPAxsPIhreXrMcwlYsi/sT268bKhpDvrC+9EgscGCGo
-         9FfQ==
-X-Gm-Message-State: AOAM530+1eM0W9sPIE0i7XG/84fMDxE9zAFMLCpVRrbMIwMxFxS5g6uw
-        mVvDEejYVyTcA4Ku+CBt3X49JTaiW3k49w==
-X-Google-Smtp-Source: ABdhPJzIMhigm0wwsjiTQmt+wWOcd9W46b4Pk94/YNum4RScjfDOeMskaNJE2G181RnOrcK6OShxPg==
-X-Received: by 2002:a67:ea4e:: with SMTP id r14mr290996vso.51.1644395334432;
-        Wed, 09 Feb 2022 00:28:54 -0800 (PST)
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
-        by smtp.gmail.com with ESMTPSA id b191sm3239091vkb.32.2022.02.09.00.28.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 00:28:54 -0800 (PST)
-Received: by mail-vs1-f53.google.com with SMTP id w6so1320851vsf.3;
-        Wed, 09 Feb 2022 00:28:54 -0800 (PST)
-X-Received: by 2002:a05:6102:34d9:: with SMTP id a25mr379149vst.68.1644395333887;
- Wed, 09 Feb 2022 00:28:53 -0800 (PST)
+        Wed, 9 Feb 2022 03:29:53 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2057.outbound.protection.outlook.com [40.107.243.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0047DC05CB9E;
+        Wed,  9 Feb 2022 00:29:56 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oJE++7nCV0VR2iNomX2dM/djX0pwEpXuMp2PQO0YgZIqMGXtlBQUBhzQuHAUGtlb0BPE+r6WuwiTASZjJqLJy7UVrMylOUfROUTCJQ1U5tYWvoyLONSn/u1J+4xpPwrrb4xO5NQhpJ9LfELxghFTTwBCZkXclqlZ1Q4DVGRvNwKFblG9OypGdgyU2/bUS4DVKIdWNtubAi1/p5nZnzDoQ76UA+bMsoMLBrT9+0VSWBq0Mv0SZnkvoWLSA2a2M50jJknDuVYovs/02MUSETb+7JP1TE4MygRS6TtWN33TGEdDGWkqxuscvTvw1p0CBjvwTS9/qortoOuFJLuJ/J3POQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qssOm+TmeasxUFDKQhOi/ZP5oXU9T4AoWutATZ9F4Sw=;
+ b=MMt3sLQ0e//ZSDa3WRHxQdvjmWMNUVRxrHebaPbZ3hO+Oss7p8X7p1yU1gN3du5OrBeahblb0LzVcnEtB1kChTwsaCKLuuASaMW4NyCBkhdUCxU37LdYBtbYaqjrTQjPa98cLKwdv9XP7laN96IDwgAG9CxEsM4Ijf3r17lJnwEmaYMr5Ne47cmBLJi0NIhybx0+0lLtQhSwy9ag5c915P/zFDMkz75P5t+Estdkb8qFLSNUefIUEd4DZfHOpMJmKEroKyWH8mbte00YNlbzAfQXBRPLULgZyTMe+wnnU9wUK2MIlUyPdhjP9pULcje4lYRIPKk62krLAq57jLSoUw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qssOm+TmeasxUFDKQhOi/ZP5oXU9T4AoWutATZ9F4Sw=;
+ b=bX7N9sZwxBbsFenZznuNBAQ0Q6wlML0bCD7kdEyklwSgg4pshp+o1ZRQMa1i2kT/Swp1DKCuXKIXtyuxLjCCFRIhHBjVWSGnUbzqZ66qudbAUybZOJYJHlrsAoJ0LgbK3agFkOYJqt5GB4eOHkjQTOyg+0dTA/r3Uh8EXwRZFe0=
+Received: from DM6PR02MB5386.namprd02.prod.outlook.com (2603:10b6:5:75::25) by
+ CH2PR02MB7093.namprd02.prod.outlook.com (2603:10b6:610:85::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4975.11; Wed, 9 Feb 2022 08:29:55 +0000
+Received: from DM6PR02MB5386.namprd02.prod.outlook.com
+ ([fe80::edcb:5b1a:1a4a:f93e]) by DM6PR02MB5386.namprd02.prod.outlook.com
+ ([fe80::edcb:5b1a:1a4a:f93e%6]) with mapi id 15.20.4951.019; Wed, 9 Feb 2022
+ 08:29:55 +0000
+From:   Srinivas Neeli <sneeli@xilinx.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Michal Simek <michals@xilinx.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Appana Durga Kedareswara Rao <appanad@xilinx.com>,
+        Srinivas Goud <sgoud@xilinx.com>, git <git@xilinx.com>
+Subject: RE: [PATCH] can: xilinx_can: Add check for NAPI Poll function
+Thread-Topic: [PATCH] can: xilinx_can: Add check for NAPI Poll function
+Thread-Index: AQHYHQfhCbkJD7wJyUaac0q2SvLXYKyK2RMAgAAKW4A=
+Date:   Wed, 9 Feb 2022 08:29:55 +0000
+Message-ID: <DM6PR02MB53861A46A48B4689F668BEE9AF2E9@DM6PR02MB5386.namprd02.prod.outlook.com>
+References: <20220208162053.39896-1-srinivas.neeli@xilinx.com>
+ <20220209074930.azbn26glrxukg4sr@pengutronix.de>
+In-Reply-To: <20220209074930.azbn26glrxukg4sr@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=xilinx.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6ab9cd03-67f9-449d-434f-08d9eba65a1b
+x-ms-traffictypediagnostic: CH2PR02MB7093:EE_
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-microsoft-antispam-prvs: <CH2PR02MB7093008502D17DD97D75008BAF2E9@CH2PR02MB7093.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0xIBCAjY/IB+4lVyiAW3gmTpolry5fd/3fD20Xp4iQXydhnS5APSjxdLKnqnMpeCbzrkjn4lKBkFiGgG5IclOmtqlT4kFlqwh6IUfuiw+HLr9aR9ZP4ngFkhWEIM6c+IDg4dy1+YDv1/GqD2550HmthGYEkQgzMv7YjKV+hYFPLnyLbXRA+k/8ilTPNTBKWwk9I1rUX7d/ScXN1Ozvp/BY6TrKzVBalxz1wDJZQ9cHAbH1aC6/uf+oDItsbnFFwTX4LIqERxwa2MEG4DlH7tanstQVbzAYykOE/R9jsB4G84u6eny5rmphDTS8PBMbpA2eMgLgmLyy+D5Ul450JuDiwQ0Aqy42OqVAzk4I34EPitzw7JcBNzPgH4Ey/7sclSIZnc8Gqo7CSaQZpAP6ux6qEPZUOIAa0KvTjQ/z9MCwKhRzAPjeM0TZWhfs8T+79cNWGElwlBD4MKiLOW+ebmc01Evwko76brMglu3HcWZ0oc1Dj5ZyimgWWLP21eSH3vDoww/XuroM2jyBmQE2nvQld2Iy0B/DDjA/97q+1YHNG1eW/3jBT1gyY1rKLT7cDtrgdjtTBw2f/7EC1lsQEFHGDB4Y2x4pFs/3kEAPKLnQRjyqn7d8EryNqN0XfNF/EC1aNWLXUc1ntSFLPGkOrsnpQKvJlSOjvjoVbD7vpXI+yQse8rn4pbF/D2/qrivLYUCBo94u4DGm8RqQGkp7K1UrvlQwso1QQ5Xi5oRtjXEW+S9Pi2NgmKnQJIk9yiDlvIxRhnjoDlzGD7NbBdKFh763a9X89kN60xFxN+1NrN6+o=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR02MB5386.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(122000001)(38070700005)(6506007)(66556008)(33656002)(52536014)(71200400001)(966005)(9686003)(508600001)(8936002)(55016003)(107886003)(53546011)(6916009)(26005)(8676002)(54906003)(186003)(5660300002)(7696005)(76116006)(66946007)(66446008)(38100700002)(64756008)(316002)(83380400001)(4326008)(66476007)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TUNEWnQyMlVmRUNRSU9yNkxtVjUreDk0VGdtUmp3dzlNVVhjL1h2T1BVeXU0?=
+ =?utf-8?B?aEk5OHM5QnpZNXNrTWdrOHFiVHhxWU9WbnNxcDcycXV0K1FEcUlCSHd2Qk5j?=
+ =?utf-8?B?cDh1VVh4dGJFY2ZDNFNybkpsS1V6bmhUMzZick9mQ0lBYW9YdWtKenhPaTIx?=
+ =?utf-8?B?djFDOXNRREtDVlUwVExvMlFBWTVha1NIMEIrbnlpWFVhZ3R2REp4WEZ1QnJO?=
+ =?utf-8?B?Mm14dVRMdnp3R1VZVlEwdnRNOVVoSUlkZ2tPbWZGbXkrRjUybWlQZEo2NlNi?=
+ =?utf-8?B?b1VZUFlPWHBQcm9ZSDR0b0dqK0ZheTk5dzEycWhvZzhxZ0pCenp3ZE02U1VT?=
+ =?utf-8?B?VzB5c2tuZUJKRlpLQzhONkgrR3dBOGlBdERmOVlwbk9TcTZPa0gvd0Uwa1Jt?=
+ =?utf-8?B?SHNqT2pqTDg4Mno3MHRvc0s4S0I1VUh3R0xlS3VvblRNcUJzY2V0S256bko0?=
+ =?utf-8?B?YjFsSlh1VDdUZEw0UWxpdE1UV1BvZCt6blc1aTVMRkVCUFpycHVzYzJUTXVx?=
+ =?utf-8?B?Snd1SzdXRDN4ZGVVOEFMSmxmcE1icEx1a2czSGFjTHFTdU5VYjgvVmVuYUZ2?=
+ =?utf-8?B?VVJ6a2tRbHNOVjdkTkhCK0dVOFA2Z1dSRnJ3b3JNWEtBanNiRTRydnZnMXFk?=
+ =?utf-8?B?WU9pRVhnQ1VEQWtPeFZZV1dCQWhnTnZYb3FrYXVUMzlFYmEvZEkxVmRERU9W?=
+ =?utf-8?B?NkZtT1JTbk1ELytvQzF4YUcrZHBBYnRZY21DR3hhUGZoYm1kRzZYTzJ6dkVo?=
+ =?utf-8?B?aDcxT05RcmdCSTllTEd4U3VJVzJSc0o3S0hPamZQZHpEOGFjVFFuaUhyOTVC?=
+ =?utf-8?B?aDBrNTl3TVdjRms1M0tLMm5TOWJZY2xVL2xINnNwazJQS25yMXR2bU1SeSth?=
+ =?utf-8?B?djlGbEEwZklmK1FVYk5GcjhLdzlNeWZ3WE8xTXhKVVJacUR5TjZrcDZRRHp5?=
+ =?utf-8?B?dEtmQzUwZFNOTk4xcE53ZTR4NnpsaU43YXhDOUZqZW5OZk1HUFRUVXFyaS8r?=
+ =?utf-8?B?N1orMkFGSUMxREk4ZjlnSm9LaGcyaUNsK0lCZjJMenhESjVPYWRzd1dOdHRT?=
+ =?utf-8?B?aXdBSGFIMWhzWnZWREhLekhhU2ZkTFRGU1dGNjFDWEtkNERyOGtFS2hoVXJC?=
+ =?utf-8?B?TkE5S2ZSU2duTEJIUk9jYWtXSTJ3TFM2SWNaWGowSjZFbVRvbW0xVXJ5QS9j?=
+ =?utf-8?B?MHhRZGpNR3E1V1F5ejFBYzFWemtlYkJNVUZNaEhXSTUzNFNyUFJxRFJUSmxr?=
+ =?utf-8?B?YWRlVGtZMkRiVDV6RWEybHlzSHdXWCtHU3B3S0ZNcytxejBYV0RGYS9tc3FW?=
+ =?utf-8?B?dS9jQ29vYkJvbDg5Yi92eEN0bWNZKzdNMWxsWURhN1o4SWM4TTR6bUwyOEt3?=
+ =?utf-8?B?RWhQNkYrMTY1Q3dvV0hwYnRscU5wU0hIdkpnU284TE4zbW41cG1KcDIxY2s3?=
+ =?utf-8?B?K0xTUitHRlNQY083VUQ0MFR1MjF1ei9lazZieVREMVBma1FVRm9sQ2F0RHpo?=
+ =?utf-8?B?cUsxYWpCVEtKV2Z3Y0lFUDdCRXI0bWxTL1QrTW9weFhQS2k0ckZnNlZXMElF?=
+ =?utf-8?B?czVxMW9qbDVZeFpaOGVBRGcyS0IwbThZT3R4LzNQK0ZKQkFuNUh4OHhVQWlP?=
+ =?utf-8?B?bnFDbEY3N2FlZ3E3bjFvUFI1OGYxTk5CVlFhWmJ2dm1FcU83dU85ZjNkYjM3?=
+ =?utf-8?B?Yk9pNHRBVEQyN1crOTRDdGRtWHZTRU1OWlZFcnlDUXIvRDFxK1I0OE52Uy9p?=
+ =?utf-8?B?NTVEcXpjU0dtM1lpTUhUYVpueGIrbm1XYThKRWFjQkJPNCtIRjJJTXVBT2s2?=
+ =?utf-8?B?QU1ud0VNM2pIb3ljZ3pWWFc3N1ZxWXRmNEduaUlqeEF2eVJFemY5SjlsRkZ3?=
+ =?utf-8?B?RnZnektKUHlTNE9VVjRuNG15SkMzMm5kWktLbDhXYk9FNXdkUW9Nd3NETFFQ?=
+ =?utf-8?B?NTJZbFJjOHNrSGx6eGI4SkFIZElxUXBiUWNIYkZHdW5CdFF0RHFMMDNkdlNm?=
+ =?utf-8?B?ZkhCK0Fxd0s3bHNScHNUdnowQVhvSEJ0THByQmxXU284MGpZVVFRWGJFSG9T?=
+ =?utf-8?B?QnhuWmV3V3oxa0hKQjJpcmc4YittR3VhRHZDZ3FVR29LSXluZWtnRkx1aHNE?=
+ =?utf-8?B?U0FNNDhtQjFhSDlpS3dvV0JtNWxZZmpFS1hkU1VNaEFGVHVtSHYySW9vRWNZ?=
+ =?utf-8?B?REE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220208183511.2925304-1-jjhiblot@traphandler.com> <20220208183511.2925304-6-jjhiblot@traphandler.com>
-In-Reply-To: <20220208183511.2925304-6-jjhiblot@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 9 Feb 2022 09:28:42 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV4PM9gC2wDZJKXKUt7AG2wS+adub=M+d0BrOedZ9ENPg@mail.gmail.com>
-Message-ID: <CAMuHMdV4PM9gC2wDZJKXKUt7AG2wS+adub=M+d0BrOedZ9ENPg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/6] watchdog: Add Renesas RZ/N1 Watchdog driver
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR02MB5386.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ab9cd03-67f9-449d-434f-08d9eba65a1b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2022 08:29:55.6751
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tggYWccLf7AKCJJtspPpsXBfWrPMLjMr2P7NINoj0NjZrJCUDPF7HCoGKkfRwneNooB6pUScnWuGBjwn5wEn/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB7093
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Jacques,
-
-On Tue, Feb 8, 2022 at 7:35 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> From: Phil Edworthy <phil.edworthy@renesas.com>
->
-> This is a driver for the standard WDT on the RZ/N1 devices. This WDT has
-> very limited timeout capabilities. However, it can reset the device.
-> To do so, the corresponding bits in the SysCtrl RSTEN register need to
-> be enabled. This is not done by this driver.
->
-> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-
-Thanks for your patch!
-
-> --- /dev/null
-> +++ b/drivers/watchdog/rzn1_wdt.c
-> @@ -0,0 +1,208 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Renesas RZ/N1 Watchdog timer.
-> + * This is a 12-bit timer driver from a (62.5/16384) MHz clock. It can't even
-> + * cope with 2 seconds.
-> + *
-> + * Copyright 2018 Renesas Electronics Europe Ltd.
-> + *
-> + * Derived from Ralink RT288x watchdog timer.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/watchdog.h>
-> +
-> +#define DEFAULT_TIMEOUT                60
-> +
-> +#define RZN1_WDT_RETRIGGER                     0x0
-> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL          0
-> +#define RZN1_WDT_RETRIGGER_RELOAD_VAL_MASK     0xfff
-> +#define RZN1_WDT_RETRIGGER_PRESCALE            BIT(12)
-> +#define RZN1_WDT_RETRIGGER_ENABLE              BIT(13)
-> +#define RZN1_WDT_RETRIGGER_WDSI                        (0x2 << 14)
-> +
-> +#define RZN1_WDT_PRESCALER                     16384
-> +#define RZN1_WDT_MAX                           4095
-> +
-> +struct rzn1_watchdog {
-> +       struct watchdog_device          wdt;
-> +       void __iomem                    *base;
-> +       unsigned long                   clk_rate;
-> +};
-> +
-> +#define to_rzn1_watchdog(_ptr) \
-> +       container_of(_ptr, struct rzn1_watchdog, wdt)
-> +
-> +static inline uint32_t get_max_heart_beat(uint32_t clk_rate)
-
-unsigned long clk_rate
-
-> +{
-> +       return (RZN1_WDT_MAX * RZN1_WDT_PRESCALER) / (clk_rate / 1000);
-
-Is clk_rate always a multiple of 1000? If not, you want to reorder
-this to avoid losing precision.
-
-> +}
-> +static inline uint32_t compute_reload_value(uint32_t tick_ms, uint32_t clk)
-
-unsigned long clk_rate
-
-> +{
-> +       return (tick_ms * (clk / 1000)) / RZN1_WDT_PRESCALER;
-
-Likewise.
-
-> +}
-
-> +static int rzn1_wdt_probe(struct platform_device *pdev)
-> +{
-> +       struct device *dev = &pdev->dev;
-> +       struct rzn1_watchdog *wdt;
-> +       struct device_node *np = dev->of_node;
-> +       struct clk *clk;
-> +       int ret;
-> +       int irq;
-> +
-> +       wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
-> +       if (!wdt)
-> +               return -ENOMEM;
-> +
-> +       wdt->wdt = rzn1_wdt;
-> +       wdt->wdt.parent = dev;
-> +
-> +       wdt->base = devm_platform_ioremap_resource(pdev, 0);
-> +       if (IS_ERR(wdt->base))
-> +               return PTR_ERR(wdt->base);
-> +
-> +       irq = platform_get_irq(pdev, 0);
-> +       if (irq < 0) {
-> +               dev_err(dev, "failed to get the irq\n");
-
-No need to print a message, platform_get_irq() already does that.
-
-> +               return irq;
-> +       }
-> +
-> +       ret = devm_request_irq(dev, irq, rzn1_wdt_irq, 0,
-> +                              np->name, wdt);
-> +       if (ret) {
-> +               dev_err(dev, "failed to request irq %d\n", irq);
-> +               return ret;
-> +       }
-> +
-> +       clk = devm_clk_get(dev, NULL);
-> +       if (IS_ERR(clk)) {
-> +               dev_err(dev, "failed to get the clock\n");
-> +               return PTR_ERR(clk);
-> +       }
-> +
-> +       ret = clk_prepare_enable(clk);
-> +       if (ret) {
-> +               dev_err(dev, "failed to prepare/enable the clock\n");
-> +               return ret;
-> +       }
-> +
-> +       ret = devm_add_action_or_reset(dev, rzn1_wdt_clk_disable_unprepare,
-> +                                      clk);
-> +       if (ret) {
-> +               dev_err(dev, "failed to register clock unprepare callback\n");
-> +               clk_disable_unprepare(clk);
-
-Please drop this, as devm_add_action_or_reset() calls the
-action on failure.
-
-> +               return ret;
-> +       }
-> +
-> +       wdt->clk_rate = clk_get_rate(clk);
-> +       if (!wdt->clk_rate) {
-> +               dev_err(dev, "failed to get the clock rate\n");
-> +               return -EINVAL;
-> +       }
-> +
-> +       /*
-> +        * The period of the watchdog cannot be changed once set
-> +        * and is limited to a very short period.
-> +        * Configure it for a 1s period once and for all, and
-> +        * rely on the heart-beat provided by the watchdog core
-> +        * to make this usable by the user-space.
-> +        */
-> +       wdt->wdt.max_hw_heartbeat_ms = get_max_heart_beat(wdt->clk_rate);
-> +       if (wdt->wdt.max_hw_heartbeat_ms > 1000)
-> +               wdt->wdt.max_hw_heartbeat_ms = 1000;
-> +
-> +       wdt->wdt.timeout = DEFAULT_TIMEOUT;
-> +       ret = watchdog_init_timeout(&wdt->wdt, 0, dev);
-> +
-> +       return devm_watchdog_register_device(dev, &wdt->wdt);
-> +}
-> +
-> +
-> +static const struct of_device_id rzn1_wdt_match[] = {
-> +       { .compatible = "renesas,r9a06g032-wdt" },
-
-No need to match on the soc-specific compatible value, as the
-family-specific value should be present in the DTB, too.
-
-> +       { .compatible = "renesas,rzn1-wdt" },
-> +       {},
-> +};
-> +MODULE_DEVICE_TABLE(of, rzn1_wdt_match);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+SGkgTWFyYywNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBNYXJjIEts
+ZWluZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPg0KPiBTZW50OiBXZWRuZXNkYXksIEZlYnJ1
+YXJ5IDksIDIwMjIgMToyMCBQTQ0KPiBUbzogU3Jpbml2YXMgTmVlbGkgPHNuZWVsaUB4aWxpbngu
+Y29tPg0KPiBDYzogd2dAZ3JhbmRlZ2dlci5jb207IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFA
+a2VybmVsLm9yZzsgTWljaGFsDQo+IFNpbWVrIDxtaWNoYWxzQHhpbGlueC5jb20+OyBsaW51eC1j
+YW5Admdlci5rZXJuZWwub3JnOw0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1hcm0t
+a2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7IGxpbnV4LQ0KPiBrZXJuZWxAdmdlci5rZXJuZWwu
+b3JnOyBBcHBhbmEgRHVyZ2EgS2VkYXJlc3dhcmEgUmFvDQo+IDxhcHBhbmFkQHhpbGlueC5jb20+
+OyBTcmluaXZhcyBHb3VkIDxzZ291ZEB4aWxpbnguY29tPjsgZ2l0DQo+IDxnaXRAeGlsaW54LmNv
+bT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gY2FuOiB4aWxpbnhfY2FuOiBBZGQgY2hlY2sgZm9y
+IE5BUEkgUG9sbCBmdW5jdGlvbg0KPiANCj4gT24gMDguMDIuMjAyMiAyMTo1MDo1MywgU3Jpbml2
+YXMgTmVlbGkgd3JvdGU6DQo+ID4gQWRkIGNoZWNrIGZvciBOQVBJIHBvbGwgZnVuY3Rpb24gdG8g
+YXZvaWQgZW5hYmxpbmcgaW50ZXJydXB0cyB3aXRoIG91dA0KPiA+IGNvbXBsZXRpbmcgdGhlIE5B
+UEkgY2FsbC4NCj4gDQo+IFRoYW5rcyBmb3IgdGhlIHBhdGNoLiBEb2VzIHRoaXMgZml4IGEgYnVn
+PyBJZiBzbywgcGxlYXNlIGFkZCBhIEZpeGVzOg0KPiB0YWcgdGhhdCBsaXN0cyB0aGUgcGF0Y2gg
+dGhhdCBpbnRyb2R1Y2VkIHRoYXQgYnVnLg0KDQpJdCBpcyBub3QgYSBidWcuIEkgYW0gYWRkaW5n
+IGFkZGl0aW9uYWwgc2FmZXR5IGNoZWNrKCBWYWxpZGF0aW5nIHRoZSByZXR1cm4gdmFsdWUgb2Yg
+ICJuYXBpX2NvbXBsZXRlX2RvbmUiIGNhbGwpLg0KDQpUaGFua3MNClNyaW5pdmFzIE5lZWxpDQoN
+Cj4gDQo+IHJlZ2FyZHMsDQo+IE1hcmMNCj4gDQo+IC0tDQo+IFBlbmd1dHJvbml4IGUuSy4gICAg
+ICAgICAgICAgICAgIHwgTWFyYyBLbGVpbmUtQnVkZGUgICAgICAgICAgIHwNCj4gRW1iZWRkZWQg
+TGludXggICAgICAgICAgICAgICAgICAgfCBodHRwczovL3d3dy5wZW5ndXRyb25peC5kZSAgfA0K
+PiBWZXJ0cmV0dW5nIFdlc3QvRG9ydG11bmQgICAgICAgICB8IFBob25lOiArNDktMjMxLTI4MjYt
+OTI0ICAgICB8DQo+IEFtdHNnZXJpY2h0IEhpbGRlc2hlaW0sIEhSQSAyNjg2IHwgRmF4OiAgICs0
+OS01MTIxLTIwNjkxNy01NTU1IHwNCg==
