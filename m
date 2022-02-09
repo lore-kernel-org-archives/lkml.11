@@ -2,96 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E16C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AD2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241061AbiBIIWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:22:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60854 "EHLO
+        id S241040AbiBII1A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:27:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239620AbiBIIWP (ORCPT
+        with ESMTP id S239126AbiBII04 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:22:15 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE58FC0613CA;
-        Wed,  9 Feb 2022 00:22:18 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id cf2so3439909edb.9;
-        Wed, 09 Feb 2022 00:22:18 -0800 (PST)
+        Wed, 9 Feb 2022 03:26:56 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21603C05CB82;
+        Wed,  9 Feb 2022 00:26:58 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id v67so1715694oie.9;
+        Wed, 09 Feb 2022 00:26:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XpQU7MwvnnmzkAtetNTBKBwEhnc+PKqXnl8IukTROIA=;
-        b=IhXDd7OGarp3eySx5bkZfw12VJDhaOaz7OC5hMX1/gqGa7Kv64i/UfuFWYOZ646SMC
-         +COGlUX3M8SLh5qgaI138hDe5mHFI1ah2h7Ya68sA5Q7NyR5UNd88Cq+eFVzeZ0Of76Q
-         N79j63SOMOlONqN/c5Vnjih/sDEW67NcDoHTdj80hEUuU977wg/Ju+LaEfTp+Nh/xPIg
-         gXvQUAdJ15BHg5TDeROrmqmxo6PYPCBvlKC+wU5FTqSMf6SlivQeu9IoTBM6O9QBFqjB
-         TaFiiZFMvdRL6qTgtEccmtyHtpgbNJKnaQw8U76C9RzU7NLskUOUdEI0p0ZrQRJ9NLkj
-         JrlA==
+        bh=41yfUpGIyxWzE/33BXhtKiam8iPGuUMqJkEcuWzBJGk=;
+        b=NtgOYfL3vJCpbYK1R1nJMegC9wNB9O6kJ91Sr0QFI8LCtyPNQfuC45mX1OgveNNonh
+         xVbPZpOXON00OTzUjyGKyohIxr8DbOGh/yS8NVCNh6PD6yCKn9N0tV9EnwyV8PoUMRUL
+         +DMidSutxTZacXH6TveYVzc5zFB8e/DobIOiErgQA5Weu6TKhX8INykhnguHjGNnkIlv
+         SURSDfP+B8onewzqRNZ8QIaMKu/L1QnOPhvWnY/xZrLzmR92Wwn3DunhrZQu2JMgm/wV
+         P2Y+zk154bIxYQ0NGcs+Btd0TUwvkRcKNcCebkcJ6w8hWBqYtu1ZYfFyCZJ8VbVP4Za9
+         p6DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XpQU7MwvnnmzkAtetNTBKBwEhnc+PKqXnl8IukTROIA=;
-        b=Xo1cvAVoyQKP1xn+cpPf88o6c5ifycUQo0Po2d7iDa2Nq7wyMVd250hqGw650Nu7mK
-         /5rvODwiBCvg3dTaQsxaZdKNjbNOvrKk1UM9CayrIqRHg3qF7urtXJTHVw2s8iEzuOX0
-         5CaBdq2zfYABChPZh/W5Gk5oLFOJkotoclKvTCN73VYP6HbjHvuJWgu+grMVuKMwUpPR
-         ARxDwFjtzvx84I6LI3xYmgwmhQ5eq5tML4vax31rm5N/WM6gywbeUhHQ6292Y4UGP5Tx
-         V/J42exdSYKfwGXGHGQ9KuzxXZan4xMVE0oRdbX20KlINYMHL2CTUXYdXcK9Zl8Y7mrK
-         8JxA==
-X-Gm-Message-State: AOAM530RByrFXYgmBF0zvH4+iaSh8JTp/UVtCJu+z40yHGeTO3fkLrBH
-        eRnUGhXpuSiVYOtZjmAn1LUiYC0FljnVSl0/rac=
-X-Google-Smtp-Source: ABdhPJxgbIM9HkQTeMr8qIeIvkRgzKugj11n3DUKBGJfOENttEguf2tvMkGSkDAJKiQ90eexactk/erkyNtZaQFulHQ=
-X-Received: by 2002:a05:6402:4254:: with SMTP id g20mr1242666edb.281.1644394936606;
- Wed, 09 Feb 2022 00:22:16 -0800 (PST)
+        bh=41yfUpGIyxWzE/33BXhtKiam8iPGuUMqJkEcuWzBJGk=;
+        b=18PTM2UBjV7kEHJQWhhBPXeKiyxaxrY1SJYuMnmDbDv/zT80YcU9rlFzD4MqWLr0iM
+         XhpJfkFc787S9UWlNX3JwsmztmWWkpSRGOENEDFBTOdiRPwqGkrM5ScjMotPBx7NiCuN
+         WckrNuOFCNnWcS90QcKl+2nl4B7quQVrOPJvoYB6nlQQAOt0TAAafkmK+KgkYxskhnBr
+         ylJ465reQgS1C6AFfgLa8LTepTBKMCaGUAEhm/O17kUAbJxrz4RwjkhTBNS5VB4DxbZX
+         3JZzRKor4gIlRbyB8R9e/txhAxKfPMR8IgjHImJZ3pwhbEvvx5YNt2KTwDI6qMAq5V1C
+         KkqQ==
+X-Gm-Message-State: AOAM533FR1fB9AOzLRlledJTxl+94W9VpcZyhbiRK2HsG9dd+M3OvIUW
+        EdOUsgtICbgkExdx8MwZOEHDEWv5aOAP8bbFlbg=
+X-Google-Smtp-Source: ABdhPJzfe5vGl2j6BxuI08oeOapu4bQlvHlvM+xVew2SOCIEFabIB/2jHMBSvI3ncvbhyUTR2woMzGCLUWUC3lgyu8w=
+X-Received: by 2002:a05:6808:1184:: with SMTP id j4mr497685oil.73.1644395217343;
+ Wed, 09 Feb 2022 00:26:57 -0800 (PST)
 MIME-Version: 1.0
-References: <96f0e23f49d708ce2476a6c19867443a48d78f65.1644283006.git.yang.guang5@zte.com.cn>
-In-Reply-To: <96f0e23f49d708ce2476a6c19867443a48d78f65.1644283006.git.yang.guang5@zte.com.cn>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 9 Feb 2022 10:21:40 +0200
-Message-ID: <CAHp75VfQMkb0Ek6HG_FL+4OJV91=nd3QKjYFCobQPCt5PzdASA@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8259: replace snprintf with sysfs_emit
-To:     davidcomponentone@gmail.com
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Zev Weiss <zev@bewilderbeest.net>,
-        Johan Hovold <johan@kernel.org>,
-        Yang Guang <yang.guang5@zte.com.cn>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/ASPEED MACHINE SUPPORT" 
-        <linux-aspeed@lists.ozlabs.org>,
+References: <cover.1644025661.git.iourit@linux.microsoft.com>
+ <CADvTj4riwoFngTkAOTyc=SuZ3FeTwpyz3FteV_+3BiQ=uiLX7Q@mail.gmail.com> <YgDCnxsnqJ1gihLf@infradead.org>
+In-Reply-To: <YgDCnxsnqJ1gihLf@infradead.org>
+From:   James Hilliard <james.hilliard1@gmail.com>
+Date:   Wed, 9 Feb 2022 01:26:46 -0700
+Message-ID: <CADvTj4q_-A9p2UkH975SPPYmSzVAv38VJxLDBQjEnHoCSERzOw@mail.gmail.com>
+Subject: Re: [PATCH v2 00/24] Driver for Hyper-v virtual compute device
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Iouri Tarassov <iourit@linux.microsoft.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>
+        spronovo@microsoft.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 9:24 AM <davidcomponentone@gmail.com> wrote:
+On Sun, Feb 6, 2022 at 11:56 PM Christoph Hellwig <hch@infradead.org> wrote:
 >
-> From: Yang Guang <yang.guang5@zte.com.cn>
+> On Sat, Feb 05, 2022 at 09:15:27PM -0700, James Hilliard wrote:
+> > Does the fully open source user-space implementation actually use the entire
+> > user-space API exposed by this driver?
 >
-> coccinelle report:
-> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:85:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:174:8-16:
-> WARNING: use scnprintf or sprintf
-> ./drivers/tty/serial/8250/8250_aspeed_vuart.c:127:8-16:
-> WARNING: use scnprintf or sprintf
->
-> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+> I think that is the abolute minimum.  But more importantly: I don't
+> think we'd want to expose interface in a virtual GPU driver that aren't
+> also supported by a native one.
 
-Subject should start with "serial: 8250_aspeed_vuart: "
+Yeah, that's one of the obvious huge issues with what is being done here, I mean
+it seems pretty clear that this is all designed to provide a way to
+run an effectively
+entirely closed source graphics/compute stack with Linux and sidestep the lack
+of a stable kernel driver API by letting vendors target the windows
+kernel instead
+for their closed source drivers.
 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
-> Signed-off-by: David Yang <davidcomponentone@gmail.com>
+I think the closed source and WSL specific user space components are the biggest
+problem with this whole graphics/compute stack potentially as that is what
+application developers are being encouraged to target.
 
-Who is the author(s)?
+I mean it's pretty clear this is being designed in a way to ultimately prevent
+users from running applications on non-WSL Linux systems, Microsoft isn't even
+hiding that at all as they even list it as a specific goal of the
+directx related changes
+being pushed to mesa(which are designed to interface with the closed
+source directx
+userspace libraries this kernel driver is designed to support):
+https://devblogs.microsoft.com/directx/in-the-works-opencl-and-opengl-mapping-layers-to-directx/
+> > Make it easier for developers to port their apps to D3D12. For developers looking
+> > to move from older OpenCL and OpenGL API versions to D3D12,
 
--- 
-With Best Regards,
-Andy Shevchenko
+Notice that the mapping/compatibility work they are pushing is
+essentially entirely
+one way, it's designed to make Linux applications work on top of the
+closed source
+WSL directx userspace but does not allow applications targeting
+directx API's to work
+without a WSL system in any way.
+
+It's basically classic
+EEE(https://en.wikipedia.org/wiki/Embrace,_extend,_and_extinguish)
+strategy except that it's targeting non-WSL Linux instead of Linux in
+general for the
+extinguish parts(by using a passthrough driver like this to bypass the kernel):
+
+* Embrace: provide OpenCL and OpenGL API compatibility layers so all existing
+  non-directx graphics/compute software works on WSL.
+
+* Extend: add the WSL-only directx graphics/compute user space to
+Linux and tie it to
+  a WSL kernel/host while maintaining backwards compatibility with OpenCL and
+  OpenGL API's for any software that doesn't get ported to directx
+
+* Extinguish: encourage application developers to migrate to new
+WSL-only directx
+  graphics/compute API's and away from non-WSL specific OpenGL/OpenCL API's
+
+> > We took this feedback to heart and we spent the last year working on a way
+> > to address this key piece of feedback. Working closely with our partner Intel,
+> > we're happy to say that we now have a fully open source user-space for the
+> > OpenCL, OpenVINO and OneAPI compute family of APIs on Intel GPU platforms.
+> > This is supported by this open source project
+> > (https://github.com/intel/compute-runtime).
+
+One would really want to see a mapping layer that translates directx
+API's to open API's,
+such as those exposed by the intel compute runtime instead of the
+other way around.
+
+Fundamentally I think the changes in this series do nothing to address
+the main issues
+in the original
+series(https://lore.kernel.org/lkml/20200519163234.226513-1-sashal@kernel.org/)
+as the DX12 userspace components(which are what microsoft wants apps
+to target) are
+still closed source. Having an open source consumer of this driver
+isn't going to help much
+if the main stack being used is closed source. Especially since this
+driver is designed to
+around the closed source DX12 driver constraints and not the open
+source user space
+constraints:
+https://lore.kernel.org/all/5493bb21-7c85-9a8a-07f6-983d1d5c425b@linux.microsoft.com/
+> > d3dkmthk.h defines a binary interface to the compute driver. It cannot
+> > be changed, because it must
+> > be binary compatible with the Windows display graphics model.
+
+Since the Windows and Linux compute-runtime drivers are developed together there
+should be no reason one needs to maintain binary compatibility with the Windows
+display model as opposed to just ensuring each side of the driver can
+talk with each
+other:
+https://github.com/intel/compute-runtime/blob/master/FAQ.md#does-neo-support-microsoft-windows
+> > Our closed-source driver for Windows is using the same codebase. At this time,
+> > we do not support compilation of the stack for Windows. It is our long-term intention
+> > to offer that option.
+
+The binary compatibility requirement with d3dkmthk.h is a constraint imposed
+by only the closed source stack effectively. So we should be able to tweak the
+kernel binary interface as needed for the purposes of the open source
+compute-runtime as the Linux side userspace is already effectively hardware
+specific, tweaking the host side would simply be a matter of getting an updated
+driver release with the host tweaks which is already a requirement for the
+compute-runtime. The binary compatibility seems to only be helpful for those
+wanting to port closed source drivers with minimal changes.
+
+The directx support could instead be built on top of an open source userspace on
+the Linux side which would allow for one to choose between either a WSL or
+non-WSL based graphics/compute stack via a reverse of the mapping layer
+(https://www.collabora.com/news-and-blog/news-and-events/introducing-opencl-and-opengl-on-directx.html).
+But that approach won't lock users into WSL like this one would so it
+seems unlikely
+to happen.
