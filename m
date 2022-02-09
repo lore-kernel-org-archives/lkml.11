@@ -2,174 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A04E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbiBIKCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
+        id S229488AbiBIKFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:05:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231569AbiBIKBs (ORCPT
+        with ESMTP id S231954AbiBIKFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:01:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7367CE0E9166
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:01:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644400578;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=k0HK3B5yNAKajVmotOojuc2NAUachNqSXS/dwZrea2Q=;
-        b=MiDrZ4gltHXcPb2OxwVx9YGPFXU+Fkzhwtx4xlhFhmrlqjMbsCGMyNxbOSxtbh4ghg8Zkd
-        VL6i50ttptJVhE0TuXA6tPcvJxM6z/1leb+GntFlBdKO2Ov7E3JVlWuEQv4v5FJklgAamb
-        1XKsUwUfxU36GB+Z0LCVo7k6OyWwdiw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-627-dGDdDviNNj6gL9uAMi56kg-1; Wed, 09 Feb 2022 03:44:16 -0500
-X-MC-Unique: dGDdDviNNj6gL9uAMi56kg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47C6419251A0;
-        Wed,  9 Feb 2022 08:44:14 +0000 (UTC)
-Received: from localhost (ovpn-12-114.pek2.redhat.com [10.72.12.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 39FF91057FD5;
-        Wed,  9 Feb 2022 08:44:12 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 16:44:10 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Pingfan Liu <kernelfans@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Baokun Li <libaokun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>, kexec@lists.infradead.org
-Subject: Re: [PATCHv2] kexec: disable cpu hotplug until the rebooting cpu is
- stable
-Message-ID: <YgN+2gAoeyp05MV7@MiWiFi-R3L-srv>
-References: <20220127090215.32000-1-kernelfans@gmail.com>
- <20220127094144.GC13508@MiWiFi-R3L-srv>
- <YfOeL6B4CowkCQBC@piliu.users.ipa.redhat.com>
- <YgI5AFoL4b/5MJEp@MiWiFi-R3L-srv>
- <YgNt4slCVxHRex8z@piliu.users.ipa.redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgNt4slCVxHRex8z@piliu.users.ipa.redhat.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+        Wed, 9 Feb 2022 05:05:13 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AE1E0F61CA;
+        Wed,  9 Feb 2022 02:05:07 -0800 (PST)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2199wVnY006620;
+        Wed, 9 Feb 2022 10:02:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=0SulrBNmeN84wRgtYofE4OjmbcUym9l2eOVo7XxUFm4=;
+ b=TeHVbBMKiV+8IdYckMbtnl6E6+YYCUp86qKBJW4MG4rk8ZslXSb7CJ6505HNrwO2r34a
+ he6sCzDC75b7JgP2k7/sxGc2ytQ1LIGgnjaR92GhdMtMvaivRkNWWmMRiwirLfyaHaiW
+ kYu5QlghfS/iiEoxOGHrUYNGwF24vAcdi+WHZdghVRhSJeQ+aoJyZ9xpd+IY+pwiBvsB
+ NINh1fhxATE9DOvVcCLBrb6rqEuR4vSPQFy9nKoEXx4KAYjKCrdy2WBCp7F4ivvsZRmi
+ +hfeKf87ceiJv23Mrbrnd7thbAKKTb0krNiGjdH85JYKIaFoh7DtJfeZIsJruzPs54UC Mw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk974d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 10:02:00 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2199ueU2000690;
+        Wed, 9 Feb 2022 10:01:59 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk973e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 10:01:59 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2199p0jZ011025;
+        Wed, 9 Feb 2022 10:01:57 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3e2ygqb2md-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 10:01:57 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219A1qJ236176188
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 10:01:52 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3BD6552076;
+        Wed,  9 Feb 2022 10:01:52 +0000 (GMT)
+Received: from li-7e0de7cc-2d9d-11b2-a85c-de26c016e5ad.ibm.com (unknown [9.171.75.42])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A0E3052069;
+        Wed,  9 Feb 2022 10:01:51 +0000 (GMT)
+Message-ID: <8d502356c3a624847c0dd2fe5d5f60e72923a141.camel@linux.ibm.com>
+Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking
+ to MEMOP IOCTL
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Date:   Wed, 09 Feb 2022 11:01:51 +0100
+In-Reply-To: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+References: <20220207165930.1608621-1-scgl@linux.ibm.com>
+         <20220207165930.1608621-6-scgl@linux.ibm.com>
+         <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
+         <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
+         <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 2oY2-tmZHD_Sxpy4wQ698-wD40BPGqHS
+X-Proofpoint-GUID: 3k6cMY92IgRBtWlRi49vOeHsyo1vvYAn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
+ priorityscore=1501 phishscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
+ malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202090064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/09/22 at 03:31pm, Pingfan Liu wrote:
-> On Tue, Feb 08, 2022 at 05:33:52PM +0800, Baoquan He wrote:
-> > On 01/28/22 at 03:41pm, Pingfan Liu wrote:
-> > > On Thu, Jan 27, 2022 at 05:41:44PM +0800, Baoquan He wrote:
-> > > Hi Baoquan,
-> > > 
-> > > Thanks for reviewing, please see comment inlined
-> > > > Hi Pingfan,
+On Wed, 2022-02-09 at 10:08 +0100, Christian Borntraeger wrote:
+> 
+> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
+> > On 2/9/22 08:34, Christian Borntraeger wrote:
+> > > Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
+> > > > User space needs a mechanism to perform key checked accesses when
+> > > > emulating instructions.
 > > > > 
-> > > > On 01/27/22 at 05:02pm, Pingfan Liu wrote:
-> > > > > The following identical code piece appears in both
-> > > > > migrate_to_reboot_cpu() and smp_shutdown_nonboot_cpus():
-> > > > > 
-> > > > > 	if (!cpu_online(primary_cpu))
-> > > > > 		primary_cpu = cpumask_first(cpu_online_mask);
-> > > > > 
-> > > > > This is due to a breakage like the following:
-> > > > >    migrate_to_reboot_cpu();
-> > > > >    cpu_hotplug_enable();
-> > > > >                           --> comes a cpu_down(this_cpu) on other cpu
-> > > > >    machine_shutdown();
-> > > > > 
-> > > > > Although the kexec-reboot task can get through a cpu_down() on its cpu,
-> > > > > this code looks a little confusing.
-> > > > > 
-> > > > > Make things straight forward by keeping cpu hotplug disabled until
-> > > > > smp_shutdown_nonboot_cpus() holds cpu_add_remove_lock. By this way, the
-> > > > > breakage is squashed out and the rebooting cpu can keep unchanged.
+> > > > The key can be passed as an additional argument.
+> > > > Having an additional argument is flexible, as user space can
+> > > > pass the guest PSW's key, in order to make an access the same way the
+> > > > CPU would, or pass another key if necessary.
 > > > > 
-> > > > If I didn't go through code wrongly, you may miss the x86 case.
-> > > > Several ARCHes do call smp_shutdown_nonboot_cpus() in machine_shutdown()
-> > > > in kexec reboot code path, while x86 doesn't. If I am right, you may
-> > > > need reconsider if this patch is needed or need be adjustd.
+> > > > Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> > > > Acked-by: Janosch Frank <frankja@linux.ibm.com>
+> > > > Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> > > > ---
+> > > >    arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
+> > > >    include/uapi/linux/kvm.h |  8 +++++--
+> > > >    2 files changed, 44 insertions(+), 13 deletions(-)
 > > > > 
-> > > Citing the code piece in kernel_kexec()
+> > > > diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> > > > index cf347e1a4f17..71e61fb3f0d9 100644
+> > > > --- a/arch/s390/kvm/kvm-s390.c
+> > > > +++ b/arch/s390/kvm/kvm-s390.c
+> > > > @@ -32,6 +32,7 @@
+> > > >    #include <linux/sched/signal.h>
+> > > >    #include <linux/string.h>
+> > > >    #include <linux/pgtable.h>
+> > > > +#include <linux/bitfield.h>
+> > > >      #include <asm/asm-offsets.h>
+> > > >    #include <asm/lowcore.h>
+> > > > @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+> > > >        return r;
+> > > >    }
+> > > >    +static bool access_key_invalid(u8 access_key)
+> > > > +{
+> > > > +    return access_key > 0xf;
+> > > > +}
+> > > > +
+> > > >    long kvm_arch_vm_ioctl(struct file *filp,
+> > > >                   unsigned int ioctl, unsigned long arg)
+> > > >    {
+> > > > @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+> > > >                      struct kvm_s390_mem_op *mop)
+> > > >    {
+> > > >        void __user *uaddr = (void __user *)mop->buf;
+> > > > +    u8 access_key = 0, ar = 0;
+> > > >        void *tmpbuf = NULL;
+> > > > +    bool check_reserved;
+> > > >        int r = 0;
+> > > >        const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+> > > > -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
+> > > > +                    | KVM_S390_MEMOP_F_CHECK_ONLY
+> > > > +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+> > > >    -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+> > > > +    if (mop->flags & ~supported_flags || !mop->size)
+> > > >            return -EINVAL;
+> > > > -
+> > > >        if (mop->size > MEM_OP_MAX_SIZE)
+> > > >            return -E2BIG;
+> > > > -
+> > > >        if (kvm_s390_pv_cpu_is_protected(vcpu))
+> > > >            return -EINVAL;
+> > > > -
+> > > >        if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+> > > >            tmpbuf = vmalloc(mop->size);
+> > > >            if (!tmpbuf)
+> > > >                return -ENOMEM;
+> > > >        }
+> > > > +    ar = mop->ar;
+> > > > +    mop->ar = 0;
 > > > 
-> > >                 migrate_to_reboot_cpu();
+> > > Why this assignment to 0?
+> > 
+> > It's so the check of reserved below works like that, they're all part of the anonymous union.
+> 
+> Ah, I see. This is ugly :-)
+
+Yes :)
+> 
+> > > > +    if (ar >= NUM_ACRS)
+> > > > +        return -EINVAL;
+> > > > +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+> > > > +        access_key = mop->key;
+> > > > +        mop->key = 0;
 > > > 
-> > >                 /*
-> > >                  * migrate_to_reboot_cpu() disables CPU hotplug assuming that
-> > >                  * no further code needs to use CPU hotplug (which is true in
-> > >                  * the reboot case). However, the kexec path depends on using
-> > >                  * CPU hotplug again; so re-enable it here.
-> > >                  */
-> > >                 cpu_hotplug_enable();
-> > >                 pr_notice("Starting new kernel\n");
-> > >                 machine_shutdown();
+> > > and this? I think we can leave mop unchanged.
 > > > 
-> > > So maybe it can be considered in such way: "cpu_hotplug_enable()" is not
-> > > needed by x86 and ppc, so this patch removes it, while re-displace it in
-> > > a more appropriate place for arm64/riscv ...
+> > > In fact, why do we add the ar and access_key variable?
+> > > This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
+> > > and it will create a memleak for tmpbuf.
 > > 
-> > OK, so the thing is:
-> > 
-> > ==
-> > In the current code of kexec, we disable cpu hotplug and check reboot cpu
-> > validity in migrate_to_reboot_cpu(), then enable cpu hotplug. Then in
-> > machine_shutdown()->smp_shutdown_nonboot_cpus(), check the reboot cpu and
-> > disable cpu hotplug again.
->   ^^^
-> No, there is no any new call to cpu_hotplug_disable() after
-> migrate_to_reboot_cpu(). smp_shutdown_nonboot_cpus() just leaves
-> cpu_hotplug_disabled==0 as it is.
+> > I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
+> > First is simpler, but second makes handling that case more explicit and might help in the future.
+> 
+> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
 
-Hmm, there's 'cpu_hotplug_disabled++;' at the end of
-smp_shutdown_nonboot_cpus(). It's disabling cpu hotplug again, I think.
+I think that would require us adding new fields in the struct by putting them in a union with reserved_02 and so on,
+which could get rather messy.
 
+Maybe a comment is good enought?
+> 
+> > Patch 6 has the same issue in the vm ioctl handler.
+> > > Simply use mop->key and mop->ar below and get rid of the local variables.
+> > > The structure has no concurrency and gcc will handle that just as the local variable.
+> > > 
+> > > Other than that this looks good.
 > > 
-> > In this patch, it disables cpu hotplug in migrate_to_reboot_cpu() and
-> > keep it till entering into smp_shutdown_nonboot_cpus() to shutdown all
-> > other cpu with hotplug mechanism, then disable it again. With this
->                                          ^^^
-> Here is enable, i.e. smp_shutdown_nonboot_cpus() makes
-> cpu_hotplug_disabled switch from 1 to 0, so the following fn can work
-
-Right, you keep the cpu hotplug disabled till in
-smp_shutdown_nonboot_cpus(), then enable it to shut down all other cpus.
-
-> ||	static int cpu_down_maps_locked(unsigned int cpu, enum cpuhp_state target)
-> ||	{
-> ||		if (cpu_hotplug_disabled)
-> ||			return -EBUSY;
-> ||		return _cpu_down(cpu, 0, target);
-> ||	}
-> 
-> > change, it won't need to double check the reboot cpu validity. 
+> > [...]
 > > 
-> > This change only affect ARCHes relying on hotplug to shutdown cpu before
-> > kexec reboot, e.g arm64, risc-v. Other ARCH like x86 is not affected.
-> 
-> Yes.
-> > ==
-> > 
-> > Do I got it right?
-> > 
-> Here, neither the original code nor this patch has another
-> cpu_hotplug_disable(), the only change is the shift of cpu_hotplug_enable() to an onwards place.
-> 
-> And I think you should get my idea except this.
-> 
-> Thanks,
-> 
-> 	Pingfan
-> 
 
