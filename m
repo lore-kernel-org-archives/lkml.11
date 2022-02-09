@@ -2,147 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC05C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:02:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 099C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233812AbiBINCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40252 "EHLO
+        id S233823AbiBINEW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:04:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233322AbiBINCb (ORCPT
+        with ESMTP id S231794AbiBINET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:02:31 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B3BC0613CA;
-        Wed,  9 Feb 2022 05:02:35 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id BEC411F383;
-        Wed,  9 Feb 2022 13:02:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644411753; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Wed, 9 Feb 2022 08:04:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 30578C05CB97
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:04:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644411862;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VZ0LfFGdQiKl3eiw2xncpOIiQjd52yjFcJ6ct5TXgnc=;
-        b=MxoCMoXz+Lpj3qNIfzq2Zw+kuMNga08HH7NObScsZ050PvnVt/HeO7Ewzdd/hL4RoZwsTW
-        58MLFv2V5bp8ByEvZFgGJK7/cYJJxDejK/y8GB4Fh0hAz+XgqU2s7vmI/vQ3PgbqrsKNuz
-        5uUiAuptUb3hO0NA9wOlYrIsneI/jws=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 952E1A3B83;
-        Wed,  9 Feb 2022 13:02:33 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 14:02:33 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     David Vernet <void@manifault.com>
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        joe.lawrence@redhat.com, corbet@lwn.net, kernel-team@fb.com
-Subject: Re: [PATCH v2] livepatch: Skip livepatch tests if ftrace cannot be
- configured
-Message-ID: <20220209130233.GB8279@pathway.suse.cz>
-References: <20220203233205.1554034-1-void@manifault.com>
- <20220204205625.2628328-1-void@manifault.com>
+        bh=aUzAJD5kbTchlL+gjCOgw4eKuUNlJh2PUtfBXKNWAAo=;
+        b=LSf+gKgA7gtQ1lgEhEeSvAq2yZFo2vgTmCw6pMn1MaSO7YsUu2+AFK+82Pdz1Xqwm5w2F0
+        NwpzaQEYZIJ7QJXQImAsyA+OcMLCu8Eug+dWWPbRhyyyBQyi7Y79uus+t6R+pgN0ae6Bnv
+        FEOb2SrEnUZb7dXU2DCMm8SJEmz979o=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-648-XuHeTHBRMTm6kEH1goyQtg-1; Wed, 09 Feb 2022 08:04:21 -0500
+X-MC-Unique: XuHeTHBRMTm6kEH1goyQtg-1
+Received: by mail-wm1-f72.google.com with SMTP id u14-20020a05600c210e00b0037bddd0562eso480594wml.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 05:04:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=aUzAJD5kbTchlL+gjCOgw4eKuUNlJh2PUtfBXKNWAAo=;
+        b=RmUsXQmWFf6BOZrzwWnGhG/baUfjVH3K3ODb9Sw0rOZEok8DrklpbBfUQVeua92R0p
+         DCWFIkHaU6vMPpaYSDCqZy97SD+gO9vJmK06vgbP9mXblgnMBOfV3snVT01ktcng/3T4
+         rvPg97J5sw+5KFFNOjFyNzGclRFPyOK+8XwXGiGo+a4jfUqWDYvf9f6y6gNPhNMRNr7n
+         BMJegv/ZQLYo9oOMXVXcOD+1qyh/y7o4krGMqXvbcCsTU5WIMzHWecbWemSvVmvUDkai
+         yHAKAOf4IHTzYS2q91M2zFWu9a8E5tFdUvtBd2XyafvZIVd7pIQeLPYCptHd81PZ/hVn
+         E1mQ==
+X-Gm-Message-State: AOAM533dZWixy+hHupO99DaxjXjo8sSIeoAbceK2HNR+AH09imy9vAxp
+        9Xu8Z9/7CaAVzS5dt9U6PMjyzd3oZpPCm9mTjZUtIthFpV7O+bCmAhaj8PPrOtsdscRR3yev00u
+        krz0N7jJNlpfRCGofqhqycubR
+X-Received: by 2002:adf:f384:: with SMTP id m4mr2089450wro.619.1644411859839;
+        Wed, 09 Feb 2022 05:04:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyiO4EFMylBV1d9vxTXEoIqL6kXbZmHBfOW0Qxtx/E3aYbo8p+lRqr/HlGnFxDb8si5vo3ofg==
+X-Received: by 2002:adf:f384:: with SMTP id m4mr2089432wro.619.1644411859577;
+        Wed, 09 Feb 2022 05:04:19 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id s26sm1994270wmh.47.2022.02.09.05.04.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 05:04:19 -0800 (PST)
+Message-ID: <e6efb2fd-300e-5282-1f2e-a68130d0b45a@redhat.com>
+Date:   Wed, 9 Feb 2022 14:04:17 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204205625.2628328-1-void@manifault.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI
+ support
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209091204.2513437-1-javierm@redhat.com>
+ <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri 2022-02-04 12:56:26, David Vernet wrote:
-> livepatch has a set of selftests that are used to validate the behavior of
-> the livepatching subsystem.  One of the testcases in the livepatch
-> testsuite is test-ftrace.sh, which among other things, validates that
-> livepatching gracefully fails when ftrace is disabled.  In the event that
-> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
-> will fail later due to it unexpectedly successfully loading the
-> test_klp_livepatch module.
+On 2/9/22 13:25, Geert Uytterhoeven wrote:
+> Hi Javier,
 > 
-> While the livepatch selftests are careful to remove any of the livepatch
-> test modules between testcases to avoid this situation, ftrace may still
-> fail to be disabled if another trace is active on the system that was
-> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
-> that use trampolines will cause this test to fail due to the trampoline
-> being implemented with register_ftrace_direct().  The following is an
-> example of such a trace:
+> On Wed, Feb 9, 2022 at 10:12 AM Javier Martinez Canillas
+> <javierm@redhat.com> wrote:
+>> The ssd130x driver only provides the core support for these devices but it
+>> does not have any bus transport logic. Add a driver to interface over SPI.
+>>
+>> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 > 
-> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
-> (call_direct_funcs+0x0/0x30)
->         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
+> Thanks for your patch!
 > 
-> In order to make the test more resilient to system state that is out of its
-> control, this patch adds a check to set_ftrace_enabled() to skip the tests
-> if the sysctl invocation fails.
+>> --- /dev/null
+>> +++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
 > 
-> Signed-off-by: David Vernet <void@manifault.com>
-> ---
-> v2:
->   - Fix typo in newly added comment (s/permament/permanent).
->   - Adjust the location of the added newline to be before the new comment
->     rather than that the end of the function.
->   - Make the failure-path check a bit less brittle by checking for the
->     exact expected string, rather than specifically for "Device or resource
->     busy".
+>> +static const struct of_device_id ssd130x_of_match[] = {
+>> +       {
+>> +               .compatible = "solomon,ssd1305fb-spi",
 > 
->  tools/testing/selftests/livepatch/functions.sh | 6 ++++++
->  1 file changed, 6 insertions(+)
+> This needs an update to the DT bindings.
+
+Yes, I know. Didn't feel like it, because the patch is a WIP anyways
+(I haven't tested it but was included just for illustration purposes).
+
+If someone confirms that works then I will include a proper DT binding
+in the next revision.
+
+> Hence this may be a good time to deprecate the existing
+> "solomon,ssd130*fb-i2c" compatible values, and switch to
+> "solomon,ssd130*fb" instead, for both I2C and SPI.
+
+Is this the preferred approach ? Asking because most of the drivers I
+know use this -$bus suffix. From a device <--> driver matching point
+of view, shouldn't be an issue to have two different drivers to use
+the same compatible strings, as long as these are for different buses.
+
+Since AFAIK the match only happens within the same struct bus_type. But
+I wonder if this could cause issues in other places, for example the
+module loading. IIRC the OF modaliases don't include the device type.
+
+If instead the drivers were old platform drivers and have an i2c_device_id
+and spi_device_id tables, then using the same device name would not be an
+issue due the modalias having a i2c: and spi: prefix to make a distinction.
+
+What I think we should do is drop the "fb" part, since that seemed to me
+that was included because it was an fbdev driver. And not really hardware
+description.
+
+> Of course the I2C subdriver still has to bind against the old values,
+> too, for backwards compatibility.
+>
+
+Yes, agreed.
+ 
+>> +               .data = (void *)&ssd130x_ssd1305_deviceinfo,
 > 
-> diff --git a/tools/testing/selftests/livepatch/functions.sh b/tools/testing/selftests/livepatch/functions.sh
-> index 846c7ed71556..32970324dd7e 100644
-> --- a/tools/testing/selftests/livepatch/functions.sh
-> +++ b/tools/testing/selftests/livepatch/functions.sh
-> @@ -78,6 +78,12 @@ function set_ftrace_enabled() {
->  	result=$(sysctl -q kernel.ftrace_enabled="$1" 2>&1 && \
->  		 sysctl kernel.ftrace_enabled 2>&1)
->  	echo "livepatch: $result" > /dev/kmsg
-> +
-> +	# Skip the test if ftrace is busy.  This can happen under normal system
-> +	# conditions if a trace is marked as permanent.
-> +	if [[ "$result" != "kernel.ftrace_enabled = $1" ]]; then
-> +		skip "failed to set kernel.ftrace_enabled=$1"
-> +	fi
->  }
->  
+> The casts are not needed.
+>
 
-Hmm, test-ftrace.sh fails with this patch:
+Ok.
 
-localhost:/prace/kernel/linux/tools/testing/selftests/livepatch # ./test-ftrace.sh 
-TEST: livepatch interaction with ftrace_enabled sysctl ... SKIP: failed to set kernel.ftrace_enabled=0
+Best regards, -- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-This is the dmesg output:
-
-[  436.176433] ===== TEST: livepatch interaction with ftrace_enabled sysctl =====
-[  436.186942] livepatch: kernel.ftrace_enabled = 0
-[  436.187854] % modprobe test_klp_livepatch
-[  436.217657] livepatch: enabling patch 'test_klp_livepatch'
-[  436.218467] livepatch: 'test_klp_livepatch': initializing patching transition
-[  436.219679] livepatch: failed to register ftrace handler for function 'cmdline_proc_show' (-16)
-[  436.221003] livepatch: failed to patch object 'vmlinux'
-[  436.221786] livepatch: failed to enable patch 'test_klp_livepatch'
-[  436.222716] livepatch: 'test_klp_livepatch': canceling patching transition, going to unpatch
-[  436.223955] livepatch: 'test_klp_livepatch': completing unpatching transition
-[  436.225476] livepatch: 'test_klp_livepatch': unpatching complete
-[  436.273295] modprobe: ERROR: could not insert 'test_klp_livepatch': Device or resource busy
-[  436.284522] livepatch: kernel.ftrace_enabled = 1
-[  436.305353] % modprobe test_klp_livepatch
-[  436.334929] livepatch: enabling patch 'test_klp_livepatch'
-[  436.335781] livepatch: 'test_klp_livepatch': initializing patching transition
-[  436.338099] livepatch: 'test_klp_livepatch': starting patching transition
-[  438.082707] livepatch: 'test_klp_livepatch': completing patching transition
-[  438.084106] livepatch: 'test_klp_livepatch': patching complete
-[  438.199997] livepatch: sysctl: setting key "kernel.ftrace_enabled": Device or resource busy
-[  438.201249] kernel.ftrace_enabled = 1
-[  438.201929] SKIP: failed to set kernel.ftrace_enabled=0
-
-
-The problem is the 2nd "set_ftrace_enabled 0" call in
-tools/testing/selftests/livepatch/test-ftrace.sh
-
-It is done when "test_klp_livepatch" is loaded. ftrace could not be
-disabled because it is used by the livepatch. It is expected behavior
-and the test should succeed in this case.
-
-Best Regards,
-Petr
