@@ -2,88 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F81C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C68C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343932AbiBIDNL (ORCPT
+        id S1344620AbiBIDNp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:13:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
+        Tue, 8 Feb 2022 22:13:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245388AbiBIDMv (ORCPT
+        with ESMTP id S1344338AbiBIDNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:12:51 -0500
-Received: from relay4.hostedemail.com (relay4.hostedemail.com [64.99.140.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3305DC061355
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:12:48 -0800 (PST)
-Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 900DA120CE6;
-        Wed,  9 Feb 2022 03:12:46 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id CB22120026;
-        Wed,  9 Feb 2022 03:12:44 +0000 (UTC)
-Message-ID: <f4b63b5a4177e38dd80f102f87bbec3ea77d9fe8.camel@perches.com>
-Subject: Re: [PATCH] scsi: csiostor: replace snprintf with sysfs_emit
-From:   Joe Perches <joe@perches.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        davidcomponentone@gmail.com, jejb@linux.ibm.com
-Cc:     martin.petersen@oracle.com, bvanassche@acm.org,
-        yang.guang5@zte.com.cn, jiapeng.chong@linux.alibaba.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeal Robot <zealci@zte.com.cn>
-Date:   Tue, 08 Feb 2022 19:12:43 -0800
-In-Reply-To: <148a5448-71f1-4f39-834b-eb9283de0bfb@opensource.wdc.com>
-References: <d711ec5a5f416204079155666d2de49d43070897.1644287527.git.yang.guang5@zte.com.cn>
-         <148a5448-71f1-4f39-834b-eb9283de0bfb@opensource.wdc.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Tue, 8 Feb 2022 22:13:34 -0500
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5A9C0613CC;
+        Tue,  8 Feb 2022 19:13:33 -0800 (PST)
+Received: by mail-ot1-f53.google.com with SMTP id g19-20020a9d6213000000b005ab7489371aso638029otj.6;
+        Tue, 08 Feb 2022 19:13:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bhPYavz29pyl+ykJUTk2kuFVvwHnpLudfeWM07RV3CY=;
+        b=6ETwU8WaGGDmbajZCFbvcuk4XDOoPx3TR/1UVmAUS/wkElWpGLqZg2s2Vh5GA0FryA
+         oQP8rymykNU+FAOabwk6vzfnYpZeTch/lAWzlWeI+ER7F99Mi684XTUKSb0xkEe6T7UO
+         cByvqv/1LQ5rn2LJAhzARmxqy1uG10sKx0albB8VpbqQUOXAblgnHfDL/pCjN5wwUW7u
+         UsBMnxSj6Nfwus8b8MLZEXqtaeFARAnfBwMI5YxHWJ7C03hv9XS+EBukTzJq/Wd+tFEV
+         Q4+kGdRKRNSPlELdx7fj1M3vXCTU1ce7OsxE1CeoHPYS4x3LHCZTd8+v92HtcQE58AER
+         s6Uw==
+X-Gm-Message-State: AOAM532FgtgIxin5hzLEwX/q728b7cRX8Z91vyZkY+OkPr9LHxQDpkkK
+        OeE0OmONvDw8KvK4a5RBtA==
+X-Google-Smtp-Source: ABdhPJzRQj0n07HNIyiYaj9jZlxThIk4+DLTmzsAvKXF03QmDAL4Omrrf0mgpRfVvroOQUoPAt4qag==
+X-Received: by 2002:a9d:6b15:: with SMTP id g21mr148782otp.337.1644376412801;
+        Tue, 08 Feb 2022 19:13:32 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id n13sm6738710ooj.34.2022.02.08.19.13.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 19:13:32 -0800 (PST)
+Received: (nullmailer pid 3557642 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:13:31 -0000
+Date:   Tue, 8 Feb 2022 21:13:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Ben Wolsieffer <benwolsieffer@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Rob Herring <robh+dt@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        linux-arm-kernel@lists.infradead.org, soc@kernel.org,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: arm: qcom: document HP TouchPad
+Message-ID: <YgMxW46u6m5dhn0+@robh.at.kernel.org>
+References: <cover.1643075547.git.benwolsieffer@gmail.com>
+ <aa59002aeae45a95097300213fc34490aa8db250.1643075547.git.benwolsieffer@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: 8gchddikwsrfirqmowadkhtbrfngo7uf
-X-Rspamd-Server: rspamout03
-X-Rspamd-Queue-Id: CB22120026
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18+kwIE1/o3TfCnWkTjoHV4vtyCYF4Lx6w=
-X-HE-Tag: 1644376364-883225
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aa59002aeae45a95097300213fc34490aa8db250.1643075547.git.benwolsieffer@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-09 at 11:36 +0900, Damien Le Moal wrote:
-> On 2/9/22 09:40, davidcomponentone@gmail.com wrote:
-> > From: Yang Guang <yang.guang5@zte.com.cn>
-> > 
-> > coccinelle report:
-> > ./drivers/scsi/csiostor/csio_scsi.c:1433:8-16:
-> > WARNING: use scnprintf or sprintf
-> > ./drivers/scsi/csiostor/csio_scsi.c:1369:9-17:
-> > WARNING: use scnprintf or sprintf
-> > ./drivers/scsi/csiostor/csio_scsi.c:1479:8-16:
-> > WARNING: use scnprintf or sprintf
-> > 
-> > Use sysfs_emit instead of scnprintf or sprintf makes more sense.
-[]
-> > diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
-[]
-> > @@ -1366,9 +1366,9 @@ csio_show_hw_state(struct device *dev,
-> >  	struct csio_hw *hw = csio_lnode_to_hw(ln);
-> >  
-> >  	if (csio_is_hw_ready(hw))
-> > -		return snprintf(buf, PAGE_SIZE, "ready\n");
-> > +		return sysfs_emit(buf, "ready\n");
-> >  	else
-> > -		return snprintf(buf, PAGE_SIZE, "not ready\n");
-> > +		return sysfs_emit(buf, "not ready\n");
+On Mon, 24 Jan 2022 21:07:04 -0500, Ben Wolsieffer wrote:
+> Add binding documentation for the HP TouchPad.
 > 
-> While at it, you could remove the useless "else" above.
+> Signed-off-by: Ben Wolsieffer <benwolsieffer@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Or not.  It's fine as is.  It's just a style preference.
-
-Another style option would be to use a ?: like any of
-
-	return sysfs_emit(buf, "%sready\n", csio_is_hw_ready(hw) ? "" : "not ");
-or
-	return sysfs_emit(buf, "%s\n", csio_is_hw_ready(hw) ? "ready" : "not ready");
-or
-	return sysfs_emit(buf, csio_is_hw_ready(hw) ? "ready\n" : "not ready\n");
-
-
+Acked-by: Rob Herring <robh@kernel.org>
