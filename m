@@ -2,124 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 772BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240387AbiBISm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
+        id S240415AbiBISnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240612AbiBISlV (ORCPT
+        with ESMTP id S239051AbiBISla (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:41:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4A2C05CB8F;
-        Wed,  9 Feb 2022 10:41:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5C79B82389;
-        Wed,  9 Feb 2022 18:41:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 342BFC340E9;
-        Wed,  9 Feb 2022 18:41:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432080;
-        bh=VIQquFzGDHKbKcmGm6RKoojybnkJGoVldTQZYNSMAJU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YMLoX3ykDV8D/jnEfLsSfVaHWBJfuUpGRVuAviE9eBodhVfJeR5fFvcQSdS/AGpzT
-         6rafXjNjRPT+HHxIvDUCrGDrHwBDAd99y3EPGhqlVzrZiOBeXUBAQ/67ryEP/xf7H1
-         itIcA1ShmJi7Ii6O2fG4fdb6z+xmaq22N25sEW2ruIpRMbOcNe6zwEY3SCV/g7TXCW
-         uDCyhcVYdIxpJwFloZhgoS68S5/3K2slSu9Z3Rnj8AAJn52c4SbqXNeDZ637jQVZZE
-         Ugi/f6OkIPwbq3j2vEN7N9oHCsUVS5YTubyzrXXTWOC73a8aHxYFLWR6jP2rsROqXa
-         vpzHRKwo+0UUQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 05/27] net: ieee802154: at86rf230: Stop leaking skb's
-Date:   Wed,  9 Feb 2022 13:40:41 -0500
-Message-Id: <20220209184103.47635-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
-References: <20220209184103.47635-1-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:41:30 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834F3C05CB88;
+        Wed,  9 Feb 2022 10:41:33 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id n5so2463521ilk.12;
+        Wed, 09 Feb 2022 10:41:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CdVKbWl+swvS6/xo2ZLmEHRuVncfYpgRkMyp8UCeKHk=;
+        b=f4nWzz4RsobozTfJhmxl3WPmpmP/DDnSSeklXu1s3tP9mG0Z9w7srOhO5bS5v/JlHJ
+         7aH+RIIe3I4eyhTj2P1BbgqxIsjc2GSkgiw2k2ifQ4MQDlAmPWGTIX1ZvD9XkDDaDStU
+         SbEdvEAkiFXYEFZHlQsBYbaboGA3BTFwzZjG5HHEejcIXJwHSvt31IzdCi/o1fv4KDEi
+         Jp3y+RXSCMyhbjoN0HWW1fYUcUqZfVEn7lotrwUJeDgq+RQwZO7MwC0f3OwUmf/ypYk9
+         jhVmYfW+H8bLSOYQ5otTt93Im1zRkQsVqALx95C6kfWpyU7auEeunKSR04gKcAKGL7pn
+         USRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CdVKbWl+swvS6/xo2ZLmEHRuVncfYpgRkMyp8UCeKHk=;
+        b=q92Rqh8rZKBsq6tNgrCo9MpZsVbXfoIB0rizd6d2d47OeIyYaEOkYakBp7i6vKMBp0
+         rLJWZvOYvogErKqlWNhwy4jH1NfjMBTLoQf8qHZ7MTwI33A4uBO08cIYIvQBaKwuOBfp
+         VYoLK48Bl26q0ByLlelWyv+WjGpRycochVUi/5qy49hcKGmtleYbOUxTnUOR1WdZWqUD
+         xRJN4NYonSXlhHZeWufr/cAUcjcEfLXFNd94fZDv19s9GEwoSmDDRhr84d7Fx50n00xy
+         cqgosaangj9zyRjSZIqopbpHQx73mBHHA29HiellwytHKMpc9c7+LF3UNuQknEuPznBZ
+         wIUg==
+X-Gm-Message-State: AOAM531bjfzMfJHIIiSI2cne7mN8dKGI+Fs2F+gxQW0o+0sxeoT9i043
+        2Rkf2an0ahijHGzNBrUrLn358z+oRsE7iQWR3T8=
+X-Google-Smtp-Source: ABdhPJzRDCy5Ev+nQWg511F1jl0oxvqccsAWt9ueb866KNUtfNrwdURFYH1NNfvH5NEvzbzgY2rpe0DxLMkWHy9aBr0=
+X-Received: by 2002:a05:6e02:1a64:: with SMTP id w4mr1782146ilv.151.1644432092937;
+ Wed, 09 Feb 2022 10:41:32 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220201185054.1041917-1-german.gomez@arm.com>
+In-Reply-To: <20220201185054.1041917-1-german.gomez@arm.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Wed, 9 Feb 2022 19:41:22 +0100
+Message-ID: <CANiq72nb_M3PJLG=mFfQVgAd4fbkL=OhGKS_uQHNf8Jbef3hag@mail.gmail.com>
+Subject: Re: [PATCH] perf symbols: Remove demangle-rust files as superfluous
+To:     German Gomez <german.gomez@arm.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+On Fri, Feb 4, 2022 at 6:46 AM German Gomez <german.gomez@arm.com> wrote:
+>
+> Demangling of Rust legacy symbols has been working through libbfd for
+> some time now, making these files no longer needed, so remove them.
 
-[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
+What about:
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. In the Tx case we then leak
-the skb structure.
+    Link: https://github.com/rust-lang/rust/issues/60705
+    Suggested-by: Eduard-Mihai Burtescu <eddyb@lyken.rs>
 
-Free the skb structure upon error before returning when appropriate.
+Maybe also reference commit cae15db74999 ("perf symbols: Add Rust demangling").
 
-As the 'is_tx = 0' cannot be moved in the complete handler because of a
-possible race between the delay in switching to STATE_RX_AACK_ON and a
-new interrupt, we introduce an intermediate 'was_tx' boolean just for
-this purpose.
-
-There is no Fixes tag applying here, many changes have been made on this
-area and the issue kind of always existed.
-
-Suggested-by: Alexander Aring <alex.aring@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 7d67f41387f55..4f5ef8a9a9a87 100644
---- a/drivers/net/ieee802154/at86rf230.c
-+++ b/drivers/net/ieee802154/at86rf230.c
-@@ -100,6 +100,7 @@ struct at86rf230_local {
- 	unsigned long cal_timeout;
- 	bool is_tx;
- 	bool is_tx_from_off;
-+	bool was_tx;
- 	u8 tx_retry;
- 	struct sk_buff *tx_skb;
- 	struct at86rf230_state_change tx;
-@@ -343,7 +344,11 @@ at86rf230_async_error_recover_complete(void *context)
- 	if (ctx->free)
- 		kfree(ctx);
- 
--	ieee802154_wake_queue(lp->hw);
-+	if (lp->was_tx) {
-+		lp->was_tx = 0;
-+		dev_kfree_skb_any(lp->tx_skb);
-+		ieee802154_wake_queue(lp->hw);
-+	}
- }
- 
- static void
-@@ -352,7 +357,11 @@ at86rf230_async_error_recover(void *context)
- 	struct at86rf230_state_change *ctx = context;
- 	struct at86rf230_local *lp = ctx->lp;
- 
--	lp->is_tx = 0;
-+	if (lp->is_tx) {
-+		lp->was_tx = 1;
-+		lp->is_tx = 0;
-+	}
-+
- 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
- 				     at86rf230_async_error_recover_complete);
- }
--- 
-2.34.1
-
+Cheers,
+Miguel
