@@ -2,241 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03975C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2911C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239583AbiBIJlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:41:04 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36172 "EHLO
+        id S239140AbiBIJlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:41:00 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240050AbiBIJhs (ORCPT
+        with ESMTP id S240059AbiBIJhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 04:37:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C020E061E55
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CD9CE061E6F
         for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:37:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644399426;
+        s=mimecast20190719; t=1644399438;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=IVaOePIAiXFw8U75tAHDUKWkv70g1B3730fSEy8H3OQ=;
-        b=R+z3d5sDCkwHxdajQw+n9V4AQmWf6u+QhFA5jLTRilTiYwalzZLdMaJNdRmfbqkHe43njD
-        2TUPm0UBNdAERuysN66r/Y6qE5Jsi7S5xBCmNRo2Y2tF6KJYgdbnyLRU8lxsq6NEmoGYbx
-        EwWvLQLN0QJmrW/JImBJbzD+ntG/4Rg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=VjsoUEihlP5/+Xekk4XWZ3ddwqyUg9r9chckwalLoEA=;
+        b=HKG3dFDu7s5tlVi4RaglX9FblKB5FQGJe2b9wNI+8wNTplSGxgRGSncS8WE/eka83wS0jP
+        FSGbLqxJt6KudBm4+538P5cjYYXnCHbVQY4c71v1csA2yBCFJRcW6RB4H41evnZ5APkHOJ
+        d6tZhwxVJg7kVE2NvFodktAJzdthEro=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-325-kKIjC3YcM1us5W9RYokvmg-1; Wed, 09 Feb 2022 04:12:24 -0500
-X-MC-Unique: kKIjC3YcM1us5W9RYokvmg-1
-Received: by mail-wr1-f70.google.com with SMTP id b8-20020adfc748000000b001e333edbe40so851098wrh.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:12:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IVaOePIAiXFw8U75tAHDUKWkv70g1B3730fSEy8H3OQ=;
-        b=X5++nWcnAbgmOQYwlp2RVshBBjgAs8AVxJeSsKXAVcDpPwsySelzp0YJLNOztYlZET
-         wJRagoJUAIcXl09E3oxZ7mctpTnLiRihrrfdOhYKYiG/C14qfFbz0ZB4C7e3RbKVCWD0
-         oWQbSEpZsd1X6z4ZHpPRvvSyTDuHy3hx5Pul31alOy2tUsvgmBReti4Tlj62MQ3Fmpue
-         K2s/Nr0Ie7pBzFsyH6GWWpxypKRad2FW1y/GobRyBnJaF2T3CYa95lLu4ltHCK6zDR7N
-         vuFE/lloAS+fYFJeMQo53tfFFKAKIyE/oer37yRMhyDCdlq+o/HDtpi7rOHMO1b7rJcP
-         z4qw==
-X-Gm-Message-State: AOAM530t0qKDIta8XgdWqWniet5hxneyfayQte4b0HMAapIOyTYCIDxz
-        mSDOqmZVWORfz1rd6/Q9jsknGSDs9fNn0F2nzCCNfLxkP2wPMAULLvUiBlGALI9Y8KqD2SJ3gD9
-        uUBBLzA/yu7b34HKBtDjZZ6O9gXxxPrOkiWBMcz88CfB+2GkXVQbDouY8hq2uZa80cqIJjLrUFB
-        0=
-X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr116359wms.116.1644397943155;
-        Wed, 09 Feb 2022 01:12:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxmy9te2m+nFf5NChLb1Oyfbsc9hQqFDn/UG2mRdylATQQhkHE0nZ3daEy/SuR9+qJRmFJzGg==
-X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr116329wms.116.1644397942870;
-        Wed, 09 Feb 2022 01:12:22 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m30sm4588068wms.34.2022.02.09.01.12.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:12:22 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI support
-Date:   Wed,  9 Feb 2022 10:12:04 +0100
-Message-Id: <20220209091204.2513437-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209090314.2511959-1-javierm@redhat.com>
-References: <20220209090314.2511959-1-javierm@redhat.com>
+ us-mta-637-P2FQFn4-Ncajs4mCVrx-rQ-1; Wed, 09 Feb 2022 04:15:47 -0500
+X-MC-Unique: P2FQFn4-Ncajs4mCVrx-rQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA1A718B9F00;
+        Wed,  9 Feb 2022 09:15:45 +0000 (UTC)
+Received: from localhost (ovpn-12-114.pek2.redhat.com [10.72.12.114])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AFB8D7AB6E;
+        Wed,  9 Feb 2022 09:15:44 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 17:15:41 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Petr =?utf-8?B?VGVzYcWZw61r?= <ptesarik@suse.cz>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Vivek Goyal <vgoyal@redhat.com>, Dave Young <dyoung@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>, kexec@lists.infradead.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] kdump: Add support for crashkernel=auto
+Message-ID: <YgOGPbdtQIhPNen7@MiWiFi-R3L-srv>
+References: <1643275911-19489-1-git-send-email-yangtiezhu@loongson.cn>
+ <d513dea3-7300-9684-73af-0b51f5f0e572@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <d513dea3-7300-9684-73af-0b51f5f0e572@suse.cz>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ssd130x driver only provides the core support for these devices but it
-does not have any bus transport logic. Add a driver to interface over SPI.
+Hi,
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
+On 01/27/22 at 04:53pm, Petr Tesařík wrote:
+> Hi Tiezhu Yang,
+> 
+> I'm afraid the whole concept is broken by design. See below.
+> 
+> Dne 27. 01. 22 v 10:31 Tiezhu Yang napsal(a):
+> > Set the reserved memory automatically for the crash kernel based on
+> > architecture.
+> > 
+> > Most code of this patch come from:
+> > https://gitlab.com/redhat/centos-stream/src/kernel/centos-stream-8/-/tree/c8s
 
-Changes in v3:
-- Add a separate driver for SSD130X chips SPI support (Andy Shevchenko)
+This code is from RHEL8/Centos8 which Redhat has been using. It's
+working pretty well, except of those big box with dozens of pcie
+devices, or exceptional device driver costing very much memory.
+See below patchset in i40e NIC case, it eats out 1.5G meory on
+ppc64le for a NIC driver init.
 
- drivers/gpu/drm/solomon/Kconfig       |   9 ++
- drivers/gpu/drm/solomon/Makefile      |   1 +
- drivers/gpu/drm/solomon/ssd130x-spi.c | 114 ++++++++++++++++++++++++++
- 3 files changed, 124 insertions(+)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
+[PATCH v1 0/3] Reducing memory usage of i40e for kdump
+https://www.spinics.net/lists/kexec/msg26521.html
 
-diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
-index 47e16bc20e0d..16a2098f438c 100644
---- a/drivers/gpu/drm/solomon/Kconfig
-+++ b/drivers/gpu/drm/solomon/Kconfig
-@@ -19,3 +19,12 @@ config DRM_SSD130X_I2C
- 	  Say Y here if the SSD130X OLED display is connected via I2C bus.
- 
- 	  If M is selected the module will be called ssd130x-i2c.
-+
-+config DRM_SSD130X_SPI
-+	tristate "DRM support for Solomon SSD130X OLED displays (SPI bus)"
-+	depends on DRM_SSD130X && SPI
-+	select REGMAP_SPI
-+	help
-+	  Say Y here if the SSD130X OLED display is connected via SPI bus.
-+
-+	  If M is selected the module will be called ssd130x-spi.
-diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
-index 4bfc5acb0447..b5fc792257d7 100644
---- a/drivers/gpu/drm/solomon/Makefile
-+++ b/drivers/gpu/drm/solomon/Makefile
-@@ -1,2 +1,3 @@
- obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
- obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
-+obj-$(CONFIG_DRM_SSD130X_SPI)	+= ssd130x-spi.o
-diff --git a/drivers/gpu/drm/solomon/ssd130x-spi.c b/drivers/gpu/drm/solomon/ssd130x-spi.c
-new file mode 100644
-index 000000000000..ccc56d2f3026
---- /dev/null
-+++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
-@@ -0,0 +1,114 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DRM driver for Solomon SSD130X OLED displays (SPI bus)
-+ *
-+ * Copyright 2022 Red Hat Inc.
-+ * Authors: Javier Martinez Canillas <javierm@redhat.com>
-+ */
-+#include <linux/spi/spi.h>
-+#include <linux/module.h>
-+
-+#include "ssd130x.h"
-+
-+#define DRIVER_NAME	"ssd130x-spi"
-+#define DRIVER_DESC	"DRM driver for Solomon SSD130X OLED displays (SPI)"
-+
-+static const struct regmap_config ssd130x_spi_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static int ssd130x_spi_probe(struct spi_device *spi)
-+{
-+	struct ssd130x_device *ssd130x;
-+	struct regmap *regmap;
-+
-+	regmap = devm_regmap_init_spi(spi, &ssd130x_spi_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	ssd130x = ssd130x_probe(&spi->dev, regmap);
-+
-+	if (IS_ERR(ssd130x))
-+		return PTR_ERR(ssd130x);
-+
-+	spi_set_drvdata(spi, ssd130x);
-+
-+	return 0;
-+}
-+
-+static int ssd130x_spi_remove(struct spi_device *spi)
-+{
-+	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
-+
-+	return ssd130x_remove(ssd130x);
-+}
-+
-+static void ssd130x_spi_shutdown(struct spi_device *spi)
-+{
-+	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
-+
-+	ssd130x_shutdown(ssd130x);
-+}
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 7,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 8,
-+	.need_chargepump = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 2,
-+	.default_dclk_frq = 12,
-+	.need_pwm = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 10,
-+};
-+
-+static const struct of_device_id ssd130x_of_match[] = {
-+	{
-+		.compatible = "solomon,ssd1305fb-spi",
-+		.data = (void *)&ssd130x_ssd1305_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1306fb-spi",
-+		.data = (void *)&ssd130x_ssd1306_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1307fb-spi",
-+		.data = (void *)&ssd130x_ssd1307_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1309fb-spi",
-+		.data = (void *)&ssd130x_ssd1309_deviceinfo,
-+	},
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, ssd130x_of_match);
-+
-+static struct spi_driver ssd130x_spi_driver = {
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = ssd130x_of_match,
-+	},
-+	.probe = ssd130x_spi_probe,
-+	.remove = ssd130x_spi_remove,
-+	.shutdown = ssd130x_spi_shutdown,
-+};
-+module_spi_driver(ssd130x_spi_driver);
-+
-+MODULE_DESCRIPTION(DRIVER_DESC);
-+MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.34.1
+I agree asking customer to estimate the needed reservation size firstly,
+then adding the value to cmdline and reboot is much easier. The thing is
+it needs customer to operate. And no matter how much reservation is
+needed, it mostly will be satisfied, including the above crazy i40e.
+You won't get report about the exception, unless user check that
+carefully each time. And you can't cover the hotplugged case.
+
+The thing is which side is in lazy mode. Customer do the
+estimation and set, developer is easy. If customer want to be easy,
+developer need do more.
+
+https://sigillatum.tesarici.cz/2022-01-27-whats-wrong-with-crashkernel-auto.html
+
+I read Petr's above article, I have some different opinion about part of
+them. Crashkernel=auto is not for upstream kernel, or customized kernel,
+it is for distros. For distros, the kernel config is fixed in one
+release, the kernel code, data is fixed. In rhel8, crashkernel=160M
+is a default value, and works on most of cases. The kernel modules are
+different, we filter out the unneeded according to user's kdump config.
+We only keep the needed user space tools certainly. We have document to
+note user that nfs needs more memory, some big end server need more memory.
+We try to reserve a little more memory propotional to the total memory.
+With these effort, we hope more people can try kdump w/o worrying about
+no knowledge.
+
+About the effort trying to get crashkernel=auto into kernel, Philipp
+pasted a patch from Oracle. The kernel config way is expected but
+rejected by Linus. We gave up too soon. RHEL instead make it in
+userspace package. We will see, we may try again if it's not going well.
+
+
+> And that's the problem, I think. The solution might be good for this
+> specific OS, but not for others.
+> 
+> > [...]
+> > diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+> > index 256cf6d..32c51e2 100644
+> > --- a/kernel/crash_core.c
+> > +++ b/kernel/crash_core.c
+> > @@ -252,6 +252,26 @@ static int __init __parse_crashkernel(char *cmdline,
+> >   	if (suffix)
+> >   		return parse_crashkernel_suffix(ck_cmdline, crash_size,
+> >   				suffix);
+> > +
+> > +	if (strncmp(ck_cmdline, "auto", 4) == 0) {
+> > +#if defined(CONFIG_X86_64) || defined(CONFIG_S390)
+> > +		ck_cmdline = "1G-4G:160M,4G-64G:192M,64G-1T:256M,1T-:512M";
+> > +#elif defined(CONFIG_ARM64)
+> > +		ck_cmdline = "2G-:448M";
+> > +#elif defined(CONFIG_PPC64)
+> > +		char *fadump_cmdline;
+> > +
+> > +		fadump_cmdline = get_last_crashkernel(cmdline, "fadump=", NULL);
+> > +		fadump_cmdline = fadump_cmdline ?
+> > +				fadump_cmdline + strlen("fadump=") : NULL;
+> > +		if (!fadump_cmdline || (strncmp(fadump_cmdline, "off", 3) == 0))
+> > +			ck_cmdline = "2G-4G:384M,4G-16G:512M,16G-64G:1G,64G-128G:2G,128G-:4G";
+> > +		else
+> > +			ck_cmdline = "4G-16G:768M,16G-64G:1G,64G-128G:2G,128G-1T:4G,1T-2T:6G,2T-4T:12G,4T-8T:20G,8T-16T:36G,16T-32T:64G,32T-64T:128G,64T-:180G";
+> > +#endif
+> > +		pr_info("Using crashkernel=auto, the size chosen is a best effort estimation.\n");
+> > +	}
+> > +
+> 
+> How did you even arrive at the above numbers? I've done some research on
+> this topic recently (ie. during the last 7 years or so). My x86_64 system
+> with 8G RAM running openSUSE Leap 15.3 seems needs 188M for saving to the
+> local disk, and 203M to save over the network (using SFTP). My PPC64 LPAR
+> with 16G RAM running latest Beta of SLES 15 SP4 needs 587M, i.e. with the
+> above numbers it may run out of memory while saving the dump.
+> 
+> Since this is not the first time, I'm trying to explain things, I've written
+> a blog post now:
+> 
+> https://sigillatum.tesarici.cz/2022-01-27-whats-wrong-with-crashkernel-auto.html
+> 
+> HTH
+> Petr Tesarik
+> 
 
