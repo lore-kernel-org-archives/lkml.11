@@ -2,163 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F603C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346675AbiBIEIs (ORCPT
+        id S1346825AbiBIEI4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:08:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50160 "EHLO
+        Tue, 8 Feb 2022 23:08:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347580AbiBIDyv (ORCPT
+        with ESMTP id S1346056AbiBIDVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:54:51 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2069.outbound.protection.outlook.com [40.107.93.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967ECC061578;
-        Tue,  8 Feb 2022 19:54:48 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JdQ37TVN0xb3varW34eroGFdJ2JrUjZGjgdqGDntMDHCo91Bp/G37iJI4oA3xPQGoY6QUa+WPwolJG65X6nR017a7Og4Qmw3zTwYU+qTumAJuhSxQMPDuH7n87V4Py5+lVq/y0RMFOBEmWZD/CV/b2f9S90uDfQ/stgI8Md+niCFGYHtQfE+jVJKI1fU2A4hNaDEoQepxiYbbMIbhGcp+UMkeXarhnOj06v7sEfM4A5JooiPvP7NROtfC00TRspndB1M47J5TufCLjqpGG1Gun6dkGH2HClIgQg7Fm7aR35FzsRJJW3XvJuIWKTW6Beny/d0iZK8w3oxZbpfD/UwAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cHOgFp5f84ZYA8VZb2wzYftgynCFMkvr6moGY81RfdY=;
- b=e8sWxRirjGqNW4qvM9dK0zrjK7Q/qF+7ULCikX6Y/efvGuNRh8kNPaBHV+YAa3DyiaJin6dPjhANCpMZBvYLhkWSfdeUCjvI1bFdm8fesFQh2afDRgqyzOqtSBJdIz3x+lWIVQznrz7IO+9+uNapZsSQbtfI7Bdjbf/eI4YRAV2gestb2O1wRPzzWMqfdZh2w+A110H8Bg0n3YgRqEhHF83Bk0VnG0G3Te4Qe+UdE51pwXWzCyub8JrnkEM97vYM4ma8GDpqztHkkR59Pln1CYGSiKSVS8zWO243pONPtBEBVnRr12feR0xo1VBkO1LvNegptF0o/KLiDDjD5SZ1NQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHOgFp5f84ZYA8VZb2wzYftgynCFMkvr6moGY81RfdY=;
- b=npJGvI/wruwwLKGK74zdqxEmhDLOduaBCw21sn7yx43wRq2q9zAuy47GM3JvyYwmP/vln5UZ10rpPUcO6OSq/ctKhAiDFUhn1nO3oqUktlrrLT/18pcjPMPWm7koF0jL5iH8Cau43AdXnNeDW2On8n7rCmS05J8g8g7a7+JWS4yi6iyvFquteeky+JwgS96dbgXSnOtwwbpiK8KVcbtPG29E2jj1YPjmUConkhTUuiNBs4qH1KwCGOVomEdwIzdSfW0ujFhIBNmL0NEnXN66JzT90sNEz5FExa/Z6p+nqC/18SVcaiz7ssR5n876sd679a0LgfAGzcc1r3JlHMh+sA==
-Received: from DM5PR12MB1850.namprd12.prod.outlook.com (2603:10b6:3:108::23)
- by BL0PR12MB5689.namprd12.prod.outlook.com (2603:10b6:208:8d::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Wed, 9 Feb
- 2022 03:54:46 +0000
-Received: from DM5PR12MB1850.namprd12.prod.outlook.com
- ([fe80::94d8:5850:e33d:b133]) by DM5PR12MB1850.namprd12.prod.outlook.com
- ([fe80::94d8:5850:e33d:b133%4]) with mapi id 15.20.4951.019; Wed, 9 Feb 2022
- 03:54:46 +0000
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        "digetx@gmail.com" <digetx@gmail.com>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/6] dt-bindings: i2c: tegra: Add Tegra234 details
-Thread-Topic: [PATCH 2/6] dt-bindings: i2c: tegra: Add Tegra234 details
-Thread-Index: AQHYCIHaCU7SytsfD0uZtfa+2khitKyKpXcAgAAZTyA=
-Date:   Wed, 9 Feb 2022 03:54:45 +0000
-Message-ID: <DM5PR12MB185019E59EC5D39113F54F59C02E9@DM5PR12MB1850.namprd12.prod.outlook.com>
-References: <1642080623-15980-1-git-send-email-akhilrajeev@nvidia.com>
- <1642080623-15980-3-git-send-email-akhilrajeev@nvidia.com>
- <YgMkUHUMaXQpMiZW@robh.at.kernel.org>
-In-Reply-To: <YgMkUHUMaXQpMiZW@robh.at.kernel.org>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 18a83f6f-d82c-4faf-98d0-08d9eb7fe983
-x-ms-traffictypediagnostic: BL0PR12MB5689:EE_
-x-microsoft-antispam-prvs: <BL0PR12MB5689D9D4BAFBA667EF0B2EE1C02E9@BL0PR12MB5689.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oeUFK/mhtRpnCaVIwt/Gg+XWW+AIlCPMe6f0AQAh1/mo0FSS2kvcFJpG94n+5U35KsdizuX3K+aCek4VPhHlKm8H8mlWNuOgegmU+Ij33ZkLDqjbUvZxPZcdSbfyn0WR9+Ub1i724HiER5lpiVDGj3TfhRa2xOgAbQqrEUZmTwuO6SpHXnO2VG5zPvTtf6PrSbichOpbqKuD7uASJd1Q+wX+sieWRNm14DXUaF3Pl3dW4e3bAgL3nqafCoKmYja2GEWU0NH1RdiDVwkzZnr9eoXTc7fWgj5wuW72/S762nQEmy4jlkvUFdYC9+G+fm5XhLctWYylg85flZOqs13l8c9c/0lumZjkl2q6e/+RPZFOv+8OImBVXJBOPl33YOzjuEAapi2rID18kIZx03N5WSgTIsUBwzxngzKmMwYYOb6UoE1jSSOvJwPZ6TtazJZRiiQS2bY8/CP3EJv+NQUWUQkyt9fh51nVfSeEQQGSwfT4xP9MDvTnlrWLR1ueTZ7pxkypqJOZYQ0NMmTNnlo+YUhX1TZkj0loNEpnVsaYyhS1AFM8Wno0s0RcVnbDzDurfwXFKmi320bbDBEPajgr6Y/so6ESl7ZZx3LijZlzxXalrqdzPxZrElYkvyYmHuTd2hFAoWJSNhR2FfE2HdV4efQyOMbGjph38dkax5d3SGtojGjwgnbdhaBlQiLiMfyhsiExLPcDarVXLnxbTr2utZgnSemAreBFNRo8qefPs+5mL7w4wcgXnGlnmHzdcfT9H9o6nVBRMw+0Z2F7lIAVtENcjwdVs9YEt52zM/2IAaU=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1850.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8676002)(52536014)(55016003)(38070700005)(966005)(2906002)(86362001)(8936002)(6916009)(4326008)(66476007)(66556008)(64756008)(76116006)(5660300002)(186003)(316002)(33656002)(122000001)(54906003)(26005)(83380400001)(9686003)(66946007)(38100700002)(508600001)(7696005)(66446008)(71200400001)(6506007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZOhc+dy0S+bDKpYSr93uR/h/1zDrzU29R6SDVzMFnUln4Uw3hoGKs/yMXl43?=
- =?us-ascii?Q?+eqJgZHAg+9Ph3FXm6szB5GFG+D9YM4BR8X0ukfOLG6mJQSe/mI77WdPMXMq?=
- =?us-ascii?Q?OfYt5Zg/1sch60/KWTWuHF2VKFnmJ/DX+camEbTIt7G33WAd1CRqqCduKniy?=
- =?us-ascii?Q?Mn4F0PJGL/+o+H1jO2INM8N14kzH11LYlP0BD+e0oL5e8Nqpl2vwDan8LODQ?=
- =?us-ascii?Q?JmqwRN0jwBf+AFjskC0guGcRsvK9HuM9FigdLOGq1RYsMD9Qw2FxX3yuA46G?=
- =?us-ascii?Q?SbO7AjgfrBrYz5/oSQLArIbaYwRuQ98nfrujo5Fy2VqD/HnEif0Pya5kT3H0?=
- =?us-ascii?Q?ZSoo4EaB85ipnfSCTBqshaiQ1kTjJeBDVuedviAl6WI/IYu9S4tw2tzIGlyn?=
- =?us-ascii?Q?W2XE+oXNh/raIKtmHbjxNZA23iSq+boxIcJ71eudgH3V4xvwGZ5pyTMWU11V?=
- =?us-ascii?Q?ZgXrsGGntEtygc+gYITv0Tg8qBuIjGrj07Dwo5I2BhIsFNu3n3zwFC0WVSNb?=
- =?us-ascii?Q?51mWcDiJ/0dvI8jP3Y7WbyEC8gSQZXUFIcrDpOmDwww/XUtg5388twWQS2CR?=
- =?us-ascii?Q?zs8F96cO6Rv9acKO9n/zYmKLc/eQnyxih5+DhiZl0DcTO0rTSOduaLfHod/o?=
- =?us-ascii?Q?DRvnrkcdXWf1mqPjI8bZ8MUFCM4H7ny2Lry6nyw84bV2FqvW5H+K2GAgKZor?=
- =?us-ascii?Q?Y3TiXvIqOqBfV2AgwRy3knYMxSJP3GYQ+SsNUlvxh7p6gtk29QitI8W5lLQ/?=
- =?us-ascii?Q?Qc33XMJswhF7PvVtOx0t4U4RJ+heQNNkH1i8RrZ7L7Jy7bP1npvS3u+tUtVd?=
- =?us-ascii?Q?bVAOG5slGH1VoZ+qj+0OfVnCKAAFTLcN6jIuiE8C9zjpyuC1GinKHHjCjXGz?=
- =?us-ascii?Q?p2HPpOZcuJbUQGlgiF+Ua48ntqfP9YAeR1kTHIRfIHV6CZEqdnzbVdwFxvYu?=
- =?us-ascii?Q?yfbphFgQv+SvFd1xkw9go4Uj6cGXpMTvuQFiahWuQQKMX8f8G6Yg1cJ4Ydtb?=
- =?us-ascii?Q?XbNXkGEKgyfDZh0O3phDEFkd54OvLpd6OKsk5Vxlz50FUZ9nFDP/oQXEoFZm?=
- =?us-ascii?Q?5AC2WoOB6LeyXrdzcl+YuXSRYexJyuKwCOCer0uhnA7XAbexobvlM1OGjPBM?=
- =?us-ascii?Q?OyqY9KBKm7RqTcK0LyA3Rtzp5vsslF7Ooi/+vS+4X0dgY7haR/AfqF9kTgZl?=
- =?us-ascii?Q?wglLX+mPVsILFSN6oFkoOX8qtK1IAJA+Q4nNFeEy2HhEg8yw9ZbC9FEMNQqW?=
- =?us-ascii?Q?N9VKEG6s5sMD9Xql6HtZD6logpH5g7buHgBB11W+zZJAK0T8fqmM86RLYojf?=
- =?us-ascii?Q?Wi0IeZje05j0hCFM0qjfs043p0oUvHA/3XhycbpbtncuN6j2uL6wmCmJIyIx?=
- =?us-ascii?Q?T5WQGOlmc3xtsZFUutQUM37ru1euavLlsJF60qIZfyhxKS0TSiAkkOeVrPlc?=
- =?us-ascii?Q?U5UBkG1XOd1D0bpk29TzLuRyJAX7T8rMInhlO91UABOR2Sre8K+tYuVnFJok?=
- =?us-ascii?Q?jliKT4ngJoUeYvTJOymgM9OG9j5vUR6gEd+mEY0hr6KLG8eE++OCjKYOijKs?=
- =?us-ascii?Q?E5JudHCN2KdSpS2KkAbiW59uPXeZu4ChdJBfy4vZkbcR7XfIomCcEbRfPATC?=
- =?us-ascii?Q?SE2VhTmydH6BTUU+B40RP68=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 8 Feb 2022 22:21:35 -0500
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2795C0613CA
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:21:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1644376894; x=1675912894;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bG51Nl2Ql0sNOokMZGbhgn1+otGBW36quGu5gynwTYs=;
+  b=pJ/AVO/jZ37DxoL3gu+katg9SRYl4oOfnnt1fcZUj94eqi5FrfxHj8CD
+   Y4CRwnYdDM0HqdF3e82EXAA1lHcCtNDpVcpAn66S81QdQlbXfUFzdR/oT
+   wGnx1qUDMfcM5X7RhrjG2O3EBDTjmJm/6gYmyNnVIGqcEyHp8b3sKXj0C
+   iY/lcUr840O1T1wZYG2E1ewzQdhTdY9kSSZ57y4JWNcok5BmuEapqosIs
+   x6X0B5lltBpNzFAbQRSAY5qqI3aunFptbrJb5uoc0xSsjNGV14me9yYz7
+   ntOMmhSvZVXhK9Kz2RD5cOokAeUr98uKg3Apa9amyb7ZKGn+2O/NyYKmH
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,354,1635177600"; 
+   d="scan'208";a="191410509"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 09 Feb 2022 11:16:32 +0800
+IronPort-SDR: 0NBaSTkFiR128NFAM9Qr9udOCjHmnlxfqd8m0bOnDarQpry0bcGR3jWENdNDlj+pZHchYzxNLT
+ qcCTKz8+MRGiv9sybNWL5qDCF7UeK9VSKaoIZg6uPYLRGjzYV73HbIJ8LalE6qvJ8Xw3lIqmId
+ U7vyw4hU/6WtP4t/aGwYGM03o/3aL4khpZnUilRypFq1M1VMv6fcipwteCVmCy/k5jJfi19729
+ Jrxxa03u9PLSrjSkfZCp4hKxj9pvnEpNnqHT9R2NDXLOcrwj/phh8xCZDiyg7/yj8bAkKsVgjJ
+ TddBbsoxvwQwM/PGIMEDJiaG
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 18:49:31 -0800
+IronPort-SDR: PIe0AhBgnhKf3PvlLXRN/UDPqy1V1qkLAtNGaLWrGtcriMX0+yYK0tQ6UKWwDxmpzuiKZZLtqJ
+ vo2VPUpv0c5aTr36Aj5ynVJziJPHeIF0Y3e2UBXfOF1Se0JAmQWRI1IdfNyU7eCH2uT32THXpG
+ BS5A8mImR0bo8X74roiFC29cRi3bsaB6grSlgar0LGZxyc0ETXGTv6q5WuqNIuT+p1aJb3nnVn
+ XO12TSqAc+LQ3Ee+cPrJNo/fDcbn9MFLIZY+cr1TxYsipuUo9QmU8nCGOdFmKXOzt62AAZMbjc
+ jcg=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 19:16:32 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JtlQl5zsLz1SVp3
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:16:31 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1644376591; x=1646968592; bh=bG51Nl2Ql0sNOokMZGbhgn1+otGBW36quGu
+        5gynwTYs=; b=m3VC1PkiFVw9+a+cl8Pi88PT/aN/rN+M5jTPRrlPzqSu/NYiSoi
+        x1u6Bf8v0MhjmzI75pNzZo0PehdxR06PfiUJmcYap7M0pXDYkUFXqVeHW02xo03p
+        47z4nQUO1/qkpwnK6iFRpk8D4ueFt3MF3tdqPfw5rx4JCefQp22/Ru3kiLmPfqGe
+        jMMo1e+bS5FeQNxvHyjRJY5FaD3djeM7+n6eCUwMTY7dxTim/0di7QKkYGZX/eBc
+        0kHO0XFTj6elfZMls6Er8bDNyXTHs7+U8G7kdc7A2O3ArkMRTaHn+e/k9qT4fGYk
+        HHcbW21/0zuEwzg6jjm7JWo1kNrHCQIPZWQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id B0xoiKnsJ3pG for <linux-kernel@vger.kernel.org>;
+        Tue,  8 Feb 2022 19:16:31 -0800 (PST)
+Received: from [10.225.54.48] (unknown [10.225.54.48])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JtlQj448cz1Rwrw;
+        Tue,  8 Feb 2022 19:16:29 -0800 (PST)
+Message-ID: <0093948e-a408-61dd-3b51-524b6d112e35@opensource.wdc.com>
+Date:   Wed, 9 Feb 2022 12:16:27 +0900
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1850.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18a83f6f-d82c-4faf-98d0-08d9eb7fe983
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2022 03:54:45.9944
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: I2k/i7issDA+LJXxxC2xXV1Cfcdk4QKQ53iQDX6o0soYJDoCTvNWV9tRchAeh3vdOIzh9glXQCOg6UIqqEyVmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5689
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH] scsi: csiostor: replace snprintf with sysfs_emit
+Content-Language: en-US
+To:     Joe Perches <joe@perches.com>, davidcomponentone@gmail.com,
+        jejb@linux.ibm.com
+Cc:     martin.petersen@oracle.com, bvanassche@acm.org,
+        yang.guang5@zte.com.cn, jiapeng.chong@linux.alibaba.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+References: <d711ec5a5f416204079155666d2de49d43070897.1644287527.git.yang.guang5@zte.com.cn>
+ <148a5448-71f1-4f39-834b-eb9283de0bfb@opensource.wdc.com>
+ <f4b63b5a4177e38dd80f102f87bbec3ea77d9fe8.camel@perches.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <f4b63b5a4177e38dd80f102f87bbec3ea77d9fe8.camel@perches.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Thu, Jan 13, 2022 at 07:00:19PM +0530, Akhil R wrote:
-> > Add documentation for Tegra234 I2C compatible.
-> >
-> > Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-> > ---
-> >  Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml | 5
-> > +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git
-> > a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> > b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> > index 424a4fc..c58e256 100644
-> > --- a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> > +++ b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> > @@ -80,6 +80,11 @@ properties:
-> >            support for 64 KiB transactions whereas earlier chips suppor=
-ted no
-> >            more than 4 KiB per transactions.
-> >          const: nvidia,tegra194-i2c
-> > +      - description: |
-> > +          Tegra234 has 8 generic I2C controllers, two of which are in =
-the AON
-> > +          (always-on) partition of the SoC. All of these controllers a=
-re
-> > +          similar to those found on Tegra194.
-> > +        const: nvidia,tegra234-i2c
->=20
-> Sounds like this needs a fallback to nvidia,tegra194-i2c if it works, but=
- without
-> optimal timing.
-Yes. The timing for tegra194 works for tegra234 as well. So, this change is=
- reverted.
-I had sent the patch updated. Latest is here - https://lkml.org/lkml/2022/1=
-/24/335
-Only the device tree nodes are required to be added now.
+On 2022/02/09 12:12, Joe Perches wrote:
+> On Wed, 2022-02-09 at 11:36 +0900, Damien Le Moal wrote:
+>> On 2/9/22 09:40, davidcomponentone@gmail.com wrote:
+>>> From: Yang Guang <yang.guang5@zte.com.cn>
+>>>
+>>> coccinelle report:
+>>> ./drivers/scsi/csiostor/csio_scsi.c:1433:8-16:
+>>> WARNING: use scnprintf or sprintf
+>>> ./drivers/scsi/csiostor/csio_scsi.c:1369:9-17:
+>>> WARNING: use scnprintf or sprintf
+>>> ./drivers/scsi/csiostor/csio_scsi.c:1479:8-16:
+>>> WARNING: use scnprintf or sprintf
+>>>
+>>> Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+> []
+>>> diff --git a/drivers/scsi/csiostor/csio_scsi.c b/drivers/scsi/csiostor/csio_scsi.c
+> []
+>>> @@ -1366,9 +1366,9 @@ csio_show_hw_state(struct device *dev,
+>>>  	struct csio_hw *hw = csio_lnode_to_hw(ln);
+>>>  
+>>>  	if (csio_is_hw_ready(hw))
+>>> -		return snprintf(buf, PAGE_SIZE, "ready\n");
+>>> +		return sysfs_emit(buf, "ready\n");
+>>>  	else
+>>> -		return snprintf(buf, PAGE_SIZE, "not ready\n");
+>>> +		return sysfs_emit(buf, "not ready\n");
+>>
+>> While at it, you could remove the useless "else" above.
+> 
+> Or not.  It's fine as is.  It's just a style preference.
 
-Thanks,
-Akhil
+It is. I dislike the useless line of code in this case :)
 
+> 
+> Another style option would be to use a ?: like any of
+> 
+> 	return sysfs_emit(buf, "%sready\n", csio_is_hw_ready(hw) ? "" : "not ");
+> or
+> 	return sysfs_emit(buf, "%s\n", csio_is_hw_ready(hw) ? "ready" : "not ready");
+> or
+> 	return sysfs_emit(buf, csio_is_hw_ready(hw) ? "ready\n" : "not ready\n");
+
+That is nice and can make that
+	
+	return sysfs_emit(buf, "%sready\n", csio_is_hw_ready(hw) ? "" : "not ");
+
+too :)
+
+-- 
+Damien Le Moal
+Western Digital Research
