@@ -2,84 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F519C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238153AbiBIIce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:32:34 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41974 "EHLO
+        id S236642AbiBIIdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:33:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241563AbiBIIc3 (ORCPT
+        with ESMTP id S230293AbiBIIcy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:32:29 -0500
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66833C050CF0;
-        Wed,  9 Feb 2022 00:32:24 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id m131so729900vkm.7;
-        Wed, 09 Feb 2022 00:32:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+oWGIhr7j5T0wmli3m35is4QqbH67LJ+yM8vH/Tq854=;
-        b=jLMKhf4nqdRGLisWIQaJHX9LnNkfluKHor9kp8/y5O+WT2xV/6XsPbOwNi0W+MCC4A
-         bp0TRegbynItzyTqj+OqUHHAUslQtGmeWCFL97bsaZRarM3blTN2HtWay3JuxpJ3r6WU
-         q7rSWLtGxHxExhvNRKk18+D61UQFl6Y+HwBY6MvyZnKvjRCmrFok373DBKbgE1iJDgj6
-         JsIC5v7a5kykIWQdLcHNeSxAzQM4hwzYBhORS16rFIF0C0p1QJ8+oqXrzUN+DAF1nMmH
-         ESL1PX4b8+EQNv0S3hUwxveT0cLFyuAb1nF/UsRBvHubmso+Dxjh5H+jopwU2P2LcvSh
-         tVbg==
-X-Gm-Message-State: AOAM5330yd7hRx95t3scXXump5VkRt2J4kCp3KdIW51MH1EjEyp2vdLE
-        tBicM2905S+Tzrtwm9L3542dugYC4kFZ+Q==
-X-Google-Smtp-Source: ABdhPJxI6ztoHaKCr6at9s7gMeLfVX7pVAf7ed0ssxLruqp7IAJauLk/Rflssgd3TsR5PQHaErKqIA==
-X-Received: by 2002:a05:6122:20a0:: with SMTP id i32mr397487vkd.36.1644395537029;
-        Wed, 09 Feb 2022 00:32:17 -0800 (PST)
-Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
-        by smtp.gmail.com with ESMTPSA id q22sm3048215vsj.23.2022.02.09.00.32.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 00:32:16 -0800 (PST)
-Received: by mail-vs1-f54.google.com with SMTP id r20so1806643vsn.0;
-        Wed, 09 Feb 2022 00:32:16 -0800 (PST)
-X-Received: by 2002:a67:ec0c:: with SMTP id d12mr296321vso.77.1644395536427;
- Wed, 09 Feb 2022 00:32:16 -0800 (PST)
+        Wed, 9 Feb 2022 03:32:54 -0500
+X-Greylist: delayed 94 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 00:32:54 PST
+Received: from julia1.inet.fi (mta-out1.inet.fi [62.71.2.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C9C1CC05CBBA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:32:54 -0800 (PST)
+X-RazorGate-Vade-Verdict: clean 0
+X-RazorGate-Vade-Classification: clean
+X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdduudejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuuffpveftnecuuegrihhlohhuthemuceftddtnecunecujfgurhepkfffgggfuffvfhfhjggtgfesthekredttdefjeenucfhrhhomhepkfhlkhhkrgcurfhruhhsihcuoehilhhkkhgrrdhprhhushhisehpphdrihhnvghtrdhfiheqnecuggftrfgrthhtvghrnhepfffgheegudehffejtefgvdelhfffgfejueekkeetveehgeegudffieeujeegffehnecukfhppeekgedrvdehuddrudelgedrudeigeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopegludelvddrudeikedruddrudeftdgnpdhinhgvthepkeegrddvhedurdduleegrdduieegpdhmrghilhhfrhhomhepoehprhhushhilhdqudesmhgsohigrdhinhgvthdrfhhiqecuuefqffgjpeekuefkvffokffogfdpnhgspghrtghpthhtohepvddprhgtphhtthhopeeolhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeophhhvghonhhigidrshhjrgesrghtthdrnhgvtheq
+Received: from [192.168.1.130] (84.251.194.164) by julia1.inet.fi (9.0.019.26-1) (authenticated as prusil-1)
+        id 61E9A0DF0071E8DE; Wed, 9 Feb 2022 10:31:12 +0200
+Message-ID: <e2032720-b977-24cc-435d-76d23025fd47@pp.inet.fi>
+Date:   Wed, 9 Feb 2022 10:31:10 +0200
 MIME-Version: 1.0
-References: <20220208183511.2925304-1-jjhiblot@traphandler.com> <20220208183511.2925304-3-jjhiblot@traphandler.com>
-In-Reply-To: <20220208183511.2925304-3-jjhiblot@traphandler.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 9 Feb 2022 09:32:05 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU80BbODE9CV2r2TuDTbpT9FGNg_ZXENoFsAHQDJ1OozQ@mail.gmail.com>
-Message-ID: <CAMuHMdU80BbODE9CV2r2TuDTbpT9FGNg_ZXENoFsAHQDJ1OozQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: watchdog: renesas,wdt: Add support
- for RZ/N1
-To:     Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: amd apu crashes
+Content-Language: en-US
+To:     Steven J Abner <pheonix.sja@att.net>, linux-kernel@vger.kernel.org
+References: <1644355058.23272.0.ref@smtp.mail.att.net>
+ <1644355058.23272.0@smtp.mail.att.net>
+From:   Ilkka Prusi <ilkka.prusi@pp.inet.fi>
+In-Reply-To: <1644355058.23272.0@smtp.mail.att.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 8, 2022 at 7:35 PM Jean-Jacques Hiblot
-<jjhiblot@traphandler.com> wrote:
-> Describe the WDT hardware in the RZ/N1 series.
->
-> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
+Hi,
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+I've seen random crashes during booting (Vega 56/64) after kernel 
+switches to DRM driver. The display is corrupted and after that system 
+crashes or freezes. This is not always reproducible for me as next boot 
+may succeed (or not). Kernel logs don't survive the crash.
 
-Gr{oetje,eeting}s,
+Do you have boot log on display or a splash screen (plymouth)?
 
-                        Geert
+-- 
+  - Ilkka
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+On 8.2.2022 23.17, Steven J Abner wrote:
+> Hi
+>   I've been trying out kernel 5.16. Lots of amdgpu upgrades? However it 
+> seems to be
+> getting worse :(
+>   On AMD Ryzen 5 2400G, elementary OS 5.1.7, Ubuntu 18.04.6 LTS, Linux 
+> 5.15.5-051505-generic, GTK 3.22.30. Background: Was using 5.16.6 when it 
+> started it's triple threat, so went back to 5.15 in panic. Previously, 
+> back in November, my first triple threat, I was on system with btrfs 
+> which destroyed my hard drive.
+> Rebuilt with ext4 and still trying to recreate the losses. Cant use 
+> higher Ubuntu due to still need afp to connect with mac for transfer, 
+> and elementary went even heavier with gtk, so crawls. I did find better 
+> workaround to afp, but not happy with Ubuntu's treatment of bug.
+>   The triple threat is when monitor flashes 3 times before total lockup. 
+> The last may have been but I was ready, hit reboot before third flash, 
+> so no test on it killing my hard drive.
+>   Guessing, it's not a true kernel problem, but gtk exploiting a 
+> weakness. Probably uninitialized pointer. But with new kernels, the 
+> crashes seem to be more frequent.
+> Here are the last few:
+> $ journalctl -o short-precise -f -k -b -3
+> -- Logs begin at Mon 2022-01-03 17:21:50 EST. --
+> Feb 05 08:37:32.229754 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:32.230639 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:32.273370 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:32.668947 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:32.794231 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:32.919503 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:33.044753 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:33.169986 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:33.295263 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> Feb 05 08:37:33.420514 steven-ryzen kernel: AMD-Vi: Completion-Wait loop 
+> timed out
+> 
+> $ journalctl -o short-precise -f -k -b -2
+> -- Logs begin at Mon 2022-01-03 17:21:50 EST. --
+> Feb 07 06:11:47.495092 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> RW: 0x0
+> Feb 07 06:11:47.495199 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> [mmhub0] retry page fault (src_id:0 ring:0 vmid:7 pasid:32782, for 
+> process WebKitWebProces pid 5037 thread WebKitWebP:cs0 pid 5101)
+> Feb 07 06:11:47.495304 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> in page starting at address 0x000080010e24d000 from IH client 0x12 (VMC)
+> Feb 07 06:11:47.495413 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> VM_L2_PROTECTION_FAULT_STATUS:0x00000000
+> Feb 07 06:11:47.495520 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> Faulty UTCL2 client ID: MP1 (0x0)
+> Feb 07 06:11:47.495631 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> MORE_FAULTS: 0x0
+> Feb 07 06:11:47.495766 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> WALKER_ERROR: 0x0
+> Feb 07 06:11:47.495875 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> PERMISSION_FAULTS: 0x0
+> Feb 07 06:11:47.495987 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> MAPPING_ERROR: 0x0
+> Feb 07 06:11:47.496108 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> RW: 0x0
+> 
+> $ journalctl -o short-precise -f -k -b -1
+> -- Logs begin at Mon 2022-01-03 17:21:50 EST. --
+> Feb 07 16:49:00.229782 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> RW: 0x0
+> Feb 07 16:49:00.229898 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> [mmhub0] retry page fault (src_id:0 ring:0 vmid:3 pasid:32769, for 
+> process Xorg pid 2061 thread Xorg:cs0 pid 2062)
+> Feb 07 16:49:00.230010 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> in page starting at address 0x0000800101955000 from IH client 0x12 (VMC)
+> Feb 07 16:49:00.230114 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> VM_L2_PROTECTION_FAULT_STATUS:0x00000000
+> Feb 07 16:49:00.230220 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> Faulty UTCL2 client ID: MP1 (0x0)
+> Feb 07 16:49:00.230425 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> MORE_FAULTS: 0x0
+> Feb 07 16:49:00.230535 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> WALKER_ERROR: 0x0
+> Feb 07 16:49:00.230646 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> PERMISSION_FAULTS: 0x0
+> Feb 07 16:49:00.230771 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> MAPPING_ERROR: 0x0
+> Feb 07 16:49:00.230910 steven-ryzen kernel: amdgpu 0000:38:00.0: amdgpu: 
+> RW: 0x0
+> 
+> I haven't dealt with kernel debug for years, so please if more info 
+> needed, I probably don't remember how to get it.
+> If this is a bother, sorry I troubled you.
+> Per 'Do I have to be subscribed to post to the list?':
+> I wish to be personally CC'ed the answers/comments posted to the list in 
+> response to your posting, please.
+> Thanks Steve
+> 
+
