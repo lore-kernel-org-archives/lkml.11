@@ -2,79 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DADEDC35273
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7ADC47084
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235260AbiBIDIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:08:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
+        id S244158AbiBIDIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:08:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235951AbiBIDFI (ORCPT
+        with ESMTP id S1350597AbiBIDGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:05:08 -0500
-Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83F4C03E942;
-        Tue,  8 Feb 2022 19:04:02 -0800 (PST)
-Received: by mail-oo1-f49.google.com with SMTP id u47-20020a4a9732000000b00316d0257de0so979692ooi.7;
-        Tue, 08 Feb 2022 19:04:02 -0800 (PST)
+        Tue, 8 Feb 2022 22:06:50 -0500
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC12C061355;
+        Tue,  8 Feb 2022 19:06:49 -0800 (PST)
+Received: by mail-oi1-f182.google.com with SMTP id u3so1134057oiv.12;
+        Tue, 08 Feb 2022 19:06:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9WxSx+PhSoNOK7Va3SOOiKpYlGJipFHoYDAnRzf0rEU=;
-        b=yjPf7b7dMoATHvCrWRfCh26704ofnNBr0AtZM7MvdWX7LUFEeNk5rnn88EImE18SLq
-         7E3GiCBCujeaODwkF/tNMsh2KvEtGKvnKHUcR1Go+BHmA7r9YkJXwxsuUiUsnkG1jADI
-         oh6TOhokS9s/+i8zbu+qTt9wxDdDO8CU9X2IHVW1TarW1G3yPbsnqqZ78euLG5H2YgY/
-         N3Fk9UGTsniHnSxVL1nKWRhOWK9vQhkIhT05lxdZ9nWntA7UvhZhomK63zXdyt6TKxpZ
-         rMc+Fi5s8w/ADPqAJ3g0ZF/C7tMcifLU1LbxYP/vfWrIl8fTHB6EedCfnqjdu2dGsd7n
-         ZmWg==
-X-Gm-Message-State: AOAM533FmkjkyxUL11Xzk3FRe0lBBHhR3I2qCKPyZ6n3g0zirs2BySdS
-        yW23En5V3d8kPVWuvYjhTg==
-X-Google-Smtp-Source: ABdhPJxz2Kc/1R1MFOvpiJkeFhlo3yjJLGr1Vk/RpOOKjTnQ0snSdqTnlGoVchdxbZOKxx6quNK/dQ==
-X-Received: by 2002:a05:6870:1010:: with SMTP id 16mr103247oai.281.1644375842063;
-        Tue, 08 Feb 2022 19:04:02 -0800 (PST)
+        bh=LVeDVNu/BCICylDILAovuwAjxje6g+Ysjhgt1fngzyo=;
+        b=s4KY/WE7aA8yQjdAmtSpuWj3H04Zf0yzuyjnK24hWRtBiq6ayYhHwGQamZNHMeJKAW
+         BLRMDrpGFLWY/0PWT+k+FwFppZmrDcH5ocynxswTRLW6XWluGJ4KxmNl3IVoyydXRSo3
+         b7kmr/liRAFgU38UCi+E34SgMnPsb4lQ5KatvSHTMC+CLA9B0zTlkdCMht2xhyePklen
+         vg7BUjzX5o91RoyV1oyw1yq7cM7O2AkkR+IjlKp5hV4qqzMltq5ERD1iuDCBbYiCdbTE
+         IaP+FDS9Gk4hE3rqthJLLyGR5YwWBa8HLsHdUqCbj/q55pmNUZrD1+u+GPX6r4h8Pu4P
+         naSQ==
+X-Gm-Message-State: AOAM532ExdH1GlsA0g8YLe4Z9GheJ3wHENvuFdRfdYoZptlqrRaqpYof
+        ETkJNE2iT4sT0/muLf0kuA==
+X-Google-Smtp-Source: ABdhPJx7cq9TDX0KZTFuW81BDWG1EoY4kxSCvCuwLrOluU5T0RnjLOr+uJoVJdCOGfn8uJmNHIWu7Q==
+X-Received: by 2002:a05:6808:1702:: with SMTP id bc2mr484788oib.214.1644376009186;
+        Tue, 08 Feb 2022 19:06:49 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id a128sm6151603oob.17.2022.02.08.19.04.00
+        by smtp.gmail.com with ESMTPSA id j19sm6006307ots.21.2022.02.08.19.06.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:04:01 -0800 (PST)
-Received: (nullmailer pid 3542310 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:04:00 -0000
-Date:   Tue, 8 Feb 2022 21:04:00 -0600
+        Tue, 08 Feb 2022 19:06:47 -0800 (PST)
+Received: (nullmailer pid 3546662 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:06:46 -0000
+Date:   Tue, 8 Feb 2022 21:06:46 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        linux-pm@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+To:     Caleb Connolly <caleb@connolly.tech>
+Cc:     Colin Cross <ccross@android.com>, Daniel Vetter <daniel@ffwll.ch>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Harigovindan P <harigovi@codeaurora.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, Tony Luck <tony.luck@intel.com>,
+        Kees Cook <keescook@chromium.org>, linux-input@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: thermal: samsung: convert to dtschema
-Message-ID: <YgMvIIKqXygIHK4k@robh.at.kernel.org>
-References: <20220122132554.65192-1-krzysztof.kozlowski@canonical.com>
- <20220122132554.65192-2-krzysztof.kozlowski@canonical.com>
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Alexander Martinz <amartinz@shiftphones.com>,
+        Sam Ravnborg <sam@ravnborg.org>, linux-arm-msm@vger.kernel.org,
+        Andy Gross <agross@kernel.org>
+Subject: Re: [PATCH 3/6] dt-bindings: display: visionox-rm69299: document new
+ compatible string
+Message-ID: <YgMvxpbUpgw3XdxS@robh.at.kernel.org>
+References: <20220123173650.290349-4-caleb@connolly.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220122132554.65192-2-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220123173650.290349-4-caleb@connolly.tech>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 22 Jan 2022 14:25:53 +0100, Krzysztof Kozlowski wrote:
-> Convert the Samsung Exynos SoC Thermal Management Unit bindings to DT
-> schema format.
+On Sun, 23 Jan 2022 17:37:41 +0000, Caleb Connolly wrote:
+> Document a new compatible string for the second panel variant.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Signed-off-by: Caleb Connolly <caleb@connolly.tech>
 > ---
->  .../bindings/thermal/exynos-thermal.txt       | 106 ----------
->  .../thermal/samsung,exynos-thermal.yaml       | 184 ++++++++++++++++++
->  2 files changed, 184 insertions(+), 106 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/thermal/exynos-thermal.txt
->  create mode 100644 Documentation/devicetree/bindings/thermal/samsung,exynos-thermal.yaml
+>  .../devicetree/bindings/display/panel/visionox,rm69299.yaml   | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
