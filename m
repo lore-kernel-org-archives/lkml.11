@@ -2,47 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA22C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3E6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240344AbiBISmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
+        id S240493AbiBISmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:42:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240570AbiBISlT (ORCPT
+        with ESMTP id S240590AbiBISlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:41:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77155C050CF4;
-        Wed,  9 Feb 2022 10:41:07 -0800 (PST)
+        Wed, 9 Feb 2022 13:41:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4D9C050CF8;
+        Wed,  9 Feb 2022 10:41:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15BF260918;
-        Wed,  9 Feb 2022 18:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F0E5C340E7;
-        Wed,  9 Feb 2022 18:41:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD73060AF2;
+        Wed,  9 Feb 2022 18:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DFCAC340E9;
+        Wed,  9 Feb 2022 18:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432066;
-        bh=JFakvK8607UA2o62LWq8p0ThgIQUef2OWViBTDQfYQc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=N8rC/s3a69nzrUbHE9Yid8xidHF61qImRjg7UdHjQl3+7akxYhOOn5rSs83xwYhXt
-         663f8nk7MbG945p8tgjOXxvfZ7NZ+smBZ8X97dwKSQTYnU2FzBHIbpwHIctAw1DZxH
-         7wcjzMYFMbHpTDZm0nwkEp6CysZ8fM1sZ4SNYhRJLZL7/Hsc/P1maEoudnOHial/YJ
-         GyKf+1A1l0e0VmIX9Z8Xm50P75h3L5z931Pbra0m2dllA8hQip3hN5G386pb98GhS0
-         toQh7qXiee1e5udH2gMIBCpGXa6gESRltwV8l3GVt/q6EaNR/2uaCGf/56Fy19P5rf
-         EAUB34U854oDg==
+        s=k20201202; t=1644432076;
+        bh=Kp3T8Uq/wmdAQIvGZCoRhZ+9BMeChwVbO3ac4eqCP1g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DIYILLr9rUd434SzQmWIfr7bQW6GKSqaZUXnqN7RjrcuOLwZGvL8DWa9mOuQ5vgzb
+         mag+6k1QsMmtphuayxgDMmwLazGsqjktHT8TFxjQ7bGVhyXU6B9jzTZqxi2YrphwS1
+         MGruwFmDthHK9jNGKKcWpyl/sFkVj0L7qdyGS6ceXToFJfMiuFlNDW4jANICCQYCkk
+         1/Jtb2ZorDV+ZwGrzcJ6ikRrynAdU9h0Fx2sQpLrS7ldWHt3GBPPL2YyNrhFtXEiaJ
+         al+mxTg0K3oysUmfgS6OEuPDcSWfraApSbuk2crqvCWvalLltAwhcLsFAmuKOYmSQR
+         JD2ng4b3LtUgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yuka Kawajiri <yukx00@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
-        linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 01/27] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
-Date:   Wed,  9 Feb 2022 13:40:37 -0500
-Message-Id: <20220209184103.47635-1-sashal@kernel.org>
+Cc:     =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, a.zummo@towertech.it,
+        shuah@kernel.org, linux-rtc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/27] selftests: rtc: Increase test timeout so that all tests run
+Date:   Wed,  9 Feb 2022 13:40:39 -0500
+Message-Id: <20220209184103.47635-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
+References: <20220209184103.47635-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -50,63 +56,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuka Kawajiri <yukx00@gmail.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
+[ Upstream commit f034cc1301e7d83d4ec428dd6b8ffb57ca446efb ]
 
-Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
+The timeout setting for the rtc kselftest is currently 90 seconds. This
+setting is used by the kselftest runner to stop running a test if it
+takes longer than the assigned value.
 
-Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
-Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+However, two of the test cases inside rtc set alarms. These alarms are
+set to the next beginning of the minute, so each of these test cases may
+take up to, in the worst case, 60 seconds.
+
+In order to allow for all test cases in rtc to run, even in the worst
+case, when using the kselftest runner, the timeout value should be
+increased to at least 120. Set it to 180, so there's some additional
+slack.
+
+Correct operation can be tested by running the following command right
+after the start of a minute (low second count), and checking that all
+test cases run:
+
+	./run_kselftest.sh -c rtc
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ tools/testing/selftests/rtc/settings | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
-index 59b7e90cd5875..ab6a9369649db 100644
---- a/drivers/platform/x86/touchscreen_dmi.c
-+++ b/drivers/platform/x86/touchscreen_dmi.c
-@@ -756,6 +756,21 @@ static const struct ts_dmi_data predia_basic_data = {
- 	.properties	= predia_basic_props,
- };
- 
-+static const struct property_entry rwc_nanote_p8_props[] = {
-+	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
-+	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
-+	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-+	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
-+	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
-+	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
-+	{ }
-+};
-+
-+static const struct ts_dmi_data rwc_nanote_p8_data = {
-+	.acpi_name = "MSSL1680:00",
-+	.properties = rwc_nanote_p8_props,
-+};
-+
- static const struct property_entry schneider_sct101ctm_props[] = {
- 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
- 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
-@@ -1326,6 +1341,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
- 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
- 		},
- 	},
-+	{
-+		/* RWC NANOTE P8 */
-+		.driver_data = (void *)&rwc_nanote_p8_data,
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
-+			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
-+		},
-+	},
- 	{
- 		/* Schneider SCT101CTM */
- 		.driver_data = (void *)&schneider_sct101ctm_data,
+diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+index ba4d85f74cd6b..a953c96aa16e1 100644
+--- a/tools/testing/selftests/rtc/settings
++++ b/tools/testing/selftests/rtc/settings
+@@ -1 +1 @@
+-timeout=90
++timeout=180
 -- 
 2.34.1
 
