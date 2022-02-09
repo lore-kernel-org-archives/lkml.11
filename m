@@ -2,71 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92612C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:47:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A63C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbiBIVrW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:47:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59130 "EHLO
+        id S233829AbiBIVry (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:47:54 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233770AbiBIVrV (ORCPT
+        with ESMTP id S233801AbiBIVru (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:47:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89024C0F8692;
-        Wed,  9 Feb 2022 13:47:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1212DB8125B;
-        Wed,  9 Feb 2022 21:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2822C340E7;
-        Wed,  9 Feb 2022 21:47:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644443241;
-        bh=YQ93vvu/mLRTii8DBVQc/ZPhQKp/nljv1Z77ABdvnmA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aSpJb1ewaZ2Z9xJBWbGcdJCZsTktGsEZJ3dFz6EY2R9NYPmruhmCnhi8U66OqjICR
-         WjyUSGe0Jx2Cm9eFGOM8qWCF9Rd7+M6yjL2lbrHmr7xJAOLroLF80ooK+DNgpYm0sp
-         S/QvsauD6hI3oXF4YBbxJ6ja6FzZJeStGjMBQ2ELkMNKtu+8jbg2Fj5jJ9lALJDBDD
-         THn7Wgs4wIpBln20X8iGIKVf14HkgwatyM4X67v10X14DRgRJ8+HGpSZBXEvl+JJio
-         Z44gj4P571G6865pXJwAS8x/kz/6U2O351PKSqu2LhVIsTISb7tPW7yd9GgAAilvdu
-         yofN8SyfCKtSw==
-Date:   Wed, 9 Feb 2022 13:47:18 -0800
-From:   Keith Busch <kbusch@kernel.org>
-To:     nitirawa@codeaurora.org
-Cc:     Vidya Sagar <vidyas@nvidia.com>, rafael.j.wysocki@intel.com,
-        keith.busch@intel.com, hch@lst.de, bhelgaas@google.com,
-        mmaddireddy@nvidia.com, kthota@nvidia.com, sagar.tv@gmail.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: Query related to shutting down NVMe during system suspend
-Message-ID: <20220209214718.GC1616420@dhcp-10-100-145-180.wdc.com>
-References: <65b836cd-8d5d-b9c2-eb8f-2ee3ef46112b@nvidia.com>
- <20220209202639.GB1616420@dhcp-10-100-145-180.wdc.com>
- <bc80ec7d1ca2c56feded1a6848c285ef@codeaurora.org>
+        Wed, 9 Feb 2022 16:47:50 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 51B01C1DC2FD
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:47:52 -0800 (PST)
+Received: from [192.168.4.54] (cpe-70-95-196-11.san.res.rr.com [70.95.196.11])
+        by linux.microsoft.com (Postfix) with ESMTPSA id AD64920B9133;
+        Wed,  9 Feb 2022 13:47:51 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AD64920B9133
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1644443271;
+        bh=ytV1hXsi6yCY6jSagexbs/gi9N3Tlue4dbEUj+BNvyY=;
+        h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+        b=Ux2uA+KpylogqqibdjPbAEGu3pvyp0rpwP02e2ByJaPlisVc7Gr2S1ir4KLFQdJFP
+         Z3QeskZ88vkYvJvSGalcJ9Z4YDJnG4Ouf/YbsmikuVIprGdNkU1rLJQNLuStzb5ZSe
+         ILqe8lONrB+9KR6UBmeSCT/1N59Z8UuKULNF14Ls=
+Message-ID: <9436d033-579b-55fa-9b00-6f4b661c2dd7@linux.microsoft.com>
+Date:   Wed, 9 Feb 2022 13:47:51 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bc80ec7d1ca2c56feded1a6848c285ef@codeaurora.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [arm64] kernel boot slowdown in v5.10.19 -> v5.10.42 update
+Content-Language: en-US
+From:   Vijay Balakrishna <vijayb@linux.microsoft.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>
+References: <9a34ee9b-0ede-30a6-0898-d32fe81d5b0c@linux.microsoft.com>
+ <YfPcNy3JcnwuJNMx@arm.com>
+ <7e43a7e9-f299-1d6d-8b61-425793abcc3e@linux.microsoft.com>
+In-Reply-To: <7e43a7e9-f299-1d6d-8b61-425793abcc3e@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 02:47:47AM +0530, nitirawa@codeaurora.org wrote:
-> IMO, the NVME driver is not associated with any device tree, Instead PCI
-> driver is associated with device tree.
 
-That may be good, though: the idle behavior isn't unqiue to nvme. It may
-be fine if PCI is the common layer to own this, as long as drivers can
-query it.
 
-> So unlike ACPI based platform where we have platform specific DMI matching,
-> we don't have equivalent check for DT based platform.
+On 1/28/2022 10:03 AM, Vijay Balakrishna wrote:
+> 
+> 
+> On 1/28/2022 4:06 AM, Catalin Marinas wrote:
+>> On Mon, Jan 24, 2022 at 03:03:48PM -0800, Vijay Balakrishna wrote:
+>>> We noticed 150ms kernel boot slowdown back in June, 2021, when moving 
+>>> from
+>>> v5.10.19 to v5.10.42.  This on a 8GB SoC.  Only recently we investigated
+>>> this issue and found the regression is introduced by a change in 
+>>> map_mem()
+>>> (paging_init() -> map_mem() -> __map_memblock(), in particular "map 
+>>> all the
+>>> memory banks" for loop) by patch
+>>>
+>>> 2687275a5843d1089687f08fc64eb3f3b026a169
+>>> arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required
+>>>
+>>> above is a follow up to
+>>>
+>>> 0a30c53573b07d5561457e41fb0ab046cd857da5
+>>> arm64: mm: Move reserve_crashkernel() into mem_init())
+>>>
+>>> which deferred crashkernel reservation into mem_init().
+>>>
+>>> The ~150ms slowdown disappears on booting without "crashkernel=.." on 
+>>> kernel
+>>> command-line.
+>>
+>> Is CONFIG_RODATA_FULL_DEFAULT_ENABLED set in your config file? It may
+>> cause the same slowdown. I suspect it's because we end up mapping the
+>> RAM at the page granularity so more loops and slightly higher TLB
+>> pressure. Not sure we can do much about >
+> 
+> Catalin,
+> 
+> Thanks for your reply.
+> 
+> CONFIG_RODATA_FULL_DEFAULT_ENABLED is not set in our config for boot 
+> time performance reasons.
 
-Is there any existing kernel API a driver can call to uniquely identify
-such a platform?
+ From following patches, the main source of deferring crash kernel 
+reservation is for Raspberry Pi 4, which has no IOMMU.
 
-> Do we see any concern if we introduce a module param with default not set to
-> quick suspend.
+1a8e1cef7603e218339ac63cb3178b25554524e5
+arm64: use both ZONE_DMA and ZONE_DMA32
 
-As of now, the idea was proposed and was not accepted.
+8424ecdde7df99d5426e1a1fd9f0fb36f4183032
+arm64: mm: Set ZONE_DMA size based on devicetree's dma-ranges
+
+0a30c53573b07d5561457e41fb0ab046cd857da5
+arm64: mm: Move reserve_crashkernel() into mem_init())
+
+2687275a5843d1089687f08fc64eb3f3b026a169
+arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required
+
+However above changes introduced slow boot (regression) for platforms 
+with IOMMU, for example as I mentioned earlier ~150ms for us.  We don't 
+have following configs set for our SoC --
+
+# CONFIG_ZONE_DMA is not set
+# CONFIG_ZONE_DMA32 is not set
+
+Can we restore crash kernel reservation (no deferring to mem_init()) for 
+platforms with no DMA memory zones?
+
+I can submit a patch.
+
+Thanks,
+Vijay
+
+
