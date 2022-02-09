@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9647AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241163AbiBISw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
+        id S241271AbiBISxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:53:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241197AbiBISux (ORCPT
+        with ESMTP id S241241AbiBISuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0370C0043FA;
-        Wed,  9 Feb 2022 10:46:06 -0800 (PST)
+        Wed, 9 Feb 2022 13:50:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2FCC003663;
+        Wed,  9 Feb 2022 10:46:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 720E2B82378;
-        Wed,  9 Feb 2022 18:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F995C340E7;
-        Wed,  9 Feb 2022 18:46:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 78AA3B821BD;
+        Wed,  9 Feb 2022 18:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333D4C340EF;
+        Wed,  9 Feb 2022 18:46:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432364;
-        bh=wDua54V40aYcPDnGD2qM9MjIhK8Jdh3ufrb+uJTT5ro=;
+        s=k20201202; t=1644432388;
+        bh=/hVOJlsFWLKRbsZ0LCXQz1BHsIWJgYUIFS3HbLPfFkY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OfnwyCk3qzbsOhfIWVvgQqS/MXcQlejHFu48hVt4+8hJehrZ9NYNQXhoh9lqWihjL
-         IXIHciXwwQke0vot8ojxCUujNrBm1Mt/TXVpli1EY4kVIbNlUdF6/H3dISpwPWTt/a
-         B2vYtIt0ZmVfloxjE9dwTyQ/XjxA8NERcyBU4PJ4rL1gH7JIzAPHh7LA+ZYhZDkzhF
-         3XxVSIx2uOQKSVbeOLaZgq2G54LEEbvcMnziIJAQe+vAQREteHARlq6Kh1xyHBi1Np
-         I53XXLx45U1ZCAHlNydEmakdJ1LV3I3erCL+X55FHdbjGwJOlzIWoI77GQJXssghrB
-         ZySyxiQqi0XCQ==
+        b=CFxpYPxhRXeqtH0r3P4DDmFWn2HD+UpHlbPKBkFV0snn5CZ/O/wUtATLrsz1q0tZ+
+         uxI5kzT+6bNqtcloKIq0Ki+p1dglPLCt5c5qzgH/3fKBMizXEkHlYYLCt4HGsGBG0u
+         IT2EZxRPlDEtFnWvzk9i+LQIBIlr+LKK6yxsqYhuVKvnc7iBcMRRx8zExqWq8x1wmX
+         McBox1+zA9TOah1fUqJXyo4e7SAV5XM+OjWYV5ujgfEdJwT7NmfIJIS9t9QqIK6oMp
+         b/g0vwspVc63n+W9NR/dykpNrwqx2hjJ5mL5GqbUQUktehPIUXgrbbfaLTt9eRGnKz
+         FN3XQiDy6ZzTQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 3/7] selftests/zram01.sh: Fix compression ratio calculation
-Date:   Wed,  9 Feb 2022 13:45:46 -0500
-Message-Id: <20220209184550.48481-3-sashal@kernel.org>
+Cc:     Duoming Zhou <duoming@zju.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, jreuter@yaina.de,
+        kuba@kernel.org, linux-hams@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 5/7] ax25: improve the incomplete fix to avoid UAF and NPD bugs
+Date:   Wed,  9 Feb 2022 13:45:48 -0500
+Message-Id: <20220209184550.48481-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
 References: <20220209184550.48481-1-sashal@kernel.org>
@@ -52,82 +52,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
+[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
 
-zram01 uses `free -m` to measure zram memory usage. The results are no
-sense because they are polluted by all running processes on the system.
+The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
+AX25 device") introduce lock_sock() into ax25_kill_by_device to
+prevent NPD bug. But the concurrency NPD or UAF bug will occur,
+when lock_sock() or release_sock() dereferences the ax25_cb->sock.
 
-We Should only calculate the free memory delta for the current process.
-So use the third field of /sys/block/zram<id>/mm_stat to measure memory
-usage instead. The file is available since kernel 4.1.
+The NULL pointer dereference bug can be shown as below:
 
-orig_data_size(first): uncompressed size of data stored in this disk.
-compr_data_size(second): compressed size of data stored in this disk
-mem_used_total(third): the amount of memory allocated for this disk
+ax25_kill_by_device()        | ax25_release()
+                             |   ax25_destroy_socket()
+                             |     ax25_cb_del()
+  ...                        |     ...
+                             |     ax25->sk=NULL;
+  lock_sock(s->sk); //(1)    |
+  s->ax25_dev = NULL;        |     ...
+  release_sock(s->sk); //(2) |
+  ...                        |
 
-Also remove useless zram cleanup call in zram_fill_fs and so we don't
-need to cleanup zram twice if fails.
+The root cause is that the sock is set to null before dereference
+site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
+in advance, and uses ax25_list_lock to protect it, which can synchronize
+with ax25_cb_del() and ensure the value of sock is not null before
+dereference sites.
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+The concurrency UAF bug can be shown as below:
+
+ax25_kill_by_device()        | ax25_release()
+                             |   ax25_destroy_socket()
+  ...                        |   ...
+                             |   sock_put(sk); //FREE
+  lock_sock(s->sk); //(1)    |
+  s->ax25_dev = NULL;        |   ...
+  release_sock(s->sk); //(2) |
+  ...                        |
+
+The root cause is that the sock is released before dereference
+site (1) or (2). Therefore, this patch uses sock_hold() to increase
+the refcount of sock and uses ax25_list_lock to protect it, which
+can synchronize with ax25_cb_del() in ax25_destroy_socket() and
+ensure the sock wil not be released before dereference sites.
+
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
+ net/ax25/af_ax25.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index b9566a6478a9c..ac6e4ddd2604e 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -42,8 +42,6 @@ zram_algs="lzo"
- 
- zram_fill_fs()
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index f4c8567e91b38..c4ef1be59cb19 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -80,6 +80,7 @@ static void ax25_kill_by_device(struct net_device *dev)
  {
--	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
--
- 	for i in $(seq 0 $(($dev_num - 1))); do
- 		echo "fill zram$i..."
- 		local b=0
-@@ -54,29 +52,17 @@ zram_fill_fs()
- 			b=$(($b + 1))
- 		done
- 		echo "zram$i can be filled with '$b' KB"
--	done
+ 	ax25_dev *ax25_dev;
+ 	ax25_cb *s;
++	struct sock *sk;
  
--	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
--	local used_mem=$(($mem_free0 - $mem_free1))
-+		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
-+		local v=$((100 * 1024 * $b / $mem_used_total))
-+		if [ "$v" -lt 100 ]; then
-+			 echo "FAIL compression ratio: 0.$v:1"
-+			 ERR_CODE=-1
-+			 return
-+		fi
- 
--	local total_size=0
--	for sm in $zram_sizes; do
--		local s=$(echo $sm | sed 's/M//')
--		total_size=$(($total_size + $s))
-+		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- 	done
+ 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
+ 		return;
+@@ -88,13 +89,15 @@ static void ax25_kill_by_device(struct net_device *dev)
+ again:
+ 	ax25_for_each(s, &ax25_list) {
+ 		if (s->ax25_dev == ax25_dev) {
++			sk = s->sk;
++			sock_hold(sk);
+ 			spin_unlock_bh(&ax25_list_lock);
+-			lock_sock(s->sk);
++			lock_sock(sk);
+ 			s->ax25_dev = NULL;
+-			release_sock(s->sk);
++			release_sock(sk);
+ 			ax25_disconnect(s, ENETUNREACH);
+ 			spin_lock_bh(&ax25_list_lock);
 -
--	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
--
--	local v=$((100 * $total_size / $used_mem))
--
--	if [ "$v" -lt 100 ]; then
--		echo "FAIL compression ratio: 0.$v:1"
--		ERR_CODE=-1
--		zram_cleanup
--		return
--	fi
--
--	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- }
- 
- check_prereqs
++			sock_put(sk);
+ 			/* The entry could have been deleted from the
+ 			 * list meanwhile and thus the next pointer is
+ 			 * no longer valid.  Play it safe and restart
 -- 
 2.34.1
 
