@@ -2,127 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF94C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19966C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240217AbiBIIBA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:01:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50364 "EHLO
+        id S240377AbiBIICX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240377AbiBIIAu (ORCPT
+        with ESMTP id S238194AbiBIICU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:00:50 -0500
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D813C05CB95
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:00:53 -0800 (PST)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 2197pbHw068866;
-        Wed, 9 Feb 2022 15:51:37 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Feb
- 2022 15:59:49 +0800
-Message-ID: <e498b84e-c8b1-f2ad-4364-f871491fb507@aspeedtech.com>
-Date:   Wed, 9 Feb 2022 15:59:50 +0800
+        Wed, 9 Feb 2022 03:02:20 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F2CC05CB81
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:02:23 -0800 (PST)
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644393741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FtIrm50qhttDnvw+t6HEGKMbZATCUZOMdzvBi9MSe90=;
+        b=M+XiBZLvnS4bNyf917WB109HyC2w29CJUrl4+O3s0DgpsdEx7qd9LvVurUJCNhRS15Nnsu
+        cRSfB+3pzT1O13psRd1f1F9RUn9biTeEoiOyQmgimdTbr/vjqZy4deWCmwndr0QD2ufJ+o
+        Sqd0tsdtLPAXbSLtB6Ji4LmVP+iCKv0Wi8A/f7QNPsiv7QL9eRdaHboT0vES0Rkm5q3nVj
+        SpwQ1re3o986jPQhDh5fxadxCmGBF1Vzc3lThDa3bMhOehonLIvbh9MLuv6ROwY5VULVZR
+        2E4X2eG/cFMezVii0GULTAbaf5XfnGRONCEx1DX7F1mYfNUvbSlZMPFwSeGCFA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644393741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FtIrm50qhttDnvw+t6HEGKMbZATCUZOMdzvBi9MSe90=;
+        b=+3CvOrEeIA0hMtHDBMPRo5y999b5GRmR5FqI8tJFmUGxGgnh38jpNfHNPILyt8qyLKUD1R
+        20dt3aOcmPlVKbDQ==
+To:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Longpeng <longpeng2@huawei.com>,
+        Gonglei <arei.gonglei@huawei.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH REPOST v2 1/2] x86/xen: Allow to retry if cpu_initialize_context() failed.
+Date:   Wed,  9 Feb 2022 09:02:13 +0100
+Message-Id: <20220209080214.1439408-2-bigeasy@linutronix.de>
+In-Reply-To: <20220209080214.1439408-1-bigeasy@linutronix.de>
+References: <20220209080214.1439408-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1] media: aspeed: Fix incorrect color
-Content-Language: en-US
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-CC:     "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "joel@jms.id.au" <joel@jms.id.au>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220209024312.2218-1-jammy_huang@aspeedtech.com>
- <554448a9-bc65-7c0b-9878-fb2c0fe9bfe4@molgen.mpg.de>
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-In-Reply-To: <554448a9-bc65-7c0b-9878-fb2c0fe9bfe4@molgen.mpg.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 2197pbHw068866
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Paul,
+From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
 
-Thanks for your review and suggestion.
+If memory allocation in cpu_initialize_context() fails then it will
+bring up the VCPU and leave with the corresponding CPU bit set in
+xen_cpu_initialized_map.
+The following (presumably successful) CPU bring up will BUG in
+xen_pv_cpu_up() because nothing for that VCPU would be initialized.
 
-On 2022/2/9 下午 02:23, Paul Menzel wrote:
+Clear the CPU bits, that were set in cpu_initialize_context() in case
+the memory allocation fails.
 
-> Dear Jammy,
->
->
-> Am 09.02.22 um 03:43 schrieb Jammy Huang:
->> Current settings for rgb-2-yuv is BT.601(studio swing), but JFIF
->> uses BT.601(full swing).
-> Could you please describe the problem in a little more detail? On an
-> attached monitor to the BMC (which one) what incorrect colors are seen?
-Aspeed video 's input is gfx' output which is ARGB format. To generate 
-jpg, video
-engine will transform ARGB into YUV first. Previously, aspeed video's 
-default
-settings is studio swing (16~235), but jpg is full swing (0~255) as you 
-can see in
-'Conversion to and from RGB' of https://www.w3.org/Graphics/JPEG/jfif3.pdf.
+[ bigeasy: Creating a patch from Boris' email. ]
 
-This will lead to incorrect color. For example, a RGB color on gfx, 
-blue(0, 0, 255) will
-become (16, 16, 235) after we see the output jpg of aspeed video.
-> Maybe use:
->
->> media: aspeed: Use full swing for JFIF to fix incorrect color
-Thanks, I will update a more suitable subject for this patch.
->> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
->> ---
->>    drivers/media/platform/aspeed-video.c | 2 +-
->>    1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
->> index eb9c17ac0e14..08b63b8297f0 100644
->> --- a/drivers/media/platform/aspeed-video.c
->> +++ b/drivers/media/platform/aspeed-video.c
->> @@ -1089,7 +1089,7 @@ static void aspeed_video_init_regs(struct aspeed_video *video)
->>    	u32 comp_ctrl = VE_COMP_CTRL_RSVD |
->>    		FIELD_PREP(VE_COMP_CTRL_DCT_LUM, video->jpeg_quality) |
->>    		FIELD_PREP(VE_COMP_CTRL_DCT_CHR, video->jpeg_quality | 0x10);
->> -	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR;
->> +	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR | VE_CTRL_YUV;
-> Excuse my ignorance, but reading [1][2] YUV can be represented by studio
-> and full swing. How is the register/bit described in the datasheet, and
-> can the macro name be improved?
-VR008[7:6] will decide the data format for video capture:
-00: CCIR601 studio swing compliant YUV format
-01: CCIR601 full swing compliant YUV format
-10: RGB format
-11: Gray color mode
+Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/20211206152034.2150770-2-bigeasy@linutronix=
+.de
+---
+ arch/x86/xen/smp_pv.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-I will update this part as well.
->
->>    	u32 seq_ctrl = video->jpeg_mode;
->>    
->>    	if (video->frame_rate)
->
-> Kind regards,
->
-> Paul
->
->
-> [1]: https://mymusing.co/bt601-yuv-to-rgb-conversion-color/
-> [2]: https://www.hisour.com/yuv-color-system-25916/
-
--- 
-Best Regards
-Jammy
+diff --git a/arch/x86/xen/smp_pv.c b/arch/x86/xen/smp_pv.c
+index 4a6019238ee7d..57c3f9332ec94 100644
+--- a/arch/x86/xen/smp_pv.c
++++ b/arch/x86/xen/smp_pv.c
+@@ -260,8 +260,11 @@ cpu_initialize_context(unsigned int cpu, struct task_s=
+truct *idle)
+ 		return 0;
+=20
+ 	ctxt =3D kzalloc(sizeof(*ctxt), GFP_KERNEL);
+-	if (ctxt =3D=3D NULL)
++	if (ctxt =3D=3D NULL) {
++		cpumask_clear_cpu(cpu, xen_cpu_initialized_map);
++		cpumask_clear_cpu(cpu, cpu_callout_mask);
+ 		return -ENOMEM;
++	}
+=20
+ 	gdt =3D get_cpu_gdt_rw(cpu);
+=20
+--=20
+2.34.1
 
