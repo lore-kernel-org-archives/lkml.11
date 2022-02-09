@@ -2,92 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FADC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A94C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240043AbiBIH7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:59:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S240131AbiBIIAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:00:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229528AbiBIH7M (ORCPT
+        with ESMTP id S235466AbiBIIAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:59:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83290C0613CA;
-        Tue,  8 Feb 2022 23:59:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B02EB81F46;
-        Wed,  9 Feb 2022 07:59:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40946C340E7;
-        Wed,  9 Feb 2022 07:59:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644393554;
-        bh=o3d1r5nyYz91T6wRpb3Xtl5wpWAZV1OgB32q5ncAlFg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I6K8ICjNzVwQMg3o/1xmH8e9ryafuMmG/zBsENYkvwq1JaMNJqT82m0RCfmIAcQe4
-         VN5pL7WQGMnRtYtzz45d//+LYGaPCF/meyjILIAslS3JOGyuyZ3ZXj0qiwmFX0z20+
-         35AG0nLwpfvAH9c3NN0pId8FaPa5IQre1LEolBTNkssvJ6KZjb4g/hIhDRTSC09vwT
-         aSrcWXN/p0WsI1rbdwAzuhwyTkLA5Yfj47Lsth2L65pBvPqcsi6n0sbcATz/w3iPdI
-         E0FMKUqqk3ZRwNlsIGOZpe4edmBV39Cm+y0WYTsUfVP34lDGRXu4MoV4d+bYKmfD4h
-         uPOZG2uck6Wrw==
-Date:   Wed, 9 Feb 2022 13:29:08 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Paul Davey <paul.davey@alliedtelesis.co.nz>
-Cc:     Hemant Kumar <hemantk@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] bus: mhi: Fix MHI on big endian architectures
-Message-ID: <20220209075908.GA10700@workstation>
-References: <20210812031700.23397-1-paul.davey@alliedtelesis.co.nz>
+        Wed, 9 Feb 2022 03:00:18 -0500
+X-Greylist: delayed 363 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 00:00:21 PST
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1700C0613CA
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:00:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644393256;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=sCy+BFzraB5UPCDrJqayTu4U5x2Azckr0KW+I3kfiQc=;
+    b=K9GgT2Gsq67ZGqFQdUZ6Ak/QSOAJogD90+bxmZUKtXDc9vR3k2qp07VDoEatKT9IwE
+    9/3OfmHeRCFkXwD0dr8TGh3G/GbG9EkmsQ0H2JlqmCOwGN2Q7SFWomKasV8ZSlL0X82k
+    CLciobQThGH4e9ehGnck7C/6iTqsAJZj+yWvQdr0eovdOcxLVQcstoqhqhZPmOuWbF/i
+    FRVZAT3wb/hdmYXLFVDCLteMTDMs3HJUzOpfUmaB5AdSNs4tTqOTGqmf4v2G+JrX56pa
+    gNmi2iDu1bP8M2Uecv4k/Xvb4iHhKNwVgyk8dykOaz+kcb0pstH1l88gmjStXW7ndRyF
+    /bCQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.39.0 AUTH)
+    with ESMTPSA id L7379cy197sFNsZ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 9 Feb 2022 08:54:15 +0100 (CET)
+Message-ID: <b4be7878-e461-e2c3-2aaf-89598ac8a64f@hartkopp.net>
+Date:   Wed, 9 Feb 2022 08:54:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210812031700.23397-1-paul.davey@alliedtelesis.co.nz>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
+        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1fb4407a-1269-ec50-0ad5-074e49f91144@hartkopp.net>
+ <2aba02d4-0597-1d55-8b3e-2c67386f68cf@huawei.com>
+ <64695483-ff75-4872-db81-ca55763f95cf@hartkopp.net>
+ <d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com>
+ <97339463-b357-3e0e-1cbf-c66415c08129@hartkopp.net>
+ <24e6da96-a3e5-7b4e-102b-b5676770b80e@hartkopp.net>
+ <20220128080704.ns5fzbyn72wfoqmx@pengutronix.de>
+ <72419ca8-b0cb-1e9d-3fcc-655defb662df@hartkopp.net>
+ <20220128084603.jvrvapqf5dt57yiq@pengutronix.de>
+ <07c69ccd-dbc0-5c74-c68e-8636ec9179ef@hartkopp.net>
+ <20220207081123.sdmczptqffwr64al@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220207081123.sdmczptqffwr64al@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 12, 2021 at 03:16:58PM +1200, Paul Davey wrote:
-> I encountered some problems getting the MHI driver to work on an Octeon
-> 3 platform these seem to all be related to endianness issues.  The modem
-> interface appears to require the DMA structures to be in little endian,
-> however the MHI core driver was assembling them in native endianness.
-> 
-> Using little endian explicitly allows the interface to function as
-> expected.
-> 
-> Changes in v4:
->   - add Fixes and Reviewed-By tags as requested/offered.
-> Changes in v3:
->   - removed change of doorbell helper functions db_val type from
->     dma_addr_t to __le64 favouring doing conversion only when writing to
->     context wp fields.  
-> Changes in v2:
->   - use __fls instead of find_last_bit in pm_state conversion patch as
->     requested by Hemant Kumar <hemantk@codeaurora.org>
-> 
-> Paul Davey (2):
->   bus: mhi: Fix pm_state conversion to string
->   bus: mhi: Fix MHI DMA structure endianness
+Hi Marc,
 
-I've included these two patches two my MHI endpoint patch series. But I
-hope to merge these along with MHI host cleanup patches separately for
-v5.18.
+On 07.02.22 09:11, Marc Kleine-Budde wrote:
+> On 28.01.2022 15:48:05, Oliver Hartkopp wrote:
+>> Hello Marc, hello William,
+>>
+>> On 28.01.22 09:46, Marc Kleine-Budde wrote:
+>>> On 28.01.2022 09:32:40, Oliver Hartkopp wrote:
+>>>>
+>>>>
+>>>> On 28.01.22 09:07, Marc Kleine-Budde wrote:
+>>>>> On 28.01.2022 08:56:19, Oliver Hartkopp wrote:
+>>>>>> I've seen the frame processing sometimes freezes for one second when
+>>>>>> stressing the isotp_rcv() from multiple sources. This finally freezes
+>>>>>> the entire softirq which is either not good and not needed as we only
+>>>>>> need to fix this race for stress tests - and not for real world usage
+>>>>>> that does not create this case.
+>>>>>
+>>>>> Hmmm, this doesn't sound good. Can you test with LOCKDEP enabled?
+>>
+>>
+>>>> #
+>>>> # Lock Debugging (spinlocks, mutexes, etc...)
+>>>> #
+>>>> CONFIG_LOCK_DEBUGGING_SUPPORT=y
+>>>> # CONFIG_PROVE_LOCKING is not set
+>>> CONFIG_PROVE_LOCKING=y
+>>
+>> Now enabled even more locking (seen relevant kernel config at the end).
+>>
+>> It turns out that there is no visible difference when using spin_lock() or
+>> spin_trylock().
+>>
+>> I only got some of these kernel log entries
+>>
+>> Jan 28 11:13:14 silver kernel: [ 2396.323211] perf: interrupt took too long
+>> (2549 > 2500), lowering kernel.perf_event_max_sample_rate to 78250
+>> Jan 28 11:25:49 silver kernel: [ 3151.172773] perf: interrupt took too long
+>> (3188 > 3186), lowering kernel.perf_event_max_sample_rate to 62500
+>> Jan 28 11:45:24 silver kernel: [ 4325.583328] perf: interrupt took too long
+>> (4009 > 3985), lowering kernel.perf_event_max_sample_rate to 49750
+>> Jan 28 12:15:46 silver kernel: [ 6148.238246] perf: interrupt took too long
+>> (5021 > 5011), lowering kernel.perf_event_max_sample_rate to 39750
+>> Jan 28 13:01:45 silver kernel: [ 8907.303715] perf: interrupt took too long
+>> (6285 > 6276), lowering kernel.perf_event_max_sample_rate to 31750
+>>
+>> But I get these sporadically anyway. No other LOCKDEP splat.
+>>
+>> At least the issue reported by William should be fixed now - but I'm still
+>> unclear whether spin_lock() or spin_trylock() is the best approach here in
+>> the NET_RX softirq?!?
+> 
+> With the !spin_trylock() -> return you are saying if something
+> concurrent happens, drop it. This doesn't sound correct.
 
-Thanks,
-Mani
+Yes, I had the same feeling and did some extensive load tests using both 
+variants.
 
-> 
->  drivers/bus/mhi/core/debugfs.c  |  26 +++----
->  drivers/bus/mhi/core/init.c     |  43 ++++++------
->  drivers/bus/mhi/core/internal.h | 119 ++++++++++++++++----------------
->  drivers/bus/mhi/core/main.c     |  22 +++---
->  drivers/bus/mhi/core/pm.c       |   4 +-
->  5 files changed, 109 insertions(+), 105 deletions(-)
-> 
-> -- 
-> 2.32.0
-> 
+It turned out the standard spin_lock() works excellent to fix the issue.
+
+Thanks for taking it for upstream here:
+https://lore.kernel.org/linux-can/20220209074818.3ylfz4zmuhit7orc@pengutronix.de/T/#t
+
+Best regards,
+Oliver
+
