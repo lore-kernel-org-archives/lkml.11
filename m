@@ -2,73 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD21FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35445C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiBIMJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:09:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
+        id S232284AbiBIMJV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:09:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233071AbiBIMGe (ORCPT
+        with ESMTP id S232938AbiBIMGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:06:34 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BEEC0045CB;
-        Wed,  9 Feb 2022 03:19:46 -0800 (PST)
-X-UUID: 08df87108ecb4667b6b5924c7089f56c-20220209
-X-UUID: 08df87108ecb4667b6b5924c7089f56c-20220209
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2120577437; Wed, 09 Feb 2022 19:19:41 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 9 Feb 2022 19:19:40 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 9 Feb 2022 19:19:40 +0800
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        Leilk Liu <leilk.liu@mediatek.com>
-Subject: [PATCH 1/6] dt-bindings: spi: Add compatible for Mediatek IPM IP with single mode
-Date:   Wed, 9 Feb 2022 19:19:33 +0800
-Message-ID: <20220209111938.16137-2-leilk.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209111938.16137-1-leilk.liu@mediatek.com>
-References: <20220209111938.16137-1-leilk.liu@mediatek.com>
+        Wed, 9 Feb 2022 07:06:30 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A512C035415;
+        Wed,  9 Feb 2022 03:18:35 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id B6A861F383;
+        Wed,  9 Feb 2022 11:18:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644405513; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ecb8kVlF7a5at0PDcBUbE7FnB0BbH/drXtwZ1H37VY0=;
+        b=2zaMGnkRseoohcMxJ0UKiQwBH3HT9zxNZwrqmAQeK/hxQsPtZ2cPaagOQGLr84S+gKTbuq
+        XSiabKkFxoT75plqyz5vp64poTlQkctQ58HlNtAhY16ou/ERlhv4NoyTrCzzhA1o5gEosq
+        SHHLKc7P2gGJeNhh/MdqMHbh4WBCxmI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644405513;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ecb8kVlF7a5at0PDcBUbE7FnB0BbH/drXtwZ1H37VY0=;
+        b=/ERE/ROgj7d+GmcSRkLN49t/Q3Ze37kTBXhwsDN8kfZpxCElt1nJJp5MLM4vNlnvWYocLv
+        Xboil1h+ibhmhICA==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A4CABA3B83;
+        Wed,  9 Feb 2022 11:18:33 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 63DD5A05C6; Wed,  9 Feb 2022 12:18:32 +0100 (CET)
+Date:   Wed, 9 Feb 2022 12:18:32 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Ritesh Harjani <riteshh@linux.ibm.com>
+Cc:     Jan Kara <jack@suse.cz>,
+        syzbot <syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com>,
+        jack@suse.com, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
+Subject: Re: [syzbot] KASAN: use-after-free Read in jbd2_journal_wait_updates
+Message-ID: <20220209111832.b7rrzaadwtbhj4f5@quack3.lan>
+References: <00000000000040c94205d78125af@google.com>
+ <20220208161429.6oviyrpovqpcwpz5@quack3.lan>
+ <20220209095615.rhoizbwcn3kbazzq@riteshh-domain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209095615.rhoizbwcn3kbazzq@riteshh-domain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds dt-binding documentation for
-Mediatek SPI IPM IP with single mode.
+On Wed 09-02-22 15:26:47, Ritesh Harjani wrote:
+> On 22/02/08 05:14PM, Jan Kara wrote:
+> > On Tue 08-02-22 04:49:19, syzbot wrote:
+> > > Hello,
+> > >
+> > > syzbot found the following issue on:
+> > >
+> > > HEAD commit:    555f3d7be91a Merge tag '5.17-rc3-ksmbd-server-fixes' of gi..
+> > > git tree:       upstream
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=17e55852700000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=88e0a6a3dbf057cf
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=afa2ca5171d93e44b348
+> > > compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13b03872700000
+> > >
+> > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > Reported-by: syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com
+> >
+> > So the syzbot reproducer looks bogus to me but the bug is real.
+> > jbd2_journal_wait_updates() looks at commit_transaction after dropping
+> > j_state_lock and sleeping which is certainly prone to use-after-free
+> > issues.
+> 
+> Yes, thanks for taking a look at it.
+> 
+> >
+> > Funnily, Ritesh's removal of t_handle_lock should "fix" the problem by
+> > removing this dereference. So Ritesh, please just add some reference to
+> > syzbot report and maybe a backport to stable would be warranted.
+> >
+> 
+> This actually looks like a regression because of commit [1].
+> So I am thinking of sending a separate patch [2] as a fix for this (after my
+> testing).
 
-Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
----
- Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Yeah, and my fault for not catching this during review :-|. Anyway the
+proposed fix looks good.
 
-diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-index bfa44acb1bdd..0a2fc0404cb3 100644
---- a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-+++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
-@@ -41,6 +41,7 @@ properties:
-               - mediatek,mt8135-spi
-               - mediatek,mt8173-spi
-               - mediatek,mt8183-spi
-+              - mediatek,ipm-spi-single
- 
-   reg:
-     maxItems: 1
+> Not sure why fstests testing didn't pick this up (given it's a common race),
+> or is it because of my recent removal of CONFIG_KASAN from my testing :(
+> 
+> I will try a full "auto" test with CONFIG_KASAN enabled and see if we could hit
+> this in fstests or not. If not then I will work towards adding a targetted test
+> to capture such race.
+
+Yeah, without KASAN this could lead to memory corruption by the spin_lock()
+but in most cases it will just pass by unnoticed because the memory does
+not get reused so quickly.
+
+								Honza
 -- 
-2.25.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
