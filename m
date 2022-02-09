@@ -2,198 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B55C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235550AbiBIJmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:42:23 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53038 "EHLO
+        id S231578AbiBIJoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:44:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235484AbiBIJmJ (ORCPT
+        with ESMTP id S229972AbiBIJoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:42:09 -0500
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB129C03C1B5;
-        Wed,  9 Feb 2022 01:42:01 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 801BF580143;
-        Wed,  9 Feb 2022 03:36:37 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Wed, 09 Feb 2022 03:36:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=MbTZeUMy+/3/3bs2adM+ZVlFkQtC01OoGyTtWh
-        YFSeU=; b=S49DnfIpi/7YTPKlQTockOxwAtMUVs8XaPAiJ/NSqOVR6Rh6IGRO1n
-        LAG3hJwbtOyPDF+4iwmmQELd8g79xb/533eMFRRhANW7kCEgkumr2MCgiR3Kek1J
-        5pXruIVIhuyAIGPg78OC5j948i59TzyaGc90LHBqXgon1QgeQ46H4KCJkiTSd/fB
-        ZL/Argyab9EWa5Li/lR5xFQm6mKeP3iJOCWhgjIevI5jN4oeyXqLOynHPBPvZCvx
-        dWcBR3GPy4jNeAfNSFLFCwFzcn8XUHidL73XIFmoqOjXTOnnX86kuoRe6g/F/Lyp
-        WBMPJQJ6kCnPZLoxA5cqb+i9jIX/j2tg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=MbTZeUMy+/3/3bs2a
-        dM+ZVlFkQtC01OoGyTtWhYFSeU=; b=PHVf772ii7K+5t4pXf37WYaSK48OU8J4r
-        F+DKwkyz9d+QYI9SQX3wLUFxmF2UTznVXNBdkCR50Oa21bJCxj5q2j997o/wLzl5
-        Z4D9FwOjCAW+rDedAs3Fewk+J9Gh17uklYOAy6bUewetfe8lFG+E/EQIIncst+00
-        FaqM9VVipi+w54ltzEemoWr46YPMgukeGZv0OQTzaC8OwFPdyBPinl8xnEzBEqfF
-        e3ZSjuyMFM+1iLX4IjzX89C9WWqTC5peFWQptliq44yCbyC9dE9E4TYihleT7412
-        Zm2bA2zOkZ0y7Agf/y0mKDjexYRyR8IBDmhdMsTjLd+Zuq9hQeUOg==
-X-ME-Sender: <xms:FH0DYuD7vrCmr4tMEF_NxPW3A9DweTL3IOjrV8ES1WX63MXEzpz9sQ>
-    <xme:FH0DYoiaEpKLrLMV6OXitHt3egZGd8A4KuE7t8UayDGq2zzW9EHpFlg8Muqx-nJLt
-    ywNDtsq6UFiJzy9gqQ>
-X-ME-Received: <xmr:FH0DYhlUgkWNzGTBoJocTIQzbxTZNraYErghFy_trYjxjBMT9ZOate6gFGMrSUcYlPkohkC3FsPRxbOKWAm5ZNIfqgwJvdQvcrjnLao>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdduudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddunecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepuddvudfhkeekhefgffetffelgffftdehffduffegveetffehueeivddvjedv
-    gfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:FH0DYsyw-yk1XHoupQcO4q2J5SZheBUyppnBctvdriEY8YhqYEa7QA>
-    <xmx:FH0DYjRTVSFqpKx3UWXxA2BpCfeY_tu-pD3u59J4UU8S9etKQFNBvg>
-    <xmx:FH0DYnbB6yYXd8s63NJzV7zEYe0bUm66K0rd6YgYO0BmIfOg9HoFRA>
-    <xmx:FX0DYhFbnHQxulT0ewqsMPradtaihtmkguPJli-9w7d2PSDJWujO_g>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 03:36:35 -0500 (EST)
-Date:   Wed, 9 Feb 2022 09:36:33 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Sui Jingfeng <15330273260@189.cn>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
- controller
-Message-ID: <20220209083633.mlfbiydi7cbpgexa@houat>
-References: <20220203082546.3099-1-15330273260@189.cn>
- <20220203082546.3099-2-15330273260@189.cn>
- <20220203085851.yqstkfgt4dz7rcnw@houat>
- <4dd6d32a-9818-1adf-cb3f-20c183ae2020@189.cn>
+        Wed, 9 Feb 2022 04:44:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24F9DE06A602
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:44:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644399609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HkjkJCV3RnHyv5DSE+jtNb73ClQ4fv7HXl/dV01kYKA=;
+        b=bC/4gKYS6sT2hAWsps87ucYKPUMCaEA72CXkrCkX2Qj2hBk8sV/FCDNUlt1TcipAZwaPcX
+        jGHEWGTTmflXCnZjb8YTMSCFRm8u7zHCuQocXiblRdNOOSOdOokHjPYtl0yR52qrUxDNFs
+        yxrvUdt+X59TykT4isw5+4zklhmIJ4I=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-357-kOzwFI8MOgOsnHzbSMiIzA-1; Wed, 09 Feb 2022 04:13:57 -0500
+X-MC-Unique: kOzwFI8MOgOsnHzbSMiIzA-1
+Received: by mail-wr1-f70.google.com with SMTP id c9-20020adfa709000000b001dde29c3202so833707wrd.22
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:13:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=HkjkJCV3RnHyv5DSE+jtNb73ClQ4fv7HXl/dV01kYKA=;
+        b=x2DGWRCAjoHIIL4yqazupyep0VVbFI+cAfGjHkT+JE9fJGT69EZZbFO4xD8T9382Wo
+         d7j2jL39X5nqUhhyjvQhURpsqP088gWIDcOHejtYg4EAnbgvHVGENrOwW3D0V9ZQHyV4
+         ulFW58wwVIZl8AeQRSe4SZfccL6tpsiyjew0CcBHhTREx26KZvFOsD6KY7VktWtn0R4B
+         UrQchgExomcZ18U8HPgt4ujrmkN2Ni/a4dm25U8BPcDTNqI4QMcVqztsjeeuPT8BIn4z
+         5JUJdhw8YDTouHqRRVSx2bFbyxRGVQgmTbFHSkBgAodsK0Y7jIkaQKhwVoUopEdJSoSz
+         RgDg==
+X-Gm-Message-State: AOAM530HKj5VkEyOWXrQ1dWn55ypr0wlDTO3aIxspAdxEhBo7cXTxXgf
+        bbt2C33w4HMDLAOivRHmi/soJAv0HvNICUjPEYY7C3uLqU482jnJtktgjObjDCOj7UMfehtRH7m
+        WytjV6q4x+8aSAYRydXqol4Lf8tX7mDxzn351JvhMP/tjqHuveekAyeFbwMR5aOaGI8ozReZ2Pd
+        Q=
+X-Received: by 2002:a5d:53c9:: with SMTP id a9mr1221614wrw.672.1644398035804;
+        Wed, 09 Feb 2022 01:13:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwN9IG1QALjH1ZUKqnf6ckKETjeoTD+yjoTXUPxM8Hq+sCkIBChwrk3c3nzhT8/h+bVv4FVsQ==
+X-Received: by 2002:a5d:53c9:: with SMTP id a9mr1221588wrw.672.1644398035459;
+        Wed, 09 Feb 2022 01:13:55 -0800 (PST)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id w6sm13557623wrp.51.2022.02.09.01.13.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 01:13:55 -0800 (PST)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: [PATCH v3 7/7] dt-bindings: display: ssd1307fb: Add myself as binding co-maintainer
+Date:   Wed,  9 Feb 2022 10:13:44 +0100
+Message-Id: <20220209091344.2513662-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209090314.2511959-1-javierm@redhat.com>
+References: <20220209090314.2511959-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kqetfhrtfefgtoun"
-Content-Disposition: inline
-In-Reply-To: <4dd6d32a-9818-1adf-cb3f-20c183ae2020@189.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The ssd130x DRM driver also makes use of this Device Tree binding to allow
+existing users of the fbdev driver to migrate without the need to change
+their Device Trees.
 
---kqetfhrtfefgtoun
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add myself as another maintainer of the binding, to make sure that I will
+be on Cc when patches are proposed for it.
 
-On Fri, Feb 04, 2022 at 12:41:37AM +0800, Sui Jingfeng wrote:
-> > > +static int lsdc_primary_plane_atomic_check(struct drm_plane *plane,
-> > > +					   struct drm_atomic_state *state)
-> > > +{
-> > > +	struct drm_device *ddev =3D plane->dev;
-> > > +	struct lsdc_device *ldev =3D to_lsdc(ddev);
-> > > +	struct drm_plane_state *old_plane_state =3D drm_atomic_get_old_plan=
-e_state(state, plane);
-> > > +	struct drm_plane_state *new_plane_state =3D drm_atomic_get_new_plan=
-e_state(state, plane);
-> > > +	struct drm_framebuffer *new_fb =3D new_plane_state->fb;
-> > > +	struct drm_framebuffer *old_fb =3D old_plane_state->fb;
-> > > +	struct drm_crtc *crtc =3D new_plane_state->crtc;
-> > > +	u32 new_format =3D new_fb->format->format;
-> > > +	struct drm_crtc_state *new_crtc_state;
-> > > +	struct lsdc_crtc_state *priv_crtc_state;
-> > > +	int ret;
-> > > +
-> > > +	if (!crtc)
-> > > +		return 0;
-> > > +
-> > > +	new_crtc_state =3D drm_atomic_get_new_crtc_state(state, crtc);
-> > > +	if (WARN_ON(!new_crtc_state))
-> > > +		return -EINVAL;
-> > > +
-> > > +	priv_crtc_state =3D to_lsdc_crtc_state(new_crtc_state);
-> > > +
-> > > +	ret =3D drm_atomic_helper_check_plane_state(new_plane_state,
-> > > +						  new_crtc_state,
-> > > +						  DRM_PLANE_HELPER_NO_SCALING,
-> > > +						  DRM_PLANE_HELPER_NO_SCALING,
-> > > +						  false,
-> > > +						  true);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	/*
-> > > +	 * Require full modeset if enabling or disabling a plane,
-> > > +	 * or changing its position, size, depth or format.
-> > > +	 */
-> > > +	if ((!new_fb || !old_fb ||
-> > > +	     old_plane_state->crtc_x !=3D new_plane_state->crtc_x ||
-> > > +	     old_plane_state->crtc_y !=3D new_plane_state->crtc_y ||
-> > > +	     old_plane_state->crtc_w !=3D new_plane_state->crtc_w ||
-> > > +	     old_plane_state->crtc_h !=3D new_plane_state->crtc_h ||
-> > > +	     old_fb->format->format !=3D new_format))
-> > > +		new_crtc_state->mode_changed =3D true;
-> > > +
-> > > +
-> > > +	priv_crtc_state->pix_fmt =3D lsdc_primary_get_default_format(crtc);
-> > Storing the pixel format in the CRTC state is weird? What would happen
-> > if you have a primary plane and a cursor in different formats?
-> >=20
-> > Also, reading the default format from a register doesn't look right.
-> > atomic_check can occur at any time, including before a previous commit,
-> > or while the hardware is disabled. You should rely on either a constant
-> > or the previous state here.
-> >=20
-> Currently, private CRTC state(priv_crtc_state) is not get used by the cur=
-sor's
-> atomic_check() and atomic_update(). I means this is only for the primary =
-plane.
-> And both and the primary and the cursor using=A0 XRGB8888 format, what I =
-really
-> want=A0here is let the atomic_update to update the framebuffer's format, =
-because
-> the firmware (pmon) of some board set the framebuffer's format as RGB565.
+Suggested-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
-atomic_update will be called each time the plane state is changed, so it
-won't be an issue: when the first state will be committed, your
-atomic_update function will be called and thus you'll overwrite what was
-left of the firmware setup.
+(no changes since v2)
 
-> If the hardware's format is same with the plane state, then there is no n=
-eed to
-> update the FB's format register, save a function call, right?
+Changes in v2:
+- Add myself as co-maintainer of the ssd1370fb DT binding (Sam Ravnborg).
 
-My point was more about the fact that you're using the wrong abstraction
-there. The format is a property of the plane, not from the CRTC. In KMS
-(and in most drivers), you can have multiple planes with different
-formats all attached to the same CRTC just fine.
+ Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Maxime
+diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+index 2ed2a7d0ca2f..9baafd0c42dd 100644
+--- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
++++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+@@ -8,6 +8,7 @@ title: Solomon SSD1307 OLED Controller Framebuffer
+ 
+ maintainers:
+   - Maxime Ripard <mripard@kernel.org>
++  - Javier Martinez Canillas <javierm@redhat.com>
+ 
+ properties:
+   compatible:
+-- 
+2.34.1
 
---kqetfhrtfefgtoun
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgN9EQAKCRDj7w1vZxhR
-xZ6BAP9j8kJHoG5YQyu1To5wFlm7TFa/y9uSGX81KcAkqlYkZwD/W3iUA4ZG9tdL
-VNf2zBWWGP2cOgzaLtyzWTOxYsxcvAs=
-=ByIy
------END PGP SIGNATURE-----
-
---kqetfhrtfefgtoun--
