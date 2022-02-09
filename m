@@ -2,141 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A59B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:43:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233909AbiBIGnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:43:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
+        id S233676AbiBIGnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:43:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232439AbiBIGnK (ORCPT
+        with ESMTP id S232761AbiBIGnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:43:10 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12898C043181
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:43:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644388994; x=1675924994;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=zlXbUZz2vYoVlpMq7pYN1eHaPofiuIFPWABuJTqRbIw=;
-  b=HIUFe8zzzKbvUGf45gvki5l/bqjNZqukZ43ID2+NL4ITeiOldF8+Ve10
-   NGHX6uVbppyiBaEtRzLLVGLotlreH63PIj+MuGFhOABehhUZMflRpECOu
-   ssK3G3RKhDU5cZsbHkvuA0eq4OaD8IadKMbUFNUtEeqO9DQqbcePcgIGT
-   Jls3TIM8sYJouga6D9+3d6E0hOYWd01dADr+Y4wKEHCxS1qfjswHmqxk4
-   fi/beDLIBSbtcWpnZWzq0g2ER1ixkIZm0CUDg1GMoZZgziNgrNgVtF8C5
-   Of4Xec50gulRKDh/cIuQD/1JO5njY/8mzIqBsgFUFoP4FldWukNsN76d1
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249342332"
-X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
-   d="scan'208";a="249342332"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 22:43:13 -0800
-X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
-   d="scan'208";a="540964099"
-Received: from ymtarple-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.231.100])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 22:43:13 -0800
-Date:   Tue, 8 Feb 2022 22:43:13 -0800
-From:   Lucas De Marchi <lucas.demarchi@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        Matthew Brost <matthew.brost@intel.com>,
-        Thomas =?utf-8?Q?Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        John Harrison <John.C.Harrison@intel.com>
-Subject: Re: [PATCH v2 02/18] iosys-map: Add a few more helpers
-Message-ID: <20220209064313.ithagwtjztcf4jfb@ldmartin-desk2>
-X-Patchwork-Hint: comment
-References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
- <20220208104524.2516209-3-lucas.demarchi@intel.com>
- <863e61f9-2888-11a2-271b-a443f4681987@suse.de>
+        Wed, 9 Feb 2022 01:43:42 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DDEC0401C7;
+        Tue,  8 Feb 2022 22:43:46 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id u6so2276156lfm.10;
+        Tue, 08 Feb 2022 22:43:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=pAAzM9YEmsN6BS7NBJa5z8OM37Zy1PTMVGmhl1fo81w=;
+        b=FlVvYLWZE91QEPrPjnkeKbrPdSH+5IeJN/XcHoBhkj2vD8EH3wR/24NglxFpdb+eTM
+         +Odo2S8UX7+C1f+j+JnNN86RN0MrROOerK5spsgTF6441CEsncZo/EiJgLd0UrXyq4ew
+         qHQXBblQ10ly18eF9co0j+Qc2WNfBqX5upTijJ/pjxqLnI8t+ay/agCNONO08mJ5AA1F
+         0ITPdrQi+oJsoFHrbIY0yP36MjyXKjJalN84O6oJ72h0/6YvgWje0y4XPRZiDWDr5CDT
+         n5JCD0U1OKqfyDCf0nIdC1BI7qsCi7MOC0jApbRuMropCtd+nHE/kgkqk9z586rPkztl
+         FYLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=pAAzM9YEmsN6BS7NBJa5z8OM37Zy1PTMVGmhl1fo81w=;
+        b=4J2o/wuZ3ZQn0gX1G8vxcly/RJJ04IULveF2oUi6s904Rdv2l0RuKSEVer3DbcVXPB
+         DKmOd/MpbEpR5T7uEo+T+HS6iHZ2F0xe0afrqF04UXpDPijGR6pSnzD9GGsk+46BJp1h
+         bbooWN/flwAcmF7YdbIwvncQBsFX+xaIxUnuJqA8o4z47OKOPo0XacX9LLJCxFK2qMiR
+         YjaNV/mr0jLuOCxDkOFr/Lcr/OxOEzD0jrsBuTWcmcnX3jBLR+Xo8L9qWuD+q/EU+UtF
+         HdmHRJQMoXHFSDysW4WVlbJjGHRGfdLFYvE8YWrrz+DKavER1CHmI4N2woQqBO0JZA8c
+         PAXg==
+X-Gm-Message-State: AOAM532hYOySh1LlGWvsXEs/cEH2IYboDCuNimrzb5I5ktnU8/gMdXL3
+        nIQPv1w6y3B1u0Y73GDYBoM=
+X-Google-Smtp-Source: ABdhPJypQnDZgbJ8Curzq6PkvfxuGqIegGNX0qm0cm40T1ctE7nHCinC134HL2iJXR+3MIPZGN5BQw==
+X-Received: by 2002:a05:6512:b11:: with SMTP id w17mr590074lfu.381.1644389024921;
+        Tue, 08 Feb 2022 22:43:44 -0800 (PST)
+Received: from grain.localdomain ([5.18.251.97])
+        by smtp.gmail.com with ESMTPSA id e13sm2328340ljj.85.2022.02.08.22.43.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 22:43:43 -0800 (PST)
+Received: by grain.localdomain (Postfix, from userid 1000)
+        id 349FD5A0020; Wed,  9 Feb 2022 09:43:43 +0300 (MSK)
+Date:   Wed, 9 Feb 2022 09:43:43 +0300
+From:   Cyrill Gorcunov <gorcunov@gmail.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "Lutomirski, Andy" <luto@kernel.org>,
+        "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "adrian@lisas.de" <adrian@lisas.de>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "kcc@google.com" <kcc@google.com>, "bp@alien8.de" <bp@alien8.de>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "rppt@kernel.org" <rppt@kernel.org>,
+        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+        Pavel Tikhomirov <ptikhomirov@virtuozzo.com>,
+        alexander.mikhalitsyn@virtuozzo.com
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YgNin5wkSaixCwdx@grain>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <YgAWVSGQg8FPCeba@kernel.org>
+ <YgDIIpCm3UITk896@lisas.de>
+ <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+ <YgI1A0CtfmT7GMIp@kernel.org>
+ <YgI37n+3JfLSNQCQ@grain>
+ <357664de-b089-4617-99d1-de5098953c80@www.fastmail.com>
+ <YgKiKEcsNt7mpMHN@grain>
+ <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <863e61f9-2888-11a2-271b-a443f4681987@suse.de>
+In-Reply-To: <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
+User-Agent: Mutt/2.0.7 (2021-05-04)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 07:23:04AM +0100, Thomas Zimmermann wrote:
->Hi
->
->Am 08.02.22 um 11:45 schrieb Lucas De Marchi:
->>First the simplest ones:
->>
->>	- iosys_map_memset(): when abstracting system and I/O memory,
->>	  just like the memcpy() use case, memset() also has dedicated
->>	  functions to be called for using IO memory.
->>	- iosys_map_memcpy_from(): we may need to copy data from I/O
->>	  memory, not only to.
->>
->>In certain situations it's useful to be able to read or write to an
->>offset that is calculated by having the memory layout given by a struct
->>declaration. Usually we are going to read/write a u8, u16, u32 or u64.
->>
->>As a pre-requisite for the implementation, add iosys_map_memcpy_from()
->>to be the equivalent of iosys_map_memcpy_to(), but in the other
->>direction. Then add 2 pairs of macros:
->>
->>	- iosys_map_rd() / iosys_map_wr()
->>	- iosys_map_rd_field() / iosys_map_wr_field()
->>
->>The first pair takes the C-type and offset to read/write. The second
->>pair uses a struct describing the layout of the mapping in order to
->>calculate the offset and size being read/written.
->>
->>We could use readb, readw, readl, readq and the write* counterparts,
->>however due to alignment issues this may not work on all architectures.
->>If alignment needs to be checked to call the right function, it's not
->>possible to decide at compile-time which function to call: so just leave
->>the decision to the memcpy function that will do exactly that.
->>
->>Finally, in order to use the above macros with a map derived from
->>another, add another initializer: IOSYS_MAP_INIT_OFFSET().
->>
->>v2:
->>   - Rework IOSYS_MAP_INIT_OFFSET() so it doesn't rely on aliasing rules
->>     within the union
->>   - Add offset to both iosys_map_rd_field() and iosys_map_wr_field() to
->>     allow the struct itself to be at an offset from the mapping
->>   - Add documentation to iosys_map_rd_field() with example and expected
->>     memory layout
->>
->>Cc: Sumit Semwal <sumit.semwal@linaro.org>
->>Cc: Christian König <christian.koenig@amd.com>
->>Cc: Thomas Zimmermann <tzimmermann@suse.de>
->>Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
->>Cc: dri-devel@lists.freedesktop.org
->>Cc: linux-kernel@vger.kernel.org
->>Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
->>---
->>  include/linux/iosys-map.h | 202 ++++++++++++++++++++++++++++++++++++++
->>  1 file changed, 202 insertions(+)
->>
->>diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
->>index edd730b1e899..c6b223534b21 100644
->>--- a/include/linux/iosys-map.h
->>+++ b/include/linux/iosys-map.h
->>@@ -6,6 +6,7 @@
->>  #ifndef __IOSYS_MAP_H__
->>  #define __IOSYS_MAP_H__
->>+#include <linux/kernel.h>
->>  #include <linux/io.h>
->>  #include <linux/string.h>
->
->Alphabetically sorted, please.
->
->What requires kernel.h? Can this be reduced to another include 
->statement? Maybe stddef.h for offsetof() ?
+On Wed, Feb 09, 2022 at 02:18:42AM +0000, Edgecombe, Rick P wrote:
+...
+> 
+> Still wrapping my head around the CRIU save and restore steps, but
+> another general approach might be to give ptrace the ability to
+> temporarily pause/resume/set CET enablement and SSP for a stopped
+> thread. Then injected code doesn't need to jump through any hoops or
+> possibly run into road blocks. I'm not sure how much this opens things
+> up if the thread has to be stopped...
+> 
+> Cyrill, could it fit into the CRIU pause and resume flow? What action
+> causes the final resuming of execution of the restored process for
+> checkpointing and for restore? Wondering if we could somehow make CET
+> re-enable exactly then.
+> 
+> And I guess this also needs a way to create shadow stack allocations at
+> a specific address to match where they were in the dumped process. That
+> is missing in this series.
 
-Humn... I believe it was something in the previous implementation that
-is not there anymore. Because this builds fine without the include now
-and I don't think it is something being included by the headers already
-here.  So this additional include can just be removed.
-
-Lucas De Marchi
+Thanks Rick! This sounds like an option. I need a couple of days to refresh
+my memory about criu internals. Let me CC a few current active criu developers
+(CC list is already big enough though:), maybe this will speedup the procedure.
