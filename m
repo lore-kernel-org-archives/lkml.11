@@ -2,129 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89259C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C388C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236986AbiBIQ1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:27:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
+        id S236880AbiBIQZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:25:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236894AbiBIQ00 (ORCPT
+        with ESMTP id S236821AbiBIQZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:26:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850EDC05CB8E;
-        Wed,  9 Feb 2022 08:26:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7A7ABB822D1;
-        Wed,  9 Feb 2022 16:26:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE65C340EE;
-        Wed,  9 Feb 2022 16:26:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644423978;
-        bh=MRbUczyI2MxyyUekUmARNowdQaSt4+OAXAfxdGF+cjw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cZWJh6dWKuwLXww8rTdHjvBoqL6fV44lWmMne0IA4lJ9ivhcV761mwmhF2zJeG3h+
-         aCa9LVm1bc1N1QtoSbRIvj8cBmI6KGARumsTJogeiLuU3Kkc2wthaoCIp/M/SSDJUi
-         svmEVR0mpCvx9ukLWZY468fX54ZGuXIRRPtKQ/QYFP6AmUhf8curB/pW2sbAHkVl3C
-         76Cgmw5jZy6WZPN0sdn3iN0YLm6EIJUVOMyUv7589U8Uw1yQmsIzbvxtmseZl0oi5I
-         XoBu+UeQOZNJdTBjd/Y/OaJN0QR7vVI//e4IrMYY5ErWLoF0OIKPz5EidhgBBakjdK
-         iGiBfFigYhU/w==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nHpnL-006fgT-Sd; Wed, 09 Feb 2022 16:26:15 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        kernel-team@android.com
-Subject: [PATCH 00/10] irqchip: Prevent drivers abusing irq_chip::name
-Date:   Wed,  9 Feb 2022 16:25:57 +0000
-Message-Id: <20220209162607.1118325-1-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 9 Feb 2022 11:25:41 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF85C05CB86;
+        Wed,  9 Feb 2022 08:25:44 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: detlev)
+        with ESMTPSA id 5A86E1F437CC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644423943;
+        bh=gDx8AevH/7v2bszTk4dO4GKNMSB8b/jIT4jSxIO98/8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FfXgUKHm+msioKg64rAQSkHFkHKTZQrdzXczGgHhGPTwcst6IIoxkFPmch14NYSXl
+         5bWqx//7S7TObaFng//M5QANQO7w2uNVr/QvnUZaLzha5w4FOIY2b8RAMGVFpjktlB
+         UiWz6cAKvAS/EcfOM7YYnLwMZD8bMszJ+BKoiLmCCA9/S7RDg7Xl7dygRA7OdLpiQ2
+         X/UDKaoj36PYf+lWQ75acTmDIesTRMJ8oa6iVRXz0yWIajIGEDmTqNQ4+1FLfPwm01
+         hvaso6n5QYzAA4Rtgfr3L7SUUwYSjr7BVyGHKZy3EypL98m/c4leFv0qslkchtWsD/
+         9hS8CnNd+yL1A==
+From:   Detlev Casanova <detlev.casanova@collabora.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Detlev Casanova <detlev.casanova@collabora.com>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        soc@kernel.org (maintainer:ARM AND ARM64 SoC SUB-ARCHITECTURES (COMMON
+        PARTS)), Rob Herring <robh+dt@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM
+        BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE...),
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM AND ARM64 SoC
+        SUB-ARCHITECTURES (COMMON PARTS)),
+        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
+        DEVICE TREE BINDINGS),
+        linux-rpi-kernel@lists.infradead.org (moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE)
+Subject: [PATCH 2/2] ARM: dts: Add bcm2711-rpi-4-b-7inch-ts-dsi.dts
+Date:   Wed,  9 Feb 2022 11:25:12 -0500
+Message-Id: <20220209162515.706729-3-detlev.casanova@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220209162515.706729-1-detlev.casanova@collabora.com>
+References: <20220209162515.706729-1-detlev.casanova@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl, matthias.bgg@gmail.com, grygorii.strashko@ti.com, ssantosh@kernel.org, khilman@kernel.org, tony@atomide.com, tglx@linutronix.de, vz@mleia.com, andrew@lunn.ch, gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com, kernel@esmil.dk, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Another common abuse in irqchip drivers (and derivatives) is to place
-a string representing the underlying device in the irq_chip::name
-field that gets displayed in /proc/interrupts while this should only
-be an indication of the "type" of interrupt controller.
+Add a device tree to support the official Raspberrypi 7" touchscreen for
+the Raspberry Pi 4 B
 
-Not only this is pretty pointless (with hierarchical domains, you only
-see the top chip), but it also gets in the way of making the irq_chip
-structure const. For debug, we have a whole infrastructure that does
-everything you can imagine (and stuff you don't want to).
+The panel is connected on the DSI 1 port and uses the simple-panel
+driver.
 
-We can't remove this name as it is visible from userspace and there is
-a whole collection of CI scripts that parse /proc/interrupts for good
-(and mostly bad) reasons. The solution is to use the irq_print_chip()
-callback and to let it output whatever string is necessary.
+The device tree also makes sure to activate:
+ * dvp: bcm2711 clock driver
+ * hvs: Hardware Video Scaler
+ * pixelvalve[0-4]: CRTC modules
+ * txp: CRTC Writeback
 
-Having done that, we can cleanup a few irqchip drivers and make their
-irq_chip structure const (which requires touching a handful of core
-functions). Whilst we're at it, we do the same for a couple of gpio
-drivers.
+Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+---
+ arch/arm/boot/dts/Makefile                    |   1 +
+ .../boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts | 129 ++++++++++++++++++
+ arch/arm64/boot/dts/broadcom/Makefile         |   1 +
+ .../broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts |   2 +
+ 4 files changed, 133 insertions(+)
+ create mode 100644 arch/arm/boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+ create mode 100644 arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts
 
-This series relies on the one posted at [1].
-
-Thanks,
-
-	M.
-
-[1] https://lore.kernel.org/r/20220201120310.878267-1-maz@kernel.org
-
-Marc Zyngier (10):
-  irqdomain: Let irq_domain_set_{info,hwirq_and_chip} take a const
-    irq_chip
-  genirq: Allow irq_chip registration functions to take a const irq_chip
-  irqchip/gic: Switch to dynamic chip name output
-  irqchip/lpc32xx: Switch to dynamic chip name output
-  irqchip/mvebu-pic: Switch to dynamic chip name output
-  irqchip/ts4800: Switch to dynamic chip name output
-  irqchip/versatile-fpga: Switch to dynamic chip name output
-  gpio: mt7621: Switch to dynamic chip name output
-  gpio: omap: Switch to dynamic chip name output
-  pinctrl: starfive: Switch to dynamic chip name output
-
- drivers/gpio/gpio-mt7621.c             |  12 ++-
- drivers/gpio/gpio-omap.c               |  28 ++++---
- drivers/irqchip/irq-ftintc010.c        |   1 -
- drivers/irqchip/irq-gic.c              | 102 +++++++++++++------------
- drivers/irqchip/irq-lpc32xx.c          |  34 ++++++---
- drivers/irqchip/irq-mvebu-pic.c        |  28 ++++---
- drivers/irqchip/irq-ts4800.c           |  25 ++++--
- drivers/irqchip/irq-versatile-fpga.c   |  46 ++++++-----
- drivers/pinctrl/pinctrl-starfive.c     |  11 ++-
- include/linux/irq.h                    |   7 +-
- include/linux/irqchip/versatile-fpga.h |  14 ----
- include/linux/irqdomain.h              |   5 +-
- kernel/irq/chip.c                      |   9 +--
- kernel/irq/irqdomain.c                 |   7 +-
- 14 files changed, 189 insertions(+), 140 deletions(-)
- delete mode 100644 include/linux/irqchip/versatile-fpga.h
-
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 0de64f237cd8..b46daf2df4ce 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -94,6 +94,7 @@ dtb-$(CONFIG_ARCH_BCM2835) += \
+ 	bcm2837-rpi-cm3-io3.dtb \
+ 	bcm2711-rpi-400.dtb \
+ 	bcm2711-rpi-4-b.dtb \
++	bcm2711-rpi-4-b-7inch-ts-dsi.dtb \
+ 	bcm2711-rpi-cm4-io.dtb \
+ 	bcm2835-rpi-zero.dtb \
+ 	bcm2835-rpi-zero-w.dtb
+diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+new file mode 100644
+index 000000000000..62e986358c2a
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+@@ -0,0 +1,129 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include "bcm2711-rpi-4-b.dts"
++
++/ {
++	model = "Raspberry Pi 4 Model B + Rpi 7inch touchscreen";
++
++	panel_disp1: panel_disp1@0 {
++		reg = <0 0 0>;
++		compatible = "raspberrypi,7inch-dsi", "simple-panel";
++		backlight = <&reg_display>;
++		power-supply = <&reg_display>;
++		status = "okay";
++
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&bridge_out>;
++			};
++		};
++	};
++
++	reg_bridge: reg_bridge@0 {
++		reg = <0 0 0>;
++		compatible = "regulator-fixed";
++		regulator-name = "bridge_reg";
++		gpio = <&reg_display 0 0>;
++		vin-supply = <&reg_display>;
++		enable-active-high;
++		status = "okay";
++	};
++};
++
++&i2c_csi_dsi {
++	ft5406: ts@38 {
++		compatible = "edt,edt-ft5506";
++		reg = <0x38>;
++		status = "okay";
++
++		vcc-supply = <&reg_display>;
++		reset-gpio = <&reg_display 1 1>;
++
++		touchscreen-size-x = < 800 >;
++		touchscreen-size-y = < 480 >;
++
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++	};
++
++	reg_display: reg_display@45 {
++		compatible = "raspberrypi,7inch-touchscreen-panel-regulator";
++		reg = <0x45>;
++		gpio-controller;
++		#gpio-cells = <2>;
++		status = "okay";
++	};
++
++};
++
++&dsi1 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	port {
++		dsi_out: endpoint {
++			remote-endpoint = <&bridge_in>;
++		};
++	};
++
++	bridge@0 {
++		reg = <0>;
++		compatible = "toshiba,tc358762";
++		vddc-supply = <&reg_bridge>;
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				bridge_in: endpoint {
++					remote-endpoint = <&dsi_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++				bridge_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++	};
++};
++
++&aon_intr {
++	status = "okay";
++};
++
++&dvp {
++	status = "okay";
++};
++
++&hvs {
++	status = "okay";
++};
++
++&pixelvalve0 {
++	status = "okay";
++};
++
++&pixelvalve1 {
++	status = "okay";
++};
++
++&pixelvalve2 {
++	status = "okay";
++};
++
++&pixelvalve3 {
++	status = "okay";
++};
++
++&pixelvalve4 {
++	status = "okay";
++};
++
++&txp {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/broadcom/Makefile b/arch/arm64/boot/dts/broadcom/Makefile
+index c6882032a428..965361bff829 100644
+--- a/arch/arm64/boot/dts/broadcom/Makefile
++++ b/arch/arm64/boot/dts/broadcom/Makefile
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ dtb-$(CONFIG_ARCH_BCM2835) += bcm2711-rpi-400.dtb \
+ 			      bcm2711-rpi-4-b.dtb \
++			      bcm2711-rpi-4-b-7inch-ts-dsi.dtb \
+ 			      bcm2711-rpi-cm4-io.dtb \
+ 			      bcm2837-rpi-3-a-plus.dtb \
+ 			      bcm2837-rpi-3-b.dtb \
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts b/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+new file mode 100644
+index 000000000000..c325adc4f874
+--- /dev/null
++++ b/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b-7inch-ts-dsi.dts
+@@ -0,0 +1,2 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "arm/bcm2711-rpi-4-b-7inch-ts-dsi.dts"
 -- 
-2.30.2
+2.35.1
 
