@@ -2,145 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBDDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B9AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235235AbiBIOuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:50:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40836 "EHLO
+        id S235244AbiBIOwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiBIOuQ (ORCPT
+        with ESMTP id S231293AbiBIOww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:50:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7BE87C061355
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:50:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644418218;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GCdwEoIBITb866ZII/MklMSrfR+LqGATKN4cy7oWV0k=;
-        b=Tz80JRVgzCJt1iWSVO0+IbvqfpexTrcYTsejKkYlUKToOOunUbAn/WbdvtU0jv+x1AC7mQ
-        JlJkLr/cA5aP1QdpsP+y/MpLUBrSy15Zj8sDVMplJbbY8OtuCOH9XpcCKmFQLxCwMQewpP
-        ifNPczo5aZm/pwGkbw5NCnrMCofW688=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-321-x4R4-UJ4NqaWm-2McJEmKQ-1; Wed, 09 Feb 2022 09:50:17 -0500
-X-MC-Unique: x4R4-UJ4NqaWm-2McJEmKQ-1
-Received: by mail-wm1-f69.google.com with SMTP id 125-20020a1c0283000000b0037bf720e6a8so405842wmc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 06:50:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GCdwEoIBITb866ZII/MklMSrfR+LqGATKN4cy7oWV0k=;
-        b=nXIuEcL+rqkS0lktvLYHptIdkAdgET5MWTJhzYtsCdjpThP3E6ZygktBdTQoxmmzgz
-         juYuaGzHmzacTF1h49u7yf5xMhLSTxdughFIZPREdvZK/MUZowKv1Xa5JElorY+DZ+jb
-         duxCb//umBgpRDE4hxaHb2Kz7JTQPh18PV+XSLxEwnu4AyTL4J21UXIOhQ8v+bIkrmlX
-         Bv9rycQYKhcF5eJzGfgVViNux4WHem3wAgxV3genzOxEhd36ukbNW8pUOL/xy4E7pLSG
-         SAvjltMEhJ+ZMDEVLQmcJOrovW7B8LnESpajdFulsxfL3YVDMc2zYW3lf1gXA+ASIywi
-         +7QQ==
-X-Gm-Message-State: AOAM532Z1AZ39F7IpEZ1+F0Va/X/U9adPZbZRcwQHy/LgrUDxHGtddLn
-        w4Qn9FbZYSmtA08ugkV0QIVxFwQXVS9n108C/9HTwejemXvrSVY+r2LJbDmHfD6aqaMsR3jlwSJ
-        +77zU/tTulPfId5XZlicRuKBy
-X-Received: by 2002:adf:c74f:: with SMTP id b15mr2468796wrh.307.1644418216019;
-        Wed, 09 Feb 2022 06:50:16 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzZ+aCmdyVfsqG8nX2yK7Vow4vj4dB6fQbmE3flM8O2RH71KLJgArlRFmLkg6F73kXfRljWzw==
-X-Received: by 2002:adf:c74f:: with SMTP id b15mr2468781wrh.307.1644418215812;
-        Wed, 09 Feb 2022 06:50:15 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id t4sm15470023wro.71.2022.02.09.06.50.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 06:50:15 -0800 (PST)
-Message-ID: <561e1f22-2741-b414-0267-14587d59d5de@redhat.com>
-Date:   Wed, 9 Feb 2022 15:50:13 +0100
+        Wed, 9 Feb 2022 09:52:52 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57971C06157B;
+        Wed,  9 Feb 2022 06:52:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644418375; x=1675954375;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Jy56aOvIJnkxVupadGEe3soUmE/7DFN/aslWw/+yKeE=;
+  b=Jt1mraJkGqdqG2Y+OA1WnezYS2wuE6gllxDucPjmajX4WGBnjCE92b26
+   864/KfKgOqlYrg/iD4RIk7mhfrmpjM8VPjnzKo8mOBP4ef6eViGwrRsXO
+   AXzyj+hKdqBQE2f+auJPZA6otWOHxUsQUwxmmGC7/A6dVd5jC5+yk6MnB
+   8=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Feb 2022 06:52:55 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 06:52:55 -0800
+Received: from [10.216.56.214] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 9 Feb 2022
+ 06:52:51 -0800
+Message-ID: <636929f8-0448-8ed9-34d2-ddc442f6b205@quicinc.com>
+Date:   Wed, 9 Feb 2022 20:22:48 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
+Subject: Re: [PATCH] sched/uclamp: New sysctl to tweak boost for uclamp tasks
 Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        linux-pwm@vger.kernel.org
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209090314.2511959-4-javierm@redhat.com>
- <YgPE8Z7HxU2wv7J/@sirena.org.uk>
- <d1025530-90e1-fbc5-c06b-f62ed83f2f19@redhat.com>
- <YgPOKf1QcOCtTisx@sirena.org.uk>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <YgPOKf1QcOCtTisx@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
+To:     Vincent Donnefort <vincent.donnefort@arm.com>
+CC:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <joel@joelfernandes.org>, <linux-arm-msm@vger.kernel.org>,
+        <quic_lingutla@quicinc.com>, <linux-kernel@vger.kernel.org>
+References: <20220209134319.1183-1-quic_ctheegal@quicinc.com>
+ <YgPIzXWpWeEpUJbi@FVFF7649Q05P>
+From:   Chitti Babu Theegala <quic_ctheegal@quicinc.com>
+In-Reply-To: <YgPIzXWpWeEpUJbi@FVFF7649Q05P>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 15:22, Mark Brown wrote:
-> On Wed, Feb 09, 2022 at 03:17:06PM +0100, Javier Martinez Canillas wrote:
->> On 2/9/22 14:43, Mark Brown wrote:
+
+Sorry, please ignore this patch. It was wrongly uploaded here.
+Will pursue this to right tree.
+
+On 2/9/2022 7:29 PM, Vincent Donnefort wrote:
+> [...]
 > 
->>> Unless the device supports power being physically omitted regulator
->>> usage should not be optional, it's just more code and a recipie for poor
->>> error handling.
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index 634d571e39d77..55019eb9c83c5 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -1269,6 +1269,14 @@ unsigned int sysctl_sched_uclamp_util_max = SCHED_CAPACITY_SCALE;
+>>    */
+>>   unsigned int sysctl_sched_uclamp_util_min_rt_default = SCHED_CAPACITY_SCALE;
+>>   
+>> +/* UCLAMP_MIN knob clamps the util_value within uclamp_min & max. By default,
+>> + * these uclamped tasks are also boosted to bigger cores which can impact power.
+>> + *
+>> + * This knob provides an option to turn-off 'boosting to gold cores' and
+>> + * just restrict to 'clamping util value' job.
+>> + */
+>> +unsigned int sysctl_sched_uclamp_util_min_to_boost = 1;
+>> +
+>>   /* All clamps are required to be less or equal than these values */
+>>   static struct uclamp_se uclamp_default[UCLAMP_CNT];
+>>   
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index 7cd316793f4e3..44adcbfa9eb32 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -6829,7 +6829,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu, int sy
+>>   		goto unlock;
+>>   
+>>   	latency_sensitive = uclamp_latency_sensitive(p);
 > 
->> The device has a VCC pin but in most cases this is just connected to a
->> power provided by the board in its pinout header. For example, I've it
->> connected to a rpi4 3.3v pin.
+> I don't think this is the right tree.
+
+Thanks ! I just noticed it :-(
+
 > 
-> That sounds like a very common configuration.
->
-
-Yep.
- 
->> I guess in that case what we should do then is to just have a regulator
->> fixed as the vbat-supply in the Device Tree, that's regulator-always-on.
 > 
-> Generally I'd suggest labelling things with whatever the supply is
-> called in the board's schematics/documentation, that tends to make
-> things clearer and easier to follow.
-> 
-
-The display controller datasheet and schematics mention VBAT as the power
-supply but the documentation says that it's just connected to VCC and the
-label in the display says VCC.
-
-But I understand why the Device Tree binding and fbdev driver used VBAT
-since that's what the documentation mentions.
-
->> The old ssd1307fb fbdev driver also had this as optional and I wanted to
->> keep the new driver as backward compatible. But I understand now that is
->> not describing the hardware properly by making this regulator optional.
-> 
-> It is depressingly common to see broken code here, unfortunately
-> graphics drivers seem like one of the most common offendors.
-
-I'll include a patch for the existing DT binding and mark the vbat-supply
-property as required. Probably we won't be able to change the fbdev driver
-without causing regressions, and I'm not interested in that driver anyways.
-
-Best regards,
---
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+>> -	boosted = uclamp_boosted(p);
+>> +	boosted = sysctl_sched_uclamp_util_min_to_boost && uclamp_boosted(p);
+>>   	target_cap = boosted ? 0 : ULONG_MAX;
+>>   
+>>   	for (; pd; pd = pd->next) {
+>> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+>> index 8f196ed2ec065..6463d60fed84e 100644
+>> --- a/kernel/sysctl.c
+>> +++ b/kernel/sysctl.c
+>> @@ -1882,6 +1882,15 @@ static struct ctl_table kern_table[] = {
+>>   		.mode		= 0644,
+>>   		.proc_handler	= sysctl_sched_uclamp_handler,
+>>   	},
+>> +	{
+>> +		.procname	= "sched_util_clamp_min_to_boost",
+>> +		.data		= &sysctl_sched_uclamp_util_min_to_boost,
+>> +		.maxlen		= sizeof(unsigned int),
+>> +		.mode		= 0644,
+>> +		.proc_handler	= proc_dointvec_minmax,
+>> +		.extra1		= SYSCTL_ZERO,
+>> +		.extra2		= SYSCTL_ONE,
+>> +	},
+>>   #endif
+>>   #ifdef CONFIG_SCHED_AUTOGROUP
+>>   	{
+>> -- 
+>> 2.17.1
+>>
