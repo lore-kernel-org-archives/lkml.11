@@ -2,75 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A491CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC185C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235521AbiBIPGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:06:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        id S235530AbiBIPIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:08:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235308AbiBIPGi (ORCPT
+        with ESMTP id S229555AbiBIPID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:06:38 -0500
-Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF153C06157B;
-        Wed,  9 Feb 2022 07:06:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=WZOcUHomPacejbhw1MKsv8v3w9dd0gwh3fSPRthDHH0=; b=VxhFUJ24lFKgv/7Xet2yYxcGSE
-        hszcJPc0xzGK3/tSjP8Qi1sDpVg6tjBP3LNHr8T1DeuE7hYO8r19sYD7AxSddUW65VPmJqb4oNBWL
-        gzX4+I007XySuILHaOUL1fbwS3sj+1ydNgVCf/XMxcarnQFkJgFZklrtagohn/s134XrRx7IGsuOC
-        xBsQxCs1Ks1YLC18ZLEgFwkZxtUyI+SkOEYerbkP6DpX1wk0eRbD387i2BBO9YEvE+hcMJHdQEprg
-        ctV5AL7HpJaif14tr3top/zYEvFn4ZaoYonBJtktn+yJkfe7ffKe6ZoSMD1PWhIoXafU4S7WnDpvd
-        eKgB3feA==;
-Received: from 201-27-34-10.dsl.telesp.net.br ([201.27.34.10] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nHoY0-0003cB-Ih; Wed, 09 Feb 2022 16:06:20 +0100
-Message-ID: <c4f0c53e-cfe4-b693-6af2-df827bc94fa8@igalia.com>
-Date:   Wed, 9 Feb 2022 12:06:03 -0300
+        Wed, 9 Feb 2022 10:08:03 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F8F2C06157B;
+        Wed,  9 Feb 2022 07:08:05 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id x23so4871513lfc.0;
+        Wed, 09 Feb 2022 07:08:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=sZuSabn0QbPYa54gWbxUvv8juq6yvTZRiZO+ivNIJxo=;
+        b=oOTfBjeMgZVrZqF+jNzMpkNyg/aIpMmvkJR6Q6yy6N+UgGAJu9kaB0F172BnP+Qpui
+         4hHKQYg9wT2yNprBHQsRqQyKWc8nwgOM8IhXHjvRi8rDt4r8LnzEVObbLmGsNlDEJW+5
+         9+/njMHqJ8cudUi6fofEBme53/m4slVQqlairCKvqQv4e67a9DhLL97HC6CJcZjLt0gv
+         ks37KXYTtnIVXauj5DegTnze5iDZ0Ggc8QmOqxpBn5e+ciYCK2YcGX5QDik3OzvNF7rA
+         bRWAXwKU1esxZs6bRroxrhlYnAdl/J3s15+XPZc/c2DXG+skIa8AM3RvbmKu1vA9L2im
+         NcUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=sZuSabn0QbPYa54gWbxUvv8juq6yvTZRiZO+ivNIJxo=;
+        b=z8uQ7mhPNeXs3zM8IMTw/u6ss0vVpJpdOD4I8xOW2Q06V/7t010EREd9NbX3QXe6LA
+         VWDzGGBmYmB3vK+ajetprjMydwNUBv90Vj/6jJ40L51nRGsRY2zYFLKKW6Uo0qKKHXC6
+         gO9jliAmvpGQpjoimaUGj1gVRT/TfnT3Zhz1S38nLi3AkTy5+47mZY4s8hPRfNa3yKsP
+         zvZcCHP0uQEJGyyfHxi2PHlAGE5eaqJu/3k/gWF1606GFPs2GjHPD9a70umC7LfyXX9Y
+         YUX5N814wwia4ZWAg5yklSXe/9MOVt8O+Opsr3mpR3gw5ESzeGuNRV/76c6TIOGABm4M
+         KoKw==
+X-Gm-Message-State: AOAM533h4m2odLmkvk1f4aRDklkw+zQwd5Fi5pKw/wITL4Z4fJR+yN1W
+        q9M0nXx/VpWXTzq80Smku96FxE/T9veGXeO5t9/gno0f
+X-Google-Smtp-Source: ABdhPJzLVWTVFbwwe6JN9rlEF0EDcw+knWnGuMm9EFOgUB0hFe2UqOWg4++mfopuj+m5N+mT8qDXoMRBeOMvB6aRBlU=
+X-Received: by 2002:a05:6512:118a:: with SMTP id g10mr1918497lfr.356.1644419283500;
+ Wed, 09 Feb 2022 07:08:03 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] panic: Allow printing extra panic information on
- kdump
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>, akpm@linux-foundation.org
-Cc:     Petr Mladek <pmladek@suse.com>, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-doc@vger.kernel.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com,
-        feng.tang@intel.com, siglesias@igalia.com, kernel@gpiccoli.net
-References: <20211109202848.610874-1-gpiccoli@igalia.com>
- <20211109202848.610874-4-gpiccoli@igalia.com> <Yd/qmyz+qSuoUwbs@alley>
- <7c516696-be5b-c280-7f4e-554834f5e472@igalia.com>
- <c10fc4fc-58c9-0b3f-5f1e-6f44b0c190d2@igalia.com>
- <20220209083951.50060e15@canb.auug.org.au>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220209083951.50060e15@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1644415355-24490-1-git-send-email-u0084500@gmail.com>
+ <YgPOz6pfpFcPmHms@kroah.com> <YgPQgtcO22W3vZDw@kuha.fi.intel.com> <YgPWLselefw3nGb8@kuha.fi.intel.com>
+In-Reply-To: <YgPWLselefw3nGb8@kuha.fi.intel.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Wed, 9 Feb 2022 23:07:51 +0800
+Message-ID: <CADiBU38AYNBpoF=Ez+Bubk10-f4Yf2_TtXeVjVQM=K8a5zhkkA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/2] Add Richtek RT1719 USBPD controller support
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        cy_huang <cy_huang@richtek.com>, will_lin@richtek.com,
+        th_chuang@richtek.com,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 18:39, Stephen Rothwell wrote:
-> Hi Guilherme,
-> [...] 
-> Dropped from linux-next today.
-> 
-
-Hi Stephen, thanks! I'm still seeing this patch over there, though - I'm
-not sure if takes a while to show up in the tree...
-
-Notice this request is only for patch 3/3 in this series - patches 1 and
-2 are fine, were reviewed and accepted =)
-
-Cheers,
-
-
-Guilherme
+Hi, Greg, Heikki:
+Heikki Krogerus <heikki.krogerus@linux.intel.com> =E6=96=BC 2022=E5=B9=B42=
+=E6=9C=889=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=8810:56=E5=AF=AB=E9=
+=81=93=EF=BC=9A
+>
+> On Wed, Feb 09, 2022 at 04:32:38PM +0200, Heikki Krogerus wrote:
+> > On Wed, Feb 09, 2022 at 03:25:19PM +0100, Greg KH wrote:
+> > > On Wed, Feb 09, 2022 at 10:02:33PM +0800, cy_huang wrote:
+> > > > 3. Change MODULE_LICENSE from 'GPL v2' to 'GPL'.
+> > >
+> > > Why?  Either is fine, any specific reason you changed this?
+> >
+> > Because I proposed it. I believe everything scripts/checkpatch.pl
+> > tells me.
+>
+> It looks like the preference on "GPL" is pretty resent. Check commit
+> bf7fbeeae6db ("module: Cure the MODULE_LICENSE "GPL" vs. "GPL v2"
+> bogosity").
+>
+> thanks,
+>
+It seems to revert it back to 'GPL v2' is proper.
+I'll resend the v5 to change the license back to 'GPL v2'.
+And add the Reviewed-by tags.
+Thanks.
+> --
+> heikki
