@@ -2,116 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D0D1C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24533C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239119AbiBISYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:24:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45484 "EHLO
+        id S238761AbiBIS2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:28:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231371AbiBISYu (ORCPT
+        with ESMTP id S231371AbiBIS23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:24:50 -0500
-Received: from smtpout1.mo3004.mail-out.ovh.net (smtpout1.mo3004.mail-out.ovh.net [79.137.123.219])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE7BC0613C9;
-        Wed,  9 Feb 2022 10:24:53 -0800 (PST)
-Received: from pro2.mail.ovh.net (unknown [10.108.4.23])
-        by mo3004.mail-out.ovh.net (Postfix) with ESMTPS id 9152623D181;
-        Wed,  9 Feb 2022 18:24:50 +0000 (UTC)
-Received: from [192.168.1.103] (88.125.132.78) by DAG1EX2.emp2.local
- (172.16.2.2) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 9 Feb
- 2022 19:24:49 +0100
-Message-ID: <5d21aa14-72fc-1cd9-05b1-6f91c62eb14d@traphandler.com>
-Date:   Wed, 9 Feb 2022 19:24:49 +0100
+        Wed, 9 Feb 2022 13:28:29 -0500
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2D3C0613C9;
+        Wed,  9 Feb 2022 10:28:32 -0800 (PST)
+Received: by mail-qk1-x72f.google.com with SMTP id g145so2383255qke.3;
+        Wed, 09 Feb 2022 10:28:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bn0WKXvV0wH64Fyn35769rJ1j57jq4L1z8r72QPkfFc=;
+        b=mk35s4az97TJp7WfXMKqywtvIL/s3xNeyXIfFuo5hIiD8kYz7JSXzA7iPm9s93qzia
+         rb9GnE5LW7nRpZ5aApDa/VEWjtoepo5/CyhjVaBUdBoy+s6YmL5mMXqhqTveEu2JO6ig
+         acHz36mOOUPVnZ/e87ob1egzCaZQlawtlR2btLGEwhgHF68EfsS+2QcmFuQlR6w9ddkC
+         ko1PzC494fLN6e9THRBv01pXvoFr01ts5EwGBi5MyI3IcDPQdsUOdjYRKqsH4MSehPV2
+         6iD5ZLJLjhdlURGdbduaTHkRstqsfgK4kkffV4QSa6AH4AAUjSL+rVzPKnfrwBnjD36v
+         vPog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bn0WKXvV0wH64Fyn35769rJ1j57jq4L1z8r72QPkfFc=;
+        b=4pZN49pjxBX1E0zORTBujEtykZxz1BrChcZVv6eABMeN5nKPFUPawekPtt2eSaU27/
+         Zgstm6JrxLXYjCf2W4YUk0hKboL5iKJ7DpLrqgqwNS2pHQtSR8tyJQD8sq17cKffhvCP
+         zF2NBx/NlnvVdwcF57/74uCHVQQ391kT+9Dj55tjXXvGtR+ROw8M5vrqeQT9db6cTFpa
+         SXumzXAC+3ggXq12AAsUX6+9zrUaqOxExD4+pFRdInckINR1SUEkwJt+rrIwbhuq3eP8
+         3kjNal0HSPz+P5MPfEYXPPOMy912Fd9q2gv22UgFs43FBrCKQXsbRuY0bjnhUG4pQDgx
+         UWAw==
+X-Gm-Message-State: AOAM532X2yu/9f+PioajrLZvUKTuMNZFkcrFFiujfllhzhz58Jy3DKgl
+        mK/DlOt8nKX5XzIXZDKmcNk=
+X-Google-Smtp-Source: ABdhPJwYVNCTYVD+5C3ouMfC747bld6PVChncLlfcf5qjZ4TddDhI+r6fR1YfMvelphlJtWlOxiYGA==
+X-Received: by 2002:a05:620a:25d2:: with SMTP id y18mr1886373qko.522.1644431311724;
+        Wed, 09 Feb 2022 10:28:31 -0800 (PST)
+Received: from godwin.fios-router.home (pool-108-18-137-133.washdc.fios.verizon.net. [108.18.137.133])
+        by smtp.gmail.com with ESMTPSA id z4sm9831131qtw.4.2022.02.09.10.28.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 10:28:31 -0800 (PST)
+From:   Sean Anderson <seanga2@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org
+Cc:     Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Sean Anderson <seanga2@gmail.com>
+Subject: [PATCH] pinctrl: k210: Fix bias-pull-up
+Date:   Wed,  9 Feb 2022 13:28:22 -0500
+Message-Id: <20220209182822.640905-1-seanga2@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/6] clk: renesas: r9a06g032: Enable the watchdog reset
- sources
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220204161806.3126321-1-jjhiblot@traphandler.com>
- <20220204161806.3126321-2-jjhiblot@traphandler.com>
- <CAMuHMdUsWSXqQ6oOP8c0XBJpAoMUg74kTJN1rU8uiq7UXRiKkw@mail.gmail.com>
- <89c0a032-3124-fc56-607c-5aeaac73fdc4@traphandler.com>
- <CAMuHMdVvrs-p4Tz2m7R8g7gXJRetTGKJNaQPEO_DYKDzu5u64A@mail.gmail.com>
-From:   Jean-Jacques Hiblot <jjhiblot@traphandler.com>
-In-Reply-To: <CAMuHMdVvrs-p4Tz2m7R8g7gXJRetTGKJNaQPEO_DYKDzu5u64A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [88.125.132.78]
-X-ClientProxiedBy: DAG1EX2.emp2.local (172.16.2.2) To DAG1EX2.emp2.local
- (172.16.2.2)
-X-Ovh-Tracer-Id: 500462510111537627
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgdduudduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtjeertddtfeejnecuhfhrohhmpeflvggrnhdqlfgrtghquhgvshcujfhisghlohhtuceojhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmqeenucggtffrrghtthgvrhhnpefhiedthedttdegueeggfdtjeegtdeileeftdegheeutdetjeeuieehtdevvdefieenucfkpheptddrtddrtddrtddpkeekrdduvdehrddufedvrdejkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepjhhjhhhisghlohhtsehtrhgrphhhrghnughlvghrrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+Using bias-pull-up would actually cause the pin to have its pull-down
+enabled. Fix this.
 
-On 08/02/2022 11:35, Geert Uytterhoeven wrote:
-> Hi Jean-Jacques,
->
-> On Tue, Feb 8, 2022 at 11:25 AM Jean-Jacques Hiblot
-> <jjhiblot@traphandler.com> wrote:
->> On 07/02/2022 16:34, Geert Uytterhoeven wrote:
->>> On Fri, Feb 4, 2022 at 5:18 PM Jean-Jacques Hiblot
->>> <jjhiblot@traphandler.com> wrote:
->>>> The watchdog reset sources are not enabled by default.
->>>> Enabling them here to make sure that the system resets when the watchdog
->>>> timers expire.
->>>>
->>>> Signed-off-by: Jean-Jacques Hiblot <jjhiblot@traphandler.com>
->>> Thanks for your patch!
->>>
->>> R-Car Gen3 and RZ/G2 SoCs have a similar mechanism.
->>> On these SoCs, the boot loader takes care of the configuration, as this
->>> is a system policy that goes beyond the Linux realm.
->>> Perhaps the RZ/N1 boot loader can do the same?
->>>
->>> Gr{oetje,eeting}s,
->> Thanks for you reviews and comments.
->>
->> I'm not conformable with the idea that the safety induced by the
->> watchdog is removed because the bootloader didn't set the register.
-> What if the CM33 is the master, and the CM33 just wants to receive an
-> interrupt when one of the CA7 watchdog timers times out?
+Signed-off-by: Sean Anderson <seanga2@gmail.com>
+---
 
-In the next version of the patch I removed the part that enables the 
-reset source.
+ drivers/pinctrl/pinctrl-k210.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-However I kept the part that disables the reset source when the system 
-is halted
+diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
+index 49e32684dbb2..1ad61b32ec88 100644
+--- a/drivers/pinctrl/pinctrl-k210.c
++++ b/drivers/pinctrl/pinctrl-k210.c
+@@ -527,7 +527,7 @@ static int k210_pinconf_set_param(struct pinctrl_dev *pctldev,
+ 	case PIN_CONFIG_BIAS_PULL_UP:
+ 		if (!arg)
+ 			return -EINVAL;
+-		val |= K210_PC_PD;
++		val |= K210_PC_PU;
+ 		break;
+ 	case PIN_CONFIG_DRIVE_STRENGTH:
+ 		arg *= 1000;
+-- 
+2.34.1
 
-because the system would otherwise reboot when a watchdog expires. Do you
-
-see a scenario where this could be a problem ?
-
-JJ
-
->
->> I'd rather that the kernel is able to enable the watchdog reset source.
->> If it is acceptable, we could use a new DTS entry to force the policy.
-> DT describes hardware. not software policy.
-> Although I agree e.g. the watchdog timeout value is software policy.
-
->
-> Gr{oetje,eeting}s,
->
->                          Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                  -- Linus Torvalds
