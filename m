@@ -2,248 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A85C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiBIGR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:17:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35886 "EHLO
+        id S232758AbiBIGSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:18:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243063AbiBIGLy (ORCPT
+        with ESMTP id S237739AbiBIGPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:11:54 -0500
-X-Greylist: delayed 1846 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 22:11:03 PST
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C9FE00E16F;
-        Tue,  8 Feb 2022 22:11:01 -0800 (PST)
-Received: from relay12.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::232])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 4895AC439F;
-        Wed,  9 Feb 2022 05:28:24 +0000 (UTC)
-Received: (Authenticated sender: frank@zago.net)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id C4DA0200002;
-        Wed,  9 Feb 2022 05:28:19 +0000 (UTC)
-From:   frank zago <frank@zago.net>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        frank zago <frank@zago.net>
-Subject: [PATCH] HID: Add support for Mega World controller force feedback
-Date:   Tue,  8 Feb 2022 23:28:07 -0600
-Message-Id: <20220209052807.138007-1-frank@zago.net>
-X-Mailer: git-send-email 2.32.0
+        Wed, 9 Feb 2022 01:15:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22DFDF28A20
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:15:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5E54B81F17
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:15:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B753DC340E7;
+        Wed,  9 Feb 2022 06:15:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644387305;
+        bh=OUPNHBAJBd42EIpzpVtb9lp5kMJbQTw7jGC1FYPoiXk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IGD42/2Jb0d5SZJjI471MYihxC7OM3utb9RbC8h+OjELkaeknbfHc2Ni209paihrU
+         kqLccFEAqqlInc/AHGaZB/ji+CAJKW5R1AfYYfulxbhW0EB1UgHvQNyRJvvoSnOMnt
+         FF0XeD7dfALhqVs7dxTAdJxRU5kFYzW4egFmXBx2hb2/ic6CPPBXF8l7Ts2LsiJAC8
+         tHoWBA2YbqM1HgTkiFhXUbP3apbqStVE8AXtdfqiCcd0nlNwK2qlvLY8d0w5RGcBs3
+         i2KavDo3xNE2NIqWrQT4OVzbfw4Oohgri5kHjPuMGfAWYgQtmpTyqDq0kcLRxeWBSA
+         EDIhrgIdTK8mw==
+Date:   Wed, 9 Feb 2022 07:14:59 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Lucas De Marchi <lucas.demarchi@intel.com>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Thomas =?UTF-8?B?SGVsbHN0csO2bQ==?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 02/18] iosys-map: Add a few more helpers
+Message-ID: <20220209071459.06d4d397@coco.lan>
+In-Reply-To: <20220208104524.2516209-3-lucas.demarchi@intel.com>
+References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
+        <20220208104524.2516209-3-lucas.demarchi@intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds support for one of the several Mega World USB game
-controller with integrated force feedback. It is a HID based
-memory-less game controller, with a weak motor on the left, and a
-strong one on the right.
+Em Tue,  8 Feb 2022 02:45:08 -0800
+Lucas De Marchi <lucas.demarchi@intel.com> escreveu:
 
-Signed-off-by: frank zago <frank@zago.net>
----
- drivers/hid/Kconfig         |  14 ++++
- drivers/hid/Makefile        |   1 +
- drivers/hid/hid-ids.h       |   3 +
- drivers/hid/hid-megaworld.c | 136 ++++++++++++++++++++++++++++++++++++
- 4 files changed, 154 insertions(+)
- create mode 100644 drivers/hid/hid-megaworld.c
+> First the simplest ones:
+>=20
+> 	- iosys_map_memset(): when abstracting system and I/O memory,
+> 	  just like the memcpy() use case, memset() also has dedicated
+> 	  functions to be called for using IO memory.
+> 	- iosys_map_memcpy_from(): we may need to copy data from I/O
+> 	  memory, not only to.
+>=20
+> In certain situations it's useful to be able to read or write to an
+> offset that is calculated by having the memory layout given by a struct
+> declaration. Usually we are going to read/write a u8, u16, u32 or u64.
+>=20
+> As a pre-requisite for the implementation, add iosys_map_memcpy_from()
+> to be the equivalent of iosys_map_memcpy_to(), but in the other
+> direction. Then add 2 pairs of macros:
+>=20
+> 	- iosys_map_rd() / iosys_map_wr()
+> 	- iosys_map_rd_field() / iosys_map_wr_field()
+>=20
+> The first pair takes the C-type and offset to read/write. The second
+> pair uses a struct describing the layout of the mapping in order to
+> calculate the offset and size being read/written.
+>=20
+> We could use readb, readw, readl, readq and the write* counterparts,
+> however due to alignment issues this may not work on all architectures.
+> If alignment needs to be checked to call the right function, it's not
+> possible to decide at compile-time which function to call: so just leave
+> the decision to the memcpy function that will do exactly that.
+>=20
+> Finally, in order to use the above macros with a map derived from
+> another, add another initializer: IOSYS_MAP_INIT_OFFSET().
+>=20
+> v2:
+>   - Rework IOSYS_MAP_INIT_OFFSET() so it doesn't rely on aliasing rules
+>     within the union
+>   - Add offset to both iosys_map_rd_field() and iosys_map_wr_field() to
+>     allow the struct itself to be at an offset from the mapping
+>   - Add documentation to iosys_map_rd_field() with example and expected
+>     memory layout
+>=20
+> Cc: Sumit Semwal <sumit.semwal@linaro.org>
+> Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
 
-diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index f5544157576c..2344830d3680 100644
---- a/drivers/hid/Kconfig
-+++ b/drivers/hid/Kconfig
-@@ -684,6 +684,20 @@ config HID_MAYFLASH
- 	Say Y here if you have HJZ Mayflash PS3 game controller adapters
- 	and want to enable force feedback support.
- 
-+config HID_MEGAWORLD
-+	tristate "Mega World based game controller support"
-+	depends on HID
-+	help
-+	  Say Y here if you have a Mega World based game controller.
-+
-+config MEGAWORLD_FF
-+	bool "Mega World based game controller force feedback support"
-+	depends on HID_MEGAWORLD
-+	select INPUT_FF_MEMLESS
-+	help
-+	  Say Y here if you have a Mega World based game controller and want
-+	  to have force feedback support for it.
-+
- config HID_REDRAGON
- 	tristate "Redragon keyboards"
- 	depends on HID
-diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index 6d3e630e81af..4f333881560e 100644
---- a/drivers/hid/Makefile
-+++ b/drivers/hid/Makefile
-@@ -76,6 +76,7 @@ obj-$(CONFIG_HID_MAGICMOUSE)	+= hid-magicmouse.o
- obj-$(CONFIG_HID_MALTRON)	+= hid-maltron.o
- obj-$(CONFIG_HID_MCP2221)	+= hid-mcp2221.o
- obj-$(CONFIG_HID_MAYFLASH)	+= hid-mf.o
-+obj-$(CONFIG_HID_MEGAWORLD)	+= hid-megaworld.o
- obj-$(CONFIG_HID_MICROSOFT)	+= hid-microsoft.o
- obj-$(CONFIG_HID_MONTEREY)	+= hid-monterey.o
- obj-$(CONFIG_HID_MULTITOUCH)	+= hid-multitouch.o
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 85975031389b..2588d933c2b5 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -860,6 +860,9 @@
- #define USB_VENDOR_ID_MCS		0x16d0
- #define USB_DEVICE_ID_MCS_GAMEPADBLOCK	0x0bcc
- 
-+#define USB_VENDOR_MEGAWORLD		0x07b5
-+#define USB_DEVICE_ID_MEGAWORLD_GAMEPAD	0x0312
-+
- #define USB_VENDOR_ID_MGE		0x0463
- #define USB_DEVICE_ID_MGE_UPS		0xffff
- #define USB_DEVICE_ID_MGE_UPS1		0x0001
-diff --git a/drivers/hid/hid-megaworld.c b/drivers/hid/hid-megaworld.c
-new file mode 100644
-index 000000000000..3ac247d7bd54
---- /dev/null
-+++ b/drivers/hid/hid-megaworld.c
-@@ -0,0 +1,136 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Vibration support for Mega World controllers
-+ *
-+ * Copyright 2022 Frank Zago
-+ *
-+ * Derived from hid-zpff.c:
-+ *   Copyright (c) 2005, 2006 Anssi Hannula <anssi.hannula@gmail.com>
-+ */
-+
-+#include <linux/hid.h>
-+#include <linux/input.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+
-+#include "hid-ids.h"
-+
-+#ifdef CONFIG_MEGAWORLD_FF
-+
-+struct mwctrl_device {
-+	struct hid_report *report;
-+	s32 *weak;
-+	s32 *strong;
-+};
-+
-+static int mwctrl_play(struct input_dev *dev, void *data,
-+		       struct ff_effect *effect)
-+{
-+	struct hid_device *hid = input_get_drvdata(dev);
-+	struct mwctrl_device *mwctrl = data;
-+
-+	*mwctrl->strong = effect->u.rumble.strong_magnitude >> 8;
-+	*mwctrl->weak = effect->u.rumble.weak_magnitude >> 8;
-+
-+	hid_hw_request(hid, mwctrl->report, HID_REQ_SET_REPORT);
-+
-+	return 0;
-+}
-+
-+static int mwctrl_init(struct hid_device *hid)
-+{
-+	struct mwctrl_device *mwctrl;
-+	struct hid_report *report;
-+	struct hid_input *hidinput;
-+	struct input_dev *dev;
-+	int i, error;
-+
-+	if (list_empty(&hid->inputs)) {
-+		hid_err(hid, "no inputs found\n");
-+		return -ENODEV;
-+	}
-+	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
-+	dev = hidinput->input;
-+
-+	for (i = 0; i < 4; i++) {
-+		report = hid_validate_values(hid, HID_OUTPUT_REPORT, 0, i, 1);
-+		if (!report)
-+			return -ENODEV;
-+	}
-+
-+	mwctrl = kzalloc(sizeof(struct mwctrl_device), GFP_KERNEL);
-+	if (!mwctrl)
-+		return -ENOMEM;
-+
-+	set_bit(FF_RUMBLE, dev->ffbit);
-+
-+	error = input_ff_create_memless(dev, mwctrl, mwctrl_play);
-+	if (error) {
-+		kfree(mwctrl);
-+		return error;
-+	}
-+
-+	mwctrl->report = report;
-+
-+	/* Field 0 is always 2, and field 1 is always 0. The original
-+	 * windows driver has a 5 bytes command, where the 5th byte is
-+	 * a repeat of the 3rd byte, however the device has only 4
-+	 * fields. It could be a bug in the driver, or there is a
-+	 * different device that needs it.
-+	 */
-+	report->field[0]->value[0] = 0x02;
-+
-+	mwctrl->strong = &report->field[2]->value[0];
-+	mwctrl->weak = &report->field[3]->value[0];
-+
-+	return 0;
-+}
-+
-+#else
-+
-+static int mwctrl_init(struct hid_device *hid)
-+{
-+	return 0;
-+}
-+
-+#endif
-+
-+static int mwctrl_probe(struct hid_device *hdev, const struct hid_device_id *id)
-+{
-+	int ret;
-+
-+	ret = hid_parse(hdev);
-+	if (ret) {
-+		hid_err(hdev, "parse failed\n");
-+		return ret;
-+	}
-+
-+	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT & ~HID_CONNECT_FF);
-+	if (ret) {
-+		hid_err(hdev, "hw start failed\n");
-+		return ret;
-+	}
-+
-+	ret = mwctrl_init(hdev);
-+	if (ret)
-+		hid_hw_stop(hdev);
-+
-+	return ret;
-+}
-+
-+static const struct hid_device_id mwctrl_devices[] = {
-+	{ HID_USB_DEVICE(USB_VENDOR_MEGAWORLD,
-+			 USB_DEVICE_ID_MEGAWORLD_GAMEPAD) },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(hid, mwctrl_devices);
-+
-+static struct hid_driver mwctrl_driver = {
-+	.name = "megaworld",
-+	.id_table = mwctrl_devices,
-+	.probe = mwctrl_probe,
-+};
-+
-+module_hid_driver(mwctrl_driver);
-+
-+MODULE_LICENSE("GPL");
--- 
-2.32.0
+LGTM.
 
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+
+Regards,
+Mauro
+
+> ---
+>  include/linux/iosys-map.h | 202 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 202 insertions(+)
+>=20
+> diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
+> index edd730b1e899..c6b223534b21 100644
+> --- a/include/linux/iosys-map.h
+> +++ b/include/linux/iosys-map.h
+> @@ -6,6 +6,7 @@
+>  #ifndef __IOSYS_MAP_H__
+>  #define __IOSYS_MAP_H__
+> =20
+> +#include <linux/kernel.h>
+>  #include <linux/io.h>
+>  #include <linux/string.h>
+> =20
+> @@ -120,6 +121,45 @@ struct iosys_map {
+>  		.is_iomem =3D false,	\
+>  	}
+> =20
+> +/**
+> + * IOSYS_MAP_INIT_OFFSET - Initializes struct iosys_map from another ios=
+ys_map
+> + * @map_:	The dma-buf mapping structure to copy from
+> + * @offset_:	Offset to add to the other mapping
+> + *
+> + * Initializes a new iosys_map struct based on another passed as argumen=
+t. It
+> + * does a shallow copy of the struct so it's possible to update the back=
+ storage
+> + * without changing where the original map points to. It is the equivale=
+nt of
+> + * doing:
+> + *
+> + * .. code-block:: c
+> + *
+> + *	iosys_map map =3D other_map;
+> + *	iosys_map_incr(&map, &offset);
+> + *
+> + * Example usage:
+> + *
+> + * .. code-block:: c
+> + *
+> + *	void foo(struct device *dev, struct iosys_map *base_map)
+> + *	{
+> + *		...
+> + *		struct iosys_map map =3D IOSYS_MAP_INIT_OFFSET(base_map, FIELD_OFFSE=
+T);
+> + *		...
+> + *	}
+> + *
+> + * The advantage of using the initializer over just increasing the offse=
+t with
+> + * iosys_map_incr() like above is that the new map will always point to =
+the
+> + * right place of the buffer during its scope. It reduces the risk of up=
+dating
+> + * the wrong part of the buffer and having no compiler warning about tha=
+t. If
+> + * the assignment to IOSYS_MAP_INIT_OFFSET() is forgotten, the compiler =
+can warn
+> + * about the use of uninitialized variable.
+> + */
+> +#define IOSYS_MAP_INIT_OFFSET(map_, offset_) ({				\
+> +	struct iosys_map copy =3D *map_;					\
+> +	iosys_map_incr(&copy, offset_);					\
+> +	copy;								\
+> +})
+> +
+>  /**
+>   * iosys_map_set_vaddr - Sets a iosys mapping structure to an address in=
+ system memory
+>   * @map:	The iosys_map structure
+> @@ -239,6 +279,26 @@ static inline void iosys_map_memcpy_to(struct iosys_=
+map *dst, size_t dst_offset,
+>  		memcpy(dst->vaddr + dst_offset, src, len);
+>  }
+> =20
+> +/**
+> + * iosys_map_memcpy_from - Memcpy from iosys_map into system memory
+> + * @dst:	Destination in system memory
+> + * @src:	The iosys_map structure
+> + * @src_offset:	The offset from which to copy
+> + * @len:	The number of byte in src
+> + *
+> + * Copies data from a iosys_map with an offset. The dest buffer is in
+> + * system memory. Depending on the mapping location, the helper picks the
+> + * correct method of accessing the memory.
+> + */
+> +static inline void iosys_map_memcpy_from(void *dst, const struct iosys_m=
+ap *src,
+> +					 size_t src_offset, size_t len)
+> +{
+> +	if (src->is_iomem)
+> +		memcpy_fromio(dst, src->vaddr_iomem + src_offset, len);
+> +	else
+> +		memcpy(dst, src->vaddr + src_offset, len);
+> +}
+> +
+>  /**
+>   * iosys_map_incr - Increments the address stored in a iosys mapping
+>   * @map:	The iosys_map structure
+> @@ -255,4 +315,146 @@ static inline void iosys_map_incr(struct iosys_map =
+*map, size_t incr)
+>  		map->vaddr +=3D incr;
+>  }
+> =20
+> +/**
+> + * iosys_map_memset - Memset iosys_map
+> + * @dst:	The iosys_map structure
+> + * @offset:	Offset from dst where to start setting value
+> + * @value:	The value to set
+> + * @len:	The number of bytes to set in dst
+> + *
+> + * Set value in iosys_map. Depending on the buffer's location, the helper
+> + * picks the correct method of accessing the memory.
+> + */
+> +static inline void iosys_map_memset(struct iosys_map *dst, size_t offset,
+> +				    int value, size_t len)
+> +{
+> +	if (dst->is_iomem)
+> +		memset_io(dst->vaddr_iomem + offset, value, len);
+> +	else
+> +		memset(dst->vaddr + offset, value, len);
+> +}
+> +
+> +/**
+> + * iosys_map_rd - Read a C-type value from the iosys_map
+> + *
+> + * @map__:	The iosys_map structure
+> + * @offset__:	The offset from which to read
+> + * @type__:	Type of the value being read
+> + *
+> + * Read a C type value from iosys_map, handling possible un-aligned acce=
+sses to
+> + * the mapping.
+> + *
+> + * Returns:
+> + * The value read from the mapping.
+> + */
+> +#define iosys_map_rd(map__, offset__, type__) ({			\
+> +	type__ val;							\
+> +	iosys_map_memcpy_from(&val, map__, offset__, sizeof(val));	\
+> +	val;								\
+> +})
+> +
+> +/**
+> + * iosys_map_wr - Write a C-type value to the iosys_map
+> + *
+> + * @map__:	The iosys_map structure
+> + * @offset__:	The offset from the mapping to write to
+> + * @type__:	Type of the value being written
+> + * @val__:	Value to write
+> + *
+> + * Write a C-type value to the iosys_map, handling possible un-aligned a=
+ccesses
+> + * to the mapping.
+> + */
+> +#define iosys_map_wr(map__, offset__, type__, val__) ({			\
+> +	type__ val =3D (val__);						\
+> +	iosys_map_memcpy_to(map__, offset__, &val, sizeof(val));	\
+> +})
+> +
+> +/**
+> + * iosys_map_rd_field - Read a member from a struct in the iosys_map
+> + *
+> + * @map__:		The iosys_map structure
+> + * @struct_offset__:	Offset from the beggining of the map, where the str=
+uct
+> + *			is located
+> + * @struct_type__:	The struct describing the layout of the mapping
+> + * @field__:		Member of the struct to read
+> + *
+> + * Read a value from iosys_map considering its layout is described by a =
+C struct
+> + * starting at @struct_offset__. The field offset and size is calculated=
+ and its
+> + * value read handling possible un-aligned memory accesses. For example:=
+ suppose
+> + * there is a @struct foo defined as below and the value ``foo.field2.in=
+ner2``
+> + * needs to be read from the iosys_map:
+> + *
+> + * .. code-block:: c
+> + *
+> + *	struct foo {
+> + *		int field1;
+> + *		struct {
+> + *			int inner1;
+> + *			int inner2;
+> + *		} field2;
+> + *		int field3;
+> + *	} __packed;
+> + *
+> + * This is the expected memory layout of a buffer using iosys_map_rd_fie=
+ld():
+> + *
+> + * +------------------------------+--------------------------+
+> + * | Address                      | Content                  |
+> + * +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D+
+> + * | buffer + 0000                | start of mmapped buffer  |
+> + * |                              | pointed by iosys_map     |
+> + * +------------------------------+--------------------------+
+> + * | ...                          | ...                      |
+> + * +------------------------------+--------------------------+
+> + * | buffer + ``struct_offset__`` | start of ``struct foo``  |
+> + * +------------------------------+--------------------------+
+> + * | ...                          | ...                      |
+> + * +------------------------------+--------------------------+
+> + * | buffer + wwww                | ``foo.field2.inner2``    |
+> + * +------------------------------+--------------------------+
+> + * | ...                          | ...                      |
+> + * +------------------------------+--------------------------+
+> + * | buffer + yyyy                | end of ``struct foo``    |
+> + * +------------------------------+--------------------------+
+> + * | ...                          | ...                      |
+> + * +------------------------------+--------------------------+
+> + * | buffer + zzzz                | end of mmaped buffer     |
+> + * +------------------------------+--------------------------+
+> + *
+> + * Values automatically calculated by this macro or not needed are denot=
+ed by
+> + * wwww, yyyy and zzzz. This is the code to read that value:
+> + *
+> + * .. code-block:: c
+> + *
+> + *	x =3D iosys_map_rd_field(&map, offset, struct foo, field2.inner2);
+> + *
+> + * Returns:
+> + * The value read from the mapping.
+> + */
+> +#define iosys_map_rd_field(map__, struct_offset__, struct_type__, field_=
+_) ({	\
+> +	struct_type__ *s;							\
+> +	iosys_map_rd(map__, struct_offset__ + offsetof(struct_type__, field__),=
+	\
+> +		     typeof(s->field__));					\
+> +})
+> +
+> +/**
+> + * iosys_map_wr_field - Write to a member of a struct in the iosys_map
+> + *
+> + * @map__:		The iosys_map structure
+> + * @struct_offset__:	Offset from the beggining of the map, where the str=
+uct
+> + *			is located
+> + * @struct_type__:	The struct describing the layout of the mapping
+> + * @field__:		Member of the struct to read
+> + * @val__:		Value to write
+> + *
+> + * Write a value to the iosys_map considering its layout is described by=
+ a C struct
+> + * starting at @struct_offset__. The field offset and size is calculated=
+ and the
+> + * @val__ is written handling possible un-aligned memory accesses. Refer=
+ to
+> + * iosys_map_rd_field() for expected usage and memory layout.
+> + */
+> +#define iosys_map_wr_field(map__, struct_offset__, struct_type__, field_=
+_, val__) ({	\
+> +	struct_type__ *s;								\
+> +	iosys_map_wr(map__, struct_offset__ + offsetof(struct_type__, field__),=
+		\
+> +		     typeof(s->field__), val__);					\
+> +})
+> +
+>  #endif /* __IOSYS_MAP_H__ */
+
+
+
+Thanks,
+Mauro
