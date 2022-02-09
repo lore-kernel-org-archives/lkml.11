@@ -2,100 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9737C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235956AbiBIPfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:35:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
+        id S235978AbiBIPfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:35:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiBIPfH (ORCPT
+        with ESMTP id S235960AbiBIPfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:35:07 -0500
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0175AC0613CA;
-        Wed,  9 Feb 2022 07:35:11 -0800 (PST)
-Received: by mail-oi1-f182.google.com with SMTP id u13so2836989oie.5;
-        Wed, 09 Feb 2022 07:35:10 -0800 (PST)
+        Wed, 9 Feb 2022 10:35:12 -0500
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222E4C0613C9;
+        Wed,  9 Feb 2022 07:35:13 -0800 (PST)
+Received: by mail-oo1-f48.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso2909397oop.0;
+        Wed, 09 Feb 2022 07:35:13 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=rue2p+rxxRzTcpzXBjAx6Nrna1JsJ4CzugHpoyHjtrM=;
-        b=jWgL9d+b3mrrkbTSySQMVGizVkmdR3j62y1hkms5xbNTU0lK4/4r5j1IvaUbM+6lKj
-         435X0rgDRY6rfW9UzTMDQBtKftoCM7EbDit2F1L1BzP3Lybj1rkkbUnbxtqPgkbXJYTe
-         aphIedqoG2htmHDLdPP7k3h/s2qRyQpVuhki2pf+xycfZlWtuN16R74bCn4ezG3jsZJX
-         cARayLLhbtO4Sv6xysVnz2b1zAoU8lEHYMxwhnbb+u9bLHulZ7zhYqrasC30uiKDJHzg
-         DetqqKUgQp39WcCJ8Cc5I7UWHGf1wtV5qgrVbiznDkFCpUci3BQYCfCwe4S/bF27T0rM
-         w3Ww==
-X-Gm-Message-State: AOAM530SfkJns6Qz1H1VJZqU8QPcQYFSWeO9cAEsnBHpw3Tf9xUUxGkN
-        sMWD32bhFSaa+UBFNwYkcQ==
-X-Google-Smtp-Source: ABdhPJxWKdE43poQgnWFP4/5cT7wgQczeGULboq8vh/fIH2TWeERikdANfIAYgAS4jESe/UbnkGqnw==
-X-Received: by 2002:aca:1a0f:: with SMTP id a15mr1226523oia.61.1644420910248;
-        Wed, 09 Feb 2022 07:35:10 -0800 (PST)
+        bh=zQuG1gNmLxtVzGRukrbPQaSats/LPmqZjnzNcnI9U2Y=;
+        b=clbTim+J8UJLar3A5G+83D3qTtcn7U2QuudLssdJ469hYrwgELBZQ4lbTdrzptgNoo
+         4Q1vtl92jgrohwRNzuTSgBzTCcinvuRE/ZwJ5ZgoU2G2o0pLimISLADFKK0z+oTOTyRI
+         f/sUgMRQXua3yWeNQ2jEbVJ+k/UvYV4kOhnrZ6CuPfXCizrRNHTVuHw27gsNu+Pe+xHl
+         hSxCUjuLio3CpztN3zlLcl5tNS/+HeQ8HfgSrhBdbZK9XfvflIz8e0SrigTPT0L9LLIy
+         GG+RwWljux51ZmYc9dh07u2Z2Uj3Ex3nKHWDPixbx/hSqNPF4QtYSfy/PZAuLUof2lSi
+         0EMQ==
+X-Gm-Message-State: AOAM530XvNRASLsrqEysPdW/9wZ5RYlOjFWdCSdzKVCrKwsI4iHyJIz7
+        19FtzK55gvaHehgAVF+kaQ==
+X-Google-Smtp-Source: ABdhPJzwiejWzZl6kEqUPNuq5xhaz6Uf7XTFMECQDOn9nmikk6iyqJxgN6O6dhy6d1aNee8cWqbpAQ==
+X-Received: by 2002:a05:6870:822b:: with SMTP id n43mr893622oae.271.1644420912117;
+        Wed, 09 Feb 2022 07:35:12 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id m26sm6845473ooa.36.2022.02.09.07.35.08
+        by smtp.gmail.com with ESMTPSA id q9sm6827864oif.9.2022.02.09.07.35.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 07:35:09 -0800 (PST)
-Received: (nullmailer pid 391812 invoked by uid 1000);
+        Wed, 09 Feb 2022 07:35:11 -0800 (PST)
+Received: (nullmailer pid 391821 invoked by uid 1000);
         Wed, 09 Feb 2022 15:35:08 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, Peter Geis <pgwipeout@gmail.com>,
-        Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-kernel@vger.kernel.org, Liang Chen <cl@rock-chips.com>,
-        devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Alex Bee <knaerzche@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20220209085110.3588035-2-michael.riesch@wolfvision.net>
-References: <20220209085110.3588035-1-michael.riesch@wolfvision.net> <20220209085110.3588035-2-michael.riesch@wolfvision.net>
-Subject: Re: [PATCH v5 1/5] dt-bindings: gpu: mali-bifrost: describe clocks for the rk356x gpu
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+In-Reply-To: <20220209081025.2178435-3-o.rempel@pengutronix.de>
+References: <20220209081025.2178435-1-o.rempel@pengutronix.de> <20220209081025.2178435-3-o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next v2 2/2] dt-bindings: net: add schema for Microchip/SMSC LAN95xx USB Ethernet controllers
 Date:   Wed, 09 Feb 2022 09:35:08 -0600
-Message-Id: <1644420908.380944.391811.nullmailer@robh.at.kernel.org>
+Message-Id: <1644420908.431570.391820.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 09:51:06 +0100, Michael Riesch wrote:
-> From: Alex Bee <knaerzche@gmail.com>
+On Wed, 09 Feb 2022 09:10:25 +0100, Oleksij Rempel wrote:
+> Create initial schema for Microchip/SMSC LAN95xx USB Ethernet controllers and
+> import all currently supported USB IDs form drivers/net/usb/smsc95xx.c
 > 
-> The Bifrost GPU in Rockchip RK356x SoCs has a core and a bus clock.
-> Reflect this in the SoC specific part of the binding.
-> 
-> Signed-off-by: Alex Bee <knaerzche@gmail.com>
-> [move the changes to the SoC section]
-> Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > ---
->  .../devicetree/bindings/gpu/arm,mali-bifrost.yaml | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+>  .../bindings/net/microchip,lan95xx.yaml       | 80 +++++++++++++++++++
+>  1 file changed, 80 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/microchip,lan95xx.yaml
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml:173:12: [warning] wrong indentation: expected 12 but found 11 (indentation)
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
+Full log is available here: https://patchwork.ozlabs.org/patch/1590223
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1590238
+smsc@2: $nodename:0: 'smsc@2' does not match '^ethernet(@.*)?$'
+	arch/arm/boot/dts/tegra30-ouya.dt.yaml
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+usbether@1: $nodename:0: 'usbether@1' does not match '^ethernet(@.*)?$'
+	arch/arm64/boot/dts/broadcom/bcm2837-rpi-3-b.dt.yaml
+	arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dt.yaml
+	arch/arm/boot/dts/bcm2835-rpi-b.dt.yaml
+	arch/arm/boot/dts/bcm2835-rpi-b-plus.dt.yaml
+	arch/arm/boot/dts/bcm2835-rpi-b-rev2.dt.yaml
+	arch/arm/boot/dts/bcm2836-rpi-2-b.dt.yaml
+	arch/arm/boot/dts/bcm2837-rpi-3-b.dt.yaml
+	arch/arm/boot/dts/omap3-beagle-xm-ab.dt.yaml
+	arch/arm/boot/dts/omap3-beagle-xm.dt.yaml
+	arch/arm/boot/dts/omap4-panda-a4.dt.yaml
+	arch/arm/boot/dts/omap4-panda.dt.yaml
+	arch/arm/boot/dts/omap4-panda-es.dt.yaml
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+usbether@3: $nodename:0: 'usbether@3' does not match '^ethernet(@.*)?$'
+	arch/arm/boot/dts/omap5-uevm.dt.yaml
 
