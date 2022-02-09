@@ -2,165 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:56:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241963AbiBIIyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:54:40 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50328 "EHLO
+        id S236646AbiBII4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:56:43 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233052AbiBIIyh (ORCPT
+        with ESMTP id S233089AbiBII4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:54:37 -0500
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E239DE03018A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:54:32 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:54c7:c522:3859:290])
-        by andre.telenet-ops.be with bizsmtp
-        id swu32600Y4VQqf501wu3YL; Wed, 09 Feb 2022 09:54:04 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nHijj-000DIj-AL; Wed, 09 Feb 2022 09:54:03 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1nHiji-00DkM0-OH; Wed, 09 Feb 2022 09:54:02 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     Atish Patra <atishp@rivosinc.com>,
-        Jessica Clarke <jrtc27@jrtc27.com>,
-        Anup Patel <anup@brainfault.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 3/3] RISC-V: Fix IPI/RFENCE hmask on non-monotonic hartid ordering
-Date:   Wed,  9 Feb 2022 09:54:01 +0100
-Message-Id: <84ee1ae4bfc0ddbafdb38a21135f67ceb121c5e1.1644396407.git.geert@linux-m68k.org>
+        Wed, 9 Feb 2022 03:56:37 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE4BC10369B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:56:34 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id o12so1064628qke.5
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 00:56:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZXandK+emcY9j+lknNJmYnpgD6ghtFPnYBrNZbHY5Mk=;
+        b=pIAfjdpVAhfLDWMrG4eyoRHalCKigC93SJzURinIMyuKtXebHbo7CQ5M/uqpuv1J2V
+         QMd85G/uFjj48hBFlU6EGtDybguIz8IafdQ1KfyR/IPR0u5rQEuh1BCY6yJrS3USlGDe
+         dxJcqhVN1HxJtQZJpDDSjrNOOFUPZ6OAS4NV2gR8U8Q/Dg+gJ03ORViNPjfE+Z+xIRqQ
+         siXr2oq+ciC9vl6wnFH5pWQ+ePwHS0TUw/BSXULl7L+SUY44qdWamtwEp62swhiI3zHj
+         iwcsu7OTnxx/cEY35qriy/isQjN+gFruCE68vX5NKBFddRfwnLur0qyomobmrLEhsKum
+         SqsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZXandK+emcY9j+lknNJmYnpgD6ghtFPnYBrNZbHY5Mk=;
+        b=UjQDO6Y8AGYwDZzUqf7/PPDk4WNXp0oprsZn5Tf57cZbSPZIRw9K5Mpg2dwo/MUbWs
+         xpStaAZA0yNxxzO2RZyv8WBH7UvT9My+TThd8Me+e2fMFoZZXyZJX3NAD4MCjldPCqPN
+         hl0bV9vTF6N2rAviVi+RT70Iq6HRz6xcmf38we/9skNMr0BnAZOEVYFjUh0W1O5EvBXS
+         +dCOYOaoJoa9F/exCQiThlpZbVxckUm534eBiGOMMAiQgytJd0e4I7WHXvahi49rjQDv
+         3wQlA0IIJeuEPZKTgNM0vwTNGYiXaCBQr1+etzgI6VAkNV51YDuE8cWXrMYCg1V7x6w0
+         kcdg==
+X-Gm-Message-State: AOAM5334+Swv/53oUhd5H/jWiYp/ggBqkaymWmNuPyG3AF/gD4rapOcO
+        Xbta5NL+BcuBlHfW8zr2XbM=
+X-Google-Smtp-Source: ABdhPJyqcybfIkYqyHz+e3zwbI+JWbs8XjkGw/GjKf5GoLAsKQqh1ZSUguwnesxj8TLFIR9i7InrEg==
+X-Received: by 2002:a05:620a:16d3:: with SMTP id a19mr516513qkn.107.1644396971097;
+        Wed, 09 Feb 2022 00:56:11 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id k6sm8763048qko.68.2022.02.09.00.56.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 00:56:10 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: deng.changcheng@zte.com.cn
+To:     fweisbec@gmail.com
+Cc:     tglx@linutronix.de, mingo@kernel.org, linux-kernel@vger.kernel.org,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] tick/sched: use min() to make code cleaner
+Date:   Wed,  9 Feb 2022 08:56:04 +0000
+Message-Id: <20220209085604.1561628-1-deng.changcheng@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1644396407.git.geert@linux-m68k.org>
-References: <cover.1644396407.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If the boot CPU does not have the lowest hartid, "hartid - hbase" can
-become negative, leading to an incorrect hmask, causing userspace to
-crash with SEGV.  This is observed on e.g. Starlight Beta, where cpuid 1
-maps to hartid 0, and cpuid 0 maps to hartid 1.
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-Fix this by detecting this case, and shifting the accumulated mask and
-updating hbase, if possible.
+Use min() in order to make code cleaner.
 
-Fixes: 26fb751ca37846c9 ("RISC-V: Do not use cpumask data structure for hartid bitmap")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
-Tested-by: Emil Renner Berthing <kernel@esmil.dk>
-Tested-by: Atish Patra <atishp@rivosinc.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
 ---
-v2:
-  - Add Reviewed-by, Tested-by.
----
- arch/riscv/kernel/sbi.c | 57 ++++++++++++++++++++++++++++-------------
- 1 file changed, 39 insertions(+), 18 deletions(-)
+ kernel/time/tick-sched.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
-index 22444cfcd56cc646..775d3322b422fe14 100644
---- a/arch/riscv/kernel/sbi.c
-+++ b/arch/riscv/kernel/sbi.c
-@@ -250,7 +250,7 @@ static void __sbi_set_timer_v02(uint64_t stime_value)
- 
- static int __sbi_send_ipi_v02(const struct cpumask *cpu_mask)
- {
--	unsigned long hartid, cpuid, hmask = 0, hbase = 0;
-+	unsigned long hartid, cpuid, hmask = 0, hbase = 0, htop = 0;
- 	struct sbiret ret = {0};
- 	int result;
- 
-@@ -259,16 +259,27 @@ static int __sbi_send_ipi_v02(const struct cpumask *cpu_mask)
- 
- 	for_each_cpu(cpuid, cpu_mask) {
- 		hartid = cpuid_to_hartid_map(cpuid);
--		if (hmask && ((hbase + BITS_PER_LONG) <= hartid)) {
--			ret = sbi_ecall(SBI_EXT_IPI, SBI_EXT_IPI_SEND_IPI,
--					hmask, hbase, 0, 0, 0, 0);
--			if (ret.error)
--				goto ecall_failed;
--			hmask = 0;
--			hbase = 0;
-+		if (hmask) {
-+			if (hartid + BITS_PER_LONG <= htop ||
-+			    hbase + BITS_PER_LONG <= hartid) {
-+				ret = sbi_ecall(SBI_EXT_IPI,
-+						SBI_EXT_IPI_SEND_IPI, hmask,
-+						hbase, 0, 0, 0, 0);
-+				if (ret.error)
-+					goto ecall_failed;
-+				hmask = 0;
-+			} else if (hartid < hbase) {
-+				/* shift the mask to fit lower hartid */
-+				hmask <<= hbase - hartid;
-+				hbase = hartid;
-+			}
- 		}
--		if (!hmask)
-+		if (!hmask) {
- 			hbase = hartid;
-+			htop = hartid;
-+		} else if (hartid > htop) {
-+			htop = hartid;
-+		}
- 		hmask |= BIT(hartid - hbase);
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index c89f50a7e690..31064f85a9fd 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -822,7 +822,7 @@ static ktime_t tick_nohz_next_event(struct tick_sched *ts, int cpu)
+ 		next_tmr = get_next_timer_interrupt(basejiff, basemono);
+ 		ts->next_timer = next_tmr;
+ 		/* Take the next rcu event into account */
+-		next_tick = next_rcu < next_tmr ? next_rcu : next_tmr;
++		next_tick = min(next_rcu, next_tmr);
  	}
  
-@@ -345,7 +356,7 @@ static int __sbi_rfence_v02(int fid, const struct cpumask *cpu_mask,
- 			    unsigned long start, unsigned long size,
- 			    unsigned long arg4, unsigned long arg5)
- {
--	unsigned long hartid, cpuid, hmask = 0, hbase = 0;
-+	unsigned long hartid, cpuid, hmask = 0, hbase = 0, htop = 0;
- 	int result;
- 
- 	if (!cpu_mask || cpumask_empty(cpu_mask))
-@@ -353,16 +364,26 @@ static int __sbi_rfence_v02(int fid, const struct cpumask *cpu_mask,
- 
- 	for_each_cpu(cpuid, cpu_mask) {
- 		hartid = cpuid_to_hartid_map(cpuid);
--		if (hmask && ((hbase + BITS_PER_LONG) <= hartid)) {
--			result = __sbi_rfence_v02_call(fid, hmask, hbase,
--						       start, size, arg4, arg5);
--			if (result)
--				return result;
--			hmask = 0;
--			hbase = 0;
-+		if (hmask) {
-+			if (hartid + BITS_PER_LONG <= htop ||
-+			    hbase + BITS_PER_LONG <= hartid) {
-+				result = __sbi_rfence_v02_call(fid, hmask,
-+						hbase, start, size, arg4, arg5);
-+				if (result)
-+					return result;
-+				hmask = 0;
-+			} else if (hartid < hbase) {
-+				/* shift the mask to fit lower hartid */
-+				hmask <<= hbase - hartid;
-+				hbase = hartid;
-+			}
- 		}
--		if (!hmask)
-+		if (!hmask) {
- 			hbase = hartid;
-+			htop = hartid;
-+		} else if (hartid > htop) {
-+			htop = hartid;
-+		}
- 		hmask |= BIT(hartid - hbase);
- 	}
- 
+ 	/*
 -- 
 2.25.1
 
