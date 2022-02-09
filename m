@@ -2,133 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6504CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B254DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347175AbiBIEJY (ORCPT
+        id S1347233AbiBIEJa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41870 "EHLO
+        Tue, 8 Feb 2022 23:09:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344316AbiBIDUc (ORCPT
+        with ESMTP id S1347194AbiBIDjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:20:32 -0500
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40690C0613CC;
-        Tue,  8 Feb 2022 19:20:31 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id x52-20020a05683040b400b0059ea92202daso644240ott.7;
-        Tue, 08 Feb 2022 19:20:31 -0800 (PST)
+        Tue, 8 Feb 2022 22:39:20 -0500
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58AFC043186;
+        Tue,  8 Feb 2022 19:32:54 -0800 (PST)
+Received: by mail-oi1-f181.google.com with SMTP id ay7so1207959oib.8;
+        Tue, 08 Feb 2022 19:32:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=kdQVNApM57taqQgD/NZRSOMXZsBoQXgaGeZXyEv+t4I=;
-        b=QqombAXYQZa/PGhtpCItQ0hJV38gvViubn757gp/sUNAz73mIIevOVxYiaJUOkLdxZ
-         V4HiEFJ0WhPornk6A1tPq0uf9VvJHoPnF7fGyResrnDI/djQbvKcf7nG+Qb75fP/jNoz
-         58Aq+9AofZzvtzWI3ONKkWkgVy/Qt/rTQOGIort4FITJw8mQhFnvPEnyCrMYHDmXRqTL
-         fERsvCx4Drix16ecYrA5LlVp/aOwjCHRq4JixMTcFsD0C2imEa9bfmXqb/gMmzKQYd6k
-         CPXGd3AShUWMbO0OOcSXtZEfIpsa88BNjAbrUxtLf3wHVZGH9pC5iaK8/GV4u6KcSC5T
-         T37w==
-X-Gm-Message-State: AOAM5338TvqpHkUdQTd0lzm8x46zYx2xGZuXn0V+3xokGOnBeAqZQDT9
-        5hoYOcQDORnlm37/5S4agQahj819Fg==
-X-Google-Smtp-Source: ABdhPJyDXby0X48vpe/WjclBIIse+1y7tQFhP5v+u0kUS+sXrbfyjK6JDuWFThkBPr1v+Zg0wgZ9zg==
-X-Received: by 2002:a05:6830:2466:: with SMTP id x38mr162568otr.33.1644376830320;
-        Tue, 08 Feb 2022 19:20:30 -0800 (PST)
+        bh=xVw4y7RQcicGcqAuoJIIuX9sgfKI9eeI2fR3E2FgTqw=;
+        b=gZs+UuEGlJxmDKsUbx4WSHZ63bRNA+Z/jXjppVaA9Cs0sBWp5rSHKGuWMWfOUr2Jlz
+         vcaYWSEn5vCirFeElVKG4Z6n04zq3hNlFl/zcHBYZy3+oAV8XNEePxU8Yfym/mdPxXnV
+         +TPlbPJxLzlfLZmYqFbpxZ08QyxhTy78ZOwSEBzdlGMiKqjxqunGvsYptuidZpP7Vvyy
+         iiUXOr4xF5J0AsKy4KukYCPhvtc0VU9d2MeIiezCaoCdCy6bmg+ZQzESBlXhNiFw+sVa
+         aTPMBsXN/sfEFd/7g+A52TYbCO57QSpfJgUu1+ErQFDvW+Q6UHrPp+x7IFpDq5bXXMVy
+         UJ1g==
+X-Gm-Message-State: AOAM533e3iDyDsI//Sq1dBH0iZE4a+LZEAc5sUWKH9P34P4/63t+YwrP
+        voHO5EeSmAPc/TZ92o+nzg==
+X-Google-Smtp-Source: ABdhPJxymnsCCtzX1ASuD0v5iwd+GBNOtOo+3Im/y5HtMBxm3SPRXXSc5a/Bd1zECZyepbo+R32dJQ==
+X-Received: by 2002:aca:3657:: with SMTP id d84mr129368oia.212.1644377573999;
+        Tue, 08 Feb 2022 19:32:53 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t2sm6190687ooo.24.2022.02.08.19.20.29
+        by smtp.gmail.com with ESMTPSA id e9sm6251393oom.8.2022.02.08.19.32.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:20:29 -0800 (PST)
-Received: (nullmailer pid 3567489 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:20:28 -0000
-Date:   Tue, 8 Feb 2022 21:20:28 -0600
+        Tue, 08 Feb 2022 19:32:53 -0800 (PST)
+Received: (nullmailer pid 3586969 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:32:52 -0000
+Date:   Tue, 8 Feb 2022 21:32:52 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/10] dt-bindings: rtc: pcf2127: add PCF2131 INT_A and
- INT_B support
-Message-ID: <YgMy/CYL8lmf6Y+J@robh.at.kernel.org>
-References: <20220125200009.900660-1-hugo@hugovil.com>
- <20220125200009.900660-11-hugo@hugovil.com>
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Michael Zhu <michael.zhu@starfivetech.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Fu Wei <tekkamanninja@gmail.com>, devicetree@vger.kernel.org,
+        Michael Turquette <mturquette@baylibre.com>
+Subject: Re: [PATCH v1 3/7] dt-bindings: clock: Add JH7100 audio clock
+ definitions
+Message-ID: <YgM15GkF7Fv1y3gE@robh.at.kernel.org>
+References: <20220126173953.1016706-1-kernel@esmil.dk>
+ <20220126173953.1016706-4-kernel@esmil.dk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220125200009.900660-11-hugo@hugovil.com>
+In-Reply-To: <20220126173953.1016706-4-kernel@esmil.dk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 03:00:09PM -0500, Hugo Villeneuve wrote:
-> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Wed, 26 Jan 2022 18:39:49 +0100, Emil Renner Berthing wrote:
+> Add all clock outputs for the StarFive JH7100 audio clock generator.
 > 
-> The PCF2131 has two output interrupt pins, named INT_A and INT_B.
-> 
-> Add properties to identify onto which pin we want the alarm interrupt
-> to be routed. It can be either one, or both.
-> 
-> These properties are automatically set to false for variants other
-> than PCF2131 (ex: PCF2127).
-> 
-> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
 > ---
->  .../devicetree/bindings/rtc/nxp,pcf2127.yaml  | 23 +++++++++++++++++++
->  1 file changed, 23 insertions(+)
+>  .../dt-bindings/clock/starfive-jh7100-audio.h | 41 +++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/starfive-jh7100-audio.h
 > 
-> diff --git a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> index 57eb0a58afa3..83656dd2f97f 100644
-> --- a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> +++ b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> @@ -24,6 +24,16 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  alarm-output-a:
 
-nxp,alarm-output-a
-
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description:
-> +      Enable alarm interrupt on INT_A output pin.
-> +
-> +  alarm-output-b:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description:
-> +      Enable alarm interrupt on INT_B output pin.
-> +
->    start-year: true
->  
->    reset-source: true
-> @@ -32,6 +42,18 @@ required:
->    - compatible
->    - reg
->  
-> +if:
-> +  not:
-> +    properties:
-> +      compatible:
-> +        contains:
-> +          enum:
-> +            - nxp,pcf2131
-> +then:
-> +  properties:
-> +    alarm-output-a: false
-> +    alarm-output-b: false
-> +
->  additionalProperties: false
->  
->  examples:
-> @@ -62,6 +84,7 @@ examples:
->              pinctrl-0 = <&rtc_nint_pins>;
->              interrupts-extended = <&gpio1 16 IRQ_TYPE_LEVEL_HIGH>;
->              reset-source;
-> +            alarm-output-b;
->          };
->      };
->  
-> -- 
-> 2.30.2
-> 
-> 
+Acked-by: Rob Herring <robh@kernel.org>
