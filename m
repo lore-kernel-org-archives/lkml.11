@@ -2,126 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D04FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiBIL1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:27:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S230417AbiBIL3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:29:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiBIL1j (ORCPT
+        with ESMTP id S229502AbiBIL3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:27:39 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176A3E0969AF;
-        Wed,  9 Feb 2022 02:21:29 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id cf2so3995380edb.9;
-        Wed, 09 Feb 2022 02:21:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
-        b=Pf5vkLS6cPpQ5pXhObwXKqRIi1EHsNwkjgOuOa/YseN2ddMt/AVXqIdoyJk3Ukrjc/
-         sFw77R/VIC7pfahE4aRjgV8RXqj1X8wro2JHIJ3YfzkkO8yWpb+kU89Ie1QbXP7UpmmX
-         C1GTdDav3TZBL+8qkGEkbE/JbNM6IKNogNBU3AYgTpYLKIDrcM08bDEEOtO2Px50SmcY
-         c45e2GaAyTv+Qt9Upwv5nkTJ8UukW6CcByZB9nqiTPwPZezURGQpOGire3k/OQdhZmAF
-         3b17UDq8d7C1nH2GOLo5//6O+KP8RjXZ24VsFeGf4Xsd0ejlqNjOjw63cHlmJ8hTaEwS
-         PVdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
-        b=as3TEKYG1k0XsZ51EWJio0H0+og5wV6EC6EEPplFEfb0Ap+n6eCp0r7qMo5FGCehrm
-         t4KJp/eaJi1WGsxKKwgvwcc4CALWRo4XfhYBbLEbJ+FN6AKv/ubMQjHHD7K8uo2v7Iu4
-         wYK+ucb/mkLu64anFOSUSZhtpMvxabEoeR7ApMZoVsJQE85ajsVNzJyii/aSE1lu1rFQ
-         GvLpIB5VD9itzkZfmyac4OR2CB3h1tSSByHKbucevZIkSt3qvqPETlp8gj/iH0oZppZS
-         XFWZUm9akSCwk0kxDjhzfMUgkD+Q8bUkHiK0bBnQo9bZCnbP5I7mrtaemve2QukuG4OY
-         MquQ==
-X-Gm-Message-State: AOAM530idXOe9ePNk96veGk/5LMhFIzIH2H8rPVqBee3ylE9tCDYJ9Re
-        TgQIzvgcwwgeQXbo/o5JC/g=
-X-Google-Smtp-Source: ABdhPJxw9KX+3YSWHKExATGl3dQ+kkw3w8RMgwOuyi1zuq7fwXtnfr9xhcYUoRq5LIZGKwB30YDNxg==
-X-Received: by 2002:aa7:d898:: with SMTP id u24mr1623473edq.60.1644402087635;
-        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
-Received: from [192.168.0.108] ([77.126.86.139])
-        by smtp.gmail.com with ESMTPSA id p19sm996929ejx.30.2022.02.09.02.21.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
-Message-ID: <bde548df-cb80-966a-599c-3e1cb8639716@gmail.com>
-Date:   Wed, 9 Feb 2022 12:21:24 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [BUG] net: mellanox: mlx4: possible deadlock in mlx4_xdp_set()
- and mlx4_en_reset_config()
-Content-Language: en-US
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>, tariqt@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Wed, 9 Feb 2022 06:29:22 -0500
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5D7E0987D4
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:22:47 -0800 (PST)
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MZkUt-1nmu571sm7-00WnbF;
+ Wed, 09 Feb 2022 11:01:30 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
         linux-kernel@vger.kernel.org
-References: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: [PATCH v5 03/12] arm64: defconfig: enable pcieaer configuration
+Date:   Wed,  9 Feb 2022 11:00:46 +0100
+Message-Id: <20220209100055.181389-4-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
+References: <20220209100055.181389-1-marcel@ziswiler.com>
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:ImXBglx5IJOFnqXkkH0uWKtrW4VUbDcr2vn403khVMa1OrPD/FZ
+ AXJrnJHGms3H1QlJAK8imEw9mcltPgWEMpk9b/fJtytCREbH+CjyX/0NI8knjfiMvcGmFTU
+ Pu1kP6VncsgvzSTway6j9pzvf5KCBaroWrpKGAjFXDjRc4BiROTbfrcHxS54Di18Kv7Z/23
+ kAOnAmeYkrDX858rRlNVQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3K+ObxKopuw=:47XH1pwFP2sRRj4TyJlQ0u
+ mz4O22uas/EkSVMqUWXJC9cBYI7dJAG5QDXmvqQ2tygAXMQSXi1yhrsUspt9CSifBsD2mGru1
+ T2wjxGe4yaNym91tqBSFQJSNm/i1lOWFKPnF6SFuX4VFe7MeYtLalFI73tdEWxdaPL260xFzj
+ 4Zui/xt84kSH1ubxkuHa5XViYxJ2v/KXtVMKzu9v/1QbCf8OQ5ZA+ek+2dbQBOfIj967cXnUE
+ Mv6V39ICeC/1zBbcKy2USP2g6a4NyOs8M6zBNYwnFCguocwFvhBd4GtNkE4Dnl1t8iX3PnG+T
+ JhupkhYIJ66ukdgoCI+7L1nK5TN9zQI5+KO21clwlqvDQ01bjJLpQA4vfOcH4l0ZiPtj/6m0O
+ WkQaAwmZk9pOd6VZ35+ZOc5YHnl9Nz17ZQe6PalV9BzUfnV0V1kTiM5RuU7l/+75Tr70Ed5hA
+ bzNJkZkg1Xf87DpUusnaVf1wQU5uzwHjOYnjKf43d0gmAEB/iVKgrAklRn6sUQNiaMQNaMhKm
+ 3MRfvAlatgt1xCfxH5cy9vzj+u2wctYYmXGKtBaO3vHvLPjDjC3EWgkqnAat6YnwgBM9KJior
+ PQBmR7kTr6zKGYpXyo+ov3VxTAUKjkDrGQFtam4qThQyAsME19qXTb+qsp1P46cRbA0DfXzzU
+ QN6MX0H2d9OxApTo/hq+KIeAdxhCMsNREvCqxCOnFnRMxEQkYlybdtpcqWBF2BfaFKo21LVcU
+ mUmc91Wo8cdXUJuQ1F8SvlOHdInywXwIW+HITvcQYl8+LSYoj2I+LiylUW0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+Enable CONFIG_PCIEAER which is required for CONFIG_ACPI_APEI_PCIEAER.
+Commit 8c8ff55b4da7 ("PCI/AER: Don't select CONFIG_PCIEAER by default")
+changed it to no longer being enabled by default.
 
-On 2/7/2022 5:16 PM, Jia-Ju Bai wrote:
-> Hello,
-> 
-> My static analysis tool reports a possible deadlock in the mlx4 driver 
-> in Linux 5.16:
-> 
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-Hi Jia-Ju,
-Thanks for your email.
+---
 
-Which static analysis tool do you use? Is it standard one?
+(no changes since v3)
 
-> mlx4_xdp_set()
->    mutex_lock(&mdev->state_lock); --> Line 2778 (Lock A)
->    mlx4_en_try_alloc_resources()
->      mlx4_en_alloc_resources()
->        mlx4_en_destroy_tx_ring()
->          mlx4_qp_free()
->            wait_for_completion(&qp->free); --> Line 528 (Wait X)
+Changes in v3:
+- Add Krzysztof's reviewed-by tag.
 
-The refcount_dec_and_test(&qp->refcount)) in mlx4_qp_free() pairs with 
-refcount_set(&qp->refcount, 1); in mlx4_qp_alloc.
-mlx4_qp_event increases and decreasing the refcount while running 
-qp->event(qp, event_type); to protect it from being freed.
+Changes in v2:
+- New patch following full defconfig analysis as requested by Krzysztof.
 
-> 
-> mlx4_en_reset_config()
->    mutex_lock(&mdev->state_lock); --> Line 3522 (Lock A)
->    mlx4_en_try_alloc_resources()
->      mlx4_en_alloc_resources()
->        mlx4_en_destroy_tx_ring()
->          mlx4_qp_free()
->            complete(&qp->free); --> Line 527 (Wake X)
-> 
-> When mlx4_xdp_set() is executed, "Wait X" is performed by holding "Lock 
-> A". If mlx4_en_reset_config() is executed at this time, "Wake X" cannot 
-> be performed to wake up "Wait X" in mlx4_xdp_set(), because "Lock A" has 
-> been already hold by mlx4_xdp_set(), causing a possible deadlock.
-> 
-> I am not quite sure whether this possible problem is real and how to fix 
-> it if it is real.
-> Any feedback would be appreciated, thanks :)
-> 
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Not possible.
-These are two different qps, maintaining two different instances of 
-refcount and complete, following the behavior I described above.
-> 
-> Best wishes,
-> Jia-Ju Bai
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index b057b08c0fc2..c37dace3e89d 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -211,6 +211,7 @@ CONFIG_NFC_NCI=m
+ CONFIG_NFC_S3FWRN5_I2C=m
+ CONFIG_PCI=y
+ CONFIG_PCIEPORTBUS=y
++CONFIG_PCIEAER=y
+ CONFIG_PCI_IOV=y
+ CONFIG_PCI_PASID=y
+ CONFIG_HOTPLUG_PCI=y
+-- 
+2.33.1
 
-Thanks,
-Tariq
