@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B3EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347010AbiBIEJE (ORCPT
+        id S1347076AbiBIEJO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:09:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
+        Tue, 8 Feb 2022 23:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346792AbiBIDiL (ORCPT
+        with ESMTP id S1346402AbiBID1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:38:11 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2171C0401C7;
-        Tue,  8 Feb 2022 19:38:06 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jtlvd2SGzz4xNq;
-        Wed,  9 Feb 2022 14:38:05 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644377885;
-        bh=IVVltse1KVLGor1dXWGYYBLp8Dq1wax8AojZy1EAyWM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gS4Oql1HBQSNhBtKfwIAa5uXL4NzdPVDhJDct9TJYJHVWWyhO50cJez9kv5UvPuO6
-         lMFQ33E7Cd+DJ3Iinm+UCEL9tnjtQl7uH7fyqyh5Pj9WdBCW//FFrd1QbPuUoJtn6B
-         chSBvftsptI3Hlti0sI4MmVRdnpR1r0gd7yeXNgODfwpEVqDfEMpbohVOr/Lu09yuL
-         MZuzkxClU1OnnGhrZBgKZEDKHOS3sphcFyY02J/fF3cQVixB2DJ8/XqaXr/F226h3l
-         KBwj5GqaZbWePn5YQzjC9lZdaK0P43xi/4vnKWloSmx64Uan0sIzgutanHwoE629sI
-         L5A5MRtmGwAeQ==
-Date:   Wed, 9 Feb 2022 14:38:04 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the folio tree
-Message-ID: <20220209143804.33b5f08a@canb.auug.org.au>
-In-Reply-To: <20220207150621.0273b095@canb.auug.org.au>
-References: <20220207150621.0273b095@canb.auug.org.au>
+        Tue, 8 Feb 2022 22:27:44 -0500
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BEADC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:27:43 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644377262;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=x2Il0JhrH5EsFOuJtqhIRhFIoWPTf3W77jR9wKs31rI=;
+        b=MIeHlyZMMutX70dqI+O6N/jG+BC92D2SkQNXDJlIW739n5beUj/tcgyAadqp9ZvWKgY8aP
+        8tSl4OFpUmeR69s9H84qSRY6fVpyNKAG83N3HBbOR6rYMKyffEllbw81HWjx0CHyRh1916
+        q5ekMfe8dl/bpBhb+yNNq0FGazgzV3M=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Len Baker <len.baker@gmx.com>, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: most: video: Make use of the helper macro LIST_HEAD()
+Date:   Wed,  9 Feb 2022 11:27:13 +0800
+Message-Id: <20220209032715.38437-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tqjQ92p5FdG2WhDa9hyRI1t";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/tqjQ92p5FdG2WhDa9hyRI1t
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Replace "struct list_head head = LIST_HEAD_INIT(head)" with
+"LIST_HEAD(head)" to simplify the code.
 
-Hi all,
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/staging/most/video/video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Mon, 7 Feb 2022 15:06:21 +1100 Stephen Rothwell <sfr@canb.auug.org.au> w=
-rote:
->
-> After merging the folio tree, today's linux-next build (arm
-> multi_v7_defconfig) failed like this:
->=20
-> mm/page_vma_mapped.c: In function 'page_vma_mapped_walk':
-> mm/page_vma_mapped.c:219:48: error: implicit declaration of function 'pmd=
-_pfn'; did you mean 'pmd_off'? [-Werror=3Dimplicit-function-declaration]
->   219 |                                 if (!check_pmd(pmd_pfn(pmde), pvm=
-w))
->       |                                                ^~~~~~~
->       |                                                pmd_off
->=20
-> Caused by commit
->=20
->   02ecfe9b9580 ("mm: Convert page_vma_mapped_walk to work on PFNs")
->=20
-> Presumably you need to explicitly include <linux/pgtable.h>?
->=20
-> I have used the folio tree from next-20220204 for today.
+diff --git a/drivers/staging/most/video/video.c b/drivers/staging/most/video/video.c
+index b7858e47145f..ffa97ef21ea5 100644
+--- a/drivers/staging/most/video/video.c
++++ b/drivers/staging/most/video/video.c
+@@ -52,7 +52,7 @@ struct comp_fh {
+ 	u32 offs;
+ };
+ 
+-static struct list_head video_devices = LIST_HEAD_INIT(video_devices);
++static LIST_HEAD(video_devices);
+ static DEFINE_SPINLOCK(list_lock);
+ 
+ static inline bool data_ready(struct most_video_dev *mdev)
+-- 
+2.25.1
 
-I am still getting this build failure.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/tqjQ92p5FdG2WhDa9hyRI1t
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIDNxwACgkQAVBC80lX
-0GyzOAf+No9QMeZbZCVvapQ8yoZJRtYxh/dZr84xH2Yr7KwTAkQx+ybLLIoi6W2F
-YPMunXGb6eqzwkVRPACVGILusUJEbDgEOIDHlR8lr75QHgUYQWQEyMihmHP276uA
-lOH5we3wHKrzBEiW/t1bens1Zjp4HQRZGUiUFvsClWnJ9V1Mwktqd2ZFPgHRZ1IP
-HKl1KWaR/aDhKPlTrjMDKqNvPyF4RGLpcJI+jaTHX4zZSNa4eO5bpKEsT3EGrYCG
-mr/5b7P5TAVpzEK+5+0gidx6Cuv3oW5pj2HextHKV1M21ey+dwrxNuH97X+/qsa9
-LIa6IPx1y6jhqrJiHgmnFPPfhnNaWA==
-=X/50
------END PGP SIGNATURE-----
-
---Sig_/tqjQ92p5FdG2WhDa9hyRI1t--
