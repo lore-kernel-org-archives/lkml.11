@@ -2,76 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F790C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50754C43217
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348359AbiBIELl (ORCPT
+        id S1348248AbiBIELa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:11:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
+        Tue, 8 Feb 2022 23:11:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239471AbiBIEFs (ORCPT
+        with ESMTP id S1347509AbiBIDtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:05:48 -0500
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205C7C061577;
-        Tue,  8 Feb 2022 20:05:48 -0800 (PST)
-Received: by mail-ot1-f42.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so688533oth.12;
-        Tue, 08 Feb 2022 20:05:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=o3YMeRwUz1ntDWPYVtPYMrCAxcHYKG6DDEiI0zJMrfg=;
-        b=KnNK8ez/GdaB6zPZw9XZJu/1vd2ygrGTZ29yeSTo8uSEXR/naKeV18p4XmjHpAx2rS
-         1rFPa3zKhvjKWcPyKCSzT7UDJ7A31R+PhI0TzHzznHgjAez7bUKfTCf3EFFL1sTg+TJr
-         UkSB/VwdybL0ANoAGyw9f8Vxmn5rkztspsPGN8BJcT9qJoIYo5qQ3hWRWki2NPyIssC1
-         A8xuyj08/fBJB5Jf6SAPcRuKKTyfpg9FffDdfR3jZkddIoTHThcW/VctYhmttxjFsv3z
-         YgNbCYrLyeu/Km5JAZDC36ndpzfehPm+y0Zxxdbo9tiBwrbZ97mKMwOG1o+iMi9Z41c9
-         /Zqg==
-X-Gm-Message-State: AOAM531pfHJe+tCtEpU64S0R6efomCOzGn6so6pwF60ilhGFX7ojZQAw
-        kgklpE97csd7yWhHSjagUQ==
-X-Google-Smtp-Source: ABdhPJz9jfeHHaiH+4zU1BTJWQ08GH8RdUKft2JUKLvjWaGoFuEonXdybnOG23G7sSVt+nWlCflSsg==
-X-Received: by 2002:a9d:73da:: with SMTP id m26mr225820otk.72.1644379547459;
-        Tue, 08 Feb 2022 20:05:47 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id s13sm6218679ooh.43.2022.02.08.20.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:05:46 -0800 (PST)
-Received: (nullmailer pid 3634207 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:05:45 -0000
-Date:   Tue, 8 Feb 2022 22:05:45 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Icenowy Zheng <icenowy@nucleisys.com>
-Cc:     linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Subject: Re: [PATCH 05/12] dt-bindings: interrupt-controller: add compatible
- string for UX600 PLIC
-Message-ID: <YgM9mdKvrjlEKRN0@robh.at.kernel.org>
-References: <20220127151647.2375449-1-icenowy@nucleisys.com>
- <20220127151647.2375449-6-icenowy@nucleisys.com>
+        Tue, 8 Feb 2022 22:49:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D836C06174F;
+        Tue,  8 Feb 2022 19:49:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF752B81E57;
+        Wed,  9 Feb 2022 03:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D912C340E7;
+        Wed,  9 Feb 2022 03:49:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644378542;
+        bh=NH/0rQb0O2Au84RUhggPWG4HEjxTOHr2UcxZto/4Uhw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=foyT8vJq6VkQKzP0c23smMGcRl/maRyaVj5vNuuZ96ohBFb0F4ek91IrERNdj0D7G
+         yi+kE42/jSvQTbHzkDW7NMYDI27rnjQimCE8CBdBkbAnaQSHBSkpkCNr5bT2LxY86u
+         hxiEvsjvn0f9oou2Hf5lzNGVIUwx7GW4TL3gR4lWi/hINeA3QeqP+dHTWy/o8BoNLx
+         bhps5CvNF507w/eolYjFss9mLDTYrWNGtj2w7nvE17YmZJ71R2RBJ4my5acQqIK8Co
+         i1DI+EY8RGpn6BitStzJTWXy+yR+Qw//vo//gTB3ZRzs4pIZwWIqQKVaSjEoClaV6X
+         vXudEdveHDjQA==
+Date:   Tue, 8 Feb 2022 19:49:00 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>
+Cc:     simon.horman@corigine.com, David Miller <davem@davemloft.net>,
+        shenyang39@huawei.com, libaokun1@huawei.com,
+        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [BUG] net: netronome: nfp: possible deadlock in
+ nfp_cpp_area_acquire() and nfp_cpp_area_release()
+Message-ID: <20220208194900.6d1afbc4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
+References: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127151647.2375449-6-icenowy@nucleisys.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 23:16:40 +0800, Icenowy Zheng wrote:
-> Nuclei UX600 series CPU has an optional PLIC (recommended when running
-> Linux).
-> 
-> Add a compatible string for it.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
-> ---
->  .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml         | 1 +
->  1 file changed, 1 insertion(+)
-> 
+On Wed, 9 Feb 2022 10:50:44 +0800 Jia-Ju Bai wrote:
+> Hello,
+>=20
+> My static analysis tool reports a possible deadlock in the nfp driver in=
+=20
+> Linux 5.16:
+>=20
+> nfp_cpp_area_acquire()
+>  =C2=A0 mutex_lock(&area->mutex); --> Line 455 (Lock A)
+>  =C2=A0 __nfp_cpp_area_acquire()
+>  =C2=A0=C2=A0=C2=A0 wait_event_interruptible(area->cpp->waitq, ...) --> L=
+ine 427 (Wait X)
+>=20
+> nfp_cpp_area_release()
+>  =C2=A0 mutex_lock(&area->mutex); --> Line 502 (Lock A)
+>  =C2=A0 wake_up_interruptible_all(&area->cpp->waitq); --> Line 508 (Wake =
+X)
+>=20
+> When nfp_cpp_area_acquire() is executed, "Wait X" is performed by=20
+> holding "Lock A". If nfp_cpp_area_release() is executed at this time,=20
+> "Wake X" cannot be performed to wake up "Wait X" in=20
+> nfp_cpp_area_acquire(), because "Lock A" has been already hold by=20
+> nfp_cpp_area_acquire(), causing a possible deadlock.
+>=20
+> I am not quite sure whether this possible problem is real and how to fix=
+=20
+> it if it is real.
 
-Acked-by: Rob Herring <robh@kernel.org>
+It's not.
+
+> Any feedback would be appreciated, thanks :)
+>
+>
+> Best wishes,
+> Jia-Ju Bai
+
