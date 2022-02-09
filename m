@@ -2,115 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE0CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:56:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235537AbiBIJ4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:56:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S235873AbiBIJ4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232745AbiBIJz4 (ORCPT
+        with ESMTP id S235574AbiBIJ4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:55:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C4C75E046F1F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:55:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644400266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bOGT40PA5LmAnBRQIBrjCAxhYJpsutSMC+lcUcCHisA=;
-        b=WaD9JxkXykV92Ys4a5XHnxtSNcNkiP8bh6uq5uGgHl2gd4tZ8J02Mi6rNpYW3bNXWCQgd5
-        5oH4XdQDAUjSWhTemPStqNtaRAe5BLXAqJND5+INxip5smLOkcsCSalhGJhGc5qRA/diOt
-        bmjO+p8CqT0B4cvIBmNEIt7y9s64PJg=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-599-zLksJTvLPNmflJynIoqBdg-1; Wed, 09 Feb 2022 04:45:02 -0500
-X-MC-Unique: zLksJTvLPNmflJynIoqBdg-1
-Received: by mail-wr1-f71.google.com with SMTP id d13-20020adfa34d000000b001e33a1c56f3so868794wrb.20
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:45:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=bOGT40PA5LmAnBRQIBrjCAxhYJpsutSMC+lcUcCHisA=;
-        b=a6N1eSsiko2OGxhVCM2ROPoZDraj/9Mt9UyjZ25jYnUvGvOdQVweetT4KFHPHi1C9+
-         P1UQ8mf0yQI6l4KEpd04orDriZF/y/TdnFD7b3UTDFd7tmTONgNvsa2AUMAHMGoxQ81b
-         lY7PDj6W0+4Z4xrcI31vlFN5pXMnntGp/5UJPoEa8rsfslO/0CLpykGa/1TNH/28YjqK
-         MX1h0jplRL8kx+Ct7or44YB4LLj8EKB26dwJZEjS5/bYGjAYZqOOvi5nLYIuj2dV4d+y
-         6DMsD8lxBqPiuINcRquR18BS7Vp4tjKpoIA+YzljB2kh6e31OdJQctfpw9lmFWxUm12E
-         W36w==
-X-Gm-Message-State: AOAM531zY67yr7rNtJmPC1tYSiZgiXPeaOo+XT/TTrIHxahXtHxCHDiQ
-        au2qg5pB5t7r60cBZTktI/w57VogDGwGX9TrOKFxFeVVcd3Td5DqFGYQXlCVxrBgWnhpOCxPjFf
-        dA57JVMjVk3vkkX5D+ICwfeAN
-X-Received: by 2002:a1c:7418:: with SMTP id p24mr1246561wmc.21.1644399901426;
-        Wed, 09 Feb 2022 01:45:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzvFdeFjkesIm97KwdAHOETISeFDFk5mT6+L7zC0mhqZYGBbdP+JGwExuY5pOJJ7UuI+EuXSg==
-X-Received: by 2002:a1c:7418:: with SMTP id p24mr1246546wmc.21.1644399901192;
-        Wed, 09 Feb 2022 01:45:01 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1204:1500:37e7:8150:d9df:36f? ([2a0c:5a80:1204:1500:37e7:8150:d9df:36f])
-        by smtp.gmail.com with ESMTPSA id h6sm4428856wmq.26.2022.02.09.01.45.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:45:00 -0800 (PST)
-Message-ID: <b5363ced8e17d07d41554da8fde06c410e6688e0.camel@redhat.com>
-Subject: Re: [PATCH 0/2] mm/page_alloc: Remote per-cpu lists drain support
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        frederic@kernel.org, tglx@linutronix.de, mtosatti@redhat.com,
-        mgorman@suse.de, linux-rt-users@vger.kernel.org, vbabka@suse.cz,
-        cl@linux.com, paulmck@kernel.org, willy@infradead.org
-Date:   Wed, 09 Feb 2022 10:45:00 +0100
-In-Reply-To: <7c87f388-cc50-e9a1-17a7-802bb42656e4@huawei.com>
-References: <20220208100750.1189808-1-nsaenzju@redhat.com>
-         <7c87f388-cc50-e9a1-17a7-802bb42656e4@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Wed, 9 Feb 2022 04:56:11 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340A7C102FDB;
+        Wed,  9 Feb 2022 01:56:03 -0800 (PST)
+X-UUID: 0aca2ca46c6a481eab03ccf4ecd769e0-20220209
+X-UUID: 0aca2ca46c6a481eab03ccf4ecd769e0-20220209
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <kewei.xu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1893974579; Wed, 09 Feb 2022 17:54:13 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 9 Feb 2022 17:54:12 +0800
+Received: from localhost.localdomain (10.17.3.14) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Feb 2022 17:54:11 +0800
+From:   Kewei Xu <kewei.xu@mediatek.com>
+To:     <wsa@the-dreams.de>
+CC:     <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <leilk.liu@mediatek.com>,
+        <qii.wang@mediatek.com>, <liguo.zhang@mediatek.com>,
+        <caiyu.chen@mediatek.com>, <housong.zhang@mediatek.com>,
+        <yuhan.wei@mediatek.com>, <kewei.xu@mediatek.com>,
+        <ryan-jh.yu@mediatek.com>, <david-yh.chiu@mediatek.com>
+Subject: [PATCH v9 0/1] Introducing an attribute to select the time setting
+Date:   Wed, 9 Feb 2022 17:54:06 +0800
+Message-ID: <1644400447-6215-1-git-send-email-kewei.xu@mediatek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Xiongfeng, thanks for taking the time to look at this.
+v9:
+1. Base on for-next remove received patch
+2. Update ac-timing calculation algorithm to make i2c ac-timing meet
+specification and function normal.
 
-On Wed, 2022-02-09 at 16:55 +0800, Xiongfeng Wang wrote:
-> Hi Nicolas，
-> 
-> When I applied the patchset on the following commit and tested on QEMU, I came
-> accross the following CallTrace.
->   commit dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-> 
-> I wrote a userspace application to consume the memory. When the memory is used
-> out, the OOM killer is triggered and the following Calltrace is printed. I am
-> not sure if it is related to this patchset. But when I reverted this patchset,
-> the 'NULL pointer' Calltrace didn't show.
+v8:
+Remove received patch
 
-It's a silly mistake on my part, while cleaning up the code I messed up one of
-the 'struct per_cpu_pages' accessors. This should fix it:
+v7:
+Resubmit the patch based on version 5.15-rc1
 
-------------------------->8-------------------------
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 0caa7155ca34..e65b991c3dc8 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3279,7 +3279,7 @@ static void __drain_all_pages(struct zone *zone, bool force_all_cpus)
-                                has_pcps = true;
-                } else {
-                        for_each_populated_zone(z) {
--                               pcp = per_cpu_ptr(zone->per_cpu_pageset, cpu);
-+                               pcp = per_cpu_ptr(z->per_cpu_pageset, cpu);
-                                lp = rcu_dereference_protected(pcp->lp,
-                                                mutex_is_locked(&pcpu_drain_mutex));
-                                if (lp->count) {
-------------------------->8-------------------------
+v6:
+1. Add the judgment condition, clear the handshake signal between dma and
+i2c when multiple msgs are transmitted.
 
-Thanks!
+v5:
+1. Replace the previous variable name "default_timing_adjust" with
+   "use-default-timing"
+2. Added waiting for dma reset mechanism
+3. Remove received patch(dt-bindings: i2c: update bindings for MT8195 SOC)
 
--- 
-Nicolás Sáenz
+v4:
+1. Remove the repeated assignment of the inter_clk_div parameter
+2. Modify the wrong assignment of OFFSET_MULTI_DMA
+3. Unify the log print format of the i2c_dump_register() and drop the extra
+   outer parentheses
+4. Place the fixes at the very least
+5. Add fixed tags commit 25708278f810 ("i2c: mediatek: Add i2c support for
+   MediaTek MT8183")
+6. Add "i2c: mediatek: modify bus speed calculation formula"
+7. Fix single line characters exceeding 80 characters
+8. Combine two different series of patches.
+
+v3:
+1. Fix code errors caused by v2 modification
+
+v2:
+1. Add "dt-bindings: i2c: add attribute default-timing-adjust"
+2. Split the fix into sepatate patch.
+
+Kewei Xu (1):
+  i2c: mediatek: modify bus speed calculation formula
+
+ drivers/i2c/busses/i2c-mt65xx.c | 51 ++++++++++++++++++++++++++-------
+ 1 file changed, 41 insertions(+), 10 deletions(-)
+
+--
+2.18.0
 
