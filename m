@@ -2,89 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50754C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAD9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348248AbiBIELa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:11:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48898 "EHLO
+        id S238886AbiBIEMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347509AbiBIDtG (ORCPT
+        with ESMTP id S238754AbiBIEFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:49:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D836C06174F;
-        Tue,  8 Feb 2022 19:49:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF752B81E57;
-        Wed,  9 Feb 2022 03:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D912C340E7;
-        Wed,  9 Feb 2022 03:49:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644378542;
-        bh=NH/0rQb0O2Au84RUhggPWG4HEjxTOHr2UcxZto/4Uhw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=foyT8vJq6VkQKzP0c23smMGcRl/maRyaVj5vNuuZ96ohBFb0F4ek91IrERNdj0D7G
-         yi+kE42/jSvQTbHzkDW7NMYDI27rnjQimCE8CBdBkbAnaQSHBSkpkCNr5bT2LxY86u
-         hxiEvsjvn0f9oou2Hf5lzNGVIUwx7GW4TL3gR4lWi/hINeA3QeqP+dHTWy/o8BoNLx
-         bhps5CvNF507w/eolYjFss9mLDTYrWNGtj2w7nvE17YmZJ71R2RBJ4my5acQqIK8Co
-         i1DI+EY8RGpn6BitStzJTWXy+yR+Qw//vo//gTB3ZRzs4pIZwWIqQKVaSjEoClaV6X
-         vXudEdveHDjQA==
-Date:   Tue, 8 Feb 2022 19:49:00 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     simon.horman@corigine.com, David Miller <davem@davemloft.net>,
-        shenyang39@huawei.com, libaokun1@huawei.com,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [BUG] net: netronome: nfp: possible deadlock in
- nfp_cpp_area_acquire() and nfp_cpp_area_release()
-Message-ID: <20220208194900.6d1afbc4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
-References: <922a002a-3ab6-eabe-131c-af3b8951866b@gmail.com>
+        Tue, 8 Feb 2022 23:05:49 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CFBC061578
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 20:05:48 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id c3so1141268pls.5
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 20:05:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=T/7E7Mp6XNXqXhtlqv1x1MYPkswrBrA6+UdeF1obBS4=;
+        b=LhhMh/QKAlG2POJv0ZfzUP5W8E7pnK30Hb6+s1H0+gZroVOfdcD2dWyMTlhY2fBoKm
+         CE6I3mJt2iEmtOfdFnpJWyj95G8qFPl+SpqKrpwMbNdgSz8CXcqy514uSwRdO/lGjisG
+         caDa9FzfI0KVEqNqIgwAy/ImzqZpuPIRBIJ0Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=T/7E7Mp6XNXqXhtlqv1x1MYPkswrBrA6+UdeF1obBS4=;
+        b=RENCq1ghh+olu5pDTn1wHOD43ASogYzPURauseosTzjHoz49L4X37fSH+JbsSeyypE
+         qiGzBlSgmGAlYdV8cGDuwB8ILqxxUZ++gqqVKDNrQhUEMWIt3UrZTqjyQCH2resV0UDM
+         +gLLMasyiPCjgDjCnkegxCBVxfDqpE5iASIRbRRPpql2qXA0w01CRb6rxVwprLEI19dF
+         ko+kBAsm4JVdRKvn18w2iNaBVe/hRSEkmDIeI+N2ymzFDEhRJ81PDdqdrtdPPANqk0Ir
+         yhYcwgr5sJs9lOsikWKurGNZNLu06Iuf0nkFs03ogG4KSp30MMdt4YgE7/mz47APzSQP
+         vPxg==
+X-Gm-Message-State: AOAM532lHRg/e9xoprv9zayvCOCm1AwSdB+5+lN6Iguq21pEft5UfEZK
+        hPvsYJNioBf9gsUZLUGE8vaWEQ==
+X-Google-Smtp-Source: ABdhPJzebAbGu7EAY4nH4ZIhdg023f0jz9MjXa8a8latUIqwacPOTeECC7leOgrcuGUHh/BtCMYo0w==
+X-Received: by 2002:a17:902:ce8a:: with SMTP id f10mr328461plg.35.1644379547675;
+        Tue, 08 Feb 2022 20:05:47 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id s10sm18098462pfu.186.2022.02.08.20.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 20:05:47 -0800 (PST)
+Date:   Tue, 8 Feb 2022 20:05:46 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Joao Moreira <joao@overdrivepizza.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        hjl.tools@gmail.com, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, samitolvanen@google.com,
+        llvm@lists.linux.dev
+Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
+Message-ID: <202202082003.FA77867@keescook>
+References: <20211122170301.764232470@infradead.org>
+ <20211122170805.338489412@infradead.org>
+ <6ebb0ab131c522f20c094294d49091fc@overdrivepizza.com>
+ <202202081541.900F9E1B@keescook>
+ <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 10:50:44 +0800 Jia-Ju Bai wrote:
-> Hello,
->=20
-> My static analysis tool reports a possible deadlock in the nfp driver in=
-=20
-> Linux 5.16:
->=20
-> nfp_cpp_area_acquire()
->  =C2=A0 mutex_lock(&area->mutex); --> Line 455 (Lock A)
->  =C2=A0 __nfp_cpp_area_acquire()
->  =C2=A0=C2=A0=C2=A0 wait_event_interruptible(area->cpp->waitq, ...) --> L=
-ine 427 (Wait X)
->=20
-> nfp_cpp_area_release()
->  =C2=A0 mutex_lock(&area->mutex); --> Line 502 (Lock A)
->  =C2=A0 wake_up_interruptible_all(&area->cpp->waitq); --> Line 508 (Wake =
-X)
->=20
-> When nfp_cpp_area_acquire() is executed, "Wait X" is performed by=20
-> holding "Lock A". If nfp_cpp_area_release() is executed at this time,=20
-> "Wake X" cannot be performed to wake up "Wait X" in=20
-> nfp_cpp_area_acquire(), because "Lock A" has been already hold by=20
-> nfp_cpp_area_acquire(), causing a possible deadlock.
->=20
-> I am not quite sure whether this possible problem is real and how to fix=
-=20
-> it if it is real.
+On Tue, Feb 08, 2022 at 06:21:16PM -0800, Joao Moreira wrote:
+> > > Note: This feature was already submitted for upstreaming with the
+> > > llvm-project: https://reviews.llvm.org/D116070
+> > 
+> > Ah nice; I see this has been committed now.
+> 
+> Yes, but then some front-end changes also required this fix
+> https://reviews.llvm.org/D118052, which is currently under review (posting
+> this here in case someone is trying this out).
+> 
+> > 
+> > Given that IBT will need to work with both Clang and gcc, I suspect the
+> > objtool approach will still end up needing to do all the verification.
+> > 
+> > (And as you say, it has limited visibility into assembly.)
+> 
+> Agreed that at this point objtool provides more coverage. Yet, besides being
+> an attempt to relief objtool and improve a bit the compiler support as
+> mentioned in the series cover letter, it is still nice to reduce the
+> left-over nops and fixups which end-up scattered all around.
+> 
+> FWIIW, https://reviews.llvm.org/D118438 and https://reviews.llvm.org/D118355
+> are also being cooked. Comments and ideas for new approaches or improvements
+> in the compiler support for this are very welcome :)
 
-It's not.
+Ah, excellent, thanks for the pointers. There's also this in the works:
+https://reviews.llvm.org/D119296 (a new CFI mode, designed to play nice
+to objtool, IBT, etc.)
 
-> Any feedback would be appreciated, thanks :)
->
->
-> Best wishes,
-> Jia-Ju Bai
-
+-- 
+Kees Cook
