@@ -2,78 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA774C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC884C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230059AbiBIFYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:24:20 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49306 "EHLO
+        id S232168AbiBIFYY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:24:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiBIFU2 (ORCPT
+        with ESMTP id S243220AbiBIFJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 00:20:28 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E437FC0612BF;
-        Tue,  8 Feb 2022 21:20:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 41A14CE13BA;
-        Wed,  9 Feb 2022 05:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8859CC340F6;
-        Wed,  9 Feb 2022 05:20:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644384028;
-        bh=l7UnrMd1qWPYoE6yezCxaKmMzhHLhzW30Wngdzs2KoI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L81/cIVv4Wmc7hR0YxCSx/8nSPC/v3ElD+6SxW6rn7fdZxj5wTJ8ep/3ty65l4VC8
-         HqtA8eN8AVJ1e5FrqKoj5FFrh76ajoEYTXQG80chykcXGrFSaAIPC159qbmHWPi5zd
-         O+ah3SiSUXpjNuub7hltvRuKNVWnbARsimVDnYhyqpnB4j/A7Yv2I/NlCm4pM1Qs6v
-         x4/WOZrZl7EeJmuqFz+swUjWIDZkQGj2f443sBQgFtbq8oLwz1+zgBOjIak/XW/gMb
-         pSdkJ/Xw0XdfuWoXkFMoEyUVY0tOG/Ie1FpVq4CixOp9wRcIIsupE9tGTWrw+BdpYT
-         WBnl3+MXLfYFg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75EDEE6D447;
-        Wed,  9 Feb 2022 05:20:28 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 9 Feb 2022 00:09:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC660C03F91E
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:09:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644383345;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TGF4Zn/lmJlaMT7UwgKtEW9zKBC5kk/h265Rl1WE1zM=;
+        b=bnQgNuMGZiPdg53YCOVNg/QoJhyRCoDLJKQ+kLzXLl+GhX6bEnyFd8s9TrXYkxI/3/n8vP
+        4oy5k6/BbKmWXDo/sUSXkgjj78b2/ZzR9qAIaobknlU9hwH03uB80ZhB0670cSfrsqWQ3J
+        rrTmMUzdsll102NBriSvhgyFGeg2WsE=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-383-zzTazHpoPsmwvVbkt9-CCw-1; Wed, 09 Feb 2022 00:09:04 -0500
+X-MC-Unique: zzTazHpoPsmwvVbkt9-CCw-1
+Received: by mail-qk1-f198.google.com with SMTP id z1-20020ae9f441000000b00507a22b2d00so706124qkl.8
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 21:09:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TGF4Zn/lmJlaMT7UwgKtEW9zKBC5kk/h265Rl1WE1zM=;
+        b=l5xWyVHvU+q9g8x6h/tAbxsypV9PWZI6XqeIobjSD4pBS5SbcgJC2zL9VrHtjFT7Db
+         /3sn0uRe6kbqvZSQOxeF+u9Uf41ZaqDAiOTY9avNTH5KUxS2Fq/I53l9Frpto0NhDR52
+         ZnkWo6RzUrZbfN31yItOd0vPXn8P/LJN248Ksghi6JEDn8xj4JiIQWWm+nNfzOOEe/sc
+         v3Fh62vbJiv0OLoX4vR76xpC/OAA1hsBbl1UbUWp2AwMHTjhc7Vh4i5yAf4sNw+aGH9/
+         AT6iF5yjPj2O2IhKlkq576kA3wo4N6gMrG3s5KQhtrSJT6ilXgCVm28yM1D4ZQysDquv
+         NYfg==
+X-Gm-Message-State: AOAM530VxOTrB6sD44+n1ESXGp9QTJvbSb31UqooT3mAxGO1PZS9vmJl
+        cusC8bXa/aOh2/RRf+QQgxlUq77xBnt804uIq62bucr7mMBYs8OGwbL7T/gLHD9NgyK0yL4iLNp
+        YmlAkiA5NFwb5STLtnj/qwaHI
+X-Received: by 2002:a05:620a:454c:: with SMTP id u12mr233640qkp.515.1644383343673;
+        Tue, 08 Feb 2022 21:09:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyEKYSvdI443BGvHYbaLRm7f+Dlmoc57zeAXbSJSAxEyM1+HZGep4jMh8KCeP0Tvni/Phn0OQ==
+X-Received: by 2002:a05:620a:454c:: with SMTP id u12mr233629qkp.515.1644383343413;
+        Tue, 08 Feb 2022 21:09:03 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::15])
+        by smtp.gmail.com with ESMTPSA id i20sm8608161qtx.44.2022.02.08.21.09.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 21:09:02 -0800 (PST)
+Date:   Tue, 8 Feb 2022 21:09:00 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, samitolvanen@google.com
+Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
+Message-ID: <20220209050900.vb676ocdrt6gsomf@treble>
+References: <20211122170301.764232470@infradead.org>
+ <20211122170805.338489412@infradead.org>
+ <20211124193037.nu7q4pa3sianzqtc@treble>
+ <202202081542.F685EC23@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: ethernet: litex: Add the dependency on HAS_IOMEM
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164438402847.12376.5907633854409051279.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Feb 2022 05:20:28 +0000
-References: <20220208013308.6563-1-cai.huoqing@linux.dev>
-In-Reply-To: <20220208013308.6563-1-cai.huoqing@linux.dev>
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-Cc:     davem@davemloft.net, kuba@kernel.org, kgugala@antmicro.com,
-        mholenko@antmicro.com, gsomlo@gmail.com, joel@jms.id.au,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202202081542.F685EC23@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Tue,  8 Feb 2022 09:33:08 +0800 you wrote:
-> The LiteX driver uses devm io funtion API which
-> needs HAS_IOMEM enabled, so add the dependency on HAS_IOMEM.
+On Tue, Feb 08, 2022 at 03:43:27PM -0800, Kees Cook wrote:
+> On Wed, Nov 24, 2021 at 11:30:37AM -0800, Josh Poimboeuf wrote:
+> > On Mon, Nov 22, 2021 at 06:03:07PM +0100, Peter Zijlstra wrote:
+> > > +static int validate_ibt_reloc(struct objtool_file *file, struct reloc *reloc, char **name)
+> > > +{
+> > > +	struct instruction *dest;
+> > > +	struct section *sec;
+> > > +	unsigned long off;
+> > > +
+> > > +	sec = reloc->sym->sec;
+> > > +	off = reloc->sym->offset + reloc->addend;
+> > > +
+> > > +	dest = find_insn(file, sec, off);
+> > > +	if (!dest)
+> > > +		return 0;
+> > > +
+> > > +	if (name && dest->func)
+> > > +		*name = dest->func->name;
+> > 
+> > I think these checks can be further narrowed down by only looking for
+> > X86_64_64 relocs.
+> > 
+> > > +	list_for_each_entry(insn, &file->endbr_list, call_node) {
+> > > +		if (ibt_seal) {
+> > > +			elf_write_insn(file->elf, insn->sec,
+> > > +				       insn->offset, insn->len,
+> > > +				       arch_nop_insn(insn->len));
+> > > +		}
+> > 
+> > Like the retpoline rewriting, I'd much rather have objtool create
+> > annotations which the kernel can then read and patch itself.
+> > 
+> > e.g. have '.ibt.direct_call_sites' and '.ibt.unused_endbr_insns'
+> > sections.
 > 
-> Fixes: ee7da21ac4c3 ("net: Add driver for LiteX's LiteETH network interface")
-> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
-> ---
->  drivers/net/ethernet/litex/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Why have the kernel do that work at every boot when it can be known at
+> link time?
 
-Here is the summary with links:
-  - [v2] net: ethernet: litex: Add the dependency on HAS_IOMEM
-    https://git.kernel.org/netdev/net/c/2427f03fb42f
+True, but:
 
-You are awesome, thank you!
+- The kernel is already doing several other flavors of boot-time
+  self-patching.  IMO it's better to consolidate such craziness in one
+  place (or a limited number of places) if we can.  It seems more
+  robust, and limits confusion about who's patching what and when.
+
+- Patching text at link time has pitfalls and I'd like to avoid (as much
+  as reasonably possible) objtool having the ability to brick the
+  kernel.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Josh
 
