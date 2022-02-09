@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39196C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239031AbiBIS6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33820 "EHLO
+        id S241573AbiBIS6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:58:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241312AbiBIS5D (ORCPT
+        with ESMTP id S241288AbiBIS47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:57:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EC2C05CBA6;
-        Wed,  9 Feb 2022 10:57:03 -0800 (PST)
+        Wed, 9 Feb 2022 13:56:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A8FC05CB96;
+        Wed,  9 Feb 2022 10:57:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 343B6617DF;
-        Wed,  9 Feb 2022 18:57:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB36C340E7;
-        Wed,  9 Feb 2022 18:57:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A0EBB82389;
+        Wed,  9 Feb 2022 18:56:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A1D5C340E7;
+        Wed,  9 Feb 2022 18:56:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433022;
-        bh=9JqxdxS3FieQzWxDZYWx4qtMJ9OU9FYiIxMk7YLJRdM=;
+        s=k20201202; t=1644433018;
+        bh=LLJn431NWz2Op/hN3e1rQHFby3XMCjd85OUZKwq7C3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jkoGJ8RGj/WJhl1eGW03PUd7YrzR3Fa9ECKQD3ZtEdcnIeuaFG8eJemezC+RerHsC
-         /u9dYkwjv67AnFH57lqq8XkZDPKu7ynbNJYB1+Y2/yuHSsWK80YZP8pX5P+wKUYLKH
-         aRK7oJ+CElc+GlU24JUGv7V4HLGzagcm5q0PAg/a7p9+wPligEmINNKCI/2uVlecY2
-         dgqt/3KBwMjZIPXXTDMv2WVLuI8Gamp+cH/7THPiXWlLvJUjnD0PhEXTA7y1iujjaO
-         +ztioyEJd8aj+nxRBWDENPQkGQMuUlp1NneIkOOTNSAw+c7ohyxn5/KeFeY/XMhcRi
-         Udo6MNfhqUGWg==
+        b=teq95VVgwFfFRZNvw9XGSJt0lgcvMd3hDGHC8tK47Udjy6DXYWKox2PjnPjCyr/M0
+         ZG6HYmK/XnEL2MQbwdQsxqqSVIo2phavjYVH2k5IZhQRTEnDPSkt/TdWJCEyARcsSu
+         MaPz4KmBR250XbmHmKTZ7kKN2kxj7ULDt4HjF8E0RvX+htzhc2N2amTp+pcOeTTVSG
+         0GSZUtJJ8WiSLxyANNtbNPofJVX9yHFK5v+Gr9YjH9Fin+0l5qtGLxNfwbuR+kAQB6
+         Z+/oQTblRtsjf0SgtOIT8peN8mJr/tVXocBA+z7oHts4jppGEa2TnzxnDlkuypDzje
+         /nVxL6Ux4RoXQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH MANUALSEL 5.15 4/8] KVM: nVMX: WARN on any attempt to allocate shadow VMCS for vmcs02
-Date:   Wed,  9 Feb 2022 13:56:49 -0500
-Message-Id: <20220209185653.48833-4-sashal@kernel.org>
+Subject: [PATCH MANUALSEL 5.15 2/8] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
+Date:   Wed,  9 Feb 2022 13:56:47 -0500
+Message-Id: <20220209185653.48833-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209185653.48833-1-sashal@kernel.org>
 References: <20220209185653.48833-1-sashal@kernel.org>
@@ -53,66 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
+[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
 
-WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
-VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
-a "real" shadow VMCS for L2.
+Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
+PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
+sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
 
-The previous code WARNed but continued anyway with the allocation,
-presumably in an attempt to avoid NULL pointer dereference.
-However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
-indeed the sole caller does:
+Note, none of the currently existing Windows/Hyper-V versions are known
+to enable 'save VMX-preemption timer value' when eVMCS is in use, the
+change is aimed at making the filtering future proof.
 
-	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
-		goto out_shadow_vmcs;
-
-which makes it not a useful attempt.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220125220527.2093146-1-seanjc@google.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ arch/x86/kvm/vmx/evmcs.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index a0193b11c381d..42559c21fb2cc 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4840,18 +4840,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
- 	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
- 
- 	/*
--	 * We should allocate a shadow vmcs for vmcs01 only when L1
--	 * executes VMXON and free it when L1 executes VMXOFF.
--	 * As it is invalid to execute VMXON twice, we shouldn't reach
--	 * here when vmcs01 already have an allocated shadow vmcs.
-+	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
-+	 * when L1 executes VMXOFF or the vCPU is forced out of nested
-+	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
-+	 * should be impossible to already have an allocated shadow VMCS.  KVM
-+	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
-+	 * always be the loaded VMCS.
- 	 */
--	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
-+	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
-+		return loaded_vmcs->shadow_vmcs;
-+
-+	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-+	if (loaded_vmcs->shadow_vmcs)
-+		vmcs_clear(loaded_vmcs->shadow_vmcs);
- 
--	if (!loaded_vmcs->shadow_vmcs) {
--		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
--		if (loaded_vmcs->shadow_vmcs)
--			vmcs_clear(loaded_vmcs->shadow_vmcs);
--	}
- 	return loaded_vmcs->shadow_vmcs;
- }
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index 152ab0aa82cf6..b43976e4b9636 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -59,7 +59,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ 	 SECONDARY_EXEC_SHADOW_VMCS |					\
+ 	 SECONDARY_EXEC_TSC_SCALING |					\
+ 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
+-#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
++#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
++	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
++	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
  
 -- 
 2.34.1
