@@ -2,96 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C92FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241255AbiBISwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
+        id S241163AbiBISw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241437AbiBISvC (ORCPT
+        with ESMTP id S241197AbiBISux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:51:02 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4382C03E931
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:47:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644432472; x=1675968472;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=J/7XQfjKt9d3myGcrh1l1pOHrCE5f9w0ySm6uM+4N84=;
-  b=cI5eKVEev2IL6+LoXwEXtcUsxDEKX4lVLXnW52dVieQIN7qxvyaokjd1
-   +P28x1GkMvgBhYT5K3wdwtZSQ3nGQHcfgfcUbw7xUsSuWcVH2qCPLMcEQ
-   WN5heG+nsYTj+tlohonKTCYciI84tT3MemJ5zTsCaJ+gqRwYEGqfwRMXv
-   ZhrAoPbwEN5VH/WoZych7Myk1WB3U7SwKbU09bWkIOSXtZem+Tn1zCEDw
-   yV4wFNlZjFCycK1sB/kxGLwUylMjez1R3R2XxC//g7iu3ul9ySdE3QTt6
-   9i39xTJYd4RZCzxR5/cjT+Pscka2fT8bwc7FN4XMxbf/TUiGQJwWuLvmy
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="232867310"
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="232867310"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:47:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
-   d="scan'208";a="541245172"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 09 Feb 2022 10:47:49 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2C02D107; Wed,  9 Feb 2022 20:48:03 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] perf/smmuv3: Don't cast parameter in bit operations
-Date:   Wed,  9 Feb 2022 20:47:58 +0200
-Message-Id: <20220209184758.56578-1-andriy.shevchenko@linux.intel.com>
+        Wed, 9 Feb 2022 13:50:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0370C0043FA;
+        Wed,  9 Feb 2022 10:46:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 720E2B82378;
+        Wed,  9 Feb 2022 18:46:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F995C340E7;
+        Wed,  9 Feb 2022 18:46:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432364;
+        bh=wDua54V40aYcPDnGD2qM9MjIhK8Jdh3ufrb+uJTT5ro=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OfnwyCk3qzbsOhfIWVvgQqS/MXcQlejHFu48hVt4+8hJehrZ9NYNQXhoh9lqWihjL
+         IXIHciXwwQke0vot8ojxCUujNrBm1Mt/TXVpli1EY4kVIbNlUdF6/H3dISpwPWTt/a
+         B2vYtIt0ZmVfloxjE9dwTyQ/XjxA8NERcyBU4PJ4rL1gH7JIzAPHh7LA+ZYhZDkzhF
+         3XxVSIx2uOQKSVbeOLaZgq2G54LEEbvcMnziIJAQe+vAQREteHARlq6Kh1xyHBi1Np
+         I53XXLx45U1ZCAHlNydEmakdJ1LV3I3erCL+X55FHdbjGwJOlzIWoI77GQJXssghrB
+         ZySyxiQqi0XCQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 3/7] selftests/zram01.sh: Fix compression ratio calculation
+Date:   Wed,  9 Feb 2022 13:45:46 -0500
+Message-Id: <20220209184550.48481-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
+References: <20220209184550.48481-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While in this particular case it would not be a (critical) issue,
-the pattern itself is bad and error prone in case somebody blindly
-copies to their code.
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-Don't cast parameter to unsigned long pointer in the bit operations.
-Instead copy to a local variable on stack of a proper type and use.
+[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
 
-Note, new compilers might warn on this line for potential outbound access.
+zram01 uses `free -m` to measure zram memory usage. The results are no
+sense because they are polluted by all running processes on the system.
 
-Fixes: 7d839b4b9e00 ("perf/smmuv3: Add arm64 smmuv3 pmu driver")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+We Should only calculate the free memory delta for the current process.
+So use the third field of /sys/block/zram<id>/mm_stat to measure memory
+usage instead. The file is available since kernel 4.1.
+
+orig_data_size(first): uncompressed size of data stored in this disk.
+compr_data_size(second): compressed size of data stored in this disk
+mem_used_total(third): the amount of memory allocated for this disk
+
+Also remove useless zram cleanup call in zram_fill_fs and so we don't
+need to cleanup zram twice if fails.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/perf/arm_smmuv3_pmu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/perf/arm_smmuv3_pmu.c b/drivers/perf/arm_smmuv3_pmu.c
-index c49108a72865..00d4c45a8017 100644
---- a/drivers/perf/arm_smmuv3_pmu.c
-+++ b/drivers/perf/arm_smmuv3_pmu.c
-@@ -654,6 +654,7 @@ static int smmu_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
- static irqreturn_t smmu_pmu_handle_irq(int irq_num, void *data)
+diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
+index b9566a6478a9c..ac6e4ddd2604e 100755
+--- a/tools/testing/selftests/zram/zram01.sh
++++ b/tools/testing/selftests/zram/zram01.sh
+@@ -42,8 +42,6 @@ zram_algs="lzo"
+ 
+ zram_fill_fs()
  {
- 	struct smmu_pmu *smmu_pmu = data;
-+	DECLARE_BITMAP(ovs, BITS_PER_TYPE(u64));
- 	u64 ovsr;
- 	unsigned int idx;
+-	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
+-
+ 	for i in $(seq 0 $(($dev_num - 1))); do
+ 		echo "fill zram$i..."
+ 		local b=0
+@@ -54,29 +52,17 @@ zram_fill_fs()
+ 			b=$(($b + 1))
+ 		done
+ 		echo "zram$i can be filled with '$b' KB"
+-	done
  
-@@ -663,7 +664,8 @@ static irqreturn_t smmu_pmu_handle_irq(int irq_num, void *data)
+-	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
+-	local used_mem=$(($mem_free0 - $mem_free1))
++		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
++		local v=$((100 * 1024 * $b / $mem_used_total))
++		if [ "$v" -lt 100 ]; then
++			 echo "FAIL compression ratio: 0.$v:1"
++			 ERR_CODE=-1
++			 return
++		fi
  
- 	writeq(ovsr, smmu_pmu->reloc_base + SMMU_PMCG_OVSCLR0);
+-	local total_size=0
+-	for sm in $zram_sizes; do
+-		local s=$(echo $sm | sed 's/M//')
+-		total_size=$(($total_size + $s))
++		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ 	done
+-
+-	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
+-
+-	local v=$((100 * $total_size / $used_mem))
+-
+-	if [ "$v" -lt 100 ]; then
+-		echo "FAIL compression ratio: 0.$v:1"
+-		ERR_CODE=-1
+-		zram_cleanup
+-		return
+-	fi
+-
+-	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ }
  
--	for_each_set_bit(idx, (unsigned long *)&ovsr, smmu_pmu->num_counters) {
-+	bitmap_from_u64(ovs, ovsr);
-+	for_each_set_bit(idx, ovs, smmu_pmu->num_counters) {
- 		struct perf_event *event = smmu_pmu->events[idx];
- 		struct hw_perf_event *hwc;
- 
+ check_prereqs
 -- 
 2.34.1
 
