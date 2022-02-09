@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8373DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbiBISsh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:48:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34882 "EHLO
+        id S240861AbiBISsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:48:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241271AbiBISqh (ORCPT
+        with ESMTP id S241825AbiBISrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:46:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56562C033259;
-        Wed,  9 Feb 2022 10:43:53 -0800 (PST)
+        Wed, 9 Feb 2022 13:47:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF925C103694;
+        Wed,  9 Feb 2022 10:44:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA902B82380;
-        Wed,  9 Feb 2022 18:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0EDBC340E9;
-        Wed,  9 Feb 2022 18:43:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9482B612BC;
+        Wed,  9 Feb 2022 18:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49017C340E7;
+        Wed,  9 Feb 2022 18:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432230;
-        bh=NF7bdpEtaimpaeLESco45AbjdDq6hHf0+u3NDa3F2lg=;
+        s=k20201202; t=1644432260;
+        bh=0x8uk8ogZkTiQRkXjDuzshmOMcA8a04iiSihN0Uu/A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kxn7pHNRoELDApvPska0m3txiJVXoAo3mGYwanxt3sF5rxxVBIN3g5kmj0geek1K4
-         oA3HM6DoqwVHUfIMi4IsM8nKg5YFvbVKXViMZWclJSYbQbCpMoZNnF4XyYOVvC6sUf
-         tvHCWA5MSUz/zdyx1WSQ7X0zqu8qGe03BobQE6Co/TgT71Rmbt4B7kzfZPrZL53nZQ
-         Qrz4lV1ZgUjsP7eugS0HJfcbkrEh5obj8ZAcbaSjxkrSJj4tayn5lTzs8drj08pGur
-         +BN9dEuSFCvjRP8HDiIldd2t2iNSTi0FvUh5Q9gumGRdYj2uTy3BZ2xUg8TRaVzTdI
-         1jmlhaedcm2qg==
+        b=NNMcfhQLK0YNiGMuxJzTvBwwn8WwfD2nK1WBhSAq2lmxdpBFjFGGx8MTfmTCKtG9C
+         vNbaqNA7yrB8WfJEPFtwK7/8cpTnDUKd+uM5q/HKCYs6U8HucjmT6CpgJB10tzE73b
+         ywZk2EyA/O3OGD7O0hAlHLAQku+7afOP/1Cu+9UbR33J2+y2hKHHdXOiVI1fXbNJj2
+         LBz97E81Wf+SpgQqe6k8nMovWvu2MYh/VR4iEQH/XJGDuB2sr+uuATNxaDlj4g1Ky1
+         wnqqUR8Rgl1Xh6/bL6mrAPCFlCo4cxQKvMwVRMNJq3KIrcgCo4xjIiye/SFKMxjeiW
+         gYGosgJOqt3wA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Chris Leech <cleech@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 12/15] nvme-tcp: fix possible use-after-free in transport error_recovery work
-Date:   Wed,  9 Feb 2022 13:42:58 -0500
-Message-Id: <20220209184305.47983-12-sashal@kernel.org>
+Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/10] selftests/zram: Skip max_comp_streams interface on newer kernel
+Date:   Wed,  9 Feb 2022 13:44:01 -0500
+Message-Id: <20220209184410.48223-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
-References: <20220209184305.47983-1-sashal@kernel.org>
+In-Reply-To: <20220209184410.48223-1-sashal@kernel.org>
+References: <20220209184410.48223-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,37 +52,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
+[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
 
-While nvme_tcp_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
+has switched to per-cpu streams. Even kernel still keep this interface for
+some reasons, but writing to max_comp_stream doesn't take any effect. So
+skip it on newer kernel ie 4.7.
 
-Tested-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+The code that comparing kernel version is from xfstests testsuite ext4/053.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index ff0d06e8ebb53..284d5e756bd6d 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -1947,6 +1947,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
- 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 9e73a4fb9b0aa..2c1d1c567f854 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -20,6 +20,9 @@ dev_mounted=-1
  
- 	nvme_stop_keep_alive(ctrl);
-+	flush_work(&ctrl->async_event_work);
- 	nvme_tcp_teardown_io_queues(ctrl, false);
- 	/* unquiesce to fail fast pending requests */
- 	nvme_start_queues(ctrl);
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
++kernel_version=`uname -r | cut -d'.' -f1,2`
++kernel_major=${kernel_version%.*}
++kernel_minor=${kernel_version#*.}
+ 
+ trap INT
+ 
+@@ -34,6 +37,20 @@ check_prereqs()
+ 	fi
+ }
+ 
++kernel_gte()
++{
++	major=${1%.*}
++	minor=${1#*.}
++
++	if [ $kernel_major -gt $major ]; then
++		return 0
++	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
++		return 0
++	fi
++
++	return 1
++}
++
+ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+@@ -95,6 +112,13 @@ zram_max_streams()
+ {
+ 	echo "set max_comp_streams to zram device(s)"
+ 
++	kernel_gte 4.7
++	if [ $? -eq 0 ]; then
++		echo "The device attribute max_comp_streams was"\
++		               "deprecated in 4.7"
++		return 0
++	fi
++
+ 	local i=0
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
 -- 
 2.34.1
 
