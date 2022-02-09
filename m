@@ -2,106 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E981C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232967AbiBIN1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S232316AbiBIN3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:29:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiBIN1j (ORCPT
+        with ESMTP id S231372AbiBIN3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:27:39 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157EFC050CCA;
-        Wed,  9 Feb 2022 05:27:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644413258; x=1675949258;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=g81XqEg610YOWPcEx1mg1A5BtET0yAQT4NmAhA1VPPs=;
-  b=Gbw9J3jpcBwtIsqT2DFdFad5jpQgoG4Zc2uAwLzNuSDqtZPksi+lvfrp
-   xERNI+NLuuOyzw4ST+EHYmnqtTiiEohwZ3GIENBLkyJlAgnvNN6NtJ9in
-   HpbkkxtqTiyFUJx4f5QMRxBJgupwKw5JNux7x4Wzb8607mb8xk9Cc8TzY
-   A=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 09 Feb 2022 05:27:37 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 05:27:21 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 05:26:41 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 05:26:35 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <plai@codeaurora.org>, <bgoswami@codeaurora.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
-        <rohitkr@codeaurora.org>, <linux-arm-msm@vger.kernel.org>,
-        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [RESEND v8 0/3] Machine driver to support LPASS SC7280 sound card registration
-Date:   Wed, 9 Feb 2022 18:56:18 +0530
-Message-ID: <1644413181-26358-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 9 Feb 2022 08:29:11 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2086.outbound.protection.outlook.com [40.107.236.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14186C0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:29:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MaaYSqJRdcECw9spGo9CIJ51TzKZ7Us8HjvJQH8tC3iXHdsw8JKGWzNGsphw4WNxIJs2jqWHQmx4efNITSukl5yxPZmJj5PwzU7r7E7DP2LlnsfT71NPaghs1D7CW5wHJmtOz0xa9k0qRSQZlOu8aYwWnLCTPj/7z/j3Pw3FD/2GFWopIyxCP7beHXi4lvCYWFvND28eCMQbJx1GihI1QCKKcIe72DoVgN//XlXcB6vuHr+26P1l7wAqJr+zukb3LKNrIOf+DdJSH6yXRCe+RUrPfp4aG5VRW1i+kiE4W4t0GrkuGyR2GQj5g6pJW90LFCxf5x4G+uBIODAXsvkfbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NRFhTcXUmuDazs+vRpCRMwOwcbhCuVUNpRabkVYd/kA=;
+ b=hQcCZ7ePmGkVPyR2neoujd94DzgybV35YTxC/4wPisQ5nxHXINHmwJX/vOYy6WbNTTsyAW/DA4HN85bQb3vKVP88DIk9PlfFykwCZwZLka4EbRnZt7H4077+TQlIoGkBnFoDsUbCZVuFYzb3ZWBvpLDSfTyvmriNZMMtN3HHeRhVdBnQpQ3pXdAmrLtRiAkMb0fOFKCN6ZchxaYuWXorDRORKLo8Agct/uXE7pTTRv3Pz/VUIGS5NF0gfED7BMWXHIGI2mxYiP51WkwZbKyVJwCvoVhkeu0aSSx1OTm+fvxm7qY06Zg0ZzgF85S4LAeRk2oc/1lkZpzHR+KqePfAQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NRFhTcXUmuDazs+vRpCRMwOwcbhCuVUNpRabkVYd/kA=;
+ b=EU+CX3CS1kk7lJb/oEkSTLbXGoChy7dD0rFxk+Sam3RHksgiz95tPAT0z9Asy0beHR86IrJt5MqMJV6b7xkTPq7QxPwC/rpIFQg60p06Z2p5XQRj2IQwxgPC1Z5KtWkEtPYLNqX1Cfl45+iQh8sjlTWSANX8sFKWY08BIBndEPphAQyhYX5bzGReuk49acNNHytOW+MuPDbwgtkZxHr0+nANV4Q94fAC8cEzJelqFRvnwctOfi/5dnTrVTEy5zdWTMPySsBOsLUckM867KoMthM0CLB6OIrnPo03Z8Nc6Q4ko8F95fZduWNJutSG+WdS51RlfZeKyRMLrGPc7cR0Vg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by BL0PR12MB4723.namprd12.prod.outlook.com (2603:10b6:208:8a::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Wed, 9 Feb
+ 2022 13:29:12 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::e8f4:9793:da37:1bd3%4]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
+ 13:29:11 +0000
+Date:   Wed, 9 Feb 2022 09:29:10 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 01/10] iommu/vt-d: Remove guest pasid related callbacks
+Message-ID: <20220209132910.GS4160@nvidia.com>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-2-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208012559.1121729-2-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BL1PR13CA0129.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::14) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 33e52a41-1ed3-4755-952f-08d9ebd02859
+X-MS-TrafficTypeDiagnostic: BL0PR12MB4723:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB47236B877CB07551C48AE2D3C22E9@BL0PR12MB4723.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1728;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KH1MfgisFZBBb+z+ZsFqDIw27dYavrt1PgH6uZas8ieWycn/vcv9jKY/WN5q8QzfRFB5HxBWk+UfUuu1otjioSkwwQKErdZ8IXzvbUVM06kuuOtsRVCIQFIhA0XKy7Ib35NFahQ1Tp7z30yPXMGADzEJwU0wlExwReU8Mb+INJuIE9IiOsdG66ead2WH0N8MUb+SsvU6ROXVZxiqqQCCUZVnQU8IvyZxASssdyUpKj4ZAjI9PtjsSgOnwmzcSoh/0/mBdTsbuhFP8aMeoPJJeuqXFwKvu6eBBZPyEI08iQopKChLnEtg5Cn5MN6DOxYVVlaekE39l8flFSVYnrzKTcoLcel3Swr/oH7i6QkpZrMvGzH+YGbLenkIaC9U/q0RTBOdgOqip167ZLVyvY/wegSgUU8iqyOZXI4L6iFgatKdJMMRrxcw4LQyDj4NtRjwI/u9wKsKPGVB/WIWZweItGDiQ59S6/3+iQ1rJvMW/+xTfvw/cflv1c06SoM1Hf5rxidxZ6WnIrE02viqsqaOVBn2gyCO9GmbAkzktXpiqcSmwnVMrIhTyUEz9hoAWkLNhR2ssXhjW+kmNsEN5tfPwZz5wZ/xF67/axkP89k5WrRt+2E7q8YbCwOxGwkiDcSKWDNdRKwnjFoyhj2msKuQ4g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(6916009)(54906003)(86362001)(316002)(6486002)(33656002)(83380400001)(66946007)(38100700002)(4744005)(2616005)(6512007)(6506007)(1076003)(26005)(186003)(66556008)(66476007)(2906002)(4326008)(8936002)(8676002)(36756003)(5660300002)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yyn4E5GgEP/Gv7cDZpgLZJlfovHcno4GvxXoGG04WuN1bLrIlw/TgNzoN1Zl?=
+ =?us-ascii?Q?AqC/Tc6MFOpt4K/kY6y1q9o5vpt9l7LxCma43lOydID+F5ZcmPzmpTBkZkyn?=
+ =?us-ascii?Q?oFAzxTdsIHizIfOJ1iSl4djwaOshKSqot3tdYUBl+1zmxJcpTZC6CKrAmdbm?=
+ =?us-ascii?Q?dGs/o9rdlUF9SiEmFwP9YseRaop6NNEtLhizKNE1FpVOYY5WbI5lJgMnUDJh?=
+ =?us-ascii?Q?zDCfdaBlBG+/loaOoN7JuE32POoGOodQbPlqCSXhkUM0zxCzu4xBoS0vo2Ld?=
+ =?us-ascii?Q?pmHgmsWQbwZRCOoOzvc897SK84jYVzpfqOXop7cAYN/FZtmUfDl99NGqZTVE?=
+ =?us-ascii?Q?aJdmVdlIUFTQQ0UUcJz2r1Jf8TMmL3hIaagwfnc5NLJHGIn4zG8oMmNCYfHh?=
+ =?us-ascii?Q?qS/CpzKANrBqCwFjWTz5DF2hV6v4dXlWfpL4jVDsGY8/eCBphLqQ5aOPcBHR?=
+ =?us-ascii?Q?zIW4r3jFXBr/JvD1QippxO0FN63GdA4sNhYSaBHik/YngGWZQrOG/Pa6jvco?=
+ =?us-ascii?Q?GuEim5KOs4Co7J7zDa93qldv0fhhKl8HGMSDfQf4hDkFGUukhtzgqa0RjIh7?=
+ =?us-ascii?Q?sDwk5Cdvo3EqrfHZ4c5IwcC9apiVdZew7sPDtNd2riCvlx5hLY0Qsfk2uqcl?=
+ =?us-ascii?Q?OmTMi2MNYCXCv6adocxt6GFPtbsv8x64osQWSzGwCNmcF49A6IS78kBKanTM?=
+ =?us-ascii?Q?/BWy/KxdwXDjna9YuvZdocLyOhQoWlgqeyllHL+L7Fu2l/VIt8a4R0w/Ozik?=
+ =?us-ascii?Q?A+fprteIjeFzeVT51sFlAQ9vbAQaK5aqY3p48cPb6Eg4XtnaO1ZOxvwnuURZ?=
+ =?us-ascii?Q?oCreF9z8sJezSsRuSkU9xvJuAOT6TJ/c0QN1WusuMF20u2UW1a2kUAESMLjr?=
+ =?us-ascii?Q?+4B9vKhUjzLODYgtMeMCvxBNZE3CrLc2Fm6Bxes905sIcuWc9eufgA6rlYpG?=
+ =?us-ascii?Q?dIL77TpNpP2SyRfwlIEKUOh4+Vtv0NjPrSP6Ryhf5vxNMBYXjmBSxOu8S+Eh?=
+ =?us-ascii?Q?2I5ehWFCVX3pND3/q3qcOFe9v1NGyTD0D8T0UFkGjTPl4PHr2L5wwy3vZ98f?=
+ =?us-ascii?Q?N6DcWGonynRYKKu4UAb5MTxTAUgUwKkJrPv8TUQT7JrYOHM88+Rg3y0zoBie?=
+ =?us-ascii?Q?x9B2yN7T6//5uIs03SDWSyxr/kUsewEFaJD1J7usPab2RXkWhBFiAw7z96Zn?=
+ =?us-ascii?Q?s55A3gBXuzWsN515wvuYMtT3fxYEjoa3Epj8lVJ1bBXRm0tntTOMfWh0bdT9?=
+ =?us-ascii?Q?PX74cwRya9RVRUl9Oe+oP3NONCy3rCINr8ly/zZ/Y+OuaXfdLkA8YyeqSivY?=
+ =?us-ascii?Q?th8yeeqyG54mWLKaVwN14Mf8Fjy3ow5LIQyyKlV32ehKkWPaCHKQforLFrI+?=
+ =?us-ascii?Q?CRTtCqVoZTa5zjn+O587UMEUtRbUo0iK8hE1AvKx3TZvsfskaf67kqWnFeLE?=
+ =?us-ascii?Q?kciSe0hy5a9uVmy6+792HBMlMh0qeOpdsiyvNSSpDLdnpf1W91e/CPTqldSX?=
+ =?us-ascii?Q?fRVCpDuBuPpy8xiqziRKn1pSb6rY3H98cMPY0SfuByT51vARhyKzcUJ7B5JX?=
+ =?us-ascii?Q?3Mf1SaOqVA/8+k/fWLo=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33e52a41-1ed3-4755-952f-08d9ebd02859
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 13:29:11.3570
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bef0FXAlz5Kq4trXknUeqMNN/vqQnEVOiczhVt+xQNHcOGzvUHeCU/m8Vxr6ztwH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4723
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch set is to add support for SC7280 sound card registration and
-to add dt-bindings documentation file.
+On Tue, Feb 08, 2022 at 09:25:50AM +0800, Lu Baolu wrote:
+> The guest pasid related callbacks are not called in the tree. Remove them
+> to avoid dead code.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/intel-iommu.h |  10 --
+>  include/linux/intel-svm.h   |  12 ---
+>  drivers/iommu/intel/pasid.h |   4 -
+>  drivers/iommu/intel/iommu.c | 208 -----------------------------------
+>  drivers/iommu/intel/pasid.c | 161 ---------------------------
+>  drivers/iommu/intel/svm.c   | 209 ------------------------------------
+>  6 files changed, 604 deletions(-)
 
-Srinivasa Rao Mandadapu (3):
-  ASoC: google: dt-bindings: Add sc7280-herobrine machine bindings
-  ASoC: qcom: Add macro for lpass DAI id's max limit
-  ASoC: qcom: SC7280: Add machine driver
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Changes Since V7:
-    -- Create separate patch for dai id's macro.
-    -- Remove unused dapm widget structure.
-    -- Move to quicinc domain email id's.
-Changes Since V6:
-    -- Remove redundant headers.
-    -- Move max ports macro to lpass.h header.
-    -- Arrange structure alignment.
-    -- Fix indentation errors.
-    -- Update module license.
-Changes Since V5:
-    -- Add required properties to dt-bindings
-Changes Since V4:
-    -- Add COMPILE_TEST flag in sc7280 configuration.
-    -- Remove redundant startup and shutdown callbacks of snd_soc_ops.
-    -- Fix typo errors.
-Changes Since V3:
-    -- Change audio jack playpause key value.
-Changes Since V2:
-    -- updated required field in bindings
-    -- updated Return type check with proper enum in sc7280.c
-    -- Updated Header name and Typos in sc7280.c
-Changes Since V1:
-    -- Indentation changes and typo.
-
- .../bindings/sound/google,sc7280-herobrine.yaml    | 171 +++++++++++++
- sound/soc/qcom/Kconfig                             |  14 +
- sound/soc/qcom/Makefile                            |   2 +
- sound/soc/qcom/lpass.h                             |   1 +
- sound/soc/qcom/sc7280.c                            | 284 +++++++++++++++++++++
- 5 files changed, 472 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
- create mode 100644 sound/soc/qcom/sc7280.c
-
--- 
-2.7.4
-
+Jason
