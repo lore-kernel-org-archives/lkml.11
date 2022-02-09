@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A742C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 22:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 22:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236299AbiBIWsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 17:48:04 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49714 "EHLO
+        id S236425AbiBIWsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 17:48:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236164AbiBIWr7 (ORCPT
+        with ESMTP id S236361AbiBIWsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 17:47:59 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D8DE01644C;
-        Wed,  9 Feb 2022 14:48:02 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso6656528pjt.4;
-        Wed, 09 Feb 2022 14:48:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=KXc1sqyU2Qd7WQy9J1rum8wM80ISZeqcdXY4bjyOVmg=;
-        b=RJoS/D+pCheo/4MzOz0AdAlQsEred3Y17syMeJcS2OQxl049MoB7xQ3sDmUuZKI0no
-         BPjQSUwQLhUbyfNZ0Oi1B8W7Xlgg/9WHHmffv6TKffiwVLA8qQyyDHo/iXLnNvDTUGZq
-         khNLvzT1As7jOtP4kKZl6uVGbK0/lLrmaXtX/iSHgwrlH8TugatOaeoBcjV01baSnLfF
-         7B0gk2/Q0THvxfCUfcARX9gIEgc7bMX0LWbXPR3iIGv073uL5+R2kReHpXxaHmF7Qep9
-         xeNlmnWHPs44BLnKJ4sIHEG1ziqoJHW+RWmqEiXwn/urRdTKSDuA8444lNKt9HXnePy0
-         jMIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=KXc1sqyU2Qd7WQy9J1rum8wM80ISZeqcdXY4bjyOVmg=;
-        b=YF7/tWGIn4zhxJ7QRZI7G6crPoW+pwyIYa87tVU3esG7csB2i9LI21bEfrdKkZFLZ8
-         BDI9+oSNSDss/sRzXziwH708ckql3jDKcFVEnZ65yqr6u/dmxfoXtsDpilw+1PDKzVxD
-         qAEDhSBqORiooF2wDH5TWFgKAcn5b1XhjY7NIU19tFnQH7gCRDuXw48H9RXjV22+pteK
-         AhhJwbOL3fD75xesTLJmy7CIMHdcXXwe+AOOClTCuttfbB8i0rwo9xDv2U6uEPElbaLR
-         IRVofTluipaiLqZht+O6ZqdztWQMSu6phIUwM3kjmDdfH+IQ/gkKLTEIfCP4Gr9m7sRG
-         fTCw==
-X-Gm-Message-State: AOAM5339qpfeLqHf7yZuirCfE3sem9eSKLVvqtwm/wbQ75K/knpbkV4I
-        BSUtpZi/30nn+Hi1sME/oQaDEGmmo1ritZyhU1KALg==
-X-Google-Smtp-Source: ABdhPJyThSBmBM2LV3bKOXvGwHD6J/HGztn5/d/UZGnKv84QhsHzmiJczkjkm3O/iWjI1mEM0S70FQ==
-X-Received: by 2002:a17:903:228c:: with SMTP id b12mr4714648plh.39.1644446881046;
-        Wed, 09 Feb 2022 14:48:01 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
-        by smtp.gmail.com with ESMTPSA id k21sm20985332pff.33.2022.02.09.14.47.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 14:48:00 -0800 (PST)
-Message-ID: <620444a0.1c69fb81.12f9e.457f@mx.google.com>
-Date:   Wed, 09 Feb 2022 14:48:00 -0800 (PST)
-X-Google-Original-Date: Wed, 09 Feb 2022 22:47:53 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
-Subject: RE: [PATCH 5.16 0/5] 5.16.9-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 17:48:16 -0500
+Received: from mickerik.phytec.de (mickerik.phytec.de [195.145.39.210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3530E019240
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 14:48:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; d=phytec.de; s=a4; c=relaxed/simple;
+        q=dns/txt; i=@phytec.de; t=1644445978; x=1647037978;
+        h=From:Sender:Reply-To:Subject:Date:Message-Id:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=slIfKGrVuz5t76T3hpjAzPyqInZyHHf+61nyzGh7cP8=;
+        b=oJOyyG8wk/UCoWb5ZKD1WMBTcFkpOG6cAablNYVBN2hpuEjELiu36+cn9QI2EnXi
+        kvHxaAB3opSnU+tn/U2JdsPoXyTnZnfuF8VmgsQk2KPZz7nJt2G4x6bbZU3HK9sp
+        Skb5DLN/kM7EKyr1t0SH/xcHIqARWiKwc6TeocRzR18=;
+X-AuditID: c39127d2-93d2170000002a63-b9-6204411a9c36
+Received: from idefix.phytec.de (Unknown_Domain [172.16.0.10])
+        by mickerik.phytec.de (PHYTEC Mail Gateway) with SMTP id 12.82.10851.A1144026; Wed,  9 Feb 2022 23:32:58 +0100 (CET)
+Received: from augenblix2.phytec.de ([172.16.0.56])
+          by idefix.phytec.de (IBM Domino Release 9.0.1FP7)
+          with ESMTP id 2022020923325855-256538 ;
+          Wed, 9 Feb 2022 23:32:58 +0100 
+From:   Yunus Bas <y.bas@phytec.de>
+To:     shawnguo@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com, devicetree@vger.kernel.org
+Cc:     festevam@gmail.com, s.hauer@pengutronix.de,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND 1/2] ARM: dts: imx6dl: Add a label to cpu1 node
+Date:   Wed, 9 Feb 2022 23:32:57 +0100
+Message-Id: <20220209223258.1672425-1-y.bas@phytec.de>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+X-MIMETrack: Itemize by SMTP Server on Idefix/Phytec(Release 9.0.1FP7|August  17, 2016) at
+ 09.02.2022 23:32:58,
+        Serialize by Router on Idefix/Phytec(Release 9.0.1FP7|August  17, 2016) at
+ 09.02.2022 23:32:58
+X-TNEFEvaluated: 1
+Content-Transfer-Encoding: quoted-printable
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrKLMWRmVeSWpSXmKPExsWyRoCBS1fKkSXJ4PALU4v5R86xWjy86m+x
+        8e0PJovLu+awWbTuPcJu8Xf7JhaLF1vEHdg9ZjX0snnsnHWX3WPTqk42j/6/Bh6fN8kFsEZx
+        2aSk5mSWpRbp2yVwZfy7spe14ANrxYf7HUwNjPdYuhg5OSQETCQuN0xi7mLk4hAS2Moo8fba
+        NzYI5xyjxMsdexhBqtgEFCXO337LCmKLCGRJPPn5gAnEZhbwkfi17wqYLSzgJjH5xxywehYB
+        FYn7L86CxXkFzCROrdzABrFNXmLmpe/sEHFBiZMzn7CALJMQuMIo8eDCN1aIIiGJ04vPMkMs
+        0JZYtvA18wRGvllIemYhSS1gZFrFKJSbmZydWpSZrVeQUVmSmqyXkrqJERiUhyeqX9rB2DfH
+        4xAjEwfjIUYJDmYlEd5T9cxJQrwpiZVVqUX58UWlOanFhxilOViUxHnv9zAlCgmkJ5akZqem
+        FqQWwWSZODilGhgFj7Ty+u/ZqfbDWyF1Cd9v1bxPyvULJ9ltu2HRo/w331NLcm7T7qIdLqfc
+        y151+Ud/XZ26dv/n0KWd1fd5pCd1uFycven6u4uTviepnt/ueqJeOKs7/s9u6bzC0+wFQVH+
+        qrnv/q02bFZ8ntu+afYSXYczLH+spnKyftQ/7Nct8CB5doKIN4cSS3FGoqEWc1FxIgBn5x5e
+        OAIAAA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  9 Feb 2022 20:14:32 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.16.9 release.
-> There are 5 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+The cpu1 is missing a label for further reference. Since cpu0 has
+already a label, add also one for cpu1 node, so it can be referenced to
+add or modify cpu specific properties the same way as cpu0.
 
-5.16.9-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+Signed-off-by: Yunus Bas <y.bas@phytec.de>
+---
+ arch/arm/boot/dts/imx6dl.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6dl.dtsi b/arch/arm/boot/dts/imx6dl.dtsi
+index fdd81fdc3f35..d49a9b99f33f 100644
+--- a/arch/arm/boot/dts/imx6dl.dtsi
++++ b/arch/arm/boot/dts/imx6dl.dtsi
+@@ -48,7 +48,7 @@ cpu0: cpu@0 {
+ 			nvmem-cell-names =3D "speed=5Fgrade";
+ 		};
+=20
+-		cpu@1 {
++		cpu1: cpu@1 {
+ 			compatible =3D "arm,cortex-a9";
+ 			device=5Ftype =3D "cpu";
+ 			reg =3D <1>;
+--=20
+2.25.1
 
