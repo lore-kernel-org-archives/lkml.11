@@ -2,194 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 670E6C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbiBIQaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:30:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60420 "EHLO
+        id S237007AbiBIQa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:30:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234737AbiBIQaO (ORCPT
+        with ESMTP id S236981AbiBIQa0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:30:14 -0500
-X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:30:16 PST
-Received: from fwd1.porkbun.com (fwd1.porkbun.com [52.10.174.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40E4C0613C9;
-        Wed,  9 Feb 2022 08:30:16 -0800 (PST)
-Received: by fwd1.porkbun.com (Postfix, from userid 497)
-        id B1FED40F95; Wed,  9 Feb 2022 16:19:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
-        s=default; t=1644423687;
-        bh=na7xW0UcmevfG+Vzc+SF/qFmYtwaEfbasz0l3EQ9fgY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=C1pHPIxNQi/h1f2RvhJfT1tI6ceLC6NYOASTQ5CzxTiLyy0NWyP1tdvY5E3Fha/OH
-         tQ7WOm2UTgdUL10RKgn/9HclH4GOBrXMh9HBZsueij3FBoUe8HnT9izKqpj4LuRAIB
-         48kbkUwzgTkKfaDCDWikCSxwl1E2WfPK9TXbixOY=
-Received: from webmail.porkbun.com (unknown [35.86.129.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: rayyan@ansari.sh)
-        by fwd1.porkbun.com (Postfix) with ESMTPSA id A00D943588;
-        Wed,  9 Feb 2022 16:19:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ansari.sh;
-        s=default; t=1644423560;
-        bh=na7xW0UcmevfG+Vzc+SF/qFmYtwaEfbasz0l3EQ9fgY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References;
-        b=iqbAOYJD8e6WhMLQHy4VtjP6PH+6cUPl8kFvrViFRxgnV6HkTgbvFa+4aFsNfWNnG
-         qmK+HrLFApA4Vlsc/FJS/BfFwVtxis3LZkfzf8KRM6rc7PpkWLJf9lTnUtOsK3SycB
-         9n3TVfbzJRg+OcSdxr2/yvDDLqr1C9zCqGBnSWWs=
+        Wed, 9 Feb 2022 11:30:26 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AD4C0612BE;
+        Wed,  9 Feb 2022 08:30:29 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id f17so5077864wrx.1;
+        Wed, 09 Feb 2022 08:30:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TCekoNAsz0CKcPwcVF/KWz963J+qSXSU1YJ6x+zUwaM=;
+        b=qh+PJYTJ5oyXPzeL3E+0rzGxo+DHUp8jHmCfBnUKrl6PG9xlEQ25rYzA2jk1QPOukq
+         +I+EibDd6oMU7hK4k+RRuf0eTvc5gEPc0G+8oVZHX1caq94TIhDCviljMlnXB1QJuN0c
+         0aYxJVQly/6XnjB3b9u9OlOw0lOBhQnpL4unuv0Z394CNxDTt1DXm1IycCS+tcwVTtFu
+         UApfxpTYtTmbLPHYngbjvg1g3RTL8G0jeK+IInbnUIPf56JY7DVOZH04ZuWOgDQ/vkiD
+         MVM4x49Rcc5JDhMqdvwcC3iJhA+B3CmXPLxfgzJ1qHY2858YRx8AnACnUtL4ZsH65rw+
+         PD8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TCekoNAsz0CKcPwcVF/KWz963J+qSXSU1YJ6x+zUwaM=;
+        b=NoSSFCw/olXR2C45lciqO6Hc9YEwNlyA/+YzKbXjdi5i9UxkUsR9mSuAdv4tseB0E5
+         Bq7IbOIB0TnM8UHMUS+DplyB7amN+92W4uMDzEGPyOTnHpzI4N6brg78niAtwv4UGLgG
+         nvCkchQJLeqSt18gQbmCmeGAIix2XVBNqV1bhaRDc3fK4vuDi+GOm/89Bh/yhDhMsXFM
+         LpIFeH+Z2iMB1W5YSt2OlW9blvyIPU6MwtOw8SHtPh37HVM8ySP/D2TJKDhtE8swoa/O
+         1sPNvGReevL4iLpCpDPHvygfhKFWxBvkRKw+NXLzNg+R6Dln6weRUNRUlE2ZYnDLX+NB
+         twSQ==
+X-Gm-Message-State: AOAM531QvuXvAdPFmL3pkOfNJtEpuliz4TO3s4lBFe6hgospQAdD4JyF
+        HtlUslvej2tQq50UMW7Vvd8=
+X-Google-Smtp-Source: ABdhPJxWLblgDOqQhOcUPkMpyv6/T7RSuVsXksjpUA3MctF2Nhiv8NtQEHbPtDFW2x4ojiq8ZRbr8g==
+X-Received: by 2002:adf:dd50:: with SMTP id u16mr2776373wrm.696.1644424228349;
+        Wed, 09 Feb 2022 08:30:28 -0800 (PST)
+Received: from leap.localnet (host-95-245-2-16.retail.telecomitalia.it. [95.245.2.16])
+        by smtp.gmail.com with ESMTPSA id p7sm5228901wmq.20.2022.02.09.08.30.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 08:30:27 -0800 (PST)
+From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com
+Subject: Re: [PATCH] usb: core: Unregister device on component_add() failure
+Date:   Wed, 09 Feb 2022 17:30:24 +0100
+Message-ID: <2094517.irdbgypaU6@leap>
+In-Reply-To: <YgPI6RQd/9I4/51p@kuha.fi.intel.com>
+References: <20220208170048.24718-1-fmdefrancesco@gmail.com> <YgPI6RQd/9I4/51p@kuha.fi.intel.com>
 MIME-Version: 1.0
-Date:   Wed, 09 Feb 2022 16:19:19 +0000
-From:   Rayyan Ansari <rayyan@ansari.sh>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 11/15] arm64: dts: qcom: Add PM8953 PMIC
-In-Reply-To: <20220112194118.178026-12-luca@z3ntu.xyz>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <20220112194118.178026-12-luca@z3ntu.xyz>
-User-Agent: Roundcube Webmail/1.4.11
-Message-ID: <cf675eac374a196dac3bd5017d2d8cae@ansari.sh>
-X-Sender: rayyan@ansari.sh
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-12 19:41, Luca Weiss wrote:
-> From: Vladimir Lypak <vladimir.lypak@gmail.com>
+On mercoled? 9 febbraio 2022 15:00:09 CET Heikki Krogerus wrote:
+> On Tue, Feb 08, 2022 at 06:00:48PM +0100, Fabio M. De Francesco wrote:
+> > Commit 8c67d06f3fd9 ("usb: Link the ports to the connectors they are
+> > attached to") creates a link to the USB Type-C connector for every new
+> > port that is added when possible. If component_add() fails,
+> > usb_hub_create_port_device() prints a warning but does not unregister
+> > the device and does not return errors to the callers.
+> > 
+> > Syzbot reported a "WARNING in component_del()".
+> > 
+> > Fix this issue in usb_hub_create_port_device by calling device_unregister()
+> > and returning the errors from component_add().
+> > 
+> > Reported-by: syzbot+60df062e1c41940cae0f@syzkaller.appspotmail.com
+> > Fixes: 8c67d06f3fd9 ("usb: Link the ports to the connectors they are attached to")
+> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+> > ---
+> >  drivers/usb/core/port.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > [...]
+> >
+> You didn't remove the peer links. Either remove them here separately,
+> or alternatively you can also just shuffle the code so that you only
+> create those links after the component_add() call:
+>
+> [...]
 > 
-> Add a base DT for PM8953 PMIC, commonly used with MSM8953.
+
+Hello Heikki,
+
+Thanks for your review and suggestion. I think that I'll use the second of the
+two possible solutions (shuffle the code).
+
+I had to spend some time to understand the code of usb_hub_create_port_device(),
+component_add() and component_del(). Unfortunately, the USB core is very far from
+the usual things I look at or care of. Therefore I missed that find_and_link_peer()
+does some work that must be either unwound or simply postponed. I agree with you 
+that the latter is the best solution.
+
+I need some minutes to submit v2.
+
+Again, thanks,
+
+Fabio
+
+> thanks,
 > 
-> Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  arch/arm64/boot/dts/qcom/pm8953.dtsi | 90 ++++++++++++++++++++++++++++
->  1 file changed, 90 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/pm8953.dtsi
+> -- 
+> heikki
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/pm8953.dtsi
-> b/arch/arm64/boot/dts/qcom/pm8953.dtsi
-> new file mode 100644
-> index 000000000000..102555b3f313
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/pm8953.dtsi
-> @@ -0,0 +1,90 @@
-> +// SPDX-License-Identifier: BSD-3-Clause
-> +/* Copyright (c) 2022, The Linux Foundation. All rights reserved. */
-> +
-> +#include <dt-bindings/iio/qcom,spmi-vadc.h>
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/input/linux-event-codes.h>
-> +#include <dt-bindings/spmi/spmi.h>
-> +
-> +&spmi_bus {
-> +	pmic@0 {
-> +		compatible = "qcom,pm8953", "qcom,spmi-pmic";
-> +		reg = <0 SPMI_USID>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		rtc@6000 {
-> +			compatible = "qcom,pm8941-rtc";
-> +			reg = <0x6000>, <0x6100>;
-> +			reg-names = "rtc", "alarm";
-> +			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
-> +		};
 
-Could you sort the nodes by order? The rtc@6000 node should be after 
-vadc@3100.
 
-> +
-> +		pm8953_pon: pon@800 {
-> +			compatible = "qcom,pm8916-pon";
-> +			reg = <0x800>;
-> +			mode-bootloader = <0x2>;
-> +			mode-recovery = <0x1>;
-> +
-> +			pwrkey {
-> +				compatible = "qcom,pm8941-pwrkey";
-> +				interrupts = <0x00 0x08 0 IRQ_TYPE_EDGE_BOTH>;
-> +				debounce = <15625>;
-> +				bias-pull-up;
-> +				linux,code = <KEY_POWER>;
-> +			};
-> +
-> +			pm8953_resin: resin {
-> +				compatible = "qcom,pm8941-resin";
-> +				interrupts = <0x00 0x08 1 IRQ_TYPE_EDGE_BOTH>;
-> +				debounce = <15625>;
-> +				bias-pull-up;
-> +				status = "disabled";
-> +			};
-> +		};
-> +
-> +		temp-alarm@2400 {
-> +			compatible = "qcom,spmi-temp-alarm";
-> +			reg = <0x2400>;
-> +			interrupts = <0x0 0x24 0x0 IRQ_TYPE_EDGE_RISING>;
-> +			io-channels = <&pm8953_vadc 0x08>;
 
-Could you use VADC_DIE_TEMP here instead of 0x08 like in 
-qcom-spmi-temp-alarm.txt?
 
-> +			io-channel-names = "thermal";
-> +			#thermal-sensor-cells = <0x00>;
-
-This should be "#thermal-sensor-cells = <0>;" as recommended by docs.
-
-> +		};
-> +
-> +		pm8953_vadc: vadc@3100 {
-> +			compatible = "qcom,spmi-vadc";
-> +			reg = <0x3100>;
-> +			interrupts = <0x00 0x31 0x00 0x01>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			#io-channel-cells = <1>;
-> +
-> +			die_temp@8 {
-> +				reg = <VADC_DIE_TEMP>;
-> +			};
-> +			ref_625mv@9 {
-> +				reg = <VADC_REF_625MV>;
-> +			};
-> +			ref_1250v@a {
-> +				reg = <VADC_REF_1250MV>;
-> +			};
-> +			ref_buf_625mv@c {
-> +				reg = <VADC_SPARE1>;
-> +			};
-> +			ref_gnd@e {
-> +				reg = <VADC_GND_REF>;
-> +			};
-> +			ref_vdd@f {
-> +				reg = <VADC_VDD_VADC>;
-> +			};
-
-Could you use the generic names for each VADC channel as recommended in 
-qcom,spmi-vadc.yaml?
-
-> +		};
-> +	};
-> +
-> +	pmic@1 {
-> +		compatible = "qcom,pm8953", "qcom,spmi-pmic";
-> +		reg = <1 SPMI_USID>;
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +	};
-> +};
-
-With this sorted, add my Reviewed-by.
-
-Reviewed-by: Rayyan Ansari <rayyan@ansari.sh>
