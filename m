@@ -2,43 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D177EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240948AbiBISsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:48:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S240743AbiBISsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:48:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiBISqh (ORCPT
+        with ESMTP id S241575AbiBISqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:46:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF88BC0302C1;
-        Wed,  9 Feb 2022 10:43:54 -0800 (PST)
+        Wed, 9 Feb 2022 13:46:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0546C0DE7E2;
+        Wed,  9 Feb 2022 10:44:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F00C611B8;
-        Wed,  9 Feb 2022 18:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D1FEC36AE2;
-        Wed,  9 Feb 2022 18:43:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0AB6B82215;
+        Wed,  9 Feb 2022 18:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E2E4C340E9;
+        Wed,  9 Feb 2022 18:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432228;
-        bh=GzgRzBVPN10UsBMAviLvVNgKxRB0wrMMqXuJINL/qbI=;
+        s=k20201202; t=1644432246;
+        bh=P3udYnsCbEskvoh3uxv97i0MEqlxnGDxof8wHmeN2IQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PHCSofJWcyOe2GvNvx8YtwkZ+PdCmq+joNn9pkiC7/vO9oW4sdtyU7ADkx5S9HLqw
-         SXXWRLibyKsZTLe4tzdbtWc8K37JQv+RVjaj33ftBlmHyjkFqpPuogqv5Xj4PFKRdJ
-         KXf3179JemfolFQLSblZ/fWGnLBAyas98y2c8xRveoY3Jlia7i/FvAGR0IeGmI7rTF
-         tILnKnz6t4PwEdeHBbe27LE/q19Noy5eQRCkqSSqin2pvO62OBuVUcm+6IgFdGpy4a
-         UiZUbmLASr87hVHqAWs+odXxZvFOLUAq21qA25FAm+0vilGa0yYhcmYzWhxnNUKimu
-         IpSpWvnLQKRlQ==
+        b=QfSOom6qSQhY3i1meRvKZ9A3SiClfINGPQGLPOcRF6IwPCQQ1a4GD28kC7EUJQBUd
+         li1yvMqizp0FlYJD1jqEG+uvfkRxrmQzRdemRyKBqCaIdT3vn3sbberQMaTMC+sC4f
+         VYfhhH8uguiIUf2ovBMb7HPZ2D9kBFv7XEXeSbpY/KCsLSA06VcUCC7MafqjFZ43OC
+         d23WWt963PN9fgetshU0lPNOD6jgE8z6csGzQ28N5mYzpWxJwFuY8DEQpl0yysbNug
+         NRou00vV8t5tpqaNnT/QRwZb8JPwJtDddLYhpUKVmYXCxWC9AQD5T4xRjJHqErY1P+
+         evTYOzMmzSCBA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Sasha Levin <sashal@kernel.org>,
-        kbusch@kernel.org, axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 11/15] nvme: fix a possible use-after-free in controller reset during load
-Date:   Wed,  9 Feb 2022 13:42:57 -0500
-Message-Id: <20220209184305.47983-11-sashal@kernel.org>
+Cc:     Igor Pylypiv <ipylypiv@google.com>,
+        Changyuan Lyu <changyuanl@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Tejun Heo <tj@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, akpm@linux-foundation.org,
+        linux@rasmusvillemoes.dk, linux-modules@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 15/15] Revert "module, async: async_synchronize_full() on module init iff async is used"
+Date:   Wed,  9 Feb 2022 13:43:01 -0500
+Message-Id: <20220209184305.47983-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
 References: <20220209184305.47983-1-sashal@kernel.org>
@@ -50,61 +57,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Igor Pylypiv <ipylypiv@google.com>
 
-[ Upstream commit 0fa0f99fc84e41057cbdd2efbfe91c6b2f47dd9d ]
+[ Upstream commit 67d6212afda218d564890d1674bab28e8612170f ]
 
-Unlike .queue_rq, in .submit_async_event drivers may not check the ctrl
-readiness for AER submission. This may lead to a use-after-free
-condition that was observed with nvme-tcp.
+This reverts commit 774a1221e862b343388347bac9b318767336b20b.
 
-The race condition may happen in the following scenario:
-1. driver executes its reset_ctrl_work
-2. -> nvme_stop_ctrl - flushes ctrl async_event_work
-3. ctrl sends AEN which is received by the host, which in turn
-   schedules AEN handling
-4. teardown admin queue (which releases the queue socket)
-5. AEN processed, submits another AER, calling the driver to submit
-6. driver attempts to send the cmd
-==> use-after-free
+We need to finish all async code before the module init sequence is
+done.  In the reverted commit the PF_USED_ASYNC flag was added to mark a
+thread that called async_schedule().  Then the PF_USED_ASYNC flag was
+used to determine whether or not async_synchronize_full() needs to be
+invoked.  This works when modprobe thread is calling async_schedule(),
+but it does not work if module dispatches init code to a worker thread
+which then calls async_schedule().
 
-In order to fix that, add ctrl state check to validate the ctrl
-is actually able to accept the AER submission.
+For example, PCI driver probing is invoked from a worker thread based on
+a node where device is attached:
 
-This addresses the above race in controller resets because the driver
-during teardown should:
-1. change ctrl state to RESETTING
-2. flush async_event_work (as well as other async work elements)
+	if (cpu < nr_cpu_ids)
+		error = work_on_cpu(cpu, local_pci_probe, &ddi);
+	else
+		error = local_pci_probe(&ddi);
 
-So after 1,2, any other AER command will find the
-ctrl state to be RESETTING and bail out without submitting the AER.
+We end up in a situation where a worker thread gets the PF_USED_ASYNC
+flag set instead of the modprobe thread.  As a result,
+async_synchronize_full() is not invoked and modprobe completes without
+waiting for the async code to finish.
 
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+The issue was discovered while loading the pm80xx driver:
+(scsi_mod.scan=async)
+
+modprobe pm80xx                      worker
+...
+  do_init_module()
+  ...
+    pci_call_probe()
+      work_on_cpu(local_pci_probe)
+                                     local_pci_probe()
+                                       pm8001_pci_probe()
+                                         scsi_scan_host()
+                                           async_schedule()
+                                           worker->flags |= PF_USED_ASYNC;
+                                     ...
+      < return from worker >
+  ...
+  if (current->flags & PF_USED_ASYNC) <--- false
+  	async_synchronize_full();
+
+Commit 21c3c5d28007 ("block: don't request module during elevator init")
+fixed the deadlock issue which the reverted commit 774a1221e862
+("module, async: async_synchronize_full() on module init iff async is
+used") tried to fix.
+
+Since commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
+request_module() from async workers") synchronous module loading from
+async is not allowed.
+
+Given that the original deadlock issue is fixed and it is no longer
+allowed to call synchronous request_module() from async we can remove
+PF_USED_ASYNC flag to make module init consistently invoke
+async_synchronize_full() unless async module probe is requested.
+
+Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
+Reviewed-by: Changyuan Lyu <changyuanl@google.com>
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/core.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ include/linux/sched.h |  1 -
+ kernel/async.c        |  3 ---
+ kernel/module.c       | 25 +++++--------------------
+ 3 files changed, 5 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index a5b5a2305791d..6a9a42809f972 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3896,7 +3896,14 @@ static void nvme_async_event_work(struct work_struct *work)
- 		container_of(work, struct nvme_ctrl, async_event_work);
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index afee5d5eb9458..b341471de9d60 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1454,7 +1454,6 @@ extern struct pid *cad_pid;
+ #define PF_MEMALLOC		0x00000800	/* Allocating memory */
+ #define PF_NPROC_EXCEEDED	0x00001000	/* set_user() noticed that RLIMIT_NPROC was exceeded */
+ #define PF_USED_MATH		0x00002000	/* If unset the fpu must be initialized before use */
+-#define PF_USED_ASYNC		0x00004000	/* Used async_schedule*(), used by module init */
+ #define PF_NOFREEZE		0x00008000	/* This thread should not be frozen */
+ #define PF_FROZEN		0x00010000	/* Frozen for system suspend */
+ #define PF_KSWAPD		0x00020000	/* I am kswapd */
+diff --git a/kernel/async.c b/kernel/async.c
+index 4f9c1d6140168..74660f611b97d 100644
+--- a/kernel/async.c
++++ b/kernel/async.c
+@@ -205,9 +205,6 @@ async_cookie_t async_schedule_node_domain(async_func_t func, void *data,
+ 	atomic_inc(&entry_count);
+ 	spin_unlock_irqrestore(&async_lock, flags);
  
- 	nvme_aen_uevent(ctrl);
--	ctrl->ops->submit_async_event(ctrl);
-+
-+	/*
-+	 * The transport drivers must guarantee AER submission here is safe by
-+	 * flushing ctrl async_event_work after changing the controller state
-+	 * from LIVE and before freeing the admin queue.
-+	*/
-+	if (ctrl->state == NVME_CTRL_LIVE)
-+		ctrl->ops->submit_async_event(ctrl);
- }
+-	/* mark that this task has queued an async job, used by module init */
+-	current->flags |= PF_USED_ASYNC;
+-
+ 	/* schedule for execution */
+ 	queue_work_node(node, system_unbound_wq, &entry->work);
  
- static bool nvme_ctrl_pp_status(struct nvme_ctrl *ctrl)
+diff --git a/kernel/module.c b/kernel/module.c
+index 59d487b8d8dad..e7656cf1652c9 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3711,12 +3711,6 @@ static noinline int do_init_module(struct module *mod)
+ 	}
+ 	freeinit->module_init = mod->init_layout.base;
+ 
+-	/*
+-	 * We want to find out whether @mod uses async during init.  Clear
+-	 * PF_USED_ASYNC.  async_schedule*() will set it.
+-	 */
+-	current->flags &= ~PF_USED_ASYNC;
+-
+ 	do_mod_ctors(mod);
+ 	/* Start the module */
+ 	if (mod->init != NULL)
+@@ -3742,22 +3736,13 @@ static noinline int do_init_module(struct module *mod)
+ 
+ 	/*
+ 	 * We need to finish all async code before the module init sequence
+-	 * is done.  This has potential to deadlock.  For example, a newly
+-	 * detected block device can trigger request_module() of the
+-	 * default iosched from async probing task.  Once userland helper
+-	 * reaches here, async_synchronize_full() will wait on the async
+-	 * task waiting on request_module() and deadlock.
+-	 *
+-	 * This deadlock is avoided by perfomring async_synchronize_full()
+-	 * iff module init queued any async jobs.  This isn't a full
+-	 * solution as it will deadlock the same if module loading from
+-	 * async jobs nests more than once; however, due to the various
+-	 * constraints, this hack seems to be the best option for now.
+-	 * Please refer to the following thread for details.
++	 * is done. This has potential to deadlock if synchronous module
++	 * loading is requested from async (which is not allowed!).
+ 	 *
+-	 * http://thread.gmane.org/gmane.linux.kernel/1420814
++	 * See commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
++	 * request_module() from async workers") for more details.
+ 	 */
+-	if (!mod->async_probe_requested && (current->flags & PF_USED_ASYNC))
++	if (!mod->async_probe_requested)
+ 		async_synchronize_full();
+ 
+ 	ftrace_free_mem(mod, mod->init_layout.base, mod->init_layout.base +
 -- 
 2.34.1
 
