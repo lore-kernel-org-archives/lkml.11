@@ -2,76 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F53BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236934AbiBICmG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:42:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
+        id S240785AbiBICmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:42:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242935AbiBICNn (ORCPT
+        with ESMTP id S242717AbiBIBUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:13:43 -0500
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905C8C06157B;
-        Tue,  8 Feb 2022 18:13:42 -0800 (PST)
-Received: by mail-oo1-f42.google.com with SMTP id t75-20020a4a3e4e000000b002e9c0821d78so886701oot.4;
-        Tue, 08 Feb 2022 18:13:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nIaW4qu/5KIfaweGLotozwrFMLHgcllMEMmVd3jpnnQ=;
-        b=TQjkt7HKL8fq40KmZjtKzLipSYoAyh0fyMdH0cgMzTnAteR+gdVgErA6dtKxSjc12V
-         FtmtcisltPAQ7ziNY6q8tzEcDQszoGvXBugflyENoDtwalIMf2CX0pEoiOumc/145oT+
-         nPCM8MBCTTR9l31BfB/OW6apVtdq2FGzbH5g/t6CfKjVMmp6Z3I0cjjbxiW7PpbfXQg7
-         XxsJpXkKTFL60C4hCTanqjdWd5XcYGcYuxDwxXs5XnhUogpaE9UQXWT0d7jNUiu+CE87
-         y6YIYnLZhWP9GSPnk5g8JyhVEyrkXHHsT027+hUk529D8ItSYW/X6hV05fbIrPY7FJT3
-         uJgw==
-X-Gm-Message-State: AOAM531TAdqZPWuJZjI4dn3CsqmPZCDXtVtfUVXUmlrazznvgX37iXfG
-        KyeNrVW2SgGDi9VgYPSiSQ==
-X-Google-Smtp-Source: ABdhPJwM0FgcPhcdDiEuQVbj6A1+LlYF41lbFX5B1ioSc3CFF3NvbJJOKEqqS/3M6sH9PpfZe1bgZg==
-X-Received: by 2002:a05:6871:506:: with SMTP id s6mr69126oal.62.1644372821873;
-        Tue, 08 Feb 2022 18:13:41 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bx41sm3324683oib.7.2022.02.08.18.13.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:13:41 -0800 (PST)
-Received: (nullmailer pid 3466961 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:13:40 -0000
-Date:   Tue, 8 Feb 2022 20:13:40 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devicetree@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Andy Gross <agross@kernel.org>
-Subject: Re: [PATCH 07/15] dt-bindings: usb: qcom,dwc3: Add msm8953 compatible
-Message-ID: <YgMjVCGpFjJ2hkOO@robh.at.kernel.org>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <20220112194118.178026-8-luca@z3ntu.xyz>
+        Tue, 8 Feb 2022 20:20:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 289B5C061576;
+        Tue,  8 Feb 2022 17:20:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1A6761763;
+        Wed,  9 Feb 2022 01:20:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DEBC340EB;
+        Wed,  9 Feb 2022 01:20:07 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LbVQ1yQa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369607;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wXavouTsQZ5PSiUPlPfFOTYKfyF5MOClkib1Muwy8ho=;
+        b=LbVQ1yQaX0XnR9YA1TWG+hQ5BfXyK622xfHx3opb2x6tgbGo/jBw8JCMZIiyZIH0IxqsAz
+        74ZIBN00RM21n2u3BktGY7PZusz0n8F35HH6Y3mj2VdNrO2JExH1plKxrhO6Oz6djsqIlJ
+        LP0WUMCXroLlRqFUNCFoWJoGU6JMmpE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 67f28a20 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:20:06 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Biggers <ebiggers@google.com>
+Subject: [PATCH v2 6/9] random: absorb fast pool into input pool after fast load
+Date:   Wed,  9 Feb 2022 02:19:16 +0100
+Message-Id: <20220209011919.493762-7-Jason@zx2c4.com>
+In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112194118.178026-8-luca@z3ntu.xyz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 20:40:56 +0100, Luca Weiss wrote:
-> Document the compatible string for the DWC3 controller in msm8953.
-> 
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+During crng_init == 0, we never credit entropy in add_interrupt_
+randomness(), but instead dump it directly into the base_crng. That's
+fine, except for the fact that we then wind up throwing away that
+entropy later when we switch to extracting from the input pool and
+overwriting the base_crng key. The two other early init sites --
+add_hwgenerator_randomness()'s use crng_fast_load() and add_device_
+randomness()'s use of crng_slow_load() -- always additionally give their
+inputs to the input pool. But not add_interrupt_randomness().
 
-Acked-by: Rob Herring <robh@kernel.org>
+This commit fixes that shortcoming by calling mix_pool_bytes() after
+crng_fast_load() in add_interrupt_randomness(). That's partially
+verboten on PREEMPT_RT, where it implies taking spinlock_t from an IRQ
+handler. But this also only happens during early boot and then never
+again after that. Should this turn into a larger problem later for some
+esoteric reason, we can always use `if (IS_ENABLED(PREEMPT_RT))` or
+something similar to that. But for now, this should do.
+
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Suggested-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 785a4545c9d7..20374bce9a07 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -864,6 +864,13 @@ void add_interrupt_randomness(int irq)
+ 		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
++
++			/* Technically this call means that we're using a spinlock_t
++			 * in the IRQ handler, which isn't terrific for PREEMPT_RT.
++			 * However, this only happens during very early boot, and then
++			 * never again, so we live with it.
++			 */
++			mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
+ 		}
+ 		return;
+ 	}
+-- 
+2.35.0
+
