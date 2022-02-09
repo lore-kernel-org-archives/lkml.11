@@ -2,135 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 482CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiBIX2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:28:08 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44550 "EHLO
+        id S229946AbiBIX2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 18:28:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiBIX2D (ORCPT
+        with ESMTP id S230010AbiBIX2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 18:28:03 -0500
-X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 15:27:58 PST
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A1D9E057C0C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:27:57 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.88,356,1635174000"; 
-   d="scan'208";a="110784889"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 10 Feb 2022 08:22:44 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 592F84004CFB;
-        Thu, 10 Feb 2022 08:22:42 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-renesas-soc@vger.kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] i2c: riic: Simplify reset handling
-Date:   Wed,  9 Feb 2022 23:22:32 +0000
-Message-Id: <20220209232232.18461-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 9 Feb 2022 18:28:18 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9B6E057C0E;
+        Wed,  9 Feb 2022 15:28:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=VyiuDl3IpexkLMiuqnAvBqtY58D0U7tUwB8UiSDeVcI=; b=grTIEYFbVAFWjguDBt19JuKsUw
+        tDr9AL5CAGAp6o7VsbQCgRCFKHcsYQB6CtqrfKmQvfg+I2hyJlttajcvnSVItWRpnz7k71T0Qg2kI
+        RbFoZLzQKCKEEh5h3HLSkyMR6yz+AFhljmGoto9uyBNbg35xa04D7Zs1gaoVbSRpU0gn07JAsa11D
+        vZ9+Ov/aENr8JphK3j6B+t6tcRXVg+IJzmL+8cX1fxzhnsb9Zf6QDqqlFBj8lpiR1xah5drLUVCuf
+        0ICXACvFPzmd+dTstrbDNOVsLbVs9tuxGEingVY/XHSqX+OxzYFx9mkmylqRlGuwp8zPAZ8OO3FfM
+        YIXLeH9w==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHwNW-0022x2-Bi; Wed, 09 Feb 2022 23:28:02 +0000
+Date:   Wed, 9 Feb 2022 15:28:02 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Zhen Ni <nizhen@uniontech.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] sched: move uclamp_util sysctls to core.c
+Message-ID: <YgROAtIdjfUXO5lJ@bombadil.infradead.org>
+References: <20220209085730.22470-1-nizhen@uniontech.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209085730.22470-1-nizhen@uniontech.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Read reset phandle as optional instead of exclusive so that all the DT's
-passing the reset phandle can be used to assert/deassert the reset line.
-With this change we don't have to differentiate the RZ/G2L SoC.
+On Wed, Feb 09, 2022 at 04:57:30PM +0800, Zhen Ni wrote:
+> move uclamp_util sysctls to core.c and use the new
+> register_sysctl_init() to register the sysctl interface.
+> 
+> Signed-off-by: Zhen Ni <nizhen@uniontech.com>
 
-With the above changes we no longer need the "renesas,riic-r9a07g044"
-compatible string, so drop it from riic_i2c_dt_ids[]. No changes are
-required to the r9a07g044.dtsi as we already have "renesas,riic-rz" as a
-fallback compatible string.
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 
-While at it, check the return code of reset_control_deassert() as it might
-fail and also add a devres action to assert the reset line.
-
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- drivers/i2c/busses/i2c-riic.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/i2c/busses/i2c-riic.c b/drivers/i2c/busses/i2c-riic.c
-index 8dfd27dc6149..cded77e06670 100644
---- a/drivers/i2c/busses/i2c-riic.c
-+++ b/drivers/i2c/busses/i2c-riic.c
-@@ -88,11 +88,6 @@
- 
- #define RIIC_INIT_MSG	-1
- 
--enum riic_type {
--	RIIC_RZ_A,
--	RIIC_RZ_G2L,
--};
--
- struct riic_dev {
- 	void __iomem *base;
- 	u8 *buf;
-@@ -396,6 +391,11 @@ static struct riic_irq_desc riic_irqs[] = {
- 	{ .res_num = 5, .isr = riic_tend_isr, .name = "riic-nack" },
- };
- 
-+static void riic_reset_control_assert(void *data)
-+{
-+	reset_control_assert(data);
-+}
-+
- static int riic_i2c_probe(struct platform_device *pdev)
- {
- 	struct riic_dev *riic;
-@@ -404,7 +404,6 @@ static int riic_i2c_probe(struct platform_device *pdev)
- 	struct i2c_timings i2c_t;
- 	struct reset_control *rstc;
- 	int i, ret;
--	enum riic_type type;
- 
- 	riic = devm_kzalloc(&pdev->dev, sizeof(*riic), GFP_KERNEL);
- 	if (!riic)
-@@ -421,16 +420,18 @@ static int riic_i2c_probe(struct platform_device *pdev)
- 		return PTR_ERR(riic->clk);
- 	}
- 
--	type = (enum riic_type)of_device_get_match_data(&pdev->dev);
--	if (type == RIIC_RZ_G2L) {
--		rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
--		if (IS_ERR(rstc)) {
--			dev_err(&pdev->dev, "Error: missing reset ctrl\n");
--			return PTR_ERR(rstc);
--		}
-+	rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
-+	if (IS_ERR(rstc))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(rstc),
-+				     "Error: missing reset ctrl\n");
- 
--		reset_control_deassert(rstc);
--	}
-+	ret = reset_control_deassert(rstc);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&pdev->dev, riic_reset_control_assert, rstc);
-+	if (ret)
-+		return ret;
- 
- 	for (i = 0; i < ARRAY_SIZE(riic_irqs); i++) {
- 		ret = platform_get_irq(pdev, riic_irqs[i].res_num);
-@@ -492,8 +493,7 @@ static int riic_i2c_remove(struct platform_device *pdev)
- }
- 
- static const struct of_device_id riic_i2c_dt_ids[] = {
--	{ .compatible = "renesas,riic-r9a07g044", .data = (void *)RIIC_RZ_G2L },
--	{ .compatible = "renesas,riic-rz", .data = (void *)RIIC_RZ_A },
-+	{ .compatible = "renesas,riic-rz", },
- 	{ /* Sentinel */ },
- };
- 
--- 
-2.17.1
-
+  Luis
