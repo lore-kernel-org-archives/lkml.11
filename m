@@ -2,74 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C764CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237779AbiBIEKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:10:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53024 "EHLO
+        id S1344022AbiBIEKE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:10:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239680AbiBIEHS (ORCPT
+        with ESMTP id S1347262AbiBIDjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:07:18 -0500
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762F1C061579;
-        Tue,  8 Feb 2022 20:07:17 -0800 (PST)
-Received: by mail-ot1-f48.google.com with SMTP id b12-20020a9d754c000000b0059eb935359eso705117otl.8;
-        Tue, 08 Feb 2022 20:07:17 -0800 (PST)
+        Tue, 8 Feb 2022 22:39:25 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159A8C043183
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:32:32 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id z13so2013104pfa.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 19:32:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GOQ0sWfM4FjwKkl33/hNhQ8lpkr9qvoQNXOdfZoCGy4=;
+        b=WPh+JZAupBRMfuEu+D0pwyvzDFFX2NJCAoSOCCWQY+6t/ldquzG3RHI7/JWZGyQRL6
+         e27N96UhOUznbX4Y6v3TO/ES3k7XZKupg6PrNvOAJd4yUlz4Z17JwkMvC7cs4EGVkaoX
+         4HJFcQ3I+gkEgMhvujrfc/e64hKNNB26SLuBnYBPWyAKEKCPwSmzK4qroViO9xXNw5Zp
+         hAJ2sRdkv0I610ubtyoyf5X+lpG5oXvCvsqBf6SLMuxjMIruVcpoVxe6xaxcEN+GTLmb
+         dg4U8hSC+7xN9EtudaCVc60tZpjJV5Wi/D3p8Oac+Yj6D3FfnjyATGsODsZwd22wAKPX
+         +EQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=1SlUTfORdsnc28tLEfE1geAYG+A9VRD+iXQo9kSBBGU=;
-        b=MrQlSdFCQqrAIpnACo431kz4pdy3zVemfvm6CokPpfXSDWCxhgd+pWZYgrG4VXusDo
-         1BMKJGg24Q9uYoiKn4XGj/TKLV8i10IuDUqN2nn9xcF62Sa4nP3xF6TShqd8vhLwmOQU
-         BMyMWFOmIBCBc8QWTwn4X6dc3HFYoqOoXFikcaYSX4JMUrBaNKhqRFqT6CA20aAVhdt5
-         80GzFBN4BondvCJKWidyDN2iXKr77E1ttEa3Z2bx1RRzBMznB148GTTtpBDYTpldpMW3
-         +CNy+tjM57NbGOwHBGRQ7bFKxhkWXYYUrAsE/rLbG1H4m9vaMXXz31X3iInh6eJi9VB4
-         wzFQ==
-X-Gm-Message-State: AOAM531Yba1QYjTlH/9qXHXoH6poLVdHz/iFYWaUMpYLPc7bmbizRkQD
-        RmEQkzFABb5E5oDOdzILsA==
-X-Google-Smtp-Source: ABdhPJw6Scyx5dzsHwxnzN7Mj5MuFSM9+a94On89xDB7U2azXkCI0FCjcs4h2HE0ouBxZojmq/wkrA==
-X-Received: by 2002:a05:6830:12c1:: with SMTP id a1mr213959otq.374.1644379636810;
-        Tue, 08 Feb 2022 20:07:16 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x19sm6148453otj.59.2022.02.08.20.07.15
+        bh=GOQ0sWfM4FjwKkl33/hNhQ8lpkr9qvoQNXOdfZoCGy4=;
+        b=1cghiRTJAh9oKJgijCmSkv55fW7x08IDMR/ZV+9R+N2SfQ2OFb+VcAzjxU15Aq53Fh
+         Gqxg2cbuiHVL9HVRBzzekvYz2WSUOtkJuX+oW4CC5QsB1nIZfbjDJJf24V4S3+iG7eHv
+         YnarBgV+sPmqRCt/auvvzUaL4vlpaf3RqoBQR1ARt0H7/DFuI7yRvNGPRUMryCbcDwlF
+         OgO5dm5PUo/j9vKZOu/ca/tbGknbkIbA3dukoUi6NdU6l8hQNxXCns0wpKR0PuPedbk6
+         +JLDw4CKMzKhqNzxEZH3wlWqzTiXl2sYCSVqdhH6+J5oBdaYBnfvHlNYSLWqfcyU2MBu
+         VFYg==
+X-Gm-Message-State: AOAM532nzmk3SvISHoFdYZmPG/ZykSRr6BW98ClNYtMcH2fsaHOTKl0Q
+        Xmv1g1VqIcexH/paa/lo++FpUQ==
+X-Google-Smtp-Source: ABdhPJz51Gwp5ZjbgRK9o+938031p99GlYbBhM3IxPTtiQ0jNOjrMfO/AhFmHZFU+kutJ57icCkOEA==
+X-Received: by 2002:a63:6a06:: with SMTP id f6mr364233pgc.576.1644377551404;
+        Tue, 08 Feb 2022 19:32:31 -0800 (PST)
+Received: from google.com ([2401:fa00:1:10:4b6f:f14d:be50:86a])
+        by smtp.gmail.com with ESMTPSA id y193sm18393977pfb.7.2022.02.08.19.32.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:07:16 -0800 (PST)
-Received: (nullmailer pid 3636515 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:07:15 -0000
-Date:   Tue, 8 Feb 2022 22:07:15 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Icenowy Zheng <icenowy@nucleisys.com>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 08/12] dt-bindings: riscv: add binding for Nuclei
- platform boards
-Message-ID: <YgM980WbioH/gkPL@robh.at.kernel.org>
-References: <20220127151647.2375449-1-icenowy@nucleisys.com>
- <20220127151647.2375449-9-icenowy@nucleisys.com>
+        Tue, 08 Feb 2022 19:32:31 -0800 (PST)
+Date:   Wed, 9 Feb 2022 11:32:28 +0800
+From:   Tzung-Bi Shih <tzungbi@google.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "open list:CHROMEOS EC USB TYPE-C DRIVER" 
+        <chrome-platform@lists.linux.dev>
+Subject: Re: [PATCH v2 4/4] platform/chrome: cros_ec_typec: Update mux flags
+ during partner removal
+Message-ID: <YgM1zM7Vpn/FlHv7@google.com>
+References: <20220208184721.1697194-1-pmalani@chromium.org>
+ <20220208184721.1697194-5-pmalani@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127151647.2375449-9-icenowy@nucleisys.com>
+In-Reply-To: <20220208184721.1697194-5-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 23:16:43 +0800, Icenowy Zheng wrote:
-> As we added support for RISC-V SoCs from Nuclei, add device tree binding
-> for the currently supported board-bitstream combo (DemoSoC with UX600 on
-> DDR200T board).
+On Tue, Feb 08, 2022 at 06:47:24PM +0000, Prashant Malani wrote:
+> In cros_typec_remove_partner(), we call
+> cros_typec_usb_disconnect_state() which sets the switches/muxes to be in
+> a disconnected state. This also happens in cros_typec_configure_mux().
+> However, unlike there, here the mux_flags variable hasn't been updated
+> to reflect that a disconnection has occurred. Update the flag here
+> accordingly.
 > 
-> Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
-> ---
->  .../devicetree/bindings/riscv/nuclei.yaml     | 27 +++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/riscv/nuclei.yaml
-> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
