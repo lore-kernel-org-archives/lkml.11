@@ -2,99 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:38:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A94AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiBIUii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 15:38:38 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49660 "EHLO
+        id S232085AbiBIUnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:43:35 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiBIUig (ORCPT
+        with ESMTP id S229628AbiBIUn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 15:38:36 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876B5E00FA58
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 12:38:38 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id 9so3536270pfx.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 12:38:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3CCwZDVWnTz0k1KLIvecC5nUo5ERwSy7pI4Pplg9Wl8=;
-        b=euriZtsupOGjw8a7umqT2cBDmUzLH4VaDyzNGSo3vCdzBeVAEQwlwdsjpyhTvCDcnf
-         JyhDahslFehlYA6KhhswwXeyV06XZ1Z8AvIonnkIK4H89xRvmsGGZiV1RknHadkxAAFH
-         Lo23ARtbPshgAgbZ5Q1oDW9X0gpXcf/+JtqBpbJzJDh7xsrzE7Rl0UC3UZ0WH3z5Q/rk
-         GiDZZt1HKmY1lDcSkVAj1sQxF1wd2env4RoJJ5jTxGBZgj1Y0vxX8w/VdAOUPY+wEXB6
-         J2A21hXcM7EQu/d2RTLnOSzRpHUpRIA6NGtm2pJzx+J9VwH6n9hZgi2Ku8P6GVrgdLb5
-         Xxqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3CCwZDVWnTz0k1KLIvecC5nUo5ERwSy7pI4Pplg9Wl8=;
-        b=y6AXEDyMHve2Db1cIEEpcQayrZoH0peYiYEBWRjQvAFl50Iu5kd2h9Yk4rOeMdc2GF
-         SZujbnxj1+p62yrv1cHvIQXgZ3InIEwX2ABRjtkFvVJtZV+uzZKHavCWhea9BII80bq8
-         gavrCe1TBPfniucHaGcZfW9yNRFMM6e+kOkpSVF8PkSF7eJEnHVJphBUQnn6Hw0bGHiw
-         Faf8BXwxRccXFwdBMjRp5Ez6YRCNpv47p1l853/9g7XDuWJDtS+zgwZG95BSjnXL+izK
-         ei6iWbumwx8zDR8S+x2lBD/8AxQjfW1O5mJvmQN0vFhl9LHiS6CSVMDE8FjtD6fqN+Bh
-         Bkaw==
-X-Gm-Message-State: AOAM531Jhpi+ZRwAh61gM8Tjeh8QvRFJ9MYjU+fPfZm0OKqWyEk1OgEw
-        qRvDjCsbaAY/Xi73dnVd4Ukf8w==
-X-Google-Smtp-Source: ABdhPJyZl9J2c7WQrcgVt2vZAMPqb1B2hJwEtuDLTLIv0TWjgnD8a+scZYKTNFnmpQ1YT7P8fEtFnA==
-X-Received: by 2002:a63:89:: with SMTP id 131mr3348551pga.253.1644439117946;
-        Wed, 09 Feb 2022 12:38:37 -0800 (PST)
-Received: from kalash.aristanetworks.com (d64-180-125-150.bchsia.telus.net. [64.180.125.150])
-        by smtp.googlemail.com with ESMTPSA id v123sm3722386pfb.12.2022.02.09.12.38.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 12:38:36 -0800 (PST)
-From:   Kalash Nainwal <kalash@arista.com>
-To:     netdev@vger.kernel.org
-Cc:     fruggeri@arista.com, kalash@arista.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH] Generate netlink notification when default IPv6 route preference changes
-Date:   Wed,  9 Feb 2022 12:38:18 -0800
-Message-Id: <20220209203818.11351-1-kalash@arista.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Wed, 9 Feb 2022 15:43:29 -0500
+X-Greylist: delayed 536 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 12:43:31 PST
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1939FC1036AE;
+        Wed,  9 Feb 2022 12:43:31 -0800 (PST)
+Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 081C4E7;
+        Wed,  9 Feb 2022 12:34:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1644438874;
+        bh=xE/LvTNyhwNJCroq7k9cSKt0G7CO52BHT1A3bAqw3HI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=I9a0CB7t3VKZNlAvKdLA7wqeT9JYHstpYUBNabqWD6G9upEcS1nUSd3/PfmMGdSmm
+         V/4/CXtmPZfjfARD8CHibpB8pAR9WZ4ci+9/KMY1ne4R+eRuOGDwbqZsWsr6TxQZJb
+         Av8t9ADBSpP1f3uOFQphQBVu92EKqGIdbYlK/bP8=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Zev Weiss <zev@bewilderbeest.net>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Konstantin Aladyshev <aladyshev22@gmail.com>,
+        Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
+        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
+Date:   Wed,  9 Feb 2022 12:34:14 -0800
+Message-Id: <20220209203414.23491-1-zev@bewilderbeest.net>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- Generate RTM_NEWROUTE netlink notification when the route preference
- changes on an existing kernel generated default route in response to
- RA messages. Currently netlink notifications are generated only when
- this route is added or deleted but not when the route preference
- changes, which can cause userspace routing application state to go
- out of sync with kernel.
+Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
+set up register mapping") fixed a bug that had, as a side-effect,
+prevented the 8250_aspeed_vuart driver from enabling the VUART's
+FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
+turn revealed what appears to be a hardware bug in the ASPEED VUART in
+which the host-side THRE bit doesn't get if the BMC-side receive FIFO
+trigger level is set to anything but one byte.  This causes problems
+for polled-mode writes from the host -- for example, Linux kernel
+console writes proceed at a glacial pace (less than 100 bytes per
+second) because the write path waits for a 10ms timeout to expire
+after every character instead of being able to continue on to the next
+character upon seeing THRE asserted.  (GRUB behaves similarly.)
 
-Signed-off-by: Kalash Nainwal <kalash@arista.com>
+As a workaround, introduce a new port type for the ASPEED VUART that's
+identical to PORT_16550A as it had previously been using, but with
+UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
+one byte, which (experimentally) seems to avoid the problematic THRE
+behavior.
+
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
 ---
- net/ipv6/ndisc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
+ drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
+ include/uapi/linux/serial_core.h            | 3 +++
+ 3 files changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index f03b597e4121..fd14f5b1c767 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1337,8 +1337,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 			return;
- 		}
- 		neigh->flags |= NTF_ROUTER;
--	} else if (rt) {
-+	} else if (rt && IPV6_EXTRACT_PREF(rt->fib6_flags) != pref) {
-+		struct nl_info nlinfo = {
-+			.nl_net = net,
-+		};
- 		rt->fib6_flags = (rt->fib6_flags & ~RTF_PREF_MASK) | RTF_PREF(pref);
-+		inet6_rt_notify(RTM_NEWROUTE, rt, &nlinfo, NLM_F_CREATE);
- 	}
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 2350fb3bb5e4..c2cecc6f47db 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
+ 	port.port.irq = irq_of_parse_and_map(np, 0);
+ 	port.port.handle_irq = aspeed_vuart_handle_irq;
+ 	port.port.iotype = UPIO_MEM;
+-	port.port.type = PORT_16550A;
++	port.port.type = PORT_ASPEED_VUART;
+ 	port.port.uartclk = clk;
+ 	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
+ 		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 3b12bfc1ed67..973870ebff69 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
+ 		.rxtrig_bytes	= {1, 32, 64, 112},
+ 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
+ 	},
++	[PORT_ASPEED_VUART] = {
++		.name		= "ASPEED VUART",
++		.fifo_size	= 16,
++		.tx_loadsz	= 16,
++		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
++		.rxtrig_bytes	= {1, 4, 8, 14},
++		.flags		= UART_CAP_FIFO,
++	},
+ };
  
- 	if (rt)
+ /* Uart divisor latch read */
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index c4042dcfdc0c..cd11748833e6 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -274,4 +274,7 @@
+ /* Freescale LINFlexD UART */
+ #define PORT_LINFLEXUART	122
+ 
++/* ASPEED AST2x00 virtual UART */
++#define PORT_ASPEED_VUART	123
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
 -- 
-2.30.1 (Apple Git-130)
+2.35.1
 
