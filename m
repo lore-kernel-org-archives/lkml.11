@@ -2,96 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF09C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234567AbiBIGpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:45:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36524 "EHLO
+        id S234655AbiBIGps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:45:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbiBIGpR (ORCPT
+        with ESMTP id S230011AbiBIGpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:45:17 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3449C03544F
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:45:20 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id t9so1375585plg.13
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 22:45:20 -0800 (PST)
+        Wed, 9 Feb 2022 01:45:43 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF444C0401C7
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:45:47 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id i15so2302232wrb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 22:45:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=PVC8kg0m66z8nLsg7hxOAh4ZCaPmayhqQ5QiMYyZWlY=;
-        b=hjkkB+DreNhYS/KptENJnaOeZzsf3zoLA17g1PzKwanvPvmLRz1rw2vIXm7TxU7Wls
-         vmIPPMUYaLfI32C6XPq8PayQJN2jHoZTxlY2sA+WhqLxpB+WrlLJVb8+xuT5u3MeKJLu
-         KT2rsVd5+bTcEY3UkL6L4/cD8Sdl0REnZW61J6IjgpohUtEYNdebpBTsf6tc81kEwJ91
-         5jab9fomYIxnmIO56L7GOmg3B50apOtkutQKT/q/DLSktmso+CzWODSvgSIqnGW0kvgO
-         Wccps8E7E9MnGF0zeqqNIY2gqkba3d3OBIbxyVg68G3xIeBzv0LNvqc8+1NhQcphvsSW
-         +6kw==
+        bh=qWz9q7D5W23mIWnyiOa6dx/TNUHhgX78pIzzQmVSN4E=;
+        b=h7Y3VPrLX/7F8A+Wd+mTD+J8MLqn3UErPb3rzT3syRfetXnJo1ITBYCt/JERTucrO0
+         AfeylxeUwoP8KuWEWhv3Ed2N4VLES8M3zS+33p5y+KF6pCWDNBkQB2Dm2vrr4BIFJjkf
+         iNLUFZ1884XcFKlRDmMZ6MICCPa63f5LTlVpSkgwnutlBDoBl1/GITRsEjIwVsdllh8R
+         XdxwMrhWSf6NvcO3XcAKjzSG9K51cwISRTj/wVvxqqtXb+woTCA26fsnzToQM1JGtwYO
+         K4hJpayw50Ku2N4VT4MpJY/HWoBobX6+IEppR54ALJ9YgG0+L0UbA/pV4K3inE22kTqS
+         Cfig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PVC8kg0m66z8nLsg7hxOAh4ZCaPmayhqQ5QiMYyZWlY=;
-        b=vt/EhMJnmqQnz8jqz1LYLWV/plRERysxiCf2Sx7d+vhVm9/hX2fcrvfOlQMWYs1SnM
-         WTCDtC4VOksWtydJ+jLv2ma01FhmGdtya5SLrggWPfQBRFKm7g5LmhjVkZ9fZngxBjY7
-         gSyAXsGzJWcmzcsNb0ZKOWWq1vPJFFgWcKNzhlEUBoLzitq6wpN+Jw5zwL37g7I5lvIE
-         86K6a/cBiCUm9fCfzNmg0taYFYCyY32t7F6zilz5L2JG+PQozNfcJJqGaLgq3mlxWqZ5
-         s6XSb0gy9DQ7FrZe9OvtEz3Tj/ndKLMPuPO00oYQqy4FFFvPhiWr3MewIPe3KMqH0lU6
-         OsOA==
-X-Gm-Message-State: AOAM531N2/Bn352XH+h5pOP64DYp0wHcHbBa94SDlz4hdMAwO5zSXIH4
-        gMJWF10fTyobe8nN28rtuKTQHw==
-X-Google-Smtp-Source: ABdhPJyTnEiwKB7qSkQcVoYjamO3CNRQCXq2vkRCtMNivvsSE2h44qEyShyFtpctl+7fuDFYlQgCrA==
-X-Received: by 2002:a17:902:b90a:: with SMTP id bf10mr847320plb.36.1644389119024;
-        Tue, 08 Feb 2022 22:45:19 -0800 (PST)
-Received: from localhost ([136.185.132.167])
-        by smtp.gmail.com with ESMTPSA id g5sm13345929pgc.51.2022.02.08.22.45.17
+        bh=qWz9q7D5W23mIWnyiOa6dx/TNUHhgX78pIzzQmVSN4E=;
+        b=hgcAzZdLLZpVeLNdxRabxIVWgtQwg4dZdvzT2JMYfKNZkFj2AoenIM3Juc9DRiO2G9
+         nQVrty9eQLgbtGK9pfqKz3U80+NZzj6Z6mgS/PaDPUBnFbVR1p4lordUllJ+lZ7cgQ/9
+         gwVgx9FrIdnz8U+7Np3hUdO/ixGNF3j4bNZeziFoyyRHUfyyKRi15T/RCzmrvN/gAtUF
+         Eu4LE5/6c9HqtWlf49M0mr9wkHhz8DpH3kPhmlPuvK3IKX8gv1xvU4oua+MQ6rHdjfwF
+         IFGD79ej0cvCoSzXPcKNsFTABcKMsG2HZpG6AgzHphld274ZRSo0qaN1mtKIOxz9s2Oq
+         XHkQ==
+X-Gm-Message-State: AOAM530EzG8PRhjcbVtTf3W21mUVW1DhtSDEz7DmXScpnRL8FaJHf5v3
+        HwXx/pNRzNMUL0QNDrlGevnIyKmfglc=
+X-Google-Smtp-Source: ABdhPJy+4BZ3MOJep0ENnzTTTtcxnadmff3gRxeojP99Hp9QkLNIL2u8T1Fik0tL+SNJ+8fHMGrngQ==
+X-Received: by 2002:a2e:b042:: with SMTP id d2mr592734ljl.147.1644388674797;
+        Tue, 08 Feb 2022 22:37:54 -0800 (PST)
+Received: from grain.localdomain ([5.18.251.97])
+        by smtp.gmail.com with ESMTPSA id q5sm160739lfb.70.2022.02.08.22.37.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 22:45:18 -0800 (PST)
-Date:   Wed, 9 Feb 2022 12:15:16 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Viresh Kumar <vireshk@kernel.org>,
-        Shiraz Hashim <shiraz.linux.kernel@gmail.com>, soc@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: spear320: Drop unused and undocumented
- 'irq-over-gpio' property
-Message-ID: <20220209064516.qxj7yd7r7dvz5zbz@vireshk-i7>
-References: <20220204004117.1232902-1-robh@kernel.org>
+        Tue, 08 Feb 2022 22:37:53 -0800 (PST)
+Received: by grain.localdomain (Postfix, from userid 1000)
+        id EE1FD5A0020; Wed,  9 Feb 2022 09:37:52 +0300 (MSK)
+Date:   Wed, 9 Feb 2022 09:37:52 +0300
+From:   Cyrill Gorcunov <gorcunov@gmail.com>
+To:     Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Mike Rapoport <rppt@kernel.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Adrian Reber <adrian@lisas.de>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andrei Vagin <avagin@gmail.com>,
+        Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YgNhQEdZjlKNr61Z@grain>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <YgAWVSGQg8FPCeba@kernel.org>
+ <YgDIIpCm3UITk896@lisas.de>
+ <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+ <YgI1A0CtfmT7GMIp@kernel.org>
+ <YgI37n+3JfLSNQCQ@grain>
+ <357664de-b089-4617-99d1-de5098953c80@www.fastmail.com>
+ <YgKiKEcsNt7mpMHN@grain>
+ <a4865e63-4778-d701-f902-2753cb862077@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204004117.1232902-1-robh@kernel.org>
-User-Agent: NeoMutt/20180716-391-311a52
+In-Reply-To: <a4865e63-4778-d701-f902-2753cb862077@gmail.com>
+User-Agent: Mutt/2.0.7 (2021-05-04)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03-02-22, 18:41, Rob Herring wrote:
-> The property 'irq-over-gpio' is both unused and undocumented. It also
-> happens to collide with standard *-gpio properties. As it is not needed,
-> drop it.
+On Tue, Feb 08, 2022 at 09:54:14PM +0000, Dmitry Safonov wrote:
+> [un-Cc'ed a lot of people, as the question is highly off-topic, so I
+> don't feel like the answer is of big interest to them, keeping x86
+> maintainer in]
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  arch/arm/boot/dts/spear320-hmi.dts | 1 -
->  1 file changed, 1 deletion(-)
+> On 2/8/22 17:02, Cyrill Gorcunov wrote:
+> >>> Probably a kind of latch in the task_struct which would trigger off once
+> >>> returt to a different address happened, thus we would be able to jump inside
+> >>> paratite code. Of course such trigger should be available under proper
+> >>> capability only.
+> >>
+> >> I'm not fully in touch with how parasite, etc works.  Are we talking about save or restore?
+> > 
+> > We use parasite code in question during checkpoint phase as far as I remember.
+> > push addr/lret trick is used to run "injected" code (code injection itself is
+> > done via ptrace) in compat mode at least. Dima, Andrei, I didn't look into this code
+> > for years already, do we still need to support compat mode at all?
 > 
-> diff --git a/arch/arm/boot/dts/spear320-hmi.dts b/arch/arm/boot/dts/spear320-hmi.dts
-> index 367ba48aac3e..b587e4ec11e5 100644
-> --- a/arch/arm/boot/dts/spear320-hmi.dts
-> +++ b/arch/arm/boot/dts/spear320-hmi.dts
-> @@ -235,7 +235,6 @@ stmpe811@41 {
->  					#address-cells = <1>;
->  					#size-cells = <0>;
->  					reg = <0x41>;
-> -					irq-over-gpio;
->  					irq-gpios = <&gpiopinctrl 29 0x4>;
->  					id = <0>;
->  					blocks = <0x5>;
+> Cyrill, I haven't been working on/with Virtuozzo people last 5 years, so
+> I don't know. As you're more connected to Vz, your question seems to
+> imply that ia32 C/R is no longer needed by Vz customers. If it's not
+> needed anymore - I'm all for stopping testing of it in CRIU.
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Nope. I didn't see any sign that Vz is intended to drop ia32 suport. But
+Vz's criu instance is following vanilla's one, that is why I asked you
+and Andrew about ia32 support. This ia32 code snippet with stack
+manipulation simply popped out in my mind immediately when Andy asked
+how we deal with stack.
 
--- 
-viresh
+Also we adjust stack in restorer code but I need some time to recall
+all thses details since as I said I didn't work with criu code for
+years already.
+
+	Cyrill
