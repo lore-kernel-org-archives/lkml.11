@@ -2,128 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC884C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2BBC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232168AbiBIFYY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:24:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34384 "EHLO
+        id S232936AbiBIFY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:24:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243220AbiBIFJC (ORCPT
+        with ESMTP id S234963AbiBIFUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 00:09:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC660C03F91E
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:09:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644383345;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TGF4Zn/lmJlaMT7UwgKtEW9zKBC5kk/h265Rl1WE1zM=;
-        b=bnQgNuMGZiPdg53YCOVNg/QoJhyRCoDLJKQ+kLzXLl+GhX6bEnyFd8s9TrXYkxI/3/n8vP
-        4oy5k6/BbKmWXDo/sUSXkgjj78b2/ZzR9qAIaobknlU9hwH03uB80ZhB0670cSfrsqWQ3J
-        rrTmMUzdsll102NBriSvhgyFGeg2WsE=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-383-zzTazHpoPsmwvVbkt9-CCw-1; Wed, 09 Feb 2022 00:09:04 -0500
-X-MC-Unique: zzTazHpoPsmwvVbkt9-CCw-1
-Received: by mail-qk1-f198.google.com with SMTP id z1-20020ae9f441000000b00507a22b2d00so706124qkl.8
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 21:09:04 -0800 (PST)
+        Wed, 9 Feb 2022 00:20:37 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20676C043180
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 21:20:41 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id k3-20020a1ca103000000b0037bdea84f9cso751103wme.1
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 21:20:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wAsSnnD9JIeAeZJ9p3BQTgq96g2Q9LHlXoe8+WeEVfI=;
+        b=1tKXU6TXAd28+p0tvCpH0D5QBomKCxkddDWl5LVsYFX8hIdbe6CzV6wuulBu+sQEps
+         AeaTcuXTxF9e8cIPmKTyUX9QS/MLzuiJ3poPshrD3N/JwthsFwtR7IqmJ/qp78VdQzKC
+         EXqidiNi/RX6zBYFOA0F0nOb+555/L5wYmFW+TC4IxgMpILOkbFejGn9NmToUD47VYv6
+         VODXl9hVeDhlGEWLaNdgOkZgRtBATLz3GRtmkcoO1HawYxr03sK0DnYLDDdfYEJ4uErA
+         Jtbl/MdVrVMc95sx7r0egcRaQ5U2Mm2BKbFsBg2cO/Jq5juetaFMNFhUAyh1A0Te5JOo
+         C15w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TGF4Zn/lmJlaMT7UwgKtEW9zKBC5kk/h265Rl1WE1zM=;
-        b=l5xWyVHvU+q9g8x6h/tAbxsypV9PWZI6XqeIobjSD4pBS5SbcgJC2zL9VrHtjFT7Db
-         /3sn0uRe6kbqvZSQOxeF+u9Uf41ZaqDAiOTY9avNTH5KUxS2Fq/I53l9Frpto0NhDR52
-         ZnkWo6RzUrZbfN31yItOd0vPXn8P/LJN248Ksghi6JEDn8xj4JiIQWWm+nNfzOOEe/sc
-         v3Fh62vbJiv0OLoX4vR76xpC/OAA1hsBbl1UbUWp2AwMHTjhc7Vh4i5yAf4sNw+aGH9/
-         AT6iF5yjPj2O2IhKlkq576kA3wo4N6gMrG3s5KQhtrSJT6ilXgCVm28yM1D4ZQysDquv
-         NYfg==
-X-Gm-Message-State: AOAM530VxOTrB6sD44+n1ESXGp9QTJvbSb31UqooT3mAxGO1PZS9vmJl
-        cusC8bXa/aOh2/RRf+QQgxlUq77xBnt804uIq62bucr7mMBYs8OGwbL7T/gLHD9NgyK0yL4iLNp
-        YmlAkiA5NFwb5STLtnj/qwaHI
-X-Received: by 2002:a05:620a:454c:: with SMTP id u12mr233640qkp.515.1644383343673;
-        Tue, 08 Feb 2022 21:09:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyEKYSvdI443BGvHYbaLRm7f+Dlmoc57zeAXbSJSAxEyM1+HZGep4jMh8KCeP0Tvni/Phn0OQ==
-X-Received: by 2002:a05:620a:454c:: with SMTP id u12mr233629qkp.515.1644383343413;
-        Tue, 08 Feb 2022 21:09:03 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::15])
-        by smtp.gmail.com with ESMTPSA id i20sm8608161qtx.44.2022.02.08.21.09.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 21:09:02 -0800 (PST)
-Date:   Tue, 8 Feb 2022 21:09:00 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, samitolvanen@google.com
-Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
-Message-ID: <20220209050900.vb676ocdrt6gsomf@treble>
-References: <20211122170301.764232470@infradead.org>
- <20211122170805.338489412@infradead.org>
- <20211124193037.nu7q4pa3sianzqtc@treble>
- <202202081542.F685EC23@keescook>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wAsSnnD9JIeAeZJ9p3BQTgq96g2Q9LHlXoe8+WeEVfI=;
+        b=0jY1KL2c/09jaSG4BhZmuQKibEDP6nLBNXfaAt+G00hZYpTfSyxLehv5dw0sbtFoJ1
+         YuxyPH4uXh+gTtiJjGp1cBzjiqr6XSgBJYs5TVR/KDFpfaPMa3VhvcT5+17sPDIgQlkJ
+         Mn7iaRAmoCuJvjw1kYOGqPCDxSnsHQ0p5hBB2uh02B1E2xLt2xZ+ptsmASjjvsx8/QCG
+         U+7wKN5ahzsiSRbBmFMbSGbJPNdJTECJcQo6iu99b4ICWsFWt+aXXyGbM03Lm3vAsjxM
+         zmSj0weZxbDghJ/Z7uIc1YxdEovG+6yyiOCyWm4hDNcmTR7HWBtu0jkQnMaeLpmnuY8y
+         MRkQ==
+X-Gm-Message-State: AOAM532cxScuvs1dOz6b0uWcfqA6tiTSCGYywSCL4G4tjajnCnoX7CKr
+        AtiFa37wHkdwbC3IE+BG7HNVWHyhQy9AeYjEKv/LrQ==
+X-Google-Smtp-Source: ABdhPJzHE/r6P/Etiunn5Sn/mWZbmE+jczRf1EpGH91d7ufK0qYetKSekneRBxf/FBI5rfOD4EPdrW88BHZPAe+N0xw=
+X-Received: by 2002:a7b:c7d5:: with SMTP id z21mr496193wmk.59.1644384039591;
+ Tue, 08 Feb 2022 21:20:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202202081542.F685EC23@keescook>
+References: <20220126114452.692512-1-apatel@ventanamicro.com>
+ <20220126114452.692512-2-apatel@ventanamicro.com> <CAJF2gTSwzx-yC=WvFixT96=q+M0KPzaZH5PpgGKVWg42M4GBNw@mail.gmail.com>
+In-Reply-To: <CAJF2gTSwzx-yC=WvFixT96=q+M0KPzaZH5PpgGKVWg42M4GBNw@mail.gmail.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Wed, 9 Feb 2022 10:50:28 +0530
+Message-ID: <CAAhSdy2onHRmnj6g6Swp86DL-nHJyv0r_KsUupatjHx11J11LA@mail.gmail.com>
+Subject: Re: [PATCH v10 1/8] RISC-V: Enable CPU_IDLE drivers
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Anup Patel <apatel@ventanamicro.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Sandeep Tripathy <milun.tripathy@gmail.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Liush <liush@allwinnertech.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvm-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 03:43:27PM -0800, Kees Cook wrote:
-> On Wed, Nov 24, 2021 at 11:30:37AM -0800, Josh Poimboeuf wrote:
-> > On Mon, Nov 22, 2021 at 06:03:07PM +0100, Peter Zijlstra wrote:
-> > > +static int validate_ibt_reloc(struct objtool_file *file, struct reloc *reloc, char **name)
-> > > +{
-> > > +	struct instruction *dest;
-> > > +	struct section *sec;
-> > > +	unsigned long off;
-> > > +
-> > > +	sec = reloc->sym->sec;
-> > > +	off = reloc->sym->offset + reloc->addend;
-> > > +
-> > > +	dest = find_insn(file, sec, off);
-> > > +	if (!dest)
-> > > +		return 0;
-> > > +
-> > > +	if (name && dest->func)
-> > > +		*name = dest->func->name;
-> > 
-> > I think these checks can be further narrowed down by only looking for
-> > X86_64_64 relocs.
-> > 
-> > > +	list_for_each_entry(insn, &file->endbr_list, call_node) {
-> > > +		if (ibt_seal) {
-> > > +			elf_write_insn(file->elf, insn->sec,
-> > > +				       insn->offset, insn->len,
-> > > +				       arch_nop_insn(insn->len));
-> > > +		}
-> > 
-> > Like the retpoline rewriting, I'd much rather have objtool create
-> > annotations which the kernel can then read and patch itself.
-> > 
-> > e.g. have '.ibt.direct_call_sites' and '.ibt.unused_endbr_insns'
-> > sections.
-> 
-> Why have the kernel do that work at every boot when it can be known at
-> link time?
+On Tue, Feb 8, 2022 at 11:46 AM Guo Ren <guoren@kernel.org> wrote:
+>
+> Reviewed-by: Guo Ren <guoren@kernel.org>
+>
+> small questions:
+>
+> On Wed, Jan 26, 2022 at 7:46 PM Anup Patel <apatel@ventanamicro.com> wrote:
+> >
+> > From: Anup Patel <anup.patel@wdc.com>
+> >
+> > We force select CPU_PM and provide asm/cpuidle.h so that we can
+> > use CPU IDLE drivers for Linux RISC-V kernel.
+> >
+> > Signed-off-by: Anup Patel <anup.patel@wdc.com>
+> > Signed-off-by: Anup Patel <apatel@vetanamicro.com>
+> > ---
+> >  arch/riscv/Kconfig                |  7 +++++++
+> >  arch/riscv/configs/defconfig      |  1 +
+> >  arch/riscv/configs/rv32_defconfig |  1 +
+> >  arch/riscv/include/asm/cpuidle.h  | 24 ++++++++++++++++++++++++
+> >  arch/riscv/kernel/process.c       |  3 ++-
+> >  5 files changed, 35 insertions(+), 1 deletion(-)
+> >  create mode 100644 arch/riscv/include/asm/cpuidle.h
+> >
+> > diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> > index 5adcbd9b5e88..76976d12b463 100644
+> > --- a/arch/riscv/Kconfig
+> > +++ b/arch/riscv/Kconfig
+> > @@ -46,6 +46,7 @@ config RISCV
+> >         select CLONE_BACKWARDS
+> >         select CLINT_TIMER if !MMU
+> >         select COMMON_CLK
+> > +       select CPU_PM if CPU_IDLE
+> >         select EDAC_SUPPORT
+> >         select GENERIC_ARCH_TOPOLOGY if SMP
+> >         select GENERIC_ATOMIC64 if !64BIT
+> > @@ -547,4 +548,10 @@ source "kernel/power/Kconfig"
+> >
+> >  endmenu
+> >
+> > +menu "CPU Power Management"
+> > +
+> > +source "drivers/cpuidle/Kconfig"
+> > +
+> > +endmenu
+> > +
+> >  source "arch/riscv/kvm/Kconfig"
+> > diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> > index f120fcc43d0a..a5e0482a4969 100644
+> > --- a/arch/riscv/configs/defconfig
+> > +++ b/arch/riscv/configs/defconfig
+> > @@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
+> >  CONFIG_SOC_VIRT=y
+> >  CONFIG_SMP=y
+> >  CONFIG_HOTPLUG_CPU=y
+> > +CONFIG_CPU_IDLE=y
+> >  CONFIG_VIRTUALIZATION=y
+> >  CONFIG_KVM=m
+> >  CONFIG_JUMP_LABEL=y
+> > diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
+> > index 8b56a7f1eb06..d1b87db54d68 100644
+> > --- a/arch/riscv/configs/rv32_defconfig
+> > +++ b/arch/riscv/configs/rv32_defconfig
+> > @@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
+> >  CONFIG_ARCH_RV32I=y
+> >  CONFIG_SMP=y
+> >  CONFIG_HOTPLUG_CPU=y
+> > +CONFIG_CPU_IDLE=y
+> >  CONFIG_VIRTUALIZATION=y
+> >  CONFIG_KVM=m
+> >  CONFIG_JUMP_LABEL=y
+> > diff --git a/arch/riscv/include/asm/cpuidle.h b/arch/riscv/include/asm/cpuidle.h
+> > new file mode 100644
+> > index 000000000000..71fdc607d4bc
+> > --- /dev/null
+> > +++ b/arch/riscv/include/asm/cpuidle.h
+> > @@ -0,0 +1,24 @@
+> > +/* SPDX-License-Identifier: GPL-2.0 */
+> > +/*
+> > + * Copyright (C) 2021 Allwinner Ltd
+> > + * Copyright (C) 2021 Western Digital Corporation or its affiliates.
+> > + */
+> > +
+> > +#ifndef _ASM_RISCV_CPUIDLE_H
+> > +#define _ASM_RISCV_CPUIDLE_H
+> > +
+> > +#include <asm/barrier.h>
+> > +#include <asm/processor.h>
+> > +
+> > +static inline void cpu_do_idle(void)
+> > +{
+> > +       /*
+> > +        * Add mb() here to ensure that all
+> > +        * IO/MEM accesses are completed prior
+> > +        * to entering WFI.
+> > +        */
+> > +       mb();
+> I think it's a separate fixup.
+>
+> > +       wait_for_interrupt();
+> > +}
+> > +
+> > +#endif
+> > diff --git a/arch/riscv/kernel/process.c b/arch/riscv/kernel/process.c
+> > index 03ac3aa611f5..504b496787aa 100644
+> > --- a/arch/riscv/kernel/process.c
+> > +++ b/arch/riscv/kernel/process.c
+> > @@ -23,6 +23,7 @@
+> >  #include <asm/string.h>
+> >  #include <asm/switch_to.h>
+> >  #include <asm/thread_info.h>
+> > +#include <asm/cpuidle.h>
+> >
+> >  register unsigned long gp_in_global __asm__("gp");
+> >
+> > @@ -37,7 +38,7 @@ extern asmlinkage void ret_from_kernel_thread(void);
+> >
+> >  void arch_cpu_idle(void)
+> >  {
+> maybe below is enough.
+> + mb();
 
-True, but:
+We can't add "mb()" here because cpu_do_idle() is called
+directly from linux/cpuidle.h and arch_cpu_idle() is only
+called when CPU idle is disabled.
 
-- The kernel is already doing several other flavors of boot-time
-  self-patching.  IMO it's better to consolidate such craziness in one
-  place (or a limited number of places) if we can.  It seems more
-  robust, and limits confusion about who's patching what and when.
+Regards,
+Anup
 
-- Patching text at link time has pitfalls and I'd like to avoid (as much
-  as reasonably possible) objtool having the ability to brick the
-  kernel.
-
--- 
-Josh
-
+>    wait_for_interrupt();
+>
+> > -       wait_for_interrupt();
+> > +       cpu_do_idle();
+>
+>
+> >         raw_local_irq_enable();
+> >  }
+> >
+> > --
+> > 2.25.1
+> >
+> >
+> > --
+> > kvm-riscv mailing list
+> > kvm-riscv@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/kvm-riscv
+>
+>
+>
+> --
+> Best Regards
+>  Guo Ren
+>
+> ML: https://lore.kernel.org/linux-csky/
