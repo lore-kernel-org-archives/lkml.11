@@ -2,101 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2171C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C842DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235477AbiBIPD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
+        id S235476AbiBIPEG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:04:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235465AbiBIPDY (ORCPT
+        with ESMTP id S230363AbiBIPEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:03:24 -0500
-X-Greylist: delayed 911 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 07:03:28 PST
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDB4C06157B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:03:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1644418054; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=TjSgu9sZsyKr/hEIFKeJoy8pAugybVEUIG2BbddlTrs/AzVW06uYW0wauusGZd1/x2gqVFeErVdMmZTGCV977DymOq79p4kbgo0g8G/TTySGUNIuIBucp4FqADBDddVFu45vp9XSpagMGUCLyrlLsASlnwdqVMrhsmhQAySobVE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1644418054; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=kmwejnD0khrSw7Jzk3gPGadOWupapvsORfk9uYGhYd8=; 
-        b=ZfRt3CP6bd8JCsvrDkWACX5GpUwqQH8HPkoDpdKMq0KlyXyLVrvP4BF63Csvjie+bhLvvPKdwZR+gGYEqcFz7yDUJzB/yfWFOTS7wBtnyPB3W3g3g+DXbAhGCedhmLhnmlpkJ1KOF+wKJshTEph8ljTgN92mEtxp0UDiX0Sjr14=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644418054;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-        bh=kmwejnD0khrSw7Jzk3gPGadOWupapvsORfk9uYGhYd8=;
-        b=dtNvbm1VL5aQ7kRJ3HU8prbsmNoyKbtJT6VpnGh3kx9eJngRuoRUbnyu6offD4tt
-        y9tws15N7pKZwvLJgg4u1Kj6ngAU/o9Trel972AB06beF6VH61aRGTihbjkf0PqFbAl
-        JWjqjnvn3w6MV7vuG9bf+d8ZvcKZZGtXwriz2P5c=
-Received: from [10.10.10.216] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1644418053600780.3051547022845; Wed, 9 Feb 2022 06:47:33 -0800 (PST)
-Message-ID: <24eba648-9029-e66f-aa2c-31ddbc7b1199@arinc9.com>
-Date:   Wed, 9 Feb 2022 17:47:29 +0300
+        Wed, 9 Feb 2022 10:04:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470D6C06157B;
+        Wed,  9 Feb 2022 07:04:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4ACE60B08;
+        Wed,  9 Feb 2022 15:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27F26C340E7;
+        Wed,  9 Feb 2022 15:03:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644419044;
+        bh=OxnEbtpnNFTYIu0BVdh7jdMb60KGrJ11+9ijMRm7QQE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nxDhMquQF59QKp+QuO0kF+kKQ6+lvZX2uBlSaQy5z3gsM3whNZxYZkIMRCuPxNE07
+         6+qnqrvRvzRqaDkpMc7nc8qZaUWQKLEShNgwLNyz+WA73LKKHcdcJMsFBrUMZ8C1zz
+         e/XKiZySMFerHQSW6mkxTE3Kw5DMq8h/lVfFf1e+WOJX3t7cHGgTmyNgy8TxeLQ7Pw
+         ZTEO2QOaAlG7KzPqXbHRxxz5M14AoSTxuULGqu0hVNUMX8yMhgwP6Gl9C/Zx8M8pH7
+         pryKYD+kDTl2wn/ZNOzyNRod0UvOtuEjfrz1XVz6CPVWTYwDGcKBGYscZxTCnv6hM+
+         TtEGy5DrrYTrg==
+Date:   Wed, 9 Feb 2022 15:03:57 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
+Message-ID: <YgPX3WZRvnWBuV18@sirena.org.uk>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-4-javierm@redhat.com>
+ <YgPE8Z7HxU2wv7J/@sirena.org.uk>
+ <d1025530-90e1-fbc5-c06b-f62ed83f2f19@redhat.com>
+ <YgPOKf1QcOCtTisx@sirena.org.uk>
+ <561e1f22-2741-b414-0267-14587d59d5de@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH net] net: phy: mediatek: remove PHY mode check on MT7531
-Content-Language: en-US
-To:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>
-References: <20220209143948.445823-1-dqfext@gmail.com>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <20220209143948.445823-1-dqfext@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Ma0oporxTU2ZNkw8"
+Content-Disposition: inline
+In-Reply-To: <561e1f22-2741-b414-0267-14587d59d5de@redhat.com>
+X-Cookie: Disc space -- the final frontier!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/02/2022 17:39, DENG Qingfang wrote:
-> The function mt7531_phy_mode_supported in the DSA driver set supported
-> mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
-> for the internal PHY, so this check breaks the PHY initialization:
-> 
-> mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
-> 
-> Remove the check to make it work again.
-> 
-> Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
-> Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
-> ---
->   drivers/net/phy/mediatek-ge.c | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mediatek-ge.c b/drivers/net/phy/mediatek-ge.c
-> index b7a5ae20edd5..68ee434f9dea 100644
-> --- a/drivers/net/phy/mediatek-ge.c
-> +++ b/drivers/net/phy/mediatek-ge.c
-> @@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct phy_device *phydev)
->   
->   static int mt7531_phy_config_init(struct phy_device *phydev)
->   {
-> -	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
-> -		return -EINVAL;
-> -
->   	mtk_gephy_config_init(phydev);
->   
->   	/* PHY link down power saving enable */
 
-Thanks for submitting this!
+--Ma0oporxTU2ZNkw8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+On Wed, Feb 09, 2022 at 03:50:13PM +0100, Javier Martinez Canillas wrote:
+> On 2/9/22 15:22, Mark Brown wrote:
+> > On Wed, Feb 09, 2022 at 03:17:06PM +0100, Javier Martinez Canillas wrot=
+e:
 
-Cheers.
-Arınç
+> >> I guess in that case what we should do then is to just have a regulator
+> >> fixed as the vbat-supply in the Device Tree, that's regulator-always-o=
+n.
+
+> > Generally I'd suggest labelling things with whatever the supply is
+> > called in the board's schematics/documentation, that tends to make
+> > things clearer and easier to follow.
+
+> The display controller datasheet and schematics mention VBAT as the power
+> supply but the documentation says that it's just connected to VCC and the
+> label in the display says VCC.
+
+> But I understand why the Device Tree binding and fbdev driver used VBAT
+> since that's what the documentation mentions.
+
+What is "the documentation" in this context and how is that distinct
+=66rom the datasheet for the display controller?  In general the consumer
+driver should be using the name from the datasheet and the regulator
+itself should get a regulator-name reflecting the name in the schematic.
+
+> > It is depressingly common to see broken code here, unfortunately
+> > graphics drivers seem like one of the most common offendors.
+
+> I'll include a patch for the existing DT binding and mark the vbat-supply
+> property as required. Probably we won't be able to change the fbdev driver
+> without causing regressions, and I'm not interested in that driver anyway=
+s.
+
+There should be little danger of causing regressions given that a dummy
+regualtor will be provided when one is missing.
+
+--Ma0oporxTU2ZNkw8
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmID19wACgkQJNaLcl1U
+h9CAzAf8CKPiD+lXXdh149xtC2P3tLmYf9/NzL3nAnYwK1PqDyJNNfWCgJ6UfoI2
+JcXfedd8YDCRodJiw0OaMn44AILruUKsMh+cHHtEUkBbyPj14DvHLoYvtlW/97sW
+5/eq5WpXC8v915Ma5H0u2wh5KdBeYzgTDKO2bqHRr756SRcqg82DcwO6U3tO55Fg
+GY3VwTJL/hykLaOdM8gtbLbM0k/C5jcADmhKUMCMX7Dc9hyHa11opAopTliZosXl
+GoknKBDa22oFsXArV7sSMiIfVz3WMaG8Z4P0RSAhzZv+e2O7sgwL42dWpio99Y1/
+xpxV3/ZObW+lY3SpInYdffOcEFHgEQ==
+=sOLR
+-----END PGP SIGNATURE-----
+
+--Ma0oporxTU2ZNkw8--
