@@ -2,67 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C76FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233796AbiBICpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:45:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42036 "EHLO
+        id S234803AbiBICpR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:45:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245507AbiBIChS (ORCPT
+        with ESMTP id S240910AbiBIAqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:37:18 -0500
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34426C061355;
-        Tue,  8 Feb 2022 18:37:17 -0800 (PST)
-Received: by mail-oo1-f51.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so871461ooo.13;
-        Tue, 08 Feb 2022 18:37:17 -0800 (PST)
+        Tue, 8 Feb 2022 19:46:17 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E600DC061576;
+        Tue,  8 Feb 2022 16:46:16 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso3639131pjg.0;
+        Tue, 08 Feb 2022 16:46:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s4mwh3fmLLPxnZWV6Va7gZyohTfajy6eCYjc+ulM7/Q=;
+        b=AAfGd3/lZ9HMxC6YhGy8ZGhOKbAyfRBzUF++fnqACslLwSt5+jewWwfk884I+SMd41
+         2wpzme4z9l2t3Ox8tb4Emkjd8upKs/5jY0InHKGj+lNNmLb8Rnk4YXLPnHy63066T35J
+         6WEhIHBtImmSXWDTeeHGqull+FNrVtjKt17xbWhX0eWs4/+DaK6nV7TMrivFTUUh6E22
+         X4rnrajk86ti/0gnP++8rphBHNOiFntlFCPPpeDo4reAr7fAVxdxS6X0ntglU5IUwOuP
+         a3f63M/kr1Z1PJaaLKGDowEQN6g6z+u1WVlKLyeimjcEQaOh1t8l6kz0lu6GABnjfvd9
+         76Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tG6MAWrIRzAJ3N/9dub38Yj2UooXcV2O7UbSNG/ESko=;
-        b=JVinuTqmB6sEzyqBVv4McZE1/Ic2Bz5ZRohdNTshWu2Pc8fMw++qy2uhcXVbfLLEat
-         SamAY98zdRQ1cjOMS90XP1Az2kPHycTk5fDhxZFIYI9gh9EqraydkHEBWXuLYR3QXbLv
-         zMkqudMZiG4Nc5pLuYWPw0gNZX6mlozrp4hpkjahZFZ8lYhYpT3/UfMb7m/vjPJYuEfB
-         XQ0l9nmuXCWA4gDp5u4M4zi5aDkz8kXHTjcPKaFWTJ7RoS0Dnpqo7ayLpKso218t4Qgv
-         OpJODCS6gUjzUYZ+qhgizvkigCSyDSshNwZMTYzyTRVmmq3ZZEX1lJ0e44mmXF8h0CE4
-         6F/w==
-X-Gm-Message-State: AOAM5320GVDTDHlXagYc1+pVEfrB4lqk5R23C2OcehSGRK43a5E4qlFY
-        uFRZVF+kBWhqqoBHIbbyJQ==
-X-Google-Smtp-Source: ABdhPJwtj3nyOGboH6MSCet48gbSVJvqfiel4X1W+2fhd3L6PWSfDl5EAZTiNYo/nM91HyvDS40UAA==
-X-Received: by 2002:a05:6870:e6d5:: with SMTP id s21mr272959oak.148.1644374236567;
-        Tue, 08 Feb 2022 18:37:16 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id m14sm6582685ooj.22.2022.02.08.18.37.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=s4mwh3fmLLPxnZWV6Va7gZyohTfajy6eCYjc+ulM7/Q=;
+        b=MCP62/yPb0FWEGOmHNT3m8KzGdEP1rWtRop9mekkSLG86N1laFieUzU9jhWy+USbzw
+         6REDDDSMHEzew2PkECN+CDVs81vDSOMfqxC7FH4IPDTNVEW9JMDxL9WewjKse78R6ZbW
+         lw4F6+rmV8Tg0mVze/wIewqexbENP5qn4Szn7xr1j9NxA6dYyBBdsdAVTgkG+8OjDGhL
+         3qJS9ixnQJEYI5byBR/7m7N6lecN4tjz4KUYPc57WXJ45dytJYMsuBVNh2SnOzJHAWrf
+         WhLnG7Qv+w1vKclwrGmkqRB8+Uav14RSsgUankjA3MDwMPf6EX+QknWYdF5jxKyNDCzv
+         mamg==
+X-Gm-Message-State: AOAM533L+7qFwU2vCKUWV4Ynvct9iz3MTPhbJcNMS1h4O54VqJ39TN5o
+        Ha+6OHSeCwIviSOXdSc3aD8=
+X-Google-Smtp-Source: ABdhPJwKIjAkrU43Ez89nlaZfp0v1g46r3efeDx5mHvXpWBFskggvtrQfQaafKzY0dA4rH0IF1u6lw==
+X-Received: by 2002:a17:90b:507:: with SMTP id r7mr659415pjz.78.1644367576455;
+        Tue, 08 Feb 2022 16:46:16 -0800 (PST)
+Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
+        by smtp.gmail.com with ESMTPSA id q1sm3781099pjd.48.2022.02.08.16.46.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:37:15 -0800 (PST)
-Received: (nullmailer pid 3501259 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:37:14 -0000
-Date:   Tue, 8 Feb 2022 20:37:14 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Stanislav Jakubek <stano.jakubek@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: trivial-devices: make comment indentation
- consistent
-Message-ID: <YgMo2mS2ekwpuPFQ@robh.at.kernel.org>
-References: <20220114172155.GA3677@standask-GA-A55M-S2HP>
+        Tue, 08 Feb 2022 16:46:16 -0800 (PST)
+From:   davidcomponentone@gmail.com
+To:     erazor_de@users.sourceforge.net
+Cc:     davidcomponentone@gmail.com, jikos@kernel.org,
+        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Guang <yang.guang5@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] HID: roccat: replace snprintf with sysfs_emit
+Date:   Wed,  9 Feb 2022 08:45:59 +0800
+Message-Id: <eb90e8fcdc793419550e42fda772ef2a5cb6751c.1644284775.git.yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114172155.GA3677@standask-GA-A55M-S2HP>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 18:21:55 +0100, Stanislav Jakubek wrote:
-> Makes the comment indentation consistent across the board.
-> 
-> Signed-off-by: Stanislav Jakubek <stano.jakubek@gmail.com>
-> ---
->  Documentation/devicetree/bindings/trivial-devices.yaml | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-Applied, thanks!
+coccinelle report:
+./drivers/hid/hid-roccat-kovaplus.c:330:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:277:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:339:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:349:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/hid/hid-roccat-kovaplus.c:370:8-16:
+WARNING: use scnprintf or sprintf
+
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
+---
+ drivers/hid/hid-roccat-kovaplus.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/hid/hid-roccat-kovaplus.c b/drivers/hid/hid-roccat-kovaplus.c
+index 6fb9b9563769..7f6238a19739 100644
+--- a/drivers/hid/hid-roccat-kovaplus.c
++++ b/drivers/hid/hid-roccat-kovaplus.c
+@@ -274,7 +274,7 @@ static ssize_t kovaplus_sysfs_show_actual_profile(struct device *dev,
+ {
+ 	struct kovaplus_device *kovaplus =
+ 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
+-	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_profile);
++	return sysfs_emit(buf, "%d\n", kovaplus->actual_profile);
+ }
+ 
+ static ssize_t kovaplus_sysfs_set_actual_profile(struct device *dev,
+@@ -327,7 +327,7 @@ static ssize_t kovaplus_sysfs_show_actual_cpi(struct device *dev,
+ {
+ 	struct kovaplus_device *kovaplus =
+ 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
+-	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_cpi);
++	return sysfs_emit(buf, "%d\n", kovaplus->actual_cpi);
+ }
+ static DEVICE_ATTR(actual_cpi, 0440, kovaplus_sysfs_show_actual_cpi, NULL);
+ 
+@@ -336,7 +336,7 @@ static ssize_t kovaplus_sysfs_show_actual_sensitivity_x(struct device *dev,
+ {
+ 	struct kovaplus_device *kovaplus =
+ 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
+-	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_x_sensitivity);
++	return sysfs_emit(buf, "%d\n", kovaplus->actual_x_sensitivity);
+ }
+ static DEVICE_ATTR(actual_sensitivity_x, 0440,
+ 		   kovaplus_sysfs_show_actual_sensitivity_x, NULL);
+@@ -346,7 +346,7 @@ static ssize_t kovaplus_sysfs_show_actual_sensitivity_y(struct device *dev,
+ {
+ 	struct kovaplus_device *kovaplus =
+ 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
+-	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_y_sensitivity);
++	return sysfs_emit(buf, "%d\n", kovaplus->actual_y_sensitivity);
+ }
+ static DEVICE_ATTR(actual_sensitivity_y, 0440,
+ 		   kovaplus_sysfs_show_actual_sensitivity_y, NULL);
+@@ -367,7 +367,7 @@ static ssize_t kovaplus_sysfs_show_firmware_version(struct device *dev,
+ 			&info, KOVAPLUS_SIZE_INFO);
+ 	mutex_unlock(&kovaplus->kovaplus_lock);
+ 
+-	return snprintf(buf, PAGE_SIZE, "%d\n", info.firmware_version);
++	return sysfs_emit(buf, "%d\n", info.firmware_version);
+ }
+ static DEVICE_ATTR(firmware_version, 0440,
+ 		   kovaplus_sysfs_show_firmware_version, NULL);
+-- 
+2.30.2
+
