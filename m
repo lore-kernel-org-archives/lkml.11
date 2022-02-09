@@ -2,258 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3593BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E8FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiBIL40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:56:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57106 "EHLO
+        id S231536AbiBIL4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:56:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiBILzX (ORCPT
+        with ESMTP id S231597AbiBILz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:55:23 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC35E00F7E5;
-        Wed,  9 Feb 2022 02:53:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644404000; x=1675940000;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=oKWHI1/oLjFI5xhSYdvQVsYvHQorhqBTY2LP5gYKBKI=;
-  b=ke7ZYToXpgYuPwWj6roeJa2uRdMExcXlHAmStWEYHz9zSlmg57Albzem
-   d41EmPbhVnspzGFHmtOvr+5NQJqxV9c1ykj2l1s2/b2gSkW7sZs6Ei7sT
-   SDQ2AtNB2emE+SBuiNXK0gwfudsPqeIEdnhcLOBnwmMScYGSbrFxQlSAO
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Feb 2022 00:56:07 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 00:56:07 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 00:56:06 -0800
-Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 00:56:00 -0800
-From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <agross@kernel.org>,
-        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
-        <robdclark@gmail.com>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <dianders@chromium.org>,
-        <krzysztof.kozlowski@canonical.com>, <thierry.reding@gmail.com>,
-        <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>
-CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        <quic_kalyant@quicinc.com>, <quic_abhinavk@quicinc.com>,
-        <quic_khsieh@quicinc.com>, <quic_mkrishn@quicinc.com>,
-        <quic_vproddut@quicinc.com>
-Subject: [PATCH v3 2/4] arm64: dts: qcom: sc7280: Add support for eDP panel on CRD
-Date:   Wed, 9 Feb 2022 14:25:30 +0530
-Message-ID: <1644396932-17932-3-git-send-email-quic_sbillaka@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
-References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
+        Wed, 9 Feb 2022 06:55:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887D9C0045A9;
+        Wed,  9 Feb 2022 02:54:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1527B612E7;
+        Wed,  9 Feb 2022 10:54:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F355C340EE;
+        Wed,  9 Feb 2022 10:53:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644404049;
+        bh=8nfXi2bAkBkxKe4ZmVJ1McrLUR/vS+aiNoKC3c4V54c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=o8kvTb2TMbpq1whYqOyKIm1hlJzLi/Q/a7JoUpj/jGssXx7Qt2YZfBNYkEkw/hZXE
+         oSInBQ5nuOk5Os7WPqk0FsmT5MYuYpJeH1AwVx9/sNxYghplvePkYAHWRcNnd3okRc
+         M9krUM2hOFkqKwv1q7AvLokp6kWPbgxm4oByhL31KH+6gGAD8NURHSZGlgRPeJ34wR
+         oKsYkioVYxJpiwc0Ji4Sp/jM+78yoZTEYYk3XHfiYOqzRm+ha7Fh2SpXMJsyh6VB8N
+         ivZdoNTpo9Vm+5jKSaeoJXseiJK/X0ch6HI7SG9uzqs2raWQmeBW+yzpszfgW8m8ad
+         YPv9Vixyl0Iow==
+Date:   Wed, 9 Feb 2022 12:53:51 +0200
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "Lutomirski, Andy" <luto@kernel.org>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>,
+        "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "adrian@lisas.de" <adrian@lisas.de>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "avagin@gmail.com" <avagin@gmail.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "kcc@google.com" <kcc@google.com>, "bp@alien8.de" <bp@alien8.de>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YgOdP7YFwbX13SlP@kernel.org>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <YgAWVSGQg8FPCeba@kernel.org>
+ <YgDIIpCm3UITk896@lisas.de>
+ <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+ <YgI1A0CtfmT7GMIp@kernel.org>
+ <YgI37n+3JfLSNQCQ@grain>
+ <357664de-b089-4617-99d1-de5098953c80@www.fastmail.com>
+ <YgKiKEcsNt7mpMHN@grain>
+ <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the eDP display panel support without HPD on sc7280 platform.
+Hi Rick,
 
-Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
----
-
-Changes in v3:
-  - Sort the nodes alphabetically
-  - Use - instead of _ as node names
-  - Place the backlight and panel nodes under root
-  - Change the name of edp_out to mdss_edp_out
-  - Change the names of regulator nodes
-  - Delete unused properties in the board file
-
-
-Changes in v2:
-  - Sort node references alphabetically
-  - Improve readability
-  - Move the pwm pinctrl to pwm node
-  - Move the regulators to root
-  - Define backlight power
-  - Remove dummy regulator node
-  - Cleanup pinctrl definitions
-
- arch/arm64/boot/dts/qcom/sc7280-crd.dts | 122 ++++++++++++++++++++++++++++++++
- arch/arm64/boot/dts/qcom/sc7280.dtsi    |   2 +-
- 2 files changed, 123 insertions(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-index e2efbdd..2a490a0 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-@@ -21,6 +21,59 @@
- 	chosen {
- 		stdout-path = "serial0:115200n8";
- 	};
-+
-+	backlight_3v3_regulator: backlight-3v3-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "backlight_3v3_regulator";
-+
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+
-+		gpio = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&edp_bl_power>;
-+	};
-+
-+	edp_3v3_regulator: edp-3v3-regulator {
-+		compatible = "regulator-fixed";
-+		regulator-name = "edp_3v3_regulator";
-+
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+
-+		gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&edp_panel_power>;
-+	};
-+
-+	edp_backlight: edp-backlight {
-+		compatible = "pwm-backlight";
-+
-+		power-supply = <&backlight_3v3_regulator>;
-+		pwms = <&pm8350c_pwm 3 65535>;
-+	};
-+
-+	edp_panel: edp-panel {
-+		compatible = "sharp,lq140m1jw46";
-+
-+		power-supply = <&edp_3v3_regulator>;
-+		backlight = <&edp_backlight>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			port@0 {
-+				reg = <0>;
-+				edp_panel_in: endpoint {
-+					remote-endpoint = <&edp_out>;
-+				};
-+			};
-+		};
-+	};
- };
+On Wed, Feb 09, 2022 at 02:18:42AM +0000, Edgecombe, Rick P wrote:
+> On Tue, 2022-02-08 at 20:02 +0300, Cyrill Gorcunov wrote:
+> > On Tue, Feb 08, 2022 at 08:21:20AM -0800, Andy Lutomirski wrote:
+> > > > > But such a knob will immediately reduce the security value of
+> > > > > the entire
+> > > > > thing, and I don't have good ideas how to deal with it :(
+> > > > 
+> > > > Probably a kind of latch in the task_struct which would trigger
+> > > > off once
+> > > > returt to a different address happened, thus we would be able to
+> > > > jump inside
+> > > > paratite code. Of course such trigger should be available under
+> > > > proper
+> > > > capability only.
+> > > 
+> > > I'm not fully in touch with how parasite, etc works.  Are we
+> > > talking about save or restore?
+> > 
+> > We use parasite code in question during checkpoint phase as far as I
+> > remember.
+> > push addr/lret trick is used to run "injected" code (code injection
+> > itself is
+> > done via ptrace) in compat mode at least. Dima, Andrei, I didn't look
+> > into this code
+> > for years already, do we still need to support compat mode at all?
+> > 
+> > > If it's restore, what exactly does CRIU need to do?  Is it just
+> > > that CRIU needs to return
+> > > out from its resume code into the to-be-resumed program without
+> > > tripping CET?  Would it
+> > > be acceptable for CRIU to require that at least one shstk slot be
+> > > free at save time?
+> > > Or do we need a mechanism to atomically switch to a completely full
+> > > shadow stack at resume?
+> > > 
+> > > Off the top of my head, a sigreturn (or sigreturn-like mechanism)
+> > > that is intended for
+> > > use for altshadowstack could safely verify a token on the
+> > > altshdowstack, possibly
+> > > compare to something in ucontext (or not -- this isn't clearly
+> > > necessary) and switch
+> > > back to the previous stack.  CRIU could use that too.  Obviously
+> > > CRIU will need a way
+> > > to populate the relevant stacks, but WRUSS can be used for that,
+> > > and I think this
+> > > is a fundamental requirement for CRIU -- CRIU restore absolutely
+> > > needs a way to write
+> > > the saved shadow stack data into the shadow stack.
+> 
+> Still wrapping my head around the CRIU save and restore steps, but
+> another general approach might be to give ptrace the ability to
+> temporarily pause/resume/set CET enablement and SSP for a stopped
+> thread. Then injected code doesn't need to jump through any hoops or
+> possibly run into road blocks. I'm not sure how much this opens things
+> up if the thread has to be stopped...
  
- &apps_rsc {
-@@ -76,6 +129,44 @@ ap_ts_pen_1v8: &i2c13 {
- 	};
- };
+IIRC, criu dump does something like this:
+* Stop the process being dumped (victim) with ptrace
+* Inject parasite code and data into the victim, again with ptrace.
+  Among other things the parasite data contains a sigreturn frame with
+  saved victim state.
+* Resume the victim process, which will run parasite code now.
+* When parasite finishes it uses that frame to sigreturn to normal victim
+  execution
+
+So, my feeling is that for dump side WRUSS should be enough.
+
+> Cyrill, could it fit into the CRIU pause and resume flow? What action
+> causes the final resuming of execution of the restored process for
+> checkpointing and for restore? Wondering if we could somehow make CET
+> re-enable exactly then.
+> 
+> And I guess this also needs a way to create shadow stack allocations at
+> a specific address to match where they were in the dumped process. That
+> is missing in this series.
+
+Yes, criu restore will need to recreate shadow stack mappings. Currently,
+we recreate the restored process (target) address space based on
+/proc/pid/maps and /proc/pid/smaps. CRIU preserves the virtual addresses
+and VMA flags. The relevant steps of restore process can be summarised as:
+* Clone() the target process tree
+* Recreate VMAs with the needed size and flags, but not necessarily at the
+  correct place yet
+* Partially populate memory data from the saved images
+* Move VMAs to their exact addresses
+* Complete restoring the data
+* Create a frame for sigreturn and jump to the target.
+
+Here, the stack used after sigreturn contains the data that was captured
+during dump and it entirely different from what shadow stack will contain.
+
+There are several points when the target threads are stopped, so
+pausing/resuming CET may help.
  
-+&mdss {
-+	status = "okay";
-+};
-+
-+&mdss_dp {
-+	status = "okay";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&dp_hot_plug_det>;
-+	data-lanes = <0 1>;
-+	vdda-1p2-supply = <&vreg_l6b_1p2>;
-+	vdda-0p9-supply = <&vreg_l1b_0p8>;
-+};
-+
-+&mdss_edp {
-+	status = "okay";
-+
-+	vdda-1p2-supply = <&vreg_l6b_1p2>;
-+	vdda-0p9-supply = <&vreg_l10c_0p8>;
-+	/delete-property/ pinctrl-names;
-+	/delete-property/ pinctrl-0;
-+};
-+
-+&mdss_edp_out {
-+	remote-endpoint = <&edp_panel_in>;
-+};
-+
-+&mdss_edp_phy {
-+	status = "okay";
-+
-+	vdda-1p2-supply = <&vreg_l6b_1p2>;
-+	vdda-0p9-supply = <&vreg_l10c_0p8>;
-+};
-+
-+&mdss_mdp {
-+	status = "okay";
-+};
-+
- &nvme_3v3_regulator {
- 	gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
- };
-@@ -84,7 +175,38 @@ ap_ts_pen_1v8: &i2c13 {
- 	pins = "gpio51";
- };
- 
-+&pm8350c_gpios {
-+	edp_bl_power: edp-bl-power {
-+		pins = "gpio7";
-+		function = "normal";
-+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-+		bias-disable;
-+		output-low;
-+	};
-+
-+	edp_bl_pwm: edp-bl-pwm {
-+		pins = "gpio8";
-+		function = "func1";
-+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-+		bias-disable;
-+		output-low;
-+	};
-+};
-+
-+&pm8350c_pwm {
-+	status = "okay";
-+
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&edp_bl_pwm>;
-+};
-+
- &tlmm {
-+	edp_panel_power: edp-panel-power {
-+		pins = "gpio80";
-+		function = "gpio";
-+		bias-pull-down;
-+	};
-+
- 	tp_int_odl: tp-int-odl {
- 		pins = "gpio7";
- 		function = "gpio";
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 3572399..eca403a 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -3066,7 +3066,7 @@
- 
- 					port@1 {
- 						reg = <1>;
--						edp_out: endpoint { };
-+						mdss_edp_out: endpoint { };
- 					};
- 				};
- 
+> > > So I think the only special capability that CRIU really needs is
+> > > WRUSS, and
+> > > we need to wire that up anyway.
+> > 
+> > Thanks for these notes, Andy! I can't provide any sane answer here
+> > since didn't
+> > read tech spec for this feature yet :-)
+> 
+> 
+> 
+> 
+
 -- 
-2.7.4
-
+Sincerely yours,
+Mike.
