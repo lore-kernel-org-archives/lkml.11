@@ -2,120 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD43C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37087C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233859AbiBJB6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:58:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33888 "EHLO
+        id S233358AbiBJB7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:59:10 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiBJB4N (ORCPT
+        with ESMTP id S234083AbiBJB6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:56:13 -0500
-Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523812AAB3
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:41:26 -0800 (PST)
-Received: by mail-oo1-xc2d.google.com with SMTP id o128-20020a4a4486000000b003181707ed40so4595434ooa.11
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:41:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=7BvHswSXg9zN9k7P3bu3kJhfUU/WgKwQ6HEFpY+l4jA=;
-        b=Ewraufgtj1xMfakazeSpwx5MnBYDQHaeFVN1wLgspkWrMugkjtb49bIjLe5uO4rZnG
-         1/SsRTmx/SdfhAdZc4IcIwJP+dA8AJX591gYcpvbwF3giFkKi4T1Ft5Om1/eRIcZOEY/
-         B0i/ShAZtw1hvFkJ6P6wjp4UGB/ApLobqDUNY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=7BvHswSXg9zN9k7P3bu3kJhfUU/WgKwQ6HEFpY+l4jA=;
-        b=lpikzqePs1d3GK8SF4DJ3saaJcc71pbirZDtDmeMILGCQL1GmJQUz6Ps9Jwc9oFeII
-         hY09VLfgd4/VzCcNGcebxWxOjpnIseoo9GQba/1ifF/J5aQmaBwN+5k1a4halKGM2gM3
-         4BRK/haXk5Z4HoIq34RkZLejCRpv8xGeotXJpqBrfCDgYdsJUc3p3qqEF9LgnvXdAqG4
-         IMCOhTg9Zv7lPlfsbcDE9S5ZdiYG1u3W/L9bpQ738g1CgdqcjfButG2UYjTX4ofbSC2d
-         Bo+Ctj/YdX3/WbBMVh1SObg0Uj4rXM93N3rWyV7OPfeqd3IOTvc7GO0oZwN4jwh+5ctM
-         RXRQ==
-X-Gm-Message-State: AOAM5337Vb8D1W/tvKEDrDBcbWL8Rxta1HQ1Xa4C1jw5WKsLTEwVOlEM
-        gBsxifl/UuMAYt61B2qMoxwZ23VrfGJkJZ1nO7AmZw==
-X-Google-Smtp-Source: ABdhPJz5nnuCshCtEM3gga4og7wjd6Bj6dW8FLpEygBvjacEExJ8np7WaRj3GTND+KVxtMxzzyhuWn0ScaNhy+C9qjM=
-X-Received: by 2002:a05:6870:1209:: with SMTP id 9mr72218oan.8.1644457285749;
- Wed, 09 Feb 2022 17:41:25 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Feb 2022 17:41:25 -0800
+        Wed, 9 Feb 2022 20:58:02 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A80A2B6A8;
+        Wed,  9 Feb 2022 17:44:09 -0800 (PST)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219KbNAI017565;
+        Wed, 9 Feb 2022 23:53:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=TWrJe7V8b7P4SgEJomUdsQa1XDxtIcBfokIBJf6ebF8=;
+ b=VM+lN6lRz2vPrMVqeI9dIH5KgC4x5nxqXV+bKPScNx/ONJAFWkimM793DglI9Et7F0eo
+ vUJf6JGrTk5EvOCdNTK11TwoAdDa0rdUdXiJwpdWTH3Zuh0BDAb+yK/HXEhWJH3HAzF0
+ C2YmXgNzxdmU/ATEGxdAFC7Hkg1je3uCcKqScAAq9VOPgS3/2pG0oeM8mfrDveE5GXBA
+ jpF5WywAKvhHXw5mBUgRobUR8maZocY2pVl8NfQHlXOnComC/yGA7W2AWJ3pGVTPdNwe
+ RrEGnAConRTS2AkUNErsZuyEqV7VY63a2Ect/4l6uWFP6e1/ikjxii+S/m6N0MiOE4jY 9g== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e4kt24gx6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 23:53:25 +0000
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 219NXeML016792;
+        Wed, 9 Feb 2022 23:53:24 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma04wdc.us.ibm.com with ESMTP id 3e2btb8q4c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 09 Feb 2022 23:53:24 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219NrNDP31326682
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 9 Feb 2022 23:53:23 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 76D85BE054;
+        Wed,  9 Feb 2022 23:53:23 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 198E9BE051;
+        Wed,  9 Feb 2022 23:53:22 +0000 (GMT)
+Received: from oc6857751186.ibm.com (unknown [9.160.68.97])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed,  9 Feb 2022 23:53:21 +0000 (GMT)
+Subject: Re: [PATCH] scsi: ibmvscsis: Silence -Warray-bounds warning
+To:     Kees Cook <keescook@chromium.org>,
+        Michael Cyr <mikecyr@linux.ibm.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220208061231.3429486-1-keescook@chromium.org>
+From:   Tyrel Datwyler <tyreld@linux.ibm.com>
+Message-ID: <53b3e9c5-23c1-3825-8286-b4a65b69067b@linux.ibm.com>
+Date:   Wed, 9 Feb 2022 15:53:21 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+In-Reply-To: <20220208061231.3429486-1-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: FZYcKikhTuyVu6wCuSbwt--0m9GwQwIc
+X-Proofpoint-ORIG-GUID: FZYcKikhTuyVu6wCuSbwt--0m9GwQwIc
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-In-Reply-To: <1644331940-18986-6-git-send-email-quic_c_skakit@quicinc.com>
-References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com> <1644331940-18986-6-git-send-email-quic_c_skakit@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 9 Feb 2022 17:41:25 -0800
-Message-ID: <CAE-0n52vX-50GEZ5X3PhnZaLyriALRtoqGiWSydi4WSAvGmf9A@mail.gmail.com>
-Subject: Re: [PATCH V5 5/6] arm64: dts: qcom: pm8008: Add base dts file
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_12,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ mlxlogscore=999 malwarescore=0 lowpriorityscore=0 adultscore=0
+ impostorscore=0 mlxscore=0 clxscore=1011 phishscore=0 bulkscore=0
+ suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202090123
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya (2022-02-08 06:52:19)
-> Add base DTS file for pm8008 with infra and regulator nodes.
->
-> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+On 2/7/22 10:12 PM, Kees Cook wrote:
+> Instead of doing a cast to storage that is too small, add a union for
+> the high 64 bits. Silences the warnings under -Warray-bounds:
+> 
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_messages':
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscript 'struct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long long unsigned int[1]'} [-Werror=array-bounds]
+>  1934 |                                         crq->valid = VALID_CMD_RESP_EL;
+>       |                                            ^~
+> drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing 'msg_hi'
+>  1875 |         u64 msg_hi = 0;
+>       |             ^~~~~~
+> 
+> There is no change to the resulting binary instructions.
+> 
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Link: https://lore.kernel.org/lkml/20220125142430.75c3160e@canb.auug.org.au
+> Cc: Michael Cyr <mikecyr@linux.ibm.com>
+> Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+> Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+> Cc: Tyrel Datwyler <tyreld@linux.ibm.com>
+> Cc: linux-scsi@vger.kernel.org
+> Cc: target-devel@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 > ---
-> Changes in V4:
->  - This is newly added in V4, to add all the pm8008 common stuff.
->
-> Changes in V5:
->  - Changed the mfd node names from pm8008_chip to pm8008_infra and
->    pm8008_ldo to pm8008_regulators as they re more appropriate.
->  - Changed the compatible for pm8008@9 mfd node to differentiate from
->    pm8008@8 node in driver.
->  - Removed compatible for regulators node.
->  - Removed reg property for LDOs and added in driver.
->
->  arch/arm64/boot/dts/qcom/pm8008.dtsi | 46 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 46 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
->
-> diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-> new file mode 100644
-> index 0000000..8e04983
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
-> @@ -0,0 +1,46 @@
-> +// SPDX-License-Identifier: BSD-3-Clause
-> +// Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> +
-> +pm8008_infra: pm8008@8 {
-> +       compatible = "qcom,pm8008";
-> +       reg = <0x8>;
-> +       #address-cells = <1>;
-> +       #size-cells = <0>;
-> +};
-> +
-> +pm8008_regulators: pm8008@9 {
-> +       compatible = "qcom,pm8008-regulators";
-> +       reg = <0x9>;
-> +       #address-cells = <1>;
-> +       #size-cells = <0>;
-> +
-> +       regulators {
+>  drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c |  9 +++------
 
-What is the point of the 'regulators' node? Why can't we just put LDO1
-directly underneath the node that has the "qcom,pm8008-regulators"
-compatible?
-
-> +               pm8008_l1: LDO1 {
-> +                       regulator-name = "pm8008_l1";
-> +               };
-> +
+Reviewed-by: Tyrel Datwyler <tyreld@linux.ibm.com>
