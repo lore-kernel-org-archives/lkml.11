@@ -2,155 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 377BFC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26472C35276
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239512AbiBIDD6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:03:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55668 "EHLO
+        id S245335AbiBIDDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:03:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359736AbiBICvY (ORCPT
+        with ESMTP id S1344407AbiBICxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:51:24 -0500
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175FBC061A73;
-        Tue,  8 Feb 2022 18:49:39 -0800 (PST)
-Received: by mail-ot1-f53.google.com with SMTP id b17-20020a9d4791000000b005a17fc2dfc1so627338otf.1;
-        Tue, 08 Feb 2022 18:49:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jclCyrtXWfZiL4Vm3TsnMlAc9202oTga5v9E2y8S6Fc=;
-        b=3AyHLw1ErTyomYMTus5YVq68jAL4EzLC1RJkoiK5uS+OkODEF729XiXL1Zt1g3hg+R
-         StX/YC83HaSiYBbmFj2F3fAZK0xc2G73uILEoYFjt/bzbEaZNkoPEXBJY8V1WNSTK5Da
-         jY5r07ejKl4PfNurWVm7eUyjDT21ynC5i+/2xTBRwdi411JvtOv3pvNn2qZmc2KQATTW
-         sFpPZT1/OyAqjA3t14xRgxrAOgAYn5sNyb3DmpEvYNwIms7tYRuUwNmMc4nymEmBF49M
-         Zm93kyCDUyDCW4Oy/3rboLDoEOCezNRsWqbzPeIG4XbKPb5EPoPiWl2tWAsclhCkwjE2
-         IeZg==
-X-Gm-Message-State: AOAM5330jsFxxHL+xuNVcrcMLJGnm9RUQZrIBm9Zggu4lyHdQ3s7/RlG
-        3aGYJBLzFbKiDNs3yhSt5YJY/R6nzA==
-X-Google-Smtp-Source: ABdhPJx5OHmjfCcXuOIwzjlCPm0lRM3HjNwQdZsy/ZJnSzxKqEg7e/efy9c9zqoKuHfIFT/b35La8w==
-X-Received: by 2002:a05:6830:348f:: with SMTP id c15mr133492otu.224.1644374978393;
-        Tue, 08 Feb 2022 18:49:38 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t13sm945095oai.37.2022.02.08.18.49.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:49:37 -0800 (PST)
-Received: (nullmailer pid 3519040 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:49:36 -0000
-Date:   Tue, 8 Feb 2022 20:49:36 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Sander Vanheule <sander@svanheule.net>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 1/2] dt-bindings: timer: Add realtek,otto-tc binding
-Message-ID: <YgMrwEXraoiJxSXe@robh.at.kernel.org>
-References: <cover.1642369117.git.sander@svanheule.net>
- <7c53821386b8f4c1c0ac440f1cd186e09f4a0456.1642369117.git.sander@svanheule.net>
+        Tue, 8 Feb 2022 21:53:42 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E4CC0613CC;
+        Tue,  8 Feb 2022 18:53:41 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtkwH2kS8z4xcp;
+        Wed,  9 Feb 2022 13:53:35 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644375217;
+        bh=IhVwFVJZTPguna2PmdUzRBNG0sppu5V6lowxE+6pGgI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KW4UqPzoR5ny9Kp9n31arzSuUqPsZM/i/VB8F2eZjzctKcKxPz+aN2TnCPaJTXzJk
+         NO7/1roj73VCajqiXXETQLweurcaM9yh3g3x/MrsoWbYduqRpnGXygqsuoRDlqlcco
+         d3GIz/3qv1+rdm8OQFtGiwV5pUie7WxQCRZSWW/1H6D5zO7EPS1He+cZMkjHdz3UAS
+         8m5M3u7NOiT8G8HkBu3TgbwDIl3C6ADS7zPGOkkAWDDyRaoT1Y6qXXuxENdoQ1QK0R
+         Wrm8MYrzN41CRCJykKR+WNPd0h8EgVxWX5eJbbULRW4fnPejXVqzLr7299dkypYgGf
+         Y08OGre6UNnbg==
+Date:   Wed, 9 Feb 2022 13:53:33 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Cai Huoqing <cai.huoqing@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Peter Xu <peterx@redhat.com>, Yang Shi <shy828301@gmail.com>,
+        David Hildenbrand <david@redhat.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Colin Cross <ccross@google.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] fs/proc: task_mmu.c: Fix the error-unused variable
+ 'migration'
+Message-ID: <20220209135333.7975a407@canb.auug.org.au>
+In-Reply-To: <20220209023602.21929-1-cai.huoqing@linux.dev>
+References: <20220209023602.21929-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c53821386b8f4c1c0ac440f1cd186e09f4a0456.1642369117.git.sander@svanheule.net>
+Content-Type: multipart/signed; boundary="Sig_/ct2dtmhrD2S_HM39xGlFpg/";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 10:39:24PM +0100, Sander Vanheule wrote:
-> New binding for the timer/counter blocks found on the Realtek Otto MIPS
-> platform.
-> 
-> Signed-off-by: Sander Vanheule <sander@svanheule.net>
+--Sig_/ct2dtmhrD2S_HM39xGlFpg/
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi Cai,
+
+On Wed,  9 Feb 2022 10:35:59 +0800 Cai Huoqing <cai.huoqing@linux.dev> wrot=
+e:
+>
+> Avoid the error-unused variable 'migration' when
+> CONFIG_TRANSPARENT_HUGEPAGE and CONFIG_ARCH_ENABLE_THP_MIGRATION
+> are not enabled.
+>=20
+> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
 > ---
->  .../bindings/timer/realtek,otto-tc.yaml       | 64 +++++++++++++++++++
->  1 file changed, 64 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/timer/realtek,otto-tc.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/timer/realtek,otto-tc.yaml b/Documentation/devicetree/bindings/timer/realtek,otto-tc.yaml
-> new file mode 100644
-> index 000000000000..12971b9ecdf5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/timer/realtek,otto-tc.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/timer/realtek,otto-tc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Realtek Otto platform timer/counter bindings
-> +
-> +description:
+>  fs/proc/task_mmu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+> index bc2f46033231..b055ff29204d 100644
+> --- a/fs/proc/task_mmu.c
+> +++ b/fs/proc/task_mmu.c
+> @@ -1441,7 +1441,7 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned =
+long addr, unsigned long end,
+>  	spinlock_t *ptl;
+>  	pte_t *pte, *orig_pte;
+>  	int err =3D 0;
+> -	bool migration =3D false;
+> +	bool migration __maybe_unused =3D false;
+> =20
+>  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+>  	ptl =3D pmd_trans_huge_lock(pmdp, vma);
+> --=20
+> 2.25.1
+>=20
 
-'|' at the end if you want to keep formatting.
+This has already been fixed in Andrew's patch set by moving the "#ifdef
+CONFIG_TRANSPARENT_HUGEPAGE" above the "migration" declaration.
 
-> +  "Up-counting 28-bit timer that can operate in oneshot or repeating mode,
+--=20
+Cheers,
+Stephen Rothwell
 
-And drop the quotes.
+--Sig_/ct2dtmhrD2S_HM39xGlFpg/
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-> +  providing an interrupt at roll-over.
-> +
-> +  The timer is driven by a divided clock, derived from the bus clock. The clock
-> +  divisor is configurable from 2 to 65535. Divisor values of 0 and 1 disable
-> +  the timer clock. The timer can also be enabled or disabled independently from
-> +  the clock (divisor) selection.
-> +
-> +  The number of timers supported by the different SoC families is:
-> +  - RTL8380: 5 timers
-> +  - RTL8390: 5 timers
-> +  - RTL9300: 6 timers
-> +  - RTL9310: 7 timers"
-> +
-> +maintainers:
-> +  - Sander Vanheule <sander@svanheule.net>
-> +
-> +properties:
-> +  compatible:
-> +    const: realtek,otto-tc
+-----BEGIN PGP SIGNATURE-----
 
-4 SoCs with differences in the block, you need 4 SoC specific 
-compatibles. With a fallback if appropriate.
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIDLK0ACgkQAVBC80lX
+0Gzc1Qf+KFKl4xD6pf9RgHcnKZv9WZMpWCxraz+jBHwPdu6UeGwT+kKOoF3xQECD
+j75xvG8h5nYScNPmNH5k6rY0h8eCMqGvydOp4sy6geBhSwrNG6PqnjYLFg1aeIuG
+rQ2Y11Bss4R307M8TVs6ESYzYEMVpLjfy6lI58j78eYZ8gfIrWabm+bNYLjfaJIx
+FO3wrQnUaBkewfWzt0u+0HrEYlX6X0cjryxV9V3B0KOT16N9kAbv7mOsiBqh+SyC
+Mi+fDLw4bz3xqwE+Y75KBKG6UPdPCiFNM4MW7Tsjc8vXwSGqZcSRF9eEzORWE+wY
+xZMJU4HlYP101pXZOKHnxpamk561xg==
+=XpWC
+-----END PGP SIGNATURE-----
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Parent clock from peripheral bus
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bus
-> +
-> +additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +examples:
-> +  - |
-> +    timer0: timer@3100 {
-
-Drop unused labels.
-
-> +      compatible = "realtek,otto-tc";
-> +      reg = <0x3100 0x10>;
-> +
-> +      interrupts = <29 4>;
-> +
-> +      clocks = <&lx_clk>;
-> +      clock-names = "bus";
-> +    };
-> -- 
-> 2.34.1
-> 
-> 
+--Sig_/ct2dtmhrD2S_HM39xGlFpg/--
