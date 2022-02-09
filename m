@@ -2,125 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D42EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345890AbiBIEMR (ORCPT
+        id S1344674AbiBIEMb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:12:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
+        Tue, 8 Feb 2022 23:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346302AbiBIDXv (ORCPT
+        with ESMTP id S1347554AbiBIDvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:23:51 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4568FC061576
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:23:50 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0CC2ED1;
-        Tue,  8 Feb 2022 19:23:49 -0800 (PST)
-Received: from [10.163.46.128] (unknown [10.163.46.128])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 512343F73B;
-        Tue,  8 Feb 2022 19:23:46 -0800 (PST)
-Subject: Re: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
-To:     Firo Yang <firogm@gmail.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        hch@infradead.org, akpm@linux-foundation.org
-References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
- <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
- <20220205091048.g3fk4eaw7p7itgil@gmail.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <83958cb9-cca7-1e48-f0c8-0d101dbeebc8@arm.com>
-Date:   Wed, 9 Feb 2022 08:53:44 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Tue, 8 Feb 2022 22:51:33 -0500
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2469EC061578
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:51:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=YvOhP
+        o6ymYclh5k4417PVKOkRi78cNnblip3oZXJi9w=; b=EvB8v6eIZiPZcMFLgJBC8
+        XZjomhJCJKc3MCB1/xa+vMyA8743IkmYQBRoQcNoXDc50AkOrOpY7OqgZFrV5f9r
+        VHmYy318ywQKCDkQguf0+ZMTF/kg9nylPSI29uBXYUn5Dc+eKsOXIHBMwtFuGJbu
+        ylu9mg+AN1i1R9B2p86yRI=
+Received: from sysgbj8.hosso.cc (unknown [42.62.85.2])
+        by smtp13 (Coremail) with SMTP id EcCowACnPAovOgNin9hKCA--.39192S2;
+        Wed, 09 Feb 2022 11:51:11 +0800 (CST)
+From:   chengchaohang@163.com
+To:     leon@kernel.org, maorg@nvidia.com, jgg@ziepe.ca,
+        logang@deltatee.com, thunder.leizhen@huawei.com
+Cc:     linux-kernel@vger.kernel.org,
+        "chaohang . cheng" <chaohang.cheng@horizon.ai>
+Subject: [PATCH] lib/scatterlist: Provide scatterlist hexdump.
+Date:   Wed,  9 Feb 2022 11:51:11 +0800
+Message-Id: <20220209035111.28365-1-chengchaohang@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220205091048.g3fk4eaw7p7itgil@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowACnPAovOgNin9hKCA--.39192S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruF18ZF4xJF48AF48WFWkXrb_yoWkCrb_Ca
+        47Jw45Gr4fGF4IqFW3WFWftFy8WFZ8ZF1I9F1Igr93W3s8urs8X34vqr9rAF45Way8Ca1D
+        Gasaqas7XF1UXjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU57UUUUUUUU==
+X-Originating-IP: [42.62.85.2]
+X-CM-SenderInfo: xfkh0wpfkd0xxdqjqiywtou0bp/xtbBEw+ivF3l-1bNiwAAsV
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "chaohang.cheng" <chaohang.cheng@horizon.ai>
 
+A scatterlist hexdump is essential during debug, sometimes.
 
-On 2/5/22 2:40 PM, Firo Yang wrote:
-> The 01/24/2022 18:26, Anshuman Khandual wrote:
->> protection_map[] maps vm_flags access combinations into page protection
->> value as defined by the platform via __PXXX and __SXXX macros. The array
->> indices in protection_map[], represents vm_flags access combinations but
->> it's not very intuitive to derive. This makes it clear and explicit.
->>
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: linux-mm@kvack.org
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->>  mm/mmap.c | 18 ++++++++++++++++--
->>  1 file changed, 16 insertions(+), 2 deletions(-)
->>
->> diff --git a/mm/mmap.c b/mm/mmap.c
->> index 1e8fdb0b51ed..254d716220df 100644
->> --- a/mm/mmap.c
->> +++ b/mm/mmap.c
->> @@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
->>   *								x: (yes) yes
->>   */
->>  pgprot_t protection_map[16] __ro_after_init = {
->> -	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
->> -	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
->> +	[VM_NONE]				= __P000,
->> +	[VM_READ]				= __P001,
->> +	[VM_WRITE]				= __P010,
->> +	[VM_READ|VM_WRITE]			= __P011,
->> +	[VM_EXEC]				= __P100,
->> +	[VM_EXEC|VM_READ]			= __P101,
->> +	[VM_EXEC|VM_WRITE]			= __P110,
->> +	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
->> +	[VM_SHARED]				= __S000,
->> +	[VM_SHARED|VM_READ]			= __S001,
->> +	[VM_SHARED|VM_WRITE]			= __S010,
->> +	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
->> +	[VM_SHARED|VM_EXEC]			= __S100,
->> +	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
->> +	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
->> +	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
-> 
-> Just a little bit picky:)
-> Would you mind rearranging vm_flags access commbination in the order as
-> the access bits appear in __SXXX or __PXXX? For example, change the following:
-> 
-> 	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]    = __S111
-> to
-> 	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= __S111
-> 
-> I think it's would be more clear for looking.
+Signed-off-by: chaohang.cheng <chaohang.cheng@horizon.ai>
+---
+ include/linux/scatterlist.h | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-So the vm_flags combination set here (and like in the platforms)
-should be like the following ..
-
-[VM_NONE]
-[VM_READ]
-[VM_WRITE]
-[VM_WRITE | VM_READ]
-[VM_EXEC]	
-[VM_EXEC|VM_READ]
-[VM_EXEC|VM_WRITE]
-[VM_EXEC|VM_WRITE | VM_READ]
-[VM_SHARED]
-[VM_SHARED|VM_READ]
-[VM_SHARED|VM_WRITE]
-[VM_SHARED|VM_WRITE | VM_READ]
-[VM_SHARED|VM_EXEC]
-[VM_SHARED|VM_EXEC | VM_READ]
-[VM_SHARED|VM_EXEC | VM_WRITE]
-[VM_SHARED|VM_EXEC | VM_WRITE | VM_READ]
-
-Implying the relative position for these flags among each other.
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 7ff9d6386c12..ef8ecaac0016 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -563,4 +563,21 @@ bool sg_miter_skip(struct sg_mapping_iter *miter, off_t offset);
+ bool sg_miter_next(struct sg_mapping_iter *miter);
+ void sg_miter_stop(struct sg_mapping_iter *miter);
  
-[VM_SHARED] [VM_EXEC]  [VM_WRITE] [VM_WRITE]
++/*
++ * Hexdump scatterlist
++ *
++ * @sg: struct scatterlist* .
++ * it stands for the head of a scatterlist .
++ *
++ * note: print_hex_dump_debug is a dynamic debug .
++ *
++ */
++#define SG_HEXDUMP(sg)							\
++do {									\
++	struct scatterlist *sg_tmp = NULL;				\
++	for (sg_tmp = sg; sg_tmp; sg_tmp = sg_next(sg_tmp))		\
++		print_hex_dump_debug("", DUMP_PREFIX_OFFSET,		\
++			16, 1, sg_virt(sg_tmp), sg_tmp->length, true);	\
++} while (0)
++
+ #endif /* _LINUX_SCATTERLIST_H */
+-- 
+2.25.1
 
-This makes sense, will change the series accordingly.
-
-- Anshuman
