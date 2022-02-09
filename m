@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D577C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240445AbiBIIC0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:02:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S240418AbiBIICc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:02:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240311AbiBIICU (ORCPT
+        with ESMTP id S240316AbiBIICU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 03:02:20 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D0AC05CB82
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D40C05CB84
         for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:02:23 -0800 (PST)
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644393741;
+        s=2020; t=1644393742;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Wif2+D8xIFS05ms3vC/tlw/Lp5Jixy0HFVXUKnCOTkc=;
-        b=BKSpVDboAbB04c8UKWU3/3FN6+QZwIsMMrXG2MHWEUl44AznK97B3GxtTJQhyLriSbJRES
-        OmjG3Pc2XlVgBO0uI/IcBSzYAvZVVOHbyxTWFemF76KKfebfzZfBP93GnSYhbYnFkMj0b9
-        Cs7VaOsl9K4VXnpNPvMK3GzHw8v1AW0B4S0pvJumHINH4LV1XsOwPJZq2uM0hd1/WijN8R
-        hqiPkTWlB+/DvR+WpOUs6H4NdHSog0phWMhXNKH00NsPQncCAleMEUgSS+TZFlJ2RYiX/o
-        1ejwsFGwV2Qh1lbu/ebUTUVy8lyi/c8kKQ/o0PQKL+kQ67eNRBXJraMTr7vPxA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mGICh+XWg4zl0BiLYSOzGN+Dsvh3xZ6pQjRuhNeu4t0=;
+        b=ExUJbo84qFWHQkDAcAAStNINkRabfk8iqlakMkfpAmeUEtkbAySRTYSeSJDPzjC8ESDJjs
+        swNFfrhhlAGeF0NLs/r64Eyk+1Td6b9zKYMN3ok5zwYOgcaOAP1qkPPo1oL2jV2sNsdI5+
+        LiSOvtHlUYOZK+mDwdteqLAhgWjyasTaXK64aUt9UGdT8Z5UiiLBZU6owgmiZqsUOgXuLM
+        fEDKOzNGXSw1XwOn+qC53DI8miXoiqN0FrfwxuqRL9vsRDzdbnbAHm6QPh7QLy1Brvz86x
+        AowW/70fENFFaxAkvAaZcbDSXsWmL22tSd1WGdhaLdOKNblqDvfFYeWtRQhi+w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644393741;
+        s=2020e; t=1644393742;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Wif2+D8xIFS05ms3vC/tlw/Lp5Jixy0HFVXUKnCOTkc=;
-        b=3/KmyOIUIb9YbWeQ0TVKV5GTKlK6SuWXvl1XUdcTswqUY/80O9zfP7saKRH7wenDcSoKpU
-        UdIbq3lrpAY/YQAA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mGICh+XWg4zl0BiLYSOzGN+Dsvh3xZ6pQjRuhNeu4t0=;
+        b=g1B138BAtPqSmJQ3szFTc93wehmOLL8GH6VVKCoGPE7yBHuAp4eaCSW9kuMmWr95Ow20Gr
+        zuRl08iV0JPH6NDg==
 To:     linux-kernel@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org
 Cc:     Thomas Gleixner <tglx@linutronix.de>,
@@ -47,23 +49,71 @@ Cc:     Thomas Gleixner <tglx@linutronix.de>,
         Stefano Stabellini <sstabellini@kernel.org>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH REPOST v2 0/2 v2] cpu/hotplug: Allow the CPU in CPU_UP_PREPARE state to be brought up again.
-Date:   Wed,  9 Feb 2022 09:02:12 +0100
-Message-Id: <20220209080214.1439408-1-bigeasy@linutronix.de>
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        Henry Wang <Henry.Wang@arm.com>
+Subject: [PATCH REPOST v2 2/2] cpu/hotplug: Allow the CPU in CPU_UP_PREPARE state to be brought up again.
+Date:   Wed,  9 Feb 2022 09:02:14 +0100
+Message-Id: <20220209080214.1439408-3-bigeasy@linutronix.de>
+In-Reply-To: <20220209080214.1439408-1-bigeasy@linutronix.de>
+References: <20220209080214.1439408-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a another repost of the previous patch (#2) and adding Boris
-(Ostrovsky)'s suggestion regarding the XEN bits.
-The previous posts can be found at
-   https://lore.kernel.org/all/20211206152034.2150770-1-bigeasy@linutronix.=
-de/
-   https://lore.kernel.org/all/20211122154714.xaoxok3fpk5bgznz@linutronix.d=
-e/
+From: "Longpeng(Mike)" <longpeng2@huawei.com>
 
-Sebastian
+A CPU will not show up in virtualized environment which includes an
+Enclave. The VM splits its resources into a primary VM and a Enclave
+VM. While the Enclave is active, the hypervisor will ignore all requests
+to bring up a CPU and this CPU will remain in CPU_UP_PREPARE state.
+The kernel will wait up to ten seconds for CPU to show up
+(do_boot_cpu()) and then rollback the hotplug state back to
+CPUHP_OFFLINE leaving the CPU state in CPU_UP_PREPARE. The CPU state is
+set back to CPUHP_TEARDOWN_CPU during the CPU_POST_DEAD stage.
+
+After the Enclave VM terminates, the primary VM can bring up the CPU
+again.
+
+Allow to bring up the CPU if it is in the CPU_UP_PREPARE state.
+
+[bigeasy: Rewrite commit description.]
+
+Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/20210901051143.2752-1-longpeng2@huawei.com
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Tested-by: Dongli Zhang <dongli.zhang@oracle.com>
+Reviewed-by: Henry Wang <Henry.Wang@arm.com>
+Link: https://lore.kernel.org/r/20211122154714.xaoxok3fpk5bgznz@linutronix.=
+de
+Link: https://lore.kernel.org/r/20211206152034.2150770-3-bigeasy@linutronix=
+.de
+---
+ kernel/smpboot.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/kernel/smpboot.c b/kernel/smpboot.c
+index f6bc0bc8a2aab..b9f54544e7499 100644
+--- a/kernel/smpboot.c
++++ b/kernel/smpboot.c
+@@ -392,6 +392,13 @@ int cpu_check_up_prepare(int cpu)
+ 		 */
+ 		return -EAGAIN;
+=20
++	case CPU_UP_PREPARE:
++		/*
++		 * Timeout while waiting for the CPU to show up. Allow to try
++		 * again later.
++		 */
++		return 0;
++
+ 	default:
+=20
+ 		/* Should not happen.  Famous last words. */
+--=20
+2.34.1
 
