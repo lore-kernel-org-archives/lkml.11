@@ -2,106 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58735C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbiBIMIK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
+        id S232440AbiBIMIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:08:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232686AbiBIMGF (ORCPT
+        with ESMTP id S232836AbiBIMGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:06:05 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378BAC050CD3;
-        Wed,  9 Feb 2022 03:27:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644406056; x=1675942056;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NGSesQuO1TkFrdjGkmTfRB4zx9VGkoV76GOJi87bu3w=;
-  b=SbMdbxq3z6EL8Tk3Xe/a7bv0Q372DpLAi1gmqjbTAGmRgi132iw14nWb
-   SJFiNI/BE0km24lK8O1ZjbAUXiDauQx4nNndLBJddpIlUZC0dE8N1Bb4m
-   t48l8Zrt0nxLnFdkqAVp7Zz4wIFjSJo+e/A5/PsSX+4GWgFQej6+OS2OP
-   je3etDl3QL4VNsZxzHI51vALJ7hVLA8Ac8J218Uujo73ZOefEK8DiF4AC
-   2nFaW8bCJc4o0Yg1Skm91JxYRdP0jkYw9yOJhAkV6fYgOAYK7PjHcbjhZ
-   ltiHB9mK6t1SiN2Q0jbze9+ifNX0DcqYR7EQtvoisJOgOTrDhPvwVWxoN
-   Q==;
-IronPort-SDR: WNfa+KzMaWtRn8hVQr/2q7GiBtU5X1zazxQ0MAgYKPWi68L6mUnGLSM61ZDRp7ddv0kVtvAq1H
- A6bQSD5u8GP4UtrUzfRcUAzjTxILBu1TtZTlfOBWF0XwXFqubJ9ZsNhRdDCpj6so7nemB24YuM
- NWpsXkqF6zDDOtML6JgTGfMDCQHi6Zh7JGOXVhN8zcEDm1jdgAsjmOApLs6j157lf9H0gRpkQz
- xP18rQvCOsgFF8qABQmT4dlNt3YJRZzkTKsA1ZVi0iTCYWehdn/E7QoRUiWSUvCxXZtMUQ+0JV
- QGAY4omMKXNCDVDyy3WGjYLv
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="148122096"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Feb 2022 04:27:34 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 9 Feb 2022 04:27:34 -0700
-Received: from CHE-LT-I21427LX.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 9 Feb 2022 04:27:29 -0700
-Message-ID: <2762670649daca77a367aaee44b6669142ce0f6d.camel@microchip.com>
-Subject: Re: [PATCH v8 net-next 03/10] net: phy: Add support for LAN937x T1
- phy driver
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>, <olteanv@gmail.com>,
-        <robh+dt@kernel.org>, <UNGLinuxDriver@microchip.com>,
-        <woojung.huh@microchip.com>, <hkallweit1@gmail.com>,
-        <linux@armlinux.org.uk>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <devicetree@vger.kernel.org>
-Date:   Wed, 9 Feb 2022 16:57:27 +0530
-In-Reply-To: <YgJre2C9jpfMCXSZ@lunn.ch>
-References: <20220207172204.589190-1-prasanna.vengateshan@microchip.com>
-         <20220207172204.589190-4-prasanna.vengateshan@microchip.com>
-         <YgJre2C9jpfMCXSZ@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.0-1 
+        Wed, 9 Feb 2022 07:06:15 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95FDC076859;
+        Wed,  9 Feb 2022 03:16:32 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 74A4D201431;
+        Wed,  9 Feb 2022 08:31:16 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 5B8518065D; Wed,  9 Feb 2022 09:28:40 +0100 (CET)
+Date:   Wed, 9 Feb 2022 09:28:40 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tytso@mit.edu, ebiggers@kernel.org,
+        Eric Biggers <ebiggers@google.com>
+Subject: Re: [PATCH v2 5/9] random: do not xor RDRAND when writing into
+ /dev/random
+Message-ID: <YgN7OKSJRNZNxuGm@owl.dominikbrodowski.net>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
+ <20220209011919.493762-6-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209011919.493762-6-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-08 at 14:09 +0100, Andrew Lunn wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the
-> content is safe
-> 
-> On Mon, Feb 07, 2022 at 10:51:57PM +0530, Prasanna Vengateshan wrote:
-> > Added support for Microchip LAN937x T1 phy driver. The sequence of
-> > initialization is used commonly for both LAN87xx and LAN937x
-> > drivers. The new initialization sequence is an improvement to
-> > existing LAN87xx and it is shared with LAN937x.
-> > 
-> > Also relevant comments are added in the existing code and existing
-> > soft-reset customized code has been replaced with
-> > genphy_soft_reset().
-> > 
-> > access_ereg_clr_poll_timeout() API is introduced for polling phy
-> > bank write and this is linked with PHYACC_ATTR_MODE_POLL.
-> > 
-> > Finally introduced function table for LAN937X_T1_PHY_ID along with
-> > microchip_t1_phy_driver struct.
-> 
-> Hi Prasanna
-> 
-> That is a lot of changes in one patch.
-> 
-> I would suggest you make this a patch series of its own. It should be
-> independent of the switch changes. And then you can break this patch
-> up into a number of smaller patches.
-> 
-> Thanks
->         Andrew
+Am Wed, Feb 09, 2022 at 02:19:15AM +0100 schrieb Jason A. Donenfeld:
+> Continuing the reasoning of "random: ensure early RDSEED goes through
+> mixer on init", we don't want RDRAND interacting with anything without
+> going through the mixer function, as a backdoored CPU could presumably
+> cancel out data during an xor, which it'd have a harder time doing when
+> being forced through a cryptographic hash function. There's actually no
+> need at all to be calling RDRAND in write_pool(), because before we
+> extract from the pool, we always do so with 32 bytes of RDSEED hashed in
+> at that stage. Xoring at this stage is needless and introduces a minor
+> liability.
 
-Sure, i will submit as a seperate patch series and i will remove from this
-patch. Thanks.
+Looks good generally, just one unrelated change slipped in:
 
-Prasanna V
+>  		bytes = min(count, sizeof(buf));
+> -		if (copy_from_user(&buf, p, bytes))
+> +		if (copy_from_user(buf, p, bytes))
+>  			return -EFAULT;
 
+Otherwise:
 
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+
+Thanks,
+	Dominik
