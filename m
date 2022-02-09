@@ -2,108 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229557AbiBIMEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:04:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39518 "EHLO
+        id S232239AbiBIMEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:04:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232198AbiBIMDa (ORCPT
+        with ESMTP id S232076AbiBIMDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:03:30 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F678C002146
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:48:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644407319; x=1675943319;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KIul0VRH8+851bLTssNY2JClhDKRKqDCUngDw8TQE8Y=;
-  b=fBFDjLuLOGfSMbAdOdqo5OxtMhogq67Wb4RZZhufn0Bgn1YctTeNjhCa
-   x/5KuOu9sYLLl9jUxcjySA+ALTEhmTPBff+m4aaLz6qp6cOmEuIiWf8gm
-   Wmp+kWDiZbikqahrzms/ACIukuzErSzxsTfRVJj4StBArd0ThnHma+SIs
-   YaCPGDkXOWaS5eI/IYhvAX4FFrVbb08DIwmtt+JOizySWfX271WPfHl5r
-   OGxG3n7kTJJLbuNSBiZqwOPJeBHGAGDT1fP8oTn8+FHtaDfsvDB5cxoRl
-   VHnylqH7Kfu9dSvNkXcX/tgjEHQM+Ybzxmh6zX4vT3siuPaH1vKgpQPOx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="232752854"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="232752854"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 03:48:38 -0800
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="536905809"
-Received: from ravicha1-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.88.114])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 03:48:33 -0800
-Date:   Thu, 10 Feb 2022 00:48:31 +1300
-From:   Kai Huang <kai.huang@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
-Message-Id: <20220210004831.03dea501738bee060003d040@intel.com>
-In-Reply-To: <YgOoId+vyd1VhIqQ@zn.tnic>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-        <20220209235613.652f5720cd196331d7a220ec@intel.com>
-        <YgOgog9Pb886lfsv@zn.tnic>
-        <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
-        <YgOoId+vyd1VhIqQ@zn.tnic>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 07:03:16 -0500
+X-Greylist: delayed 3611 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 03:42:44 PST
+Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BFE4C0364A2;
+        Wed,  9 Feb 2022 03:42:44 -0800 (PST)
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 219A0iO4024427
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 9 Feb 2022 02:00:44 -0800
+Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 9 Feb 2022 02:00:44 -0800
+Received: from pek-lpd-ccm3.wrs.com (128.224.156.163) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
+ 15.1.2242.12 via Frontend Transport; Wed, 9 Feb 2022 02:00:42 -0800
+From:   Yun Zhou <yun.zhou@windriver.com>
+To:     <broonie@kernel.org>, <yun.zhou@windriver.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <ying.xue@windriver.com>
+Subject: [PATCH] spi: disable chipselect after complete transfer
+Date:   Wed, 9 Feb 2022 18:00:42 +0800
+Message-ID: <20220209100042.22941-1-yun.zhou@windriver.com>
+X-Mailer: git-send-email 2.26.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 12:40:17 +0100 Borislav Petkov wrote:
-> On Thu, Feb 10, 2022 at 12:30:33AM +1300, Kai Huang wrote:
-> > Because SEAM, P-SEAMLDR can logically be independent, so I feel it's better to
-> > have separate C files for them.
-> 
-> Most of those look like small files. I don't see the point of having it
-> all in separate files - you can just as well put them in tdx.c and carve
-> out only then when the file becomes too unwieldy to handle.
+If there are 2 slaves or more on a spi bus, e.g. A and B, we processed a
+transfer to A, the CS will be selected for A whose 'last_cs_enable' will
+be recorded to true at the same time. Then we processed a transfer to B,
+the CS will be switched to B. And then if we transmit data to A again, it
+will not enable CS back to A because 'last_cs_enable' is true.
+In addition, if CS is not disabled, Some controllers in automatic
+transmission state will receive unpredictable data, such as Cadence SPI
+controller.
 
-arch/x86/kernel/tdx.c is already taken by this series.  This is the reason that
-I think perhaps it's better to rename it to reflect it is for TDX guest support.
+Signed-off-by: Yun Zhou <yun.zhou@windriver.com>
+---
+ drivers/spi/spi.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-> 
-> > Thanks for the information.  However, for now does it make sense to also put
-> > TDX host files under arch/x86/kernel/, or maybe arch/x86/kernel/tdx_host/?
-> 
-> Didn't you just read what I wrote about "kernel"?
-> 
-> > As suggested by Thomas, host SEAMCALL can share TDX guest's __tdx_module_call()
-> > implementation.  Kirill will have a arch/x86/kernel/tdxcall.S which implements
-> > the core body of __tdx_module_call() and is supposed to be included by the new
-> > assembly file to implement the host SEAMCALL function.  From this perspective,
-> > it seems more reasonable to just put all TDX host files under arch/x86/kernel/?
-> 
-> It would be a lot harder to move them to a different location later,
-> when they're upstream already. I'm talking from past experience here.
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index fdd530b150a7..ebbba0b08186 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -1417,7 +1417,6 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 				    struct spi_message *msg)
+ {
+ 	struct spi_transfer *xfer;
+-	bool keep_cs = false;
+ 	int ret = 0;
+ 	struct spi_statistics *statm = &ctlr->statistics;
+ 	struct spi_statistics *stats = &msg->spi->statistics;
+@@ -1486,10 +1485,8 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 		spi_transfer_delay_exec(xfer);
+ 
+ 		if (xfer->cs_change) {
+-			if (list_is_last(&xfer->transfer_list,
++			if (!list_is_last(&xfer->transfer_list,
+ 					 &msg->transfers)) {
+-				keep_cs = true;
+-			} else {
+ 				spi_set_cs(msg->spi, false, false);
+ 				_spi_transfer_cs_change_delay(msg, xfer);
+ 				spi_set_cs(msg->spi, true, false);
+@@ -1500,8 +1497,7 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 	}
+ 
+ out:
+-	if (ret != 0 || !keep_cs)
+-		spi_set_cs(msg->spi, false, false);
++	spi_set_cs(msg->spi, false, false);
+ 
+ 	if (msg->status == -EINPROGRESS)
+ 		msg->status = ret;
+-- 
+2.26.1
 
-Are you suggesting even for now we can start to put TDX host support to
-arch/x86/coco/tdx/ ?
-
-> 
-> But let's see what the others think first.
-
-Sure thanks for comments.
-
-> 
-> -- 
-> Regards/Gruss,
->     Boris.
-> 
-> https://people.kernel.org/tglx/notes-about-netiquette
