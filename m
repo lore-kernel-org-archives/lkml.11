@@ -2,112 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C488C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234748AbiBIT1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:27:45 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46744 "EHLO
+        id S234798AbiBIT1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:27:49 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234243AbiBIT0r (ORCPT
+        with ESMTP id S234196AbiBIT0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 14:26:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769B6E00E269;
-        Wed,  9 Feb 2022 11:19:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CF316198D;
-        Wed,  9 Feb 2022 19:16:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71136C340E9;
-        Wed,  9 Feb 2022 19:16:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434167;
-        bh=GbYxzQhs4ms8jLe4UsGvclRFMx7kNRco0jyQSsTZumQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FQbjSyJyF9SJ3/MnzKG8LRKosrAKEVyQeUtC1phzPGHb/Stc8Yg7jp1U+YDskL4JL
-         UGLjzq2HWQ2QtC2EHBwD8/MSRprvgNrv1rf35QvZ9LQJ6ZVUKmqiM9itwuhEhLa9MO
-         6ZcxoxLvTgwAWxEcjSagJ1j+cPag+003P4w7+KQI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.16 0/5] 5.16.9-rc1 review
-Date:   Wed,  9 Feb 2022 20:14:32 +0100
-Message-Id: <20220209191249.887150036@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AC9E00E167;
+        Wed,  9 Feb 2022 11:19:16 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id bt13so8964230ybb.2;
+        Wed, 09 Feb 2022 11:19:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CIBNTST+9OGrpk4nfrRm6UVggIJAfLO7vApiU2dxPNA=;
+        b=OxCzMiBP3pWGZ5ydZs++XEU1LN9GEm/NjCcYpCb5RUaK+dsayM1ywI7g9M+pFxEbcj
+         GFNogcdmCJDQFvS9X5/Os29mINWNuPOLTJZ6DRgKJdqxk683O99TFxmlvue+C1TCnXp3
+         WOdK1WANLzKgE+RdrdT7SH+NVc84hit0knwqq0pMc0ZpIIuW664T3q5sHbKnnOboEQn6
+         ehGN3HTC0xPpU+0BmLUAQBMk1TAde6vUgePS0IYfyjxpRzonhE6J1BAB/jTJ1MPB75TI
+         g5GPDznXQ2w1BRdTsfogKr9D4id1s7DteqQNAp9oR36bIrZpWSPjI8YpAGadcMYL7//h
+         yFaw==
+X-Gm-Message-State: AOAM530Fp7alx2Xi2l3EsVvQeoU5fU/ulh4my1QREKei/nGkYJl/pr3q
+        mgRLy1VVfanDb1+Tb51jEsBcogJZkFr7E3bwMSQ=
+X-Google-Smtp-Source: ABdhPJwr4jDaiwQ6MNEAj7xSNbO5pTS0y6wSQESBLrfGltspzdJ8IWOYvkkrwZrxAEr6fKJ+Bx1xInJejne+N7sxa78=
+X-Received: by 2002:a81:1f0b:: with SMTP id f11mr3157800ywf.149.1644434295470;
+ Wed, 09 Feb 2022 11:18:15 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.16.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.16.9-rc1
-X-KernelTest-Deadline: 2022-02-11T19:12+00:00
-Content-Transfer-Encoding: 8bit
+References: <20220202020103.2149130-1-rajatja@google.com> <CAJZ5v0gngVxoe88rNAXXK_F34rHAKuxokiuZ6kpg6FhbnyMn0Q@mail.gmail.com>
+In-Reply-To: <CAJZ5v0gngVxoe88rNAXXK_F34rHAKuxokiuZ6kpg6FhbnyMn0Q@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 9 Feb 2022 20:18:04 +0100
+Message-ID: <CAJZ5v0hY+3gBUrSwawy1bEQP-BbjXu0186+uKTuBh9r52Xs+Xw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] PCI: Allow internal devices to be marked as untrusted
+To:     Rajat Jain <rajatja@google.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        "Oliver O'Halloran" <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.16.9 release.
-There are 5 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+On Wed, Feb 9, 2022 at 8:11 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+>
+> On Wed, Feb 2, 2022 at 3:01 AM Rajat Jain <rajatja@google.com> wrote:
+> >
+> > Today the pci_dev->untrusted is set for any devices sitting downstream
+> > an external facing port (determined via "ExternalFacingPort" or the
+> > "external-facing" properties).
+> >
+> > However, currently there is no way for internal devices to be marked as
+> > untrusted.
+> >
+> > There are use-cases though, where a platform would like to treat an
+> > internal device as untrusted (perhaps because it runs untrusted firmware
+> > or offers an attack surface by handling untrusted network data etc).
+> >
+> > Introduce a new "UntrustedDevice" property that can be used by the
+> > firmware to mark any device as untrusted.
+> >
+> > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > ---
+> > v2: * Also use the same property for device tree based systems.
+> >     * Add documentation (next patch)
+> >
+> >  drivers/pci/of.c       | 2 ++
+> >  drivers/pci/pci-acpi.c | 1 +
+> >  drivers/pci/pci.c      | 9 +++++++++
+> >  drivers/pci/pci.h      | 2 ++
+> >  4 files changed, 14 insertions(+)
+> >
+> > diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> > index cb2e8351c2cc..e8b804664b69 100644
+> > --- a/drivers/pci/of.c
+> > +++ b/drivers/pci/of.c
+> > @@ -24,6 +24,8 @@ void pci_set_of_node(struct pci_dev *dev)
+> >                                                     dev->devfn);
+> >         if (dev->dev.of_node)
+> >                 dev->dev.fwnode = &dev->dev.of_node->fwnode;
+> > +
+> > +       pci_set_untrusted(dev);
+> >  }
+> >
+> >  void pci_release_of_node(struct pci_dev *dev)
+> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > index a42dbf448860..2bffbd5c6114 100644
+> > --- a/drivers/pci/pci-acpi.c
+> > +++ b/drivers/pci/pci-acpi.c
+> > @@ -1356,6 +1356,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+> >
+> >         pci_acpi_optimize_delay(pci_dev, adev->handle);
+> >         pci_acpi_set_external_facing(pci_dev);
+> > +       pci_set_untrusted(pci_dev);
+> >         pci_acpi_add_edr_notifier(pci_dev);
+> >
+> >         pci_acpi_add_pm_notifier(adev, pci_dev);
+> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > index 9ecce435fb3f..41e887c27004 100644
+> > --- a/drivers/pci/pci.c
+> > +++ b/drivers/pci/pci.c
+> > @@ -6869,3 +6869,12 @@ static int __init pci_realloc_setup_params(void)
+> >         return 0;
+> >  }
+> >  pure_initcall(pci_realloc_setup_params);
+> > +
+> > +void pci_set_untrusted(struct pci_dev *pdev)
+> > +{
+> > +       u8 val;
+> > +
+> > +       if (!device_property_read_u8(&pdev->dev, "UntrustedDevice", &val)
+> > +           && val)
+> > +               pdev->untrusted = 1;
+>
+> I'm not sure why you ignore val = 0.  Is it not a valid value?
+>
+> The property is not particularly well defined here.  It is not clear
+> from its name that it only applies to PCI devices and how.
+>
+> AFAICS, the "untrusted" bit affected by it is only used by the ATS
+> code and in one PCH ACS quirk, but I'm not sure if this is all you
+> have in mind.
 
-Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-Anything received after that time might be too late.
+Besides, sort of in the bikeshedding territory, its name doesn't
+follow the guidelines given in the _DSD guide:
+https://github.com/UEFI/DSD-Guide/blob/main/dsd-guide.pdf
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-and the diffstat can be found below.
+I do realize that you want it to be valid for both ACPI and DT, but
+that doesn't preclude following the guidelines AFAICS.
 
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.16.9-rc1
-
-Herbert Xu <herbert@gondor.apana.org.au>
-    crypto: api - Move cryptomgr soft dependency into algapi
-
-Namjae Jeon <linkinjeon@kernel.org>
-    ksmbd: fix SMB 3.11 posix extension mount failure
-
-Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-    KVM: s390: Return error on SIDA memop on normal guest
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    moxart: fix potential use-after-free on remove path
-
-Damien Le Moal <damien.lemoal@opensource.wdc.com>
-    ata: libata-core: Fix ata_dev_config_cpr()
-
-
--------------
-
-Diffstat:
-
- Makefile                      |  4 ++--
- arch/s390/kvm/kvm-s390.c      |  2 ++
- crypto/algapi.c               |  1 +
- crypto/api.c                  |  1 -
- drivers/ata/libata-core.c     | 14 ++++++--------
- drivers/mmc/host/moxart-mmc.c |  2 +-
- fs/ksmbd/smb2pdu.c            |  2 +-
- include/linux/ata.h           |  2 +-
- 8 files changed, 14 insertions(+), 14 deletions(-)
-
-
+> > +}
+> > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> > index 3d60cabde1a1..6c273ce5e0ba 100644
+> > --- a/drivers/pci/pci.h
+> > +++ b/drivers/pci/pci.h
+> > @@ -761,4 +761,6 @@ static inline pci_power_t mid_pci_get_power_state(struct pci_dev *pdev)
+> >  }
+> >  #endif
+> >
+> > +void pci_set_untrusted(struct pci_dev *pdev);
+> > +
+> >  #endif /* DRIVERS_PCI_H */
+> > --
+> > 2.35.0.rc2.247.g8bbb082509-goog
+> >
