@@ -2,54 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70851C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:45:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:45:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240545AbiBISpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:45:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34884 "EHLO
+        id S240632AbiBISpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:45:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240598AbiBISof (ORCPT
+        with ESMTP id S240546AbiBISo6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:44:35 -0500
+        Wed, 9 Feb 2022 13:44:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D749C028BD2;
-        Wed,  9 Feb 2022 10:42:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7A4C0A88CE;
+        Wed,  9 Feb 2022 10:43:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E10C56118F;
-        Wed,  9 Feb 2022 18:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1192C36AE7;
-        Wed,  9 Feb 2022 18:42:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04B6B61307;
+        Wed,  9 Feb 2022 18:43:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62EC2C340F1;
+        Wed,  9 Feb 2022 18:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432165;
-        bh=QgUJ0saQrzTCOm1uQHXtsWV+3Cf/ARFeMpt2TfXoKWI=;
+        s=k20201202; t=1644432179;
+        bh=gBR3Ce/pJ47IRQg4FP9Z/vuY4SpFZJm7Vp0omlNnSeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ogMtpQi2V3LlffmIh/nut4HsZ+Ci+I50FP4lqnRQTMuoZR9xk3JB0QQ2g0w/n7Mof
-         1SiudagDXwjnbikoAIfFNeCGlQU3iloH1fSFCRPNBffAEz0v60t/XpOf5AcnNSjJMx
-         MRMr88gOBL/GforUx1aERHq/P8mwkrI38+gHiZHJE+5mwYjNoLgjppu5kZ4ClRIDqU
-         3CPg0y+Au3pABpjeo62i9in99qhVxlzxQw7m2ZO92+R/zME8T27Z89ftLS32R7yP0K
-         /WlbnasTX51H/zsWPE+qerd0p5GEOd8JobBosZ+YQDHBN8IiYn9Rwr1stcZPW526wI
-         +dv9QzWPUX9kA==
+        b=kWhLCy/Ah2qC9Ld0a0R6Dmb/lASFcKuiCBuGL0se7ufdDgt7onz0a5S62n0lr1gqs
+         d2pJZ5T4IKTwjlINnh9kZpgEtK3jiYBRgjRJ1MfK8RtpLM+dkTL1OjlE516VgKAyhi
+         G/kVZOk6O/88o8CejxSjjo1T+Zz8na1uQC1JJw/fnwrdjnT00bp/cWsO+uHvkS0PPP
+         BkLORmTPc+4nC2tmZdUGhjmxtvOXx6+02vwqZV4USL1VQ0DS+auwxviIVcAraeOZdY
+         jGMarS4pYUr4IKQwFAMgFi+6kBqmV9muKrRoxHghQZ9/2Sm6/o7lEFSt/5eZQEQfX3
+         pSeK+31X96Yew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, nirmoy.das@amd.com,
-        Oak.Zeng@amd.com, kevin1.wang@amd.com, tzimmermann@suse.de,
-        Philip.Yang@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 23/27] drm/amdgpu: fix logic inversion in check
-Date:   Wed,  9 Feb 2022 13:40:59 -0500
-Message-Id: <20220209184103.47635-23-sashal@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Alexander Popov <alex.popov@linux.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, nixiaoming@huawei.com,
+        akpm@linux-foundation.org, mcgrof@kernel.org
+Subject: [PATCH AUTOSEL 5.10 26/27] gcc-plugins/stackleak: Use noinstr in favor of notrace
+Date:   Wed,  9 Feb 2022 13:41:02 -0500
+Message-Id: <20220209184103.47635-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184103.47635-1-sashal@kernel.org>
 References: <20220209184103.47635-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,34 +54,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
+[ Upstream commit dcb85f85fa6f142aae1fe86f399d4503d49f2b60 ]
 
-We probably never trigger this, but the logic inside the check is
-inverted.
+While the stackleak plugin was already using notrace, objtool is now a
+bit more picky.  Update the notrace uses to noinstr.  Silences the
+following objtool warnings when building with:
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+CONFIG_DEBUG_ENTRY=y
+CONFIG_STACK_VALIDATION=y
+CONFIG_VMLINUX_VALIDATION=y
+CONFIG_GCC_PLUGIN_STACKLEAK=y
+
+  vmlinux.o: warning: objtool: do_syscall_64()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: do_int80_syscall_32()+0x9: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: exc_general_protection()+0x22: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: fixup_bad_iret()+0x20: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: do_machine_check()+0x27: call to stackleak_track_stack() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .text+0x5346e: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x143: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x10eb: call to stackleak_erase() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: .entry.text+0x17f9: call to stackleak_erase() leaves .noinstr.text section
+
+Note that the plugin's addition of calls to stackleak_track_stack() from
+noinstr functions is expected to be safe, as it isn't runtime
+instrumentation and is self-contained.
+
+Cc: Alexander Popov <alex.popov@linux.com>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/stackleak.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-index 5207ad654f18e..0b162928a248b 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
-@@ -2120,7 +2120,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
- 	unsigned i;
- 	int r;
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index ce161a8e8d975..dd07239ddff9f 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -48,7 +48,7 @@ int stack_erasing_sysctl(struct ctl_table *table, int write,
+ #define skip_erasing()	false
+ #endif /* CONFIG_STACKLEAK_RUNTIME_DISABLE */
  
--	if (direct_submit && !ring->sched.ready) {
-+	if (!direct_submit && !ring->sched.ready) {
- 		DRM_ERROR("Trying to move memory with ring turned off.\n");
- 		return -EINVAL;
- 	}
+-asmlinkage void notrace stackleak_erase(void)
++asmlinkage void noinstr stackleak_erase(void)
+ {
+ 	/* It would be nice not to have 'kstack_ptr' and 'boundary' on stack */
+ 	unsigned long kstack_ptr = current->lowest_stack;
+@@ -102,9 +102,8 @@ asmlinkage void notrace stackleak_erase(void)
+ 	/* Reset the 'lowest_stack' value for the next syscall */
+ 	current->lowest_stack = current_top_of_stack() - THREAD_SIZE/64;
+ }
+-NOKPROBE_SYMBOL(stackleak_erase);
+ 
+-void __used __no_caller_saved_registers notrace stackleak_track_stack(void)
++void __used __no_caller_saved_registers noinstr stackleak_track_stack(void)
+ {
+ 	unsigned long sp = current_stack_pointer;
+ 
 -- 
 2.34.1
 
