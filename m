@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B94C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C3CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240645AbiBISsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:48:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43516 "EHLO
+        id S240948AbiBISsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241287AbiBISqi (ORCPT
+        with ESMTP id S241273AbiBISqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:46:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F25BC05CB9F;
+        Wed, 9 Feb 2022 13:46:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF88BC0302C1;
         Wed,  9 Feb 2022 10:43:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BF719612AC;
-        Wed,  9 Feb 2022 18:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71EC8C36AE7;
-        Wed,  9 Feb 2022 18:43:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F00C611B8;
+        Wed,  9 Feb 2022 18:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D1FEC36AE2;
+        Wed,  9 Feb 2022 18:43:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432232;
-        bh=xbseft0bFThlkg8lFzuN/SR2wFUAQLzKHqgJRlH3A6E=;
+        s=k20201202; t=1644432228;
+        bh=GzgRzBVPN10UsBMAviLvVNgKxRB0wrMMqXuJINL/qbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSDlhu1t++mtj/XceTUQNH+QiB/y3Gzi+GEn5EUN4Dw5fBgsK/Kg/sZibp2Nwx65p
-         pgqxLLQ7eMK1WxZ+8OCifKMeG0C58z91YimUDJDLB3macLtJ60Xn4lVJE/qyQbDORB
-         SHYqc+GsQGpcfs5v2s2AK64WNMNZCe2OZyhLocNq5V+op/Bah9/zoUe+qlDifOtdiG
-         xFjdILo2XOC+MG1bzxnxU7NQtLqeeFSb1BkwCv6pHEe2w7lBZf4wlGXS+rRyWm1afi
-         eCAenIXV3go9VKY+4ivSB5q4UzzROpM3NZXmoDPjASz58n7Iyx4r3wN7PKuFC+mFuX
-         TLX+zDu5uwgyA==
+        b=PHCSofJWcyOe2GvNvx8YtwkZ+PdCmq+joNn9pkiC7/vO9oW4sdtyU7ADkx5S9HLqw
+         SXXWRLibyKsZTLe4tzdbtWc8K37JQv+RVjaj33ftBlmHyjkFqpPuogqv5Xj4PFKRdJ
+         KXf3179JemfolFQLSblZ/fWGnLBAyas98y2c8xRveoY3Jlia7i/FvAGR0IeGmI7rTF
+         tILnKnz6t4PwEdeHBbe27LE/q19Noy5eQRCkqSSqin2pvO62OBuVUcm+6IgFdGpy4a
+         UiZUbmLASr87hVHqAWs+odXxZvFOLUAq21qA25FAm+0vilGa0yYhcmYzWhxnNUKimu
+         IpSpWvnLQKRlQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sagi Grimberg <sagi@grimberg.me>, Sasha Levin <sashal@kernel.org>,
         kbusch@kernel.org, axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 13/15] nvme-rdma: fix possible use-after-free in transport error_recovery work
-Date:   Wed,  9 Feb 2022 13:42:59 -0500
-Message-Id: <20220209184305.47983-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 11/15] nvme: fix a possible use-after-free in controller reset during load
+Date:   Wed,  9 Feb 2022 13:42:57 -0500
+Message-Id: <20220209184305.47983-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
 References: <20220209184305.47983-1-sashal@kernel.org>
@@ -52,34 +52,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Sagi Grimberg <sagi@grimberg.me>
 
-[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
+[ Upstream commit 0fa0f99fc84e41057cbdd2efbfe91c6b2f47dd9d ]
 
-While nvme_rdma_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+Unlike .queue_rq, in .submit_async_event drivers may not check the ctrl
+readiness for AER submission. This may lead to a use-after-free
+condition that was observed with nvme-tcp.
+
+The race condition may happen in the following scenario:
+1. driver executes its reset_ctrl_work
+2. -> nvme_stop_ctrl - flushes ctrl async_event_work
+3. ctrl sends AEN which is received by the host, which in turn
+   schedules AEN handling
+4. teardown admin queue (which releases the queue socket)
+5. AEN processed, submits another AER, calling the driver to submit
+6. driver attempts to send the cmd
+==> use-after-free
+
+In order to fix that, add ctrl state check to validate the ctrl
+is actually able to accept the AER submission.
+
+This addresses the above race in controller resets because the driver
+during teardown should:
+1. change ctrl state to RESETTING
+2. flush async_event_work (as well as other async work elements)
+
+So after 1,2, any other AER command will find the
+ctrl state to be RESETTING and bail out without submitting the AER.
 
 Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/rdma.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/nvme/host/core.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
-index 08a23bb4b8b57..4213c71b02a4b 100644
---- a/drivers/nvme/host/rdma.c
-+++ b/drivers/nvme/host/rdma.c
-@@ -1110,6 +1110,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
- 			struct nvme_rdma_ctrl, err_work);
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index a5b5a2305791d..6a9a42809f972 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3896,7 +3896,14 @@ static void nvme_async_event_work(struct work_struct *work)
+ 		container_of(work, struct nvme_ctrl, async_event_work);
  
- 	nvme_stop_keep_alive(&ctrl->ctrl);
-+	flush_work(&ctrl->ctrl.async_event_work);
- 	nvme_rdma_teardown_io_queues(ctrl, false);
- 	nvme_start_queues(&ctrl->ctrl);
- 	nvme_rdma_teardown_admin_queue(ctrl, false);
+ 	nvme_aen_uevent(ctrl);
+-	ctrl->ops->submit_async_event(ctrl);
++
++	/*
++	 * The transport drivers must guarantee AER submission here is safe by
++	 * flushing ctrl async_event_work after changing the controller state
++	 * from LIVE and before freeing the admin queue.
++	*/
++	if (ctrl->state == NVME_CTRL_LIVE)
++		ctrl->ops->submit_async_event(ctrl);
+ }
+ 
+ static bool nvme_ctrl_pp_status(struct nvme_ctrl *ctrl)
 -- 
 2.34.1
 
