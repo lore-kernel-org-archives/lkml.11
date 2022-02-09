@@ -2,99 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11646C4707A
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDFAC3525A
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233335AbiBIFHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:07:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42376 "EHLO
+        id S233286AbiBIFHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:07:11 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377857AbiBIEn3 (ORCPT
+        with ESMTP id S230153AbiBIFCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:43:29 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4CEC061577;
-        Tue,  8 Feb 2022 20:43:27 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtnLt20kgz4xcp;
-        Wed,  9 Feb 2022 15:43:17 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1644381801;
-        bh=h1IrtofJGjl9dOe2iPaZfbAAnbqY/viWBgGDEdVXQKk=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=X4BI56kfUn4imVm/I1LyMZe7f9s76Evbv0Pjn7HGfFFK68KUGaoCPH04q/DPmVU9g
-         wR4AbQ/owkq/8kQKt0JOU1uOB+WagWSG+QKJIV7XEnJTJKHhDsign/9EnXKGREu9LK
-         sVbaWMzAYonS1AI1YnbRd/ekzycbGZFh2GxEaCv7HdATX0qxEWn6/9yo6zI5z+ThBf
-         qQNmyglbl+FwhdR/8QyKUyZtPKN+6fK5Fi+e9xdsGsINyiETC8A4Vxoz9lcnCcyeuM
-         lrxTnV9IQhCQyG7h2V2xQJmSWs+HKYmIU+sBC2hGE8wYyYkl6AWMsv2I0fSlvW1rKx
-         y/TGj1iyy/dTg==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Michal Suchanek <msuchanek@suse.de>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org
-Cc:     Michal Suchanek <msuchanek@suse.de>, kexec@lists.infradead.org,
-        Philipp Rudo <prudo@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
-        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Frank van der Linden <fllinden@amazon.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 2/6] powerpc/kexec_file: Add KEXEC_SIG support.
-In-Reply-To: <d95f7c6865bcad5ee37dcbec240e79aa742f5e1d.1641900831.git.msuchanek@suse.de>
-References: <cover.1641900831.git.msuchanek@suse.de>
- <d95f7c6865bcad5ee37dcbec240e79aa742f5e1d.1641900831.git.msuchanek@suse.de>
-Date:   Wed, 09 Feb 2022 15:43:17 +1100
-Message-ID: <87sfsslkey.fsf@mpe.ellerman.id.au>
+        Wed, 9 Feb 2022 00:02:18 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C81C03E926;
+        Tue,  8 Feb 2022 21:02:19 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V3ze3Rg_1644382934;
+Received: from 30.225.24.53(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V3ze3Rg_1644382934)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 13:02:15 +0800
+Message-ID: <4da041e7-d88c-16ba-d180-f8e8b8c2ef31@linux.alibaba.com>
+Date:   Wed, 9 Feb 2022 13:02:13 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [syzbot] BUG: MAX_LOCK_DEPTH too low! (3)
+To:     syzbot <syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net,
+        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <0000000000006d045e05d78776f6@google.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <0000000000006d045e05d78776f6@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michal Suchanek <msuchanek@suse.de> writes:
-> Copy the code from s390x
->
-> Both powerpc and s390x use appended signature format (as opposed to EFI
-> based patforms using PE format).
->
-> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-> ---
-> v3: - Philipp Rudo <prudo@redhat.com>: Update the comit message with
->       explanation why the s390 code is usable on powerpc.
->     - Include correct header for mod_check_sig
->     - Nayna <nayna@linux.vnet.ibm.com>: Mention additional IMA features
->       in kconfig text
-> ---
->  arch/powerpc/Kconfig        | 16 ++++++++++++++++
->  arch/powerpc/kexec/elf_64.c | 36 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 52 insertions(+)
 
-I haven't tested this on powerpc, but assuming you have Michal this
-looks OK to me.
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+On 2022/2/9 4:21 am, syzbot wrote:
 
-cheers
+> 
+> The issue was bisected to:
+> 
+> commit 341adeec9adad0874f29a0a1af35638207352a39
+> Author: Wen Gu <guwen@linux.alibaba.com>
+> Date:   Wed Jan 26 15:33:04 2022 +0000
+> 
+>      net/smc: Forward wakeup to smc socket waitqueue after fallback
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11c2637c700000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=13c2637c700000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15c2637c700000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+4de3c0e8a263e1e499bc@syzkaller.appspotmail.com
+> Fixes: 341adeec9ada ("net/smc: Forward wakeup to smc socket waitqueue after fallback")
+> 
+> BUG: MAX_LOCK_DEPTH too low!
+> turning off the locking correctness validator.
+> depth: 48  max: 48!
+
+Thanks for syzbot's report.
+
+I will look into this issue and give feedback as soon as possible.
+
+Thanks,
+Wen Gu
