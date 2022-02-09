@@ -2,75 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F790C4321E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347896AbiBIELG (ORCPT
+        id S1348359AbiBIELl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:11:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        Tue, 8 Feb 2022 23:11:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347703AbiBIEDP (ORCPT
+        with ESMTP id S239471AbiBIEFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:03:15 -0500
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78EDC061578;
-        Tue,  8 Feb 2022 20:03:14 -0800 (PST)
-Received: by mail-oi1-f180.google.com with SMTP id t199so1250726oie.10;
-        Tue, 08 Feb 2022 20:03:14 -0800 (PST)
+        Tue, 8 Feb 2022 23:05:48 -0500
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205C7C061577;
+        Tue,  8 Feb 2022 20:05:48 -0800 (PST)
+Received: by mail-ot1-f42.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so688533oth.12;
+        Tue, 08 Feb 2022 20:05:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=CmY7PgTIB+xl2LL7tzgCE9G7RhMcwApZzrQupeWWqm8=;
-        b=6h1d2t2G211pKh/J/W6mFYjOM/5w5c6d3YF0bnfFGeHhvt4FqSWWdZnH+5C+TFQlAp
-         O9rPRCydoN1IOwcjDPgADWbMDtsEnSq6EFSBX2kSqloezP4AUgjdvaDNqdb+xZnAOxr6
-         MH9PJZNgZUPtfoAlphTt/pABs+6HwL/4MqSA8tFdmtt6ZSmo0m1RNFTqM38k1IYt0L6v
-         T7kW1K30FlGS9nzm74Hp/VSJdzqEmWVnUPx+UVCG/3Xrf5fn+HdFsw4rNTgn0zOMSJDi
-         Z7xDpXsht4fSJCEAnyHZ3dFcBKPATaTJgqiCUQiT+tBRKDem6XwiP6+3FHjmTjVcVaN9
-         JmKQ==
-X-Gm-Message-State: AOAM5301JHXlMyJsF/ma/sthhrfX1aBLP5A1b29XNceATD9+cAHdpEGA
-        N0hN544AUafdo5GXyOnl9g==
-X-Google-Smtp-Source: ABdhPJx9qakOYsm8R9weCyJ5x50P3WxmBB4MhXyP6Tg54v2pjw/BqbvG0kz8V3sAEgcHwwz5Clokqg==
-X-Received: by 2002:a54:4812:: with SMTP id j18mr514855oij.277.1644379394062;
-        Tue, 08 Feb 2022 20:03:14 -0800 (PST)
+        bh=o3YMeRwUz1ntDWPYVtPYMrCAxcHYKG6DDEiI0zJMrfg=;
+        b=KnNK8ez/GdaB6zPZw9XZJu/1vd2ygrGTZ29yeSTo8uSEXR/naKeV18p4XmjHpAx2rS
+         1rFPa3zKhvjKWcPyKCSzT7UDJ7A31R+PhI0TzHzznHgjAez7bUKfTCf3EFFL1sTg+TJr
+         UkSB/VwdybL0ANoAGyw9f8Vxmn5rkztspsPGN8BJcT9qJoIYo5qQ3hWRWki2NPyIssC1
+         A8xuyj08/fBJB5Jf6SAPcRuKKTyfpg9FffDdfR3jZkddIoTHThcW/VctYhmttxjFsv3z
+         YgNbCYrLyeu/Km5JAZDC36ndpzfehPm+y0Zxxdbo9tiBwrbZ97mKMwOG1o+iMi9Z41c9
+         /Zqg==
+X-Gm-Message-State: AOAM531pfHJe+tCtEpU64S0R6efomCOzGn6so6pwF60ilhGFX7ojZQAw
+        kgklpE97csd7yWhHSjagUQ==
+X-Google-Smtp-Source: ABdhPJz9jfeHHaiH+4zU1BTJWQ08GH8RdUKft2JUKLvjWaGoFuEonXdybnOG23G7sSVt+nWlCflSsg==
+X-Received: by 2002:a9d:73da:: with SMTP id m26mr225820otk.72.1644379547459;
+        Tue, 08 Feb 2022 20:05:47 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 12sm2580297oam.5.2022.02.08.20.03.13
+        by smtp.gmail.com with ESMTPSA id s13sm6218679ooh.43.2022.02.08.20.05.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:03:13 -0800 (PST)
-Received: (nullmailer pid 3630578 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:03:12 -0000
-Date:   Tue, 8 Feb 2022 22:03:12 -0600
+        Tue, 08 Feb 2022 20:05:46 -0800 (PST)
+Received: (nullmailer pid 3634207 invoked by uid 1000);
+        Wed, 09 Feb 2022 04:05:45 -0000
+Date:   Tue, 8 Feb 2022 22:05:45 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Icenowy Zheng <icenowy@nucleisys.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+Cc:     linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
         Albert Ou <aou@eecs.berkeley.edu>,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>
-Subject: Re: [PATCH 01/12] dt-bindings: vendor-prefixes: add Nuclei
-Message-ID: <YgM9AMFhzsvhd85O@robh.at.kernel.org>
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>
+Subject: Re: [PATCH 05/12] dt-bindings: interrupt-controller: add compatible
+ string for UX600 PLIC
+Message-ID: <YgM9mdKvrjlEKRN0@robh.at.kernel.org>
 References: <20220127151647.2375449-1-icenowy@nucleisys.com>
- <20220127151647.2375449-2-icenowy@nucleisys.com>
+ <20220127151647.2375449-6-icenowy@nucleisys.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220127151647.2375449-2-icenowy@nucleisys.com>
+In-Reply-To: <20220127151647.2375449-6-icenowy@nucleisys.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 23:16:36 +0800, Icenowy Zheng wrote:
-> Nuclei System Technology is a RISC-V CPU IP core vendor.
+On Thu, 27 Jan 2022 23:16:40 +0800, Icenowy Zheng wrote:
+> Nuclei UX600 series CPU has an optional PLIC (recommended when running
+> Linux).
 > 
-> Add vendor prefix for it.
+> Add a compatible string for it.
 > 
 > Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
 > ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+>  .../bindings/interrupt-controller/sifive,plic-1.0.0.yaml         | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
