@@ -2,230 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7362EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234547AbiBITZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:25:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43894 "EHLO
+        id S234645AbiBIT0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:26:15 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbiBITZW (ORCPT
+        with ESMTP id S234815AbiBIT0A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:25:22 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 952F9E01526C;
-        Wed,  9 Feb 2022 11:25:19 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id B8A881F45830
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644434718;
-        bh=7+kNVuhRDRn8ZWd50WG2gPmkpwkCawcOM90JKeUKmKU=;
+        Wed, 9 Feb 2022 14:26:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1D72C1DC703;
+        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6F48B821BD;
+        Wed,  9 Feb 2022 19:15:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 164FEC340E7;
+        Wed,  9 Feb 2022 19:15:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644434155;
+        bh=NoYfRKvg94/26C90i9BW28UUtPlRTuDUjNMESDy43NU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MV0BmwPzZNSBUeCHXgm842NsKPpUaxWQIj0kCG8a0hLp3xOW3k9kykpnwJnsQ+2PT
-         c0Su8GZH9uR8fzUnohebLBH5zeUPbglzcuRFuNDzaWA2iepkfUQZek/TzO7wb4ypK8
-         tPKOJjTj0VLKQOZU7/rvgZBrShffbP67x5MsyelHPP6mPMpC7ULshIFE8Jqb3wULt8
-         BLoZ7ix1bLLF7yXKCp3cWOqEg5FDQWHZLLAUUdOfQTd5QnagV0EbPmZdRL1Y3XSX01
-         ok0ZfmkncihMlW3BRjnTC+BpGPXDTcfCXVYmsCgLPs1dxc4pXjDgOzLl2FSFlSMYl9
-         JQgnnk5aZZ1Nw==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org,
-        Stefan Wahren <stefan.wahren@i2se.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        "maintainer:ARM AND ARM64 SoC SUB-ARCHITECTURES (COMMON PARTS)" 
-        <soc@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        "maintainer:BROADCOM BCM281XX/BCM11XXX/BCM216XX ARM ARCHITE..." 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "moderated list:ARM AND ARM64 SoC SUB-ARCHITECTURES (COMMON PARTS)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
-        <linux-rpi-kernel@lists.infradead.org>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= <uwe@kleine-koenig.org>
-Subject: Re: [PATCH 1/2] ARM: dts: bcm2*: Demux i2c0 with a pinctrl
-Date:   Wed, 09 Feb 2022 14:25:12 -0500
-Message-ID: <11962907.O9o76ZdvQC@falcon9>
-In-Reply-To: <1335ae03-705a-7a4a-a9ce-c6c55a2dcf34@i2se.com>
-References: <20220209162515.706729-1-detlev.casanova@collabora.com> <20220209162515.706729-2-detlev.casanova@collabora.com> <1335ae03-705a-7a4a-a9ce-c6c55a2dcf34@i2se.com>
+        b=eTWlEXS/0Y35dKA6PiAmObkPYW8FIkFAGa5rkK2HXeL0K6PLYOfI3JCvLq6YhLsf4
+         gxCQcwDh6VswUCtApPplS3CYreRgaQEkROKYf6rfdM8rWXaz3LGgosyHwhVsVw9PcG
+         EMQ90KJKTrE7Fk++tX2HMDk2AwzHTHTIYnW1eOok=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        linux-mmc@vger.kernel.org, whitehat002 <hackyzh002@gmail.com>
+Subject: [PATCH 5.16 2/5] moxart: fix potential use-after-free on remove path
+Date:   Wed,  9 Feb 2022 20:14:34 +0100
+Message-Id: <20220209191249.977151443@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
+References: <20220209191249.887150036@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wednesday, February 9, 2022 12:26:15 P.M. EST Stefan Wahren wrote:
-> Hi Detlev,
-> 
-> Am 09.02.22 um 17:25 schrieb Detlev Casanova:
-> > The i2c0 device has 2 different busses controlled by a pinctrl.
-> > 
-> > This commit separates the device node into 2 i2c devices:
-> >  * pin 0: Base i2c bus
-> >  * pin 44: DSI i2c bus
-> > 
-> > i2c0 is renamed to i2c0if so that device-trees referencing i2c0 don't
-> > break and use the i2c0 node defined in i2c0mux node.
-> > 
-> > i2c_csi_dsi can be used to control devices via the DSI i2c bus, used for
-> > DSI displays.
-> > 
-> > Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
-> 
-> just a note: Uwe sends a similiar approach for the RTC on CM4 [1] which
-> hasn't applied yet.
-> 
-> [1] - https://www.spinics.net/lists/arm-kernel/msg944330.html
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
+commit bd2db32e7c3e35bd4d9b8bbff689434a50893546 upstream.
 
-Oh, I missed that, I'll just hav to wait for it to be merged and base the next 
-commit on that (Mainly name change)
+It was reported that the mmc host structure could be accessed after it
+was freed in moxart_remove(), so fix this by saving the base register of
+the device and using it instead of the pointer dereference.
+
+Cc: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Cc: Xin Xiong <xiongx18@fudan.edu.cn>
+Cc: Xin Tan <tanxin.ctf@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>
+Cc: Yang Li <yang.lee@linux.alibaba.com>
+Cc: linux-mmc@vger.kernel.org
+Cc: stable <stable@vger.kernel.org>
+Reported-by: whitehat002 <hackyzh002@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220127071638.4057899-1-gregkh@linuxfoundation.org
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/mmc/host/moxart-mmc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/mmc/host/moxart-mmc.c
++++ b/drivers/mmc/host/moxart-mmc.c
+@@ -705,12 +705,12 @@ static int moxart_remove(struct platform
+ 	if (!IS_ERR_OR_NULL(host->dma_chan_rx))
+ 		dma_release_channel(host->dma_chan_rx);
+ 	mmc_remove_host(mmc);
+-	mmc_free_host(mmc);
  
-> > ---
-> > 
-> >  arch/arm/boot/dts/bcm2711-rpi-4-b.dts         |  1 +
-> >  arch/arm/boot/dts/bcm2711.dtsi                |  2 +-
-> >  arch/arm/boot/dts/bcm2835-rpi.dtsi            |  9 ++++---
-> >  .../boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi    |  4 +++
-> >  arch/arm/boot/dts/bcm283x.dtsi                | 26 ++++++++++++++++++-
-> >  5 files changed, 37 insertions(+), 5 deletions(-)
-> >  create mode 100644 arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
-> > 
-> > diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> > b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts index 4432412044de..5dcce58817e6
-> > 100644
-> > --- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> > +++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> > @@ -4,6 +4,7 @@
-> > 
-> >  #include "bcm2711-rpi.dtsi"
-> >  #include "bcm283x-rpi-usb-peripheral.dtsi"
-> >  #include "bcm283x-rpi-wifi-bt.dtsi"
-> > 
-> > +#include "bcm283x-rpi-i2c0mux_0_44.dtsi"
-> > 
-> >  / {
-> >  
-> >  	compatible = "raspberrypi,4-model-b", "brcm,bcm2711";
-> > 
-> > diff --git a/arch/arm/boot/dts/bcm2711.dtsi
-> > b/arch/arm/boot/dts/bcm2711.dtsi index 3b60297af7f6..bf6e8251c2c7 100644
-> > --- a/arch/arm/boot/dts/bcm2711.dtsi
-> > +++ b/arch/arm/boot/dts/bcm2711.dtsi
-> > @@ -1037,7 +1037,7 @@ &cma {
-> > 
-> >  	alloc-ranges = <0x0 0x00000000 0x40000000>;
-> >  
-> >  };
-> > 
-> > -&i2c0 {
-> > +&i2c0if {
-> > 
-> >  	compatible = "brcm,bcm2711-i2c", "brcm,bcm2835-i2c";
-> >  	interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
-> >  
-> >  };
-> > 
-> > diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi
-> > b/arch/arm/boot/dts/bcm2835-rpi.dtsi index 87ddcad76083..1e38f9f0e80e
-> > 100644
-> > --- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
-> > +++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
-> > @@ -49,13 +49,16 @@ alt0: alt0 {
-> > 
-> >  	};
-> >  
-> >  };
-> > 
-> > -&i2c0 {
-> > -	pinctrl-names = "default";
-> > -	pinctrl-0 = <&i2c0_gpio0>;
-> > +&i2c0if {
-> > 
-> >  	status = "okay";
-> >  	clock-frequency = <100000>;
-> >  
-> >  };
-> > 
-> > +&i2c0mux {
-> > +	pinctrl-0 = <&i2c0_gpio0>;
-> > +	status = "okay";
-> > +};
-> > +
-> > 
-> >  &i2c1 {
-> >  
-> >  	pinctrl-names = "default";
-> >  	pinctrl-0 = <&i2c1_gpio2>;
-> > 
-> > diff --git a/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
-> > b/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi new file mode 100644
-> > index 000000000000..119946d878db
-> > --- /dev/null
-> > +++ b/arch/arm/boot/dts/bcm283x-rpi-i2c0mux_0_44.dtsi
-> > @@ -0,0 +1,4 @@
-> > +&i2c0mux {
-> > +	pinctrl-0 = <&i2c0_gpio0>;
-> > +	pinctrl-1 = <&i2c0_gpio44>;
-> > +};
-> > diff --git a/arch/arm/boot/dts/bcm283x.dtsi
-> > b/arch/arm/boot/dts/bcm283x.dtsi index a3e06b680947..06d04cde52b9 100644
-> > --- a/arch/arm/boot/dts/bcm283x.dtsi
-> > +++ b/arch/arm/boot/dts/bcm283x.dtsi
-> > @@ -334,7 +334,7 @@ spi: spi@7e204000 {
-> > 
-> >  			status = "disabled";
-> >  		
-> >  		};
-> > 
-> > -		i2c0: i2c@7e205000 {
-> > +		i2c0if: i2c@7e205000 {
-> > 
-> >  			compatible = "brcm,bcm2835-i2c";
-> >  			reg = <0x7e205000 0x200>;
-> >  			interrupts = <2 21>;
-> > 
-> > @@ -344,6 +344,30 @@ i2c0: i2c@7e205000 {
-> > 
-> >  			status = "disabled";
-> >  		
-> >  		};
-> > 
-> > +		i2c0mux: i2c0mux {
-> > +			compatible = "i2c-mux-pinctrl";
-> > +			#address-cells = <1>;
-> > +			#size-cells = <0>;
-> > +
-> > +			i2c-parent = <&i2c0if>;
-> > +
-> > +			pinctrl-names = "i2c0", "i2c_csi_dsi";
-> > +
-> > +			status = "disabled";
-> > +
-> > +			i2c0: i2c@0 {
-> > +				reg = <0>;
-> > +				#address-cells = <1>;
-> > +				#size-cells = <0>;
-> > +			};
-> > +
-> > +			i2c_csi_dsi: i2c@1 {
-> > +				reg = <1>;
-> > +				#address-cells = <1>;
-> > +				#size-cells = <0>;
-> > +			};
-> > +		};
-> > +
-> > 
-> >  		dpi: dpi@7e208000 {
-> >  		
-> >  			compatible = "brcm,bcm2835-dpi";
-> >  			reg = <0x7e208000 0x8c>;
-
-
+ 	writel(0, host->base + REG_INTERRUPT_MASK);
+ 	writel(0, host->base + REG_POWER_CONTROL);
+ 	writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
+ 	       host->base + REG_CLOCK_CONTROL);
++	mmc_free_host(mmc);
+ 
+ 	return 0;
+ }
 
 
