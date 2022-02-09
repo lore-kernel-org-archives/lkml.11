@@ -2,90 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87FD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752DBC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236958AbiBIXCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:02:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53740 "EHLO
+        id S236949AbiBIXEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 18:04:42 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236886AbiBIXCX (ORCPT
+        with ESMTP id S236886AbiBIXEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 18:02:23 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71982C0302D7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:02:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=EhkMnswuaL4sL/SMOM6zzAjgMyXYRzGf0cCGaPp86to=; b=ZP4VvJJyFFRdDuI4A20xKjwyK9
-        oNK2RILfVvVTJJFPVmsMlGxKVz5Npyns1O1VqFKTyZQb5SiBufHOKWKlMK0dN+mthGrjQqtt+rsde
-        Eg7RruNFjq3flRI7HSrDkBkO942InE8BitV91uoNATJYS2mJv9QOaJsiwzA0Nbess1hdiSZzxAGsv
-        PWolH3gONGAtKMhYngHOtTGQ+a07WMT+9EJQGQ0FpR/hVlhm/WYAYaDQliIL4bxwcxijA2XbhS4r/
-        BU9RsrNTeFw8MbjkSgI5HejXoWClKAVlRyjvWBZzTWEkgZKeEUYBCcURbyx2G9c6Bs6zNm5Dg+J/r
-        f4/rZ1oA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nHvyQ-00212U-Ny; Wed, 09 Feb 2022 23:02:06 +0000
-Date:   Wed, 9 Feb 2022 15:02:06 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Petr Mladek <pmladek@suse.com>, Vimal Agrawal <avimalin@gmail.com>
-Cc:     Maninder Singh <maninder1.s@samsung.com>, rostedt@goodmis.org,
-        senozhatsky@chromium.org, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, akpm@linux-foundation.org,
-        wangkefeng.wang@huawei.com, mbenes@suse.cz, swboyd@chromium.org,
-        ojeda@kernel.org, linux-kernel@vger.kernel.org, will@kernel.org,
-        catalin.marinas@arm.com, Vaneet Narang <v.narang@samsung.com>,
-        Aaron Tomlin <atomlin@redhat.com>
-Subject: Re: [PATCH 1/1] kallsyms: print module name in %ps/S case when
- KALLSYMS is disabled
-Message-ID: <YgRH7hwFC2AGISdP@bombadil.infradead.org>
-References: <CGME20220201040100epcas5p180ef094058fc9c76b4b94d9d673fc5fc@epcas5p1.samsung.com>
- <20220201040044.1528568-1-maninder1.s@samsung.com>
- <20220209114038.GA8279@pathway.suse.cz>
+        Wed, 9 Feb 2022 18:04:41 -0500
+Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEA21E05025B;
+        Wed,  9 Feb 2022 15:04:41 -0800 (PST)
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 219N4MWl018835;
+        Thu, 10 Feb 2022 08:04:22 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 219N4MWl018835
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1644447863;
+        bh=JD3bCnrEHImzegmVdsIy2d76lHQ7wJFzdy4OTC7bGUE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=bkWDNmm8nLRvce/X5cdYH6JnlURd6Sj5nIUfjN4httonnxgMhzz0ERKwqKcSl2jrD
+         s3bncT8qg6IST+h2b+v/clxs2hmaxmRecryoorHvIWj2GKgimySRf257ITuzcsFyli
+         bXIXU7zriOAKGgssLtRHNg0vaSVh5VsLmF8TYlsgUgiGU/zhVuYkgNjTySONwD8+OX
+         IFMmInqD6ja0pXRMnA0K71nCmedVatzURHf70NydriRV1ulJueMwZLjeQjpWgMOilP
+         qjAPwp8auhrl+RdBOVXbqJZS+VOrzr/9KDJg568MRAw7q4LXuzBiRUyxUWqkLKMMjG
+         jASgG9humYJsw==
+X-Nifty-SrcIP: [209.85.216.42]
+Received: by mail-pj1-f42.google.com with SMTP id ki18-20020a17090ae91200b001b8be87e9abso498084pjb.1;
+        Wed, 09 Feb 2022 15:04:22 -0800 (PST)
+X-Gm-Message-State: AOAM532fmbTVvnjltev0DTtiYwwTNH5CbBu9CBSQ1kGTGOzmnrNQEQ6q
+        rQaIp5Evd9Kmg6UZofeadUzxCrAHYZ7N+DAGNTM=
+X-Google-Smtp-Source: ABdhPJzbnjrw/KmyMBO+YMmYwVY6E8qBn64TEpTpKommTq2t2glNIGKsdYKfqkNzF4BL6+ACmH1O1eFnVNuVdFrYEz4=
+X-Received: by 2002:a17:902:6948:: with SMTP id k8mr4565975plt.136.1644447861994;
+ Wed, 09 Feb 2022 15:04:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209114038.GA8279@pathway.suse.cz>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+References: <20211218031122.4117631-1-willy@infradead.org> <CAK7LNAQUChvX3NoukBnjBfJJGu+a96pfbM--xHEHOygWPgE9eA@mail.gmail.com>
+ <YdSOV7LL0vWCMcWl@casper.infradead.org> <CAK7LNAQgixJSnDUMfjc+tg90oMdVoh+i5faEn-rqgmHR3Bk6dQ@mail.gmail.com>
+ <20220208110122.2z4cmbqexmnxuxld@jak-t480s> <YgJrypdQium7AcWV@casper.infradead.org>
+ <20220208161259.inytmx6gm4w34gct@jak-t480s>
+In-Reply-To: <20220208161259.inytmx6gm4w34gct@jak-t480s>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 10 Feb 2022 08:03:44 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAQaCF_Dj_s4NYrAgxinw7EbmF9w4vqdYGM-wBehiCTB_A@mail.gmail.com>
+Message-ID: <CAK7LNAQaCF_Dj_s4NYrAgxinw7EbmF9w4vqdYGM-wBehiCTB_A@mail.gmail.com>
+Subject: Re: [PATCH v2] builddeb: Support signing kernels with the module
+ signing key
+To:     Julian Andres Klode <julian.klode@canonical.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Ben Hutchings <ben@decadent.org.uk>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        efi@lists.einval.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Howells <dhowells@redhat.com>, keyrings@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        debian-kernel <debian-kernel@lists.debian.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 12:40:38PM +0100, Petr Mladek wrote:
-> > --- a/include/linux/kallsyms.h
-> > +++ b/include/linux/kallsyms.h
-> > @@ -163,6 +163,33 @@ static inline bool kallsyms_show_value(const struct cred *cred)
-> >  	return false;
-> >  }
-> >  
-> > +#ifdef CONFIG_MODULES
-> > +static inline int fill_minimal_module_info(char *sym, int size, unsigned long value)
-> > +{
-> > +	struct module *mod;
-> > +	unsigned long offset;
-> > +	int ret = 0;
-> > +
-> > +	preempt_disable();
-> > +	mod = __module_address(value);
-> > +	if (mod) {
-> > +		offset = value - (unsigned long)mod->core_layout.base;
-> > +		snprintf(sym, size - 1, "0x%lx+0x%lx [%s]",
-> > +				(unsigned long)mod->core_layout.base, offset, mod->name);
-> > +
-> > +		sym[size - 1] = '\0';
-> > +		ret = 1;
-> > +	}
-> > +
-> > +	preempt_enable();
-> > +	return ret;
-> > +}
-> 
-> It looks too big for an inlined function. Anyway, we will need
-> something even more complex, see below.
+On Wed, Feb 9, 2022 at 1:13 AM Julian Andres Klode
+<julian.klode@canonical.com> wrote:
+>
+> On Tue, Feb 08, 2022 at 01:10:34PM +0000, Matthew Wilcox wrote:
+> > On Tue, Feb 08, 2022 at 12:01:22PM +0100, Julian Andres Klode wrote:
+> > > It's worth pointing out that in Ubuntu, the generated MOK key
+> > > is for module signing only (extended key usage 1.3.6.1.4.1.2312.16.1.2),
+> > > kernels signed with it will NOT be bootable.
+> >
+> > Why should these be separate keys?  There's no meaningful security
+> > boundary between a kernel module and the ernel itself; a kernel
+> > modulecan, for example, write to CR3, and that's game over for
+> > any pretence at separation.
+>
+> I don't really _know_, but I believe the difference is that the
+> kernel binaries runs in boot services, and calls ExitBootServices,
+> whereas modules are loaded after ExitBootServices.
+>
+> But I don't know the full rationale why (a) the feature exists in
+> the first place and (b) why the Ubuntu security team chose to require
+> that constraint.
+>
+> My goal is just to make people aware of that so they can make
+> informed decisions :)
+>
+> --
+> debian developer - deb.li/jak | jak-linux.org - free software dev
+> ubuntu core developer                              i speak de, en
 
-Interesting, these observations might apply to Vimal's work as well [0].
 
-[0] https://lkml.kernel.org/r/YgKyC4ZRud0JW1PF@bombadil.infradead.org
+So, this is the restriction only for Ubuntu.
 
-  Luis
+If it works for Debian, I am fine with
+adding the kernel signing to scripts/package/builddeb.
+
+If it is annoying for some people, maybe we can add
+some switch like KDEB_SIGN_KERNEL to conditionally
+sign the kernel.
+
+-- 
+Best Regards
+Masahiro Yamada
