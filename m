@@ -2,36 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F60EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA404C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiBIMEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:04:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39544 "EHLO
+        id S232280AbiBIMEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:04:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231982AbiBIMDO (ORCPT
+        with ESMTP id S232257AbiBIMDc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:03:14 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D913AC033249
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:40:27 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4F2D71EC054C;
-        Wed,  9 Feb 2022 12:40:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644406822;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=YW2m9uiYmForoP7mys5vbamX9CSY0dr8MG2u1gRwbQU=;
-        b=It8Diogeg1sUuDhyQoluVuNV7ePec4LRfJpuM0wYVw7nmTBLn+0WfOw6HSCeZjhsL5igSc
-        +F8BjOwdhuAatqqH/8UIY8+38kmJWKt8pBwOaB5BXeh89yhXclGRtRLN6Hd+Ta+rabMoVt
-        NYyYox4KN1y9RXyQpNQjej5o9oH8FoI=
-Date:   Wed, 9 Feb 2022 12:40:17 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Kai Huang <kai.huang@intel.com>
+        Wed, 9 Feb 2022 07:03:32 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3748E016CFE
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:30:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644406245; x=1675942245;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zpFWCTe09P0oV77Zfr2nNWQUjupkUrfoWW1+kTet9Pg=;
+  b=b4d76U0rkmdxYYZKuMyYKWPhMDKi5fF8EJmUX+dI2MLmlhu2hSNzXq+A
+   LqpmQGtwWj6gbuKq/d9qFVxHqkai0KT9ddfYbBnUo+rn2kNZcf3sbc+RG
+   aSvYeMupJEgPPO4qV2ykoQPYcv7MO+MpuXlYGpl+9Ugbd7g/aPXSupCG0
+   5XOhDYvXkQXMNGHw9WnAqjE6cNwOo6qsgNnjxsFXUQG/fdk63jtMyGS9B
+   5e3Y0UAiNmNNtAJUezLubhg/4X1Pydhw1vSPOZergi/A5NSSRBsk3B4I1
+   irBfiOR9UW44FXbuUXS+JlZ/OGfVahwsngsJxLCDmtCt2oSHGBMCe7xTL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="229832351"
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="229832351"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 03:30:45 -0800
+X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
+   d="scan'208";a="485209240"
+Received: from ravicha1-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.88.114])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 03:30:39 -0800
+Date:   Thu, 10 Feb 2022 00:30:33 +1300
+From:   Kai Huang <kai.huang@intel.com>
+To:     Borislav Petkov <bp@alien8.de>
 Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
         luto@kernel.org, peterz@infradead.org,
@@ -43,45 +51,101 @@ Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
-Message-ID: <YgOoId+vyd1VhIqQ@zn.tnic>
+Message-Id: <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
+In-Reply-To: <YgOgog9Pb886lfsv@zn.tnic>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220209235613.652f5720cd196331d7a220ec@intel.com>
- <YgOgog9Pb886lfsv@zn.tnic>
- <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
+        <20220209235613.652f5720cd196331d7a220ec@intel.com>
+        <YgOgog9Pb886lfsv@zn.tnic>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 12:30:33AM +1300, Kai Huang wrote:
-> Because SEAM, P-SEAMLDR can logically be independent, so I feel it's better to
-> have separate C files for them.
+On Wed, 9 Feb 2022 12:08:18 +0100 Borislav Petkov wrote:
+> On Wed, Feb 09, 2022 at 11:56:13PM +1300, Kai Huang wrote:
+> > TDX host support basically does detection of SEAM, TDX KeyIDs, P-SEAMLDR and
+> > initialize the TDX module, so likely TDX host support will introduce couple of
+> > new files to do above things respectively,
+> 
+> Why a couple of new files? How much code is that?
 
-Most of those look like small files. I don't see the point of having it
-all in separate files - you can just as well put them in tdx.c and carve
-out only then when the file becomes too unwieldy to handle.
+This is the fine names and code size of current internal version that I have:
 
-> Thanks for the information.  However, for now does it make sense to also put
-> TDX host files under arch/x86/kernel/, or maybe arch/x86/kernel/tdx_host/?
+ .../admin-guide/kernel-parameters.txt         |   6 +
+ Documentation/x86/index.rst                   |   1 +
+ Documentation/x86/intel-tdx.rst               | 259 +++++++
+ arch/x86/Kconfig                              |  14 +
+ arch/x86/include/asm/seam.h                   | 213 ++++++
+ arch/x86/include/asm/tdx_host.h               |  20 +
+ arch/x86/kernel/asm-offsets_64.c              |  18 +
+ arch/x86/kernel/cpu/Makefile                  |   1 +
+ arch/x86/kernel/cpu/intel.c                   |   6 +
+ arch/x86/kernel/cpu/tdx/Makefile              |   1 +
+ arch/x86/kernel/cpu/tdx/p-seamldr.c           | 109 +++
+ arch/x86/kernel/cpu/tdx/p-seamldr.h           |  14 +
+ arch/x86/kernel/cpu/tdx/seam.c                | 105 +++
+ arch/x86/kernel/cpu/tdx/seamcall.S            |  80 ++
+ arch/x86/kernel/cpu/tdx/tdmr.c                | 581 ++++++++++++++
+ arch/x86/kernel/cpu/tdx/tdmr.h                |  28 +
+ arch/x86/kernel/cpu/tdx/tdx.c                 | 707 ++++++++++++++++++
+ arch/x86/kernel/cpu/tdx/tdx_arch.h            |  88 +++
+ arch/x86/kernel/cpu/tdx/tdx_seamcall.h        | 138 ++++
+ 19 files changed, 2389 insertions(+)
+ create mode 100644 Documentation/x86/intel-tdx.rst
+ create mode 100644 arch/x86/include/asm/seam.h
+ create mode 100644 arch/x86/include/asm/tdx_host.h
+ create mode 100644 arch/x86/kernel/cpu/tdx/Makefile
+ create mode 100644 arch/x86/kernel/cpu/tdx/p-seamldr.c
+ create mode 100644 arch/x86/kernel/cpu/tdx/p-seamldr.h
+ create mode 100644 arch/x86/kernel/cpu/tdx/seam.c
+ create mode 100644 arch/x86/kernel/cpu/tdx/seamcall.S
+ create mode 100644 arch/x86/kernel/cpu/tdx/tdmr.c
+ create mode 100644 arch/x86/kernel/cpu/tdx/tdmr.h
+ create mode 100644 arch/x86/kernel/cpu/tdx/tdx.c
+ create mode 100644 arch/x86/kernel/cpu/tdx/tdx_arch.h
+ create mode 100644 arch/x86/kernel/cpu/tdx/tdx_seamcall.h
 
-Didn't you just read what I wrote about "kernel"?
+Because SEAM, P-SEAMLDR can logically be independent, so I feel it's better to
+have separate C files for them.  TDMR (TD Memory Region, which is the structure
+defined by TDX architecture to manage usable TDX memory) is split out as a
+separate file as the logic to deal with it requires non-trival LOC too.
 
-> As suggested by Thomas, host SEAMCALL can share TDX guest's __tdx_module_call()
-> implementation.  Kirill will have a arch/x86/kernel/tdxcall.S which implements
-> the core body of __tdx_module_call() and is supposed to be included by the new
-> assembly file to implement the host SEAMCALL function.  From this perspective,
-> it seems more reasonable to just put all TDX host files under arch/x86/kernel/?
+> 
+> > and the majority of the code could be self-contained under some
+> > directory (currently under arch/x86/kernel/cpu/tdx/, but can be
+> > changed of course). Could we have some suggestions on how to organize?
+> 
+> So we slowly try to move stuff away from arch/x86/kernel/ as that is a
+> dumping ground for everything and everything there is "kernel" so that
+> part of the path is kinda redundant.
+> 
+> That's why, for example, we stuck the entry code under arch/x86/entry/.
+> 
+> I'm thinking long term we probably should stick all confidentail
+> computing stuff under its own folder:
+> 
+> arch/x86/coco/
+> 
+> for example. The "coco" being COnfidential COmputing, for lack of a
+> better idea.
+> 
+> And there you'll have
+> 
+> arch/x86/coco/tdx and
+> arch/x86/coco/sev
+> 
+> where to we'll start migrating the AMD stuff eventually too.
 
-It would be a lot harder to move them to a different location later,
-when they're upstream already. I'm talking from past experience here.
+Thanks for the information.  However, for now does it make sense to also put
+TDX host files under arch/x86/kernel/, or maybe arch/x86/kernel/tdx_host/?
 
-But let's see what the others think first.
+As suggested by Thomas, host SEAMCALL can share TDX guest's __tdx_module_call()
+implementation.  Kirill will have a arch/x86/kernel/tdxcall.S which implements
+the core body of __tdx_module_call() and is supposed to be included by the new
+assembly file to implement the host SEAMCALL function.  From this perspective,
+it seems more reasonable to just put all TDX host files under arch/x86/kernel/?
 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks in advance.
