@@ -2,427 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD13EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E869C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236051AbiBIPgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
+        id S236154AbiBIPgN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:36:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbiBIPf4 (ORCPT
+        with ESMTP id S235855AbiBIPf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:35:56 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E8F2C0613C9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:35:59 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 25B5F113E;
-        Wed,  9 Feb 2022 07:35:59 -0800 (PST)
-Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C91E83F73B;
-        Wed,  9 Feb 2022 07:35:56 -0800 (PST)
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
-        dave.hansen@linux.intel.com, frederic@kernel.org,
-        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
-        linux-kernel@vger.kernel.org, luto@kernel.org,
-        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
-        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
-Subject: [PATCH v3 5/7] sched/preempt: add PREEMPT_DYNAMIC using static keys
-Date:   Wed,  9 Feb 2022 15:35:33 +0000
-Message-Id: <20220209153535.818830-6-mark.rutland@arm.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
-References: <20220209153535.818830-1-mark.rutland@arm.com>
+        Wed, 9 Feb 2022 10:35:58 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6F1C0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:36:01 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 9F84821106;
+        Wed,  9 Feb 2022 15:36:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644420960; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fiB/RLA6+TRPqiQcsJO/7jhpKwwOHhChnXu8OxtZJF8=;
+        b=Eg39W1KhWOahMF4A1WT7hIsLEiwE3gTmUaPCXZ5KqFrqA9wLmpSk/tyKevPPhJi2l7t7Qh
+        PApTRciEYxRKIqeSk0m4ZA4Hz1NNH+G0Ai83QbG1P/lrvUVagPrRvO5glCYzsj321l89f4
+        oSh5zJHH4LC/yD0pNAPM2pZ5wNsF8mQ=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 430AEA3B84;
+        Wed,  9 Feb 2022 15:36:00 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 16:35:59 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Hugh Dickins <hughd@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        Matthew Wilcox <willy@infradead.org>,
+        David Hildenbrand <david@redhat.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 00/13] mm/munlock: rework of mlock+munlock page handling
+Message-ID: <YgPfX+/f0ksBpx6G@dhcp22.suse.cz>
+References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Where an architecture selects HAVE_STATIC_CALL but not
-HAVE_STATIC_CALL_INLINE, each static call has an out-of-line trampoline
-which will either branch to a callee or return to the caller.
+On Sun 06-02-22 13:27:41, Hugh Dickins wrote:
+> I wondered whether to post this munlocking rework in
+> https://lore.kernel.org/linux-mm/35c340a6-96f-28a0-2b7b-2f9fbddc01f@google.com/
+> 
+> There the discussion was OOM reaping, but the main reason for the rework
+> has been catastrophic contention on i_mmap_rwsem when exiting from
+> multiply mlocked files; and frustration with how contorted munlocking is.
 
-On such architectures, a number of constraints can conspire to make
-those trampolines more complicated and potentially less useful than we'd
-like. For example:
+yeah, I do not think that too many care about oom_reaper stumbling over
+vast portions of the mlocked memory problem. So far I have seen only LTP
+oom02 hitting this and that one does mlockall and intentionally hits
+OOM. So far I haven't seen any actual workload hiting something similar.
+But hey, if we get a better and easier to maintain mlock code then the
+oom_reaper will surely add to a huge thanks.
 
-* Hardware and software control flow integrity schemes can require the
-  addition of "landing pad" instructions (e.g. `BTI` for arm64), which
-  will also be present at the "real" callee.
+> Here it is based on 5.17-rc2, applies also to -rc3, almost cleanly to
+> mmotm 2022-02-03-21-58 (needs two easy fixups in mm/huge_memory.c); but
+> likely to conflict (I hope not fundamentally) with several concurrent
+> large patchsets.
+> 
+> tl;dr
+>  mm/mlock.c  |  634 +++++++++++++++-----------------------
+>  23 files changed, 510 insertions(+), 779 deletions(-)
 
-* Limited branch ranges can require that trampolines generate or load an
-  address into a register and perform an indirect branch (or at least
-  have a slow path that does so). This loses some of the benefits of
-  having a direct branch.
+This is really impressive!
 
-* Interaction with SW CFI schemes can be complicated and fragile, e.g.
-  requiring that we can recognise idiomatic codegen and remove
-  indirections understand, at least until clang proves more helpful
-  mechanisms for dealing with this.
+> In my own opinion, this is ready to go in: that whatever its defects,
+> it's a big practical improvement over what's presently there.  Others
+> may differ; and it may be too much to arrive at a quick opinion on.
+> My hope is that it will strike a chord with some who have laboured in
+> this area in the past: I'll be short of time to do much more with it,
+> so maybe someone else could take over if necessary.
+> 
+> At present there's no update to Documentation/vm/unevictable-lru.rst:
+> that always needs a different mindset, can follow later, please refer
+> to commit messages for now.
 
-For PREEMPT_DYNAMIC, we don't need the full power of static calls, as we
-really only need to enable/disable specific preemption functions. We can
-achieve the same effect without a number of the pain points above by
-using static keys to fold early returns into the preemption functions
-themselves rather than in an out-of-line trampoline, effectively
-inlining the trampoline into the start of the function.
+Yes, that would help for sure.
 
-For arm64, this results in good code generation. For example, the
-dynamic_cond_resched() wrapper looks as follows when enabled. When
-disabled, the first `B` is replaced with a `NOP`, resulting in an early
-return.
+So far I have only managed to read through the series and trying to put
+all the pieces together (so far I have given up on the THP part) and my
+undestanding is far from complete. But I have to say I like the general
+approach and overall simplification.
 
-| <dynamic_cond_resched>:
-|        bti     c
-|        b       <dynamic_cond_resched+0x10>     // or `nop`
-|        mov     w0, #0x0
-|        ret
-|        mrs     x0, sp_el0
-|        ldr     x0, [x0, #8]
-|        cbnz    x0, <dynamic_cond_resched+0x8>
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
+The only thing that is not entirely clear to me at the moment is why you
+have chosen to ignore already mapped LOCKONFAULT pages. They will
+eventually get sorted out during the reclaim/migration but this can
+backfire if too many pages have been pre-faulted before LOCKONFAULT
+call. Maybe not an interesting case in the first place but I am still
+wondering why you have chosen that way.
 
-... compared to the regular form of the function:
-
-| <__cond_resched>:
-|        bti     c
-|        mrs     x0, sp_el0
-|        ldr     x1, [x0, #8]
-|        cbz     x1, <__cond_resched+0x18>
-|        mov     w0, #0x0
-|        ret
-|        paciasp
-|        stp     x29, x30, [sp, #-16]!
-|        mov     x29, sp
-|        bl      <preempt_schedule_common>
-|        mov     w0, #0x1
-|        ldp     x29, x30, [sp], #16
-|        autiasp
-|        ret
-
-Any architecture which implements static keys should be able to use this
-to implement PREEMPT_DYNAMIC with similar cost to non-inlined static
-calls.
-
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Frederic Weisbecker <frederic@kernel.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
----
- arch/Kconfig                 | 36 ++++++++++++++++++++++--
- arch/x86/Kconfig             |  2 +-
- include/linux/entry-common.h | 10 +++++--
- include/linux/kernel.h       |  7 ++++-
- include/linux/sched.h        | 10 ++++++-
- kernel/entry/common.c        | 11 ++++++++
- kernel/sched/core.c          | 54 ++++++++++++++++++++++++++++++++++--
- 7 files changed, 120 insertions(+), 10 deletions(-)
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 601691f1570f..7587ed30b9dc 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -1278,11 +1278,41 @@ config HAVE_STATIC_CALL_INLINE
- 
- config HAVE_PREEMPT_DYNAMIC
- 	bool
-+
-+config HAVE_PREEMPT_DYNAMIC_CALL
-+	bool
- 	depends on HAVE_STATIC_CALL
-+	select HAVE_PREEMPT_DYNAMIC
- 	help
--	   Select this if the architecture support boot time preempt setting
--	   on top of static calls. It is strongly advised to support inline
--	   static call to avoid any overhead.
-+	   An architecture should select this if it can handle the preemption
-+	   model being selected at boot time using static calls.
-+
-+	   Where an architecture selects HAVE_STATIC_CALL_INLINE, any call to a
-+	   preemption function will be patched directly.
-+
-+	   Where an architecture does not select HAVE_STATIC_CALL_INLINE, any
-+	   call to a preemption function will go through a trampoline, and the
-+	   trampoline will be patched.
-+
-+	   It is strongly advised to support inline static call to avoid any
-+	   overhead.
-+
-+config HAVE_PREEMPT_DYNAMIC_KEY
-+	bool
-+	depends on JUMP_LABEL
-+	select HAVE_PREEMPT_DYNAMIC
-+	help
-+	   An architecture should select this if it can handle the preemption
-+	   model being selected at boot time using static keys.
-+
-+	   Each preemption function will be given an early return based on a
-+	   static key. This should have slightly lower overhead than non-inline
-+	   static calls, as this effectively inlines each trampoline into the
-+	   start of its callee. This may avoid redundant work, and may
-+	   integrate better with CFI schemes.
-+
-+	   This will have greater overhead than using inline static calls as
-+	   the call to the preemption function cannot be entirely elided.
- 
- config ARCH_WANT_LD_ORPHAN_WARN
- 	bool
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..70f94094fd6f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -246,7 +246,7 @@ config X86
- 	select HAVE_STACK_VALIDATION		if X86_64
- 	select HAVE_STATIC_CALL
- 	select HAVE_STATIC_CALL_INLINE		if HAVE_STACK_VALIDATION
--	select HAVE_PREEMPT_DYNAMIC
-+	select HAVE_PREEMPT_DYNAMIC_CALL
- 	select HAVE_RSEQ
- 	select HAVE_SYSCALL_TRACEPOINTS
- 	select HAVE_UNSTABLE_SCHED_CLOCK
-diff --git a/include/linux/entry-common.h b/include/linux/entry-common.h
-index dfd84c59b144..141952f4fee8 100644
---- a/include/linux/entry-common.h
-+++ b/include/linux/entry-common.h
-@@ -456,13 +456,19 @@ irqentry_state_t noinstr irqentry_enter(struct pt_regs *regs);
-  */
- void raw_irqentry_exit_cond_resched(void);
- #ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- #define irqentry_exit_cond_resched_dynamic_enabled	raw_irqentry_exit_cond_resched
- #define irqentry_exit_cond_resched_dynamic_disabled	NULL
- DECLARE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
- #define irqentry_exit_cond_resched()	static_call(irqentry_exit_cond_resched)()
--#else
--#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+DECLARE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+void dynamic_irqentry_exit_cond_resched(void);
-+#define irqentry_exit_cond_resched()	dynamic_irqentry_exit_cond_resched()
- #endif
-+#else /* CONFIG_PREEMPT_DYNAMIC */
-+#define irqentry_exit_cond_resched()	raw_irqentry_exit_cond_resched()
-+#endif /* CONFIG_PREEMPT_DYNAMIC */
- 
- /**
-  * irqentry_exit - Handle return from exception that used irqentry_enter()
-diff --git a/include/linux/kernel.h b/include/linux/kernel.h
-index 33f47a996513..a890428bcc1a 100644
---- a/include/linux/kernel.h
-+++ b/include/linux/kernel.h
-@@ -99,7 +99,7 @@ struct user;
- extern int __cond_resched(void);
- # define might_resched() __cond_resched()
- 
--#elif defined(CONFIG_PREEMPT_DYNAMIC)
-+#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- 
- extern int __cond_resched(void);
- 
-@@ -110,6 +110,11 @@ static __always_inline void might_resched(void)
- 	static_call_mod(might_resched)();
- }
- 
-+#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+
-+extern int dynamic_might_resched(void);
-+# define might_resched() dynamic_might_resched()
-+
- #else
- 
- # define might_resched() do { } while (0)
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index f5b2be39a78c..8b320fb54290 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -2016,7 +2016,7 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
- #if !defined(CONFIG_PREEMPTION) || defined(CONFIG_PREEMPT_DYNAMIC)
- extern int __cond_resched(void);
- 
--#ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- 
- DECLARE_STATIC_CALL(cond_resched, __cond_resched);
- 
-@@ -2025,6 +2025,14 @@ static __always_inline int _cond_resched(void)
- 	return static_call_mod(cond_resched)();
- }
- 
-+#elif defined(CONFIG_PREEMPT_DYNAMIC) && defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+extern int dynamic_cond_resched(void);
-+
-+static __always_inline int _cond_resched(void)
-+{
-+	return dynamic_cond_resched();
-+}
-+
- #else
- 
- static inline int _cond_resched(void)
-diff --git a/kernel/entry/common.c b/kernel/entry/common.c
-index 1739ca79613b..b145249ad91a 100644
---- a/kernel/entry/common.c
-+++ b/kernel/entry/common.c
-@@ -3,6 +3,7 @@
- #include <linux/context_tracking.h>
- #include <linux/entry-common.h>
- #include <linux/highmem.h>
-+#include <linux/jump_label.h>
- #include <linux/livepatch.h>
- #include <linux/audit.h>
- #include <linux/tick.h>
-@@ -392,7 +393,17 @@ void raw_irqentry_exit_cond_resched(void)
- 	}
- }
- #ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- DEFINE_STATIC_CALL(irqentry_exit_cond_resched, raw_irqentry_exit_cond_resched);
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+DEFINE_STATIC_KEY_TRUE(sk_dynamic_irqentry_exit_cond_resched);
-+void dynamic_irqentry_exit_cond_resched(void)
-+{
-+	if (!static_key_unlikely(&sk_dynamic_irqentry_exit_cond_resched))
-+		return;
-+	raw_irqentry_exit_cond_resched();
-+}
-+#endif
- #endif
- 
- noinstr void irqentry_exit(struct pt_regs *regs, irqentry_state_t state)
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 3bf7f90d0ef7..4cca19d40636 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -14,6 +14,7 @@
- 
- #include <linux/nospec.h>
- #include <linux/blkdev.h>
-+#include <linux/jump_label.h>
- #include <linux/kcov.h>
- #include <linux/scs.h>
- 
-@@ -6482,21 +6483,31 @@ asmlinkage __visible void __sched notrace preempt_schedule(void)
- 	 */
- 	if (likely(!preemptible()))
- 		return;
--
- 	preempt_schedule_common();
- }
- NOKPROBE_SYMBOL(preempt_schedule);
- EXPORT_SYMBOL(preempt_schedule);
- 
- #ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- #ifndef preempt_schedule_dynamic_enabled
- #define preempt_schedule_dynamic_enabled	preempt_schedule
- #define preempt_schedule_dynamic_disabled	NULL
- #endif
- DEFINE_STATIC_CALL(preempt_schedule, preempt_schedule_dynamic_enabled);
- EXPORT_STATIC_CALL_TRAMP(preempt_schedule);
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+static DEFINE_STATIC_KEY_TRUE(sk_dynamic_preempt_schedule);
-+void __sched notrace dynamic_preempt_schedule(void)
-+{
-+	if (!static_branch_unlikely(&sk_dynamic_preempt_schedule))
-+		return;
-+	preempt_schedule();
-+}
-+NOKPROBE_SYMBOL(dynamic_preempt_schedule);
-+EXPORT_SYMBOL(dynamic_preempt_schedule);
-+#endif
- #endif
--
- 
- /**
-  * preempt_schedule_notrace - preempt_schedule called by tracing
-@@ -6551,12 +6562,24 @@ asmlinkage __visible void __sched notrace preempt_schedule_notrace(void)
- EXPORT_SYMBOL_GPL(preempt_schedule_notrace);
- 
- #ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- #ifndef preempt_schedule_notrace_dynamic_enabled
- #define preempt_schedule_notrace_dynamic_enabled	preempt_schedule_notrace
- #define preempt_schedule_notrace_dynamic_disabled	NULL
- #endif
- DEFINE_STATIC_CALL(preempt_schedule_notrace, preempt_schedule_notrace_dynamic_enabled);
- EXPORT_STATIC_CALL_TRAMP(preempt_schedule_notrace);
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+static DEFINE_STATIC_KEY_TRUE(sk_dynamic_preempt_schedule_notrace);
-+void __sched notrace dynamic_preempt_schedule_notrace(void)
-+{
-+	if (!static_branch_unlikely(&sk_dynamic_preempt_schedule_notrace))
-+		return;
-+	preempt_schedule_notrace();
-+}
-+NOKPROBE_SYMBOL(dynamic_preempt_schedule_notrace);
-+EXPORT_SYMBOL(dynamic_preempt_schedule_notrace);
-+#endif
- #endif
- 
- #endif /* CONFIG_PREEMPTION */
-@@ -8066,6 +8089,7 @@ EXPORT_SYMBOL(__cond_resched);
- #endif
- 
- #ifdef CONFIG_PREEMPT_DYNAMIC
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- #define cond_resched_dynamic_enabled	__cond_resched
- #define cond_resched_dynamic_disabled	((void *)&__static_call_return0)
- DEFINE_STATIC_CALL_RET0(cond_resched, __cond_resched);
-@@ -8075,6 +8099,25 @@ EXPORT_STATIC_CALL_TRAMP(cond_resched);
- #define might_resched_dynamic_disabled	((void *)&__static_call_return0)
- DEFINE_STATIC_CALL_RET0(might_resched, __cond_resched);
- EXPORT_STATIC_CALL_TRAMP(might_resched);
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+static DEFINE_STATIC_KEY_FALSE(sk_dynamic_cond_resched);
-+int __sched dynamic_cond_resched(void)
-+{
-+	if (!static_branch_unlikely(&sk_dynamic_cond_resched))
-+		return 0;
-+	return __cond_resched();
-+}
-+EXPORT_SYMBOL(dynamic_cond_resched);
-+
-+static DEFINE_STATIC_KEY_FALSE(sk_dynamic_might_resched);
-+int __sched dynamic_might_resched(void)
-+{
-+	if (!static_branch_unlikely(&sk_dynamic_might_resched))
-+		return 0;
-+	return __cond_resched();
-+}
-+EXPORT_SYMBOL(dynamic_might_resched);
-+#endif
- #endif
- 
- /*
-@@ -8198,8 +8241,15 @@ int sched_dynamic_mode(const char *str)
- 	return -EINVAL;
- }
- 
-+#if defined(CONFIG_HAVE_PREEMPT_DYNAMIC_CALL)
- #define preempt_dynamic_enable(f)	static_call_update(f, f##_dynamic_enabled)
- #define preempt_dynamic_disable(f)	static_call_update(f, f##_dynamic_disabled)
-+#elif defined(CONFIG_HAVE_PREEMPT_DYNAMIC_KEY)
-+#define preempt_dynamic_enable(f)	static_key_enable(&sk_dynamic_##f.key)
-+#define preempt_dynamic_disable(f)	static_key_disable(&sk_dynamic_##f.key)
-+#else
-+#error "Unsupported PREEMPT_DYNAMIC mechanism"
-+#endif
- 
- void sched_dynamic_update(int mode)
- {
+I will be off next couple of days and plan to revisit this afterwards
+(should time allow). Anyway thanks a lot Hugh!
 -- 
-2.30.2
-
+Michal Hocko
+SUSE Labs
