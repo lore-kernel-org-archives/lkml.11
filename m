@@ -2,131 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A22E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241156AbiBISwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
+        id S233010AbiBISwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241207AbiBISuy (ORCPT
+        with ESMTP id S241234AbiBISuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:50:54 -0500
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF277C0401F3;
-        Wed,  9 Feb 2022 10:46:17 -0800 (PST)
-Received: by mail-yb1-f177.google.com with SMTP id o19so8547647ybc.12;
-        Wed, 09 Feb 2022 10:46:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FOZOUKLJKTfcXhSl2Frn48yaywqWILrf0FOGMO8s1HA=;
-        b=tH6yIwGZrWuCUeSYtAFsvNZ4qfXpPlrbYzeKJegOFOLkz7y9I3chVLFYES/qy9UMjQ
-         N3rJRDbOr22jqEL9+QogsXudu4JlsYxcP9gtC4dw1KFXHktdOI9SDpfsMS/RWyUASlKd
-         psBKg9K5hnSt3qwuSHrR3YFw7re694antpouKGXRqwOixbsb03pXoMvc6kplv38MzUFv
-         LVcQQCOZXvlrr4vl8hdGdKeZr2r9rBbSEDdNZt8X4wBaEo+S6e85KVZYhakCGRZkaSCV
-         Gr453zS7cDigHDMg3EvvPBJMZHBWK9dN82TtPe0pP9g0KQxq8GGafSalpICOI7yUj5of
-         jADA==
-X-Gm-Message-State: AOAM530fBs11exwMSn3jLWDW3rbspw3S15KY4OsjKteJ1B64lnNYXAQV
-        7IHTB0dL3wwK5TunEfXO2oNNqiXR4mfiv+4vcKk=
-X-Google-Smtp-Source: ABdhPJwJGGD0nJAvFhNDkFGeYRyEdQdP75MnqP3EaVTzMLv3wT5lodwnLAvfEtrY884JKET27CdtDI1tBOtpbtwnJQ8=
-X-Received: by 2002:a81:8b4e:: with SMTP id e14mr3633769ywk.301.1644432377048;
- Wed, 09 Feb 2022 10:46:17 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEEAAC03F93F;
+        Wed,  9 Feb 2022 10:46:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63252B82386;
+        Wed,  9 Feb 2022 18:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1582BC340E7;
+        Wed,  9 Feb 2022 18:46:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644432386;
+        bh=okCagNw6vmwShPkrE2a1CdLnrg8TCiVrhIFRvrreXHA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OuXR8XSHCaOLbo7xhm5DSrPYjKhgvEABOOEndp1ZcbBaaHI7+qxlIlUTR31ObTyy6
+         /CGvsPjSpIwW1W5ezoyyF33gPNFBasuZlwl21tH9jKe797/0zTaStAPMpselBOB4fM
+         8UmVcgX4eQ0OkXKH3z+e687RS3+OLMoka4BOq7UjFob0V8KZHX7JP9L+hmRr7BFYic
+         T1sIc63CnyvF48G5ZWgqFCT81deI5Jf0eSoWxFCoBYKPyj3bVbdTWQT1dM+aNgPxYc
+         UdZcdYoSDgiwRFQ7PeZO4LI8khZJgifBDVx8QzmK/bvO5zUa/G0Pa6q6zudF1oJl1R
+         PDeZYJOGU28cw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 4/7] selftests/zram: Adapt the situation that /dev/zram0 is being used
+Date:   Wed,  9 Feb 2022 13:45:47 -0500
+Message-Id: <20220209184550.48481-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
+References: <20220209184550.48481-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220209161342.91721-1-hdegoede@redhat.com>
-In-Reply-To: <20220209161342.91721-1-hdegoede@redhat.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 9 Feb 2022 19:46:06 +0100
-Message-ID: <CAJZ5v0ihi_jig=HejWo+rivn2Re7=U5VGPOL8gfmmW0UzBp6NA@mail.gmail.com>
-Subject: Re: [PATCH] x86/PCI: revert "Ignore E820 reservations for bridge
- windows on newer systems"
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?Q?Benoit_Gr=C3=A9goire?= <benoitg@coeus.ca>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hui Wang <hui.wang@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 5:14 PM Hans de Goede <hdegoede@redhat.com> wrote:
->
-> Commit 7f7b4236f204 ("x86/PCI: Ignore E820 reservations for bridge windows
-> on newer systems") fixes the touchpad not working on laptops like
-> the Lenovo IdeaPad 3 15IIL05 and the Lenovo IdeaPad 5 14IIL05, as well as
-> fixing thunderbolt hotplug issues on the Lenovo Yoga C940.
->
-> Unfortunately it turns out that this is causing issues with suspend/resume
-> on Lenovo ThinkPad X1 Carbon Gen 2 laptops. So, per the no regressions
-> policy, rever this. Note I'm looking into another fix for the issues this
-> fixed.
->
-> Fixes: 7f7b4236f204 ("x86/PCI: Ignore E820 reservations for bridge windows on newer systems")
-> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2029207
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-Applied as 5.17-rc material and pushed out for -next, thanks!
+[ Upstream commit 01dabed20573804750af5c7bf8d1598a6bf7bf6e ]
 
-> ---
->  arch/x86/kernel/resource.c | 23 +----------------------
->  1 file changed, 1 insertion(+), 22 deletions(-)
->
-> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-> index 9ae64f9af956..9b9fb7882c20 100644
-> --- a/arch/x86/kernel/resource.c
-> +++ b/arch/x86/kernel/resource.c
-> @@ -1,5 +1,4 @@
->  // SPDX-License-Identifier: GPL-2.0
-> -#include <linux/dmi.h>
->  #include <linux/ioport.h>
->  #include <asm/e820/api.h>
->
-> @@ -24,31 +23,11 @@ static void resource_clip(struct resource *res, resource_size_t start,
->                 res->start = end + 1;
->  }
->
-> -/*
-> - * Some BIOS-es contain a bug where they add addresses which map to
-> - * system RAM in the PCI host bridge window returned by the ACPI _CRS
-> - * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
-> - * allocating address space"). To avoid this Linux by default excludes
-> - * E820 reservations when allocating addresses since 2010.
-> - * In 2019 some systems have shown-up with E820 reservations which cover
-> - * the entire _CRS returned PCI host bridge window, causing all attempts
-> - * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
-> - *
-> - * Ideally Linux would fully stop using E820 reservations, but then
-> - * the old systems this was added for will regress.
-> - * Instead keep the old behavior for old systems, while ignoring the
-> - * E820 reservations for any systems from now on.
-> - */
->  static void remove_e820_regions(struct resource *avail)
->  {
-> -       int i, year = dmi_get_bios_year();
-> +       int i;
->         struct e820_entry *entry;
->
-> -       if (year >= 2018)
-> -               return;
-> -
-> -       pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
-> -
->         for (i = 0; i < e820_table->nr_entries; i++) {
->                 entry = &e820_table->entries[i];
->
-> --
-> 2.33.1
->
+If zram-generator package is installed and works, then we can not remove
+zram module because zram swap is being used. This case needs a clean zram
+environment, change this test by using hot_add/hot_remove interface. So
+even zram device is being used, we still can add zram device and remove
+them in cleanup.
+
+The two interface was introduced since kernel commit 6566d1a32bf7("zram:
+add dynamic device add/remove functionality") in v4.2-rc1. If kernel
+supports these two interface, we use hot_add/hot_remove to slove this
+problem, if not, just check whether zram is being used or built in, then
+skip it on old kernel.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/zram/zram.sh     |  15 +---
+ tools/testing/selftests/zram/zram01.sh   |   3 +-
+ tools/testing/selftests/zram/zram02.sh   |   1 -
+ tools/testing/selftests/zram/zram_lib.sh | 110 +++++++++++++----------
+ 4 files changed, 66 insertions(+), 63 deletions(-)
+
+diff --git a/tools/testing/selftests/zram/zram.sh b/tools/testing/selftests/zram/zram.sh
+index 9399c4aeaa265..d4652e295ff8a 100755
+--- a/tools/testing/selftests/zram/zram.sh
++++ b/tools/testing/selftests/zram/zram.sh
+@@ -1,9 +1,6 @@
+ #!/bin/bash
+ TCID="zram.sh"
+ 
+-# Kselftest framework requirement - SKIP code is 4.
+-ksft_skip=4
+-
+ . ./zram_lib.sh
+ 
+ run_zram () {
+@@ -17,14 +14,4 @@ echo ""
+ 
+ check_prereqs
+ 
+-# check zram module exists
+-MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
+-if [ -f $MODULE_PATH ]; then
+-	run_zram
+-elif [ -b /dev/zram0 ]; then
+-	run_zram
+-else
+-	echo "$TCID : No zram.ko module or /dev/zram0 device file not found"
+-	echo "$TCID : CONFIG_ZRAM is not set"
+-	exit $ksft_skip
+-fi
++run_zram
+diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
+index ac6e4ddd2604e..8abc9965089d1 100755
+--- a/tools/testing/selftests/zram/zram01.sh
++++ b/tools/testing/selftests/zram/zram01.sh
+@@ -42,7 +42,7 @@ zram_algs="lzo"
+ 
+ zram_fill_fs()
+ {
+-	for i in $(seq 0 $(($dev_num - 1))); do
++	for i in $(seq $dev_start $dev_end); do
+ 		echo "fill zram$i..."
+ 		local b=0
+ 		while [ true ]; do
+@@ -76,7 +76,6 @@ zram_mount
+ 
+ zram_fill_fs
+ zram_cleanup
+-zram_unload
+ 
+ if [ $ERR_CODE -ne 0 ]; then
+ 	echo "$TCID : [FAIL]"
+diff --git a/tools/testing/selftests/zram/zram02.sh b/tools/testing/selftests/zram/zram02.sh
+index 74569b883737f..3768cfd2e5f83 100755
+--- a/tools/testing/selftests/zram/zram02.sh
++++ b/tools/testing/selftests/zram/zram02.sh
+@@ -45,7 +45,6 @@ zram_set_memlimit
+ zram_makeswap
+ zram_swapoff
+ zram_cleanup
+-zram_unload
+ 
+ if [ $ERR_CODE -ne 0 ]; then
+ 	echo "$TCID : [FAIL]"
+diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
+index 2c1d1c567f854..130d193cbd727 100755
+--- a/tools/testing/selftests/zram/zram_lib.sh
++++ b/tools/testing/selftests/zram/zram_lib.sh
+@@ -14,10 +14,12 @@
+ # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+ # Modified: Naresh Kamboju <naresh.kamboju@linaro.org>
+ 
+-MODULE=0
+ dev_makeswap=-1
+ dev_mounted=-1
+-
++dev_start=0
++dev_end=-1
++module_load=-1
++sys_control=-1
+ # Kselftest framework requirement - SKIP code is 4.
+ ksft_skip=4
+ kernel_version=`uname -r | cut -d'.' -f1,2`
+@@ -55,57 +57,72 @@ zram_cleanup()
+ {
+ 	echo "zram cleanup"
+ 	local i=
+-	for i in $(seq 0 $dev_makeswap); do
++	for i in $(seq $dev_start $dev_makeswap); do
+ 		swapoff /dev/zram$i
+ 	done
+ 
+-	for i in $(seq 0 $dev_mounted); do
++	for i in $(seq $dev_start $dev_mounted); do
+ 		umount /dev/zram$i
+ 	done
+ 
+-	for i in $(seq 0 $(($dev_num - 1))); do
++	for i in $(seq $dev_start $dev_end); do
+ 		echo 1 > /sys/block/zram${i}/reset
+ 		rm -rf zram$i
+ 	done
+ 
+-}
++	if [ $sys_control -eq 1 ]; then
++		for i in $(seq $dev_start $dev_end); do
++			echo $i > /sys/class/zram-control/hot_remove
++		done
++	fi
+ 
+-zram_unload()
+-{
+-	if [ $MODULE -ne 0 ] ; then
+-		echo "zram rmmod zram"
++	if [ $module_load -eq 1 ]; then
+ 		rmmod zram > /dev/null 2>&1
+ 	fi
+ }
+ 
+ zram_load()
+ {
+-	# check zram module exists
+-	MODULE_PATH=/lib/modules/`uname -r`/kernel/drivers/block/zram/zram.ko
+-	if [ -f $MODULE_PATH ]; then
+-		MODULE=1
+-		echo "create '$dev_num' zram device(s)"
+-		modprobe zram num_devices=$dev_num
+-		if [ $? -ne 0 ]; then
+-			echo "failed to insert zram module"
+-			exit 1
+-		fi
+-
+-		dev_num_created=$(ls /dev/zram* | wc -w)
++	echo "create '$dev_num' zram device(s)"
++
++	# zram module loaded, new kernel
++	if [ -d "/sys/class/zram-control" ]; then
++		echo "zram modules already loaded, kernel supports" \
++			"zram-control interface"
++		dev_start=$(ls /dev/zram* | wc -w)
++		dev_end=$(($dev_start + $dev_num - 1))
++		sys_control=1
++
++		for i in $(seq $dev_start $dev_end); do
++			cat /sys/class/zram-control/hot_add > /dev/null
++		done
++
++		echo "all zram devices (/dev/zram$dev_start~$dev_end" \
++			"successfully created"
++		return 0
++	fi
+ 
+-		if [ "$dev_num_created" -ne "$dev_num" ]; then
+-			echo "unexpected num of devices: $dev_num_created"
+-			ERR_CODE=-1
++	# detect old kernel or built-in
++	modprobe zram num_devices=$dev_num
++	if [ ! -d "/sys/class/zram-control" ]; then
++		if grep -q '^zram' /proc/modules; then
++			rmmod zram > /dev/null 2>&1
++			if [ $? -ne 0 ]; then
++				echo "zram module is being used on old kernel" \
++					"without zram-control interface"
++				exit $ksft_skip
++			fi
+ 		else
+-			echo "zram load module successful"
++			echo "test needs CONFIG_ZRAM=m on old kernel without" \
++				"zram-control interface"
++			exit $ksft_skip
+ 		fi
+-	elif [ -b /dev/zram0 ]; then
+-		echo "/dev/zram0 device file found: OK"
+-	else
+-		echo "ERROR: No zram.ko module or no /dev/zram0 device found"
+-		echo "$TCID : CONFIG_ZRAM is not set"
+-		exit 1
++		modprobe zram num_devices=$dev_num
+ 	fi
++
++	module_load=1
++	dev_end=$(($dev_num - 1))
++	echo "all zram devices (/dev/zram0~$dev_end) successfully created"
+ }
+ 
+ zram_max_streams()
+@@ -119,7 +136,7 @@ zram_max_streams()
+ 		return 0
+ 	fi
+ 
+-	local i=0
++	local i=$dev_start
+ 	for max_s in $zram_max_streams; do
+ 		local sys_path="/sys/block/zram${i}/max_comp_streams"
+ 		echo $max_s > $sys_path || \
+@@ -131,7 +148,7 @@ zram_max_streams()
+ 			echo "FAIL can't set max_streams '$max_s', get $max_stream"
+ 
+ 		i=$(($i + 1))
+-		echo "$sys_path = '$max_streams' ($i/$dev_num)"
++		echo "$sys_path = '$max_streams'"
+ 	done
+ 
+ 	echo "zram max streams: OK"
+@@ -141,15 +158,16 @@ zram_compress_alg()
+ {
+ 	echo "test that we can set compression algorithm"
+ 
+-	local algs=$(cat /sys/block/zram0/comp_algorithm)
++	local i=$dev_start
++	local algs=$(cat /sys/block/zram${i}/comp_algorithm)
+ 	echo "supported algs: $algs"
+-	local i=0
++
+ 	for alg in $zram_algs; do
+ 		local sys_path="/sys/block/zram${i}/comp_algorithm"
+ 		echo "$alg" >	$sys_path || \
+ 			echo "FAIL can't set '$alg' to $sys_path"
+ 		i=$(($i + 1))
+-		echo "$sys_path = '$alg' ($i/$dev_num)"
++		echo "$sys_path = '$alg'"
+ 	done
+ 
+ 	echo "zram set compression algorithm: OK"
+@@ -158,14 +176,14 @@ zram_compress_alg()
+ zram_set_disksizes()
+ {
+ 	echo "set disk size to zram device(s)"
+-	local i=0
++	local i=$dev_start
+ 	for ds in $zram_sizes; do
+ 		local sys_path="/sys/block/zram${i}/disksize"
+ 		echo "$ds" >	$sys_path || \
+ 			echo "FAIL can't set '$ds' to $sys_path"
+ 
+ 		i=$(($i + 1))
+-		echo "$sys_path = '$ds' ($i/$dev_num)"
++		echo "$sys_path = '$ds'"
+ 	done
+ 
+ 	echo "zram set disksizes: OK"
+@@ -175,14 +193,14 @@ zram_set_memlimit()
+ {
+ 	echo "set memory limit to zram device(s)"
+ 
+-	local i=0
++	local i=$dev_start
+ 	for ds in $zram_mem_limits; do
+ 		local sys_path="/sys/block/zram${i}/mem_limit"
+ 		echo "$ds" >	$sys_path || \
+ 			echo "FAIL can't set '$ds' to $sys_path"
+ 
+ 		i=$(($i + 1))
+-		echo "$sys_path = '$ds' ($i/$dev_num)"
++		echo "$sys_path = '$ds'"
+ 	done
+ 
+ 	echo "zram set memory limit: OK"
+@@ -191,8 +209,8 @@ zram_set_memlimit()
+ zram_makeswap()
+ {
+ 	echo "make swap with zram device(s)"
+-	local i=0
+-	for i in $(seq 0 $(($dev_num - 1))); do
++	local i=$dev_start
++	for i in $(seq $dev_start $dev_end); do
+ 		mkswap /dev/zram$i > err.log 2>&1
+ 		if [ $? -ne 0 ]; then
+ 			cat err.log
+@@ -215,7 +233,7 @@ zram_makeswap()
+ zram_swapoff()
+ {
+ 	local i=
+-	for i in $(seq 0 $dev_makeswap); do
++	for i in $(seq $dev_start $dev_end); do
+ 		swapoff /dev/zram$i > err.log 2>&1
+ 		if [ $? -ne 0 ]; then
+ 			cat err.log
+@@ -229,7 +247,7 @@ zram_swapoff()
+ 
+ zram_makefs()
+ {
+-	local i=0
++	local i=$dev_start
+ 	for fs in $zram_filesystems; do
+ 		# if requested fs not supported default it to ext2
+ 		which mkfs.$fs > /dev/null 2>&1 || fs=ext2
+@@ -248,7 +266,7 @@ zram_makefs()
+ zram_mount()
+ {
+ 	local i=0
+-	for i in $(seq 0 $(($dev_num - 1))); do
++	for i in $(seq $dev_start $dev_end); do
+ 		echo "mount /dev/zram$i"
+ 		mkdir zram$i
+ 		mount /dev/zram$i zram$i > /dev/null || \
+-- 
+2.34.1
+
