@@ -2,184 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 764D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3781DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232786AbiBIEPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:15:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51936 "EHLO
+        id S236533AbiBIEPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347699AbiBIECm (ORCPT
+        with ESMTP id S1346828AbiBIDiy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:02:42 -0500
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91520C061578;
-        Tue,  8 Feb 2022 20:02:40 -0800 (PST)
-Received: by mail-oo1-f43.google.com with SMTP id o128-20020a4a4486000000b003181707ed40so1075784ooa.11;
-        Tue, 08 Feb 2022 20:02:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SmAPXZKckaZ6dH+DTdhtKGAYyYnz21UexfWGc9HyiWI=;
-        b=5nU1U5ye37nhURhlOmTXyOgkcon1BE9ccAEWfQtc4U2upooTuXNHFETNf53C1d6Eoc
-         On4JUrDcc4uOeX5HkFsoFduQLKks2+/+CPirLq7LojTX1G0rew7oRZVMi+QZXFgyX+lD
-         b2OFBLzuDpBsUqn8IpdpBqVrqvFLwYEf0lWqafb+Cnbmca++hegR9sGSr/FNld/RWqmW
-         JqOfBl1nHtmAR0hOQnZTQ+q/Icw3lYT/6rwSR9GS53XWq9twxwdf4qI44OAIRpVHUX9v
-         ie9Ybk6wshWahan2PSGwx2V6o9HUe4uEHrqbTP2e5Y+sesNSxXVKfVSCsiltGeonctol
-         hU3g==
-X-Gm-Message-State: AOAM530D2vTTFBT7tLfeD5Jt2gMPHet8IloPoRKt20v0FkFjSS+59kOY
-        3vsOx3GPL1mjuOzOHrU6Wf03+V/Lgw==
-X-Google-Smtp-Source: ABdhPJyLhQb7fx1xvUdR+Mt6U6PJoLnqQKAOqE0ef2RvE0J8MScHsEiQ0aQ4u+IvDD3ryPh2KjRUnQ==
-X-Received: by 2002:a05:6870:ee0c:: with SMTP id ga12mr151021oab.343.1644379359888;
-        Tue, 08 Feb 2022 20:02:39 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id u5sm6310855ooo.46.2022.02.08.20.02.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:02:39 -0800 (PST)
-Received: (nullmailer pid 3629635 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:02:38 -0000
-Date:   Tue, 8 Feb 2022 22:02:38 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     brgl@bgdev.pl, conleylee@foxmail.com, linus.walleij@linaro.org,
-        devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: gpio: convert faraday,ftgpio01 to yaml
-Message-ID: <YgM83n5moACXZe7j@robh.at.kernel.org>
-References: <20220127123028.3992288-1-clabbe@baylibre.com>
+        Tue, 8 Feb 2022 22:38:54 -0500
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA077C043188;
+        Tue,  8 Feb 2022 19:33:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=P6YRM
+        vZrszN+VySkNSrGHtGd3i/66fEQ9oe+G3JBq3c=; b=PtMAVONpTzf0raGf7V42m
+        jcs9M/IbShvr0zwBAUMYYK5BFl5XvgU3EBZyiNAZVZfYGcwjsZdXrxmCGbY4eLb0
+        n2sMQS2g/zwh+GLHhMVoImLK1LNp/YjFbfxa76WiDiAYYiz6ltr5UTimd6FIuxTS
+        R/Kt+39kz9Gg9KbY/YiCpI=
+Received: from localhost.localdomain (unknown [112.97.82.107])
+        by smtp4 (Coremail) with SMTP id HNxpCgC3pRo4KwNiKHlaBg--.26133S2;
+        Wed, 09 Feb 2022 10:47:24 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     bjorn@mork.no, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH net] net: usb: qmi_wwan: Add support for Dell DW5829e
+Date:   Wed,  9 Feb 2022 10:47:17 +0800
+Message-Id: <20220209024717.8564-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127123028.3992288-1-clabbe@baylibre.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgC3pRo4KwNiKHlaBg--.26133S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxur4UJrW5XrykCr47JF4DXFb_yoW5Xryfpr
+        1UAr17AFyUJF12vFykAF1xZryF9an7Wr9rtasF9an7WFWIvrs7t3yDtF9rZF1Iga1fK3WD
+        tFs8Kr47Kwn5GFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRpHqsUUUUU=
+X-Originating-IP: [112.97.82.107]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwGhZFc7VzxTYQABs3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 12:30:28PM +0000, Corentin Labbe wrote:
-> Converts gpio/faraday,ftgpio010.txt to yaml.
-> 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
-> 
-> This commit will cause arch/arm/boot/dts/moxart-uc7112lx.dts to fail DT validation,
-> but the GPIO driver need an interrupt so the current moxart DT is incomplete and the error is appropriate.
-> 
->  .../bindings/gpio/faraday,ftgpio010.txt       | 27 ---------
->  .../bindings/gpio/faraday,ftgpio010.yaml      | 59 +++++++++++++++++++
->  2 files changed, 59 insertions(+), 27 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/gpio/faraday,ftgpio010.txt
->  create mode 100644 Documentation/devicetree/bindings/gpio/faraday,ftgpio010.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.txt b/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.txt
-> deleted file mode 100644
-> index d04236558619..000000000000
-> --- a/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.txt
-> +++ /dev/null
-> @@ -1,27 +0,0 @@
-> -Faraday Technology FTGPIO010 GPIO Controller
-> -
-> -Required properties:
-> -
-> -- compatible : Should be one of
-> -  "cortina,gemini-gpio", "faraday,ftgpio010"
-> -  "moxa,moxart-gpio", "faraday,ftgpio010"
-> -  "faraday,ftgpio010"
-> -- reg : Should contain registers location and length
-> -- interrupts : Should contain the interrupt line for the GPIO block
-> -- gpio-controller : marks this as a GPIO controller
-> -- #gpio-cells : Should be 2, see gpio/gpio.txt
-> -- interrupt-controller : marks this as an interrupt controller
-> -- #interrupt-cells : a standard two-cell interrupt flag, see
-> -  interrupt-controller/interrupts.txt
-> -
-> -Example:
-> -
-> -gpio@4d000000 {
-> -	compatible = "cortina,gemini-gpio", "faraday,ftgpio010";
-> -	reg = <0x4d000000 0x100>;
-> -	interrupts = <22 IRQ_TYPE_LEVEL_HIGH>;
-> -	gpio-controller;
-> -	#gpio-cells = <2>;
-> -	interrupt-controller;
-> -	#interrupt-cells = <2>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.yaml b/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.yaml
-> new file mode 100644
-> index 000000000000..dfd10b76c9d5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/gpio/faraday,ftgpio010.yaml
-> @@ -0,0 +1,59 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/gpio/faraday,ftgpio010.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Faraday Technology FTGPIO010 GPIO Controller
-> +
-> +maintainers:
-> +  - Linus Walleij <linus.walleij@linaro.org>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - const: "cortina,gemini-gpio"
-> +          - const: "faraday,ftgpio010"
-> +      - items:
-> +          - const: "moxa,moxart-gpio"
-> +          - const: "faraday,ftgpio010"
-> +      - const: "faraday,ftgpio010"
+Dell DW5829e same as DW5821e except the CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+Also, DW5829e includes normal and eSIM type.
+Please see below test evidence:
 
-Don't need quotes.
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-> +  reg:
-> +    maxItems: 1
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-blank line between DT properties
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-With those fixes,
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 37e5f3495362..3353e761016d 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1400,6 +1400,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 1)},	/* Dell Wireless 5821e preproduction config */
+ 	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e4, 0)},	/* Dell Wireless 5829e with eSIM support*/
++	{QMI_FIXED_INTF(0x413c, 0x81e6, 0)},	/* Dell Wireless 5829e */
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_QUIRK_SET_DTR(0x22de, 0x9051, 2)}, /* Hucom Wireless HM-211S/K */
+-- 
+2.25.1
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-
-> +  resets:
-> +    maxItems: 1
-> +  clocks:
-> +    maxItems: 1
-> +  interrupts:
-> +    maxItems: 1
-> +    description: Should contain the interrupt line for the GPIO block
-> +  gpio-controller: true
-> +  "#gpio-cells":
-> +    const: 2
-> +  interrupt-controller: true
-> +  "#interrupt-cells":
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - "#gpio-cells"
-> +  - interrupt-controller
-> +  - "#interrupt-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    gpio@4d000000 {
-> +      compatible = "cortina,gemini-gpio", "faraday,ftgpio010";
-> +      reg = <0x4d000000 0x100>;
-> +      interrupts = <22 IRQ_TYPE_LEVEL_HIGH>;
-> +      gpio-controller;
-> +      #gpio-cells = <2>;
-> +      interrupt-controller;
-> +      #interrupt-cells = <2>;
-> +    };
-> -- 
-> 2.34.1
-> 
-> 
