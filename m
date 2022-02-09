@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 806D9C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:18:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233286AbiBITSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:18:12 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52722 "EHLO
+        id S232257AbiBITSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:18:49 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230497AbiBITSH (ORCPT
+        with ESMTP id S230497AbiBITSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:18:07 -0500
-X-Greylist: delayed 502 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 11:18:00 PST
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [IPv6:2a00:da80:fff0:2::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBCDC00693D;
-        Wed,  9 Feb 2022 11:18:00 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 47EA71C0B7A; Wed,  9 Feb 2022 20:07:02 +0100 (CET)
-Date:   Wed, 9 Feb 2022 20:07:01 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: [PATCH 4.19 77/86] ASoC: fsl: Add missing error handling in
- pcm030_fabric_probe
-Message-ID: <20220209190701.GA10459@duo.ucw.cz>
-References: <20220207103757.550973048@linuxfoundation.org>
- <20220207103800.195504006@linuxfoundation.org>
+        Wed, 9 Feb 2022 14:18:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8A2E00D119;
+        Wed,  9 Feb 2022 11:18:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFD961987;
+        Wed,  9 Feb 2022 19:15:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C374C340E7;
+        Wed,  9 Feb 2022 19:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644434138;
+        bh=7kk9Lfg3RNYsiFu0qA1BFD41TbB4U5hzFtBATuwovDk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OfBrFUpYOaVUgOPLG1aM/GyhRYmx5h9EXlnsL4208wzkqlkXYNkVwYrgdz9l5ZU9I
+         qftiOWVUS2OtE9ZkbwvGzji+lkDc553TKjOIYut0Bj444N+ZuVbEwV39RMiU/slJJ5
+         9b1R2hd2i8wFgyQH68lhPvBB/zIp5V0zlP0zoN2s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: [PATCH 5.15 2/5] arm64: Add Cortex-A510 CPU part definition
+Date:   Wed,  9 Feb 2022 20:14:27 +0100
+Message-Id: <20220209191250.067270808@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
+References: <20220209191249.980911721@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="SUOF0GtieIMvvwua"
-Content-Disposition: inline
-In-Reply-To: <20220207103800.195504006@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Anshuman Khandual <anshuman.khandual@arm.com>
 
---SUOF0GtieIMvvwua
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 53960faf2b731dd2f9ed6e1334634b8ba6286850 upstream.
 
-Hi!
+Add the CPU Partnumbers for the new Arm designs.
 
-> commit fb25621da5702c104ce0a48de5b174ced09e5b4e upstream.
->=20
-> Add the missing platform_device_put() and platform_device_del()
-> before return from pcm030_fabric_probe in the error handling case.
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Link: https://lore.kernel.org/r/1643120437-14352-2-git-send-email-anshuman.khandual@arm.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/arm64/include/asm/cputype.h |    2 ++
+ 1 file changed, 2 insertions(+)
 
-Are you sure?
+--- a/arch/arm64/include/asm/cputype.h
++++ b/arch/arm64/include/asm/cputype.h
+@@ -73,6 +73,7 @@
+ #define ARM_CPU_PART_CORTEX_A76		0xD0B
+ #define ARM_CPU_PART_NEOVERSE_N1	0xD0C
+ #define ARM_CPU_PART_CORTEX_A77		0xD0D
++#define ARM_CPU_PART_CORTEX_A510	0xD46
+ 
+ #define APM_CPU_PART_POTENZA		0x000
+ 
+@@ -113,6 +114,7 @@
+ #define MIDR_CORTEX_A76	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76)
+ #define MIDR_NEOVERSE_N1 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1)
+ #define MIDR_CORTEX_A77	MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77)
++#define MIDR_CORTEX_A510 MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510)
+ #define MIDR_THUNDERX	MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX)
+ #define MIDR_THUNDERX_81XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX)
+ #define MIDR_THUNDERX_83XX MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX)
 
-> --- a/sound/soc/fsl/pcm030-audio-fabric.c
-> +++ b/sound/soc/fsl/pcm030-audio-fabric.c
-> @@ -90,16 +90,21 @@ static int pcm030_fabric_probe(struct pl
->  		dev_err(&op->dev, "platform_device_alloc() failed\n");
-> =20
->  	ret =3D platform_device_add(pdata->codec_device);
-> -	if (ret)
-> +	if (ret) {
->  		dev_err(&op->dev, "platform_device_add() failed: %d\n", ret);
-> +		platform_device_put(pdata->codec_device);
-> +	}
-> =20
->  	ret =3D snd_soc_register_card(card);
-> -	if (ret)
-> +	if (ret) {
->  		dev_err(&op->dev, "snd_soc_register_card() failed: %d\n", ret);
-> +		platform_device_del(pdata->codec_device);
-> +		platform_device_put(pdata->codec_device);
-> +	}
-> =20
->  	platform_set_drvdata(op, pdata);
-> -
->  	return ret;
-> +
->  }
 
-Besides interesting whitespace, this will happily do
-platform_device_put() twice. I suspect it should return or
-something. This does not look right.
-
-Best regards,
-							Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---SUOF0GtieIMvvwua
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgQQ1QAKCRAw5/Bqldv6
-8r6yAJ0b32yBnFzeOQ+ZKSYI5cF+pD0jXQCfUFZuWjyWGVZtzMvCNHmWiEODMZs=
-=FNvY
------END PGP SIGNATURE-----
-
---SUOF0GtieIMvvwua--
