@@ -2,114 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B52EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC601C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241195AbiBIIa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:30:57 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38052 "EHLO
+        id S241288AbiBIIbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:31:21 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239756AbiBIIat (ORCPT
+        with ESMTP id S235322AbiBIIbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 03:30:49 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A54C05CB8C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:30:53 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2DAC22222E;
-        Wed,  9 Feb 2022 09:30:47 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1644395449;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nWdm67gA7+zk9jlgZ1z7LIqczKn6nqGWLdX4mNABBpA=;
-        b=sP8DEhoFsO/Gw8L9NMTquKBIGMi4HfGOmKl4/RoNlpvasb36cbmzpgbbcMKSzRGGnXRs7F
-        4T2Gv9z5PofDXo/oGkKVpezhvSITuiuw2kwd6bfPmVYOpTGCap8GmsCsZ26EYGVZQiBXap
-        UWw/8CnCw8deWcukGJjEclQup+DoJmY=
+        Wed, 9 Feb 2022 03:31:18 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150075.outbound.protection.outlook.com [40.107.15.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB86C05CB8C;
+        Wed,  9 Feb 2022 00:31:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z/zWSA0sUVnrjVck0NgojMdQZzaqJwYzGZaI81THgIuS3Al9Y89n/w8bbOLlBRbv47tPaw62UjJaoxRWqeKf1cOzDrrYoyqmLBZPCTFqm/DUtS79aC3sGHqE8zqp8gOIvSIFNmioZqFbd2G6KijtrnU7htSoWVryTQiEdL/2h/NnhoJD53yQh4v5ZXs2B16GlevQ7W5xTructdXYZ6F7/6iSWXgOaSyJAdUPOr/giTZPvCJ+DqBUiOfrQVFQJ0zfSUW4LE5ETRIuPMOcLn4z1xyF34TWSFx8EoMItAQ/UQ17OwKniW1JrE0t3ThI//VQshVo33aC+JVM1vnAWY4DMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D/hfW5qmo5VchVIKtpl8d1rDuydBQjUvO4U6+b+z/6s=;
+ b=TLt1ckEpNRXSXH/gTdQ9uGBCzN4VsCbmNnT9r+syTiz7y7P5Ns4k4wDpVbPTkcjPEv6crx3qhv9azJ8hZnZyz7dtitu2S5h6vXqJsqU68AwEP6fbcvSG9LLNuF0C3QIN03pwsMtnEIdjKkHgOInrKyXe2OYOvKbpuMkEeiEcI4bh4eR+qd2hv4r46XzVU40NPgiHIWUyEpaI0H4PbpAaP87ZltbbF8Pl8Ir48FE2XrPxvLgEiTumnXPijBpR4YBEl/kpQkKyWwa8iJ3Asoz5bMGftNM+hADEj8Mm+CcR8JWlaoPsmobYWktcRkQUAJaBdjjj9b0Z/XGRw65RcVr1mA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D/hfW5qmo5VchVIKtpl8d1rDuydBQjUvO4U6+b+z/6s=;
+ b=NuWXyJFdQqDU+IdNi3/rwIdN+RbgJavdIHRqiIErli/N9Pltl5uVVu89P1nqi6/QGgGHD8rkpj3j/LWtPkpmzGn/Ck9v74u6iXimM4R23unMmOB7JRfyQdnI379FeI90iuCXgvkXixvGsMHCclzaxGPW6oHdM7yYujkI5YTiF0Q=
+Received: from AM9PR04MB8397.eurprd04.prod.outlook.com (2603:10a6:20b:3b5::5)
+ by VE1PR04MB7438.eurprd04.prod.outlook.com (2603:10a6:800:1a0::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Wed, 9 Feb
+ 2022 08:31:20 +0000
+Received: from AM9PR04MB8397.eurprd04.prod.outlook.com
+ ([fe80::99e6:4d39:1ead:e908]) by AM9PR04MB8397.eurprd04.prod.outlook.com
+ ([fe80::99e6:4d39:1ead:e908%6]) with mapi id 15.20.4975.011; Wed, 9 Feb 2022
+ 08:31:20 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Po Liu <po.liu@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tim.gardner@canonical.com" <tim.gardner@canonical.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Subject: RE: [v1,net-next 1/3] net:enetc: allocate CBD ring data memory using
+ DMA coherent methods
+Thread-Topic: [v1,net-next 1/3] net:enetc: allocate CBD ring data memory using
+ DMA coherent methods
+Thread-Index: AQHYHXjwDD6u9tqMqEactPGiVOG/iqyK43JA
+Date:   Wed, 9 Feb 2022 08:31:19 +0000
+Message-ID: <AM9PR04MB8397047CA8818F0E9B113007962E9@AM9PR04MB8397.eurprd04.prod.outlook.com>
+References: <20220209054929.10266-1-po.liu@nxp.com>
+In-Reply-To: <20220209054929.10266-1-po.liu@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b2364385-2dde-4ea6-ed3a-08d9eba68c4f
+x-ms-traffictypediagnostic: VE1PR04MB7438:EE_
+x-microsoft-antispam-prvs: <VE1PR04MB743802BC2752B4B60A3753AA962E9@VE1PR04MB7438.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2657;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZgjIJjCHSmHfsIimDa5+I5M+YaKfNAjuMRmGq/pEjK5/B6c2ozaKHOC34pDfJPmfVgGrNEnAy9jH/L9bvqZgp6243i6wHI3siA99swQENhrAkMRHEGOKK5ho7+BKH0z19jF0+DFEwVw/OcqpEB2osEb03HawARuNTXFq8ngA2olrzKEoSrfii3a9GTQlCTFBolszBRM3NICSS7Xk4DbDE7jSj2mZNX+C5u+Ai2EqvnBkx56nmsIAvPjaE6v7LUIRI2xtCwAF2Z9AByt4QBgHQyiCYLW+S08TE8qjpJhOHioFMQA4kIZwGidyR3Hc2LwN4RDn/lVYo5f0wxFRSFN4Ept+/w8YTY3zI97J+Ij1yp5KC7XjqNTgZGZW+FCoro+VunjoK1Ly2H7NP8Ja7tOR4Wagms0Y8uIOd2iyLm8XiOwDwyM3R7UrYDgc3fGwIS1JRbQN7cS/h3U4Ubpls1OW5oBwDonWK4PMYaB5dfJUVnEw4xOKauBUY3JKckxLY+bZJNjKL6gks60LQQqm1MJV1VlZXrf54s0cqBq+tJuRgPYqYLTieO4EfZrhd/CCTmv9ok0pmeegIRjsmJHEp6/B3KSGc2MAcX8FKHkdDHYe66/47DOkFW+QKGFgv3Ll90GDgbcA/qtaYd2z8/I2LISkTfSWwdZl1p2e5Y7FnZVnAg1BrXOPd0z91QUwUbZWzOz/TNYuURQ7vPfA8gv3Ny5R7dZ68fIG+Pz2a99WVL4XGeqN03pv16NwQ64uWHuk2UDTrOemsmZY+6uEQRZK85mpQeWuzqtRktvSWz3ce0nN4DI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR04MB8397.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(122000001)(186003)(38100700002)(26005)(110136005)(76116006)(8936002)(52536014)(4744005)(316002)(6636002)(44832011)(5660300002)(38070700005)(86362001)(2906002)(8676002)(64756008)(4326008)(66476007)(66946007)(66446008)(66556008)(9686003)(83380400001)(508600001)(966005)(71200400001)(7696005)(6506007)(45080400002)(33656002)(55016003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LsW7g338OwFDM0ZwHLpSNhDkVsURluYkFppw+j2b/4jj4CX7GKj8Zs5TNExm?=
+ =?us-ascii?Q?FDaPxPldiOiEfQ2F/KOE5QlzuTbCkGNgcb95ubDcDcafPwToIBK04MALSPia?=
+ =?us-ascii?Q?3zkOFptocEq6S25kdG0rdkJw72b2hkIjNK5pyniKuVGwB58n+o9uCL9qdipu?=
+ =?us-ascii?Q?+WWoAE4yQtJMWW0yLXQW/PKrz3BbfcK8U6/7nPunViI2zGB2WfdAhixN++4I?=
+ =?us-ascii?Q?seNKWfMNYSWh0n8Cg410epYB7LuGgetNFJAH01S1QthUf+EpyKX2J8KlSz49?=
+ =?us-ascii?Q?nizxQZPT2tgr30lIRWjVx1WRJ0kwgoYviuRDsoWTCMGHxHOPCVm9QCqdloPc?=
+ =?us-ascii?Q?1F2PpjMQPo8fpHw0zOA6HsMWepcq7fVvT0s+B8jBTrRL3RIuYtikZDHKtnnd?=
+ =?us-ascii?Q?V+lecWgiftMDGvW2BTnTzUHwHjyUetRWmOjQ3w9OIcwhsESr9S089ux/F8ZC?=
+ =?us-ascii?Q?gadODnuXnoPtF9lFrpZL7TciYktaJXMN04eDDqPxM8WArg3Q1msPxpI7maoe?=
+ =?us-ascii?Q?v99PX7qqUqF1/rnrh6glibFtcGB2dI8r0T8aysvusUiy7NjLdj/5t3C7aYOH?=
+ =?us-ascii?Q?37PdpJsCnNKazTSmeL4ppkg/WCTendLm7bPTj5USjOalVSIrmwZ+MewRzgDJ?=
+ =?us-ascii?Q?Xaagnf9nxCp045u790BVesDWILspGCS4W1mRx+Tv3z70xl4UtkA/oLKtBJs5?=
+ =?us-ascii?Q?/3Fai+VMCG5av/hiYCP4/ss+qrgGfSv2s/SEg+sMnOqQY5GC27o0MKQcO0mt?=
+ =?us-ascii?Q?HnGMqFJrFVOmbmKQ6qoJX+JQo564imUQQA4u6fjAdeL4UipwBFvnSdtvFENr?=
+ =?us-ascii?Q?dh0gqSFIKKVxvm0tlSJP0rYG2tR+c749sSORVgjDRtCLrUM3Dc7Z97NNmxzt?=
+ =?us-ascii?Q?gNkcmLcmZ+0kxakwTclMFzjbUwwbYerhNXplCgDHQcv5TgzDGyiJFDWTTuNE?=
+ =?us-ascii?Q?T7MEJ9ffGhqDjddxle4VLovbK2QXBdou+J1d3k0siS5Vn5HqRZkmCFT4KOz+?=
+ =?us-ascii?Q?5lKEZny2RjQVU/5s2a64Yxmf7DEPOw5D4LlxIjtv1bkRZEbZ4Qx3JUrdfLuU?=
+ =?us-ascii?Q?ICjWnUHOYcFNZZyz/LaezaaDg1CVzcl3TGRMNZbvPmuoGNICLeOHyqBi+FN+?=
+ =?us-ascii?Q?fdmyU8ewa+R6Pri1EUaixD3r/eOjRoZiz075SB83oS2ey9kKfBDi/yu8by+V?=
+ =?us-ascii?Q?6L83QAs9sreHBJO3V8+AKkUYt3skrJYoervI+wTRnuQtu757XOwxzYscJ+u6?=
+ =?us-ascii?Q?YQm1UDJfRQCwTB6ERXOZXA9Bx8z4bUM4/0vATSBSqoVR94mrDSIiI/iPWT9g?=
+ =?us-ascii?Q?dc9auFYrrttencE1iGSuxosT7JflbQs6ci1jDpHUtT6wuUBmwcy9RBfC3amx?=
+ =?us-ascii?Q?Ijco6s+zjie3Gs4nKBNFsaXKhkn8IgaOQxYWDNI45JDup7Q2MIFYxUkQHn3h?=
+ =?us-ascii?Q?+bRXLlloZRAzKkxeyWeniwq9dUabCr56gpTRX19ouhcaCDPdy+i2irihYEhK?=
+ =?us-ascii?Q?Q23HtjPWvFz6SfZB2BteYIRhugNYidK4TKGVrdgrcYfp0Vu/ECarcspflER9?=
+ =?us-ascii?Q?Pfa2Mz75dEbhgr5ri/JhASj5HSJdrWtHK2crw83/V0ioEbjuchxaPqJWVheE?=
+ =?us-ascii?Q?ow=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 09 Feb 2022 09:30:46 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Cc:     dianders@chromium.org, tudor.ambarus@microchip.com, p.yadav@ti.com,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        quic_stummala@quicinc.com, quic_vbadigan@quicinc.com,
-        quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com
-Subject: Re: [PATCH V5] mtd: spi-nor: winbond: Add support for winbond chip
-In-Reply-To: <1644350330-8809-1-git-send-email-quic_c_sbhanu@quicinc.com>
-References: <1644350330-8809-1-git-send-email-quic_c_sbhanu@quicinc.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <d343f7172f179ac2da96f80f54cc500d@walle.cc>
-X-Sender: michael@walle.cc
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR04MB8397.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2364385-2dde-4ea6-ed3a-08d9eba68c4f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2022 08:31:19.9987
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fD/mP5UO6ZstJdaf+P2/9XzA6tlW1f4PbVgjYM8Qz2Ex6YbreHVNJPwwh8hI3BNxtb8wEXi9gCLJuKYb3KWlSA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7438
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+> -----Original Message-----
+> From: Po Liu <po.liu@nxp.com>
+[...]
+> Subject: [v1,net-next 1/3] net:enetc: allocate CBD ring data memory using
+> DMA coherent methods
+>=20
+> To replace the dma_map_single() stream DMA mapping with DMA coherent
+> method dma_alloc_coherent() which is more simple.
+>=20
+> dma_map_single() found by Tim Gardner not proper. Suggested by Claudiu
+> Manoil and Jakub Kicinski to use dma_alloc_coherent(). Discussion at:
+>=20
+> https://lore.kernel.org/netdev/AM9PR04MB8397F300DECD3C44D2EBD07796
+> BD9@AM9PR04MB8397.eurprd04.prod.outlook.com/t/
+>=20
+> Fixes: 888ae5a3952ba ("net: enetc: add tc flower psfp offload driver")
+> cc: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Reported-by: Tim Gardner <tim.gardner@canonical.com>
+> Signed-off-by: Po Liu <po.liu@nxp.com>
 
-Am 2022-02-08 20:58, schrieb Shaik Sajida Bhanu:
-> Add support for winbond W25Q512NW-IM chip.
+Thanks, Po.
 
-Also please include that in the subject. Eg.
-
-mtd: spi-nor: winbond: add support for W25Q512NW-IM
-
-> 
-> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-> Reviewed-by: Doug Anderson <dianders@chromium.org>
-> ---
-> Changes since V1:
-> 	- Added space before name of the flash part as suggested by Doug.
-> 
-> Changes since V2:
-> 	- Updated chip name as w25q512nwm as suggested by Doug.
-> 
-> Changes since V3:
-> 	- Updated flash_info flags passing according to below patch.
-> 
-> Changes since V4:
-> 	- Added OTP support for SPI card as suggested by Michael Walle.
-> 	- Updated SFDP flags passing as suggested by Pratyush Yadav.
-> ---
->  drivers/mtd/spi-nor/winbond.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/mtd/spi-nor/winbond.c 
-> b/drivers/mtd/spi-nor/winbond.c
-> index 675f32c..315b9f6 100644
-> --- a/drivers/mtd/spi-nor/winbond.c
-> +++ b/drivers/mtd/spi-nor/winbond.c
-> @@ -124,6 +124,10 @@ static const struct flash_info winbond_parts[] = {
->  	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ |
->  			      SPI_NOR_DUAL_READ) },
-> +	{ "w25q512nwm", INFO(0xef8020, 0, 64 * 1024, 1024)
-> +		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-> +		PARSE_SFDP
-
-This usually goes first, eg.
-
-PARSE_SFDP
-FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-OTP_INFO(256, 3, 0x1000, 0x1000)
-
-> +		OTP_INFO(256, 3, 0x1000, 0x1000) },
->  	{ "w25q512jvq", INFO(0xef4020, 0, 64 * 1024, 1024)
->  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
->  			      SPI_NOR_QUAD_READ) },
-
-Otherwise the SFDP dump is still missing as requested in my
-comment in v4. Please make sure you put it in the comment
-section of the patch, that is under the "---" line.
-
-Then I think, this patch is good.
-
--michael
+Reviewed-by: Claudiu Manoil <claudiu.manoil@nxp.com>
