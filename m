@@ -2,130 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D359C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:19:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E71C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233263AbiBIVSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:18:55 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46366 "EHLO
+        id S233272AbiBIVUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:20:02 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233216AbiBIVSv (ORCPT
+        with ESMTP id S233188AbiBIVT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:18:51 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730F5C0F8699
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:18:53 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id cf2so7568336edb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 13:18:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lF4t68p5+AhzDhd9G64qMyTKhDZNN82OhTXuxCv8VxI=;
-        b=g4nwEVBifqeezQZFyCEixAYLJ1SK6nOot4QmaQz+GuMzaVX2NSR3JuBVm/Sqs69Cv6
-         /ZOSFV+AITbOKT5LePXr6+vt0ZEvW0me8uKvQUIXyihX98Q9V4uYLUGTSjotzPL0j37G
-         Hpb8eChJ7IVkrRiKhV9leSzOlQgSqYGq6tD0H/vUIh2H/9TN7OY2YIFAccZCcA0ufUzM
-         t2a9SOVTiHqO7r9Y41rd7bNXKK88zVv210T/Bxt89a9Z2Fdg5D1UkeT6muli8QGDBQRm
-         K1mZKuObKKCkMKGPAAXObW42A4XnKO0CJJLSnAAGj/UzfJdgVklh1WeM94ItKo+SZ1pn
-         f5dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lF4t68p5+AhzDhd9G64qMyTKhDZNN82OhTXuxCv8VxI=;
-        b=bBFvbGzdB/aLjasCbIxJGoVoj0mvBE1w9RGcQsZkWvOFzsRnLbm09QxqaGWv23RH6r
-         P6A/QXE4dK7QxplbkzQTyNPYJTMRIH15vSOZ9fxHmXItveqTYtKHjFvc7xu4ABWsZzci
-         bF0YApcaWjp5XOc98dCbNa8iRHaMV7pA6+opRPRfc0fto/4Vyx4iPAnuz5FZgPq5xpEr
-         tZIpv45yY4Qd8CGx3erXXKsJ/jMGIOOrWy9sOSN5eJHJpHCUxscyjDwdqwwnUkaLUdbV
-         3us2jePfXzgnsy7ZdvQkR+Yx5ErZPpL6rUjHWBawh1WMCswqFGjy5Yd6hA7gwfphIJRd
-         iD6Q==
-X-Gm-Message-State: AOAM532somn55U6o9Ep/Eror8U0EDMXYgbili78YZyeObdq3ZFZ18+nb
-        c/F2Nx7jxbh8/LPXMX026/YlCpHGiU58PnY3zaW/
-X-Google-Smtp-Source: ABdhPJxsokW6G/LJ/gQwG8CJxjVH9JGRKD+0ILnj3BoonWIf4UGbJ3ZivXMHLP81VTNpzLiQjzS3L6RAOr/F91hB43Q=
-X-Received: by 2002:a05:6402:1d4c:: with SMTP id dz12mr4836556edb.385.1644441531886;
- Wed, 09 Feb 2022 13:18:51 -0800 (PST)
+        Wed, 9 Feb 2022 16:19:57 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82EAC014F32;
+        Wed,  9 Feb 2022 13:19:56 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JvCSp48DDz4xNn;
+        Thu, 10 Feb 2022 08:19:54 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644441594;
+        bh=rxJNC65oBBpL7X2RVHQafH79h6Jp/lTESREKPAVVvp4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RgOfOo/Xpi4tVu4Lh81UDvCOEzTXJztTxDCH20R8Op4RG1PzMf37xmVDNmUCUDJEK
+         Ev2XZpFTPqTGuyuPUsYJpg4iPg8OKa0OhYeZt33RN3vIW6c46fEVdGjeOWLqVqQ58V
+         5YC3Nz3yrntnbuKPB4bJlQOEjq2B2ffjUr6YN//ZBtmb2kskdWWQro8r4LspCnz5Bn
+         Hh2xvUYmHaiFT8RT3395NM7tYgDyTfgJQ3MzEDQ3HvqAbdnhn+unkp8VIgAlb0SCNt
+         p9qY2qIWp5TAOPv5ARkKdsYHR299T6OZ5cRQKntON0QdQ3Cfkxdq54RcSn8yHm8+K9
+         mZUiBx8e0Nj/w==
+Date:   Thu, 10 Feb 2022 08:19:53 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Yang Wang <KevinYang.Wang@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the amdgpu tree
+Message-ID: <20220210081953.48ff4dde@canb.auug.org.au>
 MIME-Version: 1.0
-References: <cover.1621363275.git.rgb@redhat.com> <f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com>
- <c96031b4-b76d-d82c-e232-1cccbbf71946@suse.com> <CAHC9VhSHJwwG_3yy4bqNUuFAz87wFU8W-dGYfsoGBG786heTNg@mail.gmail.com>
-In-Reply-To: <CAHC9VhSHJwwG_3yy4bqNUuFAz87wFU8W-dGYfsoGBG786heTNg@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 9 Feb 2022 16:18:40 -0500
-Message-ID: <CAHC9VhRCBMtWWscTFWe4W_F_KNdfLys7e5Ged+N_xddD2tkuRQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/3] audit: add support for the openat2 syscall
-To:     Jeff Mahoney <jeffm@suse.com>, Richard Guy Briggs <rgb@redhat.com>
-Cc:     Linux-Audit Mailing List <linux-audit@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        Steve Grubb <sgrubb@redhat.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Paris <eparis@redhat.com>, Tony Jones <tonyj@suse.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/5LVAXIeXe3Ook3DL7G9=qlt";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 10:57 AM Paul Moore <paul@paul-moore.com> wrote:
-> On Tue, Feb 8, 2022 at 10:44 PM Jeff Mahoney <jeffm@suse.com> wrote:
-> >
-> > Hi Richard -
-> >
-> > On 5/19/21 16:00, Richard Guy Briggs wrote:
-> > > The openat2(2) syscall was added in kernel v5.6 with commit fddb5d430ad9
-> > > ("open: introduce openat2(2) syscall")
-> > >
-> > > Add the openat2(2) syscall to the audit syscall classifier.
-> > >
-> > > Link: https://github.com/linux-audit/audit-kernel/issues/67
-> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > Link: https://lore.kernel.org/r/f5f1a4d8699613f8c02ce762807228c841c2e26f.1621363275.git.rgb@redhat.com
-> > > ---
-> >
-> > [...]
-> >
-> > > diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-> > > index d775ea16505b..3f59ab209dfd 100644
-> > > --- a/kernel/auditsc.c
-> > > +++ b/kernel/auditsc.c
-> > > @@ -76,6 +76,7 @@
-> > >  #include <linux/fsnotify_backend.h>
-> > >  #include <uapi/linux/limits.h>
-> > >  #include <uapi/linux/netfilter/nf_tables.h>
-> > > +#include <uapi/linux/openat2.h>
-> > >
-> > >  #include "audit.h"
-> > >
-> > > @@ -196,6 +197,8 @@ static int audit_match_perm(struct audit_context *ctx, int mask)
-> > >               return ((mask & AUDIT_PERM_WRITE) && ctx->argv[0] == SYS_BIND);
-> > >       case AUDITSC_EXECVE:
-> > >               return mask & AUDIT_PERM_EXEC;
-> > > +     case AUDITSC_OPENAT2:
-> > > +             return mask & ACC_MODE((u32)((struct open_how *)ctx->argv[2])->flags);
-> > >       default:
-> > >               return 0;
-> > >       }
-> >
-> > ctx->argv[2] holds a userspace pointer and can't be dereferenced like this.
-> >
-> > I'm getting oopses, like so:
-> > BUG: unable to handle page fault for address: 00007fff961bbe70
->
-> Thanks Jeff.
->
-> Yes, this is obviously the wrong thing to being doing; I remember
-> checking to make sure we placed the audit_openat2_how() hook after the
-> open_how was copied from userspace, but I missed the argv dereference
-> in the syscall exit path when reviewing the code.
->
-> Richard, as we are already copying the open_how info into
-> audit_context::openat2 safely, the obvious fix is to convert
-> audit_match_perm() to use the previously copied value instead of argv.
-> If you can't submit a patch for this today please let me know.
+--Sig_/5LVAXIeXe3Ook3DL7G9=qlt
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I haven't heard anything from Richard so I put together a patch which
-should fix the problem (link below).  It's currently untested, but
-I've got a kernel building now with the patch ...
+Hi all,
 
-https://lore.kernel.org/linux-audit/164444111699.153511.15656610495968926251.stgit@olly/T/#u
+In commit
 
--- 
-paul-moore.com
+  41bea173d9b2 ("drm/amd/pm: drm/amd/pm: disable GetPptLimit message in sri=
+ov mode")
+
+Fixes tag
+
+  Fixes: f3527a6483fbcc ("drm/amd/pm: Enable sysfs required by rocm-smi too=
+lfor One VF mode")
+
+has these problem(s):
+
+  - Subject does not match target commit subject
+    Just use
+	git log -1 --format=3D'Fixes: %h ("%s")'
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/5LVAXIeXe3Ook3DL7G9=qlt
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIEL/kACgkQAVBC80lX
+0GzKHgf+P+/lUv03I2Shis4TJFcMclj6wxdAHlcL5m+RM5T0De+JyIqvskmvbW/K
++IpE8KwQtz91Ehc5E7XzcFZYJaX+IzZSd5k7vlyMX8fBXEN3eTBhfuybNNN58PkU
+oPbJiRRIYNaD6YyyyVhfFYSayabwN5GJywdsx4b6FEUEQ0BlnxzC2HevODiFrLp/
+14+qDxG+UoSS0oershDDMkMMA/OXJ0G402ekuXjKCT0LuF+sY390Prda1QNTndFr
+B5XpfeyhzxtKNwabK0DGZPRjUyUu79A51pFNOAeTqTZRaUrzhUOU81PU/Lwz0/EP
+6ivBsZMHCGhg1TfFNbIyG7vIRSvQjQ==
+=81xY
+-----END PGP SIGNATURE-----
+
+--Sig_/5LVAXIeXe3Ook3DL7G9=qlt--
