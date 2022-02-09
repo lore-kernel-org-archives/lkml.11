@@ -2,97 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585A1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA37C4332F
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347564AbiBIEKt (ORCPT
+        id S1348080AbiBIELS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:10:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        Tue, 8 Feb 2022 23:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347161AbiBIDjL (ORCPT
+        with ESMTP id S1346424AbiBID2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:39:11 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE05C0613CC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:30:22 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id n23so2019638pfo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 19:30:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2Je4ysSvm0qGToTfluoX75kuGzoNSHI2qP2Y0C0VNAg=;
-        b=CACwA3iWs0mIexxr+JBAReAIEm1js+p8Gd1PctwBpcCRlFarncrQq8u4LV6np8g3is
-         D/VOuIRXeoPfghb+/9LTlJtNpAvNKgMSy3Wr4lug4rsCM8eyWtwax7omfbUtcsy/9gV0
-         7zKe0Yw5vrIzVjXV0RntPZ6HYUDb3Ci9Ac0MxBz7ePn0Cx3ZAESjOlA/plyTn3cK/JDB
-         /4GywPgMyr1VKT1Ars0+RfQs5u2gxDhVAMm6XqUo1P+6wobSWI5xZqPyxvBbdotA9rpW
-         M0SPWo6TnlLbTZEqquatVpsjK0f4E620XEFwl1wrQ1s/OMsFf6/RTMOBX8yu4cXgNOQf
-         8MqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Je4ysSvm0qGToTfluoX75kuGzoNSHI2qP2Y0C0VNAg=;
-        b=tAzs6sBbowIgpzuUz3xNCM/0lmIq6vUjHkLDU7x5hBOvXfswbyL+4lGP32BOZbuV9J
-         cLpgzMFecz7efxfuBo8u/EHLjMKFVvYoiVJ+zDZYTpEDAk3ICdcyDqYX2QCFca7fpUwU
-         P44/585+hGEuXNO6ZqSJrVlpAtRuMrwdah3QtpzJhra84o6k2YHyLkQBNLrOEy2G+2Br
-         UDu0c0po3/zY7Fq9RURjQqKoqi2OZ6y3glG8te8tpK8AlyBnB0MEVcGkvAEZ0w4fDqyi
-         Bo5CVsWfxMA+8mZKP7sT0vz6PGTJ0RLboWvf/8T5+ANFyJyyDtDKZ5aHtPkjlYsb+iUT
-         +Tqg==
-X-Gm-Message-State: AOAM5326US8x+NFmV0UUxvukMF1W+wJF13m2rZAg3I1Y1ShJ7o1R4wuw
-        ALkkgPSpJqKowIsiJaezWNZuhDYPJ9N+3dMN859GhQ==
-X-Google-Smtp-Source: ABdhPJxPkAe7JqNfPN0pMdUWTXV1LFyPzWR+xK9edhPa72Ip0qH/EBHDfJCzGhUn69nUH5cFutBmSs7V8IMhNpn2WjE=
-X-Received: by 2002:a62:e907:: with SMTP id j7mr354037pfh.3.1644377421975;
- Tue, 08 Feb 2022 19:30:21 -0800 (PST)
+        Tue, 8 Feb 2022 22:28:16 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7958AC06174F
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:28:15 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644377292;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GDCExg53kc/pHnmsDC2kZisurgtykX/e2jcjrzmkqmY=;
+        b=WYNjJYp+G80Mo0gl59SFMkAqBA5GW/4eXFU/GA+47VFJm1m9pr0J/uZ5huP8LvvkX+stxa
+        ETi6iU9C6Mj/dqPePKX0a/kzCkk/QmlKkD9kZqjDo8qMEBDf098agsFlT3CuhdApzfYDys
+        rqK5PvzIW4ECHKiOrhSxA1oRtnWR6uk=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Jens Wiklander <jens.wiklander@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
+        Rijo Thomas <Rijo-john.Thomas@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tee: amdtee: Make use of the helper macro LIST_HEAD()
+Date:   Wed,  9 Feb 2022 11:27:43 +0800
+Message-Id: <20220209032745.38570-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-References: <20220207063249.1833066-1-hch@lst.de> <20220207063249.1833066-8-hch@lst.de>
-In-Reply-To: <20220207063249.1833066-8-hch@lst.de>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 8 Feb 2022 19:30:11 -0800
-Message-ID: <CAPcyv4h_axDTmkZ35KFfCdzMoOp8V3dc6btYGq6gCj1OmLXM=g@mail.gmail.com>
-Subject: Re: [PATCH 7/8] mm: remove the extra ZONE_DEVICE struct page refcount
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, nouveau@lists.freedesktop.org,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 6, 2022 at 10:33 PM Christoph Hellwig <hch@lst.de> wrote:
-[..]
-> @@ -500,28 +482,27 @@ void free_devmap_managed_page(struct page *page)
->          */
->         page->mapping = NULL;
->         page->pgmap->ops->page_free(page);
-> +
-> +       /*
-> +        * Reset the page count to 1 to prepare for handing out the page again.
-> +        */
-> +       set_page_count(page, 1);
+Replace "struct list_head head = LIST_HEAD_INIT(head)" with
+"LIST_HEAD(head)" to simplify the code.
 
-Interesting. I had expected that to really fix the refcount problem
-that fs/dax.c would need to start taking real page references as pages
-were added to a mapping, just like page cache.
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/tee/amdtee/call.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This looks ok to me, and passes my tests. So given I'm still working
-my way back to fixing the references properly I'm ok for this hack to
-replace the more broken hack that is there presently.
+diff --git a/drivers/tee/amdtee/call.c b/drivers/tee/amdtee/call.c
+index 07f36ac834c8..cec6e70f0ac9 100644
+--- a/drivers/tee/amdtee/call.c
++++ b/drivers/tee/amdtee/call.c
+@@ -122,7 +122,7 @@ static int amd_params_to_tee_params(struct tee_param *tee, u32 count,
+ }
+ 
+ static DEFINE_MUTEX(ta_refcount_mutex);
+-static struct list_head ta_list = LIST_HEAD_INIT(ta_list);
++static LIST_HEAD(ta_list);
+ 
+ static u32 get_ta_refcount(u32 ta_handle)
+ {
+-- 
+2.25.1
 
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
