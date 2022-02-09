@@ -2,92 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C157C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33142C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231629AbiBIL5X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:57:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57080 "EHLO
+        id S231768AbiBIL5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231650AbiBILzv (ORCPT
+        with ESMTP id S231811AbiBIL4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:55:51 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 793D0E00FA7A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:56:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644404181; x=1675940181;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZzXvGDpuBIFPUCI015ca9co1l1JLyg3bO61AflE667Q=;
-  b=WLoYcHIfjaJ/Wmflq0gu+lbvVYVFLHutpnvAo7C26ve2nJF6FaAwmsYk
-   Yy/wuritJX/28y+VHl2k5JE7V0H87NRIsRH9rZsgEW4nQ3+YlWfDp8dFO
-   91G03ifDuBBvGbVSSD2UktZkZtmnH2WZqGxNXzOdsIk74OMuoOM19Hj6B
-   NpaMU3hxT7rRyNwDT9oKfOw0ag02cDFJGl1be/oEYsMEpbroDP82A3onF
-   bZuJRQ+E7O1kif6RCbmo7+LcJjJnrN/DKjlCfEOSpEKoFkkL3vfoazYzZ
-   9q8gf4z2sKxIGySv9simigmuZca1NVbNMLExWoKg4aOl0V4Jxb4ECjYvR
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236584968"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="236584968"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 02:56:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="485198181"
-Received: from ravicha1-mobl.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.255.88.114])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 02:56:15 -0800
-Date:   Wed, 9 Feb 2022 23:56:13 +1300
-From:   Kai Huang <kai.huang@intel.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@intel.com>, <luto@kernel.org>, <peterz@infradead.org>,
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        <aarcange@redhat.com>, <ak@linux.intel.com>,
-        <dan.j.williams@intel.com>, <david@redhat.com>, <hpa@zytor.com>,
-        <jgross@suse.com>, <jmattson@google.com>, <joro@8bytes.org>,
-        <jpoimboe@redhat.com>, <knsathya@kernel.org>,
-        <pbonzini@redhat.com>, <sdeep@vmware.com>, <seanjc@google.com>,
-        <tony.luck@intel.com>, <vkuznets@redhat.com>,
-        <wanpengli@tencent.com>, <x86@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
-Message-Id: <20220209235613.652f5720cd196331d7a220ec@intel.com>
-In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 06:56:06 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C67E00FA48;
+        Wed,  9 Feb 2022 02:56:33 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 74C4F201432;
+        Wed,  9 Feb 2022 08:31:16 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 5EBE180F74; Wed,  9 Feb 2022 09:30:22 +0100 (CET)
+Date:   Wed, 9 Feb 2022 09:30:22 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        tytso@mit.edu, ebiggers@kernel.org
+Subject: Re: [PATCH v2 8/9] random: use hash function for crng_slow_load()
+Message-ID: <YgN7nmv9A0+Zi5L8@owl.dominikbrodowski.net>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
+ <20220209011919.493762-9-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209011919.493762-9-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am Wed, Feb 09, 2022 at 02:19:18AM +0100 schrieb Jason A. Donenfeld:
+> Since we have a hash function that's really fast, and the goal of
+> crng_slow_load() is reportedly to "touch all of the crng's state", we
+> can just hash the old state together with the new state and call it a
+> day. This way we dont need to reason about another LFSR or worry about
+> various attacks there. This code is only ever used at early boot and
+> then never again.
 
->  60 files changed, 2079 insertions(+), 142 deletions(-)
->  create mode 100644 Documentation/x86/tdx.rst
->  create mode 100644 arch/x86/boot/compressed/tdcall.S
->  create mode 100644 arch/x86/boot/compressed/tdx.c
->  create mode 100644 arch/x86/boot/compressed/tdx.h
->  create mode 100644 arch/x86/boot/io.h
->  create mode 100644 arch/x86/include/asm/shared/io.h
->  create mode 100644 arch/x86/include/asm/shared/tdx.h
->  create mode 100644 arch/x86/include/asm/tdx.h
->  create mode 100644 arch/x86/kernel/tdcall.S
->  create mode 100644 arch/x86/kernel/tdx.c
-> 
-
-Hi,
-
-Is it better to change the file name(s) to reflect they are for TDX guest
-support, for instance, especially the last one arch/x86/kernel/tdx.c?
-
-TDX host support basically does detection of SEAM, TDX KeyIDs, P-SEAMLDR and
-initialize the TDX module, so likely TDX host support will introduce couple of
-new files to do above things respectively, and the majority of the code could be
-self-contained under some directory (currently under arch/x86/kernel/cpu/tdx/,
-but can be changed of course).  Could we have some suggestions on how to
-organize?
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
 Thanks,
--Kai
+	Dominik
