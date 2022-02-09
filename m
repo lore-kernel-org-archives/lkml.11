@@ -2,83 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 531D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD75C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237448AbiBIQpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:45:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
+        id S237424AbiBIQqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:46:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237436AbiBIQpV (ORCPT
+        with ESMTP id S237434AbiBIQpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:45:21 -0500
-X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 08:45:24 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC9FC0613C9;
-        Wed,  9 Feb 2022 08:45:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644425112;
-        bh=23VcDO1UBkUQfDfSRRv997yJv60exeA4uC8n5A+TDxE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=E6VWgl1hdzxhGU9Zr8EJ7+LuqCMotcq2Z9BYIn3nfVviWUMi1gnOlgVomLss/m602
-         g+RQFKHsEVQyxBINLERnum8B4kBaqoS2B/JOdefP73OF/nX0AHyEF7wrQnNfO8VxTZ
-         9YTQZyBWf25YeHW+dvNWuYTCeP59D5ypX5bXnfwY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.77.2] ([80.245.77.2]) by web-mail.gmx.net
- (3c-app-gmx-bs62.server.lan [172.19.170.146]) (via HTTP); Wed, 9 Feb 2022
- 17:39:21 +0100
+        Wed, 9 Feb 2022 11:45:51 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF1EC0613C9;
+        Wed,  9 Feb 2022 08:45:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644425155; x=1675961155;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6o8PBrt2dlQLXaGpgRDUe/a5h6z2Gt3tbLxke74fXBE=;
+  b=BoSiNaTaF/ZWlX6FT9MpJh1o9hUj+W+lIbsOOUGqG7euOLcji5tj6Fu4
+   bSQoirC+Mb2TVVpHF9E7mLbPFcD8XFL/uQdTEvPcSBWQF/Rb9z+7KJOJx
+   P1VNPt+WjHBWdLq04+4XTXkQSca56hNn/e/Me/qUej0VaVAbDyJ27XXiy
+   0dcJbJ2yAsLeAQGindItOWWIUI2czD/ghMe/lf5cSM6qdiLEy5nJsqIr/
+   R6ly69qsJfUzTQY4lVXl7E8aothRRmi1K9HGFSDaZ+OhvLWGJ1IzHdbMv
+   B+vKY0O98ntPNwIlxl7s30LrxfCZP+prCtmnitvyMpsHkdFBWFYrECWT+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="312540860"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="312540860"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:45:54 -0800
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="633276717"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 08:45:49 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nHq5K-002g8V-C9;
+        Wed, 09 Feb 2022 18:44:50 +0200
+Date:   Wed, 9 Feb 2022 18:44:50 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
+Message-ID: <YgPvgtQ7ANd540Ht@smile.fi.intel.com>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-4-javierm@redhat.com>
+ <YgPZ3W0e7N7JQ1dT@smile.fi.intel.com>
+ <e29eaccc-863a-21d4-e669-0b708604d723@redhat.com>
+ <YgPnE0yj0Y0OJxq6@smile.fi.intel.com>
+ <406152d8-13e4-de8a-9542-bf1d96dbab0a@redhat.com>
 MIME-Version: 1.0
-Message-ID: <trinity-15c80db0-29c1-4cea-be14-794d9a02debf-1644424761490@3c-app-gmx-bs62>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Cc:     heiko@sntech.de, robh+dt@kernel.org, jbx6244@gmail.com,
-        devicetree@vger.kernel.org, vkoul@kernel.org,
-        michael.riesch@wolfvision.net, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, kishon@ti.com,
-        p.zabel@pengutronix.de, cl@rock-chips.com,
-        kever.yang@rock-chips.com, lee.jones@linaro.org,
-        wulf@rock-chips.com, david.wu@rock-chips.com,
-        Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Subject: Aw: [PATCH v8 0/4] Add Naneng combo PHY support for RK3568
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 9 Feb 2022 17:39:21 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
-References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:MM7Nx0+88CSi+CDhES/hxhcnP//1RXCCnodnqkxCyHMOIysSJnTzv+d82Mt13iCGAncX8
- DgZq7W20vZbLm3xrY7uJN7LjQMf7VkEYdBuxa068oT0hSc7uaWya6GHwx0FG0exoqY9wfgQIvdtz
- z/33dMmbL+E7IUjtCgMmZa1XUE7DeO1od88KOma67UbRir4X3wo24XXsrZ8wLyWJnt3cQlWVEEaT
- sp0T2QHcIVYTwUfv5qMBAaQky7saSPMPuCJfKHnqB/DtCt3D5DgGhBR4tU3I4IbQIfi/3CGRJZTN
- h8=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yO48XHWlAEg=:w/S5bj4TX2IHTk3QFbdfMl
- 8UonBQztscoOoXdeO7Imuot6orUUq0viFsTTOfzJEOHhIoACPgID6EfU9Epoq+PqWxXV84fhv
- N1qc3QfY26wFnvXje1EgRvaYsv7r+sECRIBQkS2+Su3SCVPhOJm6kEBShyAUjMDv5bKv3kle7
- 01rgMNuYrDSPc1iC2lVQLY4duuWNIY41QTLppt6WSERfl98gwLoeObBU/erl9A9Iufzl9+uOc
- ecv6I4dGmjGQWxh0Vh03g0tk8Cmf8Q/9XQUGLs04wNq0CdgZNaHNw1y2/7FKfSYx3va5oPe88
- P5v85N3n2d1XxUd0OOx6hPzN9ZQLiQOMAL8dwYXd8fgWKYQN5oZ8sZT/JhbWBok6IZ3ao2psP
- OgJZSsyebyKWcuR44TUJckyzFpwc3MYv64Bjze7rwxMNMWISnJd7Gn7VENFlf7ob5+V64D1dk
- SczpxwQAiwV+H773x6X5tX2urZLQ4+co3ErfCkrmoIlXs7j0diZ3GdJXlt42rlCe+lbcIe4gl
- DCSjHIfYGhzXY/fivYfAH00/z8ilSzN+tFGIUhgdDwZaFhh5ke14k3I9mXQKR4a7ZMKfsdGRA
- ami+lD4knYeptm4IoSkyga5bwjBSkb41TSVUbFVEDciV6j5dMKrg/vI/YQ7g6McBtVATPjbI7
- c36UYPhlmh8fOPRzymZpCS8JuUCgd6cKx2sydzP95vRZUQrgr28Z/EtwqjqS8AX0CS2r8IJ04
- cpdAVOR4+nyUFYmk7JSY9vaXYEU2wPaIw6s83irMAQqc2MXO+dsBsjnG7Eu5qnmVzHt1cBNhm
- vsykxOy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <406152d8-13e4-de8a-9542-bf1d96dbab0a@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Wed, Feb 09, 2022 at 05:26:00PM +0100, Javier Martinez Canillas wrote:
+> On 2/9/22 17:08, Andy Shevchenko wrote:
 
-Tested complete series on rk3568 based Bananapi R2 Pro
+...
 
-combphy0: usb3 (usbdrd3_0)
-combphy1: usb3 (usbdrd3_1)
-combphy2: sata (sata2)
+> On that topic, I even typed a SPI driver because of your feedback :)
 
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
+Much appreciated, makes me much easier to test.
 
-regards Frank
+Thank you for doing all this!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
