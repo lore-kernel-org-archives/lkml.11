@@ -2,247 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666AEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FEEC433FE
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235572AbiBIJjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:39:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34498 "EHLO
+        id S235641AbiBIJj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:39:26 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238768AbiBIJhY (ORCPT
+        with ESMTP id S238742AbiBIJhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 04:37:24 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8653CE01645B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:37:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859EAC1DC14E;
+        Wed,  9 Feb 2022 01:37:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1644399442; x=1675935442;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/6uiJQFfqhv44fXSuW+FhKqitrm0zUSNGD6jShAAAto=;
-  b=CHVqRHQCSJNpnXwQ1eISCK012gkZtoQDUqCp5p2p11qfj9qEapFGUYWx
-   x6w06zrhKNJ3kVu4a1hCRzBwtBbkWD3OfVdGUCf8fj6UEafT+4WoRysAr
-   mM3Bmlv6FknyJl6zqckMZLOr9o8QfVVRI3VxfQHao2wYMw2Xl/orlRMn0
-   MS5lJG6KEq1piw7j1XHkC1/iyUeNEoIb9in0DnJHWMauokMB9klvmHDjT
-   QGos/6Mpp0s5XK+rlJnl2xuPYAdlc5ej6xOHbGs2pUBmIAAarIxODHdnj
-   S3gT8DbUIrcMqLrNp7O/JcUue550FfGvQlYpnDBzSYX5jXWWnBlP0UeZo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="236568952"
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="236568952"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 01:14:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,355,1635231600"; 
-   d="scan'208";a="525918355"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 09 Feb 2022 01:14:36 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHj3b-0001Xs-Pp; Wed, 09 Feb 2022 09:14:35 +0000
-Date:   Wed, 09 Feb 2022 17:13:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:dev.2022.02.03a] BUILD SUCCESS
- bb642455a39a2f9a89b921e7782937023bb92fcd
-Message-ID: <620385d7.E1jVPSh0kkKj4xaa%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=7uuMRIDyHWtBbMVy5anPlSxVR+2/pPBwu/N/1DkHSCQ=;
+  b=WeGxIF6hGbC38lJZnoFM3fugKiJot5Ugm9OTbjcBk52chQG1qs+Ujr7c
+   Se+ksz2/zSFPKDeo3Tllbmzi9aIxMmCwwQHlArDSBSW6+KfxONtUBWfHS
+   tcW4x2X77aBw+qcjQZo3X0LtUsPcDCOG39luZyYLtI5Y17cDfOi5czVZk
+   w=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 09 Feb 2022 00:56:15 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 00:56:15 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 00:56:14 -0800
+Received: from sbillaka-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 00:56:08 -0800
+From:   Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <freedreno@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <robh+dt@kernel.org>,
+        <robdclark@gmail.com>, <seanpaul@chromium.org>,
+        <swboyd@chromium.org>, <dianders@chromium.org>,
+        <krzysztof.kozlowski@canonical.com>, <thierry.reding@gmail.com>,
+        <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        <quic_kalyant@quicinc.com>, <quic_abhinavk@quicinc.com>,
+        <quic_khsieh@quicinc.com>, <quic_mkrishn@quicinc.com>,
+        <quic_vproddut@quicinc.com>
+Subject: [PATCH v3 3/4] drm/panel-edp: Add eDP sharp panel support
+Date:   Wed, 9 Feb 2022 14:25:31 +0530
+Message-ID: <1644396932-17932-4-git-send-email-quic_sbillaka@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
+References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.02.03a
-branch HEAD: bb642455a39a2f9a89b921e7782937023bb92fcd  squash! mm: Check for SLAB_TYPESAFE_BY_RCU and __GFP_ZERO slab creation
+Add support for the 14" sharp,lq140m1jw46 eDP panel.
 
-elapsed time: 1492m
-
-configs tested: 170
-configs skipped: 4
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-powerpc                   motionpro_defconfig
-sh                   sh7724_generic_defconfig
-sh                               alldefconfig
-arc                          axs103_defconfig
-sh                          rsk7264_defconfig
-mips                  decstation_64_defconfig
-arm                        cerfcube_defconfig
-sh                        dreamcast_defconfig
-sh                           se7750_defconfig
-openrisc                         alldefconfig
-sparc                       sparc64_defconfig
-m68k                        m5272c3_defconfig
-powerpc                        warp_defconfig
-alpha                               defconfig
-mips                         cobalt_defconfig
-sh                          urquell_defconfig
-mips                     decstation_defconfig
-sh                         microdev_defconfig
-xtensa                  nommu_kc705_defconfig
-arm                         cm_x300_defconfig
-sh                             espt_defconfig
-powerpc                       ppc64_defconfig
-h8300                     edosk2674_defconfig
-nds32                               defconfig
-m68k                       m5475evb_defconfig
-powerpc                      mgcoge_defconfig
-powerpc                 canyonlands_defconfig
-powerpc                     stx_gp3_defconfig
-sparc64                             defconfig
-powerpc                     taishan_defconfig
-mips                       bmips_be_defconfig
-mips                           jazz_defconfig
-powerpc                     sequoia_defconfig
-mips                         rt305x_defconfig
-arc                          axs101_defconfig
-ia64                      gensparse_defconfig
-powerpc                 mpc834x_itx_defconfig
-sh                   rts7751r2dplus_defconfig
-arm                        multi_v7_defconfig
-sh                          sdk7780_defconfig
-mips                         db1xxx_defconfig
-sh                             sh03_defconfig
-openrisc                            defconfig
-sh                        sh7763rdp_defconfig
-arm                        mvebu_v7_defconfig
-mips                            gpr_defconfig
-arm                     eseries_pxa_defconfig
-powerpc                 mpc8540_ads_defconfig
-sh                           se7724_defconfig
-sh                                  defconfig
-mips                     loongson1b_defconfig
-sh                   sh7770_generic_defconfig
-csky                             alldefconfig
-arc                           tb10x_defconfig
-microblaze                      mmu_defconfig
-powerpc                      tqm8xx_defconfig
-sh                          polaris_defconfig
-arm                         axm55xx_defconfig
-powerpc                  storcenter_defconfig
-arm                         assabet_defconfig
-sh                           se7343_defconfig
-mips                 decstation_r4k_defconfig
-powerpc                      arches_defconfig
-powerpc                  iss476-smp_defconfig
-powerpc                       maple_defconfig
-riscv                    nommu_k210_defconfig
-parisc                           alldefconfig
-sh                           se7619_defconfig
-arm                  randconfig-c002-20220209
-arm                  randconfig-c002-20220208
-ia64                             allmodconfig
-ia64                                defconfig
-ia64                             allyesconfig
-m68k                                defconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-nios2                               defconfig
-arc                              allyesconfig
-nds32                             allnoconfig
-nios2                            allyesconfig
-csky                                defconfig
-alpha                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                            allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a002
-i386                          randconfig-a003
-i386                          randconfig-a001
-i386                          randconfig-a005
-x86_64                        randconfig-a004
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220208
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                            allmodconfig
-riscv                               defconfig
-riscv                          rv32_defconfig
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                           allyesconfig
-x86_64                    rhel-8.3-kselftests
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
-
-clang tested configs:
-riscv                randconfig-c006-20220209
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220209
-i386                          randconfig-c001
-mips                 randconfig-c004-20220209
-arm                  randconfig-c002-20220209
-mips                        qi_lb60_defconfig
-arm                          ixp4xx_defconfig
-mips                        bcm63xx_defconfig
-mips                           ip27_defconfig
-arm                  colibri_pxa270_defconfig
-mips                        workpad_defconfig
-arm                         s3c2410_defconfig
-hexagon                             defconfig
-powerpc                        icon_defconfig
-powerpc                     tqm8540_defconfig
-mips                  cavium_octeon_defconfig
-powerpc                     kmeter1_defconfig
-arm                         orion5x_defconfig
-arm                         hackkit_defconfig
-powerpc                     mpc512x_defconfig
-mips                         tb0287_defconfig
-arm                       mainstone_defconfig
-x86_64                        randconfig-a003
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-i386                          randconfig-a004
-i386                          randconfig-a002
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220208
-hexagon              randconfig-r041-20220208
-riscv                randconfig-r042-20220208
-s390                 randconfig-r044-20220208
-
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+Changes in v3:
+  None
+
+ drivers/gpu/drm/panel/panel-edp.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
+index a394a15..5d13ccc 100644
+--- a/drivers/gpu/drm/panel/panel-edp.c
++++ b/drivers/gpu/drm/panel/panel-edp.c
+@@ -1605,6 +1605,34 @@ static const struct panel_desc sharp_lq123p1jx31 = {
+ 	},
+ };
+ 
++static const struct drm_display_mode sharp_lq140m1jw46_mode = {
++	.clock = 144370,
++	.hdisplay = 1920,
++	.hsync_start = 1920 + 48,
++	.hsync_end = 1920 + 48 + 32,
++	.htotal = 1920 + 48 + 32 + 80,
++	.vdisplay = 1080,
++	.vsync_start = 1080 + 3,
++	.vsync_end = 1080 + 3 + 5,
++	.vtotal = 1080 + 3 + 5 + 69,
++	.flags = DRM_MODE_FLAG_NVSYNC | DRM_MODE_FLAG_NHSYNC,
++};
++
++static const struct panel_desc sharp_lq140m1jw46 = {
++	.modes = &sharp_lq140m1jw46_mode,
++	.num_modes = 1,
++	.bpc = 8,
++	.size = {
++		.width = 309,
++		.height = 174,
++	},
++	.delay = {
++		.hpd_absent = 80,
++		.enable = 50,
++		.unprepare = 500,
++	},
++};
++
+ static const struct drm_display_mode starry_kr122ea0sra_mode = {
+ 	.clock = 147000,
+ 	.hdisplay = 1920,
+@@ -1719,6 +1747,9 @@ static const struct of_device_id platform_of_match[] = {
+ 		.compatible = "sharp,lq123p1jx31",
+ 		.data = &sharp_lq123p1jx31,
+ 	}, {
++		.compatible = "sharp,lq140m1jw46",
++		.data = &sharp_lq140m1jw46,
++	}, {
+ 		.compatible = "starry,kr122ea0sra",
+ 		.data = &starry_kr122ea0sra,
+ 	}, {
+-- 
+2.7.4
+
