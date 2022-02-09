@@ -2,78 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB62C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231604AbiBIML7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        id S232735AbiBIMMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:12:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232874AbiBIMLA (ORCPT
+        with ESMTP id S233251AbiBIMLR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:11:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E255FE02460C;
-        Wed,  9 Feb 2022 04:00:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 9 Feb 2022 07:11:17 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE825E0172C1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:56:32 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78619616B1;
-        Wed,  9 Feb 2022 12:00:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D9302C340EE;
-        Wed,  9 Feb 2022 12:00:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644408009;
-        bh=Fm5+OJPUurlyd7zM2elkix6JLbemo3kzsfDEOCIzb3M=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=mpF+E9eYevoGovtKDFnbVlmrwB6o2q6FiQ5qpxfosH+GHDDI1ivcTvfExOejGSEE/
-         /MzxJOC5pExDuNgtg7LIlTm3RkAhzv5qYUCL4+Nb5jqEmO+5lIu/3VyjATXwjB9r1i
-         Lk6e/g11nUfsgAgIz0zmHYk2lx3LilfyyvReqavCqDPeRx7VXwOI/MCbYoIIlkn+Yu
-         EyZeLwcR6w6ClWnLE11s2uZVQRbc5sv1DeDw3SGza85pepZ/Wdf5ox0D9qmCzXdt+A
-         Cxuqyn+AQSuMe4eYhX2PQEtq7DTMjyyFXHwiDxJPirWeEvVLa2hyx068W42Kr7MkwM
-         ochffalcGUBfA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C1A45E5D07D;
-        Wed,  9 Feb 2022 12:00:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 414CB1EC00F8;
+        Wed,  9 Feb 2022 12:56:27 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644407787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=x1BTdlpq9tRhSnk/dAh8Px9linvJFfimEy+5n8BtRMA=;
+        b=iQDC85pMlNVrSCeBD8WjJAw/XlOCBiRpWV6JubDh0jS6gQG7ceMTurnj0xSHIeMXjp4EOy
+        mIJyC+wWC2bZErX43PE0PB6NEJAsl1H+eczhG1m/cWZlbxwmMNUSVP92rmfb4fyKYYlS6g
+        oGkCnr5IM461XSG31BBkj5AUfgxDlnE=
+Date:   Wed, 9 Feb 2022 12:56:26 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 00/29] TDX Guest: TDX core support
+Message-ID: <YgOr6tZjsooJgAi9@zn.tnic>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220209235613.652f5720cd196331d7a220ec@intel.com>
+ <YgOgog9Pb886lfsv@zn.tnic>
+ <20220210003033.e57c2925b69bab5cfabf7292@intel.com>
+ <YgOoId+vyd1VhIqQ@zn.tnic>
+ <20220210004831.03dea501738bee060003d040@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] ax25: fix NPD bug in ax25_disconnect
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164440800978.11178.6673926020768387853.git-patchwork-notify@kernel.org>
-Date:   Wed, 09 Feb 2022 12:00:09 +0000
-References: <20220208154000.87070-1-duoming@zju.edu.cn>
-In-Reply-To: <20220208154000.87070-1-duoming@zju.edu.cn>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, jreuter@yaina.de, ralf@linux-mips.org,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220210004831.03dea501738bee060003d040@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Thu, Feb 10, 2022 at 12:48:31AM +1300, Kai Huang wrote:
+> Are you suggesting even for now we can start to put TDX host support to
+> arch/x86/coco/tdx/ ?
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+That's exactly what I'm suggesting. The TDX stuff is not upstream so
+nothing's cast in stone yet. This way there won't be any unpleasant code
+movements later.
 
-On Tue,  8 Feb 2022 23:40:00 +0800 you wrote:
-> The ax25_disconnect() in ax25_kill_by_device() is not
-> protected by any locks, thus there is a race condition
-> between ax25_disconnect() and ax25_destroy_socket().
-> when ax25->sk is assigned as NULL by ax25_destroy_socket(),
-> a NULL pointer dereference bug will occur if site (1) or (2)
-> dereferences ax25->sk.
-> 
-> [...]
+But let's wait to see what the bikeshed discussion will bring first and
+then start moving files.
 
-Here is the summary with links:
-  - ax25: fix NPD bug in ax25_disconnect
-    https://git.kernel.org/netdev/net/c/7ec02f5ac8a5
+Thx.
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Regards/Gruss,
+    Boris.
 
-
+https://people.kernel.org/tglx/notes-about-netiquette
