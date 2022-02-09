@@ -2,160 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50113C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0363AC4167B
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239940AbiBISle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:41:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55182 "EHLO
+        id S238614AbiBISlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:41:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240253AbiBISk2 (ORCPT
+        with ESMTP id S240208AbiBISk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:40:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083CDC03E931;
-        Wed,  9 Feb 2022 10:39:51 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B5FC03E92D;
+        Wed,  9 Feb 2022 10:39:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96EF96006F;
-        Wed,  9 Feb 2022 18:39:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5D47C340E7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96B70B82384;
+        Wed,  9 Feb 2022 18:39:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC95C340E9;
         Wed,  9 Feb 2022 18:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431990;
-        bh=nhUzr9lx0VmfQA3yfqnH6QBCTASMBayqS1H3ObjAQ6o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=perOLt8jW98oyk7vAgo/G41UYJEuXyifw+0oAa++HQ9rYUf/gBelKSuuvaWpBDR2z
-         FB+fjdwqelBVuMSWfXgs4jfQ46tTmKKBLOMq9otyQSU0jGHj3DEZQOzz4RZCLjxLcW
-         k58jIXsCDUMrNsoZ5/gy3oNQt95OrbHVziiTzkg21foLIEPctXM9SMJyhYijUFrD5e
-         pvqaxWLzo9sfz7AJKVZ4wsI4nrCtrxOD1+sA059FQ6YrNUUKO3jG0se4XKs3jirNR7
-         +4UnzzlcFkwQp1rNWgQne0Kd/mFJo8rx3OizkbYjaad18MbA8MP0QuCIpsm5BwsGnb
-         XbnAYtXPZifvQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Bjoren Dasse <bjoern.daase@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        lijo.lazar@amd.com, Hawking.Zhang@amd.com, guchun.chen@amd.com,
-        sathishkumar.sundararaju@amd.com,
-        veerabadhran.gopalakrishnan@amd.com, shaoyun.liu@amd.com,
-        nirmoy.das@amd.com, Prike.Liang@amd.com,
-        Pratik.Vishwakarma@amd.com, rdunlap@infradead.org, bp@suse.de,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 25/36] drm/amd: Warn users about potential s0ix problems
-Date:   Wed,  9 Feb 2022 13:37:48 -0500
-Message-Id: <20220209183759.47134-25-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
+        s=k20201202; t=1644431988;
+        bh=0CUNFDq1i8SMYF2bfSV/C/M1uogY/iqh5qhEyXLr8kA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=WbAuiMszliganrStT1NXHJce/DBmAI7MzT/RPt+oRna9pXiYTF7iSZeJaYdsDBeLa
+         sMZjj5vmEZxk3yK2BxCdcepZUY81d60UaqcXH9ugrfohUIenfY+I+s1Xw7WA1kA/Ll
+         eyiH4ic7gvMwnJOPWIFwYFUBfHSiIcbmz/+YKbKuESfAqycz5AC+5aN68AwI9HVMxe
+         CS5TMRGCJNym9zZb/pa1hJ0hin9dki1IRknwFSEFlKJpxC9Q6WoFnceGquuUHmZvog
+         H+/ImzyTDVyrjjtfTZkuA+/hi6BvVVQ316V8d+ieXNxN94e4Bg8SHqGs6Us97/3nPl
+         gygEKr7Cqum3Q==
+Date:   Wed, 9 Feb 2022 12:39:45 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Rajat Jain <rajatja@google.com>, Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rajat Jain <rajatxjain@gmail.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Pavel Machek <pavel@denx.de>,
+        Oliver O'Halloran <oohall@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2 1/2] PCI: Allow internal devices to be marked as
+ untrusted
+Message-ID: <20220209183945.GA571585@bhelgaas>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgNVJKy0s8MGBRoa@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+On Wed, Feb 09, 2022 at 06:46:12AM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 08, 2022 at 04:23:27PM -0800, Rajat Jain wrote:
+> > On Tue, Feb 1, 2022 at 6:01 PM Rajat Jain <rajatja@google.com> wrote:
+> > >
+> > > Today the pci_dev->untrusted is set for any devices sitting downstream
+> > > an external facing port (determined via "ExternalFacingPort" or the
+> > > "external-facing" properties).
+> > >
+> > > However, currently there is no way for internal devices to be marked as
+> > > untrusted.
+> > >
+> > > There are use-cases though, where a platform would like to treat an
+> > > internal device as untrusted (perhaps because it runs untrusted firmware
+> > > or offers an attack surface by handling untrusted network data etc).
+> > >
+> > > Introduce a new "UntrustedDevice" property that can be used by the
+> > > firmware to mark any device as untrusted.
+> > 
+> > Just to unite the threads (from
+> > https://www.spinics.net/lists/linux-pci/msg120221.html). I did reach
+> > out to Microsoft but they haven't acknowledged my email. I also pinged
+> > them again yesterday, but I suspect I may not be able to break the
+> > ice. So this patch may be ready to go in my opinion.
+> > 
+> > I don't see any outstanding comments on this patch, but please let me
+> > know if you have any comments.
+> > 
+> > > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > > ---
+> > > v2: * Also use the same property for device tree based systems.
+> > >     * Add documentation (next patch)
+> > >
+> > >  drivers/pci/of.c       | 2 ++
+> > >  drivers/pci/pci-acpi.c | 1 +
+> > >  drivers/pci/pci.c      | 9 +++++++++
+> > >  drivers/pci/pci.h      | 2 ++
+> > >  4 files changed, 14 insertions(+)
+> > >
+> > > diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> > > index cb2e8351c2cc..e8b804664b69 100644
+> > > --- a/drivers/pci/of.c
+> > > +++ b/drivers/pci/of.c
+> > > @@ -24,6 +24,8 @@ void pci_set_of_node(struct pci_dev *dev)
+> > >                                                     dev->devfn);
+> > >         if (dev->dev.of_node)
+> > >                 dev->dev.fwnode = &dev->dev.of_node->fwnode;
+> > > +
+> > > +       pci_set_untrusted(dev);
+> > >  }
+> > >
+> > >  void pci_release_of_node(struct pci_dev *dev)
+> > > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > > index a42dbf448860..2bffbd5c6114 100644
+> > > --- a/drivers/pci/pci-acpi.c
+> > > +++ b/drivers/pci/pci-acpi.c
+> > > @@ -1356,6 +1356,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
+> > >
+> > >         pci_acpi_optimize_delay(pci_dev, adev->handle);
+> > >         pci_acpi_set_external_facing(pci_dev);
+> > > +       pci_set_untrusted(pci_dev);
+> > >         pci_acpi_add_edr_notifier(pci_dev);
+> > >
+> > >         pci_acpi_add_pm_notifier(adev, pci_dev);
+> > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > > index 9ecce435fb3f..41e887c27004 100644
+> > > --- a/drivers/pci/pci.c
+> > > +++ b/drivers/pci/pci.c
+> > > @@ -6869,3 +6869,12 @@ static int __init pci_realloc_setup_params(void)
+> > >         return 0;
+> > >  }
+> > >  pure_initcall(pci_realloc_setup_params);
+> > > +
+> > > +void pci_set_untrusted(struct pci_dev *pdev)
+> > > +{
+> > > +       u8 val;
+> > > +
+> > > +       if (!device_property_read_u8(&pdev->dev, "UntrustedDevice", &val)
 
-[ Upstream commit a6ed2035878e5ad2e43ed175d8812ac9399d6c40 ]
+If we do this, can we combine it with set_pcie_untrusted(), where we
+already set pdev->untrusted?  Maybe that needs to be renamed; I don't
+see anything PCIe-specific there, and it looks like it works for
+conventional PCI as well.
 
-On some OEM setups users can configure the BIOS for S3 or S2idle.
-When configured to S3 users can still choose 's2idle' in the kernel by
-using `/sys/power/mem_sleep`.  Before commit 6dc8265f9803 ("drm/amdgpu:
-always reset the asic in suspend (v2)"), the GPU would crash.  Now when
-configured this way, the system should resume but will use more power.
+> Please no, "Untrusted" does not really convey much, if anything here.
+> You are taking an odd in-kernel-value and making it a user api.
+> 
+> Where is this "trust" defined?  Who defines it?  What policy does the
+> kernel impose on it?
 
-As such, adjust the `amdpu_acpi_is_s0ix function` to warn users about
-potential power consumption issues during their first attempt at
-suspending.
+I'm a bit hesitant about this, too.  It really doesn't have anything
+in particular to do with the PCI core.  It's not part of the PCI
+specs, and it could apply to any kind of device, not just PCI (ACPI,
+platform, USB, etc).
 
-Reported-by: Bjoren Dasse <bjoern.daase@gmail.com>
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1824
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu.h      |  8 ++++++--
- drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c | 24 +++++++++++++++++++-----
- 2 files changed, 25 insertions(+), 7 deletions(-)
+We have:
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index f428f94b43c0a..c8d31a22176f3 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-@@ -1397,12 +1397,10 @@ int amdgpu_acpi_smart_shift_update(struct drm_device *dev, enum amdgpu_ss ss_sta
- int amdgpu_acpi_pcie_notify_device_ready(struct amdgpu_device *adev);
- 
- void amdgpu_acpi_get_backlight_caps(struct amdgpu_dm_backlight_caps *caps);
--bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
- void amdgpu_acpi_detect(void);
- #else
- static inline int amdgpu_acpi_init(struct amdgpu_device *adev) { return 0; }
- static inline void amdgpu_acpi_fini(struct amdgpu_device *adev) { }
--static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
- static inline void amdgpu_acpi_detect(void) { }
- static inline bool amdgpu_acpi_is_power_shift_control_supported(void) { return false; }
- static inline int amdgpu_acpi_power_shift_control(struct amdgpu_device *adev,
-@@ -1411,6 +1409,12 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
- 						 enum amdgpu_ss ss_state) { return 0; }
- #endif
- 
-+#if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
-+bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
-+#else
-+static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
-+#endif
-+
- int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
- 			   uint64_t addr, struct amdgpu_bo **bo,
- 			   struct amdgpu_bo_va_mapping **mapping);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-index 4811b0faafd9a..b19d407518024 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-@@ -1031,6 +1031,7 @@ void amdgpu_acpi_detect(void)
- 	}
- }
- 
-+#if IS_ENABLED(CONFIG_SUSPEND)
- /**
-  * amdgpu_acpi_is_s0ix_active
-  *
-@@ -1040,11 +1041,24 @@ void amdgpu_acpi_detect(void)
-  */
- bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev)
- {
--#if IS_ENABLED(CONFIG_AMD_PMC) && IS_ENABLED(CONFIG_SUSPEND)
--	if (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) {
--		if (adev->flags & AMD_IS_APU)
--			return pm_suspend_target_state == PM_SUSPEND_TO_IDLE;
-+	if (!(adev->flags & AMD_IS_APU) ||
-+	    (pm_suspend_target_state != PM_SUSPEND_TO_IDLE))
-+		return false;
-+
-+	if (!(acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0)) {
-+		dev_warn_once(adev->dev,
-+			      "Power consumption will be higher as BIOS has not been configured for suspend-to-idle.\n"
-+			      "To use suspend-to-idle change the sleep mode in BIOS setup.\n");
-+		return false;
- 	}
--#endif
-+
-+#if !IS_ENABLED(CONFIG_AMD_PMC)
-+	dev_warn_once(adev->dev,
-+		      "Power consumption will be higher as the kernel has not been compiled with CONFIG_AMD_PMC.\n");
- 	return false;
-+#else
-+	return true;
-+#endif /* CONFIG_AMD_PMC */
- }
-+
-+#endif /* CONFIG_SUSPEND */
--- 
-2.34.1
+  dev->removable                # struct device
+  pdev->is_thunderbolt
+  pdev->untrusted
+  pdev->external_facing
 
+and it feels a little hard to keep everything straight.  Most of them
+are "discovered" based on some DT or ACPI firmware property.  None of
+them really has anything specifically to do with *PCI*, and I don't
+think the PCI core depends on any of them.  I think
+pdev->is_thunderbolt is the only one we discover based on a PCI
+feature (the Thunderbolt Capability), and the things we *use* it for
+are actually not things specified by that capability [1].
+
+Could drivers just look for these properties directly instead of
+relying on the PCI core to get in the middle?  Most callers of
+device_property_read_*() are in drivers.  I do see that doing it in
+the PCI core might help enforce standard usage in DT/ACPI, but we
+could probably do that in other ways, too.
+
+Bjorn
+
+[1] https://lore.kernel.org/r/20220204222956.GA220908@bhelgaas
