@@ -2,182 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118D7C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4789C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiBJB6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:58:17 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60384 "EHLO
+        id S233293AbiBJB6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:58:21 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233113AbiBJB5W (ORCPT
+        with ESMTP id S233589AbiBJB5h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:57:22 -0500
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A53027D4C;
-        Wed,  9 Feb 2022 17:34:18 -0800 (PST)
-Received: by mail-oo1-f45.google.com with SMTP id t75-20020a4a3e4e000000b002e9c0821d78so4657239oot.4;
-        Wed, 09 Feb 2022 17:34:18 -0800 (PST)
+        Wed, 9 Feb 2022 20:57:37 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FB92AAB9;
+        Wed,  9 Feb 2022 17:42:18 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id i186so7640840pfe.0;
+        Wed, 09 Feb 2022 17:42:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=fznXHsB7fq3yx1Wr3eNck2JRmWHFRDu7wO8b3fegyhQ=;
+        b=K7vtY4fcgIqJ4HJSiqq2au6PruCtlk060uUEezTZDkvdc6kiNQkeRI6Vj+ufMYS0pL
+         Hi0m0j8SgtDXsJ4nqR2pQammy4kqnppm5RL5TJAT6gUTjDI1MeTm9k6fbqBwK6aCT9mo
+         A/tDrvas/wS8UWIqYZZiE8bBrBToZxZGcmVeM+rVxcEMOF738UiM1V0xRwWQC4z1271n
+         yNQOX2SlB2E7nHTegFa7BY7pA9zx/c1F1W21haZ9tnXwhGLbbQRHuXr3v7gNR+CyaRat
+         IRx/cVyUnQvH0opQh1z3jXuRmIXVNAWNpUo/zkWexFlwabFOVzo6lo4DZPQkxYd2ljUW
+         xgsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XNiOWPd36obXvgkEnxsQWaURMDInYrYIQkiEeqpKVQA=;
-        b=w4KGe1YvxshAcnK70ia1WX59OOtFo8YOs5a015MLNg9nmHEYtu4V7Z4c9WffagoaJ8
-         Wi4rAK5BwC5KiApC1o21aeaMOudCyhSTwSAzbIIcct7NExmi7m7ZGBNE4nsmRPfz8yFd
-         YlRE3ZYNlIwxwIrRUcDTNd2OMHFPzFAxqCU25eJ508Y/zZuYrWEdH/wcb+HabZxWirtm
-         R4oKRXEgc0fZCP4IzK7jCUpdNwrNFXsTSOagatOeby8VrC8nZpasuz4FVpk65LUDP4Ub
-         NPHDmJFcsMMpdwCly6VtUlVCg1Xu4ppIVqee3F4xMreBzfqM5vnTcZdMVqdCFM1qdzCd
-         NqpQ==
-X-Gm-Message-State: AOAM5305Kd2S1NvoIAy+KniFAmBEB4tJRSPOW10zN+RJcaxN023TkOwo
-        UVfrUOMr0qZzMe3P22mm9dNIasN8MVvo
-X-Google-Smtp-Source: ABdhPJyzaCGC5eLQBASxyTGmEs5hjG9Z5P2Np9DRVceWLWDDoZhFzxyTV+VDN+pMiqQnGuiyEqs6xw==
-X-Received: by 2002:a05:6871:581:: with SMTP id u1mr1833250oan.5.1644453499047;
-        Wed, 09 Feb 2022 16:38:19 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id c13sm7199740otf.5.2022.02.09.16.38.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:38:18 -0800 (PST)
-Received: (nullmailer pid 1270516 invoked by uid 1000);
-        Thu, 10 Feb 2022 00:38:17 -0000
-Date:   Wed, 9 Feb 2022 18:38:17 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     linux@roeck-us.net, linus.walleij@linaro.org,
-        wim@linux-watchdog.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: watchdog: convert faraday,ftwdt010 to yaml
-Message-ID: <YgReeZX3pc9G8yWp@robh.at.kernel.org>
-References: <20220128204856.494643-1-clabbe@baylibre.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=fznXHsB7fq3yx1Wr3eNck2JRmWHFRDu7wO8b3fegyhQ=;
+        b=wd/kDrxt2CdMl3VFOTkE1E0k1JdBY2W85wwuiqj6uOXmGKeLNtC7eP5C/iC2961Eqv
+         aYHOz6jz1G9b5c72ZDuNo1VFH84IMF3K70vYWbsdzmVBKG4PO7G5eWisYdbdR3a8PGjB
+         OJMcwipfLIGblroOSlWlq0AZ+/FJsJUo427XDJG4Ukn5p2v6iqs4dUDB2h0GFW5UQTtY
+         iKJcju9oRC++3o+NbpK3dNVOSZAdbkm9HH9i8q9Ihcz4qByOOYI9+htkbqaWxi/TO1TM
+         KVoU9tNdUjdZR9LT/l31wbIb4lKL9hVycTZizD7JOwT5V4Z3m8L0TpWjO1LAS9SOA+OU
+         jy7Q==
+X-Gm-Message-State: AOAM532Jr8Yipk44O+mncSVY5HGGijgX2mhnP5FJDzqOss7V+z7zKS1J
+        XJJB/4WgaVpETNDH9QT4cXRx0b2HiNM=
+X-Google-Smtp-Source: ABdhPJyJQcYxSpteE/xAVBfy/rxhoRCgxRtEmG3VtwpT48g1U4W5N6+0o3Iwz6Zbne1VLnM95s1W2g==
+X-Received: by 2002:a05:6214:27ce:: with SMTP id ge14mr3327269qvb.24.1644450731816;
+        Wed, 09 Feb 2022 15:52:11 -0800 (PST)
+Received: from [192.168.1.201] (pool-108-18-137-133.washdc.fios.verizon.net. [108.18.137.133])
+        by smtp.googlemail.com with ESMTPSA id f5sm9142922qkp.97.2022.02.09.15.52.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 15:52:11 -0800 (PST)
+Subject: Re: [PATCH] pinctrl: k210: Fix bias-pull-up
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20220209182822.640905-1-seanga2@gmail.com>
+ <fb3e9786-87e9-6346-cf84-2617adfa5b8d@opensource.wdc.com>
+From:   Sean Anderson <seanga2@gmail.com>
+Message-ID: <4911f3a7-fe4b-8eb0-f504-667ee5ea1294@gmail.com>
+Date:   Wed, 9 Feb 2022 18:52:11 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220128204856.494643-1-clabbe@baylibre.com>
+In-Reply-To: <fb3e9786-87e9-6346-cf84-2617adfa5b8d@opensource.wdc.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 08:48:56PM +0000, Corentin Labbe wrote:
-> Converts watchdog/faraday,ftwdt010.txt to yaml.
-> This permits to detect missing properties like clocks and resets or
-> compatible like moxa,moxart-watchdog.
+On 2/9/22 6:34 PM, Damien Le Moal wrote:
+> On 2/10/22 03:28, Sean Anderson wrote:
+>> Using bias-pull-up would actually cause the pin to have its pull-down
+>> enabled. Fix this.
+>>
+>> Signed-off-by: Sean Anderson <seanga2@gmail.com>
+>> ---
+>>
+>>   drivers/pinctrl/pinctrl-k210.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
+>> index 49e32684dbb2..1ad61b32ec88 100644
+>> --- a/drivers/pinctrl/pinctrl-k210.c
+>> +++ b/drivers/pinctrl/pinctrl-k210.c
+>> @@ -527,7 +527,7 @@ static int k210_pinconf_set_param(struct pinctrl_dev *pctldev,
+>>   	case PIN_CONFIG_BIAS_PULL_UP:
+>>   		if (!arg)
+>>   			return -EINVAL;
+>> -		val |= K210_PC_PD;
+>> +		val |= K210_PC_PU;
+>>   		break;
+>>   	case PIN_CONFIG_DRIVE_STRENGTH:
+>>   		arg *= 1000;
 > 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
->  .../bindings/watchdog/faraday,ftwdt010.txt    | 22 -------
->  .../bindings/watchdog/faraday,ftwdt010.yaml   | 60 +++++++++++++++++++
->  2 files changed, 60 insertions(+), 22 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
->  create mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
-> deleted file mode 100644
-> index 9ecdb502e605..000000000000
-> --- a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
-> +++ /dev/null
-> @@ -1,22 +0,0 @@
-> -Faraday Technology FTWDT010 watchdog
-> -
-> -This is an IP part from Faraday Technology found in the Gemini
-> -SoCs and others.
-> -
-> -Required properties:
-> -- compatible : must be one of
-> -  "faraday,ftwdt010"
-> -  "cortina,gemini-watchdog", "faraday,ftwdt010"
-> -- reg : shall contain base register location and length
-> -- interrupts : shall contain the interrupt for the watchdog
-> -
-> -Optional properties:
-> -- timeout-sec : the default watchdog timeout in seconds.
-> -
-> -Example:
-> -
-> -watchdog@41000000 {
-> -	compatible = "faraday,ftwdt010";
-> -	reg = <0x41000000 0x1000>;
-> -	interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-> new file mode 100644
-> index 000000000000..377529b21267
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/watchdog/faraday,ftwdt010.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Faraday Technology FTWDT010 watchdog
-> +
-> +maintainers:
-> +  - Linus Walleij <linus.walleij@linaro.org>
-> +
-> +description: |
-> +  This is an IP part from Faraday Technology found in the Gemini
-> +  SoCs and others.
-> +
+> Ooops... My bad :)
 
-Need a $ref to watchdog.yaml
-
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - const: "faraday,ftwdt010"
-> +      - items:
-> +          - const: "cortina,gemini-watchdog"
-> +          - const: "faraday,ftwdt010"
-> +      - items:
-> +          - const: "moxa,moxart-watchdog"
-> +          - const: "faraday,ftwdt010"
-
-Don't need quotes
-
-blank line
-
-> +  reg:
-> +    maxItems: 1
-
-blank line...
-
-> +  resets:
-> +    maxItems: 1
-> +  clocks:
-> +    maxItems: 1
-> +  clock-names:
-> +    const: PCLK
-> +  interrupts:
-> +    maxItems: 1
-> +  timeout-sec:
-> +    description: the default watchdog timeout in seconds.
-
-Don't need to describe common properties.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    watchdog@41000000 {
-> +      compatible = "faraday,ftwdt010";
-> +      reg = <0x41000000 0x1000>;
-> +      interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-> +    };
-> +  - |
-> +    watchdog: watchdog@98500000 {
-> +      compatible = "moxa,moxart-watchdog", "faraday,ftwdt010";
-> +      reg = <0x98500000 0x10>;
-> +      clocks = <&clk_apb>;
-> +      clock-names = "PCLK";
-> +    };
-> +...
-> -- 
-> 2.34.1
-> 
-> 
+(This is in U-Boot as well, so it looks like it's my bad)
