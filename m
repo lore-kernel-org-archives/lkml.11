@@ -2,159 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C7CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbiBITNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:13:01 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59938 "EHLO
+        id S232506AbiBITNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:13:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231808AbiBITMr (ORCPT
+        with ESMTP id S230198AbiBITNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:12:47 -0500
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A320C008645;
-        Wed,  9 Feb 2022 11:12:40 -0800 (PST)
-Received: by mail-yb1-f172.google.com with SMTP id y6so8882929ybc.5;
-        Wed, 09 Feb 2022 11:12:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Hqo9jmascljYsohX3+dNe11LfZ+a8ceLYfy+hC5e8w=;
-        b=qF/OxivWqyhjJvOgW19M5yH2R7A4WVih7QOwv19ibSsFFKP1NFgx9rRxtsKyIpTl3a
-         Nu+lO7vv64ssFVrRtVsk0z2MwofZ9U5JX5JI/XWOSbSzD8EXSHx0FlScIm8Wld63qrg3
-         85B6gbXoES7bxGs3YIV3ZvssYc8jzzyT9AaG7c3RN9lyGlKrSWPQvxGWfds/jEiDQw0N
-         wt6tMOD6VUt3D0Qshq2ZSLuUnWP7dQXeuluk/3DP9oc1+f+do2GaLXrROQYIEio6YDih
-         82ddT8GL8mlW9RrGHALdsg2LUiOHqiDjdjaZyNdj5+nb5yZNUiiNdUZdHQkRUfIA1rAO
-         oHqA==
-X-Gm-Message-State: AOAM530yePtzicNW12BM91S4q6JsL7PMORRz8JkjmO2REAlgM/0NHqoW
-        W/1A8PVddacYV9QFlWJu5NnVVCIsbwTJkhNK9pE=
-X-Google-Smtp-Source: ABdhPJwFI0nBunPk2Hh+mAYbQl/h/UKP2zjuR5qjVOf3IYJg606/j6/NtuQ7B/NYITZXRoWRQ2EgtJVc/uVRoZmNGyQ=
-X-Received: by 2002:a25:3410:: with SMTP id b16mr3539165yba.78.1644433875451;
- Wed, 09 Feb 2022 11:11:15 -0800 (PST)
+        Wed, 9 Feb 2022 14:13:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 423ECC014F39
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:13:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644433740;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UuA86Nyzl5Eui91dzFfwf9ECfs1Xn0BsmmUF+q9vMTM=;
+        b=KP4fkOI7PVi4YV3550bIV7XiEIcQeiKoxrODZiulXNKnnczkzEL1fkZqG98Bepv7KFwPQ0
+        8Bry1r9jFyLUVgEeH+7Pa3J70dQKnYtUetiylO8kdsKq4J74oOtjRmA1v+Gzd4p8EU3tmm
+        fXtWIkPEMK8VR+PVP6uJmYKysBmghCM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-258-3vO76ThsNKa4dxfImmOr4g-1; Wed, 09 Feb 2022 14:02:40 -0500
+X-MC-Unique: 3vO76ThsNKa4dxfImmOr4g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B83311966323;
+        Wed,  9 Feb 2022 19:02:37 +0000 (UTC)
+Received: from [10.22.9.207] (unknown [10.22.9.207])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 69C2410013C1;
+        Wed,  9 Feb 2022 19:02:35 +0000 (UTC)
+Message-ID: <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com>
+Date:   Wed, 9 Feb 2022 14:02:34 -0500
 MIME-Version: 1.0
-References: <20220202020103.2149130-1-rajatja@google.com>
-In-Reply-To: <20220202020103.2149130-1-rajatja@google.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 9 Feb 2022 20:11:04 +0100
-Message-ID: <CAJZ5v0gngVxoe88rNAXXK_F34rHAKuxokiuZ6kpg6FhbnyMn0Q@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] PCI: Allow internal devices to be marked as untrusted
-To:     Rajat Jain <rajatja@google.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
+Content-Language: en-US
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paul.mckenney@linaro.org>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org
+References: <20220208184208.79303-1-namhyung@kernel.org>
+ <20220209090908.GK23216@worktop.programming.kicks-ass.net>
+ <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com>
+ <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 2, 2022 at 3:01 AM Rajat Jain <rajatja@google.com> wrote:
+On 2/9/22 13:29, Mathieu Desnoyers wrote:
+> ----- On Feb 9, 2022, at 1:19 PM, Waiman Long longman@redhat.com wrote:
 >
-> Today the pci_dev->untrusted is set for any devices sitting downstream
-> an external facing port (determined via "ExternalFacingPort" or the
-> "external-facing" properties).
+>> On 2/9/22 04:09, Peter Zijlstra wrote:
+>>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
+>>>
+>>>> Eventually I'm mostly interested in the contended locks only and I
+>>>> want to reduce the overhead in the fast path.  By moving that, it'd be
+>>>> easy to track contended locks with timing by using two tracepoints.
+>>> So why not put in two new tracepoints and call it a day?
+>>>
+>>> Why muck about with all that lockdep stuff just to preserve the name
+>>> (and in the process continue to blow up data structures etc..). This
+>>> leaves distros in a bind, will they enable this config and provide
+>>> tracepoints while bloating the data structures and destroying things
+>>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
+>>> at all.
+>>>
+>>> Yes, the name is convenient, but it's just not worth it IMO. It makes
+>>> the whole proposition too much of a trade-off.
+>>>
+>>> Would it not be possible to reconstruct enough useful information from
+>>> the lock callsite?
+>>>
+>> I second that as I don't want to see the size of a spinlock exceeds 4
+>> bytes in a production system.
+>>
+>> Instead of storing additional information (e.g. lock name) directly into
+>> the lock itself. Maybe we can store it elsewhere and use the lock
+>> address as the key to locate it in a hash table. We can certainly extend
+>> the various lock init functions to do that. It will be trickier for
+>> statically initialized locks, but we can probably find a way to do that too.
+> If we go down that route, it would be nice if we can support a few different
+> use-cases for various tracers out there.
 >
-> However, currently there is no way for internal devices to be marked as
-> untrusted.
+> One use-case (a) requires the ability to query the lock name based on its address as key.
+> For this a hash table is a good fit. This would allow tracers like ftrace to
+> output lock names in its human-readable output which is formatted within the kernel.
 >
-> There are use-cases though, where a platform would like to treat an
-> internal device as untrusted (perhaps because it runs untrusted firmware
-> or offers an attack surface by handling untrusted network data etc).
+> Another use-case (b) is to be able to "dump" the lock { name, address } tuples
+> into the trace stream (we call this statedump events in lttng), and do the
+> translation from address to name at post-processing. This simply requires
+> that this information is available for iteration for both the core kernel
+> and module locks, so the tracer can dump this information on trace start
+> and module load.
 >
-> Introduce a new "UntrustedDevice" property that can be used by the
-> firmware to mark any device as untrusted.
->
-> Signed-off-by: Rajat Jain <rajatja@google.com>
-> ---
-> v2: * Also use the same property for device tree based systems.
->     * Add documentation (next patch)
->
->  drivers/pci/of.c       | 2 ++
->  drivers/pci/pci-acpi.c | 1 +
->  drivers/pci/pci.c      | 9 +++++++++
->  drivers/pci/pci.h      | 2 ++
->  4 files changed, 14 insertions(+)
->
-> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-> index cb2e8351c2cc..e8b804664b69 100644
-> --- a/drivers/pci/of.c
-> +++ b/drivers/pci/of.c
-> @@ -24,6 +24,8 @@ void pci_set_of_node(struct pci_dev *dev)
->                                                     dev->devfn);
->         if (dev->dev.of_node)
->                 dev->dev.fwnode = &dev->dev.of_node->fwnode;
-> +
-> +       pci_set_untrusted(dev);
->  }
->
->  void pci_release_of_node(struct pci_dev *dev)
-> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> index a42dbf448860..2bffbd5c6114 100644
-> --- a/drivers/pci/pci-acpi.c
-> +++ b/drivers/pci/pci-acpi.c
-> @@ -1356,6 +1356,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
->
->         pci_acpi_optimize_delay(pci_dev, adev->handle);
->         pci_acpi_set_external_facing(pci_dev);
-> +       pci_set_untrusted(pci_dev);
->         pci_acpi_add_edr_notifier(pci_dev);
->
->         pci_acpi_add_pm_notifier(adev, pci_dev);
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 9ecce435fb3f..41e887c27004 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -6869,3 +6869,12 @@ static int __init pci_realloc_setup_params(void)
->         return 0;
->  }
->  pure_initcall(pci_realloc_setup_params);
-> +
-> +void pci_set_untrusted(struct pci_dev *pdev)
-> +{
-> +       u8 val;
-> +
-> +       if (!device_property_read_u8(&pdev->dev, "UntrustedDevice", &val)
-> +           && val)
-> +               pdev->untrusted = 1;
+> Use-case (b) is very similar to what is done for the kernel tracepoints. Based
+> on this, implementing the init code that iterates on those sections and populates
+> a hash table for use-case (a) should be easy enough.
 
-I'm not sure why you ignore val = 0.  Is it not a valid value?
+Yes, that are good use cases for this type of functionality. I do need 
+to think about how to do it for statically initialized lock first.
 
-The property is not particularly well defined here.  It is not clear
-from its name that it only applies to PCI devices and how.
+Thanks,
+Longman
 
-AFAICS, the "untrusted" bit affected by it is only used by the ATS
-code and in one PCH ACS quirk, but I'm not sure if this is all you
-have in mind.
-
-> +}
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index 3d60cabde1a1..6c273ce5e0ba 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -761,4 +761,6 @@ static inline pci_power_t mid_pci_get_power_state(struct pci_dev *pdev)
->  }
->  #endif
->
-> +void pci_set_untrusted(struct pci_dev *pdev);
-> +
->  #endif /* DRIVERS_PCI_H */
-> --
-> 2.35.0.rc2.247.g8bbb082509-goog
->
