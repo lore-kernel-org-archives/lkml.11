@@ -2,172 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A511BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A43C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233513AbiBIMk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        id S233543AbiBIMlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:41:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233604AbiBIMkz (ORCPT
+        with ESMTP id S233026AbiBIMlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:40:55 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55BCBC05CB9A;
-        Wed,  9 Feb 2022 04:40:57 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nHmEs-0001Mv-36; Wed, 09 Feb 2022 13:38:26 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org, wefu@redhat.com,
-        liush@allwinnertech.com, guoren@kernel.org, atishp@atishpatra.org,
-        anup@brainfault.org, drew@beagleboard.org, hch@lst.de,
-        arnd@arndb.de, wens@csie.org, maxime@cerno.tech,
-        gfavor@ventanamicro.com, andrea.mondelli@huawei.com,
-        behrensj@mit.edu, xinhaoqu@huawei.com, huffman@cadence.com,
-        mick@ics.forth.gr, allen.baum@esperantotech.com,
-        jscheid@ventanamicro.com, rtrauben@gmail.com, samuel@sholland.org,
-        cmuellner@linux.com, philipp.tomsich@vrull.eu,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v6 10/14] riscv: add cpufeature handling via alternatives
-Date:   Wed,  9 Feb 2022 13:37:56 +0100
-Message-Id: <20220209123800.269774-11-heiko@sntech.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209123800.269774-1-heiko@sntech.de>
-References: <20220209123800.269774-1-heiko@sntech.de>
+        Wed, 9 Feb 2022 07:41:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B35ABC05CB86
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:41:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644410481;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2T/ZX315dLjrEaKbTpQjrwkLEmj/39CedeR+myw2pnM=;
+        b=WPoM+LoTGwPb2LY5sFnqhafrZ/+F1+qE354cDBnT+aVHvWJc2HeqHL+1V5dRyg1x71CvLL
+        VI8snj5R7lAcTerxYU/iw41M3uUGChGdk3KXNqHk84ss8nP0z85K7JVzDej5hKDstTFtvp
+        n3RPZbK4Qd3CIqvXCKhhnvtBn5AFqrw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-534-bN0312cFPXCIwsoWWALDSA-1; Wed, 09 Feb 2022 07:41:20 -0500
+X-MC-Unique: bN0312cFPXCIwsoWWALDSA-1
+Received: by mail-wr1-f72.google.com with SMTP id j8-20020adfc688000000b001e3322ced69so1054335wrg.13
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 04:41:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2T/ZX315dLjrEaKbTpQjrwkLEmj/39CedeR+myw2pnM=;
+        b=0tW1rEkG5Rk1gsqA69ATBscAeGQW5onVrk0TQbWTjbIjOblELsraeyslDwtNpVb/kU
+         i/ZQhIZSAsaJK04YAOEw8p5EGdCbvvgUEcvtdFMCKKGH4XAWxnJJMf7VcN8ANA+nyu3t
+         gU1l6YAzg4XJfPuQUhKgLXz/3iy/jI1r7ppON8Vwi/dnwj4u0l4IWRwUqHcBHCiXwVao
+         O7xHIC09CSGYdz0dIeilY84khbCEIqyfcGL+QthK9FtTLVtQZI6CWojHnH82JsbEvAwN
+         b+lKagM7r6fsRrEriW+IlnqqiNTAc2aimhfe7J+PnQXXgjBJ4KQk/piL/U7Tzl9BvZTO
+         9Zqg==
+X-Gm-Message-State: AOAM530zXVPYPGKOOr1dmppwweGqQfOX96h9tnptXcnsP3rRNQVZTmBI
+        fLpXIn/nJeLgTilU9RoYufbVecPn/VUKbFNGzy1CJIDoc5qOQoRNAmMyU0NCSuAd24L/sixBeuR
+        A9GtT25UcbDFwVugUfxoE7qXo
+X-Received: by 2002:a5d:64af:: with SMTP id m15mr1973602wrp.478.1644410479720;
+        Wed, 09 Feb 2022 04:41:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxPYKui1CF0MIpN4jnFuKlY7TO7NxCK4qlra0MJS9GiBFjcirpTBRptBCzbYbNupz5K+sxp5g==
+X-Received: by 2002:a5d:64af:: with SMTP id m15mr1973587wrp.478.1644410479500;
+        Wed, 09 Feb 2022 04:41:19 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id p3sm5299211wmq.40.2022.02.09.04.41.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 04:41:19 -0800 (PST)
+Message-ID: <29312c12-5684-b134-3e0f-e02240c574c6@redhat.com>
+Date:   Wed, 9 Feb 2022 13:41:17 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 4/7] drm/solomon: Add SSD130X OLED displays I2C support
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <20220209090314.2511959-5-javierm@redhat.com>
+ <CAMuHMdXOfz94gD+SpGRS7HazxA_PN3n2D=Q04CPm-eEMb_CkEw@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMuHMdXOfz94gD+SpGRS7HazxA_PN3n2D=Q04CPm-eEMb_CkEw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some cpufeatures should be handled via the alternatives mechanism
-to not incur penalties on unsupporting variants.
+Hello Geert,
 
-So add a mechanism to handle these similar to cpu erratas.
+Thanks for your feedback.
 
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
- arch/riscv/include/asm/alternative.h |  3 ++
- arch/riscv/include/asm/errata_list.h |  2 +
- arch/riscv/kernel/alternative.c      |  2 +
- arch/riscv/kernel/cpufeature.c       | 55 +++++++++++++++++++++++++++-
- 4 files changed, 61 insertions(+), 1 deletion(-)
+On 2/9/22 13:21, Geert Uytterhoeven wrote:
 
-diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
-index f0657b1b3174..cf3b22173834 100644
---- a/arch/riscv/include/asm/alternative.h
-+++ b/arch/riscv/include/asm/alternative.h
-@@ -39,5 +39,8 @@ struct errata_checkfunc_id {
- void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
- 			      unsigned long archid, unsigned long impid,
- 			      unsigned int stage);
-+
-+void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
-+				 unsigned int stage);
- #endif
- #endif
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 5f1046e82d9f..6b95bd9aee82 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -14,6 +14,8 @@
- #define	ERRATA_SIFIVE_NUMBER 2
- #endif
- 
-+#define	CPUFEATURE_NUMBER 0
-+
- #ifdef __ASSEMBLY__
- 
- #define ALT_INSN_FAULT(x)						\
-diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
-index 223770b3945c..e6c9de9f9ba6 100644
---- a/arch/riscv/kernel/alternative.c
-+++ b/arch/riscv/kernel/alternative.c
-@@ -63,6 +63,8 @@ static void __init_or_module _apply_alternatives(struct alt_entry *begin,
- 						 struct alt_entry *end,
- 						 unsigned int stage)
- {
-+	riscv_cpufeature_patch_func(begin, end, stage);
-+
- 	if (!vendor_patch_func)
- 		return;
- 
-diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
-index d959d207a40d..fef804346d75 100644
---- a/arch/riscv/kernel/cpufeature.c
-+++ b/arch/riscv/kernel/cpufeature.c
-@@ -8,8 +8,12 @@
- 
- #include <linux/bitmap.h>
- #include <linux/of.h>
--#include <asm/processor.h>
-+#include <asm/alternative.h>
-+#include <asm/errata_list.h>
- #include <asm/hwcap.h>
-+#include <asm/patch.h>
-+#include <asm/pgtable.h>
-+#include <asm/processor.h>
- #include <asm/smp.h>
- #include <asm/switch_to.h>
- 
-@@ -149,3 +153,52 @@ void __init riscv_fill_hwcap(void)
- 		static_branch_enable(&cpu_hwcap_fpu);
- #endif
- }
-+
-+struct cpufeature_info {
-+	char name[ERRATA_STRING_LENGTH_MAX];
-+	bool (*check_func)(unsigned int stage);
-+};
-+
-+static const struct cpufeature_info cpufeature_list[CPUFEATURE_NUMBER] = {
-+};
-+
-+static u32 __init cpufeature_probe(unsigned int stage)
-+{
-+	const struct cpufeature_info *info;
-+	u32 cpu_req_feature = 0;
-+	int idx;
-+
-+	for (idx = 0; idx < CPUFEATURE_NUMBER; idx++) {
-+		info = &cpufeature_list[idx];
-+
-+		if (info->check_func(stage))
-+			cpu_req_feature |= (1U << idx);
-+	}
-+
-+	return cpu_req_feature;
-+}
-+
-+void riscv_cpufeature_patch_func(struct alt_entry *begin, struct alt_entry *end,
-+				 unsigned int stage)
-+{
-+	u32 cpu_req_feature = cpufeature_probe(stage);
-+	u32 cpu_apply_feature = 0;
-+	struct alt_entry *alt;
-+	u32 tmp;
-+
-+	for (alt = begin; alt < end; alt++) {
-+		if (alt->vendor_id != 0)
-+			continue;
-+		if (alt->errata_id >= CPUFEATURE_NUMBER) {
-+			WARN(1, "This feature id:%d is not in kernel cpufeature list",
-+				alt->errata_id);
-+			continue;
-+		}
-+
-+		tmp = (1U << alt->errata_id);
-+		if (cpu_req_feature & tmp) {
-+			patch_text_nosync(alt->old_ptr, alt->alt_ptr, alt->alt_len);
-+			cpu_apply_feature |= tmp;
-+		}
-+	}
-+}
+[snip]
+
+> 
+>> +static const struct of_device_id ssd130x_of_match[] = {
+>> +       {
+>> +               .compatible = "solomon,ssd1305fb-i2c",
+>> +               .data = (void *)&ssd130x_ssd1305_deviceinfo,
+> 
+> The casts are not needed.
+> 
+
+Right. I copied the table from the ssd1307fb driver verbatim. I'll clean it up.
+
+Best regards,
 -- 
-2.30.2
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
