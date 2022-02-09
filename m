@@ -2,132 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D920BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240051AbiBISjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55792 "EHLO
+        id S239995AbiBISjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:39:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239944AbiBISid (ORCPT
+        with ESMTP id S239972AbiBISi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:38:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 334F0C03E95B;
-        Wed,  9 Feb 2022 10:38:30 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFC68B82378;
-        Wed,  9 Feb 2022 18:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6E4CC340E7;
-        Wed,  9 Feb 2022 18:38:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431907;
-        bh=G/siQvji3HalXvhT5qhWku0cnOVs8mMRnHkwATbA3bA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FA0gQTUGPFI588XiU/nBpaV1YCTaY53raAjQLLwr2QEAJUs3GApVW0Its43hFFFWO
-         nkrqWsXC77dWrqiQOoIRaAU+ZvEhQPhllCyhsWze+/UyDjRoEJ2TXSk2z6OTiQd/xM
-         e6AFNBBZftu+kurrR/89bEp12JaXyhbd4u1dT3Qmp71Op1eXKHwceOO9GiakHYrjt7
-         F+6glsrBbwoTMZGYehsKMalWSDNiwu/+AAfIz6VEpuovQ3Sg7k31/RDZ6u5SVETe/N
-         cF3rSuaxel+SjpLc/NlcLGLNL71h5ReOLo9DnOl5Hu3yuIeLVHacRKPtoeV4XtBweR
-         a+BvfOZ2a/Oxw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 09/36] selftests/zram01.sh: Fix compression ratio calculation
-Date:   Wed,  9 Feb 2022 13:37:32 -0500
-Message-Id: <20220209183759.47134-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:38:58 -0500
+X-Greylist: delayed 539 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 10:38:33 PST
+Received: from mail.efficios.com (mail.efficios.com [167.114.26.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15877C03E97C;
+        Wed,  9 Feb 2022 10:38:32 -0800 (PST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 578B63B44D6;
+        Wed,  9 Feb 2022 13:29:32 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id PvkRZioEQ2qz; Wed,  9 Feb 2022 13:29:31 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 959143B44D5;
+        Wed,  9 Feb 2022 13:29:31 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 959143B44D5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1644431371;
+        bh=+Zw/hovgsG1BmQcx6P8MQWbrVbn2r+dD1nEP9OsP7vM=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=d+/EJaPNp+fG2gPBRFh9aZtT/SzlY0BX9NyB3hkOcS9zHh3V1BO8Lz/3adWucY2QW
+         fmTuQ3YcN/KOYJrI8BuHL72b6g6lUEW6w4xwgAMoqSiW7w7szEM9zsL/eHioPgbpXt
+         BhOBvhBW78a6BZjb9dC5qSmzAh+B/y3sbfqKHplgFhF/QqJkHvfRrYlFNTh8PtgLE5
+         YuimU6VD1LdRv7w1yOFSszTZpzhDbxLS6XX6bIZpG6sh4sOKBDn+HUVj5k8p6VVtC1
+         gkcbUtZ/uVhNNHX3U8U1+Wcy3GCtGTDanpe09W6+vdOFPKH58JmcUWSnShPQC5H0Ee
+         EHG/4T/xZ8KSg==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id XNJjAuNwWaY3; Wed,  9 Feb 2022 13:29:31 -0500 (EST)
+Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
+        by mail.efficios.com (Postfix) with ESMTP id 7E0593B4782;
+        Wed,  9 Feb 2022 13:29:31 -0500 (EST)
+Date:   Wed, 9 Feb 2022 13:29:31 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paul.mckenney@linaro.org>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org
+Message-ID: <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+In-Reply-To: <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com>
+References: <20220208184208.79303-1-namhyung@kernel.org> <20220209090908.GK23216@worktop.programming.kicks-ass.net> <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [167.114.26.124]
+X-Mailer: Zimbra 8.8.15_GA_4203 (ZimbraWebClient - FF96 (Linux)/8.8.15_GA_4203)
+Thread-Topic: locking: Separate lock tracepoints from lockdep/lock_stat (v1)
+Thread-Index: mgD4nhH5tY/jYF4873tct6XNo0H1KQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+----- On Feb 9, 2022, at 1:19 PM, Waiman Long longman@redhat.com wrote:
 
-[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
+> On 2/9/22 04:09, Peter Zijlstra wrote:
+>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
+>>
+>>> Eventually I'm mostly interested in the contended locks only and I
+>>> want to reduce the overhead in the fast path.  By moving that, it'd be
+>>> easy to track contended locks with timing by using two tracepoints.
+>> So why not put in two new tracepoints and call it a day?
+>>
+>> Why muck about with all that lockdep stuff just to preserve the name
+>> (and in the process continue to blow up data structures etc..). This
+>> leaves distros in a bind, will they enable this config and provide
+>> tracepoints while bloating the data structures and destroying things
+>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
+>> at all.
+>>
+>> Yes, the name is convenient, but it's just not worth it IMO. It makes
+>> the whole proposition too much of a trade-off.
+>>
+>> Would it not be possible to reconstruct enough useful information from
+>> the lock callsite?
+>>
+> I second that as I don't want to see the size of a spinlock exceeds 4
+> bytes in a production system.
+> 
+> Instead of storing additional information (e.g. lock name) directly into
+> the lock itself. Maybe we can store it elsewhere and use the lock
+> address as the key to locate it in a hash table. We can certainly extend
+> the various lock init functions to do that. It will be trickier for
+> statically initialized locks, but we can probably find a way to do that too.
 
-zram01 uses `free -m` to measure zram memory usage. The results are no
-sense because they are polluted by all running processes on the system.
+If we go down that route, it would be nice if we can support a few different
+use-cases for various tracers out there.
 
-We Should only calculate the free memory delta for the current process.
-So use the third field of /sys/block/zram<id>/mm_stat to measure memory
-usage instead. The file is available since kernel 4.1.
+One use-case (a) requires the ability to query the lock name based on its address as key.
+For this a hash table is a good fit. This would allow tracers like ftrace to
+output lock names in its human-readable output which is formatted within the kernel.
 
-orig_data_size(first): uncompressed size of data stored in this disk.
-compr_data_size(second): compressed size of data stored in this disk
-mem_used_total(third): the amount of memory allocated for this disk
+Another use-case (b) is to be able to "dump" the lock { name, address } tuples
+into the trace stream (we call this statedump events in lttng), and do the
+translation from address to name at post-processing. This simply requires
+that this information is available for iteration for both the core kernel
+and module locks, so the tracer can dump this information on trace start
+and module load.
 
-Also remove useless zram cleanup call in zram_fill_fs and so we don't
-need to cleanup zram twice if fails.
+Use-case (b) is very similar to what is done for the kernel tracepoints. Based
+on this, implementing the init code that iterates on those sections and populates
+a hash table for use-case (a) should be easy enough.
 
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
- 1 file changed, 8 insertions(+), 22 deletions(-)
+Thanks,
 
-diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
-index 114863d9fb876..e9e9eb777e2c7 100755
---- a/tools/testing/selftests/zram/zram01.sh
-+++ b/tools/testing/selftests/zram/zram01.sh
-@@ -33,8 +33,6 @@ zram_algs="lzo"
- 
- zram_fill_fs()
- {
--	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
--
- 	for i in $(seq 0 $(($dev_num - 1))); do
- 		echo "fill zram$i..."
- 		local b=0
-@@ -45,29 +43,17 @@ zram_fill_fs()
- 			b=$(($b + 1))
- 		done
- 		echo "zram$i can be filled with '$b' KB"
--	done
- 
--	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
--	local used_mem=$(($mem_free0 - $mem_free1))
-+		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
-+		local v=$((100 * 1024 * $b / $mem_used_total))
-+		if [ "$v" -lt 100 ]; then
-+			 echo "FAIL compression ratio: 0.$v:1"
-+			 ERR_CODE=-1
-+			 return
-+		fi
- 
--	local total_size=0
--	for sm in $zram_sizes; do
--		local s=$(echo $sm | sed 's/M//')
--		total_size=$(($total_size + $s))
-+		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- 	done
--
--	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
--
--	local v=$((100 * $total_size / $used_mem))
--
--	if [ "$v" -lt 100 ]; then
--		echo "FAIL compression ratio: 0.$v:1"
--		ERR_CODE=-1
--		zram_cleanup
--		return
--	fi
--
--	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
- }
- 
- check_prereqs
+Mathieu
+
 -- 
-2.34.1
-
+Mathieu Desnoyers
+EfficiOS Inc.
+http://www.efficios.com
