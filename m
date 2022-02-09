@@ -2,49 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AABC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236836AbiBISsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:48:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
+        id S240842AbiBISs2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:48:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241681AbiBISqz (ORCPT
+        with ESMTP id S241487AbiBISqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:46:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204BAC0F86BE;
-        Wed,  9 Feb 2022 10:44:15 -0800 (PST)
+        Wed, 9 Feb 2022 13:46:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6F0C001914;
+        Wed,  9 Feb 2022 10:44:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38D6B612D5;
-        Wed,  9 Feb 2022 18:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FDBAC340EF;
-        Wed,  9 Feb 2022 18:44:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 874A8B82384;
+        Wed,  9 Feb 2022 18:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77E0C340ED;
+        Wed,  9 Feb 2022 18:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432253;
-        bh=K3QGi21JyiylmC9O+Ts03GWV8vWnzVXFL9nRfTBRNLk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gXB3XKq0FKZvp5ZfXg207pyTChVNXT2Bx+SA8ZTEXUSMh6kLwdLT5zRRrXi/it08V
-         4GVxP51X5/ozzcp3SYqDJ6t0yq66sJvY/O/OFigRqZssTlNU8Vd3kUTiqzl8R+SpOG
-         3movFTtC3XqjEvlcKIZ/OfY7x9WYAbKzvLV86A9Du/DQd4zGlNdtTrNuRkyPnfM/sq
-         T9qpoCSYGmqIQG3ZUdRabEZdFnXJ7U8oa26QJ8E+xHJel17F8VSXTfKqH9D64PsAFV
-         n4MCu/hpSncmqjKtigE7P/3ufMN4T2NhNQVGCLdf4JLVMxzf4Ts9gkGPS64F8EPA+V
-         xveNtz1iTqiZg==
+        s=k20201202; t=1644432240;
+        bh=68TEqlEr7oRnJi0vtYWnGuAH20gM7jHIJnUnx/9lt/Y=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eH4LDAyEpu7X683H+Yf+tUrEaE1giN+0dXrzwBE1ggDvdkKJEkZ3Mg/7I744WkcFw
+         FpZpPLa4QkkesduaJtHNEqo0p72bUOr35B746cxkqVTzlDdk34ugpYZg1MNiY1BN52
+         7UvTlfK41dLjQILckKAG5UTYDtereKetGz4Ef8EOuPB7h8PmNxFfn5W2ZlGVxDAqi2
+         NNKs1N9Qs/m2/IUQ9lSAD9B1JZ+CFKEpJuVI5mO15UdHnCnlDgMutReCvo2FajsrXQ
+         f7jXpc5jOyVJCr8KWg23mNMN4bdCdub8/wqTp9bTfQZhN9ri1yWT39JcWPPVYzt7Nq
+         +xX7R5oCmoMuw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        kuba@kernel.org, linux-wpan@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/10] net: ieee802154: at86rf230: Stop leaking skb's
-Date:   Wed,  9 Feb 2022 13:44:00 -0500
-Message-Id: <20220209184410.48223-1-sashal@kernel.org>
+Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, nirmoy.das@amd.com,
+        Oak.Zeng@amd.com, kevin1.wang@amd.com, tzimmermann@suse.de,
+        Philip.Yang@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 14/15] drm/amdgpu: fix logic inversion in check
+Date:   Wed,  9 Feb 2022 13:43:00 -0500
+Message-Id: <20220209184305.47983-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
+References: <20220209184305.47983-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,72 +57,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Christian König <christian.koenig@amd.com>
 
-[ Upstream commit e5ce576d45bf72fd0e3dc37eff897bfcc488f6a9 ]
+[ Upstream commit e8ae38720e1a685fd98cfa5ae118c9d07b45ca79 ]
 
-Upon error the ieee802154_xmit_complete() helper is not called. Only
-ieee802154_wake_queue() is called manually. In the Tx case we then leak
-the skb structure.
+We probably never trigger this, but the logic inside the check is
+inverted.
 
-Free the skb structure upon error before returning when appropriate.
-
-As the 'is_tx = 0' cannot be moved in the complete handler because of a
-possible race between the delay in switching to STATE_RX_AACK_ON and a
-new interrupt, we introduce an intermediate 'was_tx' boolean just for
-this purpose.
-
-There is no Fixes tag applying here, many changes have been made on this
-area and the issue kind of always existed.
-
-Suggested-by: Alexander Aring <alex.aring@gmail.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Link: https://lore.kernel.org/r/20220125121426.848337-4-miquel.raynal@bootlin.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ieee802154/at86rf230.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ieee802154/at86rf230.c b/drivers/net/ieee802154/at86rf230.c
-index 3d9e915798668..1bc09b6c308f8 100644
---- a/drivers/net/ieee802154/at86rf230.c
-+++ b/drivers/net/ieee802154/at86rf230.c
-@@ -108,6 +108,7 @@ struct at86rf230_local {
- 	unsigned long cal_timeout;
- 	bool is_tx;
- 	bool is_tx_from_off;
-+	bool was_tx;
- 	u8 tx_retry;
- 	struct sk_buff *tx_skb;
- 	struct at86rf230_state_change tx;
-@@ -351,7 +352,11 @@ at86rf230_async_error_recover_complete(void *context)
- 	if (ctx->free)
- 		kfree(ctx);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+index 58e14d3040f03..870dd78d5a21a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+@@ -1976,7 +1976,7 @@ int amdgpu_copy_buffer(struct amdgpu_ring *ring, uint64_t src_offset,
+ 	unsigned i;
+ 	int r;
  
--	ieee802154_wake_queue(lp->hw);
-+	if (lp->was_tx) {
-+		lp->was_tx = 0;
-+		dev_kfree_skb_any(lp->tx_skb);
-+		ieee802154_wake_queue(lp->hw);
-+	}
- }
- 
- static void
-@@ -360,7 +365,11 @@ at86rf230_async_error_recover(void *context)
- 	struct at86rf230_state_change *ctx = context;
- 	struct at86rf230_local *lp = ctx->lp;
- 
--	lp->is_tx = 0;
-+	if (lp->is_tx) {
-+		lp->was_tx = 1;
-+		lp->is_tx = 0;
-+	}
-+
- 	at86rf230_async_state_change(lp, ctx, STATE_RX_AACK_ON,
- 				     at86rf230_async_error_recover_complete);
- }
+-	if (direct_submit && !ring->sched.ready) {
++	if (!direct_submit && !ring->sched.ready) {
+ 		DRM_ERROR("Trying to move memory with ring turned off.\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.34.1
 
