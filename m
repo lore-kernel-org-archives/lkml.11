@@ -2,99 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AFCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C895EC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244616AbiBIDC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:02:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S243545AbiBIDIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:08:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355043AbiBIC60 (ORCPT
+        with ESMTP id S1349694AbiBIDGd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:58:26 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4804AC0613CC
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 18:58:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644375504; x=1675911504;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7k2feXY7Ta35bFj7td4XrK9xId7RM3/gFTXfzgZzAnU=;
-  b=K9357VBamjvvxUfoNv7PpiR1r8tFetG7KXXgh5yYHHf+2boCmXbBtKI9
-   GJdUGi1uhDQYO6+le1e6GlgwFQCIsm5TYqL/TkcByTibFOZ5dt1Yr7/zY
-   mZMGWDKk6JOAkR2dzH9tvzWFots1Db0OA+d1d0I4G56jAn4uK/FpHuEZ/
-   8k7/bC7UANDVYmK8KLB0SHDBBNRnnZ+DAwApmYBnpCGx/TAlV5rLGU1Ji
-   Kcy0GGVzEfurart+OU+l7PEbSWBkt0n/ZZrQwkQ0d+3O7z3msRwdGcK2W
-   HxsKP2RnMdYF/vBWf3yV5NqgZGvDp4qTM0peGcpw5CFcnGAquUruQ77HP
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="246691644"
-X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
-   d="scan'208";a="246691644"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 18:58:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
-   d="scan'208";a="525800696"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 08 Feb 2022 18:58:22 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHdBW-00017z-1T; Wed, 09 Feb 2022 02:58:22 +0000
-Date:   Wed, 9 Feb 2022 10:58:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [intel-tdx:kvm-upstream-workaround 21/141]
- arch/x86/include/asm/tdx_host.h:60:35: warning: 'struct tdsysinfo_struct'
- declared inside parameter list will not be visible outside of this
- definition or declaration
-Message-ID: <202202091001.FUPeNVtq-lkp@intel.com>
+        Tue, 8 Feb 2022 22:06:33 -0500
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C53C0612BC;
+        Tue,  8 Feb 2022 19:06:25 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id q8so1174522oiw.7;
+        Tue, 08 Feb 2022 19:06:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5Q+2vnIsjejUqQ8ahgYrYH7fS2Q0Im+8Cgkb2EVwayM=;
+        b=SgT824Irm9Eit68XAT1fXRkijDHnFy3BwNa1MHo6mo1pomeuRvEKDiVZWbMDeqG16m
+         awbiUx3PZlIlPWWSEFTIwnX6L103oxS4l/ddDwN9etbNTZ+BepqioDGUvfwZ0EO6lwS/
+         EEMzB2Z1eWVbi5VtpGSDzqsZGdZXEJsRMbfONEPFVQUdIpCt0k4BSLBWJQ+E/F5ybRrD
+         sZ0V/Jy13V0FGge+zdII21w9J2MLVDWUzlpw4RaOo3kGYQD1zFqTSQHYe5HdYoIuLWmT
+         yQEYMkyib1Id0mjpdLiQaLiRX9zeRRAWVT+H/A1hhhYRMWoUFuxYERz6ZKF7soA4j50b
+         bhXQ==
+X-Gm-Message-State: AOAM53362Z1RqAkgUboate8ECn6LWpSUQjdE7rzIu+k1Mn0LC+MP/T6y
+        93Qx3tCtVaL9L+wfG5lHdw==
+X-Google-Smtp-Source: ABdhPJyJtXTIsMjg464SoJfL0WpKl14WPLTJ6Yp9FfnS0DqO0gQTxSRxNfM/OduHB/yVod63K2o/qg==
+X-Received: by 2002:a05:6808:1a11:: with SMTP id bk17mr89827oib.105.1644375984335;
+        Tue, 08 Feb 2022 19:06:24 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id s13sm6166559ooh.43.2022.02.08.19.06.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 19:06:23 -0800 (PST)
+Received: (nullmailer pid 3545969 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:06:22 -0000
+Date:   Tue, 8 Feb 2022 21:06:22 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 12/12] dt-bindings: usb: samsung,exynos-usb2: convert to
+ dtschema
+Message-ID: <YgMvrveS7KPp/48M@robh.at.kernel.org>
+References: <20220123111644.25540-1-krzysztof.kozlowski@canonical.com>
+ <20220123111644.25540-13-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220123111644.25540-13-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
-head:   58f28b2fcc73d05d6a5a9f70a8fdacefa99acb85
-commit: 13dd0fa9c0ba8880c196a8feecd826f4c16b18f8 [21/141] x86/cpu: make init_tdx() system wide info about TDX module
-config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220209/202202091001.FUPeNVtq-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel/tdx/commit/13dd0fa9c0ba8880c196a8feecd826f4c16b18f8
-        git remote add intel-tdx https://github.com/intel/tdx.git
-        git fetch --no-tags intel-tdx kvm-upstream-workaround
-        git checkout 13dd0fa9c0ba8880c196a8feecd826f4c16b18f8
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/cpu/
+On Sun, 23 Jan 2022 12:16:44 +0100, Krzysztof Kozlowski wrote:
+> Convert the Samsung Exynos SoC USB 2.0 EHCI and OHCI Controller bindings
+> to DT schema format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../devicetree/bindings/usb/exynos-usb.txt    |  66 ----------
+>  .../bindings/usb/samsung,exynos-usb2.yaml     | 117 ++++++++++++++++++
+>  2 files changed, 117 insertions(+), 66 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/usb/exynos-usb.txt
+>  create mode 100644 Documentation/devicetree/bindings/usb/samsung,exynos-usb2.yaml
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from arch/x86/kernel/cpu/intel.c:30:
->> arch/x86/include/asm/tdx_host.h:60:35: warning: 'struct tdsysinfo_struct' declared inside parameter list will not be visible outside of this definition or declaration
-      60 | static inline int init_tdx(struct tdsysinfo_struct *r) { return -ENODEV; }
-         |                                   ^~~~~~~~~~~~~~~~
-
-
-vim +60 arch/x86/include/asm/tdx_host.h
-
-    53	
-    54	void detect_tdx_keyids(struct cpuinfo_x86 *c);
-    55	int detect_tdx(void);
-    56	int init_tdx(struct tdsysinfo_struct *r);
-    57	#else
-    58	static inline void detect_tdx_keyids(struct cpuinfo_x86 *c) { }
-    59	static inline int detect_tdx(void) { return -ENODEV; }
-  > 60	static inline int init_tdx(struct tdsysinfo_struct *r) { return -ENODEV; }
-    61	#endif /* CONFIG_INTEL_TDX_HOST */
-    62	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Reviewed-by: Rob Herring <robh@kernel.org>
