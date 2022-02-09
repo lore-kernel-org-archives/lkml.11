@@ -2,210 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBACDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C28EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232620AbiBIN00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39640 "EHLO
+        id S233016AbiBIN0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:26:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232239AbiBIN0W (ORCPT
+        with ESMTP id S232613AbiBIN00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:26:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4632EC06157B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 05:26:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644413184;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gj7EYe83fjjc2pVbDvN8nW0XXrWOw/vijRlZTRlTyb4=;
-        b=Mcxz1mnVrIozmkuFD7qWJpNXslM5gzAlx88KnH97p0YvXfWuVseCEeZQFElb3f5skeedOI
-        Xck1054Q0FdDVMqM2y/t3yL5vVSBUMWaQhCV4/oC5GAn45VtascEfG+/UZvv6R2DI9LUn0
-        5tAEaOnE4JqZY9GKK6RghOfo4gRM7Fg=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-63-hbLpfikLP1iWTVzTCyiSUg-1; Wed, 09 Feb 2022 08:26:23 -0500
-X-MC-Unique: hbLpfikLP1iWTVzTCyiSUg-1
-Received: by mail-wm1-f69.google.com with SMTP id i186-20020a1c3bc3000000b0037bb9f6feeeso1211809wma.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 05:26:23 -0800 (PST)
+        Wed, 9 Feb 2022 08:26:26 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD5BC06157B;
+        Wed,  9 Feb 2022 05:26:28 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id m18so4166264lfq.4;
+        Wed, 09 Feb 2022 05:26:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IW3027pfUSm8X8tmMTkWj4yWyhv91/JivfpJiyQLiBg=;
+        b=dJGf5y1jbDEGB+Vn9qR3NLT7COhV84jva29kDfvj+l7eW9998iE9RpMNz+X2TeNY9C
+         mvEHNWx6P8ftvXRNLa4e3yf9gVinvu6TqF+CzK/eHU5XqbjhAjbo9f2bH3UnqbQCldtD
+         W4tsgVV/gTDaY4pz4V4T7isDXPUu1ce4oaeZ3mAZIsvPd0MPRkZuNu1TfyK6Z8Tkq9RB
+         IxROrQSnJvgWra3iiqeakdqaHvKxMBa22GAABo1exSwghIM5alZG3pJg4BFbGq5/37OA
+         RKuM52e9KeuvqCh0uI8CBto3jGCP+yprlJMUk+YX+RRxtuWKPgebgo+yZF+AqXQ2bFsb
+         xolw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=gj7EYe83fjjc2pVbDvN8nW0XXrWOw/vijRlZTRlTyb4=;
-        b=4HOukX/1QssM/xi15laP0bVyqsUMaML7/310xx9owim1m4mLls9yfvTLiNBlEVTosA
-         Kyea339x81Sc40o/bAZuyidjkODGAp0OAHbihmJ/vCGQAVKhbtF5QeEmQ6UVSSFf3SAh
-         rZdH4h7GAVKVy88lWmIbDEsUPGHKJNCjYrfG3FKeWY05SwGpTtCzRUs3LloYvjg3Wa9o
-         enCZ/N3ZR0XPVsmj0tLWX3RLhcDgxA7EfOaGZlA457RyLrZkWCbEISApz1x1nXmzlVGq
-         TKXukoE23zn8pO+aplWA9F0Hpb/VolwCXa32I4mUpHxNkEsBG6J2lWKYJyAYNYqwk9c3
-         WwvQ==
-X-Gm-Message-State: AOAM533mFJhlTmd2b735YntSbBbWPo9EwhB5p3C33l/PZl2FKKk+U+nD
-        Laf8LLbLNkw/Mb5ibTj8VxqPQPYmFLfwXsTuzICoznR7gWP28MAu788a5WTo7quH9lGTKqcGqIt
-        +mItZc/OdEtNVuMIIX9nBerwU
-X-Received: by 2002:a05:600c:22d3:: with SMTP id 19mr2067400wmg.178.1644413182026;
-        Wed, 09 Feb 2022 05:26:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyFKrknf35Xf2LefmXXuc7aRIfezVH3jBJsgn4R4Bvho+wSQI39jFu6aG9bFdzQzoX5XOf93w==
-X-Received: by 2002:a05:600c:22d3:: with SMTP id 19mr2067383wmg.178.1644413181828;
-        Wed, 09 Feb 2022 05:26:21 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id m6sm5678550wmq.6.2022.02.09.05.26.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 05:26:21 -0800 (PST)
-Message-ID: <f75a1544-5a3e-e49f-7eab-5dd5c72584b9@redhat.com>
-Date:   Wed, 9 Feb 2022 14:26:20 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IW3027pfUSm8X8tmMTkWj4yWyhv91/JivfpJiyQLiBg=;
+        b=M7CcQ1QotiwVNtyArI0VxNcDaqoEOci+/gQXDF7htc0zPZOtHWtXqJkh6rWy5T9Rt2
+         m8HO2r4TFOhk3Gl6u4rHiJ/G64cRf1I+A4VK9htaMrH4cPP0yD8xsajqgNFb9MrSdIqa
+         N0o8Vr5ufJOrdvc1PlcmFEkZXoRpTENJwibuPE1/eutiITZzZP4UBXS4sSDiddCneS4z
+         81ez5KilDlLR8iOrro7313yG0ros0pbhQMG/mY0xwG19gJVxvvYdtoKMbK6bT/SfF9Xe
+         mRytP9ff4i7J7Kt/OciZrjHnXYY8edvLX/YvIluzwA3D9mk6UHy/d/gUUFHNY4KBoQoy
+         R9RA==
+X-Gm-Message-State: AOAM533RFpsLc1+12ou9LuANvNqJmoHOUO6gdG68O2NWzndgksGPaH1r
+        ITA1B2GPAxm0HI/2xviN5ile7Jfz1mLPypSJ+8gcp1Khav0=
+X-Google-Smtp-Source: ABdhPJyPmCW0fruoHVDhJ8leSBxkGo9GErvI0neCMAQe/rZMisBmm0gPz/T5q89klmonQ+tV1p151TLatMpLwEMiPTc=
+X-Received: by 2002:a05:6512:e9e:: with SMTP id bi30mr1716853lfb.554.1644413186402;
+ Wed, 09 Feb 2022 05:26:26 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/7] drm/format-helper: Add drm_fb_{xrgb8888,
- gray8}_to_mono_reversed()
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209090314.2511959-3-javierm@redhat.com>
- <6df9c28d-968d-ff16-988e-8e88e4734e49@suse.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <6df9c28d-968d-ff16-988e-8e88e4734e49@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1644246970-18305-1-git-send-email-u0084500@gmail.com>
+ <1644246970-18305-3-git-send-email-u0084500@gmail.com> <YgO4+mB5xJ5DbX61@kuha.fi.intel.com>
+In-Reply-To: <YgO4+mB5xJ5DbX61@kuha.fi.intel.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Wed, 9 Feb 2022 21:26:14 +0800
+Message-ID: <CADiBU3_GuHapJMUen+Ag_JaapzbN6CaAm+RNxN8E16yg5k-O0g@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] usb: typec: rt1719: Add support for Richtek RT1719
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux USB List <linux-usb@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        cy_huang <cy_huang@richtek.com>, will_lin@richtek.com,
+        th_chuang@richtek.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thomas,
-
-Thanks a lot for your feedback.
-
-On 2/9/22 13:51, Thomas Zimmermann wrote:
-> Hi
-> 
-
-[snip]
-
->> +
->> +		if (xb == pixels - 1 && end_offset)
->> +			end = end_offset;
-> 
-> end_offset should be called end_len, because it is the number of bits in
-> the final byte; but not the offset of the final bit.
+Heikki Krogerus <heikki.krogerus@linux.intel.com> =E6=96=BC 2022=E5=B9=B42=
+=E6=9C=889=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=888:52=E5=AF=AB=E9=
+=81=93=EF=BC=9A
 >
-
-Indeed.
-
-[snip]
-
->> +void drm_fb_gray8_to_mono_reversed(void *dst, unsigned int dst_pitch, const void *vaddr,
->> +				   const struct drm_framebuffer *fb,
->> +				   const struct drm_rect *clip)
-
-[snip]
-
-> 
-> Do you really need that function. It's not exported and if it's not 
-> otherwise used, I'd just remove it.  We don't keep unused interfaces around.
+> Hi,
 >
-
-At the end after your suggestion of doing line-per-line conversions it is not
-needed, but since I already typed it and we were talking about adding other
-formats besides the fake XRGB8888 as an optimization (R8 for grayscale and
-Dx or something like that for reversed mono), I thought that would be useful
-to have it as a helper.
-
-Also other drivers that want to advertise a R8 format could just use it and
-not having to add their own helper. But I'm happy to drop it in v4 if you
-think that's better to not have unused helpers. 
-
-It could be taken from this patch-set anyways if someone wants to wire the
-needed support for R8.
-
-[snip]
-
->> +
->> +	/*
->> +	 * The reversed mono destination buffer contains 1 bit per pixel
->> +	 * and destination scanlines have to be in multiple of 8 pixels.
->> +	 */
->> +	if (!dst_pitch)
->> +		dst_pitch = DIV_ROUND_UP(linepixels, 8);
-> 
-> I'd do a warn_once if (dst_pitch % 8 != 0).
+> Sorry, there is still one more problem that I realised - not your
+> problem, but a problem with fw_devlink_purge_absent_suppliers()...
 >
-
-Agreed. I'll add a warning an mention that will be rounded up.
-
-> 
->> +
->> +	/*
->> +	 * The cma memory is write-combined so reads are uncached.
->> +	 * Speed up by fetching one line at a time.
-> 
-> I once had a patchset that adds caching information to struct 
-> dma_buf_map (soon to be named struct iosys_map).  Blitting helpers would 
-> be able to enable/disable this optimization as needed.
-> 
-> However, your driver doesn't use CMA. It's backed by SHMEM. Do you 
-> really want to keep that code in?
+> On Mon, Feb 07, 2022 at 11:16:10PM +0800, cy_huang wrote:
+> > +static int rt1719_probe(struct i2c_client *i2c)
+> > +{
+> > +     struct rt1719_data *data;
+> > +     struct fwnode_handle *fwnode;
+> > +     struct typec_capability typec_cap =3D { };
+> > +     int ret;
+> > +
+> > +     data =3D devm_kzalloc(&i2c->dev, sizeof(*data), GFP_KERNEL);
+> > +     if (!data)
+> > +             return -ENOMEM;
+> > +
+> > +     data->dev =3D &i2c->dev;
+> > +     init_completion(&data->req_completion);
+> > +
+> > +     data->regmap =3D devm_regmap_init_i2c(i2c, &rt1719_regmap_config)=
+;
+> > +     if (IS_ERR(data->regmap)) {
+> > +             ret =3D PTR_ERR(data->regmap);
+> > +             dev_err(&i2c->dev, "Failed to init regmap (%d)\n", ret);
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D rt1719_check_exist(data);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     ret =3D rt1719_get_caps(data);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     /*
+> > +      * This fwnode has a "compatible" property, but is never populate=
+d as a
+> > +      * struct device. Instead we simply parse it to read the properti=
+es.
+> > +      * This it breaks fw_devlink=3Don. To maintain backward compatibi=
+lity
+> > +      * with existing DT files, we work around this by deleting any
+> > +      * fwnode_links to/from this fwnode.
+> > +      */
+> > +     fwnode =3D device_get_named_child_node(&i2c->dev, "connector");
+> > +     if (!fwnode)
+> > +             return -ENODEV;
+> > +
+> > +     fw_devlink_purge_absent_suppliers(fwnode);
 >
-
-It doesn't but the repaper does. And since the plan was to make that driver
-to use the helper instead of having their own, I wanted to also make sure
-that would work well with CMA.
-
-> 
->> +	 */
->> +	src32 = kmalloc(len_src32, GFP_KERNEL);
->> +	if (!src32)
->> +		return;
->> +
->> +	/*
->> +	 * Copies are done line-by-line, allocate an intermediate
->> +	 * buffer to copy the gray8 lines and then convert to mono.
->> +	 */
->> +	gray8 = kmalloc(linepixels, GFP_KERNEL);
->> +	if (!gray8)
->> +		goto free_src32;
-> 
-> If might be faster to allocate both buffers in one step and set the 
-> pointers into the allocated buffer.
+> So don't use that function unless you really see some issue that it's
+> fixing yourself.
 >
-
-Not sure I got this. Do you mean to have a single buffer with length
-linepixels + len_src32 and point src32 and gray8 to the same buffer ?
-
->> +
->> +	/*
->> +	 * For damage handling, it is possible that only parts of the source
->> +	 * buffer is copied and this could lead to start and end pixels that
->> +	 * are not aligned to multiple of 8.
->> +	 *
->> +	 * Calculate if the start and end pixels are not aligned and set the
->> +	 * offsets for the reversed mono line conversion function to adjust.
->> +	 */
->> +	start_offset = clip->x1 % 8;
->> +	end_offset = clip->x2 % 8;
-> 
-> end_len, again. If you have 1 single bit set in the final byte, the
-> offset is 0, but the length is 1.
+> That function is broken. It breaks at least if the fwnode is shared -
+> fwnodes can be, and are, shared - most likely it's broken in
+> some other ways too. That function seems to be a hack for some
+> individual problem that was caused by some deeper problem with the
+> device links.
 >
+> We really need to figure out a fix for the core problem now instead of
+> trying to come up with these hacks for every single separate scenario
+> that is breaking because of the core problem, what ever that core
+> problem may be.
+>
+OK, I'll remove it.
 
-Agreed, will change it too.
-
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Originally, I think the others use it to solve fwlink problem.
+But I didn't realize actually it's a workaround.
+> > +     data->role_sw =3D fwnode_usb_role_switch_get(fwnode);
+> > +     if (IS_ERR(data->role_sw)) {
+> > +             ret =3D PTR_ERR(data->role_sw);
+> > +             dev_err(&i2c->dev, "Failed to get usb role switch (%d)\n"=
+, ret);
+> > +             goto err_fwnode_put;
+> > +     }
+> > +
+> > +     ret =3D devm_rt1719_psy_register(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to register psy (%d)\n", ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     typec_cap.revision =3D USB_TYPEC_REV_1_2;
+> > +     typec_cap.pd_revision =3D 0x300;  /* USB-PD spec release 3.0 */
+> > +     typec_cap.type =3D TYPEC_PORT_SNK;
+> > +     typec_cap.data =3D TYPEC_PORT_DRD;
+> > +     typec_cap.ops =3D &rt1719_port_ops;
+> > +     typec_cap.fwnode =3D fwnode;
+> > +     typec_cap.driver_data =3D data;
+> > +     typec_cap.accessory[0] =3D TYPEC_ACCESSORY_DEBUG;
+> > +
+> > +     data->partner_desc.identity =3D &data->partner_ident;
+> > +
+> > +     data->port =3D typec_register_port(&i2c->dev, &typec_cap);
+> > +     if (IS_ERR(data->port)) {
+> > +             ret =3D PTR_ERR(data->port);
+> > +             dev_err(&i2c->dev, "Failed to register typec port (%d)\n"=
+, ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     ret =3D rt1719_init_attach_state(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to init attach state (%d)\n", =
+ret);
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     ret =3D rt1719_irq_init(data);
+> > +     if (ret) {
+> > +             dev_err(&i2c->dev, "Failed to init irq\n");
+> > +             goto err_role_put;
+> > +     }
+> > +
+> > +     fwnode_handle_put(fwnode);
+> > +
+> > +     i2c_set_clientdata(i2c, data);
+> > +
+> > +     return 0;
+> > +
+> > +err_role_put:
+> > +     usb_role_switch_put(data->role_sw);
+> > +err_fwnode_put:
+> > +     fwnode_handle_put(fwnode);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> > +static int rt1719_remove(struct i2c_client *i2c)
+> > +{
+> > +     struct rt1719_data *data =3D i2c_get_clientdata(i2c);
+> > +
+> > +     typec_unregister_port(data->port);
+> > +     usb_role_switch_put(data->role_sw);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static const struct of_device_id __maybe_unused rt1719_device_table[] =
+=3D {
+> > +     { .compatible =3D "richtek,rt1719", },
+> > +     { }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, rt1719_device_table);
+> > +
+> > +static struct i2c_driver rt1719_driver =3D {
+> > +     .driver =3D {
+> > +             .name =3D "rt1719",
+> > +             .of_match_table =3D rt1719_device_table,
+> > +     },
+> > +     .probe_new =3D rt1719_probe,
+> > +     .remove =3D rt1719_remove,
+> > +};
+> > +module_i2c_driver(rt1719_driver);
+> > +
+> > +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> > +MODULE_DESCRIPTION("Richtek RT1719 Sink Only USBPD Controller Driver")=
+;
+> > +MODULE_LICENSE("GPL v2");
+>
+> Oh, you probable want the make that "GPL" instead. See
+> Documentation/process/license-rules.rst.
+>
+Ack in next.
+> thanks,
+>
+> --
+> heikki
