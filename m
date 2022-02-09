@@ -2,115 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26472C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1549AC47081
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245335AbiBIDDX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:03:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
+        id S245571AbiBIDDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:03:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344407AbiBICxm (ORCPT
+        with ESMTP id S1359748AbiBICvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:53:42 -0500
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E4CC0613CC;
-        Tue,  8 Feb 2022 18:53:41 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JtkwH2kS8z4xcp;
-        Wed,  9 Feb 2022 13:53:35 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644375217;
-        bh=IhVwFVJZTPguna2PmdUzRBNG0sppu5V6lowxE+6pGgI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KW4UqPzoR5ny9Kp9n31arzSuUqPsZM/i/VB8F2eZjzctKcKxPz+aN2TnCPaJTXzJk
-         NO7/1roj73VCajqiXXETQLweurcaM9yh3g3x/MrsoWbYduqRpnGXygqsuoRDlqlcco
-         d3GIz/3qv1+rdm8OQFtGiwV5pUie7WxQCRZSWW/1H6D5zO7EPS1He+cZMkjHdz3UAS
-         8m5M3u7NOiT8G8HkBu3TgbwDIl3C6ADS7zPGOkkAWDDyRaoT1Y6qXXuxENdoQ1QK0R
-         Wrm8MYrzN41CRCJykKR+WNPd0h8EgVxWX5eJbbULRW4fnPejXVqzLr7299dkypYgGf
-         Y08OGre6UNnbg==
-Date:   Wed, 9 Feb 2022 13:53:33 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Cai Huoqing <cai.huoqing@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Peter Xu <peterx@redhat.com>, Yang Shi <shy828301@gmail.com>,
-        David Hildenbrand <david@redhat.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Colin Cross <ccross@google.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH] fs/proc: task_mmu.c: Fix the error-unused variable
- 'migration'
-Message-ID: <20220209135333.7975a407@canb.auug.org.au>
-In-Reply-To: <20220209023602.21929-1-cai.huoqing@linux.dev>
-References: <20220209023602.21929-1-cai.huoqing@linux.dev>
+        Tue, 8 Feb 2022 21:51:24 -0500
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4D5C061355;
+        Tue,  8 Feb 2022 18:50:29 -0800 (PST)
+Received: by mail-oi1-f177.google.com with SMTP id q8so1143420oiw.7;
+        Tue, 08 Feb 2022 18:50:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eZEq/8mCOjzwD9orqDe6jz1KcZnSjH/KbDDATUNgRXs=;
+        b=60WVH3fjF2nh+OBiYMCJFuUgFjNojCT3qpp3AvHCl2iKDn1JlydG7szmTbHYUdOWFh
+         j8MujpjjIoCUEb5I+h1M83u0JvAS2d+TgsTZ5wxxboazyZ1/peIinmq27dfDuAbvkAC4
+         jQ/5NCFkkn7+T6EVFd7kyv34MyChPAGQh96hunTXGFGoerHriC7pGXPF9UWEVPklhm+e
+         f7oUdAXNZO/AN0li8Fic+tuObxUUegTFTGVui8V1HYyu6c9dBpBGGvjGkus6BDHJLL3z
+         YrIXvXhJvI5CruA/sFFQKVf1YkQx0lauNzO4+4FBBA3gr/9rzoSUDdJj5RPW/Zg0sGw0
+         y89w==
+X-Gm-Message-State: AOAM532Hu6yzXoF+L3uM8Bm+j+PVtNlgIUosOhsFqbG/6AuWxfI2uW++
+        7bdllDT68kC/j3qYuHIyUg==
+X-Google-Smtp-Source: ABdhPJzDEYPyns9BvQ6gTLcGbC5N/bskfIdJfxxkiSmrX8PqpKdHv731s/65kutbSlVvehqXCGGzMg==
+X-Received: by 2002:aca:b708:: with SMTP id h8mr69166oif.137.1644375028706;
+        Tue, 08 Feb 2022 18:50:28 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id 5sm2226607oag.11.2022.02.08.18.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 18:50:27 -0800 (PST)
+Received: (nullmailer pid 3520304 invoked by uid 1000);
+        Wed, 09 Feb 2022 02:50:27 -0000
+Date:   Tue, 8 Feb 2022 20:50:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Marcello Sylvester Bauer <sylv@sylv.io>
+Cc:     linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/4] dt-bindings: vendor-prefixes: add Vicor
+ Corporation
+Message-ID: <YgMr84b8BKHBNQwq@robh.at.kernel.org>
+References: <cover.1642434222.git.sylv@sylv.io>
+ <58d2c7501edf746f3677681327c283fc3faaf872.1642434222.git.sylv@sylv.io>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/ct2dtmhrD2S_HM39xGlFpg/";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <58d2c7501edf746f3677681327c283fc3faaf872.1642434222.git.sylv@sylv.io>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/ct2dtmhrD2S_HM39xGlFpg/
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi Cai,
-
-On Wed,  9 Feb 2022 10:35:59 +0800 Cai Huoqing <cai.huoqing@linux.dev> wrot=
-e:
->
-> Avoid the error-unused variable 'migration' when
-> CONFIG_TRANSPARENT_HUGEPAGE and CONFIG_ARCH_ENABLE_THP_MIGRATION
-> are not enabled.
->=20
-> Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+On Mon, Jan 17, 2022 at 05:12:47PM +0100, Marcello Sylvester Bauer wrote:
+> Add vendor prefix for Vicor Corporation.
+> 
+> Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
 > ---
->  fs/proc/task_mmu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-> index bc2f46033231..b055ff29204d 100644
-> --- a/fs/proc/task_mmu.c
-> +++ b/fs/proc/task_mmu.c
-> @@ -1441,7 +1441,7 @@ static int pagemap_pmd_range(pmd_t *pmdp, unsigned =
-long addr, unsigned long end,
->  	spinlock_t *ptl;
->  	pte_t *pte, *orig_pte;
->  	int err =3D 0;
-> -	bool migration =3D false;
-> +	bool migration __maybe_unused =3D false;
-> =20
->  #ifdef CONFIG_TRANSPARENT_HUGEPAGE
->  	ptl =3D pmd_trans_huge_lock(pmdp, vma);
-> --=20
-> 2.25.1
->=20
+>  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> index 66d6432fd781..8a2a205d6d34 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+> @@ -1273,6 +1273,8 @@ patternProperties:
+>    "^vdl,.*":
+>      description: Van der Laan b.v.
+>    "^via,.*":
+> +    description: Vicor Corporation
 
-This has already been fixed in Andrew's patch set by moving the "#ifdef
-CONFIG_TRANSPARENT_HUGEPAGE" above the "migration" declaration.
+You just changed the description for VIA.
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/ct2dtmhrD2S_HM39xGlFpg/
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIDLK0ACgkQAVBC80lX
-0Gzc1Qf+KFKl4xD6pf9RgHcnKZv9WZMpWCxraz+jBHwPdu6UeGwT+kKOoF3xQECD
-j75xvG8h5nYScNPmNH5k6rY0h8eCMqGvydOp4sy6geBhSwrNG6PqnjYLFg1aeIuG
-rQ2Y11Bss4R307M8TVs6ESYzYEMVpLjfy6lI58j78eYZ8gfIrWabm+bNYLjfaJIx
-FO3wrQnUaBkewfWzt0u+0HrEYlX6X0cjryxV9V3B0KOT16N9kAbv7mOsiBqh+SyC
-Mi+fDLw4bz3xqwE+Y75KBKG6UPdPCiFNM4MW7Tsjc8vXwSGqZcSRF9eEzORWE+wY
-xZMJU4HlYP101pXZOKHnxpamk561xg==
-=XpWC
------END PGP SIGNATURE-----
-
---Sig_/ct2dtmhrD2S_HM39xGlFpg/--
+> +  "^vicor,.*":
+>      description: VIA Technologies, Inc.
+>    "^videostrong,.*":
+>      description: Videostrong Technology Co., Ltd.
+> -- 
+> 2.33.1
+> 
+> 
