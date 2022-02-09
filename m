@@ -2,148 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C92FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241245AbiBISwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43518 "EHLO
+        id S241255AbiBISwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241203AbiBISux (ORCPT
+        with ESMTP id S241437AbiBISvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:53 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C32C004385;
-        Wed,  9 Feb 2022 10:46:12 -0800 (PST)
-Received: from apollo.. (unknown [IPv6:2a02:810b:4340:43bf:4685:ff:fe12:5967])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id ED23F223E9;
-        Wed,  9 Feb 2022 19:46:06 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1644432371;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z3kgxFS1ym2jMG+9772IZvkBEpGz3sFlMVSHxffUrWM=;
-        b=bJT1JRSM2O9qHpztX4cECW3hufKFDmYDWAKTl3bYHw5U2ms5EDJuWTPy3RGOnlfiC+anaT
-        vKS8NNFLNbIUYKnfSEdo3eCTOWv26E8r5rlCRfubzZFuVw4k7dzqRTc8oLhgpCQHVvf4xS
-        YkE90e82Qx7jjxuOQXjx558m49hAlgk=
-From:   Michael Walle <michael@walle.cc>
-To:     kavyasree.kotagiri@microchip.com
-Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
-        alexandre.belloni@bootlin.com, arnd@arndb.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
-        olof@lixom.net, robh+dt@kernel.org, soc@kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: Re: [PATCH v4] ARM: dts: add DT for lan966 SoC and 2-port board pcb8291
-Date:   Wed,  9 Feb 2022 19:46:00 +0100
-Message-Id: <20220209184600.1230365-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220209111318.21112-1-kavyasree.kotagiri@microchip.com>
-References: <20220209111318.21112-1-kavyasree.kotagiri@microchip.com>
+        Wed, 9 Feb 2022 13:51:02 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4382C03E931
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:47:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644432472; x=1675968472;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J/7XQfjKt9d3myGcrh1l1pOHrCE5f9w0ySm6uM+4N84=;
+  b=cI5eKVEev2IL6+LoXwEXtcUsxDEKX4lVLXnW52dVieQIN7qxvyaokjd1
+   +P28x1GkMvgBhYT5K3wdwtZSQ3nGQHcfgfcUbw7xUsSuWcVH2qCPLMcEQ
+   WN5heG+nsYTj+tlohonKTCYciI84tT3MemJ5zTsCaJ+gqRwYEGqfwRMXv
+   ZhrAoPbwEN5VH/WoZych7Myk1WB3U7SwKbU09bWkIOSXtZem+Tn1zCEDw
+   yV4wFNlZjFCycK1sB/kxGLwUylMjez1R3R2XxC//g7iu3ul9ySdE3QTt6
+   9i39xTJYd4RZCzxR5/cjT+Pscka2fT8bwc7FN4XMxbf/TUiGQJwWuLvmy
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="232867310"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="232867310"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:47:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="541245172"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 09 Feb 2022 10:47:49 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 2C02D107; Wed,  9 Feb 2022 20:48:03 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Will Deacon <will@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] perf/smmuv3: Don't cast parameter in bit operations
+Date:   Wed,  9 Feb 2022 20:47:58 +0200
+Message-Id: <20220209184758.56578-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+While in this particular case it would not be a (critical) issue,
+the pattern itself is bad and error prone in case somebody blindly
+copies to their code.
 
-> +	clocks {
-[..]
-> +
-> +		nic_clk: nic_clk {
+Don't cast parameter to unsigned long pointer in the bit operations.
+Instead copy to a local variable on stack of a proper type and use.
 
-What does nic_clk stand for? If I had to guess, it
-has something to do with network. But..
+Note, new compilers might warn on this line for potential outbound access.
 
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
-> +			clock-frequency = <200000000>;
-> +		};
-> +	};
-> +
-> +	clks: clock-controller@e00c00a8 {
-> +		compatible = "microchip,lan966x-gck";
-> +		#clock-cells = <1>;
-> +		clocks = <&cpu_clk>, <&ddr_clk>, <&sys_clk>;
-> +		clock-names = "cpu", "ddr", "sys";
-> +		reg = <0xe00c00a8 0x38>;
-> +	};
-> +
-> +	timer {
-> +		compatible = "arm,armv7-timer";
-> +		interrupt-parent = <&gic>;
-> +		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 14 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 10 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
-> +			     <GIC_PPI 11 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
-> +		clock-frequency = <37500000>;
-> +		arm,cpu-registers-not-fw-configured;
-> +	};
-> +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-> +
-> +		flx0: flexcom@e0040000 {
-> +			compatible = "atmel,sama5d2-flexcom";
-> +			reg = <0xe0040000 0x100>;
-> +			clocks = <&clks GCK_ID_FLEXCOM0>;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges = <0x0 0xe0040000 0x800>;
-> +			status = "disabled";
-> +		};
-> +
-> +		flx1: flexcom@e0044000 {
-> +			compatible = "atmel,sama5d2-flexcom";
-> +			reg = <0xe0044000 0x100>;
-> +			clocks = <&clks GCK_ID_FLEXCOM1>;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +			ranges = <0x0 0xe0044000 0x800>;
-> +			status = "disabled";
-> +		};
-> +
-> +		trng: trng@e0048000 {
-> +			compatible = "atmel,at91sam9g45-trng";
-> +			reg = <0xe0048000 0x100>;
-> +			clocks = <&nic_clk>;
+Fixes: 7d839b4b9e00 ("perf/smmuv3: Add arm64 smmuv3 pmu driver")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/perf/arm_smmuv3_pmu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-.. it is used here..
-
-
-> +		};
-> +
-> +		aes: aes@e004c000 {
-> +			compatible = "atmel,at91sam9g46-aes";
-> +			reg = <0xe004c000 0x100>;
-> +			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
-> +			dmas = <&dma0 AT91_XDMAC_DT_PERID(13)>,
-> +			       <&dma0 AT91_XDMAC_DT_PERID(12)>;
-> +			dma-names = "rx", "tx";
-> +			clocks = <&nic_clk>;
-
-.. and here. and so on.
-
-So, is it some kind of internal clock?
-
-> +			interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
-> +		};
-> +
-> +		watchdog: watchdog@e0090000 {
-> +			compatible = "snps,dw-wdt";
-> +			reg = <0xe0090000 0x1000>;
-> +			interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&nic_clk>;
-
-Btw. can we disable all nodes by default and enable them
-in the board dts files?
+diff --git a/drivers/perf/arm_smmuv3_pmu.c b/drivers/perf/arm_smmuv3_pmu.c
+index c49108a72865..00d4c45a8017 100644
+--- a/drivers/perf/arm_smmuv3_pmu.c
++++ b/drivers/perf/arm_smmuv3_pmu.c
+@@ -654,6 +654,7 @@ static int smmu_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
+ static irqreturn_t smmu_pmu_handle_irq(int irq_num, void *data)
+ {
+ 	struct smmu_pmu *smmu_pmu = data;
++	DECLARE_BITMAP(ovs, BITS_PER_TYPE(u64));
+ 	u64 ovsr;
+ 	unsigned int idx;
+ 
+@@ -663,7 +664,8 @@ static irqreturn_t smmu_pmu_handle_irq(int irq_num, void *data)
+ 
+ 	writeq(ovsr, smmu_pmu->reloc_base + SMMU_PMCG_OVSCLR0);
+ 
+-	for_each_set_bit(idx, (unsigned long *)&ovsr, smmu_pmu->num_counters) {
++	bitmap_from_u64(ovs, ovsr);
++	for_each_set_bit(idx, ovs, smmu_pmu->num_counters) {
+ 		struct perf_event *event = smmu_pmu->events[idx];
+ 		struct hw_perf_event *hwc;
+ 
+-- 
+2.34.1
 
