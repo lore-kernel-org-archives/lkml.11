@@ -2,112 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:10:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238643AbiBISKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:10:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        id S238665AbiBISLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:11:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231624AbiBISKN (ORCPT
+        with ESMTP id S238684AbiBISK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:10:13 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D57C0613C9;
-        Wed,  9 Feb 2022 10:10:15 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 549F41F395;
-        Wed,  9 Feb 2022 18:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644430214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+QlHruA1VMM96Mcdhik82zAIxY8wzek2RoiBYk+ZHyg=;
-        b=sEi+uC7WZVrXv4SGvq4AAVUxOmmsETE6xEb0U5GIJSL3ifI+uQmcRK6XW65LTp6jNHR7My
-        Kpk6929V4xxrGHt7nNB3XqdUMEs+dwX9setLUQ8NWXjvH2LSM2ecrAFJyvAJoQ3QRT6Bz5
-        keBK+THCgXiGUBzUmPG0lYrfpVuAh34=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644430214;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+QlHruA1VMM96Mcdhik82zAIxY8wzek2RoiBYk+ZHyg=;
-        b=lNxqalVGKwyzg9XoAIjeFFK6yGjOn/WUoE9eTX3XEavwg9kh1fAK+vdtiWdd9M4BgbbX6a
-        SpIuRIHIRHjecACA==
-Received: from quack3.suse.cz (unknown [10.100.200.198])
+        Wed, 9 Feb 2022 13:10:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD5CEC0613C9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 10:10:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A1254A3B81;
-        Wed,  9 Feb 2022 18:10:03 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id F1AC4A05B5; Wed,  9 Feb 2022 19:10:10 +0100 (CET)
-Date:   Wed, 9 Feb 2022 19:10:10 +0100
-From:   Jan Kara <jack@suse.cz>
-To:     Qian Cai <quic_qiancai@quicinc.com>
-Cc:     Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Boqun Feng <boqun.feng@gmail.com>, linux-ext4@vger.kernel.org,
-        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
-Message-ID: <20220209181010.gfn66rvip56i54df@quack3.lan>
-References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A44261990
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 18:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92932C340E7;
+        Wed,  9 Feb 2022 18:10:55 +0000 (UTC)
+Date:   Wed, 9 Feb 2022 18:10:52 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v3 6/7] arm64: entry: centralize premeption decision
+Message-ID: <YgQDrGaWerGM3B2C@arm.com>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+ <20220209153535.818830-7-mark.rutland@arm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209165742.5659-1-quic_qiancai@quicinc.com>
+In-Reply-To: <20220209153535.818830-7-mark.rutland@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 09-02-22 11:57:42, Qian Cai wrote:
-> Since the linux-next commit 120aa5e57479 (mm: Check for
-> SLAB_TYPESAFE_BY_RCU and __GFP_ZERO slab allocation), we will get a
-> boot warning. Avoid it by calling synchronize_rcu() before the zeroing.
+On Wed, Feb 09, 2022 at 03:35:34PM +0000, Mark Rutland wrote:
+> For historical reasons, the decision of whether or not to preempt is
+> spread across arm64_preempt_schedule_irq() and __el1_irq(), and it would
+> be clearer if this were all in one place.
 > 
-> Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
-
-No, the performance impact of this would be just horrible. Can you
-ellaborate a bit why SLAB_TYPESAFE_BY_RCU + __GFP_ZERO is a problem and why
-synchronize_rcu() would be needed here before the memset() please? I mean
-how is zeroing here any different from the memory just being used?
-
-								Honza
-
-> ---
->  fs/jbd2/journal.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+> Also, arm64_preempt_schedule_irq() calls lockdep_assert_irqs_disabled(),
+> but this is redundant, as we have a subsequent identical assertion in
+> __exit_to_kernel_mode(), and preempt_schedule_irq() will
+> BUG_ON(!irqs_disabled()) anyway.
 > 
-> diff --git a/fs/jbd2/journal.c b/fs/jbd2/journal.c
-> index c2cf74b01ddb..323112de5921 100644
-> --- a/fs/jbd2/journal.c
-> +++ b/fs/jbd2/journal.c
-> @@ -2861,15 +2861,18 @@ static struct journal_head *journal_alloc_journal_head(void)
->  #ifdef CONFIG_JBD2_DEBUG
->  	atomic_inc(&nr_journal_heads);
->  #endif
-> -	ret = kmem_cache_zalloc(jbd2_journal_head_cache, GFP_NOFS);
-> +	ret = kmem_cache_alloc(jbd2_journal_head_cache, GFP_NOFS);
->  	if (!ret) {
->  		jbd_debug(1, "out of memory for journal_head\n");
->  		pr_notice_ratelimited("ENOMEM in %s, retrying.\n", __func__);
-> -		ret = kmem_cache_zalloc(jbd2_journal_head_cache,
-> +		ret = kmem_cache_alloc(jbd2_journal_head_cache,
->  				GFP_NOFS | __GFP_NOFAIL);
->  	}
-> -	if (ret)
-> +	if (ret) {
-> +		synchronize_rcu();
-> +		memset(ret, 0, sizeof(*ret));
->  		spin_lock_init(&ret->b_state_lock);
-> +	}
->  	return ret;
->  }
->  
-> -- 
-> 2.30.2
+> This patch removes the redundant assertion and centralizes the
+> preemption decision making within arm64_preempt_schedule_irq().
 > 
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+> Other than the slight change to assertion behaviour, there should be no
+> functional change as a result of this patch.
+> 
+> Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: James Morse <james.morse@arm.com>
+> Cc: Joey Gouly <joey.gouly@arm.com>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+
+I acked this patch in v2, has anything changed? Well, here it is again:
+
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+
+BTW, you have a typo in the subject.
