@@ -2,224 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB9BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiBILz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:55:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        id S231246AbiBILzc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:55:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231231AbiBILzO (ORCPT
+        with ESMTP id S231434AbiBILzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:55:14 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8268CC1038DF;
-        Wed,  9 Feb 2022 02:48:29 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2198rtt1027353;
-        Wed, 9 Feb 2022 10:48:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=S++/whGpVlW+WTdql7xHrwpp6jhEdnBv1OdLBRyJVGw=;
- b=f5ht6ZyOjKwGAihhNMbvGChXHC+b2MfapT+tnWwqmZhicb6/f7b4BLxe72vtMn2PdMgz
- ALrW1imY20+OtgA8xm7o/AcfzDKlE/tQvg1ZTM539L3wHKQ77i3fZg8kpgqJUweEMWWY
- 05BSj54K3uOXRLfcWp+tGcKVd7+pHeriWDVwvBHDLyjfD/egKJWuiU7JQI4jKQdo5xfz
- zcjwf2NZdgiH7+JmgNdtyhmWHW2LWadN5QwiAU8q3r5N0/s9AeaG3fwowUV8KK3wKGRU
- fnRU1C+50JdPQ8F/2VsVGNxZbwozzPsC7xmeyVZa2PPaSd7+YMCGB61IoYpw6V+qXCcl kA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3vvkv623-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:48:28 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 219ADDGU022889;
-        Wed, 9 Feb 2022 10:48:28 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e3vvkv61a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:48:28 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 219Af1Tl031016;
-        Wed, 9 Feb 2022 10:48:25 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma02fra.de.ibm.com with ESMTP id 3e1gv9mffd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:48:25 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219AmMhh33096142
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 10:48:22 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E8D2A4062;
-        Wed,  9 Feb 2022 10:48:22 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5CDEBA405C;
-        Wed,  9 Feb 2022 10:48:21 +0000 (GMT)
-Received: from [9.171.87.52] (unknown [9.171.87.52])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 10:48:21 +0000 (GMT)
-Message-ID: <ef35d70a-c0dc-e5ae-8182-79847085d593@linux.ibm.com>
-Date:   Wed, 9 Feb 2022 11:48:20 +0100
+        Wed, 9 Feb 2022 06:55:21 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C08FDE00F7CA;
+        Wed,  9 Feb 2022 02:52:49 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id m6so4625592ybc.9;
+        Wed, 09 Feb 2022 02:52:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=t9EOjDsFOoIpRxTzANo3FHWi1tKOlZeMj74re1dNnPQ=;
+        b=nol7K09L15nrTX8SbqhMA+n0uZ+Yv4qdgTEbQlIwvG7Pfmwj+9HWeqJLBSiMOkhi+6
+         exJdUcqqguQ9yQ27PdHc7yGPCVQ/2NovbX3RY0jCctPxdRbBwZ73gPci7bDwkh6MgbDR
+         NAp+wZOXbneBp/fyy80J6WJ3XPS6A27E8k2TpUpCnmlzvee9I/Yq+fsDNxmXPW9LYJHi
+         RT+nvRQE0EiUed3kBmTlNUAfsggE4fq6QRL8rXruXQnmphPwMxMUhdfQHShsEVqWFghj
+         K2ihaP+3K+nH6FePNUm346AGKRehV63ydLAibn3zs+J+TEorkSzztJ16Qjx9Vqt7/pVx
+         zh7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=t9EOjDsFOoIpRxTzANo3FHWi1tKOlZeMj74re1dNnPQ=;
+        b=uQP7/pE9+g4z9gAUdu/SAPV1wDqvaCq+gii8ncT/7N+3zd1ud7p9TCgPoWUQToJWr9
+         X76DcGBHCKGJQ4Lqki1koVDWvbY8hWM20NuNkTJ4doP0LXXZ/P2R0F1d5XgI3lHEStjp
+         cCpWlY68Z3YpAKkKJoZFvdPZf5Vn5qBZsKo7P0LtsyEeha/1++XVlw42Cl5g/65VF9NC
+         Z+9rmqP85bsXxKVSmFds1f3uDFMzYw1FA+HdZYkGd8PxH0mSPZcf4jSHcqYh1oU2b1Y5
+         NwhibK7Zi5DX6Is2GDjCjbiYuKXkawgjJztKPBeMJ4bDkXcvf2/GMeRWcPdrg45320QI
+         BTeg==
+X-Gm-Message-State: AOAM53123z0M19Oki8hVHBFmUTYAQwapY0JbKJ7sWfu8QXdHfm/kZJbf
+        oKLjrwGhTEC3nG38bGHl7mzKn7wC14wFtdEsBTk=
+X-Google-Smtp-Source: ABdhPJzYXzffFdYHs1OiBDSctVnmzVRTGomr66e7l7mljK4dP+oSHHewJhdr9uxcryg9p/0WcDqyTRDd/hFJxzUDL7k=
+X-Received: by 2002:a81:cf07:: with SMTP id u7mr1431288ywi.221.1644403968911;
+ Wed, 09 Feb 2022 02:52:48 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
- MEMOP IOCTL
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
- <20220207165930.1608621-6-scgl@linux.ibm.com>
- <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
- <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
- <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
- <8d502356c3a624847c0dd2fe5d5f60e72923a141.camel@linux.ibm.com>
- <3ec91f7a-10ca-b984-d852-1327f965b1e8@linux.ibm.com>
- <83408abf-86fe-20b0-564c-8cf840757e76@linux.ibm.com>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <83408abf-86fe-20b0-564c-8cf840757e76@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: RQ-X5p22DX3P-p7VZAa6xe220nn7dnNP
-X-Proofpoint-ORIG-GUID: RCTDGM2qLPgWjMLeNPtySkKoR32bH6oz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
- clxscore=1015 mlxscore=0 priorityscore=1501 suspectscore=0 impostorscore=0
- adultscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090066
+References: <1644213481-20321-1-git-send-email-hammerh0314@gmail.com>
+ <1644213481-20321-3-git-send-email-hammerh0314@gmail.com> <7aa14a1e-2814-0014-a682-f40666f635ac@kernel.org>
+ <CAOX-t569-0aTu73eGSY3k+btAuVgueRY91Jd5b9kbpjmxPp+Dw@mail.gmail.com> <YgJUiegS2Cc9MyHc@kroah.com>
+In-Reply-To: <YgJUiegS2Cc9MyHc@kroah.com>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Wed, 9 Feb 2022 18:53:03 +0800
+Message-ID: <CAOX-t54HXyty96UYYDHVLc4TieQsY3wEq-JT66amXgHb=SB0wg@mail.gmail.com>
+Subject: Re: [PATCH v7 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jiri Slaby <jirislaby@kernel.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Ok, thanks for your explaination, I got it now.
+I will document "posted write" info in the top of the file or top of
+startup/shutdown function.
 
+And kernel test robot report me build error and warning with gcc
+11.2.0 ia64 / powerpc.
+I will fix it and send next patch.
 
-Am 09.02.22 um 11:39 schrieb Janis Schoetterl-Glausch:
-> On 2/9/22 11:08, Christian Borntraeger wrote:
->>
->>
->> Am 09.02.22 um 11:01 schrieb Janis Schoetterl-Glausch:
->>> On Wed, 2022-02-09 at 10:08 +0100, Christian Borntraeger wrote:
->>>>
->>>> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
->>>>> On 2/9/22 08:34, Christian Borntraeger wrote:
->>>>>> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
->>>>>>> User space needs a mechanism to perform key checked accesses when
->>>>>>> emulating instructions.
->>>>>>>
->>>>>>> The key can be passed as an additional argument.
->>>>>>> Having an additional argument is flexible, as user space can
->>>>>>> pass the guest PSW's key, in order to make an access the same way the
->>>>>>> CPU would, or pass another key if necessary.
->>>>>>>
->>>>>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->>>>>>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
->>>>>>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
->>>>>>> ---
->>>>>>>      arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
->>>>>>>      include/uapi/linux/kvm.h |  8 +++++--
->>>>>>>      2 files changed, 44 insertions(+), 13 deletions(-)
->>>>>>>
->>>>>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->>>>>>> index cf347e1a4f17..71e61fb3f0d9 100644
->>>>>>> --- a/arch/s390/kvm/kvm-s390.c
->>>>>>> +++ b/arch/s390/kvm/kvm-s390.c
->>>>>>> @@ -32,6 +32,7 @@
->>>>>>>      #include <linux/sched/signal.h>
->>>>>>>      #include <linux/string.h>
->>>>>>>      #include <linux/pgtable.h>
->>>>>>> +#include <linux/bitfield.h>
->>>>>>>        #include <asm/asm-offsets.h>
->>>>>>>      #include <asm/lowcore.h>
->>>>>>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
->>>>>>>          return r;
->>>>>>>      }
->>>>>>>      +static bool access_key_invalid(u8 access_key)
->>>>>>> +{
->>>>>>> +    return access_key > 0xf;
->>>>>>> +}
->>>>>>> +
->>>>>>>      long kvm_arch_vm_ioctl(struct file *filp,
->>>>>>>                     unsigned int ioctl, unsigned long arg)
->>>>>>>      {
->>>>>>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
->>>>>>>                        struct kvm_s390_mem_op *mop)
->>>>>>>      {
->>>>>>>          void __user *uaddr = (void __user *)mop->buf;
->>>>>>> +    u8 access_key = 0, ar = 0;
->>>>>>>          void *tmpbuf = NULL;
->>>>>>> +    bool check_reserved;
->>>>>>>          int r = 0;
->>>>>>>          const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
->>>>>>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
->>>>>>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
->>>>>>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
->>>>>>>      -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
->>>>>>> +    if (mop->flags & ~supported_flags || !mop->size)
->>>>>>>              return -EINVAL;
->>>>>>> -
->>>>>>>          if (mop->size > MEM_OP_MAX_SIZE)
->>>>>>>              return -E2BIG;
->>>>>>> -
->>>>>>>          if (kvm_s390_pv_cpu_is_protected(vcpu))
->>>>>>>              return -EINVAL;
->>>>>>> -
->>>>>>>          if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
->>>>>>>              tmpbuf = vmalloc(mop->size);
->>>>>>>              if (!tmpbuf)
->>>>>>>                  return -ENOMEM;
->>>>>>>          }
->>>>>>> +    ar = mop->ar;
->>>>>>> +    mop->ar = 0;
->>>>>>
->>>>>> Why this assignment to 0?
->>>>>
->>>>> It's so the check of reserved below works like that, they're all part of the anonymous union.
->>>>
->>>> Ah, I see. This is ugly :-)
->>>
->>> Yes :)
->>>>
->>>>>>> +    if (ar >= NUM_ACRS)
->>>>>>> +        return -EINVAL;
->>>>>>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
->>>>>>> +        access_key = mop->key;
->>>>>>> +        mop->key = 0;
->>>>>>
->>>>>> and this? I think we can leave mop unchanged.
->>>>>>
->>>>>> In fact, why do we add the ar and access_key variable?
->>>>>> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
->>>>>> and it will create a memleak for tmpbuf.
->>>>>
->>>>> I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
->>>>> First is simpler, but second makes handling that case more explicit and might help in the future.
->>>>
->>>> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
->>>
->>> I think that would require us adding new fields in the struct by putting them in a union with reserved_02 and so on,
->>> which could get rather messy.
->>
->> I think it is fine to rename reserved_02. Maybe rename that to dont_use_02 ?
-> 
-> I don't know what kind of stability guarantees we give here, since it can only happen when recompiling with
-> a new header. dont_use is a lot better than reserved here, after all we tell user space to set
-> reserved bytes to 0, using reserved_02 to do that would be quite handy and therefore likely.
-> 
-> The question is also what semantic we want for the check.
-> The way it works right now, user space also needs to set unused fields to 0, e.g. key if the flag is not set.
-> At least this is the case for the vm memop, the vcpu memop cannot do that because of backward compatibility.
-
-As an alternative just remove the check for reserved == 0 and do that later on as an add-on patch?
+Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=
+=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=887:31=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> On Tue, Feb 08, 2022 at 07:16:52PM +0800, hammer hsieh wrote:
+> > Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=888=E6=
+=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=882:27=E5=AF=AB=E9=81=93=EF=BC=9A
+> > >
+> > > Hi,
+> > >
+> > > On 07. 02. 22, 6:58, Hammer Hsieh wrote:
+> > > > +static void sunplus_shutdown(struct uart_port *port)
+> > > > +{
+> > > > +     unsigned long flags;
+> > > > +     unsigned int isc;
+> > > > +
+> > > > +     spin_lock_irqsave(&port->lock, flags);
+> > > > +
+> > > > +     isc =3D readl(port->membase + SUP_UART_ISC);
+> > > > +     isc &=3D ~(SUP_UART_ISC_RXM | SUP_UART_ISC_TXM);
+> > >
+> > > Is this correct? I mean: will the SUP_UART_ISC read contain the contr=
+ol
+> > > bits, not only status bits?
+> > >
+> >
+> > I assume reviewers don't like writel(0,xxx).
+> > So I use definition to let the code easy to read.
+> > The purpose is to clear all interrupt.
+> > Bit[3:0] status bit only for read, write 1 or 0 no effect.
+> >
+> > > > +     writel(isc, port->membase + SUP_UART_ISC);
+> > > > +
+> > > > +     spin_unlock_irqrestore(&port->lock, flags);
+> > > > +
+> > > > +     free_irq(port->irq, port);
+> > >
+> > > I am still waiting for explanation why this is safe with respect to
+> > > posted writes.
+> > >
+> >
+> > Actually I'm not IC designer, not expert for bus design.
+> > About data incoherence issue between memory bus and peripheral bus.
+> > In case of AXI bus, use non-posted write can avoid data incoherence iss=
+ue.
+> > What if in case of posted write:
+> > Send a specific command after last write command.
+> > SDCTRL identify specific command, means previous write command done.
+> > Then send interrupt signal to interrupt controller.
+> > And then interrupt controller send done signal to Master.
+> > Master receive done signal, means write command done.
+> > Then issue a interrupt or proceed next write command.
+>
+> But how does the kernel know when the write is completed?  The kernel
+> seems to ignore that here entirely, so the write could actually complete
+> seconds later, which would not be a good thing, right?
+>
+> Traditionally, we want to ensure that a write() completes, so on some
+> busses, we have to do a read to ensure that the write made it to the
+> hardware before we can continue on.  That is not happening here which is
+> why Jiri keeps bringing it up.  It looks broken to us, and you need to
+> document it somewhere (in the changelog?  In the top of the file?) as to
+> why this is not needed.
+>
+> thanks,
+>
+> greg k-h
