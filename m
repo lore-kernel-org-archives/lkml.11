@@ -2,126 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D69C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8972BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:50:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230397AbiBIJtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
+        id S233022AbiBIJt7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:49:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiBIJth (ORCPT
+        with ESMTP id S231858AbiBIJt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:49:37 -0500
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEBFE01A2E8;
-        Wed,  9 Feb 2022 01:49:27 -0800 (PST)
-Received: from [192.168.0.2] (ip5f5aee30.dynamic.kabel-deutschland.de [95.90.238.48])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id D9D6561EA1923;
-        Wed,  9 Feb 2022 10:06:28 +0100 (CET)
-Message-ID: <f790f9aa-fcb7-d163-9c1c-9eb107d4b1bd@molgen.mpg.de>
-Date:   Wed, 9 Feb 2022 10:06:28 +0100
+        Wed, 9 Feb 2022 04:49:56 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E656FE0CD5D5;
+        Wed,  9 Feb 2022 01:49:48 -0800 (PST)
+Received: from mail-wr1-f52.google.com ([209.85.221.52]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MUGqT-1nhPAW2hRz-00RKGp; Wed, 09 Feb 2022 10:39:55 +0100
+Received: by mail-wr1-f52.google.com with SMTP id s10so2979127wra.5;
+        Wed, 09 Feb 2022 01:39:55 -0800 (PST)
+X-Gm-Message-State: AOAM532Wr5KJwgBx8HT5EiBbGvnyB0FGpzru6qwmYev0Hvot8e2v/Yxk
+        7HGBDorwFvs+/gZO2zznfAizcxPmVd2aIY/sr0A=
+X-Google-Smtp-Source: ABdhPJz3KHEWzLUGUXQRVUVhG7tdvGJxnqkmHAQWCi8BoxyHdHPDE5k/78Mr9En5Xk713UBFNQeWBwjQLBOzv8A4Rqg=
+X-Received: by 2002:a5d:500c:: with SMTP id e12mr1335451wrt.219.1644399595263;
+ Wed, 09 Feb 2022 01:39:55 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] media: aspeed: Use full swing as JFIF to fix incorrect
- color
-Content-Language: en-US
-To:     Jammy Huang <jammy_huang@aspeedtech.com>
-References: <20220209084225.4456-1-jammy_huang@aspeedtech.com>
-Cc:     eajames@linux.ibm.com, mchehab@kernel.org, joel@jms.id.au,
-        andrew@aj.id.au, linux-media@vger.kernel.org,
-        openbmc@lists.ozlabs.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220209084225.4456-1-jammy_huang@aspeedtech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220113080017.30155-1-kavyasree.kotagiri@microchip.com>
+ <f8b83cf0-7ebf-1ecd-b544-f0d0079d9dde@microchip.com> <CAK8P3a2kRhCOoXnvcMyqS-zK2WDZjtUq4aqOzE5VV=VMg=pVOA@mail.gmail.com>
+ <CO1PR11MB48651C0D73189AF010407F9B922E9@CO1PR11MB4865.namprd11.prod.outlook.com>
+In-Reply-To: <CO1PR11MB48651C0D73189AF010407F9B922E9@CO1PR11MB4865.namprd11.prod.outlook.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 9 Feb 2022 10:39:39 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1swyDBvSTg9a6tUnd2V2Zi=ANpJWhJpWwfvp7ArZpwVg@mail.gmail.com>
+Message-ID: <CAK8P3a1swyDBvSTg9a6tUnd2V2Zi=ANpJWhJpWwfvp7ArZpwVg@mail.gmail.com>
+Subject: Re: [PATCH v3] ARM: dts: add DT for lan966x SoC and 2-port board pcb8291
+To:     Kavyasree.Kotagiri@microchip.com
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nicolas Ferre <Nicolas.Ferre@microchip.com>,
+        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:jTCo3beyZTovebwApM1BZXCSjJx3bvezVv35gCf/vhCDsdz41Fm
+ xxWDAmsE/dBT2kkDxXcx3aqqgIUyTJFhBjWZXcRYpF08Gujn5S4Y0Y61zOpq/3HWi9HntWk
+ ymNAss107ppOZRBg74VA2Dv+3AJ/+FcLqk2FaclKuHLkP+V01WRdNiZhMiY4fNOqoYfVfo5
+ axoHCJ/ktX4EkBAVIahWQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:s6sfh7BBii0=:htF3Eju/VJMOYgJPPzo4/i
+ BKcOVDkyvVTYdufBuE6c99Hv87gqq5JMQdA8rasIVFzcugEJPYbqFfPWC9tl3lZp8ROWLZWmi
+ DJomJDGfo13k1fJSq0yHmz0hqAjarBps1F3kaDu/7jk7g03YT7eQex4FEjcy2ugkI0G7xJgND
+ sCOJjEnBlVIx1xT9aMTUuj+WlC10KwOseYwSWQQIR2ZMATdu0C5uXDRDsLoze8mKBjvhrpwLz
+ bQ3pzF0QMdEzR02zSutvWpPSzFbxka+JkFIoNdkVzwUGIybllbXNuz2UZR8CJVMmp5W2/pN9l
+ 2eUde44iGu9F4R0/axTUc1xY8sfkv5adaMGaJO0SXc02j8i8nsrZiXj/8p/NpNUCKSuFRBcqr
+ hUEpFvCPwKN52yREwFMPi8Z9ROuwK7Vp/Kmpm8//RkVJNn9agvbokgIL2pFo9hlUloj90NTdF
+ IVJiluRvzOVI+tDE12juFUTwpj8lRYj1YvCO6DyWZyT5hh4VQMj15ETuOHioJ8ZXvdDvL2PGI
+ 5EFiS7+t3vTDYhTrzGzKfNPM7JzItYKNQLxHawrzURUJgVmsgnM58Clu49b3TvOXCUdeHA/4q
+ x9JGE5s1KkfU6LtH8NWRBZ43a/QZoACXZt6nmHDsodo2Pz1orxdgImBFnQio7ymwZptTVQrzM
+ rRYVbav/Jh3j/VU6/z0nUgpFMEHaiRLLR3hvbRWBPQxFbGqZHIGbwmhwMzABIuNrICMM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Jammy,
+On Wed, Feb 9, 2022 at 10:02 AM <Kavyasree.Kotagiri@microchip.com> wrote:
+> > > On 13/01/2022 at 09:00, Kavyasree Kotagiri wrote:
 
+> > > > +&gpio {
+> > > > +     fc_shrd7_pins: fc_shrd7-pins {
+> > > > +             pins = "GPIO_49";
+> > > > +             function = "fc_shrd7";
+> > > > +     };
+> >
+> > These properties don't look like most pinctrl nodes, has the binding
+> > been reviewed?
+> > I don't see it in Documentation/devicetree/bindings/pinctrl/
+> >
+> This is similar to the ones used in Microchip Ocelot and Sparx5 pinctrl.
+> For example, see usart_pins of gpio nodes in below links:
+> https://sbexr.rabexc.org/latest/sources//84/d39b543790ff25.jhtml
+> https://searchcode.com/file/333750634/arch/mips/boot/dts/mscc/ocelot.dtsi/
 
-Am 09.02.22 um 09:42 schrieb Jammy Huang:
-> Current settings for video capture rgb-2-yuv is BT.601(studio swing),
-> but JFIF uses BT.601(full swing) to deocde. This mismatch will lead
-> to incorrect color. For example, input RGB value, (0, 0, 255), will
-> become (16, 16, 235) after jpg decoded.
-> 
-> Add an enum, aspeed_video_capture_format, to define VR008[7:6]
-> capture format and correct default settings for video capture to fix
-> the problem.
+Ok, I see, so this was reviewed by both Rob and LinusW, I assume it's fine
+then, though the use of strings with capital letters, with all pins
+named "GPIO_*"
+still looks odd.
 
-Maybe quote the datasheet:
+For my understanding, would you describe the lan966x family as
+a follow-up to Ocelot, with the CPU cores replaced and flexcom added,
+or should I think of it as a SAMA7 based SoC design that incorporates
+the Vitesse switch IP?
 
-VR008[7:6] will decide the data format for video capture:
-00: CCIR601 studio swing compliant YUV format
-01: CCIR601 full swing compliant YUV format
-10: RGB format
-11: Gray color mode
-
-> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-> ---
-> v2:
->   - update subject from 'media: aspeed: Fix-incorrect-color' to
->     'media: aspeed: Use full swing as JFIF to fix incorrect'
->   - update commit message
->   - add enum, aspeed_video_capture_format, to define VR008[7:6]
-> ---
->   drivers/media/platform/aspeed-video.c | 14 +++++++++++---
->   1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-> index eb9c17ac0e14..5bcf60b4628b 100644
-> --- a/drivers/media/platform/aspeed-video.c
-> +++ b/drivers/media/platform/aspeed-video.c
-> @@ -86,8 +86,6 @@
->   #define  VE_CTRL_SOURCE			BIT(2)
->   #define  VE_CTRL_INT_DE			BIT(4)
->   #define  VE_CTRL_DIRECT_FETCH		BIT(5)
-> -#define  VE_CTRL_YUV			BIT(6)
-> -#define  VE_CTRL_RGB			BIT(7)
->   #define  VE_CTRL_CAPTURE_FMT		GENMASK(7, 6)
->   #define  VE_CTRL_AUTO_OR_CURSOR		BIT(8)
->   #define  VE_CTRL_CLK_INVERSE		BIT(11)
-> @@ -202,6 +200,15 @@ enum {
->   	VIDEO_CLOCKS_ON,
->   };
->   
-> +// for VE_CTRL_CAPTURE_FMT
-> +enum aspeed_video_capture_format {
-> +	VIDEO_CAP_FMT_YUV_STUDIO = 0,
-
-Maybe also append `_SWING`?
-
-> +	VIDEO_CAP_FMT_YUV_FULL,
-> +	VIDEO_CAP_FMT_RGB,
-> +	VIDEO_CAP_FMT_GRAY,
-> +	VIDEO_CAP_FMT_MAX
-> +};
-> +
->   struct aspeed_video_addr {
->   	unsigned int size;
->   	dma_addr_t dma;
-> @@ -1089,7 +1096,8 @@ static void aspeed_video_init_regs(struct aspeed_video *video)
->   	u32 comp_ctrl = VE_COMP_CTRL_RSVD |
->   		FIELD_PREP(VE_COMP_CTRL_DCT_LUM, video->jpeg_quality) |
->   		FIELD_PREP(VE_COMP_CTRL_DCT_CHR, video->jpeg_quality | 0x10);
-> -	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR;
-> +	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR |
-> +		FIELD_PREP(VE_CTRL_CAPTURE_FMT, VIDEO_CAP_FMT_YUV_FULL);
->   	u32 seq_ctrl = video->jpeg_mode;
->   
->   	if (video->frame_rate)
-
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-
-
-Kind regards,
-
-Paul
+        Arnd
