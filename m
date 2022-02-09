@@ -2,242 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B095AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C36C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234017AbiBINzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:55:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52364 "EHLO
+        id S234555AbiBIN4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:56:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229779AbiBINzk (ORCPT
+        with ESMTP id S229779AbiBIN43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:55:40 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B68DC0613C9;
-        Wed,  9 Feb 2022 05:55:42 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id l67-20020a1c2546000000b00353951c3f62so1619732wml.5;
-        Wed, 09 Feb 2022 05:55:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=7U/uYfF5BBXdgNLHE4+fM0Xnr2orfhJ3kV6quQhuKN8=;
-        b=A1Raudlcg8KbydfuTRJDWC+KE9y+kf05/OEpM2s89EkYAhXlrrtpi9qGKOnu+OqeMj
-         gz2TEjbu48jg57g5SiHYUxrwLtZEHADVglTk2P8p5a9fFeCfUR3mp41KaOUHsr2Gdr/9
-         2vBvYQjnHuYEtFoMhYKZtypiLMju1EoF2zOHQl2wHIWtcp2+LJDSC0NlnZbiVoYZp7E7
-         y0/JqL6hg1PE7TU3cm7stqKK+T3i7EZCVnwFjvwurHJMOOF756CQxi6wcfoTlZhKGTfc
-         SB0pcp3mDEPsC/pUEVdUa3i3Fg3QZgx2zoQf+qQ16qWiel7aCQdLbm/Us2DB8RFLZ0E1
-         tAJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7U/uYfF5BBXdgNLHE4+fM0Xnr2orfhJ3kV6quQhuKN8=;
-        b=cMqSTgoKwJl/73fLX6iXKyztmS2387Xv/iwn6/xFFAPS+jmKtWKY4NyTkaFEfBEP6b
-         irns9P1hS16HVqH8JRQrsq9HFmGUTAU4Dkc2vtTBXqaNNsQ0VXlJj2bjKgr9gzrJ734B
-         3beQvS+XLi+qJxHH3Bvo2iFhrDjiO1Zp0mA9UW+8sN0WgmUn2HH/49BPy3BXVgooSDbo
-         eAphqoaY0a/ujwHW7/0SEATui6Lq6u33rxp8DOZpkrMurJrR1MG4hJogBgXc6cKxvC0V
-         7CCq/QXToOjujYhl/HbcM0s4M+ycdGm9UnIMFm0m+yolnElW94O5tYgnwf9O6XxaJ1SA
-         0u9A==
-X-Gm-Message-State: AOAM530mr1ZMfHgPHowgikrLFKE04jq+bJn5thiPork8Pa/mYb33TOw6
-        fHDAugkJZdWT7IiigfG2N2w=
-X-Google-Smtp-Source: ABdhPJwxjFBgHIB+UhKYGiBo3CoUpqS8lR5s3DiuLtu+98fiXKhZHC3z5PVCNCW/puAce4XBpJkvlQ==
-X-Received: by 2002:a05:600c:a03:: with SMTP id z3mr2688181wmp.73.1644414940868;
-        Wed, 09 Feb 2022 05:55:40 -0800 (PST)
-Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id g14sm3014309wmq.3.2022.02.09.05.55.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 05:55:40 -0800 (PST)
-From:   Christian Hewitt <christianshewitt@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>
-Subject: [PATCH] arm64: dts: meson: remove CPU opps below 1GHz for G12B/SM1
-Date:   Wed,  9 Feb 2022 13:55:35 +0000
-Message-Id: <20220209135535.29547-1-christianshewitt@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 9 Feb 2022 08:56:29 -0500
+X-Greylist: delayed 874 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 05:56:31 PST
+Received: from www18.qth.com (www18.qth.com [69.16.238.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EB0C0613CA;
+        Wed,  9 Feb 2022 05:56:31 -0800 (PST)
+Received: from [73.207.192.158] (port=49618 helo=justpickone.org)
+        by www18.qth.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <davidtg+robot@justpickone.org>)
+        id 1nHnEH-0007oL-Sg; Wed, 09 Feb 2022 07:41:53 -0600
+Date:   Wed, 9 Feb 2022 08:41:39 -0500
+From:   David T-G <davidtg+robot@justpickone.org>
+To:     linux-raid@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] lib/raid6/test/Makefile: Use `$(pound)` instead
+ of `\#` for Make 4.3
+Message-ID: <20220209134139.GA4455@justpickone.org>
+References: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
+ <d07a9d41-5a8f-a1f3-59f7-d2a75d6df2e5@youngman.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d07a9d41-5a8f-a1f3-59f7-d2a75d6df2e5@youngman.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - www18.qth.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - justpickone.org
+X-Get-Message-Sender-Via: www18.qth.com: authenticated_id: dmail@justpickone.org
+X-Authenticated-Sender: www18.qth.com: dmail@justpickone.org
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Amlogic G12B and SM1 devices experience CPU stalls and random board
-wedges when the system idles and CPU cores clock down to lower opp
-points. Recent vendor kernels include a change to remove 100-250MHz
-(with no explanation) [0] but other downstream sources also remove
-the 500/667MHz points (also with no explanation). Unless 100-667Mhz
-opps are removed or the CPU governor forced to performance, stalls
-are observed, so let's remove them an improve stability/uptime.
+Paul, et al --
 
-[0] https://github.com/khadas/linux/commit/20e237a4fe9f0302370e24950cb1416e038eee03
+...and then Wols Lists said...
+% 
+% On 08/02/2022 15:21, Paul Menzel wrote:
+...
+% 
+% As commented elsewhere, for the sake of us ENGLISH speakers,
+% *PLEASE* make that $(hash). A pound sign is £.
 
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
----
-Numerous people have experienced this issue and I have tested with
-only the low opp-points removed and numerous voltage tweaks: but it
-makes no difference. With the opp points present an Odroid N2 or
-Khadas VIM3 reliably drop off my network after being left idling
-overnight with UART showing a CPU stall splat. With the opp points
-removed I see weeks of uninterupted uptime. It's beyond my skills
-to research what the cause of the stalls might be, but if anyone
-ever figures it out we can always restore things. NB: This issue
-is not too widely reported in forums, but that's largely because
-most of the Amlogic supporting distros have been including this
-change picked from my kernel patchset for some time.
+Or, even better, $(octothorpe) since that's merely a symbol rather than a
+food product or a result of an algorithm on data.  You might even hope
+that we hash this out eventually ...
 
- .../boot/dts/amlogic/meson-g12b-a311d.dtsi    | 40 -------------------
- .../boot/dts/amlogic/meson-g12b-s922x.dtsi    | 40 -------------------
- arch/arm64/boot/dts/amlogic/meson-sm1.dtsi    | 20 ----------
- 3 files changed, 100 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-index d61f43052a34..8e9ad1e51d66 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-a311d.dtsi
-@@ -11,26 +11,6 @@
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <761000>;
-@@ -71,26 +51,6 @@
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-index 1e5d0ee5d541..44c23c984034 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-s922x.dtsi
-@@ -11,26 +11,6 @@
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <731000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <731000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <731000>;
-@@ -76,26 +56,6 @@
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <751000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <667000000>;
--			opp-microvolt = <751000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <771000>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-index 3c07a89bfd27..80737731af3f 100644
---- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
-@@ -95,26 +95,6 @@
- 		compatible = "operating-points-v2";
- 		opp-shared;
- 
--		opp-100000000 {
--			opp-hz = /bits/ 64 <100000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-250000000 {
--			opp-hz = /bits/ 64 <250000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-500000000 {
--			opp-hz = /bits/ 64 <500000000>;
--			opp-microvolt = <730000>;
--		};
--
--		opp-667000000 {
--			opp-hz = /bits/ 64 <666666666>;
--			opp-microvolt = <750000>;
--		};
--
- 		opp-1000000000 {
- 			opp-hz = /bits/ 64 <1000000000>;
- 			opp-microvolt = <770000>;
+Have a great day!
+
+:-D
 -- 
-2.17.1
+David T-G
+See http://justpickone.org/davidtg/email/
+See http://justpickone.org/davidtg/tofu.txt
 
