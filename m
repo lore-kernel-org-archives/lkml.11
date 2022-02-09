@@ -2,80 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C814C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbiBITR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:17:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51470 "EHLO
+        id S233766AbiBITSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:18:08 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233481AbiBITRs (ORCPT
+        with ESMTP id S230121AbiBITSH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:17:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5429C1DF8FA;
-        Wed,  9 Feb 2022 11:17:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0D476197E;
-        Wed,  9 Feb 2022 19:15:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85FCBC340E7;
-        Wed,  9 Feb 2022 19:15:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434127;
-        bh=hZXirXigZI9GoouC6CuizAWFEKIWwDBONOJmuuybl44=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zD7HvA67XcD6Pv/zPupBR46gMPD6dD8oDgOcrPypFNeO2HV0q0VWlumjboeihKeR0
-         6X70NCgLkWMoq4ZtsgIgVxFRz0s1hzQxBPO4DFkJKoTUqnHFzAwbJxqsU3LSAJFItc
-         bRjUoKxtpvi7/CGplVFYh6r6meB/eLqW2f0BxdHU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: [PATCH 5.10 2/3] KVM: s390: Return error on SIDA memop on normal guest
-Date:   Wed,  9 Feb 2022 20:14:20 +0100
-Message-Id: <20220209191248.973709059@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209191248.892853405@linuxfoundation.org>
-References: <20220209191248.892853405@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 9 Feb 2022 14:18:07 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [IPv6:2a00:da80:fff0:2::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C3BC1DC076;
+        Wed,  9 Feb 2022 11:18:00 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 7A0EE1C0B9D; Wed,  9 Feb 2022 20:08:47 +0100 (CET)
+Date:   Wed, 9 Feb 2022 20:08:46 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH 5.10 72/74] net: dsa: mt7530: make NET_DSA_MT7530 select
+ MEDIATEK_GE_PHY
+Message-ID: <20220209190846.GB10459@duo.ucw.cz>
+References: <20220207103757.232676988@linuxfoundation.org>
+ <20220207103759.591363633@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="nVMJ2NtxeReIH9PS"
+Content-Disposition: inline
+In-Reply-To: <20220207103759.591363633@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 
-commit 2c212e1baedcd782b2535a3f86bc491977677c0e upstream.
+--nVMJ2NtxeReIH9PS
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Refuse SIDA memops on guests which are not protected.
-For normal guests, the secure instruction data address designation,
-which determines the location we access, is not under control of KVM.
+Hi!
 
-Fixes: 19e122776886 (KVM: S390: protvirt: Introduce instruction data area bounce buffer)
-Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/s390/kvm/kvm-s390.c |    2 ++
- 1 file changed, 2 insertions(+)
+> From: Ar=C4=B1n=C3=A7 =C3=9CNAL <arinc.unal@arinc9.com>
+>=20
+> commit 4223f86512877b04c932e7203648b37eec931731 upstream.
+>=20
+> Make MediaTek MT753x DSA driver enable MediaTek Gigabit PHYs driver to
+> properly control MT7530 and MT7531 switch PHYs.
+>=20
+> A noticeable change is that the behaviour of switchport interfaces going
+> up-down-up-down is no longer there.
 
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -4654,6 +4654,8 @@ static long kvm_s390_guest_sida_op(struc
- 		return -EINVAL;
- 	if (mop->size + mop->sida_offset > sida_size(vcpu->arch.sie_block))
- 		return -E2BIG;
-+	if (!kvm_s390_pv_cpu_is_protected(vcpu))
-+		return -EINVAL;
- 
- 	switch (mop->op) {
- 	case KVM_S390_MEMOP_SIDA_READ:
+This is unsuitable for 5.10 at least:
 
+> +++ b/drivers/net/dsa/Kconfig
+> @@ -36,6 +36,7 @@ config NET_DSA_MT7530
+>  	tristate "MediaTek MT753x and MT7621 Ethernet switch support"
+>  	depends on NET_DSA
+>  	select NET_DSA_TAG_MTK
+> +	select MEDIATEK_GE_PHY
 
+This symbol does not exist in 5.10.
+
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--nVMJ2NtxeReIH9PS
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgQRPgAKCRAw5/Bqldv6
+8jNBAKCLi7o81Oh3+eEX68xMQ6bbp6QmOwCfTdPN8978QiP05Lak6LMh5P/o7Uw=
+=Y7q2
+-----END PGP SIGNATURE-----
+
+--nVMJ2NtxeReIH9PS--
