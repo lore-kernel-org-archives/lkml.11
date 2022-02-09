@@ -2,106 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF34C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD53C47080
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233586AbiBIDDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51862 "EHLO
+        id S242477AbiBIDEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:04:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346557AbiBICtJ (ORCPT
+        with ESMTP id S242740AbiBIDCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:49:09 -0500
-Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0581EC014CE1;
-        Tue,  8 Feb 2022 18:42:37 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1644374543; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=IiWquf9atqldWhMR+8jZuNoczLaO3Z/HOKg50E3oFHHYaAzJsmHZ061VXWr/9pZDSB3r6O604qV+YKpzjXg+ekzm3MyjuWzB7dFWIwKqZNx0UpIwvlQ4P14HQXnNuSQqk3jEwiLiih1w2DuoPmDA+3eLRz/K4Gaq9+ix1XQPCYY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1644374543; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Ik7PPsB3ckVMi8MLto9X5w+tlhq8q4mTvX1f+h1UyKw=; 
-        b=INVpAAfxFfKWqCwm93kinD9soyLpClf/xM8mZRD/b1w22UkTPLmPrAY5QUoVJ4YKrMkL27nw5mre8eP9HqfUZX2TQo0HOUcOohW4lkgw4mPv83IpymvOn6Q+z5f5WYWZ9wVgHbyLUdJG+0tRGXPiNCj2HNnY1kF5Ma8rVSLxz5w=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=zohomail.com;
-        spf=pass  smtp.mailfrom=lchen.firstlove@zohomail.com;
-        dmarc=pass header.from=<lchen.firstlove@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644374543;
-        s=zm2020; d=zohomail.com; i=lchen.firstlove@zohomail.com;
-        h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
-        bh=Ik7PPsB3ckVMi8MLto9X5w+tlhq8q4mTvX1f+h1UyKw=;
-        b=axlkY8vZH/QnVnV2YoTmxfCuXYu6R1ZdoeT+iiHxVdFBgcZQju/awJQpwnCmDhpE
-        ZkEKT8EbA1QzcZzvF3ecZVMPBL0xHWu9f2myBz1GXTnqv+7Wry5CGlEK6EegJKqg/k4
-        k7WhqrZcWx72ch32nP1XVZ67b3MaQyIpARIeTHiE=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 1644374542337509.18593299214297; Tue, 8 Feb 2022 18:42:22 -0800 (PST)
-Received: from  [40.115.208.189] by mail.zoho.com
-        with HTTP;Tue, 8 Feb 2022 18:42:22 -0800 (PST)
-Date:   Tue, 08 Feb 2022 21:42:22 -0500
-From:   Li Chen <lchen.firstlove@zohomail.com>
-To:     "Bjorn Helgaas" <helgaas@kernel.org>
-Cc:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        "Lorenzo Pieralisi" <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?Q?=22Krzysztof_Wilczy=C5=84ski=22?= <kw@linux.com>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        "Bjorn Helgaas" <bhelgaas@google.com>,
-        "linux-pci" <linux-pci@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <17edc5c47e6.122924bd015524.7108685407921243810@zohomail.com>
-In-Reply-To: <20220208152106.GA476995@bhelgaas>
-References: <20220208152106.GA476995@bhelgaas>
-Subject: Re: [PATCH V6] misc: pci_endpoint_test: simplify endpoint test read
- and write operations
+        Tue, 8 Feb 2022 22:02:13 -0500
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB69C061355;
+        Tue,  8 Feb 2022 19:02:12 -0800 (PST)
+Received: by mail-oo1-f44.google.com with SMTP id f11-20020a4abb0b000000b002e9abf6bcbcso1052716oop.0;
+        Tue, 08 Feb 2022 19:02:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r9n/VE8ShNQNiwipYWkPFL8cBHsQZxENNYkTj1Nzpt8=;
+        b=oGlZXgdAyEOFTaHmEzufmo7zLD2pBL70ptvYL05ZRVpVn17SVjmvUcsKTvQp6q2WYE
+         RwEfXMoXj4cQGk3WjJHVw7trvatwhsqY9p1EPMEQzLuUQ9e6LBDzW0tH7MpnGYnOps6f
+         51CNlEVfxh15gt/e+wVEK2+vgp+cMqr9USv4aPkSmXs494ZciSZsSuQA42YOD80nhbci
+         wofdqSdKgY3K1AMNlliTEMVaA1bpk7L4dvDJObT8o+sjIDsZtYZgTNZ4u9enA1f0wmoV
+         52Yuh5aNe5o1Zb+wrznnNTotvdz3Voag/KXuWBtfLIGAmYVTlawF9nvASltbu35XDOho
+         hKeg==
+X-Gm-Message-State: AOAM530HSidXmuD79vTKmYNNmthwTZJZJIlOd3joX5m+Qd1gLNMzIyuj
+        4dR3mwaibWDcyAc33UjsVg==
+X-Google-Smtp-Source: ABdhPJzet+Dv7YYDkSGgJ2JnIoD3tapZgHhdllycdoCmXgkx2+9s9J1YxBIMJuyIWUjbzLMqyE9qyQ==
+X-Received: by 2002:a05:6870:91c6:: with SMTP id c6mr103120oaf.147.1644375732021;
+        Tue, 08 Feb 2022 19:02:12 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id r186sm6264409oie.23.2022.02.08.19.02.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 19:02:11 -0800 (PST)
+Received: (nullmailer pid 3539514 invoked by uid 1000);
+        Wed, 09 Feb 2022 03:02:09 -0000
+Date:   Tue, 8 Feb 2022 21:02:09 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>
+Cc:     Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        George Sun <george.sun@mediatek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        linux-mediatek@lists.infradead.org, Tomasz Figa <tfiga@google.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, Irui Wang <irui.wang@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Steve Cho <stevecho@chromium.org>, srv_heupstream@mediatek.com,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Fritz Koenig <frkoenig@chromium.org>
+Subject: Re: [PATCH v1, 2/3] dt-bindings: media: mtk-vcodec: Adds decoder
+ dt-bindings for mt8186
+Message-ID: <YgMusfSSXXLlyxyX@robh.at.kernel.org>
+References: <20220122075606.19373-1-yunfei.dong@mediatek.com>
+ <20220122075606.19373-3-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220122075606.19373-3-yunfei.dong@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sent using Zoho Mail
+On Sat, 22 Jan 2022 15:56:05 +0800, Yunfei Dong wrote:
+> Adds decoder dt-bindings for mt8186.
+> 
+> Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+> ---
+>  .../bindings/media/mediatek,vcodec-subdev-decoder.yaml        | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
 
- ---- On Tue, 08 Feb 2022 10:21:06 -0500 Bjorn Helgaas <helgaas@kernel.org> wrote ----
- > On Mon, Feb 07, 2022 at 11:20:15PM -0500, Li Chen wrote:
- > >  ---- On Mon, 07 Feb 2022 12:56:13 -0500 Bjorn Helgaas <helgaas@kernel.org> wrote ----
- > >  > On Mon, Feb 07, 2022 at 04:09:05AM -0500, Li Chen wrote:
- > >  > > #define to_endpoint_test(priv) container_of((priv), struct pci_endpoint_test, \
- > >  > > -                     miscdev)
- > >  > > +                        miscdev)
- > >  > 
- > >  > Always indent with tabs when possible:
- > >  > 
- > >  >   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/coding-style.rst?id=v5.16#n18
- > >  > 
- > >  > Hmm, coding-style.rst is unfortunately not very explicit about that.
- > >  > 
- > >  > But it's obvious from the existing code in this file that things
- > >  > should not be indented four spaces, as you did in
- > >  > pci_endpoint_test_transfer_data().
- > > 
- > > So, can I say space is not allowed in indentation? If so, I should
- > > not use emacs's tabify, because it will not convert 4 space to
- > > 8-width tab. I'm also not sure is scripts/Lindent or clang-format is
- > > a good choice here, they do too much changes.
- > 
- > I don't know how emacs, Lindent, clang-format, etc work.  I *can* tell
- > you that in Linux code:
- > 
- >   - indents always use tabs (width 8) when possible,
- > 
- >   - up to 7 spaces are allowed after a tab when needed to align
- >     something with the previous line, and
- > 
- >   - a tab never directly follows a space.
- > 
- > Bjorn
- > 
-
-Thanks! I'll remove tabify operation in v7, the original code have no indentation code style issue.
-
-Regards,
-Li
+Acked-by: Rob Herring <robh@kernel.org>
