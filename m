@@ -2,63 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6162BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:06:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233875AbiBINGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43464 "EHLO
+        id S233912AbiBINGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:06:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233833AbiBINGE (ORCPT
+        with ESMTP id S233854AbiBINGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:06:04 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C46AC0613CA;
-        Wed,  9 Feb 2022 05:06:07 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id x23so4159655lfc.0;
-        Wed, 09 Feb 2022 05:06:07 -0800 (PST)
+        Wed, 9 Feb 2022 08:06:10 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE2BC05CB97;
+        Wed,  9 Feb 2022 05:06:13 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id o2so4102148lfd.1;
+        Wed, 09 Feb 2022 05:06:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:organization:content-transfer-encoding;
-        bh=bYcBMD0263VidrD3hBmBNToThm3cO5xgVyUXSYwtNSk=;
-        b=T4omMjjTBYUygDUJqs2qeyJWoxrIZ8VgP6zJChmrH8GlXMT7A7uHI8RCaZb48a1vc8
-         CriPE3c4iztC8LQlxpnwcAb1X8bRgeleRuZoFZ8V8FAWWbdsuSQPpwHBsflM0clmk1Va
-         1dLozc8Up7stMYssey58mBkRz12AKi6XUxAObqucuoU3iBZeWk3qaTN1qZ9eKcQJMLwc
-         687APJkB7FQg50eB+8SgHsH2RPEp4eOVo2Oa6y84pmpcwLTpNWgpS20BoMdFuUVMs7X6
-         sGrTeCqobAjv5zjZeyPdCfpB7piQUWo7IdLuGLCN5/7W/Yd23WRp6n/YESNFpYEqeOgQ
-         t7sQ==
+        bh=xsR/hKbVC0DUFloHcPTPuu9npcAFNkMVex8QVbhOYjs=;
+        b=aj5Htxtjt1QnCulCfzu1eLyveHrhHah6dMQEHuzB3QTTYShvpcRAjZ5pfxCGk762qQ
+         6BFw3eAADUmyqfZmB9V4jt23udaEyQK7EIVxNG9+FpfuXQDvXqpG8/O5kS13UiE2pXOj
+         437f9KJulPeEz0tpSD51qy++kHowekZNWZrx7tiLHrpi4+NYHgOTG//YhDgd6U66f2Pz
+         c5hoPpXA/21eoyFtrKLJMXJaYVaU2BLR2E4MoYM2g8/ffSc2HO00JOB4wlpY0lwbCpz6
+         TNWPzGdJ99ZavA4XvY/6aMxWBiD5qnAzBPAs9UM/psV1+fqPOAuo2N22BrJNCl1Z2BSW
+         7mww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:organization:content-transfer-encoding;
-        bh=bYcBMD0263VidrD3hBmBNToThm3cO5xgVyUXSYwtNSk=;
-        b=KdfjSk3ASyoBks8FyGbKmzbLNFnxzYfkSAc9AD3gZrgYrVliNKibwlWq/U2YCKtAWy
-         7PVY85SNZWZBa8ZN+lewyOZPug0RgW4fEXqhKQcVodN2BUw1c+jAsXC5Cqvn6RTLuwVD
-         0L8JYkyyo6cSzXmSlVicxzX1fj16l389UXGfSo6dVBcpN8IxW3dTWC1uFBMw0i5O/Rmx
-         Qm729tZzq3cqTjAKVhmbc37SKK+UM79FN9FRQ7f4/8q9SPP8b/waUo4psYDoS6JFpOO6
-         HsviGf81nz8xxXv+suFigJ/6hq49mo2HW+tPMzZK0yit6YiMC/0StGYGsGE90DMLkcrI
-         mFCA==
-X-Gm-Message-State: AOAM533bp1GoQNAsmwRDpbPJnEo/l1856foS+D3aQQs4V9B43ATVqKTi
-        QVqFfw1gUu4Q5Uk4nvq9Hhc=
-X-Google-Smtp-Source: ABdhPJyCll4ka0Jps7Twlmmr0XKRGoCjIkwwxOKu0pLjUtPupIPa00vNd0wEmuK/o27xnNhSTaZaHg==
-X-Received: by 2002:a05:6512:3b93:: with SMTP id g19mr1564844lfv.316.1644411965835;
-        Wed, 09 Feb 2022 05:06:05 -0800 (PST)
+        bh=xsR/hKbVC0DUFloHcPTPuu9npcAFNkMVex8QVbhOYjs=;
+        b=mVfXr8k8MJxXXyI56fnsyiqH8+AnQoyN0DjW8hlPVmGzSTr1sSguYAPjbHea74sZeY
+         4yuW0M8bl2+bhiF6LOVH+mtnElgrWhareOKmJvmzbalDfSB621tmbmaVqomSaPGkvauR
+         AZslPj2rYpjbgLYg0eS/6cr3DdF5ducfM8n1RXi76EaS803odbtmYteZoRk1okRN4rlk
+         eMaxVncSCR+GugGpbeOy3uIWR3Y9yhlk9JIsZ2Wgu/UTs7Plj+9Nlg6wEsoZoDrFOrpF
+         6E+cDLSspvQfcQvgvegcMDhMp/bD74DFNW+ShSdL7D6hK2m4sMqQsYF1HeDi+Nczczo9
+         R/cw==
+X-Gm-Message-State: AOAM5303pmA7s7x9TqdKIkZ68QVMwO+xDc2TCFSsuKEMRGzn00KoR+6a
+        3b+HKqkAaXpw7KekuzlJqfM=
+X-Google-Smtp-Source: ABdhPJwc0CV74l66f2wraJk089tfQr+62hoxcpiYKudUS/YHO6pQn91PajQKct90SKtB1DhVFlnXKA==
+X-Received: by 2002:a19:9219:: with SMTP id u25mr1547578lfd.685.1644411971858;
+        Wed, 09 Feb 2022 05:06:11 -0800 (PST)
 Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
-        by smtp.gmail.com with ESMTPSA id k3sm2352608lfo.127.2022.02.09.05.06.04
+        by smtp.gmail.com with ESMTPSA id k3sm2352608lfo.127.2022.02.09.05.06.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 05:06:05 -0800 (PST)
+        Wed, 09 Feb 2022 05:06:11 -0800 (PST)
 From:   Hans Schultz <schultz.hans@gmail.com>
 X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
         Hans Schultz <schultz.hans+netdev@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: [PATCH net-next v2 1/5] net: bridge: Add support for bridge port in locked mode
-Date:   Wed,  9 Feb 2022 14:05:33 +0100
-Message-Id: <20220209130538.533699-2-schultz.hans+netdev@gmail.com>
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 3/5] net: dsa: Add support for offloaded locked port flag
+Date:   Wed,  9 Feb 2022 14:05:35 +0100
+Message-Id: <20220209130538.533699-4-schultz.hans+netdev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
 References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
@@ -69,122 +71,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a 802.1X scenario, clients connected to a bridge port shall not
-be allowed to have traffic forwarded until fully authenticated.
-A static fdb entry of the clients MAC address for the bridge port
-unlocks the client and allows bidirectional communication.
-
-This scenario is facilitated with setting the bridge port in locked
-mode, which is also supported by various switchcore chipsets.
+Among the switchcores that support this feature is the Marvell
+mv88e6xxx family.
 
 Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- include/linux/if_bridge.h    |  1 +
- include/uapi/linux/if_link.h |  1 +
- net/bridge/br_input.c        | 10 +++++++++-
- net/bridge/br_netlink.c      |  6 +++++-
- 4 files changed, 16 insertions(+), 2 deletions(-)
+ net/dsa/port.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index 509e18c7e740..3aae023a9353 100644
---- a/include/linux/if_bridge.h
-+++ b/include/linux/if_bridge.h
-@@ -58,6 +58,7 @@ struct br_ip_list {
- #define BR_MRP_LOST_CONT	BIT(18)
- #define BR_MRP_LOST_IN_CONT	BIT(19)
- #define BR_TX_FWD_OFFLOAD	BIT(20)
-+#define BR_PORT_LOCKED		BIT(21)
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index bd78192e0e47..01ed22ed74a1 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -176,7 +176,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
+ 					 struct netlink_ext_ack *extack)
+ {
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+ 	int flag, err;
  
- #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+@@ -200,7 +200,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
+ {
+ 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
+ 	int flag, err;
  
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 6218f93f5c1a..a45cc0a1f415 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -537,6 +537,7 @@ enum {
- 	IFLA_BRPORT_MRP_IN_OPEN,
- 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
- 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
-+	IFLA_BRPORT_LOCKED,
- 	__IFLA_BRPORT_MAX
- };
- #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index b50382f957c1..469e3adbce07 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -69,6 +69,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
- 	enum br_pkt_type pkt_type = BR_PKT_UNICAST;
- 	struct net_bridge_fdb_entry *dst = NULL;
-+	struct net_bridge_fdb_entry *fdb_entry;
- 	struct net_bridge_mcast_port *pmctx;
- 	struct net_bridge_mdb_entry *mdst;
- 	bool local_rcv, mcast_hit = false;
-@@ -81,6 +82,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 	if (!p || p->state == BR_STATE_DISABLED)
- 		goto drop;
- 
-+	br = p->br;
-+
- 	brmctx = &p->br->multicast_ctx;
- 	pmctx = &p->multicast_ctx;
- 	state = p->state;
-@@ -88,10 +91,15 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 				&state, &vlan))
- 		goto out;
- 
-+	if (p->flags & BR_PORT_LOCKED) {
-+		fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
-+		if (!(fdb_entry && fdb_entry->dst == p))
-+			goto drop;
-+	}
-+
- 	nbp_switchdev_frame_mark(p, skb);
- 
- 	/* insert into forwarding database after filtering to avoid spoofing */
--	br = p->br;
- 	if (p->flags & BR_LEARNING)
- 		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, 0);
- 
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 2ff83d84230d..7d4432ca9a20 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -184,6 +184,7 @@ static inline size_t br_port_info_size(void)
- 		+ nla_total_size(1)	/* IFLA_BRPORT_VLAN_TUNNEL */
- 		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
- 		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
-+		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
- 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
- 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
- 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
-@@ -269,7 +270,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
- 							  BR_MRP_LOST_CONT)) ||
- 	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
- 		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
--	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)))
-+	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)) ||
-+	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)))
- 		return -EMSGSIZE;
- 
- 	timerval = br_timer_value(&p->message_age_timer);
-@@ -827,6 +829,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
- 	[IFLA_BRPORT_GROUP_FWD_MASK] = { .type = NLA_U16 },
- 	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
- 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
-+	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
- 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
- 	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
- };
-@@ -893,6 +896,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
- 	br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
- 	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
- 	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
-+	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
- 
- 	changed_mask = old_flags ^ p->flags;
- 
+ 	for_each_set_bit(flag, &mask, 32) {
 -- 
 2.30.2
 
