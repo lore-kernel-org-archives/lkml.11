@@ -2,88 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 270C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233809AbiBIKTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:19:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S233543AbiBIKU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:20:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233543AbiBIKT2 (ORCPT
+        with ESMTP id S234372AbiBIKUw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:19:28 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004BCE11C096
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:14:58 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id q7so3045263wrc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:14:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wEmAB87KMbVXGW4TeiDbnHla5i/2RYZ8JKZYPOxYxM4=;
-        b=A22Hjm1O16aNiblpsnqP4S74IQqpmkmrJ2/Tvku63VUaNefjjlWnqXrg9q3CYaUZ2B
-         VsZnXSOHEGku6MOWDYzMiFOvefV3LNjND7BIA+KohE8+UlX8KJpFRIjE8HyuPgBKwXSP
-         vMVzvlxB3226dkyPjTVBoLcnbr2NochaepR4nz6rcEtnl0cl5mrnVlv6CLFtWz1hXxxL
-         RAPhXkF3jsIiS5DQCeXgSGsmwCHreDWDlnd3z1kLYhATYALgp6wvNBTygZcuObUvivgL
-         QK3d/e8ApLYN/OFKA3+MOfpPe+zcy17e/dcPRMBNsSqIdKfwfcNB9du1HC8BoMm1gsqp
-         e3LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wEmAB87KMbVXGW4TeiDbnHla5i/2RYZ8JKZYPOxYxM4=;
-        b=IkVbmulmu2vhH/naPhtgRfIOEANiEYGhMZL395J2+Wz5/mM4dGNDrAQHfhFzVytdJb
-         CQJQj19sO8URa0I05NwuhGmFJkdHCH1KuX0CjPM2alIGVU+ChhwHX6NH/2RcJIckvuFT
-         A7oDsVEOHbCmLld20UE/qlPZjgTa6n0Y+eEElliqZ5Tw4dWxDSymfQXuF0t0snBcwXZB
-         y5+NlozojZ9rB1bM61q5v/jWH++ts/pDDeYc79W8mVijOuIu2wkz830BUbSXXtK3XU9Q
-         k/T5EqVIc5DwqDGc2EkougfebD4DXRGhWPJm60+a2g78fl8OJLhyUy2wGJD7VbRh8nwh
-         l3AA==
-X-Gm-Message-State: AOAM532gZUOCxXGqVjtErk2ANvoZOpYJqTHelcvJUuoINXR8Op9i1pYk
-        3e33luiBfJxCTNOY6IDiz40iUA==
-X-Google-Smtp-Source: ABdhPJwGwENAzy1WqFgY/9tZR9RFHwO/d1Okh9TcSAYmWbkzZUEC5+LR0BXgK8mp/VxUuaMZlnhBqg==
-X-Received: by 2002:adf:f64e:: with SMTP id x14mr1411705wrp.698.1644401685588;
-        Wed, 09 Feb 2022 02:14:45 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id f20sm5881067wmg.2.2022.02.09.02.14.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:14:45 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, krzysztof.kozlowski@canonical.com,
-        robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] ARM: dts: rk3288: fix a typo on crypto-controller
-Date:   Wed,  9 Feb 2022 10:14:39 +0000
-Message-Id: <20220209101439.1657557-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Feb 2022 05:20:52 -0500
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BAFE08E7A5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:15:52 -0800 (PST)
+Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1Mo7aJ-1o5OpV4Ayh-00pZP3;
+ Wed, 09 Feb 2022 11:01:47 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 08/12] arm64: defconfig: build imx-sdma as a module
+Date:   Wed,  9 Feb 2022 11:00:51 +0100
+Message-Id: <20220209100055.181389-9-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220209100055.181389-1-marcel@ziswiler.com>
+References: <20220209100055.181389-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:9ic7kC5N62T8D1ZciNvAZsix7jrQDa/+Ubin8FoE6e6lzPJTQYi
+ xHFFIHaf8K3ror8peOpJ0pATgs1ykurnFftdKY7MMgJIV/Wy5er+f4eVcIP53eT1dUgYN2J
+ hQPx5VxpBzVPic2hV/FTwVnriWbaeU3mRVNgG2yXzqUVKBrY8YUNBFDeYDUj/58L6WOGCCM
+ X/7JF2YMuQXIWQoXgRfQQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:hBlAXPDCYFw=:1rnBOLGEQgLf4UnMS4KU8f
+ 7i3Hng/0qk4pwVXhQBcEa+Ghf8HJs3OoybxEYmvBNRZ4mUBseIk+NZMGcSdA1vUQBKj9cqEhI
+ 8cjzWChMzr5vFItx9tZwrQXODmZdHck/XpYH/IOZzYQ1y2BrMqed5dOsyuRFHAbbI9WgVmkVx
+ 4N5z6xolj4grQVH5/bQafnnpq9IUnHQYKVNGCy9af2FUN7rNbZb+IgeLfmj3pdazUP3Iblbej
+ ZkY7bxqkYOrLrSU5XKcL/maAczO2LodkOQYUeOT3xzs7ftETG9JYszmM8UdQDbUqUZpWqYIQ7
+ /JcieSSY5lj+Wc8QAqqN0de8BimYjDg2eZ3jhN6DCVRRYl213A/BN0pSdgDRV9YkYxys8z7KP
+ n/9Pa0NrwF7jk1FvMrYmlW/ve4Aua2yNKFHUJ/uh2Njjg7RmuNFoanjS5NXvMCfyrwRJF79U9
+ 0lx7oLm61/V6mn4GKZAO3GoXE4vyIvd+n+O2oNFmL3bpraDrLytGvL2Qpc4snDHZFGgdq8UA9
+ Xz4HV0Wk+ZOVjh2q28Vo2gP7WW0fhiMdHrobouhXd4Ap3C685ixzj3Eu/VRhNtomX4gD9vg0e
+ D7aC+D4BHJRONVUvIRrrtIXV+XSJuRSYo+I/66py0ewGciCmUkFfQy94XmK2Xs1PFeJPkR6Ku
+ dSE0fCvQtr2v+kiIry6lnkWI4g1Yq5izaRtU+F3gjADHsSTcoLuuMdCc0V4F+fVeeAmeHtVoG
+ +YJYz5xfEK5ftIzbsoe7p1W6KWfsbeG1CYndfM15w8CWTsoQ6ZVkUORL8yvTp4PQ3k8gZDbcW
+ gFu9JfEtNXgJM7yufoAbQP7oS4eDg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crypto-controller had a typo, fix it.
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+This avoids firmware load error and sysfs fallback reported as follows:
+
+[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
+ for imx/sdma/sdma-imx7d.bin failed with error -2
+[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
+ fallback for: imx/sdma/sdma-imx7d.bin
+
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+
 ---
- arch/arm/boot/dts/rk3288.dtsi | 2 +-
+
+(no changes since v2)
+
+Changes in v2:
+- A similar change got accepted for imx_v6_v7_defconfig. Further
+  discussion may be found in [1].
+[1] https://lore.kernel.org/lkml/20210920144938.314588-6-marcel@ziswiler.com/
+
+ arch/arm64/configs/defconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index aaaa61875701..a0d29de3acf7 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -971,7 +971,7 @@ i2s: i2s@ff890000 {
- 		status = "disabled";
- 	};
- 
--	crypto: cypto-controller@ff8a0000 {
-+	crypto: crypto-controller@ff8a0000 {
- 		compatible = "rockchip,rk3288-crypto";
- 		reg = <0x0 0xff8a0000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index 0fed8477e72e..27afe24a025a 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -928,7 +928,7 @@ CONFIG_DMADEVICES=y
+ CONFIG_DMA_BCM2835=y
+ CONFIG_DMA_SUN6I=m
+ CONFIG_FSL_EDMA=y
+-CONFIG_IMX_SDMA=y
++CONFIG_IMX_SDMA=m
+ CONFIG_K3_DMA=y
+ CONFIG_MV_XOR=y
+ CONFIG_MV_XOR_V2=y
 -- 
-2.34.1
+2.33.1
 
