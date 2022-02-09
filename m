@@ -2,168 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6732C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F36BDC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232828AbiBITLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:11:14 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52824 "EHLO
+        id S231592AbiBITMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:12:34 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiBITLF (ORCPT
+        with ESMTP id S229441AbiBITMa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:11:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C695C02B650;
-        Wed,  9 Feb 2022 11:10:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 729C2B82381;
-        Wed,  9 Feb 2022 19:10:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C2AFC340E9;
-        Wed,  9 Feb 2022 19:10:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644433854;
-        bh=vJfdfjnTI9o6SZYd45w46xF+xwH5gWZMsI7j/ucfllg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i8HI+5ThCjZRNInGM8TbtSyTvZqr+LZ9hTmqER+7WpM5AbCLiHeKPmfx9EBoWUqKP
-         PrQTbalXMFNjg7sju2JZKodsN0KGoGeda6SWMpxTYp6tdRKNLbD99OWSnEyV6pdWp3
-         E4P2qWS6VM0XGmdSqNFSjcSXCBJ7HTpVmlTpyZ8krr1T4+e0POcD8nseT/Jxq2IeSe
-         eh4sLOymbcGtgSdw2YVipnIXnrxDl5hz+H2xafyYL7Ev+Pe9vRlqhkn9MX+OrnxaxI
-         j6ZQXesTvm/TPeHl/3PF1wcc+PWsRGxYcLj/oKRNzphsjFCbHUObu8mut3mKTbngz+
-         32TDw2koI1eMg==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nHsMe-006j1n-1R; Wed, 09 Feb 2022 19:10:52 +0000
+        Wed, 9 Feb 2022 14:12:30 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED768C014F39;
+        Wed,  9 Feb 2022 11:12:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=9gl0k3PijnwzBappKxAOI37Vix6kLRRS+YqO+Vq3rvI=; b=qFAtiO6z0mbXRm+tzfImRHlYJg
+        OTEmLv3RZ5U4u0wpUQrFULpv3aIekvg8pPgOqufzZ44EoTEJRYqPSLm3JGr+Hkhb9v5cTOHPaGHt+
+        L1ed4WJpmRlqB70lLATDhIrdvbCy9V7Zxz6O7Gd7OaK2wVVeC2qgUjnErZk0WUeFZepkiwT6rvQdE
+        8NZyyRdqBDI9s8fqf8jM+8S4NTygZ0SXY80sjtpWI0jW4xrr9WN/nD5/uUjoGEti0DiY0nRVgM/R5
+        qpAN95PzKrlZ2wQOoHCBtwZMyAIQpzFoKC8ls0PsakKTGsXuShImt2K9EfxTNU36x3onbKSwsTwsG
+        cmiykScg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nHsNu-008U5F-Dw; Wed, 09 Feb 2022 19:12:10 +0000
+Date:   Wed, 9 Feb 2022 19:12:10 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+        Stable <stable@vger.kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        "Darrick J . Wong" <darrick.wong@oracle.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        cluster-devel@redhat.com,
+        syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] Revert "iomap: fall back to buffered writes for
+ invalidation failures"
+Message-ID: <YgQSCoD5j9KbpHsA@casper.infradead.org>
+References: <20220209085243.3136536-1-lee.jones@linaro.org>
+ <20220209150904.GA22025@lst.de>
+ <YgPk9HhIeFM43b/a@google.com>
 MIME-Version: 1.0
-Date:   Wed, 09 Feb 2022 19:10:51 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] arm64: dts: ti: Introduce base support for AM62x SoC
-In-Reply-To: <20220208131827.1430086-5-vigneshr@ti.com>
-References: <20220208131827.1430086-1-vigneshr@ti.com>
- <20220208131827.1430086-5-vigneshr@ti.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <bc6cb6e1adcf6860a595b71246778733@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: vigneshr@ti.com, nm@ti.com, kristo@kernel.org, robh+dt@kernel.org, krzysztof.kozlowski@canonical.com, ssantosh@kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgPk9HhIeFM43b/a@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-08 13:18, Vignesh Raghavendra wrote:
-> The AM62 SoC family is the follow on AM335x built on K3 Multicore SoC
-> architecture platform, providing ultra-low-power modes, dual display,
-> multi-sensor edge compute, security and other BOM-saving integration.
-> The AM62 SoC targets broad market to enable applications such as
-> Industrial HMI, PLC/CNC/Robot control, Medical Equipment, Building
-> Automation, Appliances and more.
+On Wed, Feb 09, 2022 at 03:59:48PM +0000, Lee Jones wrote:
+> On Wed, 09 Feb 2022, Christoph Hellwig wrote:
 > 
-> Some highlights of this SoC are:
+> > On Wed, Feb 09, 2022 at 08:52:43AM +0000, Lee Jones wrote:
+> > > This reverts commit 60263d5889e6dc5987dc51b801be4955ff2e4aa7.
+> > > 
+> > > Reverting since this commit opens a potential avenue for abuse.
+> > > 
+> > > The C-reproducer and more information can be found at the link below.
+> > > 
+> > > With this patch applied, I can no longer get the repro to trigger.
+> > 
+> > Well, maybe you should actually debug and try to understand what is
+> > going on before blindly reverting random commits.
 > 
-> * Quad-Cortex-A53s (running up to 1.4GHz) in a single cluster.
->   Pin-to-pin compatible options for single and quad core are available.
-> * Cortex-M4F for general-purpose or safety usage.
-> * Dual display support, providing 24-bit RBG parallel interface and
->   OLDI/LVDS-4 Lane x2, up to 200MHz pixel clock support for 2K display
->   resolution.
-> * Selectable GPUsupport, up to 8GFLOPS, providing better user 
-> experience
->   in 3D graphic display case and Android.
-> * PRU(Programmable Realtime Unit) support for customized programmable
->   interfaces/IOs.
-> * Integrated Giga-bit Ethernet switch supporting up to a total of two
->   external ports (TSN capable).
-> * 9xUARTs, 5xSPI, 6xI2C, 2xUSB2, 3xCAN-FD, 3x eMMC and SD, GPMC for
->   NAND/FPGA connection, OSPI memory controller, 3xMcASP for audio,
->   1x CSI-RX-4L for Camera, eCAP/eQEP, ePWM, among other peripherals.
-> * Dedicated Centralized System Controller for Security, Power, and
->   Resource Management.
-> * Multiple low power modes support, ex: Deep sleep,Standby, MCU-only,
->   enabling battery powered system design.
+> That is not a reasonable suggestion.
 > 
-> This add bare minimum DT describing ARM compute clusters, Main, MCU and
-> Wakeup domain and interconnects, UARTs and I2Cs to enable booting using
-> ramdisk.
-> 
-> More details can be found in the Technical Reference Manual:
-> https://www.ti.com/lit/pdf/spruiv7
-> 
-> Co-developed-by: Suman Anna <s-anna@ti.com>
-> Signed-off-by: Suman Anna <s-anna@ti.com>
-> Co-developed-by: Nishanth Menon <nm@ti.com>
-> Signed-off-by: Nishanth Menon <nm@ti.com>
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-> ---
->  arch/arm64/boot/dts/ti/k3-am62-main.dtsi   | 263 +++++++++++++++++++++
->  arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi    |  36 +++
->  arch/arm64/boot/dts/ti/k3-am62-wakeup.dtsi |  41 ++++
->  arch/arm64/boot/dts/ti/k3-am62.dtsi        | 104 ++++++++
->  arch/arm64/boot/dts/ti/k3-am625.dtsi       | 103 ++++++++
->  5 files changed, 547 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am62-main.dtsi
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am62-mcu.dtsi
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am62-wakeup.dtsi
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am62.dtsi
->  create mode 100644 arch/arm64/boot/dts/ti/k3-am625.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> new file mode 100644
-> index 000000000000..81d6d99ca180
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
-> @@ -0,0 +1,263 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Device Tree Source for AM625 SoC Family Main Domain peripherals
-> + *
-> + * Copyright (C) 2020-2022 Texas Instruments Incorporated - 
-> https://www.ti.com/
-> + */
-> +
-> +&cbass_main {
-> +	gic500: interrupt-controller@1800000 {
-> +		compatible = "arm,gic-v3";
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +		ranges;
-> +		#interrupt-cells = <3>;
-> +		interrupt-controller;
-> +		reg = <0x00 0x01800000 0x00 0x10000>,	/* GICD */
-> +		      <0x00 0x01880000 0x00 0xC0000>;	/* GICR */
+> Requesting that someone becomes an area expert on a huge and complex
+> subject such as file systems (various) in order to fix your broken
+> code is not rational.
 
-Usual rant: you are missing the GICC, GICH and GICV regions
-that are implemented by the CPU. Cortex-A53 implements them
-(they are not optional), so please describe them.
+Sending a patch to revert a change you don't understand is also
+not rational.  If you've bisected it to a single change -- great!
+If reverting the patch still fixes the bug -- also great!  But
+don't send a patch when you clearly don't understand what the
+patch did.
 
-> +		/*
-> +		 * vcpumntirq:
-> +		 * virtual CPU interface maintenance interrupt
-> +		 */
-> +		interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +		gic_its: msi-controller@1820000 {
-> +			compatible = "arm,gic-v3-its";
-> +			reg = <0x00 0x01820000 0x00 0x10000>;
-> +			socionext,synquacer-pre-its = <0x1000000 0x400000>;
+> If you'd like to use the PoC provided as a basis to test your own
+> solution, then go right ahead.  However, as it stands this API should
+> be considered to contain security risk and should be patched as
+> quickly as can be mustered.  Reversion of the offending commit seems
+> to be the fastest method to achieve that currently.
 
-The mind boggles...
-
-         M.
--- 
-Jazz is not dead. It just smells funny...
+This is incoherent.  There is no security risk.
