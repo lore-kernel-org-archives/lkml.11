@@ -2,119 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFEFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:41:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB31C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245422AbiBIClI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:41:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
+        id S243272AbiBICjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231611AbiBIByv (ORCPT
+        with ESMTP id S241015AbiBIAsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:54:51 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C02C06157B;
-        Tue,  8 Feb 2022 17:54:49 -0800 (PST)
-Received: from dggeme754-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JtjWb2qZczZfNF;
-        Wed,  9 Feb 2022 09:50:35 +0800 (CST)
-Received: from huawei.com (10.175.104.170) by dggeme754-chm.china.huawei.com
- (10.3.19.100) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Wed, 9
- Feb 2022 09:54:46 +0800
-From:   Zhipeng Xie <xiezhipeng1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@redhat.com>, <namhyung@kernel.org>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xiezhipeng1@huawei.com>, <xiexiuqi@huawei.com>,
-        <fanwentao@huawei.com>
-Subject: [PATCH v2] perf/core: Fix perf_mmap fail when CONFIG_PERF_USE_VMALLOC enabled
-Date:   Wed, 9 Feb 2022 09:54:17 -0500
-Message-ID: <20220209145417.6495-1-xiezhipeng1@huawei.com>
-X-Mailer: git-send-email 2.18.1
+        Tue, 8 Feb 2022 19:48:54 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C30CC061576;
+        Tue,  8 Feb 2022 16:48:54 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2656262pjg.0;
+        Tue, 08 Feb 2022 16:48:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CI+hs3F4c1QaxzVBV/sm+QTUejv8UzZhOXTGUR0B9uI=;
+        b=YKjkFETzIsoNqqkAmCjyV0mNIUkQkRSnB2T7NJbtwbxXJrArMifhGPLxUyR08q5bHv
+         6t6xNyXKagTaEW+KSMpYR3r4SbqfopBqIabBi+Bh1fJayxMOKtbhngW1ctk39HR50gH4
+         MYsyS5IcJWmB30Pl/WeDdxFuIZdY7mfU3kxJWH5aq333hrqbWiWRic52tY8NagHRDlj2
+         gK/rkVOkK9+A9qgg+Q1MvkC6YBVpwnQyMFdaE/bDvYcC7flw6GKEjQEqAkDcLRC8IpG5
+         KVqeIch3RcnvS/X3Yba319rF8IfT/0KfRROc11/Le/eccSmeIN+5fjh4gl4m1UDO+zhs
+         xABA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CI+hs3F4c1QaxzVBV/sm+QTUejv8UzZhOXTGUR0B9uI=;
+        b=beTLwwXdqN1KM4DdFHTPVOEfun3sn+gajmcjDQbUQA8sji5Cxs8ohTdcOYQBMjoyEz
+         T6xVmsMf+zShPFlXM892LxrTsQuKTDJTtPGzaHZv3kbpRWtbvGir+4phLlZ9jhlfzoAW
+         xsFE2ds/8d8878NUDK9ppOOSUI5kB9+aORt+5WCWvxK6XMq3zeibZfucHgQFhkel31ff
+         F16iBSMjoSupqtPjakMpy0nAMJ3a12xA0LVDCUxCZZ/hTMBiYfLYqux2cg2q9iaKZx4z
+         h4jhixLW1WJSldv4wCdI1ecUy7JMgn1zzBcrPMvZBiK/VpyfJKDdclcaRJp9gWyB35ld
+         vnDQ==
+X-Gm-Message-State: AOAM532XepYJCbYNdRUhM7xwHDunady5lDfW1ixonLVOe6fTLSEuVzl3
+        +mq/er8vaCAIA3xSQ4zHLuM=
+X-Google-Smtp-Source: ABdhPJxKenclyaWuFcTHESCPUiTtBJ90EFW/FDClHKa7xQUCowiN2FiI9OlBQjPUKIjxdeTncsF5Ow==
+X-Received: by 2002:a17:90a:b947:: with SMTP id f7mr659505pjw.184.1644367733798;
+        Tue, 08 Feb 2022 16:48:53 -0800 (PST)
+Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
+        by smtp.gmail.com with ESMTPSA id t2sm17020154pfj.211.2022.02.08.16.48.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 16:48:53 -0800 (PST)
+From:   davidcomponentone@gmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     davidcomponentone@gmail.com, jirislaby@kernel.org, joel@jms.id.au,
+        andrew@aj.id.au, zev@bewilderbeest.net, johan@kernel.org,
+        yang.guang5@zte.com.cn, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] serial: 8259: replace snprintf with sysfs_emit
+Date:   Wed,  9 Feb 2022 08:48:40 +0800
+Message-Id: <96f0e23f49d708ce2476a6c19867443a48d78f65.1644283006.git.yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.104.170]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggeme754-chm.china.huawei.com (10.3.19.100)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This problem can be reproduced with CONFIG_PERF_USE_VMALLOC enabled on both
-x86_64 and aarch64 arch when using sysdig -B(using ebpf)[1].
-sysdig -B works fine after rebuilding the kernel with CONFIG_PERF_USE_VMALLOC
-disabled.
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-I tracked it down to the if condition event->rb->nr_pages != nr_pages in
-perf_mmap is true when CONFIG_PERF_USE_VMALLOC is enabled where
-event->rb->nr_pages = 1 and nr_pages = 2048 resulting perf_mmap to return
--EINVAL.This is because when CONFIG_PERF_USE_VMALLOC is enabled, rb->nr_pages
-is always equal to 1.
+coccinelle report:
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:85:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:174:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:127:8-16:
+WARNING: use scnprintf or sprintf
 
-Arch with CONFIG_PERF_USE_VMALLOC enabled by default:
-	arc/arm/csky/mips/sh/sparc/xtensa
-Arch with CONFIG_PERF_USE_VMALLOC disabled by default:
-	x86_64/aarch64/...
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
 
-Fix this problem by using data_page_nr.
-
-[1] https://github.com/draios/sysdig
-
-Signed-off-by: Zhipeng Xie <xiezhipeng1@huawei.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+Signed-off-by: David Yang <davidcomponentone@gmail.com>
 ---
- kernel/events/core.c        | 2 +-
- kernel/events/internal.h    | 5 +++++
- kernel/events/ring_buffer.c | 5 -----
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 57c7197838db..370292effd32 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6352,7 +6352,7 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
- again:
- 	mutex_lock(&event->mmap_mutex);
- 	if (event->rb) {
--		if (event->rb->nr_pages != nr_pages) {
-+		if (data_page_nr(event->rb) != nr_pages) {
- 			ret = -EINVAL;
- 			goto unlock;
- 		}
-diff --git a/kernel/events/internal.h b/kernel/events/internal.h
-index 082832738c8f..5816c0719dbf 100644
---- a/kernel/events/internal.h
-+++ b/kernel/events/internal.h
-@@ -116,6 +116,11 @@ static inline int page_order(struct perf_buffer *rb)
- }
- #endif
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 2350fb3bb5e4..36c39b8ea7af 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -82,7 +82,7 @@ static ssize_t lpc_address_show(struct device *dev,
+ 	addr = (aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRH) << 8) |
+ 		(aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRL));
  
-+static int data_page_nr(struct perf_buffer *rb)
-+{
-+	return rb->nr_pages << page_order(rb);
-+}
-+
- static inline unsigned long perf_data_size(struct perf_buffer *rb)
- {
- 	return rb->nr_pages << (PAGE_SHIFT + page_order(rb));
-diff --git a/kernel/events/ring_buffer.c b/kernel/events/ring_buffer.c
-index 52868716ec35..fb35b926024c 100644
---- a/kernel/events/ring_buffer.c
-+++ b/kernel/events/ring_buffer.c
-@@ -859,11 +859,6 @@ void rb_free(struct perf_buffer *rb)
+-	return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
++	return sysfs_emit(buf, "0x%x\n", addr);
  }
  
- #else
--static int data_page_nr(struct perf_buffer *rb)
--{
--	return rb->nr_pages << page_order(rb);
--}
--
- static struct page *
- __perf_mmap_to_page(struct perf_buffer *rb, unsigned long pgoff)
- {
+ static int aspeed_vuart_set_lpc_address(struct aspeed_vuart *vuart, u32 addr)
+@@ -124,7 +124,7 @@ static ssize_t sirq_show(struct device *dev,
+ 	reg &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
+ 	reg >>= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg);
++	return sysfs_emit(buf, "%u\n", reg);
+ }
+ 
+ static int aspeed_vuart_set_sirq(struct aspeed_vuart *vuart, u32 sirq)
+@@ -171,7 +171,7 @@ static ssize_t sirq_polarity_show(struct device *dev,
+ 	reg = aspeed_vuart_readb(vuart, ASPEED_VUART_GCRA);
+ 	reg &= ASPEED_VUART_GCRA_HOST_SIRQ_POLARITY;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg ? 1 : 0);
++	return sysfs_emit(buf, "%u\n", reg ? 1 : 0);
+ }
+ 
+ static void aspeed_vuart_set_sirq_polarity(struct aspeed_vuart *vuart,
 -- 
-2.18.1
+2.30.2
 
