@@ -2,95 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 206B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236034AbiBIPfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:35:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S236037AbiBIPf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:35:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235958AbiBIPfM (ORCPT
+        with ESMTP id S235990AbiBIPfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:35:12 -0500
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13307C0612BE;
-        Wed,  9 Feb 2022 07:35:15 -0800 (PST)
-Received: by mail-oi1-f181.google.com with SMTP id s185so2847187oie.3;
-        Wed, 09 Feb 2022 07:35:15 -0800 (PST)
+        Wed, 9 Feb 2022 10:35:18 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843FAC05CB89;
+        Wed,  9 Feb 2022 07:35:18 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so2800313oor.12;
+        Wed, 09 Feb 2022 07:35:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=87D9xgRPVhpkd0CiBsmaPizvX+fSKhfflYptts+iImg=;
-        b=E2qcqOo0dafLx8B6g9pc8RNNiI4F4qvSteSGFpUFtfBfYdBWkBCVvVW52Z5BmIunMz
-         P2N2CXfS6Pyde6YnN7dJUiRqHHhF2pnvQ2GPl0J3GKwWaecKScEwo4XdrtcAi8P0ZhXC
-         duHMuelrLqLX4RnkoS0+b4R/XWzLtwwqsfOuaHP2OG8Vvv1WWeQACmVgDk8Qt56Z5u/Y
-         LIUSbkdbBl4DZz1OiocR/60lh+UpwKELf9IdeA82Q8mHl1NfqQaQr0DyESRe6DjeO7Rb
-         Qt6hjiVB7XtCaL1atXrjAhAtxy0FRttkX7U9GHAN9FRIX/dJz4C/rfnfqAv/x2LEnc2n
-         lL9w==
-X-Gm-Message-State: AOAM530WUI0iTckb2iqJKnqUZVD5YxDrsiGOK+hF4bAWe1JeP7UaR+K+
-        Mj+vs677OxDNKDJomtaGHQ==
-X-Google-Smtp-Source: ABdhPJyPtWLE9p5DCJLdWQMRseTeW96RxJVjhB+AI0HAGDUEn+OIKwknd3fnEw5Ei7fB18SrxNWNag==
-X-Received: by 2002:aca:1b05:: with SMTP id b5mr1554068oib.289.1644420914112;
-        Wed, 09 Feb 2022 07:35:14 -0800 (PST)
+        bh=1mkLFSmd4i+BBIXy7fKCIcUEt8oNd8K14KXOxmE5hKQ=;
+        b=t3wnmTjM6DKx7hTDpqSrr0G9Q7jjWEIvPaqCfxBGlBUHsu9wr0OnCwXED06QdmnxWT
+         oEkvojcyg1+rvXrhHtn2vSGUunWv6w5iiOyD6RnCe5NK6orPOGSb7El/8s3U5xr6imMj
+         8dUOj4ncICZmRLgtffPLFqcmjS/Wobp+9onV6meorIyAz+oFswm+nQr+8tDnH7V8vnby
+         edN84gvOXfqbnWsQ+rOwaiwWq7DJuHkR1NQsSzziH44ey7Pwa+mpo4NMfoqtlvAXFxmC
+         stN7LVIxeNuYn5oYxVSl1hqgHDXdh3hZROHrKBkzEuLsUL71ih97vmFBH8KK24o7k0Ym
+         /0LQ==
+X-Gm-Message-State: AOAM532fq/RxVtqT5nNybqOdTTrXvPDr18NllLOBBg/bmjMjvaMJYIoI
+        E91ZQGSW+Xhm+1d6Y1Gf8HdJQ1X+sg==
+X-Google-Smtp-Source: ABdhPJze37RkXIeQyKNHdeY2KcUB29vKQ0Nr6pdDba5eg6DiwMkdQWBAnS8RHq6FbjaLmlrLCDY1sw==
+X-Received: by 2002:a05:6870:f78c:: with SMTP id fs12mr892266oab.297.1644420917756;
+        Wed, 09 Feb 2022 07:35:17 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id s11sm6498640otq.69.2022.02.09.07.35.12
+        by smtp.gmail.com with ESMTPSA id v10sm6624360oto.53.2022.02.09.07.35.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 07:35:13 -0800 (PST)
-Received: (nullmailer pid 391815 invoked by uid 1000);
+        Wed, 09 Feb 2022 07:35:17 -0800 (PST)
+Received: (nullmailer pid 391819 invoked by uid 1000);
         Wed, 09 Feb 2022 15:35:08 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        heiko@sntech.de, robh+dt@kernel.org, linux-crypto@vger.kernel.org,
-        krzysztof.kozlowski@canonical.com, davem@davemloft.net,
-        linux-rockchip@lists.infradead.org, herbert@gondor.apana.org.au,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220209124725.2080986-1-clabbe@baylibre.com>
-References: <20220209124725.2080986-1-clabbe@baylibre.com>
-Subject: Re: [PATCH] dt-bindings: crypto: convert rockchip-crypto to yaml
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, kernel@pengutronix.de,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>
+In-Reply-To: <20220209081025.2178435-2-o.rempel@pengutronix.de>
+References: <20220209081025.2178435-1-o.rempel@pengutronix.de> <20220209081025.2178435-2-o.rempel@pengutronix.de>
+Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: add schema for ASIX USB Ethernet controllers
 Date:   Wed, 09 Feb 2022 09:35:08 -0600
-Message-Id: <1644420908.395763.391814.nullmailer@robh.at.kernel.org>
+Message-Id: <1644420908.420720.391818.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 12:47:25 +0000, Corentin Labbe wrote:
-> Convert rockchip-crypto to yaml.
+On Wed, 09 Feb 2022 09:10:24 +0100, Oleksij Rempel wrote:
+> Create initial schema for ASIX USB Ethernet controllers and import all
+> currently supported USB IDs form drivers/net/usb/asix_devices.c
 > 
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > ---
->  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
->  .../bindings/crypto/rockchip-crypto.yaml      | 64 +++++++++++++++++++
->  2 files changed, 64 insertions(+), 28 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
->  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.yaml
+>  .../devicetree/bindings/net/asix,ax88178.yaml | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Running 'make dtbs_check' with the schema in this patch gives the
+following warnings. Consider if they are expected or the schema is
+incorrect. These may not be new warnings.
 
-yamllint warnings/errors:
+Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+This will change in the future.
 
-dtschema/dtc warnings/errors:
-Error: Documentation/devicetree/bindings/crypto/rockchip-crypto.example.dts:22.25-26 syntax error
-FATAL ERROR: Unable to parse input tree
-make[1]: *** [scripts/Makefile.lib:378: Documentation/devicetree/bindings/crypto/rockchip-crypto.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1398: dt_binding_check] Error 2
+Full log is available here: https://patchwork.ozlabs.org/patch/1590224
 
-doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1590370
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+asix@1: $nodename:0: 'asix@1' does not match '^ethernet(@.*)?$'
+	arch/arm/boot/dts/tegra20-colibri-eval-v3.dt.yaml
+	arch/arm/boot/dts/tegra20-colibri-iris.dt.yaml
+	arch/arm/boot/dts/tegra30-colibri-eval-v3.dt.yaml
 
