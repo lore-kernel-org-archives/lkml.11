@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 890F8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 813CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 13:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234517AbiBINyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 08:54:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50086 "EHLO
+        id S234543AbiBINyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 08:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiBINyM (ORCPT
+        with ESMTP id S234516AbiBINyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 08:54:12 -0500
-X-Greylist: delayed 154 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 05:54:14 PST
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de [81.169.146.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94840C05CB88;
-        Wed,  9 Feb 2022 05:54:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644414674;
+        Wed, 9 Feb 2022 08:54:14 -0500
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [81.169.146.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A613C0613CA;
+        Wed,  9 Feb 2022 05:54:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644414678;
     s=strato-dkim-0002; d=goldelico.com;
     h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
     From:Subject:Sender;
-    bh=jA//raiEAQNJt49nn2RrsPVb29dWMlgBK10K+Ak3DxA=;
-    b=d6KPdwgPmdMsAhpKpVRJBy9e3u6cVVqGChNYv8v37GPaAuHoW0wuePBR6cxqAFQtss
-    Hpfeh+ldKDl3hY0b/kv8GvRNxH1/qtc43nMm5wPj3UjMlOhsy0C5B6fKM6acZ/trBjp3
-    dSapsDtabozCAsXYnzxXoiQ5ZNNA2xBamzAYiqQ1KS4ApYZ4SGikXKYhpaS5Wj+F/vDX
-    owxbDn2SbWxIECVdvKaYCYkbXKxz9cOf++A8DMOK7i5v2PA0m1pnyjtEV0LphhjOmJYZ
-    iVZGOTa/v19A6oYrJygxt2qlOIeAkrkzmV59thD6IgmgNOJIQYHnfida6KmKn3o7LOgm
-    jKvQ==
+    bh=tvGj33EBatPgN7fdgNMT5Uwzep9OEE1oZXhb92nFpC0=;
+    b=M+b+B2eRZJtmNi+t+MYTpNrmc59i+XJFTVkzdWj3EENACd1/5TTXKY+OqXR5XyxmwT
+    TAI578t9ilOZQU5S2BKANWK7+i8xQtAEZb5ARAi0raMtajkq2a7RuQd4bi+cna+eQhN6
+    656boM9hWJ0Ffhiv+YMsdLnG+5E/RuDMyWtV7/KQsNWfEe0AXvsOXN65jSBC+HwX8+TW
+    9n9h0EPlv96CD7D/7O5/4L8eNyz25by47IPa9Z+pLfUFqQ1Z0t4NdTdjGmp0JAgq34gj
+    giOrg6vJKOkCDv5U9HP0R6bzmQBAXB6Bhum0alyjzB1Cy2ff/7NKJbVQI1N26tCGnk5K
+    efJg==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7gpw91N5y2S3iMYawg=="
 X-RZG-CLASS-ID: mo00
 Received: from imac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y19DpCguK
+    with ESMTPSA id L29417y19DpHguM
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
         (Client did not present a certificate);
-    Wed, 9 Feb 2022 14:51:12 +0100 (CET)
+    Wed, 9 Feb 2022 14:51:17 +0100 (CET)
 Content-Type: text/plain;
-        charset=us-ascii
+        charset=utf-8
 Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH v13 0/9] MIPS: JZ4780 and CI20 HDMI
+Subject: Re: [PATCH v13 6/9] dw-hdmi/ingenic-dw-hdmi: repair interworking with
+ hdmi-connector
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <9ZC17R.T1L0TBAW7MJA3@crapouillou.net>
-Date:   Wed, 9 Feb 2022 14:51:12 +0100
+In-Reply-To: <E6E17R.ND5XW1IG4SYA@crapouillou.net>
+Date:   Wed, 9 Feb 2022 14:51:17 +0100
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
@@ -71,37 +71,91 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         Jonas Karlman <jonas@kwiboo.se>,
         dri-devel@lists.freedesktop.org
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <4294A500-52EB-4319-9B89-F9DAC48EBF03@goldelico.com>
+Message-Id: <987D3DDA-FA93-4EDB-ABCB-6973DB7FD943@goldelico.com>
 References: <cover.1643819482.git.hns@goldelico.com>
- <9ZC17R.T1L0TBAW7MJA3@crapouillou.net>
+ <866f84621974992f4831bd471ae5a53414de9255.1643819482.git.hns@goldelico.com>
+ <E6E17R.ND5XW1IG4SYA@crapouillou.net>
 To:     Paul Cercueil <paul@crapouillou.net>
 X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paul,
+Hi Paul,
 
-> Am 09.02.2022 um 12:52 schrieb Paul Cercueil <paul@crapouillou.net>:
+> Am 09.02.2022 um 13:18 schrieb Paul Cercueil <paul@crapouillou.net>:
 >=20
 > Hi Nikolaus,
 >=20
-> I tried applying patches 1-2, but they don't apply cleanly on top of =
-drm-misc/drm-misc-next.
+> Le mer., f=C3=A9vr. 2 2022 at 17:31:20 +0100, H. Nikolaus Schaller =
+<hns@goldelico.com> a =C3=A9crit :
+>> Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
+fmts callbacks")
+>> introduced a new mechanism to negotiate bus formats between hdmi =
+connector
+>> and the synopsys hdmi driver inside the jz4780.
+>> By this, the dw-hdmi is no longer the only bridge and sets up a list
+>> of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
+>> This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 =
+but only
+>> produces a black screen.
+>> This fix is based on the observation that max_bpc =3D 0 when running =
+this
+>> function while info->bpc =3D 8. Since the formats checks before this =
+always test
+>> for max_bpc >=3D info->pbc indirectly my assumption is that we must =
+check it
+>> here as well.
+>=20
+> This fix looks really strange to me, so I'll let the DRM experts =
+comment.
 
-Ok I had rebased to linux-next some days ago and it appears that patch =
-1/9 has now arrived in drm-misc/drm-misc-next.
-So we can drop 1/9.
+Well, yes. We should maybe look for comments by the synopsys/dw-hdmi =
+specialists.
 
 >=20
-> Could you rebase on top of that tree?
+> It would still be better to move the patch before the introduction of =
+dw-ingenic-hdmi.c, so that once this one is introduced, everything =
+works. This also enables bisectability.
 
-Sure.
+Ok, good.
 
-Unfortunatley my v14 breaks the display again. It is not much fun to =
-develop on top of such a moving target...
-So I have to find out first what was broken this time before I can send =
-out a new version.
+BR and thanks,
+Nikolaus
 
-BR,
-Nikolaus=
+>=20
+> Cheers,
+> -Paul
+>=20
+>=20
+>> Adding the proposed patch makes the CI20/jz4780 panel work again in
+>> MEDIA_BUS_FMT_RGB888_1X24 mode.
+>> Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
+fmts callbacks")
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>> drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
+>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c =
+b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> index 52e7cd2e020d3..34703a15ee4ff 100644
+>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> @@ -2620,10 +2620,10 @@ static u32 =
+*dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+>> 		output_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>> 	}
+>> -	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB422)
+>> +	if (max_bpc >=3D info->bpc && info->color_formats & =
+DRM_COLOR_FORMAT_YCRCB422)
+>> 		output_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>> -	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB444)
+>> +	if (max_bpc >=3D info->bpc && info->color_formats & =
+DRM_COLOR_FORMAT_YCRCB444)
+>> 		output_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>> 	/* Default 8bit RGB fallback */
+>> --
+>> 2.33.0
+>=20
+>=20
+
