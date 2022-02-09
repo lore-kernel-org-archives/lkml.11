@@ -2,74 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEADC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:30:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE520C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229925AbiBIXaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:30:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52432 "EHLO
+        id S230095AbiBIXa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 18:30:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:52570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiBIXaM (ORCPT
+        with ESMTP id S229894AbiBIXaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 18:30:12 -0500
+        Wed, 9 Feb 2022 18:30:15 -0500
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0DFFE050BA5
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:30:14 -0800 (PST)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219KHBjg013543;
-        Wed, 9 Feb 2022 23:29:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
- date : message-id : content-transfer-encoding : content-type :
- mime-version; s=corp-2021-07-09;
- bh=4PLb8pAjndy5eOo6mhSlKUbzzSLEonBrw8II+9coMt0=;
- b=I3PrZqX0vB4O3rPmYr37uZ72gBrGyDo13lRq1MYDi/O551jquys2DUDh0NbDGPlK4J7y
- kl6gaQ1ZleZ5bkEgwotw/IjaOtoq87JQ4E01s5hitco3iiyqZRZ+YwV5fTwPsQHBg8oP
- WKicgBWYpS3Tat1cRHMSDe3L6cYjhVI9/fJWjRLmYSiDqIZTHvlOUeR2iFl6AOOAq15V
- LjaUkpHhuEAkte4Hc5Oe5ldl43p3EoLY7ad8TrNlB3sxSddxDPFNijSoCcJvc1HTatek
- 4h7S+ayz8AavJMQFaO1WCP7ZT8FVSR3ActsLHG7cYGa5rSVaDL0pQfXmkAvePtSsFbDX Ww== 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C7DE055264
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 15:30:18 -0800 (PST)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219KSAZo020152;
+        Wed, 9 Feb 2022 23:29:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=Vs8tFpLTMOGvTyZKGEuCsbE6CFo8oWe+4mPnhyqiYJc=;
+ b=msY3xQDppPI6SNEIw3axBRq8SfCDVcSDuTb4v5WGn5YtH0kElqvgudA+cuDZ9siAxair
+ 417uUJJo7adkRCYm4VvLZ0CbxVxtkYK04Dy4jiP0yL1IVAaWxD/I0uHa1S9XcHNqeDBh
+ uqosb1XgByiRlB1LE6mggN6g5zMRx8S/MvQ5UHHKqOn6modD1NNRAd/d/1LVneSW+8TZ
+ nZ50ye7JrkqDv3kbLEKwiX0XLvETngIM7ZI81WiZqhnC7FYOKdq4NkKIhxqOjnmEEeNi
+ up7XPNR/BRchd20K0s4/wVkzlCnHsOti1xoP4ENS9BVDP3ViaNX9PQt2u7mbT/k+jQ1z Dw== 
 Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e345sr1jw-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3e366wyd4j-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 23:29:53 +0000
+        Wed, 09 Feb 2022 23:29:57 +0000
 Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 219NFrFU117827;
-        Wed, 9 Feb 2022 23:29:52 GMT
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 219NFrFZ117827;
+        Wed, 9 Feb 2022 23:29:56 GMT
 Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2170.outbound.protection.outlook.com [104.47.73.170])
-        by userp3030.oracle.com with ESMTP id 3e1ec3m196-1
+        by userp3030.oracle.com with ESMTP id 3e1ec3m196-6
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 23:29:52 +0000
+        Wed, 09 Feb 2022 23:29:55 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VUl2Kg8IpiXzov+tZzK70T4Gh5gq00fIVzyL58abj6QYaf0jNG6AqwhrDUhiT5sepirjAus/ThZ8LmTS7NpqZCVCzTRbiBNHIh/26KBV37IRLMjCJWnpxqivIh5zSALur8CtSNjhoBsvTZRy3kyt5Af/whGiXpAzowKLWqVeV+au8RocuzUmxv0T55f5YE5kebLWiKMzhCGt3StNRWh7nut+C5OUmoAovwcJ85qCp3HCtwrCKK1HggiBKHWvrJM5tLVS5Sjmf2AjAhmbkzzoJaR34qg+FRdYaKgUQ7xesjSovoGO4HYgpnGgmQ2ssHQ78IaLOmbQUpDLbpXIyGmMvg==
+ b=mLW+gwRRKezKXwtJ9sag3WkDWsGUJ3aayttwdzl7RuvSfD7umhsSMmbI17vN9GQRtcUC+H1+0O5lNiSnWJtQxVUziiYjkuU5txCtjrnk1AoynBrZ/m21Ocr6vZL7B5D8vMUzg+PT21MRrXQXgm3VX03+ZWDhcPGy2y43XwdoQ67nj1LMgf5Wg0S6klTr5cF8rR42RWkKDqOkxu+BIGIdlw6SnzrCUOcmjvcTSndE5KH+VcJ5CBjBs8kVxXguVFim0DI7Weo/2sfZxx8GfK9GdlbRw/1oe5kXJejHz0qK9EdoKjRPR+qWTNqu45bqpzmxPvSWAJDIFz1TodJFrWoKSA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4PLb8pAjndy5eOo6mhSlKUbzzSLEonBrw8II+9coMt0=;
- b=WjWoPxz8ziIQcTU14PM5daC7enKS+1HMdPunsxKqYsJ0rtCbU7wJS2forCmnHepduzXNFEY85sT6XmsoNxPqoMe4ys5btsT5LBw+lx9C8UzbEX0AhjQLiy28JYouu/K4am1jjge0CHdruPnwF0TpgRx5NkROELxNIseR/RkzCciA4NCz7eEP5H4n9bsF7sMXnPnkV75J34qnZbhHC4WGRKK81SUwbCGxNVAt1Qh1O/y8rDUeo4Ff5RrV6T5BXe0lsXwoBCszhYFlEUP94EW+9iJhvJKEGHkIDfsmZBF5oj2PvOmu84SemRvyxz3qImmBr+2Dtydkc9PKggJsDtlPIw==
+ bh=Vs8tFpLTMOGvTyZKGEuCsbE6CFo8oWe+4mPnhyqiYJc=;
+ b=AyhvNwtfNGnpVH4h7Hxisz9QLxTW5Jv6kDzaa4n8RRTdCPsGNunif5zspipKQciVR+wsaxfroZnJtQMVTfIg80bSz4CEI3Ve84Z0eSo2xfTcpyTxsTZNsBsj8ACFSHUEEWnpYsU/TnCy+M8BvtDpMzQLVXDsGyRl84AV9YP9mf6DS+lSpxJgLNv6hQcGlaZ2uEBsoG7df3EQW98eLCnBmtUes4MiBxQajlVb/eZim6kBvVf5zeUOSvZbzUnr5LXZT8ctiXDeRd5LMXSZvc0+d6+jp4h8+HBQRVy94TJqvshUk6WYSdChqwQFtjHlv7pkLUiSLgLvCxE1ApKuBW3hyQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4PLb8pAjndy5eOo6mhSlKUbzzSLEonBrw8II+9coMt0=;
- b=DXNSFjruZtJutxOcELNvPIL9MQuhHzVJcLemOKwPTdil+qylksry6ajohrDrgABX8BcEXvnAewTz9V1BGxofHG4Gq/PiQqXD64MWRB/+ocm3NLCRiW3D13BpyXBSbM3QE9pQcvOmuwOyjP4znrirGO5fsMnPmILynN6RUrd4Kh0=
+ bh=Vs8tFpLTMOGvTyZKGEuCsbE6CFo8oWe+4mPnhyqiYJc=;
+ b=uOZE3F4xdqFFg8ztpPt1vF7qRvsLQVcbGShUo1MlKSZSksQma1J/QugQGAm/niQNDxZhqtSUjqY7xnxWgJgUHTNQcN3WEltgLrIQQxkXpAZtDmv7jzSkGt1+b+SHunBTEyn0rfWooFkgna5IzzNLza8xTw77mDf5noaxkIdy6vU=
 Received: from DM5PR10MB1466.namprd10.prod.outlook.com (2603:10b6:3:b::7) by
  SN6PR10MB3007.namprd10.prod.outlook.com (2603:10b6:805:d9::31) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4951.17; Wed, 9 Feb 2022 23:29:49 +0000
+ 15.20.4951.17; Wed, 9 Feb 2022 23:29:52 +0000
 Received: from DM5PR10MB1466.namprd10.prod.outlook.com
  ([fe80::3448:8685:9668:b4d5]) by DM5PR10MB1466.namprd10.prod.outlook.com
  ([fe80::3448:8685:9668:b4d5%5]) with mapi id 15.20.4951.019; Wed, 9 Feb 2022
- 23:29:49 +0000
+ 23:29:52 +0000
 From:   Mike Christie <michael.christie@oracle.com>
 To:     geert@linux-m68k.org, hdanton@sina.com, hch@infradead.org,
         stefanha@redhat.com, jasowang@redhat.com, mst@redhat.com,
         sgarzare@redhat.com, virtualization@lists.linux-foundation.org,
         christian.brauner@ubuntu.com, axboe@kernel.dk,
         ebiederm@xmission.com, linux-kernel@vger.kernel.org
-Subject: [PATCH V8 0/8] Use copy_process in vhost layer
-Date:   Wed,  9 Feb 2022 17:29:31 -0600
-Message-Id: <20220209232939.9169-1-michael.christie@oracle.com>
+Cc:     Mike Christie <michael.christie@oracle.com>
+Subject: [PATCH V8 5/8] fork: allow kernel code to call copy_process
+Date:   Wed,  9 Feb 2022 17:29:36 -0600
+Message-Id: <20220209232939.9169-6-michael.christie@oracle.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209232939.9169-1-michael.christie@oracle.com>
+References: <20220209232939.9169-1-michael.christie@oracle.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: CH0PR03CA0043.namprd03.prod.outlook.com
@@ -77,136 +80,104 @@ X-ClientProxiedBy: CH0PR03CA0043.namprd03.prod.outlook.com
  (2603:10b6:3:b::7)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bfd4c91f-2613-4b3d-b1e1-08d9ec24106b
+X-MS-Office365-Filtering-Correlation-Id: f97110d6-5020-4e8e-6359-08d9ec2412b1
 X-MS-TrafficTypeDiagnostic: SN6PR10MB3007:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR10MB3007A7C0B0E4E1DD79DF7DBFF12E9@SN6PR10MB3007.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <SN6PR10MB3007239687C2E10CC320468EF12E9@SN6PR10MB3007.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qqae5E6a7/tEdmBX2YYqBtaPx+qO7Abcvg59sFl8dtOclHPixMkJy2PoTZag3mLc1C7+owtUFXz5lXUWC5ec/To/5w5zce6nJGez+ByR3miOd7yeUofx3SPSYVqhbfZqBShmGJfVbvNdRI5K7fRx64mxauWdtLhTcGhwU4hlUH7r6KtasNIHdTSRpabzdjTahuG9+dGvxgUDf2YZ+UknBPAJQ4WWzmDWvn6xhj1V1PgDLdmW0eEtFvrkRU72bjFWz7/40v+sLY3ZVxtXDjdZBUlDOxVdY6KE0WKh+1xSebg6LpjlyNTsu8vT5VsfxIkeopQbwAd6kzLrViJdp5Nf/zt6mIW6FWLq8ZUiTlvqiV2Uto3tgdEoGHMhpel9BdKXYFBju2gazDAfTiuqQa+egKzG5u/Isqd+fupryZ7nkzJBgmR0euo/sIu7WWFYGFyqgKXAi59jYjl7BpMvJkpzp7dbcw2SRXo8PDVdZeP83PqljqRqGoD5uoqqiWNw0T1vmAQUNTyRNW4aogfjI81GW5QuVHpQQtY726Cklikjgb0c9a9cpMKC/4FYtblWe5L5Sdpp9vqpZc/rMk+jtRbyKEefTC0dYAOYjbiNFgDHncc/S6bAUFLifuKZaZpaCtDZj77H6Xi0HopErrBKBZOugZHhH0ZHBuPZ7qX1sojQjXmFvLHU6riCxebjnDe1YhsZ9U1bcCRdiahClzIWj2yfnbYFI1A7vsNOhIOr2oxtgfxzh1mnIbMuVO66XG7e5I4N1PcE75oFRB6YoA4GgoUiMA8+TRVK6GlI3eQilk6aOfPC8odvurz1IG4i8q6ttVu3
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(921005)(86362001)(966005)(508600001)(2616005)(1076003)(2906002)(36756003)(26005)(186003)(83380400001)(6486002)(6506007)(8936002)(52116002)(38350700002)(38100700002)(66476007)(66556008)(66946007)(8676002)(7416002)(6666004)(5660300002)(316002)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: EqlFk+Dl9Qo46DLF6fjRz+nMnAF1gXR9P7Tv/6saQCNulcmB+KhCNLG5AGRsToucroN2yd6J3cbMtiYqXr2sQinN7uthS5YmH9rLPmsm2ut9G2IJ9p7311DdWN3rJ0EuQ2OpkHO7Ll/hqKEkaxw9dSrzORKz7WAWUdgBfo5XjWPtwmDArVc8OM0uaKIcZ3WRmmRMbIKTqDoCd9brg6XEcafnUg2Fl01ywYbRvT78TLTL4nrjzfXFqo5PHqWvjwDZVg7SUezlYtzHClkg/tDTdGuu5/PD/RvTb2Y5Qhjv0VRRrY4IPadkRu5GqKlD1/rpz6TlwlvbUsiI18PRQwla6LhnNkcs8suB5cC/pXAmml4Mi8NuU7grXL3ihzup5kLyeoI4gFL8DEOGxJX3vUgQ1rUPyadPgIGLRmW0seAjU7ev6UanC0+cMDsqS7Cl5xiNoUQ6YBLhgGp4ArOpfzdvvzfIINVD1W7m1IrJ3xw5m1tstdXgNW8VR6BDsS66zFOB6+lbqsrxfyJjiHCh2IQ6/EsO5EvhfB8fqD8Kx+U0QlqEd2rrZbcdBCR2GYkqhmjuMCDIxQu7RH82BvB0EByufzPrqZUS8Vu91NNflgQCATpApoq/K/1gG31GywuWGkPlhbG4cZX/bJgtzhZ9RnEfA1pTZkIeesqOKk/Z/HClJhj8gBqgCdkZAE6idgflF6ekw7bVFQdCnXRGsH+58+gAACaxs3/RYLqOdGGoJaQzTDI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(921005)(86362001)(508600001)(2616005)(107886003)(1076003)(2906002)(36756003)(26005)(186003)(83380400001)(6486002)(6506007)(8936002)(52116002)(38350700002)(38100700002)(66476007)(66556008)(66946007)(4326008)(8676002)(7416002)(6666004)(5660300002)(316002)(6512007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iY2AbJ2LfoaDkaw7/7cJ2pm4rMQYRlpQThQtuaRnEumPVlwgUv0LzESt/gwC?=
- =?us-ascii?Q?ZdSXIDqDPTtA3SCyOn0vQ1cO41oAe0Wf1zPdkbi5z0t3ZNz4uFD/S7cSWTdC?=
- =?us-ascii?Q?Q0JkuIp5L/JR0YjTw79vExOyocw1Cq4GjtmFnxwLt9xrzMmxTJR+tsjHoD/G?=
- =?us-ascii?Q?xItP84dLj4t9NQo8ei3DOfuCMRm3oUzC9s0Ra1abSr9gBcm6NbGxSRVv/lxJ?=
- =?us-ascii?Q?oiGno1vtFzc0SvX2JI3ehkp/uTTIhePVwQG7UzNdm3fcd824rUJjfPIrHO6Y?=
- =?us-ascii?Q?oaOhUSOQ0vm8H72+7Mdcs7Y+6FlPwEyDsEWjqH/oRdFZzQClOSMbIknQ1mV4?=
- =?us-ascii?Q?dmY4EX+hW1x5VholSdqKc54cAl+/gG+gnPMtVzxSP6KzSBoANgmczNzYdZ53?=
- =?us-ascii?Q?q/k4K4rl8mqHN3w9BtDnbqoIHXV572uPnmP7uaQxCYkakeOKF7wxV8CzggTt?=
- =?us-ascii?Q?9q5IHOdoSEmBrS9W8OYBZ6scM8653FcMwwTiLIskJCsq4/DSRPmP0pfOJ0gy?=
- =?us-ascii?Q?+gHbn3+tWNcc3m0/J2+ztVLxVhmLtzPnXW2iYaeUzFbA7I8HVKy1X/sVlcDZ?=
- =?us-ascii?Q?tK/RklSdW/q7JPSLQYLzKoiQn3sf00I1V9vJO6BPlLKt6bVD3UkIjALRc+G7?=
- =?us-ascii?Q?UqDWu9rj5P/Gb0KdZVgDFS9R/LhyhOmYI2DaRFes9to2rRAwGkKoZoR46z+o?=
- =?us-ascii?Q?WEypGUiksD/pi3NNxtDyNa1U232EntkZ+vY7ScCI3QJ9bfqfwXBN91I58SZW?=
- =?us-ascii?Q?QZCIJtMhegEMfPm051Vy9MJ7YIXprFiUMM5IP8RQNT96i4HmdktTg6U0ZyHP?=
- =?us-ascii?Q?d/YYycUt65UcXvvH7w7dknxVsUD3Czu1HSg1zZfMMN9W0tFgKquxgWa06EkY?=
- =?us-ascii?Q?ki4u+fgcFHX0hBqFfHylYV0qbHW9DKx3WAhyYm3tZTwsE7tQDleIx5Umkam3?=
- =?us-ascii?Q?xzExTglL1fMDbIgtS0KvGUAfmuPkaj9mwW/sJo8a6QujxAyX44+k9OumViW5?=
- =?us-ascii?Q?ZTSTlST/ODSxRR+Jps+mfPObtnl0KltouYHfXlwPzrZUJTpcnK2tegHYtxXZ?=
- =?us-ascii?Q?J/NTO5dGhIsKhB8Yc/dN2pyHJaXlaKjAl8MCRd7AMjoHnRxb67A+XR2ZuHck?=
- =?us-ascii?Q?sD3V5tuDqxaCPXpT1v5R5jEMbI1YufxMI5QsSQBBHVknLQuHfP8u0/6v3eGE?=
- =?us-ascii?Q?GRNafazPRR0YaV51nIeosKC00VU3NYkRh0bAhCT/Ctlw/F36nHvlRRl2vqSf?=
- =?us-ascii?Q?KCtGo4JyNyEJz2snuM3ZGw829cX8F3VFFpEXn1KBCXlINet+zsqJPndQ61XA?=
- =?us-ascii?Q?PDqMFeQTKVywC1qxA668KLqSMKejSap5bxNoSjpOQ5XGhug1i0/I7BcfogJI?=
- =?us-ascii?Q?W1E56QEZHPjbOGbYL+tCQZoSEVunwqxsZSux6jnLbczjKawkcbQ8TgdGyRCW?=
- =?us-ascii?Q?GKHSBJraCIDVDfMtVZnbTgaDCM2Zk+UI4H4Pf8c/AFeX+D5a8o33QR5P8ew7?=
- =?us-ascii?Q?J97Y43H5rqX3u7fPHCg70sfCrQleG1WPT1dkdVMGPFGdh0ph/Bk7Hy32Bbtz?=
- =?us-ascii?Q?S+DmwcboYiLnoa7fWDvjQv01aNe6tqaCS3yyEfvFdbzWXdhWR/bkRYkruvDo?=
- =?us-ascii?Q?FxYJ8huiIcP2k+VZStCo9mIT2StpJq+bXkic21TnsCD92g0KWZ02RXpmMNV+?=
- =?us-ascii?Q?aORahw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?rhBVI2OZGGTTMVIgNvBH7e0QBRy4qogpme381Ibsc2LvhgzoiOShsXzTuVJJ?=
+ =?us-ascii?Q?4Tin/XTqidZYteHJkiZMx2eFkax4DK55gloepjxRMqwzBFFs+aA5J2NPOnsP?=
+ =?us-ascii?Q?hExk6PCPiga7wSbTN3/jVPcUfuarVPCZ076S2MIhr/hFQiyhBRBL02tEDJDl?=
+ =?us-ascii?Q?aIlnrHOJBbCbXCNES7ftO/fPZdDya6wVEubaATE7HzX2hoxTcaQoEuL0733T?=
+ =?us-ascii?Q?gzXzTboPMgT1xBY0mZ2IWAFvy82WDQg8PnnLA+K6CVQ4VK/luKJDhyPdj1Sm?=
+ =?us-ascii?Q?TuukgE1DHFFYHTWEMAEPI2gBRrj9/Ff2S08l7Sup2dWFfvfDigAQ3uEhvL8b?=
+ =?us-ascii?Q?ctdlUMDmErQFBYE+PR/QLtTsKCXe3BPWz2fpZF4j3zFCq6vSXJpw/qeb3zpG?=
+ =?us-ascii?Q?dfAVuFfxnFBywFU8l0KJLe9r0/59LKyuOrBDqALtpek+COuLA5LnZ5cel5+n?=
+ =?us-ascii?Q?c4G6/5yQnWuspmEUacukuXAxax3rNidr7nidTBODWUTXU7zBljWpynPOTegy?=
+ =?us-ascii?Q?emU1Ml+F/xXmBNleQP1M1enBue4bXSArgYAD5ACmR+hHs0UxPElZBXSgNrty?=
+ =?us-ascii?Q?MYJsE52j7LV09KEhFxUac7taatZTBq2cecqkIWgfjBW6Df1WXp1f1KBw58li?=
+ =?us-ascii?Q?toGIeQSJKuV6ARGbXQsCimJZYWrfNttMaLhyKfcYmhZ01SoEU39nMd/hQS5R?=
+ =?us-ascii?Q?mGhK1ac/kNmOZoOi6y7nQhsWjrn2DrAGoklU7THfy28/oWRoyItNuV/+XtAc?=
+ =?us-ascii?Q?bLqJadw8xn3fP90qL3GD/ijeIlbmVTlLhvMsv+KpRzOqhHlUB0LkzLs2SUIl?=
+ =?us-ascii?Q?vs0HjQwy8E5s14S1ZXodxDyKjMEOLX5ly/+FmZfaf4SlEGBO3ErVv+YyE9nl?=
+ =?us-ascii?Q?ZcOB64fXxWDvowHvJvy2tuM5bTp+achykoReoEcSm3/+HF6wt3MWRttWY21v?=
+ =?us-ascii?Q?Ln2GngABwVYlU+w7BDoKdO6GozOVdjdNok8jDaG7VvfO8Tu2t/num0oGXcHA?=
+ =?us-ascii?Q?XqnPKiKr98sh2RkJCtyWY22dIqhkLVWlVL7HOtAPXJYQux4Y3JJHvY9QJlRj?=
+ =?us-ascii?Q?fIaZzbMYN35M71gzeFqFYuAds+rLHF+9Z7v+ihDmisTD6Mx/7UEyzEdpYrPx?=
+ =?us-ascii?Q?Z0aTs8LqoMMCv5OU9eFt30QiUIq18Kkt/ewE0969uhb9ZAOW0Nr6KMj2fO2r?=
+ =?us-ascii?Q?Ljaj/zkZxutIEj+LTM6z+FmILoPRFUZm3DTaFhBh9vLuA4jzRdylIZp/ythQ?=
+ =?us-ascii?Q?Ufyb47Mo+N8CwgZXlHrRcaaaBRWAczHKk0dc0UnPzPrpUwDTeWdHu8ySqNa6?=
+ =?us-ascii?Q?zY2L3z0YLMjtVLgxclVxxIJ4F7VPM2AkGWQbQ6Hww9NSqjEJTI99eZ72xPmc?=
+ =?us-ascii?Q?7inMzM7RDoqqHWLFxewL96JRttenoG/eIFwzrDnThpO7bciLXzVQw3ysrX37?=
+ =?us-ascii?Q?ebYgPJ6A4eNfDEgytPmYejUTVG2TRJuQSDpOQh7p4BGk3oQCthpaF8CVJnKj?=
+ =?us-ascii?Q?XuquJlme3cFWrjJ8cNUVS190FJPrIJRwBT5FqUijrX9Z9vs1Amh3fjvBkAYG?=
+ =?us-ascii?Q?Glp8KWju94M8BXKSkFBdCmKJwdXFuM6wShHWgz/yuUQhC/nmurNRFHxKWpsU?=
+ =?us-ascii?Q?nyDNymfbA3IX2/19sUrKfaL4RVZqlTRoiVLduF0maH7fQKM0TEByT+Sqr0gN?=
+ =?us-ascii?Q?oeS93A=3D=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bfd4c91f-2613-4b3d-b1e1-08d9ec24106b
+X-MS-Exchange-CrossTenant-Network-Message-Id: f97110d6-5020-4e8e-6359-08d9ec2412b1
 X-MS-Exchange-CrossTenant-AuthSource: DM5PR10MB1466.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 23:29:49.0450
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 23:29:52.7478
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3xKQIEBBdqAmsnl3R04ro+CsNJhL3vchFq9FnzwfSmzeYpSWhPmIfzX2SKxffLGy68xszTlBf4qU1WyxI3Hrc81h2gSnsfdOqnYw1FEtTF4=
+X-MS-Exchange-CrossTenant-UserPrincipalName: iqSyih47tZBEmzIVuDr8dFYNWkUfxXFjkjsHeEUnMI5MNUXOxjmAxbc6Hpt8PjE54DOrr32in7ZuxL8prbO9aVcBmKHvV64SDuXurT3pXoc=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB3007
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10253 signatures=673431
 X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 suspectscore=0
- mlxlogscore=478 mlxscore=0 adultscore=0 malwarescore=0 spamscore=0
+ mlxlogscore=999 mlxscore=0 adultscore=0 malwarescore=0 spamscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
  definitions=main-2202090122
-X-Proofpoint-GUID: cMJ_dgWGzELLzXzKhfk9AmTT9u33Ne0S
-X-Proofpoint-ORIG-GUID: cMJ_dgWGzELLzXzKhfk9AmTT9u33Ne0S
+X-Proofpoint-GUID: H7TRreMLSnA-bpw2zlOagYOdsOD98RfN
+X-Proofpoint-ORIG-GUID: H7TRreMLSnA-bpw2zlOagYOdsOD98RfN
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following patches made over Linus's tree, allow the vhost layer to do
-a copy_process on the thread that does the VHOST_SET_OWNER ioctl like how
-io_uring does a copy_process against its userspace app. This allows the
-vhost layer's worker threads to inherit cgroups, namespaces, address
-space, etc and this worker thread will also be accounted for against that
-owner/parent process's RLIMIT_NPROC limit.
+The next patch adds helpers like create_io_thread, but for use by the
+vhost layer. There are several functions, so they are in their own file
+instead of cluttering up fork.c. This patch allows that new file to
+call copy_process.
 
-If you are not familiar with qemu and vhost here is more detailed
-problem description:
+Signed-off-by: Mike Christie <michael.christie@oracle.com>
+---
+ include/linux/sched/task.h | 2 ++
+ kernel/fork.c              | 2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-Qemu will create vhost devices in the kernel which perform network, SCSI,
-etc IO and management operations from worker threads created by the
-kthread API. Because the kthread API does a copy_process on the kthreadd
-thread, the vhost layer has to use kthread_use_mm to access the Qemu
-thread's memory and cgroup_attach_task_all to add itself to the Qemu
-thread's cgroups.
-
-The problem with this approach is that we then have to add new functions/
-args/functionality for every thing we want to inherit. I started doing
-that here:
-
-https://lkml.org/lkml/2021/6/23/1233
-
-for the RLIMIT_NPROC check, but it seems it might be easier to just
-inherit everything from the beginning, becuase I'd need to do something
-like that patch several times.
-
-V8:
-- Fix kzalloc GFP use.
-- Fix email subject version number.
-V7:
-- Drop generic user_worker_* helpers and replace with vhost_task specific
-  ones.
-- Drop autoreap patch. Use kernel_wait4 instead.
-- Fix issue where vhost.ko could be removed while the worker function is
-  still running.
-V6:
-- Rename kernel_worker to user_worker and fix prefixes.
-- Add better patch descriptions.
-V5:
-- Handle kbuild errors by building patchset against current kernel that
-  has all deps merged. Also add patch to remove create_io_thread code as
-  it's not used anymore.
-- Rebase patchset against current kernel and handle a new vm PF_IO_WORKER
-  case added in 5.16-rc1.
-- Add PF_USER_WORKER flag so we can check it later after the initial
-  thread creation for the wake up, vm and singal cses.
-- Added patch to auto reap the worker thread.
-V4:
-- Drop NO_SIG patch and replaced with Christian's SIG_IGN patch.
-- Merged Christian's kernel_worker_flags_valid helpers into patch 5 that
-  added the new kernel worker functions.
-- Fixed extra "i" issue.
-- Added PF_USER_WORKER flag and added check that kernel_worker_start users
-  had that flag set. Also dropped patches that passed worker flags to
-  copy_thread and replaced with PF_USER_WORKER check.
-V3:
-- Add parentheses in p->flag and work_flags check in copy_thread.
-- Fix check in arm/arm64 which was doing the reverse of other archs
-  where it did likely(!flags) instead of unlikely(flags).
-V2:
-- Rename kernel_copy_process to kernel_worker.
-- Instead of exporting functions, make kernel_worker() a proper
-  function/API that does common work for the caller.
-- Instead of adding new fields to kernel_clone_args for each option
-  make it flag based similar to CLONE_*.
-- Drop unused completion struct in vhost.
-- Fix compile warnings by merging vhost cgroup cleanup patch and
-  vhost conversion patch.
-
-
+diff --git a/include/linux/sched/task.h b/include/linux/sched/task.h
+index c001d0fa1426..787e6108fd65 100644
+--- a/include/linux/sched/task.h
++++ b/include/linux/sched/task.h
+@@ -90,6 +90,8 @@ extern void exit_files(struct task_struct *);
+ extern void exit_itimers(struct signal_struct *);
+ 
+ extern pid_t kernel_clone(struct kernel_clone_args *kargs);
++struct task_struct *copy_process(struct pid *pid, int trace, int node,
++				 struct kernel_clone_args *args);
+ struct task_struct *create_io_thread(int (*fn)(void *), void *arg, int node);
+ struct task_struct *fork_idle(int);
+ struct mm_struct *copy_init_mm(void);
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 6a04860fa1ae..04eb7fc50a13 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -1905,7 +1905,7 @@ static void copy_oom_score_adj(u64 clone_flags, struct task_struct *tsk)
+  * parts of the process environment (as per the clone
+  * flags). The actual kick-off is left to the caller.
+  */
+-static __latent_entropy struct task_struct *copy_process(
++__latent_entropy struct task_struct *copy_process(
+ 					struct pid *pid,
+ 					int trace,
+ 					int node,
+-- 
+2.25.1
 
