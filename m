@@ -2,118 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12578C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47930C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234920AbiBIOWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:22:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S234925AbiBIOYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234729AbiBIOWk (ORCPT
+        with ESMTP id S232842AbiBIOYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:22:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CE2C06157B;
-        Wed,  9 Feb 2022 06:22:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 9 Feb 2022 09:24:48 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435AFC06157B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:24:51 -0800 (PST)
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3821B821B2;
-        Wed,  9 Feb 2022 14:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94F33C340E7;
-        Wed,  9 Feb 2022 14:22:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644416560;
-        bh=B9M1QUhxyzDTyJUIvoDWD9clUCcq5ypjGHdIH9Y1XLk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ezvszam4JzxtWGTKTkn/z46tgYiIjF3YOhh0B3WAQBr1/xZ0J65eNGDIolA1fKD+b
-         1IcX9L3OzFYxjaDx9+OxdLcMsmVzfESU7kUhh2DCBJVZLbbGlylD+VF5Hhh7mtv0Rs
-         hMTC5ZKeOzWEKK2h40tAsJAJv6pGBOtppAywQjflflU6jB3Q/0ymDNwWMW0/NYFcgR
-         GPaJq5cseks1dx+RyBWt4ecCsHyye5IV+bClPHtsb12pPuOUim1MjI6GmlORh9nr5v
-         2oJRiEgz6ATGL/WK2LpcFIRuNqPeAY4XcIqvgAGR16ngz4EX685CB7HnezczqX2y0J
-         wKTe2eYKcX0Qg==
-Date:   Wed, 9 Feb 2022 14:22:33 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v3 3/7] drm: Add driver for Solomon SSD130X OLED displays
-Message-ID: <YgPOKf1QcOCtTisx@sirena.org.uk>
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <20220209090314.2511959-4-javierm@redhat.com>
- <YgPE8Z7HxU2wv7J/@sirena.org.uk>
- <d1025530-90e1-fbc5-c06b-f62ed83f2f19@redhat.com>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BB4024003D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 14:24:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644416688;
+        bh=/jtBgBZJr0M09mLpWCdwbeiLcjTbmSLlRU+RSibqKYU=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=YGUUTIfwvcVRR0dDJuxbSq0xigWUAVG8eLwYP09agamrCAMJkRbWeLt0+PkkuWbTb
+         ofFFZfwu4k0B0TEGKdoV7DNCtD1RDqPeVUUv4ePTWoEi+LVzO40u7uNAVC7260kLIZ
+         H/idn+M4L5PvSviQg8oWqPPRCcTarAkv78/uRloeIlLiTwS3+yL1XcSJO6WP7+kUjR
+         +ewBgMNhn8lTg9dXN8R/7gB7rkw3jyq+Is2sCPborKHVoCHQl2CFeMBY9DaVKhoVwV
+         BDZOPpoYsL+ADYw3/nR6rWy38CNlvee8MtKVdxi2uksHOIF01xqE2L2xKhK5IWpdDh
+         VW2d9Ctkwk9uw==
+Received: by mail-pj1-f69.google.com with SMTP id 62-20020a17090a09c400b001b80b0742b0so1793519pjo.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 06:24:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/jtBgBZJr0M09mLpWCdwbeiLcjTbmSLlRU+RSibqKYU=;
+        b=W0TKto7qMWjI5ruvM6duoZnBDWSZcQ70a5CHtwJkPF6SesU1IpzgAsU7O9crqAwCGD
+         U9/C+cUXe1cX4OLHXkVjA9AEeK06/xQkTjxp1Sj0+xe2BCYbQsW7GkZwUquXrdPvo1vJ
+         2mIpwQnGnEp0YnNg6GEbu1pbtkfLbrXAu9HXFIpewKXPimC2gqU4Dvo550a2ASHaT1bS
+         MJWGnWymjejVT6R+7FiiShQ+gJaYgxX3OzOK/myZ9WzJ/fQPP8hx6Aa3Z5l3FGkvn5aH
+         czXBruPNs1ZGlJ1W21mOaqAtY6tyAlv7eM9qqYqLFB9D+ukGhfpJ9WwZ8FUrEesFdEji
+         sPGA==
+X-Gm-Message-State: AOAM531YQ+1uxgPCx9UYKLkHUdsak1p5Q/K53MrkAmkDneueuRE18CcB
+        SwqToVQdg/X5lsyKZ4zt2dEC2e0r1yCKYHes7+BaaG9oCVlOpUnW0tFmkTXMs8K5HDKvEU6FFXo
+        8mi8rH/Db2bhQa0yAu4NUJS3yl2wep+O9PPbXbXVpvmJ0y9Pok3Ek7eQyTg==
+X-Received: by 2002:a63:e054:: with SMTP id n20mr2021189pgj.560.1644416687083;
+        Wed, 09 Feb 2022 06:24:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJygdhnjzmIdoKJK8oZqTsmTcv+ATV7Y5oUO+X7KpjGBaqvsfNxvAsbj2MI8knNQg5ah/9aHDhx1a+Xn2ei7EcI=
+X-Received: by 2002:a63:e054:: with SMTP id n20mr2021171pgj.560.1644416686737;
+ Wed, 09 Feb 2022 06:24:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wE80BzLpWir2bphU"
-Content-Disposition: inline
-In-Reply-To: <d1025530-90e1-fbc5-c06b-f62ed83f2f19@redhat.com>
-X-Cookie: Disc space -- the final frontier!
+References: <20220204195852.1751729-1-willy@infradead.org> <20220204195852.1751729-52-willy@infradead.org>
+In-Reply-To: <20220204195852.1751729-52-willy@infradead.org>
+From:   Mauricio Faria de Oliveira <mfo@canonical.com>
+Date:   Wed, 9 Feb 2022 11:24:34 -0300
+Message-ID: <CAO9xwp2+3Sh-X8xcukLxp5NE3pLWTx=KqVhivDB33W1Xci7uHQ@mail.gmail.com>
+Subject: Re: [PATCH 51/75] mm/rmap: Convert try_to_unmap() to take a folio
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Andrew and Matthew,
 
---wE80BzLpWir2bphU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Fri, Feb 4, 2022 at 5:00 PM Matthew Wilcox (Oracle)
+<willy@infradead.org> wrote:
+>
+> Change both callers and the worker function try_to_unmap_one().
+...
+> diff --git a/mm/rmap.c b/mm/rmap.c
+...
+> @@ -1598,8 +1602,8 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+>                         }
+>
+>                         /* MADV_FREE page check */
+> -                       if (!PageSwapBacked(page)) {
+> -                               if (!PageDirty(page)) {
+> +                       if (!folio_test_swapbacked(folio)) {
+> +                               if (!folio_test_dirty(folio)) {
+>                                         /* Invalidate as we cleared the pte */
+>                                         mmu_notifier_invalidate_range(mm,
+>                                                 address, address + PAGE_SIZE);
+> @@ -1608,11 +1612,11 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+>                                 }
+>
+>                                 /*
+> -                                * If the page was redirtied, it cannot be
+> +                                * If the folio was redirtied, it cannot be
+>                                  * discarded. Remap the page to page table.
+>                                  */
+>                                 set_pte_at(mm, address, pvmw.pte, pteval);
+> -                               SetPageSwapBacked(page);
+> +                               folio_set_swapbacked(folio);
+>                                 ret = false;
+>                                 page_vma_mapped_walk_done(&pvmw);
+>                                 break;
+...
 
-On Wed, Feb 09, 2022 at 03:17:06PM +0100, Javier Martinez Canillas wrote:
-> On 2/9/22 14:43, Mark Brown wrote:
+This conflicts with patch [1], currently in mmotm, and I'll send
+another version anyway.
+Should that patch be on top of these folio changes, or the other way around?
 
-> > Unless the device supports power being physically omitted regulator
-> > usage should not be optional, it's just more code and a recipie for poor
-> > error handling.
+The latter would help w/ the stable backports that don't have folios
+yet, but I can
+send backports there as well; not a problem.
 
-> The device has a VCC pin but in most cases this is just connected to a
-> power provided by the board in its pinout header. For example, I've it
-> connected to a rpi4 3.3v pin.
+Thanks,
 
-That sounds like a very common configuration.
+[1] https://lkml.kernel.org/r/20220131230255.789059-1-mfo@canonical.com
+[PATCH v3] mm: fix race between MADV_FREE reclaim and blkdev direct IO read
 
-> I guess in that case what we should do then is to just have a regulator
-> fixed as the vbat-supply in the Device Tree, that's regulator-always-on.
-
-Generally I'd suggest labelling things with whatever the supply is
-called in the board's schematics/documentation, that tends to make
-things clearer and easier to follow.
-
-> The old ssd1307fb fbdev driver also had this as optional and I wanted to
-> keep the new driver as backward compatible. But I understand now that is
-> not describing the hardware properly by making this regulator optional.
-
-It is depressingly common to see broken code here, unfortunately
-graphics drivers seem like one of the most common offendors.
-
---wE80BzLpWir2bphU
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIDzigACgkQJNaLcl1U
-h9CIRgf9GQgvRGky+AHIz+3b4Xh9ynU6oo2+aA7UEZoXXO9GUqpQSYRbnyQ/agr3
-FLnQfZ5r2/cRZlLAQLFv2MTfOCGD8gLiUctqlD37tLPXg8lwbDvbMblhskQ5PFMn
-wMFyobAOlaSQnA9EuQSF33dk2esmhsxAPo3kSw3YMlpqCmp3/feYC7FwfkImDH3b
-FGgL2JY9UbffMtY6kstb/WihsMhlXRP6Hj6Zch6J2vVmB+Nvn9nEMvwpWcvk9YkD
-KzzzDggasIowid6/iHYMKQ2oNhTZoUXezRWXANvYJF5NpqIwe4BWGmt9Sk5eu+X5
-opACYR+EewGRuXZAqeTmM2VIeYm8Uw==
-=kMLR
------END PGP SIGNATURE-----
-
---wE80BzLpWir2bphU--
+-- 
+Mauricio Faria de Oliveira
