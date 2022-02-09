@@ -2,207 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E83C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FB1C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230312AbiBIJ6f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:58:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55336 "EHLO
+        id S232198AbiBIJ7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:59:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234017AbiBIJ6V (ORCPT
+        with ESMTP id S233080AbiBIJ6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:58:21 -0500
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B41EE022ADA;
-        Wed,  9 Feb 2022 01:58:15 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 7EA74580152;
-        Wed,  9 Feb 2022 03:52:19 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 09 Feb 2022 03:52:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; bh=5AsuKlg9T3wRs6EodVp0NmABKRFh6ykn6emryp
-        MFqcE=; b=tJSbjzcafZKt16I56xV6jV5vxF1WGT5F2+4G9QjLLNk423jTTeO2Rc
-        zHnaWdr4mAAI6soRoHBZs56pjt7JAyvUzDI6GRCzQyj1a1gmZ7g+T2wmruVOYhGj
-        U/i8/jIg/iMTj3m7IC0/YXArfNPbCRIVDNcaXxkb7ake0Bexf2mKo3K2mth34ue9
-        WLD/Ki/AzraJGy50OZolC5AQjIFIQIrBZDPoNZ06+D6S+73CfEI/dq20rVCx1pd1
-        cC9msnw+U26YI4SnONvNadAzIHz1jx1T6tAsQ4IVX3uKRycsWBDPf5gB3N4FcDig
-        1icVgoCuAhNoi87sqBua/4Aubd977JjA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=5AsuKlg9T3wRs6Eod
-        Vp0NmABKRFh6ykn6emrypMFqcE=; b=VbtCkvnpzlBFH8WTmpIt6LRDreCQoQJub
-        Fzshu4pCLO2vq7pubT2yKFTwOh33ovalCRzkgYSFDs630Mn0JznhTazTWLuminSU
-        TGtgVwpIdKX9mF95t51To8n6ZHd2o22kRHvqvXqKgBWHMNGJUOywiLKq1/nrTHzA
-        U+AoPm1h6GAcJhtILdf7WEt3n+5sUIfpqQ7oIWwoKb4ZqArlIMDXa/dbBCufPPHJ
-        guqKP+1Dln9I5NvE17l0JStDxAOyQH3xDRTjmz/wyw2lfz5w47HGc+HJo6QGJJjv
-        o7gpY1rPw7VatRLSZWGQwb8KttgfDtgCmtoUqcT3wc/KqRDUb84Ig==
-X-ME-Sender: <xms:woADYq-0eSssQcGmiFliY3197FJPDabzDoC5c-S9rmwOLV775OJ_1Q>
-    <xme:woADYqtEcXYvnyvCziOKFwlhuM7_YdaFtgdOJ9NbhwXNdDn_Zt9COsgBJll-AVbkD
-    SvRVm4Tt4AhVHFectY>
-X-ME-Received: <xmr:woADYgA38MA3W3u_26f06nr8SC5tbUkS9nWe-Fu400YyD4TsPT9NfVPv1JlUkACVYB5DVpbsR_OoORf2kChjlYi5mTc_XN8zhy4PTyE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdduvdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:woADYifXlPCUf4Pfw4h2SaQnZtk1p0MS281dIBhl632sONAVXFFHfQ>
-    <xmx:woADYvNp5I5KNjAOyPv_QIUqQYGc9vVFIxWKktj5IhiM1bXk7_mYZw>
-    <xmx:woADYskKXPWxqIOgq3sOBSXwGBjJfH41bx-0ka5XOLVCipe0HYtfNA>
-    <xmx:w4ADYoz22sbKeC_hoJ5t4JY_gwAnhHwWZLPgo9_GLLuWGA3EgMUojg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 9 Feb 2022 03:52:17 -0500 (EST)
-Date:   Wed, 9 Feb 2022 09:52:15 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Sui Jingfeng <15330273260@189.cn>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Roland Scheidegger <sroland@vmware.com>,
-        Zack Rusin <zackr@vmware.com>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        suijingfeng <suijingfeng@loongson.cn>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
- controller
-Message-ID: <20220209085215.65qbdsgwtnvujdng@houat>
-References: <20220203082546.3099-1-15330273260@189.cn>
- <20220203082546.3099-2-15330273260@189.cn>
- <20220203085851.yqstkfgt4dz7rcnw@houat>
- <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ya7qckwy2foywkx2"
-Content-Disposition: inline
-In-Reply-To: <57805e19-285a-76d3-16e3-09a3eb7a9540@189.cn>
+        Wed, 9 Feb 2022 04:58:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0B9E04F313
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:58:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DBF2B81FC2
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4EA0C340E7;
+        Wed,  9 Feb 2022 09:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644399736;
+        bh=T+mYubC4DgSvWYTBn4SckuteBDQWitfpW4vxCFz9Xd8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=t17a+03WpPX5fsyUkiVTqQQb7z0JMhqNvZlsnI+WEPj7FkoPewMVPVXjflLcg9EE9
+         GsHvy14RTTWBaoF2mawz3tHmklfaoojB+PysLINwOETeXVm84mCSMlG1FAA3H1snEd
+         nugn54oDNGmkwczq7cQREbfICXYt2kEMFIPGXxp7oCH1Guz/yDneb7XqNTO6Uafq7e
+         rNE8DkCmHqu+OtgKl/G87Riq5oSpyI+VbyTr90CKlW6dcJ5nASv8Z9sBw9M6xPPmIu
+         PCEcpl30FDfNoqir6Up3C785j80M0mbJwjo+50juCR7xJouMdlDWZlZnHOCcJAgyjq
+         hq4lCIIWCdeIw==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        SeongJae Park <sj@kernel.org>, hughd@google.com
+Subject: [PATCH for-mm 1/2] mm/internal: Implement no-op mlock_page_drain() for !CONFIG_MMU
+Date:   Wed,  9 Feb 2022 09:41:57 +0000
+Message-Id: <20220209094158.21941-2-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220209094158.21941-1-sj@kernel.org>
+References: <20220209094158.21941-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Commit 4b3b8bd6c8287 ("mm/munlock: mlock_page() munlock_page() batch by
+pagevec") in -mm tree[1] implements 'mlock_page_drain()' under
+CONFIG_MMU only, but the function is used by 'lru_add_drain_cpu()',
+which defined outside of CONFIG_MMU.  As a result, below build error
+occurs.
 
---ya7qckwy2foywkx2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+    /linux/mm/swap.c: In function 'lru_add_drain_cpu':
+    /linux/mm/swap.c:637:2: error: implicit declaration of function 'mlock_page_drain' [-Werror=implicit-function-declaration]
+      637 |  mlock_page_drain(cpu);
+          |  ^~~~~~~~~~~~~~~~
+    cc1: some warnings being treated as errors
+    /linux/scripts/Makefile.build:289: recipe for target 'mm/swap.o' failed
 
-On Thu, Feb 03, 2022 at 11:47:16PM +0800, Sui Jingfeng wrote:
-> On 2022/2/3 16:58, Maxime Ripard wrote:
-> > > diff --git a/drivers/gpu/drm/lsdc/Kconfig b/drivers/gpu/drm/lsdc/Kcon=
-fig
-> > > new file mode 100644
-> > > index 000000000000..7ed1b0fdbe1b
-> > > --- /dev/null
-> > > +++ b/drivers/gpu/drm/lsdc/Kconfig
-> > > @@ -0,0 +1,38 @@
-> > > +config DRM_LSDC
-> > > +	tristate "DRM Support for loongson's display controller"
-> > > +	depends on DRM && PCI
-> > > +	depends on MACH_LOONGSON64 || LOONGARCH || MIPS || COMPILE_TEST
-> > > +	select OF
-> > > +	select CMA if HAVE_DMA_CONTIGUOUS
-> > > +	select DMA_CMA if HAVE_DMA_CONTIGUOUS
-> > > +	select DRM_KMS_HELPER
-> > > +	select DRM_KMS_FB_HELPER
-> > > +	select DRM_GEM_CMA_HELPER
-> > > +	select VIDEOMODE_HELPERS
-> > > +	select BACKLIGHT_PWM if CPU_LOONGSON2K
-> > > +	select I2C_GPIO if CPU_LOONGSON2K
-> > > +	select I2C_LS2X if CPU_LOONGSON2K
-> > > +	default m
-> > > +	help
-> > > +	  This is a KMS driver for the display controller in the LS7A1000
-> > > +	  bridge chip and LS2K1000 SoC. The display controller has two
-> > > +	  display pipes and it is a PCI device.
-> > > +	  When using this driver on LS2K1000/LS2K0500 SoC, its framebuffer
-> > > +	  is located at system memory.
-> > > +	  If "M" is selected, the module will be called lsdc.
-> > > +
-> > > +	  If in doubt, say "Y".
-> > > +
-> > > +config DRM_LSDC_VRAM_DRIVER
-> > > +	bool "vram helper based device driver support"
-> > > +	depends on DRM_LSDC
-> > > +	select DRM_VRAM_HELPER
-> > > +	default y
-> > > +	help
-> > > +	  When using this driver on LS7A1000 + LS3A3000/LS3A4000/LS3A5000
-> > > +	  platform, the LS7A1000 bridge chip has dedicated video RAM. Using
-> > > +	  "lsdc.use_vram_helper=3D1" in the kernel command line will enable
-> > > +	  this driver mode and then the framebuffer will be located at the
-> > > +	  VRAM at the price of losing PRIME support.
-> > > +
-> > > +	  If in doubt, say "Y".
-> > This doesn't sound right. The driver should make the proper decision
-> > depending on the platform, not the user or the distribution.
->=20
-> The LS7A1000 north bridge chip has dedicated video RAM, but the DC in LS7=
-A1000
-> can also scanout from the system memory directly like a display controlle=
-r in a
-> SoC does. In fact, this display controller is envolved from early product=
- of
-> Loongson 2H SoC. This driver still works even if the downstream PC board
-> manufacturer doesn't solder a video RAM on the mother board.
->=20
-> The lsdc_should_vram_helper_based() function in lsdc_drv.c will examine
-> if the DC device node contain a use_vram_helper property at driver loadin=
-g time.
-> If there is no use_vram_helper property, CMA helper based DRM driver will=
- be used.
-> Doing this way allow the user using "lsdc.use_vram_helper=3D0" override t=
-he default
-> behavior even through there is a "use_vram_helper;" property in the DTS.
->=20
-> In short, It is intend to let the command line passed from kernel has hig=
-her
-> priority than the device tree. Otherwise the end user can not switch diff=
-erent
-> driver mode through the kernel command line once the DC device node conta=
-in
-> "use_vram_helper;" property.
->=20
-> This driver's author already made the decision by the time when the patch=
- is
-> sent out, even through this**may not proper.
->=20
-> The CMA helper based driver will be used by default, if the DC device nod=
-e contain
-> "use_vram_helper;" then VRAM based driver will be used. This is my initia=
-l intention.
+This commit fixes it by implementing no-op 'mlock_page_drain()' for
+!CONFIG_MMU case, similar to 'mlock_new_page()'.
 
-DT isn't really a solution either. Let's take the distribution
-perspective there. Suppose you're a Fedora or Debian developer, and want
-to make a single kernel image, and ship a DT to the user for their board
-without any modification. How is either the Kconfig solution or DT flags
-solution any good there? It doesn't help them at all.
+[1] https://www.ozlabs.org/~akpm/mmotm/broken-out/mm-munlock-mlock_page-munlock_page-batch-by-pagevec.patch
 
-Maxime
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/internal.h | 1 +
+ 1 file changed, 1 insertion(+)
 
---ya7qckwy2foywkx2
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/mm/internal.h b/mm/internal.h
+index 0d240e876831..248224369b34 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -508,6 +508,7 @@ static inline void mlock_vma_page(struct page *page,
+ static inline void munlock_vma_page(struct page *page,
+ 			struct vm_area_struct *vma, bool compound) { }
+ static inline void mlock_new_page(struct page *page) { }
++static inline void mlock_page_drain(int cpu) { }
+ static inline void vunmap_range_noflush(unsigned long start, unsigned long end)
+ {
+ }
+-- 
+2.17.1
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOAvwAKCRDj7w1vZxhR
-xfmlAP9jrc/0alF0HbOEKem/PYILuIQZksQjvUqUpnADGQgZ2AD/YY/Mdq2iiu3Z
-W6nZNr9i/aZ4agM5MHGTU59+JVzfAwA=
-=9aeP
------END PGP SIGNATURE-----
-
---ya7qckwy2foywkx2--
