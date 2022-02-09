@@ -2,121 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31329C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC63C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233380AbiBIMec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:34:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33014 "EHLO
+        id S233344AbiBIMh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:37:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233289AbiBIMeY (ORCPT
+        with ESMTP id S233289AbiBIMhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:34:24 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A532C05CBBA;
-        Wed,  9 Feb 2022 04:34:25 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id u20so2585501ejx.3;
-        Wed, 09 Feb 2022 04:34:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=oISxEhOVgdnKSet2UYGwe5pMid4GVc9Hvmnmg5R1/KI=;
-        b=qQ+RDDDIHUw+vfOm5GQTBG35EX5r2QB7AP6hmDBKYQq72pTVVXL9WW/2fyL4eJH8Iy
-         ayRliOssrwotSZkA/Q+shKBPfnU/LlKSKcVs8h4wTeYfjJQ3HjziQToGD+1k5J5RR+lt
-         nnKttKD/J56IjUGZcAuk8Ha+pZKT98GIk9dbDJBZSZWbSgHlHGZ0sJaBJHr3LF0DGFsr
-         SFGo7xf/MlcSN/F86VJUy/JAkOSIV01r9ucCfdgQETjyb50wf0qu2rZGN87P0/AEhAXT
-         bOWeoNL1q1feg+afSolzEWHWXs58eMJ3OYeVSwLo1DYdG6ls7n6odH/OUMaR+wCr+LAW
-         DGqA==
+        Wed, 9 Feb 2022 07:37:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4F7EC05CB9E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:37:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644410275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yv06k0qcIVzfebmQao0F8lU/DvXpAPuqfxT+fivD3r4=;
+        b=ZZlWb2bWOJA/YRe6waWsCNKNEeE0XUgDMxeO6QzMqjDa/E9IseV8snOkWI8cR7uGQZFcvP
+        MnZAyS9LzOW7JOsDGS71a+zKanbTRmokx4BvGHpdPjX6d937Z8EKeTCN71tZBCOLyxpPBx
+        GSvlmkaEAaFWc2B0HD2RaO0I333MbKs=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-300-Khykqd2QNQi1QQbROsKu-A-1; Wed, 09 Feb 2022 07:37:54 -0500
+X-MC-Unique: Khykqd2QNQi1QQbROsKu-A-1
+Received: by mail-wm1-f71.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so2604629wme.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 04:37:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=oISxEhOVgdnKSet2UYGwe5pMid4GVc9Hvmnmg5R1/KI=;
-        b=LssvIeox2P35aeq9J7iWJsDE1fC3MlBFjqbtZMVhLyxRWNv/L9cNN7myGQZct2ZmjN
-         eK+MEqOi9YA8JsZd6u68MDeeSx3E7Li+8Mp9qyCeHlGxi+ZLWncDYJ0Tj48/yagwdsbf
-         ti2PHUgnW4jK9BItq+YCt1ssAI3cYf2apfyO2dpSmFhzINA54FzS3HT1ctWm3YiKkfRy
-         tjoj8+3nmVwp8YLaXks+CKUHyeJ+jtfDOldLmg3mLPmIubqrAvaOssJlKd8nHprmFrGC
-         eslzW2GKxvZVHm2QzLI49bzyl6RV9YLIMAx7rrrGLYQ20SXhISlT2HGeMyCLlP3/W+Uy
-         EDSg==
-X-Gm-Message-State: AOAM530c4aa3i4S71zD1XT7QboD/9VfnFaFfTxTgyRyXrXFZ32y7I5a7
-        Bmp2KI5H9EAJ/HSSuFBTi5TUkT3bFMM=
-X-Google-Smtp-Source: ABdhPJxSq0xVoxQOLW4szVsnhbifY7wFqtfgaQ0laxPK5EHPDbaIEeeI+IlB1JR0bJ23U424XIyF0g==
-X-Received: by 2002:a17:906:d62:: with SMTP id s2mr1807668ejh.176.1644410063741;
-        Wed, 09 Feb 2022 04:34:23 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id gi15sm3353843ejc.139.2022.02.09.04.34.20
+        bh=yv06k0qcIVzfebmQao0F8lU/DvXpAPuqfxT+fivD3r4=;
+        b=GGWr+t6e+C2GsnfQOyRf5lTC2/cO3cPCZgdYlHTj9Mt8ar6ThMT9rjeFBjms+OVouk
+         eBSvhye9jI6Zc+2ZvfBZodaDw/z76wT+JuUFgFzZdztXvpOfWOlO8BRfGdN77Zc9zKNh
+         EQZdUtqj6neE/5PWHfnPb5uQ53SMPauBXyqCrsFkvPa9whh6d89pGzUXZGGwgeApE/ib
+         DS9BkgpylV1rmLUSPZBTtRY3Cjt3KNSCZ+pHaYHfzV1b+eV2XthmrJt9E5PtyF38TNjd
+         Km3hJaF4okaxmF2u7zdzbv8TxWaYnedLYjR/I31l0a3wsFINE5WLbV5fZm8LO2mATsMn
+         1vBw==
+X-Gm-Message-State: AOAM531kTBsWIChfnpcQ6MZFqFguOnsO9ATeqV+4SXBLlV6v7VH0PKL8
+        Mi3FK40cIzTGam+uOEaSKvzgIQQD5uB5c/IkAmgbZB06gfMpLn7JwxR+ULpcBr8/7mW2Bj1mMy1
+        UyfnHpGZcQwLJZaF1r6l4sXV+
+X-Received: by 2002:a05:600c:4fc2:: with SMTP id o2mr1884059wmq.145.1644410273539;
+        Wed, 09 Feb 2022 04:37:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzmjpeXcKAGK2lwWC20JlgA2fV6RbEkugJVOCgWV8vBNqH8VPABqTYOsxX7qWXxzkqn+qGm5A==
+X-Received: by 2002:a05:600c:4fc2:: with SMTP id o2mr1884035wmq.145.1644410273273;
+        Wed, 09 Feb 2022 04:37:53 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id l28sm14096444wrz.90.2022.02.09.04.37.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 04:34:23 -0800 (PST)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <d4c5d59f-5526-2c4f-236e-ca1536e762f6@redhat.com>
-Date:   Wed, 9 Feb 2022 13:34:20 +0100
+        Wed, 09 Feb 2022 04:37:52 -0800 (PST)
+Message-ID: <58ebacd2-d44d-c7e9-e752-de7815dd4cc1@redhat.com>
+Date:   Wed, 9 Feb 2022 13:37:51 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH 06/23] KVM: MMU: load new PGD once nested two-dimensional
- paging is initialized
+Subject: Re: [PATCH v3 0/7] drm: Add driver for Solomon SSD130X OLED displays
 Content-Language: en-US
-To:     David Matlack <dmatlack@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        seanjc@google.com, vkuznets@redhat.com
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-7-pbonzini@redhat.com> <Yf178LYEY4pFJcLc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yf178LYEY4pFJcLc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <CAMuHMdVs750iE=kP1vabwgsGOb8sHc8aC5k=HwCU32CURnYktw@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAMuHMdVs750iE=kP1vabwgsGOb8sHc8aC5k=HwCU32CURnYktw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/4/22 20:18, David Matlack wrote:
-> On Fri, Feb 04, 2022 at 06:57:01AM -0500, Paolo Bonzini wrote:
->> __kvm_mmu_new_pgd looks at the MMU's root_level and shadow_root_level
->> via fast_pgd_switch.
+Hello Geert,
+
+On 2/9/22 13:19, Geert Uytterhoeven wrote:
+> Hi Javier,
 > 
-> Those checks are just for performance correct (to skip iterating through
-> the list of roots)?
+> On Wed, Feb 9, 2022 at 10:03 AM Javier Martinez Canillas
+> <javierm@redhat.com> wrote:
+>> This patch series adds a DRM driver for the Solomon OLED SSD1305, SSD1306,
+>> SSD1307 and SSD1309 displays. It is a port of the ssd1307fb fbdev driver.
 > 
-> Either way, it's probably worth including a Fixes tag below.
+> [...]
+> 
+>> - Fix a bug when doing partial updates (Geert Uytterhoeven)
+> 
+> Thanks, the text console is now more or less working as expected.
 
-It's actually a much bigger mess---though it's working as intended, 
-except that in some cases the caching is suboptimal.
+Thanks for giving it a try to this version too! Glad to know that
+is working better now.
 
-Basically, you have to call __kvm_mmu_new_pgd *before* kvm_init_mmu 
-because of how fast_pgd_switch takes care of stashing the current root 
-in the cache.   A PAE root is never placed in the cache exactly because 
-mmu->root_level and mmu->shadow_root_level hold the value for the 
-_current_ root.  In that case, fast_pgd_switch does not look for a 
-cached PGD (even if according to the role it could be there).
+> There is still an issue with the cursor, though.
+> After doing "echo hello > /dev/tty0", the text appears, but the cursor
+> is gone. "clear > /dev/tty0" brings it back.
+>
 
-__kvm_mmu_new_pgd then frees the current root using kvm_mmu_free_roots. 
-  kvm_mmu_free_roots *also* uses mmu->root_level and 
-mmu->shadow_root_level to distinguish whether the page table uses a 
-single root or 4 PAE roots.  Because kvm_init_mmu can overwrite 
-muu->root_level, kvm_mmu_free_roots must also be called before kvm_init_mmu.
+Hmm, I was able to reproduce this too. Thanks for pointing it out,
+I'll investigate what the problem is.
+ 
+> The execution time of "time ls" has improved. It now takes 1.21s
+> (0.86s with ssd1306fb).
+>
 
-I do wonder if the use of mmu->shadow_root_level was intentional (it 
-certainly escaped me when first reviewing fast PGD switching), but 
-fortunately none of this is necessary.  PAE roots can be identified from 
-!to_shadow_page(root_hpa), so the better fix is to do that:
+Yes, I believe that was due the bug I mentioned that partial updates
+weren't done but a full screen update instead.
+ 
+> The logo is not shown, even when I create a 16-color or 224-color
+> version of the small monochrome logo I'm using.
+>
 
-- in fast_pgd_switch/cached_root_available, you need to account for two 
-possible transformations of the cache: either the old entry becomes the 
-MRU of the prev_roots as in the current code, or the old entry cannot be 
-cached.  This is 20-30 more lines of code.
+I'll also dig into this.
 
-- in kvm_mmu_free_roots, just use to_shadow_page instead of 
-mmu->root_level and mmu->shadow_root_level.
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-Once this is in place, the original bug is fixed simply by calling 
-kvm_mmu_new_pgd after kvm_init_mmu.  kvm_mmu_reset_context is not doing 
-now to avoid having to figure out the new role, but it can do that 
-easily after the above change.
-
-I'll keep this cpu_role refactoring around, but strictly speaking it 
-becomes a separate change than the optimization.
-
-Paolo
