@@ -2,243 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A218C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F10C4707E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 03:03:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244482AbiBIDC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 22:02:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58086 "EHLO
+        id S244965AbiBIDDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 22:03:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345475AbiBIDBj (ORCPT
+        with ESMTP id S1359758AbiBICvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:01:39 -0500
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E83C0612C1;
-        Tue,  8 Feb 2022 19:01:38 -0800 (PST)
-Received: by mail-oo1-f54.google.com with SMTP id v17-20020a4ac911000000b002eac41bb3f4so944298ooq.10;
-        Tue, 08 Feb 2022 19:01:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZyXH2t51WHYfAIKNwqd9VzvZrJFEb+1EMaGREtcsO1o=;
-        b=smdHsLRvDLStsbRob5cMjjvKYoipTFRsYTwpT14xBhsjm+rAGPaWSeF9X1fdgOjMIc
-         6UweVH9vqUNy5E6nS12aUMfzDpyLVK9Sj+6DSWeQOE9pZQESPzslVFRGlyUL4+NCR/Ea
-         yh8JxcdTzGItZI9QJWP1KbbQ7sPBvgYwpiQlgkMfYBai7GQMphObAPBXidrDcUL4HXMl
-         m+yk19XOEp9US49bR4P36tgV8RoVXP+GsKI5TmJBJeVGXSdbBHcWzv+TI/2Q2EaoUWw8
-         7vRPWC3HHbsdM2Q/BPlmdx58JmMm39desuDwk3LTibUSjGNO88YBDtCMlCEvUlOur/FT
-         1K0w==
-X-Gm-Message-State: AOAM533NRjxPYoECqoaAe7w40w1QDYDkUDpPsxAO5KWIsIWHlJGOd+jq
-        vmFpGKseGh8ATov66CR+AQ==
-X-Google-Smtp-Source: ABdhPJwB8fyB9yz4PnmcGcrhM/oLIBzX1Hvz7Bc0G6d9wAsUrxiAKXe7N9gm9p3leyg8OG5KYjjkzw==
-X-Received: by 2002:a05:6870:d450:: with SMTP id j16mr302591oag.268.1644375697493;
-        Tue, 08 Feb 2022 19:01:37 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id a15sm6324251oil.13.2022.02.08.19.01.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:01:36 -0800 (PST)
-Received: (nullmailer pid 3538364 invoked by uid 1000);
-        Wed, 09 Feb 2022 03:01:35 -0000
-Date:   Tue, 8 Feb 2022 21:01:35 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: soc: qcom: add qcom,tcsr bindings
-Message-ID: <YgMuj1yyk6DnNzlw@robh.at.kernel.org>
-References: <20220122001609.15904-1-ansuelsmth@gmail.com>
- <20220122001609.15904-2-ansuelsmth@gmail.com>
+        Tue, 8 Feb 2022 21:51:25 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A7CC043180;
+        Tue,  8 Feb 2022 18:49:01 -0800 (PST)
+Received: from kwepemi100016.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jtkk72V1hzZcD0;
+        Wed,  9 Feb 2022 10:44:47 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi100016.china.huawei.com (7.221.188.123) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Feb 2022 10:48:59 +0800
+Received: from [10.174.178.208] (10.174.178.208) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 9 Feb 2022 10:48:58 +0800
+Subject: Re: [PATCH 5.4 00/44] 5.4.178-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <stable@vger.kernel.org>, <torvalds@linux-foundation.org>,
+        <akpm@linux-foundation.org>, <linux@roeck-us.net>,
+        <shuah@kernel.org>, <patches@kernelci.org>,
+        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
+        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
+        <sudipm.mukherjee@gmail.com>, <slade@sladewatkins.com>
+References: <20220207103753.155627314@linuxfoundation.org>
+From:   Samuel Zou <zou_wei@huawei.com>
+Message-ID: <4816924c-70c8-e266-2cca-5a18b1d1c279@huawei.com>
+Date:   Wed, 9 Feb 2022 10:48:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220122001609.15904-2-ansuelsmth@gmail.com>
+In-Reply-To: <20220207103753.155627314@linuxfoundation.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 22, 2022 at 01:16:08AM +0100, Ansuel Smith wrote:
-> Add qcom,tcsr-ipq8064 and qcom,tcsr-ipq4019 Documentation for the
-> tcsr present in ipq8064 and ipa4019 required to configure and
-> set various peripherals present in the SoC.
+
+
+On 2022/2/7 19:06, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.178 release.
+> There are 44 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/soc/qcom/qcom,tcsr-ipq4019.yaml  | 93 +++++++++++++++++++
->  .../bindings/soc/qcom/qcom,tcsr-ipq8064.yaml  | 47 ++++++++++
->  2 files changed, 140 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
->  create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq8064.yaml
+> Responses should be made by Wed, 09 Feb 2022 10:37:42 +0000.
+> Anything received after that time might be too late.
 > 
-> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
-> new file mode 100644
-> index 000000000000..3a82ccbb6588
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq4019.yaml
-> @@ -0,0 +1,93 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/soc/qcom/qcom,tcsr-ipq4019.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Qualcomm Top Control and Status Registers binding for IPQ4019
-> +
-> +maintainers:
-> +  - Ansuel Smith <ansuelsmth@gmail.com>
-> +
-> +description: |
-> +  This binding describes the Qualcomm Top Control and Status Registers, used
-> +  for accessing configuration and mux settings for a variety of peripherals
-> +  for ipq4019.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - const: qcom,tcsr-ipq4019
-
-Normal order is qcom,ipq4019-tcsr
-
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  qcom,usb-hsphy-mode-select:
-> +    description: Select usb hsphy mode for ipq4019
-> +    enum:
-> +      - 'host'
-> +      - 'device'
-
-Don't need quotes.
-
-> +
-> +  qcom,ess-interface-select:
-> +    description: Select ess interface mode for ipq4019
-> +    enum:
-> +      - 'psgmii'
-> +      - 'rgmii5'
-> +      - 'rmii0'
-> +      - 'rmii1'
-> +      - 'rmii0_rmii1'
-> +      - 'rgmii4'
-> +
-> +  qcom,wifi-glb-cfg-enable-axid:
-> +    description: Enable AXI master bus Axid translating
-> +                  to confirm all txn submitted by order for ipq4019
-
-Wrap at ~80 and indent 2 more spaces (than 'description').
-
-> +    type: boolean
-> +
-> +  qcom,wifi-glb-cfg-socslv-mode:
-> +    description: Select wifi socslv mode for ipq4019
-> +                  snoc use SNOC socslv_wxi_bvalid.
-> +                  local use locally generate socslv_wxi_bvalid for performance.
-> +    enum:
-> +      - 'snoc'
-> +      - 'local'
-> +
-> +  qcom,wifi_noc_memtype_m0_m2:
-
-s/_/-/
-
-> +    description: Configure special wifi memory type needed for
-> +                  some IPQ40xx devicesfor ipq4019
-> +    type: boolean
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    tcsr@194b000 {
-> +      compatible = "qcom,tcsr-ipq4019", "syscon";
-> +      reg = <0x194b000 0x100>;
-> +      qcom,usb-hsphy-mode-select = "host";
-> +    };
-> +
-> +    tcsr@1949000 {
-> +      compatible = "qcom,tcsr-ipq4019", "syscon";
-> +      reg = <0x1949000 0x100>;
-> +      qcom,wifi-glb-cfg-enable-axid;
-> +      qcom,wifi-glb-cfg-socslv-mode = "local";
-> +    };
-> +
-> +    ess_tcsr@1953000 {
-> +      compatible = "qcom,tcsr-ipq4019", "syscon";
-> +      reg = <0x1953000 0x1000>;
-> +      qcom,ess-interface-select = "psgmii";
-> +    };
-> +
-> +    tcsr@1957000 {
-> +      compatible = "qcom,tcsr-ipq4019", "syscon";
-> +      reg = <0x1957000 0x100>;
-> +      qcom,wifi_noc_memtype_m0_m2;
-> +    };
-> +
-> +...
-> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq8064.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq8064.yaml
-> new file mode 100644
-> index 000000000000..4ccc0bfccec5
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,tcsr-ipq8064.yaml
-> @@ -0,0 +1,47 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/soc/qcom/qcom,tcsr-ipq8064.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: Qualcomm Top Control and Status Registers binding for IPQ8064
-> +
-> +maintainers:
-> +  - Ansuel Smith <ansuelsmth@gmail.com>
-> +
-> +description: |
-> +  This binding describes the Qualcomm Top Control and Status Registers, used
-> +  for accessing configuration and mux settings for a variety of peripherals
-> +  for ipq8064.
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - const: qcom,tcsr-ipq8064
-
-qcom,ipq8064-tcsr
-
-> +      - const: syscon
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  qcom,usb-ctrl-select:
-> +    description: Select usb3 ctrl type for ipq8064
-> +    enum:
-> +      - 'p0'
-> +      - 'p1'
-> +      - 'dual'
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    tcsr: syscon@1a400000 {
-> +      compatible = "qcom,tcsr-ipq8064", "syscon";
-> +      reg = <0x1a400000 0x100>;
-> +      qcom,usb-ctrl-select = "dual";
-> +    };
-> +
-> +...
-> -- 
-> 2.33.1
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.178-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
 > 
+> thanks,
 > 
+> greg k-h
+> 
+
+Tested on arm64 and x86 for 5.4.178-rc1,
+
+Kernel repo:
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+Branch: linux-5.4.y
+Version: 5.4.178-rc1
+Commit: 3836147e31ee95815758c97dc5c319423774464d
+Compiler: gcc version 7.3.0 (GCC)
+
+arm64:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9009
+passed: 9009
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
+
+x86:
+--------------------------------------------------------------------
+Testcase Result Summary:
+total: 9009
+passed: 9009
+failed: 0
+timeout: 0
+--------------------------------------------------------------------
+
+Tested-by: Hulk Robot <hulkrobot@huawei.com>
