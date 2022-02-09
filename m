@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CB7C4167D
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93999C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235898AbiBISlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:41:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54708 "EHLO
+        id S240156AbiBISlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:41:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240084AbiBISka (ORCPT
+        with ESMTP id S240476AbiBISlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:40:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA386C050CFB;
-        Wed,  9 Feb 2022 10:39:55 -0800 (PST)
+        Wed, 9 Feb 2022 13:41:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A90C05CB87;
+        Wed,  9 Feb 2022 10:40:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50AC2B82378;
-        Wed,  9 Feb 2022 18:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3249AC340E7;
-        Wed,  9 Feb 2022 18:39:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0313F6006F;
+        Wed,  9 Feb 2022 18:40:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD310C340E7;
+        Wed,  9 Feb 2022 18:40:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431993;
-        bh=zIx1hJ3twxcRwji/KiyxGcWVwTCRfzELab1GBSE3O4c=;
+        s=k20201202; t=1644432031;
+        bh=SUV0sQS/PjrAEiqU1+IwNp58SrzXlY55YbhJgIcd5Rc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lsNrizGBE/qhBVqtHmMBfwNK++tB/pcIealzuvfsMwXVK3kSKksZqWb9t4p8QOXXG
-         6gkZgOHBLPdtg6/7SXO2bWwiWsinu6oRHE+PHc5rIE8v+/a3s6W4LC2vi2MoAP+IdM
-         sRBcBwK1EscfUzCogw3W0szNuff+BA7whEvJz+ygIXROV4FJty/Ww9pEPJ1jX3udFP
-         6q8OcIXZgl9cU8FSkZ1PaWbWNh3TzaM1bMsN191w6kt6UkwBiG3xLukFTHBViMxWRL
-         2Wt8wZQlBgtNFc40/a+JotSTJTQ0M2LK4yDkbcIG1bMzGJ62vR1ZTROZu84VWARvtk
-         DmVx3O7ywEghg==
+        b=WBuUhbMajWJl1YfJoVdAzBCxZnXa7u6sSeC1x9Fwi47cKfKEYYh7UHc6w7MjoUArx
+         b91nReHGmrQkz/T95EdE5Hk88J7wdpYaz45H9/nG6txeln7IFXIrfN+0AECP9ZQSjb
+         BDs31taFheKoSU5CBmLR/l8Fo1iAfnXIqt6C1pPJjhgQnJ1KbCgOCgormC8II0WTzE
+         rsmwmXhHY698ew4VRkPNq+JtNzVOpNulGRpEtMTYmJTr39hVKxKf3/mglYRSyxXP2q
+         rzYV2FEgdA34wsU0vCrNCaSRWRF2TdpCL0A9DBbKsYjsvRK8uwjxvEFVJ3nIUtyswc
+         p+AqQkVyfFm6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Chris Leech <cleech@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, kbusch@kernel.org,
-        axboe@fb.com, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 27/36] nvme-tcp: fix possible use-after-free in transport error_recovery work
-Date:   Wed,  9 Feb 2022 13:37:50 -0500
-Message-Id: <20220209183759.47134-27-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        evan.quan@amd.com, Hawking.Zhang@amd.com,
+        andrey.grodzovsky@amd.com, shaoyun.liu@amd.com,
+        aurabindo.pillai@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 31/36] drm/amd: Only run s3 or s0ix if system is configured properly
+Date:   Wed,  9 Feb 2022 13:37:54 -0500
+Message-Id: <20220209183759.47134-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
 References: <20220209183759.47134-1-sashal@kernel.org>
@@ -51,37 +56,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit ff9fc7ebf5c06de1ef72a69f9b1ab40af8b07f9e ]
+[ Upstream commit 04ef860469fda6a646dc841190d05b31fae68e8c ]
 
-While nvme_tcp_submit_async_event_work is checking the ctrl and queue
-state before preparing the AER command and scheduling io_work, in order
-to fully prevent a race where this check is not reliable the error
-recovery work must flush async_event_work before continuing to destroy
-the admin queue after setting the ctrl state to RESETTING such that
-there is no race .submit_async_event and the error recovery handler
-itself changing the ctrl state.
+This will cause misconfigured systems to not run the GPU suspend
+routines.
 
-Tested-by: Chris Leech <cleech@redhat.com>
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+* In APUs that are properly configured system will go into s2idle.
+* In APUs that are intended to be S3 but user selects
+  s2idle the GPU will stay fully powered for the suspend.
+* In APUs that are intended to be s2idle and system misconfigured
+  the GPU will stay fully powered for the suspend.
+* In systems that are intended to be s2idle, but AMD dGPU is also
+  present, the dGPU will go through S3
+
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/tcp.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-index 4ae562d30d2b9..e5f7c7fa76478 100644
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -2097,6 +2097,7 @@ static void nvme_tcp_error_recovery_work(struct work_struct *work)
- 	struct nvme_ctrl *ctrl = &tcp_ctrl->ctrl;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 41677f99c67b1..f5852bda59349 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1499,6 +1499,7 @@ static void amdgpu_drv_delayed_reset_work_handler(struct work_struct *work)
+ static int amdgpu_pmops_prepare(struct device *dev)
+ {
+ 	struct drm_device *drm_dev = dev_get_drvdata(dev);
++	struct amdgpu_device *adev = drm_to_adev(drm_dev);
  
- 	nvme_stop_keep_alive(ctrl);
-+	flush_work(&ctrl->async_event_work);
- 	nvme_tcp_teardown_io_queues(ctrl, false);
- 	/* unquiesce to fail fast pending requests */
- 	nvme_start_queues(ctrl);
+ 	/* Return a positive number here so
+ 	 * DPM_FLAG_SMART_SUSPEND works properly
+@@ -1507,6 +1508,13 @@ static int amdgpu_pmops_prepare(struct device *dev)
+ 		return pm_runtime_suspended(dev) &&
+ 			pm_suspend_via_firmware();
+ 
++	/* if we will not support s3 or s2i for the device
++	 *  then skip suspend
++	 */
++	if (!amdgpu_acpi_is_s0ix_active(adev) &&
++	    !amdgpu_acpi_is_s3_active(adev))
++		return 1;
++
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
