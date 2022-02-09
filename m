@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E556C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F13EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241103AbiBISwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S241136AbiBISwj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiBISu5 (ORCPT
+        with ESMTP id S241272AbiBISu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 13:50:57 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F62C05CB82;
-        Wed,  9 Feb 2022 10:47:19 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id x193so3510098oix.0;
-        Wed, 09 Feb 2022 10:47:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Vi9Au0Crkys221dhKz7ZSE2Xq4A6zOmUcKMnPw7BPg0=;
-        b=TnyB6MlpInW2Dhf71kV4Yh3uwcCN5h+lJbHeJzCr+vPNHy8GrGJ4DHUyTzbnfCg72g
-         nX7y70fv0RbXah9p6lLR0GRE8wym69i4oZcgtEXrWwoQ9AGeuxS1QvbJ80PNsFkDIMZK
-         TF94+oAzMX3yA75ri+FRuwy1ZQmS4aDS2C8almST+e53GSvUCst4ZnnaRkAW4nMhTSZi
-         NV4/gkLF/uWfJQ1WaeumgeuwIAhS5zXAiUOd8GXb9cQ4J/zoTgi0/A3H4Km/8X5Xf4PC
-         DaUpP1kNM5Tssp5ykKuu746m79+0t2Y5Va4pvSNR8FsuFneq+1JCGXAXZx/rtqQcKQku
-         RwHQ==
-X-Gm-Message-State: AOAM533uBrcx1aqrOtD4OxzWTQWR0QqmAKKZvar5y/bJbMh11FLyfzZ4
-        5NVHAGHQOl2+ahmpYR2kmA==
-X-Google-Smtp-Source: ABdhPJz2/34m/qedqsW5DnC2O+nTKA3JCDJGbT7oI2zsMJoDh9v3/cY/jxcuG92UIOEWq8AUGvWeXw==
-X-Received: by 2002:a05:6808:1899:: with SMTP id bi25mr2020002oib.38.1644432438872;
-        Wed, 09 Feb 2022 10:47:18 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id g9sm454209oac.3.2022.02.09.10.47.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 10:47:17 -0800 (PST)
-Received: (nullmailer pid 675998 invoked by uid 1000);
-        Wed, 09 Feb 2022 18:47:16 -0000
-Date:   Wed, 9 Feb 2022 12:47:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     hch@lst.de, linux-kernel@vger.kernel.org, maxime@cerno.tech,
-        huffman@cadence.com, liush@allwinnertech.com, xinhaoqu@huawei.com,
-        behrensj@mit.edu, anup@brainfault.org, jscheid@ventanamicro.com,
-        allen.baum@esperantotech.com, philipp.tomsich@vrull.eu,
-        aou@eecs.berkeley.edu, wefu@redhat.com, arnd@arndb.de,
-        andrea.mondelli@huawei.com, paul.walmsley@sifive.com,
-        linux-riscv@lists.infradead.org, robh+dt@kernel.org,
-        cmuellner@linux.com, drew@beagleboard.org, rtrauben@gmail.com,
-        samuel@sholland.org, palmer@dabbelt.com, atishp@atishpatra.org,
-        mick@ics.forth.gr, devicetree@vger.kernel.org,
-        gfavor@ventanamicro.com, wens@csie.org, guoren@kernel.org
-Subject: Re: [PATCH v6 11/14] dt-bindings: riscv: add MMU Standard Extensions
- support for Svpbmt
-Message-ID: <YgQMNKXytqFZFiib@robh.at.kernel.org>
-References: <20220209123800.269774-1-heiko@sntech.de>
- <20220209123800.269774-12-heiko@sntech.de>
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7218C03E96E;
+        Wed,  9 Feb 2022 10:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644432399; x=1675968399;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/sf9RDeSLDsXwLAbDoDvwa7faj+vGk0nfM38INq+8DM=;
+  b=dtU8cg14oWvUSx+8UWSnB8HX/0n/b6+ZF5C/XDpQrxspjo87W5zHBy+G
+   0jhTkF8G27aHQ7Hqn+uskLBOJ9K/6eT/TkbROuFXd32XAr5gB0di5K1vz
+   NXsEK0t659z7WnDTIxlq0GIy7pr1yongczUlGODt18TTlcyAv7qc7j4d0
+   Q=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 09 Feb 2022 10:46:39 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 10:46:38 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 9 Feb 2022 10:46:38 -0800
+Received: from qian (10.80.80.8) by nalasex01a.na.qualcomm.com (10.47.209.196)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Wed, 9 Feb 2022
+ 10:46:36 -0800
+Date:   Wed, 9 Feb 2022 13:46:34 -0500
+From:   Qian Cai <quic_qiancai@quicinc.com>
+To:     Jan Kara <jack@suse.cz>
+CC:     Theodore Ts'o <tytso@mit.edu>, Jan Kara <jack@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        <linux-ext4@vger.kernel.org>, <rcu@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
+Message-ID: <YgQMCoEM5/fSZpdo@qian>
+References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
+ <20220209181010.gfn66rvip56i54df@quack3.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220209123800.269774-12-heiko@sntech.de>
+In-Reply-To: <20220209181010.gfn66rvip56i54df@quack3.lan>
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 13:37:57 +0100, Heiko Stuebner wrote:
-> From: Wei Fu <wefu@redhat.com>
+On Wed, Feb 09, 2022 at 07:10:10PM +0100, Jan Kara wrote:
+> On Wed 09-02-22 11:57:42, Qian Cai wrote:
+> > Since the linux-next commit 120aa5e57479 (mm: Check for
+> > SLAB_TYPESAFE_BY_RCU and __GFP_ZERO slab allocation), we will get a
+> > boot warning. Avoid it by calling synchronize_rcu() before the zeroing.
+> > 
+> > Signed-off-by: Qian Cai <quic_qiancai@quicinc.com>
 > 
-> Previous patch has added svpbmt in arch/riscv and add "riscv,svpmbt"
-> in the DT mmu node. Update dt-bindings related property here.
-> 
-> Signed-off-by: Wei Fu <wefu@redhat.com>
-> Co-developed-by: Guo Ren <guoren@kernel.org>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> Cc: Anup Patel <anup@brainfault.org>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> ---
->  Documentation/devicetree/bindings/riscv/cpus.yaml | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
+> No, the performance impact of this would be just horrible. Can you
+> ellaborate a bit why SLAB_TYPESAFE_BY_RCU + __GFP_ZERO is a problem and why
+> synchronize_rcu() would be needed here before the memset() please? I mean
+> how is zeroing here any different from the memory just being used?
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+I'll defer to Paul and other RCU developers for more indepth explanations of
+the issue with the combo. The above mentioned commit has a bit information:
+
+    Code using a SLAB_TYPESAFE_BY_RCU kmem_cache can have readers accessing
+    blocks of memory passed to kmem_cache_free(), and those readers might
+    still be accessing those blocks after kmem_cache_alloc() reallocates
+    those blocks.  These readers are not going to take kindly to that memory
+    being zeroed along the way.  Therefore, add a WARN_ON_ONCE() complaining
+    about __GFP_ZERO being passed to an allocation from a SLAB_TYPESAFE_BY_RCU
+    kmem_cache.
