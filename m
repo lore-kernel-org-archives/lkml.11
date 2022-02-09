@@ -2,84 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18AC7C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiBITbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:31:43 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36506 "EHLO
+        id S235337AbiBITbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:31:52 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235550AbiBITbQ (ORCPT
+        with ESMTP id S235883AbiBITbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:31:16 -0500
-Received: from smtp.smtpout.orange.fr (smtp10.smtpout.orange.fr [80.12.242.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C6037C0219A3
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:22:57 -0800 (PST)
-Received: from [192.168.1.18] ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id HsQsnZO3wbnFGHsQtncXNY; Wed, 09 Feb 2022 20:15:16 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 09 Feb 2022 20:15:16 +0100
-X-ME-IP: 90.126.236.122
-Message-ID: <9c563d78-f883-65ee-9e7b-cf44e3b238e8@wanadoo.fr>
-Date:   Wed, 9 Feb 2022 20:15:13 +0100
+        Wed, 9 Feb 2022 14:31:35 -0500
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6B9C1DC06A;
+        Wed,  9 Feb 2022 11:22:57 -0800 (PST)
+Received: by mail-lj1-f175.google.com with SMTP id t14so4842705ljh.8;
+        Wed, 09 Feb 2022 11:22:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TAb9RMF5rdP3oF08yRzn8MffJjQ5kNb8IB5u5y/hypk=;
+        b=1MyEJIKn09+g71ZGo4sfbjB6JpK4pIgqZv140B6IXhwCbq87UNojDO+Z4kzQExxmCl
+         lPVaxagvpIkvOihaA6lfkZG8dRJ0q4NWO98Ox7WehBxX4fXR71PaO3vLUXneWIT23MkM
+         yKzhQYWWRwRBBfM1ttRzzn1bbJRQ5yrR/R6lJs0xIJyQHsdJxqSc/9LOAeIBqjDvaBMs
+         Y1qGCcdIbGof/eIJ/gK03TgSP1LZBUjF0iY135Ic9XodIsoLsHhg1TtDZWiMI74NryOP
+         L8KUDPYF5n6aYmvHlpy1ZPii2hQ4Ulk5zhRYhQ7Z5L/MlvTX6nrCGtCcEXlFg1a0cCNe
+         ZhHA==
+X-Gm-Message-State: AOAM532H1fR2XRsXn+PrPcWmvfr3Mhxti0GS5WSfekNQkvgOaBzwTsWb
+        iW+YOsl2iX9VbWUrBlIJvtCgyv+pwQHJWBxPGVI=
+X-Google-Smtp-Source: ABdhPJw08QD4wUSfZkYC8eoOu9YPXO1KD3DoKCorkCNdm3c9GLfZqlvWEz+RohSDhEAzIwcPChf/Tq1QQHAWfxCujNM=
+X-Received: by 2002:a2e:5352:: with SMTP id t18mr2459533ljd.241.1644434575676;
+ Wed, 09 Feb 2022 11:22:55 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] staging: pi433: using div64_u64() instead of do_div()
-Content-Language: en-GB
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Jiapeng Chong' <jiapeng.chong@linux.alibaba.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220121114955.96979-1-jiapeng.chong@linux.alibaba.com>
- <03591933cc384d7e91ede82f0cdd76a8@AcuMS.aculab.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <03591933cc384d7e91ede82f0cdd76a8@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220208184208.79303-1-namhyung@kernel.org> <20220209090908.GK23216@worktop.programming.kicks-ass.net>
+ <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com> <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+ <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com>
+In-Reply-To: <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Wed, 9 Feb 2022 11:22:44 -0800
+Message-ID: <CAM9d7ci=N2NVj57k=W0ebqBzfW+ThBqYSrx-CZbgwGcbOSrEGA@mail.gmail.com>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
+To:     Waiman Long <longman@redhat.com>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx@lists.freedesktop.org,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 21/01/2022 à 14:34, David Laight a écrit :
-> From: Jiapeng Chong
->> Sent: 21 January 2022 11:50
->> Subject: [PATCH] staging: pi433: using div64_u64() instead of do_div()
->>
->> Clean the following coccicheck warning:
->>
->> ./drivers/staging/pi433/rf69.c:286:1-7: WARNING: do_div() does a
->> 64-by-32 division, please consider using div64_u64 instead.
-> 
-> That is one of patchcheck's worse warnings.
-> 
-> You need to check the domain of the divisor, not its type.
-> 
-> do_div() exists to avoid expensive 64bit divides when the
-> divisor is small.
-> 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
-> 
+Hello,
 
-Moreover, the patch is broken by itself.
+On Wed, Feb 9, 2022 at 11:02 AM Waiman Long <longman@redhat.com> wrote:
+>
+> On 2/9/22 13:29, Mathieu Desnoyers wrote:
+> > ----- On Feb 9, 2022, at 1:19 PM, Waiman Long longman@redhat.com wrote:
+> >
+> >> On 2/9/22 04:09, Peter Zijlstra wrote:
+> >>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
+> >>>
+> >>>> Eventually I'm mostly interested in the contended locks only and I
+> >>>> want to reduce the overhead in the fast path.  By moving that, it'd be
+> >>>> easy to track contended locks with timing by using two tracepoints.
+> >>> So why not put in two new tracepoints and call it a day?
+> >>>
+> >>> Why muck about with all that lockdep stuff just to preserve the name
+> >>> (and in the process continue to blow up data structures etc..). This
+> >>> leaves distros in a bind, will they enable this config and provide
+> >>> tracepoints while bloating the data structures and destroying things
+> >>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
+> >>> at all.
+> >>>
+> >>> Yes, the name is convenient, but it's just not worth it IMO. It makes
+> >>> the whole proposition too much of a trade-off.
+> >>>
+> >>> Would it not be possible to reconstruct enough useful information from
+> >>> the lock callsite?
+> >>>
+> >> I second that as I don't want to see the size of a spinlock exceeds 4
+> >> bytes in a production system.
+> >>
+> >> Instead of storing additional information (e.g. lock name) directly into
+> >> the lock itself. Maybe we can store it elsewhere and use the lock
+> >> address as the key to locate it in a hash table. We can certainly extend
+> >> the various lock init functions to do that. It will be trickier for
+> >> statically initialized locks, but we can probably find a way to do that too.
+> > If we go down that route, it would be nice if we can support a few different
+> > use-cases for various tracers out there.
+> >
+> > One use-case (a) requires the ability to query the lock name based on its address as key.
+> > For this a hash table is a good fit. This would allow tracers like ftrace to
+> > output lock names in its human-readable output which is formatted within the kernel.
+> >
+> > Another use-case (b) is to be able to "dump" the lock { name, address } tuples
+> > into the trace stream (we call this statedump events in lttng), and do the
+> > translation from address to name at post-processing. This simply requires
+> > that this information is available for iteration for both the core kernel
+> > and module locks, so the tracer can dump this information on trace start
+> > and module load.
+> >
+> > Use-case (b) is very similar to what is done for the kernel tracepoints. Based
+> > on this, implementing the init code that iterates on those sections and populates
+> > a hash table for use-case (a) should be easy enough.
+>
+> Yes, that are good use cases for this type of functionality. I do need
+> to think about how to do it for statically initialized lock first.
 
-See [1] were it was already reported that do_div() and div64_u64() don't 
-have the same calling convention.
+Thank you all for the review and good suggestions.
 
-Looks that div64_u64() and div64_ul() works the same way.
+I'm also concerning dynamic allocated locks in a data structure.
+If we keep the info in a hash table, we should delete it when the
+lock is gone.  I'm not sure we have a good place to hook it up all.
 
-
-CJ
-
-[1]: 
-https://lore.kernel.org/linux-kernel/20211117112559.jix3hmx7uwqmuryg@pengutronix.de/ 
-
+Thanks,
+Namhyung
