@@ -2,81 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 206B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FAACC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236037AbiBIPf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:35:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49304 "EHLO
+        id S236032AbiBIPfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235990AbiBIPfS (ORCPT
+        with ESMTP id S235988AbiBIPfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 10:35:18 -0500
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843FAC05CB89;
-        Wed,  9 Feb 2022 07:35:18 -0800 (PST)
-Received: by mail-oo1-f51.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so2800313oor.12;
-        Wed, 09 Feb 2022 07:35:18 -0800 (PST)
+Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5247EC05CB88;
+        Wed,  9 Feb 2022 07:35:16 -0800 (PST)
+Received: by mail-oo1-f50.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so2878745oov.3;
+        Wed, 09 Feb 2022 07:35:16 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=1mkLFSmd4i+BBIXy7fKCIcUEt8oNd8K14KXOxmE5hKQ=;
-        b=t3wnmTjM6DKx7hTDpqSrr0G9Q7jjWEIvPaqCfxBGlBUHsu9wr0OnCwXED06QdmnxWT
-         oEkvojcyg1+rvXrhHtn2vSGUunWv6w5iiOyD6RnCe5NK6orPOGSb7El/8s3U5xr6imMj
-         8dUOj4ncICZmRLgtffPLFqcmjS/Wobp+9onV6meorIyAz+oFswm+nQr+8tDnH7V8vnby
-         edN84gvOXfqbnWsQ+rOwaiwWq7DJuHkR1NQsSzziH44ey7Pwa+mpo4NMfoqtlvAXFxmC
-         stN7LVIxeNuYn5oYxVSl1hqgHDXdh3hZROHrKBkzEuLsUL71ih97vmFBH8KK24o7k0Ym
-         /0LQ==
-X-Gm-Message-State: AOAM532fq/RxVtqT5nNybqOdTTrXvPDr18NllLOBBg/bmjMjvaMJYIoI
-        E91ZQGSW+Xhm+1d6Y1Gf8HdJQ1X+sg==
-X-Google-Smtp-Source: ABdhPJze37RkXIeQyKNHdeY2KcUB29vKQ0Nr6pdDba5eg6DiwMkdQWBAnS8RHq6FbjaLmlrLCDY1sw==
-X-Received: by 2002:a05:6870:f78c:: with SMTP id fs12mr892266oab.297.1644420917756;
-        Wed, 09 Feb 2022 07:35:17 -0800 (PST)
+        bh=H19TdmlGQeOvqWibXwnTgQaKpp298rj11z4re+ZlqzE=;
+        b=Qv7Z09fs87ryzqrGn5m7pW0Sdh8/Pkx/Mttyo15ehEc4zQqhRagjUfDYcMVUxJPzCi
+         1Rhs/MRAgdGrYM7W3xBvIvovOA/C1QAUkzR2S0xvqpkbLrjFDeUNxYJ8QtdHYQOxshUN
+         Cu60nkmabbP+m/GpKlk1gxW5WmTfkKCHRRnbpuMJGjObCgPOcSHspK09/lMPxq6jL5Sr
+         iaMBQqhSKP6CrR4s6+P3CTC7Epzn4SBsykM5MgVlZ1+t5A1i97JXVwvKV+yKWZGZcxVK
+         Eo7ng9lLmDiLRZYJhUbbbp5FaZhWJBqcU5u+XdmpyxArVWMiRQNVvGxfHyov1mBy8QbI
+         ihLg==
+X-Gm-Message-State: AOAM530aAfENL16Hp6b/cEw9Cxx3CEghvAOFlG86vbGimfRuAEdbvpu+
+        TxXFscG8gD7hRSH0BnCMfg==
+X-Google-Smtp-Source: ABdhPJxKdqFqfL7xuc3s+WdsojPu3tY6PLqK4sVB4rB6S59yfpnWW0p0L5BzV9TGDFMjVhphJCSaLg==
+X-Received: by 2002:a05:6870:12cc:: with SMTP id 12mr902265oam.215.1644420916147;
+        Wed, 09 Feb 2022 07:35:16 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id v10sm6624360oto.53.2022.02.09.07.35.16
+        by smtp.gmail.com with ESMTPSA id t2sm6862136ooo.24.2022.02.09.07.35.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 07:35:17 -0800 (PST)
-Received: (nullmailer pid 391819 invoked by uid 1000);
+        Wed, 09 Feb 2022 07:35:15 -0800 (PST)
+Received: (nullmailer pid 391817 invoked by uid 1000);
         Wed, 09 Feb 2022 15:35:08 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, kernel@pengutronix.de,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>
-In-Reply-To: <20220209081025.2178435-2-o.rempel@pengutronix.de>
-References: <20220209081025.2178435-1-o.rempel@pengutronix.de> <20220209081025.2178435-2-o.rempel@pengutronix.de>
-Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: add schema for ASIX USB Ethernet controllers
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Cc:     srinivas.kandagatla@linaro.org, perex@perex.cz,
+        plai@codeaurora.org, agross@kernel.org, tiwai@suse.com,
+        bgoswami@codeaurora.org, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, broonie@kernel.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        swboyd@chromium.org, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        rohitkr@codeaurora.org, lgirdwood@gmail.com
+In-Reply-To: <1644413181-26358-2-git-send-email-quic_srivasam@quicinc.com>
+References: <1644413181-26358-1-git-send-email-quic_srivasam@quicinc.com> <1644413181-26358-2-git-send-email-quic_srivasam@quicinc.com>
+Subject: Re: [RESEND v8 1/3] ASoC: google: dt-bindings: Add sc7280-herobrine machine bindings
 Date:   Wed, 09 Feb 2022 09:35:08 -0600
-Message-Id: <1644420908.420720.391818.nullmailer@robh.at.kernel.org>
+Message-Id: <1644420908.409006.391816.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 09:10:24 +0100, Oleksij Rempel wrote:
-> Create initial schema for ASIX USB Ethernet controllers and import all
-> currently supported USB IDs form drivers/net/usb/asix_devices.c
+On Wed, 09 Feb 2022 18:56:19 +0530, Srinivasa Rao Mandadapu wrote:
+> Add devicetree bindings documentation file for sc7280 sound card
+> registration.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 > ---
->  .../devicetree/bindings/net/asix,ax88178.yaml | 68 +++++++++++++++++++
->  1 file changed, 68 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
+>  .../bindings/sound/google,sc7280-herobrine.yaml    | 171 +++++++++++++++++++++
+>  1 file changed, 171 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
 > 
 
-Running 'make dtbs_check' with the schema in this patch gives the
-following warnings. Consider if they are expected or the schema is
-incorrect. These may not be new warnings.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Note that it is not yet a requirement to have 0 warnings for dtbs_check.
-This will change in the future.
+yamllint warnings/errors:
 
-Full log is available here: https://patchwork.ozlabs.org/patch/1590224
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@0: 'sound-dai' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@1: 'sound-dai' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@2: 'sound-dai' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@3: 'sound-dai' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@5: 'sound-dai' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
 
+doc reference errors (make refcheckdocs):
 
-asix@1: $nodename:0: 'asix@1' does not match '^ethernet(@.*)?$'
-	arch/arm/boot/dts/tegra20-colibri-eval-v3.dt.yaml
-	arch/arm/boot/dts/tegra20-colibri-iris.dt.yaml
-	arch/arm/boot/dts/tegra30-colibri-eval-v3.dt.yaml
+See https://patchwork.ozlabs.org/patch/1590375
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
