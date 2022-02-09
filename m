@@ -2,132 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4032C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1824C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbiBITOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:14:45 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38800 "EHLO
+        id S231133AbiBITO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:14:56 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbiBITOn (ORCPT
+        with ESMTP id S232118AbiBITOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:14:43 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F458C02B650
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:14:37 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id x193so3593297oix.0
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:14:37 -0800 (PST)
+        Wed, 9 Feb 2022 14:14:46 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D07C00F639;
+        Wed,  9 Feb 2022 11:14:40 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id r131so2099212wma.1;
+        Wed, 09 Feb 2022 11:14:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=i83UrggLqqR8sfxQp+IQdzECOxPCCxqxbgAjSDGHq/Y=;
-        b=n/sSem6NYUo+UdF/1GntVWuR1kT+0OyWraS+6jrUlMW2hux65KDqnHZrEiPE7QEJiF
-         2nftYFoT7AtMqZ+Lsom7cvyvd5bVPwga1sPkB8lAFJ3iSBOB5T7INgDuYFizA0BpSCJO
-         QHtOevRx7L/UmSgNQ4GhitW6+QAx5PAxidzf6PKNPcP4j5ajzKcS7J+/6i/jrZAenNpc
-         4wtyAbAFWqfV0ahtL76JY/9PSGTNOYHroN4nJ42A2O2yOv/sxRkDDNdoWg0ka2etLVNi
-         51OEU7usFE2QMy5FRy+c2EF/dqy4CNz5AAsRY80iCisWg1OTs4YBHrnNqUcmPgzgiJU8
-         yJ1w==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=53AqFhwrg5sf39zbHRlZ7vehLvu2fcixViHXJDSalrM=;
+        b=jsWd78AlHH12GCKj2sM1lGyk7uPOeN2Hbv9zgbd6Jh90rE/VED+SCZQ7MvUbRIpQGQ
+         toDPAuiewlaGeRaYS8OpYAyIo1BRtg9ObuFi66RmkKYrzvRv3f5QIyZwjYyPuwXxwpOO
+         wLXL+aKLyYGe6lUnUuzrFLCypTXYJlj0JcfbJAaiM0DDX+gySER0xQduBFYIxFFt19pQ
+         cLtKzBzncDDqs9mQM+qiR/kcl5dWTIxgfOXz2Be2VG6ssBsjvkqgsjGlwBXcoLt5Pie0
+         /c9bNrxQltcrKUb24wOJFNrN/p6/GrgN6uBaqTcJAynAOoi2goC8YCjpHmekvKJj0rbE
+         fsMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=i83UrggLqqR8sfxQp+IQdzECOxPCCxqxbgAjSDGHq/Y=;
-        b=y+ApBx84Yj4s+8tgFzmK0XBtmfLp8Kk24W5hAmrgT178Ze+zgS3yQ6xkauSKt79+IL
-         NTC6PgpQjVmlBWgZKTA3t2fL1+/FhXBhMJl53xyK2Rjf89z6KrP+ilp+gh7m/KXz9qVQ
-         IqWaDh0U49WQkXehE1eg3yNHwxP3M6jUDwAA8yDB8f2jCQYkWhGbvqHhJJlED337rO41
-         e6FMh8USYm/OOkEMK+d+VU/EIQMMm4WG5kKUI6ZlprLP15yTXB5YZCikwRds5TkoM1g/
-         2beGtVVS9vjzAH2uU7UvzFslpGlSiu36+iOz7siE7ccoamlDaG5WqkSFArbND7GDcoct
-         Jdtg==
-X-Gm-Message-State: AOAM531K/ns5AZriFdkfi2fuxpkg24WaGL1xZ2fUSUw99r/9TfCm+VsJ
-        BCKdQHu8qwql+BDWcccBSLY0aw==
-X-Google-Smtp-Source: ABdhPJzNqLMqK731CrdUn6LdyrYJwYcsrQuDHu/wYHmXgCn+SMhJhaGK1IYh4ATk0fCF1/NvdkNh/Q==
-X-Received: by 2002:aca:ab0d:: with SMTP id u13mr2058811oie.138.1644434066754;
-        Wed, 09 Feb 2022 11:14:26 -0800 (PST)
-Received: from [192.168.11.51] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id a15sm7127523oil.13.2022.02.09.11.14.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 11:14:26 -0800 (PST)
-Message-ID: <72fa3837-1792-9a45-c1c2-7863d3381c31@kali.org>
-Date:   Wed, 9 Feb 2022 13:14:24 -0600
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=53AqFhwrg5sf39zbHRlZ7vehLvu2fcixViHXJDSalrM=;
+        b=cqxw5GPMUzs6sCcP49x0HD1VhkIdJr4qPNYRpbPZTMwoKHLcmsqIPGMGfnBe8LNBjD
+         zeht2ctojXPSmLxb0f5dB47I/T+N6DUVIvj3y7Gzp/xQAXKOruZwMD/HRPzXfjL5ZzNz
+         zFzEWtI/P8N/fQ+htotRx3tBCCYBkF+CzRHy3kmNZABRk14CTAl8+9q7vdc7LdcabzCd
+         7R6uEUl2Z/+A4SBREwVzk75zKCl8/KgGhYyQW+wU+46Z79//8/5oD6QvOB01pg2AFP7I
+         oCAjDJ4AbaUq7sgk8/Ta4mp3dXPTqE3JyJ8pd7oMIl1SN/kWuXHzEB7+MCTMowITLVID
+         pNRQ==
+X-Gm-Message-State: AOAM530Wha2/VNScR42hkXWxMQlbETLFBBjE/mIh9cU3ay0++1HatCZ2
+        vvKL75JbG8+Q2vkhm43KK2Y=
+X-Google-Smtp-Source: ABdhPJwhmM58FyRk4hJCT5mMbz2jGwH5dhixXieg1tw4oT6/MTcNt7zs5Z0qZofSAHx3/kkf3YsMcw==
+X-Received: by 2002:a05:600c:2944:: with SMTP id n4mr3393140wmd.190.1644434071348;
+        Wed, 09 Feb 2022 11:14:31 -0800 (PST)
+Received: from krava ([83.240.63.12])
+        by smtp.gmail.com with ESMTPSA id l10sm19669970wry.79.2022.02.09.11.14.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 11:14:30 -0800 (PST)
+Date:   Wed, 9 Feb 2022 20:14:28 +0100
+From:   Jiri Olsa <olsajiri@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 2/8] bpf: Add bpf_get_func_ip kprobe helper for fprobe
+ link
+Message-ID: <YgQSlAIdjyC/FOgy@krava>
+References: <20220202135333.190761-1-jolsa@kernel.org>
+ <20220202135333.190761-3-jolsa@kernel.org>
+ <CAEf4Bzbrj01RJq7ArAo-kX-+8rPx9j5OH1OvGHxVJxiq8rn3FA@mail.gmail.com>
+ <YgPXVXJnPKQ7lOi9@krava>
+ <CAEf4BzYxtoE8Gu62oNSdVxvsv2K_5CPSdGS3Qd0Jgaegvw7sfw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.1
-Subject: Re: [v1 2/2] clk: qcom: dispcc: Update gdsc flag for display GDSC
-Content-Language: en-US
-To:     Taniya Das <tdas@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220209172513.17873-1-tdas@codeaurora.org>
- <20220209172513.17873-2-tdas@codeaurora.org>
-From:   Steev Klimaszewski <steev@kali.org>
-In-Reply-To: <20220209172513.17873-2-tdas@codeaurora.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzYxtoE8Gu62oNSdVxvsv2K_5CPSdGS3Qd0Jgaegvw7sfw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Taniya,
+On Wed, Feb 09, 2022 at 08:05:05AM -0800, Andrii Nakryiko wrote:
+> On Wed, Feb 9, 2022 at 7:01 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> >
+> > On Mon, Feb 07, 2022 at 10:59:18AM -0800, Andrii Nakryiko wrote:
+> > > On Wed, Feb 2, 2022 at 5:53 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > >
+> > > > Adding support to call get_func_ip_fprobe helper from kprobe
+> > > > programs attached by fprobe link.
+> > > >
+> > > > Also adding support to inline it, because it's single load
+> > > > instruction.
+> > > >
+> > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > ---
+> > > >  kernel/bpf/verifier.c    | 19 ++++++++++++++++++-
+> > > >  kernel/trace/bpf_trace.c | 16 +++++++++++++++-
+> > > >  2 files changed, 33 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > > index 1ae41d0cf96c..a745ded00635 100644
+> > > > --- a/kernel/bpf/verifier.c
+> > > > +++ b/kernel/bpf/verifier.c
+> > > > @@ -13625,7 +13625,7 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+> > > >                         continue;
+> > > >                 }
+> > > >
+> > > > -               /* Implement bpf_get_func_ip inline. */
+> > > > +               /* Implement tracing bpf_get_func_ip inline. */
+> > > >                 if (prog_type == BPF_PROG_TYPE_TRACING &&
+> > > >                     insn->imm == BPF_FUNC_get_func_ip) {
+> > > >                         /* Load IP address from ctx - 16 */
+> > > > @@ -13640,6 +13640,23 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
+> > > >                         continue;
+> > > >                 }
+> > > >
+> > > > +               /* Implement kprobe/fprobe bpf_get_func_ip inline. */
+> > > > +               if (prog_type == BPF_PROG_TYPE_KPROBE &&
+> > > > +                   eatype == BPF_TRACE_FPROBE &&
+> > > > +                   insn->imm == BPF_FUNC_get_func_ip) {
+> > > > +                       /* Load IP address from ctx (struct pt_regs) ip */
+> > > > +                       insn_buf[0] = BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_1,
+> > > > +                                                 offsetof(struct pt_regs, ip));
+> > >
+> > > Isn't this architecture-specific? I'm starting to dislike this
+> >
+> > ugh, it is.. I'm not sure we want #ifdef CONFIG_X86 in here,
+> > or some arch_* specific function?
+> 
+> 
+> So not inlining it isn't even considered? this function will be called
+> once or at most a few times per BPF program invocation. Anyone calling
+> it in a tight loop is going to use it very-very suboptimally (and even
+> then useful program logic will dominate). There is no point in
+> inlining it.
 
-On 2/9/22 11:25 AM, Taniya Das wrote:
-> Update the mdss gdsc flag for SC7180/SC7280/SM8150/SM8250
-> to not program the transition delay.
->
-> Fixes: dd3d06622138 ("clk: qcom: Add display clock controller driver for SC7180")
-> Fixes: 1a00c962f9cd ("clk: qcom: Add display clock controller driver for SC7280")
-> Fixes: 80a18f4a8567 ("clk: qcom: Add display clock controller driver for SM8150 and SM8250")
-> Signed-off-by: Taniya Das <tdas@codeaurora.org>
-> ---
->   drivers/clk/qcom/dispcc-sc7180.c | 2 +-
->   drivers/clk/qcom/dispcc-sc7280.c | 2 +-
->   drivers/clk/qcom/dispcc-sm8250.c | 2 +-
->   3 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/clk/qcom/dispcc-sc7180.c b/drivers/clk/qcom/dispcc-sc7180.c
-> index 538e4963c915..c203888ab2ca 100644
-> --- a/drivers/clk/qcom/dispcc-sc7180.c
-> +++ b/drivers/clk/qcom/dispcc-sc7180.c
-> @@ -629,7 +629,7 @@ static struct gdsc mdss_gdsc = {
->   		.name = "mdss_gdsc",
->   	},
->   	.pwrsts = PWRSTS_OFF_ON,
-> -	.flags = HW_CTRL,
-> +	.flags = HW_CTRL |  DEFAULT_TRANSITION_DELAY,
->   };
-There's an extra space after the |
->   static struct gdsc *disp_cc_sc7180_gdscs[] = {
-> diff --git a/drivers/clk/qcom/dispcc-sc7280.c b/drivers/clk/qcom/dispcc-sc7280.c
-> index 4ef4ae231794..8e1a2d4a8120 100644
-> --- a/drivers/clk/qcom/dispcc-sc7280.c
-> +++ b/drivers/clk/qcom/dispcc-sc7280.c
-> @@ -791,7 +791,7 @@ static struct gdsc disp_cc_mdss_core_gdsc = {
->   		.name = "disp_cc_mdss_core_gdsc",
->   	},
->   	.pwrsts = PWRSTS_OFF_ON,
-> -	.flags = HW_CTRL | RETAIN_FF_ENABLE,
-> +	.flags = HW_CTRL | RETAIN_FF_ENABLE | DEFAULT_TRANSITION_DELAY,
->   };
->
->   static struct clk_regmap *disp_cc_sc7280_clocks[] = {
-> diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
-> index 566fdfa0a15b..4d64d499a285 100644
-> --- a/drivers/clk/qcom/dispcc-sm8250.c
-> +++ b/drivers/clk/qcom/dispcc-sm8250.c
-> @@ -1130,7 +1130,7 @@ static struct gdsc mdss_gdsc = {
->   		.name = "mdss_gdsc",
->   	},
->   	.pwrsts = PWRSTS_OFF_ON,
-> -	.flags = HW_CTRL,
-> +	.flags = HW_CTRL | DEFAULT_TRANSITION_DELAY,
->   	.supply = "mmcx",
->   };
->
-> --
-> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
-> of the Code Aurora Forum, hosted by the  Linux Foundation.
->
--- steev
+I agree that given its usage pattern there won't be too much gain,
+on the other hand it's simple verifier code changing call/load/ret
+into simple load, so I thought why not.. also there are just few
+helpers we can inline so easily
+
+but yea.. I can't think of any sane usage of this helper that inlining
+would matter for.. which doesn't mean there isn't one ;-)
+
+jirka
+
+> 
+> >
+> > jirka
+> >
+> > > inlining whole more and more. It's just a complication in verifier
+> > > without clear real-world benefits. We are clearly prematurely
+> > > optimizing here. In practice you'll just call bpf_get_func_ip() once
+> > > and that's it. Function call overhead will be negligible compare to
+> > > other *userful* work you'll be doing in your BPF program.
+> > >
+> > >
+> > > > +
+> > > > +                       new_prog = bpf_patch_insn_data(env, i + delta, insn_buf, 1);
+> > > > +                       if (!new_prog)
+> > > > +                               return -ENOMEM;
+> > > > +
+> > > > +                       env->prog = prog = new_prog;
+> > > > +                       insn      = new_prog->insnsi + i + delta;
+> > > > +                       continue;
+> > > > +               }
+> > > > +
+> > > >  patch_call_imm:
+> > > >                 fn = env->ops->get_func_proto(insn->imm, env->prog);
+> > > >                 /* all functions that have prototype and verifier allowed
+> > > > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > > > index a2024ba32a20..28e59e31e3db 100644
+> > > > --- a/kernel/trace/bpf_trace.c
+> > > > +++ b/kernel/trace/bpf_trace.c
+> > > > @@ -1036,6 +1036,19 @@ static const struct bpf_func_proto bpf_get_func_ip_proto_kprobe = {
+> > > >         .arg1_type      = ARG_PTR_TO_CTX,
+> > > >  };
+> > > >
+> > > > +BPF_CALL_1(bpf_get_func_ip_fprobe, struct pt_regs *, regs)
+> > > > +{
+> > > > +       /* This helper call is inlined by verifier. */
+> > > > +       return regs->ip;
+> > > > +}
+> > > > +
+> > > > +static const struct bpf_func_proto bpf_get_func_ip_proto_fprobe = {
+> > > > +       .func           = bpf_get_func_ip_fprobe,
+> > > > +       .gpl_only       = false,
+> > > > +       .ret_type       = RET_INTEGER,
+> > > > +       .arg1_type      = ARG_PTR_TO_CTX,
+> > > > +};
+> > > > +
+> > > >  BPF_CALL_1(bpf_get_attach_cookie_trace, void *, ctx)
+> > > >  {
+> > > >         struct bpf_trace_run_ctx *run_ctx;
+> > > > @@ -1279,7 +1292,8 @@ kprobe_prog_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> > > >                 return &bpf_override_return_proto;
+> > > >  #endif
+> > > >         case BPF_FUNC_get_func_ip:
+> > > > -               return &bpf_get_func_ip_proto_kprobe;
+> > > > +               return prog->expected_attach_type == BPF_TRACE_FPROBE ?
+> > > > +                       &bpf_get_func_ip_proto_fprobe : &bpf_get_func_ip_proto_kprobe;
+> > > >         case BPF_FUNC_get_attach_cookie:
+> > > >                 return &bpf_get_attach_cookie_proto_trace;
+> > > >         default:
+> > > > --
+> > > > 2.34.1
+> > > >
