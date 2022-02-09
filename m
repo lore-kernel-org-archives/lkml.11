@@ -2,129 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE81FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiBIQSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:18:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
+        id S236701AbiBIQTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:19:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236449AbiBIQSA (ORCPT
+        with ESMTP id S236856AbiBIQT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:18:00 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B20C05CB88
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:17:59 -0800 (PST)
-Date:   Wed, 09 Feb 2022 16:17:57 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644423478;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=stjew1c1sUObQqsDAEroSIu/WUuiCdQqbTu43dIG2Ow=;
-        b=ie65Lss64vBqGu3FZ76xd2YC2Kp4CRv7QeF850X0aIBDfUZyPGcW3+E7I6y3aVU4qdKjF1
-        4DlH6/WlDCYpAuNoBK9sqbYj5H5ZNh6gWlelOIKgIqvvzl3U513uuqTc9D2EF2KbdmHwOC
-        V20wDex5etPRxnn9VdZuAJGpByP1B2JCbMMNYZKJfDbqZ2sEMX3gfvGloJGNNOUdfUtyqb
-        UkDF9cIVQoWg72g1AhAvBxT8VRCVPeGXqVoAd9l4xRN0yJQQp22VNof3hWNqJHIV2eqJiU
-        hj72UMJzGvkd3dFOQOJySzIIpC1S7T3O0rBIGFLSrknrVp/2gWw7NUo7PRkMuw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644423478;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=stjew1c1sUObQqsDAEroSIu/WUuiCdQqbTu43dIG2Ow=;
-        b=iAJ411k06+X1mkAs8vtSqCIALn9KYNrf/IHA2cyOk8DlGSR0rC6j/JpbljwSXjrgmYLFGc
-        NPkzOViFIJWGQIBg==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/imx-intmux: Move PM device over
- to irq domain
-Cc:     Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
-        tglx@linutronix.de
-In-Reply-To: <20220201120310.878267-6-maz@kernel.org>
-References: <20220201120310.878267-6-maz@kernel.org>
+        Wed, 9 Feb 2022 11:19:29 -0500
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D9BC035444;
+        Wed,  9 Feb 2022 08:19:15 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 8395F580206;
+        Wed,  9 Feb 2022 11:19:14 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Wed, 09 Feb 2022 11:19:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=55OcdTedgkHCnbbZ2TtGyVZyNIMSUAAyr5X9c0
+        GKBAo=; b=v4uF0DiPVnte+ne88sk9qzpOAVX01TfYo6w65K0GaERxBknbIBSpOj
+        xvkQ4x4ZF7Ib5pRqxvDw8S6edUrRP9YEXydxX8H1KPGe2KRTsVGyJiwR6g53YOFs
+        14ZZgZChtil8NH3pBopcVOS2rS1Oo6+UXNG1aCfxdVraU1uK86weFB7MjrQQOgWm
+        zy9vI3MJ7dIP4LGHgNadh5bzArL7G1tVj5tOiDyyshfPvmHsYC/HV4FTbnTQslDP
+        N/SuEdE0b3JsgtfLUEOQeTZTIOyZNLZvaS/44VtfE7gn8j2V2BP9GqLpm3oZuI7D
+        vv3XUiY2KwMfPdBHzocgIC+lvn1Cz7pQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=55OcdTedgkHCnbbZ2
+        TtGyVZyNIMSUAAyr5X9c0GKBAo=; b=QKx7tcdhSvKwrYqcqgNqoDzaNSr7aatII
+        r/AZAo45FibgSdw54iu7sHS8XbJzcAe/cElcNy95RG9Fd2DgL/exIF+Qp1gSpNzb
+        yLlaRnmaEHQp6969YQgV90nR48DPBBNJJHq1lhmO/ezw3ry8GBJ4Jf1Enm+bwIKS
+        zRTDF/hWS4OoQfO5twepq9lI8Qri+NPoBhyfxALjvYGvTN4snJJFi6lThDUdaFH4
+        BJ3oE5Y7QEjWsbdq+itBmJqNbNCmPIMEzYyZ3H2qKyRGkQ2CL3IEmrcFJJe+PEBg
+        UlZXxa+C209sMipZKe9BAPYDqcWUhvxkKFZmNVCL2MZCDzV04Hwtg==
+X-ME-Sender: <xms:gekDYkeuA58gXxQ0wyORseyxSG8qm4NKR8QqXs4RBCSCbzzc7qgB6w>
+    <xme:gekDYmMaj4bt8CYNBC3mmXNYRFB5dtqucfqSg-pYKguhQo1C612oTiSIGST9aR8mD
+    Dcc_-ulJBRs4CU5mLU>
+X-ME-Received: <xmr:gekDYliGRwG8Kx3PxCpDc2PpXi3ba9mMWYnhR4NLJ-bRWw-hx-prNSaDfmMmTm_1f6pgtH0hOv3EbGPRveIuPjZqLYM1W95fLlLdFVM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgdekhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:gekDYp-vKjx7qfo0DnVHWJw3zjqPaQ-nwNJ3_72oh8v28CWeA_DbXw>
+    <xmx:gekDYgtlzfycRTJFU0cyWdcdAXshxgYOoR9kAB-oRuneEAFSjhUHYg>
+    <xmx:gekDYgGERl31H7ez-Xu_vcirfybh7cv_tPpHqYjGU77bKVycMX6d9A>
+    <xmx:gukDYgQ0EWj40OfKWnf76vkG2LbPdongTb72ops65mEaW_tMIhd5Fw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 9 Feb 2022 11:19:13 -0500 (EST)
+Date:   Wed, 9 Feb 2022 17:19:11 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Message-ID: <20220209161911.eififnhc2csg4y46@houat>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <f5381561-25da-61e3-5025-fa6dd61dd730@189.cn>
+ <20220209084331.fpq5ng3yuqxmby4q@houat>
+ <def50622-fe08-01f7-83bd-e6e0bc39fe1b@189.cn>
 MIME-Version: 1.0
-Message-ID: <164442347752.16921.16997392029622093003.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ss2ssq6u6ix5jfma"
+Content-Disposition: inline
+In-Reply-To: <def50622-fe08-01f7-83bd-e6e0bc39fe1b@189.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-Commit-ID:     fb140b9c0fe1109ac2269443216d114751a030c0
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/fb140b9c0fe1109ac2269443216d114751a030c0
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Tue, 01 Feb 2022 12:03:03 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Wed, 09 Feb 2022 13:36:53 
+--ss2ssq6u6ix5jfma
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-irqchip/imx-intmux: Move PM device over to irq domain
+On Wed, Feb 09, 2022 at 11:41:06PM +0800, Sui Jingfeng wrote:
+> > Then, you have "modeset", and I'm not sure why it's supposed to be
+> > there, at all. This is a modesetting driver, why would I want to disable
+> > modesetting entirely?
+>=20
+> Something you want fbdev driver, for example simple-framebuffer driver wh=
+ich
+> using the firmware passed fb (screeninfo).
+>=20
+> besides, text mode support.
 
-Move the reference to the device over to the irq domain.
-This allows the irq_chip structure to be directly used instead
-of taking a copy for each instance.
+Then you want to use the generic nomodeset argument.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Link: https://lore.kernel.org/r/20220201120310.878267-6-maz@kernel.org
----
- drivers/irqchip/irq-imx-intmux.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+Maxime
 
-diff --git a/drivers/irqchip/irq-imx-intmux.c b/drivers/irqchip/irq-imx-intmux.c
-index e86ff74..80aaea8 100644
---- a/drivers/irqchip/irq-imx-intmux.c
-+++ b/drivers/irqchip/irq-imx-intmux.c
-@@ -61,7 +61,6 @@
- #define CHAN_MAX_NUM		0x8
- 
- struct intmux_irqchip_data {
--	struct irq_chip		chip;
- 	u32			saved_reg;
- 	int			chanidx;
- 	int			irq;
-@@ -114,7 +113,7 @@ static void imx_intmux_irq_unmask(struct irq_data *d)
- 	raw_spin_unlock_irqrestore(&data->lock, flags);
- }
- 
--static struct irq_chip imx_intmux_irq_chip = {
-+static struct irq_chip imx_intmux_irq_chip __ro_after_init = {
- 	.name		= "intmux",
- 	.irq_mask	= imx_intmux_irq_mask,
- 	.irq_unmask	= imx_intmux_irq_unmask,
-@@ -126,7 +125,7 @@ static int imx_intmux_irq_map(struct irq_domain *h, unsigned int irq,
- 	struct intmux_irqchip_data *data = h->host_data;
- 
- 	irq_set_chip_data(irq, data);
--	irq_set_chip_and_handler(irq, &data->chip, handle_level_irq);
-+	irq_set_chip_and_handler(irq, &imx_intmux_irq_chip, handle_level_irq);
- 
- 	return 0;
- }
-@@ -241,8 +240,6 @@ static int imx_intmux_probe(struct platform_device *pdev)
- 	}
- 
- 	for (i = 0; i < channum; i++) {
--		data->irqchip_data[i].chip = imx_intmux_irq_chip;
--		data->irqchip_data[i].chip.parent_device = &pdev->dev;
- 		data->irqchip_data[i].chanidx = i;
- 
- 		data->irqchip_data[i].irq = irq_of_parse_and_map(np, i);
-@@ -260,6 +257,7 @@ static int imx_intmux_probe(struct platform_device *pdev)
- 			goto out;
- 		}
- 		data->irqchip_data[i].domain = domain;
-+		irq_domain_set_pm_device(domain, &pdev->dev);
- 
- 		/* disable all interrupt sources of this channel firstly */
- 		writel_relaxed(0, data->regs + CHANIER(i));
+--ss2ssq6u6ix5jfma
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgPpfwAKCRDj7w1vZxhR
+xRuMAP9hV9LEuGnyc5HgLOl062hnV9Xm6caWfQUzcStzgYP4/QD+OgIBr59jS/HJ
+IZmuqee4UGRHzgaXB+crDV4SBZIVFQA=
+=hzlD
+-----END PGP SIGNATURE-----
+
+--ss2ssq6u6ix5jfma--
