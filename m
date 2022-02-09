@@ -2,62 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C391BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 00:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 00:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240090AbiBIAcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 19:32:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39086 "EHLO
+        id S240294AbiBIAgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 19:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiBIAcs (ORCPT
+        with ESMTP id S235164AbiBIAgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 19:32:48 -0500
-X-Greylist: delayed 8394 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 16:32:47 PST
-Received: from smtp.hosts.co.uk (smtp.hosts.co.uk [85.233.160.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480C9C06157B;
-        Tue,  8 Feb 2022 16:32:46 -0800 (PST)
-Received: from host81-132-12-162.range81-132.btcentralplus.com ([81.132.12.162] helo=[192.168.1.218])
-        by smtp.hosts.co.uk with esmtpa (Exim)
-        (envelope-from <antlists@youngman.org.uk>)
-        id 1nHYjC-0006Ve-Bl; Tue, 08 Feb 2022 22:12:50 +0000
-Message-ID: <d07a9d41-5a8f-a1f3-59f7-d2a75d6df2e5@youngman.org.uk>
-Date:   Tue, 8 Feb 2022 22:12:47 +0000
+        Tue, 8 Feb 2022 19:36:42 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229BEC061576
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 16:36:42 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id t9so747444plg.13
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 16:36:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vyW8p7EJ4pYdsF0v2XpOO4VdWGuUNyllm2/CQuuk14s=;
+        b=G2/gUi+XKMqWl1gxAIpjH8wkNS/yRe2lYltDO1boW13Nlu0THZ4F85NUCDnKx9ph9p
+         N1sD/5iakv74WkNT3jYiDo2J3N31ZFf9BuhpCC0Lab7ZSS4kZ/hODzSalKjK0KAVnKnf
+         PoINJM43hWB2VslI03Qztpb1kNp6xu+ISkaOskkgE/MWmL1EGBvxQBx0tbdyibCv+1xE
+         v4iJ1ABQz1ksREbQTiRIrgB5gKK+vuXGssPARqBC29c0CnQLs24upy/FoLN+J3fy4RpE
+         etwEcFH80bCPAKqDKPOmjiCh8dZDfWTS+7aMFlYh6ZWlXNXPso1jyNMo8D4t/9RxkhdE
+         iaSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vyW8p7EJ4pYdsF0v2XpOO4VdWGuUNyllm2/CQuuk14s=;
+        b=hTfBOwOLoaOQZdAzFA5mk+oK9/z8nZawD3xWQKDIrLS33dEj9sZuRzIivCF0ChRBHf
+         Fg9zjmCtifKV6aJZcDhQ5+JnLCB+1jHUi+6l26oZTVY/2wfN6ZoQXJjE6NIpyLKlKA2+
+         hoi0TEChDaBjSLvX6gyTzZLLDMmlRRkXyirSJ3lf6TSC9eXZym//Z9+otUHYQTXWVid3
+         n66DDopOsbKbWnWL/n3Q8om7JoTZ8StRZc8LnRTpXlVzoPK3HXMRCI+V5sjKIeBUQ/A1
+         xHWIWTm5DBXAN6elUVo6VsOjtdgH+nPSkzq8gNTWPkGJ4DrANfrFS3/2FVi+wOGqw/Sa
+         /upw==
+X-Gm-Message-State: AOAM532PRrvx77qMmU0LxtnYHBfvevh7nYK2AX+c7NZgDcvpZhwK8Hav
+        7gqJw+GRhWuDl+IXcIq7qCfOjQ==
+X-Google-Smtp-Source: ABdhPJw2HQcqc2cB2/DN76nqL4GUhsCuWhr3sDBQ+AusvTv2A73qenSTL+nr92Tz6QggDkjwZR5Ztw==
+X-Received: by 2002:a17:902:e851:: with SMTP id t17mr4359441plg.54.1644367001434;
+        Tue, 08 Feb 2022 16:36:41 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id pi9sm4261855pjb.46.2022.02.08.16.36.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 16:36:40 -0800 (PST)
+Date:   Wed, 9 Feb 2022 00:36:37 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
+        tglx@linutronix.de, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] KVM: Do compatibility checks on hotplugged CPUs
+Message-ID: <YgMMlaMnjQRqwW6w@google.com>
+References: <20220118064430.3882337-1-chao.gao@intel.com>
+ <20220118064430.3882337-5-chao.gao@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] lib/raid6/test/Makefile: Use `$(pound)` instead of
- `\#` for Make 4.3
-Content-Language: en-GB
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, Song Liu <song@kernel.org>,
-        linux-raid@vger.kernel.org,
-        Matt Brown <matthew.brown.dev@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
-From:   Wols Lists <antlists@youngman.org.uk>
-In-Reply-To: <20220208152148.48534-1-pmenzel@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118064430.3882337-5-chao.gao@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 15:21, Paul Menzel wrote:
-> So, do the same as commit 9564a8cf422d ("Kbuild: fix # escaping in .cmd
-> files for future Make") and commit 929bef467771 ("bpf: Use $(pound) instead
-> of \# in Makefiles") and define and use a `$(pound)` variable.
+On Tue, Jan 18, 2022, Chao Gao wrote:
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 528741601122..83f87fb1fa0a 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -4858,7 +4858,13 @@ static void hardware_enable_nolock(void *junk)
+>  
+>  static int kvm_online_cpu(unsigned int cpu)
+>  {
+> -	int ret = 0;
+> +	int ret;
+> +
+> +	ret = kvm_arch_check_processor_compat();
+> +	if (ret) {
+> +		pr_warn("kvm: CPU%d is incompatible with online CPUs", cpu);
 
-As commented elsewhere, for the sake of us ENGLISH speakers, *PLEASE* 
-make that $(hash). A pound sign is £.
+Hmm, I'd say omit the pr_warn() here too and instead add a pr_err() for the
+setup_vmcs_config() path in vmx_check_processor_compat().
 
-Cheers,
-Wol
+> +		return ret;
+> +	}
