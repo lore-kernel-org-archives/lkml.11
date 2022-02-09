@@ -2,85 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 744EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2840C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231261AbiBIUWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 15:22:14 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49066 "EHLO
+        id S231657AbiBIU0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:26:53 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbiBIUWM (ORCPT
+        with ESMTP id S231186AbiBIU0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 15:22:12 -0500
-X-Greylist: delayed 317 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 12:22:14 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53257E011172;
-        Wed,  9 Feb 2022 12:22:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644438132;
-        bh=23VcDO1UBkUQfDfSRRv997yJv60exeA4uC8n5A+TDxE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Zgdtg2z5F2obroxAmRdfIBqrnpL3GLo5hPzc+t0XnF19Hpb+0trtJIPCblAQEfSA+
-         rC7erf5o6k4vfcs7AA6rFHB8GPJanZA5UdHGY2eq9TrvLXFfI4K28Hqd8RM0VrehAn
-         GXklFyvGhtT3optYujMezvO9cgEggptfKDA/87P0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.77.2] ([80.245.77.2]) by web-mail.gmx.net
- (3c-app-gmx-bs62.server.lan [172.19.170.146]) (via HTTP); Wed, 9 Feb 2022
- 21:16:28 +0100
+        Wed, 9 Feb 2022 15:26:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FCFC1DC17A;
+        Wed,  9 Feb 2022 12:26:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66058B82103;
+        Wed,  9 Feb 2022 20:26:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42677C340E7;
+        Wed,  9 Feb 2022 20:26:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644438402;
+        bh=wlcycksblxHxIZsXzEsS0Ma9TIvWPN0qfiPXFmk0ycg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ola3+B6W2O6iaW/23E1kjacEf/ZdIgMbwWLbapwd25q7j/KKHMxHBRJT50Un/eEru
+         FYJFj+IX5tgpBuZtI1YQMV298kOlUoIsemIeB5GY2ywrdXc4CbFmwDnCwGPcXPgZ1z
+         yelL3hdUXkoAVkttiKa0Si9QTdztL7GoikjCpiEbA83ScpJmQwhfT9vQiESEWMj3DH
+         OJKBwguSaXCiQ5jgd6cS6NmVmrvFII5c3OLGgoN1Wi11/xdQT/Ce1Osx2H6XlbkIyD
+         8KNMosrj7lkYrSA/dvxJ9iNXJ9PGmSFWSAJuMahUYvdjMaZPSTdXHQHTAdxbOrhUx2
+         v3FvjYwSRYYSQ==
+Date:   Wed, 9 Feb 2022 12:26:39 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Vidya Sagar <vidyas@nvidia.com>
+Cc:     rafael.j.wysocki@intel.com, keith.busch@intel.com, hch@lst.de,
+        bhelgaas@google.com, mmaddireddy@nvidia.com, kthota@nvidia.com,
+        sagar.tv@gmail.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Query related to shutting down NVMe during system suspend
+Message-ID: <20220209202639.GB1616420@dhcp-10-100-145-180.wdc.com>
+References: <65b836cd-8d5d-b9c2-eb8f-2ee3ef46112b@nvidia.com>
 MIME-Version: 1.0
-Message-ID: <trinity-5a9379ec-3c81-4459-809f-7d0c8bd67d5b-1644437788730@3c-app-gmx-bs62>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Cc:     heiko@sntech.de, robh+dt@kernel.org, jbx6244@gmail.com,
-        devicetree@vger.kernel.org, vkoul@kernel.org,
-        michael.riesch@wolfvision.net, linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, kishon@ti.com,
-        p.zabel@pengutronix.de, cl@rock-chips.com,
-        kever.yang@rock-chips.com, lee.jones@linaro.org,
-        wulf@rock-chips.com, david.wu@rock-chips.com,
-        Yifeng Zhao <yifeng.zhao@rock-chips.com>
-Subject: Aw: [PATCH v8 4/4] arm64: dts: rockchip: add naneng combo phy nodes
- for rk3568
-Content-Type: text/plain; charset=UTF-8
-Date:   Wed, 9 Feb 2022 21:16:28 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220208091326.12495-5-yifeng.zhao@rock-chips.com>
-References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
- <20220208091326.12495-5-yifeng.zhao@rock-chips.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:9+TRw0BVUlgbzdQz4c/U8MCWL0dkdLvBqsfMaJL1wl7G+RYBTmCeniFA7SGXJtAHcV0h2
- 9GF3k3FhOR+9+X2SyUDlD4x/+5UYhlKnxyslUNR+kysThy2Sh96YZSrqTtPTnZTKFt/aqdRWLw9+
- lR4F6K6QnSHqtEQDpOeceO2tzOYdj7Y/NnrakFZmwOFwMxS1JziRjPrCeYTrQEOkx4v5vlic0H7g
- qDh0C7AMFMvR5YOo6nxFFNUjWeyn+uKuGNDnNy2Qv8BbxoNYGNowWHDi03fv8rTe0KMAXJj5K12x
- kw=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2w5mnw2TF7s=:VXkCKNLFaDSPo9Tomwz/Xv
- rYANgHuaLSVowsVuMmXGAOwxGtuHAUO4G1RNd+eN2pbpUX8wx32/ZB394t4fHlXpw1rfzYJ/O
- /HJxsce5iW/1T7uNAXxJaFxm1dR9OtmC2JOFF1qOv3hEvznortEdsgWa27jqGPnQC2gr0rWr0
- QhuZ0tcKCGz4+vV3h6goGziRdfHjNv8YYIBc4dzZZrXAWT17rMbDzp0QBqQLcR5FohSxzwHoO
- vBHXXLTec4QEZRiMSYFvKUPTXW8yVP+BkXnPHWldPvsQqk2DXRQZZIFpn9ulvLqcaS2knhiTK
- mRdwXn9rd68+n3npEh2i9bw607FfqEAtm4NpTNKPhBQ2OcFegTxRNAJzpYYDbcEb4LiNB5tuS
- og9nTM2fBbhImiDnXe9jSlH8WK6GADDoULZ34Zj1GpdpAaoo+7dcVPbfdC45+xQJJzHaP3i3u
- mVzmU5Y+29uVA+tPOT/aVH6zC8Xvdm0hCZ5uLCNsJY2nMloCjWSlKuMlH93TMdmLJxVrzouE7
- RuYf1P3nZvYRFhwhYlMQ14L3xEiEGmfi/wgzXiKor8PWjoMr5pBhDP6MKDO9nBU7il72prDzS
- KM9bD3zRE9+VHEsoCe2SxhcnfdN9BGjKPz8gZWdtDdp5/oqvbR2JGNNjYuG0oN9VMe+CHV/8u
- MAMpFrNNhKzBnTrsMLtva+DQJfreWu4NyYhqZ5UPw3wL0vRpIU7RUq/vi9SXrVy1d6Je8sOUb
- XFdL+QL6SqwnmIo5r6BM8v0eZX3nBa0ML+NqX11NytLyvUiuebU2ITVDru6yfBkthUM7dAK9Q
- IJpb3LB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <65b836cd-8d5d-b9c2-eb8f-2ee3ef46112b@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Tue, Feb 01, 2022 at 09:52:28PM +0530, Vidya Sagar wrote:
+> Hi Rafael & Christoph,
+> My query is regarding the comment and the code that follows after it at
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/nvme/host/pci.c?h=v5.17-rc2#n3243
+> What I understood from it is that, there is an underlying assumption
+> that the power to the devices is not removed during the suspend call.
+> In the case of device-tree based platforms like Tegra194, power is
+> indeed removed to the devices during suspend-resume process. Hence, the
+> NVMe devices need to be taken through the shutdown path irrespective of
+> whether the ASPM states are enabled or not.
+> I would like to hear from you the best method to follow to achieve this.
 
-Tested complete series on rk3568 based Bananapi R2 Pro
+Christoph prefers to append quirks for platforms that need full device
+shutdown on s2idle instead of changing the driver default.
 
-combphy0: usb3 (usbdrd3_0)
-combphy1: usb3 (usbdrd3_1)
-combphy2: sata (sata2)
-
-Tested-by: Frank Wunderlich <frank-w@public-files.de>
-
-regards Frank
+We use dmi matching for our current platform quirk list. I do not know
+what the equivalent is for device-tree based platforms. Do you know?
