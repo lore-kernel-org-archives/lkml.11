@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B17AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A59B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232331AbiBIGmw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:42:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
+        id S233909AbiBIGnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbiBIGms (ORCPT
+        with ESMTP id S232439AbiBIGnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:42:48 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C23EC043181
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:42:53 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id a19so1095596qvm.4
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 22:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3iRmgk4sE3G5R6ny6tEUeYqF+37fupjFGhzzwxVHVG8=;
-        b=JdppDHBgdz10eh2s8OCsYPjqQBQ8wFWZAWETfQHtXPXaTjFoP7TZCfKLcE9oyZEpkY
-         JKxEa+5wNV2aw+nYMiCguaKjOcNDJIobhu9T3yzprebIBHyE8BRFH+DBU1+Zy7XekGrn
-         LpkTAy0NR7y6kFQtY4W/pepaKpQJgBVcUfOtPb0wzs5JeFeKpmF6NVXjt24+RVyrZ1pb
-         ZohA8eMc6H3yAuu1ns7aLfq4vGCJrbgaeWLWIsBXpsJsH41M93wapFIjEVxtr88d+wFi
-         F+HqL+9g1MafeMNADh0yGo5Ji8FaxLT5E7lHSo24/XZlqDu3RK+Dd4pqZClgpUKRyNZz
-         cOlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3iRmgk4sE3G5R6ny6tEUeYqF+37fupjFGhzzwxVHVG8=;
-        b=tKFkugviBArXMR5BIsB78W2tWohGePXfdtD+GYJ25umJoaiFVawvx5zPxyztg/biUj
-         zcms2BLSwKT7DDpy+Y426OCZ9CP7KL0uWhe6tqqg3GVM+rFrj25XyuRga1uY2enCwNfB
-         iK5BSfjnI04OmFnNrOMNqAGb5BagFVZ00VpI8EbYHewu+gL77/dSd1d1OyJ0i9lmWIWF
-         k6S1ZAd4LtEbnpysD1D05KyZ+aJoJw0xmU9R7uML3hBBIVo1Ooz39WgxQ39IZR0TzdKl
-         eZUDqKW+NUoCkKskz6rl/8i/RNAD5oUC0RjjfCLOCxeZQ7l2nrumWvE+HFoUsEIFHfZr
-         tFuA==
-X-Gm-Message-State: AOAM531+w66GEwVdmhumpYSKMU/KuSEMElCPu5DFQw6bG5LFAXAscUQf
-        wzB59DI3glMoMuDo4+eGatc/oGEENUbKvQ==
-X-Google-Smtp-Source: ABdhPJy2lLB8xWFpGXYP/CJTJOWd1D0F2Y7DVX2HSlQlSMcbtD2yZI73Kb8Z3Z1TJLOIRyFt3Oh2Hg==
-X-Received: by 2002:a05:6a00:88e:: with SMTP id q14mr723726pfj.47.1644388658146;
-        Tue, 08 Feb 2022 22:37:38 -0800 (PST)
-Received: from localhost ([136.185.132.167])
-        by smtp.gmail.com with ESMTPSA id nv13sm5149261pjb.17.2022.02.08.22.37.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 22:37:37 -0800 (PST)
-Date:   Wed, 9 Feb 2022 12:07:35 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Stefan Agner <stefan@agner.ch>
-Subject: Re: [PATCH v2 0/2] Enable i.MX7 SOLO temperature sensor
-Message-ID: <20220209063735.552mz6q5cqymv5gx@vireshk-i7>
-References: <20220124082803.94286-1-francesco.dolcini@toradex.com>
+        Wed, 9 Feb 2022 01:43:10 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12898C043181
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 22:43:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644388994; x=1675924994;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=zlXbUZz2vYoVlpMq7pYN1eHaPofiuIFPWABuJTqRbIw=;
+  b=HIUFe8zzzKbvUGf45gvki5l/bqjNZqukZ43ID2+NL4ITeiOldF8+Ve10
+   NGHX6uVbppyiBaEtRzLLVGLotlreH63PIj+MuGFhOABehhUZMflRpECOu
+   ssK3G3RKhDU5cZsbHkvuA0eq4OaD8IadKMbUFNUtEeqO9DQqbcePcgIGT
+   Jls3TIM8sYJouga6D9+3d6E0hOYWd01dADr+Y4wKEHCxS1qfjswHmqxk4
+   fi/beDLIBSbtcWpnZWzq0g2ER1ixkIZm0CUDg1GMoZZgziNgrNgVtF8C5
+   Of4Xec50gulRKDh/cIuQD/1JO5njY/8mzIqBsgFUFoP4FldWukNsN76d1
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249342332"
+X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
+   d="scan'208";a="249342332"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 22:43:13 -0800
+X-IronPort-AV: E=Sophos;i="5.88,354,1635231600"; 
+   d="scan'208";a="540964099"
+Received: from ymtarple-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.231.100])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 22:43:13 -0800
+Date:   Tue, 8 Feb 2022 22:43:13 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        Matthew Brost <matthew.brost@intel.com>,
+        Thomas =?utf-8?Q?Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org,
+        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        John Harrison <John.C.Harrison@intel.com>
+Subject: Re: [PATCH v2 02/18] iosys-map: Add a few more helpers
+Message-ID: <20220209064313.ithagwtjztcf4jfb@ldmartin-desk2>
+X-Patchwork-Hint: comment
+References: <20220208104524.2516209-1-lucas.demarchi@intel.com>
+ <20220208104524.2516209-3-lucas.demarchi@intel.com>
+ <863e61f9-2888-11a2-271b-a443f4681987@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220124082803.94286-1-francesco.dolcini@toradex.com>
-User-Agent: NeoMutt/20180716-391-311a52
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <863e61f9-2888-11a2-271b-a443f4681987@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24-01-22, 09:28, Francesco Dolcini wrote:
-> To be able to read the T junction on i.MX CPU the imx-cpufreq-dt needs to be
-> loaded, however this is currently not the case for i.MX7S given that it does
-> have only one operating frequency.
-> 
-> Add "fsl,imx7s" to cpufreq-dt-platdev blocklist and a single frequency
-> operating point to the CPU.
-> 
-> With that it is now possible to correctly read the CPU T junction.
-> 
-> Tested on Toradex Colibri iMX7S
-> 
-> [    6.232577] imx-cpufreq-dt imx-cpufreq-dt: cpu speed grade 0 mkt segment 1 supported-hw 0x1 0x2
-> ...
-> [    6.880624] imx_thermal 30360000.anatop:tempmon: Extended Commercial CPU temperature grade - max:105C critical:100C passive:95C
-> 
-> root@colibri-imx7-02983025:~# cat /sys/class/thermal/thermal_zone0/temp 
-> 38000
-> 
-> v2:
->  - removed empty new line
->  - rebased and tested on v5.17-rc1
+On Wed, Feb 09, 2022 at 07:23:04AM +0100, Thomas Zimmermann wrote:
+>Hi
+>
+>Am 08.02.22 um 11:45 schrieb Lucas De Marchi:
+>>First the simplest ones:
+>>
+>>	- iosys_map_memset(): when abstracting system and I/O memory,
+>>	  just like the memcpy() use case, memset() also has dedicated
+>>	  functions to be called for using IO memory.
+>>	- iosys_map_memcpy_from(): we may need to copy data from I/O
+>>	  memory, not only to.
+>>
+>>In certain situations it's useful to be able to read or write to an
+>>offset that is calculated by having the memory layout given by a struct
+>>declaration. Usually we are going to read/write a u8, u16, u32 or u64.
+>>
+>>As a pre-requisite for the implementation, add iosys_map_memcpy_from()
+>>to be the equivalent of iosys_map_memcpy_to(), but in the other
+>>direction. Then add 2 pairs of macros:
+>>
+>>	- iosys_map_rd() / iosys_map_wr()
+>>	- iosys_map_rd_field() / iosys_map_wr_field()
+>>
+>>The first pair takes the C-type and offset to read/write. The second
+>>pair uses a struct describing the layout of the mapping in order to
+>>calculate the offset and size being read/written.
+>>
+>>We could use readb, readw, readl, readq and the write* counterparts,
+>>however due to alignment issues this may not work on all architectures.
+>>If alignment needs to be checked to call the right function, it's not
+>>possible to decide at compile-time which function to call: so just leave
+>>the decision to the memcpy function that will do exactly that.
+>>
+>>Finally, in order to use the above macros with a map derived from
+>>another, add another initializer: IOSYS_MAP_INIT_OFFSET().
+>>
+>>v2:
+>>   - Rework IOSYS_MAP_INIT_OFFSET() so it doesn't rely on aliasing rules
+>>     within the union
+>>   - Add offset to both iosys_map_rd_field() and iosys_map_wr_field() to
+>>     allow the struct itself to be at an offset from the mapping
+>>   - Add documentation to iosys_map_rd_field() with example and expected
+>>     memory layout
+>>
+>>Cc: Sumit Semwal <sumit.semwal@linaro.org>
+>>Cc: Christian König <christian.koenig@amd.com>
+>>Cc: Thomas Zimmermann <tzimmermann@suse.de>
+>>Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+>>Cc: dri-devel@lists.freedesktop.org
+>>Cc: linux-kernel@vger.kernel.org
+>>Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+>>---
+>>  include/linux/iosys-map.h | 202 ++++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 202 insertions(+)
+>>
+>>diff --git a/include/linux/iosys-map.h b/include/linux/iosys-map.h
+>>index edd730b1e899..c6b223534b21 100644
+>>--- a/include/linux/iosys-map.h
+>>+++ b/include/linux/iosys-map.h
+>>@@ -6,6 +6,7 @@
+>>  #ifndef __IOSYS_MAP_H__
+>>  #define __IOSYS_MAP_H__
+>>+#include <linux/kernel.h>
+>>  #include <linux/io.h>
+>>  #include <linux/string.h>
+>
+>Alphabetically sorted, please.
+>
+>What requires kernel.h? Can this be reduced to another include 
+>statement? Maybe stddef.h for offsetof() ?
 
-Applied. Thanks.
+Humn... I believe it was something in the previous implementation that
+is not there anymore. Because this builds fine without the include now
+and I don't think it is something being included by the headers already
+here.  So this additional include can just be removed.
 
--- 
-viresh
+Lucas De Marchi
