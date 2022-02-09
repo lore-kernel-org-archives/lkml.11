@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9647AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241271AbiBISxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:53:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        id S241275AbiBISxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:53:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241241AbiBISuz (ORCPT
+        with ESMTP id S240445AbiBISug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2FCC003663;
-        Wed,  9 Feb 2022 10:46:30 -0800 (PST)
+        Wed, 9 Feb 2022 13:50:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECA7C1DF8C1;
+        Wed,  9 Feb 2022 10:45:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78AA3B821BD;
-        Wed,  9 Feb 2022 18:46:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333D4C340EF;
-        Wed,  9 Feb 2022 18:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9C26166C;
+        Wed,  9 Feb 2022 18:45:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D99BC340EE;
+        Wed,  9 Feb 2022 18:45:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432388;
-        bh=/hVOJlsFWLKRbsZ0LCXQz1BHsIWJgYUIFS3HbLPfFkY=;
+        s=k20201202; t=1644432341;
+        bh=+sOF+s7HKahPE1JKaq2pvkIm6o9KcSqFdiRkd45zuQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFxpYPxhRXeqtH0r3P4DDmFWn2HD+UpHlbPKBkFV0snn5CZ/O/wUtATLrsz1q0tZ+
-         uxI5kzT+6bNqtcloKIq0Ki+p1dglPLCt5c5qzgH/3fKBMizXEkHlYYLCt4HGsGBG0u
-         IT2EZxRPlDEtFnWvzk9i+LQIBIlr+LKK6yxsqYhuVKvnc7iBcMRRx8zExqWq8x1wmX
-         McBox1+zA9TOah1fUqJXyo4e7SAV5XM+OjWYV5ujgfEdJwT7NmfIJIS9t9QqIK6oMp
-         b/g0vwspVc63n+W9NR/dykpNrwqx2hjJ5mL5GqbUQUktehPIUXgrbbfaLTt9eRGnKz
-         FN3XQiDy6ZzTQ==
+        b=um/PmPR/G71995Ij/oG0jkWkaySK2524dUhitzr0N9hMv4gsdRos5XggipUSFultc
+         yB6HQ3Qy6PQJA3z6rNVK2v2w6A90/jvXaFTuMvhnIhxoLTTfQKJNQ7jtED8hb0Boyh
+         +A0gMjzYucumElfX1ba2+5+LnmBvJ20HewyvJZoKcPmwkRhURVI0Z8wVPK5Kl15y7H
+         UwcHqH4+514nd25Hxr5tZC7Chd591Xv5nn56A6ZW1AiGfcJrZMkG3uUbgtNAVGxiF0
+         GQM+1RYhhvcWksTsnOF52ItdWDt26ZU42lLA37V9XBdTo+Cx3wTlYna4VcCqRgwkZH
+         pqeLjmC6do8Sg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jreuter@yaina.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 5/7] ax25: improve the incomplete fix to avoid UAF and NPD bugs
-Date:   Wed,  9 Feb 2022 13:45:48 -0500
-Message-Id: <20220209184550.48481-5-sashal@kernel.org>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
+        Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jack@suse.com
+Subject: [PATCH AUTOSEL 4.14 7/8] quota: make dquot_quota_sync return errors from ->sync_fs
+Date:   Wed,  9 Feb 2022 13:45:00 -0500
+Message-Id: <20220209184502.48363-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
-References: <20220209184550.48481-1-sashal@kernel.org>
+In-Reply-To: <20220209184502.48363-1-sashal@kernel.org>
+References: <20220209184502.48363-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,88 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
+[ Upstream commit dd5532a4994bfda0386eb2286ec00758cee08444 ]
 
-The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
-AX25 device") introduce lock_sock() into ax25_kill_by_device to
-prevent NPD bug. But the concurrency NPD or UAF bug will occur,
-when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+Strangely, dquot_quota_sync ignores the return code from the ->sync_fs
+call, which means that quotacalls like Q_SYNC never see the error.  This
+doesn't seem right, so fix that.
 
-The NULL pointer dereference bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-                             |     ax25_cb_del()
-  ...                        |     ...
-                             |     ax25->sk=NULL;
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |     ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is set to null before dereference
-site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
-in advance, and uses ax25_list_lock to protect it, which can synchronize
-with ax25_cb_del() and ensure the value of sock is not null before
-dereference sites.
-
-The concurrency UAF bug can be shown as below:
-
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-  ...                        |   ...
-                             |   sock_put(sk); //FREE
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |   ...
-  release_sock(s->sk); //(2) |
-  ...                        |
-
-The root cause is that the sock is released before dereference
-site (1) or (2). Therefore, this patch uses sock_hold() to increase
-the refcount of sock and uses ax25_list_lock to protect it, which
-can synchronize with ax25_cb_del() in ax25_destroy_socket() and
-ensure the sock wil not be released before dereference sites.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/quota/dquot.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index f4c8567e91b38..c4ef1be59cb19 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -80,6 +80,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- {
- 	ax25_dev *ax25_dev;
- 	ax25_cb *s;
-+	struct sock *sk;
+diff --git a/fs/quota/dquot.c b/fs/quota/dquot.c
+index 30f5da8f4affa..7c364cda8daac 100644
+--- a/fs/quota/dquot.c
++++ b/fs/quota/dquot.c
+@@ -680,9 +680,14 @@ int dquot_quota_sync(struct super_block *sb, int type)
+ 	/* This is not very clever (and fast) but currently I don't know about
+ 	 * any other simple way of getting quota data to disk and we must get
+ 	 * them there for userspace to be visible... */
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
+-	sync_blockdev(sb->s_bdev);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
++	ret = sync_blockdev(sb->s_bdev);
++	if (ret)
++		return ret;
  
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-@@ -88,13 +89,15 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			sk = s->sk;
-+			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
--			lock_sock(s->sk);
-+			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			release_sock(s->sk);
-+			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
--
-+			sock_put(sk);
- 			/* The entry could have been deleted from the
- 			 * list meanwhile and thus the next pointer is
- 			 * no longer valid.  Play it safe and restart
+ 	/*
+ 	 * Now when everything is written we can discard the pagecache so
 -- 
 2.34.1
 
