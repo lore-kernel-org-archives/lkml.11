@@ -2,103 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8372BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62741C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231840AbiBICmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:42:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52460 "EHLO
+        id S242311AbiBICmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:42:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242692AbiBIBUH (ORCPT
+        with ESMTP id S243919AbiBIBz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:20:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CF7C061576;
-        Tue,  8 Feb 2022 17:20:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AFF2AB81E10;
-        Wed,  9 Feb 2022 01:20:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC11C004E1;
-        Wed,  9 Feb 2022 01:20:02 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RxIrU9fy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644369601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jy1paGdVreYskR9ImlaMIVLBxY1lBag0eGim/MfjAUo=;
-        b=RxIrU9fyQdQevoVn/qY8p3mzsvW7xETGSJzK+ww5JByzVGt6DKfrYlLNCEHGXXrrKHQrvY
-        fV8MTUe2XQRO4VTlglj23KfO686AySoayeUjcW7/Q+Q+IeA78IwjMB76YO/T2A6sMNR6uB
-        45y0F7kU5q6kKsukGoLdyWcWpdZoC2E=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ca55a3c2 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 9 Feb 2022 01:20:01 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Biggers <ebiggers@google.com>
-Subject: [PATCH v2 4/9] random: ensure early RDSEED goes through mixer on init
-Date:   Wed,  9 Feb 2022 02:19:14 +0100
-Message-Id: <20220209011919.493762-5-Jason@zx2c4.com>
-In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
+        Tue, 8 Feb 2022 20:55:26 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F0C06157B;
+        Tue,  8 Feb 2022 17:55:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644371725; x=1675907725;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cFSvP3+npMUwdpU+EuZVnBjWbMWZP6LIj/t9xD3NmzM=;
+  b=fevRj8oEAu6r0OoVMEGCVLm5j7qluJ16VWOppm41DfBdlWFFvqMtIThf
+   vSWeNz0/TDTVtc4X2bJlirMrnmsYywLU2jPmSW6hlEgZvm+0rcRIDRkmG
+   hSkJFY10SffDXreo10WTCJn7BBmhwtg21OI69eOB8LuO9Au+N44YeOnxQ
+   U=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 17:55:25 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 17:55:24 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 8 Feb 2022 17:55:23 -0800
+Received: from [10.111.162.111] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
+ 17:55:21 -0800
+Message-ID: <b60d30cf-e435-49c4-a251-b910bc2e94ae@quicinc.com>
+Date:   Tue, 8 Feb 2022 17:55:18 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10
+ mins
+Content-Language: en-US
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        <linux-kernel@vger.kernel.org>
+CC:     <rafael@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <swboyd@chromium.org>,
+        <khsieh@codeaurora.org>, <nganji@codeaurora.org>,
+        <seanpaul@chromium.org>, <gregkh@linuxfoundation.org>,
+        <dmitry.baryshkov@linaro.org>, <aravindh@codeaurora.org>,
+        <freedreno@lists.freedesktop.org>
+References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
+ <8d67484c7e4b9fb4560d2eca1f71c75fde8bae0d.camel@sipsolutions.net>
+ <ebd340e4-2a02-d484-2ed0-9ee738d5b5c5@quicinc.com>
+ <c59bc1af9974484075091333a3c98a2088251321.camel@sipsolutions.net>
+ <a280fec2-754a-88ec-acc7-337e069e9148@quicinc.com>
+ <c2a6e29063793eecc5c65d32af9d826544404ecc.camel@sipsolutions.net>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <c2a6e29063793eecc5c65d32af9d826544404ecc.camel@sipsolutions.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Continuing the reasoning of "random: use RDSEED instead of RDRAND in
-entropy extraction" from this series, at init time we also don't want to
-be xoring RDSEED directly into the crng. Instead it's safer to put it
-into our entropy collector and then re-extract it, so that it goes
-through a hash function with preimage resistance.
+Hi Johannes
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+On 2/8/2022 1:54 PM, Johannes Berg wrote:
+> On Tue, 2022-02-08 at 13:40 -0800, Abhinav Kumar wrote:
+>>>
+>> I am checking what usermode sees and will get back ( I didnt see an
+>> error do most likely it was EOF ). I didnt follow the second part.
+> 
+> I think probably it got -ENODEV, looking at kernfs_file_read_iter().
+> 
+>> If the file descriptor read returns EOF, even if we consider them
+>> separate how will it resolve this issue?
+>>
+>> My earlier questions were related to fixing it in devcoredump to detect
+>> and fix it there. Are you suggesting to fix in usermode instead? How?
+>>
+> 
+> Yeah, no, you cannot fix it in userspace.
+> 
+> But I just followed the rabbit hole down kernfs and all, and it looks
+> like indeed the read would be cut short with -ENODEV, sorry.
+> 
+> It doesn't look like there's good API for this, but it seems at least
+> from the underlying kernfs POV it should be possible to get_device() in
+> open and put_device() in release, so that the device sticks around while
+> somebody has the file open? It's entirely virtual, so this should be OK?
+> 
+> johannes
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 81786bef0a8e..75dc370d83b5 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1218,24 +1218,18 @@ int __init rand_initialize(void)
- 	bool arch_init = true;
- 	unsigned long rv;
- 
-+	mix_pool_bytes(utsname(), sizeof(*(utsname())));
- 	mix_pool_bytes(&now, sizeof(now));
- 	for (i = BLAKE2S_BLOCK_SIZE; i > 0; i -= sizeof(rv)) {
--		if (!arch_get_random_seed_long(&rv) &&
--		    !arch_get_random_long(&rv))
--			rv = random_get_entropy();
--		mix_pool_bytes(&rv, sizeof(rv));
--	}
--	mix_pool_bytes(utsname(), sizeof(*(utsname())));
--
--	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
--	for (i = 4; i < 16; i++) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
- 			rv = random_get_entropy();
- 			arch_init = false;
- 		}
--		primary_crng.state[i] ^= rv;
-+		mix_pool_bytes(&rv, sizeof(rv));
- 	}
+Are you suggesting something like below?
+
+diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
+index 42dcf96..14203d0 100644
+--- a/fs/sysfs/file.c
++++ b/fs/sysfs/file.c
+@@ -32,6 +32,22 @@ static const struct sysfs_ops *sysfs_file_ops(struct 
+kernfs_node *kn)
+         return kobj->ktype ? kobj->ktype->sysfs_ops : NULL;
+  }
+
++static int sysfs_kf_open(struct kernfs_open_file *of)
++{
++       struct kobject *kobj = of->kn->parent->priv;
++       struct device *dev = kobj_to_dev(kobj);
 +
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
- 	if (arch_init && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		crng_init = 2;
--- 
-2.35.0
++       get_device(dev);
++}
++
++static void sysfs_kf_release(struct kernfs_open_file *of)
++{
++       struct kobject *kobj = of->kn->parent->priv;
++       struct device *dev = kobj_to_dev(kobj);
++
++       put_device(dev);
++}
++
+  /*
+   * Reads on sysfs are handled through seq_file, which takes care of hairy
+   * details like buffering and seeking.  The following function pipes
+@@ -211,6 +227,8 @@ static const struct kernfs_ops sysfs_file_kfops_wo = {
+  };
+
+  static const struct kernfs_ops sysfs_file_kfops_rw = {
++       .open       = sysfs_kf_open;
++       .release    = sysfs_kf_release;
+         .seq_show       = sysfs_kf_seq_show,
+         .write          = sysfs_kf_write,
+  };
+
+If so, dont you think this will be a more intrusive change just for the 
+sake of devcoredump? Any other way to keep the changes limited to 
+devcoredump?
+
+Thanks
+
+Abhinav
 
