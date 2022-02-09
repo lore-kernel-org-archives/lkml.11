@@ -2,100 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F30C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73FBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232088AbiBIPnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:43:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56482 "EHLO
+        id S236238AbiBIPng (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:43:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236209AbiBIPm5 (ORCPT
+        with ESMTP id S234255AbiBIPnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:42:57 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5309C05CB8A;
-        Wed,  9 Feb 2022 07:42:56 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7205821106;
-        Wed,  9 Feb 2022 15:42:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644421375; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cPanT84froBQDy0fnPPljPjc/sJJc6UFVNaQtZQNyJo=;
-        b=SdlN6/o0bkHJLdF7/rqstxANEqRu2FGQdADvtFm36FXgWN7qy8cv5E9FmMIqemtYqj5JCx
-        jcFKtYvkxRDAXyWddaU5BJQjRCKUXa8uB96+IfTENqG3s4IjsNq2JfIo9n1aVAoh4vUxkN
-        ye8z9cU4lRKUrZHOL79VeCmsS2uUcBg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644421375;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cPanT84froBQDy0fnPPljPjc/sJJc6UFVNaQtZQNyJo=;
-        b=0X+aVbHtAO76L1P2h7Y2RgH4e7i5tXnnZmX6Tcr6MKy1WuACuL/CGsKG7z3DXWtcr4kHZJ
-        FFE4oGuZFBJRVUCA==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 5BFF8A3B88;
-        Wed,  9 Feb 2022 15:42:55 +0000 (UTC)
-Date:   Wed, 9 Feb 2022 16:42:55 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-cc:     Luis Chamberlain <mcgrof@kernel.org>, Jessica Yu <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "kgdb-bugreport@lists.sourceforge.net" 
-        <kgdb-bugreport@lists.sourceforge.net>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>
-Subject: Re: [PATCH v2 0/5] Allocate module text and data separately
-In-Reply-To: <cover.1643282353.git.christophe.leroy@csgroup.eu>
-Message-ID: <alpine.LSU.2.21.2202091639491.32090@pobox.suse.cz>
-References: <cover.1643282353.git.christophe.leroy@csgroup.eu>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Wed, 9 Feb 2022 10:43:32 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9FBC0613CA;
+        Wed,  9 Feb 2022 07:43:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644421415; x=1675957415;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tT0ubbIOHy9IAuW3heCg9dBzqzLkwpWxBVD1B0pmpaQ=;
+  b=BimlXhnafmYZeRAnxWg3H1QUHe49YZWZ8WVj4XUYNhYY0TMlC8la1XUk
+   EewQqP+pJxFgBS8Mt+wQ6JbKaxIZgn2wZVKzFuOTKDIz0X0EDAbZq9qSu
+   Yt4kqx0515UDxcZkouXQn3giJq8Ny1aSsN0wDEw/71tRVY3kVXpRPAYCp
+   6Uz8HdT6h/9aNGBSKueBm/VrTd2xrlhwQpCGQc/Lx+7SejZnx8xXLLWlZ
+   Etb5ibPRyOscZV65RYrdKqTKyYpppmQwn/ewLLUIA+nTCHVWoCuNpSScz
+   +NiygLpxxOEr26fa8E/6F3xoYeuRuAMWomxroLWiiE+bbrDSQDzZd54t8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10252"; a="249435521"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="249435521"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 07:43:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="541143751"
+Received: from chenyu-dev.sh.intel.com ([10.239.158.61])
+  by orsmga008.jf.intel.com with ESMTP; 09 Feb 2022 07:43:28 -0800
+From:   Chen Yu <yu.c.chen@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Todd Brandt <todd.e.brandt@intel.com>,
+        Len Brown <len.brown@intel.com>, Chen Yu <yu.c.chen@intel.com>
+Subject: [PATCH] e1000e: Print PHY register address when MDI read/write fails
+Date:   Thu, 10 Feb 2022 07:43:02 +0800
+Message-Id: <20220209234302.50833-1-yu.c.chen@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022, Christophe Leroy wrote:
+There is occasional suspend error from e1000e which blocks the
+system from further suspending:
+[   20.078957] PM: pci_pm_suspend(): e1000e_pm_suspend+0x0/0x780 [e1000e] returns -2
+[   20.078970] PM: dpm_run_callback(): pci_pm_suspend+0x0/0x170 returns -2
+[   20.078974] e1000e 0000:00:1f.6: PM: pci_pm_suspend+0x0/0x170 returned -2 after 371012 usecs
+[   20.078978] e1000e 0000:00:1f.6: PM: failed to suspend async: error -2
+According to the code flow, this might be caused by broken MDI read/write to PHY registers.
+However currently the code does not tell us which register is broken. Thus enhance the debug
+information to print the offender PHY register for easier debugging.
 
-> This series allow architectures to request having modules data in
-> vmalloc area instead of module area.
-> 
-> This is required on powerpc book3s/32 in order to set data non
-> executable, because it is not possible to set executability on page
-> basis, this is done per 256 Mbytes segments. The module area has exec
-> right, vmalloc area has noexec. Without this change module data
-> remains executable regardless of CONFIG_STRICT_MODULES_RWX.
-> 
-> This can also be useful on other powerpc/32 in order to maximize the
-> chance of code being close enough to kernel core to avoid branch
-> trampolines.
-> 
-> Changes in v2:
-> - Dropped first two patches which are not necessary. They may be added back later as a follow-up series.
-> - Fixed the printks in GDB
-> 
-> Christophe Leroy (5):
->   modules: Always have struct mod_tree_root
->   modules: Prepare for handling several RB trees
->   modules: Introduce data_layout
->   modules: Add CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
->   powerpc: Select ARCH_WANTS_MODULES_DATA_IN_VMALLOC on book3s/32 and
->     8xx
-> 
->  arch/Kconfig                |   6 ++
->  arch/powerpc/Kconfig        |   1 +
->  include/linux/module.h      |   8 ++
->  kernel/debug/kdb/kdb_main.c |  10 +-
->  kernel/module.c             | 193 +++++++++++++++++++++++++-----------
->  5 files changed, 156 insertions(+), 62 deletions(-)
+Reported-by: Todd Brandt <todd.e.brandt@intel.com>
+Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+---
+ drivers/net/ethernet/intel/e1000e/phy.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Looks good to me apart from the typo I mentioned at v1. I will review 
-again once it is rebased on Aaron's patch set.
+diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
+index 0f0efee5fc8e..fd07c3679bb1 100644
+--- a/drivers/net/ethernet/intel/e1000e/phy.c
++++ b/drivers/net/ethernet/intel/e1000e/phy.c
+@@ -146,11 +146,11 @@ s32 e1000e_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data)
+ 			break;
+ 	}
+ 	if (!(mdic & E1000_MDIC_READY)) {
+-		e_dbg("MDI Read did not complete\n");
++		e_dbg("MDI Read PHY Reg Address %d did not complete\n", offset);
+ 		return -E1000_ERR_PHY;
+ 	}
+ 	if (mdic & E1000_MDIC_ERROR) {
+-		e_dbg("MDI Error\n");
++		e_dbg("MDI Read PHY Reg Address %d Error\n", offset);
+ 		return -E1000_ERR_PHY;
+ 	}
+ 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
+@@ -210,11 +210,11 @@ s32 e1000e_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data)
+ 			break;
+ 	}
+ 	if (!(mdic & E1000_MDIC_READY)) {
+-		e_dbg("MDI Write did not complete\n");
++		e_dbg("MDI Write PHY Reg Address %d did not complete\n", offset);
+ 		return -E1000_ERR_PHY;
+ 	}
+ 	if (mdic & E1000_MDIC_ERROR) {
+-		e_dbg("MDI Error\n");
++		e_dbg("MDI Write PHY Red Address %d Error\n", offset);
+ 		return -E1000_ERR_PHY;
+ 	}
+ 	if (((mdic & E1000_MDIC_REG_MASK) >> E1000_MDIC_REG_SHIFT) != offset) {
+-- 
+2.25.1
 
-Regards,
-Miroslav
