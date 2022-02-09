@@ -2,149 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62741C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 781C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242311AbiBICmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:42:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
+        id S236825AbiBICm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:42:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243919AbiBIBz0 (ORCPT
+        with ESMTP id S241649AbiBICiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:55:26 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F0C06157B;
-        Tue,  8 Feb 2022 17:55:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644371725; x=1675907725;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=cFSvP3+npMUwdpU+EuZVnBjWbMWZP6LIj/t9xD3NmzM=;
-  b=fevRj8oEAu6r0OoVMEGCVLm5j7qluJ16VWOppm41DfBdlWFFvqMtIThf
-   vSWeNz0/TDTVtc4X2bJlirMrnmsYywLU2jPmSW6hlEgZvm+0rcRIDRkmG
-   hSkJFY10SffDXreo10WTCJn7BBmhwtg21OI69eOB8LuO9Au+N44YeOnxQ
-   U=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 08 Feb 2022 17:55:25 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2022 17:55:24 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 8 Feb 2022 17:55:23 -0800
-Received: from [10.111.162.111] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 8 Feb 2022
- 17:55:21 -0800
-Message-ID: <b60d30cf-e435-49c4-a251-b910bc2e94ae@quicinc.com>
-Date:   Tue, 8 Feb 2022 17:55:18 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10
- mins
-Content-Language: en-US
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        <linux-kernel@vger.kernel.org>
-CC:     <rafael@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <swboyd@chromium.org>,
-        <khsieh@codeaurora.org>, <nganji@codeaurora.org>,
-        <seanpaul@chromium.org>, <gregkh@linuxfoundation.org>,
-        <dmitry.baryshkov@linaro.org>, <aravindh@codeaurora.org>,
-        <freedreno@lists.freedesktop.org>
-References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
- <8d67484c7e4b9fb4560d2eca1f71c75fde8bae0d.camel@sipsolutions.net>
- <ebd340e4-2a02-d484-2ed0-9ee738d5b5c5@quicinc.com>
- <c59bc1af9974484075091333a3c98a2088251321.camel@sipsolutions.net>
- <a280fec2-754a-88ec-acc7-337e069e9148@quicinc.com>
- <c2a6e29063793eecc5c65d32af9d826544404ecc.camel@sipsolutions.net>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <c2a6e29063793eecc5c65d32af9d826544404ecc.camel@sipsolutions.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Tue, 8 Feb 2022 21:38:14 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2160C061355;
+        Tue,  8 Feb 2022 18:38:13 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 680191A0FF0;
+        Wed,  9 Feb 2022 03:38:12 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 2FDD51A0FEB;
+        Wed,  9 Feb 2022 03:38:12 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id C9A77183AC99;
+        Wed,  9 Feb 2022 10:38:10 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     bhelgaas@google.com, shawnguo@kernel.org, l.stach@pengutronix.de
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v2] arm64: dts: imx8mq-evk: Add second PCIe port support
+Date:   Wed,  9 Feb 2022 10:06:48 +0800
+Message-Id: <1644372408-5485-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Johannes
+Enable the second PCIe port support on i.MX8MQ EVK board.
 
-On 2/8/2022 1:54 PM, Johannes Berg wrote:
-> On Tue, 2022-02-08 at 13:40 -0800, Abhinav Kumar wrote:
->>>
->> I am checking what usermode sees and will get back ( I didnt see an
->> error do most likely it was EOF ). I didnt follow the second part.
-> 
-> I think probably it got -ENODEV, looking at kernfs_file_read_iter().
-> 
->> If the file descriptor read returns EOF, even if we consider them
->> separate how will it resolve this issue?
->>
->> My earlier questions were related to fixing it in devcoredump to detect
->> and fix it there. Are you suggesting to fix in usermode instead? How?
->>
-> 
-> Yeah, no, you cannot fix it in userspace.
-> 
-> But I just followed the rabbit hole down kernfs and all, and it looks
-> like indeed the read would be cut short with -ENODEV, sorry.
-> 
-> It doesn't look like there's good API for this, but it seems at least
-> from the underlying kernfs POV it should be possible to get_device() in
-> open and put_device() in release, so that the device sticks around while
-> somebody has the file open? It's entirely virtual, so this should be OK?
-> 
-> johannes
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mq-evk.dts | 38 ++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-Are you suggesting something like below?
-
-diff --git a/fs/sysfs/file.c b/fs/sysfs/file.c
-index 42dcf96..14203d0 100644
---- a/fs/sysfs/file.c
-+++ b/fs/sysfs/file.c
-@@ -32,6 +32,22 @@ static const struct sysfs_ops *sysfs_file_ops(struct 
-kernfs_node *kn)
-         return kobj->ktype ? kobj->ktype->sysfs_ops : NULL;
-  }
-
-+static int sysfs_kf_open(struct kernfs_open_file *of)
-+{
-+       struct kobject *kobj = of->kn->parent->priv;
-+       struct device *dev = kobj_to_dev(kobj);
+diff --git a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
+index a1b7582f3ecf..06f6e44da4d4 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mq-evk.dts
+@@ -27,6 +27,17 @@ pcie0_refclk: pcie0-refclk {
+ 		clock-frequency = <100000000>;
+ 	};
+ 
++	reg_pcie1: regulator-pcie {
++		compatible = "regulator-fixed";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_pcie1_reg>;
++		regulator-name = "MPCIE_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&gpio5 10 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
 +
-+       get_device(dev);
-+}
+ 	reg_usdhc2_vmmc: regulator-vsd-3v3 {
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_reg_usdhc2>;
+@@ -327,6 +338,20 @@ &pcie0 {
+ 	status = "okay";
+ };
+ 
++&pcie1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pcie1>;
++	reset-gpio = <&gpio5 12 GPIO_ACTIVE_LOW>;
++	clocks = <&clk IMX8MQ_CLK_PCIE2_ROOT>,
++		 <&clk IMX8MQ_CLK_PCIE2_AUX>,
++		 <&clk IMX8MQ_CLK_PCIE2_PHY>,
++		 <&pcie0_refclk>;
++	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
++	vpcie-supply = <&reg_pcie1>;
++	vph-supply = <&vgen5_reg>;
++	status = "okay";
++};
 +
-+static void sysfs_kf_release(struct kernfs_open_file *of)
-+{
-+       struct kobject *kobj = of->kn->parent->priv;
-+       struct device *dev = kobj_to_dev(kobj);
+ &pgc_gpu {
+ 	power-supply = <&sw1a_reg>;
+ };
+@@ -482,6 +507,19 @@ MX8MQ_IOMUXC_UART4_RXD_GPIO5_IO28		0x16
+ 		>;
+ 	};
+ 
++	pinctrl_pcie1: pcie1grp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_I2C4_SDA_PCIE2_CLKREQ_B		0x76
++			MX8MQ_IOMUXC_ECSPI2_MISO_GPIO5_IO12		0x16
++		>;
++	};
 +
-+       put_device(dev);
-+}
++	pinctrl_pcie1_reg: pcie1reggrp {
++		fsl,pins = <
++			MX8MQ_IOMUXC_ECSPI2_SCLK_GPIO5_IO10		0x16
++		>;
++	};
 +
-  /*
-   * Reads on sysfs are handled through seq_file, which takes care of hairy
-   * details like buffering and seeking.  The following function pipes
-@@ -211,6 +227,8 @@ static const struct kernfs_ops sysfs_file_kfops_wo = {
-  };
-
-  static const struct kernfs_ops sysfs_file_kfops_rw = {
-+       .open       = sysfs_kf_open;
-+       .release    = sysfs_kf_release;
-         .seq_show       = sysfs_kf_seq_show,
-         .write          = sysfs_kf_write,
-  };
-
-If so, dont you think this will be a more intrusive change just for the 
-sake of devcoredump? Any other way to keep the changes limited to 
-devcoredump?
-
-Thanks
-
-Abhinav
+ 	pinctrl_qspi: qspigrp {
+ 		fsl,pins = <
+ 			MX8MQ_IOMUXC_NAND_ALE_QSPI_A_SCLK	0x82
+-- 
+2.25.1
 
