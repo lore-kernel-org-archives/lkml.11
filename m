@@ -2,53 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA22C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236262AbiBISmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:42:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
+        id S240344AbiBISmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:42:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240411AbiBISlJ (ORCPT
+        with ESMTP id S240570AbiBISlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:41:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC37C03BFC0;
-        Wed,  9 Feb 2022 10:40:24 -0800 (PST)
+        Wed, 9 Feb 2022 13:41:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77155C050CF4;
+        Wed,  9 Feb 2022 10:41:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C00FC60906;
-        Wed,  9 Feb 2022 18:40:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 377D8C340E7;
-        Wed,  9 Feb 2022 18:40:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15BF260918;
+        Wed,  9 Feb 2022 18:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F0E5C340E7;
+        Wed,  9 Feb 2022 18:41:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432023;
-        bh=wGO2C/+5/UpsUQ1fbHIpV6d7ywQrzR6tQA1uBrprlcE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fzCJFXeqsTy6MepEezoxKWEZVdAPH+3CqCs89Aq8wuyiP8tmxh93bBlhmKiWCaKDo
-         ufxmK4kaB6eBVZd+kzx2fcrfALSTCgmpbmI+mwW2KyVDLUJfBY2IT1PMNUxTuyU+Ps
-         y8eVQQzG50MWW4f/6ZJa54S9xSvwKPvpDS2CItcSxK9w3RqO+veyiYFzVn9dKobfSa
-         sTn6jLtMZMs0Q0FTTT865uK0TmlwOCBY1xOXwpBTYw49+zvHlyfFe19MF76XdyZFP6
-         V+AeoTZ3ms29Kak2D94duLfPsuJZtB7kfJfpMtTm/ZhsveCjqVcaZbWfVllIOjrTY4
-         cfv31JxRQYngQ==
+        s=k20201202; t=1644432066;
+        bh=JFakvK8607UA2o62LWq8p0ThgIQUef2OWViBTDQfYQc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=N8rC/s3a69nzrUbHE9Yid8xidHF61qImRjg7UdHjQl3+7akxYhOOn5rSs83xwYhXt
+         663f8nk7MbG945p8tgjOXxvfZ7NZ+smBZ8X97dwKSQTYnU2FzBHIbpwHIctAw1DZxH
+         7wcjzMYFMbHpTDZm0nwkEp6CysZ8fM1sZ4SNYhRJLZL7/Hsc/P1maEoudnOHial/YJ
+         GyKf+1A1l0e0VmIX9Z8Xm50P75h3L5z931Pbra0m2dllA8hQip3hN5G386pb98GhS0
+         toQh7qXiee1e5udH2gMIBCpGXa6gESRltwV8l3GVt/q6EaNR/2uaCGf/56Fy19P5rf
+         EAUB34U854oDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mario Limonciello <mario.limonciello@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        lijo.lazar@amd.com, Hawking.Zhang@amd.com, guchun.chen@amd.com,
-        sathishkumar.sundararaju@amd.com, shaoyun.liu@amd.com,
-        veerabadhran.gopalakrishnan@amd.com, nirmoy.das@amd.com,
-        Prike.Liang@amd.com, Pratik.Vishwakarma@amd.com, bp@suse.de,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 30/36] drm/amd: add support to check whether the system is set to s3
-Date:   Wed,  9 Feb 2022 13:37:53 -0500
-Message-Id: <20220209183759.47134-30-sashal@kernel.org>
+Cc:     Yuka Kawajiri <yukx00@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, markgross@kernel.org,
+        linux-input@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 01/27] platform/x86: touchscreen_dmi: Add info for the RWC NANOTE P8 AY07J 2-in-1
+Date:   Wed,  9 Feb 2022 13:40:37 -0500
+Message-Id: <20220209184103.47635-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
-References: <20220209183759.47134-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,64 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Yuka Kawajiri <yukx00@gmail.com>
 
-[ Upstream commit f52a2b8badbd24faf73a13c9c07fdb9d07352944 ]
+[ Upstream commit 512eb73cfd1208898cf10cb06094e0ee0bb53b58 ]
 
-This will be used to help make decisions on what to do in
-misconfigured systems.
+Add touchscreen info for RWC NANOTE P8 (AY07J) 2-in-1.
 
-v2: squash in semicolon fix from Stephen Rothwell
-
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Yuka Kawajiri <yukx00@gmail.com>
+Link: https://lore.kernel.org/r/20220111154019.4599-1-yukx00@gmail.com
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu.h      |  2 ++
- drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/platform/x86/touchscreen_dmi.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index c8d31a22176f3..7e73ac6fb21db 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-@@ -1410,9 +1410,11 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
- #endif
+diff --git a/drivers/platform/x86/touchscreen_dmi.c b/drivers/platform/x86/touchscreen_dmi.c
+index 59b7e90cd5875..ab6a9369649db 100644
+--- a/drivers/platform/x86/touchscreen_dmi.c
++++ b/drivers/platform/x86/touchscreen_dmi.c
+@@ -756,6 +756,21 @@ static const struct ts_dmi_data predia_basic_data = {
+ 	.properties	= predia_basic_props,
+ };
  
- #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
-+bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
- bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
- #else
- static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
-+static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
- #endif
- 
- int amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-index b19d407518024..0e12315fa0cb8 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-@@ -1032,6 +1032,19 @@ void amdgpu_acpi_detect(void)
- }
- 
- #if IS_ENABLED(CONFIG_SUSPEND)
-+/**
-+ * amdgpu_acpi_is_s3_active
-+ *
-+ * @adev: amdgpu_device_pointer
-+ *
-+ * returns true if supported, false if not.
-+ */
-+bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev)
-+{
-+	return !(adev->flags & AMD_IS_APU) ||
-+		(pm_suspend_target_state == PM_SUSPEND_MEM);
-+}
++static const struct property_entry rwc_nanote_p8_props[] = {
++	PROPERTY_ENTRY_U32("touchscreen-min-y", 46),
++	PROPERTY_ENTRY_U32("touchscreen-size-x", 1728),
++	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
++	PROPERTY_ENTRY_BOOL("touchscreen-inverted-y"),
++	PROPERTY_ENTRY_STRING("firmware-name", "gsl1680-rwc-nanote-p8.fw"),
++	PROPERTY_ENTRY_U32("silead,max-fingers", 10),
++	{ }
++};
 +
- /**
-  * amdgpu_acpi_is_s0ix_active
-  *
++static const struct ts_dmi_data rwc_nanote_p8_data = {
++	.acpi_name = "MSSL1680:00",
++	.properties = rwc_nanote_p8_props,
++};
++
+ static const struct property_entry schneider_sct101ctm_props[] = {
+ 	PROPERTY_ENTRY_U32("touchscreen-size-x", 1715),
+ 	PROPERTY_ENTRY_U32("touchscreen-size-y", 1140),
+@@ -1326,6 +1341,15 @@ const struct dmi_system_id touchscreen_dmi_table[] = {
+ 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "0E57"),
+ 		},
+ 	},
++	{
++		/* RWC NANOTE P8 */
++		.driver_data = (void *)&rwc_nanote_p8_data,
++		.matches = {
++			DMI_MATCH(DMI_BOARD_VENDOR, "Default string"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "AY07J"),
++			DMI_MATCH(DMI_PRODUCT_SKU, "0001")
++		},
++	},
+ 	{
+ 		/* Schneider SCT101CTM */
+ 		.driver_data = (void *)&schneider_sct101ctm_data,
 -- 
 2.34.1
 
