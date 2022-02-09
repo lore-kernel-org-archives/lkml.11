@@ -2,130 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BED6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232506AbiBITNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:13:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34920 "EHLO
+        id S230410AbiBITOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:14:38 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230198AbiBITNh (ORCPT
+        with ESMTP id S230056AbiBITOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:13:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 423ECC014F39
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:13:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644433740;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UuA86Nyzl5Eui91dzFfwf9ECfs1Xn0BsmmUF+q9vMTM=;
-        b=KP4fkOI7PVi4YV3550bIV7XiEIcQeiKoxrODZiulXNKnnczkzEL1fkZqG98Bepv7KFwPQ0
-        8Bry1r9jFyLUVgEeH+7Pa3J70dQKnYtUetiylO8kdsKq4J74oOtjRmA1v+Gzd4p8EU3tmm
-        fXtWIkPEMK8VR+PVP6uJmYKysBmghCM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-258-3vO76ThsNKa4dxfImmOr4g-1; Wed, 09 Feb 2022 14:02:40 -0500
-X-MC-Unique: 3vO76ThsNKa4dxfImmOr4g-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B83311966323;
-        Wed,  9 Feb 2022 19:02:37 +0000 (UTC)
-Received: from [10.22.9.207] (unknown [10.22.9.207])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 69C2410013C1;
-        Wed,  9 Feb 2022 19:02:35 +0000 (UTC)
-Message-ID: <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com>
-Date:   Wed, 9 Feb 2022 14:02:34 -0500
+        Wed, 9 Feb 2022 14:14:37 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F104EC0DE7C7
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:14:29 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id i34so6149848lfv.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:14:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZqCsdtECQHXTZr8IpF8umy+6Cux+k4bWSLZZ1TOrY2Q=;
+        b=IKDerEohVoRWS2zeh1Y+i/Y+oGfN/IIFKarRBaZ8JIubn4k6oVNLzPazkiW0fwezsf
+         YxdtZPi0pw6Ij6mW7ItW3Vu5BrLzjD+LRKptIqk7vpZCndqBNDg4TNKyAxLECgzKxWh+
+         +EHkydPog7Qvffd6Q0vrtErsXbnjvk60VQKwnagxLJoXh0SHAw5lbolnlCfSliKBdCwJ
+         j8lF22zTpYNrWaDlsk0VQiQlgzS35UoMx9OeFTL2Esv4YFAiXkfnnpGzIVZ+yJMrT75i
+         TzrEaR1OlxYBKfqDgtHCj+/6OzYw8fAuAxpstNl2j2awsd7nHBl/HOHk3cA3onHVIDZi
+         BLcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZqCsdtECQHXTZr8IpF8umy+6Cux+k4bWSLZZ1TOrY2Q=;
+        b=1Wj4KAMcRDYjZY2a8WHrl0zT7V1ah1UB4K+gx3IrYBWcJmA8I0uzuFxF6nEkXbFzvh
+         3XkFl3tsVO+gicbXgHsyrTQWeBOWYfBaFpmHEC6/cUTI0Qu/+e2IEDAF63WOcOUazABu
+         2d/Zw3SH2ezntmy9OYppuzGT54RAriNoXmCi85sHx/8J8p8fG5fGEq/3chYz8xcTsgvm
+         DopL/u6wKNf4MGCDuoc/d39b2m37JwIEn3Qyw/JqU8EpAWsE+NcmIJiiiSCx+62dixRL
+         inRLdRBD5Y418dep06DWbUY55r9VeNcJfwsm7q+YHWOI/ww4fxpbDDBKMDh9x1KzR0Js
+         pCxQ==
+X-Gm-Message-State: AOAM5335qVgHe88SO0sZuCwoU45b5GIzkb5gnEOK7B/gOWdwxxSffMAb
+        WpYJC+UiTCBvxq6Kw99dQRSPJ4we6Dm98Q==
+X-Google-Smtp-Source: ABdhPJy2qb10/B3KYND0/XbklU+DF93Riccx+K8hpY8eKGvHyAvHrLZ+V/+7irT5D4ivxTQ3OQ448Q==
+X-Received: by 2002:a05:6512:3c96:: with SMTP id h22mr2539605lfv.262.1644434024921;
+        Wed, 09 Feb 2022 11:13:44 -0800 (PST)
+Received: from [192.168.1.11] ([217.117.245.154])
+        by smtp.gmail.com with ESMTPSA id bt24sm285368lfb.246.2022.02.09.11.13.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 11:13:44 -0800 (PST)
+Message-ID: <a67d6a88-491c-a393-6157-7de31375325d@gmail.com>
+Date:   Wed, 9 Feb 2022 22:13:42 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
- lockdep/lock_stat (v1)
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] staging: r8188eu: keep the success path and error path
+ separate
 Content-Language: en-US
-To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paul.mckenney@linaro.org>,
-        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
-        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        intel-gfx@lists.freedesktop.org
-References: <20220208184208.79303-1-namhyung@kernel.org>
- <20220209090908.GK23216@worktop.programming.kicks-ass.net>
- <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com>
- <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+To:     Vihas Makwana <makvihas@gmail.com>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michael Straube <straube.linux@gmail.com>,
+        Martin Kaiser <martin@kaiser.cx>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220209190752.7232-1-makvihas@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220209190752.7232-1-makvihas@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 13:29, Mathieu Desnoyers wrote:
-> ----- On Feb 9, 2022, at 1:19 PM, Waiman Long longman@redhat.com wrote:
->
->> On 2/9/22 04:09, Peter Zijlstra wrote:
->>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
->>>
->>>> Eventually I'm mostly interested in the contended locks only and I
->>>> want to reduce the overhead in the fast path.  By moving that, it'd be
->>>> easy to track contended locks with timing by using two tracepoints.
->>> So why not put in two new tracepoints and call it a day?
->>>
->>> Why muck about with all that lockdep stuff just to preserve the name
->>> (and in the process continue to blow up data structures etc..). This
->>> leaves distros in a bind, will they enable this config and provide
->>> tracepoints while bloating the data structures and destroying things
->>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
->>> at all.
->>>
->>> Yes, the name is convenient, but it's just not worth it IMO. It makes
->>> the whole proposition too much of a trade-off.
->>>
->>> Would it not be possible to reconstruct enough useful information from
->>> the lock callsite?
->>>
->> I second that as I don't want to see the size of a spinlock exceeds 4
->> bytes in a production system.
->>
->> Instead of storing additional information (e.g. lock name) directly into
->> the lock itself. Maybe we can store it elsewhere and use the lock
->> address as the key to locate it in a hash table. We can certainly extend
->> the various lock init functions to do that. It will be trickier for
->> statically initialized locks, but we can probably find a way to do that too.
-> If we go down that route, it would be nice if we can support a few different
-> use-cases for various tracers out there.
->
-> One use-case (a) requires the ability to query the lock name based on its address as key.
-> For this a hash table is a good fit. This would allow tracers like ftrace to
-> output lock names in its human-readable output which is formatted within the kernel.
->
-> Another use-case (b) is to be able to "dump" the lock { name, address } tuples
-> into the trace stream (we call this statedump events in lttng), and do the
-> translation from address to name at post-processing. This simply requires
-> that this information is available for iteration for both the core kernel
-> and module locks, so the tracer can dump this information on trace start
-> and module load.
->
-> Use-case (b) is very similar to what is done for the kernel tracepoints. Based
-> on this, implementing the init code that iterates on those sections and populates
-> a hash table for use-case (a) should be easy enough.
+Hi Vihas,
 
-Yes, that are good use cases for this type of functionality. I do need 
-to think about how to do it for statically initialized lock first.
+On 2/9/22 22:07, Vihas Makwana wrote:
+> Keep the success path and error path separate in rtw_usb_if1_init() and
+> drop the "status" variable.
+> Also, remove do-nothing gotos.
+> 
+> Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+> ---
 
-Thanks,
-Longman
+Looks good, thanks
 
+Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
+
+> v1->v2:
+>      Just `return NULL` instead of `padapter=NULL/return padapter`
+>   drivers/staging/r8188eu/os_dep/usb_intf.c | 30 +++++++++--------------
+>   1 file changed, 12 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
+> index 10c33e2ae..668e79a3c 100644
+> --- a/drivers/staging/r8188eu/os_dep/usb_intf.c
+> +++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
+> @@ -336,13 +336,13 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
+>   {
+>   	struct adapter *padapter = NULL;
+>   	struct net_device *pnetdev = NULL;
+> -	int status = _FAIL;
+>   	struct io_priv *piopriv;
+>   	struct intf_hdl *pintf;
+>   
+>   	padapter = vzalloc(sizeof(*padapter));
+>   	if (!padapter)
+> -		goto exit;
+> +		return NULL;
+> +
+>   	padapter->dvobj = dvobj;
+>   	dvobj->if1 = padapter;
+>   
+> @@ -421,26 +421,20 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
+>   		, padapter->hw_init_completed
+>   	);
+>   
+> -	status = _SUCCESS;
+> +	return padapter;
+>   
+>   free_drv_sw:
+> -	if (status != _SUCCESS) {
+> -		rtw_cancel_all_timer(padapter);
+> -		rtw_free_drv_sw(padapter);
+> -	}
+> +	rtw_cancel_all_timer(padapter);
+> +	rtw_free_drv_sw(padapter);
+>   handle_dualmac:
+> -	if (status != _SUCCESS)
+> -		rtw_handle_dualmac(padapter, 0);
+> +	rtw_handle_dualmac(padapter, 0);
+>   free_adapter:
+> -	if (status != _SUCCESS) {
+> -		if (pnetdev)
+> -			rtw_free_netdev(pnetdev);
+> -		else if (padapter)
+> -			vfree(padapter);
+> -		padapter = NULL;
+> -	}
+> -exit:
+> -	return padapter;
+> +	if (pnetdev)
+> +		rtw_free_netdev(pnetdev);
+> +	else if (padapter)
+> +		vfree(padapter);
+> +
+> +	return NULL;
+>   }
+>   
+>   static void rtw_usb_if1_deinit(struct adapter *if1)
+
+
+With regards,
+Pavel Skripkin
