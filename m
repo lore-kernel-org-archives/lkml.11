@@ -2,155 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4032C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbiBITOi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:14:38 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38344 "EHLO
+        id S232031AbiBITOp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:14:45 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiBITOh (ORCPT
+        with ESMTP id S231133AbiBITOn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:14:37 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F104EC0DE7C7
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:14:29 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id i34so6149848lfv.2
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:14:29 -0800 (PST)
+        Wed, 9 Feb 2022 14:14:43 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F458C02B650
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 11:14:37 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id x193so3593297oix.0
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 11:14:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=kali.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZqCsdtECQHXTZr8IpF8umy+6Cux+k4bWSLZZ1TOrY2Q=;
-        b=IKDerEohVoRWS2zeh1Y+i/Y+oGfN/IIFKarRBaZ8JIubn4k6oVNLzPazkiW0fwezsf
-         YxdtZPi0pw6Ij6mW7ItW3Vu5BrLzjD+LRKptIqk7vpZCndqBNDg4TNKyAxLECgzKxWh+
-         +EHkydPog7Qvffd6Q0vrtErsXbnjvk60VQKwnagxLJoXh0SHAw5lbolnlCfSliKBdCwJ
-         j8lF22zTpYNrWaDlsk0VQiQlgzS35UoMx9OeFTL2Esv4YFAiXkfnnpGzIVZ+yJMrT75i
-         TzrEaR1OlxYBKfqDgtHCj+/6OzYw8fAuAxpstNl2j2awsd7nHBl/HOHk3cA3onHVIDZi
-         BLcw==
+        bh=i83UrggLqqR8sfxQp+IQdzECOxPCCxqxbgAjSDGHq/Y=;
+        b=n/sSem6NYUo+UdF/1GntVWuR1kT+0OyWraS+6jrUlMW2hux65KDqnHZrEiPE7QEJiF
+         2nftYFoT7AtMqZ+Lsom7cvyvd5bVPwga1sPkB8lAFJ3iSBOB5T7INgDuYFizA0BpSCJO
+         QHtOevRx7L/UmSgNQ4GhitW6+QAx5PAxidzf6PKNPcP4j5ajzKcS7J+/6i/jrZAenNpc
+         4wtyAbAFWqfV0ahtL76JY/9PSGTNOYHroN4nJ42A2O2yOv/sxRkDDNdoWg0ka2etLVNi
+         51OEU7usFE2QMy5FRy+c2EF/dqy4CNz5AAsRY80iCisWg1OTs4YBHrnNqUcmPgzgiJU8
+         yJ1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=ZqCsdtECQHXTZr8IpF8umy+6Cux+k4bWSLZZ1TOrY2Q=;
-        b=1Wj4KAMcRDYjZY2a8WHrl0zT7V1ah1UB4K+gx3IrYBWcJmA8I0uzuFxF6nEkXbFzvh
-         3XkFl3tsVO+gicbXgHsyrTQWeBOWYfBaFpmHEC6/cUTI0Qu/+e2IEDAF63WOcOUazABu
-         2d/Zw3SH2ezntmy9OYppuzGT54RAriNoXmCi85sHx/8J8p8fG5fGEq/3chYz8xcTsgvm
-         DopL/u6wKNf4MGCDuoc/d39b2m37JwIEn3Qyw/JqU8EpAWsE+NcmIJiiiSCx+62dixRL
-         inRLdRBD5Y418dep06DWbUY55r9VeNcJfwsm7q+YHWOI/ww4fxpbDDBKMDh9x1KzR0Js
-         pCxQ==
-X-Gm-Message-State: AOAM5335qVgHe88SO0sZuCwoU45b5GIzkb5gnEOK7B/gOWdwxxSffMAb
-        WpYJC+UiTCBvxq6Kw99dQRSPJ4we6Dm98Q==
-X-Google-Smtp-Source: ABdhPJy2qb10/B3KYND0/XbklU+DF93Riccx+K8hpY8eKGvHyAvHrLZ+V/+7irT5D4ivxTQ3OQ448Q==
-X-Received: by 2002:a05:6512:3c96:: with SMTP id h22mr2539605lfv.262.1644434024921;
-        Wed, 09 Feb 2022 11:13:44 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.154])
-        by smtp.gmail.com with ESMTPSA id bt24sm285368lfb.246.2022.02.09.11.13.43
+        bh=i83UrggLqqR8sfxQp+IQdzECOxPCCxqxbgAjSDGHq/Y=;
+        b=y+ApBx84Yj4s+8tgFzmK0XBtmfLp8Kk24W5hAmrgT178Ze+zgS3yQ6xkauSKt79+IL
+         NTC6PgpQjVmlBWgZKTA3t2fL1+/FhXBhMJl53xyK2Rjf89z6KrP+ilp+gh7m/KXz9qVQ
+         IqWaDh0U49WQkXehE1eg3yNHwxP3M6jUDwAA8yDB8f2jCQYkWhGbvqHhJJlED337rO41
+         e6FMh8USYm/OOkEMK+d+VU/EIQMMm4WG5kKUI6ZlprLP15yTXB5YZCikwRds5TkoM1g/
+         2beGtVVS9vjzAH2uU7UvzFslpGlSiu36+iOz7siE7ccoamlDaG5WqkSFArbND7GDcoct
+         Jdtg==
+X-Gm-Message-State: AOAM531K/ns5AZriFdkfi2fuxpkg24WaGL1xZ2fUSUw99r/9TfCm+VsJ
+        BCKdQHu8qwql+BDWcccBSLY0aw==
+X-Google-Smtp-Source: ABdhPJzNqLMqK731CrdUn6LdyrYJwYcsrQuDHu/wYHmXgCn+SMhJhaGK1IYh4ATk0fCF1/NvdkNh/Q==
+X-Received: by 2002:aca:ab0d:: with SMTP id u13mr2058811oie.138.1644434066754;
+        Wed, 09 Feb 2022 11:14:26 -0800 (PST)
+Received: from [192.168.11.51] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
+        by smtp.gmail.com with ESMTPSA id a15sm7127523oil.13.2022.02.09.11.14.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 11:13:44 -0800 (PST)
-Message-ID: <a67d6a88-491c-a393-6157-7de31375325d@gmail.com>
-Date:   Wed, 9 Feb 2022 22:13:42 +0300
+        Wed, 09 Feb 2022 11:14:26 -0800 (PST)
+Message-ID: <72fa3837-1792-9a45-c1c2-7863d3381c31@kali.org>
+Date:   Wed, 9 Feb 2022 13:14:24 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] staging: r8188eu: keep the success path and error path
- separate
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [v1 2/2] clk: qcom: dispcc: Update gdsc flag for display GDSC
 Content-Language: en-US
-To:     Vihas Makwana <makvihas@gmail.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Straube <straube.linux@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220209190752.7232-1-makvihas@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20220209190752.7232-1-makvihas@gmail.com>
+To:     Taniya Das <tdas@codeaurora.org>, Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>
+Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220209172513.17873-1-tdas@codeaurora.org>
+ <20220209172513.17873-2-tdas@codeaurora.org>
+From:   Steev Klimaszewski <steev@kali.org>
+In-Reply-To: <20220209172513.17873-2-tdas@codeaurora.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vihas,
+Hi Taniya,
 
-On 2/9/22 22:07, Vihas Makwana wrote:
-> Keep the success path and error path separate in rtw_usb_if1_init() and
-> drop the "status" variable.
-> Also, remove do-nothing gotos.
-> 
-> Signed-off-by: Vihas Makwana <makvihas@gmail.com>
+On 2/9/22 11:25 AM, Taniya Das wrote:
+> Update the mdss gdsc flag for SC7180/SC7280/SM8150/SM8250
+> to not program the transition delay.
+>
+> Fixes: dd3d06622138 ("clk: qcom: Add display clock controller driver for SC7180")
+> Fixes: 1a00c962f9cd ("clk: qcom: Add display clock controller driver for SC7280")
+> Fixes: 80a18f4a8567 ("clk: qcom: Add display clock controller driver for SM8150 and SM8250")
+> Signed-off-by: Taniya Das <tdas@codeaurora.org>
 > ---
-
-Looks good, thanks
-
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
-
-> v1->v2:
->      Just `return NULL` instead of `padapter=NULL/return padapter`
->   drivers/staging/r8188eu/os_dep/usb_intf.c | 30 +++++++++--------------
->   1 file changed, 12 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/staging/r8188eu/os_dep/usb_intf.c b/drivers/staging/r8188eu/os_dep/usb_intf.c
-> index 10c33e2ae..668e79a3c 100644
-> --- a/drivers/staging/r8188eu/os_dep/usb_intf.c
-> +++ b/drivers/staging/r8188eu/os_dep/usb_intf.c
-> @@ -336,13 +336,13 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
->   {
->   	struct adapter *padapter = NULL;
->   	struct net_device *pnetdev = NULL;
-> -	int status = _FAIL;
->   	struct io_priv *piopriv;
->   	struct intf_hdl *pintf;
->   
->   	padapter = vzalloc(sizeof(*padapter));
->   	if (!padapter)
-> -		goto exit;
-> +		return NULL;
-> +
->   	padapter->dvobj = dvobj;
->   	dvobj->if1 = padapter;
->   
-> @@ -421,26 +421,20 @@ static struct adapter *rtw_usb_if1_init(struct dvobj_priv *dvobj,
->   		, padapter->hw_init_completed
->   	);
->   
-> -	status = _SUCCESS;
-> +	return padapter;
->   
->   free_drv_sw:
-> -	if (status != _SUCCESS) {
-> -		rtw_cancel_all_timer(padapter);
-> -		rtw_free_drv_sw(padapter);
-> -	}
-> +	rtw_cancel_all_timer(padapter);
-> +	rtw_free_drv_sw(padapter);
->   handle_dualmac:
-> -	if (status != _SUCCESS)
-> -		rtw_handle_dualmac(padapter, 0);
-> +	rtw_handle_dualmac(padapter, 0);
->   free_adapter:
-> -	if (status != _SUCCESS) {
-> -		if (pnetdev)
-> -			rtw_free_netdev(pnetdev);
-> -		else if (padapter)
-> -			vfree(padapter);
-> -		padapter = NULL;
-> -	}
-> -exit:
-> -	return padapter;
-> +	if (pnetdev)
-> +		rtw_free_netdev(pnetdev);
-> +	else if (padapter)
-> +		vfree(padapter);
-> +
-> +	return NULL;
->   }
->   
->   static void rtw_usb_if1_deinit(struct adapter *if1)
-
-
-With regards,
-Pavel Skripkin
+>   drivers/clk/qcom/dispcc-sc7180.c | 2 +-
+>   drivers/clk/qcom/dispcc-sc7280.c | 2 +-
+>   drivers/clk/qcom/dispcc-sm8250.c | 2 +-
+>   3 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/clk/qcom/dispcc-sc7180.c b/drivers/clk/qcom/dispcc-sc7180.c
+> index 538e4963c915..c203888ab2ca 100644
+> --- a/drivers/clk/qcom/dispcc-sc7180.c
+> +++ b/drivers/clk/qcom/dispcc-sc7180.c
+> @@ -629,7 +629,7 @@ static struct gdsc mdss_gdsc = {
+>   		.name = "mdss_gdsc",
+>   	},
+>   	.pwrsts = PWRSTS_OFF_ON,
+> -	.flags = HW_CTRL,
+> +	.flags = HW_CTRL |  DEFAULT_TRANSITION_DELAY,
+>   };
+There's an extra space after the |
+>   static struct gdsc *disp_cc_sc7180_gdscs[] = {
+> diff --git a/drivers/clk/qcom/dispcc-sc7280.c b/drivers/clk/qcom/dispcc-sc7280.c
+> index 4ef4ae231794..8e1a2d4a8120 100644
+> --- a/drivers/clk/qcom/dispcc-sc7280.c
+> +++ b/drivers/clk/qcom/dispcc-sc7280.c
+> @@ -791,7 +791,7 @@ static struct gdsc disp_cc_mdss_core_gdsc = {
+>   		.name = "disp_cc_mdss_core_gdsc",
+>   	},
+>   	.pwrsts = PWRSTS_OFF_ON,
+> -	.flags = HW_CTRL | RETAIN_FF_ENABLE,
+> +	.flags = HW_CTRL | RETAIN_FF_ENABLE | DEFAULT_TRANSITION_DELAY,
+>   };
+>
+>   static struct clk_regmap *disp_cc_sc7280_clocks[] = {
+> diff --git a/drivers/clk/qcom/dispcc-sm8250.c b/drivers/clk/qcom/dispcc-sm8250.c
+> index 566fdfa0a15b..4d64d499a285 100644
+> --- a/drivers/clk/qcom/dispcc-sm8250.c
+> +++ b/drivers/clk/qcom/dispcc-sm8250.c
+> @@ -1130,7 +1130,7 @@ static struct gdsc mdss_gdsc = {
+>   		.name = "mdss_gdsc",
+>   	},
+>   	.pwrsts = PWRSTS_OFF_ON,
+> -	.flags = HW_CTRL,
+> +	.flags = HW_CTRL | DEFAULT_TRANSITION_DELAY,
+>   	.supply = "mmcx",
+>   };
+>
+> --
+> Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc.is a member
+> of the Code Aurora Forum, hosted by the  Linux Foundation.
+>
+-- steev
