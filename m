@@ -2,103 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 509B8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C243AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235116AbiBIOj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:39:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36104 "EHLO
+        id S235128AbiBIOkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:40:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiBIOj5 (ORCPT
+        with ESMTP id S230511AbiBIOkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:39:57 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39D0C06157B;
-        Wed,  9 Feb 2022 06:40:00 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id z35so4659895pfw.2;
-        Wed, 09 Feb 2022 06:40:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aO4fss2Kmx8HXgCQ0bzR08QPyCBZELu4B0EYTyczINo=;
-        b=aU3YQVKJbd9ljuFhYwuOMQbok4ZtDOreJ3/sOBsE90UxWU5YUc0CpZ1WSGJJJufXV/
-         p7lpfI89HdfTCYcIBHc6uGz21TBljfzRi53l652TC1wr6EyMN3g1MF3FgOW+yGG8EsHg
-         Mf7Wd8nGYsg6puc19z+YLJBXfd7O/UipITmWcKHW0lddc3oTeLHvj7dlt1SvP2TlrlTt
-         m6CbZAQVDgDarm57zOxVILgV4zECCSVwiZo4yFHD8OGT2gI15VbTqN9Qs551pUj68S1f
-         RXPhqzeiPUHBRL0O1kp3DrCKDE7JDxRqGhSchIKn41vaNrLc9aGWKY4brJX68QNPNhbc
-         hW9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aO4fss2Kmx8HXgCQ0bzR08QPyCBZELu4B0EYTyczINo=;
-        b=B3BNQFPzk4m9ftjiE6lKn7Y+xvOQBYKNKJatNFOJpdKU+X7lX+ZcGcxzbicFK+VfkO
-         1rl7SfcuY88ZOfXWbshlA38sJsnAT/tbUKuDhMNTEGloJoTsAqRl/q5zXfmWxGcX/8LU
-         B3YtnkdVIgRTOqbHcTZ2jgJ3AXS/3ef6yqnmaTcpksoNxmUvQcX0D3bT/NzxRcBHLzhD
-         VldV2C19rOQU9LaLpW6vPmcq3pe3VuhnIpchtVU0RB37I3RsXqdv168ECeEMNE8SY4i/
-         pdJV6CowkqdFpE10nDdvPgOielAqO5lH97v+gn3COu11WUA3R7Lv0ck/fXZsFiaTpNkG
-         gr4g==
-X-Gm-Message-State: AOAM532Ryymfn1pQqxTgtbwWiGpgSt6uwn1566REcTJ2SjZM3zIyAlGJ
-        aSl/J1ZEW+WE2kSB7oEXYiAln3vcDUY2gQ==
-X-Google-Smtp-Source: ABdhPJxrjvgHhaZfZsKO5GvaCN6MHn5ZXO3ESedIlFsIiE8VU0hgKpTCaWJs6TA5Td/4tfHRJNRyAA==
-X-Received: by 2002:a63:74e:: with SMTP id 75mr2136067pgh.452.1644417600017;
-        Wed, 09 Feb 2022 06:40:00 -0800 (PST)
-Received: from localhost.localdomain ([114.91.20.102])
-        by smtp.gmail.com with ESMTPSA id o8sm20511586pfu.52.2022.02.09.06.39.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 06:39:59 -0800 (PST)
-From:   DENG Qingfang <dqfext@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH net] net: phy: mediatek: remove PHY mode check on MT7531
-Date:   Wed,  9 Feb 2022 22:39:47 +0800
-Message-Id: <20220209143948.445823-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 9 Feb 2022 09:40:12 -0500
+X-Greylist: delayed 136 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 06:40:15 PST
+Received: from p3plsmtpa07-09.prod.phx3.secureserver.net (p3plsmtpa07-09.prod.phx3.secureserver.net [173.201.192.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34DBC06157B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 06:40:15 -0800 (PST)
+Received: from localhost ([82.17.115.212])
+        by :SMTPAUTH: with ESMTPA
+        id Ho6WnCu31VyEtHo6Yn8W0P; Wed, 09 Feb 2022 07:37:58 -0700
+X-CMAE-Analysis: v=2.4 cv=YLFadTKx c=1 sm=1 tr=0 ts=6203d1c6
+ a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
+ a=IkcTkHD0fZMA:10 a=9GtVR73LUgLZNubTt3gA:9 a=QEXdDO2ut3YA:10
+X-SECURESERVER-ACCT: atomlin@atomlin.com
+Date:   Wed, 9 Feb 2022 14:37:56 +0000
+From:   Aaron Tomlin <atomlin@atomlin.com>
+To:     Miroslav Benes <mbenes@suse.cz>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, mcgrof@kernel.org, cl@linux.com,
+        pmladek@suse.com, akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        live-patching@vger.kernel.org, ghalat@redhat.com,
+        allen.lkml@gmail.com, void@manifault.com, joe@perches.com
+Subject: Re: [RFC PATCH v4 07/13] module: Move extra signature support out of
+ core code
+Message-ID: <20220209143756.53gw3ve46gaseqny@ava.usersys.com>
+References: <20220130213214.1042497-1-atomlin@redhat.com>
+ <20220130213214.1042497-8-atomlin@redhat.com>
+ <alpine.LSU.2.21.2202091526260.32090@pobox.suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <alpine.LSU.2.21.2202091526260.32090@pobox.suse.cz>
+X-CMAE-Envelope: MS4xfEeLTpDb717gdYrJ8fyJj8u9SbuxXa0FoEtTxchN+RygMn6avjFjDz9N44ZAJn4NF09emarra7B7k6YWEXFkXy4jjlZTCK/syx62dS3QtHH4AyFDi5zi
+ m3KD+EFRaWERrm8o5Igt7fu78oTLn6xk5Zkj3FXHz7HaGODGGQmWOWyMzbvVW7CwHzQdzgbx8hp+U4MN7AGTV7GhbgRIdXswj96qgg+FNkEJ8dFxdk7yeyRu
+ 4lirWRDwcBzIXcYhHjCRR+4QuJNAkRWy724B7CCmb1PvjkcI2ynC43rJYjT2Jlm111JdHg7MTCoiEaehgYS6kJr8qQt+MIi577r4VcKn8CyJku6IErT8y51D
+ bNiEZ9Pbo0WVSAWThlzavS0dLWzjuFnXayYFwGnTWibCR8UJzqjul4LVBlhDne2eQC0CjRWSH6Wwov1l91S2qbCAWg5znBfTaHGdI3luseoeHM+YR18mEAjw
+ Qqvhk7Ynq/E2L0TzbaXhNXabcgiRv9ZGXVP37Rp/eUx3j2L8jHv1DZcbEjSWtBSN9skxXBTh1U2IA4vof5J0BzZAOD+eAO+uhDAul0YH8Cw0ZfQaRAOD2qML
+ LS4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function mt7531_phy_mode_supported in the DSA driver set supported
-mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
-for the internal PHY, so this check breaks the PHY initialization:
+On Wed 2022-02-09 15:28 +0100, Miroslav Benes wrote:
+> Please, drop these extern modifiers in front of function declarations. 
+> They are unnecessary. It applies to different patches of the set as well.
 
-mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
+Agreed - this was suggested previously.
+The next iteration should be published soon. Just waiting on 0-day.
 
-Remove the check to make it work again.
+> > +#ifdef CONFIG_MODULE_SIG
+> > +extern int module_sig_check(struct load_info *info, int flags);
+> > +#else /* !CONFIG_MODULE_SIG */
+> > +static int module_sig_check(struct load_info *info, int flags)
+> > +{
+> > +	return 0;
+> > +}
+> 
+> I think it should be 
+> static inline int module_sig_check(struct load_info *info, int flags)
 
-Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
-Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
-Signed-off-by: DENG Qingfang <dqfext@gmail.com>
----
- drivers/net/phy/mediatek-ge.c | 3 ---
- 1 file changed, 3 deletions(-)
+Yes, indeed it should. Thanks for the feedback.
 
-diff --git a/drivers/net/phy/mediatek-ge.c b/drivers/net/phy/mediatek-ge.c
-index b7a5ae20edd5..68ee434f9dea 100644
---- a/drivers/net/phy/mediatek-ge.c
-+++ b/drivers/net/phy/mediatek-ge.c
-@@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct phy_device *phydev)
- 
- static int mt7531_phy_config_init(struct phy_device *phydev)
- {
--	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
--		return -EINVAL;
--
- 	mtk_gephy_config_init(phydev);
- 
- 	/* PHY link down power saving enable */
+
+Kind regards,
+
 -- 
-2.25.1
-
+Aaron Tomlin
