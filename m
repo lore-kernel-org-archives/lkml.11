@@ -2,164 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABDCC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C8DC4167B
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 05:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239852AbiBIFHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 00:07:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38678 "EHLO
+        id S241185AbiBIFHr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 00:07:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377710AbiBIEcE (ORCPT
+        with ESMTP id S1376993AbiBIEbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:32:04 -0500
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22FEC0612BA;
-        Tue,  8 Feb 2022 20:24:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hRkWsuN4j04brji8cr5dAoovCJMNcvuEP1+qm+sGyOZFvM1AWmwMGrkDaRk5KWd0OGkmAN3iYeaEwvifgWFWE9h4cQntHRnPKsl1SRvtJmQIXcbuedRBrAriRX9dh1HpqXtbnJQP4inFgBQRk2oRJwIu05hx3hrG4s5UJ0BiTIyntNPO5NcXtDyPXq7ARyeR3CJESdyGgp1G9hR+yzhLuwi82oKrDWtgHxUx9JyJQXZrLHSJgs5EbUXtSPVE8Ne2L/AlU7gX8iwHSPRZR8SLuRnqZLAQ6YCi9zpsrI6FbU8qRwzpvrs8KriUqo3IOa9hitzsH3t1ZYYjUu0X9mI8zA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kUUVQhfwConrFnRXbg04vsbA9foJPiCYRG+HjVc343Q=;
- b=GMrw26siN7mYv5moUbS3eA3m61zLZP5l8xWHRqo4JNXdARG3WT8vtOWIYZYMl8TUHMTMqyb+R4KdaWmrZ6rqGD9Yfgcw1bnX3wdthgN7TAcN83MC89VixjRzMOkS8+Pg1HudZPUAmmZmmfoNCva9Ni+c1y9ttwVWZhLkltl5yb1zgB5w5zSPGdS+fWBc4cItWgo88fpXaWMnXiCHSs0sX2zl7MAIul1oqd9vKEZWkdY7Ndeq1cQnTMn5WrjdQL7frnd+2op4lAvFkkaowZ+Hs+hzYrof3cV8JeFYG4E+w2ccX/qgZEL56bMgn9ndz8d++Wq+Gv5SGK0zFXJmhsF5kw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kUUVQhfwConrFnRXbg04vsbA9foJPiCYRG+HjVc343Q=;
- b=mzsC69WUjMtdE/t1ePs53UlSkmkPE1m0WO8jx8yyEatuqEFwVZE6V5Q97pQVrw1+v1h8csPI9OItnO7oR9TF0jCMZ5BtvBtutu73Z3simYTpv4pcY8dgdrHgUS3kBbDA+/HnWH9wsocbM7YWmrtTGkJ3VjI9vsrpFSHPHCoNPYlyH2OYAXcKvSIXqfiP0yUI/oq4ooMjzaKrJ0wH7tPic4BsGCUym4sV4QNZf58quwYBd1LUy1H5k7+x+3zgVauGamgle1D8x88yToL7TQihWW1KK1VGap5sKG3ueRgtEHiSdRLiBH+Iyi9btdyz0jov+gXp2IcTlooYozppKA1Nng==
-Received: from MWHPR13CA0005.namprd13.prod.outlook.com (2603:10b6:300:16::15)
- by CY4PR1201MB0021.namprd12.prod.outlook.com (2603:10b6:910:1a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Wed, 9 Feb
- 2022 04:24:15 +0000
-Received: from CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:16:cafe::bc) by MWHPR13CA0005.outlook.office365.com
- (2603:10b6:300:16::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.5 via Frontend
- Transport; Wed, 9 Feb 2022 04:24:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.236) by
- CO1NAM11FT060.mail.protection.outlook.com (10.13.175.132) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4975.11 via Frontend Transport; Wed, 9 Feb 2022 04:24:14 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 9 Feb
- 2022 04:24:14 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Tue, 8 Feb 2022
- 20:24:13 -0800
-Received: from mkumard.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Tue, 8 Feb 2022 20:24:10 -0800
-From:   Mohan Kumar <mkumard@nvidia.com>
-To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <robh+dt@kernel.org>,
-        <thierry.reding@gmail.com>, <tiwai@suse.com>,
-        <jonathanh@nvidia.com>, <spujar@nvidia.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Mohan Kumar <mkumard@nvidia.com>
-Subject: [PATCH v1 6/6] arm64: tegra: Add hda dts node for Tegra234
-Date:   Wed, 9 Feb 2022 09:53:26 +0530
-Message-ID: <20220209042326.15764-7-mkumard@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220209042326.15764-1-mkumard@nvidia.com>
-References: <20220209042326.15764-1-mkumard@nvidia.com>
+        Tue, 8 Feb 2022 23:31:19 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB55C043182
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 20:19:21 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id g14-20020a056e021e0e00b002a26cb56bd4so673229ila.14
+        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 20:19:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=V0oUs8Mx3rtUGoc6VtbBLRU4MEGqEwBOLiYyT0DNM1I=;
+        b=GsdLcA8AeMf8tkKV9AkqnmHfk8Nj1Gq4WdJ29DcB63AOvCKYl0K0kZH/r99arN06Rh
+         iJ9pVETmKJCce+DiXHu3M97zZf99n95bLjKRy7Pv+DTRjQg1cT3uv8y4Dx3t7oLDubAO
+         MKASZ6dDO6AuBn2HDAcwQN/VvHQw+gMaakx/WVO4bzsMRHSWD/m4jxxDMsLELgvus779
+         bMSDXCRH9E6GbQQmDllVahn1Cej83p3TQSBi6qnmg29NVCRrMWWBRplstWY8HeNyoXor
+         WS00DJgNhmYiOcwATL2V7gfEHuz8PNFTvGSwwbxExgqAF73GBFc2N2Syu3NtcUn//3UN
+         GTkw==
+X-Gm-Message-State: AOAM533eXWK4q2odK9l4mgOcQwF13LrmfGnT17ELuXkoBQXHe521D1X6
+        eZw3PFGeBmwerItpwQKTEzPzCRs1A1U20l1jWBsbKkfagO+o
+X-Google-Smtp-Source: ABdhPJxSSrP5TXs3Lv23bfLj/ZlWwvRmDEwRn2BPdnVck0GR99EZvMC0SeN4NXidHMQRO+bhQTW5ynez4pnVIHEIenmDrpKMMAen
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 90f50707-80de-4f58-f694-08d9eb8407f4
-X-MS-TrafficTypeDiagnostic: CY4PR1201MB0021:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB002186F4470279FC0DB99EFCC12E9@CY4PR1201MB0021.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oo3LRPLmxb/5OYr5WocwwkFTyCjh8ZNaGRU/ixrnGM4GnEXZ0KhTmnikQRIOZyvVk2HdztW/jweCNM2lYfzdwtTvdIkqCN2/sxwvL80iVSiACtRWfDT3I0x0ndlMrwR1aYfhMO9yrmOlLkzzmIEUNnfSXl9pwDtTvxLg4AZrcrcbzep53mgGNtNGuCzN2Dp7Xmslg2TMJQyvfWGGqLgU9sSlkc05+FQUMlSHQ3GoTFHAGL61nfXDoZ7gPTokaaagOJ+PP0xtZWdhuaibU7I3d0Gz+SlEHtMxPYUIUv1t5QIBddg1es+7k9wCAAdHojv5t3yeK9c4scF+0C7pWwHAQGgmmWCgB87pYJPavz4eMRjcDyaXywvMPSDa2kSbl5stMMMrdC0Plyi+RuFBSC2dfC+MU8gSAbqNaPgNIoy3oYKvOLih4drimlXm3uQgNFuXoriIbOhKalVFabNAcW+n/dfrf2HcB9zaUoEo+a4zJGpiMcFWGxv2KqcuN6ziu1VeK9RvI28nC+er8fyfe+AUuKkXERgM2OR3vdafq2WtSEhGjXHHO1OV2BMhAqkuMpXROeid2E7JgFrLs3ZDIpafBMZT4SltdVCDemEiTlawRMxq3k56i6mrydE7FpZ97qhAQ3W/hlpRrCrZNC8J70+2EoPGlP6K7RMsTYdSX8mLEAEbm+Th9e6X1fiJxdw2wyj+HAUZWftu2yt0FmmMW1s6nSWQWXtT/15q0C+R51sI8YA=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(54906003)(110136005)(6636002)(8676002)(4326008)(70586007)(107886003)(70206006)(2906002)(508600001)(8936002)(316002)(36756003)(40460700003)(7696005)(6666004)(336012)(186003)(36860700001)(86362001)(26005)(83380400001)(47076005)(356005)(1076003)(2616005)(5660300002)(82310400004)(426003)(81166007)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 04:24:14.9465
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90f50707-80de-4f58-f694-08d9eb8407f4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0021
+X-Received: by 2002:a92:d58e:: with SMTP id a14mr234775iln.210.1644380360324;
+ Tue, 08 Feb 2022 20:19:20 -0800 (PST)
+Date:   Tue, 08 Feb 2022 20:19:20 -0800
+In-Reply-To: <00000000000040c94205d78125af@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000040b9d905d78e23ee@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in jbd2_journal_wait_updates
+From:   syzbot <syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com>
+To:     jack@suse.com, jack@suse.cz, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, riteshh@linux.ibm.com,
+        syzkaller-bugs@googlegroups.com, tytso@mit.edu
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add HDA dts node for Tegra234 chip and for AGX orin platform.
+syzbot has found a reproducer for the following issue on:
 
-Signed-off-by: Mohan Kumar <mkumard@nvidia.com>
----
- .../nvidia/tegra234-p3737-0000+p3701-0000.dts  |  6 ++++++
- arch/arm64/boot/dts/nvidia/tegra234.dtsi       | 18 ++++++++++++++++++
- 2 files changed, 24 insertions(+)
+HEAD commit:    ef6b35306dd8 Add linux-next specific files for 20220204
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1390be28700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0431e0b00810b4f
+dashboard link: https://syzkaller.appspot.com/bug?extid=afa2ca5171d93e44b348
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133db2b4700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17beb4a4700000
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-index efbbb878ba5a..792e4a8b272b 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
-@@ -21,4 +21,10 @@
- 	serial {
- 		status = "okay";
- 	};
-+
-+	bus@0 {
-+		hda@3510000 {
-+			nvidia,model = "NVIDIA Jetson AGX Orin HDA";
-+		};
-+	};
- };
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index 6b6f15804a1a..d39d41968ffb 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -4,6 +4,7 @@
- #include <dt-bindings/interrupt-controller/arm-gic.h>
- #include <dt-bindings/mailbox/tegra186-hsp.h>
- #include <dt-bindings/memory/tegra234-mc.h>
-+#include <dt-bindings/power/tegra234-powergate.h>
- #include <dt-bindings/reset/tegra234-reset.h>
- 
- / {
-@@ -261,6 +262,23 @@
- 			#interrupt-cells = <3>;
- 			interrupt-controller;
- 		};
-+
-+		hda@3510000 {
-+			compatible = "nvidia,tegra234-hda", "nvidia,tegra30-hda";
-+			reg = <0x3510000 0x10000>;
-+			interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&bpmp TEGRA234_CLK_AZA_BIT>,
-+				 <&bpmp TEGRA234_CLK_AZA_2XBIT>;
-+			clock-names = "hda", "hda2codec_2x";
-+			resets = <&bpmp TEGRA234_RESET_HDA>,
-+				 <&bpmp TEGRA234_RESET_HDACODEC>;
-+			reset-names = "hda", "hda2codec_2x";
-+			power-domains = <&bpmp TEGRA234_POWER_DOMAIN_DISP>;
-+			interconnects = <&mc TEGRA234_MEMORY_CLIENT_HDAR &emc>,
-+					<&mc TEGRA234_MEMORY_CLIENT_HDAW &emc>;
-+			interconnect-names = "dma-mem", "write";
-+			status = "disabled";
-+		};
- 	};
- 
- 	sram@40000000 {
--- 
-2.17.1
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+afa2ca5171d93e44b348@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in __lock_acquire+0x3d9c/0x54d0 kernel/locking/lockdep.c:4897
+Read of size 8 at addr ffff88806dd607f8 by task syz-executor106/5085
+
+CPU: 0 PID: 5085 Comm: syz-executor106 Not tainted 5.17.0-rc2-next-20220204-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xa5/0x3e0 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ __lock_acquire+0x3d9c/0x54d0 kernel/locking/lockdep.c:4897
+ lock_acquire kernel/locking/lockdep.c:5639 [inline]
+ lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5604
+ __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
+ spin_lock include/linux/spinlock.h:354 [inline]
+ jbd2_journal_wait_updates+0x221/0x2b0 fs/jbd2/transaction.c:861
+ jbd2_journal_lock_updates+0x183/0x350 fs/jbd2/transaction.c:896
+ ext4_ioctl_checkpoint fs/ext4/ioctl.c:1085 [inline]
+ __ext4_ioctl+0x1fbb/0x5d10 fs/ext4/ioctl.c:1562
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fdf375bca89
+Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 81 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffeb1463618 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007fdf375bca89
+RDX: 00000000200001c0 RSI: 000000004004662b RDI: 0000000000000003
+RBP: 0000000000000000 R08: 00007ffeb1463660 R09: 00007ffeb1463660
+R10: 00007ffeb14630a0 R11: 0000000000000246 R12: 00007ffeb146364c
+R13: 00007ffeb1463660 R14: 00007ffeb14636a0 R15: 00000000000000e5
+ </TASK>
+
+Allocated by task 5083:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:250 [inline]
+ slab_post_alloc_hook mm/slab.h:732 [inline]
+ slab_alloc_node mm/slub.c:3230 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
+ kmem_cache_zalloc include/linux/slab.h:705 [inline]
+ start_this_handle+0x66e/0x1380 fs/jbd2/transaction.c:375
+ jbd2__journal_start+0x399/0x930 fs/jbd2/transaction.c:525
+ __ext4_journal_start_sb+0x227/0x4a0 fs/ext4/ext4_jbd2.c:105
+ __ext4_new_inode+0x2d9e/0x56f0 fs/ext4/ialloc.c:1080
+ ext4_symlink+0x485/0xd40 fs/ext4/namei.c:3293
+ vfs_symlink fs/namei.c:4299 [inline]
+ vfs_symlink+0x108/0x2c0 fs/namei.c:4284
+ do_symlinkat+0x261/0x2e0 fs/namei.c:4328
+ __do_sys_symlink fs/namei.c:4350 [inline]
+ __se_sys_symlink fs/namei.c:4348 [inline]
+ __x64_sys_symlink+0x75/0x90 fs/namei.c:4348
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 5079:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:226 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3509 [inline]
+ kmem_cache_free+0xdb/0x3b0 mm/slub.c:3526
+ jbd2_journal_free_transaction+0x30/0x40 fs/jbd2/transaction.c:62
+ __jbd2_journal_remove_checkpoint+0x438/0x840 fs/jbd2/checkpoint.c:735
+ jbd2_log_do_checkpoint+0x494/0xf70 fs/jbd2/checkpoint.c:354
+ jbd2_journal_flush+0x1a5/0xc70 fs/jbd2/journal.c:2465
+ ext4_ioctl_checkpoint fs/ext4/ioctl.c:1086 [inline]
+ __ext4_ioctl+0x200e/0x5d10 fs/ext4/ioctl.c:1562
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:874 [inline]
+ __se_sys_ioctl fs/ioctl.c:860 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff88806dd60780
+ which belongs to the cache jbd2_transaction_s of size 280
+The buggy address is located 120 bytes inside of
+ 280-byte region [ffff88806dd60780, ffff88806dd60898)
+The buggy address belongs to the page:
+page:ffffea0001b75800 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x6dd60
+head:ffffea0001b75800 order:1 compound_mapcount:0
+flags: 0xfff00000010200(slab|head|node=0|zone=1|lastcpupid=0x7ff)
+raw: 00fff00000010200 ffffea0001b75300 dead000000000002 ffff888017f083c0
+raw: 0000000000000000 0000000080150015 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 1, migratetype Reclaimable, gfp_mask 0x1d2050(__GFP_IO|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC|__GFP_HARDWALL|__GFP_RECLAIMABLE), pid 3637, ts 427493856385, free_ts 14110756876
+ prep_new_page mm/page_alloc.c:2489 [inline]
+ get_page_from_freelist+0x13ea/0x31d0 mm/page_alloc.c:4219
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5435
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2268
+ alloc_slab_page mm/slub.c:1799 [inline]
+ allocate_slab mm/slub.c:1944 [inline]
+ new_slab+0x295/0x400 mm/slub.c:2004
+ ___slab_alloc+0x7ed/0xe00 mm/slub.c:3018
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
+ slab_alloc_node mm/slub.c:3196 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3243
+ kmem_cache_zalloc include/linux/slab.h:705 [inline]
+ start_this_handle+0x66e/0x1380 fs/jbd2/transaction.c:375
+ jbd2__journal_start+0x399/0x930 fs/jbd2/transaction.c:525
+ __ext4_journal_start_sb+0x227/0x4a0 fs/ext4/ext4_jbd2.c:105
+ __ext4_journal_start fs/ext4/ext4_jbd2.h:326 [inline]
+ ext4_dirty_inode+0x9d/0x110 fs/ext4/inode.c:5899
+ __mark_inode_dirty+0x45b/0xfe0 fs/fs-writeback.c:2370
+ generic_update_time fs/inode.c:1856 [inline]
+ inode_update_time fs/inode.c:1869 [inline]
+ touch_atime+0x63d/0x700 fs/inode.c:1941
+ file_accessed include/linux/fs.h:2422 [inline]
+ iterate_dir+0x465/0x700 fs/readdir.c:70
+ __do_sys_getdents64 fs/readdir.c:369 [inline]
+ __se_sys_getdents64 fs/readdir.c:354 [inline]
+ __x64_sys_getdents64+0x13a/0x2c0 fs/readdir.c:354
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+page last free stack trace:
+ reset_page_owner include/linux/page_owner.h:24 [inline]
+ free_pages_prepare mm/page_alloc.c:1356 [inline]
+ free_pcp_prepare+0x549/0xd20 mm/page_alloc.c:1406
+ free_unref_page_prepare mm/page_alloc.c:3376 [inline]
+ free_unref_page+0x19/0x6c0 mm/page_alloc.c:3455
+ free_contig_range+0xb1/0x180 mm/page_alloc.c:9434
+ destroy_args+0xa8/0x646 mm/debug_vm_pgtable.c:1018
+ debug_vm_pgtable+0x2a74/0x2b06 mm/debug_vm_pgtable.c:1332
+ do_one_initcall+0x103/0x650 init/main.c:1303
+ do_initcall_level init/main.c:1378 [inline]
+ do_initcalls init/main.c:1394 [inline]
+ do_basic_setup init/main.c:1413 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1618
+ kernel_init+0x1a/0x1d0 init/main.c:1507
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+
+Memory state around the buggy address:
+ ffff88806dd60680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88806dd60700: fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88806dd60780: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                                ^
+ ffff88806dd60800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88806dd60880: fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
 
