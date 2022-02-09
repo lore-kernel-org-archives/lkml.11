@@ -2,73 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE50C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C391C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238241AbiBIEJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:09:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
+        id S244040AbiBIEJ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 23:09:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245752AbiBIEGM (ORCPT
+        with ESMTP id S1347528AbiBIDvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 23:06:12 -0500
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE55C061577;
-        Tue,  8 Feb 2022 20:06:11 -0800 (PST)
-Received: by mail-oi1-f181.google.com with SMTP id q8so1285560oiw.7;
-        Tue, 08 Feb 2022 20:06:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b6SaNmycVybeDF6G9H1cZ2sPN7HYXMYSiZUwDNcdJwM=;
-        b=yRrRwzQpeeJbtx73KF3TpQJHdwGpN38npfxfI7hoPplEAvAGnVNzZySZMF+GBBmz/g
-         2W2XcO60Yg6VqBKEgE6c7DkqXuoS28mWYvDUhwm/TgOf5Cy3pwzkHVIJ+c5jgWRbDQGr
-         FHtrBJzrkEca7uAg7nxZEZSo8gG0AL1TojG+I1v5GqgSbhu7AozFnniMQsnY4P80seW9
-         3J4g0SFxqcD/oZk42yV2oGlUQ6H9n9ImPJ/nh7NJqr9pFbREHyanBzXtqIZKARUCTndv
-         OFMPa526iFoHPN5kJfhCBPh8QDOICnn7SzqZ3sTTpMpiEHcDhPTUlCLUw9rIXxkp2ENn
-         xjNA==
-X-Gm-Message-State: AOAM530Uvru0+nMyCFTbDSpuv8By6aiLZtPiqEppky9xDfiL6tb/rut4
-        xPqNbCMzu8C2v/fs4qUqKQ==
-X-Google-Smtp-Source: ABdhPJw2/c9hvOCvmPL3xtMWamQugOcPTEH7IK/GU9FaJtJSa+90xaUuLZm6DsV+LDiNAcr17ndPVg==
-X-Received: by 2002:aca:1011:: with SMTP id 17mr154742oiq.27.1644379570470;
-        Tue, 08 Feb 2022 20:06:10 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id i21sm6856720oao.35.2022.02.08.20.06.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 20:06:09 -0800 (PST)
-Received: (nullmailer pid 3634884 invoked by uid 1000);
-        Wed, 09 Feb 2022 04:06:08 -0000
-Date:   Tue, 8 Feb 2022 22:06:08 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Icenowy Zheng <icenowy@nucleisys.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-serial@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Albert Ou <aou@eecs.berkeley.edu>,
-        devicetree@vger.kernel.org, Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Subject: Re: [PATCH 06/12] dt-bindings: serial: add compatible string for
- Nuclei DemoSoC UART
-Message-ID: <YgM9sDyF+dx9JwOG@robh.at.kernel.org>
-References: <20220127151647.2375449-1-icenowy@nucleisys.com>
- <20220127151647.2375449-7-icenowy@nucleisys.com>
+        Tue, 8 Feb 2022 22:51:09 -0500
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 81305C061578
+        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:51:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=YvOhP
+        o6ymYclh5k4417PVKOkRi78cNnblip3oZXJi9w=; b=TL8XBCK3BGYJiAdN6Udlr
+        gZrIrYQuYZjx/21TRxoG1hfP0raAc0tF/M+/OPmQEYdezM5KFR7UciDeDIbEm+Qk
+        iYMrmBySD2iAWoSt7ovcDjfzLo1HOK7mcj54G11++6EgodVel6HVYg0p2JUZLsbU
+        sHkB2Uf6ZxFV5C3pwUZn2A=
+Received: from sysgbj8.hosso.cc (unknown [42.62.85.2])
+        by smtp13 (Coremail) with SMTP id EcCowAC3LJ5zNgNinKhICA--.44272S2;
+        Wed, 09 Feb 2022 11:35:16 +0800 (CST)
+From:   chengchaohang@163.com
+To:     leon@kernel.org, maorg@nvidia.com, jgg@ziepe.ca,
+        logang@deltatee.com, thunder.leizhen@huawei.com
+Cc:     linux-kernel@vger.kernel.org,
+        "chaohang.cheng" <chaohang.cheng@horizon.ai>
+Subject: [PATCH] lib/scatterlist: Provide scatterlist hexdump.
+Date:   Wed,  9 Feb 2022 11:34:44 +0800
+Message-Id: <20220209033444.56433-1-chengchaohang@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127151647.2375449-7-icenowy@nucleisys.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowAC3LJ5zNgNinKhICA--.44272S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWruF18ZF4xJF48AF48WFWkXrb_yoWkCrb_Ca
+        47Jw45Gr4fGF4IqFW3WFWftFy8WFZ8ZF1I9F1Igr93W3s8urs8X34vqr9rAF45Way8Ca1D
+        Gasaqas7XF1UXjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5wo7tUUUUU==
+X-Originating-IP: [42.62.85.2]
+X-CM-SenderInfo: xfkh0wpfkd0xxdqjqiywtou0bp/1tbishyivFUMUYHo9gACsl
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 23:16:41 +0800, Icenowy Zheng wrote:
-> Nuclei DemoSoC design integrates the UART controller from SiFive.
-> 
-> Add a compatible string for it.
-> 
-> Signed-off-by: Icenowy Zheng <icenowy@nucleisys.com>
-> ---
->  Documentation/devicetree/bindings/serial/sifive-serial.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+From: "chaohang.cheng" <chaohang.cheng@horizon.ai>
 
-Acked-by: Rob Herring <robh@kernel.org>
+A scatterlist hexdump is essential during debug, sometimes.
+
+Signed-off-by: chaohang.cheng <chaohang.cheng@horizon.ai>
+---
+ include/linux/scatterlist.h | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
+index 7ff9d6386c12..ef8ecaac0016 100644
+--- a/include/linux/scatterlist.h
++++ b/include/linux/scatterlist.h
+@@ -563,4 +563,21 @@ bool sg_miter_skip(struct sg_mapping_iter *miter, off_t offset);
+ bool sg_miter_next(struct sg_mapping_iter *miter);
+ void sg_miter_stop(struct sg_mapping_iter *miter);
+ 
++/*
++ * Hexdump scatterlist
++ *
++ * @sg: struct scatterlist* .
++ * it stands for the head of a scatterlist .
++ *
++ * note: print_hex_dump_debug is a dynamic debug .
++ *
++ */
++#define SG_HEXDUMP(sg)							\
++do {									\
++	struct scatterlist *sg_tmp = NULL;				\
++	for (sg_tmp = sg; sg_tmp; sg_tmp = sg_next(sg_tmp))		\
++		print_hex_dump_debug("", DUMP_PREFIX_OFFSET,		\
++			16, 1, sg_virt(sg_tmp), sg_tmp->length, true);	\
++} while (0)
++
+ #endif /* _LINUX_SCATTERLIST_H */
+-- 
+2.25.1
+
