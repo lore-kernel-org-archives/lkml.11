@@ -2,81 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C96C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 04:10:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344022AbiBIEKE (ORCPT
+        id S1347262AbiBIEKM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 23:10:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        Tue, 8 Feb 2022 23:10:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347262AbiBIDjZ (ORCPT
+        with ESMTP id S1346363AbiBID0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 22:39:25 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159A8C043183
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 19:32:32 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id z13so2013104pfa.3
-        for <linux-kernel@vger.kernel.org>; Tue, 08 Feb 2022 19:32:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GOQ0sWfM4FjwKkl33/hNhQ8lpkr9qvoQNXOdfZoCGy4=;
-        b=WPh+JZAupBRMfuEu+D0pwyvzDFFX2NJCAoSOCCWQY+6t/ldquzG3RHI7/JWZGyQRL6
-         e27N96UhOUznbX4Y6v3TO/ES3k7XZKupg6PrNvOAJd4yUlz4Z17JwkMvC7cs4EGVkaoX
-         4HJFcQ3I+gkEgMhvujrfc/e64hKNNB26SLuBnYBPWyAKEKCPwSmzK4qroViO9xXNw5Zp
-         hAJ2sRdkv0I610ubtyoyf5X+lpG5oXvCvsqBf6SLMuxjMIruVcpoVxe6xaxcEN+GTLmb
-         dg4U8hSC+7xN9EtudaCVc60tZpjJV5Wi/D3p8Oac+Yj6D3FfnjyATGsODsZwd22wAKPX
-         +EQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GOQ0sWfM4FjwKkl33/hNhQ8lpkr9qvoQNXOdfZoCGy4=;
-        b=1cghiRTJAh9oKJgijCmSkv55fW7x08IDMR/ZV+9R+N2SfQ2OFb+VcAzjxU15Aq53Fh
-         Gqxg2cbuiHVL9HVRBzzekvYz2WSUOtkJuX+oW4CC5QsB1nIZfbjDJJf24V4S3+iG7eHv
-         YnarBgV+sPmqRCt/auvvzUaL4vlpaf3RqoBQR1ARt0H7/DFuI7yRvNGPRUMryCbcDwlF
-         OgO5dm5PUo/j9vKZOu/ca/tbGknbkIbA3dukoUi6NdU6l8hQNxXCns0wpKR0PuPedbk6
-         +JLDw4CKMzKhqNzxEZH3wlWqzTiXl2sYCSVqdhH6+J5oBdaYBnfvHlNYSLWqfcyU2MBu
-         VFYg==
-X-Gm-Message-State: AOAM532nzmk3SvISHoFdYZmPG/ZykSRr6BW98ClNYtMcH2fsaHOTKl0Q
-        Xmv1g1VqIcexH/paa/lo++FpUQ==
-X-Google-Smtp-Source: ABdhPJz51Gwp5ZjbgRK9o+938031p99GlYbBhM3IxPTtiQ0jNOjrMfO/AhFmHZFU+kutJ57icCkOEA==
-X-Received: by 2002:a63:6a06:: with SMTP id f6mr364233pgc.576.1644377551404;
-        Tue, 08 Feb 2022 19:32:31 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:4b6f:f14d:be50:86a])
-        by smtp.gmail.com with ESMTPSA id y193sm18393977pfb.7.2022.02.08.19.32.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 19:32:31 -0800 (PST)
-Date:   Wed, 9 Feb 2022 11:32:28 +0800
-From:   Tzung-Bi Shih <tzungbi@google.com>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROMEOS EC USB TYPE-C DRIVER" 
-        <chrome-platform@lists.linux.dev>
-Subject: Re: [PATCH v2 4/4] platform/chrome: cros_ec_typec: Update mux flags
- during partner removal
-Message-ID: <YgM1zM7Vpn/FlHv7@google.com>
-References: <20220208184721.1697194-1-pmalani@chromium.org>
- <20220208184721.1697194-5-pmalani@chromium.org>
+        Tue, 8 Feb 2022 22:26:16 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CC8C061576;
+        Tue,  8 Feb 2022 19:26:15 -0800 (PST)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644377174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sbQcEhH/CPDuLNqbvluz1NLTZubPsF28DulkteTgQ3g=;
+        b=m6UhLUtsi6j4grN0hoHwGZ6RJTBzyq5F0J2uRUbOhflEXosCmXvMZZRrFZNIUXrMMJWoVn
+        jx9q+abuwzk85dzMXzAHUoll5UZkmerqGqjKD5ZgRa7LpBk/CBwcdVfh2VmE/QHilXASn3
+        LZkuNxrewuE/r/4BU+Y/GZfaSmLvJu0=
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     cai.huoqing@linux.dev
+Cc:     Nilesh Javali <njavali@marvell.com>,
+        Manish Rangankar <mrangankar@marvell.com>,
+        GR-QLogic-Storage-Upstream@marvell.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] scsi: bnx2i: Make use of the helper macro LIST_HEAD()
+Date:   Wed,  9 Feb 2022 11:25:46 +0800
+Message-Id: <20220209032547.38075-1-cai.huoqing@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220208184721.1697194-5-pmalani@chromium.org>
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 08, 2022 at 06:47:24PM +0000, Prashant Malani wrote:
-> In cros_typec_remove_partner(), we call
-> cros_typec_usb_disconnect_state() which sets the switches/muxes to be in
-> a disconnected state. This also happens in cros_typec_configure_mux().
-> However, unlike there, here the mux_flags variable hasn't been updated
-> to reflect that a disconnection has occurred. Update the flag here
-> accordingly.
-> 
-> Signed-off-by: Prashant Malani <pmalani@chromium.org>
+Replace "struct list_head head = LIST_HEAD_INIT(head)" with
+"LIST_HEAD(head)" to simplify the code.
 
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Signed-off-by: Cai Huoqing <cai.huoqing@linux.dev>
+---
+ drivers/scsi/bnx2i/bnx2i_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/bnx2i/bnx2i_init.c b/drivers/scsi/bnx2i/bnx2i_init.c
+index 2b3f0c10478e..40561fc2823d 100644
+--- a/drivers/scsi/bnx2i/bnx2i_init.c
++++ b/drivers/scsi/bnx2i/bnx2i_init.c
+@@ -16,7 +16,7 @@
+ 
+ #include "bnx2i.h"
+ 
+-static struct list_head adapter_list = LIST_HEAD_INIT(adapter_list);
++static LIST_HEAD(adapter_list);
+ static u32 adapter_count;
+ 
+ #define DRV_MODULE_NAME		"bnx2i"
+-- 
+2.25.1
+
