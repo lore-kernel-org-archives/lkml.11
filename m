@@ -2,75 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1974C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242241AbiBICqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36762 "EHLO
+        id S242597AbiBICqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:46:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244675AbiBICOQ (ORCPT
+        with ESMTP id S242696AbiBIBUI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:14:16 -0500
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8743C06157B;
-        Tue,  8 Feb 2022 18:14:15 -0800 (PST)
-Received: by mail-oi1-f174.google.com with SMTP id v67so1053489oie.9;
-        Tue, 08 Feb 2022 18:14:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QlY7z6ucIH6IDIDbySWxzA4mcb/KENstANpgmuDi7Sw=;
-        b=kdLCwSEF84+UfA1rQuA29sbYcoJQDTHFDMm5c6TJBO0743PABa1gInSxPZx7EU6X6Q
-         aZUMrFc6BLdfJmL3M9knFo4GBPO2EoJaBURGGiKXD4SjFZJwqxEUs7G/+ijJhCMLeUoH
-         DUS6ERQLFggbCYztuM/Uxb2kJLut3pG3d0IEoZRLCrWxrMCQTPAHILROkvl1bwVQoJbE
-         Fy2z+4mrm45KZBKFwoYm2cgSmlbbSPRFM3aOIVm0KW9ZgcLRRMLRdCSmus0gCV798puQ
-         W9nM72QmQi+xOCXyQGLwjQhtHDlibPEkwHfqViD0ILcDZPvZWvm7Oxx78fyfUhVISyC4
-         YaWw==
-X-Gm-Message-State: AOAM533/Oe8uvPzXPFIgjx1g9KkQ1hZf17Q2uJYqopgoAissu+pjBoOc
-        5eYDlv1v9+Ky3Lmsd47Nyw==
-X-Google-Smtp-Source: ABdhPJx8VIWqIwXOvN/NC7/dT9hgNU1e17bYi6UbsWxi/VPrkW8Osj2X47/792oC6Qn0vHev4h1Czg==
-X-Received: by 2002:a05:6808:1188:: with SMTP id j8mr373617oil.195.1644372855013;
-        Tue, 08 Feb 2022 18:14:15 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x16sm6203662ooa.6.2022.02.08.18.14.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:14:14 -0800 (PST)
-Received: (nullmailer pid 3467846 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:14:13 -0000
-Date:   Tue, 8 Feb 2022 20:14:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     devicetree@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH 08/15] dt-bindings: pinctrl: qcom: msm8953: allow
- gpio-reserved-ranges
-Message-ID: <YgMjdZ2hH2t5JE93@robh.at.kernel.org>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <20220112194118.178026-9-luca@z3ntu.xyz>
+        Tue, 8 Feb 2022 20:20:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E44C06157B;
+        Tue,  8 Feb 2022 17:20:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E03F761870;
+        Wed,  9 Feb 2022 01:20:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41F7C004E1;
+        Wed,  9 Feb 2022 01:20:05 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="dnbamzz2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+TxXH5q/G2VbxPaSCUZQGpApyeUqecvGFp7I+os+ONQ=;
+        b=dnbamzz2A68Eiy/4O7sFge5CrYsM6Dyjhvz3FK3iUXQdGH/RIpIW9fWD7qG53wLE1zwTWt
+        +9ZrjXd9J+JDlGNJUjPTCffSxCayPnI+tsyNTGE4GbPT3v2s1KWRQQ+dOSQFUjF+fH8PDj
+        uPyRk+3J2BZgqQxSPEzJpXf+Q441MZ8=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 13f1e4c4 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:20:04 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Eric Biggers <ebiggers@google.com>
+Subject: [PATCH v2 5/9] random: do not xor RDRAND when writing into /dev/random
+Date:   Wed,  9 Feb 2022 02:19:15 +0100
+Message-Id: <20220209011919.493762-6-Jason@zx2c4.com>
+In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112194118.178026-9-luca@z3ntu.xyz>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 20:40:57 +0100, Luca Weiss wrote:
-> Allow the gpio-reserved-ranges property to be used in dts.
-> 
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  .../devicetree/bindings/pinctrl/qcom,msm8953-pinctrl.yaml       | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+Continuing the reasoning of "random: ensure early RDSEED goes through
+mixer on init", we don't want RDRAND interacting with anything without
+going through the mixer function, as a backdoored CPU could presumably
+cancel out data during an xor, which it'd have a harder time doing when
+being forced through a cryptographic hash function. There's actually no
+need at all to be calling RDRAND in write_pool(), because before we
+extract from the pool, we always do so with 32 bytes of RDSEED hashed in
+at that stage. Xoring at this stage is needless and introduces a minor
+liability.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Reviewed-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 75dc370d83b5..785a4545c9d7 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1315,25 +1315,15 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+ static int write_pool(const char __user *buffer, size_t count)
+ {
+ 	size_t bytes;
+-	u32 t, buf[16];
++	u8 buf[BLAKE2S_BLOCK_SIZE];
+ 	const char __user *p = buffer;
+ 
+ 	while (count > 0) {
+-		int b, i = 0;
+-
+ 		bytes = min(count, sizeof(buf));
+-		if (copy_from_user(&buf, p, bytes))
++		if (copy_from_user(buf, p, bytes))
+ 			return -EFAULT;
+-
+-		for (b = bytes; b > 0; b -= sizeof(u32), i++) {
+-			if (!arch_get_random_int(&t))
+-				break;
+-			buf[i] ^= t;
+-		}
+-
+ 		count -= bytes;
+ 		p += bytes;
+-
+ 		mix_pool_bytes(buf, bytes);
+ 		cond_resched();
+ 	}
+-- 
+2.35.0
+
