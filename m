@@ -2,248 +2,344 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3997CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE0DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234393AbiBIJik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:38:40 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40892 "EHLO
+        id S233394AbiBIJi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:38:59 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237500AbiBIJcM (ORCPT
+        with ESMTP id S238860AbiBIJdq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:32:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 47780E056589
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:32:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644399072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uXHl6zWfNshnr52NE5ioPZcgRmeozRVAlTsdeYXbxCY=;
-        b=AMIUJZZkK96AMsYFDDz4armYSNDV4QSJ1EysebTNFZ9qbPCMwrjw+BK0Q60pi+yjRfO85u
-        j1X7Ut2C7uhnFlmIy6vUfbAZ0BkHNg5CF7MSPOs+5I2ghiCxmkwVGbHZIEIwoufJ4NgGck
-        Caoz93xdGd5DksHb8etNZKQuoe0I/9w=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-652-gqk7bWj8NmORQvsIyzQ31w-1; Wed, 09 Feb 2022 04:03:33 -0500
-X-MC-Unique: gqk7bWj8NmORQvsIyzQ31w-1
-Received: by mail-wm1-f71.google.com with SMTP id j39-20020a05600c1c2700b0037becd18addso222981wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:03:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uXHl6zWfNshnr52NE5ioPZcgRmeozRVAlTsdeYXbxCY=;
-        b=Uqhm6Awfhe8uSoHDI1Ma0i/enTNS6TZqDUWURwlOrnsxnuZOuHu9VT1jyawu3iPRSi
-         sjlSmHJruPWGg9CAQq58wrNUKrKuUrCAWer6xeN8IFj0dXUi8GKwOONilgC9gbBg3w5s
-         984/mhs09hYN50Pv22wU8Q73jJQitjRJPoPMey0ZiBNaYTTR9gC0hQxaAg+1acu9FHwA
-         fSmSo9P1hn51oNyVBl7uc46xAyCdnXkkPYdOFCz0b07F26fC8gyxoNvA+FY/otQryY17
-         /fRF7ZDJmxTvmE/Gq8RIew1UyNjYv3RipovTCjvt8z/S6Ws4weroynGaxCMg6zZGJazm
-         X1gg==
-X-Gm-Message-State: AOAM532x3t1yzYNdow1hZf09uUY8LOz9B3ciQDj/OGfM5xtsekexF1nu
-        M79QU3SUr5ujvV0exLCiVKPGmBBLwiqyav9gsaN32Zu+NnnbjD0djE9+a51jCBEOT1yvQp5DyPF
-        Q84OlhjtCUYjNhMtPXLp8iYVQbNLVYTxTTlRYr5jgENgSFF/Ti/7y4x29ZVGJLfMUfvZx9AZ0Vj
-        Q=
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr1662586wmm.166.1644397411453;
-        Wed, 09 Feb 2022 01:03:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxT7Pib7rdcqP+VtxNfxLQQztTdcyWavTVBGg58Xcbl17d1EFyRBBvpQE+HBcC8rsWkQwEpBw==
-X-Received: by 2002:a05:600c:2251:: with SMTP id a17mr1662550wmm.166.1644397411097;
-        Wed, 09 Feb 2022 01:03:31 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id z1sm4058866wmk.32.2022.02.09.01.03.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:03:30 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-fbdev@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH v3 4/7] drm/solomon: Add SSD130X OLED displays I2C support
-Date:   Wed,  9 Feb 2022 10:03:11 +0100
-Message-Id: <20220209090314.2511959-5-javierm@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209090314.2511959-1-javierm@redhat.com>
-References: <20220209090314.2511959-1-javierm@redhat.com>
+        Wed, 9 Feb 2022 04:33:46 -0500
+Received: from out199-12.us.a.mail.aliyun.com (out199-12.us.a.mail.aliyun.com [47.90.199.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99731E011158
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:33:39 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V4-ipji_1644398801;
+Received: from 30.178.82.5(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0V4-ipji_1644398801)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 09 Feb 2022 17:26:42 +0800
+Message-ID: <e9f8c595-c133-54f4-1167-31f4a8a6e52e@linux.alibaba.com>
+Date:   Wed, 9 Feb 2022 17:26:41 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH] uio: Replace mutex info_lock with percpu_ref to improve
+ performance
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     gregkh@linuxfoundation.org, xiaoguang.wang@linux.alibaba.com,
+        xlpang@linux.alibaba.com, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+References: <1644304760-11862-1-git-send-email-kanie@linux.alibaba.com>
+ <YgNv9folAsgtGl5Z@infradead.org>
+From:   Guixin Liu <kanie@linux.alibaba.com>
+In-Reply-To: <YgNv9folAsgtGl5Z@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ssd130x driver only provides the core support for these devices but it
-does not have any bus transport logic. Add a driver to interface over I2C.
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
-
-Changes in v3:
-- Add a separate driver for SSD130X chips I2C support (Andy Shevchenko)
-
- drivers/gpu/drm/solomon/Kconfig       |   9 ++
- drivers/gpu/drm/solomon/Makefile      |   1 +
- drivers/gpu/drm/solomon/ssd130x-i2c.c | 117 ++++++++++++++++++++++++++
- 3 files changed, 127 insertions(+)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-i2c.c
-
-diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
-index c969c358a4a7..47e16bc20e0d 100644
---- a/drivers/gpu/drm/solomon/Kconfig
-+++ b/drivers/gpu/drm/solomon/Kconfig
-@@ -10,3 +10,12 @@ config DRM_SSD130X
- 	  the appropriate bus transport in your chip also must be selected.
- 
- 	  If M is selected the module will be called ssd130x.
-+
-+config DRM_SSD130X_I2C
-+	tristate "DRM support for Solomon SSD130X OLED displays (I2C bus)"
-+	depends on DRM_SSD130X && I2C
-+	select REGMAP_I2C
-+	help
-+	  Say Y here if the SSD130X OLED display is connected via I2C bus.
-+
-+	  If M is selected the module will be called ssd130x-i2c.
-diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
-index f685addb19fe..4bfc5acb0447 100644
---- a/drivers/gpu/drm/solomon/Makefile
-+++ b/drivers/gpu/drm/solomon/Makefile
-@@ -1 +1,2 @@
- obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
-+obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
-diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-new file mode 100644
-index 000000000000..ff5f8992b2ff
---- /dev/null
-+++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-@@ -0,0 +1,117 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DRM driver for Solomon SSD130X OLED displays (I2C bus)
-+ *
-+ * Copyright 2022 Red Hat Inc.
-+ * Authors: Javier Martinez Canillas <javierm@redhat.com>
-+ *
-+ * Based on drivers/video/fbdev/ssd1307fb.c
-+ * Copyright 2012 Free Electrons
-+ */
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include "ssd130x.h"
-+
-+#define DRIVER_NAME	"ssd130x-i2c"
-+#define DRIVER_DESC	"DRM driver for Solomon SSD130X OLED displays (I2C)"
-+
-+static const struct regmap_config ssd130x_i2c_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static int ssd130x_i2c_probe(struct i2c_client *client)
-+{
-+	struct ssd130x_device *ssd130x;
-+	struct regmap *regmap;
-+
-+	regmap = devm_regmap_init_i2c(client, &ssd130x_i2c_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	ssd130x = ssd130x_probe(&client->dev, regmap);
-+
-+	if (IS_ERR(ssd130x))
-+		return PTR_ERR(ssd130x);
-+
-+	i2c_set_clientdata(client, ssd130x);
-+
-+	return 0;
-+}
-+
-+static int ssd130x_i2c_remove(struct i2c_client *client)
-+{
-+	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
-+
-+	return ssd130x_remove(ssd130x);
-+}
-+
-+static void ssd130x_i2c_shutdown(struct i2c_client *client)
-+{
-+	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
-+
-+	ssd130x_shutdown(ssd130x);
-+}
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 7,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 8,
-+	.need_chargepump = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 2,
-+	.default_dclk_frq = 12,
-+	.need_pwm = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 10,
-+};
-+
-+static const struct of_device_id ssd130x_of_match[] = {
-+	{
-+		.compatible = "solomon,ssd1305fb-i2c",
-+		.data = (void *)&ssd130x_ssd1305_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1306fb-i2c",
-+		.data = (void *)&ssd130x_ssd1306_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1307fb-i2c",
-+		.data = (void *)&ssd130x_ssd1307_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1309fb-i2c",
-+		.data = (void *)&ssd130x_ssd1309_deviceinfo,
-+	},
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, ssd130x_of_match);
-+
-+static struct i2c_driver ssd130x_i2c_driver = {
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = ssd130x_of_match,
-+	},
-+	.probe_new = ssd130x_i2c_probe,
-+	.remove = ssd130x_i2c_remove,
-+	.shutdown = ssd130x_i2c_shutdown,
-+};
-+module_i2c_driver(ssd130x_i2c_driver);
-+
-+MODULE_DESCRIPTION(DRIVER_DESC);
-+MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.34.1
-
+在 2022/2/9 15:40, Christoph Hellwig 写道:
+> On Tue, Feb 08, 2022 at 03:19:20PM +0800, Guixin Liu wrote:
+>> This patch includes a modification to repace mutex info_lock with
+>> percpu_ref, in order to improve uio performance.
+> What performance critical use case do you have for uio?  Everyone really
+> should be using vfio these days due to the large amount of shortcomings
+> in the uio interface.
+We use uio because the tcmu and tcmu-runner use uio，and in fact tcmu is 
+not a real hardware.
+>
+>> Reviewed-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+>> Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
+>> ---
+>>   drivers/uio/uio.c          | 95 ++++++++++++++++++++++++++++++++++------------
+>>   include/linux/uio_driver.h |  5 ++-
+>>   2 files changed, 75 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/drivers/uio/uio.c b/drivers/uio/uio.c
+>> index 43afbb7..0cc0655 100644
+>> --- a/drivers/uio/uio.c
+>> +++ b/drivers/uio/uio.c
+>> @@ -24,6 +24,8 @@
+>>   #include <linux/kobject.h>
+>>   #include <linux/cdev.h>
+>>   #include <linux/uio_driver.h>
+>> +#include <linux/completion.h>
+>> +#include <linux/percpu-refcount.h>
+>>   
+>>   #define UIO_MAX_DEVICES		(1U << MINORBITS)
+>>   
+>> @@ -218,7 +220,9 @@ static ssize_t name_show(struct device *dev,
+>>   	struct uio_device *idev = dev_get_drvdata(dev);
+>>   	int ret;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info) {
+>>   		ret = -EINVAL;
+>>   		dev_err(dev, "the device has been unregistered\n");
+>> @@ -228,7 +232,7 @@ static ssize_t name_show(struct device *dev,
+>>   	ret = sprintf(buf, "%s\n", idev->info->name);
+>>   
+>>   out:
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	return ret;
+>>   }
+>>   static DEVICE_ATTR_RO(name);
+>> @@ -239,7 +243,9 @@ static ssize_t version_show(struct device *dev,
+>>   	struct uio_device *idev = dev_get_drvdata(dev);
+>>   	int ret;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info) {
+>>   		ret = -EINVAL;
+>>   		dev_err(dev, "the device has been unregistered\n");
+>> @@ -249,7 +255,7 @@ static ssize_t version_show(struct device *dev,
+>>   	ret = sprintf(buf, "%s\n", idev->info->version);
+>>   
+>>   out:
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	return ret;
+>>   }
+>>   static DEVICE_ATTR_RO(version);
+>> @@ -489,16 +495,20 @@ static int uio_open(struct inode *inode, struct file *filep)
+>>   	listener->event_count = atomic_read(&idev->event);
+>>   	filep->private_data = listener;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref)) {
+>> +		ret = -EINVAL;
+>> +		goto err_infoopen;
+>> +	}
+>> +
+>>   	if (!idev->info) {
+>> -		mutex_unlock(&idev->info_lock);
+>> +		percpu_ref_put(&idev->info_ref);
+>>   		ret = -EINVAL;
+>>   		goto err_infoopen;
+>>   	}
+>>   
+>>   	if (idev->info->open)
+>>   		ret = idev->info->open(idev->info, inode);
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	if (ret)
+>>   		goto err_infoopen;
+>>   
+>> @@ -531,10 +541,12 @@ static int uio_release(struct inode *inode, struct file *filep)
+>>   	struct uio_listener *listener = filep->private_data;
+>>   	struct uio_device *idev = listener->dev;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (idev->info && idev->info->release)
+>>   		ret = idev->info->release(idev->info, inode);
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   
+>>   	module_put(idev->owner);
+>>   	kfree(listener);
+>> @@ -548,10 +560,12 @@ static __poll_t uio_poll(struct file *filep, poll_table *wait)
+>>   	struct uio_device *idev = listener->dev;
+>>   	__poll_t ret = 0;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info || !idev->info->irq)
+>>   		ret = -EIO;
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   
+>>   	if (ret)
+>>   		return ret;
+>> @@ -577,13 +591,17 @@ static ssize_t uio_read(struct file *filep, char __user *buf,
+>>   	add_wait_queue(&idev->wait, &wait);
+>>   
+>>   	do {
+>> -		mutex_lock(&idev->info_lock);
+>> +		if (!percpu_ref_tryget_live(&idev->info_ref)) {
+>> +			retval = -EINVAL;
+>> +			break;
+>> +		}
+>> +
+>>   		if (!idev->info || !idev->info->irq) {
+>>   			retval = -EIO;
+>> -			mutex_unlock(&idev->info_lock);
+>> +			percpu_ref_put(&idev->info_ref);
+>>   			break;
+>>   		}
+>> -		mutex_unlock(&idev->info_lock);
+>> +		percpu_ref_put(&idev->info_ref);
+>>   
+>>   		set_current_state(TASK_INTERRUPTIBLE);
+>>   
+>> @@ -631,7 +649,9 @@ static ssize_t uio_write(struct file *filep, const char __user *buf,
+>>   	if (copy_from_user(&irq_on, buf, count))
+>>   		return -EFAULT;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info) {
+>>   		retval = -EINVAL;
+>>   		goto out;
+>> @@ -650,7 +670,7 @@ static ssize_t uio_write(struct file *filep, const char __user *buf,
+>>   	retval = idev->info->irqcontrol(idev->info, irq_on);
+>>   
+>>   out:
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	return retval ? retval : sizeof(s32);
+>>   }
+>>   
+>> @@ -675,7 +695,9 @@ static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
+>>   	vm_fault_t ret = 0;
+>>   	int mi;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info) {
+>>   		ret = VM_FAULT_SIGBUS;
+>>   		goto out;
+>> @@ -702,8 +724,7 @@ static vm_fault_t uio_vma_fault(struct vm_fault *vmf)
+>>   	vmf->page = page;
+>>   
+>>   out:
+>> -	mutex_unlock(&idev->info_lock);
+>> -
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	return ret;
+>>   }
+>>   
+>> @@ -772,7 +793,9 @@ static int uio_mmap(struct file *filep, struct vm_area_struct *vma)
+>>   
+>>   	vma->vm_private_data = idev;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	if (!percpu_ref_tryget_live(&idev->info_ref))
+>> +		return -EINVAL;
+>> +
+>>   	if (!idev->info) {
+>>   		ret = -EINVAL;
+>>   		goto out;
+>> @@ -811,7 +834,7 @@ static int uio_mmap(struct file *filep, struct vm_area_struct *vma)
+>>   	}
+>>   
+>>    out:
+>> -	mutex_unlock(&idev->info_lock);
+>> +	percpu_ref_put(&idev->info_ref);
+>>   	return ret;
+>>   }
+>>   
+>> @@ -907,6 +930,13 @@ static void uio_device_release(struct device *dev)
+>>   	kfree(idev);
+>>   }
+>>   
+>> +static void uio_info_free(struct percpu_ref *ref)
+>> +{
+>> +	struct uio_device *idev = container_of(ref, struct uio_device, info_ref);
+>> +
+>> +	complete(&idev->free_done);
+>> +}
+>> +
+>>   /**
+>>    * __uio_register_device - register a new userspace IO device
+>>    * @owner:	module that creates the new device
+>> @@ -937,10 +967,17 @@ int __uio_register_device(struct module *owner,
+>>   
+>>   	idev->owner = owner;
+>>   	idev->info = info;
+>> -	mutex_init(&idev->info_lock);
+>>   	init_waitqueue_head(&idev->wait);
+>>   	atomic_set(&idev->event, 0);
+>>   
+>> +	ret = percpu_ref_init(&idev->info_ref, uio_info_free, 0, GFP_KERNEL);
+>> +	if (ret) {
+>> +		 pr_err("percpu_ref init failed!\n");
+>> +		 return ret;
+>> +	}
+>> +	init_completion(&idev->confirm_done);
+>> +	init_completion(&idev->free_done);
+>> +
+>>   	ret = uio_get_minor(idev);
+>>   	if (ret) {
+>>   		kfree(idev);
+>> @@ -1036,6 +1073,13 @@ int __devm_uio_register_device(struct module *owner,
+>>   }
+>>   EXPORT_SYMBOL_GPL(__devm_uio_register_device);
+>>   
+>> +static void uio_confirm_info(struct percpu_ref *ref)
+>> +{
+>> +	struct uio_device *idev = container_of(ref, struct uio_device, info_ref);
+>> +
+>> +	complete(&idev->confirm_done);
+>> +}
+>> +
+>>   /**
+>>    * uio_unregister_device - unregister a industrial IO device
+>>    * @info:	UIO device capabilities
+>> @@ -1052,14 +1096,17 @@ void uio_unregister_device(struct uio_info *info)
+>>   	idev = info->uio_dev;
+>>   	minor = idev->minor;
+>>   
+>> -	mutex_lock(&idev->info_lock);
+>> +	percpu_ref_kill_and_confirm(&idev->info_ref, uio_confirm_info);
+>> +	wait_for_completion(&idev->confirm_done);
+>> +	wait_for_completion(&idev->free_done);
+>> +
+>> +	/* now, we can set info to NULL */
+>>   	uio_dev_del_attributes(idev);
+>>   
+>>   	if (info->irq && info->irq != UIO_IRQ_CUSTOM)
+>>   		free_irq(info->irq, idev);
+>>   
+>>   	idev->info = NULL;
+>> -	mutex_unlock(&idev->info_lock);
+>>   
+>>   	wake_up_interruptible(&idev->wait);
+>>   	kill_fasync(&idev->async_queue, SIGIO, POLL_HUP);
+>> diff --git a/include/linux/uio_driver.h b/include/linux/uio_driver.h
+>> index 47c5962..6d3d87f 100644
+>> --- a/include/linux/uio_driver.h
+>> +++ b/include/linux/uio_driver.h
+>> @@ -16,6 +16,7 @@
+>>   #include <linux/device.h>
+>>   #include <linux/fs.h>
+>>   #include <linux/interrupt.h>
+>> +#include <linux/percpu-refcount.h>
+>>   
+>>   struct module;
+>>   struct uio_map;
+>> @@ -74,9 +75,11 @@ struct uio_device {
+>>   	struct fasync_struct    *async_queue;
+>>   	wait_queue_head_t       wait;
+>>   	struct uio_info         *info;
+>> -	struct mutex		info_lock;
+>>   	struct kobject          *map_dir;
+>>   	struct kobject          *portio_dir;
+>> +	struct percpu_ref       info_ref;
+>> +	struct completion       confirm_done;
+>> +	struct completion       free_done;
+>>   };
+>>   
+>>   /**
+>> -- 
+>> 1.8.3.1
+>>
+> ---end quoted text---
