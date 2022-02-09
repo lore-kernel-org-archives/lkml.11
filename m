@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FB1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC352C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232198AbiBIJ7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:59:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56970 "EHLO
+        id S234261AbiBIJ7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:59:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233080AbiBIJ6v (ORCPT
+        with ESMTP id S229534AbiBIJ7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:58:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0B9E04F313
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:58:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DBF2B81FC2
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 09:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4EA0C340E7;
-        Wed,  9 Feb 2022 09:42:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644399736;
-        bh=T+mYubC4DgSvWYTBn4SckuteBDQWitfpW4vxCFz9Xd8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t17a+03WpPX5fsyUkiVTqQQb7z0JMhqNvZlsnI+WEPj7FkoPewMVPVXjflLcg9EE9
-         GsHvy14RTTWBaoF2mawz3tHmklfaoojB+PysLINwOETeXVm84mCSMlG1FAA3H1snEd
-         nugn54oDNGmkwczq7cQREbfICXYt2kEMFIPGXxp7oCH1Guz/yDneb7XqNTO6Uafq7e
-         rNE8DkCmHqu+OtgKl/G87Riq5oSpyI+VbyTr90CKlW6dcJ5nASv8Z9sBw9M6xPPmIu
-         PCEcpl30FDfNoqir6Up3C785j80M0mbJwjo+50juCR7xJouMdlDWZlZnHOCcJAgyjq
-         hq4lCIIWCdeIw==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        SeongJae Park <sj@kernel.org>, hughd@google.com
-Subject: [PATCH for-mm 1/2] mm/internal: Implement no-op mlock_page_drain() for !CONFIG_MMU
-Date:   Wed,  9 Feb 2022 09:41:57 +0000
-Message-Id: <20220209094158.21941-2-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220209094158.21941-1-sj@kernel.org>
-References: <20220209094158.21941-1-sj@kernel.org>
+        Wed, 9 Feb 2022 04:59:07 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D10AE0E08AF
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:58:57 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id cz16so3884640edb.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:58:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/D04XVPUs/5HR5eK+SG7yKk26D53w7R1O65LyTbVnhA=;
+        b=qwScALETKFRV/s20Zvi2Sxab1LpermV3ZwMsBGBkqcgv7y8TjBOxstj817Px9r3ri6
+         3znyzCwnHMgIP6UGdgAX0GzL1f8Ea79uEQrh+/z2uncx6cBfJGfBStkpnMWWNQz4mu1P
+         LHgCllgSzz1rTaV8NQKQ+IrIb+eoB9cFSUww2S4R42/EknI436wjLv7FJpaxJV6CCXBc
+         Q/7gg3bizeZCudmAmggc5pr51wJjT1FBOrhebmwZJzl2QvBSE1h5l+lCY+jCR3DZWO7H
+         361AWTSrr9qklT6XOLqofWXljxL7Yl/M2PxVDltH4VayKtPS7cugApZilp9+f21kljSn
+         GzMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/D04XVPUs/5HR5eK+SG7yKk26D53w7R1O65LyTbVnhA=;
+        b=mf+qz1QQ8FsVBVE1Xzu3eptoFmC+g765qB9CJzmOmbKu1pXbvUlRdhKNy7yaWsE0BP
+         Hn9DTYkvFyabWagxR2ywoHLB7jDCYPBLJf804yHxHeFmUHg9Kbjj89ZntQEGrVxe9Mkp
+         FutS03oIquhdmP2rBDspasmwoYSVYrmgV1ihs5swalXVo2R0FwFKd2FQ3zAxvoXmv0wN
+         e7c8XDPHqjbhy+wRw294Yj0FKAbwMA8wfhaXvAB67xhoDvHhh5znGffhnF5QPNPRZC1j
+         BEgcFbdvD534sVNAD7Tfi7iHEzehiFL5kHIxz2SVipN6WH2z+G5rq3LcKffNLPopu0Ox
+         ufTQ==
+X-Gm-Message-State: AOAM533jstuEqZy0cytUvWa1Q0Up8QUWNQYaATfoMs11RIltN+vP0VrU
+        dMymWKNdn2inhi9C8eY5Z71QYhOhxYETGm/mfiE=
+X-Google-Smtp-Source: ABdhPJwf4VpG7Y4Q79qJuY4Hkah8ElZGEG7qRJxEJ0pnu595fxjaeUVGYFYRcR0meWnJGMfmTtmGjQ==
+X-Received: by 2002:aa7:c746:: with SMTP id c6mr1549045eds.271.1644400643017;
+        Wed, 09 Feb 2022 01:57:23 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id i24sm1748263edt.86.2022.02.09.01.57.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 01:57:22 -0800 (PST)
+Date:   Wed, 9 Feb 2022 10:57:21 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Moshe Shemesh <moshe@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 0/4] net/mlx5: Introduce devlink param to
+ disable SF aux dev probe
+Message-ID: <YgOQAZKnbm5IzbTy@nanopsycho>
+References: <1644340446-125084-1-git-send-email-moshe@nvidia.com>
+ <20220208212341.513e04bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220208212341.513e04bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 4b3b8bd6c8287 ("mm/munlock: mlock_page() munlock_page() batch by
-pagevec") in -mm tree[1] implements 'mlock_page_drain()' under
-CONFIG_MMU only, but the function is used by 'lru_add_drain_cpu()',
-which defined outside of CONFIG_MMU.  As a result, below build error
-occurs.
+Wed, Feb 09, 2022 at 06:23:41AM CET, kuba@kernel.org wrote:
+>On Tue, 8 Feb 2022 19:14:02 +0200 Moshe Shemesh wrote:
+>> $ devlink dev param set pci/0000:08:00.0 name enable_sfs_aux_devs \
+>>               value false cmode runtime
+>> 
+>> Create SF:
+>> $ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+>> $ devlink port function set pci/0000:08:00.0/32768 \
+>>                hw_addr 00:00:00:00:00:11 state active
+>> 
+>> Now depending on the use case, the user can enable specific auxiliary
+>> device(s). For example:
+>> 
+>> $ devlink dev param set auxiliary/mlx5_core.sf.1 \
+>>               name enable_vnet value true cmde driverinit
+>> 
+>> Afterwards, user needs to reload the SF in order for the SF to come up
+>> with the specific configuration:
+>> 
+>> $ devlink dev reload auxiliary/mlx5_core.sf.1
+>
+>If the user just wants vnet why not add an API which tells the driver
+>which functionality the user wants when the "port" is "spawned"?
 
-    /linux/mm/swap.c: In function 'lru_add_drain_cpu':
-    /linux/mm/swap.c:637:2: error: implicit declaration of function 'mlock_page_drain' [-Werror=implicit-function-declaration]
-      637 |  mlock_page_drain(cpu);
-          |  ^~~~~~~~~~~~~~~~
-    cc1: some warnings being treated as errors
-    /linux/scripts/Makefile.build:289: recipe for target 'mm/swap.o' failed
-
-This commit fixes it by implementing no-op 'mlock_page_drain()' for
-!CONFIG_MMU case, similar to 'mlock_new_page()'.
-
-[1] https://www.ozlabs.org/~akpm/mmotm/broken-out/mm-munlock-mlock_page-munlock_page-batch-by-pagevec.patch
-
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
- mm/internal.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/mm/internal.h b/mm/internal.h
-index 0d240e876831..248224369b34 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -508,6 +508,7 @@ static inline void mlock_vma_page(struct page *page,
- static inline void munlock_vma_page(struct page *page,
- 			struct vm_area_struct *vma, bool compound) { }
- static inline void mlock_new_page(struct page *page) { }
-+static inline void mlock_page_drain(int cpu) { }
- static inline void vunmap_range_noflush(unsigned long start, unsigned long end)
- {
- }
--- 
-2.17.1
-
+It's a different user. One works with the eswitch and creates the port
+function. The other one takes the created instance and works with it.
+Note that it may be on a different host.
