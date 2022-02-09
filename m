@@ -2,102 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FAACC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbiBIPfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49332 "EHLO
+        id S235814AbiBIPf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:35:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiBIPfS (ORCPT
+        with ESMTP id S236166AbiBIPfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:35:18 -0500
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5247EC05CB88;
-        Wed,  9 Feb 2022 07:35:16 -0800 (PST)
-Received: by mail-oo1-f50.google.com with SMTP id r15-20020a4ae5cf000000b002edba1d3349so2878745oov.3;
-        Wed, 09 Feb 2022 07:35:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=H19TdmlGQeOvqWibXwnTgQaKpp298rj11z4re+ZlqzE=;
-        b=Qv7Z09fs87ryzqrGn5m7pW0Sdh8/Pkx/Mttyo15ehEc4zQqhRagjUfDYcMVUxJPzCi
-         1Rhs/MRAgdGrYM7W3xBvIvovOA/C1QAUkzR2S0xvqpkbLrjFDeUNxYJ8QtdHYQOxshUN
-         Cu60nkmabbP+m/GpKlk1gxW5WmTfkKCHRRnbpuMJGjObCgPOcSHspK09/lMPxq6jL5Sr
-         iaMBQqhSKP6CrR4s6+P3CTC7Epzn4SBsykM5MgVlZ1+t5A1i97JXVwvKV+yKWZGZcxVK
-         Eo7ng9lLmDiLRZYJhUbbbp5FaZhWJBqcU5u+XdmpyxArVWMiRQNVvGxfHyov1mBy8QbI
-         ihLg==
-X-Gm-Message-State: AOAM530aAfENL16Hp6b/cEw9Cxx3CEghvAOFlG86vbGimfRuAEdbvpu+
-        TxXFscG8gD7hRSH0BnCMfg==
-X-Google-Smtp-Source: ABdhPJxKdqFqfL7xuc3s+WdsojPu3tY6PLqK4sVB4rB6S59yfpnWW0p0L5BzV9TGDFMjVhphJCSaLg==
-X-Received: by 2002:a05:6870:12cc:: with SMTP id 12mr902265oam.215.1644420916147;
-        Wed, 09 Feb 2022 07:35:16 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t2sm6862136ooo.24.2022.02.09.07.35.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 07:35:15 -0800 (PST)
-Received: (nullmailer pid 391817 invoked by uid 1000);
-        Wed, 09 Feb 2022 15:35:08 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Cc:     srinivas.kandagatla@linaro.org, perex@perex.cz,
-        plai@codeaurora.org, agross@kernel.org, tiwai@suse.com,
-        bgoswami@codeaurora.org, alsa-devel@alsa-project.org,
-        devicetree@vger.kernel.org, broonie@kernel.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        swboyd@chromium.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
-        rohitkr@codeaurora.org, lgirdwood@gmail.com
-In-Reply-To: <1644413181-26358-2-git-send-email-quic_srivasam@quicinc.com>
-References: <1644413181-26358-1-git-send-email-quic_srivasam@quicinc.com> <1644413181-26358-2-git-send-email-quic_srivasam@quicinc.com>
-Subject: Re: [RESEND v8 1/3] ASoC: google: dt-bindings: Add sc7280-herobrine machine bindings
-Date:   Wed, 09 Feb 2022 09:35:08 -0600
-Message-Id: <1644420908.409006.391816.nullmailer@robh.at.kernel.org>
+        Wed, 9 Feb 2022 10:35:47 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 59BDCC05CB96
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:35:47 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 24832113E;
+        Wed,  9 Feb 2022 07:35:47 -0800 (PST)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E36B83F73B;
+        Wed,  9 Feb 2022 07:35:44 -0800 (PST)
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     ardb@kernel.org, bp@alien8.de, catalin.marinas@arm.com,
+        dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org,
+        mark.rutland@arm.com, mingo@redhat.com, peterz@infradead.org,
+        tglx@linutronix.de, valentin.schneider@arm.com, will@kernel.org
+Subject: [PATCH v3 1/7] sched/preempt: move PREEMPT_DYNAMIC logic later
+Date:   Wed,  9 Feb 2022 15:35:29 +0000
+Message-Id: <20220209153535.818830-2-mark.rutland@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022 18:56:19 +0530, Srinivasa Rao Mandadapu wrote:
-> Add devicetree bindings documentation file for sc7280 sound card
-> registration.
-> 
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> ---
->  .../bindings/sound/google,sc7280-herobrine.yaml    | 171 +++++++++++++++++++++
->  1 file changed, 171 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
-> 
+The PREEMPT_DYNAMIC logic in kernel/sched/core.c patches static calls
+for a bunch of preemption functions. While most are defined prior to
+this, the definition of cond_resched() is later in the file, and so we
+only have its declarations from include/linux/sched.h.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+In subsequent patches we'd like to define some macros alongside the
+definition of each of the preemption functions, which we can use within
+sched_dynamic_update(). For this to be possible, the PREEMPT_DYNAMIC
+logic needs to be placed after the various preemption functions.
 
-yamllint warnings/errors:
+As a preparatory step, this patch moves the PREEMPT_DYNAMIC logic after
+the various preemption functions, with no other changes -- this is
+purely a move.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@0: 'sound-dai' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@1: 'sound-dai' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@2: 'sound-dai' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@3: 'sound-dai' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.example.dt.yaml: sound: dai-link@5: 'sound-dai' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+There should be no functional change as a result of this patch.
 
-doc reference errors (make refcheckdocs):
+Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Frederic Weisbecker <frederic@kernel.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+---
+ kernel/sched/core.c | 272 ++++++++++++++++++++++----------------------
+ 1 file changed, 136 insertions(+), 136 deletions(-)
 
-See https://patchwork.ozlabs.org/patch/1590375
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 848eaa0efe0e..6e8998267102 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6553,142 +6553,6 @@ EXPORT_STATIC_CALL_TRAMP(preempt_schedule_notrace);
+ 
+ #endif /* CONFIG_PREEMPTION */
+ 
+-#ifdef CONFIG_PREEMPT_DYNAMIC
+-
+-#include <linux/entry-common.h>
+-
+-/*
+- * SC:cond_resched
+- * SC:might_resched
+- * SC:preempt_schedule
+- * SC:preempt_schedule_notrace
+- * SC:irqentry_exit_cond_resched
+- *
+- *
+- * NONE:
+- *   cond_resched               <- __cond_resched
+- *   might_resched              <- RET0
+- *   preempt_schedule           <- NOP
+- *   preempt_schedule_notrace   <- NOP
+- *   irqentry_exit_cond_resched <- NOP
+- *
+- * VOLUNTARY:
+- *   cond_resched               <- __cond_resched
+- *   might_resched              <- __cond_resched
+- *   preempt_schedule           <- NOP
+- *   preempt_schedule_notrace   <- NOP
+- *   irqentry_exit_cond_resched <- NOP
+- *
+- * FULL:
+- *   cond_resched               <- RET0
+- *   might_resched              <- RET0
+- *   preempt_schedule           <- preempt_schedule
+- *   preempt_schedule_notrace   <- preempt_schedule_notrace
+- *   irqentry_exit_cond_resched <- irqentry_exit_cond_resched
+- */
+-
+-enum {
+-	preempt_dynamic_undefined = -1,
+-	preempt_dynamic_none,
+-	preempt_dynamic_voluntary,
+-	preempt_dynamic_full,
+-};
+-
+-int preempt_dynamic_mode = preempt_dynamic_undefined;
+-
+-int sched_dynamic_mode(const char *str)
+-{
+-	if (!strcmp(str, "none"))
+-		return preempt_dynamic_none;
+-
+-	if (!strcmp(str, "voluntary"))
+-		return preempt_dynamic_voluntary;
+-
+-	if (!strcmp(str, "full"))
+-		return preempt_dynamic_full;
+-
+-	return -EINVAL;
+-}
+-
+-void sched_dynamic_update(int mode)
+-{
+-	/*
+-	 * Avoid {NONE,VOLUNTARY} -> FULL transitions from ever ending up in
+-	 * the ZERO state, which is invalid.
+-	 */
+-	static_call_update(cond_resched, __cond_resched);
+-	static_call_update(might_resched, __cond_resched);
+-	static_call_update(preempt_schedule, __preempt_schedule_func);
+-	static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
+-	static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
+-
+-	switch (mode) {
+-	case preempt_dynamic_none:
+-		static_call_update(cond_resched, __cond_resched);
+-		static_call_update(might_resched, (void *)&__static_call_return0);
+-		static_call_update(preempt_schedule, NULL);
+-		static_call_update(preempt_schedule_notrace, NULL);
+-		static_call_update(irqentry_exit_cond_resched, NULL);
+-		pr_info("Dynamic Preempt: none\n");
+-		break;
+-
+-	case preempt_dynamic_voluntary:
+-		static_call_update(cond_resched, __cond_resched);
+-		static_call_update(might_resched, __cond_resched);
+-		static_call_update(preempt_schedule, NULL);
+-		static_call_update(preempt_schedule_notrace, NULL);
+-		static_call_update(irqentry_exit_cond_resched, NULL);
+-		pr_info("Dynamic Preempt: voluntary\n");
+-		break;
+-
+-	case preempt_dynamic_full:
+-		static_call_update(cond_resched, (void *)&__static_call_return0);
+-		static_call_update(might_resched, (void *)&__static_call_return0);
+-		static_call_update(preempt_schedule, __preempt_schedule_func);
+-		static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
+-		static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
+-		pr_info("Dynamic Preempt: full\n");
+-		break;
+-	}
+-
+-	preempt_dynamic_mode = mode;
+-}
+-
+-static int __init setup_preempt_mode(char *str)
+-{
+-	int mode = sched_dynamic_mode(str);
+-	if (mode < 0) {
+-		pr_warn("Dynamic Preempt: unsupported mode: %s\n", str);
+-		return 0;
+-	}
+-
+-	sched_dynamic_update(mode);
+-	return 1;
+-}
+-__setup("preempt=", setup_preempt_mode);
+-
+-static void __init preempt_dynamic_init(void)
+-{
+-	if (preempt_dynamic_mode == preempt_dynamic_undefined) {
+-		if (IS_ENABLED(CONFIG_PREEMPT_NONE)) {
+-			sched_dynamic_update(preempt_dynamic_none);
+-		} else if (IS_ENABLED(CONFIG_PREEMPT_VOLUNTARY)) {
+-			sched_dynamic_update(preempt_dynamic_voluntary);
+-		} else {
+-			/* Default static call setting, nothing to do */
+-			WARN_ON_ONCE(!IS_ENABLED(CONFIG_PREEMPT));
+-			preempt_dynamic_mode = preempt_dynamic_full;
+-			pr_info("Dynamic Preempt: full\n");
+-		}
+-	}
+-}
+-
+-#else /* !CONFIG_PREEMPT_DYNAMIC */
+-
+-static inline void preempt_dynamic_init(void) { }
+-
+-#endif /* #ifdef CONFIG_PREEMPT_DYNAMIC */
+-
+ /*
+  * This is the entry point to schedule() from kernel preemption
+  * off of irq context.
+@@ -8263,6 +8127,142 @@ int __cond_resched_rwlock_write(rwlock_t *lock)
+ }
+ EXPORT_SYMBOL(__cond_resched_rwlock_write);
+ 
++#ifdef CONFIG_PREEMPT_DYNAMIC
++
++#include <linux/entry-common.h>
++
++/*
++ * SC:cond_resched
++ * SC:might_resched
++ * SC:preempt_schedule
++ * SC:preempt_schedule_notrace
++ * SC:irqentry_exit_cond_resched
++ *
++ *
++ * NONE:
++ *   cond_resched               <- __cond_resched
++ *   might_resched              <- RET0
++ *   preempt_schedule           <- NOP
++ *   preempt_schedule_notrace   <- NOP
++ *   irqentry_exit_cond_resched <- NOP
++ *
++ * VOLUNTARY:
++ *   cond_resched               <- __cond_resched
++ *   might_resched              <- __cond_resched
++ *   preempt_schedule           <- NOP
++ *   preempt_schedule_notrace   <- NOP
++ *   irqentry_exit_cond_resched <- NOP
++ *
++ * FULL:
++ *   cond_resched               <- RET0
++ *   might_resched              <- RET0
++ *   preempt_schedule           <- preempt_schedule
++ *   preempt_schedule_notrace   <- preempt_schedule_notrace
++ *   irqentry_exit_cond_resched <- irqentry_exit_cond_resched
++ */
++
++enum {
++	preempt_dynamic_undefined = -1,
++	preempt_dynamic_none,
++	preempt_dynamic_voluntary,
++	preempt_dynamic_full,
++};
++
++int preempt_dynamic_mode = preempt_dynamic_undefined;
++
++int sched_dynamic_mode(const char *str)
++{
++	if (!strcmp(str, "none"))
++		return preempt_dynamic_none;
++
++	if (!strcmp(str, "voluntary"))
++		return preempt_dynamic_voluntary;
++
++	if (!strcmp(str, "full"))
++		return preempt_dynamic_full;
++
++	return -EINVAL;
++}
++
++void sched_dynamic_update(int mode)
++{
++	/*
++	 * Avoid {NONE,VOLUNTARY} -> FULL transitions from ever ending up in
++	 * the ZERO state, which is invalid.
++	 */
++	static_call_update(cond_resched, __cond_resched);
++	static_call_update(might_resched, __cond_resched);
++	static_call_update(preempt_schedule, __preempt_schedule_func);
++	static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
++	static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++
++	switch (mode) {
++	case preempt_dynamic_none:
++		static_call_update(cond_resched, __cond_resched);
++		static_call_update(might_resched, (void *)&__static_call_return0);
++		static_call_update(preempt_schedule, NULL);
++		static_call_update(preempt_schedule_notrace, NULL);
++		static_call_update(irqentry_exit_cond_resched, NULL);
++		pr_info("Dynamic Preempt: none\n");
++		break;
++
++	case preempt_dynamic_voluntary:
++		static_call_update(cond_resched, __cond_resched);
++		static_call_update(might_resched, __cond_resched);
++		static_call_update(preempt_schedule, NULL);
++		static_call_update(preempt_schedule_notrace, NULL);
++		static_call_update(irqentry_exit_cond_resched, NULL);
++		pr_info("Dynamic Preempt: voluntary\n");
++		break;
++
++	case preempt_dynamic_full:
++		static_call_update(cond_resched, (void *)&__static_call_return0);
++		static_call_update(might_resched, (void *)&__static_call_return0);
++		static_call_update(preempt_schedule, __preempt_schedule_func);
++		static_call_update(preempt_schedule_notrace, __preempt_schedule_notrace_func);
++		static_call_update(irqentry_exit_cond_resched, irqentry_exit_cond_resched);
++		pr_info("Dynamic Preempt: full\n");
++		break;
++	}
++
++	preempt_dynamic_mode = mode;
++}
++
++static int __init setup_preempt_mode(char *str)
++{
++	int mode = sched_dynamic_mode(str);
++	if (mode < 0) {
++		pr_warn("Dynamic Preempt: unsupported mode: %s\n", str);
++		return 0;
++	}
++
++	sched_dynamic_update(mode);
++	return 1;
++}
++__setup("preempt=", setup_preempt_mode);
++
++static void __init preempt_dynamic_init(void)
++{
++	if (preempt_dynamic_mode == preempt_dynamic_undefined) {
++		if (IS_ENABLED(CONFIG_PREEMPT_NONE)) {
++			sched_dynamic_update(preempt_dynamic_none);
++		} else if (IS_ENABLED(CONFIG_PREEMPT_VOLUNTARY)) {
++			sched_dynamic_update(preempt_dynamic_voluntary);
++		} else {
++			/* Default static call setting, nothing to do */
++			WARN_ON_ONCE(!IS_ENABLED(CONFIG_PREEMPT));
++			preempt_dynamic_mode = preempt_dynamic_full;
++			pr_info("Dynamic Preempt: full\n");
++		}
++	}
++}
++
++#else /* !CONFIG_PREEMPT_DYNAMIC */
++
++static inline void preempt_dynamic_init(void) { }
++
++#endif /* #ifdef CONFIG_PREEMPT_DYNAMIC */
++
+ /**
+  * yield - yield the current processor to other threads.
+  *
+-- 
+2.30.2
 
