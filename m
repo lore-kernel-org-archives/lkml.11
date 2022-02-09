@@ -2,73 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1681C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C7DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 16:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237585AbiBIQ56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:57:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
+        id S237619AbiBIQ6C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 11:58:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237575AbiBIQ5z (ORCPT
+        with ESMTP id S237572AbiBIQ5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 11:57:55 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0889C05CB88;
-        Wed,  9 Feb 2022 08:57:58 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: tonyk)
-        with ESMTPSA id D282F1F44C9C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644425876;
-        bh=3ww5JixqnqYDOM7TsH5CYSgQoLb3Ym1w7KoXmSWaMCQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SSpkmtjT830CKj9RrPFrf0K15b4gX6nkX8sFFfjI6/UbCBgrRz+20bubSZG+d29Tn
-         +NNkGRm88bI7A20qLlsqNjYexiKGCNWa3mPvoweHlnrr63A+pa8yu96lybubLwdf2N
-         bXnxT3BeTDTimOCBKQzYAgBflzxH3iOptt/vV6bopFSiFulsgieag/FZmQ4b+OTNIK
-         2NLDErkJC6VvX60cvLnDZeClTJdoZdXzNY51K1p7O1WMPMHS2kk+h8JR9Ry/sqtPnd
-         0CWu60WiimxRE9YUuMKgZOsJQZ3nYYeQsFNzoXzl6ZgoIVwNCV9wj8DYNec7Jt+hKk
-         HBSSveFmLZTUg==
-From:   =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
-To:     Sanjay R Mehta <sanju.mehta@amd.com>,
-        Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@collabora.com,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Nehal Bakulchandra Shah <Nehal-Bakulchandra.shah@amd.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>
-Subject: [PATCH 2/3] spi: amd: Remove needless rom_addr variable
-Date:   Wed,  9 Feb 2022 13:57:32 -0300
-Message-Id: <20220209165733.43134-3-andrealmeid@collabora.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220209165733.43134-1-andrealmeid@collabora.com>
-References: <20220209165733.43134-1-andrealmeid@collabora.com>
+        Wed, 9 Feb 2022 11:57:54 -0500
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6F6C05CB86;
+        Wed,  9 Feb 2022 08:57:57 -0800 (PST)
+Received: by mail-qt1-x843.google.com with SMTP id s1so2317798qtw.9;
+        Wed, 09 Feb 2022 08:57:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=c8ITlZ0TIJQYeuae8LzwclVS/gPvsuuD8tI1DH//ZB0=;
+        b=Alj2+fWNY3w/xeBfw85sJE1/xxD0ShOPbSBvLdKBwssQQsn0birtT5YpUpPp62/q+l
+         PTUpJ0ZQ1uHP87p3d9T/d9M5Q5vwW7sarhGKiaREvbGURzo4mZaWUx7BNsSDumcLfqKv
+         WzzSzvl7PymNUz6YlyRWx1uOQ2Oz6mecincQhr/0uocFitMryIEtHsrSwCUBNx3dFBk9
+         vh5Rn1ZV0Sy1LNax+QkgzRY2v5vHE+TXczdfIfiwxNJkSi2OTgEvuBn6KnnTCbjn7Anf
+         MhCCHghukYiJxUMI/0aIMbGGN0nA89YZiXQuS1fEEKoW+9/qj9d7mwh2/ThmJaR6rUMb
+         tPng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=c8ITlZ0TIJQYeuae8LzwclVS/gPvsuuD8tI1DH//ZB0=;
+        b=NFwU0xHifaPENHCIQdjQr87rH4pstEEoRV6LBLLFOh1mU3+KYSivb3rwAuzU6oC6Pr
+         e8wSqCLYPJzhaYUCJBDMPZIoO+SgKs4MBb5zitxUhUGZmPZf5XPBeC4OUBQdPTfhQPHI
+         x22JEZXO1mlZFSALCmgSQsLKSMRAtmE/T0LsxFRBtev3rlUbS51PvoNRvmxNWJLJa6qI
+         OnRAg/ovwcFDpbK6YYXwU/x0MOA3JhMtNFR1ylDTEBHEnJzJOaFE+lFcn6P3xdbXNVOP
+         EXh2d7QD2Aw3h6i5TqZRmIaz3ipGaJHG43wbSy8A3p3ZvjoJ6EBpktu3nT52gEV+zBfZ
+         ENzw==
+X-Gm-Message-State: AOAM530wIi3I3LhVV3nDo7ELqD69fNv2KaeiilraT87+z5Zh0nMhThNe
+        SGxTryg0UKo9n0I6Frkuz9o=
+X-Google-Smtp-Source: ABdhPJwB5PRL11twhgVtT0TwmaAdjTIgn1YAjllT+KDbjpY+nLqyxDe2O1PYeY4gdan0ISECuelYdw==
+X-Received: by 2002:ac8:7cab:: with SMTP id z11mr2004416qtv.384.1644425876371;
+        Wed, 09 Feb 2022 08:57:56 -0800 (PST)
+Received: from lumia-dev.localdomain. (pool-96-225-98-253.nwrknj.fios.verizon.net. [96.225.98.253])
+        by smtp.googlemail.com with ESMTPSA id z19sm9629019qtj.77.2022.02.09.08.57.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 08:57:55 -0800 (PST)
+From:   Jack Matthews <jm5112356@gmail.com>
+Cc:     jm5112356@gmail.com, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] ARM: dts: qcom: pm8226: add node for RTC
+Date:   Wed,  9 Feb 2022 16:57:41 +0000
+Message-Id: <20220209165742.652890-1-jm5112356@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209052929.651881-1-jm5112356@gmail.com>
+References: <20220209052929.651881-1-jm5112356@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rom_addr is not used in the code, so we can just drop it from struct
-amd_spi.
+Add a node for PM8226's real time clock.
 
-Signed-off-by: André Almeida <andrealmeid@collabora.com>
+Signed-off-by: Jack Matthews <jm5112356@gmail.com>
 ---
- drivers/spi/spi-amd.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/qcom-pm8226.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/spi/spi-amd.c b/drivers/spi/spi-amd.c
-index 899b8d90ff61..417ce14a21c6 100644
---- a/drivers/spi/spi-amd.c
-+++ b/drivers/spi/spi-amd.c
-@@ -38,7 +38,6 @@
- struct amd_spi {
- 	void __iomem *io_remap_addr;
- 	unsigned long io_base_addr;
--	u32 rom_addr;
- };
+diff --git a/arch/arm/boot/dts/qcom-pm8226.dtsi b/arch/arm/boot/dts/qcom-pm8226.dtsi
+index 872724490a5d..8ee628ce88a9 100644
+--- a/arch/arm/boot/dts/qcom-pm8226.dtsi
++++ b/arch/arm/boot/dts/qcom-pm8226.dtsi
+@@ -73,6 +73,13 @@ adc-chan@f {
+ 			};
+ 		};
  
- static inline u8 amd_spi_readreg8(struct amd_spi *amd_spi, int idx)
++		rtc@6000 {
++			compatible = "qcom,pm8941-rtc";
++			reg = <0x6000>, <0x6100>;
++			reg-names = "rtc", "alarm";
++			interrupts = <0x0 0x61 0x1 IRQ_TYPE_EDGE_RISING>;
++		};
++
+ 		pm8226_mpps: mpps@a000 {
+ 			compatible = "qcom,pm8226-mpp", "qcom,spmi-mpp";
+ 			reg = <0xa000>;
 -- 
-2.35.0
+2.25.1
 
