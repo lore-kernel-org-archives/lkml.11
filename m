@@ -2,84 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AA8C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 744EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbiBIUVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 15:21:49 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47132 "EHLO
+        id S231261AbiBIUWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:22:14 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiBIUVr (ORCPT
+        with ESMTP id S230167AbiBIUWM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 15:21:47 -0500
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C34CE016DA6;
-        Wed,  9 Feb 2022 12:21:50 -0800 (PST)
-Received: by mail-oo1-f45.google.com with SMTP id k13-20020a4a948d000000b003172f2f6bdfso3841270ooi.1;
-        Wed, 09 Feb 2022 12:21:50 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YmfSzxuqzirL1V0Zykp0UDWGW3LWKCMN5F4vQtCRtPI=;
-        b=d0+fVGjcTfbKzxAY3Ur1i2xEYcmjzxm+TLt5+HhHPliuFiDa0et4UW8PXhpoi8sylU
-         2htp7gSBKhghhvOk5yvjP//W35BsgVWKwQSra1l7yLZHdFQioLyrwxVDtWJJzy9bnXue
-         v3wNgnTVnzy0DiQLWe0xTmxtHg7ZRBdqbbru/GH+V7fFvnkUJLuA6Pfhikwz1cGGavdw
-         kuA5merNoEPVkdbaUKwKCDMdX7GIrn2i99C7CQAnC+JsFsdhBIMXPQVgs5lRNDL6lo6B
-         jamLOjth9LQbshWbW+diJw4NWMiPDr3r1bAlbM70OOX5sXJT50UajMYEfv+EZsu6dPd6
-         A2tQ==
-X-Gm-Message-State: AOAM532MDDcdcZC54iJ+WpBurDd4qbhPNdbr9uG0pZfDwaNkQ0yrI8hW
-        c2Sr4nON8pfla1IRVNo1sw==
-X-Google-Smtp-Source: ABdhPJwRFJgoaGuDGAhOtb0UhcP86Z5hgt7jSmayowRpL9dQ8ELxljV7pJYS2pDBKJqnY1e6nyk9nQ==
-X-Received: by 2002:a05:6870:d502:: with SMTP id b2mr1441779oan.94.1644438109620;
-        Wed, 09 Feb 2022 12:21:49 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t4sm7283982oie.14.2022.02.09.12.21.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 12:21:48 -0800 (PST)
-Received: (nullmailer pid 832955 invoked by uid 1000);
-        Wed, 09 Feb 2022 20:21:47 -0000
-Date:   Wed, 9 Feb 2022 14:21:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Derek Basehore <dbasehore@chromium.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        linux-pm@vger.kernel.org, Lin Huang <hl@rock-chips.com>,
-        linux-kernel@vger.kernel.org, Chanwoo Choi <cw00.choi@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-rockchip@lists.infradead.org,
-        Heiko Stuebner <heiko@sntech.de>,
-        Kyungmin Park <kyungmin.park@samsung.com>
-Subject: Re: [PATCH v2 04/15] dt-bindings: devfreq: rk3399_dmc: Specify idle
- params in nanoseconds
-Message-ID: <YgQiW8PhI/G6OqR6@robh.at.kernel.org>
-References: <20220127230727.3369358-1-briannorris@chromium.org>
- <20220127150615.v2.4.I01c6a2b2db578136686b42d463af985cfdff2fd9@changeid>
+        Wed, 9 Feb 2022 15:22:12 -0500
+X-Greylist: delayed 317 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 12:22:14 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53257E011172;
+        Wed,  9 Feb 2022 12:22:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644438132;
+        bh=23VcDO1UBkUQfDfSRRv997yJv60exeA4uC8n5A+TDxE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Zgdtg2z5F2obroxAmRdfIBqrnpL3GLo5hPzc+t0XnF19Hpb+0trtJIPCblAQEfSA+
+         rC7erf5o6k4vfcs7AA6rFHB8GPJanZA5UdHGY2eq9TrvLXFfI4K28Hqd8RM0VrehAn
+         GXklFyvGhtT3optYujMezvO9cgEggptfKDA/87P0=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.77.2] ([80.245.77.2]) by web-mail.gmx.net
+ (3c-app-gmx-bs62.server.lan [172.19.170.146]) (via HTTP); Wed, 9 Feb 2022
+ 21:16:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127150615.v2.4.I01c6a2b2db578136686b42d463af985cfdff2fd9@changeid>
+Message-ID: <trinity-5a9379ec-3c81-4459-809f-7d0c8bd67d5b-1644437788730@3c-app-gmx-bs62>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Cc:     heiko@sntech.de, robh+dt@kernel.org, jbx6244@gmail.com,
+        devicetree@vger.kernel.org, vkoul@kernel.org,
+        michael.riesch@wolfvision.net, linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, kishon@ti.com,
+        p.zabel@pengutronix.de, cl@rock-chips.com,
+        kever.yang@rock-chips.com, lee.jones@linaro.org,
+        wulf@rock-chips.com, david.wu@rock-chips.com,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>
+Subject: Aw: [PATCH v8 4/4] arm64: dts: rockchip: add naneng combo phy nodes
+ for rk3568
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 9 Feb 2022 21:16:28 +0100
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20220208091326.12495-5-yifeng.zhao@rock-chips.com>
+References: <20220208091326.12495-1-yifeng.zhao@rock-chips.com>
+ <20220208091326.12495-5-yifeng.zhao@rock-chips.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:9+TRw0BVUlgbzdQz4c/U8MCWL0dkdLvBqsfMaJL1wl7G+RYBTmCeniFA7SGXJtAHcV0h2
+ 9GF3k3FhOR+9+X2SyUDlD4x/+5UYhlKnxyslUNR+kysThy2Sh96YZSrqTtPTnZTKFt/aqdRWLw9+
+ lR4F6K6QnSHqtEQDpOeceO2tzOYdj7Y/NnrakFZmwOFwMxS1JziRjPrCeYTrQEOkx4v5vlic0H7g
+ qDh0C7AMFMvR5YOo6nxFFNUjWeyn+uKuGNDnNy2Qv8BbxoNYGNowWHDi03fv8rTe0KMAXJj5K12x
+ kw=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:2w5mnw2TF7s=:VXkCKNLFaDSPo9Tomwz/Xv
+ rYANgHuaLSVowsVuMmXGAOwxGtuHAUO4G1RNd+eN2pbpUX8wx32/ZB394t4fHlXpw1rfzYJ/O
+ /HJxsce5iW/1T7uNAXxJaFxm1dR9OtmC2JOFF1qOv3hEvznortEdsgWa27jqGPnQC2gr0rWr0
+ QhuZ0tcKCGz4+vV3h6goGziRdfHjNv8YYIBc4dzZZrXAWT17rMbDzp0QBqQLcR5FohSxzwHoO
+ vBHXXLTec4QEZRiMSYFvKUPTXW8yVP+BkXnPHWldPvsQqk2DXRQZZIFpn9ulvLqcaS2knhiTK
+ mRdwXn9rd68+n3npEh2i9bw607FfqEAtm4NpTNKPhBQ2OcFegTxRNAJzpYYDbcEb4LiNB5tuS
+ og9nTM2fBbhImiDnXe9jSlH8WK6GADDoULZ34Zj1GpdpAaoo+7dcVPbfdC45+xQJJzHaP3i3u
+ mVzmU5Y+29uVA+tPOT/aVH6zC8Xvdm0hCZ5uLCNsJY2nMloCjWSlKuMlH93TMdmLJxVrzouE7
+ RuYf1P3nZvYRFhwhYlMQ14L3xEiEGmfi/wgzXiKor8PWjoMr5pBhDP6MKDO9nBU7il72prDzS
+ KM9bD3zRE9+VHEsoCe2SxhcnfdN9BGjKPz8gZWdtDdp5/oqvbR2JGNNjYuG0oN9VMe+CHV/8u
+ MAMpFrNNhKzBnTrsMLtva+DQJfreWu4NyYhqZ5UPw3wL0vRpIU7RUq/vi9SXrVy1d6Je8sOUb
+ XFdL+QL6SqwnmIo5r6BM8v0eZX3nBa0ML+NqX11NytLyvUiuebU2ITVDru6yfBkthUM7dAK9Q
+ IJpb3LB
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 27 Jan 2022 15:07:15 -0800, Brian Norris wrote:
-> It's inefficient to use the same number of cycles for all OPPs, since
-> lower frequencies make for longer idle times. Let's specify the idle
-> time instead, so software can pick the optimal number of cycles on its
-> own.
-> 
-> NB: these bindings aren't used anywhere yet.
-> 
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> ---
-> 
-> Changes in v2:
->  - New patch
-> 
->  .../bindings/devfreq/rk3399_dmc.yaml          | 50 +++++++++++++++++--
->  1 file changed, 45 insertions(+), 5 deletions(-)
-> 
+Hi
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Tested complete series on rk3568 based Bananapi R2 Pro
+
+combphy0: usb3 (usbdrd3_0)
+combphy1: usb3 (usbdrd3_1)
+combphy2: sata (sata2)
+
+Tested-by: Frank Wunderlich <frank-w@public-files.de>
+
+regards Frank
