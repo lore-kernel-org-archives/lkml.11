@@ -2,119 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BFAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3317DC433EF
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236396AbiBIJjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:39:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:57816 "EHLO
+        id S235958AbiBIJja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:39:30 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234515AbiBIJgO (ORCPT
+        with ESMTP id S239754AbiBIJeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:36:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 136E3E01093B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:36:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644399309;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wrfi96tJIccNwtHX6q8UuWpfNu6nXOBFJNAE84+M6EA=;
-        b=NXYCUyrllwnceB+AqA6ul4AvQbz1UcNL/Lq0aq6qyn1F8r8uOGZoeF9dIDhtZPmI0fDn+N
-        5uyEDejEbENLCbfQPmrF9Drc1AmM9zsmJyaRQKp4UNaUzsidx98ZBqObIAuXRM6Rm1zWew
-        Ag3tAR41nB1TpnV7CG7Hbvt9BSIQA8M=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-2-h0x2qF6PNvGRMTqw_ZM_zQ-1; Wed, 09 Feb 2022 04:13:19 -0500
-X-MC-Unique: h0x2qF6PNvGRMTqw_ZM_zQ-1
-Received: by mail-wr1-f69.google.com with SMTP id v9-20020adfa1c9000000b001e33e5dbd5fso839382wrv.17
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:13:19 -0800 (PST)
+        Wed, 9 Feb 2022 04:34:21 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED68E05BA66
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:34:18 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 3539C4003D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 08:58:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644397116;
+        bh=j1Hd4lmSTFrkTOOqYMK0Qe55KdcJKzmf7To8MW6/JyA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=R1vuwi9m/0P0TmV9pNo4eKaLnScaY9m4dBcKBq5idGVJoyP6rsAe1BJ2PUWtLLaaY
+         B6sOJ1yQi3YP0bKab0HZA2myhVkiwq4OI8LZnVP0SJFGAk4LHYmgFU8EEIt215xf2e
+         ekOe+gRYzZ/+MqLoDowDuZ0wWiLkFmg/Fu4s1Eztl0sM05iq+pf0aell6o3ex9udzE
+         A85TV73/HTQtxqV/RfIDEutxELI2/Qz/WxdGpppsA6cQqJsao5IdJDM9O+u3kd2s5X
+         dAJVs+ovnaiC7Xh+Knp8IdNR2Hgkzu1Ift58RQt+xKLi98VmqXrmfXaHkbUf0dM5MS
+         J2QqA6o1VGy+A==
+Received: by mail-ed1-f69.google.com with SMTP id f6-20020a0564021e8600b0040f662b99ffso1002025edf.7
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 00:58:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wrfi96tJIccNwtHX6q8UuWpfNu6nXOBFJNAE84+M6EA=;
-        b=SiMtshxSWq2CTSBS5O9H+az8VzNr7WEiGp6i1PP9B6oygMycXohYydi2SwcGa+yzXX
-         J1411Fp/yPIR8FrwSa9NAnz1SK/ElKy8QvcWyrGRARE4QTPJ2qv961CJ4t1XeS+rLxAv
-         lKgL6bC8X9MeSZID6nKENEITv2MB1CrgAVufOGoCTQq/jBdrZIWRgOs/6VjiydGF3LXo
-         ts5+vxeQw4et8vCkV4Tbm/H/gxGcHV2b6KaJW6t51ohpwewMI4Euv1p0jeaeWUhDNQpZ
-         we7LYNz/Gg4sHeaKxDs1rJIvhOyKQbiRVWWWeGSuP8X4T3OrDT5qMTAFTh17b+RoEh7E
-         grPQ==
-X-Gm-Message-State: AOAM531limZ6QLEyoO1nNPfz05gLiRI3PndTtmQepGku83B2kWr6KYRD
-        VI7WY/5+LUnu5ND3rbeFls3mjHdlPmZRR9H0UW/4W5d8/ARhIYqVeoKkLY3FHN8v203D/pXGT59
-        qeJRUgE09p03PH6ecRyhIirWKfKkFrGcKSnm3uBqeKr+YmKsJL5L+hPjY4YEAFq8EY6WOrNaLA7
-        Y=
-X-Received: by 2002:a5d:52c9:: with SMTP id r9mr1258313wrv.449.1644397998241;
-        Wed, 09 Feb 2022 01:13:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy1zTRH9HjYG3ft4LFcDrPluM5RwDLJLwWrjz45XS9D+PYh5QbVpYPQLAEhlqGKHQNAri0OMg==
-X-Received: by 2002:a5d:52c9:: with SMTP id r9mr1258299wrv.449.1644397998026;
-        Wed, 09 Feb 2022 01:13:18 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id v18sm11942013wrm.105.2022.02.09.01.13.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 01:13:17 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: [PATCH v3 6/7] MAINTAINERS: Add entry for Solomon SSD130X OLED displays DRM driver
-Date:   Wed,  9 Feb 2022 10:13:12 +0100
-Message-Id: <20220209091312.2513575-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209090314.2511959-1-javierm@redhat.com>
-References: <20220209090314.2511959-1-javierm@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=j1Hd4lmSTFrkTOOqYMK0Qe55KdcJKzmf7To8MW6/JyA=;
+        b=tTBHKUqhbaNAPByrF2bxsm+EXTlhSk3sIMdFAEmtq7tmdIuShqk7C59qHNRKJPuN0M
+         oxE25FRyz9GsMp607Wj8fmOtcxVpfuL1qQ8H+rCb/hrbojcTdPvdeQTlC/lziEaj8LWQ
+         vEebhojCD0LBkpFdAd1u6i3Lz2NYOFGq2InJ6v9kQQqurzU7qo2czHCZy8400hW8X2Jp
+         ZvW5Uy6coSTZwOwYhv9yksTENH6i8rimWIIRcglekCZjny9R7QS+pbsjU81Z8hC+tb9h
+         jDvH2mkUtLgIglxkDHEK/2jYwayWU4zwEqq63JbDaZWFhpOlP538Ww0yTpiwBWMtmhSL
+         q+4w==
+X-Gm-Message-State: AOAM530b+VKGAKzzAmFD5TU7hEYrZMQb4/Au/hTebS6NMBvRDQIf20Bw
+        rfNekmvntTZ3espyxEgaivn/dGEaFjpcfWucXPneqajEnGuhJ3j93kc/1azatTmZ8GgA15AhdhW
+        0Lo3umxkl3NReasL0h6Hcd1L5dfQSGrCYvjDOqj85jA==
+X-Received: by 2002:a05:6402:268d:: with SMTP id w13mr1336045edd.287.1644397115850;
+        Wed, 09 Feb 2022 00:58:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxLa/snmtz5iqx9Hn8j3YbAXkBMWCsfLkv0xITTQmx8XEZnlMbvesoWqn0aMi8P2fY5Dqr93Q==
+X-Received: by 2002:a05:6402:268d:: with SMTP id w13mr1336029edd.287.1644397115699;
+        Wed, 09 Feb 2022 00:58:35 -0800 (PST)
+Received: from [192.168.0.94] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id g11sm3820460ejs.14.2022.02.09.00.58.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 00:58:35 -0800 (PST)
+Message-ID: <6568fd31-113f-1581-4eff-45a4a1eb4e5d@canonical.com>
+Date:   Wed, 9 Feb 2022 09:58:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 3/9] dt-bindings: memory: lpddr2: Add revision-id
+ properties
+Content-Language: en-US
+To:     Julius Werner <jwerner@chromium.org>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Rob Herring <robh@kernel.org>, linux-tegra@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>
+References: <20211006224659.21434-1-digetx@gmail.com>
+ <20211006224659.21434-4-digetx@gmail.com>
+ <YWimShkkxkR+bQLK@robh.at.kernel.org>
+ <CAODwPW-2othAhTC9a_joBdHScA86iqs-FkZJZDrK5LxrJm8F8Q@mail.gmail.com>
+ <d69f99ed-75a4-9b8c-addb-3eaa2b2be6a6@canonical.com>
+ <CAODwPW-AMqQ+ZbnvUTuxP5Bbxdcy08GSXnhcLC+V6BW=OPYaqg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <CAODwPW-AMqQ+ZbnvUTuxP5Bbxdcy08GSXnhcLC+V6BW=OPYaqg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To make sure that tools like the get_maintainer.pl script will suggest
-to Cc me if patches are posted for this driver.
+On 09/02/2022 00:46, Julius Werner wrote:
+>> Unfortunately I have no clue what patch you talk about ("this patch").
+>> There is no context here, no link except the older LPDDR3.
+> 
+> Sorry, I tried to reply to
+> https://lore.kernel.org/all/20211006224659.21434-4-digetx@gmail.com/
+> ([PATCH v5 3/9] dt-bindings: memory: lpddr2: Add revision-id
+> properties) and was hoping that would automatically provide context.
+> That patch added two one-cell properties `revision-id1` and
+> `revision-id2` to "jedec,lpddr2". Earlier in
+> https://www.spinics.net/lists/devicetree/msg413733.html ([PATCH]
+> dt-bindings: ddr: Add optional manufacturer and revision ID to
+> LPDDR3), I had added a single two-cell property `revision-id` for the
+> same purpose to "jedec,lpddr3".
+> 
+> I think it would be better if this was consistent between the two
+> types of LPDDR memory. Should I just send a patch that replaces the
+> two revision IDs in "jedec,lpddr2" with a single one according to the
+> principle of "jedec,lpddr3"? Or is it too late for that now and the
+> binding already considered stable and unchangeable?
 
-Also include the Device Tree binding for the old ssd1307fb fbdev driver
-since the new DRM driver was made compatible with the existing binding.
+Hi Julius,
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
----
+Having same bindings for revision ID makes sense. Sadly this was not
+spotted during review, eh, life... Unfortunately the bindings are
+already in a mainline release, so they are considered stable. You can
+however bring patches (bindings + drivers/memory/of + dts) which make
+the revision-id[12] deprecated and introduce new revision-id.
 
-Changes in v3:
-- Adapt MAINTAINERS entry to point to the new drivers/gpu/drm/solomon directory.
+It should be something similar to what I did for max-freq:
+https://lore.kernel.org/all/20220206135807.211767-7-krzysztof.kozlowski@canonical.com/
 
-Changes in v2:
-- Add Sam Ravnborg's acked-by to patch adding a MAINTAINERS entry (Sam Ravnborg)
+Dmitry,
+Any early comments on such approach from you?
 
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e3dad0d898f5..8e6e892f99f0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6163,6 +6163,13 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
- F:	Documentation/devicetree/bindings/display/repaper.txt
- F:	drivers/gpu/drm/tiny/repaper.c
- 
-+DRM DRIVER FOR SOLOMON SSD130X OLED DISPLAYS
-+M:	Javier Martinez Canillas <javierm@redhat.com>
-+S:	Maintained
-+T:	git git://anongit.freedesktop.org/drm/drm-misc
-+F:	Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+F:	drivers/gpu/drm/solomon/ssd130x*
-+
- DRM DRIVER FOR QEMU'S CIRRUS DEVICE
- M:	Dave Airlie <airlied@redhat.com>
- M:	Gerd Hoffmann <kraxel@redhat.com>
--- 
-2.34.1
-
+Best regards,
+Krzysztof
