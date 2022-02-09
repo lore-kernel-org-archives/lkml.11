@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED53AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 08:54:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236129AbiBIIy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 03:54:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49406 "EHLO
+        id S241111AbiBIIyb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 03:54:31 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiBIIyW (ORCPT
+        with ESMTP id S231472AbiBIIyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 03:54:22 -0500
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2EAC0401DA
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D21E02F54E
         for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 00:54:17 -0800 (PST)
 Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:54c7:c522:3859:290])
-        by xavier.telenet-ops.be with bizsmtp
-        id swu42600U4VQqf501wu4nW; Wed, 09 Feb 2022 09:54:05 +0100
+        by baptiste.telenet-ops.be with bizsmtp
+        id swu4260014VQqf501wu4K1; Wed, 09 Feb 2022 09:54:05 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nHijj-000DIi-Lv; Wed, 09 Feb 2022 09:54:03 +0100
+        id 1nHijj-000DIg-CE; Wed, 09 Feb 2022 09:54:03 +0100
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1nHiji-00DkLs-NX; Wed, 09 Feb 2022 09:54:02 +0100
+        id 1nHiji-00DkLg-LU; Wed, 09 Feb 2022 09:54:02 +0100
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@dabbelt.com>,
@@ -36,75 +36,52 @@ Cc:     Atish Patra <atishp@rivosinc.com>,
         Emil Renner Berthing <kernel@esmil.dk>,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 2/3] RISC-V: Fix handling of empty cpu masks
-Date:   Wed,  9 Feb 2022 09:54:00 +0100
-Message-Id: <e9ffcdc6569cdeb294675905c731cfd89ce17d96.1644396407.git.geert@linux-m68k.org>
+Subject: [PATCH v2 0/3] RISC-V: Fix cpumask rework fall-out
+Date:   Wed,  9 Feb 2022 09:53:58 +0100
+Message-Id: <cover.1644396407.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1644396407.git.geert@linux-m68k.org>
-References: <cover.1644396407.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cpumask rework slightly changed the behavior of the code.  Fix this
-by treating an empty cpumask as meaning all online CPUs.
+	Hi all,
 
-Extracted from a patch by Atish Patra <atishp@rivosinc.com>.
+This patch series fixes the fall-out from commit 26fb751ca37846c9
+("RISC-V: Do not use cpumask data structure for hartid bitmap"), cfr.
+the discussion in thread[1].  Most important, it fixes userspace crashes
+on systems where the first CPU does not have the lowest Hart ID.
 
-Reported-by: Jessica Clarke <jrtc27@jrtc27.com>
-Fixes: 26fb751ca37846c9 ("RISC-V: Do not use cpumask data structure for hartid bitmap")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Atish Patra <atishp@rivosinc.com>
-Tested-by: Emil Renner Berthing <kernel@esmil.dk>
----
-v2:
+Changes compared to v1[2]:
   - Add Reviewed-by, Tested-by.
----
- arch/riscv/kernel/sbi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/riscv/kernel/sbi.c b/arch/riscv/kernel/sbi.c
-index f93bc75f2bc43c8e..22444cfcd56cc646 100644
---- a/arch/riscv/kernel/sbi.c
-+++ b/arch/riscv/kernel/sbi.c
-@@ -161,7 +161,7 @@ static int __sbi_send_ipi_v01(const struct cpumask *cpu_mask)
- {
- 	unsigned long hart_mask;
- 
--	if (!cpu_mask)
-+	if (!cpu_mask || cpumask_empty(cpu_mask))
- 		cpu_mask = cpu_online_mask;
- 	hart_mask = __sbi_v01_cpumask_to_hartmask(cpu_mask);
- 
-@@ -177,7 +177,7 @@ static int __sbi_rfence_v01(int fid, const struct cpumask *cpu_mask,
- 	int result = 0;
- 	unsigned long hart_mask;
- 
--	if (!cpu_mask)
-+	if (!cpu_mask || cpumask_empty(cpu_mask))
- 		cpu_mask = cpu_online_mask;
- 	hart_mask = __sbi_v01_cpumask_to_hartmask(cpu_mask);
- 
-@@ -254,7 +254,7 @@ static int __sbi_send_ipi_v02(const struct cpumask *cpu_mask)
- 	struct sbiret ret = {0};
- 	int result;
- 
--	if (!cpu_mask)
-+	if (!cpu_mask || cpumask_empty(cpu_mask))
- 		cpu_mask = cpu_online_mask;
- 
- 	for_each_cpu(cpuid, cpu_mask) {
-@@ -348,7 +348,7 @@ static int __sbi_rfence_v02(int fid, const struct cpumask *cpu_mask,
- 	unsigned long hartid, cpuid, hmask = 0, hbase = 0;
- 	int result;
- 
--	if (!cpu_mask)
-+	if (!cpu_mask || cpumask_empty(cpu_mask))
- 		cpu_mask = cpu_online_mask;
- 
- 	for_each_cpu(cpuid, cpu_mask) {
+Thanks for applying!
+
+[1] "[PATCH v3 6/6] RISC-V: Do not use cpumask data structure for hartid
+     bitmap"
+    https://lore.kernel.org/r/20220120090918.2646626-7-atishp@rivosinc.com/
+[2] "[PATCH 0/3] RISC-V: Fix cpumask rework falloout"
+    https://lore.kernel.org/all/cover.1643635156.git.geert@linux-m68k.org/
+
+Geert Uytterhoeven (3):
+  RISC-V: Fix hartid mask handling for hartid 31 and up
+  RISC-V: Fix handling of empty cpu masks
+  RISC-V: Fix IPI/RFENCE hmask on non-monotonic hartid ordering
+
+ arch/riscv/kernel/sbi.c | 72 +++++++++++++++++++++++++++--------------
+ 1 file changed, 47 insertions(+), 25 deletions(-)
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
