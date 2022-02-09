@@ -2,190 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B13B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD18C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243220AbiBICqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:46:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
+        id S238802AbiBICq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:46:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242690AbiBIBUE (ORCPT
+        with ESMTP id S244925AbiBICUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 20:20:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309CAC061576;
-        Tue,  8 Feb 2022 17:20:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF26EB81E2E;
-        Wed,  9 Feb 2022 01:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39236C340EB;
-        Wed,  9 Feb 2022 01:20:00 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="D6C99VYI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644369598;
+        Tue, 8 Feb 2022 21:20:11 -0500
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D97BC06157B;
+        Tue,  8 Feb 2022 18:20:09 -0800 (PST)
+MIME-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644373207;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=XnXdzVIvjx3QPkWqNdSRkT5EzQoCnMhT79rAlhJcz5A=;
-        b=D6C99VYIdpH6Cy1zYJgWPy00CuBBJWREDABJ/6AwXEOTEIZ2KG/Avf3HB2X/2Mh6oG7Zao
-        Cp059kWn3/V2dDuoDVe2GcDDfEd3fm5JDRbJIZV94eSxhE1OzNyL7LI8GHvoB06XxwD9w1
-        h4ByNS8RUb21cmdzZwTp4WdmqjFDzug=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id a80b01d1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 9 Feb 2022 01:19:58 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Eric Biggers <ebiggers@google.com>
-Subject: [PATCH v2 3/9] random: inline leaves of rand_initialize()
-Date:   Wed,  9 Feb 2022 02:19:13 +0100
-Message-Id: <20220209011919.493762-4-Jason@zx2c4.com>
-In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        bh=duEdvsmvfL1YUaUj/WhXeBPgED0TQAZfCHM+etVCeio=;
+        b=gKRYgH1i4qRCdJmIiJSTJULASGNH0ILH45mJ3qZs5pLNrqBE6Jq8bEAF5yMT3z+ZsGPOW+
+        j0BMVIeZCsfoZOerdHXrmWFsbem5kJ8W0DgmLIWE4zirnrYTXk+FarLHRWmRQW6EtLVGlU
+        RBWNnyPtCnK7Sc51kRBBvARmysww1WA=
+Date:   Wed, 09 Feb 2022 02:20:07 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   yajun.deng@linux.dev
+Message-ID: <753bb02bfa8c2cf5c08c63c31f193f90@linux.dev>
+Subject: Re: [PATCH net-next] net: dev: introduce netdev_drop_inc()
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     davem@davemloft.net, rostedt@goodmis.org, mingo@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220208162729.41b62ae7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20220208162729.41b62ae7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20220208064318.1075849-1-yajun.deng@linux.dev>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparatory commit for the following one. We simply inline the
-various functions that rand_initialize() calls that have no other
-callers. The compiler was doing this anyway before. Doing this will
-allow us to reorganize this after.
-
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Reviewed-by: Eric Biggers <ebiggers@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 90 ++++++++++++++++---------------------------
- 1 file changed, 33 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 4c79463464c7..81786bef0a8e 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -471,42 +471,6 @@ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
- static void invalidate_batched_entropy(void);
- 
--static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
--static int __init parse_trust_cpu(char *arg)
--{
--	return kstrtobool(arg, &trust_cpu);
--}
--early_param("random.trust_cpu", parse_trust_cpu);
--
--static bool __init crng_init_try_arch_early(void)
--{
--	int i;
--	bool arch_init = true;
--	unsigned long rv;
--
--	for (i = 4; i < 16; i++) {
--		if (!arch_get_random_seed_long_early(&rv) &&
--		    !arch_get_random_long_early(&rv)) {
--			rv = random_get_entropy();
--			arch_init = false;
--		}
--		primary_crng.state[i] ^= rv;
--	}
--
--	return arch_init;
--}
--
--static void __init crng_initialize(void)
--{
--	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
--	if (crng_init_try_arch_early() && trust_cpu && crng_init < 2) {
--		invalidate_batched_entropy();
--		crng_init = 2;
--		pr_notice("crng init done (trusting CPU's manufacturer)\n");
--	}
--	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
--}
--
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-  * path.  So we can't afford to dilly-dally. Returns the number of
-@@ -1230,17 +1194,28 @@ int __must_check get_random_bytes_arch(void *buf, int nbytes)
- }
- EXPORT_SYMBOL(get_random_bytes_arch);
- 
-+static bool trust_cpu __ro_after_init = IS_ENABLED(CONFIG_RANDOM_TRUST_CPU);
-+static int __init parse_trust_cpu(char *arg)
-+{
-+	return kstrtobool(arg, &trust_cpu);
-+}
-+early_param("random.trust_cpu", parse_trust_cpu);
-+
- /*
-- * init_std_data - initialize pool with system data
-- *
-- * This function clears the pool's entropy count and mixes some system
-- * data into the pool to prepare it for use. The pool is not cleared
-- * as that can only decrease the entropy in the pool.
-+ * Note that setup_arch() may call add_device_randomness()
-+ * long before we get here. This allows seeding of the pools
-+ * with some platform dependent data very early in the boot
-+ * process. But it limits our options here. We must use
-+ * statically allocated structures that already have all
-+ * initializations complete at compile time. We should also
-+ * take care not to overwrite the precious per platform data
-+ * we were given.
-  */
--static void __init init_std_data(void)
-+int __init rand_initialize(void)
- {
- 	int i;
- 	ktime_t now = ktime_get_real();
-+	bool arch_init = true;
- 	unsigned long rv;
- 
- 	mix_pool_bytes(&now, sizeof(now));
-@@ -1251,22 +1226,23 @@ static void __init init_std_data(void)
- 		mix_pool_bytes(&rv, sizeof(rv));
- 	}
- 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
--}
- 
--/*
-- * Note that setup_arch() may call add_device_randomness()
-- * long before we get here. This allows seeding of the pools
-- * with some platform dependent data very early in the boot
-- * process. But it limits our options here. We must use
-- * statically allocated structures that already have all
-- * initializations complete at compile time. We should also
-- * take care not to overwrite the precious per platform data
-- * we were given.
-- */
--int __init rand_initialize(void)
--{
--	init_std_data();
--	crng_initialize();
-+	extract_entropy(&primary_crng.state[4], sizeof(u32) * 12);
-+	for (i = 4; i < 16; i++) {
-+		if (!arch_get_random_seed_long_early(&rv) &&
-+		    !arch_get_random_long_early(&rv)) {
-+			rv = random_get_entropy();
-+			arch_init = false;
-+		}
-+		primary_crng.state[i] ^= rv;
-+	}
-+	if (arch_init && trust_cpu && crng_init < 2) {
-+		invalidate_batched_entropy();
-+		crng_init = 2;
-+		pr_notice("crng init done (trusting CPU's manufacturer)\n");
-+	}
-+	primary_crng.init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
-+
- 	if (ratelimit_disable) {
- 		urandom_warning.interval = 0;
- 		unseeded_warning.interval = 0;
--- 
-2.35.0
-
+February 9, 2022 8:27 AM, "Jakub Kicinski" <kuba@kernel.org> wrote:=0A=0A=
+> On Tue, 8 Feb 2022 14:43:18 +0800 Yajun Deng wrote:=0A> =0A>> We will u=
+se 'sudo perf record -g -a -e skb:kfree_skb' command to trace=0A>> the dr=
+opped packets when dropped increase in the output of ifconfig.=0A>> But t=
+here are two cases, one is only called kfree_skb(), another is=0A>> incre=
+asing the dropped and called kfree_skb(). The latter is what=0A>> we need=
+. So we need to separate these two cases.=0A>> =0A>> From the other side,=
+ the dropped packet came from the core network and=0A>> the driver, we al=
+so need to separate these two cases.=0A>> =0A>> Add netdev_drop_inc() and=
+ add a tracepoint for the core network dropped=0A>> packets. use 'sudo pe=
+rf record -g -a -e net:netdev_drop' and 'sudo perf=0A>> script' will reco=
+red the dropped packets by the core network.=0A>> =0A>> Signed-off-by: Ya=
+jun Deng <yajun.deng@linux.dev>=0A> =0A> Have you seen the work that's be=
+ing done around kfree_skb_reason()?=0A=0AYes, I saw it. The focus of kfre=
+e_skb_reason() is trace kfree_skb() and the reason, =0Abut the focus of t=
+his patch only traces this case of the dropped packet.=0A=0AI don't want =
+to trace all kfree_skb(), but I just want to trace the dropped packet.=0A=
+=0AThis command 'sudo perf record -g -a -e skb:kfree_skb' would trace all=
+ kfree_skb(),=0Akfree_skb() would drowned out the case of dropped packets=
+ when the samples were too large.
