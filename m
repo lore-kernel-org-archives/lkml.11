@@ -2,220 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ECDC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232846AbiBIKQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:16:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
+        id S233792AbiBIKQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:16:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbiBIKQO (ORCPT
+        with ESMTP id S230260AbiBIKQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:16:14 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCC2E08A36D;
-        Wed,  9 Feb 2022 02:12:25 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2199vQAE009064;
-        Wed, 9 Feb 2022 10:08:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=nmwtq9LEYKks3gXqZdkO9gz27InimFLCeSPJOVhnZpI=;
- b=QLJiEehdi7vz5jN0iXLl6t6ix6m7VMQSpkbrVuKX1cmgwJgEqjCksrByd4NsGXPRYTPg
- Ye+qTzt8Np1TReYzKTTX+s0yf5MA68ewZ5f+Vog5dmKxTPWwLHWoANajMbE1VrdRfPbW
- pCLtBOMXNunllAOgA6imoQFkaNIosHDagxnW7hz6ogebiBqeyI+KrgSrTjrlj1fMvW8j
- CdYDNYCXrkd9zn7HumyshECwX26T9P2WQ0XRkfjq2OJ10xCz8nidv8nFHfVVRsvoKHkJ
- yC7J/Prw06K5mwGSt0PEW+ihakJBZXJSjGYdMm3QOzfTflIZqPnNDCl5eNH3ct4383vV HQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e4befr88w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:08:54 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2199w1uZ010214;
-        Wed, 9 Feb 2022 10:08:54 GMT
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e4befr88d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:08:54 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 219A3FRG019977;
-        Wed, 9 Feb 2022 10:08:52 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma05fra.de.ibm.com with ESMTP id 3e1gvac85f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:08:52 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219A8nZm26214904
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 10:08:49 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E27C1A4060;
-        Wed,  9 Feb 2022 10:08:48 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 590DEA405C;
-        Wed,  9 Feb 2022 10:08:48 +0000 (GMT)
-Received: from [9.171.87.52] (unknown [9.171.87.52])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 10:08:48 +0000 (GMT)
-Message-ID: <3ec91f7a-10ca-b984-d852-1327f965b1e8@linux.ibm.com>
-Date:   Wed, 9 Feb 2022 11:08:48 +0100
+        Wed, 9 Feb 2022 05:16:39 -0500
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C19E030190;
+        Wed,  9 Feb 2022 02:13:07 -0800 (PST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id 704612B00075;
+        Wed,  9 Feb 2022 04:22:06 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 09 Feb 2022 04:22:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=Tt9nwg4OqINVHPZtGpaWXspgVtdYpxJW0WuyZY
+        KSUXo=; b=CES+aAc/6AFtcfKBU4TR98AXkRc06kaWv959B8647awn98r+JTV1qX
+        xk57tVNqopfs2On7z7mip7717bEci13Ho6pAwwjQAGQoX0Fabg/FWpw0tfmsbRhm
+        ZNjKfAt5DX1pe5AnetTRzhRXBYTPBYgqALvQnH/Qu44iREfl5Gt9FPKHzBo3Ftso
+        rq6GEYq8FLTwdx927Z1pr5pmoZDlAs9Y7cBx+IO8pptePKKwKpaXXPGOGEvrtKGr
+        mv2e8HaFoOCA5k/6rR4RQIW2H3ahWizzf6INCDipbDtB/m6B7D/99NSiFy/F8e+0
+        ApL3vZfXZDAGbeCEzOzBRsUEKU26xLMQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Tt9nwg4OqINVHPZtG
+        paWXspgVtdYpxJW0WuyZYKSUXo=; b=DNgujOG3Kyu87VeORY/tXh7zV2FEaRCD2
+        jHTYL32LjpGyCvlGrXljVxM0tT3qSfElSiMBYhhypG3dxP7obOe+HKXcltlN33Da
+        NzJY0Rrn85+jeDIxl9miv53hhpkUbs4BZwJ0Boxmo9ip8UHHBTuywmdmUU7SHvkH
+        FuLnmbAFtgN4b/TDRMKRpz5Bq58NyFH4tHrhyW56fKcJtEmf8fMM2ySratv+hfRc
+        jFO//p7Kioly4TPiiWzuu54aJdiG6Pf9VSnmpG/fJDInw1VfN73Otf0Dx3Zx0cP+
+        ufsQu/5K1dHYWmUGZX/HJehFuYjIw94LVU2wDPIR+lijQ86k4/ZQQ==
+X-ME-Sender: <xms:vIcDYvSLzBaUpcTv3LvOvXPsxvCPTLS72MJZTSyCgRgyDIxf_sh-wQ>
+    <xme:vIcDYgzrul8zSLR5aFz4voae8ya0P99U3o5-GxWFhCcnQJW_Mhd8npqZ_o9ujcHAo
+    kilepwtXKyBN0hwOpA>
+X-ME-Received: <xmr:vIcDYk00M8AhJLwLWq45_kuMtRRCLOUKKHNcuutRQF_6wrW14hsjntFbp7Ho-w22UIbrTpElcnImSOj8N4d8wLT4frYTZe-DQhq4xmo>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheelgddtvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:vIcDYvDeqRjppTTUhzZXU1XOFeqkUtqz8TgDTNjARCopTsy2W8jaVg>
+    <xmx:vIcDYohQIwCF-TmlZ-gA_SNwx55tr-5droHMgYJIQ3cq4uD5jJwrtw>
+    <xmx:vIcDYjoWqndfwaT5D6dA3esjsRydoyESdTz74Wr1Yc8CKn9fo6ti_w>
+    <xmx:vYcDYhaLJS3VuiBzs2WMRtUF1Ei8cldNeGQ_Tc5J-yr_4FRL_8MDEmysVL4>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 9 Feb 2022 04:22:04 -0500 (EST)
+Date:   Wed, 9 Feb 2022 10:22:03 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 22/66] media: sun6i-csi: Use runtime pm for clocks and
+ reset
+Message-ID: <20220209092203.3fieqs4mbip6heug@houat>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-23-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
- MEMOP IOCTL
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
- <20220207165930.1608621-6-scgl@linux.ibm.com>
- <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
- <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
- <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
- <8d502356c3a624847c0dd2fe5d5f60e72923a141.camel@linux.ibm.com>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <8d502356c3a624847c0dd2fe5d5f60e72923a141.camel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: q6QdCDovQ7XOa1G3416OXvweFJz1vIYS
-X-Proofpoint-GUID: n7WM7JqSdW8E9vVgMecgBkvsualfblyr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- lowpriorityscore=0 priorityscore=1501 adultscore=0 clxscore=1015
- bulkscore=0 mlxscore=0 mlxlogscore=999 phishscore=0 suspectscore=0
- malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202090064
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="rqnlvhzt36vdmgbb"
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-23-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--rqnlvhzt36vdmgbb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Am 09.02.22 um 11:01 schrieb Janis Schoetterl-Glausch:
-> On Wed, 2022-02-09 at 10:08 +0100, Christian Borntraeger wrote:
->>
->> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
->>> On 2/9/22 08:34, Christian Borntraeger wrote:
->>>> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
->>>>> User space needs a mechanism to perform key checked accesses when
->>>>> emulating instructions.
->>>>>
->>>>> The key can be passed as an additional argument.
->>>>> Having an additional argument is flexible, as user space can
->>>>> pass the guest PSW's key, in order to make an access the same way the
->>>>> CPU would, or pass another key if necessary.
->>>>>
->>>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->>>>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
->>>>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
->>>>> ---
->>>>>     arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
->>>>>     include/uapi/linux/kvm.h |  8 +++++--
->>>>>     2 files changed, 44 insertions(+), 13 deletions(-)
->>>>>
->>>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->>>>> index cf347e1a4f17..71e61fb3f0d9 100644
->>>>> --- a/arch/s390/kvm/kvm-s390.c
->>>>> +++ b/arch/s390/kvm/kvm-s390.c
->>>>> @@ -32,6 +32,7 @@
->>>>>     #include <linux/sched/signal.h>
->>>>>     #include <linux/string.h>
->>>>>     #include <linux/pgtable.h>
->>>>> +#include <linux/bitfield.h>
->>>>>       #include <asm/asm-offsets.h>
->>>>>     #include <asm/lowcore.h>
->>>>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
->>>>>         return r;
->>>>>     }
->>>>>     +static bool access_key_invalid(u8 access_key)
->>>>> +{
->>>>> +    return access_key > 0xf;
->>>>> +}
->>>>> +
->>>>>     long kvm_arch_vm_ioctl(struct file *filp,
->>>>>                    unsigned int ioctl, unsigned long arg)
->>>>>     {
->>>>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
->>>>>                       struct kvm_s390_mem_op *mop)
->>>>>     {
->>>>>         void __user *uaddr = (void __user *)mop->buf;
->>>>> +    u8 access_key = 0, ar = 0;
->>>>>         void *tmpbuf = NULL;
->>>>> +    bool check_reserved;
->>>>>         int r = 0;
->>>>>         const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
->>>>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
->>>>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
->>>>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
->>>>>     -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
->>>>> +    if (mop->flags & ~supported_flags || !mop->size)
->>>>>             return -EINVAL;
->>>>> -
->>>>>         if (mop->size > MEM_OP_MAX_SIZE)
->>>>>             return -E2BIG;
->>>>> -
->>>>>         if (kvm_s390_pv_cpu_is_protected(vcpu))
->>>>>             return -EINVAL;
->>>>> -
->>>>>         if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
->>>>>             tmpbuf = vmalloc(mop->size);
->>>>>             if (!tmpbuf)
->>>>>                 return -ENOMEM;
->>>>>         }
->>>>> +    ar = mop->ar;
->>>>> +    mop->ar = 0;
->>>>
->>>> Why this assignment to 0?
->>>
->>> It's so the check of reserved below works like that, they're all part of the anonymous union.
->>
->> Ah, I see. This is ugly :-)
-> 
-> Yes :)
->>
->>>>> +    if (ar >= NUM_ACRS)
->>>>> +        return -EINVAL;
->>>>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
->>>>> +        access_key = mop->key;
->>>>> +        mop->key = 0;
->>>>
->>>> and this? I think we can leave mop unchanged.
->>>>
->>>> In fact, why do we add the ar and access_key variable?
->>>> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
->>>> and it will create a memleak for tmpbuf.
->>>
->>> I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
->>> First is simpler, but second makes handling that case more explicit and might help in the future.
->>
->> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
-> 
-> I think that would require us adding new fields in the struct by putting them in a union with reserved_02 and so on,
-> which could get rather messy.
+On Sat, Feb 05, 2022 at 07:53:45PM +0100, Paul Kocialkowski wrote:
+> Wrap the clock and reset preparation into runtime pm functions
+> for better organization of the code.
+>=20
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> ---
+>  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 94 ++++++++++++++-----
+>  1 file changed, 69 insertions(+), 25 deletions(-)
+>=20
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers=
+/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> index 2355088fdc37..b53b92b70a89 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> @@ -152,40 +152,18 @@ int sun6i_csi_set_power(struct sun6i_csi_device *cs=
+i_dev, bool enable)
+> =20
+>  	if (!enable) {
+>  		regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN, 0);
+> +		pm_runtime_put(dev);
+> =20
+> -		clk_disable_unprepare(csi_dev->clk_ram);
+> -		clk_disable_unprepare(csi_dev->clk_mod);
+> -		reset_control_assert(csi_dev->reset);
+>  		return 0;
+>  	}
+> =20
+> -	ret =3D clk_prepare_enable(csi_dev->clk_mod);
+> -	if (ret) {
+> -		dev_err(csi_dev->dev, "Enable csi clk err %d\n", ret);
+> +	ret =3D pm_runtime_resume_and_get(dev);
+> +	if (ret < 0)
+>  		return ret;
+> -	}
+> -
+> -	ret =3D clk_prepare_enable(csi_dev->clk_ram);
+> -	if (ret) {
+> -		dev_err(csi_dev->dev, "Enable clk_dram_csi clk err %d\n", ret);
+> -		goto clk_mod_disable;
+> -	}
+> -
+> -	ret =3D reset_control_deassert(csi_dev->reset);
+> -	if (ret) {
+> -		dev_err(csi_dev->dev, "reset err %d\n", ret);
+> -		goto clk_ram_disable;
+> -	}
+> =20
+>  	regmap_update_bits(regmap, CSI_EN_REG, CSI_EN_CSI_EN, CSI_EN_CSI_EN);
+> =20
+>  	return 0;
+> -
+> -clk_ram_disable:
+> -	clk_disable_unprepare(csi_dev->clk_ram);
+> -clk_mod_disable:
+> -	clk_disable_unprepare(csi_dev->clk_mod);
+> -	return ret;
+>  }
+> =20
+>  static enum csi_input_fmt get_csi_input_format(struct sun6i_csi_device *=
+csi_dev,
+> @@ -800,6 +778,65 @@ static irqreturn_t sun6i_csi_isr(int irq, void *priv=
+ate)
+>  	return IRQ_HANDLED;
+>  }
+> =20
+> +static int sun6i_csi_suspend(struct device *dev)
+> +{
+> +	struct sun6i_csi_device *csi_dev =3D dev_get_drvdata(dev);
+> +
+> +	reset_control_assert(csi_dev->reset);
+> +	clk_disable_unprepare(csi_dev->clk_ram);
+> +	clk_disable_unprepare(csi_dev->clk_mod);
+> +	clk_disable_unprepare(csi_dev->clk_bus);
+> +
+> +	return 0;
+> +}
+> +
+> +static int sun6i_csi_resume(struct device *dev)
+> +{
+> +	struct sun6i_csi_device *csi_dev =3D dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	ret =3D reset_control_deassert(csi_dev->reset);
+> +	if (ret) {
+> +		dev_err(dev, "failed to deassert reset\n");
+> +		return ret;
+> +	}
+> +
+> +	ret =3D clk_prepare_enable(csi_dev->clk_bus);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable bus clock\n");
+> +		goto error_reset;
+> +	}
+> +
+> +	ret =3D clk_prepare_enable(csi_dev->clk_mod);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable module clock\n");
+> +		goto error_clk_bus;
+> +	}
+> +
+> +	ret =3D clk_prepare_enable(csi_dev->clk_ram);
+> +	if (ret) {
+> +		dev_err(dev, "failed to enable ram clock\n");
+> +		goto error_clk_mod;
+> +	}
+> +
+> +	return 0;
 
-I think it is fine to rename reserved_02. Maybe rename that to dont_use_02 ?
-> 
-> Maybe a comment is good enought?
->>
->>> Patch 6 has the same issue in the vm ioctl handler.
->>>> Simply use mop->key and mop->ar below and get rid of the local variables.
->>>> The structure has no concurrency and gcc will handle that just as the local variable.
->>>>
->>>> Other than that this looks good.
->>>
->>> [...]
->>>
-> 
+You've change the order of the reset vs clock initialization. Also, does
+that work with CONFIG_PM disabled?
+
+Maxime
+
+--rqnlvhzt36vdmgbb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgOHuwAKCRDj7w1vZxhR
+xZriAP9bZyn3qXa36hkToZ4ZGQtpdPm8U/5vUSO5rhzQUD/N5gEA7uxX1cpy0NiA
+FcVH+0Ecscz+V2GzVMoJkN0yAOTwdAk=
+=kTBx
+-----END PGP SIGNATURE-----
+
+--rqnlvhzt36vdmgbb--
