@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93685C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A22E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241149AbiBISwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:52:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43852 "EHLO
+        id S241156AbiBISwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:52:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241167AbiBISuw (ORCPT
+        with ESMTP id S241207AbiBISuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 154D4C0045A0;
-        Wed,  9 Feb 2022 10:46:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0C77612C3;
-        Wed,  9 Feb 2022 18:45:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FFD2C340E7;
-        Wed,  9 Feb 2022 18:45:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432359;
-        bh=0x8uk8ogZkTiQRkXjDuzshmOMcA8a04iiSihN0Uu/A4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L+2zLml/4FTssBg0/zr3c6DV1LXG1LvS57e1506IBBP64rVKLQ7q1+94L4UvgBvID
-         EXaY8ZDavHHQp2IobiBkGfe+qxpVNOCDqbsuSRRCadMugAI/0/+LfDshtvSQzVrr2g
-         gfRZhgo5LbVuN7/MGtEpD/MAccciZCpwycHk+56BRCV9dSsITi91N9NRXW/wYBD4gh
-         T6RorE0vyLk9wO+Lq3sNkwcF6xsRcSv0KYg0i0m21qL8UCKHXJars0hTjp7maQ0tpa
-         HVyaY3VqjGLlLt1yrktQFtlI3l4uCQI/L0FkByZU+ikIL3XAaPzVVoofeGyPa2JizO
-         0os9snQQqg7hQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 2/7] selftests/zram: Skip max_comp_streams interface on newer kernel
-Date:   Wed,  9 Feb 2022 13:45:45 -0500
-Message-Id: <20220209184550.48481-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184550.48481-1-sashal@kernel.org>
-References: <20220209184550.48481-1-sashal@kernel.org>
+        Wed, 9 Feb 2022 13:50:54 -0500
+Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF277C0401F3;
+        Wed,  9 Feb 2022 10:46:17 -0800 (PST)
+Received: by mail-yb1-f177.google.com with SMTP id o19so8547647ybc.12;
+        Wed, 09 Feb 2022 10:46:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FOZOUKLJKTfcXhSl2Frn48yaywqWILrf0FOGMO8s1HA=;
+        b=tH6yIwGZrWuCUeSYtAFsvNZ4qfXpPlrbYzeKJegOFOLkz7y9I3chVLFYES/qy9UMjQ
+         N3rJRDbOr22jqEL9+QogsXudu4JlsYxcP9gtC4dw1KFXHktdOI9SDpfsMS/RWyUASlKd
+         psBKg9K5hnSt3qwuSHrR3YFw7re694antpouKGXRqwOixbsb03pXoMvc6kplv38MzUFv
+         LVcQQCOZXvlrr4vl8hdGdKeZr2r9rBbSEDdNZt8X4wBaEo+S6e85KVZYhakCGRZkaSCV
+         Gr453zS7cDigHDMg3EvvPBJMZHBWK9dN82TtPe0pP9g0KQxq8GGafSalpICOI7yUj5of
+         jADA==
+X-Gm-Message-State: AOAM530fBs11exwMSn3jLWDW3rbspw3S15KY4OsjKteJ1B64lnNYXAQV
+        7IHTB0dL3wwK5TunEfXO2oNNqiXR4mfiv+4vcKk=
+X-Google-Smtp-Source: ABdhPJwJGGD0nJAvFhNDkFGeYRyEdQdP75MnqP3EaVTzMLv3wT5lodwnLAvfEtrY884JKET27CdtDI1tBOtpbtwnJQ8=
+X-Received: by 2002:a81:8b4e:: with SMTP id e14mr3633769ywk.301.1644432377048;
+ Wed, 09 Feb 2022 10:46:17 -0800 (PST)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <20220209161342.91721-1-hdegoede@redhat.com>
+In-Reply-To: <20220209161342.91721-1-hdegoede@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 9 Feb 2022 19:46:06 +0100
+Message-ID: <CAJZ5v0ihi_jig=HejWo+rivn2Re7=U5VGPOL8gfmmW0UzBp6NA@mail.gmail.com>
+Subject: Re: [PATCH] x86/PCI: revert "Ignore E820 reservations for bridge
+ windows on newer systems"
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        =?UTF-8?Q?Benoit_Gr=C3=A9goire?= <benoitg@coeus.ca>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hui Wang <hui.wang@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Xu <xuyang2018.jy@fujitsu.com>
+On Wed, Feb 9, 2022 at 5:14 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Commit 7f7b4236f204 ("x86/PCI: Ignore E820 reservations for bridge windows
+> on newer systems") fixes the touchpad not working on laptops like
+> the Lenovo IdeaPad 3 15IIL05 and the Lenovo IdeaPad 5 14IIL05, as well as
+> fixing thunderbolt hotplug issues on the Lenovo Yoga C940.
+>
+> Unfortunately it turns out that this is causing issues with suspend/resume
+> on Lenovo ThinkPad X1 Carbon Gen 2 laptops. So, per the no regressions
+> policy, rever this. Note I'm looking into another fix for the issues this
+> fixed.
+>
+> Fixes: 7f7b4236f204 ("x86/PCI: Ignore E820 reservations for bridge windows on newer systems")
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2029207
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit fc4eb486a59d70bd35cf1209f0e68c2d8b979193 ]
+Applied as 5.17-rc material and pushed out for -next, thanks!
 
-Since commit 43209ea2d17a ("zram: remove max_comp_streams internals"), zram
-has switched to per-cpu streams. Even kernel still keep this interface for
-some reasons, but writing to max_comp_stream doesn't take any effect. So
-skip it on newer kernel ie 4.7.
-
-The code that comparing kernel version is from xfstests testsuite ext4/053.
-
-Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- tools/testing/selftests/zram/zram_lib.sh | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
-
-diff --git a/tools/testing/selftests/zram/zram_lib.sh b/tools/testing/selftests/zram/zram_lib.sh
-index 9e73a4fb9b0aa..2c1d1c567f854 100755
---- a/tools/testing/selftests/zram/zram_lib.sh
-+++ b/tools/testing/selftests/zram/zram_lib.sh
-@@ -20,6 +20,9 @@ dev_mounted=-1
- 
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-+kernel_version=`uname -r | cut -d'.' -f1,2`
-+kernel_major=${kernel_version%.*}
-+kernel_minor=${kernel_version#*.}
- 
- trap INT
- 
-@@ -34,6 +37,20 @@ check_prereqs()
- 	fi
- }
- 
-+kernel_gte()
-+{
-+	major=${1%.*}
-+	minor=${1#*.}
-+
-+	if [ $kernel_major -gt $major ]; then
-+		return 0
-+	elif [[ $kernel_major -eq $major && $kernel_minor -ge $minor ]]; then
-+		return 0
-+	fi
-+
-+	return 1
-+}
-+
- zram_cleanup()
- {
- 	echo "zram cleanup"
-@@ -95,6 +112,13 @@ zram_max_streams()
- {
- 	echo "set max_comp_streams to zram device(s)"
- 
-+	kernel_gte 4.7
-+	if [ $? -eq 0 ]; then
-+		echo "The device attribute max_comp_streams was"\
-+		               "deprecated in 4.7"
-+		return 0
-+	fi
-+
- 	local i=0
- 	for max_s in $zram_max_streams; do
- 		local sys_path="/sys/block/zram${i}/max_comp_streams"
--- 
-2.34.1
-
+> ---
+>  arch/x86/kernel/resource.c | 23 +----------------------
+>  1 file changed, 1 insertion(+), 22 deletions(-)
+>
+> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
+> index 9ae64f9af956..9b9fb7882c20 100644
+> --- a/arch/x86/kernel/resource.c
+> +++ b/arch/x86/kernel/resource.c
+> @@ -1,5 +1,4 @@
+>  // SPDX-License-Identifier: GPL-2.0
+> -#include <linux/dmi.h>
+>  #include <linux/ioport.h>
+>  #include <asm/e820/api.h>
+>
+> @@ -24,31 +23,11 @@ static void resource_clip(struct resource *res, resource_size_t start,
+>                 res->start = end + 1;
+>  }
+>
+> -/*
+> - * Some BIOS-es contain a bug where they add addresses which map to
+> - * system RAM in the PCI host bridge window returned by the ACPI _CRS
+> - * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
+> - * allocating address space"). To avoid this Linux by default excludes
+> - * E820 reservations when allocating addresses since 2010.
+> - * In 2019 some systems have shown-up with E820 reservations which cover
+> - * the entire _CRS returned PCI host bridge window, causing all attempts
+> - * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
+> - *
+> - * Ideally Linux would fully stop using E820 reservations, but then
+> - * the old systems this was added for will regress.
+> - * Instead keep the old behavior for old systems, while ignoring the
+> - * E820 reservations for any systems from now on.
+> - */
+>  static void remove_e820_regions(struct resource *avail)
+>  {
+> -       int i, year = dmi_get_bios_year();
+> +       int i;
+>         struct e820_entry *entry;
+>
+> -       if (year >= 2018)
+> -               return;
+> -
+> -       pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
+> -
+>         for (i = 0; i < e820_table->nr_entries; i++) {
+>                 entry = &e820_table->entries[i];
+>
+> --
+> 2.33.1
+>
