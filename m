@@ -2,180 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0363AC4167B
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7D5C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238614AbiBISlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:41:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S240279AbiBISlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:41:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240208AbiBISk2 (ORCPT
+        with ESMTP id S240128AbiBISka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:40:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B5FC03E92D;
-        Wed,  9 Feb 2022 10:39:50 -0800 (PST)
+        Wed, 9 Feb 2022 13:40:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C696C03CA48;
+        Wed,  9 Feb 2022 10:39:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96B70B82384;
-        Wed,  9 Feb 2022 18:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAC95C340E9;
-        Wed,  9 Feb 2022 18:39:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF8B060A6B;
+        Wed,  9 Feb 2022 18:39:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA334C340E9;
+        Wed,  9 Feb 2022 18:39:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644431988;
-        bh=0CUNFDq1i8SMYF2bfSV/C/M1uogY/iqh5qhEyXLr8kA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=WbAuiMszliganrStT1NXHJce/DBmAI7MzT/RPt+oRna9pXiYTF7iSZeJaYdsDBeLa
-         sMZjj5vmEZxk3yK2BxCdcepZUY81d60UaqcXH9ugrfohUIenfY+I+s1Xw7WA1kA/Ll
-         eyiH4ic7gvMwnJOPWIFwYFUBfHSiIcbmz/+YKbKuESfAqycz5AC+5aN68AwI9HVMxe
-         CS5TMRGCJNym9zZb/pa1hJ0hin9dki1IRknwFSEFlKJpxC9Q6WoFnceGquuUHmZvog
-         H+/ImzyTDVyrjjtfTZkuA+/hi6BvVVQ316V8d+ieXNxN94e4Bg8SHqGs6Us97/3nPl
-         gygEKr7Cqum3Q==
-Date:   Wed, 9 Feb 2022 12:39:45 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Rajat Jain <rajatja@google.com>, Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rajat Jain <rajatxjain@gmail.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Pavel Machek <pavel@denx.de>,
-        Oliver O'Halloran <oohall@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 1/2] PCI: Allow internal devices to be marked as
- untrusted
-Message-ID: <20220209183945.GA571585@bhelgaas>
+        s=k20201202; t=1644431994;
+        bh=27GxyIgL3H4PudnK/GThhSqcMFh/8JEiCRGKwE1+/sI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ChGLUbcWhPomy0dNw0d1lpJpzNe2bBsoEZyz8MVs6HbEzFCS9TvoLLbMnMhHbDuU7
+         SkMZfjXsE8YvkZiYb+ALWkp+4dY4YVH3+vniaPGQLxtMdUuLh2Labdit3IjNAUbbP/
+         rZY5C75HBbzXMh4aZzN978sVsFTMkUQ73EOjKFTk3peMhPMDUr7Yu1tIiYzld5jBmm
+         0CsFCrx7XYuEoBEslXc9R05DjFvBLDATB/p6nOtmd92IfRGKjZNpw49FgQjy0EQSe7
+         h1s3O4EXkGV/urbNX/ejmVRLB7cH4oM4MPwdhW50Gn/YryhTTd5PW4im7of4jz8uxV
+         ugTt9X9B+eqVQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sagi Grimberg <sagi@grimberg.me>, Sasha Levin <sashal@kernel.org>,
+        kbusch@kernel.org, axboe@fb.com, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 28/36] nvme-rdma: fix possible use-after-free in transport error_recovery work
+Date:   Wed,  9 Feb 2022 13:37:51 -0500
+Message-Id: <20220209183759.47134-28-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209183759.47134-1-sashal@kernel.org>
+References: <20220209183759.47134-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgNVJKy0s8MGBRoa@kroah.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 06:46:12AM +0100, Greg Kroah-Hartman wrote:
-> On Tue, Feb 08, 2022 at 04:23:27PM -0800, Rajat Jain wrote:
-> > On Tue, Feb 1, 2022 at 6:01 PM Rajat Jain <rajatja@google.com> wrote:
-> > >
-> > > Today the pci_dev->untrusted is set for any devices sitting downstream
-> > > an external facing port (determined via "ExternalFacingPort" or the
-> > > "external-facing" properties).
-> > >
-> > > However, currently there is no way for internal devices to be marked as
-> > > untrusted.
-> > >
-> > > There are use-cases though, where a platform would like to treat an
-> > > internal device as untrusted (perhaps because it runs untrusted firmware
-> > > or offers an attack surface by handling untrusted network data etc).
-> > >
-> > > Introduce a new "UntrustedDevice" property that can be used by the
-> > > firmware to mark any device as untrusted.
-> > 
-> > Just to unite the threads (from
-> > https://www.spinics.net/lists/linux-pci/msg120221.html). I did reach
-> > out to Microsoft but they haven't acknowledged my email. I also pinged
-> > them again yesterday, but I suspect I may not be able to break the
-> > ice. So this patch may be ready to go in my opinion.
-> > 
-> > I don't see any outstanding comments on this patch, but please let me
-> > know if you have any comments.
-> > 
-> > > Signed-off-by: Rajat Jain <rajatja@google.com>
-> > > ---
-> > > v2: * Also use the same property for device tree based systems.
-> > >     * Add documentation (next patch)
-> > >
-> > >  drivers/pci/of.c       | 2 ++
-> > >  drivers/pci/pci-acpi.c | 1 +
-> > >  drivers/pci/pci.c      | 9 +++++++++
-> > >  drivers/pci/pci.h      | 2 ++
-> > >  4 files changed, 14 insertions(+)
-> > >
-> > > diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-> > > index cb2e8351c2cc..e8b804664b69 100644
-> > > --- a/drivers/pci/of.c
-> > > +++ b/drivers/pci/of.c
-> > > @@ -24,6 +24,8 @@ void pci_set_of_node(struct pci_dev *dev)
-> > >                                                     dev->devfn);
-> > >         if (dev->dev.of_node)
-> > >                 dev->dev.fwnode = &dev->dev.of_node->fwnode;
-> > > +
-> > > +       pci_set_untrusted(dev);
-> > >  }
-> > >
-> > >  void pci_release_of_node(struct pci_dev *dev)
-> > > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> > > index a42dbf448860..2bffbd5c6114 100644
-> > > --- a/drivers/pci/pci-acpi.c
-> > > +++ b/drivers/pci/pci-acpi.c
-> > > @@ -1356,6 +1356,7 @@ void pci_acpi_setup(struct device *dev, struct acpi_device *adev)
-> > >
-> > >         pci_acpi_optimize_delay(pci_dev, adev->handle);
-> > >         pci_acpi_set_external_facing(pci_dev);
-> > > +       pci_set_untrusted(pci_dev);
-> > >         pci_acpi_add_edr_notifier(pci_dev);
-> > >
-> > >         pci_acpi_add_pm_notifier(adev, pci_dev);
-> > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > > index 9ecce435fb3f..41e887c27004 100644
-> > > --- a/drivers/pci/pci.c
-> > > +++ b/drivers/pci/pci.c
-> > > @@ -6869,3 +6869,12 @@ static int __init pci_realloc_setup_params(void)
-> > >         return 0;
-> > >  }
-> > >  pure_initcall(pci_realloc_setup_params);
-> > > +
-> > > +void pci_set_untrusted(struct pci_dev *pdev)
-> > > +{
-> > > +       u8 val;
-> > > +
-> > > +       if (!device_property_read_u8(&pdev->dev, "UntrustedDevice", &val)
+From: Sagi Grimberg <sagi@grimberg.me>
 
-If we do this, can we combine it with set_pcie_untrusted(), where we
-already set pdev->untrusted?  Maybe that needs to be renamed; I don't
-see anything PCIe-specific there, and it looks like it works for
-conventional PCI as well.
+[ Upstream commit b6bb1722f34bbdbabed27acdceaf585d300c5fd2 ]
 
-> Please no, "Untrusted" does not really convey much, if anything here.
-> You are taking an odd in-kernel-value and making it a user api.
-> 
-> Where is this "trust" defined?  Who defines it?  What policy does the
-> kernel impose on it?
+While nvme_rdma_submit_async_event_work is checking the ctrl and queue
+state before preparing the AER command and scheduling io_work, in order
+to fully prevent a race where this check is not reliable the error
+recovery work must flush async_event_work before continuing to destroy
+the admin queue after setting the ctrl state to RESETTING such that
+there is no race .submit_async_event and the error recovery handler
+itself changing the ctrl state.
 
-I'm a bit hesitant about this, too.  It really doesn't have anything
-in particular to do with the PCI core.  It's not part of the PCI
-specs, and it could apply to any kind of device, not just PCI (ACPI,
-platform, USB, etc).
+Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nvme/host/rdma.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-We have:
+diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
+index 0498801542eb6..d51f52e296f50 100644
+--- a/drivers/nvme/host/rdma.c
++++ b/drivers/nvme/host/rdma.c
+@@ -1192,6 +1192,7 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
+ 			struct nvme_rdma_ctrl, err_work);
+ 
+ 	nvme_stop_keep_alive(&ctrl->ctrl);
++	flush_work(&ctrl->ctrl.async_event_work);
+ 	nvme_rdma_teardown_io_queues(ctrl, false);
+ 	nvme_start_queues(&ctrl->ctrl);
+ 	nvme_rdma_teardown_admin_queue(ctrl, false);
+-- 
+2.34.1
 
-  dev->removable                # struct device
-  pdev->is_thunderbolt
-  pdev->untrusted
-  pdev->external_facing
-
-and it feels a little hard to keep everything straight.  Most of them
-are "discovered" based on some DT or ACPI firmware property.  None of
-them really has anything specifically to do with *PCI*, and I don't
-think the PCI core depends on any of them.  I think
-pdev->is_thunderbolt is the only one we discover based on a PCI
-feature (the Thunderbolt Capability), and the things we *use* it for
-are actually not things specified by that capability [1].
-
-Could drivers just look for these properties directly instead of
-relying on the PCI core to get in the middle?  Most callers of
-device_property_read_*() are in drivers.  I do see that doing it in
-the PCI core might help enforce standard usage in DT/ACPI, but we
-could probably do that in other ways, too.
-
-Bjorn
-
-[1] https://lore.kernel.org/r/20220204222956.GA220908@bhelgaas
