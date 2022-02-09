@@ -2,216 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AC8C43219
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03975C4167E
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 09:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237658AbiBIJj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 04:39:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50136 "EHLO
+        id S239583AbiBIJlE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 04:41:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240356AbiBIJec (ORCPT
+        with ESMTP id S240050AbiBIJhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 04:34:32 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3D1E05BA6F;
-        Wed,  9 Feb 2022 01:34:31 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2198vqhf012063;
-        Wed, 9 Feb 2022 09:34:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=HH9xhkFjQ1nugdMdCXQbfnAWk9nKi8h0ee0AeB6zGyA=;
- b=QquuRP7lHwiEdtO5XBL769aWD+oG3iEJ3M9EImyATu/lxpWyVVYe3fQdrQq1EfJs5ElI
- nEne5DAjdDjtFOdkQypeL6OCDKJ2h7FAPc2qMRK6c4lPBHTilbb1iw6m6gmMcWTtAzfs
- hn/c0ocUY1UPqJD6xi5RrtpMtxrySqCBWvgdqg4pkI5Hgq83C2Qu79MXQvXCkOLAsZQV
- lsFTTgn86750Zr68MbnZ1/oZxnzvEBCYnbdi6PhXpUm3L+iZWk+LbUDvwfhWBJ2vhc5T
- l0NiS4XmaRK4S3jVPMpum+74YYBlWmI6p9qJBWMJrPBZ+pIvP22LfOvCO9cr8NqB42Rt DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk8nj3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 09:34:30 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2199QDBs024667;
-        Wed, 9 Feb 2022 09:34:29 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk8nhk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 09:34:29 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2199H0Z1025227;
-        Wed, 9 Feb 2022 09:34:27 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9kqjg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 09:34:26 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2199YLcu44237234
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 09:34:21 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 01E5AA4053;
-        Wed,  9 Feb 2022 09:34:21 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E05EA4051;
-        Wed,  9 Feb 2022 09:34:20 +0000 (GMT)
-Received: from [9.171.87.52] (unknown [9.171.87.52])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  9 Feb 2022 09:34:19 +0000 (GMT)
-Message-ID: <29ac0e5c-f77b-04b2-bbf5-cf5a5ca78921@linux.ibm.com>
-Date:   Wed, 9 Feb 2022 10:34:19 +0100
+        Wed, 9 Feb 2022 04:37:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C020E061E55
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 01:37:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644399426;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IVaOePIAiXFw8U75tAHDUKWkv70g1B3730fSEy8H3OQ=;
+        b=R+z3d5sDCkwHxdajQw+n9V4AQmWf6u+QhFA5jLTRilTiYwalzZLdMaJNdRmfbqkHe43njD
+        2TUPm0UBNdAERuysN66r/Y6qE5Jsi7S5xBCmNRo2Y2tF6KJYgdbnyLRU8lxsq6NEmoGYbx
+        EwWvLQLN0QJmrW/JImBJbzD+ntG/4Rg=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-325-kKIjC3YcM1us5W9RYokvmg-1; Wed, 09 Feb 2022 04:12:24 -0500
+X-MC-Unique: kKIjC3YcM1us5W9RYokvmg-1
+Received: by mail-wr1-f70.google.com with SMTP id b8-20020adfc748000000b001e333edbe40so851098wrh.6
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 01:12:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IVaOePIAiXFw8U75tAHDUKWkv70g1B3730fSEy8H3OQ=;
+        b=X5++nWcnAbgmOQYwlp2RVshBBjgAs8AVxJeSsKXAVcDpPwsySelzp0YJLNOztYlZET
+         wJRagoJUAIcXl09E3oxZ7mctpTnLiRihrrfdOhYKYiG/C14qfFbz0ZB4C7e3RbKVCWD0
+         oWQbSEpZsd1X6z4ZHpPRvvSyTDuHy3hx5Pul31alOy2tUsvgmBReti4Tlj62MQ3Fmpue
+         K2s/Nr0Ie7pBzFsyH6GWWpxypKRad2FW1y/GobRyBnJaF2T3CYa95lLu4ltHCK6zDR7N
+         vuFE/lloAS+fYFJeMQo53tfFFKAKIyE/oer37yRMhyDCdlq+o/HDtpi7rOHMO1b7rJcP
+         z4qw==
+X-Gm-Message-State: AOAM530t0qKDIta8XgdWqWniet5hxneyfayQte4b0HMAapIOyTYCIDxz
+        mSDOqmZVWORfz1rd6/Q9jsknGSDs9fNn0F2nzCCNfLxkP2wPMAULLvUiBlGALI9Y8KqD2SJ3gD9
+        uUBBLzA/yu7b34HKBtDjZZ6O9gXxxPrOkiWBMcz88CfB+2GkXVQbDouY8hq2uZa80cqIJjLrUFB
+        0=
+X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr116359wms.116.1644397943155;
+        Wed, 09 Feb 2022 01:12:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxmy9te2m+nFf5NChLb1Oyfbsc9hQqFDn/UG2mRdylATQQhkHE0nZ3daEy/SuR9+qJRmFJzGg==
+X-Received: by 2002:a05:600c:3b97:: with SMTP id n23mr116329wms.116.1644397942870;
+        Wed, 09 Feb 2022 01:12:22 -0800 (PST)
+Received: from minerva.home ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id m30sm4588068wms.34.2022.02.09.01.12.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 01:12:22 -0800 (PST)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI support
+Date:   Wed,  9 Feb 2022 10:12:04 +0100
+Message-Id: <20220209091204.2513437-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220209090314.2511959-1-javierm@redhat.com>
+References: <20220209090314.2511959-1-javierm@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking to
- MEMOP IOCTL
-Content-Language: en-US
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
- <20220207165930.1608621-6-scgl@linux.ibm.com>
- <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
- <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
- <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
-In-Reply-To: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: JGM9Zf2mFAzgHbvz4-cjin-y2c5Ym3v7
-X-Proofpoint-GUID: k8icOF-FvUBNOatk0Xme2-sWOtUNd3uB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
- priorityscore=1501 phishscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202090062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC Konstantin,
+The ssd130x driver only provides the core support for these devices but it
+does not have any bus transport logic. Add a driver to interface over SPI.
 
-I hope you can find the right people. Looks that my (and Janis) emaildid not make it to linux-s390 and kvm at vger lists.
-Message-ID: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+---
 
+Changes in v3:
+- Add a separate driver for SSD130X chips SPI support (Andy Shevchenko)
 
-Am 09.02.22 um 10:08 schrieb Christian Borntraeger:
-> 
-> 
-> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
->> On 2/9/22 08:34, Christian Borntraeger wrote:
->>> Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
->>>> User space needs a mechanism to perform key checked accesses when
->>>> emulating instructions.
->>>>
->>>> The key can be passed as an additional argument.
->>>> Having an additional argument is flexible, as user space can
->>>> pass the guest PSW's key, in order to make an access the same way the
->>>> CPU would, or pass another key if necessary.
->>>>
->>>> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
->>>> Acked-by: Janosch Frank <frankja@linux.ibm.com>
->>>> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
->>>> ---
->>>>    arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
->>>>    include/uapi/linux/kvm.h |  8 +++++--
->>>>    2 files changed, 44 insertions(+), 13 deletions(-)
->>>>
->>>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
->>>> index cf347e1a4f17..71e61fb3f0d9 100644
->>>> --- a/arch/s390/kvm/kvm-s390.c
->>>> +++ b/arch/s390/kvm/kvm-s390.c
->>>> @@ -32,6 +32,7 @@
->>>>    #include <linux/sched/signal.h>
->>>>    #include <linux/string.h>
->>>>    #include <linux/pgtable.h>
->>>> +#include <linux/bitfield.h>
->>>>      #include <asm/asm-offsets.h>
->>>>    #include <asm/lowcore.h>
->>>> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
->>>>        return r;
->>>>    }
->>>>    +static bool access_key_invalid(u8 access_key)
->>>> +{
->>>> +    return access_key > 0xf;
->>>> +}
->>>> +
->>>>    long kvm_arch_vm_ioctl(struct file *filp,
->>>>                   unsigned int ioctl, unsigned long arg)
->>>>    {
->>>> @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
->>>>                      struct kvm_s390_mem_op *mop)
->>>>    {
->>>>        void __user *uaddr = (void __user *)mop->buf;
->>>> +    u8 access_key = 0, ar = 0;
->>>>        void *tmpbuf = NULL;
->>>> +    bool check_reserved;
->>>>        int r = 0;
->>>>        const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
->>>> -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
->>>> +                    | KVM_S390_MEMOP_F_CHECK_ONLY
->>>> +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
->>>>    -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
->>>> +    if (mop->flags & ~supported_flags || !mop->size)
->>>>            return -EINVAL;
->>>> -
->>>>        if (mop->size > MEM_OP_MAX_SIZE)
->>>>            return -E2BIG;
->>>> -
->>>>        if (kvm_s390_pv_cpu_is_protected(vcpu))
->>>>            return -EINVAL;
->>>> -
->>>>        if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
->>>>            tmpbuf = vmalloc(mop->size);
->>>>            if (!tmpbuf)
->>>>                return -ENOMEM;
->>>>        }
->>>> +    ar = mop->ar;
->>>> +    mop->ar = 0;
->>>
->>> Why this assignment to 0?
->>
->> It's so the check of reserved below works like that, they're all part of the anonymous union.
-> 
-> Ah, I see. This is ugly :-)
-> 
->>>
->>>> +    if (ar >= NUM_ACRS)
->>>> +        return -EINVAL;
->>>> +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
->>>> +        access_key = mop->key;
->>>> +        mop->key = 0;
->>>
->>> and this? I think we can leave mop unchanged.
->>>
->>> In fact, why do we add the ar and access_key variable?
->>> This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
->>> and it will create a memleak for tmpbuf.
->>
->> I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
->> First is simpler, but second makes handling that case more explicit and might help in the future.
-> 
-> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
-> 
->> Patch 6 has the same issue in the vm ioctl handler.
->>>
->>> Simply use mop->key and mop->ar below and get rid of the local variables.
->>> The structure has no concurrency and gcc will handle that just as the local variable.
->>>
->>> Other than that this looks good.
->>
->> [...]
->>
+ drivers/gpu/drm/solomon/Kconfig       |   9 ++
+ drivers/gpu/drm/solomon/Makefile      |   1 +
+ drivers/gpu/drm/solomon/ssd130x-spi.c | 114 ++++++++++++++++++++++++++
+ 3 files changed, 124 insertions(+)
+ create mode 100644 drivers/gpu/drm/solomon/ssd130x-spi.c
+
+diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
+index 47e16bc20e0d..16a2098f438c 100644
+--- a/drivers/gpu/drm/solomon/Kconfig
++++ b/drivers/gpu/drm/solomon/Kconfig
+@@ -19,3 +19,12 @@ config DRM_SSD130X_I2C
+ 	  Say Y here if the SSD130X OLED display is connected via I2C bus.
+ 
+ 	  If M is selected the module will be called ssd130x-i2c.
++
++config DRM_SSD130X_SPI
++	tristate "DRM support for Solomon SSD130X OLED displays (SPI bus)"
++	depends on DRM_SSD130X && SPI
++	select REGMAP_SPI
++	help
++	  Say Y here if the SSD130X OLED display is connected via SPI bus.
++
++	  If M is selected the module will be called ssd130x-spi.
+diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
+index 4bfc5acb0447..b5fc792257d7 100644
+--- a/drivers/gpu/drm/solomon/Makefile
++++ b/drivers/gpu/drm/solomon/Makefile
+@@ -1,2 +1,3 @@
+ obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
+ obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
++obj-$(CONFIG_DRM_SSD130X_SPI)	+= ssd130x-spi.o
+diff --git a/drivers/gpu/drm/solomon/ssd130x-spi.c b/drivers/gpu/drm/solomon/ssd130x-spi.c
+new file mode 100644
+index 000000000000..ccc56d2f3026
+--- /dev/null
++++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * DRM driver for Solomon SSD130X OLED displays (SPI bus)
++ *
++ * Copyright 2022 Red Hat Inc.
++ * Authors: Javier Martinez Canillas <javierm@redhat.com>
++ */
++#include <linux/spi/spi.h>
++#include <linux/module.h>
++
++#include "ssd130x.h"
++
++#define DRIVER_NAME	"ssd130x-spi"
++#define DRIVER_DESC	"DRM driver for Solomon SSD130X OLED displays (SPI)"
++
++static const struct regmap_config ssd130x_spi_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++};
++
++static int ssd130x_spi_probe(struct spi_device *spi)
++{
++	struct ssd130x_device *ssd130x;
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_spi(spi, &ssd130x_spi_regmap_config);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	ssd130x = ssd130x_probe(&spi->dev, regmap);
++
++	if (IS_ERR(ssd130x))
++		return PTR_ERR(ssd130x);
++
++	spi_set_drvdata(spi, ssd130x);
++
++	return 0;
++}
++
++static int ssd130x_spi_remove(struct spi_device *spi)
++{
++	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
++
++	return ssd130x_remove(ssd130x);
++}
++
++static void ssd130x_spi_shutdown(struct spi_device *spi)
++{
++	struct ssd130x_device *ssd130x = spi_get_drvdata(spi);
++
++	ssd130x_shutdown(ssd130x);
++}
++
++static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
++	.default_vcomh = 0x34,
++	.default_dclk_div = 1,
++	.default_dclk_frq = 7,
++};
++
++static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
++	.default_vcomh = 0x20,
++	.default_dclk_div = 1,
++	.default_dclk_frq = 8,
++	.need_chargepump = 1,
++};
++
++static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
++	.default_vcomh = 0x20,
++	.default_dclk_div = 2,
++	.default_dclk_frq = 12,
++	.need_pwm = 1,
++};
++
++static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
++	.default_vcomh = 0x34,
++	.default_dclk_div = 1,
++	.default_dclk_frq = 10,
++};
++
++static const struct of_device_id ssd130x_of_match[] = {
++	{
++		.compatible = "solomon,ssd1305fb-spi",
++		.data = (void *)&ssd130x_ssd1305_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1306fb-spi",
++		.data = (void *)&ssd130x_ssd1306_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1307fb-spi",
++		.data = (void *)&ssd130x_ssd1307_deviceinfo,
++	},
++	{
++		.compatible = "solomon,ssd1309fb-spi",
++		.data = (void *)&ssd130x_ssd1309_deviceinfo,
++	},
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, ssd130x_of_match);
++
++static struct spi_driver ssd130x_spi_driver = {
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = ssd130x_of_match,
++	},
++	.probe = ssd130x_spi_probe,
++	.remove = ssd130x_spi_remove,
++	.shutdown = ssd130x_spi_shutdown,
++};
++module_spi_driver(ssd130x_spi_driver);
++
++MODULE_DESCRIPTION(DRIVER_DESC);
++MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.34.1
+
