@@ -2,179 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8668CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 22:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 047FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 22:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235181AbiBIWOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 17:14:54 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38904 "EHLO
+        id S235218AbiBIWRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 17:17:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235126AbiBIWOw (ORCPT
+        with ESMTP id S235171AbiBIWRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 17:14:52 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD99BE00FA61
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 14:14:47 -0800 (PST)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 219HBlMv008856;
-        Wed, 9 Feb 2022 18:59:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=2wEZGqccgO46V5UuIaQxxSYUIrbHGm7xRYNusUCLIN0=;
- b=rGXb7dY7maGD2mxpUInzSJ5B9mTdT1Buuqzh+JmSjDVEXlfMM5NliaDm4hO4dIgdVFyQ
- qCavJaxlE7NHakGZEE/PNzZemJ9ZKme5AzvW4Hd1jixFiaDHh5mey97gns6YzIiR1ATl
- oMObJcSOQcuXqlbxvbB7pZWUdDnofFZslZxiMQmduToEPt7GYvmMkl39xS9dcMCWBnTV
- ckXMxJHKWHxkcnJm9NZpvi0ILplcUlhvy/3Kt3F+4ebuEIaTBH+jmfhbgb/c+9kJhKs/
- dGAIFVquqbzc7siJ3Jx+Wz+7bsu6G2VOcAfnqDBkUqzKEB1wfrFSoqw29WAHd+E6AUAC Cw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e3fpgnp9g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 18:59:28 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 219IwO5G174656;
-        Wed, 9 Feb 2022 18:59:27 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2175.outbound.protection.outlook.com [104.47.56.175])
-        by userp3020.oracle.com with ESMTP id 3e1jptk33v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 09 Feb 2022 18:59:27 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PKFNDPwaRMLL+jxfJwxScjDXg6QMoC2rhM99tDH4Z+opsVm8IGQgge0N53hAm98xZ5MU5gZlfJKFxpzDw6g+wg3QokPrTcamc+Tuin0TabarB+HSelsw8NKW33sQJI5SGsCNsWrtCy0Y1K2d67LgLRJeSRn8NmByPHvRaPfh+zZyvq7u32qsWgEQFy3zkAvU07JPdrp04lCofBbdLLKrd4/m3yAQZ4InSSX3A3VYWJt+m5NVf18NkwPPu47ULJd641MzIY4dj1/KQrDb8baqmpOQrJMKveEuGOEDuURJ4CzcszZCCBdBvI2E9m91fr4zqQYWOgXfDe4STUwm/HHF8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2wEZGqccgO46V5UuIaQxxSYUIrbHGm7xRYNusUCLIN0=;
- b=JAM6f2sltBCFG+1y2rIhqtMvhSSJHr7Jsw7gfwuoo9wleSDfiJWv3BhcjNJT/3lbv8WG8eNe+iuRCCiGrFRrXCO7lvu1+i4b7Tyzb8VVa4hkukSXSpKEGGYvLOtJG1bH2s1k7ccBZ2Wu4x5mU0BNbMJTsXq2jv43nEZl4T1P0PjLxhvke+jMhfdqH7JB8uSCYHCdok4mbm6IFslJmqKTGjvbQiRvIagFhGtWh7vMr0fwhCA4FUJpgE/dGjlkyfrA7t7loYOckZ5Bx0vrgru5NSV2LLPpdUzojG5ECu+X08cvZjYYwwvtIyz7zMzt+i0UICVA71u7LbaKDBwL7Iekmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        Wed, 9 Feb 2022 17:17:03 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C3AC0045D0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 14:17:04 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id t4-20020a17090a510400b001b8c4a6cd5dso3670452pjh.5
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 14:17:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2wEZGqccgO46V5UuIaQxxSYUIrbHGm7xRYNusUCLIN0=;
- b=q+mw+onAFYwSCafO0spCuyg7I5yIChwRv5q843O+HVryjkmQb0Brju2LKWvX8tkZwU1hxB6gkHd/npnUxrSV42ZdzUSsNUf0VlBN4oHheoio8HWAX2deAMVW5LMzyf1EPOSp0POm4EzVs+8TtFVpGmF/vM0mb9rWJK+XhzZljFc=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by BYAPR10MB2885.namprd10.prod.outlook.com (2603:10b6:a03:82::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Wed, 9 Feb
- 2022 18:59:23 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::11f6:860e:575a:e6f1]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::11f6:860e:575a:e6f1%5]) with mapi id 15.20.4951.021; Wed, 9 Feb 2022
- 18:59:23 +0000
-Message-ID: <cf985291-36a9-e60e-f1e1-f12719c7b3fb@oracle.com>
-Date:   Wed, 9 Feb 2022 10:59:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 4/5] mm: hugetlb: fix missing cache flush in
- hugetlb_mcopy_atomic_pte()
-Content-Language: en-US
-To:     Muchun Song <songmuchun@bytedance.com>, akpm@linux-foundation.org,
-        zi.yan@cs.rutgers.edu, kirill.shutemov@linux.intel.com,
-        rientjes@google.com, lars.persson@axis.com, ziy@nvidia.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, fam.zheng@bytedance.com
-References: <20220208073617.70342-1-songmuchun@bytedance.com>
- <20220208073617.70342-5-songmuchun@bytedance.com>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <20220208073617.70342-5-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CO1PR15CA0106.namprd15.prod.outlook.com
- (2603:10b6:101:21::26) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZpHy7NFzc6I5AYN1nAZFZJcd/w7v2r3d8w4j/LB1fQU=;
+        b=CIxIzFcc6hF3+u6EF0NlZaCg27NvGxJj5+ZLhbj/2/rfUalPsatjOPifGFVaye6I8F
+         WAsrKZlJRKIeSZtCnoam7nR8t2pVXo237g5J0ic3NsAemxazV0TjoMhrPsbNd/SbomKf
+         rqJ/ZzlYFGCwo+O6SCWcAEzvmjRiRd65XrL7g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZpHy7NFzc6I5AYN1nAZFZJcd/w7v2r3d8w4j/LB1fQU=;
+        b=IrzPW5BEmYtkGp/oDVP/i0obE52KxInqtWkqKpVQ8cM1d3YKvZCtmn96cQgsg53P79
+         StNSIxGr02C0NaDvkEiGMACyFoYqcAtTc56IdipbMbNATWmJqfILfq3ZuiZhVL2VRNjd
+         W0myKVnza1dB68kRyIn8Y2X2p2YfdqqP0i6cLfapkFirFC1wU3708gt2xSHEXLoLuyHO
+         0xbP6A3vcjNFW4iYjc5p1tcEZlZQal0DBJSD5lva88AFKaojxvtLyF7+TUsDsQYGPDnI
+         bnWEwbrEKuZerMwAqPRnrb9xLQJ4GIAoWTMSxqJhsjlK/B72nnS4RFfwSCXLLmjq6Z5t
+         0Nyw==
+X-Gm-Message-State: AOAM5307147gEiLvKrWm8upZlSo2FvH8hwETcetg36lgKneva9uBa9bG
+        2rB/FJOx28640Y7/QcXq49AVV1efKVdEQA==
+X-Google-Smtp-Source: ABdhPJziH9GmwZnHk78uUQtkOvDrptkApFHkf4J/JQsHINiGZsSnEai7aa3TIHg9TKyZjhyYUSUC5Q==
+X-Received: by 2002:a17:90a:e557:: with SMTP id ei23mr5029645pjb.149.1644445023613;
+        Wed, 09 Feb 2022 14:17:03 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:76d3:cb1:9cf9:95c0])
+        by smtp.gmail.com with UTF8SMTPSA id j8sm22134103pfc.48.2022.02.09.14.17.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 14:17:03 -0800 (PST)
+Date:   Wed, 9 Feb 2022 14:17:00 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Lukasz Luba <lukasz.luba@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
+        viresh.kumar@linaro.org, rafael@kernel.org, amitk@kernel.org,
+        rui.zhang@intel.com, dietmar.eggemann@arm.com,
+        Pierre.Gondois@arm.com, Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rajendra Nayak <rnayak@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 1/2] thermal: cooling: Check Energy Model type in
+ cpufreq_cooling and devfreq_cooling
+Message-ID: <YgQ9XLcto9v0fyTf@google.com>
+References: <20220207073036.14901-1-lukasz.luba@arm.com>
+ <20220207073036.14901-2-lukasz.luba@arm.com>
+ <YgG+TmLrCSXX4Bvt@google.com>
+ <4a7d4e94-1461-5bac-5798-29998af9793a@arm.com>
+ <YgKnnFl7Gp8AS30X@google.com>
+ <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d40aaa40-6b74-4277-8a9f-08d9ebfe4941
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2885:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB2885899F02B81A157C87F598E22E9@BYAPR10MB2885.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4502;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rhTDrFok67JqXZcKel6YsPZTkVcPmMpzkUv4RynF77ZrTyzYLTtPQVUTVIOp+isfiQ2AR3qW0B002qGrJ4Xkj1nMIGXCf8snPAsYUDMsuXr7sW3UVn83mX+ERE5iHyuKhnqAl2yIW10pzyhplCU/CkizUgt5HOvACTzBaXPf959lLMdHdmBUhOZlUdzm9Oc41WVDZOlGSP6Rlu6nhPjoztwdXbYfGjhk2pYNZAdttxJeSi4f0KSkS0FMaayzy34bbIHfAn4nadsiauA+onsNhr7pbJJE+tpY9FbAFx5pFJv6Q0igKq0KGRZCmmmrKmFLyQlBiZp0okRJW9O83pgwSZvc5Mr0eldTnBh4nJwYjpdjPsk3WEQyTP4/QxVtL0Ii8BgMZyDqIrdFrzoKv2iu5gFIEcqapolCSgwdG4eMlLaDw08yujQgGP4I3xy2bSx4DAn4ra9iEHwyhFvCgGSIJY56t0ghdC4b2Mg9KxUBr3wjeR3g8Ly6KF07LoAwihs30pkV5WAF4mrInqu8EnRp3HqiKTtJUpStU+M1B1P0qJqFWmYTQxdpbmZj4Xj3eqANeIQgonL1vyG2UAoD3uVR6N+Z2PqbOcjzMiYNotZuvSqYvqdJuoUNPNb4IVTyWQQWR9umI6xCcdvWsH4Eyd7xJcdJq2ETGzXV04JU1oGLlUTAG2IuNpIxwuN5jyc26+huZchSgglSwGRxISyMXQDnWErLnJeIzomVBM/J+KU83dkdgQUqjg8JBVsYoOXJouzeF5219rAPNJO0hfopvojqLA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(44832011)(7416002)(4326008)(6486002)(66946007)(8936002)(86362001)(31696002)(83380400001)(316002)(8676002)(66556008)(4744005)(508600001)(5660300002)(66476007)(186003)(53546011)(26005)(38100700002)(31686004)(36756003)(38350700002)(2616005)(52116002)(6506007)(2906002)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WnJhSFpDN2pHMGhhYXVSNEpDbDh5NUFmUFdKM2R1Ty9ZWlUyZ2RicktBaUdr?=
- =?utf-8?B?bTdGUTRuRk1hYmpTMGRTWHp3alVkTlhxWjNORlNJTDZQZkloanJmWERrUVZn?=
- =?utf-8?B?RnRlR1lxdUdxUDFwek8xd3hiazMwTTgzNEQyNkIvTUtmM09YOTY3cGs5bVZj?=
- =?utf-8?B?bi8yVnBtbXA1T1p4aitLTzcvWE1YLzFvZWdrVWxTYStCT3lFclhZVy9uZXR6?=
- =?utf-8?B?am5QdHhUZWk3bFdoZXNsYUZ5TDJpcXkwOVlTRjN4UnM1bnk5TEVTMlYxcjRP?=
- =?utf-8?B?OHNKNm11NDBJZ3k3M2ZXd0Y3SmlZSU0wbnVjWUN3RUxQZk91LytYODJnejUy?=
- =?utf-8?B?TU9YSG9JQmtLZmtsY3daOUQ1WjBFTllYL3BGekRpSUx2NEFFOVM4VkwzcDRu?=
- =?utf-8?B?dVVvQ1grN25jOGdxSkZ2ZlRxVkt6bDJOZ0ZOUjc3cmJjQ1BhR1RSdE44WWp4?=
- =?utf-8?B?T05jdk1Uck1pa1F6OHlvaGIra1VXL0EzRkxtZWJheTVjWnlPdTYyR1R5VTli?=
- =?utf-8?B?dlUzTWxlWEJUQXppbnVqNmdSSzM4S01PZFY0L2N6TTcrQlBOcGx1TnUvWU1P?=
- =?utf-8?B?OGZRVzNIVjhONHV0N2hWMnpGZWh2UUZDamZHUWR6bGFJbGptT1VhcTJmNDRk?=
- =?utf-8?B?VFIxOHpCY0ZwTFY1dHlYNVBOZ1V5bldsL05hT2prTFNCZUJJSWpoRm9CRWV0?=
- =?utf-8?B?UUI5MDFsLzBQNTFOREN0RzRtb1hsOEZtdGRvZFZkaTBKZGZaQ3liV01adTNQ?=
- =?utf-8?B?T1FzenAzclo0OWN3ZlQ2MEJ0V1JVcW1tbmgzeXdVWHNBdFhXU2swSkErTmdx?=
- =?utf-8?B?bWtTeVlDUkhUOUI2dG1YU3JLQ0xLZk9kWjFjc0xYZ2ZIVUxRWDlzb1ZPcXYv?=
- =?utf-8?B?NXhBUVM3MEFmM3Zoek9QUlprc1Fabnd2S1NhNThaRCt0VHB4R3NzUWFXaVlO?=
- =?utf-8?B?VXpJVXNWMXJWV3ZHOFNOeHBvZTdVaE0wSUp2WmZoOUhSa0dKemExd2loSTEr?=
- =?utf-8?B?NWovU3FxK29yYk01aXRwcTRDR3h4VTV1a3dLM05uQjFaUnlQSlJQaXU0Z0lQ?=
- =?utf-8?B?MFc5QXlxNlhNaHB3cGlGZjNUMWtLT2szUERZM3Qrc0hRUHZjbll2bVNhYzRG?=
- =?utf-8?B?bjMrdGx0WGZXejV6bmliQi9iMS81TWhNUzZwc2h4YkdkVXNvNVVuRUNRcUtG?=
- =?utf-8?B?UElnU0ROWUpJY1RidWw3V0dFRDVuQ01pa2E2bVBoSmRERXpBR29iY0hORXRu?=
- =?utf-8?B?akdpT0p0anpSRkQzS084c0d5QWlVaTI4YlM0TXg5ek5pTHdGQlJ6ZTdaQ1hZ?=
- =?utf-8?B?MTByZ0RsYVA0QzNRbWU4NjUxY0JYdlJOYXVpdXN6VTFENnBUQkZnSFFEQUdB?=
- =?utf-8?B?Z0FlaUxZc2J6TGVLWkNOWnkrK2NTV3pLamRyRWxVY2NhK1RvczVLbWNMMWZn?=
- =?utf-8?B?THNyVUFiaDFMVHhDNkM3bHp3a3BPWC9nazNUc2NZNktmSitQVVNpS0QwK2hE?=
- =?utf-8?B?RG41WGJycWVoQ0F5dmpSeG82eHVXeTJZYjZ4WktRNEdWamJBMkt2NnFEQkwv?=
- =?utf-8?B?OEZteXZXYXZERkZtRUVId1ZFR2tGcnlQWmlleHEvVG5aRlQ1RFQzL1ZKZkRz?=
- =?utf-8?B?NWUva01UR3J2U0VLT2NidHdDVVZkTXlnYlpNUWhQYkpMQ0ZaeHFYUUZjQkN2?=
- =?utf-8?B?WGRSU3dleDNkalNMK29iR0V6eFh4MmFucm1DZ3dsVXMvR00vaVhPVWM5SmxY?=
- =?utf-8?B?amFtQ2dhOHYrZmZCTWJnTDNLZlFwKzlGRVFtS2lWSWU4UitkUVhIcmM4bTNy?=
- =?utf-8?B?MXNFclllR1NtVE93QVcyU1A1dGdWa2l6cFBnb0YyVWZEU2xSZEtOejNLTUwx?=
- =?utf-8?B?Qno4cWZ5c1BxWGVzak1Oa3hYZFVPMW9FSFZ3VlpxWC9BOXFPb2lkeWoyeG1P?=
- =?utf-8?B?L1JITlkxYWlSUUZoUExpZVVRdXhkRy9WbTRVR3NtRTVUNlZYNUk3SGZ4ZGln?=
- =?utf-8?B?QVVWM2N5ajJMS3k4ZytGc3FLODgyQ1RGamJORHNVTnphcGZIWHNrK3E1ZEFJ?=
- =?utf-8?B?eG1TUjkxQ2lscVBqZ0dTa2ErRUlQVWpuOW1NcDFpNjRkL01IUXlXWjVtL1FK?=
- =?utf-8?B?ODhJNUhPdFpjWm9peDd2amJUVk4zSWREeWFwTm1jcW82eDUvMFdsMDh3UExI?=
- =?utf-8?Q?FJYDb7nY0eVqvMtg/OOIgWA=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d40aaa40-6b74-4277-8a9f-08d9ebfe4941
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2022 18:59:23.5388
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xUilNjv1dUD5qQ0BVsUy1le4TpJiPXJRGfO9+oXSuvrTSkG96fqfQMGxkAIQep+cZL5jNXyBu36pQP/K7L+I1w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2885
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10253 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 bulkscore=0
- malwarescore=0 suspectscore=0 phishscore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202090100
-X-Proofpoint-GUID: D4lFvOQ9tOo2MREcfTtCUHnPSEGxYQUm
-X-Proofpoint-ORIG-GUID: D4lFvOQ9tOo2MREcfTtCUHnPSEGxYQUm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <e4532f65-7f8a-7e89-97c1-85cc61462040@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/7/22 23:36, Muchun Song wrote:
-> folio_copy() will copy the data from one page to the target page, then
-> the target page will be mapped to the user space address, which might
-> have an alias issue with the kernel address used to copy the data from
-> the page to.  There are 2 ways to fix this issue.
+On Wed, Feb 09, 2022 at 11:16:36AM +0000, Lukasz Luba wrote:
 > 
->  1) insert flush_dcache_page() after folio_copy().
->  2) replace folio_copy() with copy_user_huge_page() which already
->     considers the cache maintenance.
 > 
-> We chose 2) way to fix the issue since architectures can optimize this
-> situation.
+> On 2/8/22 5:25 PM, Matthias Kaehlcke wrote:
+> > On Tue, Feb 08, 2022 at 09:32:28AM +0000, Lukasz Luba wrote:
+> > > 
+> > > 
+> > > On 2/8/22 12:50 AM, Matthias Kaehlcke wrote:
+> > > > On Mon, Feb 07, 2022 at 07:30:35AM +0000, Lukasz Luba wrote:
+> > > > > The Energy Model supports power values either in Watts or in some abstract
+> > > > > scale. When the 2nd option is in use, the thermal governor IPA should not
+> > > > > be allowed to operate, since the relation between cooling devices is not
+> > > > > properly defined. Thus, it might be possible that big GPU has lower power
+> > > > > values in abstract scale than a Little CPU. To mitigate a misbehaviour
+> > > > > of the thermal control algorithm, simply not register a cooling device
+> > > > > capable of working with IPA.
+> > > > 
+> > > > Ugh, this would break thermal throttling for existing devices that are
+> > > > currently supported in the upstream kernel.
+> > > 
+> > > Could you point me to those devices? I cannot find them in the mainline
+> > > DT. There are no GPU devices which register Energy Model (EM) in
+> > > upstream, neither using DT (which would be power in mW) nor explicitly
+> > > providing EM get_power() callback. The EM is needed to have IPA.
+> > > 
+> > > Please clarify which existing devices are going to be broken with this
+> > > change.
+> > 
+> > I was thinking about arch/arm64/boot/dts/qcom/sc7180-trogdor-*, and
+> > potentially other SC7180 boards that use IPA for the CPU thermal
+> > zones.
+> > 
+> > Initially SC7180 used an abstract scale for the CPU energy model,
+> > however I realized your change doesn't actually impact SC7180 CPUs
+> > for two reasons:
+> > 
+> > 1. The energy model of the CPUs is registered through
+> > 
+> >    cpufreq_register_em_with_opp
+> >      dev_pm_opp_of_register_em
+> >        em_dev_register_perf_domain
+> > 
+> > em_dev_register_perf_domain() is called with 'milliwatts = true',
+> > regardless of the potentially abstract scale, so IPA would not be
+> > disabled with your change.
 > 
-> Fixes: 8cc5fcbb5be8 ("mm, hugetlb: fix racy resv_huge_pages underflow on UFFDIO_COPY")
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> ---
->  mm/hugetlb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> That good registration.
+> 
+> > 
+> > 2. There is a patch from Doug that adjusted the dynamic power
+> > coefficients of the CPUs to be closer to reality:
+> > 
+> > commit 82ea7d411d43f60dce878252558e926f957109f0
+> > Author: Douglas Anderson <dianders@chromium.org>
+> > Date:   Thu Sep 2 14:51:37 2021 -0700
+> > 
+> >      arm64: dts: qcom: sc7180: Base dynamic CPU power coefficients in reality
+> 
+> Thanks for the link to the commit. I'll have a look. It's good that it
+> doesn't break this board.
+> 
+> > 
+> > > > Wasn't the conclusion that it is the responsability of the device tree
+> > > > owners to ensure that cooling devices with different scales aren't used
+> > > > in the same thermal zone?
+> > > 
+> > > It's based on assumption that someone has DT and control. There was also
+> > > implicit assumption that IPA would work properly on such platform - but
+> > > it won't.
+> > > 
+> > > 1. You cannot have 2 thermal zones: one with CPUs and other with GPU
+> > > only and both working with two instances of IPA.
+> > 
+> > It's not clear to me why such a configuration wouldn't work. Is it also a
+> > problem to have multiple CPU thermal zones (one for each core) that use
+> > multiple instances of IPA? SC7180 has separate thermal zones for each core
+> > (or thermal sensor), Chrome OS uses IPA for CPU thermal throttling.
+> 
+> Unfortunately, the control mechanism is not working best in such setup.
+> Main idea of IPA is to find 'best' OPP for a cooling device, e.g.
+> one in the middle of a freq table. Worst scenario is when we change
+> our decision between lowest and highest OPP, in short periods.
+> It's burning too much power at highest freq, then we throttle too much,
+> then we unthrottle because temp is dropping by some 'good enough' value.
+> This situation can happen due to a few reasons:
+> 1. Power values from EM are not reflecting reality, e.g. scaled too much
+> 2. We don't have proper information about CPU load and frequencies used
+> 3. PID coefficients are not properly set
+> 4. board has small physical thermal sink potential but silicon if 'hot'
+> 5. the workload is too dynamic
+> 6. there is another power hungry device (GPU, DSP, ISP) which is outside
+>    of our control loop, e.g. is controlled in other thermal zone and has
+>    impact on our temp sensor value
 
-Thanks!  This will also make backports easier.
+Thanks for the details!
 
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+> Proper setup and tuning of IPA could bring quite good benefit, because
+> it could pick the 'best at that moment' OPPs for the devices, instead
+> of throttling too hard and then unthrottling. Unfortunately, it's
+> tricky and needs time (experiments, understanding the system).
 
--- 
-Mike Kravetz
+On some sc7180 ChromeOS boards we observed a behavior as you describe,
+we mitigated it by tuning the device 'sustainable-power' device tree
+property and the trip point temperatures.
+
+> We have been trying to easy this entry barrier for developers. Very good
+> results brings the optimization of the PID coefficients. The automated
+> mechanism would figure out best values for the given board based on the
+> tests run. It's under review now, there are also shared results [1][2].
+> It would solve a some of the issues with complex tuning.
+
+Good to know, thanks for the pointer!
+
+> I was going to give it a try for my old experiments with the bogoWatts
+> devices, but I don't expect that this is a silver bullet. Regarding
+> the 'two thermal zones with IPA issues' I'm prity sure it won't help.
+> 
+> > 
+> > > 2. The abstract power scale doesn't guaranty anything about power values
+> > > and IPA was simply designed with milli-Watts in mind. So even working
+> > > on CPUs only using bogoWatts, is not what we could guaranty in IPA.
+> > 
+> > That's bad news for SoCs that are configured with bogoWatt values, from
+> > past discussions I had the impression that this is unfortunately not
+> > uncommon.
+> > 
+> > > It's ugly to have the abstract scales in the first place, but that's
+> > > unfortunately what we currently have for at least some cooling devices.
+> > 
+> > > A few questions:
+> > > 
+> > > Do you use 'we' as Chrome engineers?
+> > 
+> > I was referring to the kernel, in particular QCOM SC7180.
+> 
+> Thanks for sharing the name.
+> 
+> > 
+> > > Could you point me to those devices please?
+> > 
+> > arch/arm64/boot/dts/qcom/sc7180-trogdor-*
+> > 
+> > Though as per above they shouldn't be impacted by your change, since the
+> > CPUs always pretend to use milli-Watts.
+> > 
+> > [skipped some questions/answers since sc7180 isn't actually impacted by
+> >   the change]
+> 
+> Thank you Matthias. I will investigate your setup to get better
+> understanding.
+
+Thanks!
