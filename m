@@ -2,130 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F8FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C3F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:23:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbiBIMXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:23:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45444 "EHLO
+        id S232643AbiBIMX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:23:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiBIMXJ (ORCPT
+        with ESMTP id S231591AbiBIMXY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:23:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A6A2EC05CB96
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 04:23:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644409392;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K+6PWsGdUf8zUOs8GBfqgo0vxHAQpf/usivbTTkeWH4=;
-        b=ixXDANzc7WsY3uRsDgz15RT/gBA+CFLmTvlg9sCDER/jN0+bObIGn86/ykzrlzzjpe4g6B
-        ApEu/A+Au6RMkRqSls7CLchLuNbRSG+pqdNhKWKTGkIc4rtkO3xa5B2tMc2W2jjw+CKeIn
-        /QjAYX5gTdiK/mQKkt6sLJrRgAXAz8U=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-_cJZqJRfPHy-t9CBZqBYbw-1; Wed, 09 Feb 2022 07:23:11 -0500
-X-MC-Unique: _cJZqJRfPHy-t9CBZqBYbw-1
-Received: by mail-ed1-f71.google.com with SMTP id f6-20020a0564021e8600b0040f662b99ffso1266299edf.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 04:23:11 -0800 (PST)
+        Wed, 9 Feb 2022 07:23:24 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F1FC05CBB4;
+        Wed,  9 Feb 2022 04:23:26 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id k17so2098539plk.0;
+        Wed, 09 Feb 2022 04:23:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=PaNAnkJHSrjZ0Ymtt0aSkScJLuMHMgg0pqapqtDp4Dg=;
+        b=kG2jKtGn8FULF5Ds5XfJZeSjKGW8Z8VsxO88USCD/ONYRvH1ZbCv1iMkOxl1JMSf8+
+         eheKtiPIHZsWTNp3HZ21/r/rjz3rQbSWpwXeHM9DNwCNmzVpWkhUySynBc/IKb4XyIoM
+         08SUYZ+uS4lmGwcnmBPZIByJ5c9MwXzg3b/UVBRT9m+3qnWRAeSXVFCcbGOGh4b3s69x
+         mPmGSShDHb9qmiD3OpblYzRIj5dZYn/mW4GGBp9VaIvQ8iCHks9MVNAUwJ12yt5o8D+F
+         sJc80rONtY8+GYo3q3BQPp+cSBsR4WhMTrzuOaLZFzME/o92PFFpl9e/0BH6QF2XJUDx
+         s7QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=K+6PWsGdUf8zUOs8GBfqgo0vxHAQpf/usivbTTkeWH4=;
-        b=igKg03jI3A3LaDoHJkKosPs57xu2xNOcv4eRY1YvNF7wkeRNjJ9gF7mwEkNXtWO0Ic
-         87Do+d97o7FzwYz67oJTuao6RxzuGRDzWsVdPCDW20jOwFk3UGV9hpRaZlnCUFNWxfh8
-         7fK8kp7guRDZOUOE9Rmycag3HHHkPjGqUZOGwNiEdIx82YXAuX4amxs9P/5JL3YWtQfK
-         pvQkMo67jaWI95fTtnAu32m8CdVBg3Yy7XWG4KtaycI1heg8Yalm6DDB1swprJFs6jl1
-         rWLd6CoB8PsM+34DD8NlHumVZ4DuZmBKqMEnGCYmnXXGKYd45wPkPMHj0JTXJ7BuQ6MM
-         VSwA==
-X-Gm-Message-State: AOAM531LBsY7JoVBemgzP5xex4ss1B7xYM31KBwLNNgEvIRqgMe1CHhx
-        IRU9cV0+8Iuo77nuyoLEnpbHEHet2aBAZFxE6JXjCHeJD8GCYt3QGqZV9Li18c4z6D24lENrSzn
-        TX7o7iCQbdStT6WmwF2E2WNcv
-X-Received: by 2002:a05:6402:3511:: with SMTP id b17mr2149870edd.244.1644409390707;
-        Wed, 09 Feb 2022 04:23:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZ/hfZU/BxlpmKWPkXSArvzhAgBWjPCtIAUeEH6X8cdLOH821uUrxlHcA8MMYrtsH8t+7qBA==
-X-Received: by 2002:a05:6402:3511:: with SMTP id b17mr2149856edd.244.1644409390512;
-        Wed, 09 Feb 2022 04:23:10 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id s6sm2312550ejc.206.2022.02.09.04.23.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 04:23:10 -0800 (PST)
-Message-ID: <4732c476-f380-196f-6f37-a5c3c749dd4e@redhat.com>
-Date:   Wed, 9 Feb 2022 13:23:09 +0100
+        bh=PaNAnkJHSrjZ0Ymtt0aSkScJLuMHMgg0pqapqtDp4Dg=;
+        b=yaOttJbPXxBud1O2f0Ks3zpPY3HzVh5wjDbcL3/EsY+P54uNOw5xpE43uDyp7VnaU9
+         Ha9Uvo5VELjWGXSdPGJTNFLHJdTvmuoZWM77qN7SwyscGT9sScDf7FHGVW8CKI98X0o3
+         USJ9QTxdz0hr07ZT8uikcmXnjPNREvMojV+FtRDLE6MvgyfWcbqLlbfwcWVhtn8UKsmF
+         s+769Bqca+2dx3rW3iR8V+c2HYC4vcPsWb+NUiTIHQ9/7AigRqJTFWEKg7I1zS4zBqno
+         xyJ/li6tkhkSmuf4uz8YXVe++bD7IawWH04X9dSv12Whk8MYL7vJdl5d69RzGPeQps3j
+         n/AA==
+X-Gm-Message-State: AOAM531ojUMMYJivvYRjDyH5uqW+6XwQ9VjdTcuH76yGN5eGb2oRv8ah
+        W++sDUqjFwn+aCHLUMPQHY8=
+X-Google-Smtp-Source: ABdhPJy3B8Zxcj0qnCCCdhXCsjncbSBovC/HETIu1yprqv435k5YpCYPC9/wJY8qtxvGP2tJK79sSA==
+X-Received: by 2002:a17:90b:1e42:: with SMTP id pi2mr2281656pjb.176.1644409405570;
+        Wed, 09 Feb 2022 04:23:25 -0800 (PST)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com ([2001:4898:80e8:a:9d5c:32bf:5c81:da87])
+        by smtp.gmail.com with ESMTPSA id lb3sm6300990pjb.47.2022.02.09.04.23.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 04:23:25 -0800 (PST)
+From:   Tianyu Lan <ltykernel@gmail.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, hch@infradead.org,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        michael.h.kelley@microsoft.com
+Cc:     Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
+        brijesh.singh@amd.com, konrad.wilk@oracle.com, hch@lst.de,
+        parri.andrea@gmail.com, thomas.lendacky@amd.com
+Subject: [PATCH V2 0/2] x86/hyperv/Swiotlb: Add swiotlb_set_alloc_from_low_pages() switch function.
+Date:   Wed,  9 Feb 2022 07:23:00 -0500
+Message-Id: <20220209122302.213882-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH V6 0/3] Intel Software Defined Silicon
-Content-Language: en-US
-To:     "David E. Box" <david.e.box@linux.intel.com>,
-        gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-        srinivas.pandruvada@intel.com, mgross@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-References: <20220208005444.487209-1-david.e.box@linux.intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220208005444.487209-1-david.e.box@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-On 2/8/22 01:54, David E. Box wrote:
-> This series adds support for Intel Software Defined Silicon. These
-> patches are the same as patches 4-6 from this series [1]. Patches 1-3 
-> of that series were pulled in during the 5.17 merge window.
-> 
-> [1] https://lore.kernel.org/lkml/20211216023146.2361174-1-david.e.box@linux.intel.com/T/
+Hyper-V Isolation VM may fail to allocate swiotlb bounce buffer due
+to there is no enough contiguous memory from 0 to 4G in some cases.
+Current swiotlb code allocates bounce buffer in the low end memory.
+This patchset adds a new function swiotlb_set_alloc_from_low_pages()
+to control swiotlb bounce buffer from low pages or no limitation.
+Devices in Hyper-V Isolation VM may use memory above 4G as DMA memory
+and switch swiotlb allocation in order to avoid no enough contiguous
+memory in low pages.
 
-Thank you for taking all the feedback from others into account
-and doing new versions.
+Tianyu Lan (2):
+  Swiotlb: Add swiotlb_alloc_from_low_pages switch
+  x86/hyperv: Make swiotlb bounce buffer allocation not just from low
+    pages
 
-I was planning on doing an in-depth / foll review of this
-today, but unfortunately a kernel regression somewhere else
-has popped up and that is going to soak up all me work/$dayjob
-time this week, sorry.
+ arch/x86/kernel/cpu/mshyperv.c |  1 +
+ include/linux/swiotlb.h        |  1 +
+ kernel/dma/swiotlb.c           | 18 ++++++++++++++++--
+ 3 files changed, 18 insertions(+), 2 deletions(-)
 
-Assuming no major issues are found, the plan definitely is
-to get this in before the 5.18 merge window. I've made a note
-in my calendar to get a full review done no later then
-February 17th.
-
-Regards,
-
-Hans
-
-
-
-> 
-> David E. Box (3):
->   platform/x86: Add Intel Software Defined Silicon driver
->   tools arch x86: Add Intel SDSi provisiong tool
->   selftests: sdsi: test sysfs setup
-> 
->  .../ABI/testing/sysfs-driver-intel_sdsi       |  77 +++
->  MAINTAINERS                                   |   7 +
->  drivers/platform/x86/intel/Kconfig            |  12 +
->  drivers/platform/x86/intel/Makefile           |   2 +
->  drivers/platform/x86/intel/sdsi.c             | 574 ++++++++++++++++++
->  drivers/platform/x86/intel/vsec.c             |  12 +-
->  tools/arch/x86/intel_sdsi/Makefile            |   9 +
->  tools/arch/x86/intel_sdsi/sdsi.c              | 540 ++++++++++++++++
->  tools/testing/selftests/drivers/sdsi/sdsi.sh  |  18 +
->  .../selftests/drivers/sdsi/sdsi_test.py       | 226 +++++++
->  10 files changed, 1476 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-driver-intel_sdsi
->  create mode 100644 drivers/platform/x86/intel/sdsi.c
->  create mode 100644 tools/arch/x86/intel_sdsi/Makefile
->  create mode 100644 tools/arch/x86/intel_sdsi/sdsi.c
->  create mode 100755 tools/testing/selftests/drivers/sdsi/sdsi.sh
->  create mode 100644 tools/testing/selftests/drivers/sdsi/sdsi_test.py
-> 
+-- 
+2.25.1
 
