@@ -2,125 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5C47C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC980C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:39:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237530AbiBICjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:39:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S239852AbiBICjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:39:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbiBHXE7 (ORCPT
+        with ESMTP id S242728AbiBIBUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 18:04:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41695C061578
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 15:04:59 -0800 (PST)
+        Tue, 8 Feb 2022 20:20:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52844C06157B;
+        Tue,  8 Feb 2022 17:20:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4F856177A
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:04:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A5AC004E1;
-        Tue,  8 Feb 2022 23:04:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644361498;
-        bh=EWe+0R/ZVsm3W7XmSmNv2KN70VcPiLPtwrmHpmDlzu0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LTnv+2dK+6rYrMI0nFMsYl3iOw/V23R9x1TPnCSsewDe0UKYledTtwmnIFcsw6iTh
-         AYc6XJ7tK2ZwKO6vz7aEvlhxkxWTzrW4q2BubAqrU3n8Jo/2+RwrlnUpWilhbU4r1B
-         7FPmI1ya7W2VmtxkeBQO+c8qNdO4phap3WwX6MjJmsPUBtanuitQkAiLJf6jQtB+ly
-         f8bxt2SWTZ/AnQaB/vYZ8yZms1ACQDGLE87P5qduIN3tVbITkNxNRbvjYHLetvF6XS
-         uM2BJwR1WTbGH4ngZcVANvrij8Jg8HxS2G160oR9Z3U+7lD9CfleE6tJkILgvrPkpR
-         DuJD86MOgXhfg==
-Date:   Wed, 9 Feb 2022 00:04:55 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Mukesh Ojha <quic_mojha@quicinc.com>
-Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
-        tglx@linutronix.de, paulmck@kernel.org, will@kernel.org,
-        dave@stgolabs.net
-Subject: Re: [PATCH] softirq: Remove raise_softirq from
- tasklet_action_common()
-Message-ID: <20220208230455.GA539926@lothringen>
-References: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14FF9B81E2E;
+        Wed,  9 Feb 2022 01:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38821C004E1;
+        Wed,  9 Feb 2022 01:20:13 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="TjGdN/d1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6+BvSffpxoiCV4pJMnMVT9UMKRkfrW0iMmasZO/6IK4=;
+        b=TjGdN/d1NrTmRtPAHIDSrh2UIFpYoDBE9olAx1F4ZdPPbnEx6XIzMNCH5/ezgvl+mdSwbl
+        WtQodnFebLyBO7+we1KpoH44j3zeI/fdjVuG2D0oLMrDaJQaN7Vo8PX4WnJiKh5Rs/gt6K
+        7s6Q7Z1fjMiCmNWmQ1NUiif6B3iQqxo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d63d5d5a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:20:12 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2 8/9] random: use hash function for crng_slow_load()
+Date:   Wed,  9 Feb 2022 02:19:18 +0100
+Message-Id: <20220209011919.493762-9-Jason@zx2c4.com>
+In-Reply-To: <20220209011919.493762-1-Jason@zx2c4.com>
+References: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644066805-17212-1-git-send-email-quic_mojha@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 06:43:25PM +0530, Mukesh Ojha wrote:
-> Think about a scenario when all other cores are in suspend
-> and one core is only running ksoftirqd and it is because
-> some client has invoked tasklet_hi_schedule() only once
-> during that phase.
-> 
-> tasklet_action_common() handles that softirq and marks the
-> same softirq as pending again. And due to that core keeps
-> running the softirq handler [1] forever and it is not able to
-> go to suspend.
-> 
-> We can get rid of raising softirq from tasklet handler.
-> 
-> [1]
-> <idle>-0    [003]   13058.769081:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769085: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769087:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769091:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769094: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769097:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769100:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13058.769103: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13058.769106:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13058.769109:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058923:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> ...
-> ..
-> ..
-> ..
-> 
-> <idle>-0    [003]   13059.058951:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058954: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058957:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058960:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058963: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058966:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058969:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058972: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058975:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058978:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058981: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058984:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058987:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.058990: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.058993:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> <idle>-0    [003]   13059.058996:  softirq_entry   vec=0  action=HI_SOFTIRQ
-> <idle>-0     [003]  13059.059000: softirq_raise:        vec=0 [action=HI_SOFTIRQ]
-> <idle>-0    [003]   13059.059002:  softirq_exit   vec=0  action=HI_SOFTIRQ
-> 
-> Signed-off-by: Mukesh Ojha <quic_mojha@quicinc.com>
-> ---
->  kernel/softirq.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/kernel/softirq.c b/kernel/softirq.c
-> index 41f4709..d3e6fb9 100644
-> --- a/kernel/softirq.c
-> +++ b/kernel/softirq.c
-> @@ -795,7 +795,6 @@ static void tasklet_action_common(struct softirq_action *a,
->  		t->next = NULL;
->  		*tl_head->tail = t;
->  		tl_head->tail = &t->next;
-> -		__raise_softirq_irqoff(softirq_nr);
->  		local_irq_enable();
+Since we have a hash function that's really fast, and the goal of
+crng_slow_load() is reportedly to "touch all of the crng's state", we
+can just hash the old state together with the new state and call it a
+day. This way we dont need to reason about another LFSR or worry about
+various attacks there. This code is only ever used at early boot and
+then never again.
 
-That requeue happens when the tasklet is already executing on some other CPU
-or when it has been disabled through tasklet_disable().
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/char/random.c | 42 +++++++++++++++---------------------------
+ 1 file changed, 15 insertions(+), 27 deletions(-)
 
-So you can't just remove that line or you'll break everything.
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 359fd2501c45..f7f9cbfe13f7 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -470,42 +470,30 @@ static size_t crng_fast_load(const u8 *cp, size_t len)
+  * all), and (2) it doesn't have the performance constraints of
+  * crng_fast_load().
+  *
+- * So we do something more comprehensive which is guaranteed to touch
+- * all of the primary_crng's state, and which uses a LFSR with a
+- * period of 255 as part of the mixing algorithm.  Finally, we do
+- * *not* advance crng_init_cnt since buffer we may get may be something
+- * like a fixed DMI table (for example), which might very well be
+- * unique to the machine, but is otherwise unvarying.
++ * So, we simply hash the contents in with the current key. Finally,
++ * we do *not* advance crng_init_cnt since buffer we may get may be
++ * something like a fixed DMI table (for example), which might very
++ * well be unique to the machine, but is otherwise unvarying.
+  */
+-static int crng_slow_load(const u8 *cp, size_t len)
++static void crng_slow_load(const u8 *cp, size_t len)
+ {
+ 	unsigned long flags;
+-	static u8 lfsr = 1;
+-	u8 tmp;
+-	unsigned int i, max = sizeof(base_crng.key);
+-	const u8 *src_buf = cp;
+-	u8 *dest_buf = base_crng.key;
++	struct blake2s_state hash;
++
++	blake2s_init(&hash, sizeof(base_crng.key));
+ 
+ 	if (!spin_trylock_irqsave(&base_crng.lock, flags))
+-		return 0;
++		return;
+ 	if (crng_init != 0) {
+ 		spin_unlock_irqrestore(&base_crng.lock, flags);
+-		return 0;
+-	}
+-	if (len > max)
+-		max = len;
+-
+-	for (i = 0; i < max; i++) {
+-		tmp = lfsr;
+-		lfsr >>= 1;
+-		if (tmp & 1)
+-			lfsr ^= 0xE1;
+-		tmp = dest_buf[i % sizeof(base_crng.key)];
+-		dest_buf[i % sizeof(base_crng.key)] ^= src_buf[i % len] ^ lfsr;
+-		lfsr += (tmp << 3) | (tmp >> 5);
++		return;
+ 	}
++
++	blake2s_update(&hash, base_crng.key, sizeof(base_crng.key));
++	blake2s_update(&hash, cp, len);
++	blake2s_final(&hash, base_crng.key);
++
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+-	return 1;
+ }
+ 
+ static void crng_reseed(void)
+-- 
+2.35.0
 
-It would be nice to identify which tasklet keeps being requeued. Is it because
-something called tasklet_disable() to it and never called back tasklet_enable() ?
-
-Thanks.
