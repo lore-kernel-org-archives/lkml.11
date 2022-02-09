@@ -2,67 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5231FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02960C43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:40:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243818AbiBICkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:40:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S236460AbiBICkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:40:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238380AbiBIA4r (ORCPT
+        with ESMTP id S239694AbiBICNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 19:56:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A873C061576;
-        Tue,  8 Feb 2022 16:56:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A9C6B81DEE;
-        Wed,  9 Feb 2022 00:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CABAC004E1;
-        Wed,  9 Feb 2022 00:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644368203;
-        bh=87QuCo8sPx1cxewx1tCYTfoHao8e7JsvzOy11+m+4k4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q1keEGhVBJ5p2hmkahf0pVbn+tK2lr6w8Ep/mZ8VEQqw+pmOU/vNnIjDbtNNxWCTf
-         7fucOKN2YxOtSyiHZlErL6yGjUCGui3Wkw0PrhgYr7LvsQdBP2+hG2fBFyr2Nj6boc
-         OKjByFXNyqFDv/QlHkRk1dq8GoNBF9mOdorwb0ms33nBI4bENkuLKNtbzOSGL3+y34
-         RjrvTfHAh1JL2pmOrjr+4nui2ig0O5w1ya9FjLMYRoI1ghSZ4fypEd5UU4oF8LPPba
-         wZp6Dy2eA6Z/fUOpL5VSYYWiChfb3EF0UPnBKcEzheUgcWMV3TWtLC8vdz3nvUZAmj
-         wLVO6KVRckSTA==
-Date:   Tue, 8 Feb 2022 16:56:41 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 0/4] Priority flow control support for RVU
- netdev
-Message-ID: <20220208165641.2380f2bd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220208095456.6122-1-hkelam@marvell.com>
-References: <20220208095456.6122-1-hkelam@marvell.com>
+        Tue, 8 Feb 2022 21:13:22 -0500
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8318EC06157B;
+        Tue,  8 Feb 2022 18:13:22 -0800 (PST)
+Received: by mail-ot1-f47.google.com with SMTP id p3-20020a0568301d4300b005a7a702f921so545110oth.9;
+        Tue, 08 Feb 2022 18:13:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=K0p54TUxYjtgjJ8K6aiAZ7box7N0Ff3t+YQASKAN+Sg=;
+        b=c7H50vEBg9omjcxztWZ9rXhE/ogHQOR53u1xc4+trWm5MxGSbkMWYgub3HfL3T12FO
+         IS6a9Kk6+B2dF3+fS1z14L8GCtKRf20qhcXzzyd1Ah82xCdwlLtp3YINBvgHBJTuXeGT
+         E3BnDHs3RCO2FyVz2RfjEnY7x6oMkdt5xv2yZJQRNTI3/FwUz8LpS2k2K4078o1hpcD0
+         xZSTAIZwbkRY5NKSc4XF/1/+LeQuUYNJpn6xjUyolnlwtgNU+wGU+/PzB7BJGCQLK4y+
+         XhQaUzhN7abFY0dyMc6myTnppg7kXTbINY5cAWc0JWUSvonyoFwLL7VL/0ZO/Aqjlu8G
+         LP2w==
+X-Gm-Message-State: AOAM530BGLBLefNuaSPerUTcmO7wriyn8cktmMk6InItDjOf4ptNfkai
+        MAS2BLzuVnhZhGI6xi1lgQ==
+X-Google-Smtp-Source: ABdhPJzFqeh83AG6MbHipWskwLxsnT59BcS9u7lW1olMaD5rTgCkZdBxf8TXwg86UhHDg0YfpH2plw==
+X-Received: by 2002:a05:6830:1dc5:: with SMTP id a5mr90463otj.147.1644372801842;
+        Tue, 08 Feb 2022 18:13:21 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id g20sm6281491oiy.34.2022.02.08.18.13.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 18:13:21 -0800 (PST)
+Received: (nullmailer pid 3466385 invoked by uid 1000);
+        Wed, 09 Feb 2022 02:13:20 -0000
+Date:   Tue, 8 Feb 2022 20:13:20 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Amit Kucheria <amitk@kernel.org>, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        linux-arm-msm@vger.kernel.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        devicetree@vger.kernel.org, phone-devel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 06/15] dt-bindings: thermal: tsens: Add msm8953 compatible
+Message-ID: <YgMjQHZRy7zgoRe8@robh.at.kernel.org>
+References: <20220112194118.178026-1-luca@z3ntu.xyz>
+ <20220112194118.178026-7-luca@z3ntu.xyz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112194118.178026-7-luca@z3ntu.xyz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 15:24:52 +0530 Hariprasad Kelam wrote:
-> In network congestion, instead of pausing all traffic on link
-> PFC allows user to selectively pause traffic according to its
-> class. This series of patches add support of PFC for RVU netdev
-> drivers.
+On Wed, 12 Jan 2022 20:40:55 +0100, Luca Weiss wrote:
+> Document the compatible string for tsens found in msm8953.
 > 
-> Patch1 adds support to disable pause frames by default as
-> with PFC user can enable either PFC or 802.3 pause frames.
-> Patch2&3 adds resource management support for flow control
-> and configures necessary registers for PFC.
-> Patch4 adds dcb ops registration for netdev drivers.
+> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+>  Documentation/devicetree/bindings/thermal/qcom-tsens.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Does not build:
-
-ERROR: modpost: "otx2_config_pause_frm" [drivers/net/ethernet/marvell/octeontx2/nic/rvu_nicvf.ko] undefined!
+Acked-by: Rob Herring <robh@kernel.org>
