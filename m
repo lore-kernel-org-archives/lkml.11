@@ -2,133 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:23:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 335CAC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiBIMXr convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40646 "EHLO
+        id S233016AbiBIM0C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:26:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233101AbiBIMVt (ORCPT
+        with ESMTP id S232760AbiBIMZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:21:49 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1C6C02B5FB;
-        Wed,  9 Feb 2022 04:18:29 -0800 (PST)
-Date:   Wed, 09 Feb 2022 12:18:14 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v13 6/9] dw-hdmi/ingenic-dw-hdmi: repair interworking with
- hdmi-connector
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org
-Message-Id: <E6E17R.ND5XW1IG4SYA@crapouillou.net>
-In-Reply-To: <866f84621974992f4831bd471ae5a53414de9255.1643819482.git.hns@goldelico.com>
-References: <cover.1643819482.git.hns@goldelico.com>
-        <866f84621974992f4831bd471ae5a53414de9255.1643819482.git.hns@goldelico.com>
+        Wed, 9 Feb 2022 07:25:59 -0500
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com [209.85.217.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24685C05CB86;
+        Wed,  9 Feb 2022 04:26:00 -0800 (PST)
+Received: by mail-vs1-f52.google.com with SMTP id g10so2378263vss.1;
+        Wed, 09 Feb 2022 04:26:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G5WVmydqJCvKG/B3ZDDRDsVd5anO+fEWBRVMVdA65vE=;
+        b=QcUf41XJq8Z8BFLAEmDOOkhmrGcfpwV+uPLzT++8MceQMrnwx1OsKAsi/9QRQUk0lT
+         wO6vURirwXkdRG5hKamE6bZzeELeeTbpEQMe+7iCk4d3z4hW0RDOt/1C5nIIf2O1vVCa
+         80PlBuHAeajC2yTafwUtv9652VrBz9T/Z7Z5ZqW6Kb3VhhyFVV4MuwGPnNufR6kJF3zG
+         1mlgvYfyunsvHekb/XFml+tD/pW8clcTU0aL0OcIksPPh5k+jgpQAB1cbKDGU/ryCKP1
+         bHEJo5hRxnYKuZsKOnvAMXcYwLiuMu6ldhwAk0joe9TVOIiw9NkZcS9/l4/Ms7hVVFp4
+         /jtg==
+X-Gm-Message-State: AOAM532VJdIIyHBtCJeR42MFoPWBOay+EWy/i3VUxFLQx9bJHLeJ+G5I
+        uBOlH3vuyrbPDIxv+6PtD5bVXVtCIq8mTA==
+X-Google-Smtp-Source: ABdhPJz1VK8vRtw1kC05gajhhDEp97Q9lPjlFKkuixUSYZCn9yBDt3n0/oaMYm0o0k45XAsttUSKeA==
+X-Received: by 2002:a05:6102:364:: with SMTP id f4mr530268vsa.21.1644409558964;
+        Wed, 09 Feb 2022 04:25:58 -0800 (PST)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id k20sm3039188vsg.14.2022.02.09.04.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 04:25:58 -0800 (PST)
+Received: by mail-vk1-f180.google.com with SMTP id n14so1047263vkk.6;
+        Wed, 09 Feb 2022 04:25:58 -0800 (PST)
+X-Received: by 2002:a1f:294c:: with SMTP id p73mr691592vkp.0.1644409557884;
+ Wed, 09 Feb 2022 04:25:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+References: <20220209090314.2511959-1-javierm@redhat.com> <20220209091204.2513437-1-javierm@redhat.com>
+In-Reply-To: <20220209091204.2513437-1-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 9 Feb 2022 13:25:46 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
+Message-ID: <CAMuHMdWSDBjpYJv6JtgvyaKiFKh_eqbvH78TR6VBtpDeFJvqFQ@mail.gmail.com>
+Subject: Re: [PATCH v3 5/7] (WIP) drm/solomon: Add SSD130X OLED displays SPI support
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nikolaus,
+Hi Javier,
 
-Le mer., févr. 2 2022 at 17:31:20 +0100, H. Nikolaus Schaller 
-<hns@goldelico.com> a écrit :
-> Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus 
-> fmts callbacks")
-> 
-> introduced a new mechanism to negotiate bus formats between hdmi 
-> connector
-> and the synopsys hdmi driver inside the jz4780.
-> 
-> By this, the dw-hdmi is no longer the only bridge and sets up a list
-> of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
-> 
-> This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 
-> but only
-> produces a black screen.
-> 
-> This fix is based on the observation that max_bpc = 0 when running 
-> this
-> function while info->bpc = 8. Since the formats checks before this 
-> always test
-> for max_bpc >= info->pbc indirectly my assumption is that we must 
-> check it
-> here as well.
+On Wed, Feb 9, 2022 at 10:12 AM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The ssd130x driver only provides the core support for these devices but it
+> does not have any bus transport logic. Add a driver to interface over SPI.
+>
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 
-This fix looks really strange to me, so I'll let the DRM experts 
-comment.
+Thanks for your patch!
 
-It would still be better to move the patch before the introduction of 
-dw-ingenic-hdmi.c, so that once this one is introduced, everything 
-works. This also enables bisectability.
+> --- /dev/null
+> +++ b/drivers/gpu/drm/solomon/ssd130x-spi.c
 
-Cheers,
--Paul
+> +static const struct of_device_id ssd130x_of_match[] = {
+> +       {
+> +               .compatible = "solomon,ssd1305fb-spi",
 
+This needs an update to the DT bindings.
+Hence this may be a good time to deprecate the existing
+"solomon,ssd130*fb-i2c" compatible values, and switch to
+"solomon,ssd130*fb" instead, for both I2C and SPI.
+Of course the I2C subdriver still has to bind against the old values,
+too, for backwards compatibility.
 
-> 
-> Adding the proposed patch makes the CI20/jz4780 panel work again in
-> MEDIA_BUS_FMT_RGB888_1X24 mode.
-> 
-> Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus 
-> fmts callbacks")
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c 
-> b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> index 52e7cd2e020d3..34703a15ee4ff 100644
-> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-> @@ -2620,10 +2620,10 @@ static u32 
-> *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
->  		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
->  	}
-> 
-> -	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB422)
-> +	if (max_bpc >= info->bpc && info->color_formats & 
-> DRM_COLOR_FORMAT_YCRCB422)
->  		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
-> 
-> -	if (info->color_formats & DRM_COLOR_FORMAT_YCRCB444)
-> +	if (max_bpc >= info->bpc && info->color_formats & 
-> DRM_COLOR_FORMAT_YCRCB444)
->  		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
-> 
->  	/* Default 8bit RGB fallback */
-> --
-> 2.33.0
-> 
+> +               .data = (void *)&ssd130x_ssd1305_deviceinfo,
 
+The casts are not needed.
 
+> +       },
+> +       {
+> +               .compatible = "solomon,ssd1306fb-spi",
+> +               .data = (void *)&ssd130x_ssd1306_deviceinfo,
+> +       },
+> +       {
+> +               .compatible = "solomon,ssd1307fb-spi",
+> +               .data = (void *)&ssd130x_ssd1307_deviceinfo,
+> +       },
+> +       {
+> +               .compatible = "solomon,ssd1309fb-spi",
+> +               .data = (void *)&ssd130x_ssd1309_deviceinfo,
+> +       },
+> +       { /* sentinel */ },
+> +};
+> +MODULE_DEVICE_TABLE(of, ssd130x_of_match);
+> +
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
