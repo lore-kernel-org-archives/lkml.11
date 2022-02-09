@@ -2,218 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19CB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230394AbiBILMR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:12:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
+        id S230415AbiBILNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:13:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiBILMQ (ORCPT
+        with ESMTP id S229851AbiBILNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:12:16 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 945A4E1004CD
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:07:55 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id y8so661467pfa.11
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:07:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=um/QPlMPSYIu/2X13qGoGMxXxkltBh/JUMS9OfQ8QpU=;
-        b=FzmfuUxgZ4ojIytm2iWKsPkymGsBvaCASWzPD/KEnQIuzcLhn8Go3epGUfUWdoQHvs
-         u5PwPn9lLI4Gj19cgA70QMqMqAFPEMkPe3e+Efbs49ZWZTedopEECunkIqxgU3VNVhfo
-         hYJGwnsOJu8GWajZoT3A5q+/xAXJ3rEXIvmmAJWGaKh5hqG5PqEqEzws/pnybSBhF6Co
-         PQBKc5pIbGORd1Bd731i73FTvZ9ICOk6EcpxrNYqnPysxxi1r+MQLze5n+v8mf5DATzC
-         CzWGZSvM42i6NhbQtO51pf21tnpT/O4s2Qje/ha2HeusB6pR9mGXgWbthgbEP5svsuh9
-         i8hg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=um/QPlMPSYIu/2X13qGoGMxXxkltBh/JUMS9OfQ8QpU=;
-        b=vS4M5NfvWzAMPj9xTfYXoy9ofHXrnyuEHC9thPcVT/wohNJ3MD6NMpuuqxp+9auts0
-         TLrc9QNtjLmVV/xL75pmxwRnX86H1NKU/xoavS41gbAqyXX8XMIjuXizXlkLBTX+wJmq
-         SVX6nAAzTJXx7AXkNTgNAeM+kprQjvd0iSOt95MgI/PAwzTlRw8MR6eqLfdNZlaqw4QA
-         2zMiLZUQsQQYhQ8+lydUTLlkUJ/ZOszrVOJVbgaun688kCgBuQb6RtuXp/T31khWiQJG
-         cp6qEGCkrG37MwCaW+wsv5SPrIw687S2CI9cNTkVvC6RyMieQBlJvm0wEOPvZeztOTPj
-         XoPA==
-X-Gm-Message-State: AOAM531Z47o5TW19r89o5SnRGgW3MBa+9MQ+VPByxHmAVEeitpfs9gsw
-        j2lO1Vk/jgTksUZVJ/KGdOOI
-X-Google-Smtp-Source: ABdhPJzfd7y5ykqxl6y1YnACYi74CXYhdtIDa+47PM+EM/M5byzQBT3UuhfsMaaV00JNIPmD3kS4gQ==
-X-Received: by 2002:a65:4c4b:: with SMTP id l11mr1286054pgr.310.1644401230849;
-        Wed, 09 Feb 2022 02:07:10 -0800 (PST)
-Received: from localhost.localdomain ([117.217.179.178])
-        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.07.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:07:10 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        vbadigan@codeaurora.org, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 21/23] bus: mhi: ep: Add support for queueing SKBs over MHI bus
-Date:   Wed,  9 Feb 2022 15:26:22 +0530
-Message-Id: <20220209095624.26389-22-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
-References: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+        Wed, 9 Feb 2022 06:13:02 -0500
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E00AE0481EE;
+        Wed,  9 Feb 2022 02:08:25 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 86C8E5801B0;
+        Wed,  9 Feb 2022 03:43:34 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 09 Feb 2022 03:43:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; bh=e4SNWw1WtTCp7PF56Ssx0zWDy7EUAXFNe2S8oS
+        +po3s=; b=hFyiVZGDMWtv3gen1AiZtgpuyh1rZdV7h4HBZzWAQ7J0tOz6geOiWu
+        YqTrbHnACfOxK9NiK6//272qHuqd3DcWd0c6Nao5tl5qEiXtlysRgAKijU0+/QcC
+        e1c4iFJ6vw9EjMfES0LDCOxQNEo/S3uWUU8S2Ew18wjQEkq9rXmkYMy+74jr7qZ/
+        XFu7FlNehZ8iTPmEsehOvpzr/WubgmvpW8xiKz/+H2ocHYhS/XI/++lJ/+YYofuw
+        BODwsN7Y4sucSi231AJ+R40y5i9+Fj56zBLP1BVIZn7YOjONfyd0hyfK/QXL7+gh
+        crIZ2JoKnyf4eykrIOoYoQaGatVThLFw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=e4SNWw1WtTCp7PF56
+        Ssx0zWDy7EUAXFNe2S8oS+po3s=; b=MdXDUF3S3B/nbiCsFioEnKoZrWHh+q8XB
+        EqcQXIBjCIgP3uJ6HmKC0X9B+p/v/+q4yC50A+jPgOuS+LBDcPqip4SkxuV+zYFt
+        OeU0/b3z17a1RmKSy5kMUyM/vOfPcC4bYUE0t6AUjkxuL0rvNG/Wfj+7WjEl1XX/
+        MPNLQYfFMqx+DUzb+wZdGZYg6xyS3XgU8/EP+/z1yaEAKr2rdJYPKaJ5MAOfe/tp
+        OVFEJ7q7d7dd20H2SUzsZq5ZkDJmH0akonUKzs5OwGaBu7+Yfa7RCVk9Asnz7PdJ
+        2nLeHwYK5stabM6p+uHzGoY0Z5HnpDQMJNwCxSaGWPTVrlcWY0yNA==
+X-ME-Sender: <xms:tH4DYkPtl1-LucRywoZanVl6Lrnloi8WBO6Tp6eWHDygsH0o9DbuFw>
+    <xme:tH4DYq9TlE5BQbRzzS9AqVgN16KBdCs1jcqt2gJffqNWNQaLub3fpS4Xz_WrUKwgP
+    cKyiQupWr5nnvk4hhI>
+X-ME-Received: <xmr:tH4DYrQzC5fMP3U_DgY-6FQOjXPpHH6JzISZCNYBExzSQM-VXyvSRXh8NTWMXE0CB7H5hHTyV_VQ9UPYj0gAlfAsFAGJSVdZwu_aWYE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrheekgdduudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepgedtffduveeukeejtdefkeeljeehheeluefhkedtkeegteetledtffelfedu
+    udeinecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdplhhkmhhlrdhorhhgnecuvehluh
+    hsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegt
+    vghrnhhordhtvggthh
+X-ME-Proxy: <xmx:tH4DYssnDGdEgWSn_mOMmwMOCfpLpFHDk-smMxjdR8zpY3TRlSKifw>
+    <xmx:tH4DYscXVcHJJ6B3l_EwIwo3FrSUiRYkEefYg_nWBxdVmSoO8cUjow>
+    <xmx:tH4DYg2G8sLZdtHEfFQbJTJTN3NvNdDlHdqnOrvKgnwA6AxkLqP1WQ>
+    <xmx:tn4DYrDIqBBOk_zHZjLl9Yy6WRcPWLN7LWtQE7KQ_3PdPABIy__fBw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 9 Feb 2022 03:43:32 -0500 (EST)
+Date:   Wed, 9 Feb 2022 09:43:31 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Sui Jingfeng <15330273260@189.cn>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        suijingfeng <suijingfeng@loongson.cn>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 1/3] drm/lsdc: add drm driver for loongson display
+ controller
+Message-ID: <20220209084331.fpq5ng3yuqxmby4q@houat>
+References: <20220203082546.3099-1-15330273260@189.cn>
+ <20220203082546.3099-2-15330273260@189.cn>
+ <20220203085851.yqstkfgt4dz7rcnw@houat>
+ <f5381561-25da-61e3-5025-fa6dd61dd730@189.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gllwwgxlqy73i5no"
+Content-Disposition: inline
+In-Reply-To: <f5381561-25da-61e3-5025-fa6dd61dd730@189.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for queueing SKBs over MHI bus in the MHI endpoint stack.
-The mhi_ep_queue_skb() API will be used by the client networking drivers
-to queue the SKBs to the host over MHI.
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/main.c | 102 ++++++++++++++++++++++++++++++++++++++
- include/linux/mhi_ep.h    |  13 +++++
- 2 files changed, 115 insertions(+)
+--gllwwgxlqy73i5no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index c46d09cc67f4..8a8e90887060 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -488,6 +488,108 @@ int mhi_ep_process_tre_ring(struct mhi_ep_ring *ring, struct mhi_ep_ring_element
- 	return 0;
- }
- 
-+int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir,
-+		     struct sk_buff *skb, size_t len, enum mhi_flags mflags)
-+{
-+	struct mhi_ep_chan *mhi_chan = (dir == DMA_FROM_DEVICE) ? mhi_dev->dl_chan :
-+								mhi_dev->ul_chan;
-+	struct mhi_ep_cntrl *mhi_cntrl = mhi_dev->mhi_cntrl;
-+	struct device *dev = &mhi_chan->mhi_dev->dev;
-+	struct mhi_ep_ring_element *el;
-+	struct mhi_ep_ring *ring;
-+	size_t bytes_to_write;
-+	enum mhi_ev_ccs code;
-+	void *read_from_loc;
-+	u32 buf_remaining;
-+	u64 write_to_loc;
-+	u32 tre_len;
-+	int ret = 0;
-+
-+	if (dir == DMA_TO_DEVICE)
-+		return -EINVAL;
-+
-+	buf_remaining = len;
-+	ring = &mhi_cntrl->mhi_chan[mhi_chan->chan].ring;
-+
-+	mutex_lock(&mhi_chan->lock);
-+
-+	do {
-+		/* Don't process the transfer ring if the channel is not in RUNNING state */
-+		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
-+			dev_err(dev, "Channel not available");
-+			ret = -ENODEV;
-+			goto err_exit;
-+		}
-+
-+		if (mhi_ep_queue_is_empty(mhi_dev, dir)) {
-+			dev_err(dev, "TRE not available!\n");
-+			ret = -EINVAL;
-+			goto err_exit;
-+		}
-+
-+		el = &ring->ring_cache[ring->rd_offset];
-+		tre_len = MHI_EP_TRE_GET_LEN(el);
-+		if (skb->len > tre_len) {
-+			dev_err(dev, "Buffer size (%d) is too large for TRE (%d)!\n",
-+				skb->len, tre_len);
-+			ret = -ENOMEM;
-+			goto err_exit;
-+		}
-+
-+		bytes_to_write = min(buf_remaining, tre_len);
-+		read_from_loc = skb->data;
-+		write_to_loc = MHI_EP_TRE_GET_PTR(el);
-+
-+		ret = mhi_cntrl->write_to_host(mhi_cntrl, read_from_loc, write_to_loc,
-+					       bytes_to_write);
-+		if (ret < 0)
-+			return ret;
-+
-+		buf_remaining -= bytes_to_write;
-+		/*
-+		 * For all TREs queued by the host for DL channel, only the EOT flag will be set.
-+		 * If the packet doesn't fit into a single TRE, send the OVERFLOW event to
-+		 * the host so that the host can adjust the packet boundary to next TREs. Else send
-+		 * the EOT event to the host indicating the packet boundary.
-+		 */
-+		if (buf_remaining)
-+			code = MHI_EV_CC_OVERFLOW;
-+		else
-+			code = MHI_EV_CC_EOT;
-+
-+		ret = mhi_ep_send_completion_event(mhi_cntrl, ring, bytes_to_write, code);
-+		if (ret) {
-+			dev_err(dev, "Error sending completion event");
-+			goto err_exit;
-+		}
-+
-+		mhi_ep_ring_inc_index(ring);
-+	} while (buf_remaining);
-+
-+	/*
-+	 * During high network traffic, sometimes the DL doorbell interrupt from the host is missed
-+	 * by the endpoint. So manually check for the write pointer update here so that we don't run
-+	 * out of buffer due to missing interrupts.
-+	 */
-+	if (ring->rd_offset + 1 == ring->wr_offset) {
-+		ret = mhi_ep_update_wr_offset(ring);
-+		if (ret) {
-+			dev_err(dev, "Error updating write pointer\n");
-+			goto err_exit;
-+		}
-+	}
-+
-+	mutex_unlock(&mhi_chan->lock);
-+
-+	return 0;
-+
-+err_exit:
-+	mutex_unlock(&mhi_chan->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(mhi_ep_queue_skb);
-+
- static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
- {
- 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
-diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
-index aaf4b6942037..75cfbf0c6fb0 100644
---- a/include/linux/mhi_ep.h
-+++ b/include/linux/mhi_ep.h
-@@ -277,4 +277,17 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl);
-  */
- bool mhi_ep_queue_is_empty(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir);
- 
-+/**
-+ * mhi_ep_queue_skb - Send SKBs to host over MHI Endpoint
-+ * @mhi_dev: Device associated with the channels
-+ * @dir: DMA direction for the channel
-+ * @skb: Buffer for holding SKBs
-+ * @len: Buffer length
-+ * @mflags: MHI Endpoint transfer flags used for the transfer
-+ *
-+ * Return: 0 if the SKBs has been sent successfully, a negative error code otherwise.
-+ */
-+int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir,
-+		     struct sk_buff *skb, size_t len, enum mhi_flags mflags);
-+
- #endif
--- 
-2.25.1
+On Fri, Feb 04, 2022 at 12:29:39AM +0800, Sui Jingfeng wrote:
+> > > +static int lsdc_modeset =3D 1;
+> > > +MODULE_PARM_DESC(modeset, "Enable/disable CMA-based KMS(1 =3D enable=
+d(default), 0 =3D disabled)");
+> > > +module_param_named(modeset, lsdc_modeset, int, 0644);
+> > > +
+> > > +static int lsdc_cached_coherent =3D 1;
+> > > +MODULE_PARM_DESC(cached_coherent, "uss cached coherent mapping(1 =3D=
+ enabled(default), 0 =3D disabled)");
+> > > +module_param_named(cached_coherent, lsdc_cached_coherent, int, 0644);
+> > > +
+> > > +static int lsdc_dirty_update =3D -1;
+> > > +MODULE_PARM_DESC(dirty_update, "enable dirty update(1 =3D enabled, 0=
+ =3D disabled(default))");
+> > > +module_param_named(dirty_update, lsdc_dirty_update, int, 0644);
+> > > +
+> > > +static int lsdc_use_vram_helper =3D -1;
+> > > +MODULE_PARM_DESC(use_vram_helper, "use vram helper based solution(1 =
+=3D enabled, 0 =3D disabled(default))");
+> > > +module_param_named(use_vram_helper, lsdc_use_vram_helper, int, 0644);
+> > > +
+> > > +static int lsdc_verbose =3D -1;
+> > > +MODULE_PARM_DESC(verbose, "Enable/disable print some key information=
+");
+> > > +module_param_named(verbose, lsdc_verbose, int, 0644);
+> >
+> > It's not really clear to me why you need any of those parameters. Why
+> > would a user want to use a non coherent mapping for example?
+> >=20
+> Because we are Mips architecture. Paul Cercueil already explained it
+> in his mmap GEM buffers cachedpatch  <https://lkml.kernel.org/lkml/202008=
+22164233.71583-1-paul@crapouillou.net/T/>. I drag part of it to here for
+> convenient to reading:
+>=20
+> /Traditionally, GEM buffers are mapped write-combine. Writes to the buffer
+> are accelerated, and reads are slow. Application doing lots////of
+> alpha-blending paint inside shadow buffers, which is then memcpy'd////into
+> the final GEM buffer.///
+> "non coherent mapping" is actually cached and it is for CMA helpers
+> base driver, not for VRAM helper based driver. For Loongson CPU/SoCs.
+> The cache coherency is maintained by hardware, therefore there no
+> need to worry about coherency problems. This is true at least for
+> ls3a3000, ls3a4000 and ls3a5000.
+>=20
+> "non coherent" or "coherent" is not important here, the key point is
+> that the backing memory of the framebuffer is cached with non coherent
+> mapping, you don't need a shadow buffer layer when using X server's
+> modesetting driver.
+>=20
+> Read and write to the framebuffer in system memory is much faster than
+> read and write to the framebuffer in the VRAM.
+>=20
+> Why CMA helper based solution is faster than the VRAM based solution on M=
+ips platform?
+>=20
+> Partly because of the CPU have L1, L2 and L3 cache, especially L3 cache
+> is as large as 8MB, read and write from the cache is fast.
+>=20
+> Another reason is as Paul Cercueil said, read from VRAM with write-combine
+> cache mode is slow. it is just uncache read.
+> Please note that we don't have a GPU here, we are just a display controll=
+er.
+>=20
+> For the VRAM helper based driver case, the backing memory of the framebuf=
+fer
+> is located at VRAM, When using X server's modesetting driver, we have to =
+enable
+> the ShadowFB option, Uncache acceleration support(at the kernel size) sho=
+uld
+> also be enabled. Otherwise the performance of graphic application is just=
+ slow.
+>=20
+> Beside write-combine cache mode have bugs on our platform, a kernel side
+> developer have disabled it. Write-combine cache mode just boil down to un=
+cached
+> now. See [1] and [2]
+>=20
+> [1]https://lkml.org/lkml/2020/8/10/255
+> [2]https://lkml.kernel.org/lkml/1617701112-14007-1-git-send-email-yangtie=
+zhu@loongson.cn/T/
+>
+> This is the reason why we prefer CMA helper base solution with non cohere=
+nt mapping,
+> simply because it is fast.
+>=20
+> As far as I know, Loongson's CPU does not has the concept of write-combin=
+e,
+> it only support three caching mode:  uncached, cached and uncache acceler=
+ation.
+> write-combine is implemented with uncache acceleration on Mips.
 
+My point wasn't just about the VRAM vs CMA stuff, it was about why do
+you need all those switches in the first place?
+
+Take the verbose parameter for example: it's entirely redundant with the
+already existing, documented, DRM logging infrastructure.
+
+Then, you have "modeset", and I'm not sure why it's supposed to be
+there, at all. This is a modesetting driver, why would I want to disable
+modesetting entirely?
+
+More fundamentally (and this extends to the CMA, caching and VRAM stuff
+you explained above), why can't the driver pick the right decision all
+the time and why would that be under the user control?
+
+You were mentioning that you need to work-around MIPS memory management.
+Then fine, just do that on MIPS, and don't it on the other architectures
+that don't need it. There's no need for a knob.
+
+Maxime
+
+--gllwwgxlqy73i5no
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYgN+swAKCRDj7w1vZxhR
+xWWcAP48yidh+QiEzNhw7kqNLofKta0Ed9GODCtO98/Fa8LRuwEA5xKXu2ByzsHD
+iv6Q2TXa6lvKdV8aLFv2WYKGKNnC0w0=
+=Du2J
+-----END PGP SIGNATURE-----
+
+--gllwwgxlqy73i5no--
