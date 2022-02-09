@@ -2,80 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2B0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5402C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 19:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiBIT0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 14:26:37 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45194 "EHLO
+        id S234426AbiBIT1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 14:27:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234758AbiBIT0K (ORCPT
+        with ESMTP id S234937AbiBIT01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 14:26:10 -0500
+        Wed, 9 Feb 2022 14:26:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD88C1DC5FA;
-        Wed,  9 Feb 2022 11:19:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35263C02B5D3;
+        Wed,  9 Feb 2022 11:19:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E31A6B82393;
-        Wed,  9 Feb 2022 19:15:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06E4CC340E7;
-        Wed,  9 Feb 2022 19:15:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6589EB82392;
+        Wed,  9 Feb 2022 19:15:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC67C340E7;
+        Wed,  9 Feb 2022 19:15:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644434158;
-        bh=IrgqHa2QwSbIxMhpEksDKoTT5fvgIWnKZ7/Ytsgb0oY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gQ9CET9EWCYBZ65v4/no2lhFxSBHPHFufGKjdv/jVC0GUiupeypFKhr3gdJWYe1Og
-         w9qTd10FvFzoSvQLwO02FBEm+JFOFo7Eh4uibD0aLxZ0EsRd8kkxq7QEqoO4CDWobz
-         MFqVDPz9+pak2CyqskHDBFTZhNi5LCz6LhqgTXhI=
+        s=korg; t=1644434147;
+        bh=CDJT6ceF+7GANApPV9fPTE87Zdt/GRsTa1rFq3MjZzs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ocb3OFJWEvHrWBYxPLvEt6LTrer1WhdiSHYMhOk9g+h3UyttZch3F3GgjYinhXZ4g
+         TLaj96hj6tNC4QEcq3MxrgLxzKOtLugJJCH3UTj7LBtqZ+MfdzUtmJf3TY+34ZlA+g
+         EEP7nQqsGGBwxMBRMHu4ntbhALx/Jth2rs7Nhp6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: [PATCH 5.16 3/5] KVM: s390: Return error on SIDA memop on normal guest
-Date:   Wed,  9 Feb 2022 20:14:35 +0100
-Message-Id: <20220209191250.009221364@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.15 0/5] 5.15.23-rc1 review
+Date:   Wed,  9 Feb 2022 20:14:25 +0100
+Message-Id: <20220209191249.980911721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
-References: <20220209191249.887150036@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.23-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.23-rc1
+X-KernelTest-Deadline: 2022-02-11T19:12+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+This is the start of the stable review cycle for the 5.15.23 release.
+There are 5 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 2c212e1baedcd782b2535a3f86bc491977677c0e upstream.
+Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+Anything received after that time might be too late.
 
-Refuse SIDA memops on guests which are not protected.
-For normal guests, the secure instruction data address designation,
-which determines the location we access, is not under control of KVM.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.23-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
-Fixes: 19e122776886 (KVM: S390: protvirt: Introduce instruction data area bounce buffer)
-Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/s390/kvm/kvm-s390.c |    2 ++
- 1 file changed, 2 insertions(+)
+thanks,
 
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -4711,6 +4711,8 @@ static long kvm_s390_guest_sida_op(struc
- 		return -EINVAL;
- 	if (mop->size + mop->sida_offset > sida_size(vcpu->arch.sie_block))
- 		return -E2BIG;
-+	if (!kvm_s390_pv_cpu_is_protected(vcpu))
-+		return -EINVAL;
- 
- 	switch (mop->op) {
- 	case KVM_S390_MEMOP_SIDA_READ:
+greg k-h
+
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.23-rc1
+
+Herbert Xu <herbert@gondor.apana.org.au>
+    crypto: api - Move cryptomgr soft dependency into algapi
+
+Namjae Jeon <linkinjeon@kernel.org>
+    ksmbd: fix SMB 3.11 posix extension mount failure
+
+Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+    KVM: s390: Return error on SIDA memop on normal guest
+
+Anshuman Khandual <anshuman.khandual@arm.com>
+    arm64: Add Cortex-A510 CPU part definition
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    moxart: fix potential use-after-free on remove path
+
+
+-------------
+
+Diffstat:
+
+ Makefile                         | 4 ++--
+ arch/arm64/include/asm/cputype.h | 2 ++
+ arch/s390/kvm/kvm-s390.c         | 2 ++
+ crypto/algapi.c                  | 1 +
+ crypto/api.c                     | 1 -
+ drivers/mmc/host/moxart-mmc.c    | 2 +-
+ fs/ksmbd/smb2pdu.c               | 2 +-
+ 7 files changed, 9 insertions(+), 5 deletions(-)
 
 
