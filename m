@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:51:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB518C4167D
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242081AbiBISvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:51:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        id S239905AbiBISvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:51:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241079AbiBISud (ORCPT
+        with ESMTP id S240963AbiBISur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:50:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8417AC014F35;
-        Wed,  9 Feb 2022 10:45:40 -0800 (PST)
+        Wed, 9 Feb 2022 13:50:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1882CC0147E3;
+        Wed,  9 Feb 2022 10:45:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05F69B8203D;
-        Wed,  9 Feb 2022 18:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4EF4C340EF;
-        Wed,  9 Feb 2022 18:45:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B376B82378;
+        Wed,  9 Feb 2022 18:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC8D8C340E9;
+        Wed,  9 Feb 2022 18:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432337;
-        bh=CiNSoGFlVE7Yc/N15ISxD4jbOC0FtDELKkzSvEf6aAY=;
+        s=k20201202; t=1644432349;
+        bh=eGRjD+jlNSWjTRgOOlQUWxE40XwEgQsiMXaxkZeyMvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkgR2V0CrGDviOcODJMOxzjSypcHNastaiSh+H448/feaxkdOu8kG+2KhIIob1lki
-         Mrcfpu+VnlXBr7dh7oIugzO/S2oeR7GciWbyBH09jhac5EZcSL421ra+xObyf5WEKT
-         tC6pB1JIk7N9Hjj5x3rVfpr7TVSAG4Rga7Gsm+YxlGs3UTBHcUl4e7rWTjNEpdr1G0
-         eId6FYoarGd9Y8ql6KC2cSREE5HA+3hFA4UJO09azaZXCKBog/tmFMD8HW1JsmoukR
-         Gr1kxdxE8LPB5DvrMuf7epdeAqefHmqovwVQ+I97H4hGkj/7O6s82e26ejeiO6RuqD
-         t9vnj7DxmTYZA==
+        b=jUyjBn/Dt6biSc/G8XSmwyAEJaLqPnRkXG+9rvaAKcHKcLQgMgMCfOjvEjij3b/Gw
+         QPv2PkfS7kCUBM14Bk5XeSYCFIXt2sE+2GniN3kagTbYvWknPrnuSoy2dt6AAWu3i9
+         +5Jmxmd1AgMwJr6VyRwHmGfS9m5SpNjCXRHgOgZ56L6wguaYo3I7Fybi17YQhILuZB
+         H1TdR+9ivqK55q2hJJYSX54Bg7GWfJzghzfl7s5r+lEE4P9Hfx2W5dZ2i6sNkAQZfT
+         u05hm88IY0QXTtquvXOXywtNBgjMeWnPuzh4aH4PYZnGV1CRuZc6WvOD5uQzMz41OO
+         HpTlMY+fO6wGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, jreuter@yaina.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 5/8] ax25: improve the incomplete fix to avoid UAF and NPD bugs
-Date:   Wed,  9 Feb 2022 13:44:58 -0500
-Message-Id: <20220209184502.48363-5-sashal@kernel.org>
+Cc:     Igor Pylypiv <ipylypiv@google.com>,
+        Changyuan Lyu <changyuanl@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Tejun Heo <tj@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, linux@rasmusvillemoes.dk,
+        akpm@linux-foundation.org, linux-modules@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 8/8] Revert "module, async: async_synchronize_full() on module init iff async is used"
+Date:   Wed,  9 Feb 2022 13:45:01 -0500
+Message-Id: <20220209184502.48363-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220209184502.48363-1-sashal@kernel.org>
 References: <20220209184502.48363-1-sashal@kernel.org>
@@ -52,88 +57,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Igor Pylypiv <ipylypiv@google.com>
 
-[ Upstream commit 4e0f718daf97d47cf7dec122da1be970f145c809 ]
+[ Upstream commit 67d6212afda218d564890d1674bab28e8612170f ]
 
-The previous commit 1ade48d0c27d ("ax25: NPD bug when detaching
-AX25 device") introduce lock_sock() into ax25_kill_by_device to
-prevent NPD bug. But the concurrency NPD or UAF bug will occur,
-when lock_sock() or release_sock() dereferences the ax25_cb->sock.
+This reverts commit 774a1221e862b343388347bac9b318767336b20b.
 
-The NULL pointer dereference bug can be shown as below:
+We need to finish all async code before the module init sequence is
+done.  In the reverted commit the PF_USED_ASYNC flag was added to mark a
+thread that called async_schedule().  Then the PF_USED_ASYNC flag was
+used to determine whether or not async_synchronize_full() needs to be
+invoked.  This works when modprobe thread is calling async_schedule(),
+but it does not work if module dispatches init code to a worker thread
+which then calls async_schedule().
 
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-                             |     ax25_cb_del()
-  ...                        |     ...
-                             |     ax25->sk=NULL;
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |     ...
-  release_sock(s->sk); //(2) |
-  ...                        |
+For example, PCI driver probing is invoked from a worker thread based on
+a node where device is attached:
 
-The root cause is that the sock is set to null before dereference
-site (1) or (2). Therefore, this patch extracts the ax25_cb->sock
-in advance, and uses ax25_list_lock to protect it, which can synchronize
-with ax25_cb_del() and ensure the value of sock is not null before
-dereference sites.
+	if (cpu < nr_cpu_ids)
+		error = work_on_cpu(cpu, local_pci_probe, &ddi);
+	else
+		error = local_pci_probe(&ddi);
 
-The concurrency UAF bug can be shown as below:
+We end up in a situation where a worker thread gets the PF_USED_ASYNC
+flag set instead of the modprobe thread.  As a result,
+async_synchronize_full() is not invoked and modprobe completes without
+waiting for the async code to finish.
 
-ax25_kill_by_device()        | ax25_release()
-                             |   ax25_destroy_socket()
-  ...                        |   ...
-                             |   sock_put(sk); //FREE
-  lock_sock(s->sk); //(1)    |
-  s->ax25_dev = NULL;        |   ...
-  release_sock(s->sk); //(2) |
-  ...                        |
+The issue was discovered while loading the pm80xx driver:
+(scsi_mod.scan=async)
 
-The root cause is that the sock is released before dereference
-site (1) or (2). Therefore, this patch uses sock_hold() to increase
-the refcount of sock and uses ax25_list_lock to protect it, which
-can synchronize with ax25_cb_del() in ax25_destroy_socket() and
-ensure the sock wil not be released before dereference sites.
+modprobe pm80xx                      worker
+...
+  do_init_module()
+  ...
+    pci_call_probe()
+      work_on_cpu(local_pci_probe)
+                                     local_pci_probe()
+                                       pm8001_pci_probe()
+                                         scsi_scan_host()
+                                           async_schedule()
+                                           worker->flags |= PF_USED_ASYNC;
+                                     ...
+      < return from worker >
+  ...
+  if (current->flags & PF_USED_ASYNC) <--- false
+  	async_synchronize_full();
 
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Commit 21c3c5d28007 ("block: don't request module during elevator init")
+fixed the deadlock issue which the reverted commit 774a1221e862
+("module, async: async_synchronize_full() on module init iff async is
+used") tried to fix.
+
+Since commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
+request_module() from async workers") synchronous module loading from
+async is not allowed.
+
+Given that the original deadlock issue is fixed and it is no longer
+allowed to call synchronous request_module() from async we can remove
+PF_USED_ASYNC flag to make module init consistently invoke
+async_synchronize_full() unless async module probe is requested.
+
+Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
+Reviewed-by: Changyuan Lyu <changyuanl@google.com>
+Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ax25/af_ax25.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ include/linux/sched.h |  1 -
+ kernel/async.c        |  3 ---
+ kernel/module.c       | 25 +++++--------------------
+ 3 files changed, 5 insertions(+), 24 deletions(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 0232afd9d9c3c..36d2e1dfa1e6b 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -80,6 +80,7 @@ static void ax25_kill_by_device(struct net_device *dev)
- {
- 	ax25_dev *ax25_dev;
- 	ax25_cb *s;
-+	struct sock *sk;
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 914cc8b180eda..63522a384f5aa 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1346,7 +1346,6 @@ extern struct pid *cad_pid;
+ #define PF_MEMALLOC		0x00000800	/* Allocating memory */
+ #define PF_NPROC_EXCEEDED	0x00001000	/* set_user() noticed that RLIMIT_NPROC was exceeded */
+ #define PF_USED_MATH		0x00002000	/* If unset the fpu must be initialized before use */
+-#define PF_USED_ASYNC		0x00004000	/* Used async_schedule*(), used by module init */
+ #define PF_NOFREEZE		0x00008000	/* This thread should not be frozen */
+ #define PF_FROZEN		0x00010000	/* Frozen for system suspend */
+ #define PF_KSWAPD		0x00020000	/* I am kswapd */
+diff --git a/kernel/async.c b/kernel/async.c
+index a893d6170944f..4bf1b00a28d86 100644
+--- a/kernel/async.c
++++ b/kernel/async.c
+@@ -191,9 +191,6 @@ static async_cookie_t __async_schedule(async_func_t func, void *data, struct asy
+ 	atomic_inc(&entry_count);
+ 	spin_unlock_irqrestore(&async_lock, flags);
  
- 	if ((ax25_dev = ax25_dev_ax25dev(dev)) == NULL)
- 		return;
-@@ -88,13 +89,15 @@ static void ax25_kill_by_device(struct net_device *dev)
- again:
- 	ax25_for_each(s, &ax25_list) {
- 		if (s->ax25_dev == ax25_dev) {
-+			sk = s->sk;
-+			sock_hold(sk);
- 			spin_unlock_bh(&ax25_list_lock);
--			lock_sock(s->sk);
-+			lock_sock(sk);
- 			s->ax25_dev = NULL;
--			release_sock(s->sk);
-+			release_sock(sk);
- 			ax25_disconnect(s, ENETUNREACH);
- 			spin_lock_bh(&ax25_list_lock);
+-	/* mark that this task has queued an async job, used by module init */
+-	current->flags |= PF_USED_ASYNC;
 -
-+			sock_put(sk);
- 			/* The entry could have been deleted from the
- 			 * list meanwhile and thus the next pointer is
- 			 * no longer valid.  Play it safe and restart
+ 	/* schedule for execution */
+ 	queue_work(system_unbound_wq, &entry->work);
+ 
+diff --git a/kernel/module.c b/kernel/module.c
+index e962096672636..8404b41be7c6f 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3499,12 +3499,6 @@ static noinline int do_init_module(struct module *mod)
+ 	}
+ 	freeinit->module_init = mod->init_layout.base;
+ 
+-	/*
+-	 * We want to find out whether @mod uses async during init.  Clear
+-	 * PF_USED_ASYNC.  async_schedule*() will set it.
+-	 */
+-	current->flags &= ~PF_USED_ASYNC;
+-
+ 	do_mod_ctors(mod);
+ 	/* Start the module */
+ 	if (mod->init != NULL)
+@@ -3530,22 +3524,13 @@ static noinline int do_init_module(struct module *mod)
+ 
+ 	/*
+ 	 * We need to finish all async code before the module init sequence
+-	 * is done.  This has potential to deadlock.  For example, a newly
+-	 * detected block device can trigger request_module() of the
+-	 * default iosched from async probing task.  Once userland helper
+-	 * reaches here, async_synchronize_full() will wait on the async
+-	 * task waiting on request_module() and deadlock.
+-	 *
+-	 * This deadlock is avoided by perfomring async_synchronize_full()
+-	 * iff module init queued any async jobs.  This isn't a full
+-	 * solution as it will deadlock the same if module loading from
+-	 * async jobs nests more than once; however, due to the various
+-	 * constraints, this hack seems to be the best option for now.
+-	 * Please refer to the following thread for details.
++	 * is done. This has potential to deadlock if synchronous module
++	 * loading is requested from async (which is not allowed!).
+ 	 *
+-	 * http://thread.gmane.org/gmane.linux.kernel/1420814
++	 * See commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
++	 * request_module() from async workers") for more details.
+ 	 */
+-	if (!mod->async_probe_requested && (current->flags & PF_USED_ASYNC))
++	if (!mod->async_probe_requested)
+ 		async_synchronize_full();
+ 
+ 	mutex_lock(&module_mutex);
 -- 
 2.34.1
 
