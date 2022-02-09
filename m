@@ -2,118 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20171C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF7BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 21:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234118AbiBIVyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 16:54:50 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:47906 "EHLO
+        id S234180AbiBIV4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 16:56:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:48916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234052AbiBIVyr (ORCPT
+        with ESMTP id S233832AbiBIVzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 16:54:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B9AD6C0F8692
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 13:54:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644443689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=G4Vjp3ISdYeY8fzvSFlPeRWv5ed2FS1oG8JSf5nd0SI=;
-        b=A2FS0a6d2G9hm6VIn5H7aBkDn3D0hSlTMuygs6HOx2WK0rVx/x5v3d/cV+WuROBngCRn3t
-        dGvVySRu9z1UhC07sJaoHifQPZAYhE+qjXyI5PZz8nVEJWGUnxpUQgVwyF4oTdpXtQCAuf
-        a6iDl+ztYlzTuK/s8ggxTmmPKQpn9IQ=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-135-BF1fIRiiOum0U1YYNO03KQ-1; Wed, 09 Feb 2022 16:54:48 -0500
-X-MC-Unique: BF1fIRiiOum0U1YYNO03KQ-1
-Received: by mail-qt1-f198.google.com with SMTP id w25-20020ac84d19000000b002d2966d66a8so2758143qtv.18
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 13:54:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=G4Vjp3ISdYeY8fzvSFlPeRWv5ed2FS1oG8JSf5nd0SI=;
-        b=EOIgoP8Ngkb0lVvc9CoS3fo9vTpVhmh6IZFAv/GnoSL7prb9cvNRK70ZiGlE4Uji0E
-         Dhwfz+aD6JKZYyRm2MVZrAIoPyQTk58+GWqJav3o1WVOeA1dvEnYSNA4oMdcvBoi7Gfk
-         0oYjMq6ZNI11tGtXiXhytaAtBx34/aXWkeUUAe3i1sNRG9UBLAosjSqFH599tH68DfNX
-         2OLHM8lR+xFxiBURXAPrQPWlvrS/6Q2y+aMbU3N73eOXDjtMK2DBWQH5CzA/tq2ImhaP
-         SXAOccRVZou+GKlljjOV63eg0yqAItWtgSHBsL1F0EGwXaN39NiADcgcSgPtXjglLW0i
-         G3FQ==
-X-Gm-Message-State: AOAM532389bZMflv1k/kn0jNM89IGOI5xHE6yuYheRoqKATztEI4Bm+y
-        oG7thYD66jCiecos055eUKTdsEgFZNSztNcsjTaEa4XsVY1vP5PuT6ZAyOrPEYCgV7w+dU/Ic5D
-        +APFDQzl7bKSCsZdwpDsu0UwE
-X-Received: by 2002:a05:622a:296:: with SMTP id z22mr2881541qtw.13.1644443688305;
-        Wed, 09 Feb 2022 13:54:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwFrCPJ+6XKauKxJ7NxYVD3KF/sK7bZF7uFmE4jil0rZlccWMwS7SraCxnnG1yIwW1HMuPj9A==
-X-Received: by 2002:a05:622a:296:: with SMTP id z22mr2881528qtw.13.1644443688085;
-        Wed, 09 Feb 2022 13:54:48 -0800 (PST)
-Received: from halaneylaptop (068-184-200-203.res.spectrum.com. [68.184.200.203])
-        by smtp.gmail.com with ESMTPSA id d11sm9667430qtd.63.2022.02.09.13.54.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 13:54:47 -0800 (PST)
-Date:   Wed, 9 Feb 2022 15:54:44 -0600
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-Cc:     rostedt@goodmis.org, matthias.bgg@gmail.com,
-        akpm@linux-foundation.org, mhiramat@kernel.org, vbabka@suse.cz,
-        wangkefeng.wang@huawei.com, linux@rasmusvillemoes.dk,
-        keescook@chromium.org, valentin.schneider@arm.com,
-        peterz@infradead.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, yj.chiang@mediatek.com
-Subject: Re: [PATCH] init: Use ktime_us_delta() to make initcall_debug log
- more precise
-Message-ID: <20220209215444.sxuxutqwcyisbbld@halaneylaptop>
-References: <20220209053350.15771-1-mark-pk.tsai@mediatek.com>
+        Wed, 9 Feb 2022 16:55:52 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335EFDF8E3DC;
+        Wed,  9 Feb 2022 13:55:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644443755; x=1675979755;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=cyA26yd1PlTgRBILEYh8lkKpW6JLK7FPHg1Hg2iCiiE=;
+  b=hUmdl/NXm598+NQ2gNvv0VzJoFxlUZElIyTunvyrues4zxSjl6pmW2EI
+   Ab0rBLPFCW6y2lUDXuULbLSb/g78ASfQlqxFuwNEVfu0NrdgQNumqu/Sp
+   BAsUtAMu8D8Xe4MUawMMArnNpV+7RNIJ3ydG/UAtIp6N6WAoQeQBvhu7N
+   iTZ3QCGBPOpZFybGdBU6WUVGJazdJ3u7rBrxRn2oeDu92hU3awzrtDmBD
+   CIJ8fs8Pma5gyy0NJfpJB5Gy65ATYRl5xdjyZZXjrh4+QtvYNC+fgCbOb
+   iZcDBtH9oWbajObvo4qjpD5f8fBwhlgWsdh5eRi4b8FAN/Ol2ybsoGPcW
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="273893745"
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="273893745"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 13:55:55 -0800
+X-IronPort-AV: E=Sophos;i="5.88,356,1635231600"; 
+   d="scan'208";a="585735193"
+Received: from sanvery-mobl.amr.corp.intel.com (HELO [10.212.232.139]) ([10.212.232.139])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 13:55:53 -0800
+Message-ID: <123f9a29-ddcd-13e5-68a1-22c6d938d76c@intel.com>
+Date:   Wed, 9 Feb 2022 13:55:52 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209053350.15771-1-mark-pk.tsai@mediatek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 14/35] mm: Introduce VM_SHADOW_STACK for shadow stack
+ memory
+Content-Language: en-US
+To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com
+Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-15-rick.p.edgecombe@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220130211838.8382-15-rick.p.edgecombe@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 01:33:50PM +0800, Mark-PK Tsai wrote:
-> Use ktime_us_delta() to make the initcall_debug log more precise than
-> right shifting the result of ktime_to_ns() by 10 bits.
-> 
-> Signed-off-by: Mark-PK Tsai <mark-pk.tsai@mediatek.com>
-> ---
->  init/main.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/init/main.c b/init/main.c
-> index 65fa2e41a9c0..c8edcc3029b1 100644
-> --- a/init/main.c
-> +++ b/init/main.c
-> @@ -1246,15 +1246,11 @@ trace_initcall_start_cb(void *data, initcall_t fn)
->  static __init_or_module void
->  trace_initcall_finish_cb(void *data, initcall_t fn, int ret)
->  {
-> -	ktime_t *calltime = (ktime_t *)data;
-> -	ktime_t delta, rettime;
-> -	unsigned long long duration;
-> +	ktime_t rettime, *calltime = (ktime_t *)data;
->  
->  	rettime = ktime_get();
-> -	delta = ktime_sub(rettime, *calltime);
-> -	duration = (unsigned long long) ktime_to_ns(delta) >> 10;
->  	printk(KERN_DEBUG "initcall %pS returned %d after %lld usecs\n",
-> -		 fn, ret, duration);
-> +		 fn, ret, (unsigned long long)ktime_us_delta(rettime, *calltime));
->  }
->  
->  static ktime_t initcall_calltime;
-> -- 
-> 2.18.0
-> 
+On 1/30/22 13:18, Rick Edgecombe wrote:
+> A shadow stack PTE must be read-only and have _PAGE_DIRTY set.  However,
+> read-only and Dirty PTEs also exist for copy-on-write (COW) pages.  These
+> two cases are handled differently for page faults.  Introduce
+> VM_SHADOW_STACK to track shadow stack VMAs.
 
-I took this for a spin while playing around with other things today,
-cleans things up nicely imo.
-
-Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
-Tested-by: Andrew Halaney <ahalaney@redhat.com>
-
+This is also a very appropriate place to remind folks that VM_WRITE is
+mutually exclusive with this flag.  That's pretty important.
