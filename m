@@ -2,209 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BD0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 10:06:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229488AbiBIKFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 05:05:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49446 "EHLO
+        id S231954AbiBIKF5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 05:05:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231954AbiBIKFN (ORCPT
+        with ESMTP id S232593AbiBIKFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 05:05:13 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AE1E0F61CA;
-        Wed,  9 Feb 2022 02:05:07 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2199wVnY006620;
-        Wed, 9 Feb 2022 10:02:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=0SulrBNmeN84wRgtYofE4OjmbcUym9l2eOVo7XxUFm4=;
- b=TeHVbBMKiV+8IdYckMbtnl6E6+YYCUp86qKBJW4MG4rk8ZslXSb7CJ6505HNrwO2r34a
- he6sCzDC75b7JgP2k7/sxGc2ytQ1LIGgnjaR92GhdMtMvaivRkNWWmMRiwirLfyaHaiW
- kYu5QlghfS/iiEoxOGHrUYNGwF24vAcdi+WHZdghVRhSJeQ+aoJyZ9xpd+IY+pwiBvsB
- NINh1fhxATE9DOvVcCLBrb6rqEuR4vSPQFy9nKoEXx4KAYjKCrdy2WBCp7F4ivvsZRmi
- +hfeKf87ceiJv23Mrbrnd7thbAKKTb0krNiGjdH85JYKIaFoh7DtJfeZIsJruzPs54UC Mw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk974d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:02:00 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2199ueU2000690;
-        Wed, 9 Feb 2022 10:01:59 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e4ajk973e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:01:59 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2199p0jZ011025;
-        Wed, 9 Feb 2022 10:01:57 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04fra.de.ibm.com with ESMTP id 3e2ygqb2md-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 09 Feb 2022 10:01:57 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 219A1qJ236176188
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 9 Feb 2022 10:01:52 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3BD6552076;
-        Wed,  9 Feb 2022 10:01:52 +0000 (GMT)
-Received: from li-7e0de7cc-2d9d-11b2-a85c-de26c016e5ad.ibm.com (unknown [9.171.75.42])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A0E3052069;
-        Wed,  9 Feb 2022 10:01:51 +0000 (GMT)
-Message-ID: <8d502356c3a624847c0dd2fe5d5f60e72923a141.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 05/11] KVM: s390: Add optional storage key checking
- to MEMOP IOCTL
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Date:   Wed, 09 Feb 2022 11:01:51 +0100
-In-Reply-To: <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
-References: <20220207165930.1608621-1-scgl@linux.ibm.com>
-         <20220207165930.1608621-6-scgl@linux.ibm.com>
-         <48d1678f-746c-dab6-5ec3-56397277f752@linux.ibm.com>
-         <71f07914-d0b2-e98b-22b2-bc05f04df2da@linux.ibm.com>
-         <6ea27647-fbbe-3962-03a0-8ca5340fc7fd@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 2oY2-tmZHD_Sxpy4wQ698-wD40BPGqHS
-X-Proofpoint-GUID: 3k6cMY92IgRBtWlRi49vOeHsyo1vvYAn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-09_05,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1015
- priorityscore=1501 phishscore=0 mlxlogscore=999 adultscore=0 bulkscore=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202090064
+        Wed, 9 Feb 2022 05:05:50 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9849CDF498BD
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:05:23 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so1741536pjh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:05:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sq37MaYZovWHPQWKVIdOZC1Re8Lf/1V40i2xFH2uM5w=;
+        b=L06DCW/1L1RTvIloDsyXiioyZvOnwFkLRWfC/WzeWwSIgc/RjJPcnraGbS/OJqt1wY
+         qbeytg9m9kUqkZWjfbJccoc3f/Mg/QsEGzX0JrSC67AhU5ClSEgiBib/8D3h4bVUmcCz
+         Eg7i4v/DAH7Vtu0y/PfvelK4kgk/JoGNudaNkCsLB8mPfwJzYFRCr/k9pkXliUOIA8Ct
+         RbHGnAAVn4L8BazWS3Q7WzkMflz9KL42PWlHlJQ97X6n+Qidmkq/remFmG+axqPYJBHr
+         jp00eL3qGKrfHqpCf1ZmaVg3Wn/jJEZvgiAjetj2aWcNjhkl7KdpTtrmywQETn0M2VHL
+         jFyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sq37MaYZovWHPQWKVIdOZC1Re8Lf/1V40i2xFH2uM5w=;
+        b=MC/cvEQMA14P7q4V4RBGinJRBR1vqM8GJm09AMxsx2eb5RWtZMXaSUXMkc/eUKS4Fe
+         F7TDZzr95yE18IFXzSAl51Qs31aoJoqVGk7Ue201XRsS9VJiaAkoSjGT1jsw3rhDlzkM
+         2BgPMZO7rOMzpFFavz7rNLlnyU3WhUKsUEJ6EySPATptfdcQj7I6TGZPH/EfDcuSj9/h
+         PIlHC+4i4Ga00AsJ2CYrEQiQWIID2pB3ojDixhTLqE/18zz+RSyp0tpLXBwRHgJMUbx2
+         I/nE3HOoTm90bc5UxQlY4L+IJqRGEaSygq+aAnSoP1LxMAzquv7L7z0vrmO3GAfr1no/
+         hRew==
+X-Gm-Message-State: AOAM530YZhc9effTogUHqHsPRr4KBRvROyX5toOERlQ/FTVhgpTwy85i
+        IuiS+ysJt9t+gSHavv+xeCcA
+X-Google-Smtp-Source: ABdhPJwQSCYyz/Zdd1DwVYmbf9xfpx0/LXjSkKmDWuVrn3LDVwDmDRehJV7Sf8wTkZLhyKtwCCjVmg==
+X-Received: by 2002:a17:90b:351:: with SMTP id fh17mr2610719pjb.28.1644401106499;
+        Wed, 09 Feb 2022 02:05:06 -0800 (PST)
+Received: from localhost.localdomain ([117.217.179.178])
+        by smtp.gmail.com with ESMTPSA id p2sm6722024pfo.125.2022.02.09.02.05.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 02:05:06 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        vbadigan@codeaurora.org, quic_cang@quicinc.com,
+        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, elder@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 00/23] Add initial support for MHI endpoint stack
+Date:   Wed,  9 Feb 2022 15:26:01 +0530
+Message-Id: <20220209095624.26389-1-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-09 at 10:08 +0100, Christian Borntraeger wrote:
-> 
-> Am 09.02.22 um 09:49 schrieb Janis Schoetterl-Glausch:
-> > On 2/9/22 08:34, Christian Borntraeger wrote:
-> > > Am 07.02.22 um 17:59 schrieb Janis Schoetterl-Glausch:
-> > > > User space needs a mechanism to perform key checked accesses when
-> > > > emulating instructions.
-> > > > 
-> > > > The key can be passed as an additional argument.
-> > > > Having an additional argument is flexible, as user space can
-> > > > pass the guest PSW's key, in order to make an access the same way the
-> > > > CPU would, or pass another key if necessary.
-> > > > 
-> > > > Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-> > > > Acked-by: Janosch Frank <frankja@linux.ibm.com>
-> > > > Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> > > > ---
-> > > >    arch/s390/kvm/kvm-s390.c | 49 +++++++++++++++++++++++++++++++---------
-> > > >    include/uapi/linux/kvm.h |  8 +++++--
-> > > >    2 files changed, 44 insertions(+), 13 deletions(-)
-> > > > 
-> > > > diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> > > > index cf347e1a4f17..71e61fb3f0d9 100644
-> > > > --- a/arch/s390/kvm/kvm-s390.c
-> > > > +++ b/arch/s390/kvm/kvm-s390.c
-> > > > @@ -32,6 +32,7 @@
-> > > >    #include <linux/sched/signal.h>
-> > > >    #include <linux/string.h>
-> > > >    #include <linux/pgtable.h>
-> > > > +#include <linux/bitfield.h>
-> > > >      #include <asm/asm-offsets.h>
-> > > >    #include <asm/lowcore.h>
-> > > > @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
-> > > >        return r;
-> > > >    }
-> > > >    +static bool access_key_invalid(u8 access_key)
-> > > > +{
-> > > > +    return access_key > 0xf;
-> > > > +}
-> > > > +
-> > > >    long kvm_arch_vm_ioctl(struct file *filp,
-> > > >                   unsigned int ioctl, unsigned long arg)
-> > > >    {
-> > > > @@ -4687,34 +4693,54 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
-> > > >                      struct kvm_s390_mem_op *mop)
-> > > >    {
-> > > >        void __user *uaddr = (void __user *)mop->buf;
-> > > > +    u8 access_key = 0, ar = 0;
-> > > >        void *tmpbuf = NULL;
-> > > > +    bool check_reserved;
-> > > >        int r = 0;
-> > > >        const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
-> > > > -                    | KVM_S390_MEMOP_F_CHECK_ONLY;
-> > > > +                    | KVM_S390_MEMOP_F_CHECK_ONLY
-> > > > +                    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
-> > > >    -    if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
-> > > > +    if (mop->flags & ~supported_flags || !mop->size)
-> > > >            return -EINVAL;
-> > > > -
-> > > >        if (mop->size > MEM_OP_MAX_SIZE)
-> > > >            return -E2BIG;
-> > > > -
-> > > >        if (kvm_s390_pv_cpu_is_protected(vcpu))
-> > > >            return -EINVAL;
-> > > > -
-> > > >        if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
-> > > >            tmpbuf = vmalloc(mop->size);
-> > > >            if (!tmpbuf)
-> > > >                return -ENOMEM;
-> > > >        }
-> > > > +    ar = mop->ar;
-> > > > +    mop->ar = 0;
-> > > 
-> > > Why this assignment to 0?
-> > 
-> > It's so the check of reserved below works like that, they're all part of the anonymous union.
-> 
-> Ah, I see. This is ugly :-)
+Hello,
 
-Yes :)
-> 
-> > > > +    if (ar >= NUM_ACRS)
-> > > > +        return -EINVAL;
-> > > > +    if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
-> > > > +        access_key = mop->key;
-> > > > +        mop->key = 0;
-> > > 
-> > > and this? I think we can leave mop unchanged.
-> > > 
-> > > In fact, why do we add the ar and access_key variable?
-> > > This breaks the check from above (if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size))  into two checks
-> > > and it will create a memleak for tmpbuf.
-> > 
-> > I can move the allocation down, goto out or get rid of the reserved check and keep everything as before.
-> > First is simpler, but second makes handling that case more explicit and might help in the future.
-> 
-> Maybe add a reserved_02 field in the anon struct and check this for being zero and get rid of the local variables?
+This series adds initial support for the Qualcomm specific Modem Host Interface
+(MHI) bus in endpoint devices like SDX55 modems. The MHI bus in endpoint devices
+communicates with the MHI bus in host machines like x86 over any physical bus
+like PCIe. The MHI host support is already in mainline [1] and been used by PCIe
+based modems and WLAN devices running vendor code (downstream).
 
-I think that would require us adding new fields in the struct by putting them in a union with reserved_02 and so on,
-which could get rather messy.
+Overview
+========
 
-Maybe a comment is good enought?
-> 
-> > Patch 6 has the same issue in the vm ioctl handler.
-> > > Simply use mop->key and mop->ar below and get rid of the local variables.
-> > > The structure has no concurrency and gcc will handle that just as the local variable.
-> > > 
-> > > Other than that this looks good.
-> > 
-> > [...]
-> > 
+This series aims at adding the MHI support in the endpoint devices with the goal
+of getting data connectivity using the mainline kernel running on the modems.
+Modems here refer to the combination of an APPS processor (Cortex A grade) and
+a baseband processor (DSP). The MHI bus is located in the APPS processor and it
+transfers data packets from the baseband processor to the host machine.
+
+The MHI Endpoint (MHI EP) stack proposed here is inspired by the downstream
+code written by Qualcomm. But the complete stack is mostly re-written to adapt
+to the "bus" framework and made it modular so that it can work with the upstream
+subsystems like "PCI Endpoint". The code structure of the MHI endpoint stack
+follows the MHI host stack to maintain uniformity.
+
+With this initial MHI EP stack (along with few other drivers), we can establish
+the network interface between host and endpoint over the MHI software channels
+(IP_SW0) and can do things like IP forwarding, SSH, etc...
+
+Stack Organization
+==================
+
+The MHI EP stack has the concept of controller and device drivers as like the
+MHI host stack. The MHI EP controller driver can be a PCI Endpoint Function
+driver and the MHI device driver can be a MHI EP Networking driver or QRTR
+driver. The MHI EP controller driver is tied to the PCI Endpoint subsystem and
+handles all bus related activities like mapping the host memory, raising IRQ,
+passing link specific events etc... The MHI EP networking driver is tied to the
+Networking stack and handles all networking related activities like
+sending/receiving the SKBs from netdev, statistics collection etc...
+
+This series only contains the MHI EP code, whereas the PCIe EPF driver and MHI
+EP Networking drivers are not yet submitted and can be found here [2]. Though
+the MHI EP stack doesn't have the build time dependency, it cannot function
+without them.
+
+Test setup
+==========
+
+This series has been tested on Telit FN980 TLB board powered by Qualcomm SDX55
+(a.k.a X55 modem) and Qualcomm SM8450 based dev board.
+
+For testing the stability and performance, networking tools such as iperf, ssh
+and ping are used.
+
+Limitations
+===========
+
+We are not _yet_ there to get the data packets from the modem as that involves
+the Qualcomm IP Accelerator (IPA) integration with MHI endpoint stack. But we
+are planning to add support for it in the coming days.
+
+References
+==========
+
+MHI bus: https://www.kernel.org/doc/html/latest/mhi/mhi.html
+Linaro connect presentation around this topic: https://connect.linaro.org/resources/lvc21f/lvc21f-222/
+
+Thanks,
+Mani
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/bus/mhi
+[2] https://git.linaro.org/landing-teams/working/qualcomm/kernel.git/log/?h=tracking-qcomlt-sdx55-drivers
+
+Changes in v2:
+
+v2 mostly addresses the issues seen while testing the stack on SM8450 that is a
+SMP platform and also incorporates the review comments from Alex.
+
+Major changes are:
+
+* Added a cleanup patch for getting rid of SHIFT macros and used the bitfield
+  operations.
+* Added the endianess patches that were submitted to MHI list and used the
+  endianess conversion in EP patches also.
+* Added support for multiple event rings.
+* Fixed the MSI generation based on the event ring index.
+* Fixed the doorbell list handling by making use of list splice and not locking
+  the entire list manipulation.
+* Added new APIs for wrapping the reading and writing to host memory (Dmitry).
+* Optimized the read_channel and queue_skb function logics.
+* Added Hemant's R-o-b tag.
+
+Manivannan Sadhasivam (21):
+  bus: mhi: Move host MHI code to "host" directory
+  bus: mhi: Move common MHI definitions out of host directory
+  bus: mhi: Make mhi_state_str[] array static inline and move to
+    common.h
+  bus: mhi: Cleanup the register definitions used in headers
+  bus: mhi: Get rid of SHIFT macros and use bitfield operations
+  bus: mhi: ep: Add support for registering MHI endpoint controllers
+  bus: mhi: ep: Add support for registering MHI endpoint client drivers
+  bus: mhi: ep: Add support for creating and destroying MHI EP devices
+  bus: mhi: ep: Add support for managing MMIO registers
+  bus: mhi: ep: Add support for ring management
+  bus: mhi: ep: Add support for sending events to the host
+  bus: mhi: ep: Add support for managing MHI state machine
+  bus: mhi: ep: Add support for processing MHI endpoint interrupts
+  bus: mhi: ep: Add support for powering up the MHI endpoint stack
+  bus: mhi: ep: Add support for powering down the MHI endpoint stack
+  bus: mhi: ep: Add support for handling MHI_RESET
+  bus: mhi: ep: Add support for handling SYS_ERR condition
+  bus: mhi: ep: Add support for processing command and TRE rings
+  bus: mhi: ep: Add support for queueing SKBs over MHI bus
+  bus: mhi: ep: Add support for suspending and resuming channels
+  bus: mhi: ep: Add uevent support for module autoloading
+
+Paul Davey (2):
+  bus: mhi: Fix pm_state conversion to string
+  bus: mhi: Fix MHI DMA structure endianness
+
+ drivers/bus/Makefile                      |    2 +-
+ drivers/bus/mhi/Kconfig                   |   28 +-
+ drivers/bus/mhi/Makefile                  |    9 +-
+ drivers/bus/mhi/common.h                  |  319 ++++
+ drivers/bus/mhi/ep/Kconfig                |   10 +
+ drivers/bus/mhi/ep/Makefile               |    2 +
+ drivers/bus/mhi/ep/internal.h             |  254 ++++
+ drivers/bus/mhi/ep/main.c                 | 1602 +++++++++++++++++++++
+ drivers/bus/mhi/ep/mmio.c                 |  274 ++++
+ drivers/bus/mhi/ep/ring.c                 |  267 ++++
+ drivers/bus/mhi/ep/sm.c                   |  174 +++
+ drivers/bus/mhi/host/Kconfig              |   31 +
+ drivers/bus/mhi/{core => host}/Makefile   |    4 +-
+ drivers/bus/mhi/{core => host}/boot.c     |   17 +-
+ drivers/bus/mhi/{core => host}/debugfs.c  |   40 +-
+ drivers/bus/mhi/{core => host}/init.c     |  124 +-
+ drivers/bus/mhi/{core => host}/internal.h |  427 +-----
+ drivers/bus/mhi/{core => host}/main.c     |   46 +-
+ drivers/bus/mhi/{ => host}/pci_generic.c  |    0
+ drivers/bus/mhi/{core => host}/pm.c       |   36 +-
+ include/linux/mhi_ep.h                    |  293 ++++
+ include/linux/mod_devicetable.h           |    2 +
+ scripts/mod/file2alias.c                  |   10 +
+ 23 files changed, 3443 insertions(+), 528 deletions(-)
+ create mode 100644 drivers/bus/mhi/common.h
+ create mode 100644 drivers/bus/mhi/ep/Kconfig
+ create mode 100644 drivers/bus/mhi/ep/Makefile
+ create mode 100644 drivers/bus/mhi/ep/internal.h
+ create mode 100644 drivers/bus/mhi/ep/main.c
+ create mode 100644 drivers/bus/mhi/ep/mmio.c
+ create mode 100644 drivers/bus/mhi/ep/ring.c
+ create mode 100644 drivers/bus/mhi/ep/sm.c
+ create mode 100644 drivers/bus/mhi/host/Kconfig
+ rename drivers/bus/mhi/{core => host}/Makefile (54%)
+ rename drivers/bus/mhi/{core => host}/boot.c (96%)
+ rename drivers/bus/mhi/{core => host}/debugfs.c (90%)
+ rename drivers/bus/mhi/{core => host}/init.c (93%)
+ rename drivers/bus/mhi/{core => host}/internal.h (50%)
+ rename drivers/bus/mhi/{core => host}/main.c (98%)
+ rename drivers/bus/mhi/{ => host}/pci_generic.c (100%)
+ rename drivers/bus/mhi/{core => host}/pm.c (97%)
+ create mode 100644 include/linux/mhi_ep.h
+
+-- 
+2.25.1
 
