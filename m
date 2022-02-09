@@ -2,89 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D04FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 11:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230356AbiBILXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 06:23:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
+        id S230239AbiBIL1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 06:27:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229552AbiBILXN (ORCPT
+        with ESMTP id S229537AbiBIL1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 06:23:13 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3285E126CB2
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 02:17:30 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id h6so3104248wrb.9
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 02:17:30 -0800 (PST)
+        Wed, 9 Feb 2022 06:27:39 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 176A3E0969AF;
+        Wed,  9 Feb 2022 02:21:29 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id cf2so3995380edb.9;
+        Wed, 09 Feb 2022 02:21:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vfAV7F+Ro4DbSdjhHkusaJBb3PiMNKM76wOprs+NcNM=;
-        b=ny9ULsL/xMEXFfNXPt20i+xiJxpkX2dV9SayL9TBFHnQZRFvyPp0T00z/YJrWXCNrL
-         B0x8FxZfCdLVm3CW4kS/+7tgqqUiYKSPATkRb6BF9/tnoNqwZv/b11y/6rIZgRXHpArU
-         5ZrEiJM4nHjULj3695Qcc3hqXjmarVseMpa3GxX8WqLmB15DbGwufz+iUoU/ghEJguzj
-         cDquRy5IkmwC/jRm7sFTgzlmYvH8aZgZCKq5YnuHF+UFWVn4BrRSvA0mziIkSLydOE98
-         sZ68twH4yfcSEuLLynk+EdDdPxZhn45IYbtbIpmC1lWwSRqQk7Bx4jLyBW1ImXROWCFw
-         mW8Q==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
+        b=Pf5vkLS6cPpQ5pXhObwXKqRIi1EHsNwkjgOuOa/YseN2ddMt/AVXqIdoyJk3Ukrjc/
+         sFw77R/VIC7pfahE4aRjgV8RXqj1X8wro2JHIJ3YfzkkO8yWpb+kU89Ie1QbXP7UpmmX
+         C1GTdDav3TZBL+8qkGEkbE/JbNM6IKNogNBU3AYgTpYLKIDrcM08bDEEOtO2Px50SmcY
+         c45e2GaAyTv+Qt9Upwv5nkTJ8UukW6CcByZB9nqiTPwPZezURGQpOGire3k/OQdhZmAF
+         3b17UDq8d7C1nH2GOLo5//6O+KP8RjXZ24VsFeGf4Xsd0ejlqNjOjw63cHlmJ8hTaEwS
+         PVdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=vfAV7F+Ro4DbSdjhHkusaJBb3PiMNKM76wOprs+NcNM=;
-        b=yqussP0Otlfe64xTAXEcmliaLGco54dm8dmDs2xkmjHnoPUNnKfRwHVCls+JDnt5J/
-         izP2tP5u8q2klKlLUnOz62wodUK02qnaa1AH9GQzB2LoW+QuOg0CSYPL6o8IfrMSW5tf
-         RGVc7EP1X6lA4+Di/1oCr1h574vX2ZUwj5FnXJzyinp8bbtza70pOxseMGgnSmJ9mi0/
-         bVwcBBcZXk2H/yxDXM4KobdCHvTlksVgtq9zkCh7LazNheF+/NPK4O/00/qcJ4ABgnl3
-         BytjPOJH5U/kt5SK4+s4Y2xgxpYF917EgwIsZ9ZmkFjvvCKhvfxibfIujtaWjOJwsPXt
-         QppA==
-X-Gm-Message-State: AOAM531qLdq7TPCDXDQbnWoYWArpSSFPwuaWs4AMa0TuIEb2XvYqliVL
-        IUpoFjYO/hac5EY0Hfah9N1pwQ==
-X-Google-Smtp-Source: ABdhPJy0UdpjCxyiilvCKFqjSjmlR/q7Psi0zrmsidgeyfsV9G3fsYdDsqE4HZdrlSWv1cvyhkKIIg==
-X-Received: by 2002:a5d:6d05:: with SMTP id e5mr1504960wrq.214.1644401848828;
-        Wed, 09 Feb 2022 02:17:28 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id e13sm17740929wrq.35.2022.02.09.02.17.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 02:17:28 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH] dt-bindings: crypto: rockchip: fix a typo on crypto-controller
-Date:   Wed,  9 Feb 2022 10:17:21 +0000
-Message-Id: <20220209101721.1659574-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        bh=HkPO0AGVSJ77TKhpfb80SADzW0ARBmPh6GNCbk7lmrM=;
+        b=as3TEKYG1k0XsZ51EWJio0H0+og5wV6EC6EEPplFEfb0Ap+n6eCp0r7qMo5FGCehrm
+         t4KJp/eaJi1WGsxKKwgvwcc4CALWRo4XfhYBbLEbJ+FN6AKv/ubMQjHHD7K8uo2v7Iu4
+         wYK+ucb/mkLu64anFOSUSZhtpMvxabEoeR7ApMZoVsJQE85ajsVNzJyii/aSE1lu1rFQ
+         GvLpIB5VD9itzkZfmyac4OR2CB3h1tSSByHKbucevZIkSt3qvqPETlp8gj/iH0oZppZS
+         XFWZUm9akSCwk0kxDjhzfMUgkD+Q8bUkHiK0bBnQo9bZCnbP5I7mrtaemve2QukuG4OY
+         MquQ==
+X-Gm-Message-State: AOAM530idXOe9ePNk96veGk/5LMhFIzIH2H8rPVqBee3ylE9tCDYJ9Re
+        TgQIzvgcwwgeQXbo/o5JC/g=
+X-Google-Smtp-Source: ABdhPJxw9KX+3YSWHKExATGl3dQ+kkw3w8RMgwOuyi1zuq7fwXtnfr9xhcYUoRq5LIZGKwB30YDNxg==
+X-Received: by 2002:aa7:d898:: with SMTP id u24mr1623473edq.60.1644402087635;
+        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
+Received: from [192.168.0.108] ([77.126.86.139])
+        by smtp.gmail.com with ESMTPSA id p19sm996929ejx.30.2022.02.09.02.21.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 02:21:27 -0800 (PST)
+Message-ID: <bde548df-cb80-966a-599c-3e1cb8639716@gmail.com>
+Date:   Wed, 9 Feb 2022 12:21:24 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [BUG] net: mellanox: mlx4: possible deadlock in mlx4_xdp_set()
+ and mlx4_en_reset_config()
+Content-Language: en-US
+To:     Jia-Ju Bai <baijiaju1990@gmail.com>, tariqt@nvidia.com,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+In-Reply-To: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crypto-controller had a typo, fix it.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- Documentation/devicetree/bindings/crypto/rockchip-crypto.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt b/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-index 5e2ba385b8c9..53e39d5f94e7 100644
---- a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-+++ b/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-@@ -16,7 +16,7 @@ Required properties:
- 
- Examples:
- 
--	crypto: cypto-controller@ff8a0000 {
-+	crypto: crypto-controller@ff8a0000 {
- 		compatible = "rockchip,rk3288-crypto";
- 		reg = <0xff8a0000 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
--- 
-2.34.1
+On 2/7/2022 5:16 PM, Jia-Ju Bai wrote:
+> Hello,
+> 
+> My static analysis tool reports a possible deadlock in the mlx4 driver 
+> in Linux 5.16:
+> 
 
+Hi Jia-Ju,
+Thanks for your email.
+
+Which static analysis tool do you use? Is it standard one?
+
+> mlx4_xdp_set()
+>    mutex_lock(&mdev->state_lock); --> Line 2778 (Lock A)
+>    mlx4_en_try_alloc_resources()
+>      mlx4_en_alloc_resources()
+>        mlx4_en_destroy_tx_ring()
+>          mlx4_qp_free()
+>            wait_for_completion(&qp->free); --> Line 528 (Wait X)
+
+The refcount_dec_and_test(&qp->refcount)) in mlx4_qp_free() pairs with 
+refcount_set(&qp->refcount, 1); in mlx4_qp_alloc.
+mlx4_qp_event increases and decreasing the refcount while running 
+qp->event(qp, event_type); to protect it from being freed.
+
+> 
+> mlx4_en_reset_config()
+>    mutex_lock(&mdev->state_lock); --> Line 3522 (Lock A)
+>    mlx4_en_try_alloc_resources()
+>      mlx4_en_alloc_resources()
+>        mlx4_en_destroy_tx_ring()
+>          mlx4_qp_free()
+>            complete(&qp->free); --> Line 527 (Wake X)
+> 
+> When mlx4_xdp_set() is executed, "Wait X" is performed by holding "Lock 
+> A". If mlx4_en_reset_config() is executed at this time, "Wake X" cannot 
+> be performed to wake up "Wait X" in mlx4_xdp_set(), because "Lock A" has 
+> been already hold by mlx4_xdp_set(), causing a possible deadlock.
+> 
+> I am not quite sure whether this possible problem is real and how to fix 
+> it if it is real.
+> Any feedback would be appreciated, thanks :)
+> 
+
+Not possible.
+These are two different qps, maintaining two different instances of 
+refcount and complete, following the behavior I described above.
+> 
+> Best wishes,
+> Jia-Ju Bai
+
+Thanks,
+Tariq
