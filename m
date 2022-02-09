@@ -2,71 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7128C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232740AbiBIMJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:09:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
+        id S232744AbiBIMKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:10:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233096AbiBIMGg (ORCPT
+        with ESMTP id S233087AbiBIMGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 07:06:36 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2013EC03C1B6;
-        Wed,  9 Feb 2022 03:06:32 -0800 (PST)
-Received: from [192.168.88.87] (unknown [36.68.63.145])
-        by gnuweeb.org (Postfix) with ESMTPSA id 3CFF57E254;
-        Wed,  9 Feb 2022 11:06:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1644404791;
-        bh=CMIyqS9DnDZDs9eLANac+euir/RYD6fyCVyaDWjZp/w=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=QA2XpAp7H5Eh/37AmSmulLKjlB59txXBn0mTK/RATT1dH06TPnEMzMQOe2+F9c4G2
-         B+KmB/XL6d9hvIXa+s/wWu8+6GmV3kDVuyqAt4xt3vY2CdLzxrWa8RKY5wE3Yi23nm
-         jySsr8e7vwiEY9nZBpt19UV2Iewcd72Md132dwo7A4M2F1IPO3eX2AIRviYoY5pA+Y
-         OOq+DeYmmmRmikP1WpmurdJndxYpAJcuOriLZtv8yKpHveTWnv9kdOIfYCxq//ecDu
-         IbsdF8d/MChqxI7Pw30+jJgS/6o5k0od2kifbR3AsNC0ZkTogetMdVxHzcKNFUS2np
-         zbygG0YMGzOUg==
-Message-ID: <ff729ee0-fbc0-bb6f-d638-cc33dd4734a6@gnuweeb.org>
-Date:   Wed, 9 Feb 2022 18:06:15 +0700
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424DEC1DC733;
+        Wed,  9 Feb 2022 03:19:48 -0800 (PST)
+X-UUID: c0cd2744d2ce427aae2a08eec454ab2c-20220209
+X-UUID: c0cd2744d2ce427aae2a08eec454ab2c-20220209
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 581210229; Wed, 09 Feb 2022 19:19:44 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 9 Feb 2022 19:19:43 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 9 Feb
+ 2022 19:19:43 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Feb 2022 19:19:42 +0800
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Leilk Liu <leilk.liu@mediatek.com>
+Subject: [PATCH 5/6] dt-bindings: spi: support mediatek,need_ahb_clk flag
+Date:   Wed, 9 Feb 2022 19:19:37 +0800
+Message-ID: <20220209111938.16137-6-leilk.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209111938.16137-1-leilk.liu@mediatek.com>
+References: <20220209111938.16137-1-leilk.liu@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] io_uring: Fix uninitialized use of ret in
- io_eventfd_register()
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, axboe@kernel.dk
-Cc:     asml.silence@gmail.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220209102637.34088-1-jiapeng.chong@linux.alibaba.com>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <20220209102637.34088-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 5:26 PM, Jiapeng Chong wrote:
-> In some scenarios, ret is not assigned in the whole process, so it
-> needs to be initialized at the beginning.
-> 
-> Clean up the following clang warning:
-> 
-> fs/io_uring.c:9373:13: note: initialize the variable 'ret' to silence
-> this warning.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
+this patch support mediatek,need_ahb_clk flag.
 
-This is already fixed in commit
-4c65723081332607ca331072b0f8a90189e2e447 ("io_uring: Fix use of uninitialized ret in io_eventfd_register()")
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+---
+ .../devicetree/bindings/spi/mediatek,spi-mt65xx.yaml         | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-https://lore.kernel.org/all/20220207162410.1013466-1-nathan@kernel.org/T/
-
-https://github.com/torvalds/linux/commit/4c65723081332607ca331072b0f8a90189e2e447.patch
-
+diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+index 241c0f5880d3..af12c1711182 100644
+--- a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
++++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+@@ -71,6 +71,11 @@ properties:
+       specify which pins group(ck/mi/mo/cs) spi controller used.
+       This is an array.
+ 
++  mediatek,need_ahb_clk:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description:
++      specify IC which need control ahb clock.
++
+ required:
+   - compatible
+   - reg
 -- 
-Ammar Faizi
+2.25.1
+
