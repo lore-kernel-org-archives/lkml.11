@@ -2,96 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BCBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2171C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 15:03:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235463AbiBIPCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 10:02:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
+        id S235477AbiBIPD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 10:03:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbiBIPCt (ORCPT
+        with ESMTP id S235465AbiBIPDY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 10:02:49 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F9FDC0612BE
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:02:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644418970;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=iyN5oXAdR+1KgWlXLwn4IxXizXoaPkpGjMVEu9vunXY=;
-        b=bZ5VHC34v5Ro63LCvXEnoSZU/oFknJv2XugW1zTuu/2OLWw5sNVZiK4WYLJ3O3O6FKOndy
-        AeDkybFStuuCqi47ZzaZZO2B/vS5SdMxag796TFuatuqolVdnxDgTwBYs79S+6diHx+0JZ
-        v5aDnxGj4DRDR7yZ5ylqxng5xjdk24o=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-35-CtUp0geFNTmes0EefPvr4w-1; Wed, 09 Feb 2022 10:02:49 -0500
-X-MC-Unique: CtUp0geFNTmes0EefPvr4w-1
-Received: by mail-qt1-f200.google.com with SMTP id s1-20020ac85ec1000000b002cf7c93d56dso1867508qtx.21
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 07:02:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iyN5oXAdR+1KgWlXLwn4IxXizXoaPkpGjMVEu9vunXY=;
-        b=YSCqWhXiVZtCS/mQpf9HdxO7f7IdW1DHsOklfgAEtAQe9kDEYHopYlGaaI+VBUuxFn
-         jKUZujgsRkRZy1e/B/wh3WSJX57b6Yl9HoTjrWxGs7vrFsUAY38/BFnX9VyINhZkbpr2
-         lOq/Sr/H5IkouadTLi1DHQ4Icew8ZyW8Gj2cu4Z2Rd4u1AFopBMhMNitWHe3veaN9XNK
-         HhicvaGkMlpUh9UQn32nYouzerTskkBq/nl5kxcDs245d02tFP2cMMVewjm/hoRSpwmH
-         WPCTvD6fnCNXLWDWqdnUYdhrVfDAFgQF54Nf33IHKjJ0K+huoaW9sCsRWe5KxZai/e/U
-         m7XQ==
-X-Gm-Message-State: AOAM530gTXOSVpkjwGvCSChHAKhX9jOscC2pUAAmgCmj+2GvBVg69L3o
-        YIh0ng2tOzcd+at5VLZ56pNf6ipXPAT+g21uoegKLK3FGCWc3DhCKN/PtWuFIE6NgCzJnrGMeRB
-        IevGtTsKzt4Fs1A18kdT/z1Qc
-X-Received: by 2002:a37:a3d2:: with SMTP id m201mr1296740qke.207.1644418968775;
-        Wed, 09 Feb 2022 07:02:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwCdq/55Q1gZ9pOKmf595RR79TBJCs1r4SD6oyvo1ypUkS9q2jEpetqKV7Sf7jGQj28+QPAQA==
-X-Received: by 2002:a37:a3d2:: with SMTP id m201mr1296691qke.207.1644418968172;
-        Wed, 09 Feb 2022 07:02:48 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id 22sm9418260qtw.75.2022.02.09.07.02.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 07:02:47 -0800 (PST)
-From:   trix@redhat.com
-To:     davem@davemloft.net, kuba@kernel.org, alobakin@pm.me,
-        edumazet@google.com, pabeni@redhat.com, vvs@virtuozzo.com,
-        cong.wang@bytedance.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] skbuff: cleanup double word in comment
-Date:   Wed,  9 Feb 2022 07:02:42 -0800
-Message-Id: <20220209150242.2292183-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Wed, 9 Feb 2022 10:03:24 -0500
+X-Greylist: delayed 911 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 07:03:28 PST
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDB4C06157B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 07:03:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1644418054; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=TjSgu9sZsyKr/hEIFKeJoy8pAugybVEUIG2BbddlTrs/AzVW06uYW0wauusGZd1/x2gqVFeErVdMmZTGCV977DymOq79p4kbgo0g8G/TTySGUNIuIBucp4FqADBDddVFu45vp9XSpagMGUCLyrlLsASlnwdqVMrhsmhQAySobVE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1644418054; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=kmwejnD0khrSw7Jzk3gPGadOWupapvsORfk9uYGhYd8=; 
+        b=ZfRt3CP6bd8JCsvrDkWACX5GpUwqQH8HPkoDpdKMq0KlyXyLVrvP4BF63Csvjie+bhLvvPKdwZR+gGYEqcFz7yDUJzB/yfWFOTS7wBtnyPB3W3g3g+DXbAhGCedhmLhnmlpkJ1KOF+wKJshTEph8ljTgN92mEtxp0UDiX0Sjr14=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1644418054;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+        bh=kmwejnD0khrSw7Jzk3gPGadOWupapvsORfk9uYGhYd8=;
+        b=dtNvbm1VL5aQ7kRJ3HU8prbsmNoyKbtJT6VpnGh3kx9eJngRuoRUbnyu6offD4tt
+        y9tws15N7pKZwvLJgg4u1Kj6ngAU/o9Trel972AB06beF6VH61aRGTihbjkf0PqFbAl
+        JWjqjnvn3w6MV7vuG9bf+d8ZvcKZZGtXwriz2P5c=
+Received: from [10.10.10.216] (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
+        with SMTPS id 1644418053600780.3051547022845; Wed, 9 Feb 2022 06:47:33 -0800 (PST)
+Message-ID: <24eba648-9029-e66f-aa2c-31ddbc7b1199@arinc9.com>
+Date:   Wed, 9 Feb 2022 17:47:29 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH net] net: phy: mediatek: remove PHY mode check on MT7531
+Content-Language: en-US
+To:     DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>
+References: <20220209143948.445823-1-dqfext@gmail.com>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220209143948.445823-1-dqfext@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 09/02/2022 17:39, DENG Qingfang wrote:
+> The function mt7531_phy_mode_supported in the DSA driver set supported
+> mode to PHY_INTERFACE_MODE_GMII instead of PHY_INTERFACE_MODE_INTERNAL
+> for the internal PHY, so this check breaks the PHY initialization:
+> 
+> mt7530 mdio-bus:00 wan (uninitialized): failed to connect to PHY: -EINVAL
+> 
+> Remove the check to make it work again.
+> 
+> Reported-by: Hauke Mehrtens <hauke@hauke-m.de>
+> Fixes: e40d2cca0189 ("net: phy: add MediaTek Gigabit Ethernet PHY driver")
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
+>   drivers/net/phy/mediatek-ge.c | 3 ---
+>   1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mediatek-ge.c b/drivers/net/phy/mediatek-ge.c
+> index b7a5ae20edd5..68ee434f9dea 100644
+> --- a/drivers/net/phy/mediatek-ge.c
+> +++ b/drivers/net/phy/mediatek-ge.c
+> @@ -55,9 +55,6 @@ static int mt7530_phy_config_init(struct phy_device *phydev)
+>   
+>   static int mt7531_phy_config_init(struct phy_device *phydev)
+>   {
+> -	if (phydev->interface != PHY_INTERFACE_MODE_INTERNAL)
+> -		return -EINVAL;
+> -
+>   	mtk_gephy_config_init(phydev);
+>   
+>   	/* PHY link down power saving enable */
 
-Remove the second 'to'.
+Thanks for submitting this!
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 0118f0afaa4fc..9d0388bed0c1d 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -681,7 +681,7 @@ static void skb_release_data(struct sk_buff *skb)
- 	 * while trying to recycle fragments on __skb_frag_unref() we need
- 	 * to make one SKB responsible for triggering the recycle path.
- 	 * So disable the recycling bit if an SKB is cloned and we have
--	 * additional references to to the fragmented part of the SKB.
-+	 * additional references to the fragmented part of the SKB.
- 	 * Eventually the last SKB will have the recycling bit set and it's
- 	 * dataref set to 0, which will trigger the recycling
- 	 */
--- 
-2.26.3
-
+Cheers.
+Arınç
