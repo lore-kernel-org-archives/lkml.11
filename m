@@ -2,85 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 387A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4076C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 02:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241705AbiBICpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 8 Feb 2022 21:45:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S241860AbiBICqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 8 Feb 2022 21:46:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244788AbiBICRz (ORCPT
+        with ESMTP id S234389AbiBIBTz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 8 Feb 2022 21:17:55 -0500
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com [209.85.210.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A621C0613CC;
-        Tue,  8 Feb 2022 18:17:54 -0800 (PST)
-Received: by mail-ot1-f41.google.com with SMTP id g15-20020a9d6b0f000000b005a062b0dc12so567132otp.4;
-        Tue, 08 Feb 2022 18:17:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AoYmK30p15Kis91rANkVDxIdYOYmlZHqQgBQtDWBCNA=;
-        b=nbojxojcGUC3RgaIH1RkUkUEG9o4ZWYQ0tJUMHaoNohk2QUOvHQ+EehEeh4tL9rJ29
-         Zmbdbd0mCbmpIxRzyK0Ta+fVn+kKnSuIUvVfFztPQVU13yj9tlBy+aNB7d/rRaNx/Evo
-         TEFo8rZmizxmTxEbeRr0tHzLQrycot283gFV8o9fEDLJc/xnqIVcrtUWw6uPls8w5LTn
-         PMnZHbCrd6PubTGkrOXSv+XbBc0gAYiSS8SPu659HAV6ezpMjLHBhDnGIDqb2P4GmdtO
-         8RcLsSakwPMf37LrnsN7nW/Y6WhEoghcfV1B8D3+4cluftORZakj5sDmPrqxn1yAnFZO
-         5NJw==
-X-Gm-Message-State: AOAM53251B3TM8CISjAh19sm8YD1Xv+6ZdQquCvuD916ALW7jdHLD/JQ
-        PULqg/cvhYsqidvPwRmDdg==
-X-Google-Smtp-Source: ABdhPJyDjGb76z54LlUR+gFlVa3awyBD0pFt27gUyYRKckpwUT5VuGUujAmYiauGwQUs6DjGSzYXMw==
-X-Received: by 2002:a05:6830:200f:: with SMTP id e15mr103879otp.174.1644373073907;
-        Tue, 08 Feb 2022 18:17:53 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h27sm5961562ote.57.2022.02.08.18.17.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Feb 2022 18:17:53 -0800 (PST)
-Received: (nullmailer pid 3472953 invoked by uid 1000);
-        Wed, 09 Feb 2022 02:17:52 -0000
-Date:   Tue, 8 Feb 2022 20:17:52 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com,
-        mperttunen@nvidia.com, ldewangan@nvidia.com, digetx@gmail.com,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] dt-bindings: i2c: tegra: Add Tegra234 details
-Message-ID: <YgMkUHUMaXQpMiZW@robh.at.kernel.org>
-References: <1642080623-15980-1-git-send-email-akhilrajeev@nvidia.com>
- <1642080623-15980-3-git-send-email-akhilrajeev@nvidia.com>
+        Tue, 8 Feb 2022 20:19:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9885EC061576;
+        Tue,  8 Feb 2022 17:19:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59A80B81E2D;
+        Wed,  9 Feb 2022 01:19:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FC40C340EB;
+        Wed,  9 Feb 2022 01:19:51 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="O0ZcQX9E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644369590;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=muXktWPwK3DXgvGz5zZKW5xbimKtTXaNSyPW53UCMxA=;
+        b=O0ZcQX9E98Ro83oI3AJua90Th0b6eTHZF8OPO6r+M38IeIA4iud6w0IeKwBG3jLWocZu4W
+        z8uvvcj05qxGS/sn2fPdztXPfPrx50I5qeIt6wlgRyJzZqHyLdIIJ1FUEBVmibohgPwbXr
+        X9WG9CLE/d2rec9DknY+ZB7MPq/JjBU=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id fca0fc21 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 9 Feb 2022 01:19:49 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     tytso@mit.edu, linux@dominikbrodowski.net, ebiggers@kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH v2 0/9] random: cleanups around per-cpu crng & rdrand
+Date:   Wed,  9 Feb 2022 02:19:10 +0100
+Message-Id: <20220209011919.493762-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1642080623-15980-3-git-send-email-akhilrajeev@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 07:00:19PM +0530, Akhil R wrote:
-> Add documentation for Tegra234 I2C compatible.
-> 
-> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-> ---
->  Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> index 424a4fc..c58e256 100644
-> --- a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
-> @@ -80,6 +80,11 @@ properties:
->            support for 64 KiB transactions whereas earlier chips supported no
->            more than 4 KiB per transactions.
->          const: nvidia,tegra194-i2c
-> +      - description: |
-> +          Tegra234 has 8 generic I2C controllers, two of which are in the AON
-> +          (always-on) partition of the SoC. All of these controllers are
-> +          similar to those found on Tegra194.
-> +        const: nvidia,tegra234-i2c
+This series tackles a few issues that are intermingled with each other:
 
-Sounds like this needs a fallback to nvidia,tegra194-i2c if it works, 
-but without optimal timing.
+- Using RDSEED when we can rather than using RDRAND.
 
-Rob
+- Making sure RDRAND/RDSEED input always goes through the mixer rather
+  than being xor'd into our state directly, in part in order to prevent
+  ridiculous hypothetical cpu backdoors, and in part because it makes it
+  easier to model RDRAND/RDSEED as just another entropy input.
+
+- Untangling the never ending headache that is kmalloc'd NUMA secondary
+  CRNGs, and replacing these with leaner per-cpu ChaCha keys that don't
+  have all the state troubles. There are other patches pending my review
+  that take the current NUMA initialization code to yet another layer of
+  complexity, sort of driving home the point to me that the current code
+  is a can of worms. This patchset attempts a different direction there.
+
+- Enforcing "fast key erasure" expansion always, and not relying on
+  having a shared block counter that is bound to lead to troubles sooner
+  or later.
+
+- Nearly eliminating lock contention when several processes use the rng
+  at the same time. WireGuard, for example, processes packets in
+  parallel on all threads, and this packet processing requires frequent
+  calls to get_random_bytes().
+
+- Making sure we're never throwing away entropy from the irq handler,
+  since fast key erasure means we're overwriting keys.
+
+Because one design choice in here affects others, these issues are
+tackled by this same patchset. It's roughly divided into "things with
+RDSEED" and "things with struct crng", with the ordering of commits
+being important.
+
+Finally the series ends with a one-off patch removing an obsolete limit
+on /dev/urandom, and making crng_slow_load() more robust.
+
+v2 improves on v1 by adding the crng_{fast,slow}_load() improvements,
+adding a lot of comments regarding fast key erasure, correcting other
+comments, fixing the function signatures of two functions that return an
+array, and fixing some basic logic flow in checking crng_ready().
+
+Jason A. Donenfeld (9):
+  random: use RDSEED instead of RDRAND in entropy extraction
+  random: get rid of secondary crngs
+  random: inline leaves of rand_initialize()
+  random: ensure early RDSEED goes through mixer on init
+  random: do not xor RDRAND when writing into /dev/random
+  random: absorb fast pool into input pool after fast load
+  random: use simpler fast key erasure flow on per-cpu keys
+  random: use hash function for crng_slow_load()
+  random: remove outdated INT_MAX >> 6 check in urandom_read()
+
+ drivers/char/random.c | 699 ++++++++++++++++++------------------------
+ 1 file changed, 291 insertions(+), 408 deletions(-)
+
+-- 
+2.35.0
