@@ -2,122 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE45C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E065EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 14:55:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235318AbiBIOyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 09:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
+        id S235337AbiBIOzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 09:55:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232466AbiBIOyx (ORCPT
+        with ESMTP id S229731AbiBIOzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 09:54:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96798C06157B;
-        Wed,  9 Feb 2022 06:54:56 -0800 (PST)
+        Wed, 9 Feb 2022 09:55:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB46C061355;
+        Wed,  9 Feb 2022 06:55:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3283361B4A;
-        Wed,  9 Feb 2022 14:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D39C340F4;
-        Wed,  9 Feb 2022 14:54:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1797B821FA;
+        Wed,  9 Feb 2022 14:55:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87EC4C340E7;
+        Wed,  9 Feb 2022 14:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644418495;
-        bh=x3KYHTnQdcpuPpSms1usX2LA7bATNpiYgyATB3QLAbc=;
+        s=k20201202; t=1644418512;
+        bh=ULKfYtK5+8ILP+G8NhZQoQ7aqzNgMQ+Hnh15IDDeAqM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DP8bgKOIhroqVt4vja7HreRX2JRYYft7GhrG1w+t9B6isH/MkkvyTg5+SG1Yush54
-         vlluQal/lOUpBfY3ljkUOMQi1GyeS0zQtB4uB4Gwa/AWP4T5SwNJ69D4yAEDD6mYT2
-         JXAvDi4PQs7+a+/vxVu/f2QtZivrpKjhdRlYj9zNgXQrI02PhH6fjwWwfxAJFGuh20
-         dkeExW4jcOlFPZK7/L9c5bWjS7822u3pMYOmx3/nAQJNX8iPS4rCES+arZNCXdSe2z
-         XLv/JVtJHu/woigCybi0kThymkgMkqy7oBHZa7wlsHFOlw2Q8vjEbBGt7HKj32eByY
-         xxT1uZ/gweetQ==
-Received: by mail-ej1-f52.google.com with SMTP id fy20so8217766ejc.0;
-        Wed, 09 Feb 2022 06:54:55 -0800 (PST)
-X-Gm-Message-State: AOAM5336pqHklblZxVXZ4DrEuyo5rwJw5Q8Tu5j0LOEnq1WnjTpTUOPp
-        59yTNAxU9PDcxevgkDh6K9pyJ8uRxopqahbF1w==
-X-Google-Smtp-Source: ABdhPJw1d9C+p2auPNdEqgcaTp3i90UkTDIFvXwjsigycoG7QKqrkkRdCImb6AEMWNRJXL/DDV7TXXvY/uMqwA6Xo28=
-X-Received: by 2002:a17:906:c10f:: with SMTP id do15mr2266508ejc.638.1644418493696;
- Wed, 09 Feb 2022 06:54:53 -0800 (PST)
+        b=q8o00BHmJKljdOO7la/ECM/4SoJtkoFxu91EerYHgxRRfOZXVvWb8mARn1o4UJ5Y4
+         uzB6EmW5eog7zQh1EAd6gOuTHOOUsbgMm/TLN7Npz/WH7YOc4lQhrtQ0BQTUi7gTGv
+         JKUp9g6DgkF4InoI84IMEeNdY/d0lCiUkgJdMp8qIOVquOfLAdaouvutUzjWGyWLhS
+         3WE/FalbPx1glK5Bli1KwQhcJH+ApuihVAgmroSyYT7jSCBWNFZG3Q2Q/OXyTeexeK
+         0hrWuQ2/Ygjk1YvscXjt+vSldB6alo4+9/56qEUbhvIoScxa0qCBM0Z2fx1XnRQR5C
+         F90i3eSN4udfw==
+Received: by mail-wr1-f45.google.com with SMTP id e3so4612925wra.0;
+        Wed, 09 Feb 2022 06:55:12 -0800 (PST)
+X-Gm-Message-State: AOAM533HiPUI63kgO0HTj6l+W2UvdqGLn9sJLZJrJ+ugLrqPYS23IbYw
+        WrQCK4YTjt+fh+CRu8TQIibZBOSXVdsABPPg6qs=
+X-Google-Smtp-Source: ABdhPJwc+zhs0FbKKcw5e7bDZTPTPrG08eT2BuaJ/va4xLPEftXqghgspw3sTvIDovunNZz6u/mp3Rt9gCWp3N6Kb/4=
+X-Received: by 2002:a05:6000:178d:: with SMTP id e13mr2343920wrg.317.1644418510880;
+ Wed, 09 Feb 2022 06:55:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20220110084645.31191-1-nancy.lin@mediatek.com> <20220110084645.31191-3-nancy.lin@mediatek.com>
-In-Reply-To: <20220110084645.31191-3-nancy.lin@mediatek.com>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Wed, 9 Feb 2022 22:54:42 +0800
-X-Gmail-Original-Message-ID: <CAAOTY_-3ekRhHcs0QstWMe9hE7X041zwjQeGcRhDq5gavBhPRw@mail.gmail.com>
-Message-ID: <CAAOTY_-3ekRhHcs0QstWMe9hE7X041zwjQeGcRhDq5gavBhPRw@mail.gmail.com>
-Subject: Re: [PATCH v11 02/22] dt-bindings: mediatek: add vdosys1 MERGE
- property for mt8195
-To:     "Nancy.Lin" <nancy.lin@mediatek.com>
-Cc:     CK Hu <ck.hu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "jason-jh . lin" <jason-jh.lin@mediatek.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        singo.chang@mediatek.com,
-        srv_heupstream <srv_heupstream@mediatek.com>
+References: <CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com>
+ <20220117132757.1881981-1-arnd@kernel.org> <CAHTX3dKyAha8_nu=7e413pKr+SAaPBLp9=FTdQ=GZNdjQHW+zA@mail.gmail.com>
+ <CAK8P3a2Om2SYchx8q=ddkNeJ4o=1MVXD2MFSV2SGJ_vuTUcp0Q@mail.gmail.com> <126ae5ee-342c-334c-9c07-c00213dd7b7e@xilinx.com>
+In-Reply-To: <126ae5ee-342c-334c-9c07-c00213dd7b7e@xilinx.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 9 Feb 2022 15:54:54 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2zZfFa55nNeMicWHhia7fkT0cJBzYvUi0O+v0B13BOMA@mail.gmail.com>
+Message-ID: <CAK8P3a2zZfFa55nNeMicWHhia7fkT0cJBzYvUi0O+v0B13BOMA@mail.gmail.com>
+Subject: Re: [PATCH] microblaze: remove CONFIG_SET_FS
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Nancy:
-
-Nancy.Lin <nancy.lin@mediatek.com> =E6=96=BC 2022=E5=B9=B41=E6=9C=8810=E6=
-=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=884:46=E5=AF=AB=E9=81=93=EF=BC=9A
+On Wed, Feb 9, 2022 at 3:44 PM Michal Simek <michal.simek@xilinx.com> wrote=
+:
+> On 2/9/22 15:40, Arnd Bergmann wrote:
+> > On Wed, Feb 9, 2022 at 2:50 PM Michal Simek <monstr@monstr.eu> wrote:
+> >>
+> >> Hi Arnd,
+> >>
+> >> po 17. 1. 2022 v 14:28 odes=C3=ADlatel Arnd Bergmann <arnd@kernel.org>=
+ napsal:
+> >>>
+> >>> From: Arnd Bergmann <arnd@arndb.de>
+> >>>
+> >>> I picked microblaze as one of the architectures that still
+> >>> use set_fs() and converted it not to.
+> >>
+> >> Can you please update the commit message because what is above is not
+> >> the right one?
+> >
+> > Ah, sorry about that. I think you can copy from the openrisc patch,
+> > see https://lore.kernel.org/lkml/20220208064905.199632-1-shorne@gmail.c=
+om/
 >
-> MT8195 vdosys1 merge1 to merge4 have HW mute function.
-> Add MERGE additional mute property description.
+> Please do it. You are the author of this patch and we should follow the p=
+rocess.
 
-Applied to mediatek-drm-next [1], thanks.
+Done.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/=
-log/?h=3Dmediatek-drm-next
+Looking at it again, I wonder if it would help to use the __get_kernel_nofa=
+ult()
+and __get_kernel_nofault() helpers as the default in
+include/asm-generic/uaccess.h.
 
-Regards,
-Chun-Kuang
+I see it's identical to the openrisc version and would probably be the same
+for some of the other architectures that have no other use for
+set_fs(). That may
+help to do a bulk remove of set_fs for alpha, arc, csky, h8300, hexagon, nd=
+s32,
+nios2, um and extensa, leaving only ia64, sparc and sh.
 
->
-> Signed-off-by: Nancy.Lin <nancy.lin@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> Acked-By: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora=
-.com>
-> ---
->  .../devicetree/bindings/display/mediatek/mediatek,merge.yaml  | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,=
-merge.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,me=
-rge.yaml
-> index 28be8ffeb429..f5b1e632bcd5 100644
-> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.y=
-aml
-> @@ -61,6 +61,10 @@ properties:
->        command to SMI to speed up the data rate.
->      type: boolean
->
-> +  mediatek,merge-mute:
-> +    description: Support mute function. Mute the content of merge output=
-.
-> +    type: boolean
-> +
->    mediatek,gce-client-reg:
->      description:
->        The register of client driver can be configured by gce with 4 argu=
-ments
-> --
-> 2.18.0
->
+        Arnd
