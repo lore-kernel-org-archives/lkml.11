@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE395C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F7A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232493AbiBIMIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:08:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48362 "EHLO
+        id S232526AbiBIMIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232834AbiBIMGP (ORCPT
+        with ESMTP id S232042AbiBIMEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:06:15 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9255C07684B;
-        Wed,  9 Feb 2022 03:16:32 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id B5DD820140A;
-        Wed,  9 Feb 2022 08:30:59 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 12E7780554; Wed,  9 Feb 2022 09:23:09 +0100 (CET)
-Date:   Wed, 9 Feb 2022 09:23:09 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tytso@mit.edu, ebiggers@kernel.org,
-        Eric Biggers <ebiggers@google.com>
-Subject: Re: [PATCH v2 4/9] random: ensure early RDSEED goes through mixer on
- init
-Message-ID: <YgN57QP5xH9ebrH/@owl.dominikbrodowski.net>
-References: <20220209011919.493762-1-Jason@zx2c4.com>
- <20220209011919.493762-5-Jason@zx2c4.com>
+        Wed, 9 Feb 2022 07:04:52 -0500
+X-Greylist: delayed 1121 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 03:32:37 PST
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA3DDF28A7F
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 03:32:37 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jtxxt2gk5zdZWL;
+        Wed,  9 Feb 2022 19:10:42 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Wed, 9 Feb
+ 2022 19:13:53 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <rafael@kernel.org>, <len.brown@intel.com>, <pavel@ucw.cz>,
+        <linux-pm@vger.kernel.org>
+CC:     <tytso@mit.edu>, <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next] PM:hibernate:fix miss close 'hib_resume_bdev' in load_image_and_restore
+Date:   Wed, 9 Feb 2022 19:29:51 +0800
+Message-ID: <20220209112951.3073370-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209011919.493762-5-Jason@zx2c4.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, Feb 09, 2022 at 02:19:14AM +0100 schrieb Jason A. Donenfeld:
-> Continuing the reasoning of "random: use RDSEED instead of RDRAND in
-> entropy extraction" from this series, at init time we also don't want to
-> be xoring RDSEED directly into the crng. Instead it's safer to put it
-> into our entropy collector and then re-extract it, so that it goes
-> through a hash function with preimage resistance.
+As 'swsusp_check' open 'hib_resume_bdev', if call 'create_basic_memory_bitmaps'
+failed, we need to close 'hib_resume_bdev' in 'load_image_and_restore' function.
 
-Any reason why you re-order
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ kernel/power/hibernate.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> +	mix_pool_bytes(utsname(), sizeof(*(utsname())));
->  	mix_pool_bytes(&now, sizeof(now));
+diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
+index e6af502c2fd7..49d1df0218cb 100644
+--- a/kernel/power/hibernate.c
++++ b/kernel/power/hibernate.c
+@@ -689,8 +689,10 @@ static int load_image_and_restore(void)
+ 
+ 	lock_device_hotplug();
+ 	error = create_basic_memory_bitmaps();
+-	if (error)
++	if (error) {
++		swsusp_close(FMODE_READ | FMODE_EXCL);
+ 		goto Unlock;
++	}
+ 
+ 	error = swsusp_read(&flags);
+ 	swsusp_close(FMODE_READ | FMODE_EXCL);
+-- 
+2.31.1
 
-? It shouldn't matter, but it's an additional change I see no rationale for.
-
-Also, AFAICS, we now only call rdseed 8 times (to mix into the input pool
-directly and to update the primary pool indirectly) instead of 8 times (for
-the input pool) and 12 times (for initializing the primary pool). That's
-still 64 bytes, and we use that to seed 48 bytes, we're still on the safe
-side. So feel free to add my
-
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-
-Thanks,
-	Dominik
