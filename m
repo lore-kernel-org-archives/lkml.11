@@ -2,125 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A94AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4786C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 20:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbiBIUnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 15:43:35 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34692 "EHLO
+        id S232158AbiBIUpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:45:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiBIUn3 (ORCPT
+        with ESMTP id S232090AbiBIUpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 15:43:29 -0500
-X-Greylist: delayed 536 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 12:43:31 PST
-Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1939FC1036AE;
-        Wed,  9 Feb 2022 12:43:31 -0800 (PST)
-Received: from hatter.bewilderbeest.net (174-21-187-98.tukw.qwest.net [174.21.187.98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 081C4E7;
-        Wed,  9 Feb 2022 12:34:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1644438874;
-        bh=xE/LvTNyhwNJCroq7k9cSKt0G7CO52BHT1A3bAqw3HI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=I9a0CB7t3VKZNlAvKdLA7wqeT9JYHstpYUBNabqWD6G9upEcS1nUSd3/PfmMGdSmm
-         V/4/CXtmPZfjfARD8CHibpB8pAR9WZ4ci+9/KMY1ne4R+eRuOGDwbqZsWsr6TxQZJb
-         Av8t9ADBSpP1f3uOFQphQBVu92EKqGIdbYlK/bP8=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Konstantin Aladyshev <aladyshev22@gmail.com>,
-        Oskar Senft <osk@google.com>, openbmc@lists.ozlabs.org,
-        linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] serial: 8250_aspeed_vuart: add PORT_ASPEED_VUART port type
-Date:   Wed,  9 Feb 2022 12:34:14 -0800
-Message-Id: <20220209203414.23491-1-zev@bewilderbeest.net>
-X-Mailer: git-send-email 2.35.1
+        Wed, 9 Feb 2022 15:45:08 -0500
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07A6AC03FEEE;
+        Wed,  9 Feb 2022 12:45:11 -0800 (PST)
+Received: by mail-oo1-f41.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so3908884ooi.2;
+        Wed, 09 Feb 2022 12:45:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=E6SXQI7BZ89wLWfBrUoQLVzH2X91u9h16GeWEE3Mi8M=;
+        b=n+lRk1DOO+dZ/rkjsXsj4DrwmC8xxehuDLcSnBvViXChpDnVLxYiMPBpOFinmpHn+6
+         AXKzQKJlEg/8JzuXnl17k5ZvZLB0+TGues0wPFSGbHbZNUo6V6V/yg6SaPS9iBiFfdBh
+         R/KNU/pJnrmgqdCmm7qNtSAZ/oycg6DP0pbjXSw6ym+5CxmUCmnb/gFLhO3v2aiQFv7y
+         A+Njwjnu0Gw+NP/PekT6Fv+i+xoWdglvfws9Um9XM5v4rJ0SrK7wAJYfZkW/D1JC9Nko
+         ocUzxT2/J1+xYupW0yy8z4X/iUUSxpTD+G5OXbI2sSJOcF7hVLXAaI/l8f5FMgRWls0R
+         sBig==
+X-Gm-Message-State: AOAM531/0IXPl+KgEVEb2SMjadYsGvWi9PSB+iejsmCb8nCHob5LS2sS
+        GmvcXtAifkjp/gpdF9OKww==
+X-Google-Smtp-Source: ABdhPJy4AH9g61BJTuGzr3+4csdYvHWDckGJ/vzpMmnXYpOaTzvQOyhxZiJysr/kfvlf541SyS4xjA==
+X-Received: by 2002:a05:6870:a583:: with SMTP id c3mr1477653oam.197.1644439510352;
+        Wed, 09 Feb 2022 12:45:10 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id n47sm6957783ota.74.2022.02.09.12.45.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 12:45:09 -0800 (PST)
+Received: (nullmailer pid 875372 invoked by uid 1000);
+        Wed, 09 Feb 2022 20:45:08 -0000
+Date:   Wed, 9 Feb 2022 14:45:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Eddie Hung <eddie.hung@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Tianping Fang <tianping.fang@mediatek.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        linux-usb@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 1/4] dt-bindings: usb: mtk-xhci: add support ip-sleep
+ for mt8195
+Message-ID: <YgQn1IXiHdTw0r19@robh.at.kernel.org>
+References: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128062902.26273-1-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 54da3e381c2b ("serial: 8250_aspeed_vuart: use UPF_IOREMAP to
-set up register mapping") fixed a bug that had, as a side-effect,
-prevented the 8250_aspeed_vuart driver from enabling the VUART's
-FIFOs.  However, fixing that (and hence enabling the FIFOs) has in
-turn revealed what appears to be a hardware bug in the ASPEED VUART in
-which the host-side THRE bit doesn't get if the BMC-side receive FIFO
-trigger level is set to anything but one byte.  This causes problems
-for polled-mode writes from the host -- for example, Linux kernel
-console writes proceed at a glacial pace (less than 100 bytes per
-second) because the write path waits for a 10ms timeout to expire
-after every character instead of being able to continue on to the next
-character upon seeing THRE asserted.  (GRUB behaves similarly.)
+On Fri, 28 Jan 2022 14:28:59 +0800, Chunfeng Yun wrote:
+> There are 4 USB controllers on MT8195, each controller's wakeup control is
+> different, add some specific versions for them.
+> 
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+> v2:
+>   1. fix typo 'specific' suggested by Rob
+>   2. add acked-by AngeloGioacchino
+> ---
+>  .../devicetree/bindings/usb/mediatek,mtk-xhci.yaml          | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
 
-As a workaround, introduce a new port type for the ASPEED VUART that's
-identical to PORT_16550A as it had previously been using, but with
-UART_FCR_R_TRIG_00 instead to set the receive FIFO trigger level to
-one byte, which (experimentally) seems to avoid the problematic THRE
-behavior.
-
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
-Tested-by: Konstantin Aladyshev <aladyshev22@gmail.com>
----
- drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
- drivers/tty/serial/8250/8250_port.c         | 8 ++++++++
- include/uapi/linux/serial_core.h            | 3 +++
- 3 files changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-index 2350fb3bb5e4..c2cecc6f47db 100644
---- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
-+++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
-@@ -487,7 +487,7 @@ static int aspeed_vuart_probe(struct platform_device *pdev)
- 	port.port.irq = irq_of_parse_and_map(np, 0);
- 	port.port.handle_irq = aspeed_vuart_handle_irq;
- 	port.port.iotype = UPIO_MEM;
--	port.port.type = PORT_16550A;
-+	port.port.type = PORT_ASPEED_VUART;
- 	port.port.uartclk = clk;
- 	port.port.flags = UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF | UPF_IOREMAP
- 		| UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_NO_THRE_TEST;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3b12bfc1ed67..973870ebff69 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -307,6 +307,14 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 32, 64, 112},
- 		.flags		= UART_CAP_FIFO | UART_CAP_SLEEP,
- 	},
-+	[PORT_ASPEED_VUART] = {
-+		.name		= "ASPEED VUART",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_00,
-+		.rxtrig_bytes	= {1, 4, 8, 14},
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
- 
- /* Uart divisor latch read */
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index c4042dcfdc0c..cd11748833e6 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -274,4 +274,7 @@
- /* Freescale LINFlexD UART */
- #define PORT_LINFLEXUART	122
- 
-+/* ASPEED AST2x00 virtual UART */
-+#define PORT_ASPEED_VUART	123
-+
- #endif /* _UAPILINUX_SERIAL_CORE_H */
--- 
-2.35.1
-
+Acked-by: Rob Herring <robh@kernel.org>
