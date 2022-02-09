@@ -2,200 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69108C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D0EC4321E
 	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240416AbiBIGIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:08:05 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53218 "EHLO
+        id S233677AbiBIGIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:08:31 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235833AbiBIGBw (ORCPT
+        with ESMTP id S236250AbiBIGCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:01:52 -0500
-Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B78C05CBA7;
-        Tue,  8 Feb 2022 22:01:55 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0V3zeEdM_1644386488;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V3zeEdM_1644386488)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 09 Feb 2022 14:01:29 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
-        chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     torvalds@linux-foundation.org, gregkh@linuxfoundation.org,
-        willy@infradead.org, linux-fsdevel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com, bo.liu@linux.alibaba.com,
-        tao.peng@linux.alibaba.com, gerry@linux.alibaba.com,
-        eguan@linux.alibaba.com, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 15/22] erofs: implement fscache-based data read for non-inline layout
-Date:   Wed,  9 Feb 2022 14:01:01 +0800
-Message-Id: <20220209060108.43051-16-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
-References: <20220209060108.43051-1-jefflexu@linux.alibaba.com>
+        Wed, 9 Feb 2022 01:02:44 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA26C05CB91;
+        Tue,  8 Feb 2022 22:02:47 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jtq6Z1tFnz4xNn;
+        Wed,  9 Feb 2022 17:02:46 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644386566;
+        bh=uxaaXvYIbtI4aegsfPOJtjkeOl5w2tl8Onh1/52Y3UI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JEmOY3f+PrmaLgzaoS1/h+UOwuEST3BWLFkg1C/eIduLraEwupOlF8Z78skyLXBqi
+         0qcVkrLvAy8CV+H2wpxD9TazffJZWfw2JZUMR4PKLSsNR/YZ3Q0l24alaBO1H1Qxby
+         r0BjOKN1hk0JdtXSBhzl7ZRW1EA9JvZowJVOKHju84DPOctP1WFc9/EDE5mgfym1dy
+         abQ7eRygw5WRMAWOl0MSPeuorV8CgiEZRkb7wsKioFiXNQ4n5LPdsXJP6Wukqy0D5h
+         lYblKlwJTZjsTs+35KRiYQ3K+FEtmbXXmw3DpF/T0/N2aZuJqd6XIIIZM75TRVL54Y
+         9Wz2QoP+ijAFA==
+Date:   Wed, 9 Feb 2022 17:02:45 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Hugh Dickins <hughd@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warnings after merge of the akpm-current tree
+Message-ID: <20220209170245.08968c92@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/Dee7nPj8oXldzM=GQLhF+HP";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch implements the data plane of reading data from bootstrap blob
-file over fscache for non-inline layout.
+--Sig_/Dee7nPj8oXldzM=GQLhF+HP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Be noted that compressed layout is not supported yet.
+Hi all,
 
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
----
- fs/erofs/fscache.c  | 94 +++++++++++++++++++++++++++++++++++++++++++++
- fs/erofs/inode.c    |  6 ++-
- fs/erofs/internal.h |  1 +
- 3 files changed, 100 insertions(+), 1 deletion(-)
+After merging the akpm-current tree, today's linux-next build (htmldocs)
+produced these warnings:
 
-diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index a29d2ecff58b..82fdde054b0b 100644
---- a/fs/erofs/fscache.c
-+++ b/fs/erofs/fscache.c
-@@ -4,6 +4,12 @@
-  */
- #include "internal.h"
- 
-+struct erofs_fscache_map {
-+	struct erofs_fscache_context *m_ctx;
-+	erofs_off_t m_pa, m_la, o_la;
-+	u64 m_llen;
-+};
-+
- static struct fscache_volume *volume;
- 
- static int erofs_fscache_read_page(struct fscache_cookie *cookie,
-@@ -58,10 +64,98 @@ static int erofs_fscache_readpage_blob(struct file *data, struct page *page)
- 	return ret;
- }
- 
-+static inline int erofs_fscache_get_map(struct erofs_fscache_map *fsmap,
-+					struct erofs_map_blocks *map,
-+					struct super_block *sb)
-+{
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
-+
-+	fsmap->m_ctx  = sbi->bootstrap;
-+	fsmap->m_la   = map->m_la;
-+	fsmap->m_pa   = map->m_pa;
-+	fsmap->m_llen = map->m_llen;
-+
-+	return 0;
-+}
-+
-+static int erofs_fscache_readpage_noinline(struct page *page,
-+					   struct erofs_fscache_map *fsmap)
-+{
-+	struct fscache_cookie *cookie = fsmap->m_ctx->cookie;
-+	/*
-+	 * 1) For FLAT_PLAIN layout, the output map.m_la shall be equal to o_la,
-+	 * and the output map.m_pa is exactly the physical address of o_la.
-+	 * 2) For CHUNK_BASED layout, the output map.m_la is rounded down to the
-+	 * nearest chunk boundary, and the output map.m_pa is actually the
-+	 * physical address of this chunk boundary. So we need to recalculate
-+	 * the actual physical address of o_la.
-+	 */
-+	loff_t start = fsmap->m_pa + fsmap->o_la - fsmap->m_la;
-+
-+	return erofs_fscache_read_page(cookie, page, start);
-+}
-+
-+static int erofs_fscache_do_readpage(struct page *page)
-+{
-+	struct inode *inode = page->mapping->host;
-+	struct erofs_inode *vi = EROFS_I(inode);
-+	struct super_block *sb = inode->i_sb;
-+	struct erofs_map_blocks map;
-+	struct erofs_fscache_map fsmap;
-+	int ret;
-+
-+	if (erofs_inode_is_data_compressed(vi->datalayout)) {
-+		erofs_info(sb, "compressed layout not supported yet");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	map.m_la = fsmap.o_la = page_offset(page);
-+
-+	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
-+	if (ret)
-+		return ret;
-+
-+	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
-+		zero_user(page, 0, PAGE_SIZE);
-+		return 0;
-+	}
-+
-+	ret = erofs_fscache_get_map(&fsmap, &map, sb);
-+	if (ret)
-+		return ret;
-+
-+	switch (vi->datalayout) {
-+	case EROFS_INODE_FLAT_PLAIN:
-+	case EROFS_INODE_CHUNK_BASED:
-+		return erofs_fscache_readpage_noinline(page, &fsmap);
-+	default:
-+		DBG_BUGON(1);
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static int erofs_fscache_readpage(struct file *file, struct page *page)
-+{
-+	int ret;
-+
-+	ret = erofs_fscache_do_readpage(page);
-+	if (ret)
-+		SetPageError(page);
-+	else
-+		SetPageUptodate(page);
-+
-+	unlock_page(page);
-+	return ret;
-+}
-+
- static const struct address_space_operations erofs_fscache_blob_aops = {
- 	.readpage = erofs_fscache_readpage_blob,
- };
- 
-+const struct address_space_operations erofs_fscache_access_aops = {
-+	.readpage = erofs_fscache_readpage,
-+};
-+
- struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
- 					   pgoff_t index)
- {
-diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
-index ff62f84f47d3..2f450cb3a7b9 100644
---- a/fs/erofs/inode.c
-+++ b/fs/erofs/inode.c
-@@ -296,7 +296,11 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
- 		err = z_erofs_fill_inode(inode);
- 		goto out_unlock;
- 	}
--	inode->i_mapping->a_ops = &erofs_raw_access_aops;
-+
-+	if (erofs_bdev_mode(inode->i_sb))
-+		inode->i_mapping->a_ops = &erofs_raw_access_aops;
-+	else
-+		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
- 
- out_unlock:
- 	erofs_put_metabuf(&buf);
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index fca706cfaf72..548f928b0ded 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -393,6 +393,7 @@ struct page *erofs_grab_cache_page_nowait(struct address_space *mapping,
- extern const struct super_operations erofs_sops;
- 
- extern const struct address_space_operations erofs_raw_access_aops;
-+extern const struct address_space_operations erofs_fscache_access_aops;
- extern const struct address_space_operations z_erofs_aops;
- 
- /*
--- 
-2.27.0
+include/linux/mm_types.h:272: warning: Function parameter or member '__fill=
+er' not described in 'folio'
+include/linux/mm_types.h:272: warning: Function parameter or member 'mlock_=
+count' not described in 'folio'
 
+Introduced by commit
+
+  60a5c5ab0ba7 ("mm/munlock: maintain page->mlock_count while unevictable")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Dee7nPj8oXldzM=GQLhF+HP
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIDWQUACgkQAVBC80lX
+0GxZZwf+IR40bxk5vxRy0bIafrZM+6L2eLLu1dGAl/UVhLcl65gzfePgODjI48rW
+JckKDQm8dKo9AynZkEVcrmMydEguGNNYtlYq2Of+WTuCKBfRaw+hXugzp25bI+e2
+4zBTPMInFJ4brUWzzKwc1CIxRMA73PfETZYX0X+M4zU77DP/tmHiR/8STWk3CyRX
+11vpm0vNTxRefEs52xJolPdy/Wf2BwC8ueGfzyyRcFWRToU7XRTvHgf5ZkyFuSzK
+A34dwxzhD4KYbpZAbGQ6UjQ1yxWKucN4BxLQiRb570ASow5IwLlLMxtr/11/LGhp
+9SRRHPEUjTJdUdNnf7iGu31I+H5IzA==
+=gLy4
+-----END PGP SIGNATURE-----
+
+--Sig_/Dee7nPj8oXldzM=GQLhF+HP--
