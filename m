@@ -2,72 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454C0C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D6E5C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237784AbiBIHdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:33:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33598 "EHLO
+        id S237958AbiBIHeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:34:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233454AbiBIHdS (ORCPT
+        with ESMTP id S232097AbiBIHeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:33:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24EFC0613CB;
-        Tue,  8 Feb 2022 23:33:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E9B8B81F03;
-        Wed,  9 Feb 2022 07:33:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 876DCC340E7;
-        Wed,  9 Feb 2022 07:33:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644392000;
-        bh=Rzge9oAQz4dbWS5RgHIqc15BqtGl9ShBQCtd3fASJXw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MvUqNy2tT+NEgFGw7BnwE2Dca4xIFY/4a8zTuBbAq8X+bRRoS5fd+n3jc7xHFXofs
-         Iv85lAIGdgTVgh6uobVdjkdLI9yA1riob3q9a6h5KED5h4IpPHxFGj7oiiD2VJ7jSl
-         5pbjHGHVB6y74cN4RNgdGmEvesH4bcNKrbyHDgnkEROJHeOfQuvXZTTD/a75QzqXF4
-         65Z9uTDLZe9KKKEwyzV6aAn6bRQcs/qeGpEPyl0w+Jhfe2pAtvS1C+myuAu7jkyiNb
-         /ONgmTQgPBK+l0HaxzH3wqHsBjRWu1X2VcNBCZOKj14aUvobR3mWwWp3IFuWumh0n6
-         fjmEzKfij9bYw==
-Date:   Wed, 9 Feb 2022 15:33:12 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Adam Ford <aford173@gmail.com>
-Cc:     linux-media@vger.kernel.org, aford@beaconembedded.com,
-        cphealy@gmail.com, Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        Wed, 9 Feb 2022 02:34:07 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A8EC0613CB;
+        Tue,  8 Feb 2022 23:34:11 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 1E453202783;
+        Wed,  9 Feb 2022 08:34:10 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id DB90B201071;
+        Wed,  9 Feb 2022 08:34:09 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 683AF183AC96;
+        Wed,  9 Feb 2022 15:34:08 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH V4 08/11] arm64: dts: imx8mm: Fix VPU Hanging
-Message-ID: <20220209073312.GG4909@dragon>
-References: <20220125171129.472775-1-aford173@gmail.com>
- <20220125171129.472775-9-aford173@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220125171129.472775-9-aford173@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [RFC 1/2] ARM: dts: imx6qp-sabresd: Enable pcie support
+Date:   Wed,  9 Feb 2022 15:02:35 +0800
+Message-Id: <1644390156-5940-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 11:11:25AM -0600, Adam Ford wrote:
-> The vpumix power domain has a reset assigned to it, however
-> when used, it causes a system hang.  Testing has shown that
-> it does not appear to be needed anywhere.
-> 
-> Fixes: d39d4bb15310 ("arm64: dts: imx8mm: add GPC node")
-> Signed-off-by: Adam Ford <aford173@gmail.com>
+In the i.MX6QP sabresd board(sch-28857) design, one external oscillator
+is used as the PCIe reference clock source by the endpoint device.
 
-Applied, thanks!
+If RC uses this oscillator as reference clock too, PLL6(ENET PLL) would
+has to be in bypass mode, and ENET clocks would be messed up.
+
+To keep things simple, let RC use the internal PLL as reference clock
+and always enable the external oscillator for endpoint device on
+i.MX6QP sabresd board.
+
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+---
+ arch/arm/boot/dts/imx6qp-sabresd.dts | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/imx6qp-sabresd.dts b/arch/arm/boot/dts/imx6qp-sabresd.dts
+index 480e73183f6b..083cf90bcab5 100644
+--- a/arch/arm/boot/dts/imx6qp-sabresd.dts
++++ b/arch/arm/boot/dts/imx6qp-sabresd.dts
+@@ -50,8 +50,14 @@ MX6QDL_PAD_SD3_DAT7__SD3_DATA7		0x17059
+ 	};
+ };
+ 
++&vgen3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <3300000>;
++	regulator-always-on;
++};
++
+ &pcie {
+-	status = "disabled";
++	status = "okay";
+ };
+ 
+ &sata {
+-- 
+2.25.1
+
