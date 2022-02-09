@@ -2,138 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1875EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE981C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 12:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232432AbiBIMJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 07:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39428 "EHLO
+        id S232503AbiBIMJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 07:09:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbiBIMEv (ORCPT
+        with ESMTP id S233066AbiBIMGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 07:04:51 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B45DF28A74;
-        Wed,  9 Feb 2022 03:32:36 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id z35so3785565pfw.2;
-        Wed, 09 Feb 2022 03:32:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=xn2w0xfCDJKMhAVqaUxCw+DE0Sr56TdC/5hT2Q2ktAs=;
-        b=A8XnlVtay/HPwPvCdYqCHbhrNjAZgJnAz0Xz+ujZCb1gAicdOF7VI2ESb4ZNYoXGY4
-         mbx42w8+JYs1lJEgEhd4O11wXPcYLWocSpK165gtGz/ZKBGswmkaiKewGs6yWYvIwgwr
-         r9V3K0mEM7Q34JnZkRm6UThjPbsR58FeN7pbOPMVFzjv/u+nlvhpc9HNwCo5/FhQu3JO
-         /I8GUUsY2AuvPYjL9ycREBwkHVKoy6GV72mbhqmddW5bR3QjhW3f9GHodCZ8LBGhqxBh
-         7St5JZzECmuAR4F/yBUA93iEy3kpuwfxodvIavc1VOLDIPkAWMlOIGC/t1sYk3E7gBVg
-         LHlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=xn2w0xfCDJKMhAVqaUxCw+DE0Sr56TdC/5hT2Q2ktAs=;
-        b=Lz1GZznlOV/iI8Nf1C/uYoDlfnb+RBBIhDMkTflCTMCkuunb/PMkTrzw5g5BBBinUY
-         u8kzcfxbWFkJ7j8XIPtaaIBjnUtmGzlWXXciv5G7WOz+hukZh34c/hIgoxAXaYQZSnx+
-         wkVUYngvs9rWVSoE81jZ/tUeujaYdxrOZV0jssVQe1YmRfHUKo7PCrGEBRC9H8o5I23P
-         cMu9vDvL4/2ehqhZ2NxzcVs5bdfFKt1vCzFGNdvodRuy7H1SxeNkX9bTKqNc0f/0Cxuq
-         I1qsSXAp1qtRdjrOUVPKge+/xH8KvS6y3jYQ3hnKLxshlqRhfNx5n+KnYhRpxg4lmu4t
-         nS2g==
-X-Gm-Message-State: AOAM530Pi+PukAKx89W6oral+lMwOclFgYCB3zA7rROsRk+JiULgOO9c
-        QWcuA+I+YUWr7VmiaZ9NAT+lShCoEEI=
-X-Google-Smtp-Source: ABdhPJxcG2NeFwP2rVZjOP8Uo+Mg/HUX5kmfxwL7u059Fj1k1jCekMP+xiw87WMqt8ide1F3HKlh8g==
-X-Received: by 2002:a63:5641:: with SMTP id g1mr1501269pgm.579.1644406355113;
-        Wed, 09 Feb 2022 03:32:35 -0800 (PST)
-Received: from [192.168.1.100] ([166.111.139.99])
-        by smtp.gmail.com with ESMTPSA id f5sm19090505pfc.0.2022.02.09.03.32.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 03:32:34 -0800 (PST)
-Subject: Re: [BUG] net: mellanox: mlx4: possible deadlock in mlx4_xdp_set()
- and mlx4_en_reset_config()
-To:     Tariq Toukan <ttoukan.linux@gmail.com>, tariqt@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <4a850d04-ed6a-5802-7038-a94ad0d466c5@gmail.com>
- <bde548df-cb80-966a-599c-3e1cb8639716@gmail.com>
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-Message-ID: <10008665-3a91-f95e-7ecb-994b8e8bcf55@gmail.com>
-Date:   Wed, 9 Feb 2022 19:32:31 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Wed, 9 Feb 2022 07:06:34 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C379C05CB9E;
+        Wed,  9 Feb 2022 03:19:45 -0800 (PST)
+X-UUID: 6178447457b4491488bbf55058306cf0-20220209
+X-UUID: 6178447457b4491488bbf55058306cf0-20220209
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <leilk.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 9602998; Wed, 09 Feb 2022 19:19:42 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Wed, 9 Feb 2022 19:19:41 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 9 Feb 2022 19:19:40 +0800
+From:   Leilk Liu <leilk.liu@mediatek.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Leilk Liu <leilk.liu@mediatek.com>
+Subject: [PATCH 2/6] spi: mediatek: add IPM single mode design support
+Date:   Wed, 9 Feb 2022 19:19:34 +0800
+Message-ID: <20220209111938.16137-3-leilk.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220209111938.16137-1-leilk.liu@mediatek.com>
+References: <20220209111938.16137-1-leilk.liu@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <bde548df-cb80-966a-599c-3e1cb8639716@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+this patch add the support of IPM single mode design.
 
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+---
+ drivers/spi/spi-mt65xx.c | 103 +++++++++++++++++++++++++++++++++------
+ 1 file changed, 87 insertions(+), 16 deletions(-)
 
-On 2022/2/9 18:21, Tariq Toukan wrote:
->
->
-> On 2/7/2022 5:16 PM, Jia-Ju Bai wrote:
->> Hello,
->>
->> My static analysis tool reports a possible deadlock in the mlx4 
->> driver in Linux 5.16:
->>
->
-> Hi Jia-Ju,
-> Thanks for your email.
->
-> Which static analysis tool do you use? Is it standard one?
+diff --git a/drivers/spi/spi-mt65xx.c b/drivers/spi/spi-mt65xx.c
+index a15de10ee286..1e196fa8ac83 100644
+--- a/drivers/spi/spi-mt65xx.c
++++ b/drivers/spi/spi-mt65xx.c
+@@ -31,6 +31,7 @@
+ #define SPI_CFG2_REG                      0x0028
+ #define SPI_TX_SRC_REG_64                 0x002c
+ #define SPI_RX_DST_REG_64                 0x0030
++#define SPI_CFG3_IPM_REG                  0x0040
+ 
+ #define SPI_CFG0_SCK_HIGH_OFFSET          0
+ #define SPI_CFG0_SCK_LOW_OFFSET           8
+@@ -48,6 +49,7 @@
+ #define SPI_CFG1_CS_IDLE_MASK             0xff
+ #define SPI_CFG1_PACKET_LOOP_MASK         0xff00
+ #define SPI_CFG1_PACKET_LENGTH_MASK       0x3ff0000
++#define SPI_CFG1_IPM_PACKET_LENGTH_MASK   GENMASK(31, 16)
+ #define SPI_CFG2_SCK_HIGH_OFFSET          0
+ #define SPI_CFG2_SCK_LOW_OFFSET           16
+ 
+@@ -68,7 +70,13 @@
+ #define SPI_CMD_TX_ENDIAN            BIT(15)
+ #define SPI_CMD_FINISH_IE            BIT(16)
+ #define SPI_CMD_PAUSE_IE             BIT(17)
++#define SPI_CMD_IPM_NONIDLE_MODE     BIT(19)
++#define SPI_CMD_IPM_SPIM_LOOP        BIT(21)
++#define SPI_CMD_IPM_GET_TICKDLY_OFFSET    22
+ 
++#define SPI_CMD_IPM_GET_TICKDLY_MASK	GENMASK(24, 22)
++#define SPI_CFG3_IPM_HALF_DUPLEX_DIR		BIT(2)
++#define SPI_CFG3_IPM_HALF_DUPLEX_EN		BIT(3)
+ #define MT8173_SPI_MAX_PAD_SEL 3
+ 
+ #define MTK_SPI_PAUSE_INT_STATUS 0x2
+@@ -78,6 +86,7 @@
+ 
+ #define MTK_SPI_MAX_FIFO_SIZE 32U
+ #define MTK_SPI_PACKET_SIZE 1024
++#define MTK_SPI_IPM_PACKET_SIZE SZ_64K
+ #define MTK_SPI_32BITS_MASK  (0xffffffff)
+ 
+ #define DMA_ADDR_EXT_BITS (36)
+@@ -93,6 +102,9 @@ struct mtk_spi_compatible {
+ 	bool dma_ext;
+ 	/* some IC no need unprepare SPI clk */
+ 	bool no_need_unprepare;
++	/* IPM design improve some single mode features */
++	bool ipm_design;
++
+ };
+ 
+ struct mtk_spi {
+@@ -116,6 +128,12 @@ static const struct mtk_spi_compatible mt2712_compat = {
+ 	.must_tx = true,
+ };
+ 
++static const struct mtk_spi_compatible ipm_compat_single = {
++	.enhance_timing = true,
++	.dma_ext = true,
++	.ipm_design = true,
++};
++
+ static const struct mtk_spi_compatible mt6765_compat = {
+ 	.need_pad_sel = true,
+ 	.must_tx = true,
+@@ -157,6 +175,9 @@ static const struct mtk_chip_config mtk_default_chip_info = {
+ };
+ 
+ static const struct of_device_id mtk_spi_of_match[] = {
++	{ .compatible = "mediatek,ipm-spi-single",
++		.data = (void *)&ipm_compat_single,
++	},
+ 	{ .compatible = "mediatek,mt2701-spi",
+ 		.data = (void *)&mtk_common_compat,
+ 	},
+@@ -275,12 +296,11 @@ static int mtk_spi_set_hw_cs_timing(struct spi_device *spi)
+ 	return 0;
+ }
+ 
+-static int mtk_spi_prepare_message(struct spi_master *master,
+-				   struct spi_message *msg)
++static int mtk_spi_hw_init(struct spi_master *master,
++			   struct spi_device *spi)
+ {
+ 	u16 cpha, cpol;
+ 	u32 reg_val;
+-	struct spi_device *spi = msg->spi;
+ 	struct mtk_chip_config *chip_config = spi->controller_data;
+ 	struct mtk_spi *mdata = spi_master_get_devdata(master);
+ 
+@@ -288,6 +308,15 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+ 	cpol = spi->mode & SPI_CPOL ? 1 : 0;
+ 
+ 	reg_val = readl(mdata->base + SPI_CMD_REG);
++	if (mdata->dev_comp->ipm_design) {
++		/* SPI transfer without idle time until packet length done */
++		reg_val |= SPI_CMD_IPM_NONIDLE_MODE;
++		if (spi->mode & SPI_LOOP)
++			reg_val |= SPI_CMD_IPM_SPIM_LOOP;
++		else
++			reg_val &= ~SPI_CMD_IPM_SPIM_LOOP;
++	}
++
+ 	if (cpha)
+ 		reg_val |= SPI_CMD_CPHA;
+ 	else
+@@ -344,18 +373,33 @@ static int mtk_spi_prepare_message(struct spi_master *master,
+ 		writel(mdata->pad_sel[spi->chip_select],
+ 		       mdata->base + SPI_PAD_SEL_REG);
+ 
+-	/* tick delay */
+-	reg_val = readl(mdata->base + SPI_CFG1_REG);
+-	reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
+-	reg_val |= ((chip_config->tick_delay & 0x7)
+-		<< SPI_CFG1_GET_TICK_DLY_OFFSET);
+-	writel(reg_val, mdata->base + SPI_CFG1_REG);
++	if (mdata->dev_comp->enhance_timing) {
++		if (mdata->dev_comp->ipm_design) {
++			reg_val = readl(mdata->base + SPI_CMD_REG);
++			reg_val &= ~SPI_CMD_IPM_GET_TICKDLY_MASK;
++			reg_val |= ((chip_config->tick_delay & 0x7)
++				   << SPI_CMD_IPM_GET_TICKDLY_OFFSET);
++			writel(reg_val, mdata->base + SPI_CMD_REG);
++		} else {
++			reg_val = readl(mdata->base + SPI_CFG1_REG);
++			reg_val &= ~SPI_CFG1_GET_TICK_DLY_MASK;
++			reg_val |= ((chip_config->tick_delay & 0x7)
++				<< SPI_CFG1_GET_TICK_DLY_OFFSET);
++			writel(reg_val, mdata->base + SPI_CFG1_REG);
++		}
++	}
+ 
+ 	/* set hw cs timing */
+ 	mtk_spi_set_hw_cs_timing(spi);
+ 	return 0;
+ }
+ 
++static int mtk_spi_prepare_message(struct spi_master *master,
++				   struct spi_message *msg)
++{
++	return mtk_spi_hw_init(master, msg->spi);
++}
++
+ static void mtk_spi_set_cs(struct spi_device *spi, bool enable)
+ {
+ 	u32 reg_val;
+@@ -377,13 +421,13 @@ static void mtk_spi_set_cs(struct spi_device *spi, bool enable)
+ }
+ 
+ static void mtk_spi_prepare_transfer(struct spi_master *master,
+-				     struct spi_transfer *xfer)
++				     u32 speed_hz)
+ {
+ 	u32 div, sck_time, reg_val;
+ 	struct mtk_spi *mdata = spi_master_get_devdata(master);
+ 
+-	if (xfer->speed_hz < mdata->spi_clk_hz / 2)
+-		div = DIV_ROUND_UP(mdata->spi_clk_hz, xfer->speed_hz);
++	if (speed_hz < mdata->spi_clk_hz / 2)
++		div = DIV_ROUND_UP(mdata->spi_clk_hz, speed_hz);
+ 	else
+ 		div = 1;
+ 
+@@ -414,12 +458,24 @@ static void mtk_spi_setup_packet(struct spi_master *master)
+ 	u32 packet_size, packet_loop, reg_val;
+ 	struct mtk_spi *mdata = spi_master_get_devdata(master);
+ 
+-	packet_size = min_t(u32, mdata->xfer_len, MTK_SPI_PACKET_SIZE);
++	if (mdata->dev_comp->ipm_design)
++		packet_size = min_t(u32,
++				    mdata->xfer_len,
++				    MTK_SPI_IPM_PACKET_SIZE);
++	else
++		packet_size = min_t(u32,
++				    mdata->xfer_len,
++				    MTK_SPI_PACKET_SIZE);
++
+ 	packet_loop = mdata->xfer_len / packet_size;
+ 
+ 	reg_val = readl(mdata->base + SPI_CFG1_REG);
+-	reg_val &= ~(SPI_CFG1_PACKET_LENGTH_MASK | SPI_CFG1_PACKET_LOOP_MASK);
++	if (mdata->dev_comp->ipm_design)
++		reg_val &= ~SPI_CFG1_IPM_PACKET_LENGTH_MASK;
++	else
++		reg_val &= ~SPI_CFG1_PACKET_LENGTH_MASK;
+ 	reg_val |= (packet_size - 1) << SPI_CFG1_PACKET_LENGTH_OFFSET;
++	reg_val &= ~SPI_CFG1_PACKET_LOOP_MASK;
+ 	reg_val |= (packet_loop - 1) << SPI_CFG1_PACKET_LOOP_OFFSET;
+ 	writel(reg_val, mdata->base + SPI_CFG1_REG);
+ }
+@@ -514,7 +570,7 @@ static int mtk_spi_fifo_transfer(struct spi_master *master,
+ 	mdata->cur_transfer = xfer;
+ 	mdata->xfer_len = min(MTK_SPI_MAX_FIFO_SIZE, xfer->len);
+ 	mdata->num_xfered = 0;
+-	mtk_spi_prepare_transfer(master, xfer);
++	mtk_spi_prepare_transfer(master, xfer->speed_hz);
+ 	mtk_spi_setup_packet(master);
+ 
+ 	if (xfer->tx_buf) {
+@@ -547,7 +603,7 @@ static int mtk_spi_dma_transfer(struct spi_master *master,
+ 	mdata->cur_transfer = xfer;
+ 	mdata->num_xfered = 0;
+ 
+-	mtk_spi_prepare_transfer(master, xfer);
++	mtk_spi_prepare_transfer(master, xfer->speed_hz);
+ 
+ 	cmd = readl(mdata->base + SPI_CMD_REG);
+ 	if (xfer->tx_buf)
+@@ -582,6 +638,19 @@ static int mtk_spi_transfer_one(struct spi_master *master,
+ 				struct spi_device *spi,
+ 				struct spi_transfer *xfer)
+ {
++	struct mtk_spi *mdata = spi_master_get_devdata(spi->master);
++	u32 reg_val = 0;
++
++	/* prepare xfer direction and duplex mode */
++	if (mdata->dev_comp->ipm_design) {
++		if (!xfer->tx_buf || !xfer->rx_buf) {
++			reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_EN;
++			if (xfer->rx_buf)
++				reg_val |= SPI_CFG3_IPM_HALF_DUPLEX_DIR;
++		}
++		writel(reg_val, mdata->base + SPI_CFG3_IPM_REG);
++	}
++
+ 	if (master->can_dma(master, spi, xfer))
+ 		return mtk_spi_dma_transfer(master, spi, xfer);
+ 	else
+@@ -746,6 +815,8 @@ static int mtk_spi_probe(struct platform_device *pdev)
+ 
+ 	if (mdata->dev_comp->must_tx)
+ 		master->flags = SPI_MASTER_MUST_TX;
++	if (mdata->dev_comp->ipm_design)
++		master->mode_bits |= SPI_LOOP;
+ 
+ 	if (mdata->dev_comp->need_pad_sel) {
+ 		mdata->pad_num = of_property_count_u32_elems(
+-- 
+2.25.1
 
-Hi Tariq,
-
-Thanks for the reply and explanation :)
-I developed this tool by myself, based on LLVM.
-
->
->> mlx4_xdp_set()
->>    mutex_lock(&mdev->state_lock); --> Line 2778 (Lock A)
->>    mlx4_en_try_alloc_resources()
->>      mlx4_en_alloc_resources()
->>        mlx4_en_destroy_tx_ring()
->>          mlx4_qp_free()
->>            wait_for_completion(&qp->free); --> Line 528 (Wait X)
->
-> The refcount_dec_and_test(&qp->refcount)) in mlx4_qp_free() pairs with 
-> refcount_set(&qp->refcount, 1); in mlx4_qp_alloc.
-> mlx4_qp_event increases and decreasing the refcount while running 
-> qp->event(qp, event_type); to protect it from being freed.
->
->>
->> mlx4_en_reset_config()
->>    mutex_lock(&mdev->state_lock); --> Line 3522 (Lock A)
->>    mlx4_en_try_alloc_resources()
->>      mlx4_en_alloc_resources()
->>        mlx4_en_destroy_tx_ring()
->>          mlx4_qp_free()
->>            complete(&qp->free); --> Line 527 (Wake X)
->>
->> When mlx4_xdp_set() is executed, "Wait X" is performed by holding 
->> "Lock A". If mlx4_en_reset_config() is executed at this time, "Wake 
->> X" cannot be performed to wake up "Wait X" in mlx4_xdp_set(), because 
->> "Lock A" has been already hold by mlx4_xdp_set(), causing a possible 
->> deadlock.
->>
->> I am not quite sure whether this possible problem is real and how to 
->> fix it if it is real.
->> Any feedback would be appreciated, thanks :)
->>
->
-> Not possible.
-> These are two different qps, maintaining two different instances of 
-> refcount and complete, following the behavior I described above.
-
-Okay, "there are two different qps" should be the reason of this false 
-positive, and my tool cannot identify this reason in static analysis...
-
-
-Best wishes,
-Jia-Ju Bai
