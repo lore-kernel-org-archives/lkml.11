@@ -2,111 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49809C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E798AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 07:49:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239317AbiBIHtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 02:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43644 "EHLO
+        id S239494AbiBIHt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 02:49:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238992AbiBIHs5 (ORCPT
+        with ESMTP id S230479AbiBIHtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 02:48:57 -0500
-X-Greylist: delayed 1206 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 23:48:56 PST
-Received: from mail1.wrs.com (unknown-3-146.windriver.com [147.11.3.146])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC1BAC0613CA
-        for <linux-kernel@vger.kernel.org>; Tue,  8 Feb 2022 23:48:56 -0800 (PST)
-Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 2197SOgk009635
-        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Tue, 8 Feb 2022 23:28:24 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 2197SNeJ005157
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 8 Feb 2022 23:28:23 -0800 (PST)
-Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Tue, 8 Feb 2022 23:28:23 -0800
-Received: from pek-lpd-ccm2.wrs.com (128.224.179.210) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
- 15.1.2242.12 via Frontend Transport; Tue, 8 Feb 2022 23:28:20 -0800
-From:   Dongyang Wang <dongyang.wang@windriver.com>
-To:     <manfred@colorfullife.com>
-CC:     <akpm@linux-foundation.org>, <christian.brauner@ubuntu.com>,
-        <dave@stgolabs.net>, <dongyang.wang@windriver.com>,
-        <ebiederm@xmission.com>, <legion@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <varad.gautam@suse.com>
-Subject: Re: [PATCH] To fix the below failure of handling page fault caused by the invalid input from user.
-Date:   Wed, 9 Feb 2022 15:28:20 +0800
-Message-ID: <20220209072820.18238-1-dongyang.wang@windriver.com>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <56982041-c7ac-fc68-f5df-12a11d351ed6@colorfullife.com>
-References: <56982041-c7ac-fc68-f5df-12a11d351ed6@colorfullife.com>
+        Wed, 9 Feb 2022 02:49:21 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B92C05CB82;
+        Tue,  8 Feb 2022 23:49:24 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id s7so3391123edd.3;
+        Tue, 08 Feb 2022 23:49:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LUzGldKtZC3jOl6Fq1nfXnQKprYL3pMs6oURDAZ0EmE=;
+        b=KOvrX9K5oGQAb0XaO6VlNj0WKjC9bavJrqO6YBN2wMeYSLTNMMq4OUNbxxQtCKhHDd
+         iu25luITlcqZYE2ZMl8jsIxUQcGUjf1t8MvTEu7cO0V8NYRhxcGzsEpD1e6wWB6KCcEH
+         0rpvH33A61Wk0zcJSRuAlliDXLG6zwTrSJx00FL4JwfzkkJ/qHVrYtTj2wAsdgoV7TMB
+         hwCCfDzPd1GoWbg0oaynvhMWtw4g/aAxwnqQBwBsnpb/TEI5Xq9aU0rd7fKr1uiirDCK
+         jCmdSG28ZM5umxg0NiSDA5adQqe+DSKSQyEyk5V5cf7WFwgJa3VnWxM/pbluedefgbiC
+         W5bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=LUzGldKtZC3jOl6Fq1nfXnQKprYL3pMs6oURDAZ0EmE=;
+        b=J0bGm3fy/VYmJmJkGCQkJw7L0RWdN1ILbL+ckl8ITbxNQzHYD7V026yhSyuE2pMyhx
+         YaJE+lXoiWgCGE80rohhOVnYlD5yqJ9htRJsOhqzk3S147IsU6Gubps6fMprY4w9C1X3
+         kAOuuHy3NEifsdK9xj/N/COA7JIBez/Yn/BIVSUn0A46EkoNfDjOTwJ80l2HqGUCwmTF
+         dUr5poTBICneOCtVIyTqpnh5RLDQpBZpw2pQ7Bc+no8VzsfkAak/oQPyGNqP/D3pMgIX
+         bsRol9mMN1afjFYSxEF22C+MTKyLmQPQTjQHWcoA3zTvtmWZRpTui1W6k8Tz4zFJIerD
+         gbdA==
+X-Gm-Message-State: AOAM533ZhWdb+M6NmHMLjgi2v70qkkr91M45GcqAfNcAt95eRdtTxXZ8
+        XkOaCrVb23w59BLzw73LAx4=
+X-Google-Smtp-Source: ABdhPJy7j/jOKxsaAV2/AtzcWda7tM3HPoh6bV/FquZcserdfo9YfUiMeSpCU161wWXwVjfQXLLUEA==
+X-Received: by 2002:a05:6402:51cd:: with SMTP id r13mr1079014edd.381.1644392962839;
+        Tue, 08 Feb 2022 23:49:22 -0800 (PST)
+Received: from dumbo ([185.220.101.84])
+        by smtp.gmail.com with ESMTPSA id l1sm5690964ejb.81.2022.02.08.23.49.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Feb 2022 23:49:22 -0800 (PST)
+Sender: Domenico Andreoli <domenico.andreoli.it@gmail.com>
+Received: from cavok by dumbo with local (Exim 4.94.2)
+        (envelope-from <cavok@dumbo>)
+        id 1nHhj6-0002av-MX; Wed, 09 Feb 2022 08:49:20 +0100
+Date:   Wed, 9 Feb 2022 08:49:20 +0100
+From:   Domenico Andreoli <domenico.andreoli@linux.com>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     Tong Zhang <ztong0001@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        David Airlie <airlied@linux.ie>,
+        Andrew Morton <akpm@linux-foundation.org>, amir73il@gmail.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, bcrl@kvack.org,
+        benh@kernel.crashing.org, clemens@ladisch.de, crope@iki.fi,
+        dgilbert@interlog.com, Greg KH <gregkh@linuxfoundation.org>,
+        jack@suse.cz, jani.nikula@intel.com, jani.nikula@linux.intel.com,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>, jlbec@evilplan.org,
+        john.ogness@linutronix.de, joonas.lahtinen@linux.intel.com,
+        Joseph Qi <joseph.qi@linux.alibaba.com>, julia.lawall@inria.fr,
+        Kees Cook <keescook@chromium.org>, kernel@tuxforce.de,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        mark@fasheh.com, "Martin K. Petersen" <martin.petersen@oracle.com>,
+        mm-commits@vger.kernel.org, nixiaoming@huawei.com,
+        penguin-kernel@i-love.sakura.ne.jp, peterz@infradead.org,
+        phil@philpotter.co.uk, pjt@google.com, pmladek@suse.com,
+        rafael@kernel.org, rodrigo.vivi@intel.com, rostedt@goodmis.org,
+        senozhatsky@chromium.org, sre@kernel.org, steve@sk2.org,
+        surenb@google.com, torvalds@linux-foundation.org, tytso@mit.edu,
+        Al Viro <viro@zeniv.linux.org.uk>, wangqing@vivo.com,
+        Iurii Zaikin <yzaikin@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev
+Subject: [PATCH v2] Fix regression due to "fs: move binfmt_misc sysctl to its
+ own file"
+Message-ID: <YgNyAC8VMeuOD/uQ@dumbo>
+References: <20220121221021.60533b009c357d660791476e@linux-foundation.org>
+ <20220122061228.nmuo75sDn%akpm@linux-foundation.org>
+ <YgEeQNdgBuHRyEWl@dumbo>
+ <YgGTSR628xhRvCjB@bombadil.infradead.org>
+ <CAA5qM4BGmrkwatyO_h3F=ErDZ9t5swuttbt6NkQU-1KDGDiD4g@mail.gmail.com>
+ <YgKmaggsipzzCGCg@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgKmaggsipzzCGCg@bombadil.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Manfred, 
+Commit 3ba442d5331f did not go unnoticed, binfmt-support stopped to
+work on my Debian system since v5.17-rc2 (did not check with -rc1).
 
-I'm sorry for the late reply (we have a Chinese Lunar New Year).
+The existance of the /proc/sys/fs/binfmt_misc is a precondition for
+attempting to mount the binfmt_misc fs, which in turn triggers the
+autoload of the binfmt_misc module. Without it, no module is loaded
+and no binfmt is available at boot.
 
->>> On 1/26/22 03:42, Andrew Morton wrote:
->>>> On Tue, 18 Jan 2022 17:19:52 +0800 Dongyang Wang <dongyang.wang@windriver.com> wrote:
->>>>
->>>>> [786058.308965] Unable to handle kernel paging request at virtual address 01000004
->>>>> [786058.316286] pgd = 38a99693
->>>>> [786058.319080] [01000004] *pgd=07800003, *pmd=00000000
->>>>> [786058.324056] Internal error: Oops: 206 [#1] PREEMPT SMP ARM
->>>>> [786058.324100] CPU:  PID: Comm:  Tainted: G         C
->>>>> [786058.324102] Hardware name:
->>>>> [786058.324114] PC is at __copy_to_user_std+0x4c/0x3c4
->>>>> [786058.324120] LR is at store_msg+0xc0/0xe8
->>>>> [786058.324124] pc : [<c0c0587c>]    lr : [<c0871d04>]    psr: 20010013
->>>>> [786058.324126] sp : c3503ec4  ip : 00000000  fp : b4c9a660
->>>>> [786058.324129] r10: c4228dc0  r9 : c3502000  r8 : 00000ffc
->>>>> [786058.324132] r7 : 01000000  r6 : 546d3f8b  r5 : b4911690  r4 : 00000ffc
->>>>> [786058.324134] r3 : 00000000  r2 : 00000f7c  r1 : 01000004  r0 : b4911690
->>>>> [786058.324139] Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
->>>>> [786058.324142] Control: 30c5387d  Table: 0edc2040  DAC: 55555555
->>>>> [786058.324145] Process  (pid: , stack limit = 0x25018bdf)
->>> Why is process and pid: empty? Is this some kind of kernel process calling?
->> The pid is 8369, it's a userspace app.
->>
->>>>> [786058.324148] Stack: (0xc3503ec4 to 0xc3504000)
->>>>> [786058.324153] 3ec0:          b4911690 546d3f8b 01000000 00000ffc b4911690 00000ffc 00000000
->>>>> [786058.324157] 3ee0: 00000ffc c0871d04 546d4f73 c3407801 c3503f28 c3407800 00000000 b49106a8
->>>>> [786058.324161] 3f00: c4228dc0 c087abd4 00000002 b49106a8 617b9d03 00000000 00000000 c121d508
->>>>> [786058.324165] 3f20: 00000000 bf06a1a8 d1b634cc 16b26e77 c5af5280 00000100 00000200 db806540
->>>>> [786058.324170] 3f40: 00000001 c121d508 00000008 0000005c 00000000 00010008 b49106a8 c0601208
->>>>> [786058.324173] 3f60: c3502000 00000040 b4c9a660 c087b474 c3503f78 c121d508 617b9d03 00000000
->>>>> [786058.324177] 3f80: 2303d6cc 00000115 c0601208 c121d508 b4c9a660 b4c9a660 00000001 b49106a8
->>>>> [786058.324181] 3fa0: 00000115 c06011dc b4c9a660 00000001 0000005c b49106a8 00010008 00000000
->>>>> [786058.324185] 3fc0: b4c9a660 00000001 b49106a8 00000115 00000000 b4c9b400 00000000 b4c9a660
->>>>> [786058.324189] 3fe0: 00000115 b4c9a650 b6b253bd b6b254b6 800d0030 0000005c 00000000 00000000
->>>>> [786058.324201] [<c0c0587c>] (__copy_to_user_std) from [<c0871d04>] (store_msg+0xc0/0xe8)
->
->I would search here: __copy_to_user_std should fail if the address is 
->invalid.
->
->For whatever reasons, it produces a page fault.
+Building as built-in or manually loading the module and mounting the fs
+works fine, it's therefore only a matter of interaction with user-space.
+I could try to improve the Debian systemd configuration but I can't
+say anything about the other distributions.
 
-Totally agree with you. 
+This patch restores a working system right after boot.
 
->First: Is this reproducible? Does it fail immediately if you pass an 
->invalid value to mq_timedreceive()?
+v2:
+- move creation of fs/binfmt_misc to fs/file_table.c
+- use IS_ENABLED() to conditionally create it
 
-This crash info is from another team. It can't be reproduced until now.
-Yesterday, I changed the 'u_msg_ptr' and 'msg_ptr->m_ts' to a wrong value, but don't cause crash. 
-I will watch this part. 
+Fixes: 3ba442d5331f ("fs: move binfmt_misc sysctl to its own file")
+Signed-off-by: Domenico Andreoli <domenico.andreoli@linux.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Amir Goldstein <amir73il@gmail.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Antti Palosaari <crope@iki.fi>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Benjamin LaHaise <bcrl@kvack.org>
+Cc: Clemens Ladisch <clemens@ladisch.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Douglas Gilbert <dgilbert@interlog.com>
+Cc: Eric Biederman <ebiederm@xmission.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Iurii Zaikin <yzaikin@google.com>
+Cc: James E.J. Bottomley <jejb@linux.ibm.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: Jani Nikula <jani.nikula@intel.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: John Ogness <john.ogness@linutronix.de>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Julia Lawall <julia.lawall@inria.fr>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Lukas Middendorf <kernel@tuxforce.de>
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Martin K. Petersen <martin.petersen@oracle.com>
+Cc: Paul Turner <pjt@google.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Phillip Potter <phil@philpotter.co.uk>
+Cc: Qing Wang <wangqing@vivo.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Sebastian Reichel <sre@kernel.org>
+Cc: Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc: Stephen Kitt <steve@sk2.org>
+Cc: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: "Theodore Ts'o" <tytso@mit.edu>
+Cc: Xiaoming Ni <nixiaoming@huawei.com>
 
->https://elixir.bootlin.com/linux/v4.18.20/source/arch/arm/include/asm/uaccess.h#L464
->
->It seems ARM has special optimizations (CONFIG_UACCESS_WITH_MEMCPY), and 
->I cannot see if this is MMU or NO_MMU
+---
+ fs/binfmt_misc.c |    6 +-----
+ fs/file_table.c  |    2 ++
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 
-This is MMU. 
-
+Index: b/fs/binfmt_misc.c
+===================================================================
+--- a/fs/binfmt_misc.c
++++ b/fs/binfmt_misc.c
+@@ -817,20 +817,16 @@ static struct file_system_type bm_fs_typ
+ };
+ MODULE_ALIAS_FS("binfmt_misc");
+ 
+-static struct ctl_table_header *binfmt_misc_header;
+-
+ static int __init init_misc_binfmt(void)
+ {
+ 	int err = register_filesystem(&bm_fs_type);
+ 	if (!err)
+ 		insert_binfmt(&misc_format);
+-	binfmt_misc_header = register_sysctl_mount_point("fs/binfmt_misc");
+-	return 0;
++	return err;
+ }
+ 
+ static void __exit exit_misc_binfmt(void)
+ {
+-	unregister_sysctl_table(binfmt_misc_header);
+ 	unregister_binfmt(&misc_format);
+ 	unregister_filesystem(&bm_fs_type);
+ }
+Index: b/fs/file_table.c
+===================================================================
+--- a/fs/file_table.c
++++ b/fs/file_table.c
+@@ -119,6 +119,8 @@ static struct ctl_table fs_stat_sysctls[
+ static int __init init_fs_stat_sysctls(void)
+ {
+ 	register_sysctl_init("fs", fs_stat_sysctls);
++	if (IS_ENABLED(CONFIG_BINFMT_MISC))
++		register_sysctl_mount_point("fs/binfmt_misc");
+ 	return 0;
+ }
+ fs_initcall(init_fs_stat_sysctls);
