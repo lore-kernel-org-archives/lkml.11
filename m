@@ -2,144 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51973C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 06:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235078AbiBIGuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 01:50:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
+        id S235154AbiBIGuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 01:50:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiBIGuJ (ORCPT
+        with ESMTP id S229478AbiBIGug (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 01:50:09 -0500
-X-Greylist: delayed 65 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 08 Feb 2022 22:50:08 PST
-Received: from qq.com (smtpbg466.qq.com [59.36.132.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9D7C05BE0F;
-        Tue,  8 Feb 2022 22:50:07 -0800 (PST)
-X-QQ-mid: bizesmtp51t1644389278t06ihfgi
-Received: from localhost.localdomain (unknown [123.114.60.34])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 09 Feb 2022 14:47:56 +0800 (CST)
-X-QQ-SSF: 01400000002000B0L000B00B0000000
-X-QQ-FEAT: Mzskoac49OiRqor/bSHn4umbrQSvw0UKBD4nJJ/lyJz0uP3GIwPADWl5uJjQ1
-        HdOtWS9OwKXzU16Sbyo7j8bb9xQjDfVnrQARrOxVFmJJXtSZR2QK8omzJHk16tIDMYBQOfU
-        UCYPBlbkepQghmINujg6l1joXb6915+kTo6HJOTLcXg5FedM3PUUqCzn84DJxxvSnXs5jxB
-        uJmvz26Y59l0Gc1uJbMZeQ8kYSvYhVNa+V2HgpeBIllaAcpLsM9BwNX5AGXjDM9PLspsR4Q
-        9khnLA36wEbbbCeABvJs3NSIIK20XdtqFpLu/C46wKIpwUBK0nsRUHek+gtWcmLBhhXuVgT
-        iFUl5NLs7S4YKBJjGo=
-X-QQ-GoodBg: 2
-From:   zhaoxiao <zhaoxiao@uniontech.com>
-To:     thierry.reding@gmail.com, lee.jones@linaro.org
-Cc:     u.kleine-koenig@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, linux-pwm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhaoxiao <zhaoxiao@uniontech.com>
-Subject: [PATCH] pwm: vt8500: Rename variable pointing to driver private data
-Date:   Wed,  9 Feb 2022 14:47:55 +0800
-Message-Id: <20220209064755.7287-1-zhaoxiao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Wed, 9 Feb 2022 01:50:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB2BC05CB89;
+        Tue,  8 Feb 2022 22:50:40 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8E60B81F17;
+        Wed,  9 Feb 2022 06:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EAC9C340E7;
+        Wed,  9 Feb 2022 06:50:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644389437;
+        bh=JSJwDcbl25E7GeKEJiknWA5JGfaS90PWnKx+WSo1apY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CMkcO8ZH1YlVYScW2HeQm/OeIdK9FEKYed+6ncWysIIRtpeYQexvhX9+pGMAbs7H1
+         fFoW4vv9GwI95ISZknyKrMXbf6hzbGn/agg0NzmNkWeb1xmq0PepOcqEZaL+9P7Fo8
+         MCZlDC/Ri0IegMbF8YfKernDlQHRKbt2s4lwp0nJR7qjwXyt9XGZvcUSyzXILM1Sts
+         nEY58MRmQpMXnS8PKE71gWRPeV7AkfZFdIEWIdmgWqakQvr6v5EvzKKrvmUtex1nYx
+         ovWkXvON6T6HN8MSLRwA0UJa7jGy0rn4+Hi8i2Rsse8dDkWUdR0GejlDgcViXgfITO
+         HxtnrVamffXig==
+Date:   Wed, 9 Feb 2022 14:50:30 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Abel Vesa <abel.vesa@nxp.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: fsl-lpuart: Drop i.MX8QXP
+ backwards compatibility
+Message-ID: <20220209065029.GA4909@dragon>
+References: <20220118135918.2126010-1-abel.vesa@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
-X-QQ-Bgrelay: 1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118135918.2126010-1-abel.vesa@nxp.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Status quo is that variables of type struct vt8500_chip * are named
-"pwm", "chip" or "pc". The two formers are all not optimal because
-usually only struct pwm_device * variables are named "pwm" and "chip" is
-usually used for variabled of type struct pwm_chip *.
+On Tue, Jan 18, 2022 at 03:59:17PM +0200, Abel Vesa wrote:
+> Drop the i.MX8QXP backwards compatibility with i.MX7ULP since they
+> differ from clocks handling point of view.
+> 
+> Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 
-So consistently use the same and non-conflicting name "pc".
+I tried to pick up the patch, but it failed to apply to my imx/bindings
+branch.  Could you rebase?
 
-Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
----
- drivers/pwm/pwm-vt8500.c | 38 +++++++++++++++++++-------------------
- 1 file changed, 19 insertions(+), 19 deletions(-)
+Shawn
 
-diff --git a/drivers/pwm/pwm-vt8500.c b/drivers/pwm/pwm-vt8500.c
-index 7170a315535b..fc0a572f7d06 100644
---- a/drivers/pwm/pwm-vt8500.c
-+++ b/drivers/pwm/pwm-vt8500.c
-@@ -235,7 +235,7 @@ MODULE_DEVICE_TABLE(of, vt8500_pwm_dt_ids);
- 
- static int vt8500_pwm_probe(struct platform_device *pdev)
- {
--	struct vt8500_chip *chip;
-+	struct vt8500_chip *pc;
- 	struct device_node *np = pdev->dev.of_node;
- 	int ret;
- 
-@@ -244,48 +244,48 @@ static int vt8500_pwm_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
--	if (chip == NULL)
-+	pc = devm_kzalloc(&pdev->dev, sizeof(*pc), GFP_KERNEL);
-+	if (pc == NULL)
- 		return -ENOMEM;
- 
--	chip->chip.dev = &pdev->dev;
--	chip->chip.ops = &vt8500_pwm_ops;
--	chip->chip.npwm = VT8500_NR_PWMS;
-+	pc->chip.dev = &pdev->dev;
-+	pc->chip.ops = &vt8500_pwm_ops;
-+	pc->chip.npwm = VT8500_NR_PWMS;
- 
--	chip->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(chip->clk)) {
-+	pc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(pc->clk)) {
- 		dev_err(&pdev->dev, "clock source not specified\n");
--		return PTR_ERR(chip->clk);
-+		return PTR_ERR(pc->clk);
- 	}
- 
--	chip->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(chip->base))
--		return PTR_ERR(chip->base);
-+	pc->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(pc->base))
-+		return PTR_ERR(pc->base);
- 
--	ret = clk_prepare(chip->clk);
-+	ret = clk_prepare(pc->clk);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to prepare clock\n");
- 		return ret;
- 	}
- 
--	ret = pwmchip_add(&chip->chip);
-+	ret = pwmchip_add(&pc->chip);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to add PWM chip\n");
--		clk_unprepare(chip->clk);
-+		clk_unprepare(pc->clk);
- 		return ret;
- 	}
- 
--	platform_set_drvdata(pdev, chip);
-+	platform_set_drvdata(pdev, pc);
- 	return ret;
- }
- 
- static int vt8500_pwm_remove(struct platform_device *pdev)
- {
--	struct vt8500_chip *chip = platform_get_drvdata(pdev);
-+	struct vt8500_chip *pc = platform_get_drvdata(pdev);
- 
--	pwmchip_remove(&chip->chip);
-+	pwmchip_remove(&pc->chip);
- 
--	clk_unprepare(chip->clk);
-+	clk_unprepare(pc->clk);
- 
- 	return 0;
- }
--- 
-2.20.1
-
-
-
+> ---
+>  Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> index aa83cbf56d59..ff364bd0fbac 100644
+> --- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
+> @@ -20,11 +20,10 @@ properties:
+>            - fsl,ls1021a-lpuart
+>            - fsl,ls1028a-lpuart
+>            - fsl,imx7ulp-lpuart
+> +          - fsl,imx8qxp-lpuart
+>            - fsl,imxrt1050-lpuart
+>        - items:
+> -          - enum:
+> -              - fsl,imx8qxp-lpuart
+> -              - fsl,imx8ulp-lpuart
+> +          - const: fsl,imx8ulp-lpuart
+>            - const: fsl,imx7ulp-lpuart
+>        - items:
+>            - enum:
+> -- 
+> 2.31.1
+> 
