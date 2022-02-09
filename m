@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA38C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 929B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 18:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240754AbiBISs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 13:48:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34970 "EHLO
+        id S240947AbiBIStA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 13:49:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241197AbiBISqf (ORCPT
+        with ESMTP id S241947AbiBISrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 13:46:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E9D9C035489;
-        Wed,  9 Feb 2022 10:43:50 -0800 (PST)
+        Wed, 9 Feb 2022 13:47:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12F3C1038E6;
+        Wed,  9 Feb 2022 10:44:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0EC66118F;
-        Wed,  9 Feb 2022 18:43:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BA51C340E9;
-        Wed,  9 Feb 2022 18:43:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 722566159E;
+        Wed,  9 Feb 2022 18:44:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22BF0C340E9;
+        Wed,  9 Feb 2022 18:44:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644432223;
-        bh=iTEucs+ocduC5XY3Wd7fonirHddN7oRhxNiOjZ6Vftg=;
+        s=k20201202; t=1644432265;
+        bh=wDua54V40aYcPDnGD2qM9MjIhK8Jdh3ufrb+uJTT5ro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cFzjkbyWpW+2r9IlYaKqf0JELJpiuxSae5Sq2MTVsBVv4elGy3u2N50a2jotysArE
-         M1MdA/QLDwMXYUpRpCXkmACjGncUmhXxmqUtrWkC/SjVJuJcdH54VC8rwV04KtY6Vs
-         7fO2+C7O+xzxyx2j9WzpSLtzDri5At2th+iIwL4yGQ0d9wcoSWm8eTpWcf10EfWSNx
-         hDXEYTxtaOvobn7/9dBHzlrm/C4vCe9wTMOeeuONTHqlTkMZWFLSUMoMz/EJvN6U35
-         JwN+oi1VOdsR10QldUvBHSfnQmYi7qTs3JQgs6BvfrNtvXcSaQ67iSAhEM+F8NhrwT
-         G6qfJn859HP4Q==
+        b=sy3HNJa4ilybq8TAeSdWV/POC9AtYJX2sKvj44Vb5oy1FkvYlVYdT2iV8eE7bo1uV
+         XRf9cdbLLT1ZjvLzzV4Pwj/GSACbTInphJh3M74aXAX8dmSp0FGb4UWZV0ykBtOAe+
+         dDJPxoFsJDvxNsaz5U2VEBXe5GkyDDaStedioqN7if1tAJNKM0WIbzOheilmSxcX1n
+         VTn2QX39u06fRG1kXsDlju9C8B1GXdWRvr/wzEsMo0Jwp6t0DM2ZMKDxuA94mJbZ7V
+         Agx5PChPuJTZ4T7Y0rPr390fej7Tod4ekV7VKMdIgVLLD8C92P151MPWPxJNHJR2B7
+         SXfAnoWuUqj5w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Darrick J. Wong" <djwong@kernel.org>, Jan Kara <jack@suse.cz>,
-        Christoph Hellwig <hch@lst.de>,
-        Christian Brauner <brauner@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 08/15] vfs: make freeze_super abort when sync_filesystem returns error
-Date:   Wed,  9 Feb 2022 13:42:54 -0500
-Message-Id: <20220209184305.47983-8-sashal@kernel.org>
+Cc:     Yang Xu <xuyang2018.jy@fujitsu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 03/10] selftests/zram01.sh: Fix compression ratio calculation
+Date:   Wed,  9 Feb 2022 13:44:02 -0500
+Message-Id: <20220209184410.48223-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220209184305.47983-1-sashal@kernel.org>
-References: <20220209184305.47983-1-sashal@kernel.org>
+In-Reply-To: <20220209184410.48223-1-sashal@kernel.org>
+References: <20220209184410.48223-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,74 +52,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Yang Xu <xuyang2018.jy@fujitsu.com>
 
-[ Upstream commit 2719c7160dcfaae1f73a1c0c210ad3281c19022e ]
+[ Upstream commit d18da7ec3719559d6e74937266d0416e6c7e0b31 ]
 
-If we fail to synchronize the filesystem while preparing to freeze the
-fs, abort the freeze.
+zram01 uses `free -m` to measure zram memory usage. The results are no
+sense because they are polluted by all running processes on the system.
 
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Christian Brauner <brauner@kernel.org>
+We Should only calculate the free memory delta for the current process.
+So use the third field of /sys/block/zram<id>/mm_stat to measure memory
+usage instead. The file is available since kernel 4.1.
+
+orig_data_size(first): uncompressed size of data stored in this disk.
+compr_data_size(second): compressed size of data stored in this disk
+mem_used_total(third): the amount of memory allocated for this disk
+
+Also remove useless zram cleanup call in zram_fill_fs and so we don't
+need to cleanup zram twice if fails.
+
+Signed-off-by: Yang Xu <xuyang2018.jy@fujitsu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/super.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ tools/testing/selftests/zram/zram01.sh | 30 +++++++-------------------
+ 1 file changed, 8 insertions(+), 22 deletions(-)
 
-diff --git a/fs/super.c b/fs/super.c
-index b289356f302fc..e255c18fa2c88 100644
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1691,11 +1691,9 @@ static void lockdep_sb_freeze_acquire(struct super_block *sb)
- 		percpu_rwsem_acquire(sb->s_writers.rw_sem + level, 0, _THIS_IP_);
- }
+diff --git a/tools/testing/selftests/zram/zram01.sh b/tools/testing/selftests/zram/zram01.sh
+index b9566a6478a9c..ac6e4ddd2604e 100755
+--- a/tools/testing/selftests/zram/zram01.sh
++++ b/tools/testing/selftests/zram/zram01.sh
+@@ -42,8 +42,6 @@ zram_algs="lzo"
  
--static void sb_freeze_unlock(struct super_block *sb)
-+static void sb_freeze_unlock(struct super_block *sb, int level)
+ zram_fill_fs()
  {
--	int level;
+-	local mem_free0=$(free -m | awk 'NR==2 {print $4}')
 -
--	for (level = SB_FREEZE_LEVELS - 1; level >= 0; level--)
-+	for (level--; level >= 0; level--)
- 		percpu_up_write(sb->s_writers.rw_sem + level);
+ 	for i in $(seq 0 $(($dev_num - 1))); do
+ 		echo "fill zram$i..."
+ 		local b=0
+@@ -54,29 +52,17 @@ zram_fill_fs()
+ 			b=$(($b + 1))
+ 		done
+ 		echo "zram$i can be filled with '$b' KB"
+-	done
+ 
+-	local mem_free1=$(free -m | awk 'NR==2 {print $4}')
+-	local used_mem=$(($mem_free0 - $mem_free1))
++		local mem_used_total=`awk '{print $3}' "/sys/block/zram$i/mm_stat"`
++		local v=$((100 * 1024 * $b / $mem_used_total))
++		if [ "$v" -lt 100 ]; then
++			 echo "FAIL compression ratio: 0.$v:1"
++			 ERR_CODE=-1
++			 return
++		fi
+ 
+-	local total_size=0
+-	for sm in $zram_sizes; do
+-		local s=$(echo $sm | sed 's/M//')
+-		total_size=$(($total_size + $s))
++		echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
+ 	done
+-
+-	echo "zram used ${used_mem}M, zram disk sizes ${total_size}M"
+-
+-	local v=$((100 * $total_size / $used_mem))
+-
+-	if [ "$v" -lt 100 ]; then
+-		echo "FAIL compression ratio: 0.$v:1"
+-		ERR_CODE=-1
+-		zram_cleanup
+-		return
+-	fi
+-
+-	echo "zram compression ratio: $(echo "scale=2; $v / 100 " | bc):1: OK"
  }
  
-@@ -1766,7 +1764,14 @@ int freeze_super(struct super_block *sb)
- 	sb_wait_write(sb, SB_FREEZE_PAGEFAULT);
- 
- 	/* All writers are done so after syncing there won't be dirty data */
--	sync_filesystem(sb);
-+	ret = sync_filesystem(sb);
-+	if (ret) {
-+		sb->s_writers.frozen = SB_UNFROZEN;
-+		sb_freeze_unlock(sb, SB_FREEZE_PAGEFAULT);
-+		wake_up(&sb->s_writers.wait_unfrozen);
-+		deactivate_locked_super(sb);
-+		return ret;
-+	}
- 
- 	/* Now wait for internal filesystem counter */
- 	sb->s_writers.frozen = SB_FREEZE_FS;
-@@ -1778,7 +1783,7 @@ int freeze_super(struct super_block *sb)
- 			printk(KERN_ERR
- 				"VFS:Filesystem freeze failed\n");
- 			sb->s_writers.frozen = SB_UNFROZEN;
--			sb_freeze_unlock(sb);
-+			sb_freeze_unlock(sb, SB_FREEZE_FS);
- 			wake_up(&sb->s_writers.wait_unfrozen);
- 			deactivate_locked_super(sb);
- 			return ret;
-@@ -1829,7 +1834,7 @@ static int thaw_super_locked(struct super_block *sb)
- 	}
- 
- 	sb->s_writers.frozen = SB_UNFROZEN;
--	sb_freeze_unlock(sb);
-+	sb_freeze_unlock(sb, SB_FREEZE_FS);
- out:
- 	wake_up(&sb->s_writers.wait_unfrozen);
- 	deactivate_locked_super(sb);
+ check_prereqs
 -- 
 2.34.1
 
