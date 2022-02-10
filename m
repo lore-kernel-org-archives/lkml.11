@@ -2,82 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:28:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF546C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242214AbiBJN2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:28:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55326 "EHLO
+        id S242215AbiBJN3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:29:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242197AbiBJN2T (ORCPT
+        with ESMTP id S240857AbiBJN3M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:28:19 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8DB4BA0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qgJ7BeTdHSxnO0s1F6v+Di4M//rT9yP6AOORlVtJCSI=; b=pDt7Kz1BNTg3Gif0QrECApPRwq
-        t/zFCnya18pfeKuahfGbTny5QJloaHTjPTgQ/bHWSSq0ejUd7IEzW776dUIekV3nWgM3RDzCnyygU
-        jCAh6agscdA2uUPKvEsEBjr+sykJ6LK8bXafhhGpkLdyMtXI1qHfewnm0j5mkzW/lC0+Q7Ut5v+Tg
-        hycFoeofKLY2e5Q/TLn7Hw1vnXXQ+i2D0Jyqk4DP24VZ3QHEac+pqmbHPI241HgYCm7EfecpC2a1v
-        XJ54dWQ5Ee/uit71wuIYXWqi9xfjCa9gkHaOZu4ttBqGzV31RU+HIcJlerIvdQI1L4bMYTFAqUoeU
-        H5l3tTBA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nI9Tz-009Stf-7J; Thu, 10 Feb 2022 13:27:35 +0000
-Date:   Thu, 10 Feb 2022 13:27:35 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, ccross@google.com,
-        sumit.semwal@linaro.org, mhocko@suse.com, dave.hansen@intel.com,
-        keescook@chromium.org, kirill.shutemov@linux.intel.com,
-        vbabka@suse.cz, hannes@cmpxchg.org, ebiederm@xmission.com,
-        brauner@kernel.org, legion@kernel.org, ran.xiaokai@zte.com.cn,
-        sashal@kernel.org, chris.hyser@oracle.com, dave@stgolabs.net,
-        pcc@google.com, caoxiaofeng@yulong.com, david@redhat.com,
-        gorcunov@gmail.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@android.com,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2 1/1] mm: fix use-after-free when anon vma name is used
- after vma is freed
-Message-ID: <YgUSxzp/qDwLkiKb@casper.infradead.org>
-References: <20220210043215.42794-1-surenb@google.com>
+        Thu, 10 Feb 2022 08:29:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DC2BA9;
+        Thu, 10 Feb 2022 05:29:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 944B860F2A;
+        Thu, 10 Feb 2022 13:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF278C004E1;
+        Thu, 10 Feb 2022 13:29:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644499753;
+        bh=1DwUq7RIYQm8udrJkhokXVG//5cUWIfeguf7stIQViI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dDo2QnLy1bBULtmMeho8GZaMVBdLDpKsgm/q4u9nLjcZlHVgORGWuFTGWOPQnEWDb
+         WB9gHjP0J0OeM8dNb7DyaqZTd0eYsz+RKxzKtv5UjyvuaXO/2m2sC+bz3AvWU5AgGw
+         Px4NU+72FlWT/Yu+ggJNhE+7AvzYi79WW31ROqo5kJXw/sUQ2wJG4SUxUJZ5yfblqf
+         SXU8chOgWUPvNLVuFezHaoHKubLqKbjLKo3Sb4JMmQgWzh3M8XlHzKNE/239fEv3uG
+         LPZYtYK5hXWetadjfwLDgSLr3G0Ih3LBFFkCHVSZtuajj46VdjCIcXHaeAnxRSati8
+         cNByXr3eawcXw==
+Date:   Thu, 10 Feb 2022 13:29:06 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Apertis package maintainers <packagers@lists.apertis.org>
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        ariel.dalessandro@collabora.com, festevam@gmail.com,
+        krzysztof.kozlowski@canonical.com, lgirdwood@gmail.com,
+        michael@amarulasolutions.com, robh+dt@kernel.org,
+        s.hauer@pengutronix.de, shawnguo@kernel.org
+Subject: Re: [PATCH 1/2] ASoC: bindings: fsl-asoc-card: Add compatible for
+ tlv320aic31xx codec
+Message-ID: <YgUTImUs470jVdYs@sirena.org.uk>
+References: <20220207164946.558862-1-packagers@lists.apertis.org>
+ <YgUSEvMGMoSQYy5v@sirena.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="YLFsHYkxWKuQwxsz"
 Content-Disposition: inline
-In-Reply-To: <20220210043215.42794-1-surenb@google.com>
+In-Reply-To: <YgUSEvMGMoSQYy5v@sirena.org.uk>
+X-Cookie: Only God can make random selections.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 08:32:15PM -0800, Suren Baghdasaryan wrote:
-> +void vma_anon_name_put(struct anon_vma_name *anon_name)
-> +{
-> +	kref_put(&anon_name->kref, vma_anon_name_free);
-> +}
 
-To agree with Michal, make this:
+--YLFsHYkxWKuQwxsz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	if (anon_name)
-		kref_put(&anon_name->kref, vma_anon_name_free);
+On Thu, Feb 10, 2022 at 01:24:34PM +0000, Mark Brown wrote:
+> On Mon, Feb 07, 2022 at 01:49:45PM -0300, Apertis package maintainers wro=
+te:
+> > From: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+> >=20
+> > Commit 8c9b9cfb7724 ("ASoC: fsl-asoc-card: Support
+> > fsl,imx-audio-tlv320aic31xx codec")' added support for tlv320aic31xx
+> > codec to fsl-asoc-card, but missed the related device-tree compatible
+> > string documentation. Fix this.
+> >=20
+> > Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+> > ---
+>=20
+> This has a signoff from Ariel but the mail comes from something called
+> "Apertis package maintainers" and I really can't tell if there's a good
+> signoff chain here, please see Documentation/process/submitting-patches.r=
+st
+> for details on what this is and why it's important.  The submission
+> really needs to come from an actual person who's providing a signoff.
 
->  
-> -	error = madvise_update_vma(vma, prev, start, end, new_flags,
-> -				   vma_anon_name(vma));
-> +	anon_name = vma_anon_name_get(vma);
-> +	if (anon_name) {
-> +		error = madvise_update_vma(vma, prev, start, end, new_flags,
-> +					   anon_name->name);
-> +		vma_anon_name_put(anon_name);
-> +	} else {
-> +		error = madvise_update_vma(vma, prev, start, end, new_flags,
-> +					   NULL);
-> +	}
+=2E..and in fact the address for this group(?) isn't even deliverable :(
 
-And then this becomes:
+--YLFsHYkxWKuQwxsz
+Content-Type: application/pgp-signature; name="signature.asc"
 
-	anon_name = vma_anon_name_get(vma);
-	error = madvise_update_vma(vma, prev, start, end, new_flags, anon_name);
-	vma_anon_name_put(anon_name);
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIFEyIACgkQJNaLcl1U
+h9B/Ywf9EqP7whzzNL2Uso8FORWO2d2z5HQhklyv9TumCpmhCGDlJ1ClJRt0/073
+2sQ+e4rSTfp5pcTjFQeCCoZ7+2waeH90+mhzZnUvbn0S++x0vY2gRsqpNz6gpAZZ
+b3qyxjUlisl61t9pxufe96Jluj2RDQVC274IUh2ia3CRZxWsExR08aG2k8sNRJkx
+W6pg0t7U7pu16rMppTAHgtP4hwHc4xEaNuWl0mpu5UZSF4kCbaJHvOVUc9OdzXf4
+zor1fVCrO1JENWj7KBcIWjiTmtc+o6SK1D4rvZrsFPaX6sXz6NYf9KjO9oYrHQQc
+yX2SAurKvl6mCu5wdlKw0Yp9MrG0rA==
+=9wIg
+-----END PGP SIGNATURE-----
+
+--YLFsHYkxWKuQwxsz--
