@@ -2,77 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346390AbiBKAdP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:33:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59156 "EHLO
+        id S245008AbiBKAdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 19:33:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346380AbiBKAdI (ORCPT
+        with ESMTP id S242517AbiBKAdb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:33:08 -0500
-Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27E75F81
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:33:08 -0800 (PST)
-Received: from svr-chch-seg1.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 413AE2C00C4;
-        Fri, 11 Feb 2022 00:33:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1644539583;
-        bh=zn/yu2lMb6LsMc4qbLeNBM9b0Jo0d/eKfyNo33ad2UE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MWtbpllMPBy0A2tq0OKIXwSyIqKL7hgDNCQtZvnlcKJsVwHpJsclqpBVJI3N3qJ+m
-         oP39nCMgI+W+yJK8fgez6N4/uI6FNdjsaPE7DlMpg8nvX+H/aOFZnAkEA+sqQHG9uJ
-         kSbiwTULABoO4+2d+C1lOXQf+w/HRod10FHbx8I2q7bnzpIe1bHSGMoaUIoLRnsP/L
-         pEXhkfCjmu2zV1tzq8ARszJLql131sQ5vAagBjzzCcdVUHxLEXr0cHOVDaJP9l1WjP
-         nYmrBFeDcm84AWI/+93O39QiRL2/UUUIS+IvgMU9QC9l9YHdMPu4hr9WXKV7ujKDo8
-         hki+92oeZx91w==
-Received: from pat.atlnz.lc (Not Verified[10.32.16.33]) by svr-chch-seg1.atlnz.lc with Trustwave SEG (v8,2,6,11305)
-        id <B6205aec00000>; Fri, 11 Feb 2022 13:33:04 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.30])
-        by pat.atlnz.lc (Postfix) with ESMTP id 18E3C13ECE9;
-        Fri, 11 Feb 2022 13:33:03 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id F1C052A00D0; Fri, 11 Feb 2022 13:32:58 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     andrew@lunn.ch, gregory.clement@bootlin.com, robh+dt@kernel.org,
-        wim@linux-watchdog.org, linux@roeck-us.net
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH 0/2] watchdog: Pretimeout support for Armada-XP
-Date:   Fri, 11 Feb 2022 13:32:55 +1300
-Message-Id: <20220211003257.2037332-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.35.1
+        Thu, 10 Feb 2022 19:33:31 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0AC5F66
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:33:31 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id y84so9661062iof.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:33:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=r/11QztAgc7p887H2JROAx8muQu/2OLTeRvuBg6maFg=;
+        b=ok4tnMvC7LNlEY46BePrt8wMU+Xygc1lZ1J4h61Xtojbzh341QW8CBnitkhh5WqB3/
+         XQn5p4hMW9VVGbkJ9OqMDwRUWIdHv5YGA1+MudlaHItROlN0ZWP+huOqrDwFHv9Z8QR6
+         kAQBAsudTSUpOAzB8WSpovQie3Y9Oejz4Ny6jolkns7yygmDKtkLzivE4oMh3a2eFa0Q
+         blKT0mttPX3VUmJXZcZg9AeE3k4/82VYbeWrmKV+2djpYxOF+Z8FLRVT7aZJzk3HNEyf
+         zId6ynUThngQhyEuB4bOApoKZZXjGDOOJNdj8JSWbzBBA7Maj1PC2m2E0xgnM+DZdPL7
+         xKnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=r/11QztAgc7p887H2JROAx8muQu/2OLTeRvuBg6maFg=;
+        b=b1M2xL5LsNNBu0N7g2/nGI0bQDHXua6lhm19sRHWftvLYWxFpRQQRHs2ySDHkLdUxr
+         zOtnEfFxwEmUWv3I55v3YHQ4kcgQSdMABIbU95lmIdwOHPoLOI9jN0bt4PL5pgibAzS4
+         2PBWVQZl8nX9jl5F8neQ6iCAtzrdAbSseB4JXYMmaoUw9rDj4zlrIaOApd5W/yiPVc4o
+         lYdEnkwsOFlwM8wu5Wo4ItYq8MpkNJZRw4uF24Ua9t6Q4jC7o7iqGJguTX3vL5ApqpmX
+         ayfIKgsK8wKdTq3S8Gt9bf1rHgl7hFkcx18htmZ1MaLEdUA2S//54ox/5+a/WryzrAok
+         5vUQ==
+X-Gm-Message-State: AOAM530Ep/13JvtDF+TJWG2/vfZeGROSEXqMdQ/HoAMTb4yS4bABDqQg
+        V7dCvwWG/nSi9Rj4h3XnWBo=
+X-Google-Smtp-Source: ABdhPJyzos5XlKp1kunYx0r5VshfNF8Q0FlI8L2FzcjJPMYDnSfr0hH9Cw5PSnXX0u86MmWYjJr03Q==
+X-Received: by 2002:a02:3f2f:: with SMTP id d47mr5568535jaa.228.1644539611330;
+        Thu, 10 Feb 2022 16:33:31 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id 193sm3856876iob.17.2022.02.10.16.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 16:33:31 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH 46/49] mm/mempolicy: replace nodes_weight with nodes_weight_eq
+Date:   Thu, 10 Feb 2022 14:49:30 -0800
+Message-Id: <20220210224933.379149-47-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-SEG-SpamProfiler-Analysis: v=2.3 cv=c43Vvi1l c=1 sm=1 tr=0 a=KLBiSEs5mFS1a/PbTCJxuA==:117 a=oGFeUVbbRNcA:10 a=Dj44Gz3Sirx6rMiEHMMA:9
-X-SEG-SpamProfiler-Score: 0
-x-atlnz-ls: pat
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series extends and enables support for using timer1 as a pretimeout =
-for
-the watchdog which allows for getting some additional debug out before th=
-e
-watchdog triggers a system reset.
+do_migrate_pages() calls nodes_weight() to compare the weight
+of nodemask with a given number. We can do it more efficiently with
+nodes_weight_eq() because conditional nodes_weight() may stop
+traversing the nodemask earlier, as soon as condition is (or is not)
+met.
 
-Chris Packham (2):
-  ARM: dts: armada-xp: add interrupts for watchdog
-  watchdog: orion_wdt: support pretimeout on Armada-XP
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ mm/mempolicy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- arch/arm/boot/dts/armada-xp-98dx3236.dtsi |  1 +
- arch/arm/boot/dts/armada-xp.dtsi          |  1 +
- drivers/watchdog/orion_wdt.c              | 13 +++++++++----
- 3 files changed, 11 insertions(+), 4 deletions(-)
-
---=20
-2.35.1
+diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+index 7c852793d9e8..56efd00b1b6e 100644
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -1154,7 +1154,7 @@ int do_migrate_pages(struct mm_struct *mm, const nodemask_t *from,
+ 			 *          [0-7] - > [3,4,5] moves only 0,1,2,6,7.
+ 			 */
+ 
+-			if ((nodes_weight(*from) != nodes_weight(*to)) &&
++			if (!nodes_weight_eq(*from, nodes_weight(*to)) &&
+ 						(node_isset(s, *to)))
+ 				continue;
+ 
+-- 
+2.32.0
 
