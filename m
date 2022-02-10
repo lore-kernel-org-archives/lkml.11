@@ -2,100 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344397AbiBJU4Y (ORCPT
+        id S1344403AbiBJU5s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 15:56:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33900 "EHLO
+        Thu, 10 Feb 2022 15:57:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241575AbiBJU4W (ORCPT
+        with ESMTP id S241575AbiBJU5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 15:56:22 -0500
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2ED10A7;
-        Thu, 10 Feb 2022 12:56:22 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 3CC6A5801D5;
-        Thu, 10 Feb 2022 15:56:22 -0500 (EST)
-Received: from imap49 ([10.202.2.99])
-  by compute2.internal (MEProxy); Thu, 10 Feb 2022 15:56:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=WWJfizk8fowQvV
-        3+Z2PQ3kVVooCwktVVaQRnc7bffIk=; b=G10YaAN2n2pjVUNR+l8pDQpZtF/+N6
-        ze2ksY+J2ObtmLvpduZTMz9PHu8xE/7tap70Xv0PWIS5eFgWNdGBBlmrjJPrrad8
-        wU3unuQu+2ZMlIIgoeE1nViyDoBInft4xxK9F31refkkzU3bW+RXdiomyyTfIRDi
-        3lk+zRqVhFmnV5iQWDfirGr2oiPLoEpSZbgEHkpx2vbEiO4+5EZE8uLhYeaSPTtp
-        MMAMI3jGbi8Vl2S9pXHmqwGocG6KjpObCsOik5qkr0pjKW7bP0a/MN05f+Y0D1dO
-        I2exo0At83uI/xMgO9I23Yi4JBBsFZhUbqMQNn4j61E5nicGXkfRVCAQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=WWJfizk8fowQvV3+Z
-        2PQ3kVVooCwktVVaQRnc7bffIk=; b=amqL/TSojj8gVGrfuQvlCYRqxHXn8QaF0
-        3koN6RQsNrRDVqeHaz+vaswi3Ip9gx8mZmYVZYpU9QFmdWqtHTw6JQbosbFHM5yY
-        hoUOPYvf6ligBzpyoefj2lYqxazv6cAB7RwdLIlP7KbRTLqb5RDHYTNSO0e31J6v
-        nO92/GrvKG8C3Hz69uBLeA2JBzSgAxLUMggiRXyDquQ5AQnbogfCnbjQt9hufJhs
-        w4NtR/Xg9oP3WzzRMS8k6ye6Vqgw8NdiPjRNpEa+30kbSos8AflVDEnInGoGIFl8
-        z3UAORqE72kJqfaOyS0CiAxsEJYRVyk5vz8oVhb/ueiFM5YZgZ0gQ==
-X-ME-Sender: <xms:9nsFYumSp6ehWu4pKNLqNI1For9p__RqsN9y-x0UuZU0bPUKSvnbAg>
-    <xme:9nsFYl3_GLUH0QkC4CAvUch6oX8nxf7Int_CfCZk-QErNK6gToxST5ASuzsTsPCFR
-    2i97lzwOgkwM-WfKZM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddriedugddugeduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfulhgr
-    uggvucghrghtkhhinhhsfdcuoehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
-    eqnecuggftrfgrthhtvghrnhepueeiffetjeeitefgveetleehveduheetiefhhfethedt
-    teelgeettddvvedvudegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhm
-X-ME-Proxy: <xmx:9nsFYsqgLphy8bQ-jLWOYqNm-oUSkhhJ83tKpiXDFC8gDZt5epUXig>
-    <xmx:9nsFYilea1v2Q3-UyfAJRmOHqtjIHTKvDlFfJcT8FMWc47suTNWwjQ>
-    <xmx:9nsFYs2xX_vu3MToNmdwxa2EyYxVrKP3ABd6blkDPv_pynoHa5pTQw>
-    <xmx:9nsFYltR-pMCJ7oJSmOcz3rA6mfk1xCH0J1s606C-p7ubfQm0kR3HRfpxK0>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id F3042F6007E; Thu, 10 Feb 2022 15:56:21 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
-Mime-Version: 1.0
-Message-Id: <02bc91d9-92c6-4e5c-8746-62bd573a9feb@www.fastmail.com>
-In-Reply-To: <20220209191248.659458918@linuxfoundation.org>
-References: <20220209191248.659458918@linuxfoundation.org>
-Date:   Thu, 10 Feb 2022 15:56:18 -0500
-From:   "Slade Watkins" <slade@sladewatkins.com>
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org,
-        "Linus Torvalds" <torvalds@linux-foundation.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org,
-        "Pavel Machek" <pavel@denx.de>,
-        "Jon Hunter" <jonathanh@nvidia.com>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
-Subject: Re: [PATCH 4.14 0/3] 4.14.266-rc1 review
-Content-Type: text/plain
+        Thu, 10 Feb 2022 15:57:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7C310C1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 12:57:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 87784B82744
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 20:57:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9FDAC004E1;
+        Thu, 10 Feb 2022 20:57:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644526665;
+        bh=A5PEWqAB8nEJetdzoluo85KfvBoStC8tNmDbk7Uzpqg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hufVHiJsscm5zO92YC600YUxG27rFjQ8A3MII79WCKTeqhCyViaoFNo88BErZ6cBj
+         l/DEMuqlL53lZIMY0imsxqZbtIaKD2ZMdofLg/Hp1CxEA7JVbWlDoxwRLMr9QcvB0d
+         ZrTLAqdaBEWZqbkpC7mM14uSmfVOAoR4JuNLYBg8q0moF75A9gRfdReFOh/gDB4yyc
+         5z7iJlf7y4miA3gwFXvoudjcfRJmuQi4dCubYCzKJ34/pu+Gk7yjgmCLAswCU6bEEJ
+         7iw1h1JKyudD2MoslVLb3esr8OMoZUQl6cAJ/I/ziS2FU9gl8nary9VBvdLQhzfK1i
+         8WfW6acFVtOmw==
+Date:   Thu, 10 Feb 2022 12:57:42 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Nitin Rawat <quic_nitirawa@quicinc.com>
+Cc:     Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+Subject: Re: [PATCH v3] nvme/pci: Add quick suspend quirk for Sc7280 Platform
+Message-ID: <20220210205742.GA1658422@dhcp-10-100-145-180.wdc.com>
+References: <1644526408-10834-1-git-send-email-quic_nitirawa@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644526408-10834-1-git-send-email-quic_nitirawa@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022, at 2:13 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.14.266 release.
-> There are 3 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
+On Fri, Feb 11, 2022 at 02:23:28AM +0530, Nitin Rawat wrote:
+> Enable quick suspend quirks for Sc7280 platform, where power
+> to nvme device is removed during suspend-resume process. This
+> is done to avoid the failure dring resume.
+> 
+> This enables simple suspend path for this platform.
 
-Compiled and booted 4.14.266-rc1 on my x86_64 test system successfully without errors or regressions.
+Looks good to me.
 
-Tested-by: Slade Watkins <slade@sladewatkins.com>
-
-Thanks,
-Slade
+Reviewed-by: Keith Busch <kbusch@kernel.org>
