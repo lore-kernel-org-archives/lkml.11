@@ -2,182 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43680C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DAAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237064AbiBJIKM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:10:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48810 "EHLO
+        id S237086AbiBJILA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:11:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237016AbiBJIKE (ORCPT
+        with ESMTP id S235748AbiBJIK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:10:04 -0500
-Received: from mx.socionext.com (mx.socionext.com [202.248.49.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA27D1A6;
-        Thu, 10 Feb 2022 00:10:05 -0800 (PST)
-Received: from unknown (HELO iyokan2-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 10 Feb 2022 17:10:05 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by iyokan2-ex.css.socionext.com (Postfix) with ESMTP id 5FAC3205D901;
-        Thu, 10 Feb 2022 17:10:05 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Thu, 10 Feb 2022 17:10:05 +0900
-Received: from plum.e01.socionext.com (unknown [10.212.243.119])
-        by kinkan2.css.socionext.com (Postfix) with ESMTP id E9B9EC1E22;
-        Thu, 10 Feb 2022 17:10:03 +0900 (JST)
-From:   Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Subject: [PATCH v3 3/3] PCI: uniphier-ep: Add NX1 support
-Date:   Thu, 10 Feb 2022 17:09:56 +0900
-Message-Id: <1644480596-20037-4-git-send-email-hayashi.kunihiko@socionext.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644480596-20037-1-git-send-email-hayashi.kunihiko@socionext.com>
-References: <1644480596-20037-1-git-send-email-hayashi.kunihiko@socionext.com>
+        Thu, 10 Feb 2022 03:10:58 -0500
+X-Greylist: delayed 534 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:11:00 PST
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC63D275;
+        Thu, 10 Feb 2022 00:10:59 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id AF52F580150;
+        Thu, 10 Feb 2022 03:02:02 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 10 Feb 2022 03:02:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=PnpDbCRZGPp5ifSTERgTXRQM9Rv/E2SdB0qFWY
+        wi/Og=; b=lEWBuaBgH31hd8rrTx0Bn0MN0c4ro+u0VouYcY/OrlrSIQKI73aLqE
+        Yrl/6w4fYlKVeGpwUlHdE9Y3GFYbd8Zoh2sH24nU62YDlRwyVOB61QiANaKn4qxS
+        rvbC8wiNxjbzuZYkIrVA3xlIcwEc3EoyiJOi+4iy8x6B4ImXM967VLsvfVXpO4XH
+        tj0iSGn1itCtyE+K55qaJdtjdR7128K5tcflVH3epTN6ktq6lMyAVqb2sGVWE94G
+        B2HgmsIyyOpETtwV/brGfpE2XBdy2XhqC39x14IMphHDjyBBC7dXh2fizoRlAvb4
+        yV436j0X1ILlE2hdkpEpS8vP0cZZBgUg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=PnpDbCRZGPp5ifSTE
+        RgTXRQM9Rv/E2SdB0qFWYwi/Og=; b=i1WSoUtaNV7reSiJbZ1/TSFQMNbI31mCa
+        YlP+ZE+iMxCt810dwPBtlzm/AtxhQb1WkqTfd00bjokbNa9vzrvQjs0xQd6ESG5Y
+        2Mq6lyTCMrOnInsfoTRiXQHkAFlo1lbwnVGZPDeCbJg5C9XG/TKvzk5gN2dx8Bk5
+        AcuB4kmevueR7OPaLXLtyvnKJn99gb+SrxqrHLe3Z66GVkxPT5gXGU45f6tnMhoe
+        HvKAoPCPjf8AsJazcUAn3Okmii05ez39ZS7KkKLPNrqHjKVbNYDXd45PyFvdXRwb
+        bm2fTDsG0+Vg/VLgGoQgGQwrDFtvkpx4xxlyk/QjP56oKbHrtZjgA==
+X-ME-Sender: <xms:ecYEYpSXKXVPeqIVpKsfEKW2ulsThyPHfeNXCTkq5FVsJ3YQCjMQ2Q>
+    <xme:ecYEYiyeSp3gEwD0NxwBuJ0vss3YXrw8ehVDarAWGn2BZs-hCw5gqUTDi1Nkwq1OM
+    NMLNxD8DheOZg>
+X-ME-Received: <xmr:ecYEYu040fLlnwX54F-jfP3YIroxfksS-m_XdBCKuuXemqXsJCk70KhbMgmQK0d7KgyfG9BpKfht4lvgkCyi7jmYHoybRzrh>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddriedtgdduudefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:esYEYhCXmaFHaVRgFmqEt0HfR9eAJk0oDdXfeUgA4sLLVxttcfltKw>
+    <xmx:esYEYih2ISucqOfIQ3EnDiHyCNg8W7mfMZg3tCT9F4swzWwopMJcqQ>
+    <xmx:esYEYlrbLYvQq1RcaF8rYoBjto9csFa1Pk2NhlrnnX-oqhJAZ7hETg>
+    <xmx:esYEYjY5FYVI15as4LdLkyW0-lViFRog4RNSzLQ1cgG9uyBBwlrJSw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 10 Feb 2022 03:02:01 -0500 (EST)
+Date:   Thu, 10 Feb 2022 09:01:59 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Michal Simek <monstr@monstr.eu>, David Heidelberg <david@ixit.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: linux-next: manual merge of the usb tree with the xilinx tree
+Message-ID: <YgTGdwkTkDgx+pan@kroah.com>
+References: <20220210141550.56359523@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210141550.56359523@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic support for UniPhier NX1 SoC as non-legacy SoC. This includes
-a compatible string, SoC-dependent data containing init() and wait()
-functions for the controller.
+On Thu, Feb 10, 2022 at 02:15:50PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the usb tree got a conflict in:
+> 
+>   arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+> 
+> between commit:
+> 
+>   eceb6f8677d3 ("arm64: xilinx: dts: drop legacy property #stream-id-cells")
+> 
+> from the xilinx tree and commit:
+> 
+>   d8b1c3d0d700 ("arm64: dts: zynqmp: Move USB clocks to dwc3 node")
+> 
+> from the usb tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> diff --cc arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+> index 056761c974fd,ba68fb8529ee..000000000000
+> --- a/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+> +++ b/arch/arm64/boot/dts/xilinx/zynqmp.dtsi
+> @@@ -823,6 -824,8 +822,7 @@@
+>   				interrupt-parent = <&gic>;
+>   				interrupt-names = "dwc_usb3", "otg";
+>   				interrupts = <0 65 4>, <0 69 4>;
+> + 				clock-names = "bus_early", "ref";
+>  -				#stream-id-cells = <1>;
+>   				iommus = <&smmu 0x860>;
+>   				snps,quirk-frame-length-adjustment = <0x20>;
+>   				/* dma-coherent; */
+> @@@ -849,6 -851,8 +848,7 @@@
+>   				interrupt-parent = <&gic>;
+>   				interrupt-names = "dwc_usb3", "otg";
+>   				interrupts = <0 70 4>, <0 74 4>;
+> + 				clock-names = "bus_early", "ref";
+>  -				#stream-id-cells = <1>;
+>   				iommus = <&smmu 0x861>;
+>   				snps,quirk-frame-length-adjustment = <0x20>;
+>   				/* dma-coherent; */
+> -- 
+> Cheers,
+> Stephen Rothwell
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
----
- drivers/pci/controller/dwc/pcie-uniphier-ep.c | 81 +++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pcie-uniphier-ep.c b/drivers/pci/controller/dwc/pcie-uniphier-ep.c
-index 6c035fc45aaa..4d0a587c0ba5 100644
---- a/drivers/pci/controller/dwc/pcie-uniphier-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-uniphier-ep.c
-@@ -10,6 +10,7 @@
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/init.h>
-+#include <linux/iopoll.h>
- #include <linux/of_device.h>
- #include <linux/pci.h>
- #include <linux/phy/phy.h>
-@@ -31,6 +32,17 @@
- #define PCL_RSTCTRL2			0x0024
- #define PCL_RSTCTRL_PHY_RESET		BIT(0)
- 
-+#define PCL_PINCTRL0			0x002c
-+#define PCL_PERST_PLDN_REGEN		BIT(12)
-+#define PCL_PERST_NOE_REGEN		BIT(11)
-+#define PCL_PERST_OUT_REGEN		BIT(8)
-+#define PCL_PERST_PLDN_REGVAL		BIT(4)
-+#define PCL_PERST_NOE_REGVAL		BIT(3)
-+#define PCL_PERST_OUT_REGVAL		BIT(0)
-+
-+#define PCL_PIPEMON			0x0044
-+#define PCL_PCLK_ALIVE			BIT(15)
-+
- #define PCL_MODE			0x8000
- #define PCL_MODE_REGEN			BIT(8)
- #define PCL_MODE_REGVAL			BIT(0)
-@@ -51,6 +63,9 @@
- #define PCL_APP_INTX			0x8074
- #define PCL_APP_INTX_SYS_INT		BIT(0)
- 
-+#define PCL_APP_PM0			0x8078
-+#define PCL_SYS_AUX_PWR_DET		BIT(8)
-+
- /* assertion time of INTx in usec */
- #define PCL_INTX_WIDTH_USEC		30
- 
-@@ -123,6 +138,55 @@ static void uniphier_pcie_pro5_init_ep(struct uniphier_pcie_ep_priv *priv)
- 	msleep(100);
- }
- 
-+static void uniphier_pcie_nx1_init_ep(struct uniphier_pcie_ep_priv *priv)
-+{
-+	u32 val;
-+
-+	/* set EP mode */
-+	val = readl(priv->base + PCL_MODE);
-+	val |= PCL_MODE_REGEN | PCL_MODE_REGVAL;
-+	writel(val, priv->base + PCL_MODE);
-+
-+	/* use auxiliary power detection */
-+	val = readl(priv->base + PCL_APP_PM0);
-+	val |= PCL_SYS_AUX_PWR_DET;
-+	writel(val, priv->base + PCL_APP_PM0);
-+
-+	/* assert PERST# */
-+	val = readl(priv->base + PCL_PINCTRL0);
-+	val &= ~(PCL_PERST_NOE_REGVAL | PCL_PERST_OUT_REGVAL
-+		 | PCL_PERST_PLDN_REGVAL);
-+	val |= PCL_PERST_NOE_REGEN | PCL_PERST_OUT_REGEN
-+		| PCL_PERST_PLDN_REGEN;
-+	writel(val, priv->base + PCL_PINCTRL0);
-+
-+	uniphier_pcie_ltssm_enable(priv, false);
-+
-+	usleep_range(100000, 200000);
-+
-+	/* deassert PERST# */
-+	val = readl(priv->base + PCL_PINCTRL0);
-+	val |= PCL_PERST_OUT_REGVAL | PCL_PERST_OUT_REGEN;
-+	writel(val, priv->base + PCL_PINCTRL0);
-+}
-+
-+static int uniphier_pcie_nx1_wait_ep(struct uniphier_pcie_ep_priv *priv)
-+{
-+	u32 status;
-+	int ret;
-+
-+	/* wait PIPE clock */
-+	ret = readl_poll_timeout(priv->base + PCL_PIPEMON, status,
-+				 status & PCL_PCLK_ALIVE, 100000, 1000000);
-+	if (ret) {
-+		dev_err(priv->pci.dev,
-+			"Failed to initialize controller in EP mode\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int uniphier_pcie_start_link(struct dw_pcie *pci)
- {
- 	struct uniphier_pcie_ep_priv *priv = to_uniphier_pcie(pci);
-@@ -353,11 +417,28 @@ static const struct uniphier_pcie_ep_soc_data uniphier_pro5_data = {
- 	},
- };
- 
-+static const struct uniphier_pcie_ep_soc_data uniphier_nx1_data = {
-+	.has_gio = false,
-+	.init = uniphier_pcie_nx1_init_ep,
-+	.wait = uniphier_pcie_nx1_wait_ep,
-+	.features = {
-+		.linkup_notifier = false,
-+		.msi_capable = true,
-+		.msix_capable = false,
-+		.align = 1 << 12,
-+		.bar_fixed_64bit = BIT(BAR_0) | BIT(BAR_2) | BIT(BAR_4),
-+	},
-+};
-+
- static const struct of_device_id uniphier_pcie_ep_match[] = {
- 	{
- 		.compatible = "socionext,uniphier-pro5-pcie-ep",
- 		.data = &uniphier_pro5_data,
- 	},
-+	{
-+		.compatible = "socionext,uniphier-nx1-pcie-ep",
-+		.data = &uniphier_nx1_data,
-+	},
- 	{ /* sentinel */ },
- };
- 
--- 
-2.7.4
 
+Looks good, thanks!
+
+greg k-h
