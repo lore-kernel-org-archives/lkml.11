@@ -2,115 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3D8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68FEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237291AbiBJIR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:17:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54042 "EHLO
+        id S237323AbiBJISW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:18:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237266AbiBJIRs (ORCPT
+        with ESMTP id S237266AbiBJISS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:17:48 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D075DA9;
-        Thu, 10 Feb 2022 00:17:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644481070; x=1676017070;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=oy1isJLYwtuPuNrEw0LtVuMelYGGRN0YXlD3NuT4aUc=;
-  b=W0KuWYrJOfARnNftxF3GKLkUKlp6SY2VhXeUU+6oYOMM20nFsVW2LMFa
-   5pxlFhm4Rve8hFXtjbCuceDg41pxlsgiOQ/d+pWLChjJGWG+dUKkXSVN2
-   ZjQ7Ybo74wEDftJu7C9x1ruHnbkE/HSSQ/46VCF2eFwiKCjURNR5CK1YS
-   G6D7Ei5pbc/seVcompwdQyWkFx22H7dXKhDX8IR3RN8kIjV2OnlL8W4VA
-   OMQyNkkLMix/PbcdIWTMARyq7oEV69t3+66R2E7Snw4nkDw7hXmMQkZmD
-   tnLlTDcfff0Akzb71e7bG2dNeA1gq5X7pvzKzcR/SyOshbYlWUaY7fxXh
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="229407980"
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="229407980"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 00:17:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="568562945"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga001.jf.intel.com with ESMTP; 10 Feb 2022 00:17:24 -0800
-Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
- value of function xhci_check_args
-To:     =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>,
-        Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
-        mathias.nyman@intel.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220209025234.25230-1-xy521521@gmail.com>
- <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
- <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Message-ID: <1e4bdc41-abcf-a082-140a-3dcead7073c6@linux.intel.com>
-Date:   Thu, 10 Feb 2022 10:18:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Thu, 10 Feb 2022 03:18:18 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8683A10B2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:18:19 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id y9so4508328pjf.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:18:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=H574A7XQqJ2i5NOk/wD0S3rN53fezDZ1/ELWgryWgFE=;
+        b=Oa+Tp3QxHuRcJB/aSgRGxHd8UwAsGvC3gacfclP4+/ahWcAWX74FK03OqlzxB3iBsg
+         GQRhf9gVxyecKNxaNPkl1qjXL2lnsB8O83NCkNiO/A7Jt+oknUlyF0fO37yQ/2ImHDLT
+         1n+YJWq+QEdb6y8b/PIqwgTS7NuBURzoo8L/D0jG0zeyp7Vn5wjBeGWHOadk8R8G2+lm
+         8pmbuy1OZkrXQTwZKvvmerXrEQW3k0QX/rOcQfJcxMfYFY4+vupO18VqImPsRvMRs5Ax
+         xCEHrzMO1kEVBFtwoU91hXPH+o4EQZBQkKmyt23OQQ5uZoJRI2lYAA5N0QVsSmI6mN+4
+         mC8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=H574A7XQqJ2i5NOk/wD0S3rN53fezDZ1/ELWgryWgFE=;
+        b=4QxVBgvxXFzRK67xc5cueb7dA9/PjF1U7oXaB0+YQhXg6LGyYS+ATW37N0IvrfbeP4
+         JQdFlkxJOnmqBQCtF3FBCFF5bruLj2JcRKFGrmYHNA1uJYhMetJ9Uh83zQ4OMBOJsWbv
+         gMWYmHGgX2UkNUiluWKNLCY8Gl6X6mPLjvFlOsDHxelwDfeBtDvG3LzkgIxo4K9TOSug
+         WkUf1SjeUHfMMhpIIvah4oiffiYyagqCMMzSQzyUqofFjT1NuvNOib5n+dtVBVQGyD47
+         rQBgygxbikcw9x2m9Iiz1uVZFXPHXuzTixTho2AMF8djVVbQDyGbc19MRUvL7JVub9Gq
+         dUrg==
+X-Gm-Message-State: AOAM532owCqHLTHix4CWILX5PbAOMS+5ZRLZr45N1Womf0ygpXPrxkuP
+        ASkO5QJtw4GV9pdZ2yptbFBN5s+6cNNDq+kNEx4w6A==
+X-Google-Smtp-Source: ABdhPJwrKcbOYPJEbU39Gd2dmmbqdwqqtinc327Thc2Xjkz4zVZ//YkeDIVkAuLI2XRNsUtZ+htTSuFHX/0/KqwX34Q=
+X-Received: by 2002:a17:902:6b4a:: with SMTP id g10mr6467923plt.57.1644481099048;
+ Thu, 10 Feb 2022 00:18:19 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20220208141218.2049591-1-jsd@semihalf.com> <20220208141218.2049591-3-jsd@semihalf.com>
+ <YgPdYw6hDoN198Hf@smile.fi.intel.com>
+In-Reply-To: <YgPdYw6hDoN198Hf@smile.fi.intel.com>
+From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Date:   Thu, 10 Feb 2022 09:18:08 +0100
+Message-ID: <CAOtMz3OJNopHKgKDvGNfVWwvvo57=LyiRcnT+x6TxwLb+hgkyw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] i2c: designware: Add AMD PSP I2C bus support
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        "Easow, Nimesh" <Nimesh.Easow@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10.2.2022 3.04, 谢泓宇 wrote:
-> Hi,
-> 
-> On 2022/2/9 17:29, Mathias Nyman wrote:
->> On 9.2.2022 4.52, Hongyu Xie wrote:
->>> From: Hongyu Xie <xiehongyu1@kylinos.cn>
->>>
->>> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
->>> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
->>> the return value of xhci_check_args <= 0.
->>> This will cause a problem.
->>> For example, r8152_submit_rx calling usb_submit_urb in
->>> drivers/net/usb/r8152.c.
->>> r8152_submit_rx will never get -ENODEV after submiting an urb
->>> when xHC is halted,
->>> because xhci_urb_enqueue returns -EINVAL in the very beginning.
->>>
->>> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
->>> Cc: stable@vger.kernel.org
->>> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
->>> ---
->> Thanks, added to queue.
->> Changed the commit message and header a bit:
->>
->> "xhci: Prevent futile URB re-submissions due to incorrect return value.
->>      The -ENODEV return value from xhci_check_args() is incorrectly changed
->> to -EINVAL in a couple places before propagated further.
->>      xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
->> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
->> the return value of xhci_check_args <= 0.
->> This causes problems for example r8152_submit_rx, calling usb_submit_urb
->> in drivers/net/usb/r8152.c.
->> r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
->> is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
->>
->> Let me know if you disagree with this.
->>
->> Thanks
->> -Mathias
-> 
-> Sounds good to me.
-> 
-> Do I have to send another patch with commit message and header changed?
-> 
-> Thanks
-> 
-> Hongyu Xie
-> 
+=C5=9Br., 9 lut 2022 o 16:28 Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> napisa=C5=82(a):
+>
+> On Tue, Feb 08, 2022 at 03:12:18PM +0100, Jan Dabros wrote:
+>
+> ...
+>
+> I have noticed code duplication.
+>
+> > +     status =3D psp_send_i2c_req(PSP_I2C_REQ_ACQUIRE);
+> > +     if (status) {
+> > +             if (status =3D=3D -ETIMEDOUT)
+> > +                     dev_err(psp_i2c_dev, "Timed out waiting for PSP t=
+o release I2C bus\n");
+> > +             else
+> > +                     dev_err(psp_i2c_dev, "PSP communication error\n")=
+;
+> > +
+> > +             dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive hos=
+t usage\n");
+> > +             psp_i2c_mbox_fail =3D true;
+> > +             goto cleanup;
+> > +     }
+>
+> > +     /* Send a release command to PSP */
+> > +     status =3D psp_send_i2c_req(PSP_I2C_REQ_RELEASE);
+> > +     if (status) {
+> > +             if (status =3D=3D -ETIMEDOUT)
+> > +                     dev_err(psp_i2c_dev, "Timed out waiting for PSP t=
+o acquire I2C bus\n");
+> > +             else
+> > +                     dev_err(psp_i2c_dev, "PSP communication error\n")=
+;
+> > +
+> > +             dev_err(psp_i2c_dev, "Assume i2c bus is for exclusive hos=
+t usage\n");
+> > +             psp_i2c_mbox_fail =3D true;
+> > +             goto cleanup;
+> > +     }
+>
+> If you are going to update the series, consider to introduce a common hel=
+per.
+> Otherwise, consider a follow up.
 
-No need, I'll submit it.
+Thanks for your comment. Since Jarkko is running some long-lasting
+tests with v4 patchset, I would like to keep this as is for now (and
+make a follow up commit). If there will be some additional comments
+for v4 from him and will spin v5 - I will introduce a common helper
+function then.
 
--Mathias
+Best Regards,
+Jan
