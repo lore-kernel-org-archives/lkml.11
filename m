@@ -2,108 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF76C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9992CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345909AbiBJXxp (ORCPT
+        id S1345936AbiBJXzl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:53:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54724 "EHLO
+        Thu, 10 Feb 2022 18:55:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240464AbiBJXxl (ORCPT
+        with ESMTP id S1345909AbiBJXzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:53:41 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0831D5F75;
-        Thu, 10 Feb 2022 15:53:42 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id q204so9473512iod.8;
-        Thu, 10 Feb 2022 15:53:42 -0800 (PST)
+        Thu, 10 Feb 2022 18:55:38 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3643B5F5C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:55:39 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id x136so18399680ybe.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:55:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=dlcn0c8FYc7DODG7QrUeh/RDtAB+I+F4Kdfoio51FaI=;
-        b=pT8V02cRnyvge4g/jEw/vfDpSCJQ6mG8f5/2aDrsolSd6MEJ2MeTditvg5HTS3jTiY
-         WtGZZX0/SoKQZhzIgkP9n0Dcpz+r0Ry6EqlDS1ADj+r+2ulVo+sw3mWYm6spJo0j4izv
-         N1Ts5gZLSbXcfXixzzF1vDOzXCcZZGoO1De22gzUYl4uxS93hxyIA0QHPiwWxW7NznE1
-         lewNaZm3nBzJFJx6tYvobMi78QVigZ22b58D/vnMuMkpRkUzPV6fqocJUenoiOeZYDlQ
-         W543WAQd+q0/+WonyRm+lCqOpJHOTkjXAKKjvaVnXKxFWTPxKbP0S6V7BC0ngGjwAxig
-         dinw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NBgjpXZigvKnq2ReZid/vVB+xdrDhkSnQh0scwSixew=;
+        b=xZbxhSdG7BP+bJnrVyoE2lszS+OHv+a+H3cQQ/XSPeuBnunccAuxwGYKSfskaMedG+
+         M854Z+EZQraXLGral30yOEGTBOxMdz2uKrWOI4zvQlOOUMiIBbEj99+ZHDFFoIPOYpHX
+         FWVn8PSeldaBpwu8/kCQdARjDyNTXAQ6Gc3X6ARJRIb/8EfAQjg9JJTpALPioBWNXJms
+         GbUG5ppLhIkhcipfpkHzhmLVaYwOfmwgN+/Mp1E6pB7sM8K5YmMFALbSjsySG7zeVMyN
+         2ZYQFhiHmgerzNCmL1Pb6REYcyjuhJXQDBIy3ElkgmmTYutzGkK8emj4JbhcDG45LwX5
+         yaPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dlcn0c8FYc7DODG7QrUeh/RDtAB+I+F4Kdfoio51FaI=;
-        b=3A6NIwIeavoUYipRWjuzK5wDwLiStp3ujhMBqkbMCPiFG2V1zHwhxY5wL+EGKT0/vM
-         ekStjIW8QaWB7flsLaAq6TiLJpgtyEHRDRnrow64mvjGxxXzg2yyIwLgOZWiwlayXUW1
-         Y2hrDRA3+yncT6Ip1zF7G+yGNrT1/lqphYY7ybP2zkEPIiL/wICxzhlnY2WPk9D6Fcn3
-         DCnrcauleYcUKIsdDpVHGmvRxtb2ve61bRcEHFliF/nPKOrL7fG2KOG5/mDgOvqQFxXC
-         zNTIe9OKSk2xoYNQyciNnGg0Jvi5NWE88C5zLegXeY6xx8fLScAeQP0V1/9hwm3UjZRq
-         mT+Q==
-X-Gm-Message-State: AOAM531XCfY+wDmFG2PImSr9TRASQNlQg6DQ3lWygVqdoYJb+MglgtYV
-        MH+A6fjHm8frxgfWu4r2a64=
-X-Google-Smtp-Source: ABdhPJy1cnRyAEVSz8FK6oisjYTOYyOW5apveqRHtmqXfgAdrv7GPswYZO2OmUFJkYqdisR1K1A0IQ==
-X-Received: by 2002:a05:6602:2c8d:: with SMTP id i13mr5215640iow.181.1644537221384;
-        Thu, 10 Feb 2022 15:53:41 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id e17sm11144879ilm.67.2022.02.10.15.53.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:53:41 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH 28/49] iio: replace bitmap_weight() with bitmap_weight_{eq,gt} where appropriate
-Date:   Thu, 10 Feb 2022 14:49:12 -0800
-Message-Id: <20220210224933.379149-29-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NBgjpXZigvKnq2ReZid/vVB+xdrDhkSnQh0scwSixew=;
+        b=md2uSBf26/Iq0VKfET4Tx/p5H5C+C8dye69qdfxekW1fosoOPW/0eaGTYUUrCOPMLC
+         jioaVZik2lmyIvIl/F4EezMlT2Ohbal2EtCrgZ24WJevUAWN79difYriIfHmxI1qPYcC
+         hqcSKte89kKD+9Bd+hf4D7WRnlSTr/aTUdsbb7Y+p7U9hOz9J8wh6gg3SIFboGE9IZUn
+         hBrkByZ7/I2r8CxMwCa4qW1szIRdVSKJtABWAoBkX8SQfv+ftjRYApxzOYv7waPUeWhY
+         pNYWMhYI7z3rK0rRu3TqGNMDaodK9V5EeRtAYpXtvj4rOj1KMAwr4WUjGlu9CTUGLdP/
+         LPwQ==
+X-Gm-Message-State: AOAM533+YnTSMn6c9tCO6CagNrB+WG2DS5EHehD4P9AvvegLdQcevNG9
+        L0B9uW3lAcNCcFPbT6aWw093dLrg2GfNJhiIbmr/yQ==
+X-Google-Smtp-Source: ABdhPJwipupTHC/BooALieYlhlXLEn3fYioHlw3JUyAr99lmECPcYnKONg/T+vXDZIAm5NxFs4SAErzm0/3TmmckDVg=
+X-Received: by 2002:a81:4cc3:: with SMTP id z186mr10395825ywa.140.1644537338489;
+ Thu, 10 Feb 2022 15:55:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220120150024.646714-1-paul.kocialkowski@bootlin.com>
+ <20220120150024.646714-4-paul.kocialkowski@bootlin.com> <CACRpkdZnw-Tf2eQwO+LZRW4UacR09qWRWct00=XLb4pfa-N3=g@mail.gmail.com>
+ <CAMRc=MewxfQqM+QvzqjP05Qe5TeiEx+iiOFZLmieqCCVOL9UGQ@mail.gmail.com>
+In-Reply-To: <CAMRc=MewxfQqM+QvzqjP05Qe5TeiEx+iiOFZLmieqCCVOL9UGQ@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 11 Feb 2022 00:55:27 +0100
+Message-ID: <CACRpkdb2d2q8DjgjG5_h3TH0ppugAEVyRvYGhNMrWy3fzq2Jcw@mail.gmail.com>
+Subject: Re: [PATCH v10 3/6] gpio: logicvc: Support compatible with major
+ version only
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drivers/iio calls bitmap_weight() to compare the weight of bitmap with
-a given number. We can do it more efficiently with bitmap_weight_eq
-because conditional bitmap_weight may stop traversing the bitmap earlier,
-as soon as condition is (or can't be) met.
+On Tue, Feb 8, 2022 at 10:55 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> On Sun, Jan 30, 2022 at 1:43 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > On Thu, Jan 20, 2022 at 4:00 PM Paul Kocialkowski
+> > <paul.kocialkowski@bootlin.com> wrote:
+> >
+> > > Support the newly-introduced common compatible for version 3.
+> > >
+> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> >
+> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> >
+> > Are there dependencies between the GPIO patches and the rest?
+> > Doesn't look like that.
+> > Can Bartosz just merge the GPIO stuff to the GPIO tree?
+> >
+> > Yours,
+> > Linus Walleij
+>
+> Except I'm seeing there's no agreement on the actual compatible yet in
+> the previous patch.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/iio/industrialio-trigger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yeah I noticed that after writing that :/
 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index f504ed351b3e..98c54022fecf 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -331,7 +331,7 @@ int iio_trigger_detach_poll_func(struct iio_trigger *trig,
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(pf->indio_dev);
- 	bool no_other_users =
--		bitmap_weight(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER) == 1;
-+		bitmap_weight_eq(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER, 1);
- 	int ret = 0;
- 
- 	if (trig->ops && trig->ops->set_trigger_state && no_other_users) {
--- 
-2.32.0
-
+Yours,
+Linus Walleij
