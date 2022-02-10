@@ -2,79 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB6AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7396FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346158AbiBKALI (ORCPT
+        id S1346182AbiBKALZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:11:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47260 "EHLO
+        Thu, 10 Feb 2022 19:11:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245055AbiBKALG (ORCPT
+        with ESMTP id S243963AbiBKALU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:11:06 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B1A02724
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:11:06 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id p5so20089598ybd.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:11:06 -0800 (PST)
+        Thu, 10 Feb 2022 19:11:20 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2584926FC;
+        Thu, 10 Feb 2022 16:11:21 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id c12so5089696ilm.8;
+        Thu, 10 Feb 2022 16:11:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SCMpPtMCiOJ/G+Eq+FzjqaIZUVvMGCRl0NKCrIWOD3c=;
-        b=XBA4n8JWpO28GAY8KpOE5Fii8tHnNL0Lrh0fWhsI07c/cJA8Nz2/XqJrI8jSV2cGSw
-         1P91jvRZCfGSCKLJFuS4PTIM4Jrs9opnFDu/wrZbAPpeYBJIuKAmK0RMYD5fuMInBFOf
-         iqwoArv+BP9V2GE9k3aY5bFzaaKeNSPnZsA6cfEROnmQ+rJQkw2sW30UUjE4EuCq4ikh
-         icWobOZJ4w6Rp/ozGYoTyCQTvUjdUEJIel+Nb5PzXVswvIAZiQ/1IjWYXRYZO/SM993j
-         ArKAc51/+S5BDuPNadLYzJ1vU5rEqAvCBsfeSmPlSAJNUnwlrUNC4CLcwMutRgaVaLqY
-         TrEQ==
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=4h1t/bTC+qDJEJPFRFVcOK5rGe+GH/iRxYkyQH+GgIE=;
+        b=ZbhAJACxr48oNEwePgKFllHTK19fvAQq+syugIWiNbjTIbpMhXabd524NdFk43VC0r
+         B2hb9BmF99mJk9SLhcktegNw7uf/aZput7dd0Caq9kW8BhlfTyrh9FLvqip34hJAYxU3
+         yJu6/fI770DnT1KmaXY2hB6gXMtWmcQIO+/NoeGJqB+FEUOjjrueHwo997wTI6Qa+u1e
+         dsTSd8IexTLJdmTz03InYWBbE5FetCdiNbfdUBuMl6uoDH/GyCJ9Qhd/tIcnOq5AYY+d
+         H0vKrvtzn6zHqEpnQBzqdN7cZHZ8BYNcBACZth46mq4/qK0PuxkQEQPP7ihi6PQFbdbL
+         B9mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SCMpPtMCiOJ/G+Eq+FzjqaIZUVvMGCRl0NKCrIWOD3c=;
-        b=45N19sa+FaNJmpwerprFrZ3Jcz+Ngh4puBGYcYqeaC1tSQoVLUfNNxk9weQelxAK9/
-         QIsvSCYvbPAcFy9ar2utvEyPkS3i/OgJcg8pi1XCOJ9tdgDqxAUdprmgLOqZG0tXqANB
-         YpPuW1Cv/+Xzulwa8/p/wipcI8ckIWzBKBIleWOzfFVqJfw8g1yu5RMz2AknR0gwK4fW
-         Z3BgGXapSV7HCUvZuH5RPvDkeq35uHvhq2iMGtjBRmY0/wZS2l+ch6wusL3vldJ0w36v
-         Y4tsCKIGVKkdGBQjmjUrPvx2CEQeVMtlcGePMCt3EjVdTCSY8qP5cIP3WI+EyyECsyex
-         /k7A==
-X-Gm-Message-State: AOAM53339xoOr2E3mIBJWRQV9c90NhcHI6F4UfqWjaQCX59lrCONTDOB
-        57J9ZYHf73IjvpXO4KAtU3patUnqpSy7xNq2xF4f6rvkJVzcXw==
-X-Google-Smtp-Source: ABdhPJz2D8S8vUC1h5FU6mERCeQjOZLOQvAmkY2lC5MMdhv3su82ZuGu4xueTzqReYLkVp6s5xRXwZIwEmBX5LooWjY=
-X-Received: by 2002:a25:103:: with SMTP id 3mr9342711ybb.110.1644538265780;
- Thu, 10 Feb 2022 16:11:05 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4h1t/bTC+qDJEJPFRFVcOK5rGe+GH/iRxYkyQH+GgIE=;
+        b=KGBeVlX0Ps418O1UhTg9XwpVhFXaXMYTHLm7eGZsi0IhLSvsScgB7GTB9akiTXe9IF
+         8QIODYg7L4RR1fghX6Mo3jINoCAjxEXamiufs8nrse0zvxfAjzV4Touq5q4wrsNayu2M
+         R6pW+uLV0nB5Ln2k4Cpy578iAhplWc8szXNQhv8nALb5wZ7GSkeyMzj1TMihzLjw6NfE
+         R7RoCPgxJmUxYwZUImpkrgGULuY/h6bCOoqwmvq/YyTvPfdKxnMDOQPK8/VbvgZqTFuf
+         hQ75AqSQQGj9gXrwR7W57bMAXiQsIH2nj8Qusn+W/I8dkrr0FWjo2K7B3+QUo0XijjPs
+         MayQ==
+X-Gm-Message-State: AOAM531FqPf0sWkrSmimMtl7NTB5BRH0RbreHSFCPgZ/7G2O6a+Vrg6P
+        NyWxYdWeHSNCI/kxVlRa/tM=
+X-Google-Smtp-Source: ABdhPJxnKGWWX+h3tns0z9BdoPa/Tdtk5KLlu3v4Oxuh6/KxSgi5Su/RU6jC7/E8reyvrJ26b1xJ6Q==
+X-Received: by 2002:a05:6e02:1e08:: with SMTP id g8mr5702300ila.22.1644538280448;
+        Thu, 10 Feb 2022 16:11:20 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id u26sm12191990ior.52.2022.02.10.16.11.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 16:11:20 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org
+Subject: [PATCH 36/49] arch/ia64: replace cpumask_weight with cpumask_weight_eq in mm/tlb.c
+Date:   Thu, 10 Feb 2022 14:49:20 -0800
+Message-Id: <20220210224933.379149-37-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-References: <20220210062122.23974-1-guodong.liu@mediatek.com> <20220210062122.23974-2-guodong.liu@mediatek.com>
-In-Reply-To: <20220210062122.23974-2-guodong.liu@mediatek.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 01:10:54 +0100
-Message-ID: <CACRpkdbNef4MH2UFOC6wvCFB4jUV6Qmar6H2Dqq9GYfmGtfkPA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] dt-bindings: pinctrl: mt8186: add pinctrl file and
- binding document
-To:     Guodong Liu <guodong.liu@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 7:21 AM Guodong Liu <guodong.liu@mediatek.com> wrote:
->
-> 1. This patch adds pinctrl file for mt8186.
-> 2. This patch adds mt8186 compatible node in binding document.
->
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+__flush_tlb_range() code calls cpumask_weight() to compare the
+weight of cpumask with a given number. We can do it more efficiently with
+cpumask_weight_eq because conditional cpumask_weight may stop traversing
+the cpumask earlier, as soon as condition is (or can't be) met.
 
-I see complaints from Rob's robot so please address these
-or explain why they appear.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ arch/ia64/mm/tlb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Yours,
-Linus Walleij
+diff --git a/arch/ia64/mm/tlb.c b/arch/ia64/mm/tlb.c
+index 135b5135cace..a5bce13ab047 100644
+--- a/arch/ia64/mm/tlb.c
++++ b/arch/ia64/mm/tlb.c
+@@ -332,7 +332,7 @@ __flush_tlb_range (struct vm_area_struct *vma, unsigned long start,
+ 
+ 	preempt_disable();
+ #ifdef CONFIG_SMP
+-	if (mm != current->active_mm || cpumask_weight(mm_cpumask(mm)) != 1) {
++	if (mm != current->active_mm || !cpumask_weight_eq(mm_cpumask(mm), 1)) {
+ 		ia64_global_tlb_purge(mm, start, end, nbits);
+ 		preempt_enable();
+ 		return;
+-- 
+2.32.0
+
