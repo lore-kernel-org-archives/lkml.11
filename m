@@ -2,114 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D57F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3317C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346261AbiBKAYG (ORCPT
+        id S1346310AbiBKAYl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:24:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54766 "EHLO
+        Thu, 10 Feb 2022 19:24:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346239AbiBKAYF (ORCPT
+        with ESMTP id S1346239AbiBKAYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:24:05 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15505590
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:24:05 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso7282118pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:24:05 -0800 (PST)
+        Thu, 10 Feb 2022 19:24:39 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7462735;
+        Thu, 10 Feb 2022 16:24:39 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id d188so9541410iof.7;
+        Thu, 10 Feb 2022 16:24:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LrUyb0Wh6q+TWQdBAwHTHlIVx9+z8b9Fs7B5ywluypo=;
-        b=byNY5Pw6n4O+A1Q3QFXWhgzmCWlIQeKjcQUWZJ+DB0iNn6tZK4MT+hS6YSspA+h6bs
-         jQa8L7AoQ4gf7HiYdKT9kprrE3EEg2SozoFAdE6qCOgU4p/0vHsXRbay/qdPQRfSyE8c
-         uoHZzTYhOGPFz+DVto+lcTWIDjTXeT8u1ckhRepZoJbX+yBc0h/qzWrXD3XNuktL30Pd
-         uQDROctnatm8uQ2LT/yqgFQOe693BKBmpFVHStg1CYX1nse3bEoOVfETyM3b3sZHKx0X
-         zou/jBtc5nB0F51EuGLQlbGzX66gCbBkBXBj4SUAMoY35zWFdMlxc5HuUWl2+oZKFDrK
-         cxgw==
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=QAzv4ww8wIlL+as7782AHbg1vH8P76wooakjw6i+3Lc=;
+        b=eXLLwoHPmmMGbzE7v0/eoXuOPxdUXwkX/S1PRH7+XaWXBdBlZ2LApOHE3iMbfl1Kr1
+         4GwEpbo6DXk12uqn0CKDnMRhKWqc5E3xyz9NlalC6BgjOF5wKrnvMhCPW9SSAhlLLl6m
+         SJ7sEazoSG1wTfj/t9S8PKfHMcLUmvpTj5Pc0aeefCRDO6tqtR1xpZoio2/j0k8YYyxX
+         zEBfNvS1zpcUSSWrMuGVBIRyH8o5iTxni7dpOaIzvLu25KQaD405JzCGbLLWDXy3I+2R
+         RrwzKsgeq5+sh8lMKFvhc8G58okPUNcmv6K7HmZ88pG7t1Y1PPc1VwW9SLPBecuQ6xwT
+         /6zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LrUyb0Wh6q+TWQdBAwHTHlIVx9+z8b9Fs7B5ywluypo=;
-        b=48v5nYUrfZ2FK9pNv2EF34xBlGJKnqI3hvf6w/Byzso1gIgkRUMyBVI98zLxSBgoPu
-         wpRno+GNmQh3cDux7mfEMAWgAgO4isRTcrihoQBqF3SnM/3TfGaQZUPu5otu0Zoyi21r
-         Tkqrv/Sn2ZiMiAPzYEAj9ylaGLMteTa4lfmrMSpO1Gy+9Sk9pb5iQCAtS1uh8DNep14N
-         sWx7SBwLIlMMlHbtwt7iAO3ZAPOtYpv8wcpiQFbXtivDmQqH14PdUUXw+EO+cdrT/Lxh
-         KCv2TIebizqc8TwUDLYDWC4674EnW0RlgOMYzrC9zgkdE9vgyQVIWy18eb+RGZKxDk1s
-         ekug==
-X-Gm-Message-State: AOAM5329JAYwtYNgrued13H3LhSlhbGfyCdix0IHNgRx8P7hRx1mLtra
-        glbqgglP1ESblt7NBxIAngnVdQ==
-X-Google-Smtp-Source: ABdhPJy6NqoftN81+qGjPmSwA1HX60QzmRV7HaXy1H+bXAqKzrJoFkfKC5JwQ2PB4RaR/grvsdiu3g==
-X-Received: by 2002:a17:902:ea06:: with SMTP id s6mr9827627plg.163.1644539045142;
-        Thu, 10 Feb 2022 16:24:05 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id iy13sm3338563pjb.51.2022.02.10.16.24.04
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QAzv4ww8wIlL+as7782AHbg1vH8P76wooakjw6i+3Lc=;
+        b=hTsQWyDyKSbu3ZwsEqV2Lzfe8WDWkNt0zcrOhzoUd/fBQGfNHGuJBM+0ezQFO1d8Vw
+         JiJkQor5dpMBA28s2VCM6IETHnXcBobFa2WgdXi9SYoF52ZOi7CLmV1/R7xChSTSgIBk
+         2vIW1WItHEmbEACEi7K6cMoCzdApArl0lABv0RwuQXlYiPbgaX4ptBXDaXCmzn9BN/iH
+         b56qic+7F/HGQ9Q1uvGmbzmQ/k3Cc21qdMQQclMZD/HAGlfn65Lup4hlmJB2/UjssJYm
+         srlWKE1ZeMliouUCh0LXo2Q551VVmkzL8kjChTXs4+xLscfuflTJv+xOgDWtSd7I12f4
+         G0nQ==
+X-Gm-Message-State: AOAM530PwIyTAlaANtjaQJSyBWmEiboBl4iYqctO07BibVncQK6WLvfl
+        1VlMk/tXepdhJS0eAS7TQ94=
+X-Google-Smtp-Source: ABdhPJzat5BMCPgkejoDjmOJcB5P48ExVxXh+fEyDvvDxqoIGAU7OXeWm93caqoE2/ZSItwt5e3CXA==
+X-Received: by 2002:a6b:ed06:: with SMTP id n6mr5210030iog.88.1644539079119;
+        Thu, 10 Feb 2022 16:24:39 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id b5sm6780043ilr.0.2022.02.10.16.24.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 16:24:04 -0800 (PST)
-Date:   Fri, 11 Feb 2022 00:24:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
-Subject: Re: [PATCH 05/12] KVM: MMU: avoid NULL-pointer dereference on page
- freeing bugs
-Message-ID: <YgWsoKskWnahgR8j@google.com>
-References: <20220209170020.1775368-1-pbonzini@redhat.com>
- <20220209170020.1775368-6-pbonzini@redhat.com>
+        Thu, 10 Feb 2022 16:24:38 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        James Smart <james.smart@broadcom.com>,
+        Dick Kennedy <dick.kennedy@broadcom.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH 42/49] scsi: lpfc: replace cpumask_weight with cpumask_weight_gt
+Date:   Thu, 10 Feb 2022 14:49:26 -0800
+Message-Id: <20220210224933.379149-43-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209170020.1775368-6-pbonzini@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022, Paolo Bonzini wrote:
-> If kvm_mmu_free_roots encounters a PAE page table where a 64-bit page
-> table is expected, the result is a NULL pointer dereference.  Instead
-> just WARN and exit.
+lpfc_cpuhp_get_eq() calls cpumask_weight() to compare the weight of
+cpumask with a given number. We can do it more efficiently with
+cpumask_weight_gt because conditional cpumask_weight may stop
+traversing the cpumask earlier, as soon as condition is (or can't be) met.
 
-This confused the heck out of me, because we obviously free PAE page tables.  What
-we don't do is back the root that gets shoved into CR3 with a shadow page.  It'd
-be especially confusing without the context that this WARN was helpful during
-related development, as it's not super obvious why mmu_free_root_page() is a special
-snowflake and deserves a WARN.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ drivers/scsi/lpfc/lpfc_init.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Something like this?
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index f5c363f663f6..35688427cb7f 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -12642,7 +12642,7 @@ lpfc_cpuhp_get_eq(struct lpfc_hba *phba, unsigned int cpu,
+ 		 * gone offline yet, we need >1.
+ 		 */
+ 		cpumask_and(tmp, maskp, cpu_online_mask);
+-		if (cpumask_weight(tmp) > 1)
++		if (cpumask_weight_gt(tmp, 1))
+ 			continue;
+ 
+ 		/* Now that we have an irq to shutdown, get the eq
+-- 
+2.32.0
 
-  WARN and bail if KVM attempts to free a root that isn't backed by a shadow
-  page.  KVM allocates a bare page for "special" roots, e.g. when using PAE
-  paging or shadowing 2/3/4-level page tables with 4/5-level, and so root_hpa
-  will be valid but won't be backed by a shadow page.  It's all too easy to
-  blindly call mmu_free_root_page() on root_hpa, be nice and WARN instead of
-  crashing KVM and possibly the kernel.
-
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index 7b5765ced928..d0f2077bd798 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -3201,6 +3201,8 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
->  		return;
->  
->  	sp = to_shadow_page(*root_hpa & PT64_BASE_ADDR_MASK);
-> +	if (WARN_ON(!sp))
-
-Should this be KVM_BUG_ON()?  I.e. when you triggered these, would continuing on
-potentially corrupt guest data, or was it truly benign-ish?
-
-> +		return;
->  
->  	if (is_tdp_mmu_page(sp))
->  		kvm_tdp_mmu_put_root(kvm, sp, false);
-> -- 
-> 2.31.1
-> 
-> 
