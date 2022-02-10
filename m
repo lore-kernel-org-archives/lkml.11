@@ -2,80 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33311C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0356AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245098AbiBJROR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:14:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59728 "EHLO
+        id S245091AbiBJRSl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 12:18:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245091AbiBJROM (ORCPT
+        with ESMTP id S240659AbiBJRSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:14:12 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C05BCD1;
-        Thu, 10 Feb 2022 09:14:13 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 3755F1F46644
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644513251;
-        bh=7eKe9cr+drEikdGOCEKvZJjS+2opyiB5I/5QBobUyqg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Hu8sDjEJegZhxyoRsPrtPfobwZ0NYVhVnq6TxIfjDmkmW4PTxXJewDm8rBfrv4zsS
-         Pb34c97Mkhl0YLVrK6Dp9+O6YQ58zqrWIqLWDPBiJIMMBgLPFs2NwKuZLnKXjLixM0
-         ABIUbH9iR6p1fMgDtt2xIxHxGeJ9/F7qaLoQsD3Wgg+rEUFw8guhdRhF3sDTC93Eui
-         uOyWEhw17vLUhOTCKyEEe8nNcw+nOWgIZrHnCwGYEc6VT+On17trV7bZwIN1DTHVj0
-         qbFyDfjDsXyo32W7NtYyHLuVT/c0wO2yTZaq/l3evKwWX8ebHPyojAoAvvVgCngp3B
-         AslsTHiY/74pQ==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, kernelci@groups.io,
-        "kernelci.org bot" <bot@kernelci.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests/exec: Add non-regular to TEST_GEN_PROGS
-Date:   Thu, 10 Feb 2022 22:13:23 +0500
-Message-Id: <20220210171323.1304501-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 10 Feb 2022 12:18:40 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC9AE6B
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:18:40 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id v186so17538370ybg.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:18:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Y6jU5y+7ciw1kZFk2voVGn514q9KLRF2t/AdSLq2qd4=;
+        b=kA+EU7zowAhr4Q6p3DR2WaQWW+nlLBUiWTFn/6iEG2XqIU0Jvua7ciIE+flrDSx7CH
+         sDKhgfH4W8O+dNAJ2nev5wRYbAZEST6GDKboFkzjFB43X8M7zlX+QwfLa/vs1/EwIzL8
+         I25oIP7rzbivJXAWZTNqJo/ySkuw1c5IhDHFz7IFIvb+xtSqtY+PrfvTDnSIYlhqtdjs
+         TSglyzVe31PfFPTs3w4vLFzd543RzxMSqTuM8htpmRvYtTeis8o63HdsyVwAeo+tIyzn
+         dv6dQvUgRIZQC3LD4TvOHX31y7nuwYywBeDeXJP+y2mbxbp2JUrn79Z1Wqk0QBrLjOfm
+         nMKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Y6jU5y+7ciw1kZFk2voVGn514q9KLRF2t/AdSLq2qd4=;
+        b=2sZWJDw772HAPakGUUqT9X1wfr771rYxFHtsM8c5NxfIjda49h86U4DaRNOGFbJyBE
+         lUp74KlK3HlrS+iVay+Sk8eIzh9kJ9Z4Z7LH0q3RFJrB59TXc6pn8xuNcOlq2Yi585AP
+         pMoWr5tFB6WCLrWDBgSS0zoUf86pXZPYdJegwpOKsfQFBDlij4nP/LHHg6MyCozV5EU7
+         qyTuUdpevTBIC6BB2/Tu83i6/xnz5uiJCom4OyJLU2QaEpb3sWi6tGIJ+bDkpN4JlNeV
+         VNRE4cL/7GUxEVPMrl8Q50TiwyPhMcxtjYVBLUg6Fa2nKq9bAJsWyVEsFWnuc3v2/VsU
+         GvvA==
+X-Gm-Message-State: AOAM530be4N1qcljdDkUjXYeutsUzHe8xgnI+iWJB9/Yz/vTvwn7/dCo
+        q9KTO91UnynM2qZ15tTuaX1vDkie0RhGuhMZRTo+jg==
+X-Google-Smtp-Source: ABdhPJyeRA3e502ZxR+L51J3Klgeehjbwyny/IdqqMZuHjSZtFufytlLUNoKGN3UeoZgnfritSbpsz/suGfpi2djVWk=
+X-Received: by 2002:a25:49c5:: with SMTP id w188mr7757635yba.200.1644513519410;
+ Thu, 10 Feb 2022 09:18:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220209191248.596319706@linuxfoundation.org>
+In-Reply-To: <20220209191248.596319706@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 10 Feb 2022 22:48:28 +0530
+Message-ID: <CA+G9fYv8ejt_OrujMXdUv3Hgc-BrSFpeZJYx+LEGZoj0eNPDSA@mail.gmail.com>
+Subject: Re: [PATCH 4.19 0/2] 4.19.229-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-non-regular file needs to be compiled and then copied to the output
-directory. Remove it from TEST_PROGS and add it to TEST_GEN_PROGS. This
-removes error thrown by rsync when non-regular object isn't found:
+On Thu, 10 Feb 2022 at 00:45, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.229 release.
+> There are 2 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.229-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-rsync: [sender] link_stat "/linux/tools/testing/selftests/exec/non-regular" failed: No such file or directory (2)
-rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Fixes: 0f71241a8e32 ("selftests/exec: add file type errno tests")
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
- tools/testing/selftests/exec/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
-index 551affb437fe1..a89ba6de79870 100644
---- a/tools/testing/selftests/exec/Makefile
-+++ b/tools/testing/selftests/exec/Makefile
-@@ -3,8 +3,8 @@ CFLAGS = -Wall
- CFLAGS += -Wno-nonnull
- CFLAGS += -D_GNU_SOURCE
- 
--TEST_PROGS := binfmt_script non-regular
--TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216
-+TEST_PROGS := binfmt_script
-+TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
- TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
- # Makefile is a run-time dependency, since it's accessed by the execveat test
- TEST_FILES := Makefile
--- 
-2.30.2
+## Build
+* kernel: 4.19.229-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-4.19.y
+* git commit: 020dc380ec76524a264536664d516a5a4d7cd45d
+* git describe: v4.19.227-90-g020dc380ec76
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.227-90-g020dc380ec76
 
+## Test Regressions (compared to v4.19.227-87-gb06b07466af8)
+No test regressions found.
+
+## Metric Regressions (compared to v4.19.227-87-gb06b07466af8)
+No metric regressions found.
+
+## Test Fixes (compared to v4.19.227-87-gb06b07466af8)
+No test fixes found.
+
+## Metric Fixes (compared to v4.19.227-87-gb06b07466af8)
+No metric fixes found.
+
+## Test result summary
+total: 61877, pass: 52177, fail: 270, skip: 8370, xfail: 1060
+
+## Build Summary
+* arm: 130 total, 130 passed, 0 failed
+* arm64: 35 total, 35 passed, 0 failed
+* i386: 18 total, 18 passed, 0 failed
+* mips: 26 total, 26 passed, 0 failed
+* powerpc: 52 total, 39 passed, 13 failed
+* s390: 12 total, 12 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 34 total, 34 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-arm64
+* kselftest-arm64/arm64.btitest.bti_c_func
+* kselftest-arm64/arm64.btitest.bti_j_func
+* kselftest-arm64/arm64.btitest.bti_jc_func
+* kselftest-arm64/arm64.btitest.bti_none_func
+* kselftest-arm64/arm64.btitest.nohint_func
+* kselftest-arm64/arm64.btitest.paciasp_func
+* kselftest-arm64/arm64.nobtitest.bti_c_func
+* kselftest-arm64/arm64.nobtitest.bti_j_func
+* kselftest-arm64/arm64.nobtitest.bti_jc_func
+* kselftest-arm64/arm64.nobtitest.bti_none_func
+* kselftest-arm64/arm64.nobtitest.nohint_func
+* kselftest-arm64/arm64.nobtitest.paciasp_func
+* kselftest-breakpoints
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-drivers
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-net
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+
+--
+Linaro LKFT
+https://lkft.linaro.org
