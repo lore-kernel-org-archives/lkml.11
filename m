@@ -2,171 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:57:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D06A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245429AbiBJR5T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:57:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57042 "EHLO
+        id S245439AbiBJR6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 12:58:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245415AbiBJR5Q (ORCPT
+        with ESMTP id S245426AbiBJR6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:57:16 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4CA1A8;
-        Thu, 10 Feb 2022 09:57:14 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21AHVwbi013360;
-        Thu, 10 Feb 2022 17:56:31 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=oHVQtcRVEBRhV8J2beeLNC7Hwr6ccNb65yPca//xNhE=;
- b=UtlW2ra2FDjc4lYsO00gX8CWy++h4mnypl7s3tJAbR9vMnM1T695CLovjt8PE4ZbTMR6
- laZq0UOpHMLQWc56iG/uCCN3pda7mdZ11/+GXOhtmt21Xw//rlOv/fbwpdjM/VzgsJVf
- pJlRJWrpaOrkpWVBmXSU++b92WE7citGPyG8WCtXgCTmX9QnfsCiXLxbzOSqu9OAz7TA
- MI4ODh5tLyPMcrlkdkzAKelfiYFgYWYpzVmm2zXamVm+EylTCV9Nsail0fPuG7z21emd
- OGkfn0PviPiGgrsnuoRcx+i5rI95LQVeQLZD4B+PxIWAukXjc/bmha6bMB5qmusuqzlI Rg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e368u1v0x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Feb 2022 17:56:31 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21AHffWg080905;
-        Thu, 10 Feb 2022 17:56:30 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2170.outbound.protection.outlook.com [104.47.59.170])
-        by aserp3020.oracle.com with ESMTP id 3e1h2at5se-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Feb 2022 17:56:30 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y6+2kZ+pFLIX7+3X3LQ+4tVIMPZuqoOsfgohOuPr7JMAW+wVGkKJxJhJthKb9x3P5QS7Ovh/DiMBHXfhwwz5yDIplex1wH07h+CZOvK2u+dJWBzkiDAApgmk/7f9Z1ciBJk3Bj4tCfzXaBI3c36plEP1e67q43wFRxibpdJiDXIZu0I0Gc+26fAT/AQy4ayrcPZopOuJ6zTvuPjs2cUbO5HWTUQ5ZrCsb6MX7F2nNpph6zMxwvsUWPqHS4RlCpApDnuWLlrz3hVh6EP2eOqiO+QVhNyc11Dh8RqPmV33jAONv9Pb7qBIws5CyPxWK6PBR+QBRu2QC2g2/Ic0b7INjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oHVQtcRVEBRhV8J2beeLNC7Hwr6ccNb65yPca//xNhE=;
- b=jXpcfBl3E6Qg7w7gqpf24Q0Fd9zvq5tfIH7IP6JZH5pnOaQyfDXWXaIXKa+jz736Iw6N4mscEaMDasOU1mTiLTkQuCsie3K8DzTmwgp0qaJceGdFY9aclEkvCCGAChSssYmwI0+/WtB/Z9LrsozyjfsiHGARAF6R1TXfhUEhgoOwlV0GAQxUrlB1dk5XXhZRJ8lTueLB0bnzBicC0Js5fTJWWCtudYzrhEq2ActYUrX2ovCXKu71yiISOtDc4NHJnxfyf+jS8IVUxCQVh0z0q5/7rUS++XRJ1Mup8dC8Fl2YNTBaqRG2HcSvkMAh1yNEYp7iAk4dhOeCRUS4LTGNgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        Thu, 10 Feb 2022 12:58:51 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0A4BF5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:58:51 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso5137440pjj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:58:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oHVQtcRVEBRhV8J2beeLNC7Hwr6ccNb65yPca//xNhE=;
- b=wGU/pycrVoxtuwFJJUTUbrg54uqTQu/kwfM5hQ9nEuPFbozVehS9SvWAqED/dcrq3JK2w5tFbDA1BVnW6uNxTj/UU6FIshFLXI/Q0axthy4uzqwEm5fu2UDC/EhMgIV+WkQEdO/IOWpPmhHRjJ72gp2doGgkFolRoEmbZ5VU71w=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by BYAPR10MB2582.namprd10.prod.outlook.com
- (2603:10b6:a02:ae::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 17:56:27 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::e5a5:8f49:7ec4:b7b8%5]) with mapi id 15.20.4951.018; Thu, 10 Feb 2022
- 17:56:27 +0000
-Date:   Thu, 10 Feb 2022 20:56:03 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>, Willy Tarreau <w@1wt.eu>,
-        syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
-        fgheet255t@gmail.com, Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        mudongliangabcd@gmail.com, Netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
-Message-ID: <20220210175603.GL1951@kadam>
-References: <000000000000a3571605d27817b5@google.com>
- <0000000000001f60ef05d7a3c6ad@google.com>
- <20220210081125.GA4616@1wt.eu>
- <359ee592-747f-8610-4180-5e1d2aba1b77@iogearbox.net>
- <CAJ+HfNjeapa=2Ue19L3EWF8z5vxFB0k2QO_LuBu4Meqs0=AE4Q@mail.gmail.com>
- <20220210174507.GK1951@kadam>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eJjpjiZFmC3NVaxARYWkgFsjJKrhv1BAcceimkRM1uc=;
+        b=I4hwIxjkkeAi4jIAR7EXdb4NWii/7oxAC6AKqPuQcnGc8TW/3D7Kxhqam1lyFsXflt
+         Vm5HJqIQnwHvwhbzNaVZa/mGzfaowJ3SBRqQD0pO7VdYw06AMqhgorMLoVu687YW6uRy
+         xkDO6nKGEP1GdnvBreXiy7Bzs/r8JG5ZY52itSe+2nWNR7aR/w54AI9EhT004OHlxO41
+         Zue5nM3Rjk/3mHOTvwbP6nVoO7O6C5tofS/BRIFKSU4np+suf7OKHgu8N9LUfARepCSh
+         PX2O6hjyeqrkf2K0IX6MAgjAOqbTm0uSfwncU7ax0gdaHn259R4/6H92h5F65UBFMXJT
+         ESLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eJjpjiZFmC3NVaxARYWkgFsjJKrhv1BAcceimkRM1uc=;
+        b=m9Yl7iyR/ogiWfH9A7YZ6/Pj8Eu8NEXbZiXr7JbAZqqhGCDtJdC6eh65M0X++j/o+A
+         zj9y7rFXtxcLsf4plYuqdw55diMfeNCldEo7YG3StQ7m6f+Ud6YrKBQm3MSXpG6YadRS
+         ElP2gVGCHXpFhdEM34PhSgrOdVNIwFKksEZSDaj1MzafGlwSfebAGQ5rtaq54iWHoh4Y
+         R1rEPrP1i83fRedA/aohIqnCEiMSAKtr6xK7G7MX8OCzxtzlAQH9VKZDQaaUysanWu6o
+         zvajWhrqHN4az6mW2+dkT0jIh3F3i+65Pq/F58Ns8RHPf6bAfuTPX/99AZcn4n9sF25i
+         tUSA==
+X-Gm-Message-State: AOAM531+BMOXQU/kI6uk4Slc9Frs3iwPckOJmdZWgtWSyG7hQkjAr/0l
+        LC1Z7oMOAHHuQzBmiaQSToK7xw==
+X-Google-Smtp-Source: ABdhPJybX2DTRur/fqp1T3fsi1sv7jdOfBkzRKrTiFCl1wtzaexEErRObkoG10fCF7lKUo/ZB94mrw==
+X-Received: by 2002:a17:902:db01:: with SMTP id m1mr8805397plx.53.1644515931043;
+        Thu, 10 Feb 2022 09:58:51 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id y30sm3834969pfq.142.2022.02.10.09.58.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 09:58:49 -0800 (PST)
+Date:   Thu, 10 Feb 2022 10:58:47 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     Wendy Liang <wendy.liang@xilinx.com>,
+        Michal Simek <monstr@monstr.eu>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] remoteproc: fix minmax.cocci warnings
+Message-ID: <20220210175847.GA3603040@p14s>
+References: <alpine.DEB.2.22.394.2202082139180.52266@hadrien>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220210174507.GK1951@kadam>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0070.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::18)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c0c5ca2f-7469-4f51-58cc-08d9ecbea90c
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2582:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB2582A3D37659352A7DD19B548E2F9@BYAPR10MB2582.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:751;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JcU+cc0hmHp35r/OLh1VGFvvQXu+2XNpjmMJvMV5Xi4mD+4m5aNHMUBBTKMb9J2+aYVx7UajSuDswcO17/wO0XRjrmAobWQNrmjtt42H7RaWGxrKxOFMr7uVACuQj+axhrzW6LgjVez/s/5kVyIKSbRNDz2itA+gupaW/0GrxIf2ZPlsvViN0S+tN//vjJjZPbNfjIAEE15WvmAVbCDGHuUMpw6XUzJe/zoPLSXumtJt851re5A1RKw9wMKWnVtKBW+MJft4Z/rnXXorsuE/4Kwh3nX7Ltcgpw5FHMKQdLHQVxFqw0QMASyGfHkA9jxPXgCevAXuVuZZNrdakZuiq6Xsl5o7GPmmEtM6mSk4s/BwFW9GPTLlVZoTxXCM6ul4KJGVg408XQ/AmrE04E91FM3rhTbW+ixhugl6TBQCySfBMzfkHQZc/IIrXJxjef9V6GfPX6/jgBYcedpHe7INEQL2k+BcNgU2GQE8wwxbiL3pUGKgdkXpIkpR8UsFXLTY+VkCTXjtrk06RN0+JSouq0MxoiBKeUyDPxT9wtWlyylQTk10kOCaKgBZsncmrpgNICVguOnFbL4Cmof6UloS+ZIF1ZFXpZk1NBj4lTKUbkyf4sX0iadM5jFeAunhzm59E+qkuSirsdhyBnQgUFdnioHwjYf2Ww/pWjV3QPDU6WS/L6Xo4RahRKgOfXJLyBdiKrMA2cc+KBETnwYRK/Oyvw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(38100700002)(9686003)(6512007)(2906002)(5660300002)(26005)(186003)(1076003)(7416002)(38350700002)(44832011)(4326008)(86362001)(316002)(54906003)(6916009)(6486002)(8676002)(6506007)(558084003)(33716001)(33656002)(66476007)(66556008)(66946007)(6666004)(52116002)(508600001)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?3kYYMZXqnzPqGzblpIx5MTQn9u5RuzT/3SP+SInibXQhcLyozxCxNGwcaoHS?=
- =?us-ascii?Q?HPcuvjCNmVB7KSZJcNVpid0tzrkokH0cXrD44yDXDPBHS9NXXc32r6V4tA9R?=
- =?us-ascii?Q?zLR4ch9dq5EIGU/HZNp1nNZ5CxuR+/qOjsTs2ViwlIxoK3a/vFk4hu2ZhGNc?=
- =?us-ascii?Q?f+baasWUAA82u0kulaRMdeuJOn+uZBwrCFaiFYuINMzwzOVbqZW1PLebByL9?=
- =?us-ascii?Q?s9mRjFkcZhfM72DE80tTHS+hm6x2eSR/1NOY1t8qx1y01tB0mdWu5UlCz7JI?=
- =?us-ascii?Q?LHb/VfXnz3vZlAPG18g69MBhGZsjwBSwahalrHzMuZfGzgSb19ajMckJs6Nt?=
- =?us-ascii?Q?yA0D5Qer6qSZTJ1QeF/zrzZTROMbIruQxFWn2cInBXJxdAnbyQ8UOPXq24o+?=
- =?us-ascii?Q?rQ4evJ+ahTdy+w0000TqwAr3vlpR65rvinjtDaMOsmlk1KPMjfcTKXamSInk?=
- =?us-ascii?Q?iP1AUU3wb4fuklqyRD2NielhZJhfZju2//Wb7iYQp5rI6MMtYSblb8TqaQoa?=
- =?us-ascii?Q?JiVgmMcrsx+9vdpqtNllAjbA0JiEUdzv+Oo9UVNJcjNxjkbDQCT4BNFcUFQj?=
- =?us-ascii?Q?qyTbU230t2fyoM1AL2r+4t1bTMi2OncJDAhmR5t6VQfbxlFAp2Y7XrrLS4q+?=
- =?us-ascii?Q?4eyXHoKnYAi0SZv7FIAhX569xRQcTK3DvKmdUnoTBkMBaOoZ+xq6Yn4HSrTG?=
- =?us-ascii?Q?b+8+AqVRmORoYeKuu7hmrvq38zWWHjdzKV5kzEdNNfimqdT2PHCuVpn2Wyhf?=
- =?us-ascii?Q?5b2yJV7CeSIB8VoFfOcoEzb7f3ztkttnOycOiL7J47mhQP3aTkgi8s60Nfz7?=
- =?us-ascii?Q?YWUu+95gyc1VB/48rCG0aM8MI1Nxo/XqI1r3bTJAe2+bISvXjD2C5l1PsBNN?=
- =?us-ascii?Q?TsE8FDv80r8aimziaYWm778kFmWhmKs1Y40C3rX424Ts0E8cIZh39UcBnMON?=
- =?us-ascii?Q?ZDwGwDgqXOfb3322Tn1oT/G9XEtq+Xry1mGyi92MTlUW7Snta3gunMC3dyEJ?=
- =?us-ascii?Q?nHpUr7VimSa+v2gix2xtAVrXiPdgwkFCcb3XDJW1ec9M0cASmZxhVcqOA5C3?=
- =?us-ascii?Q?Zlx+nohYPw0asPN9ai8I95mw7upjrkO4CsKE3OZsxbzweuDx2NmAQimwTkjI?=
- =?us-ascii?Q?qaIF/P5Rm5VK3Z97kUp/hSPIcrBFa/t/vnO9xn3fA/7zx4zWxqka63NNlM+5?=
- =?us-ascii?Q?3Mr+Fh2Ni143efqSqiXk6KsH6/2h8qjQ1P2be8hJ7sOpJekbCWFNaI5aqmla?=
- =?us-ascii?Q?+G8LtGTsVzoIb3jmApHMLnqWo37YG0S6lcX/MkAW7vXEHtMsrQUivpqZSQDl?=
- =?us-ascii?Q?xOBZpu/aJ2SIw5lnap5HW8egHl0MbkkB0oBT3fX/B3i37flFyPm9jEf4HwvW?=
- =?us-ascii?Q?Or2aJarN1gutwHhnhtLVoZXxgsA2fWwG8jJTA/O7bm/I4QYuMETVEqsyrSp0?=
- =?us-ascii?Q?fte3u7brObY1mjr2t25CRWqGVv+uxtyZk7PaY2zrxjrEh7B6iNGUZMJYSwCE?=
- =?us-ascii?Q?qDFj6cyehG4HTYzVG+zWHFBcTuxsAPowjDwpzx+oR7SH/yXOgTMF9RsSIIXz?=
- =?us-ascii?Q?IWa9EpLiPgNaFElVwqIpq4Zm0txIwey2B6I7wZmfp8xwv4VmUqFQ4lZHaFx1?=
- =?us-ascii?Q?csz5djswhGkZnxzRAcwDl4ZQfYa9q9gIbxlUt+02YPlsOH1IUgXI9kEyvSQy?=
- =?us-ascii?Q?592lxA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0c5ca2f-7469-4f51-58cc-08d9ecbea90c
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 17:56:27.5610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jtFKk6pYhAnGSPD+zy/qqwy0Tt/Z1xd/dhPlJR1b68f6ZajdbahbhrYKEid+sMKDVWr0iulDf55dm5Wr+xhvtvsTdUafmxSjJdSFPQuwFPk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2582
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10254 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0 bulkscore=0
- phishscore=0 malwarescore=0 mlxlogscore=852 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202100094
-X-Proofpoint-ORIG-GUID: dTQJ89Qm3EFlpr-lhVmN5GG6WluMXEcr
-X-Proofpoint-GUID: dTQJ89Qm3EFlpr-lhVmN5GG6WluMXEcr
+In-Reply-To: <alpine.DEB.2.22.394.2202082139180.52266@hadrien>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 08:45:08PM +0300, Dan Carpenter wrote:
-> Is it normally going to huge?  You could call vmalloc() instead of
-> kvmalloc().
+Hi,
 
-Wait that would make the allocation succeed...  We don't want that.
-That was a dumb idea.  Forget I said that.
+On Tue, Feb 08, 2022 at 09:41:39PM +0100, Julia Lawall wrote:
+> From: kernel test robot <lkp@intel.com>
+> 
+> The code seems more readable with min.
+> 
+> Generated by: scripts/coccinelle/misc/minmax.cocci
+> 
+> Fixes: 2b9408d09dc6 ("remoteproc: Add support for peek from remote and acking kick from remote")
+> CC: Wendy Liang <wendy.liang@xilinx.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+> 
+> ---
+> 
+> tree:   https://github.com/Xilinx/linux-xlnx xlnx_rebase_v5.15
+> head:   1183ce490adb103e5e569b8ebd74c50c885ddc05
+> commit: 2b9408d09dc6367fd2f0820f0c7beab69e9aed56 [550/872] remoteproc: Add support for peek from remote and acking kick from remote
+> :::::: branch date: 7 days ago
+> :::::: commit date: 7 days ago
+> 
+>  remoteproc_sysfs.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> --- a/drivers/remoteproc/remoteproc_sysfs.c
+> +++ b/drivers/remoteproc/remoteproc_sysfs.c
+> @@ -241,7 +241,7 @@ static ssize_t kick_store(struct device
+>  	size_t cpy_len;
+> 
+>  	(void)attr;
+> -	cpy_len = count <= sizeof(id) ? count : sizeof(id);
+> +	cpy_len = min(count, sizeof(id));
 
-regards,
-dan carpenter
+Looking at the min() macro the above would become "count < sizeof(id)" rather
+than "count <= sizeof(id)".  I don't have more context into this code because I
+can't find it in rproc-next nor today's linux-next, but it is something to look
+into.  The patch is also missing the minmax.h include for the min() macro.
 
+Thanks,
+Mathieu
+
+>  	memcpy((char *)(&id), buf, cpy_len);
+> 
+>  	if (rproc->ops->kick)
