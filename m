@@ -2,106 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB438C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA36C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344991AbiBJWci (ORCPT
+        id S1345003AbiBJWe7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:32:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54852 "EHLO
+        Thu, 10 Feb 2022 17:34:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344965AbiBJWcg (ORCPT
+        with ESMTP id S238570AbiBJWe4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:32:36 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B36267F;
-        Thu, 10 Feb 2022 14:32:36 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 75E0F240003;
-        Thu, 10 Feb 2022 22:32:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644532354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+QgVffAGvdGWhHLFKs1yKdpUZfk0sx8ZccSaPdB92Lc=;
-        b=lAQGGi+iO2hQ8Jo77cYHXAKC9fn+Dtj73HjHETDcS6HzIAeGvxrIUqUd2p3khMDYu59OyQ
-        d9Wm+X31vHFHH9humJRy1hjWfxtz/H6kXk285aSJ/p1fIVcjmtz3S7uLf2y/5HJiwhor0i
-        DRn+HxJNSn3bc7bhcAHlJsRPTil3HN8+B6G1b6EqyZZsdXrr5i3EmcI4Etj2AjEffrUg96
-        V15H9Li6j9h1AmY5UgQAqAn9h8u0C9G2vbO1c+4ZvfqA0ngcTdT8CWoH/OxOCSq8K9dShP
-        j9PNV6UDcJ1h6C/zXPXsyClS634lZLYkI5pSXEYeTz737HEZfHqvuaqVqz3Nvw==
-Date:   Thu, 10 Feb 2022 23:32:32 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Hugo Villeneuve <hugo@hugovil.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/10] dt-bindings: rtc: pcf2127: add PCF2131 INT_A and
- INT_B support
-Message-ID: <YgWSgGTKR63g+S9e@piout.net>
-References: <20220125200009.900660-1-hugo@hugovil.com>
- <20220125200009.900660-11-hugo@hugovil.com>
- <YgMy/CYL8lmf6Y+J@robh.at.kernel.org>
- <20220210171234.4e317c8a5d5f91f358382b07@hugovil.com>
+        Thu, 10 Feb 2022 17:34:56 -0500
+Received: from smtp.smtpout.orange.fr (smtp03.smtpout.orange.fr [80.12.242.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C0110AA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:34:56 -0800 (PST)
+Received: from pop-os.home ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id II1dnjIzz9r2MII1enUsYH; Thu, 10 Feb 2022 23:34:55 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 10 Feb 2022 23:34:55 +0100
+X-ME-IP: 90.126.236.122
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        John Hurley <john.hurley@netronome.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        oss-drivers@corigine.com, netdev@vger.kernel.org
+Subject: [PATCH v2 1/2] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
+Date:   Thu, 10 Feb 2022 23:34:52 +0100
+Message-Id: <4acb805751f2cf5de8d69e9602a88ec39feff9fc.1644532467.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210171234.4e317c8a5d5f91f358382b07@hugovil.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10/02/2022 17:12:34-0500, Hugo Villeneuve wrote:
-> On Tue, 8 Feb 2022 21:20:28 -0600
-> Rob Herring <robh@kernel.org> wrote:
-> 
-> > On Tue, Jan 25, 2022 at 03:00:09PM -0500, Hugo Villeneuve wrote:
-> > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > 
-> > > The PCF2131 has two output interrupt pins, named INT_A and INT_B.
-> > > 
-> > > Add properties to identify onto which pin we want the alarm interrupt
-> > > to be routed. It can be either one, or both.
-> > > 
-> > > These properties are automatically set to false for variants other
-> > > than PCF2131 (ex: PCF2127).
-> > > 
-> > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > ---
-> > >  .../devicetree/bindings/rtc/nxp,pcf2127.yaml  | 23 +++++++++++++++++++
-> > >  1 file changed, 23 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > index 57eb0a58afa3..83656dd2f97f 100644
-> > > --- a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > +++ b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > @@ -24,6 +24,16 @@ properties:
-> > >    interrupts:
-> > >      maxItems: 1
-> > >  
-> > > +  alarm-output-a:
-> > 
-> > nxp,alarm-output-a
-> 
-> Ok, this will be fixed for V2.
-> 
+ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
+inclusive.
+So NFP_MAX_MAC_INDEX (0xff) is a valid id.
 
-Actually, this property has to be made more generic and thought out.
-There are multiple RTCs that have multiple interrupt pins where one of
-the pin can be used for different interrupt or clock output.
+In order for the error handling path to work correctly, the 'invalid'
+value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
+inclusive.
 
-With your binding, there is no way to separate which interrupt is going
-to which pin and so there is no way to get the alarm and BLF or the
-watchdog on different pins and we certainly don't want to have a
-property per interrupt type.
+So set it to -1.
 
-Also, the documentation is missing the fact that the driver makes having
-one of the property mandatory.
+Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index cd50db779dda..9244b35e3855 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -922,8 +922,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ 			  int port, bool mod)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int ida_idx = NFP_MAX_MAC_INDEX, err;
+ 	struct nfp_tun_offloaded_mac *entry;
++	int ida_idx = -1, err;
+ 	u16 nfp_mac_idx = 0;
+ 
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
+@@ -997,7 +997,7 @@ nfp_tunnel_add_shared_mac(struct nfp_app *app, struct net_device *netdev,
+ err_free_entry:
+ 	kfree(entry);
+ err_free_ida:
+-	if (ida_idx != NFP_MAX_MAC_INDEX)
++	if (ida_idx != -1)
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
+ 
+ 	return err;
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.32.0
+
