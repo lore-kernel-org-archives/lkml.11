@@ -2,109 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8040C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C46C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345439AbiBJXIk (ORCPT
+        id S1345445AbiBJXJd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:08:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58326 "EHLO
+        Thu, 10 Feb 2022 18:09:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238904AbiBJXIi (ORCPT
+        with ESMTP id S238904AbiBJXJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:08:38 -0500
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A790E31;
-        Thu, 10 Feb 2022 15:08:39 -0800 (PST)
-Received: by mail-qk1-x72d.google.com with SMTP id o10so6606250qkg.0;
-        Thu, 10 Feb 2022 15:08:39 -0800 (PST)
+        Thu, 10 Feb 2022 18:09:32 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7646FC66;
+        Thu, 10 Feb 2022 15:09:32 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id o3so7144365qtm.12;
+        Thu, 10 Feb 2022 15:09:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=8tBSzebx6IZWphnQDmZzi0rvUYtCYRK6nGrmurw7iTk=;
-        b=VctWFimLh3AYddEGqTeZwYpvH+2egElHggiZG6HROcMPM6t4PbuJRA3P7nel5acxHJ
-         iVQtSJ6P8j/vL38rwP+vwLlkPVwnPVBh36AXVths9rFLU8Jf8Nu9MwqwdTO9ndYp1Az+
-         UCDnDGwr/s+vCOfO28O5MqFNsyI7IC+EaInU7kKbFdyTOtNEdWRafeisQBf3eQCBuzqG
-         EJ5T2OOsfp//rGAWOIp72EkCNobq2Jps8jA6DTJ9H14V9rPuEOnbxvlRLfKiLs88A5a+
-         pzF7Lcqq0h8cN3QlFSo/+ZyNgTD0S1drwmCJrCJfDhbCVLKHva/gnz45ss/dsQ2fWwpT
-         nH1A==
+        bh=Il/njuSffEOrDW4E6Z5WwCggqy6XxgY6UGpPrL0AIR4=;
+        b=JHJhNoUxh9ZuIiGYQov/FCIzAnjDxw6DqtVPkL1Zy1CLrsVwmf/L1YO0+GvOXbDRZ1
+         pqP9mY9GzQYWTgjathqD6S833i3Jn5LhtxZir6zDdzPkcq0f+VaqtHxlBS6ulo5m01Uc
+         5DJQwrfoKFPrAReQX/OlzhfusR6gY3jUDmZ2vXh/MK0XJxvb+JBDrj+24HC4sMqKBH2x
+         kal6x+3q2ykI4/TCu98o6Mozggc8N7XorGZWzB7iKSz5i9wIizC8TdU+Cz+wzu1nNQay
+         JFJ9W+P6+SkdtD9v9e2pIYBVGBN0oQwzdYpdb3O/UPoDayEfqa2+ziM7S0gFtv3xwP3k
+         JINw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8tBSzebx6IZWphnQDmZzi0rvUYtCYRK6nGrmurw7iTk=;
-        b=A+TBVbkzhSghPUPrxsdtHdPoUx+9S++VKhubygpEw5yKgfmn8fTKOT4nHWyC1eqArU
-         TjNzaZJnCGIx4gyRrxcOjRy311bIagIJBlMEY3IjxTRfWR1QYevJpsxxZ3onSE/QQ5Wj
-         GwEY8KZCYmccOa/VcQqwHNe7WFewrb+Ib0ko9jl+ySq3oMC+8Um13A/6ARVq1wE+HVw4
-         tpgZigACNrC2KTku44YK2tK0zIvuHNOjO9joiQLfTKXKWdDGEUtLKSQGAT+MbCbIW0Lm
-         edQEERdYIKHBMClnNJ2Dr8NwarMKWQ7tVI1VwQv61ev2ugQ6i1GZEmfJuPHAwMkrdJSE
-         yiSA==
-X-Gm-Message-State: AOAM5321Q9vT/H6HxlcVLeozWWOFDhBvMEp+AY1upm1YGM0SFh46e5/s
-        LxMzRIFwsyoI9ldKbP8rQUA=
-X-Google-Smtp-Source: ABdhPJxz8mHol+ysN0OuloI7MrK637q0cIngQIMXKsaQuDg4uwCNVT0JgimFXOAi9PcGNTEyNSlXLA==
-X-Received: by 2002:a05:620a:c4e:: with SMTP id u14mr4883247qki.710.1644534518498;
-        Thu, 10 Feb 2022 15:08:38 -0800 (PST)
-Received: from localhost.localdomain (c-67-187-90-124.hsd1.ky.comcast.net. [67.187.90.124])
-        by smtp.gmail.com with ESMTPSA id s6sm10549153qko.93.2022.02.10.15.08.37
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Il/njuSffEOrDW4E6Z5WwCggqy6XxgY6UGpPrL0AIR4=;
+        b=wij2CJmAo1Sp0oor3zOLtoYdXM4d3E+sJqga2rLIYQpwhx534e0hFSct8wQQrRaQhS
+         NhPZkLGQEuHtXVV4ChYHwuJdD/euv+VwP9yyuFiIWk96GYs4wNdyPgLN0ynE2MpeDLoS
+         HxH9UXgVAtiOks0S3JpR1+xKjmyO1giJT+WByxuxqZKsBRykOM1fDkuNPhCqpmGKecJv
+         kwn/Tv3Qx7HGk5O8T70c7VaHeEF4q3rBVR23YkKUDazxCA5XxBRTZxIaYZ+Xu+8b8/nb
+         0NdTEcCpH7JGBGcHjbDk4usEK1lqOpaKKSwAuSkv2P2r3Lw+AbQqTPQtnZdhmgvYjh7q
+         Xb8w==
+X-Gm-Message-State: AOAM531n4VugdfmWm5lXpAOD1/sDzuv0QK0YGPZbuWtZKmH17QvNqVyA
+        C/IU3zPms1zPU9BBKi40vkc=
+X-Google-Smtp-Source: ABdhPJyv7MT5wCGfdlfCLRk0wYTBM2q1x++ztUAm4XQN4J6MUGrqRSzzk5Brej8rnmEAO7fi58Ap6g==
+X-Received: by 2002:a05:622a:1304:: with SMTP id v4mr6649618qtk.359.1644534571568;
+        Thu, 10 Feb 2022 15:09:31 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id s6sm11824113qtw.18.2022.02.10.15.09.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:08:38 -0800 (PST)
-From:   frowand.list@gmail.com
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] of: unittest: print pass messages at PR_INFO level
-Date:   Thu, 10 Feb 2022 17:08:19 -0600
-Message-Id: <20220210230819.3303212-1-frowand.list@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 15:09:31 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
+Subject: [PATCH 08/49] drm: replace bitmap_weight with bitmap_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:48:52 -0800
+Message-Id: <20220210224933.379149-9-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+smp_request_block() in drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c calls
+bitmap_weight() to check if any bit of a given bitmap is set. It's
+better to use bitmap_empty() in that case because bitmap_empty() stops
+traversing the bitmap as soon as it finds first set bit, while
+bitmap_weight() counts all bits unconditionally.
 
-Printing the devicetree unittest pass message for each passed test
-creates much console verbosity.  The existing pass messages are
-printed at loglevel KERN_DEBUG so they will not print by default.
-
-Change default to print the pass messages at loglevel PR_INFO so
-they will print with the default console loglevel.
-
-The test community expects either a pass or a fail message for each
-test in a test suite.  The messages are typically post-processed to
-report pass/fail results.
-
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
-
-One review comment to similar previous patch "of: unittest: print
-pass message as same lovlevel as fail" suggested to also change
-the text of the pass message to include "PASS" instead of "pass".
-I would rather leave the text unchanged to minimize churn for any
-existing users of the message.  It is my intention to change the
-pass and fail messages to KTAP version 2 format as soon as that
-version of the specification is completed.
-
- drivers/of/unittest.c | 2 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 70992103c07d..9012e6900965 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -44,7 +44,7 @@ static struct unittest_results {
- 		pr_err("FAIL %s():%i " fmt, __func__, __LINE__, ##__VA_ARGS__); \
- 	} else { \
- 		unittest_results.passed++; \
--		pr_debug("pass %s():%i\n", __func__, __LINE__); \
-+		pr_info("pass %s():%i\n", __func__, __LINE__); \
- 	} \
- 	failed; \
- })
+diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
+index d7fa2c49e741..56a3063545ec 100644
+--- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
++++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
+@@ -68,7 +68,7 @@ static int smp_request_block(struct mdp5_smp *smp,
+ 	uint8_t reserved;
+ 
+ 	/* we shouldn't be requesting blocks for an in-use client: */
+-	WARN_ON(bitmap_weight(cs, cnt) > 0);
++	WARN_ON(!bitmap_empty(cs, cnt));
+ 
+ 	reserved = smp->reserved[cid];
+ 
 -- 
-Frank Rowand <frank.rowand@sony.com>
+2.32.0
 
