@@ -2,106 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16466C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 03:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 03:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232412AbiBJDUV convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 22:20:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51372 "EHLO
+        id S232427AbiBJDVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 22:21:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229511AbiBJDUU (ORCPT
+        with ESMTP id S229511AbiBJDVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 22:20:20 -0500
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A121EAF5;
-        Wed,  9 Feb 2022 19:20:21 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:41030)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHxEu-00EcR6-Rv; Wed, 09 Feb 2022 17:23:12 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:41838 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHxEs-00A1Nk-OT; Wed, 09 Feb 2022 17:23:12 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
+        Wed, 9 Feb 2022 22:21:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93B631EAFB
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 19:21:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644463302;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=17Oj7nthiIWNQvcRVQOrz83IgfpkiF/YXs0dTC+pb6Y=;
+        b=EFSWy6DoRI4cP8obdIuNqZO/Oykeqh3OYic9YdVxWZ2gIuRnbc0EhZk6xsSiy56ImhDafH
+        RP2GoPiQGr9BEkd2pTk8HIln9NV/M78yl0azKw3FAqTqG65D+J4uApz5S/fBzg8h0k5eHX
+        ScU2uxAxPIZoJznuKgkjNOIn+ueWLnw=
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
+ [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-477-Tcy1CHFDMXS_5KM9IAwGUA-1; Wed, 09 Feb 2022 22:21:41 -0500
+X-MC-Unique: Tcy1CHFDMXS_5KM9IAwGUA-1
+Received: by mail-pl1-f197.google.com with SMTP id v14-20020a170902e8ce00b0014b48e8e498so580834plg.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 19:21:41 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=17Oj7nthiIWNQvcRVQOrz83IgfpkiF/YXs0dTC+pb6Y=;
+        b=LJ1S1KcYF/+ZPfoiCdKQSf8WDToH6Jp4h/H9TovgXZxV5/MpkUZA3L7w/Q74TUOWLP
+         YG1/BMKcDUdi9vtVYtAewT0bSiZ9GF+qORNtY8dm/ZPqgz4OaB6BAPabd9aynErsqGHw
+         BpYNBePTJWn1BQm/GfvuNJ+Nd3zUMkFSxcAy5Pxn0nL1tgita9o3z4kfnHfpdSu4orDk
+         Xwy+LhVr2Mjc7kl6TfiNB9tPEQ54DfK88HclIle3f4FvONseq/I20eiq1r0FB7qnpNKi
+         CS8E2yZli5T1qpq+cflsEh7q4/N2Hrp4d/OJpcQiQg9xowSFZ+pLEOojSqKOKv6NTUav
+         70+g==
+X-Gm-Message-State: AOAM531TD8mJyKoyATUdTcobAzJoWTfoHFRL6RmEMo0Nbjw1FDxAab/7
+        aWMH9ZiAsJ4CbS4BBoc5JbmckMk+1N5b+zCD/k08Qu9fXsS69GTuZiXs7Pc9pSi1UpHOmyK1lj/
+        O+KXrYnn7oDpYLXTDr70KIWDk
+X-Received: by 2002:a17:902:b708:: with SMTP id d8mr5305529pls.67.1644463300121;
+        Wed, 09 Feb 2022 19:21:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxy8H0sudq262065i30E8DJVWmFQT9Q0V7k6OqW7821GAtFa+RDZqCorSow+O0e3x2bAI9ILA==
+X-Received: by 2002:a17:902:b708:: with SMTP id d8mr5305511pls.67.1644463299814;
+        Wed, 09 Feb 2022 19:21:39 -0800 (PST)
+Received: from xz-m1.local ([94.177.118.72])
+        by smtp.gmail.com with ESMTPSA id z1sm21169985pfh.137.2022.02.09.19.21.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 19:21:39 -0800 (PST)
+Date:   Thu, 10 Feb 2022 11:21:30 +0800
+From:   Peter Xu <peterx@redhat.com>
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        David Hildenbrand <david@redhat.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
         Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <20220207121800.5079-5-mkoutny@suse.com>
-Date:   Wed, 09 Feb 2022 18:21:07 -0600
-In-Reply-To: <20220207121800.5079-5-mkoutny@suse.com> ("Michal =?utf-8?Q?K?=
- =?utf-8?Q?outn=C3=BD=22's?=
-        message of "Mon, 7 Feb 2022 13:17:58 +0100")
-Message-ID: <87a6eza7ws.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v2 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
+Message-ID: <YgSDcmXya7vTvvZE@xz-m1.local>
+References: <20220202014034.182008-1-mike.kravetz@oracle.com>
+ <20220202014034.182008-2-mike.kravetz@oracle.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nHxEs-00A1Nk-OT;;;mid=<87a6eza7ws.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+x1wyLwJjAEjidVjc0O5LqBuAMgqtDSuQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RFC PATCH 4/6] ucounts: Allow root to override RLIMIT_NPROC
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Disposition: inline
+In-Reply-To: <20220202014034.182008-2-mike.kravetz@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Michal Koutný <mkoutny@suse.com> writes:
+(Sorry for the late comment)
 
-> Call sites of ucounts_limit_cmp() would allow the global root or capable
-> user to bypass RLIMIT_NPROC on the bottom level of user_ns tree by not
-> looking at ucounts at all.
->
-> As the traversal up the user_ns tree continues, the ucounts to which the
-> task is charged may switch the owning user (to the creator of user_ns).
-> If the new chargee is root, we don't really care about RLIMIT_NPROC
-> observation, so lift the limit to the max.
->
-> The result is that an unprivileged user U can globally run more that
-> RLIMIT_NPROC (of user_ns) tasks but within each user_ns it is still
-> limited to RLIMINT_NPROC (as passed into task->signal->rlim) iff the
-> user_nss are created by the privileged user.
-
-My apologies.  When I first looked at this I thought this change was
-non-sense.  However I had missed the special logic that happens with
-RLIMIT_NPROC to carefully allow the root user to bypass the NPROC
-limits.
-
-So yes this does look like something that needs to be addressed as well.
-
-Thank you for reporting all of these issues.
-
-Eric
-
->
-> Signed-off-by: Michal Koutný <mkoutny@suse.com>
+On Tue, Feb 01, 2022 at 05:40:32PM -0800, Mike Kravetz wrote:
+> MADV_DONTNEED is currently disabled for hugetlb mappings.  This
+> certainly makes sense in shared file mappings as the pagecache maintains
+> a reference to the page and it will never be freed.  However, it could
+> be useful to unmap and free pages in private mappings.
+> 
+> The only thing preventing MADV_DONTNEED from working on hugetlb mappings
+> is a check in can_madv_lru_vma().  To allow support for hugetlb mappings
+> create and use a new routine madvise_dontneed_free_valid_vma() that will
+> allow hugetlb mappings.  Also, before calling zap_page_range in the
+> DONTNEED case align start and size to huge page size for hugetlb vmas.
+> madvise only requires PAGE_SIZE alignment, but the hugetlb unmap routine
+> requires huge page size alignment.
+> 
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
 > ---
->  kernel/ucount.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/kernel/ucount.c b/kernel/ucount.c
-> index 53ccd96387dd..f52b7273a572 100644
-> --- a/kernel/ucount.c
-> +++ b/kernel/ucount.c
-> @@ -356,6 +356,9 @@ long ucounts_limit_cmp(struct ucounts *ucounts, enum ucount_type type, unsigned
->  		if (excess > 0)
->  			return excess;
->  		max = READ_ONCE(iter->ns->ucount_max[type]);
-> +		/* Next ucounts owned by root? RLIMIT_NPROC is moot */
-> +		if (type == UCOUNT_RLIMIT_NPROC && uid_eq(iter->ns->owner, GLOBAL_ROOT_UID))
-> +			max = LONG_MAX;
->  	}
->  	return excess;
+>  mm/madvise.c | 24 ++++++++++++++++++++++--
+>  1 file changed, 22 insertions(+), 2 deletions(-)
+> 
+> diff --git a/mm/madvise.c b/mm/madvise.c
+> index 5604064df464..7ae891e030a4 100644
+> --- a/mm/madvise.c
+> +++ b/mm/madvise.c
+> @@ -796,10 +796,30 @@ static int madvise_free_single_vma(struct vm_area_struct *vma,
+>  static long madvise_dontneed_single_vma(struct vm_area_struct *vma,
+>  					unsigned long start, unsigned long end)
+>  {
+> +	/*
+> +	 * start and size (end - start) must be huge page size aligned
+> +	 * for hugetlb vmas.
+> +	 */
+> +	if (is_vm_hugetlb_page(vma)) {
+> +		struct hstate *h = hstate_vma(vma);
+> +
+> +		start = ALIGN_DOWN(start, huge_page_size(h));
+> +		end = ALIGN(end, huge_page_size(h));
+> +	}
+> +
+
+Maybe check the alignment before userfaultfd_remove()?  Otherwise there'll be a
+fake message generated to the tracer.
+
+>  	zap_page_range(vma, start, end - start);
+>  	return 0;
 >  }
+>  
+> +static bool madvise_dontneed_free_valid_vma(struct vm_area_struct *vma,
+> +						int behavior)
+> +{
+> +	if (is_vm_hugetlb_page(vma))
+> +		return behavior == MADV_DONTNEED;
+> +	else
+> +		return can_madv_lru_vma(vma);
+> +}
+
+can_madv_lru_vma() will check hugetlb again which looks a bit weird.  Would it
+look better to write it as:
+
+madvise_dontneed_free_valid_vma()
+{
+    return !(vma->vm_flags & (VM_LOCKED|VM_PFNMAP));
+}
+
+can_madv_lru_vma()
+{
+    return madvise_dontneed_free_valid_vma() && !is_vm_hugetlb_page(vma);
+}
+
+?
+
+Another use case of DONTNEED upon hugetlbfs could be uffd-minor, because afaiu
+this is the only api that can force strip the hugetlb mapped pgtable without
+losing pagecache data.
+
+Thanks,
+
+-- 
+Peter Xu
+
