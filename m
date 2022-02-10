@@ -2,255 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA24FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236092AbiBJJ3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:29:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51550 "EHLO
+        id S238562AbiBJJaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:30:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238585AbiBJJ3S (ORCPT
+        with ESMTP id S238720AbiBJJ3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:29:18 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00031134;
-        Thu, 10 Feb 2022 01:29:18 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A74UHh017191;
-        Thu, 10 Feb 2022 09:36:21 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=G/1l6JpUGOidRb9dQ6UMR2ViJBXgtTFNmfutsOzLvFc=;
- b=J2hDc5Bu/cs0d8uvuowAVawTd+ivgAzCtXVnPDrSXJWrcOZAnjuYfdqEHPEAtO1MhbC9
- G9obSLHoeAYwZiMOveVDF+ivlLiQaYD4Vteg5zzCfNaFRPjE8Q/QjtoFvQNaN2m810fi
- KphFAi3oDR6FBzRsSB7p6LoN+ZSPWQaS5mq9WmnM7Pei8zA/AWQYOSTurkED/8hBdHE5
- T9rYB/tKMevcGb15jZbzX6RI6MvDOIogdtmrX4lrIWgWWqzeTPJ7FLmWyFoOV8mj/+fX
- ByWrm5DNs/y1Opnkp+6TY8WFZqknYKufgZbwujt5+ywli1tLCR1EmIEbL5RjSHIotnaG Tw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4x0c0j8u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Feb 2022 09:36:21 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4BA7D10002A;
-        Thu, 10 Feb 2022 09:36:20 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 44B452138DE;
-        Thu, 10 Feb 2022 09:36:20 +0100 (CET)
-Received: from [10.201.21.201] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
- 2022 09:36:19 +0100
-Message-ID: <2dfbf110-9c08-5a4e-7714-6e9e960afae5@foss.st.com>
-Date:   Thu, 10 Feb 2022 09:36:14 +0100
+        Thu, 10 Feb 2022 04:29:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5A31112
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69418619A5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:29:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7A3C340F3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:29:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644485374;
+        bh=HGM4Q7IrvX3TCMF1bCBJF/zPO3rFe3dmiOQn+Ok2zCM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Tbc8VMytVSPwXhPAFQ+pHW0VyXILcAVQiYcTRAHd9pZIO4SZXyZVupdvYHlpEfFUs
+         MayK24kZfPvksWqOGd40rwRrxRceQ8hjZPiEmP1pVr5n4iLKklamS+/WhXp9dsCxXB
+         YBENBAFVolTJop4EqJPtwL22sKGbSygW6QpHvUlYeCJX/4bYti6U8wgKltQs9Il4Hm
+         Oar81vk9stV3J1/N2UpeA/eufrKFhbtybgz5pVV7hxvEv2O+cfPgePE5fuW/w+zGL5
+         BQWTAdmZ0xL8lSQ1hjWn/wJHdOJASqQgkwogbXY+ipSoHzuHxmQaURClnCHG0CgVfR
+         mFmr+OZgFVCFg==
+Received: by mail-wr1-f50.google.com with SMTP id d27so4604821wrb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:34 -0800 (PST)
+X-Gm-Message-State: AOAM532hJDDeZV2n4UE6v1wRghffSnlw3aJE+3bVmmJTI09re+R1UA3X
+        eheLHNNqiW3i4mwOMVZgw+wH5r0A7Q4/UZ8rlNA=
+X-Google-Smtp-Source: ABdhPJyj1SGdUBiIOfZDt8ZwdLNUao09JQ8pTbN3rxClO1zCdUAgLNfU5RFjsfxJNTGpgIBiQYMSTTpb0iJqfvEwCss=
+X-Received: by 2002:a05:6000:15ca:: with SMTP id y10mr5599700wry.417.1644485373021;
+ Thu, 10 Feb 2022 01:29:33 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 03/12] ARM: dts: sti: ensure unique unit-address in
- stih418-clock
-Content-Language: en-US
-To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20211202075105.195664-1-avolmat@me.com>
- <20211202075105.195664-4-avolmat@me.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20211202075105.195664-4-avolmat@me.com>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 10 Feb 2022 10:29:21 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXGKRc8NNQWDpgLL_=G2DWYv6wXcgkpFw=H98LxTHjpq+w@mail.gmail.com>
+Message-ID: <CAMj1kXGKRc8NNQWDpgLL_=G2DWYv6wXcgkpFw=H98LxTHjpq+w@mail.gmail.com>
+Subject: Re: [PATCH v3 0/7] arm64 / sched/preempt: support PREEMPT_DYNAMIC
+ with static keys
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        James Morse <james.morse@arm.com>, joey.gouly@arm.com,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Will Deacon <will@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alain
+On Wed, 9 Feb 2022 at 16:35, Mark Rutland <mark.rutland@arm.com> wrote:
+>
+> This series enables PREEMPT_DYNAMIC on arm64. To do so, it adds a new
+> mechanism allowing the preemption functions to be enabled/disabled using
+> static keys rather than static calls, with architectures selecting
+> whether they use static calls or static keys.
+>
+> With non-inline static calls, each function call results in a call to
+> the (out-of-line) trampoline which either tail-calls its associated
+> callee or performs an early return.
+>
+> The key idea is that where we're only enabling/disabling a single
+> callee, we can inline this trampoline into the start of the callee,
+> using a static key to decide whether to return early, and leaving the
+> remaining codegen to the compiler. The overhead should be similar to
+> (and likely lower than) using a static call trampoline. Since most
+> codegen is up to the compiler, we sidestep a number of implementation
+> pain-points (e.g. things like CFI should "just work" as well as they do
+> for any other functions).
+>
+> The bulk of the diffstat for kernel/sched/core.c is shuffling the
+> PREEMPT_DYNAMIC code later in the file, and the actual additions are
+> fairly trivial.
+>
+> I've given this very light build+boot testing so far.
+>
+> Since v1 [1]:
+> * Rework Kconfig text to be clearer
+> * Rework arm64 entry code
+> * Clarify commit messages.
+>
+> Since v2 [2]:
+> * Add missing includes
+> * Always provide prototype for preempt_schedule()
+> * Always provide prototype for preempt_schedule_notrace()
+> * Fix __cond_resched() to default to disabled
+> * Fix might_resched() to default to disabled
+> * Clarify example in commit message
+>
+> [1] https://lore.kernel.org/r/20211109172408.49641-1-mark.rutland@arm.com/
+> [2] https://lore.kernel.org/r/20220204150557.434610-1-mark.rutland@arm.com/
+>
+> Mark Rutland (7):
+>   sched/preempt: move PREEMPT_DYNAMIC logic later
+>   sched/preempt: refactor sched_dynamic_update()
+>   sched/preempt: simplify irqentry_exit_cond_resched() callers
+>   sched/preempt: decouple HAVE_PREEMPT_DYNAMIC from GENERIC_ENTRY
+>   sched/preempt: add PREEMPT_DYNAMIC using static keys
+>   arm64: entry: centralize premeption decision
+>   arm64: support PREEMPT_DYNAMIC
+>
 
-On 12/2/21 08:50, Alain Volmat wrote:
-> Move quadfs and a9-mux clocks nodes into clockgen nodes so
-> that they can get the reg property from the parent node and
-> ensure only one node has the address.
-> 
-> Signed-off-by: Alain Volmat <avolmat@me.com>
-> ---
->  arch/arm/boot/dts/stih418-clock.dtsi | 101 +++++++++++++--------------
->  1 file changed, 48 insertions(+), 53 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stih418-clock.dtsi b/arch/arm/boot/dts/stih418-clock.dtsi
-> index e84c476b83ed..e1749e92a2e7 100644
-> --- a/arch/arm/boot/dts/stih418-clock.dtsi
-> +++ b/arch/arm/boot/dts/stih418-clock.dtsi
-> @@ -32,7 +32,7 @@ clocks {
->  		 */
->  		clockgen-a9@92b0000 {
->  			compatible = "st,clkgen-c32";
-> -			reg = <0x92b0000 0xffff>;
-> +			reg = <0x92b0000 0x10000>;
->  
->  			clockgen_a9_pll: clockgen-a9-pll {
->  				#clock-cells = <1>;
-> @@ -40,30 +40,29 @@ clockgen_a9_pll: clockgen-a9-pll {
->  
->  				clocks = <&clk_sysin>;
->  			};
-> -		};
-> -
-> -		/*
-> -		 * ARM CPU related clocks.
-> -		 */
-> -		clk_m_a9: clk-m-a9@92b0000 {
-> -			#clock-cells = <0>;
-> -			compatible = "st,stih407-clkgen-a9-mux", "st,clkgen-mux";
-> -			reg = <0x92b0000 0x10000>;
-> -
-> -			clocks = <&clockgen_a9_pll 0>,
-> -				 <&clockgen_a9_pll 0>,
-> -				 <&clk_s_c0_flexgen 13>,
-> -				 <&clk_m_a9_ext2f_div2>;
->  
->  			/*
-> -			 * ARM Peripheral clock for timers
-> +			 * ARM CPU related clocks.
->  			 */
-> -			arm_periph_clk: clk-m-a9-periphs {
-> +			clk_m_a9: clk-m-a9 {
->  				#clock-cells = <0>;
-> -				compatible = "fixed-factor-clock";
-> -				clocks = <&clk_m_a9>;
-> -				clock-div = <2>;
-> -				clock-mult = <1>;
-> +				compatible = "st,stih407-clkgen-a9-mux", "st,clkgen-mux";
-> +
-> +				clocks = <&clockgen_a9_pll 0>,
-> +					 <&clockgen_a9_pll 0>,
-> +					 <&clk_s_c0_flexgen 13>,
-> +					 <&clk_m_a9_ext2f_div2>;
-> +
-> +				/*
-> +				 * ARM Peripheral clock for timers
-> +				 */
-> +				arm_periph_clk: clk-m-a9-periphs {
-> +					#clock-cells = <0>;
-> +					compatible = "fixed-factor-clock";
-> +					clocks = <&clk_m_a9>;
-> +					clock-div = <2>;
-> +					clock-mult = <1>;
-> +				};
->  			};
->  		};
->  
-> @@ -88,14 +87,6 @@ clk_s_a0_flexgen: clk-s-a0-flexgen {
->  			};
->  		};
->  
-> -		clk_s_c0_quadfs: clk-s-c0-quadfs@9103000 {
-> -			#clock-cells = <1>;
-> -			compatible = "st,quadfs-pll";
-> -			reg = <0x9103000 0x1000>;
-> -
-> -			clocks = <&clk_sysin>;
-> -		};
-> -
->  		clk_s_c0: clockgen-c@9103000 {
->  			compatible = "st,clkgen-c32";
->  			reg = <0x9103000 0x1000>;
-> @@ -114,6 +105,13 @@ clk_s_c0_pll1: clk-s-c0-pll1 {
->  				clocks = <&clk_sysin>;
->  			};
->  
-> +			clk_s_c0_quadfs: clk-s-c0-quadfs {
-> +				#clock-cells = <1>;
-> +				compatible = "st,quadfs-pll";
-> +
-> +				clocks = <&clk_sysin>;
-> +			};
-> +
->  			clk_s_c0_flexgen: clk-s-c0-flexgen {
->  				#clock-cells = <1>;
->  				compatible = "st,flexgen", "st,flexgen-stih418-c0";
-> @@ -143,18 +141,17 @@ clk_m_a9_ext2f_div2: clk-m-a9-ext2f-div2s {
->  			};
->  		};
->  
-> -		clk_s_d0_quadfs: clk-s-d0-quadfs@9104000 {
-> -			#clock-cells = <1>;
-> -			compatible = "st,quadfs-d0";
-> -			reg = <0x9104000 0x1000>;
-> -
-> -			clocks = <&clk_sysin>;
-> -		};
-> -
->  		clockgen-d0@9104000 {
->  			compatible = "st,clkgen-c32";
->  			reg = <0x9104000 0x1000>;
->  
-> +			clk_s_d0_quadfs: clk-s-d0-quadfs {
-> +				#clock-cells = <1>;
-> +				compatible = "st,quadfs-d0";
-> +
-> +				clocks = <&clk_sysin>;
-> +			};
-> +
->  			clk_s_d0_flexgen: clk-s-d0-flexgen {
->  				#clock-cells = <1>;
->  				compatible = "st,flexgen", "st,flexgen-stih410-d0";
-> @@ -167,18 +164,17 @@ clk_s_d0_flexgen: clk-s-d0-flexgen {
->  			};
->  		};
->  
-> -		clk_s_d2_quadfs: clk-s-d2-quadfs@9106000 {
-> -			#clock-cells = <1>;
-> -			compatible = "st,quadfs-d2";
-> -			reg = <0x9106000 0x1000>;
-> -
-> -			clocks = <&clk_sysin>;
-> -		};
-> -
->  		clockgen-d2@9106000 {
->  			compatible = "st,clkgen-c32";
->  			reg = <0x9106000 0x1000>;
->  
-> +			clk_s_d2_quadfs: clk-s-d2-quadfs {
-> +				#clock-cells = <1>;
-> +				compatible = "st,quadfs-d2";
-> +
-> +				clocks = <&clk_sysin>;
-> +			};
-> +
->  			clk_s_d2_flexgen: clk-s-d2-flexgen {
->  				#clock-cells = <1>;
->  				compatible = "st,flexgen", "st,flexgen-stih418-d2";
-> @@ -193,18 +189,17 @@ clk_s_d2_flexgen: clk-s-d2-flexgen {
->  			};
->  		};
->  
-> -		clk_s_d3_quadfs: clk-s-d3-quadfs@9107000 {
-> -			#clock-cells = <1>;
-> -			compatible = "st,quadfs-d3";
-> -			reg = <0x9107000 0x1000>;
-> -
-> -			clocks = <&clk_sysin>;
-> -		};
-> -
->  		clockgen-d3@9107000 {
->  			compatible = "st,clkgen-c32";
->  			reg = <0x9107000 0x1000>;
->  
-> +			clk_s_d3_quadfs: clk-s-d3-quadfs {
-> +				#clock-cells = <1>;
-> +				compatible = "st,quadfs-d3";
-> +
-> +				clocks = <&clk_sysin>;
-> +			};
-> +
->  			clk_s_d3_flexgen: clk-s-d3-flexgen {
->  				#clock-cells = <1>;
->  				compatible = "st,flexgen", "st,flexgen-stih407-d3";
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
 
-Thanks
-Patrice
+
+>  arch/Kconfig                     |  37 +++-
+>  arch/arm64/Kconfig               |   1 +
+>  arch/arm64/include/asm/preempt.h |  19 +-
+>  arch/arm64/kernel/entry-common.c |  28 ++-
+>  arch/x86/Kconfig                 |   2 +-
+>  arch/x86/include/asm/preempt.h   |  10 +-
+>  include/linux/entry-common.h     |  15 +-
+>  include/linux/kernel.h           |   7 +-
+>  include/linux/sched.h            |  10 +-
+>  kernel/entry/common.c            |  23 +-
+>  kernel/sched/core.c              | 347 ++++++++++++++++++-------------
+>  11 files changed, 327 insertions(+), 172 deletions(-)
+>
+> --
+> 2.30.2
+>
