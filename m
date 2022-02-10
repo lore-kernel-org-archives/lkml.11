@@ -2,259 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 21:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 036CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 21:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344532AbiBJVMp (ORCPT
+        id S1344543AbiBJVNu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 16:12:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40732 "EHLO
+        Thu, 10 Feb 2022 16:13:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239478AbiBJVMo (ORCPT
+        with ESMTP id S236222AbiBJVNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 16:12:44 -0500
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C120126C5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:12:44 -0800 (PST)
-Received: by mail-qk1-x72d.google.com with SMTP id 200so6268825qki.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:12:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eGKgAJz2dJO294+be78C8+dB47Cw1SR8HtZpqoI4u6E=;
-        b=rf6aHwLhBkB3nt1N9g+QnhYv5tVOz8GsX7FTsawdB0VluhGjCoaJkkxxBiv4qxeolR
-         vE1TmQf9qSA1iIQomxULfXBZ9GV7TzCO8Iwuavufb+ca1fSUrzSXm8juhUB/GI/mFW0C
-         9TOFfA89ucniP01YY5BNQAh12PPWjgbELaw/cmDhCMtz0x4WcppiwG7JZx6GIyjEUdCV
-         RKWJct1L2mx+RNJ349Ayy/l+WE2cz81CJ/HWNPO3By4ayydhzS0rUwkyGrJEeRRFBnXG
-         EXS0hKNH6txc/MR5jz3DZR5IRd2nbF1/UQ0nYAXGBjkFIPayEMPH7YuUsq/yppjlkGA/
-         38FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eGKgAJz2dJO294+be78C8+dB47Cw1SR8HtZpqoI4u6E=;
-        b=yLnjUA/OCkI9KwuVBIY1xTWGwpHniZCQaf9iZeZtrW81GmIU0+vXvaMpWfAm45Dr5x
-         wfVXcW1/IPEr3QPZzlYaCFuDAJDjrxKp6JUjoVRJFscD2NWBReRfeQ1eNR6pISFzlkbC
-         9+bhOiX2i8JSvlu0FCRmPwLaWDLuVSCkBBRPeqssFUyKnJRmsTxZMx6nDxE9JYg3MDRL
-         VHsViGDEDBGfdYearMwj595bgjVktGEOWpuQQ7Sv8pmrwc+0HegP04gk4cccG8MnwKH4
-         sGjLrT3wwiZGb5c1J8tQc8/HNOw8+0d/1i+RlZUkONU609onl7dt1Ch8gp0UP3LGJdGJ
-         u9tA==
-X-Gm-Message-State: AOAM532oO4o4+im9b7g0UmPGaSZcGCHShgQ5nB+DVVv11G0X4dWD7v+0
-        5lUFhuW/tDTEfDiW5ov1SaGJX2mKLhYrzPcqObw6iA==
-X-Google-Smtp-Source: ABdhPJy+IHLLg+lum0l64VChU98w1V7sQgvluKp2fObOY2Y+7zq6S7LI5qBIbU+kQcI2lns5avDNyi64Irumie2mSQI=
-X-Received: by 2002:a05:620a:75b:: with SMTP id i27mr4757700qki.593.1644527563819;
- Thu, 10 Feb 2022 13:12:43 -0800 (PST)
+        Thu, 10 Feb 2022 16:13:49 -0500
+X-Greylist: delayed 307 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 13:13:41 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C7AF47;
+        Thu, 10 Feb 2022 13:13:41 -0800 (PST)
+Received: from leknes.fjasle.eu ([46.142.99.154]) by mrelayeu.kundenserver.de
+ (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1Mnac9-1nyzQT0gvl-00jYQB; Thu, 10 Feb 2022 22:08:24 +0100
+Received: from localhost.fjasle.eu (unknown [IPv6:fd00::6f0:21ff:fe91:394])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (Client did not present a certificate)
+        by leknes.fjasle.eu (Postfix) with ESMTPS id 8705A3C050;
+        Thu, 10 Feb 2022 22:08:19 +0100 (CET)
+Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
+Received: by localhost.fjasle.eu (Postfix, from userid 1000)
+        id 25BC318B0; Thu, 10 Feb 2022 22:00:56 +0100 (CET)
+Date:   Thu, 10 Feb 2022 22:00:56 +0100
+From:   Nicolas Schier <nicolas@fjasle.eu>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] kbuild: replace $(if A,A,B) with $(or A,B)
+Message-ID: <YgV9CHKpS/ptY3my@bergen.fjasle.eu>
+References: <20220210093342.2118196-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-References: <20220208044328.588860-1-bjorn.andersson@linaro.org>
- <YgJISIIacBnFyTLq@kroah.com> <YgV8GyK9G0gbWAaq@ripper>
-In-Reply-To: <YgV8GyK9G0gbWAaq@ripper>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Fri, 11 Feb 2022 00:12:32 +0300
-Message-ID: <CAA8EJppkZTRApQbuEUACw=r2kBH+321_f1ZqRf_-veEuwB56zg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] drm: Add HPD state to drm_connector_oob_hotplug_event()
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220210093342.2118196-1-masahiroy@kernel.org>
+Jabber-ID: nicolas@jabber.no
+X-Operating-System: Debian GNU/Linux bookworm/sid
+X-Provags-ID: V03:K1:apwdst/S/4MvpD5SeWBwUhd/SEKva7BSqmtXbCEgsgotW4V5moE
+ KqINi4CGet4lvPWXMlYDaNrgn7V2RTMdF4hBZuZK+OyLzH0RUURko9mYfH4uwgz4Kvw17oi
+ RgxVS/4jQqHYDUw2ir9SeZipIYxutwdx7tk6fJa5aa96IvmirbbmtHiJclS8CfgIOoEziwH
+ /YvBZXpDJddXhMk8T1zTg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:BjgAJG7ufrk=:SKnf7B6DC4QEBqtc8z0vov
+ rLMtIJ5Mz0KJm86bSwOrHXAbcjKtUQISLXoGCntfXzlCLvRk9rMgCHv/mDcigFYHHLBjRdyXg
+ LhwGl+jasbDhdhQvwSm1BHJQTe/KAm+Xi1CSIFE8+Y2NbkDgql5d8JI6Nhc34mazDWGXZO3X8
+ 0tIZNUHW1Xv93qc2A1EZyncCyh5FW+jgQ6Fj/dOH/nTCqEc5vj1pRGa2ZFa4iXRklzaIwnWML
+ QwHZuRj1szcJ/mrJSUEvswhG+tBuSawCGe6eZNyflCBOLzGMHqfdoyGwlt1GoXqE53UHYQwiJ
+ BPZk+FrIHBzm2AeevAvnBSUMI/+y6OheE0E+YDc9/NMC20Gxgqns1n7C7FX8CtzKM7BXeUvLf
+ jCHaxPjlPMq3aRka4E2ye2Cdpg2aFtHvb4/9rcft8byVRdDGEyHqvHgE2FtSiG7JnfuFKZMDW
+ J5QVAnzFB59NDEnlZOdwykPiur4NHJe+MNT1o2VnBbFBVvKm0JyE5v4KLj+ODn1+QBseb6x/E
+ kJUGSR0WwAcOe2WcJXIfoFrfP+95dUX9gL77JZaxk5loIbObySz03EsRx876eaYfU8vnWABEi
+ Tt63qfWTMaC6Wu1Tw/MSEkVBDAbzYd3Gc9X8ERBRdYGIQN3uOTC3f7nVnHHpPPWhLIhQ1l/8G
+ YbgboL9PeR+ImjvYIkLG71Jd6/aJJktZbYTM/MiuvpsQUS86YbOrtMCvXPfAl7RNK0/U=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 at 23:54, Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
->
-> On Tue 08 Feb 02:39 PST 2022, Greg Kroah-Hartman wrote:
->
-> > On Mon, Feb 07, 2022 at 08:43:27PM -0800, Bjorn Andersson wrote:
-> > > In some implementations, such as the Qualcomm platforms, the display
-> > > driver has no way to query the current HPD state and as such it's
-> > > impossible to distinguish between disconnect and attention events.
-> > >
-> > > Add a parameter to drm_connector_oob_hotplug_event() to pass the HPD
-> > > state.
-> > >
-> > > Also push the test for unchanged state in the displayport altmode driver
-> > > into the i915 driver, to allow other drivers to act upon each update.
-> > >
-> > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > ---
-> > >
-> > > Note that the Intel driver has only been compile tested with this patch.
-> > >
-> > >  drivers/gpu/drm/drm_connector.c          |  6 ++++--
-> > >  drivers/gpu/drm/i915/display/intel_dp.c  | 14 +++++++++++---
-> > >  drivers/gpu/drm/i915/i915_drv.h          |  3 +++
-> > >  drivers/usb/typec/altmodes/displayport.c |  9 ++-------
-> > >  include/drm/drm_connector.h              |  5 +++--
-> > >  5 files changed, 23 insertions(+), 14 deletions(-)
-> > >
-> > > diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-> > > index a50c82bc2b2f..ad7295597c0f 100644
-> > > --- a/drivers/gpu/drm/drm_connector.c
-> > > +++ b/drivers/gpu/drm/drm_connector.c
-> > > @@ -2825,6 +2825,7 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
-> > >  /**
-> > >   * drm_connector_oob_hotplug_event - Report out-of-band hotplug event to connector
-> > >   * @connector_fwnode: fwnode_handle to report the event on
-> > > + * @hpd_state: number of data lanes available
-> >
-> > "number"?
-> >
-> > >   *
-> > >   * On some hardware a hotplug event notification may come from outside the display
-> > >   * driver / device. An example of this is some USB Type-C setups where the hardware
-> > > @@ -2834,7 +2835,8 @@ struct drm_connector *drm_connector_find_by_fwnode(struct fwnode_handle *fwnode)
-> > >   * This function can be used to report these out-of-band events after obtaining
-> > >   * a drm_connector reference through calling drm_connector_find_by_fwnode().
-> > >   */
-> > > -void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
-> > > +void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode,
-> > > +                                bool hpd_state)
-> >
-> > This is a boolean, how can it be a number?
-> >
->
-> The kerneldoc wasn't appropriately updated as this went from being
-> "number of data lanes" to "the hot plug detect (hpd) state".
->
-> > And having a "flag" like this is a pain, how do you know what the
-> > parameter really means?
-> >
->
-> You're right, "state" isn't a boolean property, let's rename it
-> "hpd_high" to clarify it.
+På to. 10. feb. 2022 kl. 18.33 +0000 skrev Masahiro Yamada:
+> Date:   Thu, 10 Feb 2022 18:33:42 +0900
+> From: Masahiro Yamada <masahiroy@kernel.org>
+> To: linux-kbuild@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>
+> Subject: [PATCH] kbuild: replace $(if A,A,B) with $(or A,B)
+> Message-Id: <20220210093342.2118196-1-masahiroy@kernel.org>
+> X-Mailer: git-send-email 2.32.0
+> X-Mailing-List: linux-kbuild@vger.kernel.org
+> 
+> $(or ...) is available since GNU Make 3.81, and useful to shorten the
+> code in some places.
+> 
+> Covert as follows:
+> 
+>   $(if A,A,B)  -->  $(or A,B)
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+> 
+>  Makefile                                    | 8 ++++----
+>  scripts/Makefile.build                      | 3 +--
+>  scripts/Makefile.clean                      | 2 +-
+>  scripts/Makefile.lib                        | 4 ++--
+>  tools/bpf/bpftool/Makefile                  | 4 ++--
+>  tools/build/Makefile                        | 2 +-
+>  tools/counter/Makefile                      | 2 +-
+>  tools/gpio/Makefile                         | 2 +-
+>  tools/hv/Makefile                           | 2 +-
+>  tools/iio/Makefile                          | 2 +-
+>  tools/lib/api/Makefile                      | 2 +-
+>  tools/lib/bpf/Makefile                      | 2 +-
+>  tools/lib/perf/Makefile                     | 2 +-
+>  tools/lib/subcmd/Makefile                   | 2 +-
+>  tools/objtool/Makefile                      | 2 +-
+>  tools/pci/Makefile                          | 2 +-
+>  tools/perf/Makefile.perf                    | 4 ++--
+>  tools/power/x86/intel-speed-select/Makefile | 2 +-
+>  tools/scripts/utilities.mak                 | 2 +-
+>  tools/spi/Makefile                          | 6 +++---
+>  tools/tracing/rtla/Makefile                 | 2 +-
+>  tools/usb/Makefile                          | 2 +-
+>  22 files changed, 30 insertions(+), 31 deletions(-)
+> 
+[...]
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index f947b61b2107..df1f6ff7bc49 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -60,7 +60,7 @@ ifndef VERBOSE
+>    VERBOSE = 0
+>  endif
+>  
+> -INCLUDES = -I$(if $(OUTPUT),$(OUTPUT),.)				\
+> +INCLUDES = -I$(or $(OUTPUT),.)				\
+>  	   -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
 
-"connected" ?
+I think I'd have shortened the whitespaces before the stray backslash.
 
->
-> > >  {
-> > >     struct drm_connector *connector;
-> > >
-> > > @@ -2843,7 +2845,7 @@ void drm_connector_oob_hotplug_event(struct fwnode_handle *connector_fwnode)
-> > >             return;
-> > >
-> > >     if (connector->funcs->oob_hotplug_event)
-> > > -           connector->funcs->oob_hotplug_event(connector);
-> > > +           connector->funcs->oob_hotplug_event(connector, hpd_state);
-> > >
-> > >     drm_connector_put(connector);
-> > >  }
-> > > diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-> > > index 146b83916005..00520867d37b 100644
-> > > --- a/drivers/gpu/drm/i915/display/intel_dp.c
-> > > +++ b/drivers/gpu/drm/i915/display/intel_dp.c
-> > > @@ -4816,15 +4816,23 @@ static int intel_dp_connector_atomic_check(struct drm_connector *conn,
-> > >     return intel_modeset_synced_crtcs(state, conn);
-> > >  }
-> > >
-> > > -static void intel_dp_oob_hotplug_event(struct drm_connector *connector)
-> > > +static void intel_dp_oob_hotplug_event(struct drm_connector *connector, bool hpd_state)
-> > >  {
-> > >     struct intel_encoder *encoder = intel_attached_encoder(to_intel_connector(connector));
-> > >     struct drm_i915_private *i915 = to_i915(connector->dev);
-> > > +   bool need_work = false;
-> > >
-> > >     spin_lock_irq(&i915->irq_lock);
-> > > -   i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-> > > +   if (hpd_state != i915->hotplug.oob_hotplug_state) {
-> > > +           i915->hotplug.event_bits |= BIT(encoder->hpd_pin);
-> > > +
-> > > +           i915->hotplug.oob_hotplug_state = hpd_state;
-> > > +           need_work = true;
-> > > +   }
-> > >     spin_unlock_irq(&i915->irq_lock);
-> > > -   queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-> > > +
-> > > +   if (need_work)
-> > > +           queue_delayed_work(system_wq, &i915->hotplug.hotplug_work, 0);
-> > >  }
-> > >
-> > >  static const struct drm_connector_funcs intel_dp_connector_funcs = {
-> > > diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-> > > index 8c1706fd81f9..543ebf1cfcf4 100644
-> > > --- a/drivers/gpu/drm/i915/i915_drv.h
-> > > +++ b/drivers/gpu/drm/i915/i915_drv.h
-> > > @@ -149,6 +149,9 @@ struct i915_hotplug {
-> > >     /* Whether or not to count short HPD IRQs in HPD storms */
-> > >     u8 hpd_short_storm_enabled;
-> > >
-> > > +   /* Last state reported by oob_hotplug_event */
-> > > +   bool oob_hotplug_state;
-> > > +
-> > >     /*
-> > >      * if we get a HPD irq from DP and a HPD irq from non-DP
-> > >      * the non-DP HPD could block the workqueue on a mode config
-> > > diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
-> > > index c1d8c23baa39..a4596be4d34a 100644
-> > > --- a/drivers/usb/typec/altmodes/displayport.c
-> > > +++ b/drivers/usb/typec/altmodes/displayport.c
-> > > @@ -59,7 +59,6 @@ struct dp_altmode {
-> > >     struct typec_displayport_data data;
-> > >
-> > >     enum dp_state state;
-> > > -   bool hpd;
-> > >
-> > >     struct mutex lock; /* device lock */
-> > >     struct work_struct work;
-> > > @@ -143,10 +142,7 @@ static int dp_altmode_status_update(struct dp_altmode *dp)
-> > >             if (!ret)
-> > >                     dp->state = DP_STATE_CONFIGURE;
-> > >     } else {
-> > > -           if (dp->hpd != hpd) {
-> > > -                   drm_connector_oob_hotplug_event(dp->connector_fwnode);
-> > > -                   dp->hpd = hpd;
-> > > -           }
-> > > +           drm_connector_oob_hotplug_event(dp->connector_fwnode, hpd);
-> > >     }
-> > >
-> > >     return ret;
-> > > @@ -573,8 +569,7 @@ void dp_altmode_remove(struct typec_altmode *alt)
-> > >     cancel_work_sync(&dp->work);
-> > >
-> > >     if (dp->connector_fwnode) {
-> > > -           if (dp->hpd)
-> > > -                   drm_connector_oob_hotplug_event(dp->connector_fwnode);
-> > > +           drm_connector_oob_hotplug_event(dp->connector_fwnode, false);
-> >
-> > See, what does "false" here mean?
-> >
-> > Name the function for what it does, do not have random flags as
-> > parameters, that makes it impossible to understand what the code is
-> > doing when you are reading it, without having to jump around and figure
-> > out what the flags are saying.
-> >
-> > And here they just don't even seem to be right :(
-> >
->
-> Both the old and new code will signal to the DRM driver that the cable
-> was removed, the change is that we're carrying the level in the call
-> rather than just indicating that the state has changed.
->
-> We could introduce some HPD_HIGH/HPD_LOW defines to make it easier to
-> read. But the various places I'm looking at just represented the hpd
-> state as a bool.
->
-> Regards,
-> Bjorn
+>  
+>  export prefix libdir src obj
+> diff --git a/tools/lib/perf/Makefile b/tools/lib/perf/Makefile
+> index 08fe6e3c4089..2d985d6a3a96 100644
+> --- a/tools/lib/perf/Makefile
+> +++ b/tools/lib/perf/Makefile
+> @@ -153,7 +153,7 @@ $(TESTS_STATIC): $(TESTS_IN) $(LIBPERF_A) $(LIBAPI)
+>  	$(QUIET_LINK)$(CC) -o $@ $^
+>  
+>  $(TESTS_SHARED): $(TESTS_IN) $(LIBAPI)
+> -	$(QUIET_LINK)$(CC) -o $@ -L$(if $(OUTPUT),$(OUTPUT),.) $^ -lperf
+> +	$(QUIET_LINK)$(CC) -o $@ -L$(if $(OUTPUT),.) $^ -lperf
 
+$(if ...)  -> $(or ...)
+
+With this one fixed:
+Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+
+Thanks for that patch.  I have never seen $(or) in use before but it 
+definitively makes sense!
+
+Kind regards,
+Nicolas
 
 
 -- 
-With best wishes
-Dmitry
+epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
+↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
+     -- frykten for herren er opphav til kunnskap --
