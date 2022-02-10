@@ -2,89 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F31C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbiBJCn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:43:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52936 "EHLO
+        id S231596AbiBJCoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:44:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbiBJCny (ORCPT
+        with ESMTP id S231393AbiBJCon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 21:43:54 -0500
-X-Greylist: delayed 674 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 18:43:56 PST
-Received: from h2.fbrelay.privateemail.com (h2.fbrelay.privateemail.com [131.153.2.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9612F2409A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 18:43:56 -0800 (PST)
-Received: from MTA-06-3.privateemail.com (mta-06-1.privateemail.com [68.65.122.26])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h1.fbrelay.privateemail.com (Postfix) with ESMTPS id 10F941800A77
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:32:42 -0500 (EST)
-Received: from mta-06.privateemail.com (localhost [127.0.0.1])
-        by mta-06.privateemail.com (Postfix) with ESMTP id BA63018000AD;
-        Wed,  9 Feb 2022 21:32:40 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
-        t=1644460360; bh=bat2b2vczdAO3gG1eSLsoPHTCx/Y+HGptLuu8z8kW/g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ztPswVJK3qLcaydP8DO220wPp+b+Tv86I+fCBCl9BubJ9aY9NfVJaxpegp3/XvoHd
-         QWCOFCwfB+VfW6yiuonWij5IznhHkvDhvTLjQVdF/mtzhhlLHVuI/p71jDkrRg8jlC
-         KbWS/CgjOBmbcuTAGSQdnGc/1gxREEpH54It6F404FdadAqozuoQ0WdRWS6yNWNSe7
-         oLGxFmQsFIsCr4RmLoaWb6nVxvPoCNUIoVIR4Fq56Rp6tml+mK6yiPNUd/mNkHHgBj
-         uin3doYw4IBI2jB/KJX2S6EsziGbyfRNsplBnkNgsOf75kCYcB/WAJqO+LpKHwftAk
-         fdgFekeW6v26g==
-Received: from warhead.local (unknown [10.20.151.143])
-        by mta-06.privateemail.com (Postfix) with ESMTPA id 06FC818000A1;
-        Wed,  9 Feb 2022 21:32:38 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
-        t=1644460360; bh=bat2b2vczdAO3gG1eSLsoPHTCx/Y+HGptLuu8z8kW/g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ztPswVJK3qLcaydP8DO220wPp+b+Tv86I+fCBCl9BubJ9aY9NfVJaxpegp3/XvoHd
-         QWCOFCwfB+VfW6yiuonWij5IznhHkvDhvTLjQVdF/mtzhhlLHVuI/p71jDkrRg8jlC
-         KbWS/CgjOBmbcuTAGSQdnGc/1gxREEpH54It6F404FdadAqozuoQ0WdRWS6yNWNSe7
-         oLGxFmQsFIsCr4RmLoaWb6nVxvPoCNUIoVIR4Fq56Rp6tml+mK6yiPNUd/mNkHHgBj
-         uin3doYw4IBI2jB/KJX2S6EsziGbyfRNsplBnkNgsOf75kCYcB/WAJqO+LpKHwftAk
-         fdgFekeW6v26g==
-From:   Marco Bonelli <marco@mebeim.net>
-To:     dwmw2@infradead.org
-Cc:     Marco Bonelli <marco@mebeim.net>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/vt-d: Add missing "__init" for rmrr_sanity_check()
-Date:   Thu, 10 Feb 2022 03:31:41 +0100
-Message-Id: <20220210023141.9208-1-marco@mebeim.net>
-X-Mailer: git-send-email 2.30.2
+        Wed, 9 Feb 2022 21:44:43 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A7E2409A;
+        Wed,  9 Feb 2022 18:44:45 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id bt13so11526113ybb.2;
+        Wed, 09 Feb 2022 18:44:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Yae8xh6+/RqAjaPxfOanlLu1lpjK4lOMpxS+ykxZ6Ck=;
+        b=PkZFlJba0ASmUM09LH0Aj6AVWyyqxqQFoEAO7Q2GzWCXVd+iWGwZmQbY9EZr4ovvYE
+         hNjB3CoZahIBB+jznu8m24SjeXDCLHE5VmBPTK6Mj/DdTya4KVYwfndgQf7qvEcuYxMj
+         zOGE6SzY/rScVftDHv/U1Ww9nD4W2EK5TNHpW8/o+9syMV4AK7yrgCgmBMFo1LpdPn1D
+         qIuVk5HMeMg17jqAJ91r7zAF61IYaYCmCwQp1mjyCOuuybzwaW6jKC0YuzvhFqNHrCdS
+         3F363h003Bp7r2hI9TCQSfnhTq2T03ioUoPqFZtbFH42OR0mY+I6mNPrFTS4Q7O7KrwU
+         +6+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Yae8xh6+/RqAjaPxfOanlLu1lpjK4lOMpxS+ykxZ6Ck=;
+        b=oNobM8n6z9vaY13IuzpvUfC1mjCtAwLQu082FE25Lt0A56/zmhfRCj73HbstLjc/8Z
+         mQN6g3Y1jO1fr8r99q7hnHs6+rob58L+O/2vsjw1wpeKq3gv1gldmV7HoteFIXIjpEGf
+         j5XXFg1uQ1+Wv0b2kpiruEwCwmMmwueHDeeomiOTH3mvWngU5B4ExKUmA89h6ax2CK1W
+         XKJ9TghEL750L+TYsqMQPzBm1uI3FEZuPYRiz/Q6QT23dfYVbuFIVCGiwlsb/W+BUG6v
+         B5sMOQY62eDFM9ZPN3QfSenHcr3gHa6RlUW242MAH2GkIjqdnUCJYylP02vi2Ly/iOgQ
+         9PLw==
+X-Gm-Message-State: AOAM532Or52YB98PJ5BVdh/6nuoymUeeW4h4pm2wATRKhQn+sIJ1MRj8
+        t5my3dUBolEvS4JSmB6o2l/qyga1U4KeUzfmLuw=
+X-Google-Smtp-Source: ABdhPJxJo9spdHYdv+eWs5mpin2D3XWhlrqvPJszbnGJ90dCoz+MsjNLGtdXa9zo3Qe6xNc5xeHQNVZlcm3halUMO2s=
+X-Received: by 2002:a05:6902:114b:: with SMTP id p11mr5153810ybu.2.1644461084954;
+ Wed, 09 Feb 2022 18:44:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <20220209163029.2299009-1-trix@redhat.com> <YgPs8U85ZFbDWYlx@sirena.org.uk>
+ <61a545d5-224d-86fb-2fe3-406c3ffd78fb@redhat.com> <YgP0JOilWpKU4704@sirena.org.uk>
+ <CAGcXWkyCQ4JExvHv3cEL7vLMOcq_iPu0vOyOmnfzbQmMxHEp=Q@mail.gmail.com> <27a1822d798641f5bba33d7529ec02c0@sphcmbx02.sunplus.com.tw>
+In-Reply-To: <27a1822d798641f5bba33d7529ec02c0@sphcmbx02.sunplus.com.tw>
+From:   =?UTF-8?B?6YOt5Yqb6LGq?= <lhjeff911@gmail.com>
+Date:   Thu, 10 Feb 2022 10:45:46 +0800
+Message-ID: <CAGcXWkyF8FdRNP7=pcLQw339QpVX82op+zEMS7KrXXZJ8SLMQw@mail.gmail.com>
+Subject: Re: [PATCH] spi: initialize ret variable
+To:     =?UTF-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+Cc:     Tom Rix <trix@redhat.com>, "nathan@kernel.org" <nathan@kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rmrr_sanity_check() calls arch_rmrr_sanity_check(), which is marked as
-"__init". Add the annotation for rmrr_sanity_check() too. This function is
-currently only called from dmar_parse_one_rmrr() which is also "__init".
+>Yes, that's what I'm asking.
 
-Signed-off-by: Marco Bonelli <marco@mebeim.net>
----
- drivers/iommu/intel/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 92fea3fbbb11..7a308fd8d4b9 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3691,7 +3691,7 @@ static void __init init_iommu_pm_ops(void)
- static inline void init_iommu_pm_ops(void) {}
- #endif	/* CONFIG_PM */
- 
--static int rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
-+static int __init rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
- {
- 	if (!IS_ALIGNED(rmrr->base_address, PAGE_SIZE) ||
- 	    !IS_ALIGNED(rmrr->end_address + 1, PAGE_SIZE) ||
--- 
-2.30.2
 
+>The original setting was ret=0; I just wanted to remove it when defining
+
+>the ret, but it looks like it's required.
+
+>Yes, it should return error at default
+
+
+
+>I will submit new patch for this.
+
+
+
+
+> The old behavior returned 0 and I am treating this as a regression.
+
+The goal here isn't just to shut up warnings, it's to fix any problems
+that they identify.  Unconditionally initialising return values is a
+common way of fixing warnings while leaving real problems in place.
+
+
+The original setting was ret=0; I just wanted to remove it when defining
+
+the ret, but it looks like it's required.
+
+Yes, it should return error at default
+
+
+
+I will submit new patch for this.
