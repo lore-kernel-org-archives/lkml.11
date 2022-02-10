@@ -2,97 +2,362 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A3AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE927C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbiBJBWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:22:21 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41172 "EHLO
+        id S231604AbiBJBW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:22:26 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231313AbiBJBWQ (ORCPT
+        with ESMTP id S231518AbiBJBWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:22:16 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF57767E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:22:18 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id i62so5549327ioa.1
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:22:18 -0800 (PST)
+        Wed, 9 Feb 2022 20:22:19 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19081EC67
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:22:21 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id 9so5559107iou.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:22:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linuxfoundation.org; s=google;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cdxLMgsmmoWwNr6QfX9BlZQEHtbyyDeBFlgL8Ttf6Ko=;
-        b=N3Jh70Kzppxzw5ToFBbrHwsdpEYL7Ulz422DOUp85ChwME4TCxIutPfGQ4F5q67Tpl
-         yjr0s3JQDx/sZk9JI3B90NAVBQTjDDmlUeHsUf1t2+VIMHEas29Vj/WnDw4V0u2+AZr4
-         eTCpZw7W4nUyjncOMMZkouKFIlqqJN8EuUkaY=
+        bh=5+tRnd8Xg9x7mgUqVVo/liOxPoi3ep4CbmXvpW+HjwM=;
+        b=Ss+PDDj7oCnQ2KGPqPfYltHXga74jpfEV9BYRBNQLvQeUZiGNb42fWTGaxTwOMbW8i
+         S5DV/SFS/4P68yIivGidmgElaG8YYaIWt85HeKtSQ3N5sSuKOdAihDva6swjbgLOgXR3
+         8b4t6WXF7CD1MmibvwSV+6SKpy/0viLlZC4Tk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=cdxLMgsmmoWwNr6QfX9BlZQEHtbyyDeBFlgL8Ttf6Ko=;
-        b=C3YYgwhpX8ArGIj8RNq5LpHuKmZYR8Q5j/R2mSV9IIk0fXuoWwudC1wYxhxEpvjVey
-         LccaWmJA5RRuHZXOT3UcMJW9DOSGNeYlwL+S5iW7bASrJFcVkvb+wzWev+3fKP3zHZeZ
-         OMb3XsGnRsB8B9lu1+e9Q1ilTHymTMmW78phpT7xE7aYntw7Y5rTNyoVzD6DEnOkw+/R
-         bfGZuLynPcftu3f5XQzTZOWRhk5kE73LQdSPYqgqmzlJk8RefwjcmHd2trMGgsBPtEEV
-         LjtLIf6dW+6KVl7oZXJsBOnL363DWsUrZBZQgaRVTy9M3PFSB5390LU5ZyMqgxM8zfDG
-         9BzQ==
-X-Gm-Message-State: AOAM530+441ENKgR0CppHUlGxIugS3N0gJqNgjz7VEv+GBOwZ7/XFkK6
-        bT8XTlq4lQu+9Uo4D4CLeWVngfwxZSq2DA==
-X-Google-Smtp-Source: ABdhPJxodiyAREzkXOkvY/SMzh82G1BjPwhNRwtVULqYbCK8pb81TiorkVba9Cl+gCSEui2k7UzWhw==
-X-Received: by 2002:a5e:8509:: with SMTP id i9mr2520057ioj.28.1644454750744;
-        Wed, 09 Feb 2022 16:59:10 -0800 (PST)
+        bh=5+tRnd8Xg9x7mgUqVVo/liOxPoi3ep4CbmXvpW+HjwM=;
+        b=c9tRGMG8ROb4ucmLvRffVA/SSHMVauiCHWHmJCOE3hC/hfEz+bgtuRPY4gdlTSSVP0
+         Ha9xD13S8TjwFYuiH2SZPYxQrBGdUXwvbiw425oOPav3ZEiD/gAElKFNMGvYZrCbgByw
+         ut+p/sOPn+jpggkj5M7fCLKp9H/AnZ+hWjlqPO4Wr/o3rXvPYkbdi1mk1RXw6yANXNCq
+         F/uliiI5FrH85o9P3IfbCsJk6XImGTZKIdKh44zQGRlILLt7mdJIbe4Qcu+vXfXoAmCa
+         +0iiMlz7+6mukkUE1jbgld49KI1mtfgxIa8quvoTLaOGkKxcge/4pQAqlDTYRruM43s9
+         KH9w==
+X-Gm-Message-State: AOAM531qTAIVRED2FQ1f6Wlc7wr9g/All5EFNAWthQtB4BM7ErTG2/jf
+        Blx0sJWJuqiOU0sAgAVomoZTXg==
+X-Google-Smtp-Source: ABdhPJw0YIqTMBAlse9jZaw+UpEJ52/QSYtS9ASvHdFodInCPfAzt5hFgsIVmrYAIw6G2I7NeaRPOg==
+X-Received: by 2002:a05:6638:22ce:: with SMTP id j14mr2844023jat.225.1644456139851;
+        Wed, 09 Feb 2022 17:22:19 -0800 (PST)
 Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id y7sm4092385ila.7.2022.02.09.16.59.09
+        by smtp.gmail.com with ESMTPSA id ay35sm10631712iob.3.2022.02.09.17.22.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 16:59:10 -0800 (PST)
-Subject: Re: [PATCH 5.4 0/1] 5.4.179-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Wed, 09 Feb 2022 17:22:19 -0800 (PST)
+Subject: Re: [RFC PATCH 5/6] selftests: Challenge RLIMIT_NPROC in user
+ namespaces
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Alexey Gladkov <legion@kernel.org>
+Cc:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>,
         Shuah Khan <skhan@linuxfoundation.org>
-References: <20220209191248.688351316@linuxfoundation.org>
+References: <20220207121800.5079-1-mkoutny@suse.com>
+ <20220207121800.5079-6-mkoutny@suse.com>
 From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <401c0a7a-9af9-e871-32a0-0688e684c0b6@linuxfoundation.org>
-Date:   Wed, 9 Feb 2022 17:59:09 -0700
+Message-ID: <f0585ae4-5642-361f-11d6-9399bd9cc550@linuxfoundation.org>
+Date:   Wed, 9 Feb 2022 18:22:18 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20220209191248.688351316@linuxfoundation.org>
+In-Reply-To: <20220207121800.5079-6-mkoutny@suse.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 12:14 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.179 release.
-> There are 1 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2/7/22 5:17 AM, Michal Koutný wrote:
+> The services are started in descendant user namepaces, each of them
+> should honor the RLIMIT_NPROC that's passed during user namespace
+> creation.
 > 
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
+> 	main [user_ns_0]
+> 	  ` service [user_ns_1]
+> 	    ` worker 1
+> 	    ` worker 2
+> 	    ...
+> 	    ` worker k
+> 	  ...
+> 	  ` service [user_ns_n]
+> 	    ` worker 1
+> 	    ` worker 2
+> 	    ...
+> 	    ` worker k
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.179-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> Test uses explicit synchronization, to make sure original parent's limit
+> does not interfere with descendants.
 > 
 
-Compiled and booted on my test system. No dmesg regressions.
+Thank you for updating the test with the kernel updates. Please see
+comments below. A bit of a concern with how long this test will run.
+Did you time it?
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+> Signed-off-by: Michal Koutný <mkoutny@suse.com>
+> ---
+>   .../selftests/rlimits/rlimits-per-userns.c    | 154 ++++++++++++++----
+>   1 file changed, 125 insertions(+), 29 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/rlimits/rlimits-per-userns.c b/tools/testing/selftests/rlimits/rlimits-per-userns.c
+> index 26dc949e93ea..54c1b345e42b 100644
+> --- a/tools/testing/selftests/rlimits/rlimits-per-userns.c
+> +++ b/tools/testing/selftests/rlimits/rlimits-per-userns.c
+> @@ -9,7 +9,9 @@
+>   #include <sys/resource.h>
+>   #include <sys/prctl.h>
+>   #include <sys/stat.h>
+> +#include <sys/socket.h>
+>   
+> +#include <assert.h>
+>   #include <unistd.h>
+>   #include <stdlib.h>
+>   #include <stdio.h>
+> @@ -21,38 +23,74 @@
+>   #include <errno.h>
+>   #include <err.h>
+>   
+> -#define NR_CHILDS 2
+> +#define THE_LIMIT 4
+> +#define NR_CHILDREN 5
+> +
+> +static_assert(NR_CHILDREN >= THE_LIMIT-1, "Need slots for limit-1 children.");
+>   
+>   static char *service_prog;
+>   static uid_t user   = 60000;
+>   static uid_t group  = 60000;
+> +static struct rlimit saved_limit;
+> +
+> +/* Two uses: main and service */
+> +static pid_t child[NR_CHILDREN];
+> +static pid_t pid;
+>   
+>   static void setrlimit_nproc(rlim_t n)
+>   {
+> -	pid_t pid = getpid();
+>   	struct rlimit limit = {
+>   		.rlim_cur = n,
+>   		.rlim_max = n
+>   	};
+> -
+> -	warnx("(pid=%d): Setting RLIMIT_NPROC=%ld", pid, n);
+> +	if (getrlimit(RLIMIT_NPROC, &saved_limit) < 0)
+> +		err(EXIT_FAILURE, "(pid=%d): getrlimit(RLIMIT_NPROC)", pid);
+>   
+>   	if (setrlimit(RLIMIT_NPROC, &limit) < 0)
+>   		err(EXIT_FAILURE, "(pid=%d): setrlimit(RLIMIT_NPROC)", pid);
+> +
+> +	warnx("(pid=%d): Set RLIMIT_NPROC=%ld", pid, n);
+> +}
+> +
+> +static void restore_rlimit_nproc(void)
+> +{
+> +	if (setrlimit(RLIMIT_NPROC, &saved_limit) < 0)
+> +		err(EXIT_FAILURE, "(pid=%d): setrlimit(RLIMIT_NPROC, saved)", pid);
+> +	warnx("(pid=%d) Restored RLIMIT_NPROC", pid);
+>   }
+>   
+> -static pid_t fork_child(void)
+> +enum msg_sync {
+> +	UNSHARE,
+> +	RLIMIT_RESTORE,
+> +};
+> +
+> +static void sync_notify(int fd, enum msg_sync m)
+>   {
+> -	pid_t pid = fork();
+> +	char tmp = m;
+> +
+> +	if (write(fd, &tmp, 1) < 0)
+> +		warnx("(pid=%d): failed sync-write", pid);
+> +}
+>   
+> -	if (pid < 0)
+> +static void sync_wait(int fd, enum msg_sync m)
+> +{
+> +	char tmp;
+> +
+> +	if (read(fd, &tmp, 1) < 0)
+> +		warnx("(pid=%d): failed sync-read", pid);
+> +}
+> +
+> +static pid_t fork_child(int control_fd)
+> +{
+> +	pid_t new_pid = fork();
+> +
+> +	if (new_pid < 0)
+>   		err(EXIT_FAILURE, "fork");
+>   
+> -	if (pid > 0)
+> -		return pid;
+> +	if (new_pid > 0)
+> +		return new_pid;
+>   
+>   	pid = getpid();
+> -
+>   	warnx("(pid=%d): New process starting ...", pid);
+>   
+>   	if (prctl(PR_SET_PDEATHSIG, SIGKILL) < 0)
+> @@ -73,6 +111,9 @@ static pid_t fork_child(void)
+>   	if (unshare(CLONE_NEWUSER) < 0)
+>   		err(EXIT_FAILURE, "unshare(CLONE_NEWUSER)");
+>   
+> +	sync_notify(control_fd, UNSHARE);
+> +	sync_wait(control_fd, RLIMIT_RESTORE);
+> +
+>   	char *const argv[] = { "service", NULL };
+>   	char *const envp[] = { "I_AM_SERVICE=1", NULL };
+>   
+> @@ -82,37 +123,92 @@ static pid_t fork_child(void)
+>   	err(EXIT_FAILURE, "(pid=%d): execve", pid);
+>   }
+>   
+> +static void run_service(void)
+> +{
+> +	size_t i;
+> +	int ret = EXIT_SUCCESS;
+> +	struct rlimit limit;
+> +	char user_ns[PATH_MAX];
+> +
+> +	if (getrlimit(RLIMIT_NPROC, &limit) < 0)
+> +		err(EXIT_FAILURE, "(pid=%d) failed getrlimit", pid);
+> +	if (readlink("/proc/self/ns/user", user_ns, PATH_MAX) < 0)
+> +		err(EXIT_FAILURE, "(pid=%d) failed readlink", pid);
+> +
+> +	warnx("(pid=%d) Service instance attempts %i children, limit %lu:%lu, ns=%s",
+> +	      pid, THE_LIMIT, limit.rlim_cur, limit.rlim_max, user_ns);
+> +
+> +	/* test rlimit inside the service, effectively THE_LIMIT-1 becaue of service itself */
+> +	for (i = 0; i < THE_LIMIT; i++) {
+> +		child[i] = fork();
+> +		if (child[i] == 0) {
+> +			/* service child */
+> +			pause();
+> +			exit(EXIT_SUCCESS);
+> +		}
+> +		if (child[i] < 0) {
+> +			warnx("(pid=%d) service fork %lu failed, errno = %i", pid, i+1, errno);
+> +			if (!(i == THE_LIMIT-1 && errno == EAGAIN))
+> +				ret = EXIT_FAILURE;
+> +		} else if (i == THE_LIMIT-1) {
+> +			warnx("(pid=%d) RLIMIT_NPROC not honored", pid);
+> +			ret = EXIT_FAILURE;
+> +		}
+> +	}
+> +
+> +	/* service cleanup */
+> +	for (i = 0; i < THE_LIMIT; i++)
+> +		if (child[i] > 0)
+> +			kill(child[i], SIGUSR1);
+> +
+> +	for (i = 0; i < THE_LIMIT; i++)
+> +		if (child[i] > 0)
+> +			waitpid(child[i], NULL, WNOHANG);
+> +
+> +	if (ret)
+> +		exit(ret);
+> +	pause();
+> +}
+> +
+>   int main(int argc, char **argv)
+>   {
+>   	size_t i;
+> -	pid_t child[NR_CHILDS];
+> -	int wstatus[NR_CHILDS];
+> -	int childs = NR_CHILDS;
+> -	pid_t pid;
+> +	int control_fd[NR_CHILDREN];
+> +	int wstatus[NR_CHILDREN];
+> +	int children = NR_CHILDREN;
+> +	int sockets[2];
+> +
+> +	pid = getpid();
+>   
+>   	if (getenv("I_AM_SERVICE")) {
+> -		pause();
+> -		exit(EXIT_SUCCESS);
+> +		run_service();
+> +		exit(EXIT_FAILURE);
+
+Why is this a failure unconditionally?
+
+>   	}
+>   
+>   	service_prog = argv[0];
+> -	pid = getpid();
+>   
+>   	warnx("(pid=%d) Starting testcase", pid);
+>   
+> -	/*
+> -	 * This rlimit is not a problem for root because it can be exceeded.
+> -	 */
+> -	setrlimit_nproc(1);
+> -
+> -	for (i = 0; i < NR_CHILDS; i++) {
+> -		child[i] = fork_child();
+> +	setrlimit_nproc(THE_LIMIT);
+> +	for (i = 0; i < NR_CHILDREN; i++) {
+> +		if (socketpair(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets) < 0)
+> +			err(EXIT_FAILURE, "(pid=%d) socketpair failed", pid);
+> +		control_fd[i] = sockets[0];
+> +		child[i] = fork_child(sockets[1]);
+>   		wstatus[i] = 0;
+> +	}
+> +
+> +	for (i = 0; i < NR_CHILDREN; i++)
+> +		sync_wait(control_fd[i], UNSHARE);
+> +	restore_rlimit_nproc();
+> +
+> +	for (i = 0; i < NR_CHILDREN; i++) {
+> +		sync_notify(control_fd[i], RLIMIT_RESTORE);
+>   		usleep(250000);
+
+How long does this test now run for with this loop?
+
+>   	}
+>   
+>   	while (1) {
+> -		for (i = 0; i < NR_CHILDS; i++) {
+> +		for (i = 0; i < NR_CHILDREN; i++) {
+>   			if (child[i] <= 0)
+>   				continue;
+>   
+> @@ -126,22 +222,22 @@ int main(int argc, char **argv)
+>   				warn("(pid=%d): waitpid(%d)", pid, child[i]);
+>   
+>   			child[i] *= -1;
+> -			childs -= 1;
+> +			children -= 1;
+>   		}
+>   
+> -		if (!childs)
+> +		if (!children)
+>   			break;
+>   
+>   		usleep(250000);
+>   
+> -		for (i = 0; i < NR_CHILDS; i++) {
+> +		for (i = 0; i < NR_CHILDREN; i++) {
+>   			if (child[i] <= 0)
+>   				continue;
+>   			kill(child[i], SIGUSR1);
+>   		}
+>   	}
+>   
+> -	for (i = 0; i < NR_CHILDS; i++) {
+> +	for (i = 0; i < NR_CHILDREN; i++) {
+>   		if (WIFEXITED(wstatus[i]))
+>   			warnx("(pid=%d): pid %d exited, status=%d",
+>   				pid, -child[i], WEXITSTATUS(wstatus[i]));
+> 
+
+Please a add few more comments in the code path.
 
 thanks,
 -- Shuah
