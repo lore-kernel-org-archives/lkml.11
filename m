@@ -2,235 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF09C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:43:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0516C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:43:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234522AbiBJFnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:43:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38236 "EHLO
+        id S234728AbiBJFnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:43:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234134AbiBJFmV (ORCPT
+        with ESMTP id S234390AbiBJFmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:42:21 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FD510CB
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:41:35 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id i30so8293666pfk.8
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 21:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=MycArphAL+eI4CNWC2fJtlo4v2VAv4DVPnEgYiAFfhI=;
-        b=cRwFHOxsA1rFfoKgkohYYCK97jWpVFIeQpUt6nrxyxweM1gnUGKZQPcEa9umeVYlQ3
-         z9DV4xaqGUJSSSmMTiXptrxBO6ZKAqlDt7juJN/fBtWx7e4hHYdy3zobDbjnUa54wUgk
-         FuF5fRExGky/ELqIoVQitM75YWGXBSdGUU1J2vNWQHi81QYe/u38h/MCzcRT5MExwIWG
-         bjZIHV3ulQX9Dff6nHO0uuh0UyOXiXtudECJJBM9+txAMSyMLQbhwepC+WqVN7ZOaL4f
-         76fOnnjH/RCqt9sReilEmvGhic9wW0flWj5ilkhA0BL99em+7UmBDfdWY7pdbhj0E1CO
-         SxwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=MycArphAL+eI4CNWC2fJtlo4v2VAv4DVPnEgYiAFfhI=;
-        b=B5vWCzmCI5tkxXIDKBV7SywTEwENbUixHGLM4rfhcZvXVy/VYCE0XppRd5T76AZhRd
-         uWhKk5b4etKiluQv6aUv25iB9+/B7STH6i5D3VQUwGRqJyE8wKGhBSKBnJ87X2HMD+fE
-         9zDSrbeO2azhthKVofBKEIxHds1LiZAuaTRDz9dFi7GG42omq3ue+YVL600NaovOiOiP
-         t6tK6MCzCfhbrlyJ7YU2kIDBeShyWa9JhVZJay7qkroqlhvJSNlgQcr6UUgIVxD1btuz
-         GiZh4OfcsvUx/+qPm/+ONbqCnsdSW7allIwm9pL7iwiO7i9tzvweDmICJZsKmbI7g4SF
-         s6lw==
-X-Gm-Message-State: AOAM532uqcWoW4q940JDayscWYHysZy4ydaLGXJsFtSHuCQnWs4GhBK4
-        SKYZwZtPHSIJV9Ld7VnjCJ0PNQ==
-X-Google-Smtp-Source: ABdhPJylbaVJIaI4S2Eo448QHk8Qz7yTaz2a4vWBQpy5qfMnKkwM/5SAToovyB7ORqe/SbpsRrPqaQ==
-X-Received: by 2002:a05:6a00:16d4:: with SMTP id l20mr5973435pfc.5.1644471694237;
-        Wed, 09 Feb 2022 21:41:34 -0800 (PST)
-Received: from google.com ([2401:fa00:1:10:c189:30c:e45a:d116])
-        by smtp.gmail.com with ESMTPSA id a17sm663383pju.15.2022.02.09.21.41.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 21:41:33 -0800 (PST)
-Date:   Thu, 10 Feb 2022 13:41:31 +0800
-From:   Tzung-Bi Shih <tzungbi@google.com>
-To:     Sami =?iso-8859-1?Q?Ky=F6stil=E4?= <skyostil@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, bleung@chromium.org,
-        arnd@arndb.de, gregkh@linuxfoundation.org, evanbenn@chromium.org
-Subject: Re: [PATCH v3 1/1] platform/chrome: add a driver for HPS
-Message-ID: <YgSli/6HuZ+i+2gb@google.com>
-References: <20220207013613.1150783-1-skyostil@chromium.org>
- <20220207013613.1150783-2-skyostil@chromium.org>
+        Thu, 10 Feb 2022 00:42:23 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15081174;
+        Wed,  9 Feb 2022 21:41:47 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 8D1C9210F6;
+        Thu, 10 Feb 2022 05:41:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644471706; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zUXE+p4nU0NR3LK33keTKiC3MiGpqHZzDnhCV/FYFVc=;
+        b=1iOjcBu6oE+BXqXEFHtabUHK7sZNNAt+F9BXNB5uV7m3v4yti6KzGXBiLv7VLruTI3nEpR
+        RzUf48rnigX5xLwZY9cqLSfPrG7m7EbPedvqO83z8P0IJauCacL1yhTk9JKT9feAU1DqJI
+        KUpM8T9cgXJ5IztxA4OlP16a8F1IH8w=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644471706;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zUXE+p4nU0NR3LK33keTKiC3MiGpqHZzDnhCV/FYFVc=;
+        b=0ZiiWmrlykQukuniHTdmeJDPxTmHcRtiUSrL0vXadFeW3t9RQIDNXluXWa7JinzIWwJ++B
+        zkp5vHuwQfZju0DQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D113C13519;
+        Thu, 10 Feb 2022 05:41:38 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id wj+/IpKlBGLHOQAAMHmgww
+        (envelope-from <neilb@suse.de>); Thu, 10 Feb 2022 05:41:38 +0000
+Subject: [PATCH 10/11] block/bfq-iosched.c: use "false" rather than
+ "BLK_RW_ASYNC"
+From:   NeilBrown <neilb@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>, Jan Kara <jack@suse.cz>,
+        Wu Fengguang <fengguang.wu@intel.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-nilfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
+Date:   Thu, 10 Feb 2022 16:37:52 +1100
+Message-ID: <164447147264.23354.2763356897218946255.stgit@noble.brown>
+In-Reply-To: <164447124918.23354.17858831070003318849.stgit@noble.brown>
+References: <164447124918.23354.17858831070003318849.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220207013613.1150783-2-skyostil@chromium.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 12:36:13PM +1100, Sami Kyöstilä wrote:
-> This patch introduces a driver for the ChromeOS screen privacy
-> sensor (aka. HPS). The driver supports a sensor connected to the I2C bus
-> and identified as "GOOG0020" in the ACPI tables.
+bfq_get_queue() expects a "bool" for the third arg, so pass "false"
+rather than "BLK_RW_ASYNC" which will soon be removed.
 
-The patch uses HPS instead of SPS everywhere.  Would you consider to use
-"human presence sensor" when referring it?
+Acked-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: NeilBrown <neilb@suse.de>
+---
+ block/bfq-iosched.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> When loaded, the driver exports the sensor to userspace through a
-> character device. This device only supports power management, i.e.,
-> communication with the sensor must be done through regular I2C
-> transmissions from userspace.
-> 
-> Power management is implemented by enabling the respective power GPIO
-> while at least one userspace process holds an open fd on the character
-> device. By default, the device is powered down if there are no active
-> clients.
-> 
-> Note that the driver makes no effort to preserve the state of the sensor
-> between power down and power up events. Userspace is responsible for
-> reinitializing any needed state once power has been restored.
+diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
+index 0c612a911696..4e645ae1e066 100644
+--- a/block/bfq-iosched.c
++++ b/block/bfq-iosched.c
+@@ -5448,7 +5448,7 @@ static void bfq_check_ioprio_change(struct bfq_io_cq *bic, struct bio *bio)
+ 	bfqq = bic_to_bfqq(bic, false);
+ 	if (bfqq) {
+ 		bfq_release_process_ref(bfqd, bfqq);
+-		bfqq = bfq_get_queue(bfqd, bio, BLK_RW_ASYNC, bic, true);
++		bfqq = bfq_get_queue(bfqd, bio, false, bic, true);
+ 		bic_set_bfqq(bic, bfqq, false);
+ 	}
+ 
 
-It's weird.  If most of the thing is done by userspace programs, couldn't it
-set the power GPIO via userspace interface (e.g. [1]) too?
 
-[1]: https://embeddedbits.org/new-linux-kernel-gpio-user-space-interface/
-
-> diff --git a/MAINTAINERS b/MAINTAINERS
-[...]
-> +HPS (ChromeOS screen privacy sensor) DRIVER
-
-Does it make more sense to use "CHROMEOS HPS DRIVER" title?
-
-> diff --git a/drivers/platform/chrome/cros_hps_i2c.c b/drivers/platform/chrome/cros_hps_i2c.c
-[...]
-> +static void hps_set_power(struct hps_drvdata *hps, bool state)
-> +{
-> +	if (!IS_ERR_OR_NULL(hps->enable_gpio))
-
-Could it get rid of the check?  Does the function get called if device probe
-fails?
-
-> +static void hps_unload(void *drv_data)
-> +{
-> +	struct hps_drvdata *hps = drv_data;
-> +
-> +	hps_set_power(hps, true);
-
-Why does it need to set to true when device removing?
-
-> +static int hps_open(struct inode *inode, struct file *file)
-> +{
-> +	struct hps_drvdata *hps = container_of(file->private_data,
-> +					       struct hps_drvdata, misc_device);
-> +	struct device *dev = &hps->client->dev;
-> +	int ret;
-> +
-> +	ret = pm_runtime_get_sync(dev);
-> +	if (ret < 0)
-> +		goto pm_get_fail;
-> +	return 0;
-> +
-> +pm_get_fail:
-> +	pm_runtime_put(dev);
-> +	pm_runtime_disable(dev);
-
-The two functions are not effectively symmetric if pm_runtime_get_sync()
-fails.
-- It doesn't need to call pm_runtime_put() if pm_runtime_get_sync() fails.
-- I guess it wouldn't want to pm_runtime_disable() here.  The capability is
-  controlled when the device probing and removing.
-
-> +static int hps_release(struct inode *inode, struct file *file)
-> +{
-> +	struct hps_drvdata *hps = container_of(file->private_data,
-> +					       struct hps_drvdata, misc_device);
-> +	struct device *dev = &hps->client->dev;
-> +	int ret;
-> +
-> +	ret = pm_runtime_put(dev);
-> +	if (ret < 0)
-> +		goto pm_put_fail;
-> +	return 0;
-> +
-> +pm_put_fail:
-> +	pm_runtime_disable(dev);
-
-Same here.
-
-> +const struct file_operations hps_fops = {
-> +	.owner = THIS_MODULE,
-> +	.open = hps_open,
-> +	.release = hps_release,
-> +};
-
-The struct can be static.
-
-> +static int hps_i2c_probe(struct i2c_client *client)
-> +{
-> +	struct hps_drvdata *hps;
-> +	int ret = 0;
-
-It doesn't need to be initialized.  It's going to be overridden soon.
-
-> +	memset(&hps->misc_device, 0, sizeof(hps->misc_device));
-> +	hps->misc_device.parent = &client->dev;
-> +	hps->misc_device.minor = MISC_DYNAMIC_MINOR;
-> +	hps->misc_device.name = "hps";
-
-Does "cros_hps_i2c" or "cros_hps" make more sense?
-
-> +	ret = devm_add_action(&client->dev, &hps_unload, hps);
-> +	if (ret) {
-> +		dev_err(&client->dev,
-> +			"failed to install unload action: %d\n", ret);
-> +		return ret;
-> +	}
-
-Why does it need to call hps_unload() when device removing?  Couldn't it put
-the code in hps_i2c_remove()?
-
-> +	hps_set_power(hps, false);
-> +	pm_runtime_enable(&client->dev);
-> +	return ret;
-
-Using `return 0;` makes it clear.
-
-> +static int hps_suspend(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct hps_drvdata *hps = i2c_get_clientdata(client);
-> +
-> +	hps_set_power(hps, false);
-> +	return 0;
-> +}
-> +
-> +static int hps_resume(struct device *dev)
-> +{
-> +	struct i2c_client *client = to_i2c_client(dev);
-> +	struct hps_drvdata *hps = i2c_get_clientdata(client);
-> +
-> +	hps_set_power(hps, true);
-> +	return 0;
-> +}
-
-Does it need to save the old state before suspending?  Instead of turning on
-the power after every resumes.
-
-> +static const struct i2c_device_id hps_i2c_id[] = {
-> +	{ "hps", 0 },
-
-Does "cros_hps_i2c" or "cros_hps" make more sense?
-
-> +static struct i2c_driver hps_i2c_driver = {
-> +	.probe_new = hps_i2c_probe,
-> +	.remove = hps_i2c_remove,
-> +	.id_table = hps_i2c_id,
-> +	.driver = {
-> +		.name = "hps",
-
-Does "cros_hps_i2c" or "cros_hps" make more sense?
-
-> +#ifdef CONFIG_ACPI
-> +		.acpi_match_table = ACPI_PTR(hps_acpi_id),
-> +#endif
-
-It doesn't need the guard as ACPI_PTR() already does.
