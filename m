@@ -2,221 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 363C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243859AbiBJP5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:57:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46638 "EHLO
+        id S243874AbiBJP5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:57:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiBJP5k (ORCPT
+        with ESMTP id S243856AbiBJP5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:57:40 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D1DA1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:57:40 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id x136so14973939ybe.11
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:57:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=L/gmacHO+nIX8yUgzR5WCryJPsq0BTK07bA0MOZtRbo=;
-        b=sesbnoOHpiOR51+54Hd3unKOwAtRmwNA/IDMT54hgrg/u8vsTTfmua5W1cVqQW6x3a
-         DDJ8WJAYKeOAwnXiQpx5C0Q0Q8+3qk9zGrZRi6tOGEi/6ReidqsgrrckprUbMIb2OdpM
-         GxNZeJz7gN23OIpZPRR1K/wZWlvRnVByZokAjV5QXgGrCdFNl9FOJH6H8t7ZkmAp+HW/
-         PDLrA2rdRidg9J9ry4zdTEni7zXLm4SVleUn8pzINVztSn9zEnhtyVO7IqK6/Yon2PSE
-         pbQ2Opd6A2SoR23ztkgAlJEPoYFWNB4C9vbwbvkq5bZfyPW3fWya92z5SjYQWb7pguYd
-         d9rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=L/gmacHO+nIX8yUgzR5WCryJPsq0BTK07bA0MOZtRbo=;
-        b=tWQzUtkSidalJGSTJUOtMc+2pqe8n1J/lTn56Rd0iqRiuci/0v+FXTz9c1azQF3Ies
-         WhruNNmr2/Zb7EV0who6S4rXQ8dgzRhjux4VXP4fHEs4Okx0sb4rGS8YgLL1uhh2UBKN
-         /ZYDuu9MJCOvUoW8bhlxIMe2ZLal+Wp1gN4mGKYMF6aqZ2UAhkOFH4EFICnffrBvN7dm
-         xAC2BT7vpsN2mWrThM2OV3J9ZKRm+mn1/xsQDeEr5qvOrf0Q3ixxFcStoPOEisx+UKsG
-         4JMZ1GzCEC4hv3mjPciPO1nXNoUxZrPJIGVw8HUELmu1FMOU3qlBpReLb7g7C090e9dV
-         fB2A==
-X-Gm-Message-State: AOAM531mn9ljA2gBC8mIysCUGDZ58zPW5U9wyj3FEwLk3ka+yAtJH4kr
-        qP5hMDS+ReHjaqmM0AVvAS+xXUmZBzaTUG/ScYtO1A==
-X-Google-Smtp-Source: ABdhPJwtHUHoicTc62W51Ae15FqUt4uok6ofdnQlOyyNuQ+oj4nZayQ1Bjk9IjD6f/RqrnYy+n8F6kqdh5txmwgpJUQ=
-X-Received: by 2002:a25:1402:: with SMTP id 2mr6943610ybu.684.1644508659379;
- Thu, 10 Feb 2022 07:57:39 -0800 (PST)
+        Thu, 10 Feb 2022 10:57:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3C68A1;
+        Thu, 10 Feb 2022 07:57:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5016B61C77;
+        Thu, 10 Feb 2022 15:57:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1F27C004E1;
+        Thu, 10 Feb 2022 15:57:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644508669;
+        bh=5a0H2dZ8NHiNHJT624T80SiJuLxas7HwdA6coL6AIJs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l5QTW9HAsjdNi2/UJAjlx35fw12/TB6rehsgpGyA/+E6Hn1gKWbB1N+CEWkh1nBnp
+         BUVdN2oxaXOSDxP5412EVZVOenYKjNYbdKDjqJpMibv7wLM2E9A38mLdhDTE9wCX47
+         HlPbwNrR1DuiCdxIex0X/w27aNXiVBiog8QoMTy/VRgCl55o3+RGlQ+5FM1duFd8vT
+         xgOziHICD2DdyUby81ZtD4PxmGDOAy131tQEXNkREdG8c6YhNOUnf4w8olyIjGyF6n
+         9A1oumOfvHxJ/0W17r0vniRtCmu3154LSptFLt539HPQFLk2D6Qgc14jqWeqjS82Uq
+         KKiyYZsdIvq0w==
+Date:   Thu, 10 Feb 2022 15:57:45 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     "Zhou, Yun" <Yun.Zhou@windriver.com>
+Cc:     "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Xue, Ying" <Ying.Xue@windriver.com>
+Subject: Re: =?utf-8?B?5Zue5aSN?= =?utf-8?Q?=3A?= [PATCH] spi: disable
+ chipselect after complete transfer
+Message-ID: <YgU1+cIlANAkJCAL@sirena.org.uk>
+References: <SN6PR11MB3008AF5619B0B026836FD7429F2F9@SN6PR11MB3008.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220209191248.688351316@linuxfoundation.org>
-In-Reply-To: <20220209191248.688351316@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 10 Feb 2022 21:27:28 +0530
-Message-ID: <CA+G9fYtmysoxC=HMRTqQ9jPWWuzqBwukpPuhBoh3e82cu7NhNw@mail.gmail.com>
-Subject: Re: [PATCH 5.4 0/1] 5.4.179-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="YiQuSH9yRC2LqOqw"
+Content-Disposition: inline
+In-Reply-To: <SN6PR11MB3008AF5619B0B026836FD7429F2F9@SN6PR11MB3008.namprd11.prod.outlook.com>
+X-Cookie: Only God can make random selections.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 at 00:45, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.4.179 release.
-> There are 1 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.4.179-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.4.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+--YiQuSH9yRC2LqOqw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On Thu, Feb 10, 2022 at 03:41:41PM +0000, Zhou, Yun wrote:
 
-## Build
-* kernel: 5.4.179-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.4.y
-* git commit: 3eacd9fd7c98dd0c2574ea8f3692776fd62b4557
-* git describe: v5.4.177-47-g3eacd9fd7c98
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.4.y/build/v5.4.1=
-77-47-g3eacd9fd7c98
+Please don't top post, reply in line with needed context.  This allows
+readers to readily follow the flow of conversation and understand what
+you are talking about and also helps ensure that everything in the
+discussion is being addressed.
 
-## Test Regressions (compared to v5.4.177-45-g3836147e31ee)
-No test regressions found.
+> I am sorry that I can not agree with you.
 
-## Metric Regressions (compared to v5.4.177-45-g3836147e31ee)
-No metric regressions found.
+> If there are multiple messages, and each message only has one xfer,
+> and the cs_change of each xfer is 1, during the transmission of the
+> messages, the CS will keep active even until at the end. This must be
+> unreasonable.
 
-## Test Fixes (compared to v5.4.177-45-g3836147e31ee)
-No test fixes found.
+This is not something that most drivers are expected to use, cs_change
+should only be being used at all for very unusual hardware and it should
+be used even less frequently for the last transfer in a message.  It is
+fragile and anyone using it really needs to know what they're doing but
+the feature is there.
 
-## Metric Fixes (compared to v5.4.177-45-g3836147e31ee)
-No metric fixes found.
+> I can't understand why it have to keep CS active after the
+> transmission is completed. Could you please explain this in detail?
 
-## Test result summary
-total: 70784, pass: 60720, fail: 227, skip: 9035, xfail: 802
+The feature predates me working on the SPI stack, the obvious examples
+would be a device that doesn't actually use chip select where you want
+to avoid all chip select changes or if you need to do some other actions
+in the middle of a SPI transaction for some reason (which would need a
+bunch of system level considerations to actually be safe/sensible like
+making sure you're not sharing the SPI bus).
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 258 total, 258 passed, 0 failed
-* arm64: 35 total, 30 passed, 5 failed
-* i386: 19 total, 19 passed, 0 failed
-* mips: 34 total, 34 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 52 total, 39 passed, 13 failed
-* riscv: 24 total, 24 passed, 0 failed
-* s390: 12 total, 12 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 36 total, 36 passed, 0 failed
+Please fix your mail client to word wrap within paragraphs at something
+substantially less than 80 columns.  Doing this makes your messages much
+easier to read and reply to.
 
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
+--YiQuSH9yRC2LqOqw
+Content-Type: application/pgp-signature; name="signature.asc"
 
---
-Linaro LKFT
-https://lkft.linaro.org
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIFNfgACgkQJNaLcl1U
+h9AQQAf/ZYZzgXlybdG4bmNaHaYY6Cr0wodK4VZNJVP7SilnxhpMEOGIrIed8Wct
+D3O1mkLf6+qEMFfNQEab0cn9K/etC2aZIzJ0r32uHIkAyXdBTqlgc8nMdv4mlxiy
+kUaJlaqbndbwyTO0qDtJ36ivojXQMMhotL74z4yd+AGTZvR45qYI0+8ulgRAj2tq
+VMdCPGXVvXN84zDdGoPSwzdex5aFgw/HNkrFLRyQICTOZ9+pjRfR0S/vQbWYqLk2
+GM32zJ7q0DLYDV2U5+JqPnDvEEPtzjnUW+2MtIwRvfrOqtqYZQp5WBRrE7ouHZsi
+A4JOaFntUJChwkfupM1fU8NV3QFasw==
+=4awE
+-----END PGP SIGNATURE-----
+
+--YiQuSH9yRC2LqOqw--
