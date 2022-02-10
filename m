@@ -2,131 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BAD3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F519C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345513AbiBJXN7 (ORCPT
+        id S1345530AbiBJXOZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:13:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33480 "EHLO
+        Thu, 10 Feb 2022 18:14:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243041AbiBJXN6 (ORCPT
+        with ESMTP id S243041AbiBJXOY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:13:58 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF2555A4;
-        Thu, 10 Feb 2022 15:13:58 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id j12so7208355qtr.2;
-        Thu, 10 Feb 2022 15:13:58 -0800 (PST)
+        Thu, 10 Feb 2022 18:14:24 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3549E5F44
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:14:24 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso5915637pjj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:14:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=7FL52FrXNIHTozrcS4UAHCYMPxTzl2RTxQeoy1tQzZU=;
-        b=AGBuTbR1DDTmbip/u/WZx2mNt0jPGvuO3BycAp6q2VmWJ1XpinqhZGjzxMYykQs1+h
-         9ZwK9nV2Hza30UOMDXrLFK15LOSULvD7ZjJxE9dsXejT1uWe+NyRJMgTaXeV1WmNgel9
-         eLii97p7+4ojaqGef/1vF3/S8W8Rgtj6O0GJTl0T6A2RIPF7e9C9EPh0fpAZj0VOPEjo
-         nwjqptD59NnDlqInCC5Xcz7zI6Zdwo+X80xnVSm9eNlJ/x+5G4Rsb0PAvF1FL5QnrdSm
-         ZkZCUR0Del2ERA0vC9l/qhTmRfA93zM+A7aiM1dWPj88KXvNexP7raFIi+zqIMF7LFdx
-         3osA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zVPS2ok9/nx7180z6dx4Z4VBr5ge+N4XNxLNYfv1b4E=;
+        b=VyyafF8z0UHAylczbPUn4iflRukwWBbb+WUXy47xyXqkhIbDPqr8QWGmQRK08hrtkt
+         IUUtWOTxMrtxTQUmV5kZYgN3t5yJfO7EHgX1B94/+OGtyIuYZf67FGfL78/A1VRN1qcR
+         yZHUxbG//rJmxAlIy7hmpGz03vxelXwsVQjC0dYELgXlme1cj3t4zxZ+Lt5i3/buYshI
+         +C49g6w39oWHqkT88ERKBpyaHXMiJ7pIKTD7TDNl2iFt4ZRdymGwPi8c3Vn1JgLkNuU9
+         663OJuen9xmZPOyn+rAyIydumJ/0FtLmSD9sd9DH8klMuOW6aTJEkunzim8z31w/hhgh
+         5aBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7FL52FrXNIHTozrcS4UAHCYMPxTzl2RTxQeoy1tQzZU=;
-        b=roIilZ70b7b4OqHEr5LH/sdm2zdzv0llS/qx3vWCE0K5Q9r3vv0NaQoOtCTRaEDDcp
-         MD4zKXl9cbFqiiSIcQsplDZB/8G7DdgX1g/qpecw0cyQHRmOsoHKZ/Wmn0QAz2l249DV
-         tuRCi97OKpi9JeJFxCMVSrIulbqgB5mjbhWDQ9g7WSwIr5jkhTpqIIpnht0/Ix5b45ph
-         Wg8Llp1KK6nyMAW3mk+nkTh/nw0B71xDLmCW6xB4943bAMKjSasGBk7rGbGGolXDsQH+
-         xSpuq8cl+A8obCygamYOiRVJheSsmjFjy/oIPhKRZnLH5/r1MGfx9tzeCsro0kTabTXP
-         Xlhw==
-X-Gm-Message-State: AOAM532xIJDxukIp8LSDs4D3h68EkPIZ7NwbP+Th7W9KdVq/wPeorcHm
-        7PpA8HcXgTZPxLPH5da9SVc=
-X-Google-Smtp-Source: ABdhPJyziDNVK4gHlSQTL8oiGDJLo7w3dJcb5KZC+Jm81CQxXWEXD3+ANBnrP6vi6uDJfSyzoSW4VA==
-X-Received: by 2002:ac8:7d16:: with SMTP id g22mr6640405qtb.180.1644534837689;
-        Thu, 10 Feb 2022 15:13:57 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id u6sm10751221qki.136.2022.02.10.15.13.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zVPS2ok9/nx7180z6dx4Z4VBr5ge+N4XNxLNYfv1b4E=;
+        b=kDkee7lcQdbgYvY52KvRpE5EfGhAgt1TIX9kDshR3o+4aY/bHrYi/caHH/eEPx/sOp
+         +MuJRTSVB9HRpHrsD+FQqvezS9JjEhV7Pp5U2wlwcdNsc72WO/9kT8OM1EDRlnAZGZXa
+         w4pdPbCSGGluy50MTTwOOvQt0DxO/Yg6fBVEDKSMG/M0PNK2Ml1KgPPQHPxzPIO0Uz/m
+         DA/AbslJFJc0yJ1svHvoyzzSGLOHV6OfXZw01he79jsMAnaNtz1OjMFf8SrmqELxmhEF
+         nwoUzcJkiZxbEINRsdFuMdveBLXTn9wadtCUg4QeteQIe62DTR3taA1No6XN6jqyG01I
+         o8vw==
+X-Gm-Message-State: AOAM532icZsE0Ql7VoUy8bLzZABt9xoeiDNG4Sg0AuYML/tjYxWVgLpR
+        dad4wmYrHcOceFFqxJ0Fc8+dTg==
+X-Google-Smtp-Source: ABdhPJw188UyNNoqFlMqDgKpm7hdg8bXICpgwoP46Vv6pmyTqCweCur2W7sJkfRIks5cXCOoPrUP5Q==
+X-Received: by 2002:a17:902:f789:: with SMTP id q9mr9618229pln.135.1644534863552;
+        Thu, 10 Feb 2022 15:14:23 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id k16sm24789705pfu.140.2022.02.10.15.14.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:13:57 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 10/49] octeontx2-pf: replace bitmap_weight with bitmap_empty where appropriate
-Date:   Thu, 10 Feb 2022 14:48:54 -0800
-Message-Id: <20220210224933.379149-11-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 15:14:22 -0800 (PST)
+Date:   Thu, 10 Feb 2022 23:14:19 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+Subject: Re: [PATCH 03/12] KVM: x86: do not deliver asynchronous page faults
+ if CR0.PG=0
+Message-ID: <YgWcS/0naKPdAn2E@google.com>
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-4-pbonzini@redhat.com>
+ <YgWbgfSrzAhd97LG@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgWbgfSrzAhd97LG@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some places, octeontx2 code calls bitmap_weight() to check if any bit of
-a given bitmap is set. It's better to use bitmap_empty() in that case
-because bitmap_empty() stops traversing the bitmap as soon as it finds
-first set bit, while bitmap_weight() counts all bits unconditionally.
+On Thu, Feb 10, 2022, Sean Christopherson wrote:
+> On Wed, Feb 09, 2022, Paolo Bonzini wrote:
+> > Enabling async page faults is nonsensical if paging is disabled, but
+> > it is allowed because CR0.PG=0 does not clear the async page fault
+> > MSR.  Just ignore them and only use the artificial halt state,
+> > similar to what happens in guest mode if async #PF vmexits are disabled.
+> > 
+> > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> > ---
+> >  arch/x86/kvm/x86.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 5e1298aef9e2..98aca0f2af12 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -12272,7 +12272,9 @@ static inline bool apf_pageready_slot_free(struct kvm_vcpu *vcpu)
+> >  
+> >  static bool kvm_can_deliver_async_pf(struct kvm_vcpu *vcpu)
+> >  {
+> > -	if (!vcpu->arch.apf.delivery_as_pf_vmexit && is_guest_mode(vcpu))
+> > +	if (is_guest_mode(vcpu)
+> > +	    ? !vcpu->arch.apf.delivery_as_pf_vmexit
+> > +	    : !is_cr0_pg(vcpu->arch.mmu))
+> 
+> As suggested in the previous patch, is_paging(vcpu).
+> 
+> I find a more tradition if-elif marginally easier to understand the implication
+> that CR0.PG is L2's CR0 and thus irrelevant if is_guest_mode()==true.  Not a big
+> deal though.
+> 
+> 	if (is_guest_mode(vcpu)) {
+> 		if (!vcpu->arch.apf.delivery_as_pf_vmexit)
+> 			return false;
+> 	} else if (!is_paging(vcpu)) {
+> 		return false;
+> 	}
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c | 4 ++--
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Alternatively, what about reordering and refactoring to yield:
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 77a13fb555fb..80b2d64b4136 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -353,7 +353,7 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
- {
- 	struct otx2_nic *pf = netdev_priv(netdev);
- 
--	if (bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
-+	if (!bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
- 			  pf->flow_cfg->dmacflt_max_flows))
- 		netdev_warn(netdev,
- 			    "Add %pM to CGX/RPM DMAC filters list as well\n",
-@@ -436,7 +436,7 @@ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
- 		return 0;
- 
- 	if (flow_cfg->nr_flows == flow_cfg->max_flows ||
--	    bitmap_weight(&flow_cfg->dmacflt_bmap,
-+	    !bitmap_empty(&flow_cfg->dmacflt_bmap,
- 			  flow_cfg->dmacflt_max_flows))
- 		return flow_cfg->max_flows + flow_cfg->dmacflt_max_flows;
- 	else
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 86c1c2f77bd7..0f671df46694 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1120,7 +1120,7 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
- 	struct msg_req *msg;
- 	int err;
- 
--	if (enable && bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
-+	if (enable && !bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
- 				    pf->flow_cfg->dmacflt_max_flows))
- 		netdev_warn(pf->netdev,
- 			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
--- 
-2.32.0
+	if (kvm_pv_async_pf_enabled(vcpu))
+		return false;
 
+	if (vcpu->arch.apf.send_user_only &&
+	    static_call(kvm_x86_get_cpl)(vcpu) == 0)
+		return false;
+
+	/* L1 CR0.PG=1 is guaranteed if the vCPU is in guest mode (L2). */
+	if (is_guest_mode(vcpu)
+		return !vcpu->arch.apf.delivery_as_pf_vmexit;
+
+	return is_cr0_pg(vcpu->arch.mmu);
+
+There isn't any need to "batch" the if statements.
