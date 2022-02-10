@@ -2,144 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCA9C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241729AbiBJMuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 07:50:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33882 "EHLO
+        id S241746AbiBJMuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 07:50:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235587AbiBJMuR (ORCPT
+        with ESMTP id S241731AbiBJMue (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 07:50:17 -0500
-X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 04:50:18 PST
-Received: from srv6.fidu.org (srv6.fidu.org [IPv6:2a01:4f8:231:de0::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5522925C7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:50:18 -0800 (PST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by srv6.fidu.org (Postfix) with ESMTP id 88BB3C80082;
-        Thu, 10 Feb 2022 13:42:41 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at srv6.fidu.org
-Received: from srv6.fidu.org ([127.0.0.1])
-        by localhost (srv6.fidu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id wgvB-zJ5M1dL; Thu, 10 Feb 2022 13:42:41 +0100 (CET)
-Received: from [192.168.176.116] (host-88-217-226-44.customer.m-online.net [88.217.226.44])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: wse@tuxedocomputers.com)
-        by srv6.fidu.org (Postfix) with ESMTPSA id F2393C80080;
-        Thu, 10 Feb 2022 13:42:40 +0100 (CET)
-Message-ID: <dc7e56bb-e7a0-1694-36bb-4e4d0d2dbc17@tuxedocomputers.com>
-Date:   Thu, 10 Feb 2022 13:42:40 +0100
+        Thu, 10 Feb 2022 07:50:34 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C452633;
+        Thu, 10 Feb 2022 04:50:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644497436; x=1676033436;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=5RFwqeZBHTl8fzPVNM690wz76GpCK7jQ+7aX+IFo96Q=;
+  b=wP7boPm0X3BsGtKegKPDxrL+nL96Z0A9e43an7GvKuDDjvuv7dvqnHVy
+   ag/YW0EIpCIBvLf7j5BfykkJKcPyw6yH1INHRPoihD9JRNbsaAbgDj44U
+   A5TAo1N119DlTWywefnIsAEaRbcQbahRSGcsYbLpwFAOM8JeV1SFUtFxG
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 Feb 2022 04:50:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 04:50:34 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 10 Feb 2022 04:50:33 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 10 Feb 2022 04:50:28 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <plai@codeaurora.org>, <bgoswami@codeaurora.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <srinivas.kandagatla@linaro.org>,
+        <rohitkr@codeaurora.org>, <linux-arm-msm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
+        <judyhsiao@chromium.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH v9 0/3] Machine driver to support LPASS SC7280 sound card registration
+Date:   Thu, 10 Feb 2022 18:20:12 +0530
+Message-ID: <1644497415-25291-1-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] input/i8042: Add quirk table to disable aux port on
- Clevo NS70MU
-Content-Language: en-US
-From:   Werner Sembach <wse@tuxedocomputers.com>
-To:     dmitry.torokhov@gmail.com, tiwai@suse.com, mpdesouza@suse.com,
-        arnd@arndb.de, samuel@cavoj.net, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220118115532.33011-1-wse@tuxedocomputers.com>
-In-Reply-To: <20220118115532.33011-1-wse@tuxedocomputers.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> At least one modern Clevo barebone has the touchpad connected both via PS/2
-> and i2c interface. This causes a race condition between the psmouse and
-> i2c-hid driver. Since the full capability if the touchpad is available via
-> the i2c interface and the device has no external PS/2 port, it is save to
-> just ignore all ps2 mouses here to avoid this issue.
->
-> The know affected device is the Clevo NS70MU.
->
-> This patch adds a new i8042_dmi_noaux_table with the dmi strings of the
-> affected device of different revisions. The table is then evaluated like
-> the other quirk tables in the i8042 driver.
->
-> This is revision 2 as I got aware that there are yet another 2 dmi string
-> combinations identifying the same device.
-Please let me know if a patch like this could be accepted or if the i8042 quirk tables are in a freeze state and issues
-like this should be fixed another way now?
-> Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/input/serio/i8042-x86ia64io.h | 54 +++++++++++++++++++++++++++
->  1 file changed, 54 insertions(+)
->
-> diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-> index 148a7c5fd0e2..e39d3d840a31 100644
-> --- a/drivers/input/serio/i8042-x86ia64io.h
-> +++ b/drivers/input/serio/i8042-x86ia64io.h
-> @@ -1013,6 +1013,57 @@ static const struct dmi_system_id i8042_dmi_probe_defer_table[] __initconst = {
->  	{ }
->  };
->  
-> +static const struct dmi_system_id i8042_dmi_noaux_table[] __initconst = {
-> +	/*
-> +	 * At least one modern Clevo barebone has the touchpad connected
-> +	 * both via PS/2 and i2c interface. This causes a race condition
-> +	 * between the psmouse and i2c-hid driver. Since the full
-> +	 * capability if the touchpad is available via the i2c interface
-> +	 * and the device has no external PS/2 port, it is save to just
-> +	 * ignore all ps2 mouses here to avoid this issue.
-> +	 * The know affected device is the
-> +	 * TUXEDO InfinityBook S17 Gen6 / Clevo NS70MU which comes with
-> +	 * one of the 6 different dmi string combinations below.
-> +	 */
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50MU"),
-> +		},
-> +	},
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "TUXEDO"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50_70MU"),
-> +		},
-> +	},
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50MU"),
-> +		},
-> +	},
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "SchenkerTechnologiesGmbH"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50_70MU"),
-> +		},
-> +	},
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50MU"),
-> +		},
-> +	},
-> +	{
-> +		.matches = {
-> +			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
-> +			DMI_MATCH(DMI_BOARD_NAME, "NS50_70MU"),
-> +		},
-> +	},
-> +	{ }
-> +};
-> +
->  #endif /* CONFIG_X86 */
->  
->  #ifdef CONFIG_PNP
-> @@ -1336,6 +1387,9 @@ static int __init i8042_platform_init(void)
->  	if (dmi_check_system(i8042_dmi_probe_defer_table))
->  		i8042_probe_defer = true;
->  
-> +	if (dmi_check_system(i8042_dmi_noaux_table))
-> +		i8042_noaux = true;
-> +
->  	/*
->  	 * A20 was already enabled during early kernel init. But some buggy
->  	 * BIOSes (in MSI Laptops) require A20 to be enabled using 8042 to
+This patch set is to add support for SC7280 sound card registration and
+to add dt-bindings documentation file.
+
+Srinivasa Rao Mandadapu (3):
+  ASoC: google: dt-bindings: Add sc7280-herobrine machine bindings
+  ASoC: qcom: Add macro for lpass DAI id's max limit
+  ASoC: qcom: SC7280: Add machine driver
+
+Changes Since V8:
+    -- Update snd_soc_dai_get_sdw_stream api compatible to latest kernel.
+    -- Fix bot errors in dt-bindings file.
+    -- Add co-developer email id.
+Changes Since V7:
+    -- Create separate patch for dai id's macro.
+    -- Remove unused dapm widget structure.
+    -- Move to quicinc domain email id's.
+Changes Since V6:
+    -- Remove redundant headers.
+    -- Move max ports macro to lpass.h header.
+    -- Arrange structure alignment.
+    -- Fix indentation errors.
+    -- Update module license.
+Changes Since V5:
+    -- Add required properties to dt-bindings
+Changes Since V4:
+    -- Add COMPILE_TEST flag in sc7280 configuration.
+    -- Remove redundant startup and shutdown callbacks of snd_soc_ops.
+    -- Fix typo errors.
+Changes Since V3:
+    -- Change audio jack playpause key value.
+Changes Since V2:
+    -- updated required field in bindings
+    -- updated Return type check with proper enum in sc7280.c
+    -- Updated Header name and Typos in sc7280.c
+Changes Since V1:
+    -- Indentation changes and typo.
+
+ .../bindings/sound/google,sc7280-herobrine.yaml    | 180 +++++++++++++
+ sound/soc/qcom/Kconfig                             |  14 +
+ sound/soc/qcom/Makefile                            |   2 +
+ sound/soc/qcom/lpass.h                             |   1 +
+ sound/soc/qcom/sc7280.c                            | 284 +++++++++++++++++++++
+ 5 files changed, 481 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/google,sc7280-herobrine.yaml
+ create mode 100644 sound/soc/qcom/sc7280.c
+
+-- 
+2.7.4
+
