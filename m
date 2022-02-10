@@ -2,133 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38191C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49265C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244488AbiBJQhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:37:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47398 "EHLO
+        id S244383AbiBJQhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:37:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244358AbiBJQhR (ORCPT
+        with ESMTP id S244325AbiBJQhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:37:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85B99EAF
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:37:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5WySc1RlGnG8P3T39mlzj8E39X8bwgB3Tm12/xbTZl0=;
-        b=TEBgsqv0DHjMI0cXBhHhQzhCNZuGIlGCfS14QEN8L7fD/PUjkEgGKrevAQPsgTS3n5K3D7
-        okDBuSk/7VNNlYo4Coalh0j0+pWR0UXNEy7Hnn4uH//ptTwo9MvJpzwegdW3izSMxm2+u2
-        96JDcsr6AsKwYMnSFtCquzZ9NraVagY=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-JU1A0gllMrOCqawAqpTh7A-1; Thu, 10 Feb 2022 11:36:59 -0500
-X-MC-Unique: JU1A0gllMrOCqawAqpTh7A-1
-Received: by mail-ed1-f69.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so3669368edb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:59 -0800 (PST)
+        Thu, 10 Feb 2022 11:37:52 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6923E92;
+        Thu, 10 Feb 2022 08:37:38 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id i14so10546461wrc.10;
+        Thu, 10 Feb 2022 08:37:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
+        b=dKXqotWRGHmTw1XcfRMkhaahkcFHii8qzG21n2LAipNgy4+ZMpWNDEzpbEJeTYQjfB
+         2PS7C8cIdy+KbfDa/XAdIUZIGf9OTZpEKEe1houLFIrEFPllqY8nrI1pl1suLDqq9blR
+         Rf94A2WkkM1GU97wC/Sjpb+Tr2jr2MsX9l1YLGjt7obLRgwS3S1dHX3EYOAeNdMpNfLj
+         YwCUdwSwO5USExY+qg1BM7YqIBdzsO6C5oUe08xwXn6jzBHR1tVjSu7EIJD/XM8noSzX
+         Ufr5hk0kJIwtVjvmB2t+7LXDH2KvvM39BK4VIhOsbhmjmrfpuCC9hsnQBlZRGZSeQvQu
+         06/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5WySc1RlGnG8P3T39mlzj8E39X8bwgB3Tm12/xbTZl0=;
-        b=xmL2PSz6nhMOsDHEdfjomHUcAOr8nBZJwImGyhOEJdwD38GChYXFBD7FymHl098Wil
-         AVOf/8MKWXg+KFKz/psbnTN75jPH5Lxck9oqnml1+SNJf9iT/uc8+NaEs4BZiG8XTa2p
-         D6pPrsh6KnvQKhhXfgOrhIo9ENLkHWwGrw2Xa7aCfyhisefFdDyqvKE6L0ORacrYiiNj
-         WDWjSpQQTI0RrZygI3T45Hcb559f8jdnkWlpXtoGWQ+baVTyO7+0/ctAXWa8Jfn0Vv7M
-         0KaTdIdzdCdigWWoIt/AZ19ttb/ps7o1nLM8VQ7nzNfLuo7oaXZweJP2/Glfw7bxgapb
-         kmTQ==
-X-Gm-Message-State: AOAM533pGRh1IKDykBZl6g8fBlH6FL1YNFIVGRS+Q+nR7gLhrIAuKRFG
-        L9ZZPyJz5REUzFLnWhslxSrYOqfhqwZgP6DEp3B/oTR3/Jmwa07kBo12f46PhB41Jv4wyjrKbCj
-        oKm9B/IG+bN6FASfRKSPhMvnD
-X-Received: by 2002:a17:906:73ce:: with SMTP id n14mr6827048ejl.312.1644511018362;
-        Thu, 10 Feb 2022 08:36:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxDLWA297hpVfTcfKzBU3jAjpUisYVnV/ULWs53msCQUuZNZ+de98gW+3zY9Ew60sUlgr8XXw==
-X-Received: by 2002:a17:906:73ce:: with SMTP id n14mr6827032ejl.312.1644511018158;
-        Thu, 10 Feb 2022 08:36:58 -0800 (PST)
-Received: from [192.168.10.118] ([93.56.170.240])
-        by smtp.googlemail.com with ESMTPSA id m17sm8783672edr.62.2022.02.10.08.36.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:36:57 -0800 (PST)
-Message-ID: <042c4562-3eb8-f141-a363-67ec1def8e2c@redhat.com>
-Date:   Thu, 10 Feb 2022 17:33:40 +0100
+        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
+        b=2TEp0LzfuN4sy+0SZgETWJjdgvQ5E5cXm2PL6nas10+F/W4sh2FqN6860cgRuuwO7U
+         +G9xEG/TQND5E37M3ObPipdbo1wx/zMlbLN9ufdtMLnxeGlfXe7nVQkwOnMkwjefVmBf
+         B2CcWb3Y4xXf8ffhmYslsaptcM6a7zUuuMFhFkTExeaN2hC1LM4wJzmEXiEwkYq/NQfW
+         0FA7U9CXpDtNdXau6RdRd3TDBub2+Ns1XgJUh82jFhZz6HRZyt2lRG2znOuTwYbaNsI6
+         KdxypEZvwzlLKUaEC5IN736l3W8Km6ML0B7fHIBxuyT9mkMZcZESTluLcoKP8o+b+ubc
+         HniA==
+X-Gm-Message-State: AOAM530B9Fr/QCRVBjVRaRFnkG4zgqJV1VBysj0EkK5vIQGg3AA4guOX
+        WgxJKqjUji7mFcZV44hx9zS1v7GoYCfmvg==
+X-Google-Smtp-Source: ABdhPJx6yKBCZ42CNYBGUShy0xul0X1WOmtXVv5/jph8ifV1YyBOgMP7MaAGG9zeGVSjWbKN8V379g==
+X-Received: by 2002:a5d:47cb:: with SMTP id o11mr6943525wrc.138.1644511057211;
+        Thu, 10 Feb 2022 08:37:37 -0800 (PST)
+Received: from nergzd-desktop.localdomain ([62.122.67.26])
+        by smtp.gmail.com with ESMTPSA id k5sm5871795wrw.117.2022.02.10.08.37.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 08:37:36 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v2 0/2] Add support for Imagis touchscreens
+Date:   Thu, 10 Feb 2022 18:37:05 +0200
+Message-Id: <20220210163708.162866-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.16 5/8] KVM: SVM: Don't kill SEV guest if SMAP
- erratum triggers in usermode
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Liam Merwick <liam.merwick@oracle.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-References: <20220209185635.48730-1-sashal@kernel.org>
- <20220209185635.48730-5-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185635.48730-5-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 19:56, Sasha Levin wrote:
-> From: Sean Christopherson <seanjc@google.com>
-> 
-> [ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
-> 
-> Inject a #GP instead of synthesizing triple fault to try to avoid killing
-> the guest if emulation of an SEV guest fails due to encountering the SMAP
-> erratum.  The injected #GP may still be fatal to the guest, e.g. if the
-> userspace process is providing critical functionality, but KVM should
-> make every attempt to keep the guest alive.
+Add support for Imagis touchscreens, used on various mobile
+devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+v2: rebase on top of the correct tree
 
-Paolo
+Markuss Broks (2):
+  dt-bindings: input/touchscreen: bindings for Imagis
+  Input: add Imagis touchscreen driver
 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-> Message-Id: <20220120010719.711476-10-seanjc@google.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
->   1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 3efada37272c0..d6a4acaa65742 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -4530,7 +4530,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
->   	is_user = svm_get_cpl(vcpu) == 3;
->   	if (smap && (!smep || is_user)) {
->   		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
-> -		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
-> +
-> +		/*
-> +		 * If the fault occurred in userspace, arbitrarily inject #GP
-> +		 * to avoid killing the guest and to hopefully avoid confusing
-> +		 * the guest kernel too much, e.g. injecting #PF would not be
-> +		 * coherent with respect to the guest's page tables.  Request
-> +		 * triple fault if the fault occurred in the kernel as there's
-> +		 * no fault that KVM can inject without confusing the guest.
-> +		 * In practice, the triple fault is moot as no sane SEV kernel
-> +		 * will execute from user memory while also running with SMAP=1.
-> +		 */
-> +		if (is_user)
-> +			kvm_inject_gp(vcpu, 0);
-> +		else
-> +			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
->   	}
->   
->   	return false;
+ .../input/touchscreen/imagis,ist3038c.yaml    |  78 +++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   6 +
+ drivers/input/touchscreen/Kconfig             |  10 +
+ drivers/input/touchscreen/Makefile            |   1 +
+ drivers/input/touchscreen/imagis.c            | 329 ++++++++++++++++++
+ 6 files changed, 426 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+ create mode 100644 drivers/input/touchscreen/imagis.c
+
+-- 
+2.35.0
 
