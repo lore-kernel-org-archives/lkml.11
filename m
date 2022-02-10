@@ -2,85 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238390AbiBJJTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:19:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45900 "EHLO
+        id S238403AbiBJJTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:19:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbiBJJTb (ORCPT
+        with ESMTP id S238391AbiBJJTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:19:31 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D2C4F5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:19:33 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B02B3113E;
-        Thu, 10 Feb 2022 01:19:32 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E1E173F718;
-        Thu, 10 Feb 2022 01:19:28 -0800 (PST)
-Date:   Thu, 10 Feb 2022 09:19:10 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
-        bp@alien8.de, dave.hansen@linux.intel.com, frederic@kernel.org,
-        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
-        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
-        peterz@infradead.org, tglx@linutronix.de,
-        valentin.schneider@arm.com, will@kernel.org
-Subject: Re: [PATCH v3 6/7] arm64: entry: centralize premeption decision
-Message-ID: <YgTYcmrKAmHzU2im@FVFF77S0Q05N>
-References: <20220209153535.818830-1-mark.rutland@arm.com>
- <20220209153535.818830-7-mark.rutland@arm.com>
- <YgQDrGaWerGM3B2C@arm.com>
+        Thu, 10 Feb 2022 04:19:41 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D496F10B3;
+        Thu, 10 Feb 2022 01:19:41 -0800 (PST)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JvWPV1Sttz9sXd;
+        Thu, 10 Feb 2022 17:18:06 +0800 (CST)
+Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Feb 2022 17:19:24 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Feb 2022 17:19:24 +0800
+From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
+To:     <axboe@kernel.dk>, <hch@lst.de>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yuyufen@huawei.com>, <guohanjun@huawei.com>,
+        <wangxiongfeng2@huawei.com>
+Subject: [RFC PATCH] blk-mq: avoid housekeeping CPUs scheduling a worker on a non-housekeeping CPU
+Date:   Thu, 10 Feb 2022 17:35:32 +0800
+Message-ID: <20220210093532.182818-1-wangxiongfeng2@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgQDrGaWerGM3B2C@arm.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500002.china.huawei.com (7.185.36.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 06:10:52PM +0000, Catalin Marinas wrote:
-> On Wed, Feb 09, 2022 at 03:35:34PM +0000, Mark Rutland wrote:
-> > For historical reasons, the decision of whether or not to preempt is
-> > spread across arm64_preempt_schedule_irq() and __el1_irq(), and it would
-> > be clearer if this were all in one place.
-> > 
-> > Also, arm64_preempt_schedule_irq() calls lockdep_assert_irqs_disabled(),
-> > but this is redundant, as we have a subsequent identical assertion in
-> > __exit_to_kernel_mode(), and preempt_schedule_irq() will
-> > BUG_ON(!irqs_disabled()) anyway.
-> > 
-> > This patch removes the redundant assertion and centralizes the
-> > preemption decision making within arm64_preempt_schedule_irq().
-> > 
-> > Other than the slight change to assertion behaviour, there should be no
-> > functional change as a result of this patch.
-> > 
-> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: James Morse <james.morse@arm.com>
-> > Cc: Joey Gouly <joey.gouly@arm.com>
-> > Cc: Valentin Schneider <valentin.schneider@arm.com>
-> > Cc: Will Deacon <will@kernel.org>
-> 
-> I acked this patch in v2, has anything changed? Well, here it is again:
+When NOHZ_FULL is enabled, such as in HPC situation, CPUs are divided
+into housekeeping CPUs and non-housekeeping CPUs. Non-housekeeping CPUs
+are NOHZ_FULL CPUs and are often monopolized by the userspace process,
+such HPC application process. Any sort of interruption is not expected.
 
-Sorry; I had meant to add your acks.
+blk_mq_hctx_next_cpu() selects each cpu in 'hctx->cpumask' alternately
+to schedule the work thread blk_mq_run_work_fn(). When 'hctx->cpumask'
+contains housekeeping CPU and non-housekeeping CPU at the same time, a
+housekeeping CPU, which want to request a IO, may schedule a worker on a
+non-housekeeping CPU. This may affect the performance of the userspace
+application running on non-housekeeping CPUs.
 
-This patch is the same as in v2; the other patch has some minor changes as in
-the cover letter (adding includes and always exposing a couple of function
-prototypes).
+So let's just schedule the worker thread on the current CPU when the
+current CPU is housekeeping CPU.
 
-> Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+---
+ block/blk-mq.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
 
-Thanks!
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 1adfe4824ef5..ff9a4bf16858 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -24,6 +24,7 @@
+ #include <linux/sched/sysctl.h>
+ #include <linux/sched/topology.h>
+ #include <linux/sched/signal.h>
++#include <linux/sched/isolation.h>
+ #include <linux/delay.h>
+ #include <linux/crash_dump.h>
+ #include <linux/prefetch.h>
+@@ -2036,6 +2037,8 @@ static int blk_mq_hctx_next_cpu(struct blk_mq_hw_ctx *hctx)
+ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 					unsigned long msecs)
+ {
++	int work_cpu;
++
+ 	if (unlikely(blk_mq_hctx_stopped(hctx)))
+ 		return;
+ 
+@@ -2050,7 +2053,17 @@ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
+ 		put_cpu();
+ 	}
+ 
+-	kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx), &hctx->run_work,
++	/*
++	 * Avoid housekeeping CPUs scheduling a worker on a non-housekeeping
++	 * CPU
++	 */
++	if (tick_nohz_full_enabled() && housekeeping_cpu(smp_processor_id(),
++							 HK_FLAG_WQ))
++		work_cpu = smp_processor_id();
++	else
++		work_cpu = blk_mq_hctx_next_cpu(hctx);
++
++	kblockd_mod_delayed_work_on(work_cpu, &hctx->run_work,
+ 				    msecs_to_jiffies(msecs));
+ }
+ 
+-- 
+2.20.1
 
-> BTW, you have a typo in the subject.
-
-I'll go fix that now.
-
-Mark.
