@@ -2,97 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD4DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:35:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D5AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345738AbiBJXfp (ORCPT
+        id S1345745AbiBJXgD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:35:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44832 "EHLO
+        Thu, 10 Feb 2022 18:36:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345736AbiBJXfm (ORCPT
+        with ESMTP id S1345734AbiBJXgB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:35:42 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7DE35F70;
-        Thu, 10 Feb 2022 15:35:41 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id y6so20101847ybc.5;
-        Thu, 10 Feb 2022 15:35:41 -0800 (PST)
+        Thu, 10 Feb 2022 18:36:01 -0500
+Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609875F6B;
+        Thu, 10 Feb 2022 15:36:01 -0800 (PST)
+Received: by mail-il1-x132.google.com with SMTP id o10so5711977ilh.0;
+        Thu, 10 Feb 2022 15:36:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f0OQR6lJELfc5hXAuEQxY1AA157xaZFZkub6I8EmaCE=;
-        b=DGdS78rt4WNFSNFgFhdNXJVLTpvBg8SDtuHN5cVVM/yjrUbSIwD/teT8sFZ0iIkuTJ
-         hqM+bK+TZ4ypnaX0uJAgX+8rGFAnR0Xx3gUnyHybLfSXjsOPdZeNtRoAaIReSmai81bd
-         RrDuW3KsB9l1noVO+ewBhyg2fIQqqzgrSKUaiUvGk6AjrhGzGkLSvE/McY2iy+yu9ZB2
-         X4lKH81IgcGkZJuC9er+bmgPKaTUMyOR5+ykEAA38WPF4Hq8nEj7c/wnX+Cj7PS9ZHBD
-         Hj5EMSzNolH/Y19mDzzjzvIecrMyROdTW51caGIt1oFQw4ABQLs0H6aFDZLeE4WqCQ+s
-         ywWw==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=+6fGWOvKupFRHqASATl4H7ePp2/LogONFRX5QE2erMk=;
+        b=c5TKy1a65HE0+KDrrZ0l/0nyjG2KwQMjf+LTDiNfbSE5RPViIvGC8K2sHtLqVEcATl
+         s9UJ/l/F0Gz6sTG4Um9A9x+I5/IKHSGqrabca7G/pE0GFSn3XrH1YGeZFwiQrdeYQ2OO
+         wRYGq1zhoyCG6jEZqlxFK4gKdjeLjsn3FyH/9KWUGJa5YZSktM3YXMRDDCVu/rR+AA2Z
+         oA78RSF7auCtcAT5js4nUbb4fLc9eIrWmHdj2Xyew4TFqMHZNPCFuVgHQyJVH43uWM+x
+         hbbn18w+pjBpT7F/P3oXQdsqSOIcktcYds/lAjybQxjTdeU0egJ1F0ul5vz3eBMhF1Qg
+         zMvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f0OQR6lJELfc5hXAuEQxY1AA157xaZFZkub6I8EmaCE=;
-        b=lYPScfzdTMNWfipovjF3/XJQOxac44CLdEkKtsLhd67c43a/AlKy2L6rIdCAhd6rBe
-         ogV1wOAJ0T1SvCpNHmr/0lqlxt3/i9ZP5eWP1ap9Lb9ki7rQiKImz7kJvfg6nE5MKVys
-         hYgGQB8PhK0jUXHDru+brHs6aronMqsl4RWTFT1ELnlopDtxm12wl72bJZoGmWCY6zK2
-         iLll5GfWM21FOoKs0zxWUzRPhLaOH/nUhoq8Z0KFWtlyKZoXupDrlpNd1mJt0TEl4fci
-         wGBnBSU0N79MiKydM1bKs7/IMXgvHR4n9SKVqUtGcZxj0h7lBfM7kbEYtmcQvngaTTPg
-         y3Uw==
-X-Gm-Message-State: AOAM531jepGjjNiPsi5FDlMictVXiISmRQmWVc3n5vqsA3zsgGpCus/I
-        vsNH1Wyh7RgsD/zi1EXcRhF1awdlvR8kqH6RV9PQzNoAeFc=
-X-Google-Smtp-Source: ABdhPJxZjh/ZB2LxbqndF/NG6fDK29FIN9zEAsqiIy+Bbe+cv8D3FFmaPkaetN5SyZ0IXk77545U1/YrdVeREbCC9Uk=
-X-Received: by 2002:a5b:f4b:: with SMTP id y11mr8706490ybr.634.1644536141049;
- Thu, 10 Feb 2022 15:35:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20220210184340.7eba108a@canb.auug.org.au>
-In-Reply-To: <20220210184340.7eba108a@canb.auug.org.au>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Thu, 10 Feb 2022 15:35:30 -0800
-Message-ID: <CAA5qM4BKwS9W5UCbnfo_xSTJKBuUEyNzUrg0UfGhoxWK5WK3RQ@mail.gmail.com>
-Subject: Re: linux-next: boottime warning from todays linux-next
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Domenico Andreoli <domenico.andreoli@linux.com>,
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+6fGWOvKupFRHqASATl4H7ePp2/LogONFRX5QE2erMk=;
+        b=Je0WUv8LTZFb/06BB0tyffvW5e+Oc7MqqdghD3pFwzPq1WhT6yfLFUhxLkl1RsCcEg
+         7JW8ssOV6hUweOq6Uu9htKUk/oOQnFkssshDDPwt9IHjp5tf4bFY9UItTtBQP3zYcV9Y
+         7Z0qVWVMj8rhz+q/CLVYPg2FiRvKIgt3+/tLSLQQdMUq/nt9W6Mqwo9I06WiBY+1AlMa
+         l51BhzCu6EdHkDLQoh1LXDLNZtV8ipEtkU0xbfsF610BC3V2ckhaHu+/FXRTXCzZW851
+         a5WtVzooDXFuD+i+SEYrm2sY56MHrYjwVQ2TokMOjJr++ZAVHSkPQh/IHPmo7/Z23r35
+         feCA==
+X-Gm-Message-State: AOAM533CM9eYh7FtzcLm2Q2NI++rCkX4i/+hfMwl246sK+2oi6h9Ih+D
+        FLCa1+cN5WdOmhPe120HajE=
+X-Google-Smtp-Source: ABdhPJxIyAONwSqovY5ap0uN+hIkP7cYxn35rT83uobFJrTicWBOWExdY8XujcVELZYNJmB7R5CauA==
+X-Received: by 2002:a92:db0e:: with SMTP id b14mr5408913iln.153.1644536160698;
+        Thu, 10 Feb 2022 15:36:00 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id a10sm12126701ilv.44.2022.02.10.15.36.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 15:36:00 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, linux-mips@vger.kernel.org
+Subject: [PATCH 20/49] irq: mips: replace cpumask_weight with cpumask_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:49:04 -0800
+Message-Id: <20220210224933.379149-21-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 11:43 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> My qemu boot of a powerpc pseries_le_defconfig kernel produced these
-> kernel messages:
->
->   CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc3 #2
->   Call Trace:
->   [c0000000073e3a80] [c0000000007bfd40] dump_stack_lvl+0x74/0xa8 (unreliable)
->   [c0000000073e3ac0] [c00000000057e3dc] __register_sysctl_table+0x60c/0x9f0
->   [c0000000073e3bd0] [c000000002041170] init_fs_stat_sysctls+0x48/0x60
->   [c0000000073e3bf0] [c000000000012110] do_one_initcall+0x60/0x2d0
->   [c0000000073e3cd0] [c0000000020049f0] kernel_init_freeable+0x334/0x3dc
->   [c0000000073e3db0] [c000000000012710] kernel_init+0x30/0x1a0
->   [c0000000073e3e10] [c00000000000cd64] ret_from_kernel_thread+0x5c/0x64
->
-> Presumably introduced by commit
->
->   b42bc9a3c511 ("Fix regression due to "fs: move binfmt_misc sysctl to its own file"")
->
-> --
-> Cheers,
-> Stephen Rothwell
+bcm6345_l1_of_init() calls cpumask_weight() to check if any bit of a given
+cpumask is set. We can do it more efficiently with cpumask_empty() because
+cpumask_empty() stops traversing the cpumask as soon as it finds first set
+bit, while cpumask_weight() counts all bits unconditionally.
 
-Hi Stephen,
-I am trying to see if I can reproduce this.
-Could you share the QEMU command line and pseries_le_defconfig?
-Latest kernel does not have pseries_le_defconfig so I assume you have
-your own version.
-Thanks!
-- Tong
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/irqchip/irq-bcm6345-l1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/irqchip/irq-bcm6345-l1.c b/drivers/irqchip/irq-bcm6345-l1.c
+index fd079215c17f..142a7431745f 100644
+--- a/drivers/irqchip/irq-bcm6345-l1.c
++++ b/drivers/irqchip/irq-bcm6345-l1.c
+@@ -315,7 +315,7 @@ static int __init bcm6345_l1_of_init(struct device_node *dn,
+ 			cpumask_set_cpu(idx, &intc->cpumask);
+ 	}
+ 
+-	if (!cpumask_weight(&intc->cpumask)) {
++	if (cpumask_empty(&intc->cpumask)) {
+ 		ret = -ENODEV;
+ 		goto out_free;
+ 	}
+-- 
+2.32.0
+
