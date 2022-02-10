@@ -2,134 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F81C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:07:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34147C43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345420AbiBJXHV (ORCPT
+        id S1345429AbiBJXH0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:07:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57650 "EHLO
+        Thu, 10 Feb 2022 18:07:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239716AbiBJXHS (ORCPT
+        with ESMTP id S1345425AbiBJXHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:07:18 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5055655BB;
-        Thu, 10 Feb 2022 15:07:19 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id p14so7212026qtx.0;
-        Thu, 10 Feb 2022 15:07:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=sS42IV/IyJJJQe1oR3KUsg/jNaiYCRP226dHL2TKSfc=;
-        b=eocimBnfXPFWj8+E/eB1AYv5kSg66Mv6qkEhHGxwdqK6+dpi+peRet6nrjcRYlb1tJ
-         HLjsHeS4HoimMpuxEg6Q1KFwlnDiLHRIUxX6DAS8BAJyYe1Wb5ZRuGjIJMKR1q4x1tax
-         mR0v16h3AqcOHy0zSKKbFeKUUpHpXQKLT1K/LlXJmTYON2jCyhCt2CbAHCunDJet+SQf
-         qB3xSxKlgbKAtVXuJt2VZ7Ky2ByxUPWa//VI9ZAvnNBy9epN/zB3cnDTCxQ9bKhG9BuX
-         3+3BcwaBmibYIEse7pP1iJqUGgPQy06oSK9nozPDLkXHxtbCOZzb3pzwlcco0UUiQ3qe
-         mySw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sS42IV/IyJJJQe1oR3KUsg/jNaiYCRP226dHL2TKSfc=;
-        b=lk6t8MLwgU2dFFqPnJwRFF3vFOnCc7KeDA7EdJASpDozZmB0ue7q1Wr7QBzJ8fouGk
-         aPfiYoFK/4UF9xm7blwfJIwCLyxVTAKkEPxkcuG50WHLkU3WqSyBSbNOyqCflQklxPas
-         s6yFFJC22a/qVrh5yzNk+jDWP40XViZ+igg15GYl1Pbni3ZTUvS9N4qiAat1fF0Q1eE3
-         /B4k5Ryq00hCq9me7kLRkQAao2CrHDuUE/PiHBcLHnut8Feq4EG3ew61oKc2WwrMNH2A
-         tNhFicd6ayz4vcuzxdzgpvCYlo+Jam0wn+vdMTmFDL6wZn35Nq9kZNRpodxK/jAUO91V
-         7ETg==
-X-Gm-Message-State: AOAM5316ViZc0B6pYJGF7tq3pfuH8cfqM0uaq/Fes6fe0lvi/i9aSzs3
-        jsQXEwjcpsDt49w9oGyzC9A=
-X-Google-Smtp-Source: ABdhPJzsKhjH0E928PMWg14kbD+gJ7XaexanfTXEjOjfj8p4ucvwelQVCnWVujQwOdKeD0pnOszvBg==
-X-Received: by 2002:ac8:7f82:: with SMTP id z2mr6441488qtj.591.1644534438427;
-        Thu, 10 Feb 2022 15:07:18 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id o13sm11924755qtv.36.2022.02.10.15.07.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:07:17 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH 07/49] KVM: x86: replace bitmap_weight with bitmap_empty where appropriate
-Date:   Thu, 10 Feb 2022 14:48:51 -0800
-Message-Id: <20220210224933.379149-8-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 18:07:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5CF5F45
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:07:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD59061D5F
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:07:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316EFC340F8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:07:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644534443;
+        bh=MpjbTs2AoYPM1cEieyRbZViurjwRjHJe1IjmNAem4ZQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=pLe8bXcq19et61m9ujLHJQ85Z8TpSMP5fXsivO2GIQcSObRnPxPgKGUq8CI8z+2+U
+         jE51eBZVxdfAhwEOyuIJttUpgjZ8ckXrKMB4DV6Y+4hNQYIo5iBKtDPDqVcXOzyvUM
+         pska714X551rWzbsXzRZeqvI3eRlexMlpeoZmF/Pf0OsUmJW5kvhUt1KUoUsyDzKPC
+         8yTkdwLAcjtLUvNcbYzK+rkmVNyNkoAh7a+q6x/Qwu61KDT4ph8Xo3dtKS2kQllVMy
+         NEmd5zwaTC1aKVDVszaAyx1JOe3rVimQsEBBY/EodvKt87oHMveHSisYmhN1QX4Y6U
+         sNdeKgHC18sZA==
+Received: by mail-ed1-f51.google.com with SMTP id f17so13654953edd.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:07:23 -0800 (PST)
+X-Gm-Message-State: AOAM532KtkJuRHWG2zHJqG93JY1u+nZWyZk2RHQfbhESLqGMKzralJa4
+        ogn5mG9ddaU1wngZunXzy6RRw+2CM/pwHUl3RiqQ8A==
+X-Google-Smtp-Source: ABdhPJxS8HJLUSGJfYOhID6yYZrHkqyIQTwmdEqPryBMs8qpUzLEn5ETtQ6MUdtPgqQJ5O+pj34qGLRGx/VYU3EGO5g=
+X-Received: by 2002:a05:6402:90b:: with SMTP id g11mr7368740edz.73.1644534441171;
+ Thu, 10 Feb 2022 15:07:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-19-rick.p.edgecombe@intel.com> <4c216532-2b68-dd95-93f1-542df4786d7a@intel.com>
+In-Reply-To: <4c216532-2b68-dd95-93f1-542df4786d7a@intel.com>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Thu, 10 Feb 2022 15:07:09 -0800
+X-Gmail-Original-Message-ID: <CALCETrWmiNi2+sPKWDUjGtGWtP9XNryfFe-dG4fTQkXyqGqpzQ@mail.gmail.com>
+Message-ID: <CALCETrWmiNi2+sPKWDUjGtGWtP9XNryfFe-dG4fTQkXyqGqpzQ@mail.gmail.com>
+Subject: Re: [PATCH 18/35] mm: Add guard pages around a shadow stack.
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <dave.martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com,
+        Yu-cheng Yu <yu-cheng.yu@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some places kvm/hyperv.c code calls bitmap_weight() to check if any bit
-of a given bitmap is set. It's better to use bitmap_empty() in that case
-because bitmap_empty() stops traversing the bitmap as soon as it finds
-first set bit, while bitmap_weight() counts all bits unconditionally.
+On Thu, Feb 10, 2022 at 2:44 PM Dave Hansen <dave.hansen@intel.com> wrote:
+>
+> On 1/30/22 13:18, Rick Edgecombe wrote:
+> > INCSSP(Q/D) increments shadow stack pointer and 'pops and discards' the
+> > first and the last elements in the range, effectively touches those memory
+> > areas.
+> >
+> > The maximum moving distance by INCSSPQ is 255 * 8 = 2040 bytes and
+> > 255 * 4 = 1020 bytes by INCSSPD.  Both ranges are far from PAGE_SIZE.
+> > Thus, putting a gap page on both ends of a shadow stack prevents INCSSP,
+> > CALL, and RET from going beyond.
+>
+> What is the downside of not applying this patch?  The shadow stack gap
+> is 1MB instead of 4k?
+>
+> That, frankly, doesn't seem too bad.  How badly do we *need* this patch?
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/hyperv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+1MB of oer-thread guard address space in a 32-bit program may be a
+show stopper.  Do we intend to support any of this for 32-bit?
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 6e38a7d22e97..06c2a5603123 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -90,7 +90,7 @@ static void synic_update_vector(struct kvm_vcpu_hv_synic *synic,
- {
- 	struct kvm_vcpu *vcpu = hv_synic_to_vcpu(synic);
- 	struct kvm_hv *hv = to_kvm_hv(vcpu->kvm);
--	int auto_eoi_old, auto_eoi_new;
-+	bool auto_eoi_old, auto_eoi_new;
- 
- 	if (vector < HV_SYNIC_FIRST_VALID_VECTOR)
- 		return;
-@@ -100,16 +100,16 @@ static void synic_update_vector(struct kvm_vcpu_hv_synic *synic,
- 	else
- 		__clear_bit(vector, synic->vec_bitmap);
- 
--	auto_eoi_old = bitmap_weight(synic->auto_eoi_bitmap, 256);
-+	auto_eoi_old = !bitmap_empty(synic->auto_eoi_bitmap, 256);
- 
- 	if (synic_has_vector_auto_eoi(synic, vector))
- 		__set_bit(vector, synic->auto_eoi_bitmap);
- 	else
- 		__clear_bit(vector, synic->auto_eoi_bitmap);
- 
--	auto_eoi_new = bitmap_weight(synic->auto_eoi_bitmap, 256);
-+	auto_eoi_new = !bitmap_empty(synic->auto_eoi_bitmap, 256);
- 
--	if (!!auto_eoi_old == !!auto_eoi_new)
-+	if (auto_eoi_old == auto_eoi_new)
- 		return;
- 
- 	down_write(&vcpu->kvm->arch.apicv_update_lock);
--- 
-2.32.0
-
+--Andy
