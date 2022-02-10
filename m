@@ -2,97 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4859BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CBAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234986AbiBJGET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:04:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51316 "EHLO
+        id S235001AbiBJGEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:04:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233149AbiBJGEQ (ORCPT
+        with ESMTP id S233149AbiBJGEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 01:04:16 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CEA1C1
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:04:18 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id y8so4118206qtn.8
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 22:04:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8IguWedCfgYcNS4qqgdsH8hKCfOP9gHJvHTgKmsnzDo=;
-        b=qkDCU8kTDf9D6+ZTpxLGrT0JfQ+PJhEBRB1E+iQIpQQxlhevHiq0V4j3bPXeetlVa8
-         +/mwbpdkKxM5I6XJMX1Burn20+acMhiclCQK08f/0Tubw46VekO285B6J+4xR8p5Vgk6
-         cXZZNhnExGpkIc1O80V0549vD59AjJKPg4hMF/MTn+WDk0UVlYhCAtwz2QivXXka8xGi
-         cdr/wgtmE46mCeBbccH0FXbBAism2M/nCey1DS9LgIb65977c/+Qfrngq69rGnw1MWJd
-         G3jcBiUrAi6gK9V0t/pAR6D6HALGy2IxV5bZ++0zpiWHtbYlKx8tCHbd+gKXxD3+j3O6
-         +JSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8IguWedCfgYcNS4qqgdsH8hKCfOP9gHJvHTgKmsnzDo=;
-        b=GAoGDjIRTFsJP5UhLp6pd1zWJoewKSJ3Az+wGWAfR6D0Gezh9EgDDYwt9uyDPQhDpr
-         i7buqP7kucPv6NilJLLaT16+rXLQh25UjZaVzMfNmKc9Dd8MglejsOJVNdLv/99DRX1w
-         BFdHP2GPudCAqsLxYYVRs4i6bw/tR51ypvEwQHL/1Vdw498NucLSsjIW9jS6M5ivZxWP
-         QStQzDuS7133CpHCvssphNb9v9jDcTJZzilkqN79OOx433JOumNoYoHepCrZOXimG2Bn
-         03rftqH70Q7aQkqmkejf2ndAzIElHavqp4iB+nCCsHTlzrgDFYu1Ql1xIbQT1PAsrEtx
-         Neeg==
-X-Gm-Message-State: AOAM533GZA6jIh2iRO2/76SN3V+otPfiKBMDmHswUWW3F8XuygUMPGOw
-        IuIV39/IWOByptuL/ntka/I=
-X-Google-Smtp-Source: ABdhPJzVOlJFWyeIEgnZABXxPt5TemSYedk7zgAGGRMXt1qPyKyK9DYyPdgIIi1ViolAo7T/o1pX/g==
-X-Received: by 2002:a05:622a:1348:: with SMTP id w8mr3956850qtk.216.1644473057357;
-        Wed, 09 Feb 2022 22:04:17 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y20sm9234632qtw.28.2022.02.09.22.04.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 22:04:16 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] staging/ks7010: Remove redundant 'flush_workqueue()' calls
-Date:   Thu, 10 Feb 2022 06:04:11 +0000
-Message-Id: <20220210060411.1607928-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 01:04:47 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E991C5;
+        Wed,  9 Feb 2022 22:04:47 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 2627D201421;
+        Thu, 10 Feb 2022 06:04:46 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 8EB9D804B3; Thu, 10 Feb 2022 06:43:42 +0100 (CET)
+Date:   Thu, 10 Feb 2022 06:43:42 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Theodore Ts'o <tytso@mit.edu>, LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH] random: fix locking for crng_init in crng_reseed()
+Message-ID: <YgSmDtA2hlrDBmrH@owl.dominikbrodowski.net>
+References: <YgQOgqWr0nwqZCh6@owl.dominikbrodowski.net>
+ <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
+Hi Jason,
 
-'destroy_workqueue()' already drains the queue before destroying it,
-so there is no need to flush it explicitly.
+Am Wed, Feb 09, 2022 at 10:39:17PM +0100 schrieb Jason A. Donenfeld:
+> Thanks, applied. I changed complete_init to finalize_init, to match
+> our naming scheme from earlier, and I moved
+> invalidate_batched_entropy() to outside the lock and after
+> crng_init=2, since now it uses atomics, and it should probably be
+> ordered after crng_init = 2, so the new batch gets the new entropy.
 
-Remove the redundant 'flush_workqueue()' calls.
+Doesn't that mean that there is a small window where crng_init == 2, but
+get_random_u64/get_random_u32 still returns old data, with potentially
+insufficient entropy (as obtained at a time when crng_init was still < 2)?
+That's why I moved invalidate_batched_entropy() under the lock.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/staging/ks7010/ks7010_sdio.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+But with your subsequent patch, it doesn't matter any more.
 
-diff --git a/drivers/staging/ks7010/ks7010_sdio.c b/drivers/staging/ks7010/ks7010_sdio.c
-index 98d759e7cc95..9fb118e77a1f 100644
---- a/drivers/staging/ks7010/ks7010_sdio.c
-+++ b/drivers/staging/ks7010/ks7010_sdio.c
-@@ -1102,10 +1102,8 @@ static void ks7010_sdio_remove(struct sdio_func *func)
- 	if (ret)	/* memory allocation failure */
- 		goto err_free_card;
- 
--	if (priv->wq) {
--		flush_workqueue(priv->wq);
-+	if (priv->wq)
- 		destroy_workqueue(priv->wq);
--	}
- 
- 	hostif_exit(priv);
- 
--- 
-2.25.1
-
+Thanks,
+	Dominik
