@@ -2,84 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233410AbiBJB5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:57:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60094 "EHLO
+        id S233074AbiBJB51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:57:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233403AbiBJB4I (ORCPT
+        with ESMTP id S233244AbiBJB4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:56:08 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B4D2B6B4;
-        Wed,  9 Feb 2022 17:45:51 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        Wed, 9 Feb 2022 20:56:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C262AA80;
+        Wed,  9 Feb 2022 17:36:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 82BA42C1;
-        Thu, 10 Feb 2022 00:29:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 82BA42C1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1644452995; bh=JeAPbfW2n6bSXcS12/5ZU0UMBn33nmdtlOjKnwSEXYI=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=rXNFe172Tnb8y40rzYS6eEF0rqWLAAs96fxoear4HGMmRX1ZnNk9UqCglGOg+3lZ+
-         8v16sbsGVmIHRmPvvH+hKOnaGVSrrrn5XxKfcqVjUZYiM6gL4qjZofPWQTshjY5A8P
-         Zkd513+59JDe3owTC8qSwSsZgC5xJ/wF7otnIT1Bn5yvQFRXV9Fo9K9+G6Z58ixzU9
-         i24IKei5rs7g5Vp/7o8g8UXWdydMVlesWkD76QLmX7LNuF2cG1h7CQD1i4ZY4ALUsj
-         djOxGFWQeD7JM3NQ48IZhaHxOcl9R6GNsgATL7HfqDGl0C0o6EAmp8Edr+J0Sc7Nmz
-         WildtHoiciIaw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH v2 0/4] docs: sphinx/kfigure.py: Improve conversion to PDF
-In-Reply-To: <3cfe6cb0-67c7-bd12-0a3c-a609f5341a32@gmail.com>
-References: <e01fe9f9-f600-c2fc-c6b3-ef6395655ffe@gmail.com>
- <e545803a-8f09-f0e7-4ca0-16b673ef1796@gmail.com>
- <20220114094535.5bb9ba94@coco.lan>
- <e03de287-4eef-8a68-89f3-8614db66a74b@gmail.com>
- <87bl0c7l79.fsf@meer.lwn.net>
- <3cfe6cb0-67c7-bd12-0a3c-a609f5341a32@gmail.com>
-Date:   Wed, 09 Feb 2022 17:30:38 -0700
-Message-ID: <874k57ef69.fsf@meer.lwn.net>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F65FB823EF;
+        Thu, 10 Feb 2022 00:56:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4934DC340E7;
+        Thu, 10 Feb 2022 00:56:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644454603;
+        bh=eYU7NV2lU87Te/oArn1NFLW6lyegJxoiFC+uPfhAoqM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UHNJ+HIGQETrnOyMDDQrDAi7CbpVHwry6k0dMz7Pll50RKFrgTdC7ep7ZJJsbkQ9o
+         nTH/ipeptiqJQB9LfMlZEXWuno7bbnE7pH/5O0B051E4cZsA5yGzWV3crxMqw4NgJ5
+         iXcswHuj30mc0r0F7U5EV/DfEEMJFq2/w/GPjlNJIf+/dLy0mLiXZGPAJ54Lc7wJaZ
+         nA1EOyKH0EGXRI7wJJJVLqMm1y1P4VenifBojYd7ZRMwkqsRRnWCoL/kQU085yNLkh
+         BKykwY5Er6HpdG7W3KbwpaLNIrrJeIyZyqKLsk7rLBrT/+cG+EftZhyCL6GUTVrQ74
+         r6qFp0TC9oHcg==
+Date:   Wed, 9 Feb 2022 19:04:07 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Keith Busch <kbusch@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] overflow: Provide constant expression struct_size
+Message-ID: <20220210010407.GA701603@embeddedor>
+References: <20220210004326.776574-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210004326.776574-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akira Yokosawa <akiyks@gmail.com> writes:
+On Wed, Feb 09, 2022 at 04:43:26PM -0800, Kees Cook wrote:
+> There have been cases where struct_size() (or flex_array_size()) needs
+> to be calculated for an initializer, which requires it be a constant
+> expression. This is possible when the "count" argument is a constant
+> expression, so provide this ability for the helpers.
+> 
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-> On Sat, 15 Jan 2022 14:17:30 -0700,
-> Jonathan Corbet wrote:
->> Akira Yokosawa <akiyks@gmail.com> writes:
->> 
->>> We are in the middle of the v5.17 merge window, and I think of this
->>> series as a v5.18 material.
->>> Which means it won't be merged into doc-next until v5.17-rc5 or -rc6
->>> (mid March or so), unless Jon thinks otherwise.
->> 
->> I'd rather merge it rather sooner than that if possible; 5.18 stuff will
->> start going into docs-next shortly.
->
-> Jon,
->
-> Hearing no objection since mid January, I think it is time for you to
-> merge this series into docs-next.
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+Tested-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-That has been done - thanks for your work on this!
+Thanks!
+--
+Gustavo
 
-Since you seem to have a reasonably good understanding of the
-PDF-generation side of things...I noted as I was testing this work that
-we are still getting the "restricted \write18 enabled" messages.  I
-asked about this years ago, and nobody seemed to have a clue of what was
-enabling it.  I'd *really* like to turn that off if possible; do you
-have any idea what's going on there?
-
-Thanks,
-
-jon
+> ---
+>  include/linux/overflow.h | 10 +++++++---
+>  lib/test_overflow.c      |  7 +++++++
+>  2 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/overflow.h b/include/linux/overflow.h
+> index 59d7228104d0..f1221d11f8e5 100644
+> --- a/include/linux/overflow.h
+> +++ b/include/linux/overflow.h
+> @@ -4,6 +4,7 @@
+>  
+>  #include <linux/compiler.h>
+>  #include <linux/limits.h>
+> +#include <linux/const.h>
+>  
+>  /*
+>   * We need to compute the minimum and maximum values representable in a given
+> @@ -221,8 +222,9 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
+>   * Return: number of bytes needed or SIZE_MAX on overflow.
+>   */
+>  #define flex_array_size(p, member, count)				\
+> -	size_mul(count,							\
+> -		 sizeof(*(p)->member) + __must_be_array((p)->member))
+> +	__builtin_choose_expr(__is_constexpr(count),			\
+> +		(count) * sizeof(*(p)->member) + __must_be_array((p)->member),	\
+> +		size_mul(count, sizeof(*(p)->member) + __must_be_array((p)->member)))
+>  
+>  /**
+>   * struct_size() - Calculate size of structure with trailing flexible array.
+> @@ -237,6 +239,8 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
+>   * Return: number of bytes needed or SIZE_MAX on overflow.
+>   */
+>  #define struct_size(p, member, count)					\
+> -	size_add(sizeof(*(p)), flex_array_size(p, member, count))
+> +	__builtin_choose_expr(__is_constexpr(count),			\
+> +		sizeof(*(p)) + flex_array_size(p, member, count),	\
+> +		size_add(sizeof(*(p)), flex_array_size(p, member, count)))
+>  
+>  #endif /* __LINUX_OVERFLOW_H */
+> diff --git a/lib/test_overflow.c b/lib/test_overflow.c
+> index 712fb2351c27..d488ffaf56be 100644
+> --- a/lib/test_overflow.c
+> +++ b/lib/test_overflow.c
+> @@ -602,11 +602,18 @@ struct __test_flex_array {
+>  
+>  static int __init test_overflow_size_helpers(void)
+>  {
+> +	/* Make sure struct_size() can be used in a constant expression. */
+> +	u8 ce_array[struct_size((struct __test_flex_array *)0, data, 55)];
+>  	struct __test_flex_array *obj;
+>  	int count = 0;
+>  	int err = 0;
+>  	int var;
+>  
+> +	/* Verify constant expression against runtime version. */
+> +	var = 55;
+> +	OPTIMIZER_HIDE_VAR(var);
+> +	err |= sizeof(ce_array) != struct_size(obj, data, var);
+> +
+>  #define check_one_size_helper(expected, func, args...)	({	\
+>  	bool __failure = false;					\
+>  	size_t _r;						\
+> -- 
+> 2.30.2
+> 
