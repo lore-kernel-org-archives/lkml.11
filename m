@@ -2,100 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E242DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59425C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234570AbiBJCAj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:00:39 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60146 "EHLO
+        id S230359AbiBJCAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:00:51 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234589AbiBJB7X (ORCPT
+        with ESMTP id S234369AbiBJB7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:59:23 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D16882AAB6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:41:54 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id f13so3233297ilq.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:41:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NnM5dCp68E2rE/49/oOSjnZsSaxmdjzgIGASXkmR6xY=;
-        b=SAzNK2jOoju8Kh3tfB4nt1GBgAe2hFe+vZ/ZEcNq9+YseZkdv2Fs4ANx/8Njn2iHYw
-         VgImwzzPwpqjZer2EaG3EFoHGPc7ZAG0lVoML//dwhD2BjDTxWacHXbShQifoKV37Z0B
-         VlqmbomQWjifurbhavxvDrNbK8H8R7Dm5ffKg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NnM5dCp68E2rE/49/oOSjnZsSaxmdjzgIGASXkmR6xY=;
-        b=zzwFSnc3EohXCeHcjpDL4c0BRvJoz/KApETYuxS0I/hQmZKJqQ+cpt0mQRW543ORL5
-         QkbM+iSx6Cda4ZMqKL4oebCl3O9RbMhlqoXOCHJlWggBtpTtU5LTDaCdFx95tUiBTlof
-         D7MXxgZEXCZL8HS98dcKJYv1OO0kojDB3RC7jOo8KEDdvPrp91h2tvCCt2LpM/BZFa+E
-         GpPKdg52RhNKfwCR/c2bXx6q989MULsjfwSdU7ugcJsrT7Nb7KM38wmPvCDdkvg5toUL
-         vKRJz/WdxL/uCGANTN9FctuGsdGbX/VSi6+fFOOnuaTtcAgMNsJHkcsmsg++v/W03wOR
-         LkNg==
-X-Gm-Message-State: AOAM5312ij8ZyThlPSnrbgMv9QJ8QhYfviBGtu3xRGYjOBeFPkpVlAHS
-        Xz5OgfYVB8s36IjhUn0UotZYKSrvpcqLkg==
-X-Google-Smtp-Source: ABdhPJx1Wh7HpA/HF6B4EOxrjALlX3FDTxDRKrQ1wIzg5zjIWbRCBbc3R4Vri25XuSFgtzE6GDqv0A==
-X-Received: by 2002:a63:cf05:: with SMTP id j5mr4054620pgg.544.1644453146584;
-        Wed, 09 Feb 2022 16:32:26 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id lr7sm8382805pjb.42.2022.02.09.16.32.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:32:26 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Jeff Dike <jdike@addtoit.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        David Gow <davidgow@google.com>, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-um@lists.infradead.org, linux-hardening@vger.kernel.org
-Subject: [PATCH] um: Enable FORTIFY_SOURCE
-Date:   Wed,  9 Feb 2022 16:32:24 -0800
-Message-Id: <20220210003224.773957-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 9 Feb 2022 20:59:20 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC8727D65
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:34:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644456876; x=1675992876;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CnOSWYoXr4bC9YQTX0CWWYKZDGp0EePO33bXWv9JyVM=;
+  b=df7/lccGDX+cDSa0/1HgdMS5xGbjRC0aZKWKQ+t1yS9UK87iEqhXEHaH
+   qzZ8xTbqZhmQYWtwfBVwF7n/yoMqkuyBser5yqLGjLaQfxHNKIV5XemHZ
+   V0/GZRc3YLX4RkF419VouMV0WhXG1yWYUPPw9Da3mNYOxpPf0P3gpP67a
+   51y7i8pP7VFL49SKoBnz/NgSKu1n6QiBV78VqXcU8WOglD8FQgBUd8pf0
+   SbNXw26hV77nS9KuFQWu39HvpElnaPKALCPrD0dW0VJix/JFWxtOwO9Gb
+   +x17f9la5nO7qM/BK+ZNlOUwdqyWxHB6nCxmrJDIyci+a/v3R2jqVaGu+
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="273920855"
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="273920855"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 16:31:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="585774824"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 09 Feb 2022 16:31:17 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nHxMi-0002Sq-U8; Thu, 10 Feb 2022 00:31:16 +0000
+Date:   Thu, 10 Feb 2022 08:30:51 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stephane Eranian <eranian@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>
+Subject: [peterz-queue:perf/core 16/17] drivers/acpi/acpi_pad.c:168:4: error:
+ implicit declaration of function 'perf_lopwr_cb'
+Message-ID: <202202100823.E5rjIvVT-lkp@intel.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=965; h=from:subject; bh=8p9qV7nCUTAMY0NIWHaERW8Fzn7HqVa7AIuy3N51Nyw=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiBF0Xl67ZsAL362Vl2CFFWCSHpRPRaKgRKXg0mWx7 ZMVp4xqJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgRdFwAKCRCJcvTf3G3AJgidD/ 0ZTEYhKrilkWGasprf9ZIJxdPF1kViXr2K/C6/H7qvfbMkbD5Fg2txX23xhIDwLbpy5MpK6IDxNR2P MaUrUJnHJl0ZNl2PNf2uHwC/kjyyYsTvIHWJcdwDIBceeGQ7ub0Oq7j2vm/ldaha1PEymXloMWDwHz /3fj9YBHe5CKyezHu0V0lUx0hm4jNUDN3meuyyr3VAQ7sclsdreGSU+Ci0IhyaH6KuOlPtxmK+GGXQ r8lfsQiPVm5BJl8l+52BHMXlCQNhs4Nz6qv0Woxb9YML5Dv62TkyeGp/lWSPgPJFsSnnm3oycROEtr YxP3tKf0eBqiYZ/BmpO+svULC2RCO1ZBCuZ3Dl7hWtoC0hj6p2l8MwjH/P/VJDj8Qi4IjNAg8Pk1ou Zh7Fye8CDaK8vxMKBKB0HQ+OmgTnf4CM3eYhEvTQgnzhmnsiHS5rsAhfH0pgDMyp8F+WXGDc9CPYaF dBEixq9z4prhX1xhEZ9oZosu4MH0rUOwjFzaLuqJkSlfpIw8limtRgTkrtVFa4NLOjQqLZ1MAkRx5C B4ipNCCEMFhMf21hLLc54+iBrfAutksrvAhvYx8YLdOX/6nn3doqRqbjRwq38WqJsIzWgWeDv1veIK JO/xEQBVhQRO5nJ3XymXJQv5p2F7scM+73OoDDW+Hg+88tMp6ynYwykvph0A==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable FORTIFY_SOURCE so running Kunit tests can test fortified
-functions.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/core
+head:   c23483152838201e7eb9d179d121e0ed0189269e
+commit: e879a335a574ca071f76684b8160a56d9147db27 [16/17] ACPI: add perf low power callback
+config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220210/202202100823.E5rjIvVT-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e8bff9ae54a55b4dbfeb6ba55f723abbd81bf494)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=e879a335a574ca071f76684b8160a56d9147db27
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue perf/core
+        git checkout e879a335a574ca071f76684b8160a56d9147db27
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/acpi/acpi_pad.c:168:4: error: implicit declaration of function 'perf_lopwr_cb' [-Werror,-Wimplicit-function-declaration]
+                           perf_lopwr_cb(true);
+                           ^
+   1 error generated.
+
+
+vim +/perf_lopwr_cb +168 drivers/acpi/acpi_pad.c
+
+   135	
+   136	static unsigned int idle_pct = 5; /* percentage */
+   137	static unsigned int round_robin_time = 1; /* second */
+   138	static int power_saving_thread(void *data)
+   139	{
+   140		int do_sleep;
+   141		unsigned int tsk_index = (unsigned long)data;
+   142		u64 last_jiffies = 0;
+   143	
+   144		sched_set_fifo_low(current);
+   145	
+   146		while (!kthread_should_stop()) {
+   147			unsigned long expire_time;
+   148	
+   149			/* round robin to cpus */
+   150			expire_time = last_jiffies + round_robin_time * HZ;
+   151			if (time_before(expire_time, jiffies)) {
+   152				last_jiffies = jiffies;
+   153				round_robin_cpu(tsk_index);
+   154			}
+   155	
+   156			do_sleep = 0;
+   157	
+   158			expire_time = jiffies + HZ * (100 - idle_pct) / 100;
+   159	
+   160			while (!need_resched()) {
+   161				if (tsc_detected_unstable && !tsc_marked_unstable) {
+   162					/* TSC could halt in idle, so notify users */
+   163					mark_tsc_unstable("TSC halts in idle");
+   164					tsc_marked_unstable = 1;
+   165				}
+   166				local_irq_disable();
+   167	
+ > 168				perf_lopwr_cb(true);
+   169	
+   170				tick_broadcast_enable();
+   171				tick_broadcast_enter();
+   172				stop_critical_timings();
+   173	
+   174				mwait_idle_with_hints(power_saving_mwait_eax, 1);
+   175	
+   176				start_critical_timings();
+   177				tick_broadcast_exit();
+   178	
+   179				perf_lopwr_cb(false);
+   180	
+   181				local_irq_enable();
+   182	
+   183				if (time_before(expire_time, jiffies)) {
+   184					do_sleep = 1;
+   185					break;
+   186				}
+   187			}
+   188	
+   189			/*
+   190			 * current sched_rt has threshold for rt task running time.
+   191			 * When a rt task uses 95% CPU time, the rt thread will be
+   192			 * scheduled out for 5% CPU time to not starve other tasks. But
+   193			 * the mechanism only works when all CPUs have RT task running,
+   194			 * as if one CPU hasn't RT task, RT task from other CPUs will
+   195			 * borrow CPU time from this CPU and cause RT task use > 95%
+   196			 * CPU time. To make 'avoid starvation' work, takes a nap here.
+   197			 */
+   198			if (unlikely(do_sleep))
+   199				schedule_timeout_killable(HZ * idle_pct / 100);
+   200	
+   201			/* If an external event has set the need_resched flag, then
+   202			 * we need to deal with it, or this loop will continue to
+   203			 * spin without calling __mwait().
+   204			 */
+   205			if (unlikely(need_resched()))
+   206				schedule();
+   207		}
+   208	
+   209		exit_round_robin(tsk_index);
+   210		return 0;
+   211	}
+   212	
+
 ---
- arch/um/Kconfig              | 1 +
- arch/um/os-Linux/user_syms.c | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/um/Kconfig b/arch/um/Kconfig
-index 4d398b80aea8..746e661395d7 100644
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -9,6 +9,7 @@ config UML
- 	select ARCH_HAS_KCOV
- 	select ARCH_HAS_STRNCPY_FROM_USER
- 	select ARCH_HAS_STRNLEN_USER
-+	select ARCH_HAS_FORTIFY_SOURCE
- 	select ARCH_NO_PREEMPT
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select HAVE_ARCH_SECCOMP_FILTER
-diff --git a/arch/um/os-Linux/user_syms.c b/arch/um/os-Linux/user_syms.c
-index 715594fe5719..d9845b5219ce 100644
---- a/arch/um/os-Linux/user_syms.c
-+++ b/arch/um/os-Linux/user_syms.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#define __NO_FORTIFY
- #include <linux/types.h>
- #include <linux/module.h>
- 
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
