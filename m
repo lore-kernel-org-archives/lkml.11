@@ -2,84 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6AB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242019AbiBJNLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:11:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45572 "EHLO
+        id S242028AbiBJNNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:13:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238484AbiBJNLT (ORCPT
+        with ESMTP id S238484AbiBJNNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:11:19 -0500
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 415D710C8;
-        Thu, 10 Feb 2022 05:11:20 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id f13so2959560uab.10;
-        Thu, 10 Feb 2022 05:11:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VyfL/XR3k1yiplw7IJLRPirPvVisKMbHbKr+Yiu87oY=;
-        b=TIa8vkc7c18R0sEPrKqzRjcsms8qgc9M9VM1+9uaHWklEUjzgpMdf/4PrS8KA1lFZ0
-         A28RUL6X7iAJO530SjbiHSk4DdVxDcSy3KEVl7qOCIc1SqGl0GB8NsI4Yb12MGFCeh1O
-         Y67BSUVvGQqLJWKZ8ZUjRZTXOsoGB+ovau3k8wJ8xGX+i5VsNk+nh8gzw4kuT8pmaxO8
-         QDJCgYpaSUlYcCqwqU8fabmqtWcvbwqpXLoTjNIa13YWP5NyPBKqCFtqgCFFoE76rwoe
-         KMQIbi0dOkRSSX7fkZkw3vXFSbVXtzhNBTZZIaZHthPBGzZxvmiXsJbThU+g+nGIQweF
-         V3JQ==
-X-Gm-Message-State: AOAM531j7ZLestYJCb1/NMmoAbe1rWWon0FlrYFquE9e6pYuRoMZudQy
-        ngjNZlOt8CPqxbV1/baLWVWsDYQsXMAM6w==
-X-Google-Smtp-Source: ABdhPJy7Fu5D4Ol/VaNPnTMyRH1ygjc8dZU38N1m+55rF0MwbouiH/LrOyN/g0VEbHObZzAxgbXkyQ==
-X-Received: by 2002:ab0:6156:: with SMTP id w22mr2303172uan.61.1644498679204;
-        Thu, 10 Feb 2022 05:11:19 -0800 (PST)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
-        by smtp.gmail.com with ESMTPSA id 3sm1077055vkf.16.2022.02.10.05.11.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 05:11:18 -0800 (PST)
-Received: by mail-vs1-f49.google.com with SMTP id t22so6316536vsa.4;
-        Thu, 10 Feb 2022 05:11:18 -0800 (PST)
-X-Received: by 2002:a67:c198:: with SMTP id h24mr2420776vsj.5.1644498677998;
- Thu, 10 Feb 2022 05:11:17 -0800 (PST)
+        Thu, 10 Feb 2022 08:13:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F9C113F
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:13:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23F71B824B3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:13:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737A4C004E1;
+        Thu, 10 Feb 2022 13:13:15 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hR3fwfat"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644498794;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IzzyXRQXp1fF2yvhjaLxOErxhAVSjKgIdCU6rMFCToc=;
+        b=hR3fwfatTqVS4+eNt/tG8z1aIvnKYVXs5swQt1n88Q2hgTzHZanflrrTR1rGNOy2ukspm6
+        X64RtyboJL6M1QvLRnrAnhw2Q48dI2G1sF49v0cNuPFsvuc/Y1jUN+/sVxr3LH7KOp2JA3
+        1hNkZbsmTxddm5GgbSmZZY8ILw/j4oM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 71accad9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 10 Feb 2022 13:13:13 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: [PATCH v2] random: tie batched entropy generation to base_crng generation
+Date:   Thu, 10 Feb 2022 14:13:04 +0100
+Message-Id: <20220210131304.97224-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9oo5y08skaOOXg-q0T9pDs580dOotm6Wz0t96AssZr2Pw@mail.gmail.com>
+References: <CAHmME9oo5y08skaOOXg-q0T9pDs580dOotm6Wz0t96AssZr2Pw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220130143333.552646-1-laurent@vivier.eu> <20220130143333.552646-4-laurent@vivier.eu>
-In-Reply-To: <20220130143333.552646-4-laurent@vivier.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 10 Feb 2022 14:11:07 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUorQNkEfYfnkme8MzA2pMP1gogQSTMhAywSPFiZUSCuA@mail.gmail.com>
-Message-ID: <CAMuHMdUorQNkEfYfnkme8MzA2pMP1gogQSTMhAywSPFiZUSCuA@mail.gmail.com>
-Subject: Re: [PATCH v14 3/5] rtc: goldfish: use gf_ioread32()/gf_iowrite32()
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 3:33 PM Laurent Vivier <laurent@vivier.eu> wrote:
-> replace readl()/writel() by gf_ioread32()/gf_iowrite32()
-> as done for goldfish-tty.
->
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Now that we have an explicit base_crng generation counter, we don't need
+a separate one for batched entropy. Rather, we can just move the
+generation forward every time we change crng_init state or update the
+base_crng key.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+v2 always increments the generation after extraction, as suggested by
+Dominik.
 
-Gr{oetje,eeting}s,
+ drivers/char/random.c | 29 ++++++++---------------------
+ 1 file changed, 8 insertions(+), 21 deletions(-)
 
-                        Geert
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 5beb421ec12b..57d36f13e3a6 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -431,8 +431,6 @@ static DEFINE_PER_CPU(struct crng, crngs) = {
+ 
+ static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+ 
+-static void invalidate_batched_entropy(void);
+-
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+  * path.  So we can't afford to dilly-dally. Returns the number of
+@@ -455,7 +453,7 @@ static size_t crng_fast_load(const void *cp, size_t len)
+ 		src++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+-		invalidate_batched_entropy();
++		++base_crng.generation;
+ 		crng_init = 1;
+ 	}
+ 	spin_unlock_irqrestore(&base_crng.lock, flags);
+@@ -530,7 +528,6 @@ static void crng_reseed(void)
+ 	WRITE_ONCE(base_crng.generation, next_gen);
+ 	base_crng.birth = jiffies;
+ 	if (crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		finalize_init = true;
+ 	}
+@@ -1277,8 +1274,9 @@ int __init rand_initialize(void)
+ 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
+ 
+ 	extract_entropy(base_crng.key, sizeof(base_crng.key));
++	++base_crng.generation;
++
+ 	if (arch_init && trust_cpu && crng_init < 2) {
+-		invalidate_batched_entropy();
+ 		crng_init = 2;
+ 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+ 	}
+@@ -1628,8 +1626,6 @@ static int __init random_sysctls_init(void)
+ device_initcall(random_sysctls_init);
+ #endif	/* CONFIG_SYSCTL */
+ 
+-static atomic_t batch_generation = ATOMIC_INIT(0);
+-
+ struct batched_entropy {
+ 	union {
+ 		/* We make this 1.5x a ChaCha block, so that we get the
+@@ -1642,8 +1638,8 @@ struct batched_entropy {
+ 		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
+ 	};
+ 	local_lock_t lock;
++	unsigned long generation;
+ 	unsigned int position;
+-	int generation;
+ };
+ 
+ /*
+@@ -1662,14 +1658,14 @@ u64 get_random_u64(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_lock_irqsave(&batched_entropy_u64.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u64);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
+@@ -1695,14 +1691,14 @@ u32 get_random_u32(void)
+ 	unsigned long flags;
+ 	struct batched_entropy *batch;
+ 	static void *previous;
+-	int next_gen;
++	unsigned long next_gen;
+ 
+ 	warn_unseeded_randomness(&previous);
+ 
+ 	local_lock_irqsave(&batched_entropy_u32.lock, flags);
+ 	batch = raw_cpu_ptr(&batched_entropy_u32);
+ 
+-	next_gen = atomic_read(&batch_generation);
++	next_gen = READ_ONCE(base_crng.generation);
+ 	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
+ 	    next_gen != batch->generation) {
+ 		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
+@@ -1718,15 +1714,6 @@ u32 get_random_u32(void)
+ }
+ EXPORT_SYMBOL(get_random_u32);
+ 
+-/* It's important to invalidate all potential batched entropy that might
+- * be stored before the crng is initialized, which we can do lazily by
+- * bumping the generation counter.
+- */
+-static void invalidate_batched_entropy(void)
+-{
+-	atomic_inc(&batch_generation);
+-}
+-
+ /**
+  * randomize_page - Generate a random, page aligned address
+  * @start:	The smallest acceptable address the caller will take.
+-- 
+2.35.0
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
