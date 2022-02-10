@@ -2,92 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346224AbiBKAPi (ORCPT
+        id S1346239AbiBKAPs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:15:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49838 "EHLO
+        Thu, 10 Feb 2022 19:15:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346214AbiBKAPh (ORCPT
+        with ESMTP id S1346226AbiBKAPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:15:37 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017F22735
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:15:38 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id 192so20182950ybd.10
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:15:37 -0800 (PST)
+        Thu, 10 Feb 2022 19:15:47 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69100558A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:15:47 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id m185so9505727iof.10
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:15:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E7OoL04aP+MZeQy8gEUASlkgu2toqHuHNgEWJOzWKkI=;
-        b=STyD92iMRI0ITMeRrZZIgrsOTqWv1OtmvKboQgkN8aHCeb6qmGBZytZN5kIu8+b5AB
-         FM95HInfiaDAapUiv/80ZCTLvpJgeTC/hvl1gCpJ08wK35dPxUz2ctLpohgB7m3nIj0Y
-         WmO+83UiTjZSSEygrYn1m1c2lMnsa1k7yzX57aoMAgU82rQg1S9T46OlWV3M8urvhhGD
-         7okaYEU+fobCrAf3l6IwhUznoZR4ZQdjP7Z8hsI0Nar2PJGrmalR7C581w0B/kPRqvQ7
-         k8tgqGsGgyRu+J7ohCT3R4zi1SdWCWAyUAolivGpxAaxiG376F6K5TYtIjaM4xR+ZN9c
-         SAfA==
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=PIovVUUoTXrNkGptnZalq8qTG6elYmmkmcndd2InBI8=;
+        b=pcjmfLwAiS/XGbn7H5lJSwo1VmJtz/MoynS0X5Dcg+dWgAtP50rspk13S0E5pJvDty
+         S6taB1oBu2sz0cRmYD0OrRjqt2eHBVSewuL1cld2PkhQsvFtl9InCW6guWZsBAakxHMk
+         QeAHrP+IGJZPPsIbTyETpTaKJMX41JIs46ZQl2s+qGfwWzoybsFUJSxmhqN/EcMYGjqu
+         aLAgKKOq45uiO1viWnPybbeWGhqL5zctU9mMIOJebmWir+BUuJeDQnU4GPsD0okN+NS4
+         pJvRQWhfbiVaTp3GfeFPrI0rEQUVFFs+HDyaa7lPxlLEpozQBg6i1VzRnx8jLoMxeYZM
+         MW4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E7OoL04aP+MZeQy8gEUASlkgu2toqHuHNgEWJOzWKkI=;
-        b=6YQX1J82Ez52nlzYnCkQnI9Z7sjITxXlHjDJ726d2nOACAz/HJQi6+TVTKIC2nYxz6
-         f3mytEGdhX2jn6HUptdkYOPoPkOW5vzw2ps/KFp509BIeHBa5DKmHYpvb/G5wl30aTy9
-         WnFjx5ue3mvvrcjaGImYgxzftOiy+KMrfderBS3DIV2hJxxw23Xw0Y1Hd6QMdGB3Gjhv
-         k+n881mpLGRXXTKv0h0dp2M98AbPhurgRNq3qcIVw4neKQaotrS0YjECzxcfA1vIL8UJ
-         WtJ4bObD4jRLM3hd5hg8v1MPWH+0DYxz2u7qtK7WMbYE8qV8RjNzTEeibiBWyQAPoewI
-         495g==
-X-Gm-Message-State: AOAM5323Zb12GhfIFETJhJK9l/EhOC90bve9sFiBl8qK9ntA4/k83e3O
-        z1rzentQo01Z62Dlr1VBb7Oa/s48OgMNHTlTVJB52Q==
-X-Google-Smtp-Source: ABdhPJy/Q5Zr/NTFpZq1apn9uDiuLsg2WFOhJqeZ3lViKWsIgjSwTxtM1oZy17C+JIqGLVdKS7iawzFxAzRAsAjiNVk=
-X-Received: by 2002:a25:103:: with SMTP id 3mr9355820ybb.110.1644538537279;
- Thu, 10 Feb 2022 16:15:37 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PIovVUUoTXrNkGptnZalq8qTG6elYmmkmcndd2InBI8=;
+        b=3vjumhYVGVtilNlI4+zJxUPjYiRsBlKN96h4xGO6ppEU1RzI+rRZHfphT/+avqYkrl
+         xIqMjopNy1qmA12IVoY5nZv4JHG0VyqAZCfQsNWxe7i50ONM3AqZdepINVgSM4Vfev6P
+         KiIsp/qbSu9PR5NNiggAFm7QxpPphPcgLxB9y1dlxWUQVRvfqQO2YzsPNpDoKF56YOns
+         SzyCHRyL70dq4z8ByIU8qaOcEdSNEL76gfE1UzH0Uvblo/CppY6CNpZJ8qrtm37ZFOwi
+         qd/mKLzZWF/+oeBIWfOwQZBi4TRW+BIOT1j8MiUBbnqYVVR3ZKUm/c/tB4nibIk9i7UK
+         SEWA==
+X-Gm-Message-State: AOAM530Y03xfWyagsvEuP4Id80ip+3t8/WC+1tLNs8/0CPS6WCUSrxOI
+        rYBsVDYpTkO/YmSqcSAc9Ig=
+X-Google-Smtp-Source: ABdhPJxRcsurSAFIVa51O5zD9bcY1kB5OJeXxGfVrQ9MyMfVmVSnWSLVAohEIbusFvdw1qpbmH+QRA==
+X-Received: by 2002:a05:6638:d0c:: with SMTP id q12mr5411794jaj.310.1644538546802;
+        Thu, 10 Feb 2022 16:15:46 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id h3sm12329728ioe.19.2022.02.10.16.15.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 16:15:46 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Parth Shah <parth@linux.ibm.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Rob Herring <robh@kernel.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Xiongwei Song <sxwjean@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 38/49] arch/powerpc: replace cpumask_weight with cpumask_weight_{eq, ...} where appropriate
+Date:   Thu, 10 Feb 2022 14:49:22 -0800
+Message-Id: <20220210224933.379149-39-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-References: <20220209162607.1118325-1-maz@kernel.org> <20220209162607.1118325-11-maz@kernel.org>
- <CANBLGcwKeLn7Q1Ra8pCw=cXy=kJeEFRmBjOxjds10+k70LvzXA@mail.gmail.com> <87zgmz3xbf.wl-maz@kernel.org>
-In-Reply-To: <87zgmz3xbf.wl-maz@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 01:15:25 +0100
-Message-ID: <CACRpkdbo4seF6t6iFgKhaTZ_PKMdCt+2gSmdCaM+vDeHGZfHcQ@mail.gmail.com>
-Subject: Re: [PATCH 10/10] pinctrl: starfive: Switch to dynamic chip name output
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 10:06 AM Marc Zyngier <maz@kernel.org> wrote:
-> On Wed, 09 Feb 2022 23:30:55 +0000,
-> Emil Renner Berthing <kernel@esmil.dk> wrote:
+PowerPC code uses cpumask_weight() to compare the weight of cpumask with
+a given number. We can do it more efficiently with cpumask_weight_{eq, ...}
+because conditional cpumask_weight may stop traversing the cpumask earlier,
+as soon as condition is (or can't be)  met.
 
-> > The gpio framework seems to fill in default handlers in the struct
-> > above, so unfortunately it can't yet be made const. Is this something
-> > you intend to fix in the future?
->
-> This is next on my list of things to address. The whole 'let's copy a
-> whole irqchip structure and hijack random pointers' should not have
-> happened, and it certainly is going to be an interesting ride.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ arch/powerpc/kernel/smp.c      | 2 +-
+ arch/powerpc/kernel/watchdog.c | 2 +-
+ arch/powerpc/xmon/xmon.c       | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
-Sorry about that... Probably my bad idea. The only upside is that the
-things that are ugly are centralized to one spot.
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index b7fd6a72aa76..8bff748df402 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -1656,7 +1656,7 @@ void start_secondary(void *unused)
+ 		if (has_big_cores)
+ 			sibling_mask = cpu_smallcore_mask;
+ 
+-		if (cpumask_weight(mask) > cpumask_weight(sibling_mask(cpu)))
++		if (cpumask_weight_gt(mask, cpumask_weight(sibling_mask(cpu))))
+ 			shared_caches = true;
+ 	}
+ 
+diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
+index bfc27496fe7e..62937a077de7 100644
+--- a/arch/powerpc/kernel/watchdog.c
++++ b/arch/powerpc/kernel/watchdog.c
+@@ -483,7 +483,7 @@ static void start_watchdog(void *arg)
+ 
+ 	wd_smp_lock(&flags);
+ 	cpumask_set_cpu(cpu, &wd_cpus_enabled);
+-	if (cpumask_weight(&wd_cpus_enabled) == 1) {
++	if (cpumask_weight_eq(&wd_cpus_enabled, 1)) {
+ 		cpumask_set_cpu(cpu, &wd_smp_cpus_pending);
+ 		wd_smp_last_reset_tb = get_tb();
+ 	}
+diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+index fd72753e8ad5..b423812e94e0 100644
+--- a/arch/powerpc/xmon/xmon.c
++++ b/arch/powerpc/xmon/xmon.c
+@@ -469,7 +469,7 @@ static bool wait_for_other_cpus(int ncpus)
+ 
+ 	/* We wait for 2s, which is a metric "little while" */
+ 	for (timeout = 20000; timeout != 0; --timeout) {
+-		if (cpumask_weight(&cpus_in_xmon) >= ncpus)
++		if (cpumask_weight_ge(&cpus_in_xmon, ncpus))
+ 			return true;
+ 		udelay(100);
+ 		barrier();
+@@ -1338,7 +1338,7 @@ static int cpu_cmd(void)
+ 			case 'S':
+ 			case 't':
+ 				cpumask_copy(&xmon_batch_cpus, &cpus_in_xmon);
+-				if (cpumask_weight(&xmon_batch_cpus) <= 1) {
++				if (cpumask_weight_le(&xmon_batch_cpus, 1)) {
+ 					printf("There are no other cpus in xmon\n");
+ 					break;
+ 				}
+-- 
+2.32.0
 
-Yours,
-Linus Walleij
