@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5958DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE160C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbiBJBXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:23:25 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:43362 "EHLO
+        id S231837AbiBJBXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:23:48 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231774AbiBJBXV (ORCPT
+        with ESMTP id S231857AbiBJBXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:23:21 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF68767E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:23:20 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id o25so3390958qkj.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:23:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iZO4TemCZ8xmhdNFoaIraPzmY18I03u16eQkDpDWGxg=;
-        b=btEjxvWZwzfmYXT1MzA+MxUz2YNp6aGlGnqyhsPlm++PMTaJ1BalMTHvRmgVtY40qW
-         hERYDcBs/H/UomXIxXAoHkdM5hIBTbnkMCghbUGwvi9FwIW3geHyi7GCtuV6huFyVet4
-         Xe0Y/BUTW//RTJEe20Or6Qkn1FPPPGMrRq948=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iZO4TemCZ8xmhdNFoaIraPzmY18I03u16eQkDpDWGxg=;
-        b=XzYXSGhjxr/c860eojxVSLZwezXpXnJjb8tXSH2xN4vuZ9dadsUHjJqcm9s0qEdIji
-         eXURH1LT52K2CbNFUmenPnCef87/lORLhOJ3fEsVWaR9B9WX+Jlbb43FRDHXNBcS2IV+
-         KC6U31rmUDXmDQ6YBg9zVAgyWvur/VHdf1fPCmsbyRJOdvqIVJlLiyFG+JIZU0gf/RgJ
-         1rj0srTMWSc064hRr/BdV11ZFbc7FQkoSnaWmcUkHsO595qDXWu/4+ac7zh+UAXiJ+OK
-         vijL9hfJtGMvuzEpo/OzVcPYF3K5zLveLrnhJ1HiMqYMvjnh8aGd1eMz/oVaEeX9IYqR
-         j5Ng==
-X-Gm-Message-State: AOAM530XoKEL3HvMaiUDQNrJNGPvHdpGispLD2IpLzeBslg4d7lv+nCz
-        KgPN23X+vY7Q9sIYCcHOaRu0zSFszALLnA==
-X-Google-Smtp-Source: ABdhPJzlJDxhdVWGAi6UhKwOweI2QgEC/M5titKQ/PUe+fQ9cnMmUTBueH1sFoVkjm0wWwZu+icLag==
-X-Received: by 2002:a05:6638:345c:: with SMTP id q28mr2599777jav.143.1644454651912;
-        Wed, 09 Feb 2022 16:57:31 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id l16sm6835203ilc.54.2022.02.09.16.57.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 16:57:31 -0800 (PST)
-Subject: Re: [PATCH 5.15 0/5] 5.15.23-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220209191249.980911721@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <7d0bcbf2-bbe9-c04f-e879-5a3655a24f88@linuxfoundation.org>
-Date:   Wed, 9 Feb 2022 17:57:30 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 9 Feb 2022 20:23:42 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650931EC7D
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:23:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644456220; x=1675992220;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3TVWAm9LlhlLa2IkCVU8wnRmJGrW+1uk41RrCt4p/Tc=;
+  b=nIveuFRjgR54ayuDiKg1FgrmA2M6tKaD/CUQGoG1yYChZZzEqGEfDYzt
+   +SnpZkf6dVZMf9lzR7Cp8/V/vsrgKjapPuwNtmneUShkNqkcJZs2WS5Hg
+   bi/TT9Nx1iMaCVtcmmYZIjWMXhtyQieE5epfa2CQSMoFgsaWILmB3N2rM
+   ILoLDMyib7eF5tH1DclwpLKvnekhLd8GuoT4d1VkyTItTsC+GUM+X5lgr
+   MOWAR5gnuqCgfDaCT2PXZu1Wykg7Q0jKiF3KmcIl336oB99QyipfqYWar
+   E5BKL3lUIG44ScRU41CUytJpDYz7F1bJWlI1kMGCT6td9UklYhQT+fr8g
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="273923635"
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="273923635"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 16:52:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="678968070"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 09 Feb 2022 16:52:21 -0800
+Message-ID: <27fbcb02-4f13-3377-eadd-e689ce063348@linux.intel.com>
+Date:   Thu, 10 Feb 2022 08:51:08 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 08/10] iommu: Remove unused argument in
+ is_attach_deferred
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-9-baolu.lu@linux.intel.com>
+ <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 12:14 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.23 release.
-> There are 5 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On 2/9/22 9:52 PM, Robin Murphy wrote:
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 2b5f4e57a8bb..80f1294be634 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -5052,8 +5052,7 @@ intel_iommu_dev_disable_feat(struct device *dev, 
+>> enum iommu_dev_features feat)
+>>       }
+>>   }
+>> -static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+>> -                       struct device *dev)
+>> +static bool intel_iommu_is_attach_deferred(struct device *dev)
+>>   {
+>>       return attach_deferred(dev);
 > 
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.23-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+> Seems like there's no need to wrap this now?
 
-Compiled and booted on my test system. No dmesg regressions.
+Yes. It's pointless.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Best regards,
+baolu
 
-thanks,
--- Shuah
