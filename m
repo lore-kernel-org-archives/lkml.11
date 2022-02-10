@@ -2,90 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9ED1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:35:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DB0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:36:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244238AbiBJQfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:35:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45774 "EHLO
+        id S244255AbiBJQgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:36:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232641AbiBJQfh (ORCPT
+        with ESMTP id S232641AbiBJQgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:35:37 -0500
-X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 08:35:37 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DA5128
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:35:37 -0800 (PST)
-Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M1qbm-1nKOC82xbs-002FVF for <linux-kernel@vger.kernel.org>; Thu, 10 Feb
- 2022 17:30:32 +0100
-Received: by mail-wr1-f44.google.com with SMTP id q7so10473880wrc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:30:32 -0800 (PST)
-X-Gm-Message-State: AOAM533TR4Siq1eqoU2tDQMWXyCopk2EGUSX/fZ+BqQgCfOr+whsE+GF
-        AxDQA538ayt1ZJl1RJnUOb6ZXMBqqDzFmlnaOnE=
-X-Google-Smtp-Source: ABdhPJwxBvlbd4av+M+Wt3kUK7FJRCqF+gfuROuPRVX6DWa4nR1KkBnzFSUpMXDjuIAebSwZ4Cgah/eIprmfjzqcdTk=
-X-Received: by 2002:a5d:58d1:: with SMTP id o17mr5522580wrf.407.1644510632390;
- Thu, 10 Feb 2022 08:30:32 -0800 (PST)
+        Thu, 10 Feb 2022 11:36:05 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB71137;
+        Thu, 10 Feb 2022 08:36:06 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id k1so10578702wrd.8;
+        Thu, 10 Feb 2022 08:36:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
+        b=nd/5t16q2dZeSUXeLARHqs1r2kr182kK742RAKdzthI6qpbsztn0Jl15mbQ4Khd7uU
+         IZl1CVv03mdQzSrtA22Rs+EUVMfzQv/TXgFjmEUz7rJ9NSnNFg7hb+/YMHtKAsaYbI7K
+         QwEkvtkdBiIsp/Hop8+q+savBqyxD1bUlsPBg6HK5hSH1GmB2UuVf/WxEFWJd2f/kRYY
+         fCTAs6XR5DJKslcZH7x6Jd150NCyVElAp59wyt9X1jk5tzgI25mh/xn2GAumUy6z6B4K
+         C/DMNmM6OHGaX9clEk1ntOqRpO8uauDjtlCbjdVE3I2Y1yzzZnnIXXv0gkmJLX7flc5c
+         0wmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
+        b=jLbQTQFLpLWNaigM5VoPHZrLRLscs9YlVhq06Qmf5+fszcKzXiKTgCFqzLW2BMdPA/
+         NwenMFWhUYAUqGPgSsca9obN9uN25Us5gbXy885gEIOde1BIvFLz3meSzlEec0VVd3Ul
+         PznxDdwoa0xwpSGm8TjXOnJUAzSBo6qs2wYXw01+QBItoL/L7zuSGWarqi+p7bU/Bw+5
+         EOIxqqhA2Yr2ZNzWdi4sEUsbZwvLaWKczIxW6/xZeXveK/j7vSrU0WY2xArK/dv96FxK
+         1BGcXGHGW1m1rcEyRS9b7ARE4lKrV2ZVCbVbZHkKtuGbkBJM+HXzye1hmvTxEmLP2XHk
+         rmHw==
+X-Gm-Message-State: AOAM530gdjHqgbWWWt6ME1dgG1HQR8bHyMtbvG08fMyN8VK/2h84g2kl
+        LRUiN39lmJSQNisrzX7/f9JIel4/uZD4UA==
+X-Google-Smtp-Source: ABdhPJw3E1DbJcu/NQe2RVRdi2hEvEpWrfv2F9Vzy6kkcP9oZkdso+/gVayKkwaIiZJxNkDECxCTUw==
+X-Received: by 2002:adf:f592:: with SMTP id f18mr7196852wro.179.1644510965064;
+        Thu, 10 Feb 2022 08:36:05 -0800 (PST)
+Received: from nergzd-desktop.localdomain ([62.122.67.26])
+        by smtp.gmail.com with ESMTPSA id i2sm2354057wmq.45.2022.02.10.08.36.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 08:36:04 -0800 (PST)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 0/2] Add support for Imagis touchscreens
+Date:   Thu, 10 Feb 2022 18:35:37 +0200
+Message-Id: <20220210163540.162727-1-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.35.0
 MIME-Version: 1.0
-References: <20220209224210.153907-1-radhac@marvell.com>
-In-Reply-To: <20220209224210.153907-1-radhac@marvell.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 10 Feb 2022 17:30:15 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a29uJF+dVVjuKmF=rRDJrM2ndbxRJPFt9ga-waQcECb+A@mail.gmail.com>
-Message-ID: <CAK8P3a29uJF+dVVjuKmF=rRDJrM2ndbxRJPFt9ga-waQcECb+A@mail.gmail.com>
-Subject: Re: [PATCH 0/4] soc: Add support for Marvell OcteonTX2 SDP block
-To:     Radha Mohan Chintakuntla <radhac@marvell.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        sburla@marvell.com
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:1olmKYa5/dCgcu1PGJvWHtcH3XEnYETDY8G+sJyWbuGhgFTPBvt
- OwPa3zDJ4uTSbDKDT0Q0d0lLCan2pX87ILht8LHIjb7ubK4m4HBFWHPrQxTb8N/5AY2XdNI
- rkqyGlZ3Stkc+lSGVpR3y91y8xCe1/bJW+oFKouhjYv5kIWfOs+c7SRQmfggl6NafFYd+be
- lQ4MbuH1VVb2EvcXzDoNQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:rOoFpGH6QbU=:1PhDheeNv4rNdbCO8cX+pi
- 8Uxzk37023Y6JM8sooej/X/g3ieBY8RTeOtv/JwrBSr3S3JvAO/IWqjcAB1MmBqZp8z6UBqrg
- iGzncBesosvSSdNUi3GxPVfEaPHekQBj3lKbLhoCkyGnKbPIPyFV0/+4oF55BMWsb2W5O0Zoe
- dLN7r8hAe2TxQ9vYJqsoj8zQNUZMPi/zNGrLqZD5fHRr19I+N7hGhE89ZnlZ1I24Pz9KH76Yr
- Xe9MuxfTH4FYQ6e8VscxvNJq3YEPpWF/B63coGvDkRqmjqqQsN0Tmp4V9VycyYL/Zsot785F6
- KtTmAq1r////C48vaC08GivZ8TOnCnG8wJwQEIvbPbO4CozdOxRVl77/Y49/dZx1qr9rZffLU
- W1FubymdESSNszDLj8A92inOVCaHwpgJeTLb+Da/VbAva41sLkFA5LCN+Sdq+FoPSV90qopBg
- lHRhm/xtpSEOOHHjFlglzRugbubnrNQBZLdVoSifoPhFtYsIHgmPgBFSg3ohFXhpT5KV4EtUe
- KNegOzmAGaTkFbxeke9Qm2getdNROkytxEDdZZBKwFrE4L8nxxbD1KU+4hLQ7FbiBZfv04odS
- 547u7x/upEy34TaQIWml3Em+jeprG8BHwB3tN2Ll53ii51tS71/CBGpNvV0WkHlVzn+jxE2FU
- OjmXJb/QHcvCEHkvD8V31wYy9NPeCRA/L9y5ppg63A6bnePWCCTVH+KAAXAA+qVcbnZa8y8pp
- TPGgBS0UIyQuUOozrnTGCvrRh5v75qdOxukrixa7tseMONKXmOw54Ebmh0SO4/WRAsMWJEdbO
- ZdaKZemQPIAdld3xSdTHYFWA96PtgwXFq9zHk/pGW8txgjg/q8=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 11:42 PM Radha Mohan Chintakuntla
-<radhac@marvell.com> wrote:
->
-> The Marvell OcteonTX2's SDP block is a interface for sending and receiving
-> ethernet packets over the PCIe interface when OcteonTX2 is in PCIe endpoint
-> mode. It interfaces with the OcteonTX2's NIX block queues.
+Add support for Imagis touchscreens, used on various mobile
+devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
 
-Hi Radha,
+v2: rebase on top of the correct tree
 
-I'm not sure drivers/soc/ is the right place for it. I have not done an
-actual review so far, but I have some high-level questions to
-clarify how this fits in:
+Markuss Broks (2):
+  dt-bindings: input/touchscreen: bindings for Imagis
+  Input: add Imagis touchscreen driver
 
-When you say it is meant for passing ethernet packets, why is
-it not an ethernet driver?
+ .../input/touchscreen/imagis,ist3038c.yaml    |  78 +++++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ MAINTAINERS                                   |   6 +
+ drivers/input/touchscreen/Kconfig             |  10 +
+ drivers/input/touchscreen/Makefile            |   1 +
+ drivers/input/touchscreen/imagis.c            | 329 ++++++++++++++++++
+ 6 files changed, 426 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+ create mode 100644 drivers/input/touchscreen/imagis.c
 
-If this drives the PCIe endpoint mode, how does it interface with
-the pci endpoint framework? It looks like a normal PCI driver.
+-- 
+2.35.0
 
-What hardware does this run on? Is this only usable when
-both the host side and the endpoint side are Octexon TX2
-machines with their packet engines, or can one of the two
-be a different machine that has PCIe host or endpoint device
-support?
-
-          Arnd
