@@ -2,152 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232146AbiBJBZq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:25:46 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51028 "EHLO
+        id S232528AbiBJB0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:26:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiBJBZg (ORCPT
+        with ESMTP id S232118AbiBJBZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:25:36 -0500
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090E026D6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:25:38 -0800 (PST)
-Received: by mail-ua1-x92b.google.com with SMTP id w21so2234338uan.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:25:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GJJ5yMq4ZICn27lugqpl19qQCQjAVf5SyLvlpWNSqt0=;
-        b=VNgm+lzKXsiNKKdpaoeaWNAu32B5xjtsHA1m4wVSv9gTf4IV5ROsg7e2nuHKpdvAn3
-         TRXaj9ph4kV3IW/BUH8OPDoCqAv78qclFKnKW/daXW1QL0PKct5O7o9NrHL8UXd7ZGBY
-         poD4IygP47kjs50QclsEQIXz+N7WaDSRxVS9mmj3sri59JIg/pI8PfpTHXp5pHLcznCt
-         0nzNI2NsRkn3hoiQRjdvB0ARz87iRF6/T1uHX8sT0QzCYSNFpsurMsvPdpl3Ue+sdo4V
-         peZlpOYn+oATQ2bv85shLDAzrS51pfQ2mZtthqN45XvU5FtWB5tEnOkaN2541gkgbjyP
-         relw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GJJ5yMq4ZICn27lugqpl19qQCQjAVf5SyLvlpWNSqt0=;
-        b=birp4OsXQgnAW49cq77HH2PGU7IZkbIxyGzpKxEVEBjbYTLKUktEWi+xON8c6lMBSx
-         5CF+9bOjF8nM828MdPw6LPJQ/Hy5EA4cHCoskDEFxnVHmWEAkX7EASuJiaHYTla2NQxG
-         gvlti9v6tFzfugps0eus2cPb8AbX69kYgcaWambZ7RvjeZqbmCfvzK3Cci3m34Z6mNLK
-         GYGdDzL2EKwZZEkrdeVzQjQm2qhKURH+1b0Q2Ot6nDW1VIAxr2PMjvYEdzQ5PkaDvtwp
-         WyR0POAyLRNq+WidAEy6PJuK8ZQMtwW4gQoa/kVENnN6Mo7+VW96n+he4HQrQ4abzE8N
-         TiAQ==
-X-Gm-Message-State: AOAM533sNzMb8qBLaG/DSwZQ6Jvsp7ouBM/znq3znmGQw+8DyWHQwApa
-        WxDR+IhxXNmxGPWGk9QvGaqtCs1N8PmA/b9UFT9MUoUqOzuWFOus
-X-Google-Smtp-Source: ABdhPJxQZxm3apDeuDNnV3eo9lSJfTQBksY2fWlFYAWl9sDbeKsof4m++lkshWfOLuTQ90yHcGl80ySA19rW5Cwqyv8=
-X-Received: by 2002:a25:7a47:: with SMTP id v68mr5063005ybc.488.1644454967763;
- Wed, 09 Feb 2022 17:02:47 -0800 (PST)
+        Wed, 9 Feb 2022 20:25:41 -0500
+X-Greylist: delayed 169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 17:25:43 PST
+Received: from condef-01.nifty.com (condef-01.nifty.com [202.248.20.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35B81261F;
+        Wed,  9 Feb 2022 17:25:42 -0800 (PST)
+Received: from conssluserg-03.nifty.com ([10.126.8.82])by condef-01.nifty.com with ESMTP id 21A0nMGk016551;
+        Thu, 10 Feb 2022 09:49:22 +0900
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50]) (authenticated)
+        by conssluserg-03.nifty.com with ESMTP id 21A0n28Z006407;
+        Thu, 10 Feb 2022 09:49:03 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 21A0n28Z006407
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1644454143;
+        bh=dAKyP6GJpF6V2QvUnN/LuX24hdc1hZvojEh30WfrKgY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IG3GM/DeBViLLxnZ3fQanZTvYc802gcfsCckcPHRrgf4Tgn/4P+ZJFsO3kgDlgsmp
+         vI5pkF+QlLMWdv3f52B0XYjh86Z3SnjkGoOvjbmWVbpMB6wBedSkwtS4CKTnv28iJa
+         nvcntW2JHBQU1P18cC/PDDZfNV0aP6i8qf4TEK3NjITMDvsHosz7waB8K9oRFRNhJ4
+         KUJtRKRrIWLIC0b8npHrf3jv1iiMm+KoZawBTUnYsysnbEkuWH9Qlt2IBQoqIsfgQ1
+         ZqEC6DqW6nFmnAOyGwqdyHLC7ab+b2V/y9mylO0uxgtYh/b4C6nJCc6a2jHBRIT0D2
+         1vKnjktfIdKRA==
+X-Nifty-SrcIP: [209.85.216.50]
+Received: by mail-pj1-f50.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso2785249pjj.1;
+        Wed, 09 Feb 2022 16:49:02 -0800 (PST)
+X-Gm-Message-State: AOAM533uAB+PAvqxxxQOsb9xhjU1ODM3mH87X1FQ4M/cW1gcEx05HHFZ
+        uswokZOlQJDYy/Hrhs0o6o1dMnI3cyZulZxSYX4=
+X-Google-Smtp-Source: ABdhPJz+oomnAexVoHRJuLkhmhIQ/hVUcOzqSdE+0J9BS1NupWTERWXAvLXlLHjA+mI8F9nQCQ7P39mPbMqd7K7oOx4=
+X-Received: by 2002:a17:90b:4a4b:: with SMTP id lb11mr20816pjb.144.1644454142067;
+ Wed, 09 Feb 2022 16:49:02 -0800 (PST)
 MIME-Version: 1.0
-References: <20220210001801.15413-1-surenb@google.com> <20220209163324.bbf26e7462b217d453c5a34f@linux-foundation.org>
-In-Reply-To: <20220209163324.bbf26e7462b217d453c5a34f@linux-foundation.org>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Wed, 9 Feb 2022 17:02:36 -0800
-Message-ID: <CAJuCfpGen2Rr1j20ROhh41_znhs40iJJzJ20BvXm0bqD2MOx9g@mail.gmail.com>
-Subject: Re: [PATCH 1/1] mm: Fix UAF when anon vma name is used after vma is freed
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Colin Cross <ccross@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Peter Collingbourne <pcc@google.com>, caoxiaofeng@yulong.com,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+References: <20220208184309.148192-1-nick.alcock@oracle.com> <20220208184309.148192-5-nick.alcock@oracle.com>
+In-Reply-To: <20220208184309.148192-5-nick.alcock@oracle.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 10 Feb 2022 09:48:26 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAT-4sJj9hzPHS2nb01ri+wRv+O-6N4048N2qTVVxicUfg@mail.gmail.com>
+Message-ID: <CAK7LNAT-4sJj9hzPHS2nb01ri+wRv+O-6N4048N2qTVVxicUfg@mail.gmail.com>
+Subject: Re: [PATCH v8 4/6] kallsyms: introduce sections needed to map symbols
+ to built-in modules
+To:     Nick Alcock <nick.alcock@oracle.com>
+Cc:     "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, bas@baslab.org,
+        tglozar@gmail.com, Ast-x64@protonmail.com, viktor.malik@gmail.com,
+        Daniel Xu <dxu@dxuuu.xyz>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eugene Loh <eugene.loh@oracle.com>,
+        Kris Van Hees <kris.van.hees@oracle.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:33 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+On Wed, Feb 9, 2022 at 3:44 AM Nick Alcock <nick.alcock@oracle.com> wrote:
 >
-> On Wed,  9 Feb 2022 16:18:01 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
+> The mapping consists of three new symbols, computed by integrating the
+> information in the (just-added) .tmp_vmlinux.ranges and
+> modules_thick.builtin: taken together, they map address ranges
+> (corresponding to object files on the input) to the names of zero or
+> more modules containing those address ranges.
 >
-> > When adjacent vmas are being merged it can result in the vma that was
-> > originally passed to madvise_update_vma being destroyed. In the current
-> > implementation, the name parameter passed to madvise_update_vma points
-> > directly to vma->anon_name->name and it is used after the call to
-> > vma_merge. In the cases when vma_merge merges the original vma and
-> > destroys it, this will result in use-after-free bug as shown below:
-> >
-> > madvise_vma_behavior << passes vma->anon_name->name as name param
-> >   madvise_update_vma(name)
-> >     vma_merge
-> >       __vma_adjust
-> >         vm_area_free <-- frees the vma
-> >     replace_vma_anon_name(name) <-- UAF
-> >
-> > Fix this by passing madvise_update_vma a copy of the name.
-> >
-> > ...
-> >
-> > --- a/kernel/sys.c
-> > +++ b/kernel/sys.c
-> > @@ -2263,7 +2263,6 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
-> >
-> >  #ifdef CONFIG_ANON_VMA_NAME
-> >
-> > -#define ANON_VMA_NAME_MAX_LEN                80
-> >  #define ANON_VMA_NAME_INVALID_CHARS  "\\`$[]"
-> >
-> >  static inline bool is_valid_name_char(char ch)
-> > diff --git a/mm/madvise.c b/mm/madvise.c
-> > index 5604064df464..f36a5a9942d8 100644
-> > --- a/mm/madvise.c
-> > +++ b/mm/madvise.c
-> > @@ -976,6 +976,8 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
-> >  {
-> >       int error;
-> >       unsigned long new_flags = vma->vm_flags;
-> > +     char name_buf[ANON_VMA_NAME_MAX_LEN];
-> > +     const char *anon_name;
-> >
-> >       switch (behavior) {
-> >       case MADV_REMOVE:
-> > @@ -1040,8 +1042,18 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
-> >               break;
-> >       }
-> >
-> > +     anon_name = vma_anon_name(vma);
-> > +     if (anon_name) {
-> > +             /*
-> > +              * Make a copy of the name because vma might be destroyed when
-> > +              * merged with another one and the name parameter might be used
-> > +              * after that.
-> > +              */
-> > +             strcpy(name_buf, anon_name);
-> > +             anon_name = name_buf;
-> > +     }
-> >       error = madvise_update_vma(vma, prev, start, end, new_flags,
-> > -                                vma_anon_name(vma));
-> > +                                anon_name);
+>  - kallsyms_module_addresses/kallsyms_module_offsets encodes the
+>    address/offset of each object file (derived from the linker map), in
+>    exactly the same way as kallsyms_addresses/kallsyms_offsets does
+>    for symbols.  There is no size: instead, the object files are assumed
+>    to tile the address space.  (This is slightly more space-efficient
+>    than using a size).  Non-text-section addresses are skipped: for now,
+>    all the users of this interface only need module/non-module
+>    information for instruction pointer addresses, not absolute-addressed
+>    symbols and the like.  This restriction can easily be lifted in
+>    future.  (Regarding the name: right now the entries correspond pretty
+>    closely to object files, so we could call the section
+>    kallsyms_objfiles or something, but the optimizer added in the next
+>    commit will change this.)
 >
-> anon_name is refcounted.  Why not use kref_get()/kref_put() instead of
-> taking a copy?
+>  - kallsyms_module_names encodes the name of each module in a modified
+>    form of strtab: notably, if an object file appears in *multiple*
+>    modules, all of which are built in, this is encoded via a zero byte,
+>    a one-byte module count, then a series of that many null-terminated
+>    strings.  As a special case, the table starts with a single zero byte
+>    which does *not* represent the start of a multi-module list.
+>
+>  - kallsyms_modules connects the two, encoding a table associated 1:1
+>    with kallsyms_module_addresses / kallsyms_module_offsets, pointing
+>    at an offset in kallsyms_module_names describing which module (or
+>    modules, for a multi-module list) the code occupying this address
+>    range is part of.  If an address range is part of no module (always
+>    built-in) it points at 0 (the null byte at the start of the
+>    kallsyms_module_names list).
+>
+> There is no optimization yet: kallsyms_modules and
+> kallsyms_module_names will almost certainly contain many duplicate
+> entries, and kallsyms_module_{addresses,offsets} may contain
+> consecutive entries that point to the same place.  The size hit is
+> fairly substantial as a result, though still much less than a naive
+> implementation mapping each symbol to a module name would be: 50KiB or
+> so.
+>
+> Signed-off-by: Nick Alcock <nick.alcock@oracle.com>
+> Reviewed-by: Kris Van Hees <kris.van.hees@oracle.com>
+> ---
+>  Makefile           |   2 +-
+>  init/Kconfig       |   8 +
+>  scripts/Makefile   |   6 +
+>  scripts/kallsyms.c | 366 +++++++++++++++++++++++++++++++++++++++++++--
+>  4 files changed, 371 insertions(+), 11 deletions(-)
+>
+> diff --git a/Makefile b/Makefile
+> index 5e823fe8390f..b719244cb571 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1151,7 +1151,7 @@ cmd_link-vmlinux =                                                 \
+>         $(CONFIG_SHELL) $< "$(LD)" "$(KBUILD_LDFLAGS)" "$(LDFLAGS_vmlinux)";    \
+>         $(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
+>
+> -vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE
+> +vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) modules_thick.builtin FORCE
+>         +$(call if_changed_dep,link-vmlinux)
+>
+>  targets := vmlinux
+> diff --git a/init/Kconfig b/init/Kconfig
+> index e9119bf54b1f..e1ca3d70cb1c 100644
+> --- a/init/Kconfig
+> +++ b/init/Kconfig
+> @@ -1530,6 +1530,14 @@ config POSIX_TIMERS
+>
+>           If unsure say y.
+>
+> +config KALLMODSYMS
+> +       default y
+> +       bool "Enable support for /proc/kallmodsyms" if EXPERT
+> +       depends on KALLSYMS
+> +       help
+> +         This option enables the /proc/kallmodsyms file, which maps symbols
+> +         to addresses and their associated modules.
+> +
+>  config PRINTK
+>         default y
+>         bool "Enable support for printk" if EXPERT
+> diff --git a/scripts/Makefile b/scripts/Makefile
+> index ce5aa9030b74..c5cc4ac3d660 100644
+> --- a/scripts/Makefile
+> +++ b/scripts/Makefile
+> @@ -29,6 +29,12 @@ ifdef CONFIG_BUILDTIME_MCOUNT_SORT
+>  HOSTCFLAGS_sorttable.o += -DMCOUNT_SORT_ENABLED
+>  endif
+>
+> +kallsyms-objs  := kallsyms.o
+> +
+> +ifdef CONFIG_KALLMODSYMS
+> +kallsyms-objs += modules_thick.o
+> +endif
+> +
+>  # The following programs are only built on demand
+>  hostprogs += unifdef
+>
+> diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
+> index 54ad86d13784..8f87b724d0fa 100644
+> --- a/scripts/kallsyms.c
+> +++ b/scripts/kallsyms.c
+> @@ -5,7 +5,10 @@
+>   * This software may be used and distributed according to the terms
+>   * of the GNU General Public License, incorporated herein by reference.
+>   *
+> - * Usage: nm -n vmlinux | scripts/kallsyms [--all-symbols] > symbols.S
+> + * Usage: nm -n vmlinux
+> + *        | scripts/kallsyms [--all-symbols] [--absolute-percpu]
+> + *             [--base-relative] [--builtin=modules_thick.builtin]
+> + *        > symbols.S
+>   *
+>   *      Table compression uses all the unused char codes on the symbols and
+>   *  maps these to the most used substrings (tokens). For instance, it might
+> @@ -24,6 +27,10 @@
+>  #include <string.h>
+>  #include <ctype.h>
+>  #include <limits.h>
+> +#include <assert.h>
+> +#include "modules_thick.h"
+> +
+> +#include "../include/generated/autoconf.h"
 
-Yes, I considered that. It would require new get/put APIs for
-anon_name and I thought I better keep it simple. This path is used
-only by madvise() syscall, so the copy overhead should not be
-critical. But if you think refcounting is more appropriate here I'll
-happily rework it. It should still be quite simple. Please let me
-know.
 
->
+
+I do not remember if I had pointed this out before,
+but including autoconf.h from a host program is wrong.
+
+Do not use ifdef CONFIG_...  in the hostprog code.
+Having --builtin=modules_thick.builtin is enough.
+
+
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
