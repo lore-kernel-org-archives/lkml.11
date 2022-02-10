@@ -2,85 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7601C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50012C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242591AbiBJODV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 09:03:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56660 "EHLO
+        id S242601AbiBJOFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 09:05:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242583AbiBJODR (ORCPT
+        with ESMTP id S241248AbiBJOFR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 09:03:17 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9EEBF5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:03:16 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21AE35dK007606;
-        Thu, 10 Feb 2022 08:03:05 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644501785;
-        bh=PiljcDEbg06UCTJ9yZCFbrV4SBZ07VQn7L8EF42ldHs=;
-        h=From:To:CC:Subject:Date;
-        b=UQXriwppD610PoH34lX2lGKDBDN/juwI102urjc7inUHzYIzZSw8FhRwMPGubaFpM
-         V5WKcwhr6k7EZZR+m6ZelutM+LWf2UJk9kSUwCadqj6MpXjPUX53Wrq13SSBqJzwMa
-         gkPNqlTKsi+qlf5x8sN34xUP4IbD5sQaEm6Nnfvc=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21AE35x3027136
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 10 Feb 2022 08:03:05 -0600
-Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 10
- Feb 2022 08:03:04 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 10 Feb 2022 08:03:04 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21AE331H077747;
-        Thu, 10 Feb 2022 08:03:04 -0600
-From:   Rahul T R <r-ravikumar@ti.com>
-To:     <thierry.reding@gmail.com>
-CC:     <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
-        <nikhil.nd@ti.com>, <tomi.valkeinen@ideasonboard.com>,
-        <laurent.pinchart@ideasonboard.com>, Rahul T R <r-ravikumar@ti.com>
-Subject: [PATCH] drm/panel: simple: Initialize bpc in RK101II01D-CT panel descriptor
-Date:   Thu, 10 Feb 2022 19:33:00 +0530
-Message-ID: <20220210140300.11900-1-r-ravikumar@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 10 Feb 2022 09:05:17 -0500
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6741B3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:05:19 -0800 (PST)
+Received: by mail-io1-f69.google.com with SMTP id 193-20020a6b01ca000000b00612778c712aso4121396iob.14
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:05:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=9sgSbApQo++c7T70sHfxQzyj8WhWNYeWFt0ennmNEF4=;
+        b=xFZSAPiqKuYfPRr4QX2wB4P95A6Ty8vQl6fA1433P/913GqdvNYZsefZITXOQ+7e1X
+         LfQ5GZMHY4LtXiqP4HUm09qaqYj5xsQ+6q63z5z8WtTySctQ2TNzpyrgmtE8qUkOxVRb
+         lENC2nZ+HWFfcisgVFlZmcme/1Dv2dfvMP8u47LmM+jvG42FpJJxtWfYra8CJUHa42Rn
+         eKKG5tATjjWJ9rVn2hJPd2KR/o6+/VN/74KEMCLQxJagmEYBwk58vQhTvTQneqPG5+js
+         w953ZGHNqxxgFqrV7t18dduDHn8eDx1eIO6w4o89xnafchfVEfT+dHrA8hCNZB0DkZm8
+         /tKA==
+X-Gm-Message-State: AOAM531xLx6bgKn247fta4aaiaodWBUhQ9apI7uHBEiELOBcu9uiAVhR
+        T15klJFk0Hd3Etc3t/Ezy/JPLMcfrANIVVKxLRJK3/5n8o5w
+X-Google-Smtp-Source: ABdhPJx9Wn+4DdjWmfvunvoohS0TCSGFqtxqixRGiPT2n7ES7InJgdBlxLJp6xXEqCpCxhBmFGtGpg9ihjjFDl5JQHf92GXr/eOb
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Received: by 2002:a05:6638:2054:: with SMTP id t20mr4051237jaj.207.1644501918370;
+ Thu, 10 Feb 2022 06:05:18 -0800 (PST)
+Date:   Thu, 10 Feb 2022 06:05:18 -0800
+In-Reply-To: <0000000000009962dc05d7a6b27f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ad4e9c05d7aa7064@google.com>
+Subject: Re: [syzbot] WARNING in mroute_clean_tables
+From:   syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dsahern@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Initialize bpc while creating panel_desc structure for RK101II01D-CT
+syzbot has found a reproducer for the following issue on:
 
-Below warning is triggered since bpc is not being initialized
+HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=141c859a700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
+dashboard link: https://syzkaller.appspot.com/bug?extid=a7c030a05218db921de5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130486f8700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d9f758700000
 
-WARNING: CPU: 2 PID: 47 at drivers/gpu/drm/panel/panel-simple.c:614
-panel_simple_probe+0x1b0/0x3c8
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com
 
-Signed-off-by: Rahul T R <r-ravikumar@ti.com>
----
- drivers/gpu/drm/panel/panel-simple.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index c324a3ed34b9..c09eb5ad65fc 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -3058,6 +3058,7 @@ static const struct drm_display_mode rocktech_rk101ii01d_ct_mode = {
- 
- static const struct panel_desc rocktech_rk101ii01d_ct = {
- 	.modes = &rocktech_rk101ii01d_ct_mode,
-+	.bpc = 8,
- 	.num_modes = 1,
- 	.size = {
- 		.width = 217,
--- 
-2.17.1
+------------[ cut here ]------------
+RTNL: assertion failed at net/core/dev.c (10367)
+WARNING: CPU: 1 PID: 3674 at net/core/dev.c:10367 unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+Modules linked in:
+CPU: 1 PID: 3674 Comm: syz-executor165 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:unregister_netdevice_many+0x1246/0x1850 net/core/dev.c:10367
+Code: 0f 85 9b ee ff ff e8 59 f1 4a fa ba 7f 28 00 00 48 c7 c6 00 90 ae 8a 48 c7 c7 40 90 ae 8a c6 05 0e a1 51 06 01 e8 3c 8a d8 01 <0f> 0b e9 70 ee ff ff e8 2e f1 4a fa 4c 89 e7 e8 c6 22 59 fa e9 ee
+RSP: 0018:ffffc90003adf6e0 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff888075bf8000 RSI: ffffffff815fa058 RDI: fffff5200075bece
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815f3dbe R11: 0000000000000000 R12: 00000000fffffff4
+R13: dffffc0000000000 R14: ffffc90003adf750 R15: ffff888070f9c000
+FS:  00007f8cda422700(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f8cda4229d0 CR3: 0000000071e66000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ mroute_clean_tables+0x244/0xb40 net/ipv6/ip6mr.c:1509
+ ip6mr_free_table net/ipv6/ip6mr.c:389 [inline]
+ ip6mr_rules_init net/ipv6/ip6mr.c:246 [inline]
+ ip6mr_net_init net/ipv6/ip6mr.c:1306 [inline]
+ ip6mr_net_init+0x3f0/0x4e0 net/ipv6/ip6mr.c:1298
+ ops_init+0xaf/0x470 net/core/net_namespace.c:140
+ setup_net+0x54f/0xbb0 net/core/net_namespace.c:331
+ copy_net_ns+0x318/0x760 net/core/net_namespace.c:475
+ create_new_namespaces+0x3f6/0xb20 kernel/nsproxy.c:110
+ copy_namespaces+0x391/0x450 kernel/nsproxy.c:178
+ copy_process+0x2e15/0x7310 kernel/fork.c:2167
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2555
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f8cda472169
+Code: Unable to access opcode bytes at RIP 0x7f8cda47213f.
+RSP: 002b:00007f8cda4222f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
+RAX: ffffffffffffffda RBX: 00007f8cda4fb4e0 RCX: 00007f8cda472169
+RDX: 0000000020000080 RSI: 0000000020000050 RDI: 0000000046000080
+RBP: 00007f8cda4c82fc R08: 0000000020000100 R09: 0000000000000000
+R10: 00000000200000c0 R11: 0000000000000246 R12: 00007f8cda4c82ed
+R13: 2bcc52a5f498fa8d R14: 000000344059e000 R15: 00007f8cda4fb4e8
+ </TASK>
 
