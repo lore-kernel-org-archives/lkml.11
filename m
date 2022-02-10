@@ -2,92 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E12BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238386AbiBJJSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:18:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45440 "EHLO
+        id S238390AbiBJJTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:19:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235240AbiBJJSV (ORCPT
+        with ESMTP id S235240AbiBJJTb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:18:21 -0500
-X-Greylist: delayed 1071 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 01:18:22 PST
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1084F5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:18:22 -0800 (PST)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JvVwG6mpwz1FD5t;
-        Thu, 10 Feb 2022 16:56:14 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 17:00:11 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Feb
- 2022 17:00:11 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <op-tee@lists.trustedfirmware.org>
-CC:     <jens.wiklander@linaro.org>, <sumit.garg@linaro.org>
-Subject: [PATCH -next] tee: optee: fix error return code in probe function
-Date:   Thu, 10 Feb 2022 17:10:53 +0800
-Message-ID: <20220210091053.2045809-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 04:19:31 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D2C4F5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:19:33 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B02B3113E;
+        Thu, 10 Feb 2022 01:19:32 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E1E173F718;
+        Thu, 10 Feb 2022 01:19:28 -0800 (PST)
+Date:   Thu, 10 Feb 2022 09:19:10 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, dave.hansen@linux.intel.com, frederic@kernel.org,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v3 6/7] arm64: entry: centralize premeption decision
+Message-ID: <YgTYcmrKAmHzU2im@FVFF77S0Q05N>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+ <20220209153535.818830-7-mark.rutland@arm.com>
+ <YgQDrGaWerGM3B2C@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgQDrGaWerGM3B2C@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If teedev_open() fails, probe function need return
-error code.
+On Wed, Feb 09, 2022 at 06:10:52PM +0000, Catalin Marinas wrote:
+> On Wed, Feb 09, 2022 at 03:35:34PM +0000, Mark Rutland wrote:
+> > For historical reasons, the decision of whether or not to preempt is
+> > spread across arm64_preempt_schedule_irq() and __el1_irq(), and it would
+> > be clearer if this were all in one place.
+> > 
+> > Also, arm64_preempt_schedule_irq() calls lockdep_assert_irqs_disabled(),
+> > but this is redundant, as we have a subsequent identical assertion in
+> > __exit_to_kernel_mode(), and preempt_schedule_irq() will
+> > BUG_ON(!irqs_disabled()) anyway.
+> > 
+> > This patch removes the redundant assertion and centralizes the
+> > preemption decision making within arm64_preempt_schedule_irq().
+> > 
+> > Other than the slight change to assertion behaviour, there should be no
+> > functional change as a result of this patch.
+> > 
+> > Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+> > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > Cc: James Morse <james.morse@arm.com>
+> > Cc: Joey Gouly <joey.gouly@arm.com>
+> > Cc: Valentin Schneider <valentin.schneider@arm.com>
+> > Cc: Will Deacon <will@kernel.org>
+> 
+> I acked this patch in v2, has anything changed? Well, here it is again:
 
-Fixes: aceeafefff73 ("optee: use driver internal tee_context for some rpc")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/tee/optee/ffa_abi.c | 4 +++-
- drivers/tee/optee/smc_abi.c | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+Sorry; I had meant to add your acks.
 
-diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-index f2bf6c61197f..f744ab15bf2c 100644
---- a/drivers/tee/optee/ffa_abi.c
-+++ b/drivers/tee/optee/ffa_abi.c
-@@ -869,8 +869,10 @@ static int optee_ffa_probe(struct ffa_device *ffa_dev)
- 	optee_supp_init(&optee->supp);
- 	ffa_dev_set_drvdata(ffa_dev, optee);
- 	ctx = teedev_open(optee->teedev);
--	if (IS_ERR(ctx))
-+	if (IS_ERR(ctx)) {
-+		rc = PTR_ERR(ctx);
- 		goto err_rhashtable_free;
-+	}
- 	optee->ctx = ctx;
- 	rc = optee_notif_init(optee, OPTEE_DEFAULT_MAX_NOTIF_VALUE);
- 	if (rc)
-diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-index 1a55339c7072..c517d310249f 100644
---- a/drivers/tee/optee/smc_abi.c
-+++ b/drivers/tee/optee/smc_abi.c
-@@ -1417,8 +1417,10 @@ static int optee_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, optee);
- 	ctx = teedev_open(optee->teedev);
--	if (IS_ERR(ctx))
-+	if (IS_ERR(ctx)) {
-+		rc = PTR_ERR(ctx);
- 		goto err_supp_uninit;
-+	}
- 	optee->ctx = ctx;
- 	rc = optee_notif_init(optee, max_notif_value);
- 	if (rc)
--- 
-2.25.1
+This patch is the same as in v2; the other patch has some minor changes as in
+the cover letter (adding includes and always exposing a couple of function
+prototypes).
 
+> Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+
+Thanks!
+
+> BTW, you have a typo in the subject.
+
+I'll go fix that now.
+
+Mark.
