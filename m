@@ -2,151 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F98C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:05:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E43C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:05:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234153AbiBJCDJ convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:03:09 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33174 "EHLO
+        id S229996AbiBJCFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:05:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234608AbiBJCAR (ORCPT
+        with ESMTP id S234354AbiBJCDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 21:00:17 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458DB103F;
-        Wed,  9 Feb 2022 17:57:21 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:43770)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHyhy-0011Oq-PQ; Wed, 09 Feb 2022 18:57:18 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:44682 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nHyhw-00AMiJ-MT; Wed, 09 Feb 2022 18:57:18 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Solar Designer <solar@openwall.com>
-Cc:     Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        Linux Containers <containers@lists.linux-foundation.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <20220207121800.5079-2-mkoutny@suse.com>
-        <20220210011405.GA17076@openwall.com>
-Date:   Wed, 09 Feb 2022 19:57:10 -0600
-In-Reply-To: <20220210011405.GA17076@openwall.com> (Solar Designer's message
-        of "Thu, 10 Feb 2022 02:14:05 +0100")
-Message-ID: <87v8xn8ow9.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nHyhw-00AMiJ-MT;;;mid=<87v8xn8ow9.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX18XlNqZ8OwOBkY4TyLNlmApbq/5YW22QNU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [RFC PATCH 1/6] set_user: Perform RLIMIT_NPROC capability check
- against new user credentials
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+        Wed, 9 Feb 2022 21:03:36 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059F022515;
+        Wed,  9 Feb 2022 17:59:18 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id h9so3588307qvm.0;
+        Wed, 09 Feb 2022 17:59:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=zaHt6sWpY5C0HN1ZyaKoNPi53f6iEdj2wRBDsfELfWU=;
+        b=BNSgM9M2q7YKdC1G9xJhJ8sUwBQxKbiTGrTUxwClWh81PssGEn6KXzXhPZ/9/U8ZOX
+         t63m+TzEb4+Jm/1BwuWkt8a4uzdfG3jc3uy7H8eGuwy59NlMZcBMz+k1yK0nerUS4QCU
+         /nlqtrSuIVjaq7OGltcmH1xkbhzOKyQt2rWpSyf00XSWIc1w2HFU7xylTSGSJlaN6B5n
+         XnFHLNstc+yGqwHqIkKGv2MZZxl/f13U0I3xHoETtOp12LP9jt8dUismLkZt6p+fW2Mi
+         70jBw6I0jubYrqyCJd7ZqFhM9T+YejOK/PQpfajXsXN/wqqixnylLru/BYB75YHTWZDE
+         q07g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=zaHt6sWpY5C0HN1ZyaKoNPi53f6iEdj2wRBDsfELfWU=;
+        b=jj3DuASSBy2OOwwle+xz7rMrj3rKRQ49OwzagC83z+FxQs1hsMb4X2bNOwgujPIm0J
+         5xxHGyfiSPIaJhwDAdq1aNcXoYCOmxmltth6IMOPVo2t087NoBmTSZH+i0XxFkFv7noX
+         PB0gx98WQqBb38n7euoZYh1IglUmtcEzWct25u6Jx4mcXIGU6Gi+cPRdlbSQ/6QeNU6H
+         ibTFZ5txp4ldZAxtFeySNf0uUXsEYEM/hgB8tMbtMZHNX1YkYwrQmu/a8vfxQHcgo729
+         MFikQXZqEpDwGXA/zD42jznyT83UCFOU86tiey4VCx3cT0DmRYXlTVQybSEr32Fs8xEH
+         9lCw==
+X-Gm-Message-State: AOAM530v9OPySUmQf5NegEC976sTO4JzQ/eSO51QlHk3LV/Pc7LEJmco
+        e5Mm+GhS9QgqIitIT0IVhWl+31bS0vLwcftUfWUzXw==
+X-Google-Smtp-Source: ABdhPJzBc4q1624esWkXsa/tTH4nOvT+siaocFtsFfYzTyxgTjF6Yh8Jj3GhJxDceysQPVJfbwYbKA==
+X-Received: by 2002:a05:6a00:15cd:: with SMTP id o13mr4983528pfu.54.1644454450294;
+        Wed, 09 Feb 2022 16:54:10 -0800 (PST)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [71.19.144.195])
+        by smtp.gmail.com with ESMTPSA id s6sm15198505pgk.44.2022.02.09.16.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 16:54:09 -0800 (PST)
+Message-ID: <62046231.1c69fb81.c9820.768b@mx.google.com>
+Date:   Wed, 09 Feb 2022 16:54:09 -0800 (PST)
+X-Google-Original-Date: Thu, 10 Feb 2022 00:54:02 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
+Subject: RE: [PATCH 5.15 0/5] 5.15.23-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Solar Designer <solar@openwall.com> writes:
+On Wed,  9 Feb 2022 20:14:25 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.15.23 release.
+> There are 5 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.23-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-> Hi Michal,
->
-> On Mon, Feb 07, 2022 at 01:17:55PM +0100, Michal Koutný wrote:
->> The check is currently against the current->cred but since those are
->> going to change and we want to check RLIMIT_NPROC condition after the
->> switch, supply the capability check with the new cred.
->> But since we're checking new_user being INIT_USER any new cred's
->> capability-based allowance may be redundant when the check fails and the
->> alternative solution would be revert of the commit 2863643fb8b9
->> ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
->> 
->> Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
->> 
->> Cc: Solar Designer <solar@openwall.com>
->> Cc: Christian Brauner <christian.brauner@ubuntu.com>
->> Signed-off-by: Michal Koutný <mkoutny@suse.com>
->> ---
->>  kernel/sys.c | 3 ++-
->>  1 file changed, 2 insertions(+), 1 deletion(-)
->> 
->> diff --git a/kernel/sys.c b/kernel/sys.c
->> index 8ea20912103a..48c90dcceff3 100644
->> --- a/kernel/sys.c
->> +++ b/kernel/sys.c
->> @@ -481,7 +481,8 @@ static int set_user(struct cred *new)
->>  	 */
->>  	if (ucounts_limit_cmp(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) >= 0 &&
->>  			new_user != INIT_USER &&
->> -			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
->> +			!security_capable(new, &init_user_ns, CAP_SYS_RESOURCE, CAP_OPT_NONE) &&
->> +			!security_capable(new, &init_user_ns, CAP_SYS_ADMIN, CAP_OPT_NONE))
->>  		current->flags |= PF_NPROC_EXCEEDED;
->>  	else
->>  		current->flags &= ~PF_NPROC_EXCEEDED;
->
-> Thank you for working on this and CC'ing me on it.  This is related to
-> the discussion Christian and I had in September:
->
-> https://lore.kernel.org/all/20210913100140.bxqlg47pushoqa3r@wittgenstein/
->
-> Christian was going to revert 2863643fb8b9, but apparently that never
-> happened.  Back then, I also suggested:
->
-> "Alternatively, we could postpone the set_user() calls until we're
-> running with the new user's capabilities, but that's an invasive change
-> that's likely to create its own issues."
+5.15.23-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
-I really think we need to do something like that.  Probably just set a
-flag in commit_creds and test later.
-
-I was working on fixes that looked cleaner and I just recently realized
-that the test in fork is almost as bad.  The function has_capability can
-be used but the same kind of problems exist.
-
-I thought I was very quickly going to have patches to post but I need
-to redo everything now that I have noticed the issue in fork, so it will
-be a day or so.
-
-Eric
-
-
-> The change you propose above is similar to that, but is more limited and
-> non-invasive.  That looks good to me.
->
-> However, I think you need to drop the negations of the return value from
-> security_capable().  security_capable() returns 0 or -EPERM, while
-> capable() returns a bool, in kernel/capability.c: ns_capable_common():
->
-> 	capable = security_capable(current_cred(), ns, cap, opts);
-> 	if (capable == 0) {
-> 		current->flags |= PF_SUPERPRIV;
-> 		return true;
-> 	}
-> 	return false;
->
-> Also, your change would result in this no longer setting PF_SUPERPRIV.
-> This may be fine, but you could want to document it.
->
-> On a related note, this comment in security/commoncap.c needs an update:
->
->  * NOTE WELL: cap_has_capability() cannot be used like the kernel's capable()
->  * and has_capability() functions.  That is, it has the reverse semantics:
->  * cap_has_capability() returns 0 when a task has a capability, but the
->  * kernel's capable() and has_capability() returns 1 for this case.
->
-> cap_has_capability() doesn't actually exist, and perhaps the comment
-> should refer to cap_capable().
->
-> Alexander
