@@ -2,171 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBADC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:32:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232999AbiBJBcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:32:08 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39252 "EHLO
+        id S233037AbiBJBcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:32:17 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232926AbiBJBbz (ORCPT
+        with ESMTP id S233043AbiBJBcK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:31:55 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E8510C4
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:31:55 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id ki18-20020a17090ae91200b001b8be87e9abso709625pjb.1
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:31:55 -0800 (PST)
+        Wed, 9 Feb 2022 20:32:10 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F7D2252B
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:32:06 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id ay7so4432496oib.8
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:32:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Yudl84hMQxfLHFinLSXzC02VLhYOexhpsfOokm5q7zI=;
-        b=iFEW70mUyIL6xFZqNc3fyWHhA7kZK7m5jhoBEudtRgQuUlpyo3hymoFzHKr9RsO6/+
-         NdEDJ00DowKRMIYQeISCJHTZ4mbIR5iP+hFQL8F17u1pOwXluhTtTtioMNMC60aY7nzC
-         7FKKeheDXxy54qnX0IiS0kzvvEZufRLroLR5LVUPYKxeWFODnbwJ/93kvpDJyHV5RySB
-         /9C/1IZTvdzM15USHlH1Awi4btfqLsxH9U99a4mXqV4TC1gswlZYuX8r2dXAqZIlJLTS
-         6+/O9OH8A1wLHV0i58r75smombgDabG6r0Re34kGoX2hTQBvSKL632T9mRl6xQm7OhP3
-         xfhQ==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=JA8SYVMxaUyH4YyZJM0C21azBYEMmi2Y1kxP1Lk2Sfc=;
+        b=O3c6mAlIw3LJ6tHGeInotdtty8m394xV0O/zN1i5RWCIhhfLgZUgyenmomq+2yAdtF
+         lkBG5v1vqioAZDjPgTKmVulcUw7dq6qMEQs0O+YK8Al8OES0a8R9wNGRfl/NqhBso73B
+         aZdSh1Vr0PxzlbkLbNsRCwjITa6mtVVMmdZHU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Yudl84hMQxfLHFinLSXzC02VLhYOexhpsfOokm5q7zI=;
-        b=iCAJsSgftXZApRUEsopIY0W/6n9IhbdItvgTJ8CxjvY6eNYhImjAQdi7IKns9/UK4W
-         kGjdHFju4vNBPbLM8fH9KS+PygRrddt6QCaAmShaWmtTzsg1pdeGEtxk7ZQXdXXGRe+E
-         DoQOIzKfRD00amTBbZEmm7+pkYF8c87aEjPzr4OSBQlL5zu0B8PO16ifDcufbP690wnG
-         KZwYJlN0tfTzQ4zy9FV3Sk6g/pvR2SCv4/9An8s4Fo4bBmmPY9B8rjra0NDtPVs9xFcd
-         GGs8AHK9RclIM0tXwt5oOAt+GNVxGuX3hCQM1GQ/D4PS+BN+0OCMvnrvVKouw6vM/mhY
-         DF0A==
-X-Gm-Message-State: AOAM5316rusZtcBBs5b/VyW5vTiC607m7OBI6LYgvamcBuqLxJpSVeVF
-        2v1z2geeDRr+kFpJvi08PpIRdt60Db0fbg==
-X-Google-Smtp-Source: ABdhPJxrU1x5K4f/mXLdxnZ6HovUenwDypXBS9OnT3ytekHe8lLu1VHAQBCI4PBjKjp+rrZhlhUtiA==
-X-Received: by 2002:a17:902:6905:: with SMTP id j5mr4775844plk.145.1644453012311;
-        Wed, 09 Feb 2022 16:30:12 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id i3sm5521002pgq.65.2022.02.09.16.30.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:30:11 -0800 (PST)
-Date:   Thu, 10 Feb 2022 00:30:08 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     David Matlack <dmatlack@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, vkuznets@redhat.com
-Subject: Re: [PATCH 01/23] KVM: MMU: pass uses_nx directly to
- reset_shadow_zero_bits_mask
-Message-ID: <YgRckLixnxa7hLqB@google.com>
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-2-pbonzini@redhat.com>
- <Yf1pk1EEBXj0O0/p@google.com>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=JA8SYVMxaUyH4YyZJM0C21azBYEMmi2Y1kxP1Lk2Sfc=;
+        b=Iw1sT4eGRnR0b02Ki7QwuvjETE5Q6Yaj2G5nVfXIlJCL6mFHRrYnWxK4ZUi5GQSJE8
+         TB7W7SPjjU/VeJ9+nBoFRzqhwmk+5m+18cDc1ov8ibrRwTOnIpqQGRxcITsc0reojQCl
+         6K1qvWredOwBCxWDOdY5qgROeBkLDFnANI4QKxky8nI+8ZocuzQeikYgYvPU5tCkiXvF
+         IdWfJNw4bpP17jIypGlQgBO2jCBFe4IjRIuD21AT+ml+JO7eQeWFGrAFoymy5iiGZx5y
+         vTA3UulzOL1vTjvDsgjjfd9dqumOWMRrD+ZPbGqDD5wbWVOh6gLVRVXBkYSc0zSY2sgj
+         p3ow==
+X-Gm-Message-State: AOAM532SGpwtIVJHYZu9iYoozktrzO/tx97o1LNii7rraelgPLXWFEDp
+        ktae3FcdcUyc3EnaMf3X8CEfGbvjJ8yTSfWoNpeb4Q==
+X-Google-Smtp-Source: ABdhPJzzlx3EUJerFZaJLb5bo/Ioe6tDfoil/nNDn7PZlJm3As5kujrEC2xVsGqaKf2pGVwpd8IFLA4u8yQTkDzY6KU=
+X-Received: by 2002:aca:ad97:: with SMTP id w145mr76985oie.238.1644456725843;
+ Wed, 09 Feb 2022 17:32:05 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 9 Feb 2022 17:32:05 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yf1pk1EEBXj0O0/p@google.com>
+In-Reply-To: <1644331940-18986-4-git-send-email-quic_c_skakit@quicinc.com>
+References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com> <1644331940-18986-4-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 9 Feb 2022 17:32:05 -0800
+Message-ID: <CAE-0n52B4heY5fcbz71JPOqvMVvmqsXO94V+Z0qTTw_XXextJw@mail.gmail.com>
+Subject: Re: [PATCH V5 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022, David Matlack wrote:
-> On Fri, Feb 04, 2022 at 06:56:56AM -0500, Paolo Bonzini wrote:
-> > reset_shadow_zero_bits_mask has a very unintuitive way of deciding
-> > whether the shadow pages will use the NX bit.  The function is used in
-> > two cases, shadow paging and shadow NPT; shadow paging has a use for
-> > EFER.NX and needs to force it enabled, while shadow NPT only needs it
-> > depending on L1's setting.
-> > 
-> > The actual root problem here is that is_efer_nx, despite being part
-> > of the "base" role, only matches the format of the shadow pages in the
-> > NPT case.  For now, just remove the ugly variable initialization and move
-> > the call to reset_shadow_zero_bits_mask out of shadow_mmu_init_context.
-> > The parameter can then be removed after the root problem in the role
-> > is fixed.
-> > 
-> > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> 
-> Reviewed-by: David Matlack <dmatlack@google.com>
-> 
-> (I agree this commit makes no functional change.)
+Quoting Satya Priya (2022-02-08 06:52:17)
+> diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+> index c472d7f..e8569cc 100644
+> --- a/drivers/mfd/qcom-pm8008.c
+> +++ b/drivers/mfd/qcom-pm8008.c
+> @@ -8,6 +8,7 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h>
+>  #include <linux/irqdomain.h>
+> +#include <linux/mfd/core.h>
+>  #include <linux/module.h>
+>  #include <linux/of_device.h>
+>  #include <linux/of_platform.h>
+> @@ -27,6 +28,37 @@
+>  #define INT_EN_CLR_OFFSET              0x16
+>  #define INT_LATCHED_STS_OFFSET         0x18
+>
+> +static const struct mfd_cell pm8008_regulator_devs[] = {
 
-There may not be a functional change, but it drops an optimization and contributes
-to making future code/patches more fragile due to making it harder to understand
-the relationship between shadow_mmu_init_context() and __kvm_mmu_new_pgd().
+Is there some way to not allocate this structure statically forever?
 
-> > @@ -4829,8 +4820,6 @@ static void shadow_mmu_init_context(struct kvm_vcpu *vcpu, struct kvm_mmu *conte
-> >  
-> >  	reset_guest_paging_metadata(vcpu, context);
-> >  	context->shadow_root_level = new_role.base.level;
-> > -
-> > -	reset_shadow_zero_bits_mask(vcpu, context);
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 0,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 1,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 2,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 3,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 4,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 5,
+> +       },
+> +       {
+> +               .name = "qcom,pm8008-regulators",
+> +               .id = 6,
+> +       },
+> +};
+> +
+>  enum {
+>         PM8008_MISC,
+>         pm8008_temp_alarm,
+> @@ -35,6 +67,17 @@ enum {
+>         PM8008_NUM_PERIPHS,
+>  };
+>
+> +enum {
+> +       PM8008_INFRA,
+> +       PM8008_REGULATORS,
+> +};
+> +
+> +static const struct of_device_id pm8008_match[] = {
+> +       { .compatible = "qcom,pm8008", .data = (void *)PM8008_INFRA},
+> +       { .compatible = "qcom,pm8008-regulators", .data = (void *)PM8008_REGULATORS},
+> +       { },
 
-This is guarded by:
+Nitpick: Drop , on {} so nothing can come after without causing compile
+error.
 
-	if (new_role.as_u64 == context->mmu_role.as_u64)
-		return;
+> +};
+> +
+>  #define PM8008_PERIPH_0_BASE   0x900
+>  #define PM8008_PERIPH_1_BASE   0x2400
+>  #define PM8008_PERIPH_2_BASE   0xC000
+> @@ -221,6 +264,7 @@ static int pm8008_probe(struct i2c_client *client)
+>  {
+>         int rc;
+>         struct pm8008_data *chip;
+> +       const struct of_device_id *id;
+>
+>         chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+>         if (!chip)
+> @@ -239,14 +283,19 @@ static int pm8008_probe(struct i2c_client *client)
+>                         dev_err(chip->dev, "Failed to probe irq periphs: %d\n", rc);
+>         }
+>
+> +       id = of_match_node(pm8008_match, chip->dev->of_node);
 
-> >  }
-> >  
-> >  static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
-> > @@ -4841,6 +4830,16 @@ static void kvm_init_shadow_mmu(struct kvm_vcpu *vcpu,
-> >  		kvm_calc_shadow_mmu_root_page_role(vcpu, regs, false);
-> >  
-> >  	shadow_mmu_init_context(vcpu, context, regs, new_role);
-> > +
-> > +	/*
-> > +	 * KVM uses NX when TDP is disabled to handle a variety of scenarios,
-> > +	 * notably for huge SPTEs if iTLB multi-hit mitigation is enabled and
-> > +	 * to generate correct permissions for CR0.WP=0/CR4.SMEP=1/EFER.NX=0.
-> > +	 * The iTLB multi-hit workaround can be toggled at any time, so assume
-> > +	 * NX can be used by any non-nested shadow MMU to avoid having to reset
-> > +	 * MMU contexts.  Note, KVM forces EFER.NX=1 when TDP is disabled.
-> > +	 */
-> > +	reset_shadow_zero_bits_mask(vcpu, context, true);
+Use device_get_match_data()? And then use (uintptr_t) casts to check for
+the enum? Using device_get_match_data() allows us to avoid moving the
+pm8008_match table.
 
-Whereas this will compute the mask even if the role doesn't change.  I say that
-matters later on because then this sequence:
+> +       if (id->data == (void *)PM8008_REGULATORS) {
 
-	shadow_mmu_init_context(vcpu, context, &regs, new_role);
-	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
-	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
+	enum <your_name_here> dev_type = device_get_match_data(dev);
 
-becomes even more difficult to untangle.
+	if (dev_type == PM8008_REGULATORS)
 
-And looking at where this series ends up, I don't understand the purpose of this
-change.  Patch 18 essentially reverts this patch, and I see nothing in between
-that will break without the temporary change.   That patch becomes:
+> +               rc = mfd_add_devices(chip->dev, 0, pm8008_regulator_devs,
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 02e6d256805d..f9c96de1189d 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4408,7 +4408,7 @@ static void reset_shadow_zero_bits_mask(struct kvm_vcpu *vcpu,
-         * NX can be used by any non-nested shadow MMU to avoid having to reset
-         * MMU contexts.  Note, KVM forces EFER.NX=1 when TDP is disabled.
-         */
--       bool uses_nx = is_efer_nx(context) || !tdp_enabled;
-+       bool uses_nx = context->mmu_role.efer_nx;
+Why not devm_mfd_add_devices()?
 
-        /* @amd adds a check on bit of SPTEs, which KVM shouldn't use anyways. */
-        bool is_amd = true;
+> +                               ARRAY_SIZE(pm8008_regulator_devs), NULL, 0, NULL);
+> +               if (rc) {
+> +                       dev_err(chip->dev, "Failed to add children: %d\n", rc);
+> +                       return rc;
+> +               }
+> +       }
+> +
+>         return devm_of_platform_populate(chip->dev);
+>  }
+>
+> -static const struct of_device_id pm8008_match[] = {
+> -       { .compatible = "qcom,pm8008", },
+> -       { },
+> -};
 
-though it needs to update the comment as well.
+This should have a MODULE_DEVICE_TABLE(of, pm8008_match) here.
 
-> >  }
-> >  
-> >  static union kvm_mmu_role
-> > @@ -4872,6 +4871,7 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
-> >  	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
-> >  
-> >  	shadow_mmu_init_context(vcpu, context, &regs, new_role);
-> > +	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
-> 
-> Out of curiousity, how does KVM mitigate iTLB multi-hit when shadowing
-> NPT and the guest has not enabled EFER.NX?
-> 
-> >  }
-> >  EXPORT_SYMBOL_GPL(kvm_init_shadow_npt_mmu);
-> >  
-> > -- 
-> > 2.31.1
-> > 
-> > 
+> -
+>  static struct i2c_driver pm8008_mfd_driver = {
+>         .driver = {
+>                 .name = "pm8008",
