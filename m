@@ -2,68 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7601C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242579AbiBJODK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 09:03:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56484 "EHLO
+        id S242591AbiBJODV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 09:03:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242580AbiBJODE (ORCPT
+        with ESMTP id S242583AbiBJODR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 09:03:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D519A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:03:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D60E861812
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:03:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 46386C340E5;
-        Thu, 10 Feb 2022 14:03:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644501784;
-        bh=kKobx81JM9qWQ61Bn0oUUoVkVGcYutTJEWIw6A6X594=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ulJXzZu43tazrHmrEvMiHD4oS+9DPNxsgUhiGW0GuElIYdmtJBD/NawmCQgFWWqGu
-         M3xSVSHlOEEuqqOkjIlqcATX8OcrCENwezOx23ZFLoy2MTshl5THu8r0UlxUXhYElq
-         /1MzaO7aWlXOAISg9NVCK3Xp4AfkUm/e7kRcBTwhERj3pgDgcxtXrNkhcJ96iMOZcY
-         /FIuP/c7ywMzDlZSU2qscJtHdOuwQAYesSbtsD9H+nK9sEPF0/xrIwQ7V0veuKkBo9
-         yBkFdN5giY4VXRgJXK/xe5mMLatK4VIQs1g2altMokyZX9MJYFrCZJOf1z61dDxqIq
-         d5tjM91PYRXrw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35A07E5D084;
-        Thu, 10 Feb 2022 14:03:04 +0000 (UTC)
-Subject: Re: [GIT PULL] Audit fixes for v5.17 (#2)
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAHC9VhTJR7vwuSBRa1nmP4-EY-GMrJmeQ3F_tuihjqLxT23GQg@mail.gmail.com>
-References: <CAHC9VhTJR7vwuSBRa1nmP4-EY-GMrJmeQ3F_tuihjqLxT23GQg@mail.gmail.com>
-X-PR-Tracked-List-Id: Linux Audit Discussion <linux-audit.redhat.com>
-X-PR-Tracked-Message-Id: <CAHC9VhTJR7vwuSBRa1nmP4-EY-GMrJmeQ3F_tuihjqLxT23GQg@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git tags/audit-pr-20220209
-X-PR-Tracked-Commit-Id: 7a82f89de92aac5a244d3735b2bd162c1147620c
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 252787201edfdf563ddf6b6006aa534ddc504031
-Message-Id: <164450178421.30240.1907810739176095127.pr-tracker-bot@kernel.org>
-Date:   Thu, 10 Feb 2022 14:03:04 +0000
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-audit@redhat.com, linux-kernel@vger.kernel.org
+        Thu, 10 Feb 2022 09:03:17 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9EEBF5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:03:16 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21AE35dK007606;
+        Thu, 10 Feb 2022 08:03:05 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644501785;
+        bh=PiljcDEbg06UCTJ9yZCFbrV4SBZ07VQn7L8EF42ldHs=;
+        h=From:To:CC:Subject:Date;
+        b=UQXriwppD610PoH34lX2lGKDBDN/juwI102urjc7inUHzYIzZSw8FhRwMPGubaFpM
+         V5WKcwhr6k7EZZR+m6ZelutM+LWf2UJk9kSUwCadqj6MpXjPUX53Wrq13SSBqJzwMa
+         gkPNqlTKsi+qlf5x8sN34xUP4IbD5sQaEm6Nnfvc=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21AE35x3027136
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 10 Feb 2022 08:03:05 -0600
+Received: from DLEE112.ent.ti.com (157.170.170.23) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 10
+ Feb 2022 08:03:04 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 10 Feb 2022 08:03:04 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21AE331H077747;
+        Thu, 10 Feb 2022 08:03:04 -0600
+From:   Rahul T R <r-ravikumar@ti.com>
+To:     <thierry.reding@gmail.com>
+CC:     <sam@ravnborg.org>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        <nikhil.nd@ti.com>, <tomi.valkeinen@ideasonboard.com>,
+        <laurent.pinchart@ideasonboard.com>, Rahul T R <r-ravikumar@ti.com>
+Subject: [PATCH] drm/panel: simple: Initialize bpc in RK101II01D-CT panel descriptor
+Date:   Thu, 10 Feb 2022 19:33:00 +0530
+Message-ID: <20220210140300.11900-1-r-ravikumar@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 9 Feb 2022 22:42:31 -0500:
+Initialize bpc while creating panel_desc structure for RK101II01D-CT
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/audit.git tags/audit-pr-20220209
+Below warning is triggered since bpc is not being initialized
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/252787201edfdf563ddf6b6006aa534ddc504031
+WARNING: CPU: 2 PID: 47 at drivers/gpu/drm/panel/panel-simple.c:614
+panel_simple_probe+0x1b0/0x3c8
 
-Thank you!
+Signed-off-by: Rahul T R <r-ravikumar@ti.com>
+---
+ drivers/gpu/drm/panel/panel-simple.c | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index c324a3ed34b9..c09eb5ad65fc 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -3058,6 +3058,7 @@ static const struct drm_display_mode rocktech_rk101ii01d_ct_mode = {
+ 
+ static const struct panel_desc rocktech_rk101ii01d_ct = {
+ 	.modes = &rocktech_rk101ii01d_ct_mode,
++	.bpc = 8,
+ 	.num_modes = 1,
+ 	.size = {
+ 		.width = 217,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.17.1
+
