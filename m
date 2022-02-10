@@ -2,140 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA24FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbiBJJaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:30:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51956 "EHLO
+        id S238595AbiBJJaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:30:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238720AbiBJJ3g (ORCPT
+        with ESMTP id S238786AbiBJJaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:29:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5A31112
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69418619A5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD7A3C340F3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:29:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644485374;
-        bh=HGM4Q7IrvX3TCMF1bCBJF/zPO3rFe3dmiOQn+Ok2zCM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Tbc8VMytVSPwXhPAFQ+pHW0VyXILcAVQiYcTRAHd9pZIO4SZXyZVupdvYHlpEfFUs
-         MayK24kZfPvksWqOGd40rwRrxRceQ8hjZPiEmP1pVr5n4iLKklamS+/WhXp9dsCxXB
-         YBENBAFVolTJop4EqJPtwL22sKGbSygW6QpHvUlYeCJX/4bYti6U8wgKltQs9Il4Hm
-         Oar81vk9stV3J1/N2UpeA/eufrKFhbtybgz5pVV7hxvEv2O+cfPgePE5fuW/w+zGL5
-         BQWTAdmZ0xL8lSQ1hjWn/wJHdOJASqQgkwogbXY+ipSoHzuHxmQaURClnCHG0CgVfR
-         mFmr+OZgFVCFg==
-Received: by mail-wr1-f50.google.com with SMTP id d27so4604821wrb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:34 -0800 (PST)
-X-Gm-Message-State: AOAM532hJDDeZV2n4UE6v1wRghffSnlw3aJE+3bVmmJTI09re+R1UA3X
-        eheLHNNqiW3i4mwOMVZgw+wH5r0A7Q4/UZ8rlNA=
-X-Google-Smtp-Source: ABdhPJyj1SGdUBiIOfZDt8ZwdLNUao09JQ8pTbN3rxClO1zCdUAgLNfU5RFjsfxJNTGpgIBiQYMSTTpb0iJqfvEwCss=
-X-Received: by 2002:a05:6000:15ca:: with SMTP id y10mr5599700wry.417.1644485373021;
- Thu, 10 Feb 2022 01:29:33 -0800 (PST)
+        Thu, 10 Feb 2022 04:30:11 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608532193;
+        Thu, 10 Feb 2022 01:29:56 -0800 (PST)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21A9S8on025662;
+        Thu, 10 Feb 2022 09:29:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=SpAvOlbMczGLsykgOFpdpnqDTDEFsbtMWrbhYBJOwbk=;
+ b=P+aX6FIyOH0QzsZ6M9kk5zOm8FnKabzNHeSz6w08hC8tH07I3/PLpG3DorpJLGQympnk
+ pDBGD/nslEmgDoX0tvnE9hJ2VqaRT8BqFIrbKvCMxDxIkWyoMWgaMjz62lW0CUjtY91x
+ RPht+InZ7wBkHfjT8I1dMWerM7lzVysffUAJQU8CZltHC4vZgPeXKSaNtKqcxxEfbtSM
+ WRD9fIvf8rnCrNJCj5wBGWqPpnQ25fWQaQDDpc2mzhdoUPvnlaEfguXtxLi7eTcgmtBw
+ Z2+cUF4CHwV5o55+n0VmNR9oWKmzh6yryNGtT5eNQzZJEAZbIJcQs3NADx3zIoFE4qUz lg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e503q81aj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:29:54 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21A9TVsF004992;
+        Thu, 10 Feb 2022 09:29:53 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3e503q81a3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:29:53 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21A9FNBb025591;
+        Thu, 10 Feb 2022 09:29:51 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3e1gv9vcah-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:29:51 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21A9Tkh645941232
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 10 Feb 2022 09:29:46 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0F0E452059;
+        Thu, 10 Feb 2022 09:29:46 +0000 (GMT)
+Received: from [9.171.15.77] (unknown [9.171.15.77])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 682A652052;
+        Thu, 10 Feb 2022 09:29:45 +0000 (GMT)
+Message-ID: <c5d8e633-c0cd-91d4-723b-abf26c01fd6d@linux.ibm.com>
+Date:   Thu, 10 Feb 2022 10:29:45 +0100
 MIME-Version: 1.0
-References: <20220209153535.818830-1-mark.rutland@arm.com>
-In-Reply-To: <20220209153535.818830-1-mark.rutland@arm.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 10 Feb 2022 10:29:21 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXGKRc8NNQWDpgLL_=G2DWYv6wXcgkpFw=H98LxTHjpq+w@mail.gmail.com>
-Message-ID: <CAMj1kXGKRc8NNQWDpgLL_=G2DWYv6wXcgkpFw=H98LxTHjpq+w@mail.gmail.com>
-Subject: Re: [PATCH v3 0/7] arm64 / sched/preempt: support PREEMPT_DYNAMIC
- with static keys
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        James Morse <james.morse@arm.com>, joey.gouly@arm.com,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Will Deacon <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 05/10] KVM: s390: Add optional storage key checking to
+ MEMOP IOCTL
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+References: <20220209170422.1910690-1-scgl@linux.ibm.com>
+ <20220209170422.1910690-6-scgl@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <20220209170422.1910690-6-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: T2VL2Xs_s-0Pv3_lWWG9rh739H5qLs8C
+X-Proofpoint-ORIG-GUID: fW0DijVORjjbzCpT-Kk64pLj41SWqXle
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ mlxlogscore=999 priorityscore=1501 bulkscore=0 adultscore=0 clxscore=1015
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202100049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 at 16:35, Mark Rutland <mark.rutland@arm.com> wrote:
->
-> This series enables PREEMPT_DYNAMIC on arm64. To do so, it adds a new
-> mechanism allowing the preemption functions to be enabled/disabled using
-> static keys rather than static calls, with architectures selecting
-> whether they use static calls or static keys.
->
-> With non-inline static calls, each function call results in a call to
-> the (out-of-line) trampoline which either tail-calls its associated
-> callee or performs an early return.
->
-> The key idea is that where we're only enabling/disabling a single
-> callee, we can inline this trampoline into the start of the callee,
-> using a static key to decide whether to return early, and leaving the
-> remaining codegen to the compiler. The overhead should be similar to
-> (and likely lower than) using a static call trampoline. Since most
-> codegen is up to the compiler, we sidestep a number of implementation
-> pain-points (e.g. things like CFI should "just work" as well as they do
-> for any other functions).
->
-> The bulk of the diffstat for kernel/sched/core.c is shuffling the
-> PREEMPT_DYNAMIC code later in the file, and the actual additions are
-> fairly trivial.
->
-> I've given this very light build+boot testing so far.
->
-> Since v1 [1]:
-> * Rework Kconfig text to be clearer
-> * Rework arm64 entry code
-> * Clarify commit messages.
->
-> Since v2 [2]:
-> * Add missing includes
-> * Always provide prototype for preempt_schedule()
-> * Always provide prototype for preempt_schedule_notrace()
-> * Fix __cond_resched() to default to disabled
-> * Fix might_resched() to default to disabled
-> * Clarify example in commit message
->
-> [1] https://lore.kernel.org/r/20211109172408.49641-1-mark.rutland@arm.com/
-> [2] https://lore.kernel.org/r/20220204150557.434610-1-mark.rutland@arm.com/
->
-> Mark Rutland (7):
->   sched/preempt: move PREEMPT_DYNAMIC logic later
->   sched/preempt: refactor sched_dynamic_update()
->   sched/preempt: simplify irqentry_exit_cond_resched() callers
->   sched/preempt: decouple HAVE_PREEMPT_DYNAMIC from GENERIC_ENTRY
->   sched/preempt: add PREEMPT_DYNAMIC using static keys
->   arm64: entry: centralize premeption decision
->   arm64: support PREEMPT_DYNAMIC
->
+Am 09.02.22 um 18:04 schrieb Janis Schoetterl-Glausch:
+> User space needs a mechanism to perform key checked accesses when
+> emulating instructions.
+> 
+> The key can be passed as an additional argument.
+> Having an additional argument is flexible, as user space can
+> pass the guest PSW's key, in order to make an access the same way the
+> CPU would, or pass another key if necessary.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> Acked-by: Janosch Frank <frankja@linux.ibm.com>
+> Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Claudio, Janosch, can you confirm that this is still valid?
 
 
->  arch/Kconfig                     |  37 +++-
->  arch/arm64/Kconfig               |   1 +
->  arch/arm64/include/asm/preempt.h |  19 +-
->  arch/arm64/kernel/entry-common.c |  28 ++-
->  arch/x86/Kconfig                 |   2 +-
->  arch/x86/include/asm/preempt.h   |  10 +-
->  include/linux/entry-common.h     |  15 +-
->  include/linux/kernel.h           |   7 +-
->  include/linux/sched.h            |  10 +-
->  kernel/entry/common.c            |  23 +-
->  kernel/sched/core.c              | 347 ++++++++++++++++++-------------
->  11 files changed, 327 insertions(+), 172 deletions(-)
->
-> --
-> 2.30.2
->
+Reviewed-by: Christian Borntraeger <borntraeger@de.ibm.com>
+
+minor thing below
+> ---
+>   arch/s390/kvm/kvm-s390.c | 30 ++++++++++++++++++++----------
+>   include/uapi/linux/kvm.h |  6 +++++-
+>   2 files changed, 25 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index cf347e1a4f17..85763ec7bc60 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -32,6 +32,7 @@
+>   #include <linux/sched/signal.h>
+>   #include <linux/string.h>
+>   #include <linux/pgtable.h>
+> +#include <linux/bitfield.h>
+
+do we still need that after the changes?
+
+>   
+>   #include <asm/asm-offsets.h>
+>   #include <asm/lowcore.h>
+> @@ -2359,6 +2360,11 @@ static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
+>   	return r;
+>   }
+>   
+> +static bool access_key_invalid(u8 access_key)
+> +{
+> +	return access_key > 0xf;
+> +}
+> +
+>   long kvm_arch_vm_ioctl(struct file *filp,
+>   		       unsigned int ioctl, unsigned long arg)
+>   {
+> @@ -4690,17 +4696,19 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>   	void *tmpbuf = NULL;
+>   	int r = 0;
+>   	const u64 supported_flags = KVM_S390_MEMOP_F_INJECT_EXCEPTION
+> -				    | KVM_S390_MEMOP_F_CHECK_ONLY;
+> +				    | KVM_S390_MEMOP_F_CHECK_ONLY
+> +				    | KVM_S390_MEMOP_F_SKEY_PROTECTION;
+>   
+>   	if (mop->flags & ~supported_flags || mop->ar >= NUM_ACRS || !mop->size)
+>   		return -EINVAL;
+> -
+>   	if (mop->size > MEM_OP_MAX_SIZE)
+>   		return -E2BIG;
+> -
+>   	if (kvm_s390_pv_cpu_is_protected(vcpu))
+>   		return -EINVAL;
+> -
+> +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
+> +		if (access_key_invalid(mop->key))
+> +			return -EINVAL;
+> +	}
+>   	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
+>   		tmpbuf = vmalloc(mop->size);
+>   		if (!tmpbuf)
+> @@ -4710,11 +4718,12 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>   	switch (mop->op) {
+>   	case KVM_S390_MEMOP_LOGICAL_READ:
+>   		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+> -			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+> -					    mop->size, GACC_FETCH, 0);
+> +			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+> +					    GACC_FETCH, mop->key);
+>   			break;
+>   		}
+> -		r = read_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
+> +		r = read_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+> +					mop->size, mop->key);
+>   		if (r == 0) {
+>   			if (copy_to_user(uaddr, tmpbuf, mop->size))
+>   				r = -EFAULT;
+> @@ -4722,15 +4731,16 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>   		break;
+>   	case KVM_S390_MEMOP_LOGICAL_WRITE:
+>   		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+> -			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+> -					    mop->size, GACC_STORE, 0);
+> +			r = check_gva_range(vcpu, mop->gaddr, mop->ar, mop->size,
+> +					    GACC_STORE, mop->key);
+>   			break;
+>   		}
+>   		if (copy_from_user(tmpbuf, uaddr, mop->size)) {
+>   			r = -EFAULT;
+>   			break;
+>   		}
+> -		r = write_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
+> +		r = write_guest_with_key(vcpu, mop->gaddr, mop->ar, tmpbuf,
+> +					 mop->size, mop->key);
+>   		break;
+>   	}
+>   
+> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> index b46bcdb0cab1..44558cf4c52e 100644
+> --- a/include/uapi/linux/kvm.h
+> +++ b/include/uapi/linux/kvm.h
+> @@ -562,7 +562,10 @@ struct kvm_s390_mem_op {
+>   	__u32 op;		/* type of operation */
+>   	__u64 buf;		/* buffer in userspace */
+>   	union {
+> -		__u8 ar;	/* the access register number */
+> +		struct {
+> +			__u8 ar;	/* the access register number */
+> +			__u8 key;	/* access key, ignored if flag unset */
+> +		};
+>   		__u32 sida_offset; /* offset into the sida */
+>   		__u8 reserved[32]; /* should be set to 0 */
+>   	};
+> @@ -575,6 +578,7 @@ struct kvm_s390_mem_op {
+>   /* flags for kvm_s390_mem_op->flags */
+>   #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
+>   #define KVM_S390_MEMOP_F_INJECT_EXCEPTION	(1ULL << 1)
+> +#define KVM_S390_MEMOP_F_SKEY_PROTECTION	(1ULL << 2)
+>   
+>   /* for KVM_INTERRUPT */
+>   struct kvm_interrupt {
