@@ -2,80 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 845F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD71AC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:11:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344169AbiBJUJR (ORCPT
+        id S1344129AbiBJULC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 15:09:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59338 "EHLO
+        Thu, 10 Feb 2022 15:11:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344114AbiBJUJE (ORCPT
+        with ESMTP id S238091AbiBJULB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 15:09:04 -0500
+        Thu, 10 Feb 2022 15:11:01 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11C932735
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 12:09:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DE42735;
+        Thu, 10 Feb 2022 12:11:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF7E1B82745
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 20:09:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE4EC340F0;
-        Thu, 10 Feb 2022 20:09:02 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nIFkT-002zLe-KE;
-        Thu, 10 Feb 2022 15:09:01 -0500
-Message-ID: <20220210200901.465807827@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Thu, 10 Feb 2022 15:05:14 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-linus][PATCH 5/6] MAINTAINERS: Add RTLA entry
-References: <20220210200509.089236997@goodmis.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F912B8272A;
+        Thu, 10 Feb 2022 20:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAAD1C004E1;
+        Thu, 10 Feb 2022 20:10:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644523858;
+        bh=iLVxmxOrhgeAZwTkFuG1YJotZgqgklwTkad+usc+SbM=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=o56gSkY6KjsTqaNLucwpbwSfiS6lwFJGp+betDu9X8aq4l5khh7ZxFWlsuOatT/SU
+         kOGdUu/H0ffGyVffjwXC/ybeD43ppXkNTvDupxItbHL7c25YO9JTjYo5liSOPlcZC2
+         S1l9sx6T5hVnihTP/6rf8lhrpqqKkZFEIUwl5KM59cYjlYCu/0Yr+pjZ3xGxIECloB
+         CApZ1rDMi8muJMOR27g2MNZAWOGq2UPWWAP3ejtxogM0Zp3M0cGAvHvgqTg5t4J52t
+         BAlD+tYaAE1gb9pplHq+kCcw19EB/b00N+HnvtaBqE+Exhnq3oBWfkbhFmD3qaQRE5
+         TDTWUZVxVnWFA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 9B70E5C0439; Thu, 10 Feb 2022 12:10:58 -0800 (PST)
+Date:   Thu, 10 Feb 2022 12:10:58 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
+Message-ID: <20220210201058.GP4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220208184208.79303-1-namhyung@kernel.org>
+ <20220209090908.GK23216@worktop.programming.kicks-ass.net>
+ <CAM9d7cgq+jxu6FJuKhZkprn7dO4DiG5pDjmYZzneQYTfKOM85g@mail.gmail.com>
+ <YgTXUQ9CBoo3+A+c@hirez.programming.kicks-ass.net>
+ <20220210191404.GM4285@paulmck-ThinkPad-P17-Gen-1>
+ <52de2e14-33d9-bdda-4b37-3e72ae9954c7@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52de2e14-33d9-bdda-4b37-3e72ae9954c7@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+On Thu, Feb 10, 2022 at 02:27:11PM -0500, Waiman Long wrote:
+> On 2/10/22 14:14, Paul E. McKenney wrote:
+> > On Thu, Feb 10, 2022 at 10:13:53AM +0100, Peter Zijlstra wrote:
+> > > On Wed, Feb 09, 2022 at 04:32:58PM -0800, Namhyung Kim wrote:
+> > > > On Wed, Feb 9, 2022 at 1:09 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> > > > > On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
+> > > > > 
+> > > > > > Eventually I'm mostly interested in the contended locks only and I
+> > > > > > want to reduce the overhead in the fast path.  By moving that, it'd be
+> > > > > > easy to track contended locks with timing by using two tracepoints.
+> > > > > So why not put in two new tracepoints and call it a day?
+> > > > > 
+> > > > > Why muck about with all that lockdep stuff just to preserve the name
+> > > > > (and in the process continue to blow up data structures etc..). This
+> > > > > leaves distros in a bind, will they enable this config and provide
+> > > > > tracepoints while bloating the data structures and destroying things
+> > > > > like lockref (which relies on sizeof(spinlock_t)), or not provide this
+> > > > > at all.
+> > > > If it's only lockref, is it possible to change it to use arch_spinlock_t
+> > > > so that it can remain in 4 bytes?  It'd be really nice if we can keep
+> > > > spin lock size, but it'd be easier to carry the name with it for
+> > > > analysis IMHO.
+> > > It's just vile and disgusting to blow up the lock size for convenience
+> > > like this.
+> > > 
+> > > And no, there's more of that around. A lot of effort has been spend to
+> > > make sure spinlocks are 32bit and we're not going to give that up for
+> > > something as daft as this.
+> > > 
+> > > Just think harder on the analysis side. Like said; I'm thinking the
+> > > caller IP should be good enough most of the time.
+> > 
+> > Another option is to keep any additional storage in a separate data
+> > structure keyed off of lock address, lockdep class, or whatever.
+> > 
+> > Whether or not this is a -good- option, well, who knows?  ;-)
+> 
+> I have suggested that too. Unfortunately, I was replying to an email with
+> your wrong email address. So you might not have received it.
 
-Add an RTLA entry in the MAINTAINERS file with Steven Rostedt and
-myself as maintainers.
+Plus I was too lazy to go look at lore.  ;-)
 
-Link: https://lkml.kernel.org/r/50d8870522580905a1c7f3e6fb611a700f632af1.1643994005.git.bristot@kernel.org
+For whatever it is worth, we did something similar in DYNIX/ptx, whose
+spinlocks were limited to a single byte.  But it does have its drawbacks.
 
-Cc: Joe Perches <joe@perches.com>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ea3e6c914384..61d127e3314f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19576,6 +19576,14 @@ F:	Documentation/trace/timerlat-tracer.rst
- F:	Documentation/trace/hwlat_detector.rst
- F:	arch/*/kernel/trace.c
- 
-+Real-time Linux Analysis (RTLA) tools
-+M:	Daniel Bristot de Oliveira <bristot@kernel.org>
-+M:	Steven Rostedt <rostedt@goodmis.org>
-+L:	linux-trace-devel@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/tools/rtla/
-+F:	tools/tracing/rtla/
-+
- TRADITIONAL CHINESE DOCUMENTATION
- M:	Hu Haowen <src.res@email.cn>
- L:	linux-doc-tw-discuss@lists.sourceforge.net
--- 
-2.34.1
+							Thanx, Paul
