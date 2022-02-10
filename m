@@ -2,134 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F18C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1045BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242527AbiBJN5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:57:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53170 "EHLO
+        id S242530AbiBJN6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:58:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242513AbiBJN5M (ORCPT
+        with ESMTP id S235060AbiBJN6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:57:12 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31061BF5;
-        Thu, 10 Feb 2022 05:57:13 -0800 (PST)
+        Thu, 10 Feb 2022 08:58:09 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F0B9A;
+        Thu, 10 Feb 2022 05:58:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644501433; x=1676037433;
+  t=1644501490; x=1676037490;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=OFP1NltEDOTkFZpR5z2865Gx8le09uqHZgXyYOTV2S4=;
-  b=captqA7NfiTaSUeYOqjU1bXEluI1uDcuFnafc+vB35D23AwoMhX0yPUe
-   h2m0V9l/wI2tNMNpv5ejunl+Ow/brKzpcnNJC04EeQXl1eVSNJ4tEnpjY
-   /+L6QPu1ZN/p2aZ5jOB9N2wePeoceYVJB3Mwml+yNFzL/q+/fBaWLJOkL
-   lj2NzA3yCLkjcE9TqLuudAHgQ4q1+FFtvMDz9YiTsRbdDfeZ2WT7GnGls
-   WVNFACV/5+3hEbosvkbHPSLjIUECYN15LiJ7pHpLMZVEwfGEtse3pKl0Z
-   p5woW2/XbAcR9wvtWa880wU8u+OPtOC0CQk0pO2hkHJgRlmShaNrvFbgL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="233054007"
+  bh=wHeKyQCVnyauIWBqHolq/Aeqe75EVRZohHRCGcosvUQ=;
+  b=T3Vf8AWRRcNfqPdFPql/dEV4d3AGuOnQHXvBjjWs0BXu9woK/ucMM3xM
+   tlj4jG3v8GVoLVgKgwDsia+mKHlsFHJ31ORunTQ1PRo4scz7JaoDVYHzV
+   FOFWgywEWvMaECJ0LtFELg6vzF7a2Gagp9q2h/ggtouFQXV5fPHZMM3Zh
+   o9QO0KPCjhhM12StC6vVQ42ycIpgMBWJ3Dk/j+ID3YvG9/wRyBOY7Jd7U
+   pnUBexKGYOrxQqZs0JhgrF4HCr6DlR3rpkAPqkzk/0UCXrZ44NVTzV1wt
+   CwwM68scG0057m4xEjTuH2czMNNjIZXLQs8R7scbjGCgE6YtuIBKi7YIv
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="335910153"
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="233054007"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:57:12 -0800
+   d="scan'208";a="335910153"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:58:10 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="773875261"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Feb 2022 05:57:10 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 20FC9366; Thu, 10 Feb 2022 15:57:25 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 1/1] iio: ssp_sensors: Make use of device properties
-Date:   Thu, 10 Feb 2022 15:57:24 +0200
-Message-Id: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+   d="scan'208";a="526487206"
+Received: from silpixa00400294.ir.intel.com ([10.237.222.100])
+  by orsmga007.jf.intel.com with ESMTP; 10 Feb 2022 05:58:08 -0800
+From:   Wojciech Ziemba <wojciech.ziemba@intel.com>
+To:     herbert@gondor.apana.org.au
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com, Wojciech Ziemba <wojciech.ziemba@intel.com>
+Subject: [PATCH v2 0/3] Introduce support for QAT Dynamic Power Management
+Date:   Thu, 10 Feb 2022 13:38:24 +0000
+Message-Id: <20220210133827.2366901-1-wojciech.ziemba@intel.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
+Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 - Collinstown Industrial Park, Leixlip, County Kildare - Ireland
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+This patch set consist of following updates:
+1. Add misc workqueue for general purpose usage.
+2. Move error source related CSRs from 4xxx to the wider GEN4 header
+file.
+3. Add support for HW QAT Power Management (PM) feature.
+        This feature is enabled at init time (1) by sending an admin
+message to
+        the firmware, targeting the admin AE, that sets the idle time
+before
+        the device changes state and (2) by unmasking the PM source of
+        interrupt in ERRMSK2.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/common/ssp_sensors/ssp_dev.c | 22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+        The interrupt handler is extended to handle a PM interrupt which
+        is triggered by HW when a PM transition occurs. In this case,
+the
+        driver responds acknowledging the transaction using the HOST_MSG
+        mailbox.
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index eafaf4529df5..c1abd20ff808 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -7,9 +7,10 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/mfd/core.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_platform.h>
-+#include <linux/property.h>
-+
- #include "ssp.h"
- 
- #define SSP_WDT_TIME			10000
-@@ -425,7 +426,6 @@ int ssp_queue_ssp_refresh_task(struct ssp_data *data, unsigned int delay)
- 				  msecs_to_jiffies(delay));
- }
- 
--#ifdef CONFIG_OF
- static const struct of_device_id ssp_of_match[] = {
- 	{
- 		.compatible	= "samsung,sensorhub-rinato",
-@@ -441,8 +441,6 @@ MODULE_DEVICE_TABLE(of, ssp_of_match);
- static struct ssp_data *ssp_parse_dt(struct device *dev)
- {
- 	struct ssp_data *data;
--	struct device_node *node = dev->of_node;
--	const struct of_device_id *match;
- 
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
-@@ -461,22 +459,12 @@ static struct ssp_data *ssp_parse_dt(struct device *dev)
- 	if (IS_ERR(data->mcu_reset_gpiod))
- 		return NULL;
- 
--	match = of_match_node(ssp_of_match, node);
--	if (!match)
--		return NULL;
--
--	data->sensorhub_info = match->data;
-+	data->sensorhub_info = device_get_match_data(dev);
- 
- 	dev_set_drvdata(dev, data);
- 
- 	return data;
- }
--#else
--static struct ssp_data *ssp_parse_dt(struct device *pdev)
--{
--	return NULL;
--}
--#endif
- 
- /**
-  * ssp_register_consumer() - registers iio consumer in ssp framework
-@@ -670,7 +658,7 @@ static struct spi_driver ssp_driver = {
- 	.remove = ssp_remove,
- 	.driver = {
- 		.pm = &ssp_pm_ops,
--		.of_match_table = of_match_ptr(ssp_of_match),
-+		.of_match_table = ssp_of_match,
- 		.name = "sensorhub"
- 	},
- };
+Changes since v1:
+- Moved unmasking PM interrupts after PM interrupt source enable to
+  avoid a spurious interrupt
+- Fixed kbuild bot issue by moving adf_handle_pm_int() out of
+  CONFIG_PCI_IOV scope
+- Rename [..]_init_pm() functions to [..]_enable_pm() as the function
+  needs to be called inside adf_start()
+
+
+Wojciech Ziemba (3):
+  crypto: qat - add misc workqueue
+  crypto: qat - move and rename GEN4 error register definitions
+  crypto: qat - enable power management for QAT GEN4
+
+ .../crypto/qat/qat_4xxx/adf_4xxx_hw_data.c    |  21 +--
+ .../crypto/qat/qat_4xxx/adf_4xxx_hw_data.h    |  24 ---
+ drivers/crypto/qat/qat_common/Makefile        |   1 +
+ .../crypto/qat/qat_common/adf_accel_devices.h |   2 +
+ drivers/crypto/qat/qat_common/adf_admin.c     |  37 +++++
+ .../crypto/qat/qat_common/adf_common_drv.h    |   4 +
+ drivers/crypto/qat/qat_common/adf_ctl_drv.c   |   6 +
+ .../crypto/qat/qat_common/adf_gen4_hw_data.h  |  14 ++
+ drivers/crypto/qat/qat_common/adf_gen4_pm.c   | 137 ++++++++++++++++++
+ drivers/crypto/qat/qat_common/adf_gen4_pm.h   |  44 ++++++
+ drivers/crypto/qat/qat_common/adf_init.c      |   6 +
+ drivers/crypto/qat/qat_common/adf_isr.c       |  42 ++++++
+ .../qat/qat_common/icp_qat_fw_init_admin.h    |   1 +
+ 13 files changed, 306 insertions(+), 33 deletions(-)
+ create mode 100644 drivers/crypto/qat/qat_common/adf_gen4_pm.c
+ create mode 100644 drivers/crypto/qat/qat_common/adf_gen4_pm.h
+
 -- 
-2.34.1
+2.29.2
 
