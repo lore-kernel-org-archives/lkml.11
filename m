@@ -2,213 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BACC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235420AbiBJGmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:42:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50286 "EHLO
+        id S235437AbiBJGor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:44:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235384AbiBJGmA (ORCPT
+        with ESMTP id S231362AbiBJGon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 01:42:00 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ECBC10AD;
-        Wed,  9 Feb 2022 22:42:02 -0800 (PST)
+        Thu, 10 Feb 2022 01:44:43 -0500
+Received: from mail-vk1-xa32.google.com (mail-vk1-xa32.google.com [IPv6:2607:f8b0:4864:20::a32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75BFED6D;
+        Wed,  9 Feb 2022 22:44:45 -0800 (PST)
+Received: by mail-vk1-xa32.google.com with SMTP id l14so2480701vko.12;
+        Wed, 09 Feb 2022 22:44:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644475322; x=1676011322;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=fvee1abFfi+F3OUQ6XwujWZeP2UCx/GT5KX8hazMnzg=;
-  b=sK0S+zz5QTbL7CH8nbMosMj97Cif6Cq7rpmzH1UUqC/xWsM5s/DDQFjC
-   CSwplmQCVBzT483ihL4+iFjwYcvZ+Q5TK2G0y+9sPPMhKZHBdHQwWCtNq
-   C7a4wrhWjOJvZh96RE5H36XxMcfGRreAalqJ2r9VhZ2sdHRkv/2+Qf9HZ
-   4=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 09 Feb 2022 22:42:02 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 22:42:01 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 22:42:01 -0800
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Wed, 9 Feb 2022 22:41:57 -0800
-Date:   Thu, 10 Feb 2022 12:11:53 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-CC:     Pavan Kondeti <quic_pkondeti@quicinc.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Doug Anderson <dianders@chromium.org>,
-        "Matthias Kaehlcke" <mka@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_ppratap@quicinc.com>
-Subject: Re: [PATCH v5] usb: host: xhci-plat: Set XHCI_SKIP_PHY_INIT quirk
- for DWC3 controller
-Message-ID: <20220210064153.GA15114@hu-pkondeti-hyd.qualcomm.com>
-References: <1640153383-21036-1-git-send-email-quic_c_sanm@quicinc.com>
- <Ydb79/twbxLDJB8/@kroah.com>
- <d17330f1-d85e-b8c2-9e87-10d109c25abb@quicinc.com>
- <YfE9s06CIv1P3bA/@kroah.com>
- <f45f5952-e31c-5e9d-2560-064199beb29f@quicinc.com>
- <ca306d7c-d816-3cbd-8c65-2c3619739d47@quicinc.com>
- <YgJB6bGm/y7C0oo/@kroah.com>
- <20220209055352.GA22550@hu-pkondeti-hyd.qualcomm.com>
- <d0048456-eb0a-cf91-fc28-f1dda69c1432@quicinc.com>
- <825a62d8-dc09-fed1-7e33-00d2192a91d5@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vATQV96HIV875DpM2fnnEa+rKLHrA6ZG+qfAprHu1e8=;
+        b=DCGcZiebBFSTnkF9RGqM9hnYnWCcnAxcDZSEpbKWKeQs1KM3bM00eS9vRY+lkpxjD0
+         GJoLV0IkKyT6IE1DPL0KegouXUMN33zgsVDuDCJ9JSSaoKUNqPsoO+uZmNBpwf3aoZfg
+         Knoa4fPaLPMLT838YRhdjoDyRSH+9CAsKxF9FolpTEOLrM1z5L3VXHROzC1ZtHqrGxJK
+         lRr2MiDnRrx6oaYralUySq+SzFeGN7DMSAUI00EyRefKX6bh3Jfy/13oOneZysryApyp
+         Q0KbB5DIV+5rt8E2mutj+QMH7Z4uistgIpvFzqesllNC7vq+lm8hBVEqKKtyBt7XsVCp
+         XzoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vATQV96HIV875DpM2fnnEa+rKLHrA6ZG+qfAprHu1e8=;
+        b=frq8udFHGQvomKBGUP8xJp3jy1OBx1vMr4HWs9Ttjs9XixnMycjLzjO8lY9AqaI5Yq
+         m8qer7Vb5NmwaUHh7N4DO9mdME0FEWJfzOGg/nF/AYw2NXcjl+ozzIfUn9MmaoPNzfoS
+         MzHNL1JA/qNvH2KOUXGCqD23yU6RQkVys3AF3jmEV9riiQAhdZ4BXR8rBKUyxrAmTm3F
+         crPF2BnzPY0jxrBuhZB4t7p8yYtK5Pf8n/Nx66Afxl+VFmNvngJq+kBh1/OCu2XVNoyh
+         Q/SJ8ChqiylS4kmoOC6Wj2ZgHOiFu+Cp0/wSRpR1S3sjtP40pT2PyVfLLwWXMSiHCq4k
+         QceA==
+X-Gm-Message-State: AOAM532m2PkZF/KOCbSCXtq0IH5XeEwf4uvdYjKF3aqU9qBGfY2LmwEX
+        FYiQH0SZZEW4DqCLkH8qJgk3fXQDJR5vrfNPDLk=
+X-Google-Smtp-Source: ABdhPJy4f9xIFUUmiX+BmjO+7FRRofRm71wdEsoGHAiePfWX1OQdeIlGzUShnt/VNT67jJifn+eRplmpDmZ6oamSjDc=
+X-Received: by 2002:a05:6122:17a9:: with SMTP id o41mr2314279vkf.1.1644475484513;
+ Wed, 09 Feb 2022 22:44:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <825a62d8-dc09-fed1-7e33-00d2192a91d5@quicinc.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220110114930.1406665-1-sergio.paracuellos@gmail.com>
+ <YfE5MOkQRoHQV7Wf@kroah.com> <CAMhs-H8s0d=PswQDR86Tq-bQt634Z6rdFYHTE+DFepsthmKAYA@mail.gmail.com>
+ <YfE7LNFuf79i3oAQ@kroah.com> <CAMhs-H9c8zF=v2tu5Y1OsFRP6esOi5zrUceqS_OUiJ=MSfCvRQ@mail.gmail.com>
+ <20220205025548.AA1BBC004E1@smtp.kernel.org> <CAMhs-H82J5DC+m0V==tQKKYyqsu30kGLkdUbMRU+nsyLb8sL3Q@mail.gmail.com>
+In-Reply-To: <CAMhs-H82J5DC+m0V==tQKKYyqsu30kGLkdUbMRU+nsyLb8sL3Q@mail.gmail.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Thu, 10 Feb 2022 07:44:33 +0100
+Message-ID: <CAMhs-H9RSjgW1-dafqDqbfBaQ4iH6NFDLoRHqjt=f41zAEcC-g@mail.gmail.com>
+Subject: Re: [PATCH v8 0/4] clk: ralink: make system controller a reset provider
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        NeilBrown <neil@brown.name>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sandeep,
+Hi Greg,
 
-On Thu, Feb 10, 2022 at 11:18:19AM +0530, Sandeep Maheswaram wrote:
-> Hi Pavan,
-> 
-> On 2/9/2022 11:31 AM, Sandeep Maheswaram wrote:
+On Sat, Feb 5, 2022 at 8:31 AM Sergio Paracuellos
+<sergio.paracuellos@gmail.com> wrote:
+>
+> On Sat, Feb 5, 2022 at 3:55 AM Stephen Boyd <sboyd@kernel.org> wrote:
 > >
-> >On 2/9/2022 11:23 AM, Pavan Kondeti wrote:
-> >>On Tue, Feb 08, 2022 at 11:11:53AM +0100, Greg Kroah-Hartman wrote:
-> >>>On Tue, Feb 08, 2022 at 03:34:22PM +0530, Sandeep Maheswaram wrote:
-> >>>>Hi Greg,
-> >>>>
-> >>>>On 1/27/2022 10:28 AM, Sandeep Maheswaram wrote:
-> >>>>>On 1/26/2022 5:55 PM, Greg Kroah-Hartman wrote:
-> >>>>>>On Fri, Jan 07, 2022 at 10:27:59AM +0530, Sandeep Maheswaram wrote:
-> >>>>>>>On 1/6/2022 7:55 PM, Greg Kroah-Hartman wrote:
-> >>>>>>>>On Wed, Dec 22, 2021 at 11:39:43AM +0530, Sandeep Maheswaram
-> >>>>>>>>wrote:
-> >>>>>>>>>Set XHCI_SKIP_PHY_INIT quirk to avoid phy initialization twice.
-> >>>>>>>>>Runtime suspend of phy drivers was failing from DWC3
-> >>>>>>>>>driver as runtime
-> >>>>>>>>>usage value is 2 because the phy is initialized from
-> >>>>>>>>>DWC3 and HCD core.
-> >>>>>>>>>DWC3 manages phy in their core drivers. Set this quirk to
-> >>>>>>>>>avoid phy
-> >>>>>>>>>initialization in HCD core.
-> >>>>>>>>>
-> >>>>>>>>>Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-> >>>>>>>>>---
-> >>>>>>>>>v5:
-> >>>>>>>>>Added comment to explain the change done.
-> >>>>>>>>>v4:
-> >>>>>>>>>Changed pdev->dev.parent->of_node to sysdev->of_node
-> >>>>>>>>>
-> >>>>>>>>>    drivers/usb/host/xhci-plat.c | 8 ++++++++
-> >>>>>>>>>    1 file changed, 8 insertions(+)
-> >>>>>>>>>
-> >>>>>>>>>diff --git a/drivers/usb/host/xhci-plat.c
-> >>>>>>>>>b/drivers/usb/host/xhci-plat.c
-> >>>>>>>>>index c1edcc9..e6014d4 100644
-> >>>>>>>>>--- a/drivers/usb/host/xhci-plat.c
-> >>>>>>>>>+++ b/drivers/usb/host/xhci-plat.c
-> >>>>>>>>>@@ -327,6 +327,14 @@ static int xhci_plat_probe(struct
-> >>>>>>>>>platform_device *pdev)
-> >>>>>>>>>&xhci->imod_interval);
-> >>>>>>>>>        }
-> >>>>>>>>>+    /*
-> >>>>>>>>>+     * Set XHCI_SKIP_PHY_INIT quirk to avoid phy
-> >>>>>>>>>initialization twice.
-> >>>>>>>>>+     * DWC3 manages phy in their core drivers. Set this
-> >>>>>>>>>quirk to avoid phy
-> >>>>>>>>>+     * initialization in HCD core.
-> >>>>>>>>>+     */
-> >>>>>>>>>+    if (of_device_is_compatible(sysdev->of_node, "snps,dwc3"))
-> >>>>>>>>>+        xhci->quirks |= XHCI_SKIP_PHY_INIT;
-> >>>>>>>>>+
-> >>>>>>>>Why is this function caring about dwc3 stuff? Shoudn't this be a
-> >>>>>>>>"generic" device property instead of this device-specific one?
-> >>>>>>>>
-> >>>>>>>>thanks,
-> >>>>>>>>
-> >>>>>>>>greg k-h
-> >>>>>>>This quirk is set only if required for some controllers (eg:
-> >>>>>>>dwc3 & cdns3).
-> >>>>>>>
-> >>>>>>>Please check below commit.
-> >>>>>>>
-> >>>>>>>https://lore.kernel.org/all/20200918131752.16488-5-mathias.nyman@linux.intel.com/
-> >>>>>>>
-> >>>>>>>
-> >>>>>>That commit has nothing to do with a specific "dwc3" quirk anywhere.
-> >>>>>>Why not set this flag in the specific platform xhci driver
-> >>>>>>instead where
-> >>>>>>it belongs?
-> >>>>>>
-> >>>>>>thanks,
-> >>>>>>
-> >>>>>>greg k-h
-> >>>>>There is no specific xhci platform driver for dwc3 controllers.
-> >>>>>
-> >>>>>dwc3 controllers use xhci-plat driver .
-> >>>>>
-> >>>>>We can add this quirk in usb/dwc3/host.c as cdns3 does but that
-> >>>>>requires
-> >>>>>tying dwc3 and xhci driver .
-> >>>>>
-> >>>>>https://patchwork.kernel.org/project/linux-arm-msm/patch/1633946518-13906-1-git-send-email-sanm@codeaurora.org/
-> >>>>>
-> >>>>>
-> >>>>>
-> >>>>>Regards
-> >>>>>
-> >>>>>Sandeep
-> >>>>>
-> >>>>>
-> >>>>Can you suggest any other method to set this quirk for dwc3
-> >>>>controllers.
-> >>>No idea, sorry.
-> >>Sandeep,
-> >>
-> >>I agree with Greg's comments here. The compatible based check to detect
-> >>dwc3
-> >>controller is not elegant. Your proposal of adding a device tree param
-> >>is
-> >>overkill, I believe.
-> >>
-> >>Greg already gave us a pointer here [1] which I feel is the best
-> >>approach going
-> >>forward. We know that xhci-plat is being used by drivers like dwc3,
-> >>cdns3 and
-> >>these drivers need to expose their xhci quirks. As Greg suggested, why
-> >>can't
-> >>we move xhci quirks definition to include/linux/usb/xhci-quriks.h and
-> >>directly
-> >>access from the glue drivers? The attached is the patch (completely
-> >>untested)
-> >>for your reference. It will prepare the setup for you to add the private
-> >>data
-> >>and quirks in the dwc3 host glue driver.
-> >>
-> >>Thanks,
-> >>Pavan
-> >>
-> >>[1]
-> >>https://patchwork.kernel.org/project/linux-arm-msm/patch/1633946518-13906-1-git-send-email-sanm@codeaurora.org/
-> >>
-> >>
-> >Thanks Pavan..will test the patch.
-> 
-> Tested your patch. It is working fine along with the attached changes.
-> 
+> > Quoting Sergio Paracuellos (2022-01-26 04:45:31)
+> > > On Wed, Jan 26, 2022 at 1:14 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > >
+> > > > On Wed, Jan 26, 2022 at 01:08:52PM +0100, Sergio Paracuellos wrote:
+> > > > > On Wed, Jan 26, 2022 at 1:06 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > > > >
+> > > > > > On Mon, Jan 10, 2022 at 12:49:26PM +0100, Sergio Paracuellos wrote:
+> > > > > > > Hi all,
+> > > > > > >
+> > > > > > > This patch series add minimal change to provide mt7621 resets properly
+> > > > > > > defining them in the 'mediatek,mt7621-sysc' node which is the system
+> > > > > > > controller of the SoC and is already providing clocks to the rest of
+> > > > > > > the world.
+> > > > > > >
+> > > > > > > There is shared architecture code for all ralink platforms in 'reset.c'
+> > > > > > > file located in 'arch/mips/ralink' but the correct thing to do to align
+> > > > > > > hardware with software seems to define and add related reset code to the
+> > > > > > > already mainlined clock driver.
+> > > > > > >
+> > > > > > > After this changes, we can get rid of the useless reset controller node
+> > > > > > > in the device tree and use system controller node instead where the property
+> > > > > > > '#reset-cells' has been added. Binding documentation for this nodeq has
+> > > > > > > been updated with the new property accordly.
+> > > > > > >
+> > > > > > > This series also provide a bindings include header where all related
+> > > > > > > reset bits for the MT7621 SoC are defined.
+> > > > > > >
+> > > > > > > Also, please take a look to this review [0] to understand better motivation
+> > > > > > > for this series.
+> > > > > > >
+> > > > > > > Regarding the way of merging this:
+> > > > > > >  - I'd like patches 1 and 4 which are related going through staging tree.
+> > > > > >
+> > > > > > Patches 1 and 4 now in the staging tree, thanks.
+> > > > >
+> > > > > Stephen wanted all to go through the CLK tree since PATCH 3 and 1 were
+> > > > > also a dependency... Can we get all of them through the same tree,
+> > > > > then? I am ok with both CLK or staging trees.
+> > > >
+> > > > That's fine with me if they all go through the CLK tree, but there will
+> > > > be a merge issue that I already fixed up in my tree.  If you want me to
+> > > > drop them, just let me know.
+> > >
+> > > Stephen, what do you prefer? Is it better all going through staging-tree then?
+> > >
+> >
+> > Sure take them through staging tree.
+> >
+> > Acked-by: Stephen Boyd <sboyd@kernel.org>
+>
+> Thanks, Stephen.
+>
+> Greg, can you please take remaining patches 2 and 3 through your tree, then?
+>
+> Thanks in advance for your time.
 
-Your patch looks good to me. Feel free to send the two patches together.
+Please, let me know if you prefer me to resend the remaining two
+patches with tags added to make this easier for you.
 
-Thanks,
-Pavan
+Best regards,
+    Sergio Paracuellos
+
+>
+> Best regards,
+>     Sergio Paracuellos
