@@ -2,283 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED52BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 716C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:21:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231587AbiBJCUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:20:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39694 "EHLO
+        id S229898AbiBJCVJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:21:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230372AbiBJCUj (ORCPT
+        with ESMTP id S231654AbiBJCVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 21:20:39 -0500
-Received: from condef-05.nifty.com (condef-05.nifty.com [202.248.20.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B13722B36;
-        Wed,  9 Feb 2022 18:20:38 -0800 (PST)
-Received: from conuserg-12.nifty.com ([10.126.8.75])by condef-05.nifty.com with ESMTP id 21A2CEgX007238;
-        Thu, 10 Feb 2022 11:12:14 +0900
-Received: from localhost.localdomain (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 21A2BVGw030193;
-        Thu, 10 Feb 2022 11:11:32 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 21A2BVGw030193
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1644459092;
-        bh=9rlTIDf+U0DYlyosnkaUCepGIAJ7vKKws/NpiQ+PL4I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BX06GH+WTisBdFFp+EltlSA9tkoYjTNeBLO7faiKnMDs7ZLUmIsKRWStl5IhyytnX
-         PYJGfycgxdchdg12CxlQoENG8h9dVJFRLEOE5kpRGXBkVRAukfS87erh35xanyWtvQ
-         QAQPOPAGSc6IcOr9vHsXKARlCN83342LfRCHcxQy/aiLrLLHDqH3hVEPK9aJmhfYrg
-         YhYutTdWp/eMzVoIsD8wVBxf56ihdHWdWwtnSVorxcDXqwVYN50JYWcglod/oWsIsu
-         e+W/jMKXF4K6MvXOVnJiMTPdMmVtxXVdvL9UvkMAWi6GHkhSDu1twcEjuCXWdqzpI0
-         bI7Zvcnr1SnJw==
-X-Nifty-SrcIP: [133.32.232.101]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-arch@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Wed, 9 Feb 2022 21:21:00 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D15922BC0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 18:20:59 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id g145so3504828qke.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 18:20:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=kxPpYOr9fMCpJd7sCfUn04qJNkl4bMWZoTA8Ys3By8k=;
+        b=BxDabmfDoaUDg1dIy4jDTq+JM5s/45/glUofZdZQaH0DIPhWoBB6gHmDiT2A8DFOva
+         G32ykwm4JiumAeBLNmVBsH3T1FvUvgNfX9W1gelGS4ABinKosCLgG0inBLbTYGLz8uHV
+         /qjKuiTneFLu4RNVWZErq28gjv6qydN2NGQVMd5wNwjeyuC3AeOV5F+X5jMibsRfFJQo
+         AZGztqAZ0+9r1GtckwGOODMrVKec6y1LAdVFCSg6CfzrhO8R5VKvl0F7z1lezAYhBQ0X
+         tYlhMTzDKAFaTDfcajRq4HtNPIMYyxIIOY8054YxUH0GqhY1GsoaRhLaJtl6GfEA3xQP
+         vo1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=kxPpYOr9fMCpJd7sCfUn04qJNkl4bMWZoTA8Ys3By8k=;
+        b=TJBuDwJI3zPA5Gy5W+qBS7IcZyt9DWXgNVvhLNUKp0VRzZPCZaNSqCUrP3cDVMFuhR
+         2679ED0WpVoQtfaqZHQno+8X2PneqIGU3BtHCro4SQ5026xLbCsRCZ5nmzKR9Rc146o+
+         jhNAam4WRHd2JI+4u+1dsY/4lfHy2DQl8tEW95i84yZeOI4fJn4E+hl9naDrI0fymITj
+         AUYToH5bCRfX96l2/1M/eY9dVh82N+YaYxltJXfg0Z1dE7EjJIUnGkEUbC0zJ9gHREyD
+         sfU1Vj+wKJ4DJ902lNapZhY2QTOjWJFK0hLMSOiI17Wq/ZQ6lwvxYuXEbChI1ftZDF29
+         BgKA==
+X-Gm-Message-State: AOAM5326qxRW61ZZrZOlAZtaElwfhGmLzbElRtTOsw1LzENnizWI1UBY
+        g7vRTzwGgG2ywCMHvKc1o7K4aQ==
+X-Google-Smtp-Source: ABdhPJz7jqG0d7JGpbU68kibD9jbvyBU3iduP2od/KjZDE0+g8Vn/9ABBS1tr25xGzStG9SpUY1rQg==
+X-Received: by 2002:a05:620a:2904:: with SMTP id m4mr2721558qkp.479.1644459658987;
+        Wed, 09 Feb 2022 18:20:58 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id 16sm10185035qty.86.2022.02.09.18.20.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 18:20:58 -0800 (PST)
+Date:   Wed, 9 Feb 2022 18:20:46 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Yang Li <yang.lee@linux.alibaba.com>
+cc:     akpm@linux-foundation.org, linux-mm@kvack.org,
         linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH 1/6] signal.h: add linux/signal.h and asm/signal.h to UAPI compile-test coverage
-Date:   Thu, 10 Feb 2022 11:11:24 +0900
-Message-Id: <20220210021129.3386083-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210021129.3386083-1-masahiroy@kernel.org>
-References: <20220210021129.3386083-1-masahiroy@kernel.org>
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Hugh Dickins <hughd@google.com>
+Subject: Re: [PATCH -next] mm/munlock: Fix kernel-doc formatting issues
+In-Reply-To: <20220210004849.69017-1-yang.lee@linux.alibaba.com>
+Message-ID: <9eceb01a-4a62-985f-52c-266cabc156f9@google.com>
+References: <20220210004849.69017-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-linux/signal.h and asm/signal.h are currently excluded from the UAPI
-compile-test because of the errors like follows:
+On Thu, 10 Feb 2022, Yang Li wrote:
 
-    HDRTEST usr/include/asm/signal.h
-  In file included from <command-line>:
-  ./usr/include/asm/signal.h:103:9: error: unknown type name ‘size_t’
-    103 |         size_t ss_size;
-        |         ^~~~~~
+> Some functions had kernel-doc that used a hash instead of a colon to
+> separate the parameter name from the one line description.
+> 
+> Replacing them to remove warnings found by running scripts/kernel-doc,
+> which is caused by using 'make W=1'.
+> 
+> mm/mlock.c:218: warning: Function parameter or member 'page' not
+> described in 'mlock_page'
+> mm/mlock.c:240: warning: Function parameter or member 'page' not
+> described in 'mlock_new_page'
+> mm/mlock.c:260: warning: Function parameter or member 'page' not
+> described in 'munlock_page'
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-The errors can be fixed by replacing size_t with __kernel_size_t.
+Oh, great, thanks.  I thought I was just following what was already
+there, but now I look closer, yes, the ones with "/*" at the top had
+dashes and the ones with "/**" at the top had colons: apparently I fell
+for the wrong combination - sorry.
 
-Then, remove the no-header-test entries from user/include/Makefile.
+Hugh
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- arch/alpha/include/uapi/asm/signal.h   | 2 +-
- arch/arm/include/uapi/asm/signal.h     | 2 +-
- arch/h8300/include/uapi/asm/signal.h   | 2 +-
- arch/ia64/include/uapi/asm/signal.h    | 2 +-
- arch/m68k/include/uapi/asm/signal.h    | 2 +-
- arch/mips/include/uapi/asm/signal.h    | 2 +-
- arch/parisc/include/uapi/asm/signal.h  | 2 +-
- arch/powerpc/include/uapi/asm/signal.h | 2 +-
- arch/s390/include/uapi/asm/signal.h    | 2 +-
- arch/sparc/include/uapi/asm/signal.h   | 3 ++-
- arch/x86/include/uapi/asm/signal.h     | 2 +-
- arch/xtensa/include/uapi/asm/signal.h  | 2 +-
- include/uapi/asm-generic/signal.h      | 2 +-
- usr/include/Makefile                   | 2 --
- 14 files changed, 14 insertions(+), 15 deletions(-)
-
-diff --git a/arch/alpha/include/uapi/asm/signal.h b/arch/alpha/include/uapi/asm/signal.h
-index a69dd8d080a8..1413075f7616 100644
---- a/arch/alpha/include/uapi/asm/signal.h
-+++ b/arch/alpha/include/uapi/asm/signal.h
-@@ -100,7 +100,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- /* sigstack(2) is deprecated, and will be withdrawn in a future version
-diff --git a/arch/arm/include/uapi/asm/signal.h b/arch/arm/include/uapi/asm/signal.h
-index c9a3ea1d8d41..9e2178420db2 100644
---- a/arch/arm/include/uapi/asm/signal.h
-+++ b/arch/arm/include/uapi/asm/signal.h
-@@ -93,7 +93,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/h8300/include/uapi/asm/signal.h b/arch/h8300/include/uapi/asm/signal.h
-index 2cd0dce2b6a6..1165481f80f6 100644
---- a/arch/h8300/include/uapi/asm/signal.h
-+++ b/arch/h8300/include/uapi/asm/signal.h
-@@ -85,7 +85,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/ia64/include/uapi/asm/signal.h b/arch/ia64/include/uapi/asm/signal.h
-index 38166a88e4c9..63d574e802a2 100644
---- a/arch/ia64/include/uapi/asm/signal.h
-+++ b/arch/ia64/include/uapi/asm/signal.h
-@@ -90,7 +90,7 @@ struct siginfo;
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/m68k/include/uapi/asm/signal.h b/arch/m68k/include/uapi/asm/signal.h
-index 4619291df601..80f520b9b10b 100644
---- a/arch/m68k/include/uapi/asm/signal.h
-+++ b/arch/m68k/include/uapi/asm/signal.h
-@@ -83,7 +83,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- #endif /* _UAPI_M68K_SIGNAL_H */
-diff --git a/arch/mips/include/uapi/asm/signal.h b/arch/mips/include/uapi/asm/signal.h
-index e6c78a15cb2f..94a00f82e373 100644
---- a/arch/mips/include/uapi/asm/signal.h
-+++ b/arch/mips/include/uapi/asm/signal.h
-@@ -100,7 +100,7 @@ struct sigaction {
- /* IRIX compatible stack_t  */
- typedef struct sigaltstack {
- 	void __user *ss_sp;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- 	int ss_flags;
- } stack_t;
- 
-diff --git a/arch/parisc/include/uapi/asm/signal.h b/arch/parisc/include/uapi/asm/signal.h
-index e5a2657477ac..8e4895c5ea5d 100644
---- a/arch/parisc/include/uapi/asm/signal.h
-+++ b/arch/parisc/include/uapi/asm/signal.h
-@@ -67,7 +67,7 @@ struct siginfo;
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- #endif /* !__ASSEMBLY */
-diff --git a/arch/powerpc/include/uapi/asm/signal.h b/arch/powerpc/include/uapi/asm/signal.h
-index 04873dd311c2..37d41d87c45b 100644
---- a/arch/powerpc/include/uapi/asm/signal.h
-+++ b/arch/powerpc/include/uapi/asm/signal.h
-@@ -86,7 +86,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/s390/include/uapi/asm/signal.h b/arch/s390/include/uapi/asm/signal.h
-index 0189f326aac5..e74d6ba1bd3b 100644
---- a/arch/s390/include/uapi/asm/signal.h
-+++ b/arch/s390/include/uapi/asm/signal.h
-@@ -108,7 +108,7 @@ struct sigaction {
- typedef struct sigaltstack {
-         void __user *ss_sp;
-         int ss_flags;
--        size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/sparc/include/uapi/asm/signal.h b/arch/sparc/include/uapi/asm/signal.h
-index 53758d53ac0e..d395af9b46d2 100644
---- a/arch/sparc/include/uapi/asm/signal.h
-+++ b/arch/sparc/include/uapi/asm/signal.h
-@@ -2,6 +2,7 @@
- #ifndef _UAPI__SPARC_SIGNAL_H
- #define _UAPI__SPARC_SIGNAL_H
- 
-+#include <asm/posix_types.h>
- #include <asm/sigcontext.h>
- #include <linux/compiler.h>
- 
-@@ -171,7 +172,7 @@ struct __old_sigaction {
- typedef struct sigaltstack {
- 	void			__user *ss_sp;
- 	int			ss_flags;
--	size_t			ss_size;
-+	__kernel_size_t		ss_size;
- } stack_t;
- 
- 
-diff --git a/arch/x86/include/uapi/asm/signal.h b/arch/x86/include/uapi/asm/signal.h
-index 164a22a72984..777c3a0f4e23 100644
---- a/arch/x86/include/uapi/asm/signal.h
-+++ b/arch/x86/include/uapi/asm/signal.h
-@@ -104,7 +104,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- #endif /* __ASSEMBLY__ */
-diff --git a/arch/xtensa/include/uapi/asm/signal.h b/arch/xtensa/include/uapi/asm/signal.h
-index 79ddabaa4e5d..b8c824dd4b74 100644
---- a/arch/xtensa/include/uapi/asm/signal.h
-+++ b/arch/xtensa/include/uapi/asm/signal.h
-@@ -103,7 +103,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- #endif	/* __ASSEMBLY__ */
-diff --git a/include/uapi/asm-generic/signal.h b/include/uapi/asm-generic/signal.h
-index f634822906e4..0eb69dc8e572 100644
---- a/include/uapi/asm-generic/signal.h
-+++ b/include/uapi/asm-generic/signal.h
-@@ -85,7 +85,7 @@ struct sigaction {
- typedef struct sigaltstack {
- 	void __user *ss_sp;
- 	int ss_flags;
--	size_t ss_size;
-+	__kernel_size_t ss_size;
- } stack_t;
- 
- #endif /* __ASSEMBLY__ */
-diff --git a/usr/include/Makefile b/usr/include/Makefile
-index 8dbd1d8a245f..e7230a5a402a 100644
---- a/usr/include/Makefile
-+++ b/usr/include/Makefile
-@@ -24,7 +24,6 @@ override c_flags = $(UAPI_CFLAGS) -Wp,-MMD,$(depfile) -I$(objtree)/usr/include
- #
- # Sorted alphabetically.
- no-header-test += asm/shmbuf.h
--no-header-test += asm/signal.h
- no-header-test += asm/ucontext.h
- no-header-test += drm/vmwgfx_drm.h
- no-header-test += linux/am437x-vpfe.h
-@@ -44,7 +43,6 @@ no-header-test += linux/patchkey.h
- no-header-test += linux/phonet.h
- no-header-test += linux/reiserfs_xattr.h
- no-header-test += linux/sctp.h
--no-header-test += linux/signal.h
- no-header-test += linux/sysctl.h
- no-header-test += linux/usb/audio.h
- no-header-test += linux/v4l2-mediabus.h
--- 
-2.32.0
-
+> ---
+>  mm/mlock.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/mm/mlock.c b/mm/mlock.c
+> index d50d48961b22..7fb97e1242f1 100644
+> --- a/mm/mlock.c
+> +++ b/mm/mlock.c
+> @@ -212,7 +212,7 @@ bool need_mlock_page_drain(int cpu)
+>  
+>  /**
+>   * mlock_page - mlock a page already on (or temporarily off) LRU
+> - * @page - page to be mlocked, either a normal page or a THP head.
+> + * @page: page to be mlocked, either a normal page or a THP head.
+>   */
+>  void mlock_page(struct page *page)
+>  {
+> @@ -234,7 +234,7 @@ void mlock_page(struct page *page)
+>  
+>  /**
+>   * mlock_new_page - mlock a newly allocated page not yet on LRU
+> - * @page - page to be mlocked, either a normal page or a THP head.
+> + * @page: page to be mlocked, either a normal page or a THP head.
+>   */
+>  void mlock_new_page(struct page *page)
+>  {
+> @@ -254,7 +254,7 @@ void mlock_new_page(struct page *page)
+>  
+>  /**
+>   * munlock_page - munlock a page
+> - * @page - page to be munlocked, either a normal page or a THP head.
+> + * @page: page to be munlocked, either a normal page or a THP head.
+>   */
+>  void munlock_page(struct page *page)
+>  {
+> -- 
+> 2.20.1.7.g153144c
