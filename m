@@ -2,152 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7789CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233241AbiBJB5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:57:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33854 "EHLO
+        id S233595AbiBJB5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:57:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233301AbiBJB4I (ORCPT
+        with ESMTP id S233169AbiBJB4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:56:08 -0500
-Received: from mail-ot1-x34a.google.com (mail-ot1-x34a.google.com [IPv6:2607:f8b0:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F96C2BB32
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:54:10 -0800 (PST)
-Received: by mail-ot1-x34a.google.com with SMTP id p17-20020a0568301d5100b005a3cd7c1e0bso2523097oth.7
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:54:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=w6tX9+LQQBgQkkL2Bmc0Ipn0ZYxEiQaM6qO9zXS/sD4=;
-        b=LyjUs12jFchRbYf+ASxBxNEsiClOdfJyVsWMQuJzQI0s4J1EDfEochhm9jtdOxvzSG
-         swfXSCSS0eDITV/XVz2A7h3CdX6ZbRxSVNgEmyCBbGkuQ2vxRFseuHb8Ym9aOaID3Mq7
-         DCtuv5TJLO4how//y3nZ6OHBTV0CAVTNUpPpfv9okzd/ucPaM2YF3IjIq8z11SpkrhQS
-         Oj/4q7ldfEpSIM/hKhG2eKnLRpaJT+KJk5ESLvNRoBLU+simsYvCINODJkCAfMbawKlY
-         F1AFB6IWWoBOHHCcxoXxHayWcKC7nYbnauL6bqLdpZhJZojGa10aAsdRirLHqVKjV3sP
-         GrUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=w6tX9+LQQBgQkkL2Bmc0Ipn0ZYxEiQaM6qO9zXS/sD4=;
-        b=6oGFvk+e/MzJkTUzmvk49MNgQCS1az2XzGLqVQ/xpiVmz5KALtuDpvCqC16v16M/63
-         5KKD9N2etoMrnmhk819RkrKo4HDY38EuqHQRR00QJg6Z+0FTmOfCoo4QlHj/fLY1TeAV
-         19Lr6wNgothERUACq+naJQMn8gKjtsnfxSu1stVOIuq3Mk1X3cnifzcAKbpNZpVze/zQ
-         9+7UrooTITSqhQAUoBzwSzMNAy0LZLyXc6TDQUv96FexkeyZHRZG/XcEKwWs2jLCZlgV
-         qT1WG6AvNWgCZ7SW9GX2cegttGfW0rqON4aPaosFua8yEOt8HsOh6uqu62IJEmNVDymR
-         Gzog==
-X-Gm-Message-State: AOAM531GREUdb+C2YMBHokprQw1MCZaoat1YXDTa5gqzpJc7iLI9OLqU
-        6JaOyfrXEhtcDYITTaO8Hsgf3+RNAhM=
-X-Google-Smtp-Source: ABdhPJxjQE6hDRgB3Yfh1egBA9CHmneYX+GIeGCDPvULa2hWWGNpM3Vp4gBNGaRiiDyaUPor7WTgh6F8ApM=
-X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:17d2:7c05:7f59:da03])
- (user=surenb job=sendgmr) by 2002:a81:4a07:: with SMTP id x7mr4764404ywa.245.1644452286222;
- Wed, 09 Feb 2022 16:18:06 -0800 (PST)
-Date:   Wed,  9 Feb 2022 16:18:01 -0800
-Message-Id: <20220210001801.15413-1-surenb@google.com>
+        Wed, 9 Feb 2022 20:56:01 -0500
+X-Greylist: delayed 1201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 17:43:16 PST
+Received: from mother.openwall.net (mother.openwall.net [195.42.179.200])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 29BB02B6A0
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:43:14 -0800 (PST)
+Received: (qmail 7392 invoked from network); 10 Feb 2022 01:16:33 -0000
+Received: from localhost (HELO pvt.openwall.com) (127.0.0.1)
+  by localhost with SMTP; 10 Feb 2022 01:16:33 -0000
+Received: by pvt.openwall.com (Postfix, from userid 503)
+        id 0E08DAB88C; Thu, 10 Feb 2022 02:14:05 +0100 (CET)
+Date:   Thu, 10 Feb 2022 02:14:05 +0100
+From:   Solar Designer <solar@openwall.com>
+To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Linux Containers <containers@lists.linux-foundation.org>
+Subject: Re: [RFC PATCH 1/6] set_user: Perform RLIMIT_NPROC capability check against new user credentials
+Message-ID: <20220210011405.GA17076@openwall.com>
+References: <20220207121800.5079-1-mkoutny@suse.com> <20220207121800.5079-2-mkoutny@suse.com>
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH 1/1] mm: Fix UAF when anon vma name is used after vma is freed
-From:   Suren Baghdasaryan <surenb@google.com>
-To:     akpm@linux-foundation.org
-Cc:     ccross@google.com, sumit.semwal@linaro.org, mhocko@suse.com,
-        dave.hansen@intel.com, keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com, surenb@google.com,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220207121800.5079-2-mkoutny@suse.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When adjacent vmas are being merged it can result in the vma that was
-originally passed to madvise_update_vma being destroyed. In the current
-implementation, the name parameter passed to madvise_update_vma points
-directly to vma->anon_name->name and it is used after the call to
-vma_merge. In the cases when vma_merge merges the original vma and
-destroys it, this will result in use-after-free bug as shown below:
+Hi Michal,
 
-madvise_vma_behavior << passes vma->anon_name->name as name param
-  madvise_update_vma(name)
-    vma_merge
-      __vma_adjust
-        vm_area_free <-- frees the vma
-    replace_vma_anon_name(name) <-- UAF
+On Mon, Feb 07, 2022 at 01:17:55PM +0100, Michal Koutný wrote:
+> The check is currently against the current->cred but since those are
+> going to change and we want to check RLIMIT_NPROC condition after the
+> switch, supply the capability check with the new cred.
+> But since we're checking new_user being INIT_USER any new cred's
+> capability-based allowance may be redundant when the check fails and the
+> alternative solution would be revert of the commit 2863643fb8b9
+> ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+> 
+> Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
+> 
+> Cc: Solar Designer <solar@openwall.com>
+> Cc: Christian Brauner <christian.brauner@ubuntu.com>
+> Signed-off-by: Michal Koutný <mkoutny@suse.com>
+> ---
+>  kernel/sys.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/sys.c b/kernel/sys.c
+> index 8ea20912103a..48c90dcceff3 100644
+> --- a/kernel/sys.c
+> +++ b/kernel/sys.c
+> @@ -481,7 +481,8 @@ static int set_user(struct cred *new)
+>  	 */
+>  	if (ucounts_limit_cmp(new->ucounts, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)) >= 0 &&
+>  			new_user != INIT_USER &&
+> -			!capable(CAP_SYS_RESOURCE) && !capable(CAP_SYS_ADMIN))
+> +			!security_capable(new, &init_user_ns, CAP_SYS_RESOURCE, CAP_OPT_NONE) &&
+> +			!security_capable(new, &init_user_ns, CAP_SYS_ADMIN, CAP_OPT_NONE))
+>  		current->flags |= PF_NPROC_EXCEEDED;
+>  	else
+>  		current->flags &= ~PF_NPROC_EXCEEDED;
 
-Fix this by passing madvise_update_vma a copy of the name.
+Thank you for working on this and CC'ing me on it.  This is related to
+the discussion Christian and I had in September:
 
-Fixes: 9a10064f5625 ("mm: add a field to store names for private anonymous memory")
-Reported-by: syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
----
- include/linux/mm.h |  2 ++
- kernel/sys.c       |  1 -
- mm/madvise.c       | 14 +++++++++++++-
- 3 files changed, 15 insertions(+), 2 deletions(-)
+https://lore.kernel.org/all/20210913100140.bxqlg47pushoqa3r@wittgenstein/
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 213cc569b192..e3490be76f35 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3370,6 +3370,8 @@ static inline int seal_check_future_write(int seals, struct vm_area_struct *vma)
- 	return 0;
- }
- 
-+#define ANON_VMA_NAME_MAX_LEN	80
-+
- #ifdef CONFIG_ANON_VMA_NAME
- int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
- 			  unsigned long len_in, const char *name);
-diff --git a/kernel/sys.c b/kernel/sys.c
-index ecc4cf019242..4cb6dc4bc09c 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -2263,7 +2263,6 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
- 
- #ifdef CONFIG_ANON_VMA_NAME
- 
--#define ANON_VMA_NAME_MAX_LEN		80
- #define ANON_VMA_NAME_INVALID_CHARS	"\\`$[]"
- 
- static inline bool is_valid_name_char(char ch)
-diff --git a/mm/madvise.c b/mm/madvise.c
-index 5604064df464..f36a5a9942d8 100644
---- a/mm/madvise.c
-+++ b/mm/madvise.c
-@@ -976,6 +976,8 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
- {
- 	int error;
- 	unsigned long new_flags = vma->vm_flags;
-+	char name_buf[ANON_VMA_NAME_MAX_LEN];
-+	const char *anon_name;
- 
- 	switch (behavior) {
- 	case MADV_REMOVE:
-@@ -1040,8 +1042,18 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
- 		break;
- 	}
- 
-+	anon_name = vma_anon_name(vma);
-+	if (anon_name) {
-+		/*
-+		 * Make a copy of the name because vma might be destroyed when
-+		 * merged with another one and the name parameter might be used
-+		 * after that.
-+		 */
-+		strcpy(name_buf, anon_name);
-+		anon_name = name_buf;
-+	}
- 	error = madvise_update_vma(vma, prev, start, end, new_flags,
--				   vma_anon_name(vma));
-+				   anon_name);
- 
- out:
- 	/*
--- 
-2.35.0.263.gb82422642f-goog
+Christian was going to revert 2863643fb8b9, but apparently that never
+happened.  Back then, I also suggested:
 
+"Alternatively, we could postpone the set_user() calls until we're
+running with the new user's capabilities, but that's an invasive change
+that's likely to create its own issues."
+
+The change you propose above is similar to that, but is more limited and
+non-invasive.  That looks good to me.
+
+However, I think you need to drop the negations of the return value from
+security_capable().  security_capable() returns 0 or -EPERM, while
+capable() returns a bool, in kernel/capability.c: ns_capable_common():
+
+	capable = security_capable(current_cred(), ns, cap, opts);
+	if (capable == 0) {
+		current->flags |= PF_SUPERPRIV;
+		return true;
+	}
+	return false;
+
+Also, your change would result in this no longer setting PF_SUPERPRIV.
+This may be fine, but you could want to document it.
+
+On a related note, this comment in security/commoncap.c needs an update:
+
+ * NOTE WELL: cap_has_capability() cannot be used like the kernel's capable()
+ * and has_capability() functions.  That is, it has the reverse semantics:
+ * cap_has_capability() returns 0 when a task has a capability, but the
+ * kernel's capable() and has_capability() returns 1 for this case.
+
+cap_has_capability() doesn't actually exist, and perhaps the comment
+should refer to cap_capable().
+
+Alexander
