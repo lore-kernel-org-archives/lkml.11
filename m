@@ -2,97 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A037CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231861AbiBJBY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:24:58 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:49700 "EHLO
+        id S231968AbiBJBZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:25:38 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232019AbiBJBYz (ORCPT
+        with ESMTP id S232057AbiBJBZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:24:55 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B58205DD
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:24:52 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id b35so3396035qkp.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:24:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6v40Xs8Ytvxt0dDH5ckr0SUmNY8MyYZKnzYuhetFRrk=;
-        b=g7XhLrabfAMa31SDaONO+44MUaqxJyyQ1DXkN/0PQi2qcfrTJkNnmXWpwJEy49wtcQ
-         hq8Y/ohL/W6JeQdp6ZErKzlv+hdweaMWkKZ6hU6sI90MD++DZwzselOcYApTtI4C3CzL
-         h7KFLlctJD1sForQR9GGZ70Wyv/kDtlCVYejw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6v40Xs8Ytvxt0dDH5ckr0SUmNY8MyYZKnzYuhetFRrk=;
-        b=xgYUZIJc3lQvSu90qFRjh2kHvepGR4D7z9OdH0t3UW6jZHiOnj9RiHzoDCuMP7iAcS
-         VSsD2QYMrpGl31Ol2nLkMS2J21FSARddEyMnmIU2cQuhzA6yqWBCcgqE2W6+mkKnDFR+
-         kxKHTcrXbyTxYXUJzaMF7RLJPm4l58z716oZhzklJfuFKjvZP8JxAQgDHSAKRHxCra3j
-         t+MWsswoE6ZymYSfxLbWJ0c55yPYgpuMIo6OmYfoYrMzJjDg2XvDISnY1IaUs8RhJi+F
-         Yv+1QaEyU9bgH02pI0dwjDmxBEczd5MEkcjwHXzppDzjvqPdismP9oF9axHUXqkKkk9G
-         qrpg==
-X-Gm-Message-State: AOAM533A0hHBjrvBnTlfLJ8awBC8rht2BxcAFfx38sSID9xiWeS0LnmJ
-        mxX02+a9q2UbKxDzzWwtOXxT6DsLu2+K8Q==
-X-Google-Smtp-Source: ABdhPJw4saNEQbesdBoqV2W+wS0zEzTkZdojv6Jco5zy72uddagAi8o4iGvor4N5b/AKz2f0vujHCg==
-X-Received: by 2002:a02:3f2f:: with SMTP id d47mr2694158jaa.228.1644454626661;
-        Wed, 09 Feb 2022 16:57:06 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id u26sm10442878ior.52.2022.02.09.16.57.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 16:57:06 -0800 (PST)
-Subject: Re: [PATCH 5.16 0/5] 5.16.9-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wed, 9 Feb 2022 20:25:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50FB75598;
+        Wed,  9 Feb 2022 17:25:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD21EB823BB;
+        Thu, 10 Feb 2022 01:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276E9C340E7;
+        Thu, 10 Feb 2022 01:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644456327;
+        bh=q1j/8X8KRoaMux0MR33EKmu69UKx9HSvfrHlB087F2Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dSOgMdAvTyqsqgyfjJafaoZDP9KQqRA12znksjSjfUS65ZvWAeU5jZLE44U3J+1Te
+         MblFTGGEnsucHWyXVUgdr+CpwrmS2RkEGHQn1zqk+rYzT1kzBDhkWXfKH4bcty4NF+
+         AnSaHC9mSJ1XsDOYHyxifkbduWYMtOqU+/1ACoSa3/9Hz/5mjA2r4OqEdQLWtvNDn7
+         u5a29BYyu2kAD8e7D9Kvd3BJJ556KnEQX8IYeAk/BKLebT2sZBhScfw1qznLrCjVNV
+         PcCOJ//q4w8XmVdIJS+WtIYh0t78DmP/C2S6oouNqEmN0eFrKNifHdcOlZq+LiltdU
+         6u6/GoJJ1W4tQ==
+Date:   Wed, 9 Feb 2022 17:25:25 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>, Moshe Shemesh <moshe@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220209191249.887150036@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <b1ca60f8-59d7-568b-8e8b-348c1e70d32e@linuxfoundation.org>
-Date:   Wed, 9 Feb 2022 17:57:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Subject: Re: [PATCH net-next 0/4] net/mlx5: Introduce devlink param to
+ disable SF aux dev probe
+Message-ID: <20220209172525.19977e8c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YgOQAZKnbm5IzbTy@nanopsycho>
+References: <1644340446-125084-1-git-send-email-moshe@nvidia.com>
+        <20220208212341.513e04bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <YgOQAZKnbm5IzbTy@nanopsycho>
 MIME-Version: 1.0
-In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 12:14 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.9 release.
-> There are 5 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+On Wed, 9 Feb 2022 09:39:54 +0200 Moshe Shemesh wrote:
+> Well we don't have the SFs at that stage, how can we tell which SF will 
+> use vnet and which SF will use eth ?
 
-Compiled and booted on my test system. No dmesg regressions.
+On Wed, 9 Feb 2022 10:57:21 +0100 Jiri Pirko wrote: 
+> It's a different user. One works with the eswitch and creates the port
+> function. The other one takes the created instance and works with it.
+> Note that it may be on a different host.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+It is a little confusing, so I may well be misunderstanding but the
+cover letter says:
 
-thanks,
--- Shuah
+$ devlink dev param set pci/0000:08:00.0 name enable_sfs_aux_devs \
+              value false cmode runtime
+
+$ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11
+
+So both of these run on the same side, no?
+
+What I meant is make the former part of the latter:
+
+$ devlink port add pci/0000:08:00.0 flavour pcisf pfnum 0 sfnum 11 noprobe
+
+
+Maybe worth clarifying - pci/0000:08:00.0 is the eswitch side and
+auxiliary/mlx5_core.sf.1 is the... "customer" side, correct? 
