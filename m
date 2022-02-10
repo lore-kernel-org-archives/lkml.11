@@ -2,139 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E52F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57699C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345182AbiBJWot (ORCPT
+        id S1345193AbiBJWpI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:44:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34070 "EHLO
+        Thu, 10 Feb 2022 17:45:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237923AbiBJWop (ORCPT
+        with ESMTP id S237923AbiBJWpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:44:45 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2182704
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:44:46 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id s73-20020a25aa4f000000b0061d764d3c13so15208501ybi.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:44:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=2dZOYBOmJua4dYugoiMtuQUhFU9vmd43xxG8qEJDkFQ=;
-        b=ep6/TNGFOJe8CMFzZYZTp3879NvaY6+muWoz075exQAtJ+Dtv/XxFOgo1TvFvY76YC
-         XOB/EOtVDQ935brIbXoSTuX/PaYdWJC8dHLpt6DXVeYIdx05KvPgXyX9s2r4wBITC+yr
-         AiLe4qiBik1TW8/yYKyz/i9tgLFNDvabJBTvtv17doe7xkkBUVgcvImDEydYuurvMduH
-         wbTib7UbkW1wLjMaJazhGbz3ZRn3P6dDOBYxBoKnsfjlvq1oDKICPU7DpepOHn7PWInc
-         6NuG3/TMjtT91dnM2QUaLSFBNYRxG6DVDul48ADGrixxtXdibO2kEXGlX1gPRU0hafh+
-         ZcpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=2dZOYBOmJua4dYugoiMtuQUhFU9vmd43xxG8qEJDkFQ=;
-        b=N/338bp1zxkvCNbZOoFnYdoYS3+/5AMySHQhcLbQTdNwUs10550mcV9tBw4fOGxbOh
-         6Wdjg3mwGHmnU+2/yNVSfD9ozawd83ajtkFx3A2S1H/Ri34D6ESTRBZC85W/cK08jwbY
-         dfRw3MzbvxzRZ8umep/eLQdfgptpTA0imuWrxVGw6JZm+lpHdJCrnAsLFgWqE5PCOz5z
-         NJHeYFUZkPJ6tjruz1+JI3Slfq+zsvJwSBF6Km6B7z9LM8sXR5eEUUSoJXBDYdj35MG/
-         Y3MaWQzesY58e9GzKMOMAqBHHk2csx3N/dJNFSvUMu8o3iCl2Y7wI0JsTr9KXV0MAIl/
-         N1SA==
-X-Gm-Message-State: AOAM530kRH4Jmao5wTXQqN5E66uxn7vcdhHO9PJmmfFQFFeROOTDK7gU
-        VZs7JjgyBrH1656R8vQpA2Wb+4an5UwSzAIHfw==
-X-Google-Smtp-Source: ABdhPJzhHuVVpX5/8wSgs7kQYW10C9SFtD8VH8eIEn4uDIMdbuJGadpvTqkiYBtfns2EGA0KUtz+LKt9roCBW8sc/A==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:8f02:232:ad86:2ab2])
- (user=kaleshsingh job=sendgmr) by 2002:a5b:548:: with SMTP id
- r8mr9416027ybp.717.1644533085249; Thu, 10 Feb 2022 14:44:45 -0800 (PST)
-Date:   Thu, 10 Feb 2022 14:41:44 -0800
-In-Reply-To: <20220210224220.4076151-1-kaleshsingh@google.com>
-Message-Id: <20220210224220.4076151-4-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220210224220.4076151-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH 3/7] arm64: asm: Introduce test_sp_overflow macro
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        Thu, 10 Feb 2022 17:45:06 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A35732737
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:45:05 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-320-tnvpk8ZBMl6vvx44NdPNoA-1; Thu, 10 Feb 2022 22:45:02 +0000
+X-MC-Unique: tnvpk8ZBMl6vvx44NdPNoA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 10 Feb 2022 22:45:00 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 10 Feb 2022 22:45:00 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Dave Hansen' <dave.hansen@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Eugene Syromiatnikov" <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        "joao.moreira@intel.com" <joao.moreira@intel.com>,
+        John Allen <john.allen@amd.com>,
+        "kcc@google.com" <kcc@google.com>,
+        "eranian@google.com" <eranian@google.com>
+CC:     Yu-cheng Yu <yu-cheng.yu@intel.com>
+Subject: RE: [PATCH 20/35] mm: Update can_follow_write_pte() for shadow stack
+Thread-Topic: [PATCH 20/35] mm: Update can_follow_write_pte() for shadow stack
+Thread-Index: AQHYHgex3kDJpMh0kE6CJu25wcKQLKyNYu3Q
+Date:   Thu, 10 Feb 2022 22:45:00 +0000
+Message-ID: <cd5e3eb792474e41bca1bd04d1747c9a@AcuMS.aculab.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-21-rick.p.edgecombe@intel.com>
+ <37426b64-2139-dc24-c7be-f3cefa4f0dd9@intel.com>
+In-Reply-To: <37426b64-2139-dc24-c7be-f3cefa4f0dd9@intel.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Perret <qperret@google.com>
-
-The asm entry code in the kernel uses a trick to check if VMAP'd stacks
-have overflowed by aligning them at THREAD_SHIFT * 2 granularity and
-checking the SP's THREAD_SHIFT bit.
-
-Protected KVM will soon make use of a similar trick to detect stack
-overflows, so factor out the asm code in a re-usable macro.
-
-Signed-off-by: Quentin Perret <qperret@google.com>
-[Kalesh - Resolve minor conflicts]
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/include/asm/assembler.h | 11 +++++++++++
- arch/arm64/kernel/entry.S          |  9 ++-------
- 2 files changed, 13 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index e8bd0af0141c..ad40eb0eee83 100644
---- a/arch/arm64/include/asm/assembler.h
-+++ b/arch/arm64/include/asm/assembler.h
-@@ -850,4 +850,15 @@ alternative_endif
- 
- #endif /* GNU_PROPERTY_AARCH64_FEATURE_1_DEFAULT */
- 
-+/*
-+ * Test whether the SP has overflowed, without corrupting a GPR.
-+ */
-+.macro test_sp_overflow shift, label
-+	add	sp, sp, x0			// sp' = sp + x0
-+	sub	x0, sp, x0			// x0' = sp' - x0 = (sp + x0) - x0 = sp
-+	tbnz	x0, #\shift, \label
-+	sub	x0, sp, x0			// x0'' = sp' - x0' = (sp + x0) - sp = x0
-+	sub	sp, sp, x0			// sp'' = sp' - x0 = (sp + x0) - x0 = sp
-+.endm
-+
- #endif	/* __ASM_ASSEMBLER_H */
-diff --git a/arch/arm64/kernel/entry.S b/arch/arm64/kernel/entry.S
-index 772ec2ecf488..2632bc47b348 100644
---- a/arch/arm64/kernel/entry.S
-+++ b/arch/arm64/kernel/entry.S
-@@ -53,16 +53,11 @@ alternative_else_nop_endif
- 	sub	sp, sp, #PT_REGS_SIZE
- #ifdef CONFIG_VMAP_STACK
- 	/*
--	 * Test whether the SP has overflowed, without corrupting a GPR.
- 	 * Task and IRQ stacks are aligned so that SP & (1 << THREAD_SHIFT)
- 	 * should always be zero.
- 	 */
--	add	sp, sp, x0			// sp' = sp + x0
--	sub	x0, sp, x0			// x0' = sp' - x0 = (sp + x0) - x0 = sp
--	tbnz	x0, #THREAD_SHIFT, 0f
--	sub	x0, sp, x0			// x0'' = sp' - x0' = (sp + x0) - sp = x0
--	sub	sp, sp, x0			// sp'' = sp' - x0 = (sp + x0) - x0 = sp
--	b	el\el\ht\()_\regsize\()_\label
-+	test_sp_overflow THREAD_SHIFT, 0f
-+	b       el\el\ht\()_\regsize\()_\label
- 
- 0:
- 	/*
--- 
-2.35.1.265.g69c8d7142f-goog
+RnJvbTogRGF2ZSBIYW5zZW4NCj4gU2VudDogMDkgRmVicnVhcnkgMjAyMiAyMjo1Mg0KPiANCj4g
+T24gMS8zMC8yMiAxMzoxOCwgUmljayBFZGdlY29tYmUgd3JvdGU6DQo+ID4gTGlrZSBhIHdyaXRh
+YmxlIGRhdGEgcGFnZSwgYSBzaGFkb3cgc3RhY2sgcGFnZSBpcyB3cml0YWJsZSwgYW5kIGJlY29t
+ZXMNCj4gPiByZWFkLW9ubHkgZHVyaW5nIGNvcHktb24td3JpdGUsIGJ1dCBpdCBpcyBhbHdheXMg
+ZGlydHkuDQo+IA0KPiBPbmUgb3RoZXIgdGhpbmcuLi4NCj4gDQo+IFRoZSBsYW5ndWFnZSBpbiB0
+aGVzZSBjaGFuZ2Vsb2dzIGlzIGEgYml0IHNsb3BweS4gIEZvciBpbnN0YW5jZSwgd2hhdA0KPiBk
+b2VzICJhbHdheXMgZGlydHkiIG1lYW4gaGVyZT8gIHB0ZV9kaXJ0eSgpPyAgT3Igc3RyaWN0bHkg
+X1BBR0VfRElSVFk/DQo+IA0KPiBJbiBvdGhlciB3b3JkcywgbG9naWNhbGx5IGRpcnR5LCBvciBs
+aXRlcmFsbHkgImhhcyAqdGhlKiBkaXJ0eSBiaXQgc2V0Ij8NCg0KRG9lc24ndCBDT1cgaGF2ZSB0
+byBzZXQgaXQgcmVhZG9ubHkgLSBzbyB0aGF0IHRoZSBhY2Nlc3MgZmF1bHRzLg0KQW5kIHRoZW4g
+c2V0IHRoZSBmYXVsdCBjb2RlIHNldCBpdCByZWFkb25seStkaXJ0eSAod2l0aG91dCB3cml0ZSkN
+CnRvIGFsbG93IHRoZSBzaGFkb3cgc3RhY2sgYWNjZXNzZXMgdG8gbm90LWZhdWx0Lg0KDQpPciBh
+bSBJIG1pcy1ndWVzc2luZyB3aGF0IHRoZSBkb2NzIGFjdHVhbGx5IHNheT8NCg0KCURhdmlkDQoN
+Ci0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJt
+LCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChX
+YWxlcykNCg==
 
