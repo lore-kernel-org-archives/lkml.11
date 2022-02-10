@@ -2,133 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 982C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F44C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344831AbiBJWJp (ORCPT
+        id S1344848AbiBJWKF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:09:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44506 "EHLO
+        Thu, 10 Feb 2022 17:10:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241875AbiBJWJn (ORCPT
+        with ESMTP id S241875AbiBJWKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:09:43 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99E0FE7B;
-        Thu, 10 Feb 2022 14:09:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644530982; x=1676066982;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=XyOoywc4THLPzW+PmVQhClugtwQHmT6Xsd0BZq1fpE4=;
-  b=CIEZ5lokxaYl7LA+gppQ+CyMiZ7XODF2t6MBTQSIhWvl7xULsI9sqmHs
-   IGL/ql10MJJ9sSsXydVmSYOAo/rWlyrrtuk8uAVh8TwTc9KIYcDTazzii
-   VBd19i/BkxkmQN5uNnzp4F0Xm1P5PPOY8OlyuIiLKH2Bn5YdVXTb+FD91
-   soS1Heyh/tC6g1HlL9x9M5/OStDpNkhpHYKkjKWKGMPKcfkfC2ud3du8k
-   ic06BjNrTJ+9PZxuuVMOGm0llpRv+4mmD4WowohTkhH2b1zjIG/v+h0TZ
-   RT4AbTkYKCihpVjnbsc01MS6PGw1ulc1bb65ro7FtfFyHst+JI82ueoNz
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="248435960"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="248435960"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 14:09:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="701862618"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by orsmga005.jf.intel.com with ESMTP; 10 Feb 2022 14:09:19 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 10 Feb 2022 14:09:19 -0800
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 10 Feb 2022 14:09:18 -0800
-Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
- fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.2308.020;
- Thu, 10 Feb 2022 14:09:18 -0800
-From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
-To:     Victor Erminpour <victor.erminpour@oracle.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-CC:     "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "trivial@kernel.org" <trivial@kernel.org>
-Subject: RE: [PATCH] RDMA/irdma: Fix GCC 12 warning
-Thread-Topic: [PATCH] RDMA/irdma: Fix GCC 12 warning
-Thread-Index: AQHYHhXpIKGNtR9Qu0Cesy+E4ixcfayNV7Tw
-Date:   Thu, 10 Feb 2022 22:09:18 +0000
-Message-ID: <35240f17968242409a39427c303370df@intel.com>
-References: <1644453235-1437-1-git-send-email-victor.erminpour@oracle.com>
-In-Reply-To: <1644453235-1437-1-git-send-email-victor.erminpour@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.200.16
-x-originating-ip: [10.1.200.100]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 10 Feb 2022 17:10:03 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018ACF5B
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:10:03 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id i21so11273564pfd.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:10:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qPFE4Zp5rbm2IQyqlfm7NXsxDl+45f9FHKMcmltWZhM=;
+        b=BecGAhNqQKYBtuSt99I5RDK+OvickszP+NeK3ijUCL77o0dlQTbAy7BggM8aX4IETb
+         cEpXpjKIFS7AJLjIwvKdvmPWB1Vni6UAFNlCB40EP1Whtvmhh9PIcbfuDUk0IFMrGJH6
+         2EHsAlEV0bVFb7TTxLd5m4MQ9wwFizcKa4RZrAa5ryY4J0yi9PA/55ewUkwp4ZN5yYOK
+         sjGtR6sq1gFrg6cmc34y6GDB5jXmh8Q9riwznb6bhB59llLXYVHLRFQJgpUj+3tVFAy3
+         SauljF+zxpTbCj5Mau4X2QEY4vf3By6ULIoM+4mnpYOJHKZrlXdCLxRdPPCwzL4TvPmK
+         Ks6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qPFE4Zp5rbm2IQyqlfm7NXsxDl+45f9FHKMcmltWZhM=;
+        b=U2q3og5oOrPqqtm4fLX0xHLE7tQMyxzDqVZ7bv7rWr+Lgt2R/GrtncmBQbu04DUOcf
+         Ta0x0vZ7OdBU+vPsMRiJWZEFKp5DqNEdF3vHJEQNxyw/3Lev7hKEGKoba1VsuQAfATeo
+         lzhoROiBkFC+GONZQat3AryQLGADNFzW5EluDiwEakNuhsZ6nir1gAUmSDLG7HCTt7zE
+         YAPYbuLe0KQmMEtekr/+Sj9OK9CK4yM0Nafpfr99O4KidJadSaj5AUeM1+CK44xrQhvO
+         433Aj6Bo0dsm7QPPXpoqd6ZzcPRC6KsqAAKV98dXKSPa7APQ84V5bzQ3VVSBk74zyad1
+         6iKQ==
+X-Gm-Message-State: AOAM533zMQ8WdrrtlhtoQocvqxBLtk6RT3+SF+lKBetXV5Z23vZ1DI0f
+        epdemjvy9tnDhp63Bxk2m8cyaA==
+X-Google-Smtp-Source: ABdhPJy/6kfvRUGKsTucEgxDqPV2QGBA53s+SzuHMp3+/NwS5tGBIzsr2EtjnYA0ie6BtvIfuitpDQ==
+X-Received: by 2002:a62:86cd:: with SMTP id x196mr5610683pfd.26.1644531002471;
+        Thu, 10 Feb 2022 14:10:02 -0800 (PST)
+Received: from kalash.aristanetworks.com ([64.180.125.150])
+        by smtp.googlemail.com with ESMTPSA id c4sm12470147pfl.131.2022.02.10.14.10.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 14:10:01 -0800 (PST)
+From:   Kalash Nainwal <kalash@arista.com>
+To:     netdev@vger.kernel.org
+Cc:     fruggeri@arista.com, kalash@arista.com, dsahern@gmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Generate netlink notification when default IPv6 route preference changes
+Date:   Thu, 10 Feb 2022 14:09:35 -0800
+Message-Id: <20220210220935.21139-1-kalash@arista.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: [PATCH] RDMA/irdma: Fix GCC 12 warning
->=20
-> When building with automatic stack variable initialization, GCC 12 compla=
-ins about
-> variables defined outside of switch case statements.
-> Move the variable into the case that uses it, which silences the warning:
->=20
-> ./drivers/infiniband/hw/irdma/hw.c:270:47: error: statement will never be=
- executed [-
-> Werror=3Dswitch-unreachable]
->   270 |                         struct irdma_cm_node *cm_node;
->       |
->=20
-> ./drivers/infiniband/hw/irdma/utils.c:1215:50: error: statement will neve=
-r be executed
-> [-Werror=3Dswitch-unreachable]
->   1215 |                         struct irdma_gen_ae_info ae_info;
->        |
->=20
-> Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
-> ---
->  drivers/infiniband/hw/irdma/hw.c    | 2 +-
->  drivers/infiniband/hw/irdma/utils.c | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/ird=
-ma/hw.c
-> index 89234d04cc65..a41a3b128d0d 100644
-> --- a/drivers/infiniband/hw/irdma/hw.c
-> +++ b/drivers/infiniband/hw/irdma/hw.c
-> @@ -267,8 +267,8 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
->  		}
->=20
->  		switch (info->ae_id) {
-> -			struct irdma_cm_node *cm_node;
->  		case IRDMA_AE_LLP_CONNECTION_ESTABLISHED:
-> +			struct irdma_cm_node *cm_node;
->  			cm_node =3D iwqp->cm_node;
->  			if (cm_node->accept_pend) {
->  				atomic_dec(&cm_node->listener-
+ Generate RTM_NEWROUTE netlink notification when the route preference
+ changes on an existing kernel generated default route in response to
+ RA messages. Currently netlink notifications are generated only when
+ this route is added or deleted but not when the route preference
+ changes, which can cause userspace routing application state to go
+ out of sync with kernel.
 
-This doesn't compile.
+Signed-off-by: Kalash Nainwal <kalash@arista.com>
+---
+ net/ipv6/ndisc.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-drivers/infiniband/hw/irdma/hw.c: In function \u2018irdma_process_aeq\u2019=
-:
-drivers/infiniband/hw/irdma/hw.c:271:4: error: a label can only be part of =
-a statement and a declaration is not a statement
-  271 |    struct irdma_cm_node *cm_node;
-
-Seems like we are accommodating for gcc12 bug since this C code is legit?=20
-
-Shiraz
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index f03b597e4121..1c06d0cd02f7 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1337,8 +1337,12 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 			return;
+ 		}
+ 		neigh->flags |= NTF_ROUTER;
+-	} else if (rt) {
++	} else if (rt && IPV6_EXTRACT_PREF(rt->fib6_flags) != pref) {
++		struct nl_info nlinfo = {
++			.nl_net = net,
++		};
+ 		rt->fib6_flags = (rt->fib6_flags & ~RTF_PREF_MASK) | RTF_PREF(pref);
++		inet6_rt_notify(RTM_NEWROUTE, rt, &nlinfo, NLM_F_REPLACE);
+ 	}
+ 
+ 	if (rt)
+-- 
+2.30.1 (Apple Git-130)
 
