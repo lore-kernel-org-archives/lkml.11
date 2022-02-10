@@ -2,82 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC71C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232126AbiBJB04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:26:56 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53378 "EHLO
+        id S232200AbiBJB1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:27:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232241AbiBJB0k (ORCPT
+        with ESMTP id S232166AbiBJB06 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:26:40 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC14F20188;
-        Wed,  9 Feb 2022 17:26:39 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id u3so4389697oiv.12;
-        Wed, 09 Feb 2022 17:26:39 -0800 (PST)
+        Wed, 9 Feb 2022 20:26:58 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F89420188;
+        Wed,  9 Feb 2022 17:26:56 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id i21so5996455pfd.13;
+        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=99kJAF1LYHwtSv0Yf3YOWEwdRAz6cOKJMAAN9vZQpPA=;
+        b=V208CxnCfJAW7fmWBawGNO4R+VshKsgngfQdMPxgDkMgP6Ulonm1Em6PIMBqJJbGKU
+         3BMFA9b+vjpeszMj3qdKdDh5kwJ2k/Z+7YPP7vwq3JUsdEw+uih0WJjn/ANjfmOPGeCc
+         duFAf6yoViCOT5T6JehENfcQ9N0Rwyp2NgNTIsC1y2CkAmBJDNQ2VOKzy2oSRB02trnH
+         p4f+FMnlX/E7PMdzfRJrlKkx6x4DfDGGTChKPheLQx0VaEEG+VbFgzlQMFRAz3cZSQUm
+         olxOqp9vVZfixIrFdFEeg8R3GjEarejrwz8ySgcr0g61zr3+1mvRyY20OJP1s+drGjdd
+         cPAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uEpUpIfQBjsAuD0aREJWR3efYMmJJL1AuZam/m/6eyk=;
-        b=w0ScF+hR78OXG+jAoOQKsdehtypFF3RMaEyWoWtnHyAT3GIGAYX6JdJAVvef353Eer
-         ywLafQAHVOGs5VF2KcQrS+B9BfSUKV6gdQy61ecs58IsYzkEjwKOs2mLOPS3yXGQu+37
-         3mNa3gAAjbpaYmrNzeREWa1OClg0xBoFbJKcUG03YsW9hdfJOt24Bov0KCJyIhp+ncma
-         Ba98F2YpPwbIPQYWVwZUo9zOO4QDyE97HYhsKI2V7nJH3a4XR+cgEygFUGpFnCqI/5Qe
-         8Z84mUGh5muRcXmltqWtopzAYaoG9xMFYr+oO1Rh2zgZ3LEKxTjH0Dg5CXWBOJkhXnc4
-         I09g==
-X-Gm-Message-State: AOAM531SRupS0U/GR3zl7RjUvII0NMIWv9olLRFOGCIsS9U4MhkwuaOV
-        LGYOiZuuFCYnaV23DEYj6EHkKlZoWPhe
-X-Google-Smtp-Source: ABdhPJwoR118NCOFT4jqQkNW8s4CsH9rsEXgiQUx/h/9X+JbFWXy6NTwk+s6c9KZXxU3htf8jMh9MQ==
-X-Received: by 2002:a05:6870:b1d6:: with SMTP id x22mr1770817oak.32.1644452944711;
-        Wed, 09 Feb 2022 16:29:04 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id w7sm2001747oiv.8.2022.02.09.16.29.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:29:04 -0800 (PST)
-Received: (nullmailer pid 1255559 invoked by uid 1000);
-        Thu, 10 Feb 2022 00:29:03 -0000
-Date:   Wed, 9 Feb 2022 18:29:03 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     nicolas.ferre@microchip.com
-Cc:     linux-crypto@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-kernel@vger.kernel.org,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH] dt-bindings: rng: atmel,at91-trng: update maintainers
- entry
-Message-ID: <YgRcT8yGjzMryNDp@robh.at.kernel.org>
-References: <d84760e0b81c338e01f7856e1ce3c5b600b08f23.1643553619.git.nicolas.ferre@microchip.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=99kJAF1LYHwtSv0Yf3YOWEwdRAz6cOKJMAAN9vZQpPA=;
+        b=DRpRnG9ywyWQuuSDdmnAlVuKZlaQCVpVRv36iQuR1kcUYfwvC7+pI8neB2+5/p/bp6
+         h+M0eb28whqjRmYE/ivK3gX8IsXJXe3DoZU9mHS0O0T6MsNIdoIn13FrWSfT+64umcNh
+         olVtup9S65O+bhTiI24+otuuYKQO9g+yGzSgIR69686MBM2hYU0UaNo7rRFGQwc/tX7y
+         1xP4+79aj+lr5giqUe+FKYqJ3nRwcoIlqk6LBJ6ncoew9NVeLibADBcKPW2YYJBCcDR0
+         GNJlumkAnVMPS5XbJghoLZmKxgk0t661ZP+FJ6qhJNb135/kMgP6EzfHqyCd42eRPT34
+         c0CA==
+X-Gm-Message-State: AOAM5333ep2CQWnTzuswmnidRTbH0w6RWpYg0zZYMmm+sc0yxlYVcTTf
+        XYl+OGD2h2tpCQgulqbsr6E=
+X-Google-Smtp-Source: ABdhPJx7mH2yZo4C4pJn/aE3cCDOtK+LkPC5Nk+B6bO3/Fqq03i1P/0o3tAvSQXdg21ttVWaEs1o8w==
+X-Received: by 2002:a65:4c87:: with SMTP id m7mr4145769pgt.509.1644456416531;
+        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id 6sm15177035pgx.36.2022.02.09.17.26.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
+Message-ID: <519bd2d9-1bee-03e1-eeb4-d9883c18be0c@gmail.com>
+Date:   Thu, 10 Feb 2022 10:26:53 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d84760e0b81c338e01f7856e1ce3c5b600b08f23.1643553619.git.nicolas.ferre@microchip.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Akira Yokosawa <akiyks@gmail.com>
+From:   Akira Yokosawa <akiyks@gmail.com>
+Subject: [PATCH] docs: Makefile: Add -no-shell-escape option to LATEXOPTS
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 30 Jan 2022 15:47:08 +0100, nicolas.ferre@microchip.com wrote:
-> From: Nicolas Ferre <nicolas.ferre@microchip.com>
-> 
-> Update according to new MAINTAINERS entry.
-> 
-> Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> ---
-> Hi,
-> 
-> Patch for new MAINTAINERS entry is here:
-> https://lore.kernel.org/linux-arm-kernel/23819d8baa635815d0893955197561fe4f044d5e.1643553501.git.nicolas.ferre@microchip.com/
-> 
-> Regards,
->   Nicolas
-> 
->  Documentation/devicetree/bindings/rng/atmel,at91-trng.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+By adding this option, message of "restricted \write18 enabled" from
+LaTeX can be silenced.
 
-Applied, thanks!
+As there is no use of \write18 in LaTeX sources from sphinx-build, it
+is safe to add this option.
+
+Reported-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+---
+ Documentation/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/Makefile b/Documentation/Makefile
+index 9f4bd42cef18..64d44c1ecad3 100644
+--- a/Documentation/Makefile
++++ b/Documentation/Makefile
+@@ -26,7 +26,7 @@ SPHINX_CONF   = conf.py
+ PAPER         =
+ BUILDDIR      = $(obj)/output
+ PDFLATEX      = xelatex
+-LATEXOPTS     = -interaction=batchmode
++LATEXOPTS     = -interaction=batchmode -no-shell-escape
+ 
+ ifeq ($(KBUILD_VERBOSE),0)
+ SPHINXOPTS    += "-q"
+
+base-commit: f647de4b02dcb1815fb3019f86a001a681daf0a1
+-- 
+2.17.1
+
