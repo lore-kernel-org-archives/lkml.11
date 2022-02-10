@@ -2,132 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F20CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 463F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245581AbiBJSLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:11:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36932 "EHLO
+        id S245584AbiBJSLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:11:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245569AbiBJSLH (ORCPT
+        with ESMTP id S245582AbiBJSLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:11:07 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1871167
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:08 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id ft32so1525340ejc.11
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:08 -0800 (PST)
+        Thu, 10 Feb 2022 13:11:38 -0500
+Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F327C2187
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:38 -0800 (PST)
+Received: by mail-vs1-xe2c.google.com with SMTP id w6so6995385vsf.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Tlc50y2zvWkDNDR0F+Hwlo/MK2qUQWeFkSFZIhsrGgA=;
-        b=iJ8wAdxK3aVPvQadvP2kQORWpqM1MwHhKRoQhinm5nXPKgnbRB25C9NdtTZR9ceJIE
-         SBtJXEjBFGQckKrACPJtdyxbGmTclNdJbEJSeV7V7WDPuPoqREzUn2VBLtsxA4qSs5wS
-         cyllBj95re5mmkwQjGIgS42OyNeC+S8X3neeo=
+        bh=m+hInPGeofgQvr+B+jVJK410sDOyGMUjmtcn9HJ0ffY=;
+        b=flqnBBPVANSD1q26AJK1xKHd6Pz8XsN5l5tNUv0zrjZ6RUkvAhmsCcb2usX76C3vze
+         BKQrSKHOjwhTWQ8zLtP0DwlqZU2SZ1gutMd+mUC2qMxIBtTl+AZrnhS8Ud7gT9mdwbxi
+         5BDCER/FC7wNbWpnFp5+7hKfdPu2ON2BDi0AWBt9Q/lbujogRcsefNa6QEIFX42OADob
+         kQ50VLfgVRE2YphEk0I5jOQvXDCXzqj2VfDbkAFstqP0CW3rjHIZ/2kOGpi+2ej68ixh
+         swkWO+3eL+q68NYwP5EkES500gpKk9md4DW9TPEE87u0QzYq/Lr6RF9kWQd2Jiwq8Fpi
+         MJnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Tlc50y2zvWkDNDR0F+Hwlo/MK2qUQWeFkSFZIhsrGgA=;
-        b=ejqXTXJrEKWsgUt/yCO9VRqUDcmzlBFtJ7fhlrm3MXA2IyWRyeDrHFSrpsNfgLlKXC
-         B/IK/Sv443ifIShuN5Wlcnl6+aAt02E327bwCm8rFEOmtUplkQO4o6xNBrsQFLLJ2OwO
-         EqA05y2+oQygMDHpOXXQsV6PQaLTRw55YRlCdjUBXJIHqrV2VJdmzmL6p5HiegU+K0RY
-         Olb8+3jJnqCnEErrTHNAnnJxabvNoRFJm0j6Dj7wRMoqeVj9e7oCYNqZ91Blg4gVEU6H
-         0aE9wHUHHaEY/12REHaiCxqTYaa59iN6nCffHeNSKKXVKUz7/5Bog/tNwOaMbBVHoD+G
-         qMoA==
-X-Gm-Message-State: AOAM533MHpTKt7l8XcxTN8i8xgtZSVLBTcSKNXFhHOvN6SvXkB6U5Nrf
-        ynOJuxGipaZkNaV9JN3HyPZtWDC4E8bYqtJV3Yg=
-X-Google-Smtp-Source: ABdhPJxY09lPuy5iS/04B894SXLPPH3T8mkHnMwg0OMtgFRuTFyepus7nxo+8aZU3M4zurUMuc01Lg==
-X-Received: by 2002:a17:907:c0d:: with SMTP id ga13mr7479450ejc.576.1644516666756;
-        Thu, 10 Feb 2022 10:11:06 -0800 (PST)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
-        by smtp.gmail.com with ESMTPSA id m25sm1277373ejn.118.2022.02.10.10.11.06
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 10:11:06 -0800 (PST)
-Received: by mail-wm1-f51.google.com with SMTP id k127-20020a1ca185000000b0037bc4be8713so5720115wme.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:06 -0800 (PST)
-X-Received: by 2002:a1c:f702:: with SMTP id v2mr3105904wmh.155.1644516283317;
- Thu, 10 Feb 2022 10:04:43 -0800 (PST)
+        bh=m+hInPGeofgQvr+B+jVJK410sDOyGMUjmtcn9HJ0ffY=;
+        b=kyG4lqs/0OjgpxKlpmC5pg4v7r/tAhiAFI5x/QIA0QvYuNNF1gzvLkjVm7GyLPt6bD
+         nDry6S+ATKz1F2u4krEoZBOGehqrCvfOBgt1VPlE4QgCULWTgeg7NZbeEuBMM45jjpRS
+         DMleOQDTDEjQaOZnNWaVhAujSlNRRjwTyHTSGWHVCQAB6kSqb/NGITv0qGpNuaCq0Fqm
+         7yehik0SV/MLVS69cgzzJHWNcGh0MZ1Ow0dGIgqrq+s1nXwwhcUAl1MV+jnYGIWsqyNr
+         lJ35ctHLiN9THaBmIhzmvBtK8eMyW8R6ce6kzmKaJYvgPd4QqeC4en5d/UsnHgJrERFN
+         kdoQ==
+X-Gm-Message-State: AOAM533FNLssx+9PlTIP2iTEnZo3te5v8YR8b9EdyRqdpDOrHHScUTZ+
+        ySZCNDME2sl+cl8tM93Bl2Nd8ynPwJhX0LundFYPig==
+X-Google-Smtp-Source: ABdhPJw0wrjMPSV0KitDigRahLC/42LEA2IINh4KLCyn8gAYrV3PQkar+WOmsLQ0V6q190C4yh2BfHWfFZg0RMqQ4wo=
+X-Received: by 2002:a67:ff0a:: with SMTP id v10mr1811061vsp.3.1644516698069;
+ Thu, 10 Feb 2022 10:11:38 -0800 (PST)
 MIME-Version: 1.0
-References: <000000000000a3571605d27817b5@google.com> <0000000000001f60ef05d7a3c6ad@google.com>
- <20220210081125.GA4616@1wt.eu> <359ee592-747f-8610-4180-5e1d2aba1b77@iogearbox.net>
- <CAJ+HfNjeapa=2Ue19L3EWF8z5vxFB0k2QO_LuBu4Meqs0=AE4Q@mail.gmail.com>
- <20220210174507.GK1951@kadam> <20220210175603.GL1951@kadam>
-In-Reply-To: <20220210175603.GL1951@kadam>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 10 Feb 2022 10:04:27 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiRq+_jd_O1gz3J6-ANtXMY7iLpi8XFUcmtB3rBixvUXQ@mail.gmail.com>
-Message-ID: <CAHk-=wiRq+_jd_O1gz3J6-ANtXMY7iLpi8XFUcmtB3rBixvUXQ@mail.gmail.com>
-Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Willy Tarreau <w@1wt.eu>,
-        syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>,
+References: <20220209191248.596319706@linuxfoundation.org>
+In-Reply-To: <20220209191248.596319706@linuxfoundation.org>
+From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
+Date:   Thu, 10 Feb 2022 13:11:01 -0500
+Message-ID: <CAG=yYwk2JyJsUsBR_aRxY2j=i=snjoCTx+D70x78BRwN-X53=Q@mail.gmail.com>
+Subject: Re: [PATCH 4.19 0/2] 4.19.229-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        torvalds@linux-foundation.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
-        fgheet255t@gmail.com, Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        mudongliangabcd@gmail.com, Netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Guenter Roeck <linux@roeck-us.net>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Content-Type: multipart/mixed; boundary="0000000000009ddee705d7ade1bc"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 9:57 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+--0000000000009ddee705d7ade1bc
+Content-Type: text/plain; charset="UTF-8"
+
+On Wed, Feb 9, 2022 at 2:25 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> Wait that would make the allocation succeed...  We don't want that.
-> That was a dumb idea.  Forget I said that.
+> This is the start of the stable review cycle for the 4.19.229 release.
+> There are 2 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.229-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Well, sometimes that _can_ be the right model.
+hello,
+Compiled  and booted kernel 4.19.229-rc1+ on :
 
-That said, pretty much every time this has come up, the kernel warning
-has shown that yes, the code was broken and there really wasn't a
-reason for doing allocations that big.
+Processor Information:
+    Socket Designation: FM2
+    Type: Central Processor
+    Family: A-Series
+    Manufacturer: AuthenticAMD
+    ID: 31 0F 61 00 FF FB 8B 17
+    Signature: Family 21, Model 19, Stepping 1
 
-Of course, some people would be perfectly fine with the allocation
-failing, they just don't want the warning. I didn't want __GFP_NOWARN
-to shut it up originally because I wanted people to see all those
-cases, but these days I think we can just say "yeah, people can shut
-it up explicitly by saying 'go ahead and fail this allocation, don't
-warn about it'".
 
-So enough time has passed that by now I'd certainly be ok with something like
+i have a new  display card of nvidia chipset. iam using non-free drivers here.
+01:00.0 VGA compatible controller: NVIDIA Corporation GP108 [GeForce
+GT 1030] (rev a1) (from lspci output)
+resources: irq:29 memory:fd000000-fdffffff memory:c0000000-cfffffff
+memory:d0000000-d1ffffff ioport:e000(size=128) memory:c0000-dffff
+(from "sudo lshw -c video"  output)
 
-  --- a/mm/util.c
-  +++ b/mm/util.c
-  @@ -587,8 +587,10 @@ void *kvmalloc_node(size_t size,
-                  return ret;
+dmesg related actions attached.
 
-          /* Don't even allow crazy sizes */
-  -       if (WARN_ON_ONCE(size > INT_MAX))
-  +       if (unlikely(size > INT_MAX)) {
-  +               WARN_ON_ONCE(!(flags & __GFP_NOWARN));
-                  return NULL;
-  +       }
+Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+--
+software engineer
+rajagiri school of engineering and technology  -  autonomous
 
-          return __vmalloc_node(size, 1, flags, node,
-                           __builtin_return_address(0));
+--0000000000009ddee705d7ade1bc
+Content-Type: text/plain; charset="US-ASCII"; name="dmesg0.txt"
+Content-Disposition: attachment; filename="dmesg0.txt"
+Content-Transfer-Encoding: base64
+Content-ID: <f_kzhaqwpy0>
+X-Attachment-Id: f_kzhaqwpy0
 
-(which is obviously COMPLETELY UNTESTED as well as being
-whitespace-damaged, but you get the idea).
-
-If somebody tests that patch and verifies it works, and writes a
-little commit blurb for it, I'll apply it.
-
-            Linus
+JHN1ZG8gc3lzY3RsIC13IGtlcm5lbC5kbWVzZ19yZXN0cmljdD0wCmtlcm5lbC5kbWVzZ19yZXN0
+cmljdCA9IDAKJGRtZXNnIC1sIGVtZXJnCiRkbWVzZyAtbCBhbGVydAokZG1lc2cgLWwgY3JpdAok
+ZG1lc2cgLWwgZXJyClsgICAgMS4yNzAwOTJdIG52aWRpYWZiOiB1bmtub3duIE5WX0FSQ0gKWyAg
+ICA1LjUzMTk5Ml0gY2dyb3VwOiBjZ3JvdXAyOiB1bmtub3duIG9wdGlvbiAibWVtb3J5X3JlY3Vy
+c2l2ZXByb3QiCiRkbWVzZyAtbCB3YXJuClsgICAgMC4wMTczODRdIEFDUEkgQklPUyBXYXJuaW5n
+IChidWcpOiBPcHRpb25hbCBGQURUIGZpZWxkIFBtMkNvbnRyb2xCbG9jayBoYXMgdmFsaWQgTGVu
+Z3RoIGJ1dCB6ZXJvIEFkZHJlc3M6IDB4MDAwMDAwMDAwMDAwMDAwMC8weDEgKDIwMTgwODEwL3Ri
+ZmFkdC02MTUpClsgICAgMS4yNzAwNDBdIG52aWRpYWZiX3NldHVwIFNUQVJUClsgICAgMS4yNzAw
+NDddIG52aWRpYWZiX3Byb2JlIFNUQVJUClsgICAxMi4zMjk2OTZdIG52aWRpYTogbG9hZGluZyBv
+dXQtb2YtdHJlZSBtb2R1bGUgdGFpbnRzIGtlcm5lbC4KWyAgIDEyLjMyOTcxMF0gbnZpZGlhOiBt
+b2R1bGUgbGljZW5zZSAnTlZJRElBJyB0YWludHMga2VybmVsLgpbICAgMTIuMzI5NzExXSBEaXNh
+YmxpbmcgbG9jayBkZWJ1Z2dpbmcgZHVlIHRvIGtlcm5lbCB0YWludApbICAgMTIuNDg2Mjg5XSBO
+VlJNOiBsb2FkaW5nIE5WSURJQSBVTklYIHg4Nl82NCBLZXJuZWwgTW9kdWxlICA0NzAuMTAzLjAx
+ICBUaHUgSmFuICA2IDEyOjEwOjA0IFVUQyAyMDIyClsgICAzMS41NDcwNzNdIHJlc291cmNlIHNh
+bml0eSBjaGVjazogcmVxdWVzdGluZyBbbWVtIDB4MDAwYzAwMDAtMHgwMDBmZmZmZl0sIHdoaWNo
+IHNwYW5zIG1vcmUgdGhhbiBQQ0kgQnVzIDAwMDA6MDAgW21lbSAweDAwMGMwMDAwLTB4MDAwZGZm
+ZmYgd2luZG93XQpbICAgMzEuNTQ3NDgzXSBjYWxsZXIgX252MDAwNzIycm0rMHgxYWQvMHgyMDAg
+W252aWRpYV0gbWFwcGluZyBtdWx0aXBsZSBCQVJzClsgICA0MC4wOTk0MDJdIGthdWRpdGRfcHJp
+bnRrX3NrYjogMTEgY2FsbGJhY2tzIHN1cHByZXNzZWQKJAo=
+--0000000000009ddee705d7ade1bc--
