@@ -2,96 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBEF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiBJB1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:27:09 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53922 "EHLO
+        id S232290AbiBJB1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:27:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232166AbiBJB06 (ORCPT
+        with ESMTP id S232291AbiBJB1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:26:58 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F89420188;
-        Wed,  9 Feb 2022 17:26:56 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id i21so5996455pfd.13;
-        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=99kJAF1LYHwtSv0Yf3YOWEwdRAz6cOKJMAAN9vZQpPA=;
-        b=V208CxnCfJAW7fmWBawGNO4R+VshKsgngfQdMPxgDkMgP6Ulonm1Em6PIMBqJJbGKU
-         3BMFA9b+vjpeszMj3qdKdDh5kwJ2k/Z+7YPP7vwq3JUsdEw+uih0WJjn/ANjfmOPGeCc
-         duFAf6yoViCOT5T6JehENfcQ9N0Rwyp2NgNTIsC1y2CkAmBJDNQ2VOKzy2oSRB02trnH
-         p4f+FMnlX/E7PMdzfRJrlKkx6x4DfDGGTChKPheLQx0VaEEG+VbFgzlQMFRAz3cZSQUm
-         olxOqp9vVZfixIrFdFEeg8R3GjEarejrwz8ySgcr0g61zr3+1mvRyY20OJP1s+drGjdd
-         cPAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=99kJAF1LYHwtSv0Yf3YOWEwdRAz6cOKJMAAN9vZQpPA=;
-        b=DRpRnG9ywyWQuuSDdmnAlVuKZlaQCVpVRv36iQuR1kcUYfwvC7+pI8neB2+5/p/bp6
-         h+M0eb28whqjRmYE/ivK3gX8IsXJXe3DoZU9mHS0O0T6MsNIdoIn13FrWSfT+64umcNh
-         olVtup9S65O+bhTiI24+otuuYKQO9g+yGzSgIR69686MBM2hYU0UaNo7rRFGQwc/tX7y
-         1xP4+79aj+lr5giqUe+FKYqJ3nRwcoIlqk6LBJ6ncoew9NVeLibADBcKPW2YYJBCcDR0
-         GNJlumkAnVMPS5XbJghoLZmKxgk0t661ZP+FJ6qhJNb135/kMgP6EzfHqyCd42eRPT34
-         c0CA==
-X-Gm-Message-State: AOAM5333ep2CQWnTzuswmnidRTbH0w6RWpYg0zZYMmm+sc0yxlYVcTTf
-        XYl+OGD2h2tpCQgulqbsr6E=
-X-Google-Smtp-Source: ABdhPJx7mH2yZo4C4pJn/aE3cCDOtK+LkPC5Nk+B6bO3/Fqq03i1P/0o3tAvSQXdg21ttVWaEs1o8w==
-X-Received: by 2002:a65:4c87:: with SMTP id m7mr4145769pgt.509.1644456416531;
-        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id 6sm15177035pgx.36.2022.02.09.17.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 17:26:56 -0800 (PST)
-Message-ID: <519bd2d9-1bee-03e1-eeb4-d9883c18be0c@gmail.com>
-Date:   Thu, 10 Feb 2022 10:26:53 +0900
+        Wed, 9 Feb 2022 20:27:04 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41047201AB
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:27:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644456424; x=1675992424;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=aWgYdPh3hxkc5p9L3CTkYdSFZfZ5U7JLDAtc29XbeFU=;
+  b=e61ms+AK3gpQCofjQxnkM75MMfMRU9Vvxmxq4lSvTmnxTRZ4WVKFexbC
+   EIIZDviPGFwJpF+pIfb94KHB/mFnyyDnvVW5VJrZUg7SwlCRVQNc9Gvss
+   lMqSqVsFna+HkbWSKHwV5nAmapS4pV6eu01qSV4g9alFeMy7NyFaq3+GE
+   AV7UQlGKWYerGYImG9kxd6nz4elCV91Hn5LqbAjSFR5MzWL5EQyJz850G
+   BU888SVAwdPxYCFb0wruilqDQ8dD3DwzKIqhmE84nr9CLtEvP/Q1s74Hd
+   T/SRwsDWIN65ee/lZqWZkhpeJvDKJgVsUqU5xvnhRi1GhEjo14GM88YaR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="335792989"
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="335792989"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 17:11:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="678973478"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 09 Feb 2022 17:11:47 -0800
+Message-ID: <2707a77d-6171-0180-fa0e-72cf44719ed7@linux.intel.com>
+Date:   Thu, 10 Feb 2022 09:10:34 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 09/10] iommu: Use dev_iommu_ops() helper
 Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Akira Yokosawa <akiyks@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: [PATCH] docs: Makefile: Add -no-shell-escape option to LATEXOPTS
-Content-Type: text/plain; charset=UTF-8
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-10-baolu.lu@linux.intel.com>
+ <20220209134152.GA4160@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220209134152.GA4160@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By adding this option, message of "restricted \write18 enabled" from
-LaTeX can be silenced.
+On 2/9/22 9:41 PM, Jason Gunthorpe wrote:
+> On Tue, Feb 08, 2022 at 09:25:58AM +0800, Lu Baolu wrote:
+>> Convert all the feasible instances of dev->bus->iommu_ops to
+>> dev_iommu_ops() in order to making the operation of obtaining
+>> iommu_ops from a device consistent.
+> 
+> Why are there two patches doing this conversion? Roll this into the
+> prior patch?
 
-As there is no use of \write18 in LaTeX sources from sphinx-build, it
-is safe to add this option.
+It's reasonable to merge this patch into the previous one where
+dev_iommu_ops() was added.
 
-Reported-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
----
- Documentation/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+>>   void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>>   {
+>> -	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>>   
+>>   	if (ops && ops->get_resv_regions)
+>>   		ops->get_resv_regions(dev, list);
+> 
+> And agree with Christoph, don't keep confusing ops null tests -
+> dev_iommu_ops() never returns null and any function using it must rely
+> on the caller to handle this, somehow.
 
-diff --git a/Documentation/Makefile b/Documentation/Makefile
-index 9f4bd42cef18..64d44c1ecad3 100644
---- a/Documentation/Makefile
-+++ b/Documentation/Makefile
-@@ -26,7 +26,7 @@ SPHINX_CONF   = conf.py
- PAPER         =
- BUILDDIR      = $(obj)/output
- PDFLATEX      = xelatex
--LATEXOPTS     = -interaction=batchmode
-+LATEXOPTS     = -interaction=batchmode -no-shell-escape
- 
- ifeq ($(KBUILD_VERBOSE),0)
- SPHINXOPTS    += "-q"
+Agree with you both.
 
-base-commit: f647de4b02dcb1815fb3019f86a001a681daf0a1
--- 
-2.17.1
+> 
+> However, I wonder how safe this is. Certainly some APIs like this one
+> it is fine, but I would be happier if the 'first' APIs like
+> bind/attach/alloc/etc fail silently upwards. In many cases these APIs
+> are called based on things like DT configuration, or VFIO or
+> something, and the caller is expecting the iommu layer to do all
+> necessary validation.
 
+domain_alloc()/bind/unbind/attach/detach/etc are APIs for external
+kernel components. We shouldn't use dev_iommu_ops() there and all
+necessary validation should be done.
+
+The dev_iommu_ops() are for IOMMU subsystem internal use purpose, hence
+we can add a WARN there and avoid further checks.
+
+> 
+>> @@ -2788,7 +2789,7 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
+>>   {
+>>   	struct iommu_group *group;
+>>   	struct iommu_sva *handle = ERR_PTR(-EINVAL);
+>> -	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>>   
+>>   	if (!ops || !ops->sva_bind)
+>>   		return ERR_PTR(-ENODEV);
+>> @@ -2831,7 +2832,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+>>   {
+>>   	struct iommu_group *group;
+>>   	struct device *dev = handle->dev;
+>> -	const struct iommu_ops *ops = dev->bus->iommu_ops;
+>> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>>   
+>>   	if (!ops || !ops->sva_unbind)
+>>   		return;
+>> @@ -2850,7 +2851,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+>>   
+>>   u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+>>   {
+>> -	const struct iommu_ops *ops = handle->dev->bus->iommu_ops;
+>> +	const struct iommu_ops *ops = dev_iommu_ops(handle->dev);
+>>   
+>>   	if (!ops || !ops->sva_get_pasid)
+>>   		return IOMMU_PASID_INVALID;
+> 
+> We all agreed that this sva object will turn into a domain and thus
+> all of this will eventually move to domain ops?
+
+Partially yes.
+
+My plan is to leverage the sva-domain specific .attach/detach_dev_pasid
+callbacks. All the sva related ops in iommu_ops could be removed.
+
+> 
+> Jason
+
+Best regards,
+baolu
