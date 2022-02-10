@@ -2,82 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:29:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6340EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:30:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232565AbiBJB3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:29:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:59520 "EHLO
+        id S232623AbiBJBaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:30:16 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232462AbiBJB3k (ORCPT
+        with ESMTP id S232462AbiBJBaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:29:40 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10424BEB;
-        Wed,  9 Feb 2022 17:29:42 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id a19so3508565qvm.4;
-        Wed, 09 Feb 2022 17:29:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ToNCyCER18er4bQVMsXGiDd9JZ4VHfKIQFWhjnXru2Q=;
-        b=diG+Q6iHPMCG+8DyBzxqb1NI8p1ZMfHMEgR0kYUzkbIZvu/QajXhbxzbjjIoc3Yuw+
-         Wi8RTzuCI84MntfVrwONo3Xs60JrBQXCVw90eT95lBtt52mSS6Y200opNL9SLD/zsEYN
-         BRrPMtoL3MRYpgGrc4aN+evta/FxtPYcVj5Sf9BQWnzqRJw0fP5UxPJUe9YKMnknoJ9M
-         S1ZWuoc7/5MlCWbCGUqUl+DSFK51VMz93J//1nipAT2XB6Z9xTlnaTAD50NTmzxOdECS
-         1N+JTkJD7u9sUupKl9xNxkSVu75BymPj1VW1hXbxHMNv7dvYzvdDQQbcTeWMkuyatxxI
-         Z3gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ToNCyCER18er4bQVMsXGiDd9JZ4VHfKIQFWhjnXru2Q=;
-        b=hmI8lzu7koNrXrpAba4yBgRzYGKzzcCSS//g6raOEseF/8Rs1Z8+YgQJriesZtl0Cc
-         LdqbnEi3WqpcfbyA9qoG6z60td0H9PBNHx703RmSqx4cUKsFxRyOw8E6/6WBq4IG1KZU
-         gLChIS8Oywlwqq26FyXlYaYOO3GO7+HCmLoccRjNAycimhIlibyn/3clCl0eZx0XfrYJ
-         jOAfN7JVhaRzRq8ih7wzsJMrvJrq/Nj+brp7xWESN2qbQYT3gzlEvXaWDBjnSWYqPHzF
-         wHwYQJtGhh16GEQ/au+OcCWYweo3lBSHAB+4T7014uXK2mCKlBRt6zzLFkSyyAylTsDU
-         4EHQ==
-X-Gm-Message-State: AOAM533OSAcz0k5aj0jDPIMtCjVKCCP20hD2j2aXi5efE0DDMwF386Md
-        qWeQf/ZQieXYMpdnKrOc/WomcwJ4cCg=
-X-Google-Smtp-Source: ABdhPJxe4K+f1x2wrGyCqcfa4iOdbXjp5YK45cjtlWUvZxJHCnm+FBTprVk8D3JJFXiAaBvBwv7MLw==
-X-Received: by 2002:a17:902:aa85:: with SMTP id d5mr4974794plr.150.1644455008697;
-        Wed, 09 Feb 2022 17:03:28 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:2a5:6459:fd91:33b])
-        by smtp.gmail.com with ESMTPSA id z13sm20883691pfe.20.2022.02.09.17.03.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 17:03:27 -0800 (PST)
-Date:   Wed, 9 Feb 2022 17:03:24 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Yunus Bas <y.bas@phytec.de>
-Cc:     yuehaibing@huawei.com, linux-input@vger.kernel.org,
-        u.kleine-koenig@pengutronix.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND] Input: tsc200x-core - Add axis inversion and
- swapping support
-Message-ID: <YgRkXLZpPBpHF2QY@google.com>
-References: <20220209223933.1672782-1-y.bas@phytec.de>
+        Wed, 9 Feb 2022 20:30:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE52FE8;
+        Wed,  9 Feb 2022 17:30:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF42617F7;
+        Thu, 10 Feb 2022 01:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B9F32C340F1;
+        Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644456609;
+        bh=QCCqocOBA0QXANoR9Th7qCJXBmcweW8s/m7U1ai9C5E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fpB6X8Au1GTblA5imuus/BJFEuX9LTKozlgVvHcwfql2P0FgYwZZgSWigzkzUZkLj
+         Vg86Mp8NvLWFpmr4aP21pLetK+F/IT8sH+oWmUtDU/ErjWc5EkxirpayoJo/vQpiAg
+         akajpvR6h5ZUXZqCy+R0cAe5O6/eUekFoLSD1WAkL9UipJUnrHxqkgPpkg/6asOE1Z
+         8Ey8SttVebfkfytu7QmKjhmRmDnzt2be5IOszye8UP5BDbqfa7zUCYrgmSKX2lVRcc
+         WDK2tvpoQKl5bXBpLMsiGCJ7j9afCHYNx2Br2ASI4Fw3lcLgUhJL+oZ8ZHV5sh2u1t
+         tQIJYMEh21s6A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8FE3E6D447;
+        Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209223933.1672782-1-y.bas@phytec.de>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v8 net-next] net: drop_monitor: support drop reason
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164445660968.21209.6215816253255469230.git-patchwork-notify@kernel.org>
+Date:   Thu, 10 Feb 2022 01:30:09 +0000
+References: <20220209060838.55513-1-imagedong@tencent.com>
+In-Reply-To: <20220209060838.55513-1-imagedong@tencent.com>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     idosch@idosch.org, nhorman@tuxdriver.com, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
+        dsahern@kernel.org, imagedong@tencent.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 11:39:33PM +0100, Yunus Bas wrote:
-> Since Commit ed7c9870c9bc ("Input: of_touchscreen - add support for
-> inverted / swapped axes"), the of_touchscreen interface supports axis
-> inverting and swapping through Devicetree properties. Make use of this
-> feature.
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed,  9 Feb 2022 14:08:38 +0800 you wrote:
+> From: Menglong Dong <imagedong@tencent.com>
 > 
-> Signed-off-by: Yunus Bas <y.bas@phytec.de>
+> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
+> drop reason is introduced to the tracepoint of kfree_skb. Therefore,
+> drop_monitor is able to report the drop reason to users by netlink.
+> 
+> The drop reasons are reported as string to users, which is exactly
+> the same as what we do when reporting it to ftrace.
+> 
+> [...]
 
-Applied, thank you, however I believe we also need to adjust
-Documentation/devicetree/bindings/input/touchscreen/ti,tsc2005.yamli to
-allow these properties.
+Here is the summary with links:
+  - [v8,net-next] net: drop_monitor: support drop reason
+    https://git.kernel.org/netdev/net-next/c/5cad527d5ffa
 
-Thanks.
-
+You are awesome, thank you!
 -- 
-Dmitry
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
