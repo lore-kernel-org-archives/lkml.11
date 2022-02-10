@@ -2,134 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AD43C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233403AbiBJB6j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:58:39 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33462 "EHLO
+        id S233859AbiBJB6l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:58:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233442AbiBJB5W (ORCPT
+        with ESMTP id S233761AbiBJB4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:57:22 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F75628CE4;
-        Wed,  9 Feb 2022 17:35:25 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nHwd4-0005XG-Kr; Thu, 10 Feb 2022 00:44:06 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, wefu@redhat.com, liush@allwinnertech.com,
-        guoren@kernel.org, atishp@atishpatra.org, anup@brainfault.org,
-        drew@beagleboard.org, hch@lst.de, arnd@arndb.de, wens@csie.org,
-        maxime@cerno.tech, gfavor@ventanamicro.com,
-        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
-        huffman@cadence.com, mick@ics.forth.gr,
-        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
-        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
-        philipp.tomsich@vrull.eu
-Subject: Re: [PATCH v6 00/14] riscv: support for Svpbmt and D1 memory types
-Date:   Thu, 10 Feb 2022 00:44:04 +0100
-Message-ID: <14426959.46CLvVMboC@diego>
-In-Reply-To: <YgP+n5OMhQPSbICV@xhacker>
-References: <20220209123800.269774-1-heiko@sntech.de> <YgP+n5OMhQPSbICV@xhacker>
+        Wed, 9 Feb 2022 20:56:13 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523812AAB3
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:41:26 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id o128-20020a4a4486000000b003181707ed40so4595434ooa.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:41:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=7BvHswSXg9zN9k7P3bu3kJhfUU/WgKwQ6HEFpY+l4jA=;
+        b=Ewraufgtj1xMfakazeSpwx5MnBYDQHaeFVN1wLgspkWrMugkjtb49bIjLe5uO4rZnG
+         1/SsRTmx/SdfhAdZc4IcIwJP+dA8AJX591gYcpvbwF3giFkKi4T1Ft5Om1/eRIcZOEY/
+         B0i/ShAZtw1hvFkJ6P6wjp4UGB/ApLobqDUNY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=7BvHswSXg9zN9k7P3bu3kJhfUU/WgKwQ6HEFpY+l4jA=;
+        b=lpikzqePs1d3GK8SF4DJ3saaJcc71pbirZDtDmeMILGCQL1GmJQUz6Ps9Jwc9oFeII
+         hY09VLfgd4/VzCcNGcebxWxOjpnIseoo9GQba/1ifF/J5aQmaBwN+5k1a4halKGM2gM3
+         4BRK/haXk5Z4HoIq34RkZLejCRpv8xGeotXJpqBrfCDgYdsJUc3p3qqEF9LgnvXdAqG4
+         IMCOhTg9Zv7lPlfsbcDE9S5ZdiYG1u3W/L9bpQ738g1CgdqcjfButG2UYjTX4ofbSC2d
+         Bo+Ctj/YdX3/WbBMVh1SObg0Uj4rXM93N3rWyV7OPfeqd3IOTvc7GO0oZwN4jwh+5ctM
+         RXRQ==
+X-Gm-Message-State: AOAM5337Vb8D1W/tvKEDrDBcbWL8Rxta1HQ1Xa4C1jw5WKsLTEwVOlEM
+        gBsxifl/UuMAYt61B2qMoxwZ23VrfGJkJZ1nO7AmZw==
+X-Google-Smtp-Source: ABdhPJz5nnuCshCtEM3gga4og7wjd6Bj6dW8FLpEygBvjacEExJ8np7WaRj3GTND+KVxtMxzzyhuWn0ScaNhy+C9qjM=
+X-Received: by 2002:a05:6870:1209:: with SMTP id 9mr72218oan.8.1644457285749;
+ Wed, 09 Feb 2022 17:41:25 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 9 Feb 2022 17:41:25 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <1644331940-18986-6-git-send-email-quic_c_skakit@quicinc.com>
+References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com> <1644331940-18986-6-git-send-email-quic_c_skakit@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 9 Feb 2022 17:41:25 -0800
+Message-ID: <CAE-0n52vX-50GEZ5X3PhnZaLyriALRtoqGiWSydi4WSAvGmf9A@mail.gmail.com>
+Subject: Re: [PATCH V5 5/6] arm64: dts: qcom: pm8008: Add base dts file
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Quoting Satya Priya (2022-02-08 06:52:19)
+> Add base DTS file for pm8008 with infra and regulator nodes.
+>
+> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
+> ---
+> Changes in V4:
+>  - This is newly added in V4, to add all the pm8008 common stuff.
+>
+> Changes in V5:
+>  - Changed the mfd node names from pm8008_chip to pm8008_infra and
+>    pm8008_ldo to pm8008_regulators as they re more appropriate.
+>  - Changed the compatible for pm8008@9 mfd node to differentiate from
+>    pm8008@8 node in driver.
+>  - Removed compatible for regulators node.
+>  - Removed reg property for LDOs and added in driver.
+>
+>  arch/arm64/boot/dts/qcom/pm8008.dtsi | 46 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/qcom/pm8008.dtsi
+>
+> diff --git a/arch/arm64/boot/dts/qcom/pm8008.dtsi b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+> new file mode 100644
+> index 0000000..8e04983
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/qcom/pm8008.dtsi
+> @@ -0,0 +1,46 @@
+> +// SPDX-License-Identifier: BSD-3-Clause
+> +// Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> +
+> +pm8008_infra: pm8008@8 {
+> +       compatible = "qcom,pm8008";
+> +       reg = <0x8>;
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +};
+> +
+> +pm8008_regulators: pm8008@9 {
+> +       compatible = "qcom,pm8008-regulators";
+> +       reg = <0x9>;
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +
+> +       regulators {
 
-Am Mittwoch, 9. Februar 2022, 18:49:19 CET schrieb Jisheng Zhang:
-> On Wed, Feb 09, 2022 at 01:37:46PM +0100, Heiko Stuebner wrote:
-> > Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
-> > for things like non-cacheable pages or I/O memory pages.
-> > 
-> > 
-> > So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
-> > types) using the alternatives framework.
-> > 
-> > This includes a number of changes to the alternatives mechanism itself.
-> > The biggest one being the move to a more central location, as I expect
-> > in the future, nearly every chip needing some sort of patching, be it
-> > either for erratas or for optional features (svpbmt or others).
-> > 
-> > The dt-binding for svpbmt itself is of course not finished and is still
-> > using the binding introduced in previous versions, as where to put
-> > a svpbmt-property in the devicetree is still under dicussion.
-> > Atish seems to be working on a framework for extensions [0],
-> > 
-> > The series also introduces support for the memory types of the D1
-> > which are implemented differently to svpbmt. But when patching anyway
-> > it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
-> > location.
-> > 
-> > The only slightly bigger difference is that the "normal" type is not 0
-> > as with svpbmt, so kernel patches for this PMA type need to be applied
-> > even before the MMU is brought up, so the series introduces a separate
-> > stage for that.
-> > 
-> > 
-> > In theory this series is 3 parts:
-> > - sbi cache-flush / null-ptr
-> > - alternatives improvements
-> > - svpbmt+d1
-> > 
-> > So expecially patches from the first 2 areas could be applied when
-> > deemed ready, I just thought to keep it together to show-case where
-> > the end-goal is and not requiring jumping between different series.
-> > 
-> > 
-> > The sbi cache-flush patch is based on Atish's sparse-hartid patch [1],
-> > as it touches a similar area in mm/cacheflush.c
-> > 
-> > 
-> > I picked the recipient list from the previous version, hopefully
-> > I didn't forget anybody.
-> > 
-> > changes in v6:
-> > - rebase onto 5.17-rc1
-> > - handle sbi null-ptr differently
-> > - improve commit messages
-> > - use riscv,mmu as property name
-> > 
-> > changes in v5:
-> > - move to use alternatives for runtime-patching
-> 
-> another choice is using static key mechanism. Pros: no need to coding
-> in asm, all in c.
-> 
-> To support new arch features, I see other arch sometimes use static
-> key, sometimes use alternative mechanism, so one question here would
-> be which mechanism is better? Any guide?
+What is the point of the 'regulators' node? Why can't we just put LDO1
+directly underneath the node that has the "qcom,pm8008-regulators"
+compatible?
 
-For me it's also a bit of a learn-as-you-go experience, but I do see some
-advantages in using alternatives:
-
-- Static keys need the jump-label infrastructure, which the RiscV kernel
-  only seems to provide on non-XIP kernels [0]
-- the amount of asm here is somewhat minimal for the core no-cache and io
-  types (load immediate + shift)
-- using the static key mechanism still does incur more overhead for the
-  conditional
-- and if we want to support the strange family-members like the D1,
-  (and it seems we do want that) this would create more conditionals
-  as we have to test for svpbmt, d1 and maybe future special cases,
-  where alternatives-patching on the other hand simply replaces the
-  relevant code with the appropriate variant.
-
-
-Heiko
-
-
-[0] https://elixir.bootlin.com/linux/latest/source/arch/riscv/Kconfig#L67
-
-
+> +               pm8008_l1: LDO1 {
+> +                       regulator-name = "pm8008_l1";
+> +               };
+> +
