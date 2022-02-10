@@ -2,176 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E02C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0469C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343561AbiBJSsG (ORCPT
+        id S1343534AbiBJStN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:48:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36844 "EHLO
+        Thu, 10 Feb 2022 13:49:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343550AbiBJSsF (ORCPT
+        with ESMTP id S229590AbiBJStL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:48:05 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459E8F28
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:48:06 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id u16so6141303pfg.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:48:06 -0800 (PST)
+        Thu, 10 Feb 2022 13:49:11 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BD3CE9;
+        Thu, 10 Feb 2022 10:49:12 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id r19so11841919pfh.6;
+        Thu, 10 Feb 2022 10:49:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VsLbb6fw09jdueYA3hgQp5c4zAw8XroJudfdKUin7Pk=;
-        b=A8nvS+811owjf+WxW8Y85nR1hJR7SCEE+KgU8+3UxXLVggL/+xneQ3xxsdomZFPAXG
-         OaZZns42B0hs+2AsdSfvl8hZUQmWzBzWaH+qByMuY7ubAhFgdcv1EROA3CJCgEy/N22l
-         qmKSV+hHkJbd7bT6MgvX7/y2JnhJOHkdFr/61DANa7QNv4LT4OZu2oaxNjPV1Lga/EOK
-         x2OpCvmMg468WnKAGYiPbFU1VuRr0K8cuufsAJcAQy0IEiH7azT/CN/3npSBGlK6TsiP
-         rDNUBNMI0KBHn/4JWMEqwhUKIGMF3KH+fTYbZc6Wt/kmUsDuNzJoEeiaBD0Q7Euky40n
-         KPng==
+        d=gmail.com; s=20210112;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xyY6RXsZc0sRZI2dIx6Yfgcp+cHl3kx4JYS5Tt67YQs=;
+        b=C1zGoNnSTm6BqNQAjEbBkEPT6xD4cNvVJHTEkTMbh05aidR1CHJy+XnCrqIgBSUQdn
+         v2AyQwrK70vySC0SB/bP6wSJ10P9OYAgf63WRorqLgBgs1ihs3iU84wy/obpLL9PHK48
+         PL7HTdJOaMlfNdR4sSVQxK+PgS3lRo1LF3lRB6HybRtpPpPUhZz02/kp3BBxLWkDpfBb
+         20ZBybLD9lRkj6maX9bJvpoRw+Wosr3o6d3nBl4byicuCzPpYnrfoafDRHPxnWXDmQQL
+         V4voKMnfZvDHn45xgZ1iSd2uAM4ieabggbtE1ojvDpjCo/VS5aPgY1NIITPaRKxvmKLX
+         dzow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VsLbb6fw09jdueYA3hgQp5c4zAw8XroJudfdKUin7Pk=;
-        b=Ho7b8S0AGYB56AYf8aqAhVyhjhDDhoNc0R6sH4pVNSeuK/wlfs15lgsNQVPcrJtd3h
-         WysuqtiBbTocNXk9dLpCrC0PTSsNMa1ethE6m4Uuvn1fYQjVbth7uqZ0cexHfOtDv4at
-         bGoEEXrspIVP8jsmmwPya4HXV+Zxv9eZWzEbjEF9sFbUqtC1hXC/5W9m3Y5IlN/axLDS
-         KNBrjCGULJJ7EdguEFKt38CG4pae5acLwI9rDuFS1CB6Jp4lxdXNIei2YV8Mf4EZdMX4
-         n7+R6W5anu22jv5JCrBxjEX2upZLpkXBnTpRbn1d9KZRPb9RfW2/Uq5trvvmJd9Hpk5r
-         3GVQ==
-X-Gm-Message-State: AOAM531D0uT6kDxljrHKAvNvjMf3TjHxSLVC9SJwJt8hK2Zx6RIPKocW
-        lzKTG8j6VU4GLVhnKILAv8427Q==
-X-Google-Smtp-Source: ABdhPJyAcsZT8dibcimAmFBciTXwwwCwtwpwFfr1/pJSIRwcJLfqtsWO+mS9FQ3RSw4EpD30XVcViw==
-X-Received: by 2002:a63:6ac3:: with SMTP id f186mr7163744pgc.81.1644518885741;
-        Thu, 10 Feb 2022 10:48:05 -0800 (PST)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id oa10sm964695pjb.54.2022.02.10.10.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 10:48:04 -0800 (PST)
-Date:   Thu, 10 Feb 2022 11:48:02 -0700
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     puranjay12@gmail.com, kishon@ti.com, vigneshr@ti.com,
-        s-anna@ti.com, bjorn.andersson@linaro.org,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 1/2] remoteproc: Introduce deny_sysfs_ops flag
-Message-ID: <20220210184802.GB3603040@p14s>
-References: <20220209090342.13220-1-p-mohan@ti.com>
- <20220209090342.13220-2-p-mohan@ti.com>
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xyY6RXsZc0sRZI2dIx6Yfgcp+cHl3kx4JYS5Tt67YQs=;
+        b=S9wKrCoZb/RdTsHYpZFTDSe+RahEBaDlIhGWyyzGzZ6b23K0y4N14UHT2wpuCBdSay
+         cC+0GVUswK8Rk7w2Pk+9lSaHH2gKRNhn1vrrchMDEMZSjMR5mL5OnpkF/AMAa+p90NeI
+         TyXUrnjX4OJFBLWStlAgbd1p2UljyFD4NwcMfiN9YIhpmpg+fDCuljhu/pWTi9cpbToP
+         3hNC1gI6OI+SZmZt/P7HSS1yfBQbrJU82Woh4hVgCRYJ0c9zkg7ZOmOHgXrrWeLBnVTf
+         +q8KI++UVAAxDQ5hIWxlL49QtRASoUmIUf4pPuLjT5gxT/QM/vmfd1qnZWvFHzvoZ8MD
+         tpcQ==
+X-Gm-Message-State: AOAM533zUgwF9PR1PPeWh1kfUhVDD5IFspNAIb7eH1M2Z/2QQD3L3hH/
+        iFvUdLNjxsdpHgIav+8hVWI=
+X-Google-Smtp-Source: ABdhPJy+/KWlRA6IHo8GTBHk3tTIiTULQnZdhqd8U09vUpqlMzlag4GuHB797vXz29LbFT3sEv4UFw==
+X-Received: by 2002:a05:6a00:cc8:: with SMTP id b8mr8759818pfv.5.1644518952298;
+        Thu, 10 Feb 2022 10:49:12 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a29sm16951278pgl.24.2022.02.10.10.49.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 10:49:11 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH 5.16 0/5] 5.16.9-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220209191249.887150036@linuxfoundation.org>
+Message-ID: <c9f0cf42-a454-7544-14f8-99c3eaef73d1@gmail.com>
+Date:   Thu, 10 Feb 2022 10:49:08 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209090342.13220-2-p-mohan@ti.com>
+In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Puranjay,
 
-On Wed, Feb 09, 2022 at 02:33:41PM +0530, Puranjay Mohan wrote:
-> The remoteproc framework provides sysfs interfaces for changing
-> the firmware name and for starting/stopping a remote processor
-> through the sysfs files 'state' and 'firmware'. The 'recovery'
-> sysfs file can also be used similarly to control the error recovery
-> state machine of a remoteproc. These interfaces are currently
-> allowed irrespective of how the remoteprocs were booted (like
-> remoteproc self auto-boot, remoteproc client-driven boot etc).
-> These interfaces can adversely affect a remoteproc and its clients
-> especially when a remoteproc is being controlled by a remoteproc
-> client driver(s). Also, not all remoteproc drivers may want to
-> support the sysfs interfaces by default.
+
+On 2/9/2022 11:14 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.9 release.
+> There are 5 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> Add support to deny the sysfs state/firmware/recovery change by
-> introducing a state flag 'deny_sysfs_ops' that the individual
-> remoteproc drivers can set based on their usage needs. The default
-> behavior is to allow the sysfs operations as before.
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
 > 
-> Implement attribute_group->is_visible() to hide the sysfs
-> state/firmware/recovery entries when deny_sysfs_ops flag is set.
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
 > 
-> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
-> ---
-> Changes in v3->v4:
-> Use mode = 0444 in rproc_is_visible() to make the sysfs entries
-> read-only when the deny_sysfs_ops flag is set.
-> ---
->  drivers/remoteproc/remoteproc_sysfs.c | 18 +++++++++++++++++-
->  include/linux/remoteproc.h            |  2 ++
->  2 files changed, 19 insertions(+), 1 deletion(-)
+> thanks,
 > 
-> diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
-> index ea8b89f97d7b..da2d0eecfa44 100644
-> --- a/drivers/remoteproc/remoteproc_sysfs.c
-> +++ b/drivers/remoteproc/remoteproc_sysfs.c
-> @@ -230,6 +230,21 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
->  }
->  static DEVICE_ATTR_RO(name);
->  
-> +static umode_t rproc_is_visible(struct kobject *kobj, struct attribute *attr,
-> +				int n)
-> +{
-> +	struct device *dev = kobj_to_dev(kobj);
-> +	struct rproc *rproc = to_rproc(dev);
-> +	umode_t mode = attr->mode;
-> +
-> +	if (rproc->deny_sysfs_ops && (attr == &dev_attr_recovery.attr ||
-> +				      attr == &dev_attr_firmware.attr ||
-> +				      attr == &dev_attr_state.attr))
+> greg k-h
 
-I was wondering if we should also add coredump to this group to make it an all
-or nothing option (name is already read only).
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-> +		mode = 0444;
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
 
-Much better.
-
-> +
-> +	return mode;
-> +}
-> +
->  static struct attribute *rproc_attrs[] = {
->  	&dev_attr_coredump.attr,
->  	&dev_attr_recovery.attr,
-> @@ -240,7 +255,8 @@ static struct attribute *rproc_attrs[] = {
->  };
->  
->  static const struct attribute_group rproc_devgroup = {
-> -	.attrs = rproc_attrs
-> +	.attrs = rproc_attrs,
-> +	.is_visible = rproc_is_visible,
->  };
->  
->  static const struct attribute_group *rproc_devgroups[] = {
-> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-> index e0600e1e5c17..3849c66ce38f 100644
-> --- a/include/linux/remoteproc.h
-> +++ b/include/linux/remoteproc.h
-> @@ -523,6 +523,7 @@ struct rproc_dump_segment {
->   * @table_sz: size of @cached_table
->   * @has_iommu: flag to indicate if remote processor is behind an MMU
->   * @auto_boot: flag to indicate if remote processor should be auto-started
-> + * @deny_sysfs_ops: flag to not permit sysfs operations on state, firmware and recovery
->   * @dump_segments: list of segments in the firmware
->   * @nb_vdev: number of vdev currently handled by rproc
->   * @elf_class: firmware ELF class
-> @@ -562,6 +563,7 @@ struct rproc {
->  	size_t table_sz;
->  	bool has_iommu;
->  	bool auto_boot;
-> +	bool deny_sysfs_ops;
-
-Wouldn't "sysfs_read_only" make more sense?
-
-
-With or without the above and for this set:
-
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-
->  	struct list_head dump_segments;
->  	int nb_vdev;
->  	u8 elf_class;
-> -- 
-> 2.17.1
-> 
