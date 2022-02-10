@@ -2,112 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05551C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F43C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245460AbiBJR7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:59:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58808 "EHLO
+        id S245464AbiBJSAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:00:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245439AbiBJR7s (ORCPT
+        with ESMTP id S243410AbiBJSAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:59:48 -0500
-X-Greylist: delayed 382 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 09:59:48 PST
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EA7F2D;
-        Thu, 10 Feb 2022 09:59:48 -0800 (PST)
-Message-ID: <b6032dd3-eb49-50dc-5847-484d8cc35195@linux.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1644515602;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7jGGXtZuM+egD69FXEvOYIvlU7UKlZOrjM0E5mMf6D8=;
-        b=WqmTzxxG9nAZftgELIJe0xs5GpfBkJeFazaVzCiTTY+BXZES5aog1sKX0YTch2Fu0bdDvM
-        6Dt6wOxvNsZMMQps89B6WK1/RQ3fZhSPqPJZfxdqhRk3oBTFmIOv5V54ofuBOa109mNonk
-        yixSs4rj9Cn7hrw9EkbRr1YHBqPHpag=
-Date:   Thu, 10 Feb 2022 10:52:59 -0700
+        Thu, 10 Feb 2022 13:00:01 -0500
+X-Greylist: delayed 102 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 09:59:59 PST
+Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E158DF2D;
+        Thu, 10 Feb 2022 09:59:59 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 00C3F20491FF
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH] MAINTAINERS: specify IRC channel for Renesas ARM64 port
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        <linux-renesas-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Magnus Damm <magnus.damm@gmail.com>
+Organization: Open Mobile Platform
+Message-ID: <6c08e98f-c7bb-9d95-5032-69022e43e39b@omp.ru>
+Date:   Thu, 10 Feb 2022 20:59:57 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Subject: Re: [PATCH v3] PCI: vmd: Honor ACPI _OSC on PCIe features
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Keith Busch <kbusch@kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Nirmal Patel <nirmal.patel@linux.intel.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Linux PCI <linux-pci@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220209213638.GA587920@bhelgaas>
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Jonathan Derrick <jonathan.derrick@linux.dev>
-In-Reply-To: <20220209213638.GA587920@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The Renesas ARM ports do have their own IRC channel #renesas-soc (initially
+created on Freenode, then moved to Liberta.Chat).  Hopefully, adding it to
+this file will attract more people... :-)
 
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-On 2/9/2022 2:36 PM, Bjorn Helgaas wrote:
-> On Tue, Dec 07, 2021 at 02:15:04PM +0100, Rafael J. Wysocki wrote:
->> On Tue, Dec 7, 2021 at 12:12 AM Keith Busch <kbusch@kernel.org> wrote:
->>> On Fri, Dec 03, 2021 at 11:15:41AM +0800, Kai-Heng Feng wrote:
->>>> When Samsung PCIe Gen4 NVMe is connected to Intel ADL VMD, the
->>>> combination causes AER message flood and drags the system performance
->>>> down.
->>>>
->>>> The issue doesn't happen when VMD mode is disabled in BIOS, since AER
->>>> isn't enabled by acpi_pci_root_create() . When VMD mode is enabled, AER
->>>> is enabled regardless of _OSC:
->>>> [    0.410076] acpi PNP0A08:00: _OSC: platform does not support [AER]
->>>> ...
->>>> [    1.486704] pcieport 10000:e0:06.0: AER: enabled with IRQ 146
->>>>
->>>> Since VMD is an aperture to regular PCIe root ports, honor ACPI _OSC to
->>>> disable PCIe features accordingly to resolve the issue.
->>>
->>> At least for some versions of this hardare, I recall ACPI is unaware of
->>> any devices in the VMD domain; the platform can not see past the VMD
->>> endpoint, so I throught the driver was supposed to always let the VMD
->>> domain use OS native support regardless of the parent's ACPI _OSC.
->>
->> This is orthogonal to whether or not ACPI is aware of the VMD domain
->> or the devices in it.
->>
->> If the platform firmware does not allow the OS to control specific
->> PCIe features at the physical host bridge level, that extends to the
->> VMD "bus", because it is just a way to expose a hidden part of the
->> PCIe hierarchy.
-> 
-> I don't understand what's going on here.  Do we understand the AER
-> message flood?  Are we just papering over it by disabling AER?
-> 
-> If an error occurs below a VMD, who notices and reports it?  If we
-> disable native AER below VMD because of _OSC, as this patch does, I
-> guess we're assuming the platform will handle AER events below VMD.
-> Is that really true?  Does the platform know how to find AER log
-> registers of devices below VMD?
-ACPI (and the specific UEFI implementation) might remain unaware of
-VMD domains. It's possible that the system management mode (SMM)
-controller which typically handles firmware-first errors would be
-capable of handling VMD errors in the vendor-specific manner.
-However if _OSC hadn't taken into account VMD ports, SMM wouldn't
-be capable of handling those errors and silently disabling AER on
-VMD domains is a bad idea.
+---
+This patch is against the 'next' branch of Geert Uytterhoeven's
+'renesas-devel.git' repo.
 
-The bugzilla made it sound like a specific platform/drive combination.
-What about a DMI match to mask the Corrected Physical Layer bits?
+ MAINTAINERS |    1 +
+ 1 file changed, 1 insertion(+)
 
-> 
->> The platform firmware does that through ACPI _OSC under the host
->> bridge device (not under the VMD device) which it is very well aware
->> of.
+Index: renesas-devel/MAINTAINERS
+===================================================================
+--- renesas-devel.orig/MAINTAINERS
++++ renesas-devel/MAINTAINERS
+@@ -2525,6 +2525,7 @@ ARM/RENESAS ARM64 ARCHITECTURE
+ M:	Geert Uytterhoeven <geert+renesas@glider.be>
+ M:	Magnus Damm <magnus.damm@gmail.com>
+ L:	linux-renesas-soc@vger.kernel.org
++C:	irc://irc.libera.chat/renesas-soc
+ S:	Supported
+ Q:	http://patchwork.kernel.org/project/linux-renesas-soc/list/
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-devel.git next
