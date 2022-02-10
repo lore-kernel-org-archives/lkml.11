@@ -2,86 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3075C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BAD3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345522AbiBJXLz (ORCPT
+        id S1345513AbiBJXN7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:11:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60592 "EHLO
+        Thu, 10 Feb 2022 18:13:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345508AbiBJXLw (ORCPT
+        with ESMTP id S243041AbiBJXN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:11:52 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC455F5D;
-        Thu, 10 Feb 2022 15:11:52 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 1E5A31F469B1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644534711;
-        bh=xJk1X1Ou6Pj/lU4m3+l3X4A8FKv0b4TtWehWstyFtXM=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=lkNkBwNu3iDeSbxbxmet/aqfx3hhFrQ3FBBRbXIoO+lQStXrobNg3t/g4nl3tQ1gX
-         FIZPublwfNFKTq0N+K3/aOdozYJVx5cKySe/NoLst7xgG5oghsf/2DTe1rKAmYXk52
-         OSHezvvvrA2ceJ0fxhgAi35xzbqLDZN6a4Z+DN2AQNHnQT92cxiCzYGSaZhHpD6tqQ
-         bYRF3c7Sh6e/B7vfE1bxu5Iji30pldoNAFuBGMvg47DAV/WAwWUVdBtNjDaC3tYaeB
-         zUzQ3D2nvsEL2zJywXcCRm+3Lp9K0H4azyW19a8BUVPwPwRd0vy8w/V1khLtWkOR22
-         7fPgtj9o+VzXg==
-Message-ID: <63e239fc-9282-0276-50b2-3172a446262d@collabora.com>
-Date:   Fri, 11 Feb 2022 04:11:40 +0500
+        Thu, 10 Feb 2022 18:13:58 -0500
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF2555A4;
+        Thu, 10 Feb 2022 15:13:58 -0800 (PST)
+Received: by mail-qt1-x82f.google.com with SMTP id j12so7208355qtr.2;
+        Thu, 10 Feb 2022 15:13:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=7FL52FrXNIHTozrcS4UAHCYMPxTzl2RTxQeoy1tQzZU=;
+        b=AGBuTbR1DDTmbip/u/WZx2mNt0jPGvuO3BycAp6q2VmWJ1XpinqhZGjzxMYykQs1+h
+         9ZwK9nV2Hza30UOMDXrLFK15LOSULvD7ZjJxE9dsXejT1uWe+NyRJMgTaXeV1WmNgel9
+         eLii97p7+4ojaqGef/1vF3/S8W8Rgtj6O0GJTl0T6A2RIPF7e9C9EPh0fpAZj0VOPEjo
+         nwjqptD59NnDlqInCC5Xcz7zI6Zdwo+X80xnVSm9eNlJ/x+5G4Rsb0PAvF1FL5QnrdSm
+         ZkZCUR0Del2ERA0vC9l/qhTmRfA93zM+A7aiM1dWPj88KXvNexP7raFIi+zqIMF7LFdx
+         3osA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7FL52FrXNIHTozrcS4UAHCYMPxTzl2RTxQeoy1tQzZU=;
+        b=roIilZ70b7b4OqHEr5LH/sdm2zdzv0llS/qx3vWCE0K5Q9r3vv0NaQoOtCTRaEDDcp
+         MD4zKXl9cbFqiiSIcQsplDZB/8G7DdgX1g/qpecw0cyQHRmOsoHKZ/Wmn0QAz2l249DV
+         tuRCi97OKpi9JeJFxCMVSrIulbqgB5mjbhWDQ9g7WSwIr5jkhTpqIIpnht0/Ix5b45ph
+         Wg8Llp1KK6nyMAW3mk+nkTh/nw0B71xDLmCW6xB4943bAMKjSasGBk7rGbGGolXDsQH+
+         xSpuq8cl+A8obCygamYOiRVJheSsmjFjy/oIPhKRZnLH5/r1MGfx9tzeCsro0kTabTXP
+         Xlhw==
+X-Gm-Message-State: AOAM532xIJDxukIp8LSDs4D3h68EkPIZ7NwbP+Th7W9KdVq/wPeorcHm
+        7PpA8HcXgTZPxLPH5da9SVc=
+X-Google-Smtp-Source: ABdhPJyziDNVK4gHlSQTL8oiGDJLo7w3dJcb5KZC+Jm81CQxXWEXD3+ANBnrP6vi6uDJfSyzoSW4VA==
+X-Received: by 2002:ac8:7d16:: with SMTP id g22mr6640405qtb.180.1644534837689;
+        Thu, 10 Feb 2022 15:13:57 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id u6sm10751221qki.136.2022.02.10.15.13.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 15:13:57 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 10/49] octeontx2-pf: replace bitmap_weight with bitmap_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:48:54 -0800
+Message-Id: <20220210224933.379149-11-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     usama.anjum@collabora.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-Content-Language: en-US
-To:     Sherry Yang <sherry.yang@oracle.com>, skhan@linuxfoundation.org,
-        shuah@kernel.org, keescook@chromium.org, luto@amacapital.net,
-        wad@chromium.org, christian@brauner.io, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220210203049.67249-1-sherry.yang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/11/22 1:30 AM, Sherry Yang wrote:
-> seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-> and 48 global.user_notification_filter_empty_threaded when it's
-> tested on updated kernel but with old kernel headers. Because old
-> kernel headers don't have definition of macro __NR_clone3 which is
-> required for these two tests. Since under selftests/, we can install
-> headers once for all tests (the default INSTALL_HDR_PATH is
-> usr/include), fix it by adding usr/include to the list of directories
-> to be searched. Use "-isystem" to indicate it's a system directory as
-> the real kernel headers directories are.
-> 
-> Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-> Tested-by: Sherry Yang <sherry.yang@oracle.com>
-> ---
->  tools/testing/selftests/seccomp/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-> index 0ebfe8b0e147..585f7a0c10cb 100644
-> --- a/tools/testing/selftests/seccomp/Makefile
-> +++ b/tools/testing/selftests/seccomp/Makefile
-> @@ -1,5 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> -CFLAGS += -Wl,-no-as-needed -Wall
-> +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/"../../../../usr/include/" directory doesn't have header files if
-different output directory is used for kselftests build like "make -C
-tools/tests/selftest O=build". Can you try adding recently added
-variable, KHDR_INCLUDES here which makes this kind of headers inclusion
-easy and correct for other build combinations as well?
+In some places, octeontx2 code calls bitmap_weight() to check if any bit of
+a given bitmap is set. It's better to use bitmap_empty() in that case
+because bitmap_empty() stops traversing the bitmap as soon as it finds
+first set bit, while bitmap_weight() counts all bits unconditionally.
+
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c | 4 ++--
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 77a13fb555fb..80b2d64b4136 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -353,7 +353,7 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
+ {
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+ 
+-	if (bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
++	if (!bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
+ 			  pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(netdev,
+ 			    "Add %pM to CGX/RPM DMAC filters list as well\n",
+@@ -436,7 +436,7 @@ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
+ 		return 0;
+ 
+ 	if (flow_cfg->nr_flows == flow_cfg->max_flows ||
+-	    bitmap_weight(&flow_cfg->dmacflt_bmap,
++	    !bitmap_empty(&flow_cfg->dmacflt_bmap,
+ 			  flow_cfg->dmacflt_max_flows))
+ 		return flow_cfg->max_flows + flow_cfg->dmacflt_max_flows;
+ 	else
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 86c1c2f77bd7..0f671df46694 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1120,7 +1120,7 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
+ 	struct msg_req *msg;
+ 	int err;
+ 
+-	if (enable && bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
++	if (enable && !bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
+ 				    pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(pf->netdev,
+ 			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
+-- 
+2.32.0
 
