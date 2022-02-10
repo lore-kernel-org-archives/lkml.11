@@ -2,164 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E553C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:08:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3FEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238259AbiBJJIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:08:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41004 "EHLO
+        id S238298AbiBJJMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:12:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238209AbiBJJIf (ORCPT
+        with ESMTP id S238316AbiBJJMC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:08:35 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C60C38
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:08:37 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id i6so7212371pfc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:08:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=piScQxlxRdoRBmtbVJxqHKS4101vt9jal70V/sVv6CE=;
-        b=j6+cxBJ5l5i2Pz3zXTe0q51kyHeBtuHJ22oVGtMOKRBM3P1XBL29sZCo1W9r0UZiw/
-         kDn8/X78HiAmNkdJn1GHsIg60r8e+sz7nWIX1iDH4ClYzuTk9o6UnglWg9ss//+9d6Pu
-         3R7CqSvk4M6YGFYN/SFjsh9T6+P9+p6I4UrYOFCpWqYiOzMKXMKcMi9VZeDr5N4b6md+
-         1KM+OLRLb/3MVcBxI4bwh09W6zxE/UnPGxI7tazVXU51Th9zk9tCERbW4T5kX6Fo1N7f
-         5j1er1F4nIoLVh9QHQ8a1ev4ukDR4z2VU8FwuBjWvWNqKZuVAcj9A0gCdSkjDttin9vU
-         A2xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=piScQxlxRdoRBmtbVJxqHKS4101vt9jal70V/sVv6CE=;
-        b=C3UR0DBSuoFyyXtK9t05WVwlBJI5i7kY+Dn/ggO53lPW907iYmEeSFW3Yd/SixB01f
-         9ZzkdV+BSB0vBTa7xV+vqLerheTA0LRsCltdz62S3JQk1A5HVKfDd9HQVDEkfP+pVhMw
-         HuyvbwUefUPgtfY89k12xr2jIKkpWxqfRi3zm1uj+Par068wkzLU2JWQ7F9GoTfDcfE4
-         fLj+tXx6vrBE7dNs2Cg46zfrf4TTDLf0IdU777rva2GwDcc5chN8+890TtA8mteAgcuN
-         Pf90eSbBUP4XlSDqYH6bjr/WidT3zq/5R2mqNjLxoUava9eIYM4254NazhePdSc6tRnm
-         iOxQ==
-X-Gm-Message-State: AOAM532fy226WlmXJiN/hCuzUQC0EEQ5O/kHXCLfMF8KlKEuUKAZ41J4
-        rkhRl/kS5iNP+nqzWkMRcItPOabL87Y6uf3CU8A=
-X-Google-Smtp-Source: ABdhPJzrd8MGws6n2JUZyAaOLmq5x4+vBMaws1lv+oTfs9w5MCA1ZJTVqR9j/Lb9+WhWsStFxN8qi/ddpcksFuiZmNU=
-X-Received: by 2002:a62:b40e:: with SMTP id h14mr6448020pfn.79.1644484116439;
- Thu, 10 Feb 2022 01:08:36 -0800 (PST)
+        Thu, 10 Feb 2022 04:12:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AEE1109;
+        Thu, 10 Feb 2022 01:12:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F3DCB82440;
+        Thu, 10 Feb 2022 09:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3331DC340F0;
+        Thu, 10 Feb 2022 09:11:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644484319;
+        bh=JedsB1JwXMEe8yGaX/BRWqTZv9TyfpT/Y68puVJHs/o=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=VF3q86MjV6MKq4r9qsD1rtfzgmwOhffpMjSWJ+EQuSRNZKZn96yOdYHRi8qOGKVZo
+         WQdV5jkduwNFX+iPKGunGKIuHmw2vT/JAvwJBzTepl5t311clPn0vv4tBnQ44Qakeo
+         OqW+tJ+kWuUBzZsKwJp2no1l/ZeKL5z2Fyn8ifO8fkPH7YlHUWc95sTSgkGo8lGIRn
+         3UhrvlgBLj2+HE948UWlskfcH8EQk7bFuljZZp+20NsMvY5WtxA5lRht+Agkc7onWR
+         D+/W/+uaIuKRv2k2Hh6eBMaGIO2c+3qi+AlZHTWGKu+PmJXMjLTtuKORRzjp+ozAJV
+         WDwYpQ/SZZV1w==
+Received: by mail-wr1-f54.google.com with SMTP id e3so8409210wra.0;
+        Thu, 10 Feb 2022 01:11:59 -0800 (PST)
+X-Gm-Message-State: AOAM530jkiuz241WhbeujITD+MYGPOyeThP0IzHFesKwxAOj27dzhZxL
+        loeDNpE0c5Ki2Ld6o+BY0N+dzm1G8+lCCAky5JU=
+X-Google-Smtp-Source: ABdhPJyCE9WauEk8svEa5nQ4zRYMLQZlXKjxclYSXVI9ENtdYdFhWHJ6K5eHC4aW0EOR7LXwJnDCKn9OyF3EktyQeN4=
+X-Received: by 2002:a05:6000:1b88:: with SMTP id r8mr5675117wru.447.1644484317472;
+ Thu, 10 Feb 2022 01:11:57 -0800 (PST)
 MIME-Version: 1.0
-References: <20211101044955.2295495-1-goldstein.w.n@gmail.com>
- <20211117210245.843374-1-goldstein.w.n@gmail.com> <bc0297a1b97a4b129fa3ea1b155f6062@AcuMS.aculab.com>
- <CAFUsyfJTuFjVXHMgYi0uggVNW=1WW1uVYa7avVjW5VBb2cmAkQ@mail.gmail.com>
- <e41913010e61429bbd2980a5c5ccfb39@AcuMS.aculab.com> <CAFUsyfLUQLj5py1AQ+4NptM6htWxV5i0qxkeXDUdFPfAnqRY2w@mail.gmail.com>
- <CAFUsyfKrGhTHoC+MXiA3zFY-dT0wqPRxoJwMY=+uPbj0p0dDAg@mail.gmail.com> <CAFUsyfJQq5n12L-fCsagk5LOqLYXL+3BAORHDCXY-Ud1t2CVDg@mail.gmail.com>
-In-Reply-To: <CAFUsyfJQq5n12L-fCsagk5LOqLYXL+3BAORHDCXY-Ud1t2CVDg@mail.gmail.com>
-From:   Noah Goldstein <goldstein.w.n@gmail.com>
-Date:   Thu, 10 Feb 2022 03:08:25 -0600
-Message-ID: <CAFUsyf+4vgZsM9gdyN1=eP_MzDsuOXOdKitS=1Rj-jBpdFGg9Q@mail.gmail.com>
-Subject: Re: [PATCH v4] arch/x86: Improve 'rep movs{b|q}' usage in memmove_64.S
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1644453141-1181-1-git-send-email-victor.erminpour@oracle.com>
+In-Reply-To: <1644453141-1181-1-git-send-email-victor.erminpour@oracle.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Thu, 10 Feb 2022 10:11:46 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXHUOJ-3CXFUJ9ULQuSoRh1=d3PJ15eFUsdGjQtUHozSpA@mail.gmail.com>
+Message-ID: <CAMj1kXHUOJ-3CXFUJ9ULQuSoRh1=d3PJ15eFUsdGjQtUHozSpA@mail.gmail.com>
+Subject: Re: [PATCH] ACPI/IORT: Fix GCC 12 warning
+To:     Victor Erminpour <victor.erminpour@oracle.com>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        trivial@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 9:13 PM Noah Goldstein <goldstein.w.n@gmail.com> wrote:
+On Thu, 10 Feb 2022 at 01:34, Victor Erminpour
+<victor.erminpour@oracle.com> wrote:
 >
-> On Fri, Dec 10, 2021 at 12:35 PM Noah Goldstein <goldstein.w.n@gmail.com> wrote:
-> >
-> > On Fri, Nov 19, 2021 at 6:05 PM Noah Goldstein <goldstein.w.n@gmail.com> wrote:
-> > >
-> > > On Fri, Nov 19, 2021 at 4:31 PM David Laight <David.Laight@aculab.com> wrote:
-> > > >
-> > > > From: Noah Goldstein
-> > > > > Sent: 17 November 2021 22:45
-> > > > >
-> > > > > On Wed, Nov 17, 2021 at 4:31 PM David Laight <David.Laight@aculab.com> wrote:
-> > > > > >
-> > > > > > From: Noah Goldstein
-> > > > > > > Sent: 17 November 2021 21:03
-> > > > > > >
-> > > > > > > Add check for "short distance movsb" for forwards FSRM usage and
-> > > > > > > entirely remove backwards 'rep movsq'. Both of these usages hit "slow
-> > > > > > > modes" that are an order of magnitude slower than usual.
-> > > > > > >
-> > > > > > > 'rep movsb' has some noticeable VERY slow modes that the current
-> > > > > > > implementation is either 1) not checking for or 2) intentionally
-> > > > > > > using.
-> > > > > >
-> > > > > > How does this relate to the decision that glibc made a few years
-> > > > > > ago to use backwards 'rep movs' for non-overlapping copies?
-> > > > >
-> > > > > GLIBC doesn't use backwards `rep movs`.  Since the regions are
-> > > > > non-overlapping it just uses forward copy. Backwards `rep movs` is
-> > > > > from setting the direction flag (`std`) and is a very slow byte
-> > > > > copy. For overlapping regions where backwards copy is necessary GLIBC
-> > > > > uses 4x vec copy loop.
-> > > >
-> > > > Try to find this commit 6fb8cbcb58a29fff73eb2101b34caa19a7f88eba
-> > > >
-> > > > Or follow links from https://www.win.tue.nl/~aeb/linux/misc/gcc-semibug.html
-> > > > But I can't find the actual patch.
-> > > >
-> > > > The claims were a massive performance increase for the reverse copy.
-> > > >
-> > >
-> > > I don't think that's referring to optimizations around `rep movs`. It
-> > > appears to be referring to fallout from this patch:
-> > > https://sourceware.org/git/?p=glibc.git;a=commit;h=6fb8cbcb58a29fff73eb2101b34caa19a7f88eba
-> > >
-> > > which broken programs misusing `memcpy` with overlapping regions
-> > > resulting in this fix:
-> > > https://sourceware.org/git/?p=glibc.git;a=commit;h=0354e355014b7bfda32622e0255399d859862fcd
-> > >
-> > > AFAICT support for ERMS was only added around:
-> > > https://sourceware.org/git/?p=glibc.git;a=commit;h=13efa86ece61bf84daca50cab30db1b0902fe2db
-> > >
-> > > Either way GLIBC memcpy/memmove moment most certainly does not
-> > > use backwards `rep movs`:
-> > > https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S;hb=HEAD#l655
-> > >
-> > > as it is very slow.
-> > >
-> > > > The pdf from www.agner.org/optimize may well indicate why some
-> > > > copies are unexpectedly slow due to cache access aliasing.
-> > >
-> > > Even in the `4k` aliasing case `rep movsb` seems to stay within a
-> > > factor of 2 of optimal whereas the `std` backwards `rep movs` loses
-> > > by a factor of 10.
-> > >
-> > > Either way, `4k` aliasing detection is mostly a concern of `memcpy` as
-> > > the direction of copy for `memmove` is a correctness question, not
-> > > an optimization.
-> > >
-> > >
-> > > >
-> > > > I'm pretty sure that Intel cpu (possibly from Ivy bridge onwards)
-> > > > can be persuaded to copy 8 bytes/clock for in-cache data with
-> > > > a fairly simple loop that contains 2 reads (maybe misaligned)
-> > > > and two writes (so 16 bytes per iteration).
-> > > > Extra unrolling just adds extra code top and bottom.
-> > > >
-> > > > You might want a loop like:
-> > > >         1:      mov     0(%rsi, %rcx),%rax
-> > > >                 mov     8(%rsi, %rcx),%rdx
-> > > >                 mov     %rax, 0(%rdi, %rcx)
-> > > >                 mov     %rdx, 8(%rdi, %rcx)
-> > > >                 add     $16, %rcx
-> > > >                 jnz     1b
-> > > >
-> > > >         David
-> > >
-> > > The backwards loop already has 4x unrolled `movq` loop.
-> > ping.
-> ping.
-ping3.
-> > >
-> > > >
-> > > > -
-> > > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> > > > Registration No: 1397386 (Wales)
+> When building with automatic stack variable initialization, GCC 12
+> complains about variables defined outside of switch case statements.
+> Move the variable into the case that uses it, which silences the warning:
+>
+> ./drivers/acpi/arm64/iort.c:1670:59: error: statement will never be executed [-Werror=switch-unreachable]
+>   1670 |                         struct acpi_iort_named_component *ncomp;
+>        |                                                           ^~~~~
+>
+> Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
+
+GCC 12 is not released yet, and this is clearly a compiler bug (a
+declaration is not a statement, and the hidden offending statement
+[the zero-init] is emitted by the compiler itself), so please report
+this to the GCC folks instead.
+
+
+> ---
+>  drivers/acpi/arm64/iort.c | 8 +++-----
+>  1 file changed, 3 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index 3b23fb775ac4..5c5d2e56d756 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1645,7 +1645,7 @@ void __init acpi_iort_init(void)
+>   */
+>  phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>  {
+> -       phys_addr_t limit = PHYS_ADDR_MAX;
+> +       phys_addr_t local_limit, limit = PHYS_ADDR_MAX;
+>         struct acpi_iort_node *node, *end;
+>         struct acpi_table_iort *iort;
+>         acpi_status status;
+> @@ -1667,17 +1667,15 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>                         break;
+>
+>                 switch (node->type) {
+> -                       struct acpi_iort_named_component *ncomp;
+> -                       struct acpi_iort_root_complex *rc;
+> -                       phys_addr_t local_limit;
+> -
+>                 case ACPI_IORT_NODE_NAMED_COMPONENT:
+> +                       struct acpi_iort_named_component *ncomp;
+>                         ncomp = (struct acpi_iort_named_component *)node->node_data;
+>                         local_limit = DMA_BIT_MASK(ncomp->memory_address_limit);
+>                         limit = min_not_zero(limit, local_limit);
+>                         break;
+>
+>                 case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
+> +                       struct acpi_iort_root_complex *rc;
+>                         if (node->revision < 1)
+>                                 break;
+>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
