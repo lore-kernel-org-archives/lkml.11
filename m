@@ -2,93 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD54C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93744C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiBJCAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:00:23 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60222 "EHLO
+        id S233986AbiBJCA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:00:29 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234503AbiBJB7U (ORCPT
+        with ESMTP id S234557AbiBJB7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:59:20 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8172BB0A
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:49:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644457748; x=1675993748;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=A1arXDdvviAbJmFHB0JiZO8bM7BMFQsEYKo+h0boyLo=;
-  b=FiYj4PBKlEb7PaQUxDrL13qDVvEbPRDti4Mzgsjkvy6w77u2q/KSbuoB
-   s1ruyLif2giCPHdhWmqiQAxvri5x7dBDnWxbq7xMXvOiplESPv2ZfEa0V
-   RZdz2BKJqE/K70EnUZAgHghX5C505nBpPZG4dywmLXhiAtiKYA4FubXYM
-   4XgYXijLDJNTfkSQmOs3BuKac5uPgi4i/vla5BqjBPAwRHixvzonT/s36
-   PAbf49HnmzjPR1hAPQbMet6J3lLtFTPWWtvMRRmoMDIXQES6xttUyuty2
-   NxNYemmzAlYIyjYoP7aeJU7ykYin7fEDO3GJAVneRB5m2vF8RpUeDbnS5
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="249585930"
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="249585930"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 16:45:50 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="678966591"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Feb 2022 16:45:46 -0800
-Message-ID: <b83e4324-6ef8-1cf0-b5e2-00d0802a6f75@linux.intel.com>
-Date:   Thu, 10 Feb 2022 08:44:34 +0800
+        Wed, 9 Feb 2022 20:59:21 -0500
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D85B1270F0;
+        Wed,  9 Feb 2022 17:34:08 -0800 (PST)
+Received: by mail-wr1-f43.google.com with SMTP id s18so6888042wrv.7;
+        Wed, 09 Feb 2022 17:34:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S7eVUoreTdbtEAolbtfKVyv4dZoqeTIGEz+EBJSn9AQ=;
+        b=HiXDpS4p5aclt5sJhGVSnvMD9694FZ04yJaRqWqvGmu0j8OoQMV63r+TC6T17cE3+t
+         PPwUV0F3K+pbBQnaYfEgcJwq9s1pqBaeOnUcclljXbn/iiuM1ygpL2Jn5W3cT/KKp8HZ
+         edGeycpXSbEh/8Z9633HhnpNwp8pZp9RgTxZHYzGZUHfqYcKzoQNQ75t0q25PRQBF5zt
+         OPbAjakjnVl+KssnbJZ4rhAKwXDCpcrApPbkRPQL/ARkftCKiznsqHQXWTyxOrow5f+R
+         BLQT6mhqmE2cWdVSdlgG9LnL+3Qw8vZ4g7ykRaCYEVu8WN6REh/uVOCZtMp1JPsGZdpS
+         33Tg==
+X-Gm-Message-State: AOAM531syoCndjIjntNV6kfpDHr0/oKD11Vm1Ss4J9QfZTVCGyHsgUp4
+        UcO+9tDJgpfargjQ1knngJtwH+iQMLdeZ69AqCnZ/s3+
+X-Google-Smtp-Source: ABdhPJxECgtyvabxbqWLIvad75/MXw7Bove9aVEmgchS/RAiH0bwkldePoCObtsg2kp8bdf3KphsStFgI9e5U3sEWSA=
+X-Received: by 2002:a05:6512:3b9a:: with SMTP id g26mr3428751lfv.71.1644452844971;
+ Wed, 09 Feb 2022 16:27:24 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 02/10] iommu: Remove guest pasid related interfaces and
- definitions
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
- <20220208012559.1121729-3-baolu.lu@linux.intel.com>
- <20220209132954.GT4160@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220209132954.GT4160@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220208184208.79303-1-namhyung@kernel.org> <20220209090908.GK23216@worktop.programming.kicks-ass.net>
+ <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com> <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+ <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com> <CAM9d7ci=N2NVj57k=W0ebqBzfW+ThBqYSrx-CZbgwGcbOSrEGA@mail.gmail.com>
+ <718973621.50447.1644434890744.JavaMail.zimbra@efficios.com>
+ <CAM9d7cj=tj6pA48q_wkQOGn-2vUc9FRj63bMBOm5R7OukmMbTQ@mail.gmail.com> <f8b7760f-16a2-6ada-de88-9e21a7e8fef9@redhat.com>
+In-Reply-To: <f8b7760f-16a2-6ada-de88-9e21a7e8fef9@redhat.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Wed, 9 Feb 2022 16:27:13 -0800
+Message-ID: <CAM9d7chH0Pvxx_FURL0sZvawwenRmjPyfac_9oinOaRwv8isng@mail.gmail.com>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
+To:     Waiman Long <longman@redhat.com>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        paulmck <paulmck@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Wed, Feb 9, 2022 at 12:17 PM Waiman Long <longman@redhat.com> wrote:
+>
+>
+> On 2/9/22 14:45, Namhyung Kim wrote:
+> > On Wed, Feb 9, 2022 at 11:28 AM Mathieu Desnoyers
+> > <mathieu.desnoyers@efficios.com> wrote:
+> >> ----- On Feb 9, 2022, at 2:22 PM, Namhyung Kim namhyung@kernel.org wrote:
+> >>> I'm also concerning dynamic allocated locks in a data structure.
+> >>> If we keep the info in a hash table, we should delete it when the
+> >>> lock is gone.  I'm not sure we have a good place to hook it up all.
+> >> I was wondering about this use case as well. Can we make it mandatory to
+> >> declare the lock "class" (including the name) statically, even though the
+> >> lock per-se is allocated dynamically ? Then the initialization of the lock
+> >> embedded within the data structure would simply refer to the lock class
+> >> definition.
+> > Isn't it still the same if we have static lock classes that the entry needs
+> > to be deleted from the hash table when it frees the data structure?
+> > I'm more concerned about free than alloc as there seems to be no
+> > API to track that in a place.
+>
+> We may have to invent some new APIs to do that. For example,
+> spin_lock_exit() can be the counterpart of spin_lock_init() and so on.
+> Of course, existing kernel code have to be modified to designate the
+> point after which a lock is no longer being used or is freed.
 
-On 2/9/22 9:29 PM, Jason Gunthorpe wrote:
->> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
->> index 59178fc229ca..65d8b0234f69 100644
->> --- a/include/uapi/linux/iommu.h
->> +++ b/include/uapi/linux/iommu.h
->> @@ -158,185 +158,4 @@ struct iommu_page_response {
->>   	__u32	code;
->>   };
-> What is the plan for the rest of the dead code in this file?
+Yeah, but I'm afraid that it could be easy to miss something.
+Also it would add some runtime overhead due to maintaining
+the hash table even if the tracepoints are not used.
 
-The remaining code are IOMMU fault related. I can look into them in a
-separated series where I plan to make the I/O page fault framework
-generic.
-
-Best regards,
-baolu
+Thanks,
+Namhyung
