@@ -2,161 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D702C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E792C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:43:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345118AbiBJWmy (ORCPT
+        id S1345139AbiBJWna (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:42:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60092 "EHLO
+        Thu, 10 Feb 2022 17:43:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345093AbiBJWmr (ORCPT
+        with ESMTP id S1345122AbiBJWnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:42:47 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBAFF26D4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:42:46 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id p19so19776756ybc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:42:46 -0800 (PST)
+        Thu, 10 Feb 2022 17:43:25 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA302704
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:43:25 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id q11-20020a252a0b000000b0061e240c8fb3so11422482ybq.22
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:43:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OjreJ4Dbxm2NwQlgnQYlRNvrqvyn6H+tQ+K3U0g0mFI=;
-        b=LX8u+w3RqcntgJCHyFMV4Fre+NntXNFQQlBWBGTBu67MgFdVmMjY4UPqS9LePVWP9q
-         ++KmXmIcvng+CQaKcXpdHGPKgfZw95uSBgxJbFskcujzYu3MN57xy/TWm4L28xAomOPi
-         e39N5a0TeU8SvKhzNwQFOmjJdb3DcmqQhtL2I=
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=2CtdKKtWqmoQwaNtCKVnEnSlCVes5hG5Of9ZJoRSPvY=;
+        b=nf4mRr3ZycGHhBqUZ+8DH8ok/Qz5Vau89sI8kQL6TBzahsS+36PcxWkEHapQEi57zC
+         CGZbN1pSxbTcmxo4AB+1siE6sFbVo2nb0UNYy50fVpf34U/KaE2hkYTprUDL4Nb7cEx7
+         eOnLgbr0qMZnT6YgUCkRnP6o+xccxEE8H2B8bDpfPqwt3rT5owKtKDyzxlxoreRzy07y
+         MzXYO5kYEYUKhF9/9jypyALGVa3urJxqTXcX0FAUfDebx61o/y7NyiNP7UOwQhkI7CzS
+         luqBAqd7jIqdj7/5zwZd4zwMLB9kJDCIHLmkKLXY+xR7ATa7MbmSjWRxP0IbgVTg4WA9
+         yOBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OjreJ4Dbxm2NwQlgnQYlRNvrqvyn6H+tQ+K3U0g0mFI=;
-        b=YBimH/p0owvdLk+smNRYSOAbftfzCSjP9IMbY9tOoHj7bOHS5LGJ8AADeLuSpNMDul
-         LD6ORqHiGTMbhGXORCa+ya2UEd7QSC6LXiEE+I6CK6ETHxJIWe5fJH0C2jP/i5b0mqeP
-         1BBsbjU+vy/VF0Nqt9OuAwWiqKUyd1t3Tjde7zM2sh7C8iB5LVW5MV75ZffrRJP+4rk3
-         9ZRiK17r8zla86K83HhxDE2Jn2PbOEWXcsUpRafBniiYvwRZVmvDtAcbXJmZYUKqfday
-         BIc7JQN+srDLrJKfQ61+8s2TzJVgCmKyNCTptDh21E+Ons63a7FupeW+5a8+DL8w0i9Z
-         98aw==
-X-Gm-Message-State: AOAM530ioV6EMc3lzh1Q1FBqaPbCBgrbdueLDvXFfj5wfVoCoYIZ4vMP
-        o5ZBnWdMaTorTRWcW3T5i2KHTFZClsshT2arp+o6
-X-Google-Smtp-Source: ABdhPJyR8oYWkiUH8cQr2NFW+hlos0Nq2+W+WHKskklGcfGFhys92e0ats7QSYkRoCXeYmJAm9nXLikQIY28et3jaCs=
-X-Received: by 2002:a81:e241:: with SMTP id z1mr9683966ywl.62.1644532966055;
- Thu, 10 Feb 2022 14:42:46 -0800 (PST)
-MIME-Version: 1.0
-References: <20220209123800.269774-1-heiko@sntech.de> <20220209123800.269774-9-heiko@sntech.de>
-In-Reply-To: <20220209123800.269774-9-heiko@sntech.de>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Thu, 10 Feb 2022 14:42:35 -0800
-Message-ID: <CAOnJCULe_5v6cb_JcoPKf-UD3bVze1U=jaYeLTsMu7pFigde+A@mail.gmail.com>
-Subject: Re: [PATCH v6 08/14] riscv: move boot alternatives to a slightly
- earlier position
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Wei Fu <wefu@redhat.com>,
-        liush <liush@allwinnertech.com>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Drew Fustini <drew@beagleboard.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Greg Favor <gfavor@ventanamicro.com>,
-        Andrea Mondelli <andrea.mondelli@huawei.com>,
-        Jonathan Behrens <behrensj@mit.edu>,
-        Xinhaoqu <xinhaoqu@huawei.com>,
-        Bill Huffman <huffman@cadence.com>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Allen Baum <allen.baum@esperantotech.com>,
-        Josh Scheid <jscheid@ventanamicro.com>,
-        Richard Trauben <rtrauben@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=2CtdKKtWqmoQwaNtCKVnEnSlCVes5hG5Of9ZJoRSPvY=;
+        b=6kDzonm23UMbArHlah93p4q1/R2EGmS7BjvxBZs+N34mxRP9sJQUkU2wY3t3tWfGKG
+         rDXbFOZ98jgSyj85YCKd7s1lLOmxFeBhSmfgAgLNrihY7Vl3U6t7jOPMIRJRaQ4Y0v0q
+         IUpXruC5fXGUN5nzqUAVn5kRmEyVkaiM1biTescNvTTaFi6oUwi60Qot+SywXbW0Mx3C
+         caEx5uQf6iJ65Iq+i3wu+dChCUOYrsN68PtLuUJJIlobfMopJXKIxAFRbxwiuwywj/Mf
+         s9e3csv4YlrwrGPw1JzkQyhu13hdkvW4MCoA9VOCdeEYTTYiMTOXWR3dBQVEFAsSgBXO
+         +o8g==
+X-Gm-Message-State: AOAM5327UqxJAVz38uabWk7CuHOdeBOVEq8VJm04apuSPcP6Dj2r9/AE
+        dgjohAI+mARnH+c93OrJY4RyeEXk6cvQgzNyIg==
+X-Google-Smtp-Source: ABdhPJwyMEA3/vPtnC5hrjc0C911vwYkTGYEzvGOgFv+0i9iJplYrKuXB9UfmBJoHZPA2fyRMmEXZHP0MgIOdqb77g==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:8f02:232:ad86:2ab2])
+ (user=kaleshsingh job=sendgmr) by 2002:a81:60c3:: with SMTP id
+ u186mr9342666ywb.26.1644533004795; Thu, 10 Feb 2022 14:43:24 -0800 (PST)
+Date:   Thu, 10 Feb 2022 14:41:42 -0800
+In-Reply-To: <20220210224220.4076151-1-kaleshsingh@google.com>
+Message-Id: <20220210224220.4076151-2-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220210224220.4076151-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH 1/7] KVM: arm64: Map the stack pages in the 'private' range
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Walbran <qwandor@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
 Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:39 AM Heiko Stuebner <heiko@sntech.de> wrote:
->
-> Move the application of boot alternatives to soc_early_init().
-> This allows to catch more generic cases of code needing patches
-> than doing it in smp_prepare_boot_cpu() and also makes it actually
-> work if CONFIG_SMP is disabled for whatever reason.
->
-> The position is chosen mainly as it is before the actual soc early
-> init runs but also already allows accessing the devicetree
-> via fdt_* functions.
->
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> ---
->  arch/riscv/kernel/head.S    | 2 ++
->  arch/riscv/kernel/smpboot.c | 2 --
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/riscv/kernel/head.S b/arch/riscv/kernel/head.S
-> index 2363b43312fc..0e1bb97f9749 100644
-> --- a/arch/riscv/kernel/head.S
-> +++ b/arch/riscv/kernel/head.S
-> @@ -10,6 +10,7 @@
->  #include <asm/thread_info.h>
->  #include <asm/page.h>
->  #include <asm/pgtable.h>
-> +#include <asm/alternative.h>
->  #include <asm/csr.h>
->  #include <asm/cpu_ops_sbi.h>
->  #include <asm/hwcap.h>
-> @@ -341,6 +342,7 @@ clear_bss_done:
->         call kasan_early_init
->  #endif
->         /* Start the kernel */
-> +       call apply_boot_alternatives
+From: Quentin Perret <qperret@google.com>
 
-Do you really need this early ?
-if non-smp configuration is the only option, Can you do it in
-setup_arch() after riscv_fill_hwcap() is called ?
+In preparation for introducing guard pages for the stacks, map them
+in the 'private' range of the EL2 VA space in which the VA to PA
+relation is flexible when running in protected mode.
 
-By doing that, we can unify the cpu feature probing and you don't need
-a separate DT parsing just for svpbmt.
+Signed-off-by: Quentin Perret <qperret@google.com>
+[Kalesh - Refactor, add comments, resolve conflicts,
+          use  __pkvm_create_private_mapping()]
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/kvm/hyp/nvhe/setup.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
->         call soc_early_init
->         tail start_kernel
->
-> diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
-> index a6d13dca1403..f1e4948a4b52 100644
-> --- a/arch/riscv/kernel/smpboot.c
-> +++ b/arch/riscv/kernel/smpboot.c
-> @@ -32,7 +32,6 @@
->  #include <asm/sections.h>
->  #include <asm/sbi.h>
->  #include <asm/smp.h>
-> -#include <asm/alternative.h>
->
->  #include "head.h"
->
-> @@ -41,7 +40,6 @@ static DECLARE_COMPLETION(cpu_running);
->  void __init smp_prepare_boot_cpu(void)
->  {
->         init_cpu_topology();
-> -       apply_boot_alternatives();
->  }
->
->  void __init smp_prepare_cpus(unsigned int max_cpus)
-> --
-> 2.30.2
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
-
-
-
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index 27af337f9fea..99e178cf4249 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -105,11 +105,19 @@ static int recreate_hyp_mappings(phys_addr_t phys, unsigned long size,
+ 		if (ret)
+ 			return ret;
+ 
+-		end = (void *)per_cpu_ptr(&kvm_init_params, i)->stack_hyp_va;
++		/* Map stack pages in the 'private' VA range */
++		end = (void *)__hyp_pa(per_cpu_ptr(&kvm_init_params, i)->stack_hyp_va);
+ 		start = end - PAGE_SIZE;
+-		ret = pkvm_create_mappings(start, end, PAGE_HYP);
+-		if (ret)
+-			return ret;
++		start = (void *)__pkvm_create_private_mapping((phys_addr_t)start,
++					PAGE_SIZE, PAGE_HYP);
++		if (IS_ERR_OR_NULL(start))
++			return PTR_ERR(start);
++		end = start + PAGE_SIZE;
++		/*
++		 * Update stack_hyp_va to the end of the stack page's
++		 * allocated 'private' VA range.
++		 */
++		per_cpu_ptr(&kvm_init_params, i)->stack_hyp_va = (unsigned long) end;
+ 	}
+ 
+ 	/*
 -- 
-Regards,
-Atish
+2.35.1.265.g69c8d7142f-goog
+
