@@ -2,129 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9467FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243809AbiBJPxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:53:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43730 "EHLO
+        id S243818AbiBJPyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:54:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236180AbiBJPxB (ORCPT
+        with ESMTP id S236180AbiBJPyv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:53:01 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C080FC24
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:53:00 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id x3so2177249pll.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0aRk2HscakizWLCqrQ5CB9tK40FZrYvTnEVJfReiNFY=;
-        b=cpP2LFQ2eDQJe1EcaNgZ1viwdC1hsSCsiX89PLoiweg3TfX7WlC3XJrAXXye7iSxfK
-         DZUODoJBTptRW8uP3q03n32z5WbCGSPy2vcAXI2pj6jgniJH+7RL2EEfNNkorwwdJoov
-         p1absB5z4ZacBDKRjCGZEwtE90JG0qMJBt1YnOg5KMgjG8wnh4BrDhAZp/3ZhLWex9xB
-         OVQQRLubLo79JrW1ihdgN/sYDdQ66R08TGoE8jU/IT7NHuDTBelht/k9p8laqHVBGahW
-         HU57kCTbXYB41R+bE+SK7Slk/74xGa8RtIiGKY2fNOeJO+/V40FfKo/k8vxPwi8ChtyN
-         EHaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0aRk2HscakizWLCqrQ5CB9tK40FZrYvTnEVJfReiNFY=;
-        b=CtknlDgkz5L+AC8flXG8YEs7le4J4zxLIyy/G8RuaLK7mpiS2+sy88VbZ00lATZlP6
-         Bc5oBsJZoXq22ZPKlA5kB376t44wrxuGUroVsz4IiebcLCufweWCoqA+i3PqBNI4xCGW
-         FHKiAbl/TPwS7BI/JeznO8OhrBOhaWQXivYl5ilfwtoU7ZKPKOXpTOMe818hmLhDPSIQ
-         5KKzQ66fwSoQbTah76g60zxPWgxWzXS6WHmAYrApuweZTg0aZ2LsncVWq5m2GEZKxD30
-         o8d9vAQgECV/+OeBw7b1EPmpAfBhMGBgd98i4RGHlIX4bN9FU+p4ydXLtwOCMjRDdJqs
-         ip+g==
-X-Gm-Message-State: AOAM533DbPrdKHu8Mt0/LJibKXqgXeohqfPVx1epsl4leHxlm2rH2VFa
-        eVTYU93+H2h05b2U5MX/N0o66ohFJykqTL9vSpH61Q==
-X-Google-Smtp-Source: ABdhPJzhIDlgg0ODPB8qVf1n8qI/DXWoH8jwpmcTEd2zXyfLZPFCTLNFEyefMem1sfonuxQSxIruS4cSPxJgSyBcG/o=
-X-Received: by 2002:a17:903:32cb:: with SMTP id i11mr7831244plr.118.1644508380054;
- Thu, 10 Feb 2022 07:53:00 -0800 (PST)
+        Thu, 10 Feb 2022 10:54:51 -0500
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57169C24
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:54:52 -0800 (PST)
+Received: from gproxy2-pub.mail.unifiedlayer.com (unknown [69.89.18.3])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id CAF89802F406
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:54:49 +0000 (UTC)
+Received: from cmgw12.mail.unifiedlayer.com (unknown [10.0.90.127])
+        by progateway4.mail.pro1.eigbox.com (Postfix) with ESMTP id 4D7DC100488E1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:54:49 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id IBmRnKwm1XOyfIBmRnJmTf; Thu, 10 Feb 2022 15:54:48 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=EucXEQQA c=1 sm=1 tr=0 ts=62053548
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oGFeUVbbRNcA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=cEBh+rmEkXJATJYFKN6Cgk92oAlcQ1oW3+4Ahs4+OOk=; b=IYoQeD/3Q3QdhkZ0B1M8zdONNu
+        9qPxZSPAne8BLCGyu9+TDKu38vtQH9Cex+ZwvxkasdhLXucuvXz1NfhdVcg0oD9A8xNmaR88HtvtA
+        cGQXlTm1jrAEXZgcwALlFNzO6;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:53976 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nIBmR-000ma5-4S; Thu, 10 Feb 2022 08:54:47 -0700
+Message-ID: <37525d88-a3cb-c8ef-cd62-bfa48aa36ff6@w6rz.net>
+Date:   Thu, 10 Feb 2022 07:54:45 -0800
 MIME-Version: 1.0
-References: <20210421055047.22858-1-ms@dev.tdt.de> <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
- <YfspazpWoKuHEwPU@lunn.ch> <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
- <YfwEvgerYddIUp1V@lunn.ch> <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
- <YfxtglvVDx2JJM9w@lunn.ch> <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
- <Yf2usAHGZSUDvLln@lunn.ch> <CAJ+vNU3EY0qp-6oQ6Bjd4mZCKv9AeqiaJp=FSrN84P=8atKLrw@mail.gmail.com>
- <YgRWl5ykcjPW0xvx@lunn.ch>
-In-Reply-To: <YgRWl5ykcjPW0xvx@lunn.ch>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Thu, 10 Feb 2022 07:52:49 -0800
-Message-ID: <CAJ+vNU1kmxgFjX2HeTok-6FcnCAApvzszhh2dbNnDgFD7ZsAiQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led functions
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.16 0/5] 5.16.9-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220209191249.887150036@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220209191249.887150036@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nIBmR-000ma5-4S
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:53976
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 13
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 4:04 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On 2/9/22 11:14, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.9 release.
+> There are 5 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> > The errata can be summarized as:
-> > - 1 out of 100 boots or cable plug events RGMII GbE link will end up
-> > going down and up 3 to 4 times then resort to a 100m link; workaround
-> > has been found to require a pin level reset
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
 >
-> So that sounds like it is downshifting because it thinks there is a
-> broken pair. Can you disable downshift? Problem is, that might just
-> result in link down.
-
-Its a bad situation. The actual errata is that the device latches into
-a bad state where there is some noise on an ADC or something like that
-that cause a high packet error rate. The firmware baked into the PHY
-has a detection mechanism looking at these errors (SSD errors) and if
-there are enough of them it takes the link down and up again and if
-that doesn't resolve in 3 times it shifts down to 100mbs. They call
-this 'ADS' or 'auto-down-speed' and you can disable it but it would
-just result in leaving your bad gbe link up. It's unclear yet if it's
-better to just detect the ADS event and reset or to disable ADS and
-look for the SSD errors myself (which I can do).
-
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.9-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
 >
-> > - 1 out of 100 boots or cable plug events (varies per board) SGMII
-> > will fail link between the MAC and PHY; workaround has been found to
-> > require a pin level reset
+> thanks,
 >
-> I don't suppose there is a register to restart SGMII sync?  Sometimes
-> there is.
+> greg k-h
 
-Not that I see but I haven't really investigated too much into
-mitigating that issue yet. The errata for that issue says you need to
-assert reset but then it also says it can occur on a cable plug event
-which makes me think an MDI ANEG restart may be sufficient.
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
->
-> Anyway, shared reset makes this messy, as you said. Unfortunate
-> design. But i don't see how you can work around this in the
-> bootloader, especially the cable plug events.
->
+Tested-by: Ron Economos <re@w6rz.net>
 
-Ya, in hindsight the shared reset was a really bad idea, of course the
-last PHY we used on this particular board for years before the supply
-chain crashed didn't have any issues like this.
-
-I agree that I can't do anything in boot firmware. I was planning on
-having some static code that registered a PHY fixup to get a call when
-these PHYs were detected and I could then kick off a polling thread to
-watch for errors and trigger a reset. The reset could have knowledge
-of the PHY devices that called the fixup handler so that I can at
-least setup each PHY again.
-
-Regardless of how I go about this the end result may be unreliable
-networking for up to a couple of minutes after board power-up or cable
-plug event.
-
-Best Regards,
-
-Tim
