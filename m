@@ -2,83 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92F11C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC903C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238807AbiBJJiL convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:38:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57544 "EHLO
+        id S238821AbiBJJio (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:38:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238888AbiBJJiE (ORCPT
+        with ESMTP id S238772AbiBJJin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:38:04 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F8E1AF
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:38:05 -0800 (PST)
-Received: from mail-wr1-f45.google.com ([209.85.221.45]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MmlCY-1nzR3i0nG2-00jtxd; Thu, 10 Feb 2022 10:38:04 +0100
-Received: by mail-wr1-f45.google.com with SMTP id o24so5777689wro.3;
-        Thu, 10 Feb 2022 01:38:04 -0800 (PST)
-X-Gm-Message-State: AOAM533kp+AEBUaVNUg6ZmbOJEWztxtLWnPklf0Y6tAEDEjjH6kSeSey
-        pB1W+XW88RgTxZ2XM1D4vy9w4HnyV6mqNffl8OY=
-X-Google-Smtp-Source: ABdhPJxyuPFqVuAPp0m7wxkmSqedZ5gdhAYe8N0BP0zMGS9YdwnNAcEToFaurnCdHolQDzxAj8ZmIRKq3k4br+ZsfeY=
-X-Received: by 2002:adf:e5ce:: with SMTP id a14mr681191wrn.317.1644485883806;
- Thu, 10 Feb 2022 01:38:03 -0800 (PST)
+        Thu, 10 Feb 2022 04:38:43 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F33F220;
+        Thu, 10 Feb 2022 01:38:45 -0800 (PST)
+Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 0760193;
+        Thu, 10 Feb 2022 10:38:40 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644485921;
+        bh=lF+r6UQCxoqWroIZy8/2n+0n/A+ghFkPyKqL+rYmqL4=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=nIsX+aUCZpg42I5BMkVxnW3NzL+xrWrld4vcDWTJYe3M+saH5lhg4RYD8ixO0PhPA
+         zxdQVr58HRIFIJHw95qKt91z0GBERL0glsPJI1b995rxII2iZqNx7dpRJ9nzd8mLw2
+         z7fyydxbZPRtyb6Bua6g3icy28+AMgfCMXKh9Yv4=
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220210021129.3386083-1-masahiroy@kernel.org> <20220210021129.3386083-4-masahiroy@kernel.org>
-In-Reply-To: <20220210021129.3386083-4-masahiroy@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 10 Feb 2022 10:37:47 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a07kN8H-8Zx2vX8b0rHfAjaeWyg4-c1aNEVhTF=miOEpA@mail.gmail.com>
-Message-ID: <CAK8P3a07kN8H-8Zx2vX8b0rHfAjaeWyg4-c1aNEVhTF=miOEpA@mail.gmail.com>
-Subject: Re: [PATCH 3/6] android/binder.h: add linux/android/binder(fs).h to
- UAPI compile-test coverage
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:c/BbFZ5D1fK5UZMctKsor9U6uDxXVPmqFomyNPi5TWKLgvq2Dwi
- 0dsQp76fHAMUch5kg1AbIlwHf3dPcS2tJMhAKdJn6zL6/T9uxE+BA8wgJz2g3RYVBKHb/30
- GnOmU2B4U9UsoJnhTnDFOTekt9bCbyQqYL6Xp90dyNOLDcuxAd1GiNHW05eqn6RPSzUMJLD
- FnWT8ipfqwV5kcRaGyL0w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Al/ZptctYJ4=:mB9cnfgruGlrmJWc4rpgfS
- 0WSAua9wMOO+2XLdpJNTqrUFZY2rp1S4Z59n2Rh3Cj2r8eCAas8hyodu1IEe25B0cuLtEAWjl
- FEKKPFe7adBHkRN6sqqD/fsX53HXvSO4hn1xbGYMWIXYDZh/d4pCtTyAJjXfe6Gbd3Vij2YXN
- 9d8qXtrmAjtc6FVoBCcLGos8wlInuAr1h8m6Hh2eIK3X1mO8jojdUu9TB68u1KKSJmY6ecl2g
- BjG63CmbYf6MUPmaAV/+yl2SeJHiwtwYa0Jf2DkOzYA+jyQCkoN8/IudcZ+/3VWJvA5UB+pxx
- anRuJFakm2Pbcv+EIAZsbv04YHc7NY2tRUUxNkeK0VZZyZU9zyL4KDJb8gyjl4RqsqGBi32Vg
- QlArL6KqbIdra67ZyQv9bWESA/QaAd4FkAO3KNf0mUefNT6gNFspDcw7vWQpyfs2T/aB0VV29
- i12ZSZmXa09cdHbYEJ0kcGU7TURcTmn4tTs3796myFe0AmJKH296vQ5AO5qovA+SwDYD/chvP
- DXB0FoGZHwTmgs3eYrNuxKSrgPtFF45YXuxBACmiIKPIKjdmEqtzYd9ZhB724A64pu0R+g0jT
- nPkyzAe19cLkmq5I+7f+uKYi/IO+YISD16jiY42iD7GIoD0bqR9fihi/eCnZ8dqIJK1rwyMD9
- P/+UeDildxP3iBMZt27lQCzVw65j6cEnwOcwRX9XbIr+thICREa5ROMS4oH7+u1g5CME=
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1644481960-15049-1-git-send-email-wangqing@vivo.com>
+References: <1644481960-15049-1-git-send-email-wangqing@vivo.com>
+Subject: Re: [PATCH] media: wl128x: use time_after_eq() instead of jiffies judgment
+From:   Kieran Bingham <kieran.bingham@ideasonboard.com>
+Cc:     Wang Qing <wangqing@vivo.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Qing Wang <wangqing@vivo.com>, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Date:   Thu, 10 Feb 2022 09:38:38 +0000
+Message-ID: <164448591856.3354066.6123333934504651771@Monstersaurus>
+User-Agent: alot/0.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 3:11 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> linux/android/binder.h and linux/android/binderfs.h are currently
-> excluded from the UAPI compile-test because of the errors like follows:
->
->     HDRTEST usr/include/linux/android/binder.h
->   In file included from <command-line>:
->   ./usr/include/linux/android/binder.h:291:9: error: unknown type name ‘pid_t’
->     291 |         pid_t           sender_pid;
->         |         ^~~~~
->   ./usr/include/linux/android/binder.h:292:9: error: unknown type name ‘uid_t’
->     292 |         uid_t           sender_euid;
->         |         ^~~~~
->
-> The errors can be fixed by replacing {pid,uid}_t with __kernel_{pid,uid}_t.
->
-> Then, remove the no-header-test entries from user/include/Makefile.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Hi,
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+All of these patches you've just sent say "Use time_after_eq()" in the
+subject, but I haven't yet seen a usage of that.
+
+Could you make your patch subject reflective of the true changes in each
+patch please?
+
+Batching them in a series as suggested by Joe would be helpful too.
+
+Quoting Qing Wang (2022-02-10 08:32:39)
+> From: Wang Qing <wangqing@vivo.com>
+>=20
+> It is better to use time_xxx() directly instead of jiffies judgment
+> for understanding.
+>=20
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+>  drivers/media/radio/wl128x/fmdrv_common.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/media/radio/wl128x/fmdrv_common.c b/drivers/media/ra=
+dio/wl128x/fmdrv_common.c
+> index 6142484d..a599d08
+> --- a/drivers/media/radio/wl128x/fmdrv_common.c
+> +++ b/drivers/media/radio/wl128x/fmdrv_common.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/firmware.h>
+>  #include <linux/module.h>
+>  #include <linux/nospec.h>
+> +#include <linux/jiffies.h>
+> =20
+>  #include "fmdrv.h"
+>  #include "fmdrv_v4l2.h"
+> @@ -342,7 +343,7 @@ static void send_tasklet(struct tasklet_struct *t)
+>                 return;
+> =20
+>         /* Check, is there any timeout happened to last transmitted packe=
+t */
+> -       if ((jiffies - fmdev->last_tx_jiffies) > FM_DRV_TX_TIMEOUT) {
+> +       if (time_after(jiffies, fmdev->last_tx_jiffies + FM_DRV_TX_TIMEOU=
+T)) {
+
+It looks like there are specific macros for working with jiffies too.
+
+Should this be=20
+              time_is_after_jiffies(fmdev->last_tx_jiffies + FM_DRV_TX_TIME=
+OUT) {
+
+Although that is in fact 2 characters longer ;-S
+
+
+--
+Kieran
+
+
+>                 fmerr("TX timeout occurred\n");
+>                 atomic_set(&fmdev->tx_cnt, 1);
+>         }
+> --=20
+> 2.7.4
+>
