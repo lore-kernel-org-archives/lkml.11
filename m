@@ -2,106 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC27C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:57:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238085AbiBJI4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:56:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54610 "EHLO
+        id S238105AbiBJI5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:57:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238072AbiBJI4s (ORCPT
+        with ESMTP id S238087AbiBJI5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:56:48 -0500
-Received: from mickerik.phytec.de (mickerik.phytec.de [195.145.39.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3C4E7A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:56:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; d=phytec.de; s=a4; c=relaxed/simple;
-        q=dns/txt; i=@phytec.de; t=1644483406; x=1647075406;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Lm/71IsbS9y6EkUe+Y9v0qP4rN1NNtNxnb7fv+nNAZc=;
-        b=KJ0YIKCk0oagzbeTQwQFSZAGnNl6QaM1iAKwKQWxmLipVakL3eFL31EIZ4BdCuFE
-        MkQ6gX8edNZKeNRZ1MYfxuzwfGLsuunW+YXnfxc5qwi7VvN1obq8ZLW4ylcSdoIB
-        pFYh8xUJ8UnYPRGQjLED3Xefbvbf6sVrugTXlhgp5QU=;
-X-AuditID: c39127d2-93d2170000002a63-56-6204d34ecc47
-Received: from Diagnostix.phytec.de (Diagnostix.phytec.de [172.16.0.119])
-        (using TLS with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (Client did not present a certificate)
-        by mickerik.phytec.de (PHYTEC Mail Gateway) with SMTP id 26.95.10851.E43D4026; Thu, 10 Feb 2022 09:56:46 +0100 (CET)
-Received: from Berlix.phytec.de (172.16.0.117) by Diagnostix.phytec.de
- (172.16.0.119) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 10 Feb
- 2022 09:56:45 +0100
-Received: from Berlix.phytec.de ([fe80::2d82:c2a2:5905:87c2]) by
- berlix.phytec.de ([fe80::2d82:c2a2:5905:87c2%3]) with mapi id 15.01.2375.018;
- Thu, 10 Feb 2022 09:56:45 +0100
-From:   Yunus Bas <Y.Bas@phytec.de>
-To:     "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>
-CC:     "yuehaibing@huawei.com" <yuehaibing@huawei.com>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        Thu, 10 Feb 2022 03:57:05 -0500
+X-Greylist: delayed 510 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:57:05 PST
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BD6D4A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:57:05 -0800 (PST)
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220210084833epoutp037f053b6e6801e65287b9d78d91f32938~SYH9T_F8G3184331843epoutp03D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:48:33 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220210084833epoutp037f053b6e6801e65287b9d78d91f32938~SYH9T_F8G3184331843epoutp03D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644482913;
+        bh=KcWEqHF9nH1fZ8q/x1XxY2SexomZ3sxRtUBKXEsjkb4=;
+        h=Date:Subject:Reply-To:From:To:CC:In-Reply-To:References:From;
+        b=DshZ+ZINaQiyAxWmRDOJ3Qlbl5nhXFmoAMh70HjV53yZ8z7azxMzsVhMaJ4Lq3YuM
+         PKN7J/O7Fl2+ZaddHhSa8YyUzR57JFNIfhkKnrLgDkacrruqOMo3sHPDOCpawcgkK0
+         ZIXxmthirLzM+Pn1+pl8UAoNIIaSl1nJ8x/VxIkc=
+Received: from epsmges5p1new.samsung.com (unknown [182.195.42.73]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220210084833epcas5p4ccf8d4cf288fb6bf3f5d71d545222398~SYH8sHlBE0116901169epcas5p4c;
+        Thu, 10 Feb 2022 08:48:33 +0000 (GMT)
+X-AuditID: b6c32a49-b13ff70000001917-86-6204d16170ad
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        1F.CF.06423.161D4026; Thu, 10 Feb 2022 17:48:33 +0900 (KST)
+Date:   Thu, 10 Feb 2022 14:18:23 +0530
+Message-ID: <436367503.2691559.1644482903367@mail-kr5-0>
+Mime-Version: 1.0
+Subject: RE: [PATCH 1/1] kallsyms: print module name in %ps/S case when
+ KALLSYMS is disabled
+Reply-To: maninder1.s@samsung.com
+Sender: Maninder Singh <maninder1.s@samsung.com>
+From:   Maninder Singh <maninder1.s@samsung.com>
+To:     Petr Mladek <pmladek@suse.com>,
+        Luis Chamberlain <mcgrof@kernel.org>
+CC:     Vimal Agrawal <avimalin@gmail.com>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "swboyd@chromium.org" <swboyd@chromium.org>,
+        "ojeda@kernel.org" <ojeda@kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH RESEND] Input: tsc200x-core - Add axis inversion and
- swapping support
-Thread-Topic: [PATCH RESEND] Input: tsc200x-core - Add axis inversion and
- swapping support
-Thread-Index: AQHYHhoGdjqo+NoqVUG1vJQEGDjbHayMa0qA
-Date:   Thu, 10 Feb 2022 08:56:45 +0000
-Message-ID: <2d9c2dec1b3e78f60f0a42b1f20966d9fad62d63.camel@phytec.de>
-References: <20220209223933.1672782-1-y.bas@phytec.de>
-         <YgRkXLZpPBpHF2QY@google.com>
-In-Reply-To: <YgRkXLZpPBpHF2QY@google.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.0.116]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <396C4E59B2B414449BC3D5B9FBC2043D@phytec.de>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrMIsWRmVeSWpSXmKPExsWyRoChXNfvMkuSwaTHLBaHF71gtLj56Rur
-        xeVdc9gsbk+czGhx5+tzFgdWj52z7rJ7tBx5y+rR/9fA4/MmuQCWKC6blNSczLLUIn27BK6M
-        tdsqC/7xVzRtO8rUwHiCv4uRk0NCwESis/cbO4gtJLCOSWL1l4guRi4g+xmjxPmzzcwQziZG
-        id5z94AcDg42AUWJK7fyQRpEBKwlDuzrYAOxmQV+MEo8OeUBYgsLREssvLGdGaImRqKv6yGU
-        bSTx+Mw9RhCbRUBV4smHq0wgNq+Am8SrZdvZII4Il1i5eA8riM0poCWx+skjFhCbUUBWYsOG
-        88wQu8QlNj37zgrxgIDEkj0QcQkBUYmXj/9BxRUk2no6mUBOZhbQlFi/Sx+i1UJi8vd+Vghb
-        UWJK90N2iBMEJU7OfMIygVF8FpINsxC6ZyHpnoWkexaS7gWMrKsYhXIzk7NTizKz9QoyKktS
-        k/VSUjcxAiPy8ET1SzsY++Z4HGJk4mA8xCjBwawkwnuqnjlJiDclsbIqtSg/vqg0J7X4EKM0
-        B4uSOO/9HqZEIYH0xJLU7NTUgtQimCwTB6dUA2Pfj/+mf5cq6moKRC6QOh+9Z3IHY1eOqt6K
-        byqWe6bzXgmKPsQqUj/xi+Rs6dOirxV2y7BJN9UwHtjY3i+veZxrhbdUHo9WhK/3h9tPT2tb
-        SlZxTLJhXLP1wUp3pzeecdXqN5Rq+Fpk13SuXR+QvlRrxRfbQFk+W/ezpVy1JuZJ/L4ym3/p
-        KrEUZyQaajEXFScCALJ4ySC2AgAA
+        "will@kernel.org" <will@kernel.org>,
+        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+        Vaneet Narang <v.narang@samsung.com>,
+        Aaron Tomlin <atomlin@redhat.com>
+X-Priority: 3
+X-Content-Kind-Code: NORMAL
+In-Reply-To: <YgTKqoRIwahzWyh0@alley>
+X-Drm-Type: N,general
+X-Msg-Generator: Mail
+X-Msg-Type: PERSONAL
+X-Reply-Demand: N
+X-CMS-MailID: 20220210084823epcms5p4aa4b02982ca806b52c5078aa7d9ec76e
+Content-Type: multipart/mixed;
+        boundary="----=_Part_2691558_779447602.1644482903367"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprNJsWRmVeSWpSXmKPExsWy7bCmum7iRZYkg1nzuC3mrF/DZtHbNJ3J
+        4sj8NawWDw5eZ7d4v6yH0eLyrjlsFo9nzWOzuLviBpPFjQlPGS1Wzl/OaPH/8VdWi30dD5gs
+        dm9cxGZx/M5TJotDJ+cyWjR+vs9o0XLH1EHQY828NYwesxsusnjsnHWX3aNl3y0gceQtq8em
+        VZ1sHidm/GbxmHcy0ONCV7bH+31X2Tz6tqxi9Fi/5SqLx5kFR9g9Pm+SC+CL4rJJSc3JLEst
+        0rdL4MpofPmBseCQRsWf43INjBeUuhg5OSQETCSOndjBBmILCexmlFi6oRDEZhFQlXi9/z1Y
+        nFfAQmJr7xamLkYOIFtQ4u8OYZCwsECcxPL5E1ghWhUlLsxYwwhSIixgIPFrqwZImE1AT2LV
+        rj0sILaIgIfEn+0fgGwuDmaBt6wSm/oPskCcwCsxo/0plC0tsX35VkYQmxPohKnPPrFBxEUl
+        bq5+yw5jvz82nxHCFpFovXeWGcIWlHjwczdUXEZi9eZesGUSAt2MEuvf7YVyZjBK9DyaBtVh
+        LrF+ySqoqS4S5389BoszC4RJHN97C6pGVmLqqXVMEHE+id7fT5hgrt4xD8ZWlWi5uYEV5oPP
+        Hz9CfeMhMbFnNiMkhL4zStw9JD+BUX4WIhxnIdkGYctLbH87hxmkhFlAU2L9Ln2IsJrElP4v
+        bBC2mURD+1QWCFtRYkr3Q/YFjOyrGCVTC4pz01OLTQsM81LL9YoTc4tL89L1kvNzNzGC06yW
+        5w7Guw8+6B1iZOJgPMSoAtT+aMPqC4xSLHn5ealKIryn6pmThHhTEiurUovy44tKc1KLDzFK
+        c7AoifOeTt+QKCSQnliSmp2aWpBaBJNl4uCUamBqnOvsXXVz8x9xli1nFffpHZqe9CCivE3o
+        sRhHvdKvouwLd7nt9AwXpSfO0I5dkGWSuJjZfd/ZH3OZ1ikwme5U2xWwYbNh8mXjlUZPzsvK
+        acxzPhT5/+/jifwbb3+2V4rhtVib+9lmetLs65f3nTTztSh8+eHo33/u62NFLr6/XzyfIyiq
+        90n6kixN49SiV8fO9EwXtTfbHKintGplvvZVl/DZabWSsSrR38WbOXb5R3I+vJLOw5naouxo
+        EPQz98SZKDFzvS5Tt7Rru6UkKmx5Qy9YLOxs3CDsYPIp96ZZ/MUnT1sbnOy/+a9SSjJi8Vo8
+        84GX5CaLq8ePBt3RbTrD/eTk3bz+dYnZgoHRG5RYijMSDbWYi4oTAcRs0rguBAAA
+X-CMS-RootMailID: 20220201040100epcas5p180ef094058fc9c76b4b94d9d673fc5fc
+References: <YgTKqoRIwahzWyh0@alley>
+        <20220201040044.1528568-1-maninder1.s@samsung.com>
+        <20220209114038.GA8279@pathway.suse.cz>
+        <YgRH7hwFC2AGISdP@bombadil.infradead.org>
+        <CGME20220201040100epcas5p180ef094058fc9c76b4b94d9d673fc5fc@epcms5p4>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgRG1pdHJ5LA0KDQpBbSBNaXR0d29jaCwgZGVtIDA5LjAyLjIwMjIgdW0gMTc6MDMgLTA4MDAg
-c2NocmllYiBEbWl0cnkgVG9yb2tob3Y6DQo+IE9uIFdlZCwgRmViIDA5LCAyMDIyIGF0IDExOjM5
-OjMzUE0gKzAxMDAsIFl1bnVzIEJhcyB3cm90ZToNCj4gPiBTaW5jZSBDb21taXQgZWQ3Yzk4NzBj
-OWJjICgiSW5wdXQ6IG9mX3RvdWNoc2NyZWVuIC0gYWRkIHN1cHBvcnQgZm9yDQo+ID4gaW52ZXJ0
-ZWQgLyBzd2FwcGVkIGF4ZXMiKSwgdGhlIG9mX3RvdWNoc2NyZWVuIGludGVyZmFjZSBzdXBwb3J0
-cw0KPiA+IGF4aXMNCj4gPiBpbnZlcnRpbmcgYW5kIHN3YXBwaW5nIHRocm91Z2ggRGV2aWNldHJl
-ZSBwcm9wZXJ0aWVzLiBNYWtlIHVzZSBvZg0KPiA+IHRoaXMNCj4gPiBmZWF0dXJlLg0KPiA+IA0K
-PiA+IFNpZ25lZC1vZmYtYnk6IFl1bnVzIEJhcyA8eS5iYXNAcGh5dGVjLmRlPg0KPiANCj4gQXBw
-bGllZCwgdGhhbmsgeW91LCBob3dldmVyIEkgYmVsaWV2ZSB3ZSBhbHNvIG5lZWQgdG8gYWRqdXN0
-DQo+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pbnB1dC90b3VjaHNjcmVlbi90
-aSx0c2MyMDA1LnlhbWxpDQo+IHRvDQo+IGFsbG93IHRoZXNlIHByb3BlcnRpZXMuDQoNClRoYW5r
-IHlvdSBmb3IgdGhlIG5vdGUuIEkgd2lsbCB1cGRhdGUgdGhlIGRvY3VtZW50YXRpb24gQVNBUCBh
-bmQgc2VuZCBhDQp2Mi4NCg0KUmVnYXJkcw0KWXVudXMNCg0KPiANCj4gVGhhbmtzLg0KPiANCg0K
-LS0gDQotU29mdHdhcmUgRW50d2lja2x1bmctDQpQSFlURUMgTWVzc3RlY2huaWsgR21iSA0KUm9i
-ZXJ0LUtvY2gtU3RyLiAzOQ0KNTUxMjkgTWFpbnoNCkdlcm1hbnkNClRlbC46ICs0OSAoMCk2MTMx
-IDkyMjEtNDY2DQpXZWI6IHd3dy5waHl0ZWMuZGUNCg0KU2llIGZpbmRlbiB1bnMgYXVjaCBhdWY6
-IEZhY2Vib29rLCBMaW5rZWRJbiwgWGluZywgWW91VHViZQ0KDQpQSFlURUMgTWVzc3RlY2huaWsg
-R21iSCB8IFJvYmVydC1Lb2NoLVN0ci4gMzkgfCA1NTEyOSBNYWlueiwgR2VybWFueQ0KR2VzY2jD
-pGZ0c2bDvGhyZXI6IERpcGwuLUluZy4gTWljaGFlbCBNaXRlemtpLCBEaXBsLi1JbmcuIEJvZG8g
-SHViZXIgfA0KSGFuZGVsc3JlZ2lzdGVyIE1haW56IEhSQiA0NjU2IHwgRmluYW56YW10IE1haW56
-IHwgU3QuTnIuIDI2NjUwMDYwOCwgREUNCjE0OTA1OTg1NQ0KVGhpcyBFLU1haWwgbWF5IGNvbnRh
-aW4gY29uZmlkZW50aWFsIG9yIHByaXZpbGVnZWQgaW5mb3JtYXRpb24uIElmIHlvdQ0KYXJlIG5v
-dCB0aGUgaW50ZW5kZWQgcmVjaXBpZW50IChvciBoYXZlIHJlY2VpdmVkIHRoaXMgRS1NYWlsIGlu
-IGVycm9yKQ0KcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGltbWVkaWF0ZWx5IGFuZCBkZXN0cm95
-IHRoaXMgRS1NYWlsLiBBbnkNCnVuYXV0aG9yaXplZCBjb3B5aW5nLCBkaXNjbG9zdXJlIG9yIGRp
-c3RyaWJ1dGlvbiBvZiB0aGUgbWF0ZXJpYWwgaW4NCnRoaXMgRS1NYWlsIGlzIHN0cmljdGx5IGZv
-cmJpZGRlbi4NCg==
+------=_Part_2691558_779447602.1644482903367
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+
+Hi All,
+
+Thanks for your inputs.
+
+> On Wed 2022-02-09 15:02:06, Luis Chamberlain wrote:
+> > On Wed, Feb 09, 2022 at 12:40:38PM +0100, Petr Mladek wrote:
+> > > > --- a/include/linux/kallsyms.h
+> > > > +++ b/include/linux/kallsyms.h
+> > > > @@ -163,6 +163,33 @@ static inline bool kallsyms_show_value(const struct cred *cred)
+> > > >          return false;
+> > > >  }
+> > > >  
+> > > > +#ifdef CONFIG_MODULES
+> > > > +static inline int fill_minimal_module_info(char *sym, int size, unsigned long value)
+> > > > +{
+> > > > +        struct module *mod;
+> > > > +        unsigned long offset;
+> > > > +        int ret = 0;
+> > > > +
+> > > > +        preempt_disable();
+> > > > +        mod = __module_address(value);
+> > > > +        if (mod) {
+> > > > +                offset = value - (unsigned long)mod->core_layout.base;
+> > > > +                snprintf(sym, size - 1, "0x%lx+0x%lx [%s]",
+> > > > +                                (unsigned long)mod->core_layout.base, offset, mod->name);
+> > > > +
+> > > > +                sym[size - 1] = '\0';
+> > > > +                ret = 1;
+> > > > +        }
+> > > > +
+> > > > +        preempt_enable();
+> > > > +        return ret;
+> > > > +}
+> > > 
+> > > It looks too big for an inlined function. Anyway, we will need
+> > > something even more complex, see below.
+> > 
+> > Interesting, these observations might apply to Vimal's work as well [0].
+> > 
+> > [0] https://lkml.kernel.org/r/YgKyC4ZRud0JW1PF@bombadil.infradead.org
+>  
+> Honestly, I am not sure what is the best practice. My understanding is
+> that inlined functions are used primary for speed up at runtime.
+>  
+
+Main reason of making it inline was:
+(1) kallsysm.c was not getting compiled(with disabled config), so could not add defination there.
+(2) lib/vsnprintf.c was not correct place to define new function of kallsyms(fill_minimal_module_info)
+(3) I thought static int will be part of each .c file which includes kallsyms.h and compiler can make noise for unused functions,
+and also increase code size, where as static inline will be added only if some code is calling that function otherwise will be discarded.
+
+But as peter said better version will be to make a new defination of __sprint_symbol (probably in kernel/module.c)
+to handle all cases of %ps/S/B/b when KALLSYSMS is disabled.
+
+I will try to prepare changes and share V2 patch.
+
+Thanks,
+Maninder Singh
+------=_Part_2691558_779447602.1644482903367
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename="rcptInfo.txt"
+Content-Transfer-Encoding: base64
+
+DQogICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT0NCiAgICAgIFN1YmplY3QgICAgOiBSZTogW1BBVENIIDEvMV0g
+a2FsbHN5bXM6IHByaW50IG1vZHVsZSBuYW1lIGluICVwcy9TIGNhc2Ugd2hlbiBLQUxMU1lNUyBp
+cyBkaXNhYmxlZA0KICAgICAgRnJvbSAgICAgICA6IG51bGwNCiAgICAgIFNlbnQgRGF0ZSAgOiAy
+MDIyLTAyLTEwIDEzOjUwICBHTVQrNTozMA0KICAgPT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQogICAgICAgICAg
+ICAgICAgICBOYW1lICAgICAgICAgICAgICAgIFR5cGUgICAgICAgICAgSm9iIFRpdGxlICAgICAg
+ICAgICAgICAgICAgICAgICBEZXB0LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBDb21w
+YW55ICAgICAgICAgICAgICAgIA0KICAgPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQogICAgICBtY2dyb2ZAa2Vy
+bmVsLm9yZyAgICAgICAgICAgICAgVE8NCiAgICAgIGF2aW1hbGluQGdtYWlsLmNvbSAgICAgICAg
+ICAgICBDQw0KICAgICAgTWFuaW5kZXIgU2luZ2ggICAgICAgICAgICAgICAgIENDICAgICAgICAg
+U3RhZmYgRW5naW5lZXIgICAgICAgICAgICAgU3lzdGVtIFMvVyBHcm91cCAvU1JJLURlbGhpICAg
+ICAgICAgICAgICAgU2Ftc3VuZ8KgRWxlY3Ryb25pY3PCoA0KICAgICAgcm9zdGVkdEBnb29kbWlz
+Lm9yZyAgICAgICAgICAgIENDDQogICAgICBzZW5vemhhdHNreUBjaHJvbWl1bS5vcmcgICAgICAg
+Q0MNCiAgICAgIGFuZHJpeS5zaGV2Y2hlbmtvQGxpbnV4LmkuLi4gICBDQw0KICAgICAgbGludXhA
+cmFzbXVzdmlsbGVtb2VzLmRrICAgICAgIENDDQogICAgICBha3BtQGxpbnV4LWZvdW5kYXRpb24u
+b3JnICAgICAgQ0MNCiAgICAgIHdhbmdrZWZlbmcud2FuZ0BodWF3ZWkuY29tICAgICBDQw0KICAg
+ICAgbWJlbmVzQHN1c2UuY3ogICAgICAgICAgICAgICAgIENDDQogICAgICBzd2JveWRAY2hyb21p
+dW0ub3JnICAgICAgICAgICAgQ0MNCiAgICAgIG9qZWRhQGtlcm5lbC5vcmcgICAgICAgICAgICAg
+ICBDQw0KICAgICAgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZyAgIENDDQogICAgICB3aWxs
+QGtlcm5lbC5vcmcgICAgICAgICAgICAgICAgQ0MNCiAgICAgIGNhdGFsaW4ubWFyaW5hc0Bhcm0u
+Y29tICAgICAgICBDQw0KICAgICAgVmFuZWV0IE5hcmFuZyAgICAgICAgICAgICAgICAgIENDICAg
+ICAgICAgQXNzb2NpYXRlIEFyY2hpdGVjdCAgICAgICAgU3lzdGVtIFMvVyBHcm91cCAvU1JJLURl
+bGhpICAgICAgICAgICAgICAgU2Ftc3VuZyBFbGVjdHJvbmljcw0KICAgICAgYXRvbWxpbkByZWRo
+YXQuY29tICAgICAgICAgICAgIENDDQogICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCg==
+
+------=_Part_2691558_779447602.1644482903367--
