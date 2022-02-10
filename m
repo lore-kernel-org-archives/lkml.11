@@ -2,90 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC55C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244786AbiBJQ5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:57:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40534 "EHLO
+        id S244955AbiBJQ62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:58:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244450AbiBJQ5b (ORCPT
+        with ESMTP id S244504AbiBJQ60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:57:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A934D122
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:57:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D088B80B3E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:57:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789DCC004E1;
-        Thu, 10 Feb 2022 16:57:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644512247;
-        bh=Fd0kc4ClVmsdMt5I8xjQsCXxmNuCaOh6XmyTDmrK5h0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SyLqH1XjRQ7awad+24hAAOTFKLqfbentRah/JnB0Ok0YK5PmNIaTGfxrdzOzaR00M
-         m90mNtfFt4zARiN61pnP3Q49IZY/zqUc1K7vAYRDewUu099zbl9WeLg3np1cWrC0nA
-         iPOdnqWLDdR708b2NjS6SO9KK0Q5ydFpOm8YGY5uwKsDvnbrmBKSTzgaRQlmhPvoV+
-         WK7VRUxpH41D+J79rAiAL6FGGrqg9uCo1veorAHl07KjN14lY4yWwmDYX/bIaIcgv+
-         S/clH3658HV3eYiuuE4ZmL1o5qQ4fdymZL8cSBFmBo35pGOyRr+5W5XwTfML4aoDDC
-         oobKMxK8fmdsA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>
-Subject: [PATCH] riscv: alternative only works on !XIP_KERNEL
-Date:   Fri, 11 Feb 2022 00:49:43 +0800
-Message-Id: <20220210164943.2646-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 10 Feb 2022 11:58:26 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDBF6B8A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:58:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644512308; x=1676048308;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=GYGzyzkgR/rYPrMVbdP7rjEVKe0/Bk0Twcm4LdpnhDI=;
+  b=gMhaOV6Bm1FoQeJDv2Wqz0PKSAgnLDbJw98xambM8igzN4QFL2rU5wBz
+   uc4fDIObVcyGgHcW/9s/4TXjOupSWLr33VtBHhCh20X/QOsIUQ0C8beQT
+   /YTbhh+9I624I4JVgTzXeZQ0LGI+LEctQ1JY1KR0mKDb8JTdLI0zWJRaL
+   8=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 10 Feb 2022 08:58:27 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 08:58:27 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 10 Feb 2022 08:58:27 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 10 Feb 2022 08:58:26 -0800
+Received: from nalasex01a.na.qualcomm.com ([fe80::bc64:9e8c:e944:8704]) by
+ nalasex01a.na.qualcomm.com ([fe80::bc64:9e8c:e944:8704%4]) with mapi id
+ 15.02.0922.019; Thu, 10 Feb 2022 08:58:26 -0800
+From:   "Nitin Rawat (QUIC)" <quic_nitirawa@quicinc.com>
+To:     Keith Busch <kbusch@kernel.org>
+CC:     Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
+        "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Sajida Bhanu (Temp) (QUIC)" <quic_c_sbhanu@quicinc.com>
+Subject: RE: [PATCH v1] nvme/pci: Add quick suspend quirk for Toshiba drive.
+Thread-Topic: [PATCH v1] nvme/pci: Add quick suspend quirk for Toshiba drive.
+Thread-Index: AQHYHni/VohKdx1dg06GCWGFwibsxqyNZ0MA//+aLKA=
+Date:   Thu, 10 Feb 2022 16:58:26 +0000
+Message-ID: <eb186ce5e5f84bf193bc3fef0860b92b@quicinc.com>
+References: <1644495676-8124-1-git-send-email-quic_nitirawa@quicinc.com>
+ <20220210150114.GB1617879@dhcp-10-100-145-180.wdc.com>
+In-Reply-To: <20220210150114.GB1617879@dhcp-10-100-145-180.wdc.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.216.37.205]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The alternative mechanism needs runtime code patching, it can't work
-on XIP_KERNEL. And the errata workarounds are implemented via the
-alternative mechanism. So add !XIP_KERNEL dependency for alternative
-and erratas.
+Thanks keith for review.
+Yes moved the condition check outside vendor/device check in Patchset 2.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/riscv/Kconfig.erratas | 1 +
- arch/riscv/Kconfig.socs    | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+-----Original Message-----
+From: Keith Busch <kbusch@kernel.org>=20
+Sent: Thursday, February 10, 2022 8:31 PM
+To: Nitin Rawat (QUIC) <quic_nitirawa@quicinc.com>
+Cc: Jens Axboe <axboe@fb.com>; Sagi Grimberg <sagi@grimberg.me>; linux-nvme=
+@lists.infradead.org; linux-kernel@vger.kernel.org; Sajida Bhanu (Temp) (QU=
+IC) <quic_c_sbhanu@quicinc.com>
+Subject: Re: [PATCH v1] nvme/pci: Add quick suspend quirk for Toshiba drive=
+.
 
-diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
-index b44d6ecdb46e..0aacd7052585 100644
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -2,6 +2,7 @@ menu "CPU errata selection"
- 
- config RISCV_ERRATA_ALTERNATIVE
- 	bool "RISC-V alternative scheme"
-+	depends on !XIP_KERNEL
- 	default y
- 	help
- 	  This Kconfig allows the kernel to automatically patch the
-diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index 6ec44a22278a..c112ab2a9052 100644
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -14,8 +14,8 @@ config SOC_SIFIVE
- 	select CLK_SIFIVE
- 	select CLK_SIFIVE_PRCI
- 	select SIFIVE_PLIC
--	select RISCV_ERRATA_ALTERNATIVE
--	select ERRATA_SIFIVE
-+	select RISCV_ERRATA_ALTERNATIVE if !XIP_KERNEL
-+	select ERRATA_SIFIVE if !XIP_KERNEL
- 	help
- 	  This enables support for SiFive SoC platform hardware.
- 
--- 
-2.34.1
+On Thu, Feb 10, 2022 at 05:51:16PM +0530, Nitin Rawat wrote:
+> The Toshiba KBG40ZPZ256G SSD is having resume issues on SC7280 platform.
+> Hence enabling quick suspend quirks for Toshiba KBG40ZPZ256G on sc7280=20
+> platform so that nvme device is taken through shutdown path during=20
+> resume.
+>=20
+> No issue is seen after enabling this quirks.
+>=20
+> Signed-off-by: Nitin Rawat <quic_nitirawa@quicinc.com>
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> ---
+>  drivers/nvme/host/pci.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+>=20
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c index=20
+> 6a99ed6..04c5954 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -3032,6 +3032,15 @@ static unsigned long check_vendor_combination_bug(=
+struct pci_dev *pdev)
+>  		if ((dmi_match(DMI_BOARD_VENDOR, "LENOVO")) &&
+>  		     dmi_match(DMI_BOARD_NAME, "LNVNB161216"))
+>  			return NVME_QUIRK_SIMPLE_SUSPEND;
+> +
+> +		/*
+> +		 * Toshiba KBG40ZPZ256G on Sc7280 platform is having NVMe
+> +		 * Resume issue. Appending quick suspend quirks for sc7280
+> +		 * platforms so that full NVMe device shutdown path is
+> +		 * executed during resume.
+> +		 */
+> +		if (of_machine_is_compatible("qcom,sc7280"))
+> +			return NVME_QUIRK_SIMPLE_SUSPEND;
 
+Shouldn't this check be moved outside the vendor/device check? It doesn't s=
+eem like this behavior for this platform is specific to any particular cont=
+roller, right?
+
+Otherwise, looks fine.
