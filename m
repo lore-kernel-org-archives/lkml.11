@@ -2,173 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B998C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345224AbiBJWrP (ORCPT
+        id S1345238AbiBJWtN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:47:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35866 "EHLO
+        Thu, 10 Feb 2022 17:49:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242109AbiBJWrO (ORCPT
+        with ESMTP id S242109AbiBJWtM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:47:14 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986EB5F46
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:47:14 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id h6-20020a253a06000000b0061de83305f2so15006198yba.19
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:47:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=0KTIZ/BsAXUFEI2iaae3XhjiZCEBM5hWuzmqdk8v8UY=;
-        b=ZHZcx5xA7EHUTHCEaadFyiIjhdIRYxHvTFae4ko0TI3GsIog1bV3SjKx1jRojQWUj9
-         9YmFQDHXzEGOwzo0jbIx2p05gWQot0LfhQEneSFTIQDTsEvDEu3cbgpbhfSSiOKTck7B
-         XnA5mt4AM4oFT952jp0wtfNf7wV5ozC6f4FRX17E75v7SVOIT6Qq311evP23Cd+WxpCL
-         t4yqScsbIWIhUS/HOMp6RY2OVDmFmetiuTA2yxdyMmNDQyRHtrtm3pjz0CB+NKSsCK+K
-         F7SOpuTg/HVJ5A4DPQFaIsMVgylVqHlTpMjmwpbi8GWIswYd63eFghrQb2JVt08OjyHt
-         AohA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=0KTIZ/BsAXUFEI2iaae3XhjiZCEBM5hWuzmqdk8v8UY=;
-        b=HmJB2ERXclMiXKqPH6fLFIdLz1OkBawwkoRRiMvqrYPZhkfmRajklsbuFV2OPgBKm7
-         CRf1ub7n0YYHuB0FRJfAnXpGDCcW8WfMye7exJJwiEUqkbuj5Oil+P4q6ljiS6UzD1SM
-         M7dba0alLnonrCkjQj9NLxYmLJHmeSedhceIe/ZBBkEnI7nIpuvsX2AUPd8UCrcU3aVI
-         /POQTyTz8kbUA4V8whhzghoNcsTtwnuBHNYo0SMmpk+qj2+RBtNywpGov782qiTsHuPV
-         2S0SJLGAPYRHtTpmbUAZsbEkQVWxNMS5/DKv9IO4O+9Klp+d/9BEwaGvb9cz65nkjn0R
-         zXIg==
-X-Gm-Message-State: AOAM533SmH3EiGmi/Me4pYOdYONVzBq9ZMACfS8ivIzyBD5o6G6Kln4n
-        XIchY/Rddl1PkLSfwOx/1kWpu8RIpeTcjVtDIg==
-X-Google-Smtp-Source: ABdhPJw5p/Uh7hAVUUQUoiuUOWMwTt8ZLF4sqcEFxLAvSzIjy7oy/SoNwO/Prk3wKZ7puGZ6SI+A+MoEUcuHAzw3bA==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:8f02:232:ad86:2ab2])
- (user=kaleshsingh job=sendgmr) by 2002:a81:b650:: with SMTP id
- h16mr9312369ywk.238.1644533233863; Thu, 10 Feb 2022 14:47:13 -0800 (PST)
-Date:   Thu, 10 Feb 2022 14:41:48 -0800
-In-Reply-To: <20220210224220.4076151-1-kaleshsingh@google.com>
-Message-Id: <20220210224220.4076151-8-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220210224220.4076151-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH 7/7] KVM: arm64: Symbolize the nVHE HYP backtrace
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Joey Gouly <joey.gouly@arm.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kvmarm@lists.cs.columbia.edu
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        Thu, 10 Feb 2022 17:49:12 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958C3B6F;
+        Thu, 10 Feb 2022 14:49:09 -0800 (PST)
+Received: from in01.mta.xmission.com ([166.70.13.51]:53576)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nIIFQ-000DO7-EC; Thu, 10 Feb 2022 15:49:08 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47596 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nIIFO-00EgvJ-TW; Thu, 10 Feb 2022 15:49:07 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Robert =?utf-8?B?xZp3acSZY2tp?= <robert@swiecki.net>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20220210025321.787113-1-keescook@chromium.org>
+        <871r0a8u29.fsf@email.froward.int.ebiederm.org>
+        <202202101033.9C04563D9@keescook>
+        <87pmnu5z28.fsf@email.froward.int.ebiederm.org>
+        <202202101137.B48D02138@keescook>
+Date:   Thu, 10 Feb 2022 16:48:30 -0600
+In-Reply-To: <202202101137.B48D02138@keescook> (Kees Cook's message of "Thu,
+        10 Feb 2022 12:43:14 -0800")
+Message-ID: <87k0e249tt.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1nIIFO-00EgvJ-TW;;;mid=<87k0e249tt.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/JHZfXIjTQBa3uqb2Ausc9H2cCfR+/F2Q=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 0/3] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reintroduce the __kvm_nvhe_ symbols in kallsyms, ignoring the local
-symbols in this namespace. The local symbols are not informative and
-can cause aliasing issues when symbolizing the addresses.
+Kees Cook <keescook@chromium.org> writes:
 
-With the necessary symbols now in kallsyms we can symbolize nVHE
-stacktrace addresses using the %pB print format specifier.
+> On Thu, Feb 10, 2022 at 12:58:07PM -0600, Eric W. Biederman wrote:
+>> Kees Cook <keescook@chromium.org> writes:
+>> 
+>> > On Thu, Feb 10, 2022 at 12:17:50PM -0600, Eric W. Biederman wrote:
+>> >> Kees Cook <keescook@chromium.org> writes:
+>> >> 
+>> >> > Hi,
+>> >> >
+>> >> > This fixes the signal refactoring to actually kill unkillable processes
+>> >> > when receiving a fatal SIGSYS from seccomp. Thanks to Robert for the
+>> >> > report and Eric for the fix! I've also tweaked seccomp internal a bit to
+>> >> > fail more safely. This was a partial seccomp bypass, in the sense that
+>> >> > SECCOMP_RET_KILL_* didn't kill the process, but it didn't bypass other
+>> >> > aspects of the filters. (i.e. the syscall was still blocked, etc.)
+>> >> 
+>> >> Any luck on figuring out how to suppress the extra event?
+>> >
+>> > I haven't found a good single indicator of a process being in an "I am dying"
+>> > state, and even if I did, it seems every architecture's exit path would
+>> > need to add a new test.
+>> 
+>> The "I am dying" state for a task is fatal_signal_pending, at least
+>> before get_signal is reached, for a process there is SIGNAL_GROUP_EXIT.
+>> Something I am busily cleaning up and making more reliable at the
+>> moment.
+>
+> The state I need to catch is "I am dying and this syscall was
+> interrupted". fatal_signal_pending() is kind of only the first half
+> (though it doesn't cover fatal SIGSYS?)
+>
+> For example, if a process hits a BUG() in the middle of running a
+> syscall, that syscall isn't expected to "exit" from the perspective of
+> userspace. This is similarly true for seccomp's fatal SIGSYS.
+>
+>> What is the event that is happening?  Is it
+>> tracehook_report_syscall_exit or something else?
+>
+> Yes, but in more completely, it's these three, which are called in
+> various fashions from architecture syscall exit code:
+>
+> 	audit_syscall_exit()		(audit)
+> 	trace_sys_exit()		(see "TRACE_EVENT_FN(sys_exit,")
+> 	tracehook_report_syscall_exit()	(ptrace)
+>
+>> From the bits I have seen it seems like something else.
+>
+> But yes, the place Robert and I both noticed it was with ptrace from
+> tracehook_report_syscall_exit(), which is rather poorly named. :)
 
-Some sample call traces:
+Speaking of patches I am just about to send out.
 
--------
-[  167.018598][  T407] kvm [407]: nVHE hyp panic at: [<ffffffc0116145cc>] __kvm_nvhe_overflow_stack+0x10/0x34!
-[  167.020841][  T407] kvm [407]: nVHE HYP call trace:
-[  167.021371][  T407] kvm [407]: [<ffffffc011614934>] __kvm_nvhe_hyp_panic_bad_stack+0xc/0x10
-[  167.021972][  T407] kvm [407]: [<ffffffc01160fa48>] __kvm_nvhe___kvm_hyp_host_vector+0x248/0x794
-[  167.022572][  T407] kvm [407]: [<ffffffc0116145dc>] __kvm_nvhe_overflow_stack+0x20/0x34
-[  167.023135][  T407] kvm [407]: [<ffffffc0116145dc>] __kvm_nvhe_overflow_stack+0x20/0x34
-[  167.023699][  T407] kvm [407]: [<ffffffc0116145dc>] __kvm_nvhe_overflow_stack+0x20/0x34
-[  167.024261][  T407] kvm [407]: [<ffffffc0116145dc>] __kvm_nvhe_overflow_stack+0x20/0x34
-. . .
+> Looking at the results, audit_syscall_exit() and trace_sys_exit() need
+> to be skipped too, since they would each be reporting potential nonsense.
+>
+>> > The best approach seems to be clearing the TIF_*WORK* bits, but that's
+>> > still a bit arch-specific. And I'm not sure which layer would do that.
+>> > At what point have we decided the process will not continue? More
+>> > than seccomp was calling do_exit() in the middle of a syscall, but those
+>> > appear to have all been either SIGKILL or SIGSEGV?
+>> 
+>> This is where I get confused what TIF_WORK bits matter?
+>
+> This is where I wish all the architectures were using the common syscall
+> code. The old do_exit() path would completely skip _everything_ in the
+> exit path, so it was like never calling anything after the syscall
+> dispatch table. The only userspace visible things in there are triggered
+> from having TIF_WORK... flags (but again, it's kind of a per-arch mess).
+>
+> Skipping the entire exit path makes a fair bit of sense. For example,
+> rseq_syscall() is redundant (forcing SIGSEGV).
+>
+> Regardless, at least the three places above need to be skipped.
+>
+> But just testing fatal_signal_pending() seems wrong: a normal syscall
+> could be finishing just fine, it just happens to have a fatal signal
+> ready to be processed.
 
--------
-[  166.161699][  T409] kvm [409]: Invalid host exception to nVHE hyp!
-[  166.163789][  T409] kvm [409]: nVHE HYP call trace:
-[  166.164709][  T409] kvm [409]: [<ffffffc011614fa0>] __kvm_nvhe_handle___kvm_vcpu_run+0x198/0x21c
-[  166.165352][  T409] kvm [409]: [<ffffffc011614980>] __kvm_nvhe_handle_trap+0xa4/0x124
-[  166.165911][  T409] kvm [409]: [<ffffffc01160f060>] __kvm_nvhe___host_exit+0x60/0x64
-[  166.166657][  T409] Kernel panic - not syncing: HYP panic:
-. . .
--------
+Yes.  It is really just the HANDLER_EXIT case where this is interesting.
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/kvm/handle_exit.c | 11 +++--------
- arch/arm64/kvm/stacktrace.c  |  2 +-
- scripts/kallsyms.c           |  2 +-
- 3 files changed, 5 insertions(+), 10 deletions(-)
+>
+> Here's the ordering after a syscall on x86 from do_syscall_64():
+>
+> do_syscall_x64()
+> 	sys_call_table[...](regs)
+> syscall_exit_to_user_mode()
+> 	__syscall_exit_to_user_mode_work()
+> 		syscall_exit_to_user_mode_prepare()
+> 			syscall_exit_work()
+> 				arch_syscall_exit_tracehook()
+> 					tracehook_report_syscall_exit()
+> 	exit_to_user_mode_prepare()
+> 		exit_to_user_mode_loop()
+> 			handle_signal_work()
+> 				arch_do_signal_or_restart()
+> 					get_signal()
+> 						do_group_exit()
+>
+> Here's arm64 from el0_svc():
+>
+> do_el0_svc()
+> 	el0_svc_common()
+> 		invoke_syscall()
+> 			syscall_table[...](regs)
+> 		syscall_trace_exit()
+> 			tracehook_report_syscall()
+> 				tracehook_report_syscall_exit()
+> exit_to_user_mode()
+> 	prepare_exit_to_user_mode()
+> 		do_notify_resume()
+> 			do_signal()
+> 				get_signal()
+> 					do_group_exit()
+>
+> In the past, any do_exit() would short circuit everything after the
+> syscall table. Now, we do all the exit work before starting the return
+> to user mode which is what processes the signals. So I guess there's
+> more precisely a difference between "visible to userspace" and "return
+> to userspace".
 
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index b038c32a3236..d7f0f295aebf 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -296,13 +296,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 	u64 elr_in_kimg = __phys_to_kimg(elr_phys);
- 	u64 hyp_offset = elr_in_kimg - kaslr_offset() - elr_virt;
- 	u64 mode = spsr & PSR_MODE_MASK;
-+	u64 panic_addr = elr_virt + hyp_offset;
- 
--	/*
--	 * The nVHE hyp symbols are not included by kallsyms to avoid issues
--	 * with aliasing. That means that the symbols cannot be printed with the
--	 * "%pS" format specifier, so fall back to the vmlinux address if
--	 * there's no better option.
--	 */
- 	if (mode != PSR_MODE_EL2t && mode != PSR_MODE_EL2h) {
- 		kvm_err("Invalid host exception to nVHE hyp!\n");
- 	} else if (ESR_ELx_EC(esr) == ESR_ELx_EC_BRK64 &&
-@@ -322,9 +317,9 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 		if (file)
- 			kvm_err("nVHE hyp BUG at: %s:%u!\n", file, line);
- 		else
--			kvm_err("nVHE hyp BUG at: %016llx!\n", elr_virt + hyp_offset);
-+			kvm_err("nVHE hyp BUG at: [<%016llx>] %pB!\n", panic_addr, panic_addr);
- 	} else {
--		kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
-+		kvm_err("nVHE hyp panic at: [<%016llx>] %pB!\n", panic_addr, panic_addr);
- 	}
- 
- 	hyp_dump_backtrace(hyp_offset);
-diff --git a/arch/arm64/kvm/stacktrace.c b/arch/arm64/kvm/stacktrace.c
-index 3990a616ab66..4d12ffee9cc6 100644
---- a/arch/arm64/kvm/stacktrace.c
-+++ b/arch/arm64/kvm/stacktrace.c
-@@ -261,7 +261,7 @@ static void hyp_dump_backtrace_entry(unsigned long hyp_pc, unsigned long hyp_off
- 	hyp_pc &= va_mask;
- 	hyp_pc += hyp_offset;
- 
--	kvm_err(" [<%016llx>]\n", hyp_pc);
-+	kvm_err("[<%016llx>] %pB\n", hyp_pc, hyp_pc);
- }
- 
- void hyp_dump_backtrace(unsigned long hyp_offset)
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 54ad86d13784..19aba43d9da4 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -111,7 +111,7 @@ static bool is_ignored_symbol(const char *name, char type)
- 		".LASANPC",		/* s390 kasan local symbols */
- 		"__crc_",		/* modversions */
- 		"__efistub_",		/* arm64 EFI stub namespace */
--		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
-+		"__kvm_nvhe_$",		/* arm64 local symbols in non-VHE KVM namespace */
- 		"__AArch64ADRPThunk_",	/* arm64 lld */
- 		"__ARMV5PILongThunk_",	/* arm lld */
- 		"__ARMV7PILongThunk_",
--- 
-2.35.1.265.g69c8d7142f-goog
+Yes.  I see that now.  I had not had an occasion to look at the order
+all of these were called in before and my mental model was wrong.
+
+It makes a certain kind of sense that the per syscall work happens
+before we do additional things like process signals.  It simply
+had not realized that was happening in that order until now.
+
+
+> (an aside: where to PF_IO_WORKER threads die?)
+
+They are calling do_exit explicitly.
+
+>> I expect if anything else mattered we would need to change it to
+>> HANDLER_EXIT.
+>> 
+>> I made a mistake conflating to cases and I want to make certain I
+>> successfully separate those two cases at the end of the day.
+>
+> For skipping the exit work, I'm not sure it matters, since all the
+> signal stuff is "too late"...
+
+The conflation lead me to believe that we could simply and safely cause
+seccomp to use normal signal delivery to kill the process.  The first
+part of the conflation I sorted out by introducing HANDLER_EXIT.  The
+user visible part of the change I am not yet certain what to do with.
+
+My gut reaction is does it matter?  Can you escape the seccomp filter
+with a stop?  Does it break userspace?
+
+I realize the outcome of that question is that it does matter so we
+probably need to find a way to supress that situation for HANDLER_EXIT.
+Both force_exit_sig and force_sig_seccomp appear to be using dumpable
+signals which makes the problem doubly tricky.
+
+The first tricky bit is fatal_signal_pending isn't set because a
+coredump is possible, so something else is needed to detect this
+condition.
+
+The second part is what to do when we detect the condition.
+
+
+The only solution I can think of quickly is to modify
+force_sig_info_to_task clear TIF_SYSCALL_WORK on the architectures where
+that is used and to clear SYSCALL_WORK_EXIT on x86 and s390, and to do
+whatever the architecture appropriate thing is on the other
+architectures.
+
+It might be easier once I have cleaned some more code up but as long as
+we can limit the logic to force_sig_info_to_task for the HANDLER_EXIT
+case I don't see any advantage in the cleanups I have planned for this
+case.  This may be incentive to make the architecture code more uniform
+in this area.
+
+Anyway I am off to finish fixing some other bugs.
+
+Eric
+
 
