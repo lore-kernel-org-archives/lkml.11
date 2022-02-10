@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6050BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232638AbiBJBaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:30:25 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33352 "EHLO
+        id S232661AbiBJBbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:31:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiBJBaK (ORCPT
+        with ESMTP id S232563AbiBJBbB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:30:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C03A10A0;
-        Wed,  9 Feb 2022 17:30:11 -0800 (PST)
+        Wed, 9 Feb 2022 20:31:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0712F22527;
+        Wed,  9 Feb 2022 17:31:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A42DBB823FC;
-        Thu, 10 Feb 2022 01:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7020BC340ED;
-        Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD8F616B2;
+        Thu, 10 Feb 2022 01:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEB8C340E7;
+        Thu, 10 Feb 2022 01:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644456609;
-        bh=qGQyGmjtozCv84Ye2BOs+8mk0SR0cVgFlFinrbcqULk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ASgJytk3CD6RUrcArDfPMltQOgX3F6DcY8tpPSBoLsNCyYwOEGSTG+3MF+jTZecoD
-         oKE6caIpaOAcOOeGxF6KSdeBwGQLHmnQAZZFPxjaNESuvqPt0JLewCistNLwZihbWv
-         5DXWiQX+v+HCsSDLG0n/3x9pj67XuGjEyuwXMxCB539HefN3zqpSS2+fA2zKDchpQo
-         ZQ9MP6zT5pL48WnTxKgWHwsxgfvWlqJVlWGwwVPZMcAt8lVgyL5Lj5axLncrfnxQAO
-         tPV49f6PMv98lFvo/hsNqSRwCaOjHYf6TireDHqZo1bkRP2/AaxZAdmO2UQeJ0qM6R
-         xw5S3qdiN/4Ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5904AE6D447;
-        Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1644455172;
+        bh=OBeVERzluy4DArHFC4mn3YZzQAgsdo26IY1UOV+S3po=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=neW6q5TJZCtjBdRjuhBPe+fIQsoITAs+gqkje+/Oguku7udHSpMNRMzCKSdgscQn6
+         7FmDKj+IO9dmg0svmZqafQNZ6HuHSeVuosT1ezyk+J5yEQbEWfb9JtxwbLHkUTBMBW
+         XktUDiEeL0sGM5Z+elyaa3276MG8A10Qk7Gb0/Or0qEMecOdvGmIpIyLuqbgvC0Cam
+         +PDuhw3lYYM8bFxNLSOWHdJOT/Tds/blKfKqAhEBhzcKvSyWiuwEvbHRoMElsQZ3z8
+         dnc6ltsVSwxCXn54z+6MxGujQXS6V4VyuZrRYWRuT52gneoQF8PV+TtD+ciQPvODcG
+         WsCeJxOtKjYaQ==
+Date:   Wed, 9 Feb 2022 17:06:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "lina.wang" <lina.wang@mediatek.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        "Kernel hackers" <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, "Martin KaFai Lau" <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>, <zhuoliang@mediatek.com>,
+        <chao.song@mediatek.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+Message-ID: <20220209170610.10694339@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
+References: <20220208025511.1019-1-lina.wang@mediatek.com>
+        <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
+        <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
+        <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
+        <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: usb: qmi_wwan: Add support for Dell DW5829e
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164445660936.21209.3904165812207339582.git-patchwork-notify@kernel.org>
-Date:   Thu, 10 Feb 2022 01:30:09 +0000
-References: <20220209024717.8564-1-slark_xiao@163.com>
-In-Reply-To: <20220209024717.8564-1-slark_xiao@163.com>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     bjorn@mork.no, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  9 Feb 2022 10:47:17 +0800 you wrote:
-> Dell DW5829e same as DW5821e except the CAT level.
-> DW5821e supports CAT16 but DW5829e supports CAT9.
-> Also, DW5829e includes normal and eSIM type.
-> Please see below test evidence:
+On Wed, 9 Feb 2022 18:25:07 +0800 lina.wang wrote:
+> We use NETIF_F_GRO_FRAGLIST not for forwarding scenary, just for
+> software udp gro. Whatever NETIF_F_GRO_FRAGLIST or NETIF_F_GRO_FWD,
+> skb_segment_list should not have bugs.
 > 
-> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-> P:  Vendor=413c ProdID=81e6 Rev=03.18
-> S:  Manufacturer=Dell Inc.
-> S:  Product=DW5829e Snapdragon X20 LTE
-> S:  SerialNumber=0123456789ABCDEF
-> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> 
-> [...]
+> We modify skb_segment_list, not in epbf. One point is traversing the
+> segments costly, another is what @Maciej said, *other* helper may have
+> the same problem. In skb_segment_list, it calls
+> skb_headers_offset_update to update different headroom, which implys
+> header maybe different.
 
-Here is the summary with links:
-  - [net] net: usb: qmi_wwan: Add support for Dell DW5829e
-    https://git.kernel.org/netdev/net/c/8ecbb179286c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Process notes:
+ - the patch didn't apply so even if the discussion concludes that 
+   the patch was good you'll need to rebase on netdev/net and repost;
+ - please don't top post.
