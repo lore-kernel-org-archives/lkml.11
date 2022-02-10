@@ -2,212 +2,453 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC45C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 763C0C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239748AbiBJKew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:34:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46852 "EHLO
+        id S239778AbiBJKe4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:34:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239746AbiBJKet (ORCPT
+        with ESMTP id S239763AbiBJKet (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 05:34:49 -0500
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30077.outbound.protection.outlook.com [40.107.3.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02249FF1;
-        Thu, 10 Feb 2022 02:34:50 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DIzUontJTpyrDcEP/FW+HGwFcqejOJV+mh8DBI4PCZCEduW07GeFtKuFwhy5Zr6KTtcZHTy+spZctg6tKcs+/1clQyhFftx870Cq0l+6T5hYNvuSWMAsXMgxI+UQQo/7oImIKpyLZ00zah9B1qbz0WNZ8kGwJI8geUVehOj7jxGyhpy7jbikCa3ObooNohh9jRUYfJIOUqU3iOvu+grhqWEgD5WZ9s9vBq0mgzldziQuWqsLA2eYu4E4OXYrWJ+5Mn5/gZQYeV5Qm45j9PYhTC3QWJGd9mXcpcvK4X/pxj9Bc70vjaIccDLUbW0hUs1RKfgVkggm9NNWM+qhzpG9vg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cTF4O52L6+K1nvAJg6kUnZz7djG5j1e9FJus8l65UUA=;
- b=JJQUqXEFKk6v+5yMdrbabKIRRxVupmx9VIvp80Ia+am+sSWukxk6WhFyb+egw4Yto7WcmQ63iUzKJw942bQ5o8CBxMrTSmkSnZjAZcu0+b8eTDz5JaSNFjxXE06vL/yzkYIqiuomcJyg/ovbblZ2IY64OO7gDnKbbbV4q4o6biXLrf9YdpfXdiXX7LK9uNnTr24hLzjs3yfbN9573bSgUyfkE6maGYO5ZZZ5I+US/xQu7PYrL9YnGpM2jSMS2uwQj5s6doSsWMPSUIX53AChCYolMxOSycZaj5W7o7QL9SE4CVojI0gNdItrtMaEijbpP8fx/FSaYKQgusNd3sAOSg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cTF4O52L6+K1nvAJg6kUnZz7djG5j1e9FJus8l65UUA=;
- b=CSWaxz8IHzROSfyaHA7U3bCHbIm5YUTk0FzHJZ/hDu8gx5SSkBfmmoo15kxhTBrxN/nEhpCQQTNzpxlNAyc+iQPCP+u3llCPzTS0W1YPw5CbWmsr/sNR8medygzyFrQiSRfR3kcIIhD7bQ7BAvHhdMBmq81V/sPPbvRdBadJwb0=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB3PR0402MB3899.eurprd04.prod.outlook.com (2603:10a6:8:f::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Thu, 10 Feb
- 2022 10:34:47 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::95cf:8c40:b887:a7b9%4]) with mapi id 15.20.4951.019; Thu, 10 Feb 2022
- 10:34:47 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-Subject: Re: [PATCH v6 net-next 2/5] net: mscc: ocelot: remove unnecessary
- stat reading from ethtool
-Thread-Topic: [PATCH v6 net-next 2/5] net: mscc: ocelot: remove unnecessary
- stat reading from ethtool
-Thread-Index: AQHYHjTeSRre4+TdMUarRWdg03eF1ayMlzsA
-Date:   Thu, 10 Feb 2022 10:34:47 +0000
-Message-ID: <20220210103446.3rdnulyk5p7tzgn6@skbuf>
-References: <20220210041345.321216-1-colin.foster@in-advantage.com>
- <20220210041345.321216-3-colin.foster@in-advantage.com>
-In-Reply-To: <20220210041345.321216-3-colin.foster@in-advantage.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f8d7b709-9b7d-4c06-a29f-08d9ec80f5d6
-x-ms-traffictypediagnostic: DB3PR0402MB3899:EE_
-x-microsoft-antispam-prvs: <DB3PR0402MB38997037FDBAB26A592B9DDFE02F9@DB3PR0402MB3899.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vPIJllB+gJHSLiDuLV1gyFKrMdxNo2YTTTCdPA8HkW5NKxK/xkOJqETajAZcuQnUwN/Yl1ypg63vuucUuGPW4WjqbqISXoaD2NrL7SaHhErvFkFF5hSvgSp+zGHMmcXyzQYvA7VnSfIeehY3/nkmsU67jVqzdvcjsJK44QzeiqTA7jGUT84HvjmX/48CsiqT29nMNvRkxgdZpdXa4aJS3X+XoTw2648s+EU6vzWBEOAKNvXM2IHqBNZa85PmbryFYB8c6jmqrlvDw3pJYf3u7pJ8yvi7xRyP8C37KC81ySk7mdWBBFAN1umrR3SfIKVW438XhbUwJIiatUNeQmyIGAmMoyGOg1yPZJTxAC2TSVfhy5Kprcoi2Q2JHlH2aYgemUnJN8SeuGBw9bmxeLiFkPiLvkBJYJdW7lLvTdlT1obe0Z+j9+Dlfo0szvqOYFP9kMsFKYNKenPDum8vPJ+ZKFcNfXdIHk3Mf+8NZm70lC+r7WzJxMmF9f9pmAZs8W3aGTK0mGq7kCeacytTW7U4I05/+lPig2EKRI54EPkgmVkB8Po8Zn0UjFS8z2hi5CTq7R0fZRKZ1Z8KMuD89eDoWVtaXlcx6Yy27S0vTXt+Pw8EMjL8iYJEm0yTwlVk8NUxn6hBqoRqgW240DfULNicSRzlxYnAanDNM0H4T1UogOstry9ow1XYnugKVh9hn5SvPDe7Ir4cfeZJa/Q3YAbSCw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(33716001)(8936002)(38070700005)(316002)(54906003)(66476007)(8676002)(4326008)(38100700002)(76116006)(66946007)(1076003)(122000001)(91956017)(6916009)(66556008)(66446008)(64756008)(2906002)(26005)(5660300002)(86362001)(44832011)(6486002)(9686003)(6512007)(186003)(6506007)(508600001)(83380400001)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?C8lpwtAFhG4DYRdl4OfZvdpBsfJFFTLHrF5dWIHbOpXwuyxKWg4TX/4xm0O/?=
- =?us-ascii?Q?5F6U6A3l2dp0AZvZhKY8ZuoU7qUI1OFllqYIlb6cuNlZ48nUD62X7vm4Wqe+?=
- =?us-ascii?Q?blaYFDIj6l0JthP67nL9S7q6X9P6noKRZqnSAJeNr99Dv5cMU57KC+jSQVrb?=
- =?us-ascii?Q?SGIwOhtVLYEHTDgMmy5820M/7xlThm1S3/dmsAnQBlKh5ZAJALt7hM2vSNXX?=
- =?us-ascii?Q?ciE84m2S2fCh8YCaNp19vqnhmBoWSgogdNRnlWP3OS9XP5g30Q4qTeacDvyi?=
- =?us-ascii?Q?czq8RxwFblTm7b9UrN+Pri+X78mwzfbHhBA/6i6Xnhf/rVt7kWKGkxL4J9Fd?=
- =?us-ascii?Q?+B1Gi93z18pFwRtRjvgQiGmPmj9S2SwDgUlsLtVz0Jz3FXR4o0lLHmz+myoT?=
- =?us-ascii?Q?plqxUoJ/NeBSPUpwc42d9V2z1/GbEVVM82Vh/g8kKwfPbpjA/eDglEG+eFit?=
- =?us-ascii?Q?l0LjAI4nR9AOvHQFaahk/r2qTqYn0z0z6B5AtHaZSNZpz+vgnEYbW4K6W6br?=
- =?us-ascii?Q?gSDRgtL0SJ7EZrjc/+CC/loLJG0IGKbX/fN7r9Fdarb0CEXRLKTWXg+P7XsW?=
- =?us-ascii?Q?7NZPwBxkAQ0dNqCc11mcUc0sce7u5p93Kvn98V40VxJp7vTJCuKRdrtqxLGL?=
- =?us-ascii?Q?5cbVr9U3xTHiu7DXrML7IXV6cK+yYA6TetFf1Q9uGGgxqmoddHmDcrNup0tb?=
- =?us-ascii?Q?+J0iDRcGnfULDf6sdP+TvVK1hYYBxw026Wx9dhjI1n8ThwbvVqJ+0t9yjg+P?=
- =?us-ascii?Q?r+Ge+F0koDrMnzw5uxg8q4A25XkgF82YkIz0sa2VX7T3kySSs4TisQPp7o7k?=
- =?us-ascii?Q?Q3475K0hjM0mhcWe1PUHBuuEkLGTTk3Jnd8uI38HFXTZGqnyVZ/QOPuNeNji?=
- =?us-ascii?Q?eVlkUrZwnvmPszcw8CFeaIETeASoLzVt8pH3fHoxbg8lT8ahE/XaJv6ITCH2?=
- =?us-ascii?Q?1yXChUvRD2XRbtzT0oP0WCl7IlZ9bCCrFzyeiZMqOHbOmb1qlq2NPDf3rksI?=
- =?us-ascii?Q?lCsO3Kl84B2/niNoyX5+1NGFiD3YBP1MwzjkN2Fg8UUCdGQpyAJpEQV4QGsV?=
- =?us-ascii?Q?ghiUAMwLfgcweH+O2ZqdRdNa1gb9ZG+jRoct2CvQX8D+GDxUQNGoNaxkaayA?=
- =?us-ascii?Q?YxrO531Rzr4DApzeVlNCTiyJWD86NekR1U9Yg1xOvQg+QwRTKZB5NFkwr6lB?=
- =?us-ascii?Q?SgRmwNbRhoP77kFojOBhu6K5cMnUtAdho5OH1ymE1JvcgG3Yo+H87v1eKgrH?=
- =?us-ascii?Q?sPi4XHPqyTttOdwM9uYCGT1ochiEkOFssHMYebOmXClLO3bobYK8V+ZDhMtm?=
- =?us-ascii?Q?aKZRtCxPHuUUKw72dEL90qNuCU+Z6D3aHHWQSExif6g04Btq2/enO5Gr+sfM?=
- =?us-ascii?Q?JISwYgWpGc4xIeMsy2y26knyEEAHv9DCEtcpzjjlcSoiuIMsFNr1s57exuWM?=
- =?us-ascii?Q?ZjmTyiTLHSZrvLS7tTFrT9hOse1ZXsohM/aNVz2tpDashibd4NYC205dkDtU?=
- =?us-ascii?Q?93/P97Jk+EMh3WgEoLR8EBFgNJuqDXh4YYMIRrIEW08N94TCFG9EZ2BoPaI2?=
- =?us-ascii?Q?fhuKVl0e5jAFf921bnMWQyrEgeoT8Rw93m3HIBFJq0zqUCsOWbD8h0afwJAb?=
- =?us-ascii?Q?t+SUldOSCV3wgg4doJG7dah3qGjYBv/BeV9DxN4Ty72w?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <95D952DA4770CB4EB2594E26C2AB5817@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2066EFE7;
+        Thu, 10 Feb 2022 02:34:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96AB7B8243C;
+        Thu, 10 Feb 2022 10:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB03CC340EE;
+        Thu, 10 Feb 2022 10:34:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644489286;
+        bh=uoPKqGLuDTE7Ez8WeGnBfVUBsElOAxxA72ZNX/XyhlA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RsCPtneadSH9zXBA7NNroQMdOMN7dcjC8A2at2/eJtJ3Tv0+uTpkwgfYwok3RAqHb
+         uKc2Ne/as3f2LqdZGAVELwtRo5CIafkI2uzWc13UYuULxddQ3DFOiDTZD/gyHxdt9h
+         z6bDAaCdwxIY5GLqPY+vfrTpGaQEXDOlHA/5I0XQvN+OSwn90HaXrktC4IpzKl8agO
+         Ig6Da7z88DatOZHLqAPPmIzpe7vtWw4HndgbbVWFCQk6T9Cok/QaGbabZUQVNVoACC
+         pAgthrSJHHJBwlAcX5886hUWfqxYj3lTD92C+/4qFehSJUMA9DP4IdxKuR3YteKHGN
+         CUI8oP4Hvdk1Q==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org
+Subject: [REPOST PATCH v4 03/13] drm/msm/disp/dpu1: Add support for DSC
+Date:   Thu, 10 Feb 2022 16:04:13 +0530
+Message-Id: <20220210103423.271016-4-vkoul@kernel.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220210103423.271016-1-vkoul@kernel.org>
+References: <20220210103423.271016-1-vkoul@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8d7b709-9b7d-4c06-a29f-08d9ec80f5d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2022 10:34:47.2839
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cX84PY6PdKC3pyTOCuZqDUer2JD01fsdobxXyy6p6qZqwn54gI2ztaNTlc+ftKB0Y5DLhfp/YaAs3IzaCAdICg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3899
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 08:13:42PM -0800, Colin Foster wrote:
-> The ocelot_update_stats function only needs to read from one port, yet it
-> was updating the stats for all ports. Update to only read the stats that
-> are necessary.
->=20
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> ---
+Display Stream Compression (DSC) is one of the hw blocks in dpu, so add
+support by adding hw blocks for DSC
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+---
+ drivers/gpu/drm/msm/Makefile                  |   1 +
+ .../gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h    |  13 ++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c    | 210 ++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h    |  77 +++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h   |  13 ++
+ 5 files changed, 314 insertions(+)
+ create mode 100644 drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c
+ create mode 100644 drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h
 
->  drivers/net/ethernet/mscc/ocelot.c | 33 +++++++++++++++---------------
->  1 file changed, 16 insertions(+), 17 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/ms=
-cc/ocelot.c
-> index 6933dff1dd37..ab36732e7d3f 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -1738,27 +1738,24 @@ void ocelot_get_strings(struct ocelot *ocelot, in=
-t port, u32 sset, u8 *data)
->  EXPORT_SYMBOL(ocelot_get_strings);
-> =20
->  /* Caller must hold &ocelot->stats_lock */
-> -static void ocelot_update_stats(struct ocelot *ocelot)
-> +static void ocelot_update_stats_for_port(struct ocelot *ocelot, int port=
-)
+diff --git a/drivers/gpu/drm/msm/Makefile b/drivers/gpu/drm/msm/Makefile
+index 03ab55c37beb..7ec3c70c77ce 100644
+--- a/drivers/gpu/drm/msm/Makefile
++++ b/drivers/gpu/drm/msm/Makefile
+@@ -56,6 +56,7 @@ msm-y := \
+ 	disp/dpu1/dpu_formats.o \
+ 	disp/dpu1/dpu_hw_catalog.o \
+ 	disp/dpu1/dpu_hw_ctl.o \
++	disp/dpu1/dpu_hw_dsc.o \
+ 	disp/dpu1/dpu_hw_interrupts.o \
+ 	disp/dpu1/dpu_hw_intf.o \
+ 	disp/dpu1/dpu_hw_lm.o \
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+index 31af04afda7d..5fc0888351c7 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+@@ -556,6 +556,16 @@ struct dpu_merge_3d_cfg  {
+ 	const struct dpu_merge_3d_sub_blks *sblk;
+ };
+ 
++/**
++ * struct dpu_dsc_cfg - information of DSC blocks
++ * @id                 enum identifying this block
++ * @base               register offset of this block
++ * @features           bit mask identifying sub-blocks/features
++ */
++struct dpu_dsc_cfg {
++	DPU_HW_BLK_INFO;
++};
++
+ /**
+  * struct dpu_intf_cfg - information of timing engine blocks
+  * @id                 enum identifying this block
+@@ -752,6 +762,9 @@ struct dpu_mdss_cfg {
+ 	u32 merge_3d_count;
+ 	const struct dpu_merge_3d_cfg *merge_3d;
+ 
++	u32 dsc_count;
++	struct dpu_dsc_cfg *dsc;
++
+ 	u32 intf_count;
+ 	const struct dpu_intf_cfg *intf;
+ 
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c
+new file mode 100644
+index 000000000000..449d6f1dad28
+--- /dev/null
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.c
+@@ -0,0 +1,210 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2020-2021, Linaro Limited
++ */
++
++#include "dpu_kms.h"
++#include "dpu_hw_catalog.h"
++#include "dpu_hwio.h"
++#include "dpu_hw_mdss.h"
++#include "dpu_hw_dsc.h"
++
++#define DSC_COMMON_MODE	                0x000
++#define DSC_ENC                         0X004
++#define DSC_PICTURE                     0x008
++#define DSC_SLICE                       0x00C
++#define DSC_CHUNK_SIZE                  0x010
++#define DSC_DELAY                       0x014
++#define DSC_SCALE_INITIAL               0x018
++#define DSC_SCALE_DEC_INTERVAL          0x01C
++#define DSC_SCALE_INC_INTERVAL          0x020
++#define DSC_FIRST_LINE_BPG_OFFSET       0x024
++#define DSC_BPG_OFFSET                  0x028
++#define DSC_DSC_OFFSET                  0x02C
++#define DSC_FLATNESS                    0x030
++#define DSC_RC_MODEL_SIZE               0x034
++#define DSC_RC                          0x038
++#define DSC_RC_BUF_THRESH               0x03C
++#define DSC_RANGE_MIN_QP                0x074
++#define DSC_RANGE_MAX_QP                0x0B0
++#define DSC_RANGE_BPG_OFFSET            0x0EC
++
++static void dpu_hw_dsc_disable(struct dpu_hw_dsc *dsc)
++{
++	struct dpu_hw_blk_reg_map *c = &dsc->hw;
++
++	DPU_REG_WRITE(c, DSC_COMMON_MODE, 0);
++}
++
++static void dpu_hw_dsc_config(struct dpu_hw_dsc *hw_dsc,
++			      struct msm_display_dsc_config *dsc, u32 mode)
++{
++	struct dpu_hw_blk_reg_map *c = &hw_dsc->hw;
++	u32 data, lsb, bpp;
++	u32 initial_lines = dsc->initial_lines;
++	bool is_cmd_mode = !(mode & DSC_MODE_VIDEO);
++
++	DPU_REG_WRITE(c, DSC_COMMON_MODE, mode);
++
++	if (is_cmd_mode)
++		initial_lines += 1;
++
++	data = (initial_lines << 20);
++	data |= ((dsc->slice_last_group_size - 1) << 18);
++	/* bpp is 6.4 format, 4 LSBs bits are for fractional part */
++	data |= dsc->drm->bits_per_pixel << 12;
++	lsb = dsc->drm->bits_per_pixel % 4;
++	bpp = dsc->drm->bits_per_pixel / 4;
++	bpp *= 4;
++	bpp <<= 4;
++	bpp |= lsb;
++
++	data |= bpp << 8;
++	data |= (dsc->drm->block_pred_enable << 7);
++	data |= (dsc->drm->line_buf_depth << 3);
++	data |= (dsc->drm->simple_422 << 2);
++	data |= (dsc->drm->convert_rgb << 1);
++	data |= dsc->drm->bits_per_component;
++
++	DPU_REG_WRITE(c, DSC_ENC, data);
++
++	data = dsc->drm->pic_width << 16;
++	data |= dsc->drm->pic_height;
++	DPU_REG_WRITE(c, DSC_PICTURE, data);
++
++	data = dsc->drm->slice_width << 16;
++	data |= dsc->drm->slice_height;
++	DPU_REG_WRITE(c, DSC_SLICE, data);
++
++	data = dsc->drm->slice_chunk_size << 16;
++	DPU_REG_WRITE(c, DSC_CHUNK_SIZE, data);
++
++	data = dsc->drm->initial_dec_delay << 16;
++	data |= dsc->drm->initial_xmit_delay;
++	DPU_REG_WRITE(c, DSC_DELAY, data);
++
++	data = dsc->drm->initial_scale_value;
++	DPU_REG_WRITE(c, DSC_SCALE_INITIAL, data);
++
++	data = dsc->drm->scale_decrement_interval;
++	DPU_REG_WRITE(c, DSC_SCALE_DEC_INTERVAL, data);
++
++	data = dsc->drm->scale_increment_interval;
++	DPU_REG_WRITE(c, DSC_SCALE_INC_INTERVAL, data);
++
++	data = dsc->drm->first_line_bpg_offset;
++	DPU_REG_WRITE(c, DSC_FIRST_LINE_BPG_OFFSET, data);
++
++	data = dsc->drm->nfl_bpg_offset << 16;
++	data |= dsc->drm->slice_bpg_offset;
++	DPU_REG_WRITE(c, DSC_BPG_OFFSET, data);
++
++	data = dsc->drm->initial_offset << 16;
++	data |= dsc->drm->final_offset;
++	DPU_REG_WRITE(c, DSC_DSC_OFFSET, data);
++
++	data = dsc->det_thresh_flatness << 10;
++	data |= dsc->drm->flatness_max_qp << 5;
++	data |= dsc->drm->flatness_min_qp;
++	DPU_REG_WRITE(c, DSC_FLATNESS, data);
++
++	data = dsc->drm->rc_model_size;
++	DPU_REG_WRITE(c, DSC_RC_MODEL_SIZE, data);
++
++	data = dsc->drm->rc_tgt_offset_low << 18;
++	data |= dsc->drm->rc_tgt_offset_high << 14;
++	data |= dsc->drm->rc_quant_incr_limit1 << 9;
++	data |= dsc->drm->rc_quant_incr_limit0 << 4;
++	data |= dsc->drm->rc_edge_factor;
++	DPU_REG_WRITE(c, DSC_RC, data);
++}
++
++static void dpu_hw_dsc_config_thresh(struct dpu_hw_dsc *hw_dsc,
++				     struct msm_display_dsc_config *dsc)
++{
++	struct drm_dsc_rc_range_parameters *rc = dsc->drm->rc_range_params;
++	struct dpu_hw_blk_reg_map *c = &hw_dsc->hw;
++	u32 off;
++	int i;
++
++	off = DSC_RC_BUF_THRESH;
++	for (i = 0; i < DSC_NUM_BUF_RANGES - 1 ; i++) {
++		DPU_REG_WRITE(c, off, dsc->drm->rc_buf_thresh[i]);
++		off += 4;
++	}
++
++	off = DSC_RANGE_MIN_QP;
++	for (i = 0; i < DSC_NUM_BUF_RANGES; i++) {
++		DPU_REG_WRITE(c, off, rc[i].range_min_qp);
++		off += 4;
++	}
++
++	off = DSC_RANGE_MAX_QP;
++	for (i = 0; i < 15; i++) {
++		DPU_REG_WRITE(c, off, rc[i].range_max_qp);
++		off += 4;
++	}
++
++	off = DSC_RANGE_BPG_OFFSET;
++	for (i = 0; i < 15; i++) {
++		DPU_REG_WRITE(c, off, rc[i].range_bpg_offset);
++		off += 4;
++	}
++}
++
++static struct dpu_dsc_cfg *_dsc_offset(enum dpu_dsc dsc,
++				       struct dpu_mdss_cfg *m,
++				       void __iomem *addr,
++				       struct dpu_hw_blk_reg_map *b)
++{
++	int i;
++
++	for (i = 0; i < m->dsc_count; i++) {
++		if (dsc == m->dsc[i].id) {
++			b->base_off = addr;
++			b->blk_off = m->dsc[i].base;
++			b->length = m->dsc[i].len;
++			b->hwversion = m->hwversion;
++			b->log_mask = DPU_DBG_MASK_DSC;
++			return &m->dsc[i];
++		}
++	}
++
++	return NULL;
++}
++
++static void _setup_dsc_ops(struct dpu_hw_dsc_ops *ops,
++			   unsigned long cap)
++{
++	ops->dsc_disable = dpu_hw_dsc_disable;
++	ops->dsc_config = dpu_hw_dsc_config;
++	ops->dsc_config_thresh = dpu_hw_dsc_config_thresh;
++};
++
++struct dpu_hw_dsc *dpu_hw_dsc_init(enum dpu_dsc idx, void __iomem *addr,
++				   struct dpu_mdss_cfg *m)
++{
++	struct dpu_hw_dsc *c;
++	struct dpu_dsc_cfg *cfg;
++
++	c = kzalloc(sizeof(*c), GFP_KERNEL);
++	if (!c)
++		return ERR_PTR(-ENOMEM);
++
++	cfg = _dsc_offset(idx, m, addr, &c->hw);
++	if (IS_ERR_OR_NULL(cfg)) {
++		kfree(c);
++		return ERR_PTR(-EINVAL);
++	}
++
++	c->idx = idx;
++	c->caps = cfg;
++	_setup_dsc_ops(&c->ops, c->caps->features);
++
++	return c;
++}
++
++void dpu_hw_dsc_destroy(struct dpu_hw_dsc *dsc)
++{
++	kfree(dsc);
++}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h
+new file mode 100644
+index 000000000000..648c9e4d8749
+--- /dev/null
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h
+@@ -0,0 +1,77 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright (c) 2020-2021, Linaro Limited */
++
++#ifndef _DPU_HW_DSC_H
++#define _DPU_HW_DSC_H
++
++#include <drm/drm_dsc.h>
++
++#define DSC_MODE_SPLIT_PANEL            BIT(0)
++#define DSC_MODE_MULTIPLEX              BIT(1)
++#define DSC_MODE_VIDEO                  BIT(2)
++
++struct dpu_hw_dsc;
++
++/**
++ * struct dpu_hw_dsc_ops - interface to the dsc hardware driver functions
++ * Assumption is these functions will be called after clocks are enabled
++ */
++struct dpu_hw_dsc_ops {
++	/**
++	 * dsc_disable - disable dsc
++	 * @hw_dsc: Pointer to dsc context
++	 */
++	void (*dsc_disable)(struct dpu_hw_dsc *hw_dsc);
++
++	/**
++	 * dsc_config - configures dsc encoder
++	 * @hw_dsc: Pointer to dsc context
++	 * @dsc: panel dsc parameters
++	 * @mode: dsc topology mode to be set
++	 */
++	void (*dsc_config)(struct dpu_hw_dsc *hw_dsc,
++			   struct msm_display_dsc_config *dsc, u32 mode);
++
++	/**
++	 * dsc_config_thresh - programs panel thresholds
++	 * @hw_dsc: Pointer to dsc context
++	 * @dsc: panel dsc parameters
++	 */
++	void (*dsc_config_thresh)(struct dpu_hw_dsc *hw_dsc,
++				  struct msm_display_dsc_config *dsc);
++};
++
++struct dpu_hw_dsc {
++	struct dpu_hw_blk base;
++	struct dpu_hw_blk_reg_map hw;
++
++	/* dsc */
++	enum dpu_dsc idx;
++	const struct dpu_dsc_cfg *caps;
++
++	/* ops */
++	struct dpu_hw_dsc_ops ops;
++};
++
++/**
++ * dpu_hw_dsc_init - initializes the dsc block for the passed dsc idx.
++ * @idx:  DSC index for which driver object is required
++ * @addr: Mapped register io address of MDP
++ * @m:    Pointer to mdss catalog data
++ * Returns: Error code or allocated dpu_hw_dsc context
++ */
++struct dpu_hw_dsc *dpu_hw_dsc_init(enum dpu_dsc idx, void __iomem *addr,
++				   struct dpu_mdss_cfg *m);
++
++/**
++ * dpu_hw_dsc_destroy - destroys dsc driver context
++ * @dsc:   Pointer to dsc driver context returned by dpu_hw_dsc_init
++ */
++void dpu_hw_dsc_destroy(struct dpu_hw_dsc *dsc);
++
++static inline struct dpu_hw_dsc *to_dpu_hw_dsc(struct dpu_hw_blk *hw)
++{
++	return container_of(hw, struct dpu_hw_dsc, base);
++}
++
++#endif /* _DPU_HW_DSC_H */
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h
+index bb9ceadeb0bb..b0ce8cb97d22 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_mdss.h
+@@ -97,6 +97,7 @@ enum dpu_hw_blk_type {
+ 	DPU_HW_BLK_WB,
+ 	DPU_HW_BLK_DSPP,
+ 	DPU_HW_BLK_MERGE_3D,
++	DPU_HW_BLK_DSC,
+ 	DPU_HW_BLK_MAX,
+ };
+ 
+@@ -176,6 +177,17 @@ enum dpu_ctl {
+ 	CTL_MAX
+ };
+ 
++enum dpu_dsc {
++	DSC_NONE = 0,
++	DSC_0,
++	DSC_1,
++	DSC_2,
++	DSC_3,
++	DSC_4,
++	DSC_5,
++	DSC_MAX
++};
++
+ enum dpu_pingpong {
+ 	PINGPONG_0 = 1,
+ 	PINGPONG_1,
+@@ -437,5 +449,6 @@ struct dpu_mdss_color {
+ #define DPU_DBG_MASK_VBIF     (1 << 8)
+ #define DPU_DBG_MASK_ROT      (1 << 9)
+ #define DPU_DBG_MASK_DSPP     (1 << 10)
++#define DPU_DBG_MASK_DSC      (1 << 11)
+ 
+ #endif  /* _DPU_HW_MDSS_H */
+-- 
+2.31.1
 
-If you need to resend, I think a name more consistent with the rest of
-the driver would be "ocelot_port_update_stats".
-
->  {
-> -	int i, j;
-> +	int j;
-> =20
-> -	for (i =3D 0; i < ocelot->num_phys_ports; i++) {
-> -		/* Configure the port to read the stats from */
-> -		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
-> +	/* Configure the port to read the stats from */
-> +	ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(port), SYS_STAT_CFG);
-> =20
-> -		for (j =3D 0; j < ocelot->num_stats; j++) {
-> -			u32 val;
-> -			unsigned int idx =3D i * ocelot->num_stats + j;
-> +	for (j =3D 0; j < ocelot->num_stats; j++) {
-> +		u32 val;
-> +		unsigned int idx =3D port * ocelot->num_stats + j;
-> =20
-> -			val =3D ocelot_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
-> -					      ocelot->stats_layout[j].offset);
-> +		val =3D ocelot_read_rix(ocelot, SYS_COUNT_RX_OCTETS,
-> +				      ocelot->stats_layout[j].offset);
-> =20
-> -			if (val < (ocelot->stats[idx] & U32_MAX))
-> -				ocelot->stats[idx] +=3D (u64)1 << 32;
-> +		if (val < (ocelot->stats[idx] & U32_MAX))
-> +			ocelot->stats[idx] +=3D (u64)1 << 32;
-> =20
-> -			ocelot->stats[idx] =3D (ocelot->stats[idx] &
-> -					      ~(u64)U32_MAX) + val;
-> -		}
-> +		ocelot->stats[idx] =3D (ocelot->stats[idx] & ~(u64)U32_MAX) + val;
->  	}
->  }
-> =20
-> @@ -1767,9 +1764,11 @@ static void ocelot_check_stats_work(struct work_st=
-ruct *work)
->  	struct delayed_work *del_work =3D to_delayed_work(work);
->  	struct ocelot *ocelot =3D container_of(del_work, struct ocelot,
->  					     stats_work);
-> +	int i;
-> =20
->  	mutex_lock(&ocelot->stats_lock);
-> -	ocelot_update_stats(ocelot);
-> +	for (i =3D 0; i < ocelot->num_phys_ports; i++)
-> +		ocelot_update_stats_for_port(ocelot, i);
->  	mutex_unlock(&ocelot->stats_lock);
-> =20
->  	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
-> @@ -1783,7 +1782,7 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot=
-, int port, u64 *data)
->  	mutex_lock(&ocelot->stats_lock);
-> =20
->  	/* check and update now */
-> -	ocelot_update_stats(ocelot);
-> +	ocelot_update_stats_for_port(ocelot, port);
-> =20
->  	/* Copy all counters */
->  	for (i =3D 0; i < ocelot->num_stats; i++)
-> --=20
-> 2.25.1
->=
