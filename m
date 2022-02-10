@@ -2,113 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9551EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 859A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242055AbiBJNOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:14:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47052 "EHLO
+        id S242063AbiBJNOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:14:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242043AbiBJNOP (ORCPT
+        with ESMTP id S239881AbiBJNOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:14:15 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 155A71157
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:14:16 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id k9so4853182qvv.9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:14:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=marek-ca.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uqnW/szZ8yMl69fSxYGMyrphrxanTs2JR1CLOUZb5zM=;
-        b=KShJlbJHbAl9loI8iynvAEQIMPYc002bkwj24615T+nnpTbXCABKyQbvp9hykiZ/w2
-         WCz49rBtNp4Sy8SHN2nzpsHgR9N5e8Rj0Lxwzc8LJEmkm248uqvHCNZZVKXEVzS+9IUT
-         DLJYyp9XJAdrrGNE191HFk+8BPwBh9rE9OFdi8LK6NgYji+1ygWZBEXO0XCBOb8PprPc
-         +ObYK6uIRS91ao8H3r4WLm8clFNIe+5ofxQXVIIOdgLLzYjapvJarbpRTBjixI1Cg/3G
-         /MAuozCLQ2bWnVA8LIXKp0adkVoZaO750eITaXpy5bC/Q/dTruvoMdeB7jSflLLv6LIN
-         U2mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uqnW/szZ8yMl69fSxYGMyrphrxanTs2JR1CLOUZb5zM=;
-        b=nZJvoclOqVnOX9W4X8vHQnXN6wdzQjKvKym6elsP0L5gMvnoJlvk52m/1XIs+xg7u3
-         0F0TypcZnevF97ncav+/R86odXTKhQlxvD7F9f40nLqcxDMHqAh+YDMRWBHKu9CMhIaU
-         QvJgWoiyoq7W4G2SaQ/NlUORG5tWIE/ZYXw2AlheoaA2i6PaaU1YmRkPnh9hV7Qyl2Mw
-         BkL/h97dC5C1cZ01L5eoAUswWGp2+e437rrxoiLgEimSROHkASHZhTB4FZYvS08yo51v
-         17AkA+y6JCQmhzlXckdcUYovDFRFyCFnQekoqtU1/m7wlUOXkyQEaZ9/da/+11QLwOP2
-         M0fg==
-X-Gm-Message-State: AOAM530gnRCpIwA47SQBkolQ8BVd8sWOp7gHif6LTwVAI6YWCHr/blGy
-        EWxgzdtT8uexF0Y1V2sqxZlCNIYPWhIug9n2Ipk=
-X-Google-Smtp-Source: ABdhPJwX48+RfVd9PNIxvmxM+Lm9nNjH5HsHrTT/zZU2MUbiGHSQODMEVBJbkr7/14XjQg60DJyvWw==
-X-Received: by 2002:a05:6214:5081:: with SMTP id kk1mr5009104qvb.112.1644498855283;
-        Thu, 10 Feb 2022 05:14:15 -0800 (PST)
-Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
-        by smtp.gmail.com with ESMTPSA id p15sm10969824qtk.56.2022.02.10.05.14.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 05:14:14 -0800 (PST)
-From:   Jonathan Marek <jonathan@marek.ca>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     dmitry.baryshkov@linaro.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 2/2] pinctrl: qcom: print egpio mode in debugfs
-Date:   Thu, 10 Feb 2022 08:12:09 -0500
-Message-Id: <20220210131210.24605-2-jonathan@marek.ca>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20220210131210.24605-1-jonathan@marek.ca>
-References: <20220210131210.24605-1-jonathan@marek.ca>
+        Thu, 10 Feb 2022 08:14:34 -0500
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DFC1157;
+        Thu, 10 Feb 2022 05:14:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=a3sjCPkuo/yp/xxSnVr5f3pnRVPuuMGoup115Dij2eQ=; b=zHo7AbkpDJzLDPt3595KfZw3Gn
+        wkORiO4MvrO3tVWySWtQ4xpum5LQbEc13cPDc4XmABICv8qRnitfaMBd8ZAytUfYLgrKxga1vk8Ue
+        O9X6NZI4qBBKjM6CyZJV/jjUJkeHyN4QnJ56N7cNQc8eiXnfzWqQX1G244Yg1BL7v4sM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nI9HH-005IYz-S9; Thu, 10 Feb 2022 14:14:27 +0100
+Date:   Thu, 10 Feb 2022 14:14:27 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next] net: lan966x: Fix when CONFIG_IPV6 is not set
+Message-ID: <YgUPswHG60Fi9rjA@lunn.ch>
+References: <20220209101823.1270489-1-horatiu.vultur@microchip.com>
+ <YgPHjxpo0N4ND1ch@lunn.ch>
+ <20220209180620.3699bf25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20220210083612.4mszzwgcrvmn67rn@soft-dev3-1.localhost>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210083612.4mszzwgcrvmn67rn@soft-dev3-1.localhost>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When egpio_enable bit is cleared, the gpio is driven by SSC/LPASS TLMM and
-the APSS TLMM settings are ignored. Reflect that in the debugfs dump.
+> What do you think if I do something like this in the lan966x_main.h
+> 
+> ---
+> #if IS_ENABLED(CONFIG_IPV6)
+> static inline bool lan966x_hw_offload_ipv6(struct sk_buff *skb)
+> {
+> 	if (skb->protocol == htons(ETH_P_IPV6) &&
+> 	    ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr) &&
+> 	    !ipv6_mc_check_mld(skb))
+> 		return false;
+> 
+> 	return true;
+> }
+> #else
+> static inline bool lan966x_hw_offload_ipv6(struct sk_buff *skb)
+> {
+> 	return false;
+> }
+> #endif
+> ---
 
-Signed-off-by: Jonathan Marek <jonathan@marek.ca>
----
- drivers/pinctrl/qcom/pinctrl-msm.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+The reason we prefer not to use #if is that it reduced compile testing
+coverage. The block of code inside gets compiled a lot less.
 
-diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
-index 780878dede9e0..27c19a206502d 100644
---- a/drivers/pinctrl/qcom/pinctrl-msm.c
-+++ b/drivers/pinctrl/qcom/pinctrl-msm.c
-@@ -615,6 +615,7 @@ static void msm_gpio_dbg_show_one(struct seq_file *s,
- 	int drive;
- 	int pull;
- 	int val;
-+	int egpio_enable;
- 	u32 ctl_reg, io_reg;
- 
- 	static const char * const pulls_keeper[] = {
-@@ -641,12 +642,20 @@ static void msm_gpio_dbg_show_one(struct seq_file *s,
- 	func = (ctl_reg >> g->mux_bit) & 7;
- 	drive = (ctl_reg >> g->drv_bit) & 7;
- 	pull = (ctl_reg >> g->pull_bit) & 3;
-+	egpio_enable = 0;
-+	if (pctrl->soc->egpio_func && ctl_reg & BIT(g->egpio_present))
-+		egpio_enable = !(ctl_reg & BIT(g->egpio_enable));
- 
- 	if (is_out)
- 		val = !!(io_reg & BIT(g->out_bit));
- 	else
- 		val = !!(io_reg & BIT(g->in_bit));
- 
-+	if (egpio_enable) {
-+		seq_printf(s, " %-8s: egpio\n", g->name);
-+		return;
-+	}
-+
- 	seq_printf(s, " %-8s: %-3s", g->name, is_out ? "out" : "in");
- 	seq_printf(s, " %-4s func%d", val ? "high" : "low", func);
- 	seq_printf(s, " %dmA", msm_regval_to_drive(drive));
--- 
-2.26.1
+> And then in lan966x_main.c just call this function.
+> 
+> > 
+> > If it's linking we can do:
+> > 
+> >         if (IS_ENABLED(CONFIG_IPV6) &&
+> >             skb->protocol == htons(ETH_P_IPV6) &&
+> >             ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr) &&
+> >             !ipv6_mc_check_mld(skb))
+> >                 return false;
+
+Jakub solution results in the code always being compiled, but the
+IS_ENABLED(CONFIG_IPV6) gets turned into a constant 0 or 1. The
+optimizer can then remove the whole block of code in the 0 case.
+
+> I was also looking at other drivers on how they use 'ipv6_mc_check_mld'.
+> Then I have seen that drivers/net/amt.c and net/bridge/br_multicast.c
+> they wrap this function with #if.
+> But then there is net/batman-adv/multicast.c which doesn't do that and
+> it can compile and link without CONFIG_IPV6 and I just don't see how
+> that is working.
+
+Maybe it is to do with this at the end of net/ip6/Makefile
+
+ifneq ($(CONFIG_IPV6),)
+obj-$(CONFIG_NET_UDP_TUNNEL) += ip6_udp_tunnel.o
+obj-y += mcast_snoop.o
+endif
 
