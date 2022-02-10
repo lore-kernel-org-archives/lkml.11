@@ -2,79 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49EB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA0EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbiBJB2c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:28:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56192 "EHLO
+        id S232427AbiBJB2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:28:41 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233116AbiBJB2S (ORCPT
+        with ESMTP id S232830AbiBJB2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:28:18 -0500
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EF720197;
-        Wed,  9 Feb 2022 17:28:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=ULmAtyK6TJjr1QVUNlDS0X1iN3QvREY5ZfYCv9v5FwA=; b=NtqFXUPsUEV5rj6gTA8JTXNQd0
-        HwWPACBb9ahCPbRj4DW2eX9HhMpYTDG9fvTyUnciQZ/dSmY6+drRmI7AjXLZxDUsp8QLX0ca5k384
-        2N9nzJI6MA6bOU1LGuhw2PcYi8P5dteqquf1DDL+ga6+QOYSv3O+7W0vT6WGsWcKaxUI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nHwwx-005CsL-UU; Thu, 10 Feb 2022 01:04:39 +0100
-Date:   Thu, 10 Feb 2022 01:04:39 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Martin Schiller <ms@dev.tdt.de>, Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v3] net: phy: intel-xway: enable integrated led
- functions
-Message-ID: <YgRWl5ykcjPW0xvx@lunn.ch>
-References: <20210421055047.22858-1-ms@dev.tdt.de>
- <CAJ+vNU1=4sDmGXEzPwp0SCq4_p0J-odw-GLM=Qyi7zQnVHwQRA@mail.gmail.com>
- <YfspazpWoKuHEwPU@lunn.ch>
- <CAJ+vNU2v9WD2kzB9uTD5j6DqnBBKhv-XOttKLoZ-VzkwdzwjXw@mail.gmail.com>
- <YfwEvgerYddIUp1V@lunn.ch>
- <CAJ+vNU1qY1VJgw1QRsbmED6-TLQP2wwxSYb+bXfqZ3wiObLgHg@mail.gmail.com>
- <YfxtglvVDx2JJM9w@lunn.ch>
- <CAJ+vNU1td9aizbws-uZ-p-fEzsD8rJVS-mZn4TT2YFn9PY2n_w@mail.gmail.com>
- <Yf2usAHGZSUDvLln@lunn.ch>
- <CAJ+vNU3EY0qp-6oQ6Bjd4mZCKv9AeqiaJp=FSrN84P=8atKLrw@mail.gmail.com>
+        Wed, 9 Feb 2022 20:28:08 -0500
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B61420197;
+        Wed,  9 Feb 2022 17:28:11 -0800 (PST)
+Received: by mail-ot1-f50.google.com with SMTP id n6-20020a9d6f06000000b005a0750019a7so2778475otq.5;
+        Wed, 09 Feb 2022 17:28:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=siet+Ao2TH7V5m6SftR2gVXEXyrYhoODYtbaQVg/nkg=;
+        b=YNRMeQ04hxyAt6Zpl5OzJOlbVqSXQBqZ0EHbAVqoApo9bi82CP5RXJqAYvlep8w58t
+         SS7AH9OvM+tj0fkIpmv/37FL+Bujqd/ymdtuF9UHtqK4oQSKUu0W5AnSltcsRjHDm52m
+         vDtf9QI+InPCKT4PTQ99IKjY5JryW1eERxUIJifrnHU2oi7sHBGnoXfq4BnEuWDTWB15
+         /7m1M28GKMX6pe3+/y8rht6k7B7Nc5X7nt6iOvQQ6Eo4UmO6I8SERUrI4omfYUvDXabW
+         CDlo2s+RtAwPuCZsJ7m0MZhvcjLCXSnfPbwJndWHtXjtSj+truIg2tGwX6E6cVnRicD9
+         BLQA==
+X-Gm-Message-State: AOAM533UxnDxg/9q66cuB4v5RoOUCRMrGZRCInh8uA0FmnBYLMXQUsvD
+        AfGkcc9kUobwU0nx4briy9cdnOT2Clfz
+X-Google-Smtp-Source: ABdhPJzmtB6J3X9Ywh+GW7FeYw449wZbfGox6Vdj/LQZjI2yjkhUTsq3PQRmfnSFWvpLXg81YeejXg==
+X-Received: by 2002:a05:6830:12cf:: with SMTP id a15mr2071431otq.262.1644453043789;
+        Wed, 09 Feb 2022 16:30:43 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id i1sm4402159ood.32.2022.02.09.16.30.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 16:30:43 -0800 (PST)
+Received: (nullmailer pid 1258215 invoked by uid 1000);
+        Thu, 10 Feb 2022 00:30:42 -0000
+Date:   Wed, 9 Feb 2022 18:30:42 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel-janitors@vger.kernel.org, Ray Jui <rjui@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, Scott Branden <sbranden@broadcom.com>
+Subject: Re: [PATCH] pinctl: doc: Fix spelling mistake "resisitors" ->
+ "resistors"
+Message-ID: <YgRcspCc9UW2CRp3@robh.at.kernel.org>
+References: <20220202091551.580372-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJ+vNU3EY0qp-6oQ6Bjd4mZCKv9AeqiaJp=FSrN84P=8atKLrw@mail.gmail.com>
+In-Reply-To: <20220202091551.580372-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> The errata can be summarized as:
-> - 1 out of 100 boots or cable plug events RGMII GbE link will end up
-> going down and up 3 to 4 times then resort to a 100m link; workaround
-> has been found to require a pin level reset
+On Wed, 02 Feb 2022 09:15:51 +0000, Colin Ian King wrote:
+> There is a spelling mistake in the documentation. Fix it.
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  .../devicetree/bindings/pinctrl/brcm,bcm11351-pinctrl.txt       | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-So that sounds like it is downshifting because it thinks there is a
-broken pair. Can you disable downshift? Problem is, that might just
-result in link down.
-
-> - 1 out of 100 boots or cable plug events (varies per board) SGMII
-> will fail link between the MAC and PHY; workaround has been found to
-> require a pin level reset
-
-I don't suppose there is a register to restart SGMII sync?  Sometimes
-there is.
-
-Anyway, shared reset makes this messy, as you said. Unfortunate
-design. But i don't see how you can work around this in the
-bootloader, especially the cable plug events.
-
-	Andrew
+Acked-by: Rob Herring <robh@kernel.org>
