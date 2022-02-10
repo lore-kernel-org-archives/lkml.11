@@ -2,112 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B88C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F11C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237105AbiBJILD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:11:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49742 "EHLO
+        id S237016AbiBJILK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:11:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237016AbiBJIK6 (ORCPT
+        with ESMTP id S237098AbiBJILH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:10:58 -0500
-X-Greylist: delayed 534 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:10:59 PST
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC723108D;
-        Thu, 10 Feb 2022 00:10:59 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id CB91958014D;
-        Thu, 10 Feb 2022 03:02:21 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Thu, 10 Feb 2022 03:02:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=wZgdoN3qVkzQTVuivbiZ1IEaB82Lu0qyPYhhG9
-        ODyp4=; b=Itcxq9NQ3p5sndAgAZqmMkDruIFfizrYPEI0yuB3bL7HbjHe/M3c2m
-        BOTtfLi40QvZ+kOV9IRbA+0NGcca4cqSlytudsuSVK6D4ag//J/23xGVSiqMbrPT
-        mfaFKUFCF/C+HPwnhFXYlkpS+9xX5hyI2DLI8o2SicMDdfaA6vN40opctzD53hsM
-        rN7W/YRKC5528c0+sB9P9iUK+5aGoZ7zllP6PsDgov/BLZ4Tw0Im9nKYje2AIIgG
-        Eu+1dxf4rk+tgpB5eXInlOtY4YArYmmot39sS67aH/u1ZiSvFWrELYt0qyp7Jyl7
-        e7uUbE10Z1l7EzRR5iagx4DwdCf3iedw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=wZgdoN3qVkzQTVuiv
-        biZ1IEaB82Lu0qyPYhhG9ODyp4=; b=S13AuPUAZIB97OC79mHV8m/iMoZm2CtGm
-        Ll8IeDhfWVa/XZD5c1QFuY2VxtYPkttyCByc0j7rs5JCySWmSCtGybuKJUEr9ABf
-        K7VOV4XKZCkQOFRMUJusCWBN7KdXPsVYZlMDgK2VKMt0lV5If1xYvTK7ypzgzdRg
-        H9XdyTh4E9BHdmOKhs5HfS2rGeyqvPc0HoI3lBrX/jBT/4AW89Vc91fJfFisnPZc
-        D7NGQRg8oWS0ye9bowxJBaxNah6q9W8aZVv2oKQLnTzOJbdS8SfFJHOJi88/gTIB
-        yIGCBFx2I6voeVtrj78ztSzOZsfn/KvV0pG4KrO+CpxPw9u7cAalA==
-X-ME-Sender: <xms:jMYEYmHA33qtyrCMh-UGoMynEPUtMpLoqIed6rdvDOItmKtLMvGIWQ>
-    <xme:jMYEYnUrfhdoX7ek4TIZi9dSvPfHbJRtouJF3Q6iGy0xX2mXusDMhtmMZAzf8dAwh
-    iWkKLa66lxC1A>
-X-ME-Received: <xmr:jMYEYgL3_9jPqBflCA78dKqVEOiOvAYY95Mulw3EAS8cNtVdnMcpaGgN7uxxhfED07m3Ily57L2BzvFhFgPb1Ti5A5PcU4Uw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddriedtgdduudefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
-    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
-    drtghomh
-X-ME-Proxy: <xmx:jcYEYgFkoxOLicfM_5hhgnAAaBSElrEecYugB2Uefiy2MTVr7xRECg>
-    <xmx:jcYEYsU-mnNiUugt7jJW-988VeNLcdjpqKAKhX_jdP5Gx-mMtkwS_Q>
-    <xmx:jcYEYjNUlAFOw7ZJRiKzfuJymwmetvIx9rTsDLhggPv0gRSkhQEwUQ>
-    <xmx:jcYEYtsGCTx2NcKrTLRQCAeEnrhtB97q0HCSmise3FwRLw85L796Tg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 10 Feb 2022 03:02:20 -0500 (EST)
-Date:   Thu, 10 Feb 2022 09:02:18 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Andy Gross <agross@kernel.org>, Baruch Siach <baruch@tkos.co.il>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: Re: linux-next: manual merge of the usb tree with the qcom tree
-Message-ID: <YgTGihSrtlRR3DPC@kroah.com>
-References: <20220210141100.715b13e9@canb.auug.org.au>
+        Thu, 10 Feb 2022 03:11:07 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D1121097
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:11:06 -0800 (PST)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3C4F83F32C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:10:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644480658;
+        bh=rnVHj9CHiNB6vcrhWaipk1/sdp7xgf97Hh+oKwEPpOs=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=hKlHiHRQmg2i9AQzqbU5BfEQOztKoNYvApUzp+n4PPyY8KF44lJeVn97keQlOyOTO
+         ovkte5tYNaD15sj1k2ImhDJt9D4uOBGXg/B0Bmg1STf0MnNKY7YWfsjX8fh4e2xfAp
+         7U8K5eu0OCFYEt//NTAeFESqEk+zxlzs6Y8lcC3uaAucTFmqKZ2c7GDPvkmzFWs6nK
+         ht/A3ywBaun6hf8oXorfnrV2SenWAUFYIy0Jy0E9hupGOxx8TjLt69/+XtOFGyhMID
+         /q8YN+uV5rUWrbaplr+d0XidT64dQIkck7iNLiEGaSDmkKuIQ/W9f7cfnnEDJHl2yT
+         o/37vv1gC9xag==
+Received: by mail-ed1-f71.google.com with SMTP id ed6-20020a056402294600b004090fd8a936so2864639edb.23
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:10:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rnVHj9CHiNB6vcrhWaipk1/sdp7xgf97Hh+oKwEPpOs=;
+        b=OIKP8GGnNn2rh7SXgWqSqfUwTcEUjkQbSvwfOMveUK3U3fPrj+VCbJEXOoefANDx2+
+         c0oaCXlMH0AcE1KBuWQJ+d5mKHxep7CIGi+1myoq2SoZMT10xt6xCJ1pBttc/pBdNmOA
+         RhNQGAbPnmtyysQkD3Cuw+tnKVDWpscr533piYZefg92f/hjeTv6TiBU4ILyeR6pEF+a
+         WIdVskVGQyFSdryMkG8QnbFtnefS6fZShI//g6eRbLhg7FYn7RHX/2FOPTxsv8IAnH5t
+         LZSqgBUkZltlnffruZ4BYBX+giNBgRx+vJGUA+Ad+W0LodYRIqAxF2H0FSvaLZgt5j9L
+         RV5w==
+X-Gm-Message-State: AOAM5336oDmO+w1AxLyLtLsRvcVqYNqA/Ew1d229ZvEiuUwXHHjCVVts
+        Br5QUZtyWUhcSXe8ys/Jx9Qv1P1pPt/JVKtcQuLE+1MEngtroST1FhEPypuU+JOF76UrbXQAY/j
+        1594WThSTRca4emx5jkeKZE2aCYamzlAqLAe1+kI0eg==
+X-Received: by 2002:a17:906:5349:: with SMTP id j9mr1695990ejo.368.1644480656975;
+        Thu, 10 Feb 2022 00:10:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz93CRsj8ZQh2gY9EXnoyBRs+OT8gb0AMXSmIAPsFac9M3xo7W5tdmNzg25cweSZ1IFjqp/bg==
+X-Received: by 2002:a17:906:5349:: with SMTP id j9mr1695977ejo.368.1644480656756;
+        Thu, 10 Feb 2022 00:10:56 -0800 (PST)
+Received: from [192.168.0.97] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id kw5sm6904003ejc.140.2022.02.10.00.10.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 00:10:56 -0800 (PST)
+Message-ID: <61be0071-a6e9-f749-37e9-978a72a60897@canonical.com>
+Date:   Thu, 10 Feb 2022 09:10:55 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210141100.715b13e9@canb.auug.org.au>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] selftests/ftrace: Do not trace do_softirq because of
+ PREEMPT_RT
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com
+References: <20220209162430.286578-1-krzysztof.kozlowski@canonical.com>
+ <20220210000003.6b6142f9@gandalf.local.home>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220210000003.6b6142f9@gandalf.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 02:11:00PM +1100, Stephen Rothwell wrote:
-> Hi all,
+On 10/02/2022 06:00, Steven Rostedt wrote:
+> On Wed,  9 Feb 2022 17:24:30 +0100
+> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
 > 
-> Today's linux-next merge of the usb tree got a conflict in:
+>> The PREEMPT_RT patchset does not use soft IRQs thus trying to filter for
+>> do_softirq fails for such kernel:
+>>
+>>   echo do_softirq
+>>   ftracetest: 81: echo: echo: I/O error
+>>
+>> Choose some other externally visible function for the test.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>>
+>> ---
+>>
+>> I understand that the failure does not exist on mainline kernel (only
+>> with PREEMPT_RT patchset) but the change does not harm it.
+>>
+>> If it is not suitable alone, please consider it for RT patchset.
+>> ---
+>>  .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+>> index e96e279e0533..1d0c7601865f 100644
+>> --- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+>> +++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+>> @@ -19,7 +19,7 @@ fail() { # mesg
+>>  
+>>  FILTER=set_ftrace_filter
+>>  FUNC1="schedule"
+>> -FUNC2="do_softirq"
+>> +FUNC2="_printk"
 > 
->   arch/arm64/boot/dts/qcom/ipq6018.dtsi
+> The problem with the above, is that it is not guaranteed to trigger (and
+> probably will not), where as the do_softirq is. The filtering is suppose to
+> trace something that actually happens.
 > 
-> between commit:
+> How about using: scheduler_tick ?
 > 
->   d1c10ab1494f ("arm64: dts: qcom: ipq6018: fix usb reference period")
-> 
-> from the qcom tree and commit:
-> 
->   5726079cd486 ("arm64: dts: ipq6018: Use reference clock to set dwc3 period")
-> 
-> from the usb tree.
-> 
-> I fixed it up (I just use the latter) and can carry the fix as
-> necessary. This is now fixed as far as linux-next is concerned, but any
-> non trivial conflicts should be mentioned to your upstream maintainer
-> when your tree is submitted for merging.  You may also want to consider
-> cooperating with the maintainer of the conflicting tree to minimise any
-> particularly complex conflicts.
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
+
+This works as well. I had impression that the test is only about
+filtering interface and actual function does not have to hit/trigger.
+
+I'll send v2 with scheduler_tick.
 
 
-That is fine, thanks.
-
-greg k-h
+Best regards,
+Krzysztof
