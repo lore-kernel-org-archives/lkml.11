@@ -2,103 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62618C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 04:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4660C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 04:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233631AbiBJEuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 23:50:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36378 "EHLO
+        id S232796AbiBJE7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 23:59:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiBJEuA (ORCPT
+        with ESMTP id S229783AbiBJE66 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 23:50:00 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C211AF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 20:50:02 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id o192-20020a4a2cc9000000b00300af40d795so4985509ooo.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 20:50:02 -0800 (PST)
+        Wed, 9 Feb 2022 23:58:58 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EC31F6
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 20:59:00 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id d18-20020a9d51d2000000b005a09728a8c2so3028062oth.3
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 20:59:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=4Jobq+qDCn0DLQoMGzu/G3IUm/o1eD+lCYxdsTeODFA=;
-        b=eMQ6xiBu0oXza2qERH659vL16F0VUyIma1jeN615rGln+fqxBmCvgJJMDQMpXj3Htz
-         fqLKpO5zBluZw2dRoGTBPQtmBFe4gZnJVBAnVVpAfqJopBJNTvEyFCzXz+IvT8WtBEb/
-         TOIZCormeBiQNpmgjl+n2DuK73sIO21Fn1TzPbb7A8ret3wM0uhdcemHRSLVjgW5TmUm
-         I3i/LGF4q+4DjouvSdpz7/mdm7wsBA7dS0fQv3FN+x/XV225OQ+B+F6VK6PbZ+tCLEkI
-         03w/SzLpNEUp8GilFe8L/bbelpC6iLr+fX2fUhUUFwPdwm3rtP76uBmUWBA852LybRZt
-         aG9w==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rEjmJFMNh9IQm8dtWbQTvDdM437tEa4s5NElVG565pw=;
+        b=OwrqedecyktT/3v6gq7Esl+6hdKaH7VQnsE4eqS1IFppKK9mFc0eFQVDgRMMGCVV4p
+         qrcQb8XJRo1NIwMtyyuzs2Rrg0K+wLd6z/rZahX/F2Pz/AaX58OFXz6vjQ+9/xwSub5W
+         qSINAbwFA1Jk1ww1d1QXZoeEyLCYYZVVuiRYleFb3n4kGVoFc83652O+aPz/GSRiCQKO
+         y4vERDNn7rRWn0fiMTRUNJvZv6k9wnD5sZETIz4O0wg0QbfLbDjtteT6DfexE+rAY2+y
+         G2oln+nAJ8qiOUEeRwrdeW7FI9cNSa9akwBSQ1b6EPC/v4p3R9My6xdQQ2dJbIAhIOR/
+         CfWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=4Jobq+qDCn0DLQoMGzu/G3IUm/o1eD+lCYxdsTeODFA=;
-        b=28985lihz/mFbjr/3MCL1VYQhZ1AIFrslMkG9FWo6Sss2QMMoUoY+UBiRMYbL/ifeT
-         mx44qgb75KnDjWssDmJNkOieGvDpm7N2J/ekVTeDqkF5A7wUgFeF7FVwx10QNGMM1nfm
-         Q5Mfhpnm1ADZOXvNOMiPVQLkbqDClQQLFmjc+UbQOkA/1ro7ohsuP/i/5Xy50b2+ZSOm
-         BMeSpzUjTt9teXuyqNqZv8r8HynFsmGl5A0ogOsRPJO5BzsEwnu2lL1ahOG5Ec3Itv+8
-         L/WKsbeoaq7gQr0MeUKSLE7Q5W7gC0LsrS6a8LFsrEHaVjIKZzj6benD/uPvYIppBvLi
-         OS2w==
-X-Gm-Message-State: AOAM533Dry0QjbLi9f5GoOj+e7Rx6YIoWFBtFSeyddJFXxPFYd3VPN6e
-        4dzaVVmxT7dXm6YEzHw1LdErJw==
-X-Google-Smtp-Source: ABdhPJwwSZhmnjDZ7pgSMs76EZBfUaAKepRAPpZCVge1mXkMwftDxRWUj7/PT0YJkxPBtJj+Gy2HCw==
-X-Received: by 2002:a05:6871:583:: with SMTP id u3mr254881oan.189.1644468600735;
-        Wed, 09 Feb 2022 20:50:00 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id f21sm7364939otq.4.2022.02.09.20.49.58
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rEjmJFMNh9IQm8dtWbQTvDdM437tEa4s5NElVG565pw=;
+        b=dkspg+DGBfbYlXKSVevAg0umBT73Y6e9K1a4y92+QymMm9hzGebNrt+VLhxjReofEL
+         J6Px1JduSF84HJ8MJBdg3TEaiGwgvhaqpyfxowB4gN6fo1AL1h3MCWFEQnSxAR9KuZhS
+         eQzwnDUhKOTPt0nJNd2whR2e+FqEehv63LMotNNldYnljzO4KQAcqniCT829nd4bFD8K
+         9/ATMC1CYG6+VJtJO9qCMlTm5t0fayyaFIDoUKB2kFAf1phGMUUo4H/B/i5ywxLfJSOn
+         gaarcozY7yAUdCiPNaQoL6xY5jZ0jaNW7Ev1lH9En2ryrLYsniZe+bjMyqIq7iiuISPN
+         CWgw==
+X-Gm-Message-State: AOAM531WN7KrgHzBDOd97oRazyXdfOQ0ZtzQCO0HJhOsyby7qMHeKRkF
+        0RABQX6u/NRkJqPvD000FGyYPvCFc5gMTg==
+X-Google-Smtp-Source: ABdhPJxrwfdfPFCNzFRaI1TLvD5ToWqehkssypEQUuRp9LRC9ggZ8kzc5P2CeIZ7uOI/KmDXzscNtA==
+X-Received: by 2002:a05:6830:4c9:: with SMTP id s9mr2389657otd.12.1644469139953;
+        Wed, 09 Feb 2022 20:58:59 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id t13sm2453201oai.37.2022.02.09.20.58.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 20:49:59 -0800 (PST)
-Date:   Wed, 9 Feb 2022 20:49:57 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
-        Hugh Dickins <hughd@google.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Greg Thelen <gthelen@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Yu Zhao <yuzhao@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: mm/munlock: mlock_page() munlock_page() batch by pagevec
-In-Reply-To: <CA+G9fYv_ssRhvYi4mM1ZeGCL2meFwRsakpADp_Cz3bNDZz2zSA@mail.gmail.com>
-Message-ID: <5d63a397-96e-7e9a-eb9f-289904f9998@google.com>
-References: <CA+G9fYv_ssRhvYi4mM1ZeGCL2meFwRsakpADp_Cz3bNDZz2zSA@mail.gmail.com>
+        Wed, 09 Feb 2022 20:58:59 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] cpufreq: qcom-hw: Add support for per-core-dcvs
+Date:   Wed,  9 Feb 2022 21:01:17 -0800
+Message-Id: <20220210050117.747569-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022, Naresh Kamboju wrote:
-> The following build regression noticed while building Linux next 20220209
-> arm/riscv/sh of allnoconfig and tinyconfig builds failed with gcc-10,
-> gcc-11 and clang-13.
-> 
-> clang: warning: argument unused during compilation: '-march=armv7-m'
-> [-Wunused-command-line-argument]
-> mm/swap.c:637:2: error: implicit declaration of function
-> 'mlock_page_drain' [-Werror,-Wimplicit-function-declaration]
->         mlock_page_drain(cpu);
->         ^
-> 1 error generated.
-> make[2]: *** [scripts/Makefile.build:289: mm/swap.o] Error 1
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+The OSM and EPSS hardware controls the frequency of each cluster in the
+system based on requests from the OS and various limiting factors, such
+as input from LMH.
 
-Thanks Naresh, Geert had already reported, and SeongJae sent a fix in
+In most systems the vote from the OS is done using a single register per
+cluster, but some systems are configured to instead take one request per
+core.  In this configuration a set of consecutive registers are used for
+the OS to request the frequency of each of the cores within the cluster.
+The information is then aggregated in the hardware and the frequency for
+the cluster is determined.
 
-https://lore.kernel.org/lkml/20220209094158.21941-2-sj@kernel.org/
+As the current implementation ends up only requesting a frequency for
+the first core in each cluster and only the vote of non-idle cores are
+considered it's often the case that the cluster will be clocked (much)
+lower than expected.
 
-Turns out that a !CONFIG_MMU CONFIG_SMP config will need one more stub,
-I just sent a v2 update to SJ's patch in that thread.
+It's possible that there are benefits of performing the per-core
+requests from the OS, but more investigation of the outcome is needed
+before introducing such support. As such this patch extends the request
+for the cluster to be written to all the cores.
 
-Hugh
+The weight of the policy's related_cpus is used to determine how many
+cores, and hence consecutive registers, each cluster has.
+
+The OS is not permitted to disable the per-core dcvs feature.
+
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ drivers/cpufreq/qcom-cpufreq-hw.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index 05f3d7876e44..8d2b65c782e6 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -28,6 +28,7 @@
+ 
+ struct qcom_cpufreq_soc_data {
+ 	u32 reg_enable;
++	u32 reg_dcvs_ctrl;
+ 	u32 reg_freq_lut;
+ 	u32 reg_volt_lut;
+ 	u32 reg_current_vote;
+@@ -50,6 +51,8 @@ struct qcom_cpufreq_data {
+ 	bool cancel_throttle;
+ 	struct delayed_work throttle_work;
+ 	struct cpufreq_policy *policy;
++
++	bool per_core_dcvs;
+ };
+ 
+ static unsigned long cpu_hw_rate, xo_rate;
+@@ -102,9 +105,14 @@ static int qcom_cpufreq_hw_target_index(struct cpufreq_policy *policy,
+ 	struct qcom_cpufreq_data *data = policy->driver_data;
+ 	const struct qcom_cpufreq_soc_data *soc_data = data->soc_data;
+ 	unsigned long freq = policy->freq_table[index].frequency;
++	unsigned int i;
+ 
+ 	writel_relaxed(index, data->base + soc_data->reg_perf_state);
+ 
++	if (data->per_core_dcvs)
++		for (i = 1; i < cpumask_weight(policy->related_cpus); i++)
++			writel_relaxed(index, data->base + soc_data->reg_perf_state + i * 4);
++
+ 	if (icc_scaling_enabled)
+ 		qcom_cpufreq_set_bw(policy, freq);
+ 
+@@ -137,10 +145,15 @@ static unsigned int qcom_cpufreq_hw_fast_switch(struct cpufreq_policy *policy,
+ 	struct qcom_cpufreq_data *data = policy->driver_data;
+ 	const struct qcom_cpufreq_soc_data *soc_data = data->soc_data;
+ 	unsigned int index;
++	unsigned int i;
+ 
+ 	index = policy->cached_resolved_idx;
+ 	writel_relaxed(index, data->base + soc_data->reg_perf_state);
+ 
++	if (data->per_core_dcvs)
++		for (i = 1; i < cpumask_weight(policy->related_cpus); i++)
++			writel_relaxed(index, data->base + soc_data->reg_perf_state + i * 4);
++
+ 	return policy->freq_table[index].frequency;
+ }
+ 
+@@ -342,6 +355,7 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
+ 
+ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
+ 	.reg_enable = 0x0,
++	.reg_dcvs_ctrl = 0xbc,
+ 	.reg_freq_lut = 0x110,
+ 	.reg_volt_lut = 0x114,
+ 	.reg_current_vote = 0x704,
+@@ -351,6 +365,7 @@ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
+ 
+ static const struct qcom_cpufreq_soc_data epss_soc_data = {
+ 	.reg_enable = 0x0,
++	.reg_dcvs_ctrl = 0xb0,
+ 	.reg_freq_lut = 0x100,
+ 	.reg_volt_lut = 0x200,
+ 	.reg_perf_state = 0x320,
+@@ -481,6 +496,9 @@ static int qcom_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
+ 		goto error;
+ 	}
+ 
++	if (readl_relaxed(base + data->soc_data->reg_dcvs_ctrl) & 0x1)
++		data->per_core_dcvs = true;
++
+ 	qcom_get_related_cpus(index, policy->cpus);
+ 	if (!cpumask_weight(policy->cpus)) {
+ 		dev_err(dev, "Domain-%d failed to get related CPUs\n", index);
+-- 
+2.33.1
+
