@@ -2,102 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23825C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239130AbiBJJvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:51:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39384 "EHLO
+        id S239153AbiBJJwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:52:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232140AbiBJJvq (ORCPT
+        with ESMTP id S232140AbiBJJwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:51:46 -0500
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 01:51:46 PST
-Received: from qq.com (smtpbg409.qq.com [113.96.223.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A451DD;
-        Thu, 10 Feb 2022 01:51:46 -0800 (PST)
-X-QQ-mid: bizesmtp35t1644486579t7s5pzpj
-Received: from localhost.localdomain (unknown [123.114.60.34])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 10 Feb 2022 17:49:37 +0800 (CST)
-X-QQ-SSF: 01400000002000B0L000B00A0000000
-X-QQ-FEAT: 1vYwxPNStGkN+kaiA9TtVU7idvHzuLjWRT8ogLx30DRJ+gwRyaLbXx7V2EPtH
-        n4qR9GIXYajsebc+ONF04MhxGgVMvpBXESO4EpLChV3ndIPRMsFpTxwwFtttUCtjyNzUAat
-        dVWrRXDKV4stfMFW02g8gRERqbuwSdy4mbFzL/7P1YlZVjcLd+47x5y8GiL0INKaCfJs9qm
-        oXxo1SRQgURBpl2/zqMXNtE7xOL+m9GFUpLfYamwBxNo4+IZ5n/GGt+BZAOyLbvWjs6R/bA
-        YuhIga17DK8zUXIfxgXDuWWKrGReSNCwMpj+TP48TUazq+De/9zCUaC40g/xvag1zwvBF15
-        HoFwQSUdyIQzuN1feCaaVvOexbEDzGMBnSCOBg6
-X-QQ-GoodBg: 2
-From:   zhaoxiao <zhaoxiao@uniontech.com>
-To:     robert.foss@linaro.org, todor.too@gmail.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, mchehab@kernel.org
-Cc:     linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zhaoxiao <zhaoxiao@uniontech.com>
-Subject: [PATCH] media: camss-csiphy: Use platform_get_irq_byname() to get the interrupt
-Date:   Thu, 10 Feb 2022 17:49:36 +0800
-Message-Id: <20220210094936.23462-1-zhaoxiao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 10 Feb 2022 04:52:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CEB57250
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:52:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644486727;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f91FCCeGq06aNvkcPfCWFTAXz7qvGKLhqYaagKj3uqI=;
+        b=h4QKx5wmBGT+br1O0JuB7DG56PFn0M3Sc0IDBABMbcg0Blf0SrsITO2CP0UmvF2PtUbKNK
+        NSKDejGgm+N0z4sZfm/w6f4LXmW9ITOsV2iSgrQftgnxXXEXeqbKUCUmyZfCWNMdNDDtdW
+        brgNrJRDhwt8c6g4Unze0dk9uARF9K0=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-456-E_MUAZ_PMeixPoIgC_t4Hg-1; Thu, 10 Feb 2022 04:52:06 -0500
+X-MC-Unique: E_MUAZ_PMeixPoIgC_t4Hg-1
+Received: by mail-ej1-f69.google.com with SMTP id v2-20020a170906292200b006a94a27f903so2477271ejd.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:52:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=f91FCCeGq06aNvkcPfCWFTAXz7qvGKLhqYaagKj3uqI=;
+        b=O7YlLSitvc1mNAZGnkbGmYDCFBvkynWU0KkmcbGOH98HHk2Z+AARXvjp6R3QeYeTHq
+         xMMII2I6xp+WVticGTfvjjKQd6EWJT14rJng+3NzQ7aPW17gHWQ0VFz/hHGmWdtbM3+B
+         C/4oHriLrfoHmPrS2YPx8aEYm9KT7Qf7BLQI46RQZeaaiHsO0MkvEUzu8KGDdnAzNPqG
+         P5AcidOSbPQVqumijcFl1gG4NJ4KTCC1CMttIBAorBwjco4M42Z0sTYOJTx+flX8R3H2
+         uMr9QCz/8qLUErCM2E+4IqQ1XvaoVsiplmnu3P8GpXD8avTQjqlOxmJKu2oFpRvnWte2
+         ffBw==
+X-Gm-Message-State: AOAM533slZzmVXwqOguxwGrQSMjKnDKtNvvRK5WE4d/ud5nCD4udcqoa
+        9D4JAn7xN+wL9ET9up8UVM77iw1heVcK+FMwnqGVoOAQAGOv71WM8j/wLDzmao99M2WHuyBzgJM
+        TCHDr3UWPt6+MBLaRXPGuy7Jg
+X-Received: by 2002:a17:907:16aa:: with SMTP id hc42mr5656294ejc.307.1644486725361;
+        Thu, 10 Feb 2022 01:52:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzPiWFgV580SgcmFbsoPownArFuAX6Qoh20+/Wh5oVOlIGwlHf3OkEF/WdgZ58aQXeQy1XtA==
+X-Received: by 2002:a17:907:16aa:: with SMTP id hc42mr5656283ejc.307.1644486725183;
+        Thu, 10 Feb 2022 01:52:05 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id r3sm6926943ejd.129.2022.02.10.01.52.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 01:52:04 -0800 (PST)
+Message-ID: <1e8c38eb-d66a-60e7-9432-eb70e7ec1dd4@redhat.com>
+Date:   Thu, 10 Feb 2022 10:52:03 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign5
-X-QQ-Bgrelay: 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 07/23] KVM: MMU: remove kvm_mmu_calc_root_page_role
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        dmatlack@google.com, vkuznets@redhat.com
+References: <20220204115718.14934-1-pbonzini@redhat.com>
+ <20220204115718.14934-8-pbonzini@redhat.com> <YgRgrCxLM0Ctfwrj@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YgRgrCxLM0Ctfwrj@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_get_resource_byname(pdev, IORESOURCE_IRQ, ..) relies on static
-allocation of IRQ resources in DT core code, this causes an issue
-when using hierarchical interrupt domains using "interrupts" property
-in the node as this bypassed the hierarchical setup and messed up the
-irq chaining.
+On 2/10/22 01:47, Sean Christopherson wrote:
+> The nested mess is likely easily solved, I don't see any obvious issue with swapping
+> the order.  But I still don't love the subtlety.  I do like shaving cycles, just
+> not the subtlety...
 
-In preparation for removal of static setup of IRQ resource from DT core
-code use platform_get_irq_byname().
+Not so easily, but it's doable and it's essentially what I did in the 
+other series (the one that reworks the root cache).
 
-Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
----
- drivers/media/platform/qcom/camss/camss-csiphy.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+Quick spoiler: there's a complicated dependency between the _old_ values 
+in kvm_mmu and the root cache, so that the root cache code currently 
+needs both the old MMU state (especially shadow_root_level/root_level) 
+and the new role.
 
-diff --git a/drivers/media/platform/qcom/camss/camss-csiphy.c b/drivers/media/platform/qcom/camss/camss-csiphy.c
-index 24eec16197e7..92bdd1cd260f 100644
---- a/drivers/media/platform/qcom/camss/camss-csiphy.c
-+++ b/drivers/media/platform/qcom/camss/camss-csiphy.c
-@@ -568,7 +568,6 @@ int msm_csiphy_subdev_init(struct camss *camss,
- {
- 	struct device *dev = camss->dev;
- 	struct platform_device *pdev = to_platform_device(dev);
--	struct resource *r;
- 	int i, j;
- 	int ret;
- 
-@@ -610,19 +609,14 @@ int msm_csiphy_subdev_init(struct camss *camss,
- 	}
- 
- 	/* Interrupt */
-+	ret = platform_get_irq_byname(pdev, res->interrupt[0]);
-+	if (ret < 0)
-+		return ret;
- 
--	r = platform_get_resource_byname(pdev, IORESOURCE_IRQ,
--					 res->interrupt[0]);
--	if (!r) {
--		dev_err(dev, "missing IRQ\n");
--		return -EINVAL;
--	}
--
--	csiphy->irq = r->start;
- 	snprintf(csiphy->irq_name, sizeof(csiphy->irq_name), "%s_%s%d",
- 		 dev_name(dev), MSM_CSIPHY_NAME, csiphy->id);
- 
--	ret = devm_request_irq(dev, csiphy->irq, csiphy->ops->isr,
-+	ret = devm_request_irq(dev, ret, csiphy->ops->isr,
- 			       IRQF_TRIGGER_RISING | IRQF_NO_AUTOEN,
- 			       csiphy->irq_name, csiphy);
- 	if (ret < 0) {
--- 
-2.20.1
+kvm_mmu_reset_context does the expensive kvm_mmu_unload to cop out of 
+having to know in advance the new role; the crux of the other series is 
+to remove that need, so that kvm_mmu_reset_context does not have to cop 
+out anymore.
 
+> If we do rework things to have kvm_mmu_new_pgd() pull the role from the mmu, then
+> we should first add a long overdue audit/warn that KVM never runs with a mmu_role
+> that isn't consistent with respect to its root SP's role.
 
+There's a much cheaper check that can be done to enforce the invariant 
+that kvm_mmu_new_pgd must follow kvm_init_mmu: kvm_init_mmu sets a 
+not_ready flag, kvm_mmu_new_pgd clears it, and kvm_mmu_reload screams if 
+it sees not_ready == 1.
+
+Paolo
 
