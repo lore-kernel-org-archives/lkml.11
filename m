@@ -2,108 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C37C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:36:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345745AbiBJXgD (ORCPT
+        id S1345750AbiBJXg1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:36:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45170 "EHLO
+        Thu, 10 Feb 2022 18:36:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345734AbiBJXgB (ORCPT
+        with ESMTP id S1345704AbiBJXgZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:36:01 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609875F6B;
-        Thu, 10 Feb 2022 15:36:01 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id o10so5711977ilh.0;
-        Thu, 10 Feb 2022 15:36:01 -0800 (PST)
+        Thu, 10 Feb 2022 18:36:25 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7655F6A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:36:24 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id b5so7211150qtq.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:36:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=+6fGWOvKupFRHqASATl4H7ePp2/LogONFRX5QE2erMk=;
-        b=c5TKy1a65HE0+KDrrZ0l/0nyjG2KwQMjf+LTDiNfbSE5RPViIvGC8K2sHtLqVEcATl
-         s9UJ/l/F0Gz6sTG4Um9A9x+I5/IKHSGqrabca7G/pE0GFSn3XrH1YGeZFwiQrdeYQ2OO
-         wRYGq1zhoyCG6jEZqlxFK4gKdjeLjsn3FyH/9KWUGJa5YZSktM3YXMRDDCVu/rR+AA2Z
-         oA78RSF7auCtcAT5js4nUbb4fLc9eIrWmHdj2Xyew4TFqMHZNPCFuVgHQyJVH43uWM+x
-         hbbn18w+pjBpT7F/P3oXQdsqSOIcktcYds/lAjybQxjTdeU0egJ1F0ul5vz3eBMhF1Qg
-         zMvw==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jdc4wttGNx0+uj82g/3cbdbffgxGg6KC2LBxBSLJrgk=;
+        b=jRX3EwsKEqLkj5t34Wyy1HXC4YVS1isnrMPVqBC4ixn+0oP2qBipNkgdmlqMVQdT43
+         oFKqw7xgqwe9R5L+D7Ssebx1WwzV+x8fcYnrfPNRQioWbF0pVBgIF77MXw72CXw/rBh1
+         R03crznZCerFV0VRfsmmSiS0yCBzJbc+1KBCvbYjswrpa2MUDRIufenGKegLtzpUQKOK
+         fRuy688UtSf/WYawQ7B98TF8bl4BJHLH3h8PeLmYGlSYA5texJ3n2QbtdG/5nMz5A4sD
+         OM6UqY7H9vdsmD/ZtvC73tTJQdCur07s8k4MJdY89xPuA0BhEsqeyrleqRcU8ll1DQCF
+         yalw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+6fGWOvKupFRHqASATl4H7ePp2/LogONFRX5QE2erMk=;
-        b=Je0WUv8LTZFb/06BB0tyffvW5e+Oc7MqqdghD3pFwzPq1WhT6yfLFUhxLkl1RsCcEg
-         7JW8ssOV6hUweOq6Uu9htKUk/oOQnFkssshDDPwt9IHjp5tf4bFY9UItTtBQP3zYcV9Y
-         7Z0qVWVMj8rhz+q/CLVYPg2FiRvKIgt3+/tLSLQQdMUq/nt9W6Mqwo9I06WiBY+1AlMa
-         l51BhzCu6EdHkDLQoh1LXDLNZtV8ipEtkU0xbfsF610BC3V2ckhaHu+/FXRTXCzZW851
-         a5WtVzooDXFuD+i+SEYrm2sY56MHrYjwVQ2TokMOjJr++ZAVHSkPQh/IHPmo7/Z23r35
-         feCA==
-X-Gm-Message-State: AOAM533CM9eYh7FtzcLm2Q2NI++rCkX4i/+hfMwl246sK+2oi6h9Ih+D
-        FLCa1+cN5WdOmhPe120HajE=
-X-Google-Smtp-Source: ABdhPJxIyAONwSqovY5ap0uN+hIkP7cYxn35rT83uobFJrTicWBOWExdY8XujcVELZYNJmB7R5CauA==
-X-Received: by 2002:a92:db0e:: with SMTP id b14mr5408913iln.153.1644536160698;
-        Thu, 10 Feb 2022 15:36:00 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id a10sm12126701ilv.44.2022.02.10.15.36.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jdc4wttGNx0+uj82g/3cbdbffgxGg6KC2LBxBSLJrgk=;
+        b=Ckm4REV635r3kGDMRPyRPgU8rFZgX58BsKqtyyY905gcak90KKtSVOpnLdrVWitilg
+         zhN2OtmOyUh5DATbCWPdMl/FuaqiWZrQyg2NVranYJ2B1yOCbfpM6WC36el/X9Lme/Br
+         OUlCspMeXU+r0tPzQ0RcW+/+xblC6sckBykiwydbz24RTVGmNa0GEtDplRSYiqaS32S8
+         uREa/p+2xvNFpAq112ZFaoHUyHNAM559XjWyNnDZJY2AUMSHY9UjyA7zjVlBd5BjQ4uh
+         Mb4x5VEM+klhyXs3AuQkqoE6NtPTERwW91CLSKbko/DrammslSkZDQxGMiZvv9uX2Xqm
+         kNDg==
+X-Gm-Message-State: AOAM530K4yTy3i9O2ZImyE6BEtCu4xnAcRgyIJ0csmx72gfXP05R/vpv
+        8OdIb9ZlHm6tKBZe5lRQMTncOJoEtRhSwQ==
+X-Google-Smtp-Source: ABdhPJzQIa5zPQh2XXzG457f36+iK0e3IhFV7shWUsXDsYa/H80qoTgj6GDIRkxYp7seatNxPqPccQ==
+X-Received: by 2002:ac8:588f:: with SMTP id t15mr6728007qta.580.1644536184070;
+        Thu, 10 Feb 2022 15:36:24 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id j15sm9497370qkp.88.2022.02.10.15.36.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:36:00 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, linux-mips@vger.kernel.org
-Subject: [PATCH 20/49] irq: mips: replace cpumask_weight with cpumask_empty where appropriate
-Date:   Thu, 10 Feb 2022 14:49:04 -0800
-Message-Id: <20220210224933.379149-21-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 15:36:23 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nIIz8-0021OD-JG; Thu, 10 Feb 2022 19:36:22 -0400
+Date:   Thu, 10 Feb 2022 19:36:22 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Victor Erminpour <victor.erminpour@oracle.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "trivial@kernel.org" <trivial@kernel.org>
+Subject: Re: [PATCH] RDMA/irdma: Fix GCC 12 warning
+Message-ID: <20220210233622.GK49147@ziepe.ca>
+References: <1644453235-1437-1-git-send-email-victor.erminpour@oracle.com>
+ <35240f17968242409a39427c303370df@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <35240f17968242409a39427c303370df@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bcm6345_l1_of_init() calls cpumask_weight() to check if any bit of a given
-cpumask is set. We can do it more efficiently with cpumask_empty() because
-cpumask_empty() stops traversing the cpumask as soon as it finds first set
-bit, while cpumask_weight() counts all bits unconditionally.
+On Thu, Feb 10, 2022 at 10:09:18PM +0000, Saleem, Shiraz wrote:
+> > Subject: [PATCH] RDMA/irdma: Fix GCC 12 warning
+> > 
+> > When building with automatic stack variable initialization, GCC 12 complains about
+> > variables defined outside of switch case statements.
+> > Move the variable into the case that uses it, which silences the warning:
+> > 
+> > ./drivers/infiniband/hw/irdma/hw.c:270:47: error: statement will never be executed [-
+> > Werror=switch-unreachable]
+> >   270 |                         struct irdma_cm_node *cm_node;
+> >       |
+> > 
+> > ./drivers/infiniband/hw/irdma/utils.c:1215:50: error: statement will never be executed
+> > [-Werror=switch-unreachable]
+> >   1215 |                         struct irdma_gen_ae_info ae_info;
+> >        |
+> > 
+> > Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
+> >  drivers/infiniband/hw/irdma/hw.c    | 2 +-
+> >  drivers/infiniband/hw/irdma/utils.c | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/hw.c
+> > index 89234d04cc65..a41a3b128d0d 100644
+> > +++ b/drivers/infiniband/hw/irdma/hw.c
+> > @@ -267,8 +267,8 @@ static void irdma_process_aeq(struct irdma_pci_f *rf)
+> >  		}
+> > 
+> >  		switch (info->ae_id) {
+> > -			struct irdma_cm_node *cm_node;
+> >  		case IRDMA_AE_LLP_CONNECTION_ESTABLISHED:
+> > +			struct irdma_cm_node *cm_node;
+> >  			cm_node = iwqp->cm_node;
+> >  			if (cm_node->accept_pend) {
+> >  				atomic_dec(&cm_node->listener-
+> 
+> This doesn't compile.
+> 
+> drivers/infiniband/hw/irdma/hw.c: In function \u2018irdma_process_aeq\u2019:
+> drivers/infiniband/hw/irdma/hw.c:271:4: error: a label can only be part of a statement and a declaration is not a statement
+>   271 |    struct irdma_cm_node *cm_node;
+> 
+> Seems like we are accommodating for gcc12 bug since this C code is
+> legit?
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/irqchip/irq-bcm6345-l1.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It might be legit, but it is nutzo and not our coding style.
 
-diff --git a/drivers/irqchip/irq-bcm6345-l1.c b/drivers/irqchip/irq-bcm6345-l1.c
-index fd079215c17f..142a7431745f 100644
---- a/drivers/irqchip/irq-bcm6345-l1.c
-+++ b/drivers/irqchip/irq-bcm6345-l1.c
-@@ -315,7 +315,7 @@ static int __init bcm6345_l1_of_init(struct device_node *dn,
- 			cpumask_set_cpu(idx, &intc->cpumask);
- 	}
- 
--	if (!cpumask_weight(&intc->cpumask)) {
-+	if (cpumask_empty(&intc->cpumask)) {
- 		ret = -ENODEV;
- 		goto out_free;
- 	}
--- 
-2.32.0
+If the variable is used by many branches it should be declared at the
+top of the function.
 
+If it is used in one branch it should be as above, with the missing {}
+added.
+
+Jason
