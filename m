@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA79C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242645AbiBJOIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 09:08:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59790 "EHLO
+        id S242654AbiBJOKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 09:10:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240931AbiBJOIu (ORCPT
+        with ESMTP id S239028AbiBJOJ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 09:08:50 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB05F5;
-        Thu, 10 Feb 2022 06:08:51 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 470541F391;
-        Thu, 10 Feb 2022 14:08:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644502130;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KKfbdMLq1uv0xXHacVm2GBmBm+0Pa3pnsnQQmDp1SRs=;
-        b=tCS8fnro2eBglLgWwNj/Bhf1jwTIerc+rDKFSgdLLXSlshGhKv5BIA2Zaw5ve3CTPry2PQ
-        EoLH2MS2up75IvH6Q37g+zjdq2s4+ao2X5Y78YoE+kf6jiLBDYWgSHDvWaDBDYwqyKwu3u
-        3yshXktz6z68q4ewKy9MmdzFElIq8bU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644502130;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KKfbdMLq1uv0xXHacVm2GBmBm+0Pa3pnsnQQmDp1SRs=;
-        b=IlyvGXydUeuFMwaAwUwYRSj0twVgFKnnVCaQABQQJizUUXKAXP3UHf80By6O7GN/VJEwOZ
-        f9NnQWdypK0IkjCg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 30644A3B87;
-        Thu, 10 Feb 2022 14:08:50 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id CCCEADA9BA; Thu, 10 Feb 2022 15:05:08 +0100 (CET)
-Date:   Thu, 10 Feb 2022 15:05:08 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>
-Cc:     linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] btrfs: prevent copying too big compressed lzo segment
-Message-ID: <20220210140508.GN12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        =?utf-8?B?RMSBdmlzIE1vc8SBbnM=?= <davispuh@gmail.com>,
-        linux-btrfs@vger.kernel.org, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        linux-kernel@vger.kernel.org
-References: <20220202214455.15753-1-davispuh@gmail.com>
- <20220202214455.15753-2-davispuh@gmail.com>
+        Thu, 10 Feb 2022 09:09:59 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BE4C1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:10:00 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id s185so5985124oie.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:10:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k16MeYOe3tvEW9UdX+HTX9NGIo7L7H8oO9b068swmwc=;
+        b=BuMgD+nEItVdQQtwBKjNuTgKIUyyvj1REr90F8mIZ7N3DxOnWby9YkSq8It6vvO/Pt
+         nucxsA+00C+M8FDTzzamJK/iYexnj5rhOw/kq6nzPjRp2hPU4bNEM6/CyAxdsn/piMZW
+         +RCCL57Se3G35WtnS3FJK0VxinxDe9M+zDDIG4lvEX04dlTtew97pCK+QsuZpmmlJ5YW
+         7I7vpqKEq3UlPMuEhkvd7n6Z3SNKeTpYwQkBz4lF/FGXnFir6MBaAaGDNkRpX0n8yB9V
+         kW1PLl/uv1xnYjNMzGiZ+u9DyJxKNGmD/2jnnAE9+6REBwyn3KGsYu/nWJJ/62MgzGKD
+         xGYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k16MeYOe3tvEW9UdX+HTX9NGIo7L7H8oO9b068swmwc=;
+        b=2FefjPe7uvGRlVkzTDCHXPDjbrdo3wJBRV1hF5sW3QLp6Y16/h0ix5LJBn0/1gpbPI
+         I91pKPob6rxjB1l1gAU529MUK/KrGSPjZDXcUAxH2Ce/DapmsapaPnPljVZJs/HHufSA
+         EGN0gEbfC1AdYZhJSCzw7d6vrNBZ14oawsMrM2FSkxsmtYDvD71lOlJnB1Rh8zsPQIk8
+         UmubBqnEsOkI4YGexUAXIVJbgZu7FQTBEI6w97ArgWIlgL8+XTjXwbOILbfq6R5g/1sG
+         3byqQlSRn+9seej3fikSQVwt70XaZRGKsk8haX/qJc+SO90F/lzKHV8AxS+2ZqyxuKYQ
+         FpQQ==
+X-Gm-Message-State: AOAM5302xikgUAHlKD3X4zL3F6vfLi5H5bDa0kJO+jpXZRPmL14AR46w
+        CP8aN2P3wJQjmRAwCM42HmLfQ3ep2WkxVb9HU4XXWA==
+X-Google-Smtp-Source: ABdhPJzyWIEs29hVEejnCCg8oj2jR2hhA7+qWp+ZTy+9kCraF7eYGaQlvfhDfVtN32jAAH0+LPfx9Dca+EI+aQwEXTA=
+X-Received: by 2002:a05:6808:1292:: with SMTP id a18mr1034942oiw.314.1644502199441;
+ Thu, 10 Feb 2022 06:09:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220202214455.15753-2-davispuh@gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <20220210102603.42764-1-likexu@tencent.com>
+In-Reply-To: <20220210102603.42764-1-likexu@tencent.com>
+From:   Jim Mattson <jmattson@google.com>
+Date:   Thu, 10 Feb 2022 06:09:48 -0800
+Message-ID: <CALMp9eQBzWUk2UBz3EP-YJizEypOnpL0whrmb1ttnFA8TNuspA@mail.gmail.com>
+Subject: Re: [PATCH] KVM: x86/pmu: Distinguish EVENTSEL bitmasks for uniform
+ event creation and filtering
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 02, 2022 at 11:44:55PM +0200, Dāvis Mosāns wrote:
-> Compressed length can be corrupted to be a lot larger than memory
-> we have allocated for buffer.
-> This will cause memcpy in copy_compressed_segment to write outside
-> of allocated memory.
-> 
-> This mostly results in stuck read syscall but sometimes when using
-> btrfs send can get #GP
-> 
-> kernel: general protection fault, probably for non-canonical address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
-> kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P           OE     5.17.0-rc2-1 #12
-> kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
-> kernel: RIP: 0010:lzo_decompress_bio (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322 fs/btrfs/lzo.c:394) btrfs
-> Code starting with the faulting instruction
-> ===========================================
->    0:*  48 8b 06                mov    (%rsi),%rax              <-- trapping instruction
->    3:   48 8d 79 08             lea    0x8(%rcx),%rdi
->    7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
->    b:   48 89 01                mov    %rax,(%rcx)
->    e:   44 89 f0                mov    %r14d,%eax
->   11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
-> kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
-> kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX: ffff98996e6d8ff8
-> kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI: ffffffff9500435d
-> kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09: 0000000000000000
-> kernel: R10: 0000000000000000 R11: 0000000000001000 R12: ffff98996e6d8000
-> kernel: R13: 0000000000000008 R14: 0000000000001000 R15: 000841551d5c1000
-> kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000) knlGS:0000000000000000
-> kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4: 00000000003506e0
-> kernel: Call Trace:
-> kernel:  <TASK>
-> kernel: end_compressed_bio_read (fs/btrfs/compression.c:104 fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
-> kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
-> kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
-> kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:212 ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
-> kernel: worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2455)
-> kernel: ? process_one_work (kernel/workqueue.c:2397)
-> kernel: kthread (kernel/kthread.c:377)
-> kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
-> kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
-> kernel:  </TASK>
-> 
-> Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+On Thu, Feb 10, 2022 at 2:26 AM Like Xu <like.xu.linux@gmail.com> wrote:
+>
+> From: Like Xu <likexu@tencent.com>
+>
+> The current usage of EVENTSEL_* macro is a mess in the KVM context. Partly
+> because we have a conceptual ambiguity when choosing to create a RAW or
+> HARDWARE event: when bits other than HARDWARE_EVENT_MASK are set,
+> the pmc_reprogram_counter() will use the RAW type.
+>
+> By introducing the new macro AMD64_EXTRA_EVENTSEL_EVENT to simplify,
+> the following three issues can be addressed in one go:
+>
+> - the 12 selection bits are used as comparison keys for allow or deny;
+> - NON_HARDWARE_EVENT_MASK is only used to determine if a HARDWARE
+>   event is programmed or not, a 12-bit selected event will be a RAW event;
+>   (jmattson helped report this issue)
+> - by reusing AMD64_RAW_EVENT_MASK, the extra 4 selection bits (if set) are
+>   passed to the perf correctly and not filtered out by X86_RAW_EVENT_MASK;.
+>
+> Signed-off-by: Like Xu <likexu@tencent.com>
+> ---
+>  arch/x86/include/asm/perf_event.h |  3 ++-
+>  arch/x86/kvm/pmu.c                | 11 ++++-------
+>  arch/x86/kvm/pmu.h                |  6 ++++++
+>  3 files changed, 12 insertions(+), 8 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/perf_event.h b/arch/x86/include/asm/perf_event.h
+> index 8fc1b5003713..bd068fd19043 100644
+> --- a/arch/x86/include/asm/perf_event.h
+> +++ b/arch/x86/include/asm/perf_event.h
+> @@ -43,8 +43,9 @@
+>  #define AMD64_EVENTSEL_INT_CORE_SEL_MASK               \
+>         (0xFULL << AMD64_EVENTSEL_INT_CORE_SEL_SHIFT)
+>
+> +#define AMD64_EXTRA_EVENTSEL_EVENT                             (0x0FULL << 32)
+>  #define AMD64_EVENTSEL_EVENT   \
+> -       (ARCH_PERFMON_EVENTSEL_EVENT | (0x0FULL << 32))
+> +       (ARCH_PERFMON_EVENTSEL_EVENT | AMD64_EXTRA_EVENTSEL_EVENT)
+>  #define INTEL_ARCH_EVENT_MASK  \
+>         (ARCH_PERFMON_EVENTSEL_UMASK | ARCH_PERFMON_EVENTSEL_EVENT)
+>
+> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
+> index 2c98f3ee8df4..99426a8d7f18 100644
+> --- a/arch/x86/kvm/pmu.c
+> +++ b/arch/x86/kvm/pmu.c
+> @@ -198,7 +198,8 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+>
+>         filter = srcu_dereference(kvm->arch.pmu_event_filter, &kvm->srcu);
+>         if (filter) {
+> -               __u64 key = eventsel & AMD64_RAW_EVENT_MASK_NB;
+> +               __u64 key = eventsel & (INTEL_ARCH_EVENT_MASK |
+> +                                       AMD64_EXTRA_EVENTSEL_EVENT);
+>
+>                 if (bsearch(&key, filter->events, filter->nevents,
+>                             sizeof(__u64), cmp_u64))
+> @@ -209,18 +210,14 @@ void reprogram_gp_counter(struct kvm_pmc *pmc, u64 eventsel)
+>         if (!allow_event)
+>                 return;
+>
+> -       if (!(eventsel & (ARCH_PERFMON_EVENTSEL_EDGE |
+> -                         ARCH_PERFMON_EVENTSEL_INV |
+> -                         ARCH_PERFMON_EVENTSEL_CMASK |
+> -                         HSW_IN_TX |
+> -                         HSW_IN_TX_CHECKPOINTED))) {
+> +       if (!(eventsel & NON_HARDWARE_EVENT_MASK)) {
 
-Thanks, added to misc-next. I've swapped the order of the patches so
-that it's easier to backport the fix.
+I still don't understand why we even bother doing this lookup in the
+first place. What's wrong with simply requesting PERF_TYPE_RAW every
+time?
+
+>                 config = kvm_x86_ops.pmu_ops->pmc_perf_hw_id(pmc);
+>                 if (config != PERF_COUNT_HW_MAX)
+>                         type = PERF_TYPE_HARDWARE;
+>         }
+>
+>         if (type == PERF_TYPE_RAW)
+> -               config = eventsel & X86_RAW_EVENT_MASK;
+> +               config = eventsel & AMD64_RAW_EVENT_MASK;
+
+This chunk looks a lot like
+https://lore.kernel.org/kvm/20220203014813.2130559-2-jmattson@google.com/.
+Note that if you don't increase the width of config (as in the first
+change of that series), this mask change is ineffective.
+
+>         if (pmc->current_config == eventsel && pmc_resume_counter(pmc))
+>                 return;
+> diff --git a/arch/x86/kvm/pmu.h b/arch/x86/kvm/pmu.h
+> index 7a7b8d5b775e..48d867e250bc 100644
+> --- a/arch/x86/kvm/pmu.h
+> +++ b/arch/x86/kvm/pmu.h
+> @@ -17,6 +17,12 @@
+>
+>  #define MAX_FIXED_COUNTERS     3
+>
+> +#define KVM_ARCH_PERFMON_EVENTSEL_IGNORE \
+> +       (ARCH_PERFMON_EVENTSEL_ANY | ARCH_PERFMON_EVENTSEL_PIN_CONTROL)
+> +
+> +#define NON_HARDWARE_EVENT_MASK        (AMD64_EXTRA_EVENTSEL_EVENT | \
+> +        (X86_ALL_EVENT_FLAGS & ~KVM_ARCH_PERFMON_EVENTSEL_IGNORE))
+> +
+>  struct kvm_event_hw_type_mapping {
+>         u8 eventsel;
+>         u8 unit_mask;
+> --
+> 2.35.0
+>
