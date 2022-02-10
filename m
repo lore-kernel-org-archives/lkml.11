@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF56C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94060C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239771AbiBJKfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:35:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47208 "EHLO
+        id S239713AbiBJKfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:35:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239802AbiBJKfD (ORCPT
+        with ESMTP id S239819AbiBJKfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:35:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF88FDE;
-        Thu, 10 Feb 2022 02:34:59 -0800 (PST)
+        Thu, 10 Feb 2022 05:35:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A771022;
+        Thu, 10 Feb 2022 02:35:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D28A61BAF;
-        Thu, 10 Feb 2022 10:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 051D8C004E1;
-        Thu, 10 Feb 2022 10:34:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAE1DB8243C;
+        Thu, 10 Feb 2022 10:35:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C13C004E1;
+        Thu, 10 Feb 2022 10:35:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644489298;
-        bh=s77zX8tlQZGtLkt3yoLZJ4/EQEAGs6BTpnX/BQtdbYo=;
+        s=k20201202; t=1644489306;
+        bh=+uSJgpPgVwRknOJakx0hYRG2KS47RZ7WM5XC1poqiXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gHRGD9b92gcyrUm5uzA4/hTcbQZonWdYW3ITgsSZv/o7g5RSJMCHTYocCGoDJbQKV
-         95oGsjC2j26rYBfW9cF0Ii8CbfHwApE7/ia+s7qb1tA2vWdDjI07S5zow4vQ16h0Ey
-         8ho2lfovcwNdiFDd7T2YIU9mgJc7nkAG6gLMQMDetlMYzY8njKFNjEehNnwD3W4f5T
-         cNqPZDX1gAUy4+M1ooWzOTxos3r4mi/LHAKLG8hYVxL2OnNvGcXCSuatxZOP1VBtYK
-         IP0WdVlizy6woYoQZR/9KZxHgsNkPDczsmCwi49aPlnukUIMiwws5bOgQzNJWqx7qj
-         uVXKZa/vjC20A==
+        b=DBX/BHfqKRYHB5+5vLVptqJ9fQR9KWHvaI5SxbOxNUc2bnMOZRqcWrxtJEqCgSif0
+         WrJkJWUytflwm+aVZbURR1YE76DAdfW5GqavVe1q3eY1YBFh6Wf9EXeSEOgBCfJ82h
+         yt2nV/idILVoia3d1wkMltM3BoHthW5RJssgw5PE7Ywxi4eAyGaELMP5P2GZDHZnwX
+         ai/Cy0RqTZZ4adJFv59XH8JStLaIFF5qBsS4nVmcj74QtxCkrkwcE4EboenpzNSgG7
+         L7WEdur9NpF+rKxc84MP5cd8AULvHxuNJduZTQ8KB9l4jd0RnuWmFkA7lTcO0pBVw0
+         RwvmmNVhzKhYg==
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Rob Clark <robdclark@gmail.com>
 Cc:     linux-arm-msm@vger.kernel.org,
@@ -43,9 +43,9 @@ Cc:     linux-arm-msm@vger.kernel.org,
         Abhinav Kumar <abhinavk@codeaurora.org>,
         linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
         freedreno@lists.freedesktop.org
-Subject: [REPOST PATCH v4 06/13] drm/msm/disp/dpu1: Add DSC support in hw_ctl
-Date:   Thu, 10 Feb 2022 16:04:16 +0530
-Message-Id: <20220210103423.271016-7-vkoul@kernel.org>
+Subject: [REPOST PATCH v4 08/13] drm/msm/disp/dpu1: Don't use DSC with mode_3d
+Date:   Thu, 10 Feb 2022 16:04:18 +0530
+Message-Id: <20220210103423.271016-9-vkoul@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220210103423.271016-1-vkoul@kernel.org>
 References: <20220210103423.271016-1-vkoul@kernel.org>
@@ -55,86 +55,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Later gens of hardware have DSC bits moved to hw_ctl, so configure these
-bits so that DSC would work there as well
+We cannot enable mode_3d when we are using the DSC. So pass
+configuration to detect DSC is enabled and not enable mode_3d
+when we are using DSC
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+We add a helper dpu_encoder_helper_get_dsc() to detect dsc
+enabled and pass this to .setup_intf_cfg()
+
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c | 11 ++++++++++-
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h |  2 ++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c | 4 ++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c | 4 ++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c           | 7 ++++++-
+ 3 files changed, 14 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-index 02da9ecf71f1..49659165cea8 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
-@@ -25,6 +25,8 @@
- #define   CTL_MERGE_3D_ACTIVE           0x0E4
- #define   CTL_INTF_ACTIVE               0x0F4
- #define   CTL_MERGE_3D_FLUSH            0x100
-+#define   CTL_DSC_ACTIVE                0x0E8
-+#define   CTL_DSC_FLUSH                0x104
- #define   CTL_INTF_FLUSH                0x110
- #define   CTL_INTF_MASTER               0x134
- #define   CTL_FETCH_PIPE_ACTIVE         0x0FC
-@@ -34,6 +36,7 @@
- 
- #define DPU_REG_RESET_TIMEOUT_US        2000
- #define  MERGE_3D_IDX   23
-+#define  DSC_IDX        22
- #define  INTF_IDX       31
- #define CTL_INVALID_BIT                 0xffff
- #define CTL_DEFAULT_GROUP_ID		0xf
-@@ -121,7 +124,6 @@ static u32 dpu_hw_ctl_get_pending_flush(struct dpu_hw_ctl *ctx)
- 
- static inline void dpu_hw_ctl_trigger_flush_v1(struct dpu_hw_ctl *ctx)
- {
--
- 	if (ctx->pending_flush_mask & BIT(MERGE_3D_IDX))
- 		DPU_REG_WRITE(&ctx->hw, CTL_MERGE_3D_FLUSH,
- 				ctx->pending_merge_3d_flush_mask);
-@@ -506,6 +508,9 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if ((test_bit(DPU_CTL_VM_CFG, &ctx->caps->features)))
- 		mode_sel = CTL_DEFAULT_GROUP_ID  << 28;
- 
-+	if (cfg->dsc)
-+		DPU_REG_WRITE(&ctx->hw, CTL_DSC_FLUSH, cfg->dsc);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+index 34a6940d12c5..ed37a4c21596 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+@@ -70,6 +70,10 @@ static void _dpu_encoder_phys_cmd_update_intf_cfg(
+ 	intf_cfg.intf_mode_sel = DPU_CTL_MODE_SEL_CMD;
+ 	intf_cfg.stream_sel = cmd_enc->stream_sel;
+ 	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
++	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
++	if (intf_cfg.dsc)
++		intf_cfg.mode_3d = 0;
 +
- 	if (cfg->intf_mode_sel == DPU_CTL_MODE_SEL_CMD)
- 		mode_sel |= BIT(17);
- 
-@@ -517,6 +522,10 @@ static void dpu_hw_ctl_intf_cfg_v1(struct dpu_hw_ctl *ctx,
- 	if (cfg->merge_3d)
- 		DPU_REG_WRITE(c, CTL_MERGE_3D_ACTIVE,
- 			      BIT(cfg->merge_3d - MERGE_3D_0));
-+	if (cfg->dsc) {
-+		DPU_REG_WRITE(&ctx->hw, CTL_FLUSH, cfg->dsc);
-+		DPU_REG_WRITE(c, CTL_DSC_ACTIVE, cfg->dsc);
-+	}
+ 	ctl->ops.setup_intf_cfg(ctl, &intf_cfg);
  }
  
- static void dpu_hw_ctl_intf_cfg(struct dpu_hw_ctl *ctx,
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-index 806c171e5df2..9847c9c46d6f 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.h
-@@ -40,6 +40,7 @@ struct dpu_hw_stage_cfg {
-  * @merge_3d:              3d merge block used
-  * @intf_mode_sel:         Interface mode, cmd / vid
-  * @stream_sel:            Stream selection for multi-stream interfaces
-+ * @dsc:                   DSC BIT masks
-  */
- struct dpu_hw_intf_cfg {
- 	enum dpu_intf intf;
-@@ -47,6 +48,7 @@ struct dpu_hw_intf_cfg {
- 	enum dpu_merge_3d merge_3d;
- 	enum dpu_ctl_mode_sel intf_mode_sel;
- 	int stream_sel;
-+	unsigned int dsc;
- };
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
+index ddd9d89cd456..218009855fca 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
+@@ -284,6 +284,10 @@ static void dpu_encoder_phys_vid_setup_timing_engine(
+ 	intf_cfg.intf_mode_sel = DPU_CTL_MODE_SEL_VID;
+ 	intf_cfg.stream_sel = 0; /* Don't care value for video mode */
+ 	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
++	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
++	if (intf_cfg.dsc)
++		intf_cfg.mode_3d = 0;
++
+ 	if (phys_enc->hw_pp->merge_3d)
+ 		intf_cfg.merge_3d = phys_enc->hw_pp->merge_3d->idx;
  
- /**
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
+index 49659165cea8..6d5268b7da90 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_ctl.c
+@@ -536,7 +536,12 @@ static void dpu_hw_ctl_intf_cfg(struct dpu_hw_ctl *ctx,
+ 
+ 	intf_cfg |= (cfg->intf & 0xF) << 4;
+ 
+-	if (cfg->mode_3d) {
++	/* In DSC we can't set merge, so check for dsc and complain */
++	if (cfg->mode_3d && cfg->dsc)
++		pr_err("DPU1: DSC and Merge 3D both are set!! it may not work\n");
++
++	/* set merge only when dsc is not set */
++	if (cfg->mode_3d && !cfg->dsc) {
+ 		intf_cfg |= BIT(19);
+ 		intf_cfg |= (cfg->mode_3d - 0x1) << 20;
+ 	}
 -- 
 2.31.1
 
