@@ -2,98 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD39C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 530EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiBJCz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:55:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58134 "EHLO
+        id S231714AbiBJC5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:57:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229765AbiBJCzV (ORCPT
+        with ESMTP id S229604AbiBJC5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 21:55:21 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9C82409C
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 18:55:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644461724; x=1675997724;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=iDfWGlHTAn8lrs/k4FQdMghrl98b7boV7KEbgB7lnR0=;
-  b=KWk157ucPQPt/OXYSYoobsHIMzBlPFpU4MxXO/ph63aOsYodlLOuvm1F
-   wWeUJ+GleSJ/fMtS5rB5B7LLj/EicCmJMtN/oeTLCQgyNeBfMbm9PB3V+
-   jSWCCQRpeVQZZ9DuiPtnVVuyg/IQIXCGfCHks5pwwj1XWORnv7WwCApaP
-   BKJ3d8cbDN5zXnNsDm2A+w86HK3mwGKT6GkHGr6KiD25FGk5R2rvBSdjA
-   wRz7d7AR/7sLfXr51tYGmtL+S6d1lY06N8aBCRLACg965093wKouWHT7h
-   tiu9C/GfZ+m5z3b6RstrxU3GiY1F5ev1uZ/ZKrp1eM4OUK5Fhx0q6vHRr
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="232961804"
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="232961804"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 18:53:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="633479230"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 09 Feb 2022 18:53:22 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nHzaD-0002bY-Rz; Thu, 10 Feb 2022 02:53:21 +0000
-Date:   Thu, 10 Feb 2022 10:53:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: net/bridge/br_private.h:901 br_multicast_rport_from_node_skb() warn:
- inconsistent indenting
-Message-ID: <202202101038.9QptdYTn-lkp@intel.com>
+        Wed, 9 Feb 2022 21:57:31 -0500
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E53240B8;
+        Wed,  9 Feb 2022 18:57:33 -0800 (PST)
+Received: by mail-qv1-xf2f.google.com with SMTP id d7so3649823qvk.2;
+        Wed, 09 Feb 2022 18:57:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DveL08cBpQyT38jrCHqG38StDpIpjTtO5x5RxN2qOLY=;
+        b=kOFXR7ExGrn1+/9lTrSbG9/68OlOMqhrankhZRfVeox04sGJXOXIneDj+Kh9aYk9tJ
+         wtjeJSXf3+Gdy0L+ToO6JOfg7Y7Cp1d3EsAVwsCJJZ3kRx6Uxo1GDPMMccv5o3uRcZl3
+         vyuQn9dAlZTxe4kii5JYVp23OS6coTVJ5ixy3cJegneqY6p+7opCUQIL05JtjpzzeJVc
+         BmRBJqPg4juTeRc698tkabUNgu6+ZoT7sw+TfByysGvcGD8wFc3OfbosfnElTjS+gdi3
+         e8C8/r4IGogqWxIhtAJ1Wz2IYF7t2MNffE5N3Rvs6XLTVasfS8ly3HDEwLfAY/ThBFrm
+         EbWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DveL08cBpQyT38jrCHqG38StDpIpjTtO5x5RxN2qOLY=;
+        b=nGy5rM5kW+xmpOKwHgLEiNh+aZQGjrMNj9W2MXCzWagBWIBCJBTOyqv2vcx/d75Yk1
+         VVGnhfVgrn70Hcli6OcVQR12k6YM9+R4JmF+KEHIHJjXpLrE/aM1+ukb82vHoRNTqhcc
+         jsy5n1UF4odBzExMqbIThD1JXHm/PaJ2Gnvua8ODphQCMc6/r8T/oFnwo9yiBTfnqJAF
+         v/QKTzf1zY2VjR4WzGKbngaUGZWavbLSwdIoC+kySOT7YCYMed5FlYUc/N/zeLyuheK2
+         SV2qN5VD8WIRqTCNgaIZ5qwjDmrzk8YoGDM1Wos94HCxg+um+kKQjUjnhxGutUdNpefz
+         j6Fw==
+X-Gm-Message-State: AOAM532WoHa8WP/iA1VVWDvZEH5PTbaP0iYZM4Nd3fdFnoQzAb6a7Izs
+        Z/GWU+acTgsEPIKSWUIJRlc=
+X-Google-Smtp-Source: ABdhPJynjNToCd5PPegiDDI59TPQmtFEuHnh/crKpgATDReo+lOqVn+E2kR11jsiXN51nK/RiEY5Bw==
+X-Received: by 2002:a05:6214:1c8d:: with SMTP id ib13mr3673192qvb.81.1644461852770;
+        Wed, 09 Feb 2022 18:57:32 -0800 (PST)
+Received: from [192.168.1.49] (c-67-187-90-124.hsd1.ky.comcast.net. [67.187.90.124])
+        by smtp.gmail.com with ESMTPSA id s1sm10088441qta.0.2022.02.09.18.57.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 18:57:32 -0800 (PST)
+Subject: Re: [PATCH 1/1] of: unittest: print pass messages at same loglevel as
+ fail
+To:     Rob Herring <robh@kernel.org>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220203211150.2912192-1-frowand.list@gmail.com>
+ <CAL_JsqKMZWMtvdTvYHmWkd5CmehKJexJVv_BUBENrMPOf002+w@mail.gmail.com>
+ <24652725-91d8-9db4-e14a-e1bb5ded87b1@gmail.com>
+ <YgRdqe0+8fqSYi2T@robh.at.kernel.org>
+From:   Frank Rowand <frowand.list@gmail.com>
+Message-ID: <a746aad8-694a-85f7-7cbe-e0831b4b42da@gmail.com>
+Date:   Wed, 9 Feb 2022 20:57:31 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YgRdqe0+8fqSYi2T@robh.at.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f4bc5bbb5fef3cf421ba3485d6d383c27ec473ed
-commit: 9632233e7de8da43711bb7cd3e054af32fedcc38 net: bridge: multicast: factor out port multicast context
-date:   7 months ago
-config: openrisc-randconfig-m031-20220210 (https://download.01.org/0day-ci/archive/20220210/202202101038.9QptdYTn-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
+On 2/9/22 6:34 PM, Rob Herring wrote:
+> On Thu, Feb 03, 2022 at 09:41:45PM -0600, Frank Rowand wrote:
+>> On 2/3/22 3:40 PM, Rob Herring wrote:
+>>> On Thu, Feb 3, 2022 at 3:12 PM <frowand.list@gmail.com> wrote:
+>>>>
+>>>> From: Frank Rowand <frank.rowand@sony.com>
+>>>>
+>>>> Printing the devicetree unittest pass message for each passed test
+>>>> creates much console verbosity.  The existing pass messages are
+>>>> printed at loglevel KERN_DEBUG so they will not print by default.
+>>>>
+>>>> Change default to print the pass messages at the same loglevel as
+>>>> the fail messages.
+>>>>
+>>>> The test community expects either a pass or a fail message for each
+>>>> test in a test suite.  The messages are typically post-processed to
+>>>> report pass/fail results.
+>>>>
+>>>> Suppressing printing the pass message for each individual test is
+>>>> available via the kernel command line parameter unittest.hide_pass.
+>>>>
+>>>> Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+>>>> ---
+>>>>  Documentation/admin-guide/kernel-parameters.txt |  4 ++++
+>>>>  drivers/of/unittest.c                           | 17 ++++++++++++++++-
+>>>>  2 files changed, 20 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+>>>> index f5a27f067db9..045455f9b7e1 100644
+>>>> --- a/Documentation/admin-guide/kernel-parameters.txt
+>>>> +++ b/Documentation/admin-guide/kernel-parameters.txt
+>>>> @@ -5997,6 +5997,10 @@
+>>>>                         Note that genuine overcurrent events won't be
+>>>>                         reported either.
+>>>>
+>>>> +       unittest.hide_pass
+>>>
+>>> Can we rename the module name to include 'dt' so we're not taking a
+>>> generic name.
+>>
+>> I got most of the way through writing a reply to the various questions, then got to
+>> the point where my answer to a specific question ended up being something to the
+>> effect of: "this line of code (where a change was suggested) will end up being
+>> replaced when I convert the unittest messages to KTAP format".
+>>
+>> Then I got sidelined by going back and re-reading the KTAP specification email
+>> thread from August, then discovering that there is also a patch submission email
+>> thread from December where a KTAP specification is accepted into the kernel tree.
+>>
+>> Being KTAP compliant does not allow for suppressing the individual test pass
+>> messages, so I think I should just drop my desire to be able to do so.  That
+>> would reduce this patch to a one line change to print the pass messages at the
+>> same loglevel as the fail messages.  And I would prefer to not worry about
+>> whether the pass message is 'pass' vs 'PASS' since that text will get replaced
+>> by the KTAP syntax anyway.
+>>
+>> Would you be ok with that one line patch?
+> 
+> At info level, yes. If not, how soon until using ktap syntax?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+OK, I'll redo the patch as a one liner, printing pass messages at the info
+level.
 
-New smatch warnings:
-net/bridge/br_private.h:901 br_multicast_rport_from_node_skb() warn: inconsistent indenting
+The KTAP syntax is going to depend on KTAP specification version 2.  I have
+a patch series against version 1 that is at version 4.  I think that series
+is likely to be accepted with no further changes.
 
-Old smatch warnings:
-net/bridge/br_forward.c:317 br_multicast_flood() error: we previously assumed 'p' could be null (see line 293)
+There was a big thread last summer about what to add to the KTAP
+specification, but most of the suggestions (even with much agreement) did
+not get into the KTAP version 1 specification that was added to the kernel
+tree in December.  Once my KTAP version 1 specification clean up patches
+are accepted, I will move on to pulling items from the August thread, one
+item per patch series to focus discussion, to create KTAP version 2.  So
+timing will be based on the review timing.  The involved parties have been
+responsive, so I expect the process to move fairly quickly.
 
-vim +901 net/bridge/br_private.h
+-Frank
 
-   890	
-   891	static inline struct net_bridge_port *
-   892	br_multicast_rport_from_node_skb(struct hlist_node *rp, struct sk_buff *skb) {
-   893		struct net_bridge_mcast_port *mctx;
-   894	
-   895	#if IS_ENABLED(CONFIG_IPV6)
-   896		if (skb->protocol == htons(ETH_P_IPV6))
-   897			mctx = hlist_entry_safe(rp, struct net_bridge_mcast_port,
-   898						ip6_rlist);
-   899		else
-   900	#endif
- > 901			mctx = hlist_entry_safe(rp, struct net_bridge_mcast_port,
-   902						ip4_rlist);
-   903	
-   904		if (mctx)
-   905			return mctx->port;
-   906		else
-   907			return NULL;
-   908	}
-   909	
+> 
+> Rob
+> 
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
