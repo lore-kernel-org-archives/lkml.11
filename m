@@ -2,151 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D718C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 03:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 03:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232966AbiBJDnV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 22:43:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33222 "EHLO
+        id S232897AbiBJDoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 22:44:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232338AbiBJDnN (ORCPT
+        with ESMTP id S229543AbiBJDoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 22:43:13 -0500
-X-Greylist: delayed 914 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 19:43:13 PST
-Received: from m13101.mail.163.com (m13101.mail.163.com [220.181.13.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B29DC23BF6;
-        Wed,  9 Feb 2022 19:43:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=c85HH
-        iv/NNEvYmRAHu1FxIBJCC6ptXYLNbFxD5zqy/Y=; b=XF+4k8ofwDlWT6dL+rV3t
-        d8peBguI8sr7WxTMIRYVKGthPHWNoCQhGFUUZB7oPDCdaCYDPp67b4RSdTzyuOCK
-        g7UL043+SmtRAMBQvgRQ1sPOBrdhkU9h9YY8La5WoV0bDn5vVaFnIRpUs8UqaqW5
-        iUL95OjSLZngWLPJ5whm2c=
-Received: from slark_xiao$163.com ( [112.97.49.191] ) by
- ajax-webmail-wmsvr101 (Coremail) ; Thu, 10 Feb 2022 11:27:45 +0800 (CST)
-X-Originating-IP: [112.97.49.191]
-Date:   Thu, 10 Feb 2022 11:27:45 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Johan Hovold" <johan@kernel.org>
-Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re:Re: [PATCH] USB: serial: option: add support for DW5829e
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <YgPPNVzyg7Gypzv9@hovoldconsulting.com>
-References: <20220209031535.9668-1-slark_xiao@163.com>
- <YgPPNVzyg7Gypzv9@hovoldconsulting.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
-MIME-Version: 1.0
-Message-ID: <62feaf3.248f.17ee1ac3017.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: ZcGowACXTmkyhgRizC8jAA--.29194W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiow+jZFUMa6bjEgACsM
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+        Wed, 9 Feb 2022 22:44:04 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DF423BF8
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 19:44:06 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id 127-20020a250f85000000b00611ab6484abso9280713ybp.23
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 19:44:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=qWciCl5ZnA9cee9VzBNrbmZE8MiSApc+U+pccH0ywtA=;
+        b=PblpbGivAgUrwkOht9582vzXVasv4VMvpMz3lvBIGDiBjYaQgnqS7+IZOblr5OWlFA
+         RZD1fNqXxa3Myt8T4AVZWn/J725vs43n11uyMfkQxXSgvQ8Euql15tidstY2FYvI1Nr9
+         L0pkNONCYIbptyxWeTfkQF9EPnDmzpZhGbi39EDSjn/65lpjb/U8U4lfaToQ4S8DYgB+
+         TQKb5tuZUiEw8rSMF1Xy2rpcImcHUuN7Ea3bOwVx+GSmoJKQrEo66aGtC66ZldMvaAOY
+         iMTVOkfZsFas+s2NtzEG04oM5Xml5EbKeZhbPVZbUspFM2HBKDJ3hbAMn3472WuBjpbN
+         jylQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
+         :content-transfer-encoding;
+        bh=qWciCl5ZnA9cee9VzBNrbmZE8MiSApc+U+pccH0ywtA=;
+        b=LFORMKAYyncdkrahEgY+IOO9cn1Au5p7yZ8zwBIGC5HJC1Zdwrzg6DzFxlXaZ/zFCx
+         a2Gx4WT5nC5g+fri7pVa84zA2cCE0pE65+qk17Lk73ouCt6n0QyN5SoFWXm2S4O5Yjbc
+         avMf82YrBT8SnPpIzWyJZP5SJ3O5cHx8teCHE48PlI3rooWGOZhXgmYXdfV3pAvtH9Xc
+         9YIG135Blx5OH2P6GrzByaWRaXQ+CW5bXM96Qjt52YiWW0jGS0QFCVQm2/UlmlulkzbN
+         RfeBwJKmGVPZkj7UYETBCJWL8NBFFBvGhaDeFrSXIvjzmaHkmDEa4P17XkYhAT3njenr
+         R1oQ==
+X-Gm-Message-State: AOAM532prKaQkXd/Ggc494N1KWh/1WDKE0N+nD8eQ5dzVNFDK+H1QZyq
+        tnS/izbIK4gdMC/PlwzI7bIqtm6B+CNnPw==
+X-Google-Smtp-Source: ABdhPJyRin3QH5+g4IN2NFhJb+pUdb70CkVQBrXXRWnw9X9KybCGXHGiOSdS1drI6ORnR2CMcfjFDII3JsZ9UA==
+X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
+ (user=davidgow job=sendgmr) by 2002:a0d:f742:: with SMTP id
+ h63mr5655549ywf.410.1644464645575; Wed, 09 Feb 2022 19:44:05 -0800 (PST)
+Date:   Thu, 10 Feb 2022 11:43:53 +0800
+Message-Id: <20220210034353.1065703-1-davidgow@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.0.263.gb82422642f-goog
+Subject: [PATCH] um: Cleanup syscall_handler_t definition/cast, fix warning
+From:   David Gow <davidgow@google.com>
+To:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     David Gow <davidgow@google.com>, x86@kernel.org,
+        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgpBdCAyMDIyLTAyLTA5IDIyOjI3OjAxLCAiSm9oYW4gSG92b2xkIiA8am9oYW5Aa2VybmVsLm9y
-Zz4gd3JvdGU6Cgo+T24gV2VkLCBGZWIgMDksIDIwMjIgYXQgMTE6MTU6MzVBTSArMDgwMCwgU2xh
-cmsgWGlhbyB3cm90ZToKPj4gRGVsbCBEVzU4MjllIHNhbWUgYXMgRFc1ODIxZSBleGNlcHQgQ0FU
-IGxldmVsLgo+PiBEVzU4MjFlIHN1cHBvcnRzIENBVDE2IGJ1dCBEVzU4MjllIHN1cHBvcnRzIENB
-VDkuCj4+IFRoZXJlIGFyZSAyIHR5cGVzIHByb2R1Y3Qgb2YgRFc1ODI5ZTogbm9ybWFsIGFuZCBl
-U0lNLgo+PiBTbyB3ZSB3aWxsIGFkZCAyIFBJRCBmb3IgRFc1ODI5ZS4KPj4gQW5kIGZvciBlYWNo
-IFBJRCwgaXQgc3VwcG9ydCBNQklNIG9yIFJNTkVULgo+PiBMZXQncyBzZWUgdGVzdCBldmlkZW5j
-ZSBhcyBiZWxvdzoKPj4gCj4+IERXNTgyOWUgTUJJTSBtb2RlOgo+PiBUOiAgQnVzPTA0IExldj0w
-MSBQcm50PTAxIFBvcnQ9MDEgQ250PTAxIERldiM9ICA0IFNwZD01MDAwIE14Q2g9IDAKPj4gRDog
-IFZlcj0gMy4xMCBDbHM9ZWYobWlzYyApIFN1Yj0wMiBQcm90PTAxIE14UFM9IDkgI0NmZ3M9ICAy
-Cj4+IFA6ICBWZW5kb3I9NDEzYyBQcm9kSUQ9ODFlNiBSZXY9MDMuMTgKPj4gUzogIE1hbnVmYWN0
-dXJlcj1EZWxsIEluYy4KPj4gUzogIFByb2R1Y3Q9RFc1ODI5ZSBTbmFwZHJhZ29uIFgyMCBMVEUK
-Pj4gUzogIFNlcmlhbE51bWJlcj0wMTIzNDU2Nzg5QUJDREVGCj4+IEM6ICAjSWZzPSA3IENmZyM9
-IDIgQXRyPWEwIE14UHdyPTg5Nm1BCj4+IEk6ICBJZiM9MHgwIEFsdD0gMCAjRVBzPSAxIENscz0w
-Mihjb21tYykgU3ViPTBlIFByb3Q9MDAgRHJpdmVyPWNkY19tYmltCj4+IEk6ICBJZiM9MHgxIEFs
-dD0gMSAjRVBzPSAyIENscz0wYShkYXRhICkgU3ViPTAwIFByb3Q9MDIgRHJpdmVyPWNkY19tYmlt
-Cj4+IEk6ICBJZiM9MHgyIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9
-MDAgRHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYjPTB4MyBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVu
-ZC4pIFN1Yj0wMCBQcm90PTAwIERyaXZlcj1vcHRpb24KPj4gSTogIElmIz0weDQgQWx0PSAwICNF
-UHM9IDMgQ2xzPWZmKHZlbmQuKSBTdWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+IEk6ICBJ
-ZiM9MHg1IEFsdD0gMCAjRVBzPSAyIENscz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9ZmYgRHJpdmVy
-PW9wdGlvbgo+PiBJOiAgSWYjPTB4NiBBbHQ9IDAgI0VQcz0gMSBDbHM9ZmYodmVuZC4pIFN1Yj1m
-ZiBQcm90PWZmIERyaXZlcj0obm9uZSkKPj4gCj4+IERXNTgyOWUgUk1ORVQgbW9kZToKPj4gVDog
-IEJ1cz0wNCBMZXY9MDEgUHJudD0wMSBQb3J0PTAxIENudD0wMSBEZXYjPSAgNSBTcGQ9NTAwMCBN
-eENoPSAwCj4+IEQ6ICBWZXI9IDMuMTAgQ2xzPWVmKG1pc2MgKSBTdWI9MDIgUHJvdD0wMSBNeFBT
-PSA5ICNDZmdzPSAgMQo+PiBQOiAgVmVuZG9yPTQxM2MgUHJvZElEPTgxZTYgUmV2PTAzLjE4Cj4+
-IFM6ICBNYW51ZmFjdHVyZXI9RGVsbCBJbmMuCj4+IFM6ICBQcm9kdWN0PURXNTgyOWUgU25hcGRy
-YWdvbiBYMjAgTFRFCj4+IFM6ICBTZXJpYWxOdW1iZXI9MDEyMzQ1Njc4OUFCQ0RFRgo+PiBDOiAg
-I0lmcz0gNiBDZmcjPSAxIEF0cj1hMCBNeFB3cj04OTZtQQo+PiBJOiAgSWYjPTB4MCBBbHQ9IDAg
-I0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQcm90PWZmIERyaXZlcj1xbWlfd3dhbgo+PiBJ
-OiAgSWYjPTB4MSBBbHQ9IDAgI0VQcz0gMSBDbHM9MDMoSElEICApIFN1Yj0wMCBQcm90PTAwIERy
-aXZlcj11c2JoaWQKPj4gSTogIElmIz0weDIgQWx0PSAwICNFUHM9IDMgQ2xzPWZmKHZlbmQuKSBT
-dWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+IEk6ICBJZiM9MHgzIEFsdD0gMCAjRVBzPSAz
-IENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYjPTB4
-NCBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj0wMCBQcm90PTAwIERyaXZlcj1vcHRp
-b24KPj4gSTogIElmIz0weDUgQWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJv
-dD1mZiBEcml2ZXI9b3B0aW9uCj4+IAo+PiBEVzU4MjllLWVTSU0gTUJJTSBtb2RlOgo+PiBUOiAg
-QnVzPTA0IExldj0wMSBQcm50PTAxIFBvcnQ9MDEgQ250PTAxIERldiM9ICA2IFNwZD01MDAwIE14
-Q2g9IDAKPj4gRDogIFZlcj0gMy4xMCBDbHM9ZWYobWlzYyApIFN1Yj0wMiBQcm90PTAxIE14UFM9
-IDkgI0NmZ3M9ICAyCj4+IFA6ICBWZW5kb3I9NDEzYyBQcm9kSUQ9ODFlNCBSZXY9MDMuMTgKPj4g
-UzogIE1hbnVmYWN0dXJlcj1EZWxsIEluYy4KPj4gUzogIFByb2R1Y3Q9RFc1ODI5ZS1lU0lNIFNu
-YXBkcmFnb24gWDIwIExURQo+PiBTOiAgU2VyaWFsTnVtYmVyPTAxMjM0NTY3ODlBQkNERUYKPj4g
-QzogICNJZnM9IDcgQ2ZnIz0gMiBBdHI9YTAgTXhQd3I9ODk2bUEKPj4gSTogIElmIz0weDAgQWx0
-PSAwICNFUHM9IDEgQ2xzPTAyKGNvbW1jKSBTdWI9MGUgUHJvdD0wMCBEcml2ZXI9Y2RjX21iaW0K
-Pj4gSTogIElmIz0weDEgQWx0PSAxICNFUHM9IDIgQ2xzPTBhKGRhdGEgKSBTdWI9MDAgUHJvdD0w
-MiBEcml2ZXI9Y2RjX21iaW0KPj4gSTogIElmIz0weDIgQWx0PSAwICNFUHM9IDMgQ2xzPWZmKHZl
-bmQuKSBTdWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+IEk6ICBJZiM9MHgzIEFsdD0gMCAj
-RVBzPSAzIENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9MDAgRHJpdmVyPW9wdGlvbgo+PiBJOiAg
-SWYjPTB4NCBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj0wMCBQcm90PTAwIERyaXZl
-cj1vcHRpb24KPj4gSTogIElmIz0weDUgQWx0PSAwICNFUHM9IDIgQ2xzPWZmKHZlbmQuKSBTdWI9
-ZmYgUHJvdD1mZiBEcml2ZXI9b3B0aW9uCj4+IEk6ICBJZiM9MHg2IEFsdD0gMCAjRVBzPSAxIENs
-cz1mZih2ZW5kLikgU3ViPWZmIFByb3Q9ZmYgRHJpdmVyPShub25lKQo+PiAKPj4gRFc1ODI5ZS1l
-U0lNIFJNTkVUIG1vZGU6Cj4+IFQ6ICBCdXM9MDQgTGV2PTAxIFBybnQ9MDEgUG9ydD0wMSBDbnQ9
-MDEgRGV2Iz0gIDcgU3BkPTUwMDAgTXhDaD0gMAo+PiBEOiAgVmVyPSAzLjEwIENscz1lZihtaXNj
-ICkgU3ViPTAyIFByb3Q9MDEgTXhQUz0gOSAjQ2Zncz0gIDEKPj4gUDogIFZlbmRvcj00MTNjIFBy
-b2RJRD04MWU0IFJldj0wMy4xOAo+PiBTOiAgTWFudWZhY3R1cmVyPURlbGwgSW5jLgo+PiBTOiAg
-UHJvZHVjdD1EVzU4MjllLWVTSU0gU25hcGRyYWdvbiBYMjAgTFRFCj4+IFM6ICBTZXJpYWxOdW1i
-ZXI9MDEyMzQ1Njc4OUFCQ0RFRgo+PiBDOiAgI0lmcz0gNiBDZmcjPSAxIEF0cj1hMCBNeFB3cj04
-OTZtQQo+PiBJOiAgSWYjPTB4MCBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4pIFN1Yj1mZiBQ
-cm90PWZmIERyaXZlcj1xbWlfd3dhbgo+PiBJOiAgSWYjPTB4MSBBbHQ9IDAgI0VQcz0gMSBDbHM9
-MDMoSElEICApIFN1Yj0wMCBQcm90PTAwIERyaXZlcj11c2JoaWQKPj4gSTogIElmIz0weDIgQWx0
-PSAwICNFUHM9IDMgQ2xzPWZmKHZlbmQuKSBTdWI9MDAgUHJvdD0wMCBEcml2ZXI9b3B0aW9uCj4+
-IEk6ICBJZiM9MHgzIEFsdD0gMCAjRVBzPSAzIENscz1mZih2ZW5kLikgU3ViPTAwIFByb3Q9MDAg
-RHJpdmVyPW9wdGlvbgo+PiBJOiAgSWYjPTB4NCBBbHQ9IDAgI0VQcz0gMyBDbHM9ZmYodmVuZC4p
-IFN1Yj0wMCBQcm90PTAwIERyaXZlcj1vcHRpb24KPj4gSTogIElmIz0weDUgQWx0PSAwICNFUHM9
-IDIgQ2xzPWZmKHZlbmQuKSBTdWI9ZmYgUHJvdD1mZiBEcml2ZXI9b3B0aW9uCj4+IAo+PiBCVFcs
-IHRoZSBpbnRlcmZhY2UgMHg2IG9mIE1CSU0gbW9kZSBpcyBHTlNTIHBvcnQsIHdoaWNoIG5vdCBz
-YW1lIGFzIE5NRUEKPj4gcG9ydC4gU28gaXQncyBiYW5uZWQgZnJvbSBzZXJpYWwgb3B0aW9uIGRy
-aXZlci4KPj4gVGhlIHJlbWFpbmluZyBpbnRlcmZhY2VzIDB4Mi0weDUgYXJlOiBNT0RFTSwgTU9E
-RU0sIE5NRUEsIERJQUcuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5OiBTbGFyayBYaWFvIDxzbGFya194
-aWFvQDE2My5jb20+Cj4KPlRoYW5rcyBmb3IgcHJvdmlkaW5nIGFsbCB0aGUgbmVjZXNzYXJ5IGRl
-dGFpbHMuCj4KPj4gLS0tCj4+ICBkcml2ZXJzL3VzYi9zZXJpYWwvb3B0aW9uLmMgfCA2ICsrKysr
-Kwo+PiAgMSBmaWxlIGNoYW5nZWQsIDYgaW5zZXJ0aW9ucygrKQo+PiAKPj4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvdXNiL3NlcmlhbC9vcHRpb24uYyBiL2RyaXZlcnMvdXNiL3NlcmlhbC9vcHRpb24u
-Ywo+PiBpbmRleCA5NjJlOTk0M2ZjMjAuLmI0N2JhZDgxMGVlYyAxMDA2NDQKPj4gLS0tIGEvZHJp
-dmVycy91c2Ivc2VyaWFsL29wdGlvbi5jCj4+ICsrKyBiL2RyaXZlcnMvdXNiL3NlcmlhbC9vcHRp
-b24uYwo+PiBAQCAtMTk4LDYgKzE5OCw4IEBAIHN0YXRpYyB2b2lkIG9wdGlvbl9pbnN0YXRfY2Fs
-bGJhY2soc3RydWN0IHVyYiAqdXJiKTsKPj4gIAo+PiAgI2RlZmluZSBERUxMX1BST0RVQ1RfNTgy
-MUUJCQkweDgxZDcKPj4gICNkZWZpbmUgREVMTF9QUk9EVUNUXzU4MjFFX0VTSU0JCQkweDgxZTAK
-Pj4gKyNkZWZpbmUgREVMTF9QUk9EVUNUXzU4MjlFCQkJMHg4MWU2Cj4+ICsjZGVmaW5lIERFTExf
-UFJPRFVDVF81ODI5RV9FU0lNCQkJMHg4MWU0Cj4KPlBsZWFzZSBrZWVwIHRoZSBkZWZpbmVzIHNv
-cnRlZCBieSBQSUQuCj4KT0ssIEkgd2lsbCB1cGRhdGUgaXQgaW4gVjIgdmVyc2lvbi4KCj4+ICAj
-ZGVmaW5lIEtZT0NFUkFfVkVORE9SX0lECQkJMHgwYzg4Cj4+ICAjZGVmaW5lIEtZT0NFUkFfUFJP
-RFVDVF9LUEM2NTAJCQkweDE3ZGEKPj4gQEAgLTEwNjMsNiArMTA2NSwxMCBAQCBzdGF0aWMgY29u
-c3Qgc3RydWN0IHVzYl9kZXZpY2VfaWQgb3B0aW9uX2lkc1tdID0gewo+PiAgCSAgLmRyaXZlcl9p
-bmZvID0gUlNWRCgwKSB8IFJTVkQoMSkgfCBSU1ZEKDYpIH0sCj4+ICAJeyBVU0JfREVWSUNFKERF
-TExfVkVORE9SX0lELCBERUxMX1BST0RVQ1RfNTgyMUVfRVNJTSksCj4+ICAJICAuZHJpdmVyX2lu
-Zm8gPSBSU1ZEKDApIHwgUlNWRCgxKSB8IFJTVkQoNikgfSwKPj4gKwl7IFVTQl9ERVZJQ0VfSU5U
-RVJGQUNFX0NMQVNTKERFTExfVkVORE9SX0lELCBERUxMX1BST0RVQ1RfNTgyOUUsIDB4ZmYpLAo+
-PiArCSAgLmRyaXZlcl9pbmZvID0gUlNWRCg2KSB9LAo+PiArCXsgVVNCX0RFVklDRV9JTlRFUkZB
-Q0VfQ0xBU1MoREVMTF9WRU5ET1JfSUQsIERFTExfUFJPRFVDVF81ODI5RV9FU0lNLCAweGZmKSwK
-Pj4gKwkgIC5kcml2ZXJfaW5mbyA9IFJTVkQoNikgfSwKPgo+SXQgbG9va3MgbGlrZSB0aGVzZSBl
-bnRyaWVzIHdpbGwgY2F1c2UgdGhlIGRyaXZlciB0byBiaW5kIGFsc28gdG8gdGhlCj5RTUkgcG9y
-dCBob3dldmVyLgo+CkFjdHVhbGx5IG5vdCwgIGN1cnJlbnRseSBSTU5FVCBwb3J0IHdvdWxkIGxv
-YWQgdGhlIHFtaV93d2FuIGRyaXZlciBzdWNjZXNzZnVsbHkgZXZlbiB0aGUgY2xhc3Mgb2YgUU1J
-IGlzIGFsc28gMHhmZi4KRG8geW91IG1lYW4gSSBzaG91bGQgYWRkIFJTVkQoMCkgdG8gcmVkdWNl
-IGNvbmZ1c2lvbj8KCj4+ICAJeyBVU0JfREVWSUNFKEFOWURBVEFfVkVORE9SX0lELCBBTllEQVRB
-X1BST0RVQ1RfQURVX0UxMDBBKSB9LAkvKiBBRFUtRTEwMCwgQURVLTMxMCAqLwo+PiAgCXsgVVNC
-X0RFVklDRShBTllEQVRBX1ZFTkRPUl9JRCwgQU5ZREFUQV9QUk9EVUNUX0FEVV81MDBBKSB9LAo+
-PiAgCXsgVVNCX0RFVklDRShBTllEQVRBX1ZFTkRPUl9JRCwgQU5ZREFUQV9QUk9EVUNUX0FEVV82
-MjBVVykgfSwKPgo+Sm9oYW4K
+The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
+but always cast to 'long (*)(long, long, long, long, long, long)' before
+use. This now triggers a warning (see below).
+
+Define syscall_handler_t as the latter instead, and remove the cast.
+This simplifies the code, and fixes the warning.
+
+Warning:
+In file included from ../arch/um/include/asm/processor-generic.h:13
+                 from ../arch/x86/um/asm/processor.h:41
+                 from ../include/linux/rcupdate.h:30
+                 from ../include/linux/rculist.h:11
+                 from ../include/linux/pid.h:5
+                 from ../include/linux/sched.h:14
+                 from ../include/linux/ptrace.h:6
+                 from ../arch/um/kernel/skas/syscall.c:7:
+../arch/um/kernel/skas/syscall.c: In function =E2=80=98handle_syscall=E2=80=
+=99:
+../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between inc=
+ompatible function types from =E2=80=98long int (*)(void)=E2=80=99 to =E2=
+=80=98long int (*)(long int,  long int,  long int,  long int,  long int,  l=
+ong int)=E2=80=99 [
+-Wcast-function-type]
+   18 |         (((long (*)(long, long, long, long, long, long)) \
+      |           ^
+../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro =E2=80=98PT=
+_REGS_SET_SYSCALL_RETURN=E2=80=99
+   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) =3D (res)=
+)
+      |                                                              ^~~
+../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro =E2=80=
+=98EXECUTE_SYSCALL=E2=80=99
+   46 |                                 EXECUTE_SYSCALL(syscall, regs));
+      |                                 ^~~~~~~~~~~~~~~
+
+Signed-off-by: David Gow <davidgow@google.com>
+---
+
+I couldn't find a reason for the two conflicting function types here,
+but it's possible I'm missing one. At the very least, this change didn't
+seem to break anything on my system.
+
+
+ arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/s=
+ysdep/syscalls_64.h
+index 48d6cd12f8a5..b6b997225841 100644
+--- a/arch/x86/um/shared/sysdep/syscalls_64.h
++++ b/arch/x86/um/shared/sysdep/syscalls_64.h
+@@ -10,13 +10,12 @@
+ #include <linux/msg.h>
+ #include <linux/shm.h>
+=20
+-typedef long syscall_handler_t(void);
++typedef long syscall_handler_t(long, long, long, long, long, long);
+=20
+ extern syscall_handler_t *sys_call_table[];
+=20
+ #define EXECUTE_SYSCALL(syscall, regs) \
+-	(((long (*)(long, long, long, long, long, long)) \
+-	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
++	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
+ 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
+ 				      UPT_SYSCALL_ARG3(&regs->regs), \
+ 				      UPT_SYSCALL_ARG4(&regs->regs), \
+--=20
+2.35.0.263.gb82422642f-goog
+
