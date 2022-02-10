@@ -2,124 +2,392 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D53C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238298AbiBJJMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:12:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42250 "EHLO
+        id S238311AbiBJJNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:13:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiBJJMC (ORCPT
+        with ESMTP id S234216AbiBJJNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:12:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AEE1109;
-        Thu, 10 Feb 2022 01:12:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F3DCB82440;
-        Thu, 10 Feb 2022 09:12:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3331DC340F0;
-        Thu, 10 Feb 2022 09:11:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644484319;
-        bh=JedsB1JwXMEe8yGaX/BRWqTZv9TyfpT/Y68puVJHs/o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=VF3q86MjV6MKq4r9qsD1rtfzgmwOhffpMjSWJ+EQuSRNZKZn96yOdYHRi8qOGKVZo
-         WQdV5jkduwNFX+iPKGunGKIuHmw2vT/JAvwJBzTepl5t311clPn0vv4tBnQ44Qakeo
-         OqW+tJ+kWuUBzZsKwJp2no1l/ZeKL5z2Fyn8ifO8fkPH7YlHUWc95sTSgkGo8lGIRn
-         3UhrvlgBLj2+HE948UWlskfcH8EQk7bFuljZZp+20NsMvY5WtxA5lRht+Agkc7onWR
-         D+/W/+uaIuKRv2k2Hh6eBMaGIO2c+3qi+AlZHTWGKu+PmJXMjLTtuKORRzjp+ozAJV
-         WDwYpQ/SZZV1w==
-Received: by mail-wr1-f54.google.com with SMTP id e3so8409210wra.0;
-        Thu, 10 Feb 2022 01:11:59 -0800 (PST)
-X-Gm-Message-State: AOAM530jkiuz241WhbeujITD+MYGPOyeThP0IzHFesKwxAOj27dzhZxL
-        loeDNpE0c5Ki2Ld6o+BY0N+dzm1G8+lCCAky5JU=
-X-Google-Smtp-Source: ABdhPJyCE9WauEk8svEa5nQ4zRYMLQZlXKjxclYSXVI9ENtdYdFhWHJ6K5eHC4aW0EOR7LXwJnDCKn9OyF3EktyQeN4=
-X-Received: by 2002:a05:6000:1b88:: with SMTP id r8mr5675117wru.447.1644484317472;
- Thu, 10 Feb 2022 01:11:57 -0800 (PST)
+        Thu, 10 Feb 2022 04:13:22 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2223D94;
+        Thu, 10 Feb 2022 01:13:23 -0800 (PST)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A71avC029160;
+        Thu, 10 Feb 2022 09:36:45 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=yXr8XX6rwrng7HjMcpwWei0FYtr/pOibVM/8k+UeduE=;
+ b=eX5uB5yCEHdGrs50+TA72WBUhEwUxqfdu9GWt2q0zXWwSq0Ldmu0rvfHmXV87JxO1Zbu
+ CEG5B9m+wSLWp4kU0Zof2VKew2SKi/I13VSW8GObtwsy6Uo3uRSFHa6IZcc+9JeF2Jk/
+ MBIbhHZ++Au7ba4eYmgY3CMEWxQYYuTynhQ1iN8dsImAI0k8pPThXVkdyoZhpJQSmUzg
+ OUghRi4s+A0GUFZDk2MdZxEuNuGOnOTSHM+P38DzDxcxa+1dW6FEusJKy63Nt+JXREN1
+ eE98/OT6u5Oqgbe/DxtWwZYF04AVe4UFjWFuFozRM0Ym7S7k8/XzjRHkXOXKpVEJJwxj oQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4wy1gjt7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:36:45 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EAB2C10002A;
+        Thu, 10 Feb 2022 09:36:44 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E22A42132F1;
+        Thu, 10 Feb 2022 09:36:44 +0100 (CET)
+Received: from [10.201.21.201] (10.75.127.46) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
+ 2022 09:36:43 +0100
+Message-ID: <b5759eb1-5258-662f-3abc-d05034ca4379@foss.st.com>
+Date:   Thu, 10 Feb 2022 09:36:43 +0100
 MIME-Version: 1.0
-References: <1644453141-1181-1-git-send-email-victor.erminpour@oracle.com>
-In-Reply-To: <1644453141-1181-1-git-send-email-victor.erminpour@oracle.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 10 Feb 2022 10:11:46 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXHUOJ-3CXFUJ9ULQuSoRh1=d3PJ15eFUsdGjQtUHozSpA@mail.gmail.com>
-Message-ID: <CAMj1kXHUOJ-3CXFUJ9ULQuSoRh1=d3PJ15eFUsdGjQtUHozSpA@mail.gmail.com>
-Subject: Re: [PATCH] ACPI/IORT: Fix GCC 12 warning
-To:     Victor Erminpour <victor.erminpour@oracle.com>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        trivial@kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 04/12] ARM: dts: sti: move some nodes out of the soc
+ section in stih407-family.dtsi
+Content-Language: en-US
+To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
+        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20211202075105.195664-1-avolmat@me.com>
+ <20211202075105.195664-5-avolmat@me.com>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20211202075105.195664-5-avolmat@me.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 at 01:34, Victor Erminpour
-<victor.erminpour@oracle.com> wrote:
->
-> When building with automatic stack variable initialization, GCC 12
-> complains about variables defined outside of switch case statements.
-> Move the variable into the case that uses it, which silences the warning:
->
-> ./drivers/acpi/arm64/iort.c:1670:59: error: statement will never be executed [-Werror=switch-unreachable]
->   1670 |                         struct acpi_iort_named_component *ncomp;
->        |                                                           ^~~~~
->
-> Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
+Hi Alain
 
-GCC 12 is not released yet, and this is clearly a compiler bug (a
-declaration is not a statement, and the hidden offending statement
-[the zero-init] is emitted by the compiler itself), so please report
-this to the GCC folks instead.
-
-
+On 12/2/21 08:50, Alain Volmat wrote:
+> Move all nodes without reg property out of the soc section of
+> stih407-family.dtsi.  This avoid to set a <0> reg property.
+> 
+> Signed-off-by: Alain Volmat <avolmat@me.com>
 > ---
->  drivers/acpi/arm64/iort.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 3b23fb775ac4..5c5d2e56d756 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1645,7 +1645,7 @@ void __init acpi_iort_init(void)
->   */
->  phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->  {
-> -       phys_addr_t limit = PHYS_ADDR_MAX;
-> +       phys_addr_t local_limit, limit = PHYS_ADDR_MAX;
->         struct acpi_iort_node *node, *end;
->         struct acpi_table_iort *iort;
->         acpi_status status;
-> @@ -1667,17 +1667,15 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->                         break;
->
->                 switch (node->type) {
-> -                       struct acpi_iort_named_component *ncomp;
-> -                       struct acpi_iort_root_complex *rc;
-> -                       phys_addr_t local_limit;
+>  arch/arm/boot/dts/stih407-family.dtsi | 262 +++++++++++++-------------
+>  1 file changed, 126 insertions(+), 136 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/stih407-family.dtsi b/arch/arm/boot/dts/stih407-family.dtsi
+> index 21f3347a91d6..1713f7878117 100644
+> --- a/arch/arm/boot/dts/stih407-family.dtsi
+> +++ b/arch/arm/boot/dts/stih407-family.dtsi
+> @@ -115,37 +115,140 @@ pwm_regulator: pwm-regulator {
+>  		status = "okay";
+>  	};
+>  
+> -	soc {
+> -		#address-cells = <1>;
+> -		#size-cells = <1>;
+> -		interrupt-parent = <&intc>;
+> +	restart: restart-controller {
+> +		compatible = "st,stih407-restart";
+> +		st,syscfg = <&syscfg_sbc_reg>;
+> +		status = "okay";
+> +	};
+> +
+> +	powerdown: powerdown-controller {
+> +		compatible = "st,stih407-powerdown";
+> +		#reset-cells = <1>;
+> +	};
+> +
+> +	softreset: softreset-controller {
+> +		compatible = "st,stih407-softreset";
+> +		#reset-cells = <1>;
+> +	};
+> +
+> +	picophyreset: picophyreset-controller {
+> +		compatible = "st,stih407-picophyreset";
+> +		#reset-cells = <1>;
+> +	};
+> +
+> +	irq-syscfg {
+> +		compatible    = "st,stih407-irq-syscfg";
+> +		st,syscfg     = <&syscfg_core>;
+> +		st,irq-device = <ST_IRQ_SYSCFG_PMU_0>,
+> +				<ST_IRQ_SYSCFG_PMU_1>;
+> +		st,fiq-device = <ST_IRQ_SYSCFG_DISABLED>,
+> +				<ST_IRQ_SYSCFG_DISABLED>;
+> +	};
+> +
+> +	usb2_picophy0: phy1 {
+> +		compatible = "st,stih407-usb2-phy";
+> +		#phy-cells = <0>;
+> +		st,syscfg = <&syscfg_core 0x100 0xf4>;
+> +		resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
+> +			 <&picophyreset STIH407_PICOPHY2_RESET>;
+> +		reset-names = "global", "port";
+> +	};
+> +
+> +	miphy28lp_phy: miphy28lp {
+> +		compatible = "st,miphy28lp-phy";
+> +		st,syscfg = <&syscfg_core>;
+> +		#address-cells	= <1>;
+> +		#size-cells	= <1>;
+>  		ranges;
+> -		compatible = "simple-bus";
+>  
+> -		restart: restart-controller@0 {
+> -			compatible = "st,stih407-restart";
+> -			reg = <0 0>;
+> -			st,syscfg = <&syscfg_sbc_reg>;
+> -			status = "okay";
+> -		};
+> +		phy_port0: port@9b22000 {
+> +			reg = <0x9b22000 0xff>,
+> +			      <0x9b09000 0xff>,
+> +			      <0x9b04000 0xff>;
+> +			reg-names = "sata-up",
+> +				    "pcie-up",
+> +				    "pipew";
+> +
+> +			st,syscfg = <0x114 0x818 0xe0 0xec>;
+> +			#phy-cells = <1>;
+>  
+> -		powerdown: powerdown-controller@0 {
+> -			compatible = "st,stih407-powerdown";
+> -			reg = <0 0>;
+> -			#reset-cells = <1>;
+> +			reset-names = "miphy-sw-rst";
+> +			resets = <&softreset STIH407_MIPHY0_SOFTRESET>;
+>  		};
+>  
+> -		softreset: softreset-controller@0 {
+> -			compatible = "st,stih407-softreset";
+> -			reg = <0 0>;
+> -			#reset-cells = <1>;
+> +		phy_port1: port@9b2a000 {
+> +			reg = <0x9b2a000 0xff>,
+> +			      <0x9b19000 0xff>,
+> +			      <0x9b14000 0xff>;
+> +			reg-names = "sata-up",
+> +				    "pcie-up",
+> +				    "pipew";
+> +
+> +			st,syscfg = <0x118 0x81c 0xe4 0xf0>;
+> +
+> +			#phy-cells = <1>;
+> +
+> +			reset-names = "miphy-sw-rst";
+> +			resets = <&softreset STIH407_MIPHY1_SOFTRESET>;
+>  		};
+>  
+> -		picophyreset: picophyreset-controller@0 {
+> -			compatible = "st,stih407-picophyreset";
+> -			reg = <0 0>;
+> -			#reset-cells = <1>;
+> +		phy_port2: port@8f95000 {
+> +			reg = <0x8f95000 0xff>,
+> +			      <0x8f90000 0xff>;
+> +			reg-names = "pipew",
+> +				    "usb3-up";
+> +
+> +			st,syscfg = <0x11c 0x820>;
+> +
+> +			#phy-cells = <1>;
+> +
+> +			reset-names = "miphy-sw-rst";
+> +			resets = <&softreset STIH407_MIPHY2_SOFTRESET>;
+>  		};
+> +	};
+> +
+> +	st231_gp0: st231-gp0 {
+> +		compatible	= "st,st231-rproc";
+> +		memory-region	= <&gp0_reserved>;
+> +		resets		= <&softreset STIH407_ST231_GP0_SOFTRESET>;
+> +		reset-names	= "sw_reset";
+> +		clocks		= <&clk_s_c0_flexgen CLK_ST231_GP_0>;
+> +		clock-frequency	= <600000000>;
+> +		st,syscfg	= <&syscfg_core 0x22c>;
+> +		#mbox-cells = <1>;
+> +		mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
+> +		mboxes = <&mailbox0 0 2>, <&mailbox2 0 1>, <&mailbox0 0 3>, <&mailbox2 0 0>;
+> +	};
+> +
+> +	st231_delta: st231-delta {
+> +		compatible	= "st,st231-rproc";
+> +		memory-region	= <&delta_reserved>;
+> +		resets		= <&softreset STIH407_ST231_DMU_SOFTRESET>;
+> +		reset-names	= "sw_reset";
+> +		clocks		= <&clk_s_c0_flexgen CLK_ST231_DMU>;
+> +		clock-frequency	= <600000000>;
+> +		st,syscfg	= <&syscfg_core 0x224>;
+> +		#mbox-cells = <1>;
+> +		mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
+> +		mboxes = <&mailbox0 0 0>, <&mailbox3 0 1>, <&mailbox0 0 1>, <&mailbox3 0 0>;
+> +	};
+> +
+> +	delta0 {
+> +		compatible = "st,st-delta";
+> +		clock-names = "delta",
+> +			      "delta-st231",
+> +			      "delta-flash-promip";
+> +		clocks = <&clk_s_c0_flexgen CLK_VID_DMU>,
+> +			 <&clk_s_c0_flexgen CLK_ST231_DMU>,
+> +			 <&clk_s_c0_flexgen CLK_FLASH_PROMIP>;
+> +	};
+> +
+> +	soc {
+> +		#address-cells = <1>;
+> +		#size-cells = <1>;
+> +		interrupt-parent = <&intc>;
+> +		ranges;
+> +		compatible = "simple-bus";
+>  
+>  		syscfg_sbc: sbc-syscfg@9620000 {
+>  			compatible = "st,stih407-sbc-syscfg", "syscon";
+> @@ -189,16 +292,6 @@ syscfg_lpm: lpm-syscfg@94b5100 {
+>  			reg = <0x94b5100 0x1000>;
+>  		};
+>  
+> -		irq-syscfg@0 {
+> -			compatible    = "st,stih407-irq-syscfg";
+> -			reg = <0 0>;
+> -			st,syscfg     = <&syscfg_core>;
+> -			st,irq-device = <ST_IRQ_SYSCFG_PMU_0>,
+> -					<ST_IRQ_SYSCFG_PMU_1>;
+> -			st,fiq-device = <ST_IRQ_SYSCFG_DISABLED>,
+> -					<ST_IRQ_SYSCFG_DISABLED>;
+> -		};
 > -
->                 case ACPI_IORT_NODE_NAMED_COMPONENT:
-> +                       struct acpi_iort_named_component *ncomp;
->                         ncomp = (struct acpi_iort_named_component *)node->node_data;
->                         local_limit = DMA_BIT_MASK(ncomp->memory_address_limit);
->                         limit = min_not_zero(limit, local_limit);
->                         break;
->
->                 case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
-> +                       struct acpi_iort_root_complex *rc;
->                         if (node->revision < 1)
->                                 break;
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>  		/* Display */
+>  		vtg_main: sti-vtg-main@8d02800 {
+>  			compatible = "st,vtg";
+> @@ -389,70 +482,6 @@ i2c@9541000 {
+>  			status = "disabled";
+>  		};
+>  
+> -		usb2_picophy0: phy1@0 {
+> -			compatible = "st,stih407-usb2-phy";
+> -			reg = <0 0>;
+> -			#phy-cells = <0>;
+> -			st,syscfg = <&syscfg_core 0x100 0xf4>;
+> -			resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
+> -				 <&picophyreset STIH407_PICOPHY2_RESET>;
+> -			reset-names = "global", "port";
+> -		};
+> -
+> -		miphy28lp_phy: miphy28lp@0 {
+> -			compatible = "st,miphy28lp-phy";
+> -			st,syscfg = <&syscfg_core>;
+> -			#address-cells	= <1>;
+> -			#size-cells	= <1>;
+> -			ranges;
+> -			reg = <0 0>;
+> -
+> -			phy_port0: port@9b22000 {
+> -				reg = <0x9b22000 0xff>,
+> -				      <0x9b09000 0xff>,
+> -				      <0x9b04000 0xff>;
+> -				reg-names = "sata-up",
+> -					    "pcie-up",
+> -					    "pipew";
+> -
+> -				st,syscfg = <0x114 0x818 0xe0 0xec>;
+> -				#phy-cells = <1>;
+> -
+> -				reset-names = "miphy-sw-rst";
+> -				resets = <&softreset STIH407_MIPHY0_SOFTRESET>;
+> -			};
+> -
+> -			phy_port1: port@9b2a000 {
+> -				reg = <0x9b2a000 0xff>,
+> -				      <0x9b19000 0xff>,
+> -				      <0x9b14000 0xff>;
+> -				reg-names = "sata-up",
+> -					    "pcie-up",
+> -					    "pipew";
+> -
+> -				st,syscfg = <0x118 0x81c 0xe4 0xf0>;
+> -
+> -				#phy-cells = <1>;
+> -
+> -				reset-names = "miphy-sw-rst";
+> -				resets = <&softreset STIH407_MIPHY1_SOFTRESET>;
+> -			};
+> -
+> -			phy_port2: port@8f95000 {
+> -				reg = <0x8f95000 0xff>,
+> -				      <0x8f90000 0xff>;
+> -				reg-names = "pipew",
+> -					    "usb3-up";
+> -
+> -				st,syscfg = <0x11c 0x820>;
+> -
+> -				#phy-cells = <1>;
+> -
+> -				reset-names = "miphy-sw-rst";
+> -				resets = <&softreset STIH407_MIPHY2_SOFTRESET>;
+> -			};
+> -		};
+> -
+>  		spi@9840000 {
+>  			compatible = "st,comms-ssc4-spi";
+>  			reg = <0x9840000 0x110>;
+> @@ -815,34 +844,6 @@ mailbox3: mailbox@8f03000 {
+>  			status		= "okay";
+>  		};
+>  
+> -		st231_gp0: st231-gp0@0 {
+> -			compatible	= "st,st231-rproc";
+> -			reg		= <0 0>;
+> -			memory-region	= <&gp0_reserved>;
+> -			resets		= <&softreset STIH407_ST231_GP0_SOFTRESET>;
+> -			reset-names	= "sw_reset";
+> -			clocks		= <&clk_s_c0_flexgen CLK_ST231_GP_0>;
+> -			clock-frequency	= <600000000>;
+> -			st,syscfg	= <&syscfg_core 0x22c>;
+> -			#mbox-cells = <1>;
+> -			mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
+> -			mboxes = <&mailbox0 0 2>, <&mailbox2 0 1>, <&mailbox0 0 3>, <&mailbox2 0 0>;
+> -		};
+> -
+> -		st231_delta: st231-delta@0 {
+> -			compatible	= "st,st231-rproc";
+> -			reg		= <0 0>;
+> -			memory-region	= <&delta_reserved>;
+> -			resets		= <&softreset STIH407_ST231_DMU_SOFTRESET>;
+> -			reset-names	= "sw_reset";
+> -			clocks		= <&clk_s_c0_flexgen CLK_ST231_DMU>;
+> -			clock-frequency	= <600000000>;
+> -			st,syscfg	= <&syscfg_core 0x224>;
+> -			#mbox-cells = <1>;
+> -			mbox-names = "vq0_rx", "vq0_tx", "vq1_rx", "vq1_tx";
+> -			mboxes = <&mailbox0 0 0>, <&mailbox3 0 1>, <&mailbox0 0 1>, <&mailbox3 0 0>;
+> -		};
+> -
+>  		/* fdma audio */
+>  		fdma0: dma-controller@8e20000 {
+>  			compatible = "st,stih407-fdma-mpe31-11", "st,slim-rproc";
+> @@ -986,16 +987,5 @@ sti_uni_reader1: sti-uni-reader@8d84000 {
+>  
+>  			status = "disabled";
+>  		};
+> -
+> -		delta0@0 {
+> -			compatible = "st,st-delta";
+> -			reg = <0 0>;
+> -			clock-names = "delta",
+> -				      "delta-st231",
+> -				      "delta-flash-promip";
+> -			clocks = <&clk_s_c0_flexgen CLK_VID_DMU>,
+> -				 <&clk_s_c0_flexgen CLK_ST231_DMU>,
+> -				 <&clk_s_c0_flexgen CLK_FLASH_PROMIP>;
+> -		};
+>  	};
+>  };
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+
+Thanks
+Patrice
