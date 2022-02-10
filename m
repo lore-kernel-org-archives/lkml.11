@@ -2,153 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD5BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AEFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:09:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235088AbiBJGI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:08:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53772 "EHLO
+        id S235105AbiBJGJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:09:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229865AbiBJGIx (ORCPT
+        with ESMTP id S235071AbiBJGJd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 01:08:53 -0500
-X-Greylist: delayed 17286 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 22:08:52 PST
-Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC3061E6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:08:52 -0800 (PST)
-X-QQ-mid: bizesmtp31t1644473325t4um6gr6
-Received: from localhost.localdomain (unknown [58.240.82.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 10 Feb 2022 14:08:37 +0800 (CST)
-X-QQ-SSF: 0140000000200020C000B00A0000000
-X-QQ-FEAT: F3yR32iATbgqbQ7dxOEjZ8MGKfPiaMbvMu0Lq+6FSWO29t6tRcEdrRK9bqB6x
-        6aj+EpSZ8mgnCUh5uBOeMlsuP0R9Cuu97YEieN8zDS8/x8QgmK5qPKZqWr7iR9cG6FcziWv
-        6QzARQiZcGm/PMiKERzdDxkcYj7ATOzHWcaTl7cWKZjrXuk/3RymxEBeMDhtp5Wrudj8/Zj
-        4iDluVCjd1pTAXXiWD8Y8EDW5/RnYeVopR43TAJLIreAqjq48kulVMilXMU1x6MX9sTApXG
-        i5CB/SmqFf+gDgrN02X3HfkLzDA/9NK7y/rIQzc9PVDAyBOXi96jgOjsmy1KsGlL6Q+5QtH
-        nY4FDRfAQSfHG3Z49OGOF003OETqbMnzfjdwCbzeyQ4LDK+GBg=
-X-QQ-GoodBg: 2
-From:   Zhen Ni <nizhen@uniontech.com>
-To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, mcgrof@kernel.org,
-        keescook@chromium.org
-Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        Zhen Ni <nizhen@uniontech.com>
-Subject: [PATCH] sched: move rr_timeslice sysctls to rt.c
-Date:   Thu, 10 Feb 2022 14:08:31 +0800
-Message-Id: <20220210060831.26689-1-nizhen@uniontech.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 10 Feb 2022 01:09:33 -0500
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F595FEC;
+        Wed,  9 Feb 2022 22:09:34 -0800 (PST)
+Received: by mail-qv1-xf35.google.com with SMTP id k9so3943476qvv.9;
+        Wed, 09 Feb 2022 22:09:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jT2VUOtIQfoNyG3Ewt7SAd6JYYbSI+5T48hu+9Y9c+c=;
+        b=iu8E8I3Adrnxpo9y5rJvuLSV7Vuh28V4cAxSVRXWS20ZlP/Y+B79F0fvvLIHBup5UV
+         YDErmZhQmRfvCaTVikUeq7bDSUjc8pJksT/ZXMmrbnbpHGj6WCY8eyVlEZEQ1hmGXart
+         PdO7MdNVRFKPO1+WDv5R2q/CNqBwKAfiQF3c5DVNVUGjSR7bglHeU5Pd7+6QJEQk1zEp
+         9QrugWaxry3cpDdjoo04jLq/LwJFWFc9fEc2ywGH7X1vg7zv4XoklrGVdmCdg7F1dkdH
+         EedNkYPgq0sBX4ZiqQBTBqNp6K2nJPeGVpmfBO7Dgd9A6YRfVH1Um/YLQY3sRr859HU4
+         nmiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jT2VUOtIQfoNyG3Ewt7SAd6JYYbSI+5T48hu+9Y9c+c=;
+        b=4V0TLohkAVjRXlzePvMHBaTtPx5VoA54CL33HEu4iQ2+mikzaK4M4cMmWKjfdmVt4p
+         6SVFu2siM8QxV3Th7tU9NybINLUQi+tX77e/4mJmlw0chSXULXxyAICetbdrG+hZ0cIp
+         kkyjpuIhCOAlY6si6AdzXJkGouKZ+WPQl8yM0ZD+m5lkblyPYlUfxaVAvGiNAMbpB8O3
+         glyLOr3mnrAimRDSaUbwP35dofossnex1xRBw++oFGfiozvzrWtMZuCtc1Bu3tTEx3iE
+         HrvEPnEnJ+qE70xpuYPct5nJ+O39C5ewpPhNtHO9ZPGsxiwOVAMFOhJWRul8LgYavJC/
+         ysuA==
+X-Gm-Message-State: AOAM530MB92fB3ViMClRb4KEL8+7xBXAkwHq/tRD/JI6WK2UW55FuV3V
+        zBmgmFZRANaoqiO8Yzpqcpo=
+X-Google-Smtp-Source: ABdhPJxR8cwFiyTedmD0fWPi9wFBQDTgOLiLzNVHnY4uMjyUFyoKtZw4B4JwNMDOFzLuvLlRPQ5yvg==
+X-Received: by 2002:a05:6214:21e8:: with SMTP id p8mr4105812qvj.116.1644473373741;
+        Wed, 09 Feb 2022 22:09:33 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id o3sm10244425qtw.3.2022.02.09.22.09.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 22:09:33 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     luciano.coelho@intel.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        johannes.berg@intel.com, trix@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH V2] iwlwifi: dvm: use struct_size over open coded arithmetic
+Date:   Thu, 10 Feb 2022 06:09:26 +0000
+Message-Id: <20220210060926.1608378-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
-X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-move rr_timeslice sysctls to rt.c and use the new
-register_sysctl_init() to register the sysctl interface.
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Replace zero-length array with flexible-array member and make use
+of the struct_size() helper in kmalloc(). For example:
+
+struct iwl_wipan_noa_data {
+    ...
+    u8 data[];
+};
+
+Make use of the struct_size() helper instead of an open-coded version
+in order to avoid any potential type mistakes.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
 ---
- include/linux/sched/sysctl.h |  3 ---
- kernel/sched/rt.c            | 28 ++++++++++++++++++++++++++--
- kernel/sysctl.c              |  7 -------
- 3 files changed, 26 insertions(+), 12 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/dvm/rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-index d416d8f45186..f6466040883c 100644
---- a/include/linux/sched/sysctl.h
-+++ b/include/linux/sched/sysctl.h
-@@ -45,11 +45,8 @@ extern unsigned int sysctl_sched_uclamp_util_min_rt_default;
- extern unsigned int sysctl_sched_autogroup_enabled;
- #endif
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
+index db0c41bbeb0e..bc6ed2f712f9 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/rx.c
+@@ -915,7 +915,7 @@ static void iwlagn_rx_noa_notification(struct iwl_priv *priv,
+ 		len += 1 + 2;
+ 		copylen += 1 + 2;
  
--extern int sysctl_sched_rr_timeslice;
- extern int sched_rr_timeslice;
- 
--int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
--		size_t *lenp, loff_t *ppos);
- int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos);
- int sysctl_sched_uclamp_handler(struct ctl_table *table, int write,
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index 7b4f4fbbb404..e8316e0307b0 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -8,10 +8,33 @@
- #include "pelt.h"
- 
- int sched_rr_timeslice = RR_TIMESLICE;
--int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
-+static int sysctl_sched_rr_timeslice = (MSEC_PER_SEC / HZ) * RR_TIMESLICE;
- /* More than 4 hours if BW_SHIFT equals 20. */
- static const u64 max_rt_runtime = MAX_BW;
- 
-+static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-+		size_t *lenp, loff_t *ppos);
-+
-+#ifdef CONFIG_SYSCTL
-+static struct ctl_table sched_rr_sysctls[] = {
-+	{
-+		.procname       = "sched_rr_timeslice_ms",
-+		.data           = &sysctl_sched_rr_timeslice,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = sched_rr_handler,
-+	},
-+	{}
-+};
-+
-+static void __init sched_rr_sysctl_init(void)
-+{
-+	register_sysctl_init("kernel", sched_rr_sysctls);
-+}
-+#else
-+#define sched_rr_sysctl_init() do { } while (0)
-+#endif
-+
- static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
- 
- struct rt_bandwidth def_rt_bandwidth;
-@@ -2471,6 +2494,7 @@ void __init init_sched_rt_class(void)
- 		zalloc_cpumask_var_node(&per_cpu(local_cpu_mask, i),
- 					GFP_KERNEL, cpu_to_node(i));
- 	}
-+	sched_rr_sysctl_init();
- }
- #endif /* CONFIG_SMP */
- 
-@@ -2967,7 +2991,7 @@ int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
- 	return ret;
- }
- 
--int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
-+static int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
- 		size_t *lenp, loff_t *ppos)
- {
- 	int ret;
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 981a1902d7a4..d0c45bf6801d 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -1720,13 +1720,6 @@ static struct ctl_table kern_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
--	{
--		.procname	= "sched_rr_timeslice_ms",
--		.data		= &sysctl_sched_rr_timeslice,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= sched_rr_handler,
--	},
- #ifdef CONFIG_UCLAMP_TASK
- 	{
- 		.procname	= "sched_util_clamp_min",
+-		new_data = kmalloc(sizeof(*new_data) + len, GFP_ATOMIC);
++		new_data = kmalloc(struct_size(new_data, data, len), GFP_ATOMIC);
+ 		if (new_data) {
+ 			new_data->length = len;
+ 			new_data->data[0] = WLAN_EID_VENDOR_SPECIFIC;
 -- 
-2.20.1
-
-
+2.25.1
 
