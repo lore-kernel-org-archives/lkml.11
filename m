@@ -2,177 +2,305 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4660C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 04:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33003C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 04:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiBJE7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 23:59:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38916 "EHLO
+        id S233804AbiBJE7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 23:59:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiBJE66 (ORCPT
+        with ESMTP id S233648AbiBJE7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 23:58:58 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EC31F6
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 20:59:00 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id d18-20020a9d51d2000000b005a09728a8c2so3028062oth.3
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 20:59:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rEjmJFMNh9IQm8dtWbQTvDdM437tEa4s5NElVG565pw=;
-        b=OwrqedecyktT/3v6gq7Esl+6hdKaH7VQnsE4eqS1IFppKK9mFc0eFQVDgRMMGCVV4p
-         qrcQb8XJRo1NIwMtyyuzs2Rrg0K+wLd6z/rZahX/F2Pz/AaX58OFXz6vjQ+9/xwSub5W
-         qSINAbwFA1Jk1ww1d1QXZoeEyLCYYZVVuiRYleFb3n4kGVoFc83652O+aPz/GSRiCQKO
-         y4vERDNn7rRWn0fiMTRUNJvZv6k9wnD5sZETIz4O0wg0QbfLbDjtteT6DfexE+rAY2+y
-         G2oln+nAJ8qiOUEeRwrdeW7FI9cNSa9akwBSQ1b6EPC/v4p3R9My6xdQQ2dJbIAhIOR/
-         CfWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rEjmJFMNh9IQm8dtWbQTvDdM437tEa4s5NElVG565pw=;
-        b=dkspg+DGBfbYlXKSVevAg0umBT73Y6e9K1a4y92+QymMm9hzGebNrt+VLhxjReofEL
-         J6Px1JduSF84HJ8MJBdg3TEaiGwgvhaqpyfxowB4gN6fo1AL1h3MCWFEQnSxAR9KuZhS
-         eQzwnDUhKOTPt0nJNd2whR2e+FqEehv63LMotNNldYnljzO4KQAcqniCT829nd4bFD8K
-         9/ATMC1CYG6+VJtJO9qCMlTm5t0fayyaFIDoUKB2kFAf1phGMUUo4H/B/i5ywxLfJSOn
-         gaarcozY7yAUdCiPNaQoL6xY5jZ0jaNW7Ev1lH9En2ryrLYsniZe+bjMyqIq7iiuISPN
-         CWgw==
-X-Gm-Message-State: AOAM531WN7KrgHzBDOd97oRazyXdfOQ0ZtzQCO0HJhOsyby7qMHeKRkF
-        0RABQX6u/NRkJqPvD000FGyYPvCFc5gMTg==
-X-Google-Smtp-Source: ABdhPJxrwfdfPFCNzFRaI1TLvD5ToWqehkssypEQUuRp9LRC9ggZ8kzc5P2CeIZ7uOI/KmDXzscNtA==
-X-Received: by 2002:a05:6830:4c9:: with SMTP id s9mr2389657otd.12.1644469139953;
-        Wed, 09 Feb 2022 20:58:59 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id t13sm2453201oai.37.2022.02.09.20.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 20:58:59 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] cpufreq: qcom-hw: Add support for per-core-dcvs
-Date:   Wed,  9 Feb 2022 21:01:17 -0800
-Message-Id: <20220210050117.747569-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
+        Wed, 9 Feb 2022 23:59:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382101FD;
+        Wed,  9 Feb 2022 20:59:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8D0261BC2;
+        Thu, 10 Feb 2022 04:59:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32187C004E1;
+        Thu, 10 Feb 2022 04:59:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644469152;
+        bh=xpSvsZo9uIV0gv5kg5afu2dn4W4prSq2494jXFlLryk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LGAaT2n8o/rRfG0ba+hSPaCFMYinhEO78KexL2r1ZHN7vSdXzms4x++Lx/P6wtxBL
+         wyFLiDCkCbwyoOeFY1uD8QPOrfQOPd7m0g6bi71JspfBODLOv9vizoz104odfTXcAB
+         MIZ0FblxbGnpmoig7yPFQjto1AUJX8RAOxyvzrSubxIFKdQdqt5j566bnOXIRqhB6Q
+         eWk4odKOgFJ3uUXizEipo8c1I6j1Y8pBL5GRMSFrkzmMjj5kuIckd4igTOwRz/qE9G
+         Jgm4Jac8haD9fzqT3BS2/jAMHdpM58RQnhNopOhBnd5XNxAW5E1gRG155e3Rnm9IPr
+         gkH3M1Tlruyxw==
+Date:   Wed, 9 Feb 2022 20:59:11 -0800
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, Stable <stable@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        "Darrick J . Wong" <darrick.wong@oracle.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        cluster-devel@redhat.com,
+        syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] Revert "iomap: fall back to buffered writes for
+ invalidation failures"
+Message-ID: <20220210045911.GF8338@magnolia>
+References: <20220209085243.3136536-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209085243.3136536-1-lee.jones@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OSM and EPSS hardware controls the frequency of each cluster in the
-system based on requests from the OS and various limiting factors, such
-as input from LMH.
+On Wed, Feb 09, 2022 at 08:52:43AM +0000, Lee Jones wrote:
+> This reverts commit 60263d5889e6dc5987dc51b801be4955ff2e4aa7.
+> 
+> Reverting since this commit opens a potential avenue for abuse.
 
-In most systems the vote from the OS is done using a single register per
-cluster, but some systems are configured to instead take one request per
-core.  In this configuration a set of consecutive registers are used for
-the OS to request the frequency of each of the cores within the cluster.
-The information is then aggregated in the hardware and the frequency for
-the cluster is determined.
+What kind of abuse?  Did you conclude there's an avenue solely because
+some combination of userspace rigging produced a BUG warning?  Or is
+this a real problem that someone found?
 
-As the current implementation ends up only requesting a frequency for
-the first core in each cluster and only the vote of non-idle cores are
-considered it's often the case that the cluster will be clocked (much)
-lower than expected.
+> The C-reproducer and more information can be found at the link below.
 
-It's possible that there are benefits of performing the per-core
-requests from the OS, but more investigation of the outcome is needed
-before introducing such support. As such this patch extends the request
-for the cluster to be written to all the cores.
+No.  Post the information and your analysis here.  I'm not going to dig
+into some Google site to find out what happened, and I'm not going to
+assume that future developers will be able to access that URL to learn
+why this patch was created.
 
-The weight of the policy's related_cpus is used to determine how many
-cores, and hence consecutive registers, each cluster has.
+I am not convinced that this revert is a proper fix for ... whatever is
+the problem, because you never explained what happened.
 
-The OS is not permitted to disable the per-core dcvs feature.
+> With this patch applied, I can no longer get the repro to trigger.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/cpufreq/qcom-cpufreq-hw.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+With ext4 completely reverted, I can no longer get the repro to trigger
+either.
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index 05f3d7876e44..8d2b65c782e6 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -28,6 +28,7 @@
- 
- struct qcom_cpufreq_soc_data {
- 	u32 reg_enable;
-+	u32 reg_dcvs_ctrl;
- 	u32 reg_freq_lut;
- 	u32 reg_volt_lut;
- 	u32 reg_current_vote;
-@@ -50,6 +51,8 @@ struct qcom_cpufreq_data {
- 	bool cancel_throttle;
- 	struct delayed_work throttle_work;
- 	struct cpufreq_policy *policy;
-+
-+	bool per_core_dcvs;
- };
- 
- static unsigned long cpu_hw_rate, xo_rate;
-@@ -102,9 +105,14 @@ static int qcom_cpufreq_hw_target_index(struct cpufreq_policy *policy,
- 	struct qcom_cpufreq_data *data = policy->driver_data;
- 	const struct qcom_cpufreq_soc_data *soc_data = data->soc_data;
- 	unsigned long freq = policy->freq_table[index].frequency;
-+	unsigned int i;
- 
- 	writel_relaxed(index, data->base + soc_data->reg_perf_state);
- 
-+	if (data->per_core_dcvs)
-+		for (i = 1; i < cpumask_weight(policy->related_cpus); i++)
-+			writel_relaxed(index, data->base + soc_data->reg_perf_state + i * 4);
-+
- 	if (icc_scaling_enabled)
- 		qcom_cpufreq_set_bw(policy, freq);
- 
-@@ -137,10 +145,15 @@ static unsigned int qcom_cpufreq_hw_fast_switch(struct cpufreq_policy *policy,
- 	struct qcom_cpufreq_data *data = policy->driver_data;
- 	const struct qcom_cpufreq_soc_data *soc_data = data->soc_data;
- 	unsigned int index;
-+	unsigned int i;
- 
- 	index = policy->cached_resolved_idx;
- 	writel_relaxed(index, data->base + soc_data->reg_perf_state);
- 
-+	if (data->per_core_dcvs)
-+		for (i = 1; i < cpumask_weight(policy->related_cpus); i++)
-+			writel_relaxed(index, data->base + soc_data->reg_perf_state + i * 4);
-+
- 	return policy->freq_table[index].frequency;
- }
- 
-@@ -342,6 +355,7 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
- 
- static const struct qcom_cpufreq_soc_data qcom_soc_data = {
- 	.reg_enable = 0x0,
-+	.reg_dcvs_ctrl = 0xbc,
- 	.reg_freq_lut = 0x110,
- 	.reg_volt_lut = 0x114,
- 	.reg_current_vote = 0x704,
-@@ -351,6 +365,7 @@ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
- 
- static const struct qcom_cpufreq_soc_data epss_soc_data = {
- 	.reg_enable = 0x0,
-+	.reg_dcvs_ctrl = 0xb0,
- 	.reg_freq_lut = 0x100,
- 	.reg_volt_lut = 0x200,
- 	.reg_perf_state = 0x320,
-@@ -481,6 +496,9 @@ static int qcom_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
- 		goto error;
- 	}
- 
-+	if (readl_relaxed(base + data->soc_data->reg_dcvs_ctrl) & 0x1)
-+		data->per_core_dcvs = true;
-+
- 	qcom_get_related_cpus(index, policy->cpus);
- 	if (!cpumask_weight(policy->cpus)) {
- 		dev_err(dev, "Domain-%d failed to get related CPUs\n", index);
--- 
-2.33.1
+>   kernel BUG at fs/ext4/inode.c:2647!
+>   invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+>   CPU: 0 PID: 459 Comm: syz-executor359 Tainted: G        W         5.10.93-syzkaller-01028-g0347b1658399 #0
 
+What BUG on fs/ext4/inode.c:2647?
+
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/fs/ext4/inode.c?h=v5.10.93#n2647
+
+All I see is a call to pagevec_release()?  There's a BUG_ON further up
+if we wait for page writeback but then it still has Writeback set.  But
+I don't see anything in pagevec_release that would actually result in a
+BUG warning.
+
+Oh, right, this is one of those inscrutable syzkaller things, where a
+person can spend hours figuring out what the hell it set up.
+
+Yeah...no, you don't get to submit patches to core kernel code, claim
+it's not your responsibility to know anything about a subsystem that you
+want to patch, and then expect us to do the work for you.  If you pick
+up a syzkaller report, you get to figure out what broke, why, and how to
+fix it in a reasonable manner.
+
+You're a maintainer, would you accept a patch like this?
+
+NAK.
+
+--D
+
+OH WAIT, you're running this on the Android 5.10 kernel, aren't you?
+The BUG report came from page_buffers failing to find any buffer heads
+attached to the page.
+https://android.googlesource.com/kernel/common/+/refs/heads/android12-5.10-2022-02/fs/ext4/inode.c#2647
+
+Yeah, don't care.
+
+>   Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+>   RIP: 0010:mpage_prepare_extent_to_map+0xbe9/0xc00 fs/ext4/inode.c:2647
+>   Code: e8 fc bd c3 ff e9 80 f6 ff ff 44 89 e9 80 e1 07 38 c1 0f 8c a6 fe ff ff 4c 89 ef e8 e1 bd c3 ff e9 99 fe ff ff e8 87 c9 89 ff <0f> 0b e8 80 c9 89 ff 0f 0b e8 79 1e b8 02 66 0f 1f 84 00 00 00 00
+>   RSP: 0018:ffffc90000e2e9c0 EFLAGS: 00010293
+>   RAX: ffffffff81e321f9 RBX: 0000000000000000 RCX: ffff88810c12cf00
+>   RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
+>   RBP: ffffc90000e2eb90 R08: ffffffff81e31e71 R09: fffff940008d68b1
+>   R10: fffff940008d68b1 R11: 0000000000000000 R12: ffffea00046b4580
+>   R13: ffffc90000e2ea80 R14: 000000000000011e R15: dffffc0000000000
+>   FS:  00007fcfd0717700(0000) GS:ffff8881f7000000(0000) knlGS:0000000000000000
+>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>   CR2: 00007fcfd07d5520 CR3: 000000010a142000 CR4: 00000000003506b0
+>   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>   Call Trace:
+>    ext4_writepages+0xcbb/0x3950 fs/ext4/inode.c:2776
+>    do_writepages+0x13a/0x280 mm/page-writeback.c:2358
+>    __filemap_fdatawrite_range+0x356/0x420 mm/filemap.c:427
+>    filemap_write_and_wait_range+0x64/0xe0 mm/filemap.c:660
+>    __iomap_dio_rw+0x621/0x10c0 fs/iomap/direct-io.c:495
+>    iomap_dio_rw+0x35/0x80 fs/iomap/direct-io.c:611
+>    ext4_dio_write_iter fs/ext4/file.c:571 [inline]
+>    ext4_file_write_iter+0xfc5/0x1b70 fs/ext4/file.c:681
+>    do_iter_readv_writev+0x548/0x740 include/linux/fs.h:1941
+>    do_iter_write+0x182/0x660 fs/read_write.c:866
+>    vfs_iter_write+0x7c/0xa0 fs/read_write.c:907
+>    iter_file_splice_write+0x7fb/0xf70 fs/splice.c:686
+>    do_splice_from fs/splice.c:764 [inline]
+>    direct_splice_actor+0xfe/0x130 fs/splice.c:933
+>    splice_direct_to_actor+0x4f4/0xbc0 fs/splice.c:888
+>    do_splice_direct+0x28b/0x3e0 fs/splice.c:976
+>    do_sendfile+0x914/0x1390 fs/read_write.c:1257
+> 
+> Link: https://syzkaller.appspot.com/bug?extid=41c966bf0729a530bd8d
+> 
+> From the patch:
+> Cc: Stable <stable@vger.kernel.org>
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Dave Chinner <dchinner@redhat.com>
+> Cc: Goldwyn Rodrigues <rgoldwyn@suse.com>
+> Cc: Darrick J. Wong <darrick.wong@oracle.com>
+> Cc: Bob Peterson <rpeterso@redhat.com>
+> Cc: Damien Le Moal <damien.lemoal@wdc.com>
+> Cc: Theodore Ts'o <tytso@mit.edu> # for ext4
+> Cc: Andreas Gruenbacher <agruenba@redhat.com>
+> Cc: Ritesh Harjani <riteshh@linux.ibm.com>
+> 
+> Others:
+> Cc: Johannes Thumshirn <jth@kernel.org>
+> Cc: linux-xfs@vger.kernel.org
+> Cc: linux-fsdevel@vger.kernel.org
+> Cc: linux-ext4@vger.kernel.org
+> Cc: cluster-devel@redhat.com
+> 
+> Fixes: 60263d5889e6d ("iomap: fall back to buffered writes for invalidation failures")
+> Reported-by: syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
+> Signed-off-by: Lee Jones <lee.jones@linaro.org>
+> ---
+>  fs/ext4/file.c       |  2 --
+>  fs/gfs2/file.c       |  3 +--
+>  fs/iomap/direct-io.c | 16 +++++-----------
+>  fs/iomap/trace.h     |  1 -
+>  fs/xfs/xfs_file.c    |  4 ++--
+>  fs/zonefs/super.c    |  7 ++-----
+>  6 files changed, 10 insertions(+), 23 deletions(-)
+> 
+> diff --git a/fs/ext4/file.c b/fs/ext4/file.c
+> index 3ed8c048fb12c..cb347c3b35535 100644
+> --- a/fs/ext4/file.c
+> +++ b/fs/ext4/file.c
+> @@ -551,8 +551,6 @@ static ssize_t ext4_dio_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>  		iomap_ops = &ext4_iomap_overwrite_ops;
+>  	ret = iomap_dio_rw(iocb, from, iomap_ops, &ext4_dio_write_ops,
+>  			   is_sync_kiocb(iocb) || unaligned_io || extend);
+> -	if (ret == -ENOTBLK)
+> -		ret = 0;
+>  
+>  	if (extend)
+>  		ret = ext4_handle_inode_extension(inode, offset, ret, count);
+> diff --git a/fs/gfs2/file.c b/fs/gfs2/file.c
+> index b39b339feddc9..847adb97380d3 100644
+> --- a/fs/gfs2/file.c
+> +++ b/fs/gfs2/file.c
+> @@ -835,8 +835,7 @@ static ssize_t gfs2_file_direct_write(struct kiocb *iocb, struct iov_iter *from,
+>  
+>  	ret = iomap_dio_rw(iocb, from, &gfs2_iomap_ops, NULL,
+>  			   is_sync_kiocb(iocb));
+> -	if (ret == -ENOTBLK)
+> -		ret = 0;
+> +
+>  out:
+>  	gfs2_glock_dq(gh);
+>  out_uninit:
+> diff --git a/fs/iomap/direct-io.c b/fs/iomap/direct-io.c
+> index 933f234d5becd..ddcd06c0c452d 100644
+> --- a/fs/iomap/direct-io.c
+> +++ b/fs/iomap/direct-io.c
+> @@ -10,7 +10,6 @@
+>  #include <linux/backing-dev.h>
+>  #include <linux/uio.h>
+>  #include <linux/task_io_accounting_ops.h>
+> -#include "trace.h"
+>  
+>  #include "../internal.h"
+>  
+> @@ -413,9 +412,6 @@ iomap_dio_actor(struct inode *inode, loff_t pos, loff_t length,
+>   * can be mapped into multiple disjoint IOs and only a subset of the IOs issued
+>   * may be pure data writes. In that case, we still need to do a full data sync
+>   * completion.
+> - *
+> - * Returns -ENOTBLK In case of a page invalidation invalidation failure for
+> - * writes.  The callers needs to fall back to buffered I/O in this case.
+>   */
+>  struct iomap_dio *
+>  __iomap_dio_rw(struct kiocb *iocb, struct iov_iter *iter,
+> @@ -493,15 +489,13 @@ __iomap_dio_rw(struct kiocb *iocb, struct iov_iter *iter,
+>  	if (iov_iter_rw(iter) == WRITE) {
+>  		/*
+>  		 * Try to invalidate cache pages for the range we are writing.
+> -		 * If this invalidation fails, let the caller fall back to
+> -		 * buffered I/O.
+> +		 * If this invalidation fails, tough, the write will still work,
+> +		 * but racing two incompatible write paths is a pretty crazy
+> +		 * thing to do, so we don't support it 100%.
+>  		 */
+>  		if (invalidate_inode_pages2_range(mapping, pos >> PAGE_SHIFT,
+> -				end >> PAGE_SHIFT)) {
+> -			trace_iomap_dio_invalidate_fail(inode, pos, count);
+> -			ret = -ENOTBLK;
+> -			goto out_free_dio;
+> -		}
+> +				end >> PAGE_SHIFT))
+> +			dio_warn_stale_pagecache(iocb->ki_filp);
+>  
+>  		if (!wait_for_completion && !inode->i_sb->s_dio_done_wq) {
+>  			ret = sb_init_dio_done_wq(inode->i_sb);
+> diff --git a/fs/iomap/trace.h b/fs/iomap/trace.h
+> index fdc7ae388476f..5693a39d52fb6 100644
+> --- a/fs/iomap/trace.h
+> +++ b/fs/iomap/trace.h
+> @@ -74,7 +74,6 @@ DEFINE_EVENT(iomap_range_class, name,	\
+>  DEFINE_RANGE_EVENT(iomap_writepage);
+>  DEFINE_RANGE_EVENT(iomap_releasepage);
+>  DEFINE_RANGE_EVENT(iomap_invalidatepage);
+> -DEFINE_RANGE_EVENT(iomap_dio_invalidate_fail);
+>  
+>  #define IOMAP_TYPE_STRINGS \
+>  	{ IOMAP_HOLE,		"HOLE" }, \
+> diff --git a/fs/xfs/xfs_file.c b/fs/xfs/xfs_file.c
+> index 5b0f93f738372..43e2c057214d9 100644
+> --- a/fs/xfs/xfs_file.c
+> +++ b/fs/xfs/xfs_file.c
+> @@ -589,8 +589,8 @@ xfs_file_dio_aio_write(
+>  	xfs_iunlock(ip, iolock);
+>  
+>  	/*
+> -	 * No fallback to buffered IO after short writes for XFS, direct I/O
+> -	 * will either complete fully or return an error.
+> +	 * No fallback to buffered IO on errors for XFS, direct IO will either
+> +	 * complete fully or fail.
+>  	 */
+>  	ASSERT(ret < 0 || ret == count);
+>  	return ret;
+> diff --git a/fs/zonefs/super.c b/fs/zonefs/super.c
+> index bec47f2d074be..d54fbef3db4df 100644
+> --- a/fs/zonefs/super.c
+> +++ b/fs/zonefs/super.c
+> @@ -851,11 +851,8 @@ static ssize_t zonefs_file_write_iter(struct kiocb *iocb, struct iov_iter *from)
+>  	if (iocb->ki_pos >= ZONEFS_I(inode)->i_max_size)
+>  		return -EFBIG;
+>  
+> -	if (iocb->ki_flags & IOCB_DIRECT) {
+> -		ssize_t ret = zonefs_file_dio_write(iocb, from);
+> -		if (ret != -ENOTBLK)
+> -			return ret;
+> -	}
+> +	if (iocb->ki_flags & IOCB_DIRECT)
+> +		return zonefs_file_dio_write(iocb, from);
+>  
+>  	return zonefs_file_buffered_write(iocb, from);
+>  }
+> -- 
+> 2.35.0.263.gb82422642f-goog
+> 
