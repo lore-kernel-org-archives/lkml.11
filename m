@@ -2,228 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83975C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30ECC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241512AbiBJMSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 07:18:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35560 "EHLO
+        id S241518AbiBJMVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 07:21:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232947AbiBJMSC (ORCPT
+        with ESMTP id S232947AbiBJMU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 07:18:02 -0500
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D864B54;
-        Thu, 10 Feb 2022 04:18:03 -0800 (PST)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21AC9CLd013346;
-        Thu, 10 Feb 2022 12:17:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=Tus0124XqOoj0fvHq9TmPa2z5itSeMn54MsAmqMBUbA=;
- b=Mge+M6wOHtqWPhQ8/j+UEmLLKrd6gYl91qjPRNzq4q/QoR6Xfie0zj8tvGvf1jFAbM1S
- ZXtDNMraCu9Tsp/1FqlJR8Lf59RIOpdfQJxbrvyNeIfornHwJSNhRIJlWPEo/aULanYb
- 9fXHmPNQNrRgFLyPzkS7fgOFEgaPcGvl9h1yztgv3ECpzf4lPLBlfkT6RdZ67GZNpE4o
- CMPmFDZsQGOHPQGBaWVpZac/D6bZEGx4QZIGZexrPzmDI2NgkfQC7K7ADu7TJ0j+P9Jv
- 0OWR+xo61m4QxkZ4H/XdAlGFkRDJFkM+MFwGe4bHIorAt56NTzm9FsvZydNy07xzLtRw pQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3e368u0wq6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Feb 2022 12:17:24 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21ACGp3u167374;
-        Thu, 10 Feb 2022 12:17:23 GMT
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2172.outbound.protection.outlook.com [104.47.58.172])
-        by userp3020.oracle.com with ESMTP id 3e1jpv4q7e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 10 Feb 2022 12:17:23 +0000
+        Thu, 10 Feb 2022 07:20:58 -0500
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2050.outbound.protection.outlook.com [40.107.223.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CC3B90;
+        Thu, 10 Feb 2022 04:20:59 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O9DUDjKRf3zBBQ0dY1xP+L9XQ0r6wi1+VfdknSYqSFXcMMWigPMINv0XaxPl/5Xrg5Xp6xokjzsukcqtDYROaSRMiGxW7Ck0MVenaoQE+5oJtc9rdUIE5V+56Ngo+qJPdwOA1z8C/9g6pG7zskTNYCbG6y2M4NHOOYSW86Bb0rpmn1YBb3/zjOluCsAJHjQoHXso+5Lb20tdF7cILDEiYT/OfSnmFptZvjwjueCgo5vOfAfspkF6PZnk3+zHLir72nXLgUrg2okHrvMbeyKn2HYcXwfZlbzthibILbGd/dLgVUXSF8YxI82NmXiLhcmnAqFaHOMNQyxYOzjrUeB50w==
+ b=ThzTmLc/mgliYA+GnpWhhrE5Lzpd4wO0eVD1BPGn8vfhNnG5KPKPS6HfapHaAj6BetQCdk4JWtsEa1z6IZf2kTPxXYuOUWZrc5oeS0mcGNXN7epi7n1+MPMUD6iUdRNXHJq4YF9kNXWxF7uN2gmLLUnG5bEOVTEyhrN+QKO567UGHCp01AH8bRwbEIl5E5rV1UzEdNDCx5ijPAjQJcBI+VU5QjYFcg6XnOMcxuwoLuT0dj5XnI8ZJWt21eKIBVLWm535855UsPA66CoMStFYb2tJcbyJFwbwoNa34vIFMLk2BCy4j8cKxsFGSwtsZOSkU4JMiHcuTMHCL8X4yceHaw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Tus0124XqOoj0fvHq9TmPa2z5itSeMn54MsAmqMBUbA=;
- b=dn6GkY5MuKAtBUuqXoiZsSRgYgLujt1htfbVIokMFN+7kouEQ49i5T1+4Hu+peNMbDe00J0JH19WG/SSR2A1N4JvIUgCg4aYpRFb6O19hBp8xO2Q4UH2Q6IJIFplzvkoxulRZn3yxXKdZ6qbGsEYSQXmKTrOpEgV8uVaXvkN6AobrGJfI4aB5IQA5rmJz14x+fQdMk7eY46drI2Qqt142e2SxYqtZdDlZToqlOrFv6EaqrqMaS6rRQyuF78TQaqAGNzJd3vsS+slIlv3D9rRpvew7lHOgbv47gVyFW11vgC+ZbfRCt/fIl/kiL9jjIiemZlEV2iQ5/S/bXp94Kka6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+ bh=y2Iyuaqg5xIcU7KrdKiJI14VNxyCV2UqV8oSsChZfvs=;
+ b=eF//yTYV4gcmyNnkHUVGXnOecIsJgZoqW6M3DsPB5yZAB+sKHNx5+XXIXQHxUCH+NrBeQKCbLKVd9oAY+PL2KvkNXTtSugMrUmhGDes4ceY+IBn1/gVEhKDRPOGgtD7Jh2QWgdkOpxqefyM6a2N04IWWFcV+N1DisNU32KQGBwRXJGV7/yKf0Y1HJ+fIT5jejA+kVqQt4FTo3R3XA9DjssYmVF3YdBuzE5/WOpn+24jl1vgMB9XWO+5yBrfgCCeEf4BoEOF0EDkyfn7UQfxLGI8bCZ9OT8zLZYnm1oZRUR9lhpe9FngsNaTJjV9BbeFCTPGKyO4bZ6lTOUihS4/cNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Tus0124XqOoj0fvHq9TmPa2z5itSeMn54MsAmqMBUbA=;
- b=opOVmbZjD6I4jSgijScNU0o7OptdkrC9XQzh8rmZ0ExnYof5CewRtafr2kXXH2RhrxHE+26cWkog7ofY3oiqf/Dx7s2kfx1Hcu+4uhTzccs5r47wNLB98jEw2Ne9cKyiBnjpTHbfOdqAIODTwAFOe7N4kR5/M5O7gvJei620ReI=
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by DM6PR10MB2651.namprd10.prod.outlook.com (2603:10b6:5:b9::12) with
+ bh=y2Iyuaqg5xIcU7KrdKiJI14VNxyCV2UqV8oSsChZfvs=;
+ b=Amj1ZrLSEAy6DqBjMCvkh8N4lSGpbT5zsQShj06KVHwjj0CCagMztnK0IU/HPe5nxuHYR4tl98S0vXQLFRaki5tnhx6b3NxqfcJ544JD0dyxa2QTPui9bVw48Usf3XjX4LYS/dcp3xIOyH04wIUtG94f/xGGqL2Mq7wZO0wnz7w=
+Received: from BN9PR03CA0850.namprd03.prod.outlook.com (2603:10b6:408:13d::15)
+ by DM5PR0201MB3447.namprd02.prod.outlook.com (2603:10b6:4:79::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 12:17:21 +0000
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::4910:964a:4156:242a]) by BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::4910:964a:4156:242a%5]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
- 12:17:20 +0000
-Message-ID: <97b17522-ec57-3ad5-b9cf-037835158e48@oracle.com>
-Date:   Thu, 10 Feb 2022 12:17:12 +0000
-Subject: Re: [PATCH RFC 15/39] KVM: x86/xen: handle PV spinlocks slowpath
-Content-Language: en-US
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     Ankur Arora <ankur.a.arora@oracle.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        =?UTF-8?B?UmFkaW0gS3LEjW3DocWZ?= <rkrcmar@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        kvm@vger.kernel.org, metikaya@amazon.co.uk,
-        linux-kernel@vger.kernel.org
-References: <20190220201609.28290-1-joao.m.martins@oracle.com>
- <20190220201609.28290-16-joao.m.martins@oracle.com>
- <ce716485bb0b3097cefb77c1ec53e1834bef2e06.camel@infradead.org>
-From:   Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <ce716485bb0b3097cefb77c1ec53e1834bef2e06.camel@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LNXP265CA0062.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:5d::26) To BLAPR10MB4835.namprd10.prod.outlook.com
- (2603:10b6:208:331::11)
+ 2022 12:20:57 +0000
+Received: from BN1NAM02FT031.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::75) by BN9PR03CA0850.outlook.office365.com
+ (2603:10b6:408:13d::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
+ Transport; Thu, 10 Feb 2022 12:20:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ BN1NAM02FT031.mail.protection.outlook.com (10.13.2.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4975.11 via Frontend Transport; Thu, 10 Feb 2022 12:20:57 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 10 Feb 2022 04:20:42 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 10 Feb 2022 04:20:42 -0800
+Envelope-to: git@xilinx.com,
+ robh@kernel.org,
+ linux-can@vger.kernel.org,
+ wg@grandegger.com,
+ netdev@vger.kernel.org,
+ davem@davemloft.net,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ kuba@kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ mkl@pengutronix.de,
+ robh+dt@kernel.org
+Received: from [10.254.241.49] (port=45360)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <michal.simek@xilinx.com>)
+        id 1nI8RF-000Cme-K7; Thu, 10 Feb 2022 04:20:42 -0800
+Message-ID: <8132b563-c726-36aa-c210-937a996784c4@xilinx.com>
+Date:   Thu, 10 Feb 2022 13:20:37 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] dt-bindings: can: xilinx_can: Convert Xilinx CAN
+ binding to YAML
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
+CC:     <naga.sureshkumar.relli@xilinx.com>, <linux-can@vger.kernel.org>,
+        <wg@grandegger.com>, <netdev@vger.kernel.org>,
+        <appana.durga.rao@xilinx.com>, <git@xilinx.com>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <linux-kernel@vger.kernel.org>,
+        <kuba@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <mkl@pengutronix.de>, <robh+dt@kernel.org>
+References: <20220209174850.32360-1-amit.kumar-mahapatra@xilinx.com>
+ <1644445576.227208.1050091.nullmailer@robh.at.kernel.org>
+From:   Michal Simek <michal.simek@xilinx.com>
+In-Reply-To: <1644445576.227208.1050091.nullmailer@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4082cc3a-d7ca-4e5b-e1a8-08d9ec8f495e
-X-MS-TrafficTypeDiagnostic: DM6PR10MB2651:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR10MB26516AF8C0BC0E4BC060BFA4BB2F9@DM6PR10MB2651.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Office365-Filtering-Correlation-Id: 8b12d2fb-d1f2-4ad1-96ca-08d9ec8fca7f
+X-MS-TrafficTypeDiagnostic: DM5PR0201MB3447:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR0201MB3447C44119277F542C185989C62F9@DM5PR0201MB3447.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EfCfUb09sg04YAEedxy/O5FjWH6iXhCYGm9P5iLN1SFmXwubLsY9cpPO5TPvKR0ai0OOHIYkqGv0p/sH4OMwRPCCcRZnCxdJX1mZvU8oAMLo+obdqVRgEsrx5UZG9S48ziCF9LIxuPtS7rXjWZsb589kVGNqv0aAnFwQj8vAGYkPyOoUVK29HnWRiodyoUdGNAesWBGWlKPtuhrr8PK0Tr/ky9/8ern0I6V/KQ7s5HpNJpXvUMbX8xrnx7h3+Oo0ldGYhhRi+FywsQs2aBwROQFt9pCkiFyGCdfHWkzHlDBLt6nrR7bc4vke06dRynLSQZDgGRioh2kKCLGnEe4Pak1SJL+vK5/9c4M+f/JXUhAjkmWS9pCIulPL0EumuvrTTOqwshlKsnDGBzEQLJXCOQI76WCM3OyhL8MgZg7S1uGeNTcgJiyvNVwsT9gYJNQ2lZCWbh/Q3jJ1YBbXzMZx+h6FtWJ+4Dy6TM9+6ik+JC0xFcjGSMo2j5ZbD5q5JhTPlWqTYyc/N5R++lcHMtm2zVgPpaOrhGUN+s9n1l9ufPy8YfiAD0Q66aElSXK4dHEgScITQAeEC6iJsQ5HsFMp2d0Wj2LM8D1Wn7fTGoFAcKK8qjZfd7+PhFbGpbsJrnrn88xJEGq+xI6xPLwj++NcMKW2bMR5WiiAHhXyXxjC9xMMH9LVI1rwC7GF1j6ssSzKx9MKbcxwMBIzNKyPk6luzdt8JA7aLmfNqx6RZqkKxa76T78WZ8nfoAsKNlsWC7CJlLU1dbXZlpbGuminCUUZQTBEW6RBgyjbnkcdG5WcKgA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2616005)(31686004)(186003)(66946007)(26005)(6512007)(53546011)(6666004)(316002)(86362001)(6506007)(2906002)(508600001)(38100700002)(8936002)(966005)(7416002)(6486002)(5660300002)(8676002)(66476007)(54906003)(6916009)(31696002)(4326008)(66556008)(83380400001)(36756003)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YXl1clo2czNkOW9nclpNcENmSlBXMnFvSnVtd25EODFKVGZFR3JsZTlWRXY3?=
- =?utf-8?B?NVVtVzFuWDA1NjEwNXRBNTdMUlREZ01PMzNwWWJxaDVydk5UeHIrOXZmblE1?=
- =?utf-8?B?RVpIVktEV3N6eXpGNDM3VXNSL0RpVGV4Rld0c1BIZXNDbWM2M1dUOG1RZW9v?=
- =?utf-8?B?UTllM2h6WEN2WHhUd0ZFUHdFYTdMUlY0RDU5Ny8vOW1zYW9lUXpvT2xSUXpp?=
- =?utf-8?B?S21xR3FqYytYUXNhVE5rMEszNmM0a1RBVkkwcXZuOVFHbCtrL3JhTmRBc2g5?=
- =?utf-8?B?MnB6dGptakhTME1BN0JrNlE0VTdUTVhXVDBJWWNlQlE1VFExNG5SWGxoZ0Fq?=
- =?utf-8?B?dmpjZ0c2SVNUTi9QbWdTdEFwZWVEOHdqWjcydkQxcUxEM2JCMGY1ZTl6ZDIw?=
- =?utf-8?B?alpOUE1rRkdkRmFidDRYdnJudWxBNXNmYTM5VmJoNEE2RzJycml4a2MzOXNz?=
- =?utf-8?B?WkRZLys3RTNmcXo2SnYxUHdMb3N2ZjZINis3WEkrV0drL294RzFJT0owNStZ?=
- =?utf-8?B?SWFGUnd1bFF3RDN1VkxWOUtFMXRzN1QxNmlQTG9teWZRZjZySHRDUUUxL1Vs?=
- =?utf-8?B?ZVRwU240bloxYllvdGgwekFJdEVBcGl5VzlMdUlLYU5YNGRnWFhnYk9CVFk2?=
- =?utf-8?B?SWNTN1F3aHBSc2ptNkY4dUJ4UmdaTHZCZDJQTS9WQk9PRHo4enhvRDlNVEZ2?=
- =?utf-8?B?TWswZUJkTGRlMmNxam1lUm9GZ1MrS1RRR3B4aE5SUG1wT0NvOEdQakVWUGJQ?=
- =?utf-8?B?Nzk2TUJUTHdxT3V5em5BS0VGMk1XMmxXWnF2YTk5aDR3L1c2RE4zNUN2b1Vr?=
- =?utf-8?B?UUhTdG5FWGRld2xMeGROSlJGZUJWL2tIdkt5SHpyMVVPd2lsdFVCMVR0VE1Q?=
- =?utf-8?B?QlJDOFpFajNwd0RJdlJVbWR3K3p5U3U2N2RyU0Z6c0ZQemRtK25GL2FtWTRV?=
- =?utf-8?B?Qm83eERvQnBVelpITG1vMnl1RzhQd1pWL0V0aExrWFpQUk1NRUZEVEZaVDFU?=
- =?utf-8?B?Sis0TU1VT2RoK0c4TTh2T3NMd0RiY2JMWkZuVXVCOE5jQ0JIR2w1cUJ1dE9U?=
- =?utf-8?B?cmtCYkhURk15VXJ6akt1RUp4NTIxdmVscGVBbkpYbE15TTNOVEZjL0QweWVl?=
- =?utf-8?B?clJISHA5UEcyaVI3UUZncTg0WjJXckcxLzg3Y0J1UXlJejh2dmNxVkdmOTVX?=
- =?utf-8?B?OTBuZEt3aFNRejVCdzRPOHMrRkJ3Ym1nbnc3V2JwQmJTT0NxdnFIYnVONCs0?=
- =?utf-8?B?dFh5RmpJeE9Od09MYWlVaHpNSG10Slh6NjRDSUFGY0owcHpNY2NpT2o1NG0r?=
- =?utf-8?B?U1RuK3NqeEE2bDBpdEZLN2FKTVFkTForQ3ZpcTdTbjVWN0hrNm5NL2xFQjdx?=
- =?utf-8?B?bS9QZzVSdXp3YkRIZVJRRFBzNW82dG1OWGQ2SlZIS0gyZjZubzVCamJmSDBk?=
- =?utf-8?B?M0tLejh5cCs4dEVsVm92akVGNFRkZ2RiSXRNVDI4N3FIaDdlRUhlUVZ0ZjRV?=
- =?utf-8?B?emgwTDNmOVJiOHFGR0JyQ2FvSTFIcEFQUWk2c1ZsS0hPZ0M2S0dFeWRiM2dy?=
- =?utf-8?B?cHVmUUNzN3hiVGxuS3REWE9tc0xHQW15OEZmR0FyM2RWbXRqdEpwc3M5eHdK?=
- =?utf-8?B?TFRlaitaQjIvZmNjRXcvaHp4dVo3U1BuZXJRYnVxNEs5OXhzZEtobzg5RGNl?=
- =?utf-8?B?VjZ2VE9kRlVKSnB3aHBOOTh6SjRhMVBLajc0T2J4VjhhSitZZThkaTBNRk1H?=
- =?utf-8?B?ZlZWMm5mRFg1dDZrVWwwdDhVTDNuUWhHVTRsMDA0cVVjTVNjSVk4YjdFZjJt?=
- =?utf-8?B?OWhjV2ZvMUJXL2N3YkRjYnFKREw0YzAxbGZvSTNxRWw1OUJWQUZuaEdtamdE?=
- =?utf-8?B?V1lLVzBoR3lvQjBpWjZvTFFXMmdPMEhGWTBZUms3ZitTRWxML1FDalNqdllG?=
- =?utf-8?B?dEFlOHJyV2xWRWZqVkgybitaZnEyMGpzOHdMLzE2OFVZbTIvNE9RNnZpQjRv?=
- =?utf-8?B?bmFEOUk2TEFmNWNnVEtQalRDQ3lMdFhhWkdENGxQK29PUHo1VGI1OEhtNTFk?=
- =?utf-8?B?MUs0UExmSVhHTmp2OUxQcDUvaTRWamVjbUppbVgxRTkvNy84cGNqSm5JRTFI?=
- =?utf-8?B?ZHNwV1Z6UkVUeDdrcExJN2lsUmg3bzVtWkVBVnVFRWpYMTlsMWZ3V1EwYXRk?=
- =?utf-8?B?d3IvMmJZem1uS2luNmsvdlhsWGZnRzNwWWRvSUVqSmlnaEFsTU45TEFwb2R1?=
- =?utf-8?B?WUxobXNBME1aUlRtWHlNakpMTitBPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4082cc3a-d7ca-4e5b-e1a8-08d9ec8f495e
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:17:20.8819
+X-Microsoft-Antispam-Message-Info: 0sRXNCk1VoqeuEEw8glZW3DkjbdFpRZbRCrFXfpQo0MuMe3ZHa2Q0C9833WJ0AWHYLsdIlaQ3c/Q2K+6op7c86FRou+5Yv/tUQNE++vJll+9n22Xihyu2oRTHy2EDfXPe6YQa+OZ3Hx3k+0Qh5zhk27AY9+sy5YqF+SFhdjADoJjaU5urAI3m9fbLy73gWT86M9TobZlnAmPyxkeHHzHngfJ+lzSvjlstztelLkrAcr3tXL6qkE6nnleTK8AVXely8n+Qq5YP1XgxOws/0eA3QFMsrBlmCQ5g/fnDNdt3a8hGQP2uKUqTrxgs2ZHnw5YuKKjyoPp40O1A13txsikkg9/tC3M/53kGdl5Nji9wgtnVaVEDzYNuFWJbB31MV4kvDhhgcCmqGloutkp4erlwBCzLcW2K1ZdjePj79LBa+LCNcq66nHkFMWSf042bBiA+BZuiWZkEPVVgybcyTaBf1pb6h3RHRAmtgJt8iKTXNWYuU8JFJ855gLmzA1RzQr+1aHgiTTCmsuFIoHxJmnYWQCop00mopKTfHVFKqjK3awbr2EVClBHDiG96bEGl66BP90/mmgd8HgZsgZvGzfrFTn6TGzfrEXuhAj5Kd9hIUz3EXwMv74VDw522Tuj5f9Km50UIzEHfIEGUycFM4x9Vq5ZtXtkIcAuDEkcolwkXsW7NGzCZ1MQkn3DFRA6vevvKjDveD2PTszgaoZQAplIxXyH5UdH9jEYskQ/Wy9julDqCyoKLsRVXCF55dzU1uR4KJMk9vck8T0pp0ulybLQmfiyv0cn7JYB0iBjiEc3cv+fbcFDUTp3dcTb+jjSvEsbb8s6sQ7ZMdIBJ/l9t4o7z/3UBQbHV6WvPpUvnSJ8tZ8=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(40460700003)(36860700001)(8936002)(31686004)(508600001)(31696002)(6666004)(966005)(8676002)(426003)(336012)(9786002)(83380400001)(53546011)(70206006)(4326008)(47076005)(54906003)(6636002)(316002)(26005)(186003)(70586007)(7636003)(82310400004)(110136005)(5660300002)(356005)(2616005)(7416002)(44832011)(2906002)(36756003)(50156003)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 12:20:57.0067
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t8U4GrF33bdAP55xL7FN2S1vLj6PbLaIA9HZz3XaNIz0EC/iWBpYwJAzIRtssjDmpNkv7+1ixHIoU2ynMgTVAhDE0dEiuYpdun56+xwMZ5o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2651
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10253 signatures=673431
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 bulkscore=0
- malwarescore=0 suspectscore=0 phishscore=0 adultscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202100067
-X-Proofpoint-ORIG-GUID: EwRclCI1NL68tWvKy43i54wBlMZjltJY
-X-Proofpoint-GUID: EwRclCI1NL68tWvKy43i54wBlMZjltJY
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b12d2fb-d1f2-4ad1-96ca-08d9ec8fca7f
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT031.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR0201MB3447
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/8/22 12:36, David Woodhouse wrote:
-> On Wed, 2019-02-20 at 20:15 +0000, Joao Martins wrote:
->> From: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+
+
+On 2/9/22 23:26, Rob Herring wrote:
+> On Wed, 09 Feb 2022 23:18:50 +0530, Amit Kumar Mahapatra wrote:
+>> Convert Xilinx CAN binding documentation to YAML.
 >>
->> Add support for SCHEDOP_poll hypercall.
->>
->> This implementation is optimized for polling for a single channel, which
->> is what Linux does. Polling for multiple channels is not especially
->> efficient (and has not been tested).
->>
->> PV spinlocks slow path uses this hypercall, and explicitly crash if it's
->> not supported.
->>
->> Signed-off-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+>> Signed-off-by: Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>
 >> ---
+>> BRANCH: yaml
+>>
+>> Changes in v2:
+>>   - Added reference to can-controller.yaml
+>>   - Added example node for canfd-2.0
+>> ---
+>>   .../bindings/net/can/xilinx_can.txt           |  61 -------
+>>   .../bindings/net/can/xilinx_can.yaml          | 160 ++++++++++++++++++
+>>   2 files changed, 160 insertions(+), 61 deletions(-)
+>>   delete mode 100644 Documentation/devicetree/bindings/net/can/xilinx_can.txt
+>>   create mode 100644 Documentation/devicetree/bindings/net/can/xilinx_can.yaml
+>>
 > 
-> ...
+> Running 'make dtbs_check' with the schema in this patch gives the
+> following warnings. Consider if they are expected or the schema is
+> incorrect. These may not be new warnings.
 > 
->> +static void kvm_xen_check_poller(struct kvm_vcpu *vcpu, int port)
->> +{
->> +       struct kvm_vcpu_xen *vcpu_xen = vcpu_to_xen_vcpu(vcpu);
->> +
->> +       if ((vcpu_xen->poll_evtchn == port ||
->> +            vcpu_xen->poll_evtchn == -1) &&
->> +           test_and_clear_bit(vcpu->vcpu_id, vcpu->kvm->arch.xen.poll_mask))
->> +               wake_up(&vcpu_xen->sched_waitq);
->> +}
+> Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> This will change in the future.
 > 
-> ...
+> Full log is available here: https://patchwork.ozlabs.org/patch/1590637
 > 
->> +	if (sched_poll.nr_ports == 1)
->> +		vcpu_xen->poll_evtchn = port;
->> +	else
->> +		vcpu_xen->poll_evtchn = -1;
->> +
->> +	if (!wait_pending_event(vcpu, sched_poll.nr_ports, ports))
->> +		wait_event_interruptible_timeout(
->> +			 vcpu_xen->sched_waitq,
->> +			 wait_pending_event(vcpu, sched_poll.nr_ports, ports),
->> +			 sched_poll.timeout ?: KTIME_MAX);
 > 
-> Hm, this doesn't wake on other interrupts, does it? 
+> can@ff060000: 'power-domains' does not match any of the regexes: 'pinctrl-[0-9]+'
+> 	arch/arm64/boot/dts/xilinx/avnet-ultra96-rev1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-sm-k26-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-smk-k26-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1232-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1254-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1275-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm015-dc1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm016-dc2.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm017-dc3.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm018-dc4.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm019-dc5.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu100-revC.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.0.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revB.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revC.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu106-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu111-revA.dt.yaml
+> 
+> can@ff070000: 'power-domains' does not match any of the regexes: 'pinctrl-[0-9]+'
+> 	arch/arm64/boot/dts/xilinx/avnet-ultra96-rev1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-sm-k26-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-smk-k26-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1232-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1254-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1275-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm015-dc1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm016-dc2.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm017-dc3.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm018-dc4.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zc1751-xm019-dc5.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu100-revC.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.0.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev1.1.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu102-revB.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu104-revC.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu106-revA.dt.yaml
+> 	arch/arm64/boot/dts/xilinx/zynqmp-zcu111-revA.dt.yaml
+> 
 
-Hmm, I don't think so? This was specifically polling on event channels,
-not sleeping or blocking.
+Yes add power-domains as was done for example by this commit for ttc.
 
-> I think it should.
-> Shouldn't it basically be like HLT, with an additional wakeup when the
-> listed ports are triggered even when they're masked?
-> 
+Thanks,
+Michal
 
-I am actually not sure.
+commit 557804a81d256b15952dcd179280ede92a5bfae1
+Author:     Michal Simek <michal.simek@xilinx.com>
+AuthorDate: Fri Oct 15 10:29:14 2021 +0200
+Commit:     Daniel Lezcano <daniel.lezcano@linaro.org>
+CommitDate: Tue Nov 2 10:03:25 2021 +0100
 
-Quickly glancing at the xen source, this hypercall doesn't appear to really
-block the vcpu, but rather just looking if the evtchn ports are pending and
-if a timeout is is specified it sets up a timer. And ofc, wake any evtchn
-pollers. But it doesn't appear to actually block the VCPU. It should be
-IIRC, the functional equivalent of KVM_HC_VAPIC_POLL_IRQ but for event
-channels.
+     dt-bindings: timer: cadence_ttc: Add power-domains
 
+     Describe optional power-domain property to fix dts_check warnings.
+     The similar change was done by commit 8c0aa567146b ("dt-bindings: gpio:
+     fsl-imx-gpio: Add power-domains").
 
-> At https://git.infradead.org/users/dwmw2/linux.git/commitdiff/ddfbdf1af
-> I've tried to make it use kvm_vcpu_halt(), and kvm_xen_check_poller()
-> sets KVM_REQ_UNBLOCK when an event is delivered to a monitored port.
-> 
-> I haven't quite got it to work yet, but does it seem like a sane
-> approach?
-> 
+     Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+     Acked-by: Rob Herring <robh@kernel.org>
+     Link: 
+https://lore.kernel.org/r/cc655a72b20790f6d7408b1aaf81c4bf878aafb4.1634286552.git.michal.simek@xilinx.com
+     Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-	Joao
