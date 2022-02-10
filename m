@@ -2,208 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F20CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245568AbiBJSLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:11:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36898 "EHLO
+        id S245581AbiBJSLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:11:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiBJSLD (ORCPT
+        with ESMTP id S245569AbiBJSLH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:11:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8882C110C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644516662;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ChKOo/Qv0R89dvgKNKcoh58DZx/3Fryy1wSZpo9TRf0=;
-        b=EHmoDVq9e707vB8IYqXGvrPNRNL+PVM0/6YUUTcfUcZWBibpjPOXoi63YxgeTuXb/3qeLO
-        BvjxeMQn5J6lSADt+/XscI8qLc7mEBndanrCOLLRbKIKkEGEgZoR53/5AXDairjxla0Btk
-        rfv0WsFuhvd0jXeX34pKqKgedH+eEu4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-330-TFAb_GXkM4mn1hD7alkfXA-1; Thu, 10 Feb 2022 13:10:58 -0500
-X-MC-Unique: TFAb_GXkM4mn1hD7alkfXA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2890109B5EC;
-        Thu, 10 Feb 2022 18:10:31 +0000 (UTC)
-Received: from llong.com (unknown [10.22.19.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2DE73348E0;
-        Thu, 10 Feb 2022 18:10:31 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Waiman Long <longman@redhat.com>
-Subject: [PATCH v2] locking/semaphore: Use wake_q to wake up processes outside lock critical section
-Date:   Thu, 10 Feb 2022 13:10:19 -0500
-Message-Id: <20220210181019.1259677-1-longman@redhat.com>
+        Thu, 10 Feb 2022 13:11:07 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1871167
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:08 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id ft32so1525340ejc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Tlc50y2zvWkDNDR0F+Hwlo/MK2qUQWeFkSFZIhsrGgA=;
+        b=iJ8wAdxK3aVPvQadvP2kQORWpqM1MwHhKRoQhinm5nXPKgnbRB25C9NdtTZR9ceJIE
+         SBtJXEjBFGQckKrACPJtdyxbGmTclNdJbEJSeV7V7WDPuPoqREzUn2VBLtsxA4qSs5wS
+         cyllBj95re5mmkwQjGIgS42OyNeC+S8X3neeo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Tlc50y2zvWkDNDR0F+Hwlo/MK2qUQWeFkSFZIhsrGgA=;
+        b=ejqXTXJrEKWsgUt/yCO9VRqUDcmzlBFtJ7fhlrm3MXA2IyWRyeDrHFSrpsNfgLlKXC
+         B/IK/Sv443ifIShuN5Wlcnl6+aAt02E327bwCm8rFEOmtUplkQO4o6xNBrsQFLLJ2OwO
+         EqA05y2+oQygMDHpOXXQsV6PQaLTRw55YRlCdjUBXJIHqrV2VJdmzmL6p5HiegU+K0RY
+         Olb8+3jJnqCnEErrTHNAnnJxabvNoRFJm0j6Dj7wRMoqeVj9e7oCYNqZ91Blg4gVEU6H
+         0aE9wHUHHaEY/12REHaiCxqTYaa59iN6nCffHeNSKKXVKUz7/5Bog/tNwOaMbBVHoD+G
+         qMoA==
+X-Gm-Message-State: AOAM533MHpTKt7l8XcxTN8i8xgtZSVLBTcSKNXFhHOvN6SvXkB6U5Nrf
+        ynOJuxGipaZkNaV9JN3HyPZtWDC4E8bYqtJV3Yg=
+X-Google-Smtp-Source: ABdhPJxY09lPuy5iS/04B894SXLPPH3T8mkHnMwg0OMtgFRuTFyepus7nxo+8aZU3M4zurUMuc01Lg==
+X-Received: by 2002:a17:907:c0d:: with SMTP id ga13mr7479450ejc.576.1644516666756;
+        Thu, 10 Feb 2022 10:11:06 -0800 (PST)
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
+        by smtp.gmail.com with ESMTPSA id m25sm1277373ejn.118.2022.02.10.10.11.06
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 10:11:06 -0800 (PST)
+Received: by mail-wm1-f51.google.com with SMTP id k127-20020a1ca185000000b0037bc4be8713so5720115wme.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:11:06 -0800 (PST)
+X-Received: by 2002:a1c:f702:: with SMTP id v2mr3105904wmh.155.1644516283317;
+ Thu, 10 Feb 2022 10:04:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <000000000000a3571605d27817b5@google.com> <0000000000001f60ef05d7a3c6ad@google.com>
+ <20220210081125.GA4616@1wt.eu> <359ee592-747f-8610-4180-5e1d2aba1b77@iogearbox.net>
+ <CAJ+HfNjeapa=2Ue19L3EWF8z5vxFB0k2QO_LuBu4Meqs0=AE4Q@mail.gmail.com>
+ <20220210174507.GK1951@kadam> <20220210175603.GL1951@kadam>
+In-Reply-To: <20220210175603.GL1951@kadam>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 10 Feb 2022 10:04:27 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiRq+_jd_O1gz3J6-ANtXMY7iLpi8XFUcmtB3rBixvUXQ@mail.gmail.com>
+Message-ID: <CAHk-=wiRq+_jd_O1gz3J6-ANtXMY7iLpi8XFUcmtB3rBixvUXQ@mail.gmail.com>
+Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Willy Tarreau <w@1wt.eu>,
+        syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
+        fgheet255t@gmail.com, Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        mudongliangabcd@gmail.com, Netdev <netdev@vger.kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following lockdep splat was observed:
+On Thu, Feb 10, 2022 at 9:57 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> Wait that would make the allocation succeed...  We don't want that.
+> That was a dumb idea.  Forget I said that.
 
-[ 9776.459819] ======================================================
-[ 9776.459820] WARNING: possible circular locking dependency detected
-[ 9776.459821] 5.14.0-0.rc4.35.el9.x86_64+debug #1 Not tainted
-[ 9776.459823] ------------------------------------------------------
-[ 9776.459824] stress-ng/117708 is trying to acquire lock:
-[ 9776.459825] ffffffff892d41d8 ((console_sem).lock){-...}-{2:2}, at: down_trylock+0x13/0x70
+Well, sometimes that _can_ be the right model.
 
-[ 9776.459831] but task is already holding lock:
-[ 9776.459832] ffff888e005f6d18 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x27/0x130
+That said, pretty much every time this has come up, the kernel warning
+has shown that yes, the code was broken and there really wasn't a
+reason for doing allocations that big.
 
-[ 9776.459837] which lock already depends on the new lock.
-      :
-[ 9776.459857] -> #1 (&p->pi_lock){-.-.}-{2:2}:
-[ 9776.459860]        __lock_acquire+0xb72/0x1870
-[ 9776.459861]        lock_acquire+0x1ca/0x570
-[ 9776.459862]        _raw_spin_lock_irqsave+0x40/0x90
-[ 9776.459863]        try_to_wake_up+0x9d/0x1210
-[ 9776.459864]        up+0x7a/0xb0
-[ 9776.459864]        __up_console_sem+0x33/0x70
-[ 9776.459865]        console_unlock+0x3a1/0x5f0
-[ 9776.459866]        vprintk_emit+0x23b/0x2b0
-[ 9776.459867]        devkmsg_emit.constprop.0+0xab/0xdc
-[ 9776.459868]        devkmsg_write.cold+0x4e/0x78
-[ 9776.459869]        do_iter_readv_writev+0x343/0x690
-[ 9776.459870]        do_iter_write+0x123/0x340
-[ 9776.459871]        vfs_writev+0x19d/0x520
-[ 9776.459871]        do_writev+0x110/0x290
-[ 9776.459872]        do_syscall_64+0x3b/0x90
-[ 9776.459873]        entry_SYSCALL_64_after_hwframe+0x44/0xae
-      :
-[ 9776.459905] Chain exists of:
-[ 9776.459906]   (console_sem).lock --> &p->pi_lock --> &rq->__lock
+Of course, some people would be perfectly fine with the allocation
+failing, they just don't want the warning. I didn't want __GFP_NOWARN
+to shut it up originally because I wanted people to see all those
+cases, but these days I think we can just say "yeah, people can shut
+it up explicitly by saying 'go ahead and fail this allocation, don't
+warn about it'".
 
-[ 9776.459911]  Possible unsafe locking scenario:
+So enough time has passed that by now I'd certainly be ok with something like
 
-[ 9776.459913]        CPU0                    CPU1
-[ 9776.459914]        ----                    ----
-[ 9776.459914]   lock(&rq->__lock);
-[ 9776.459917]                                lock(&p->pi_lock);
-[ 9776.459919]                                lock(&rq->__lock);
-[ 9776.459921]   lock((console_sem).lock);
+  --- a/mm/util.c
+  +++ b/mm/util.c
+  @@ -587,8 +587,10 @@ void *kvmalloc_node(size_t size,
+                  return ret;
 
-[ 9776.459923]  *** DEADLOCK ***
-[ 9776.459925] 2 locks held by stress-ng/117708:
-[ 9776.459925]  #0: ffffffff89403960 (&cpuset_rwsem){++++}-{0:0}, at: __sched_setscheduler+0xe2f/0x2c80
-[ 9776.459930]  #1: ffff888e005f6d18 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x27/0x130
+          /* Don't even allow crazy sizes */
+  -       if (WARN_ON_ONCE(size > INT_MAX))
+  +       if (unlikely(size > INT_MAX)) {
+  +               WARN_ON_ONCE(!(flags & __GFP_NOWARN));
+                  return NULL;
+  +       }
 
-[ 9776.459935] stack backtrace:
-[ 9776.459936] CPU: 95 PID: 117708 Comm: stress-ng Kdump: loaded Not tainted 5.14.0-0.rc4.35.el9.x86_64+debug #1
-[ 9776.459938] Hardware name: FUJITSU PRIMEQUEST 2800E3/D3752, BIOS PRIMEQUEST 2000 Series BIOS Version 01.51 06/29/2020
-[ 9776.459939] Call Trace:
-[ 9776.459940]  <IRQ>
-[ 9776.459940]  dump_stack_lvl+0x57/0x7d
-[ 9776.459941]  check_noncircular+0x26a/0x310
-[ 9776.459945]  check_prev_add+0x15e/0x20f0
-[ 9776.459946]  validate_chain+0xaba/0xde0
-[ 9776.459948]  __lock_acquire+0xb72/0x1870
-[ 9776.459949]  lock_acquire+0x1ca/0x570
-[ 9776.459952]  _raw_spin_lock_irqsave+0x40/0x90
-[ 9776.459954]  down_trylock+0x13/0x70
-[ 9776.459955]  __down_trylock_console_sem+0x2a/0xb0
-[ 9776.459956]  console_trylock_spinning+0x13/0x1f0
-[ 9776.459957]  vprintk_emit+0x1e6/0x2b0
-[ 9776.459958]  printk+0xb2/0xe3
-[ 9776.459960]  __warn_printk+0x9b/0xf3
-[ 9776.459964]  update_rq_clock+0x3c2/0x780
-[ 9776.459966]  do_sched_rt_period_timer+0x19e/0x9a0
-[ 9776.459968]  sched_rt_period_timer+0x6b/0x150
-[ 9776.459969]  __run_hrtimer+0x27a/0xb20
-[ 9776.459970]  __hrtimer_run_queues+0x159/0x260
-[ 9776.459974]  hrtimer_interrupt+0x2cb/0x8f0
-[ 9776.459976]  __sysvec_apic_timer_interrupt+0x13e/0x540
-[ 9776.459977]  sysvec_apic_timer_interrupt+0x6a/0x90
-[ 9776.459977]  </IRQ>
+          return __vmalloc_node(size, 1, flags, node,
+                           __builtin_return_address(0));
 
-The problematic locking sequence ((console_sem).lock --> &p->pi_lock)
-was caused by the fact the semaphore up() function is calling
-wake_up_process() while holding the semaphore raw spinlock.
+(which is obviously COMPLETELY UNTESTED as well as being
+whitespace-damaged, but you get the idea).
 
-The (&rq->__lock --> (console_sem).lock) locking sequence seems to be
-caused by a SCHED_WARN_ON() call in update_rq_clock(). To work around
-this problematic locking sequence, we may have to ban all WARN*() calls
-when the rq lock is held, which may be too restrictive, or we may have
-to add a WARN_DEFERRED() call which can be quite a lot of work.
+If somebody tests that patch and verifies it works, and writes a
+little commit blurb for it, I'll apply it.
 
-On the other hand, by moving the wake_up_processs() call out of the
-raw spinlock critical section using wake_q, it will break the first
-problematic locking sequence as well as reducing raw spinlock hold time.
-This is easier and cleaner.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- kernel/locking/semaphore.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/locking/semaphore.c b/kernel/locking/semaphore.c
-index 9ee381e4d2a4..a26c915430ba 100644
---- a/kernel/locking/semaphore.c
-+++ b/kernel/locking/semaphore.c
-@@ -29,6 +29,7 @@
- #include <linux/export.h>
- #include <linux/sched.h>
- #include <linux/sched/debug.h>
-+#include <linux/sched/wake_q.h>
- #include <linux/semaphore.h>
- #include <linux/spinlock.h>
- #include <linux/ftrace.h>
-@@ -37,7 +38,7 @@ static noinline void __down(struct semaphore *sem);
- static noinline int __down_interruptible(struct semaphore *sem);
- static noinline int __down_killable(struct semaphore *sem);
- static noinline int __down_timeout(struct semaphore *sem, long timeout);
--static noinline void __up(struct semaphore *sem);
-+static noinline void __up(struct semaphore *sem, struct wake_q_head *wake_q);
- 
- /**
-  * down - acquire the semaphore
-@@ -182,13 +183,16 @@ EXPORT_SYMBOL(down_timeout);
- void up(struct semaphore *sem)
- {
- 	unsigned long flags;
-+	DEFINE_WAKE_Q(wake_q);
- 
- 	raw_spin_lock_irqsave(&sem->lock, flags);
- 	if (likely(list_empty(&sem->wait_list)))
- 		sem->count++;
- 	else
--		__up(sem);
-+		__up(sem, &wake_q);
- 	raw_spin_unlock_irqrestore(&sem->lock, flags);
-+	if (!wake_q_empty(&wake_q))
-+		wake_up_q(&wake_q);
- }
- EXPORT_SYMBOL(up);
- 
-@@ -256,11 +260,12 @@ static noinline int __sched __down_timeout(struct semaphore *sem, long timeout)
- 	return __down_common(sem, TASK_UNINTERRUPTIBLE, timeout);
- }
- 
--static noinline void __sched __up(struct semaphore *sem)
-+static noinline void __sched __up(struct semaphore *sem,
-+				  struct wake_q_head *wake_q)
- {
- 	struct semaphore_waiter *waiter = list_first_entry(&sem->wait_list,
- 						struct semaphore_waiter, list);
- 	list_del(&waiter->list);
- 	waiter->up = true;
--	wake_up_process(waiter->task);
-+	wake_q_add(wake_q, waiter->task);
- }
--- 
-2.27.0
-
+            Linus
