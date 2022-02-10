@@ -2,134 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6BF0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245398AbiBJRzz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:55:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55944 "EHLO
+        id S245410AbiBJR4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 12:56:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240671AbiBJRzx (ORCPT
+        with ESMTP id S245401AbiBJR4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:55:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03F4225D1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:55:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644515753;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2pgYKgbH/aywvATf7zLUXZmomBX6TKWirDhHOAVvfKM=;
-        b=FuxKBNoyOSvtwCeB9aqGl1JjZ3/8hSHfpudh+RSYLOMO3KB0ZWkym/2YcB/e31YLk7wxsn
-        Fo+ZFsaUwU8knr+Jrdrs6C9DvizR7/skomz7PNXpUQJK+Pbw51YgktPeUpOF8Ycx8T2bAl
-        9/fcXyTpXvZY5TORdRfs3fvr5sypxBA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-551-HrE9gddpOUaT038DLWrC_Q-1; Thu, 10 Feb 2022 12:55:51 -0500
-X-MC-Unique: HrE9gddpOUaT038DLWrC_Q-1
-Received: by mail-wm1-f70.google.com with SMTP id l20-20020a05600c1d1400b0035153bf34c3so4672029wms.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:55:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2pgYKgbH/aywvATf7zLUXZmomBX6TKWirDhHOAVvfKM=;
-        b=3TdhQLu0siixAxFhVP5BLCCRl9wO9r8GDywrv2ykKvi5I7ZSPlp74teYaX3rqk8sn3
-         HEcMz4joEEfmvtMe20PwkalP2jpK1U8G1BZ17Rzfjpt942vCupvfYnxR4zSp7PvbnLDL
-         5zfQaFOGHgQFOLL83aWGH1OO9/aXSTTC9Wm8tOzDAew0zze3IgAjjNnwvYiA5XskaAdo
-         dDL1XUqKR76yv3vHt1X4ji62hA+hvo1k06wl4/2qFYmgRDn7BRGt8ysrmcazyifYT6NE
-         fAIeBMzDV1yHm420JaTot5PY1IvlhsqB0tq25XGziVGnoigfYrqbI4ZeQCFBhoFw84bL
-         uhgw==
-X-Gm-Message-State: AOAM532mIPnVoR3ojbLBLioj2NdGHpcB+1GTiqZCSA6f6pRofnNEhch5
-        l1zcxZ6DSFuLtdtsBZpftTuxc1g9fDJI9PjpWovFKrRjMTpCjGcZvN3UJzoEVnCqb6GNv645v5T
-        iN2aVw0luYd9P/KvrmsZ/x8eT
-X-Received: by 2002:a05:600c:501f:: with SMTP id n31mr3110907wmr.141.1644515750096;
-        Thu, 10 Feb 2022 09:55:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzztOtP2nPNM37UZbRdKgmrkAzYQV0Pr1R7MI99JcWycnjK/AG6TWJyvSRPiuS1u8x26j6AYA==
-X-Received: by 2002:a05:600c:501f:: with SMTP id n31mr3110886wmr.141.1644515749879;
-        Thu, 10 Feb 2022 09:55:49 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id p8sm21716128wrr.16.2022.02.10.09.55.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 09:55:49 -0800 (PST)
-Message-ID: <e910fc2f-2acb-b81d-4b8c-532562952aeb@redhat.com>
-Date:   Thu, 10 Feb 2022 18:55:47 +0100
+        Thu, 10 Feb 2022 12:56:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAFE115A;
+        Thu, 10 Feb 2022 09:56:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99B8661E30;
+        Thu, 10 Feb 2022 17:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70648C004E1;
+        Thu, 10 Feb 2022 17:56:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644515775;
+        bh=mp2WY1Z07IUjp9Qk8J2PhJawFi/dDHvgiH8vGbexGRw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fFRSKpDwJ8tH9Ko3XvxybAcXr9GE36E4SzO+uwgbYhqIou6MC6C0tZ7JzQ7IRJBLy
+         6PsshJNUi535eP4JUvCxtTY4i9W08ztaEQwOuI+BnpNyMyI5iF3jJkk2PECLtLZxFs
+         MDPipXog5CPfVtQxG06kzrZ3qHlQd2TW4QarW0YI=
+Date:   Thu, 10 Feb 2022 18:56:11 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     aurelien@aurel32.net, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Kito Cheng <kito.cheng@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH] riscv: fix build with binutils 2.38
+Message-ID: <YgVRu9Z0BDyJdjR5@kroah.com>
+References: <20220126171442.1338740-1-aurelien@aurel32.net>
+ <mhng-f5101f2f-eb08-4e20-8cb3-b7d267ba25bc@palmer-ri-x1c9>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 0/7] drm: Add driver for Solomon SSD130X OLED displays
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>
-References: <20220209090314.2511959-1-javierm@redhat.com>
- <CAMuHMdVs750iE=kP1vabwgsGOb8sHc8aC5k=HwCU32CURnYktw@mail.gmail.com>
- <CAMuHMdVKmfOAdTG70KF+eAw3noXHSGCPyGjw3cSVyQOvzUafhQ@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAMuHMdVKmfOAdTG70KF+eAw3noXHSGCPyGjw3cSVyQOvzUafhQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <mhng-f5101f2f-eb08-4e20-8cb3-b7d267ba25bc@palmer-ri-x1c9>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Geert,
-
-On 2/10/22 18:06, Geert Uytterhoeven wrote:
-> On Wed, Feb 9, 2022 at 1:19 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->> On Wed, Feb 9, 2022 at 10:03 AM Javier Martinez Canillas
->> <javierm@redhat.com> wrote:
->>> This patch series adds a DRM driver for the Solomon OLED SSD1305, SSD1306,
->>> SSD1307 and SSD1309 displays. It is a port of the ssd1307fb fbdev driver.
->>
->> [...]
+On Thu, Feb 10, 2022 at 09:40:22AM -0800, Palmer Dabbelt wrote:
+> On Wed, 26 Jan 2022 09:14:42 PST (-0800), aurelien@aurel32.net wrote:
+> > From version 2.38, binutils default to ISA spec version 20191213. This
+> > means that the csr read/write (csrr*/csrw*) instructions and fence.i
+> > instruction has separated from the `I` extension, become two standalone
+> > extensions: Zicsr and Zifencei. As the kernel uses those instruction,
+> > this causes the following build failure:
+> > 
+> >   CC      arch/riscv/kernel/vdso/vgettimeofday.o
+> >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler messages:
+> >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+> >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+> >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+> >   <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+> > 
+> > The fix is to specify those extensions explicitely in -march. However as
+> > older binutils version do not support this, we first need to detect
+> > that.
+> > 
+> > Cc: stable@vger.kernel.org # 4.15+
+> > Cc: Kito Cheng <kito.cheng@gmail.com>
+> > Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
+> > ---
+> >  arch/riscv/Makefile | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> > 
+> > diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> > index 8a107ed18b0d..7d81102cffd4 100644
+> > --- a/arch/riscv/Makefile
+> > +++ b/arch/riscv/Makefile
+> > @@ -50,6 +50,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32ima
+> >  riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
+> >  riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
+> >  riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
+> > +
+> > +# Newer binutils versions default to ISA spec version 20191213 which moves some
+> > +# instructions from the I extension to the Zicsr and Zifencei extensions.
+> > +toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
+> > +riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
+> > +
+> >  KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
+> >  KBUILD_AFLAGS += -march=$(riscv-march-y)
 > 
->> The logo is not shown, even when I create a 16-color or 224-color
->> version of the small monochrome logo I'm using.
-> 
-> My mistake, I messed up the hook-up, causing it to pick a different
-> logo that was too large to be displayed.
->
+> Thanks, this is on fixes.  It's CC stable, but doesn't have a "Fixes" tag --
+> I did that on purpose as this isn't really fixing a bug in Linux so I'm not
+> sure it's right to point at a particular patch, but I'm not sure how that
+> will play with the stable tree.
 
-Great, thanks for all the testing.
- 
-> Of course it's using the 224-color logo reduced to monochrome instead
-> of the real monochrome logo, as fbcon thinks it's running on XRGB8888.
->
+I will backport it as far back as it easily goes to, and then forget
+about it :)
 
-Right. Once the patch lands, I'll look at wiring up the needed support in
-DRM for the drivers to be able to advertise 8-bit grayscale and monochrome
-to avoid the unnecessary conversions and to have feature parity with fbdev.
+If you have a Fixes: tag, and it doesn't properly backport that far,
+then you will get a "FAILED:" email notifying you about it.
 
-But I just wanted to do it incrementally and first port to DRM as first step.
- 
-Best regards,
--- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+hope that helps explain things,
 
+greg k-h
