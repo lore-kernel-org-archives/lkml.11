@@ -2,203 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A74C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9ED1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244229AbiBJQeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:34:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45082 "EHLO
+        id S244238AbiBJQfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:35:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244226AbiBJQeM (ORCPT
+        with ESMTP id S232641AbiBJQfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:34:12 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8BC137
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:34:12 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id i5so6514453oih.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:34:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1YIKfZRvYANp4LD1zrAyetEyh6SC9UJR3WpF2jixnhg=;
-        b=QgRqq58HV2n/SVh/S+GojRQwp60yhgmzNVespq1oanW9kzraUwCgjC4+ZFEJR4gQJy
-         i979etkuGy2UFJEo/siSvS/BXyO9SFMEZ45Tf+XbKJnVxiGj3Qh6jK3idttylvt5v5s7
-         MlYJ+zOrJ1m60zunhVDxmFVnl0w6qfdw4ILoqFM3hCS5Ht5UvP6ohgC5w/8OQwD2K89K
-         Sm6gN5ylb1yMCHVHeUnpxqKzP+X63Xi2DsAkCxsoWDut7m7VZV9VdL7gvD4j4tVo4r/o
-         K15CjByQaDypgGLhdmDIYwnXkGpzq0aJ9IF83sZ+4sgd9Ntp+5PG00ng40v3gvnUn9ot
-         B50Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1YIKfZRvYANp4LD1zrAyetEyh6SC9UJR3WpF2jixnhg=;
-        b=xdKVAxWQMfHJ1qd8qwHrG/F49CIV9OXQ++fw5umEehxMu3Gr/ts1OE4QHwC+AmwJnE
-         N4pWdb7L7bm8zMfidIaGXTAN56MgKUJxzntAzscxBnOTnzTdOeZ1SRSdpUmQzGnteTuD
-         w+Nm71VgSDuf2jbmzsoSz8sfNyMPARrsBHfW8anWGB7B7oHo3vbEzzfg8GqAbM+Adjpe
-         7ckFyv+VeecW06+n2ycbFqJ6XJTuUAVXdSYBT2DAZiZ+zPaeQKLvorIyHcE3eboxnDvK
-         p025ekRT/y4VNTXbwC2cS2uvQitHTPSwtMH0++Nvkd3ebb4g50/r/EU+h/TxCVx5turX
-         K/Gw==
-X-Gm-Message-State: AOAM532LcKKeCVIEnGdnfxnezfMEyxaBT6dnO2W0DgzH8JElyRLyfgVQ
-        pnLYaUOxXZjpvP80Rqrt2goHDhGSBSr0PUtcgrVC2A==
-X-Google-Smtp-Source: ABdhPJx7abYE/RroOoR0sLulQr5fjSEGOEijinAhYH+lTFflLmjkOsn4a+lpmfnsUCsnDv/JuMsyF5hE63B3TCtMUdw=
-X-Received: by 2002:a05:6808:21a5:: with SMTP id be37mr1396341oib.339.1644510852049;
- Thu, 10 Feb 2022 08:34:12 -0800 (PST)
+        Thu, 10 Feb 2022 11:35:37 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 08:35:37 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DA5128
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:35:37 -0800 (PST)
+Received: from mail-wr1-f44.google.com ([209.85.221.44]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M1qbm-1nKOC82xbs-002FVF for <linux-kernel@vger.kernel.org>; Thu, 10 Feb
+ 2022 17:30:32 +0100
+Received: by mail-wr1-f44.google.com with SMTP id q7so10473880wrc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:30:32 -0800 (PST)
+X-Gm-Message-State: AOAM533TR4Siq1eqoU2tDQMWXyCopk2EGUSX/fZ+BqQgCfOr+whsE+GF
+        AxDQA538ayt1ZJl1RJnUOb6ZXMBqqDzFmlnaOnE=
+X-Google-Smtp-Source: ABdhPJwxBvlbd4av+M+Wt3kUK7FJRCqF+gfuROuPRVX6DWa4nR1KkBnzFSUpMXDjuIAebSwZ4Cgah/eIprmfjzqcdTk=
+X-Received: by 2002:a5d:58d1:: with SMTP id o17mr5522580wrf.407.1644510632390;
+ Thu, 10 Feb 2022 08:30:32 -0800 (PST)
 MIME-Version: 1.0
-References: <20220117085307.93030-1-likexu@tencent.com> <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net> <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
- <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com> <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
- <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
-In-Reply-To: <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Thu, 10 Feb 2022 08:34:01 -0800
-Message-ID: <CALMp9eTOaWxQPfdwMSAn-OYAHKPLcuCyse7BpsSOM35vg5d0Jg@mail.gmail.com>
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     David Dunn <daviddunn@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Like Xu <like.xu.linux@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Stephane Eranian <eranian@google.com>
+References: <20220209224210.153907-1-radhac@marvell.com>
+In-Reply-To: <20220209224210.153907-1-radhac@marvell.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 10 Feb 2022 17:30:15 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a29uJF+dVVjuKmF=rRDJrM2ndbxRJPFt9ga-waQcECb+A@mail.gmail.com>
+Message-ID: <CAK8P3a29uJF+dVVjuKmF=rRDJrM2ndbxRJPFt9ga-waQcECb+A@mail.gmail.com>
+Subject: Re: [PATCH 0/4] soc: Add support for Marvell OcteonTX2 SDP block
+To:     Radha Mohan Chintakuntla <radhac@marvell.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        sburla@marvell.com
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:1olmKYa5/dCgcu1PGJvWHtcH3XEnYETDY8G+sJyWbuGhgFTPBvt
+ OwPa3zDJ4uTSbDKDT0Q0d0lLCan2pX87ILht8LHIjb7ubK4m4HBFWHPrQxTb8N/5AY2XdNI
+ rkqyGlZ3Stkc+lSGVpR3y91y8xCe1/bJW+oFKouhjYv5kIWfOs+c7SRQmfggl6NafFYd+be
+ lQ4MbuH1VVb2EvcXzDoNQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rOoFpGH6QbU=:1PhDheeNv4rNdbCO8cX+pi
+ 8Uxzk37023Y6JM8sooej/X/g3ieBY8RTeOtv/JwrBSr3S3JvAO/IWqjcAB1MmBqZp8z6UBqrg
+ iGzncBesosvSSdNUi3GxPVfEaPHekQBj3lKbLhoCkyGnKbPIPyFV0/+4oF55BMWsb2W5O0Zoe
+ dLN7r8hAe2TxQ9vYJqsoj8zQNUZMPi/zNGrLqZD5fHRr19I+N7hGhE89ZnlZ1I24Pz9KH76Yr
+ Xe9MuxfTH4FYQ6e8VscxvNJq3YEPpWF/B63coGvDkRqmjqqQsN0Tmp4V9VycyYL/Zsot785F6
+ KtTmAq1r////C48vaC08GivZ8TOnCnG8wJwQEIvbPbO4CozdOxRVl77/Y49/dZx1qr9rZffLU
+ W1FubymdESSNszDLj8A92inOVCaHwpgJeTLb+Da/VbAva41sLkFA5LCN+Sdq+FoPSV90qopBg
+ lHRhm/xtpSEOOHHjFlglzRugbubnrNQBZLdVoSifoPhFtYsIHgmPgBFSg3ohFXhpT5KV4EtUe
+ KNegOzmAGaTkFbxeke9Qm2getdNROkytxEDdZZBKwFrE4L8nxxbD1KU+4hLQ7FbiBZfv04odS
+ 547u7x/upEy34TaQIWml3Em+jeprG8BHwB3tN2Ll53ii51tS71/CBGpNvV0WkHlVzn+jxE2FU
+ OjmXJb/QHcvCEHkvD8V31wYy9NPeCRA/L9y5ppg63A6bnePWCCTVH+KAAXAA+qVcbnZa8y8pp
+ TPGgBS0UIyQuUOozrnTGCvrRh5v75qdOxukrixa7tseMONKXmOw54Ebmh0SO4/WRAsMWJEdbO
+ ZdaKZemQPIAdld3xSdTHYFWA96PtgwXFq9zHk/pGW8txgjg/q8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 7:34 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
+On Wed, Feb 9, 2022 at 11:42 PM Radha Mohan Chintakuntla
+<radhac@marvell.com> wrote:
 >
->
->
-> On 2/9/2022 2:24 PM, David Dunn wrote:
-> > Dave,
-> >
-> > In my opinion, the right policy depends on what the host owner and
-> > guest owner are trying to achieve.
-> >
-> > If the PMU is being used to locate places where performance could be
-> > improved in the system, there are two sub scenarios:
-> >     - The host and guest are owned by same entity that is optimizing
-> > overall system.  In this case, the guest doesn't need PMU access and
-> > better information is provided by profiling the entire system from the
-> > host.
-> >     - The host and guest are owned by different entities.  In this
-> > case, profiling from the host can identify perf issues in the guest.
-> > But what action can be taken?  The host entity must communicate issues
-> > back to the guest owner through some sort of out-of-band information
-> > channel.  On the other hand, preempting the host PMU to give the guest
-> > a fully functional PMU serves this use case well.
-> >
-> > TDX and SGX (outside of debug mode) strongly assume different
-> > entities.  And Intel is doing this to reduce insight of the host into
-> > guest operations.  So in my opinion, preemption makes sense.
-> >
-> > There are also scenarios where the host owner is trying to identify
-> > systemwide impacts of guest actions.  For example, detecting memory
-> > bandwidth consumption or split locks.  In this case, host control
-> > without preemption is necessary.
-> >
-> > To address these various scenarios, it seems like the host needs to be
-> > able to have policy control on whether it is willing to have the PMU
-> > preempted by the guest.
-> >
-> > But I don't see what scenario is well served by the current situation
-> > in KVM.  Currently the guest will either be told it has no PMU (which
-> > is fine) or that it has full control of a PMU.  If the guest is told
-> > it has full control of the PMU, it actually doesn't.  But instead of
-> > losing counters on well defined events (from the guest perspective),
-> > they simply stop counting depending on what the host is doing with the
-> > PMU.
->
-> For the current perf subsystem, a PMU should be shared among different
-> users via the multiplexing mechanism if the resource is limited. No one
-> has full control of a PMU for lifetime. A user can only have the PMU in
-> its given period. I think the user can understand how long it runs via
-> total_time_enabled and total_time_running.
+> The Marvell OcteonTX2's SDP block is a interface for sending and receiving
+> ethernet packets over the PCIe interface when OcteonTX2 is in PCIe endpoint
+> mode. It interfaces with the OcteonTX2's NIX block queues.
 
-For most clients, yes. For kvm, no. KVM currently tosses
-total_time_enabled and total_time_running in the bitbucket. It could
-extrapolate, but that would result in loss of precision. Some guest
-uses of the PMU would not be able to cope (e.g.
-https://github.com/rr-debugger/rr).
+Hi Radha,
 
-> For a guest, it should rely on the host to tell whether the PMU resource
-> is available. But unfortunately, I don't think we have such a
-> notification mechanism in KVM. The guest has the wrong impression that
-> the guest can have full control of the PMU.
+I'm not sure drivers/soc/ is the right place for it. I have not done an
+actual review so far, but I have some high-level questions to
+clarify how this fits in:
 
-That is the only impression that the architectural specification
-allows the guest to have. On Intel, we can mask off individual fixed
-counters, and we can reduce the number of GP counters, but AMD offers
-us no such freedom. Whatever resources we advertise to the guest must
-be available for its use whenever it wants. Otherwise, PMU
-virtualization is simply broken.
+When you say it is meant for passing ethernet packets, why is
+it not an ethernet driver?
 
-> In my opinion, we should add the notification mechanism in KVM. When the
-> PMU resource is limited, the guest can know whether it's multiplexing or
-> can choose to reschedule the event.
+If this drives the PCIe endpoint mode, how does it interface with
+the pci endpoint framework? It looks like a normal PCI driver.
 
-That sounds like a paravirtual perf mechanism, rather than PMU
-virtualization. Are you suggesting that we not try to virtualize the
-PMU? Unfortunately, PMU virtualization is what we have customers
-clamoring for. No one is interested in a paravirtual perf mechanism.
-For example, when will VTune in the guest know how to use your
-proposed paravirtual interface?
+What hardware does this run on? Is this only usable when
+both the host side and the endpoint side are Octexon TX2
+machines with their packet engines, or can one of the two
+be a different machine that has PCIe host or endpoint device
+support?
 
-> But seems the notification mechanism may not work for TDX case?
-> >
-> > On the other hand, if we flip it around the semantics are more clear.
-> > A guest will be told it has no PMU (which is fine) or that it has full
-> > control of the PMU.  If the guest is told that it has full control of
-> > the PMU, it does.  And the host (which is the thing that granted the
-> > full PMU to the guest) knows that events inside the guest are not
-> > being measured.  This results in all entities seeing something that
-> > can be reasoned about from their perspective.
-> >
->
-> I assume that this is for the TDX case (where the notification mechanism
->   doesn't work). The host still control all the PMU resources. The TDX
-> guest is treated as a super-user who can 'own' a PMU. The admin in the
-> host can configure/change the owned PMUs of the TDX. Personally, I think
-> it makes sense. But please keep in mind that the counters are not
-> identical. There are some special events that can only run on a specific
-> counter. If the special counter is assigned to TDX, other entities can
-> never run some events. We should let other entities know if it happens.
-> Or we should never let non-host entities own the special counter.
-
-Right; the counters are not fungible. Ideally, when the guest requests
-a particular counter, that is the counter it gets. If it is given a
-different counter, the counter it is given must provide the same
-behavior as the requested counter for the event in question.
-
->
-> Thanks,
-> Kan
->
-> > Thanks,
-> >
-> > Dave Dunn
-> >
-> > On Wed, Feb 9, 2022 at 10:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
-> >
-> >>> I was referring to gaps in the collection of data that the host perf
-> >>> subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
-> >>> guest. This can potentially be a problem if someone is trying to
-> >>> measure events per unit of time.
-> >>
-> >> Ahh, that makes sense.
-> >>
-> >> Does SGX cause problem for these people?  It can create some of the same
-> >> collection gaps:
-> >>
-> >>          performance monitoring activities are suppressed when entering
-> >>          an opt-out (of performance monitoring) enclave.
+          Arnd
