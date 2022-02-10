@@ -2,209 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A48C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32A35C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbiBJKfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:35:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47766 "EHLO
+        id S239839AbiBJKgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:36:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239831AbiBJKfU (ORCPT
+        with ESMTP id S239875AbiBJKgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:35:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67FEFF4;
-        Thu, 10 Feb 2022 02:35:21 -0800 (PST)
+        Thu, 10 Feb 2022 05:36:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4245FD8;
+        Thu, 10 Feb 2022 02:36:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 678B4B824AB;
-        Thu, 10 Feb 2022 10:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9099CC004E1;
-        Thu, 10 Feb 2022 10:35:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5993A61B95;
+        Thu, 10 Feb 2022 10:36:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAFB5C004E1;
+        Thu, 10 Feb 2022 10:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644489319;
-        bh=k5D32G5ixKYN4bBUiBY8pnqwXqXFp8NFaHmFL6/PAOM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FfvGotceV6tNx5N6iJiWydfwxZVt2rR2dp8jwgLCX+WIRUtg6jBgZjZqgIWTwt9oZ
-         s4xsxbFH8T00zIi8CKRVlhMb6x/0APEXa3OoZ6N+umiD3LEni2Q9YmbcL2geuY5Rk8
-         lmeO0k62dGQUjEvetg6ddPQrvsR4IL4uCBPeRP9hdmCSt+ptUjsb8xaVkioT4jC2ha
-         8lbSTaYFLr2PT3f5JtQSgEqg/d8wDb5Rg6txD3SXuoo4OUqUwAlKfjZI+UmyJM8Bsi
-         SruIiT/2l6Ym8HUbPQL+MBZk85ClptU1EDj2h5+JPA+oLUKRpm5zdr9wtZ7TTS3Hq7
-         WDreGun26inlA==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [REPOST PATCH v4 11/13] drm/msm/disp/dpu1: Add DSC support in RM
-Date:   Thu, 10 Feb 2022 16:04:21 +0530
-Message-Id: <20220210103423.271016-12-vkoul@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220210103423.271016-1-vkoul@kernel.org>
-References: <20220210103423.271016-1-vkoul@kernel.org>
+        s=k20201202; t=1644489364;
+        bh=v+o/pVXW0jbA4rH4iLmFawzXy6jeZG+7qU8hQVcABk8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fGr/GgaTlNVwq40OWT7jAcnPQ9ivu7mq7xKwRyJeV2t5pJ7AZxBo//9/moMfUE0wY
+         2WBL59Hl2t7Ir7+2kzzVisVdKM7cpxq9zNyoXyju/nYuyeo/O+9qlArpcIrU83AbJx
+         WDYCT2sla5PdhRZUE3s7VW5ZSiDHor2/iDX/9H+atkM4tH0TCj1PcDBaxG4XKxA7J6
+         kLdBymLKKp+hmY5lX0+qoYcCBJJxcPTTUDlo7dhXR9NLuwGkcqAtk3TnU4tRwkse7H
+         XpGakSB0bl3G5A2lq7b2KB3/N7b1TOzBFYjOvUgH7KL21orcj5/ifxYmPL85NHoj6T
+         VM14GuJQ6NI4g==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nI6ny-006sNS-OR; Thu, 10 Feb 2022 10:36:02 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Thu, 10 Feb 2022 10:36:02 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Christian Hewitt <christianshewitt@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] arm64: dts: meson: remove CPU opps below 1GHz for
+ SM1 boards
+In-Reply-To: <20220210100638.19130-3-christianshewitt@gmail.com>
+References: <20220210100638.19130-1-christianshewitt@gmail.com>
+ <20220210100638.19130-3-christianshewitt@gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <8211344a481dd40f260106bdd3f03bfb@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: christianshewitt@gmail.com, robh+dt@kernel.org, mark.rutland@arm.com, khilman@baylibre.com, narmstrong@baylibre.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This add the bits in RM to enable the DSC blocks
+On 2022-02-10 10:06, Christian Hewitt wrote:
+> Amlogic SM1 devices experience CPU stalls and random board wedges when
+> the system idles and CPU cores clock down to lower opp points. Recent
+> vendor kernels include a change to remove 100-250MHz and other distro
+> sources also remove the 500/667MHz points. Unless all 100-667Mhz opps
+> are removed or the CPU governor forced to performance stalls are still
+> observed, so let's remove them to improve stability and uptime.
+> 
+> Fixes: 3d9e76483049 ("arm64: dts: meson-sm1-sei610: enable DVFS")
+> Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+> ---
+>  arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 20 --------------------
+>  1 file changed, 20 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> index 3c07a89bfd27..80737731af3f 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+> @@ -95,26 +95,6 @@
+>  		compatible = "operating-points-v2";
+>  		opp-shared;
+> 
+> -		opp-100000000 {
+> -			opp-hz = /bits/ 64 <100000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-250000000 {
+> -			opp-hz = /bits/ 64 <250000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-500000000 {
+> -			opp-hz = /bits/ 64 <500000000>;
+> -			opp-microvolt = <730000>;
+> -		};
+> -
+> -		opp-667000000 {
+> -			opp-hz = /bits/ 64 <666666666>;
+> -			opp-microvolt = <750000>;
+> -		};
+> -
+>  		opp-1000000000 {
+>  			opp-hz = /bits/ 64 <1000000000>;
+>  			opp-microvolt = <770000>;
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h |  1 +
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c  | 56 +++++++++++++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h  |  1 +
- 3 files changed, 58 insertions(+)
+That's not nearly enough. If that's an actual issue, the driver
+should be updated not to use these OPPs, and you can't assume
+that people will just update their DT (mine comes from u-boot,
+and it is unlikely I will update it anytime soon).
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-index 2d385b4b7f5e..8f2fb667b05c 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.h
-@@ -146,6 +146,7 @@ struct dpu_global_state {
- 	uint32_t ctl_to_enc_id[CTL_MAX - CTL_0];
- 	uint32_t intf_to_enc_id[INTF_MAX - INTF_0];
- 	uint32_t dspp_to_enc_id[DSPP_MAX - DSPP_0];
-+	uint32_t dsc_to_enc_id[DSC_MAX - DSC_0];
- };
- 
- struct dpu_global_state
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-index f9c83d6e427a..fbb24bb2b998 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.c
-@@ -11,6 +11,7 @@
- #include "dpu_hw_intf.h"
- #include "dpu_hw_dspp.h"
- #include "dpu_hw_merge3d.h"
-+#include "dpu_hw_dsc.h"
- #include "dpu_encoder.h"
- #include "dpu_trace.h"
- 
-@@ -75,6 +76,14 @@ int dpu_rm_destroy(struct dpu_rm *rm)
- 			dpu_hw_intf_destroy(hw);
- 		}
- 	}
-+	for (i = 0; i < ARRAY_SIZE(rm->dsc_blks); i++) {
-+		struct dpu_hw_dsc *hw;
-+
-+		if (rm->dsc_blks[i]) {
-+			hw = to_dpu_hw_dsc(rm->dsc_blks[i]);
-+			dpu_hw_dsc_destroy(hw);
-+		}
-+	}
- 
- 	return 0;
- }
-@@ -221,6 +230,19 @@ int dpu_rm_init(struct dpu_rm *rm,
- 		rm->dspp_blks[dspp->id - DSPP_0] = &hw->base;
- 	}
- 
-+	for (i = 0; i < cat->dsc_count; i++) {
-+		struct dpu_hw_dsc *hw;
-+		const struct dpu_dsc_cfg *dsc = &cat->dsc[i];
-+
-+		hw = dpu_hw_dsc_init(dsc->id, mmio, cat);
-+		if (IS_ERR_OR_NULL(hw)) {
-+			rc = PTR_ERR(hw);
-+			DPU_ERROR("failed dsc object creation: err %d\n", rc);
-+			goto fail;
-+		}
-+		rm->dsc_blks[dsc->id - DSC_0] = &hw->base;
-+	}
-+
- 	return 0;
- 
- fail:
-@@ -476,6 +498,7 @@ static int _dpu_rm_reserve_intf(
- 	}
- 
- 	global_state->intf_to_enc_id[idx] = enc_id;
-+
- 	return 0;
- }
- 
-@@ -500,6 +523,28 @@ static int _dpu_rm_reserve_intf_related_hw(
- 	return ret;
- }
- 
-+static int _dpu_rm_reserve_dsc(struct dpu_rm *rm,
-+			       struct dpu_global_state *global_state,
-+			       struct drm_encoder *enc,
-+			       const struct msm_display_topology *top)
-+{
-+	int num_dsc = top->num_dsc;
-+	int i;
-+
-+	/* check if DSC required are allocated or not */
-+	for (i = 0; i < num_dsc; i++) {
-+		if (global_state->dsc_to_enc_id[i]) {
-+			DPU_ERROR("DSC %d is already allocated\n", i);
-+			return -EIO;
-+		}
-+	}
-+
-+	for (i = 0; i < num_dsc; i++)
-+		global_state->dsc_to_enc_id[i] = enc->base.id;
-+
-+	return 0;
-+}
-+
- static int _dpu_rm_make_reservation(
- 		struct dpu_rm *rm,
- 		struct dpu_global_state *global_state,
-@@ -526,6 +571,10 @@ static int _dpu_rm_make_reservation(
- 	if (ret)
- 		return ret;
- 
-+	ret  = _dpu_rm_reserve_dsc(rm, global_state, enc, &reqs->topology);
-+	if (ret)
-+		return ret;
-+
- 	return ret;
- }
- 
-@@ -567,6 +616,8 @@ void dpu_rm_release(struct dpu_global_state *global_state,
- 		ARRAY_SIZE(global_state->ctl_to_enc_id), enc->base.id);
- 	_dpu_rm_clear_mapping(global_state->intf_to_enc_id,
- 		ARRAY_SIZE(global_state->intf_to_enc_id), enc->base.id);
-+	_dpu_rm_clear_mapping(global_state->dsc_to_enc_id,
-+		ARRAY_SIZE(global_state->dsc_to_enc_id), enc->base.id);
- }
- 
- int dpu_rm_reserve(
-@@ -640,6 +691,11 @@ int dpu_rm_get_assigned_resources(struct dpu_rm *rm,
- 		hw_to_enc_id = global_state->dspp_to_enc_id;
- 		max_blks = ARRAY_SIZE(rm->dspp_blks);
- 		break;
-+	case DPU_HW_BLK_DSC:
-+		hw_blks = rm->dsc_blks;
-+		hw_to_enc_id = global_state->dsc_to_enc_id;
-+		max_blks = ARRAY_SIZE(rm->dsc_blks);
-+		break;
- 	default:
- 		DPU_ERROR("blk type %d not managed by rm\n", type);
- 		return 0;
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-index 1f12c8d5b8aa..278d2a510b80 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_rm.h
-@@ -30,6 +30,7 @@ struct dpu_rm {
- 	struct dpu_hw_blk *intf_blks[INTF_MAX - INTF_0];
- 	struct dpu_hw_blk *dspp_blks[DSPP_MAX - DSPP_0];
- 	struct dpu_hw_blk *merge_3d_blks[MERGE_3D_MAX - MERGE_3D_0];
-+	struct dpu_hw_blk *dsc_blks[DSC_MAX - DSC_0];
- 
- 	uint32_t lm_max_width;
- };
+Thanks,
+
+         M.
 -- 
-2.31.1
-
+Jazz is not dead. It just smells funny...
