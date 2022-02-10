@@ -2,157 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F19C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E397C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345584AbiBJXTd (ORCPT
+        id S1345595AbiBJXUm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:19:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37186 "EHLO
+        Thu, 10 Feb 2022 18:20:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244960AbiBJXTa (ORCPT
+        with ESMTP id S1345587AbiBJXUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:19:30 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75D7266C;
-        Thu, 10 Feb 2022 15:19:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description;
-        bh=5OxpglYg6sSOJNdELP8v+HgsOKFwOz/qsyk4a6rak9U=; b=Qd03c5MlqJEMYHC3hB/oWR/+TY
-        aaWkCh/eC5fNwh5DPfDP3Rc5x+bI8revhAi/AIICmNUsk5jp0x4i1LJC0oAU0JjIPP5DpNjsqFiEi
-        4dr0jCuSBYgMBjtcouS2dzVyPLpc6hK+vcHrt+3c0+9UYJAlYVhcia4GHowFDNpwj7uM2jsBMjuDq
-        LiqlmCpa6oFvUik4v8Yw36UE5i/NENSvhUomgRwLzP4zcxLYV4G5juD3I0SiuvE5sQFHgKOSkUlBN
-        TNHm/U7rJCiJJTdIg+V+29DNxyH0UMWbNSN3awsu03/846D1rFKn6/pIBRcXTLskIq9fmCJw69iKN
-        8cZ4soTw==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIIiT-0059e9-Ev; Thu, 10 Feb 2022 23:19:09 +0000
-Date:   Thu, 10 Feb 2022 15:19:09 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Tong Zhang <ztong0001@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Domenico Andreoli <domenico.andreoli@linux.com>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: boottime warning from todays linux-next
-Message-ID: <YgWdbYfWgHP2jBmI@bombadil.infradead.org>
-References: <20220210184340.7eba108a@canb.auug.org.au>
- <20220210193302.686fa61a@canb.auug.org.au>
- <20220210214125.2b248790@canb.auug.org.au>
- <20220210222953.6e078d20@canb.auug.org.au>
+        Thu, 10 Feb 2022 18:20:38 -0500
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B9B5F57;
+        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
+Received: by mail-qk1-x733.google.com with SMTP id 200so6608218qki.2;
+        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=OI8hrqvEfZeAPpQf8rC+vBfmKoqD6QuGtPPDNoK9uS4=;
+        b=EQfXcPTDBcYmVj4+j4y/o25JVZVDwsWDx+EHUAOF3zMYUn3kQLX/MQfzHc/YKh7FN+
+         wm3IVR3uXroLe/72PTmQlUcmmno8zHVeYAM0auen7rv+y/jThDNnkafJjcgmONPKaZx5
+         gDKoXCQtUHorfeynZcINw3BfDvjNFg1UfPdLYBp9UNxk8+r/ONDMKXrWVWxHFGs4MioI
+         4Qo6KmzZXo6xLcPq6A2malt5UGXvTQ0/AN4hdbapLw/4UqjI/nUuIbUbfUEXo9K8538z
+         v9P/ZZOoEfZt7peFCpLO9LS5MNJS7WxJgbU0lBrAZ25AQUta31Bg+sR9XeKHm/qqs1wE
+         GMsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OI8hrqvEfZeAPpQf8rC+vBfmKoqD6QuGtPPDNoK9uS4=;
+        b=UCYQSb3Pzs2xa8qitu7UTbrUwQ72zJbSk+i29PfseM5LzrMK5pODUFPc5fT9ERWToW
+         7n+l6fe7qgjUuvyopYxxioJGZUtP/KmGGt1/V/yHS0euf0agDasPsuEYvLdjTlGKLA/G
+         MszWX06Yk8G3YRjWSbckyKxh9r59szR28HtpqcTB9v7T6gkaCc2fNkBegr3g6fsvp/QH
+         /cEIdxT+ub8P/1iPeLrvYtSjfZoe6+S2tJ8s34nTip0CepDri9Bq7MyUfkCFghgqf50E
+         0254QeweafMDsuHT1ouRr6GcbyGlr4bktF1ZukHzcpUmcofYVn4Fh+EM8tieIVhZKUrh
+         mSuQ==
+X-Gm-Message-State: AOAM532jO7txafanMGY7sBYAGKS69YBNbzmYdQ65tzUOWafDfO/FZXXB
+        NNg6A3cAs3qIgCotqJ/nG+M=
+X-Google-Smtp-Source: ABdhPJyfmC4ftc0tGVwbWyGGCrs8QXCUCRrbYeGrdw/pzG5Dj57MnQrgDJcGdetfGIydZXZ3xW6zSg==
+X-Received: by 2002:a05:620a:4043:: with SMTP id i3mr5211591qko.14.1644535235068;
+        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id v12sm10661466qkl.74.2022.02.10.15.20.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 15:20:34 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH 13/49] perf tools: replace bitmap_weight with bitmap_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:48:57 -0800
+Message-Id: <20220210224933.379149-14-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220210222953.6e078d20@canb.auug.org.au>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 10:29:53PM +1100, Stephen Rothwell wrote:
-> Hi all,
->=20
-> On Thu, 10 Feb 2022 21:41:25 +1100 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >
-> > On Thu, 10 Feb 2022 19:33:02 +1100 Stephen Rothwell <sfr@canb.auug.org.=
-au> wrote:
-> > >
-> > > On Thu, 10 Feb 2022 18:43:40 +1100 Stephen Rothwell <sfr@canb.auug.or=
-g.au> wrote: =20
-> > > >
-> > > > My qemu boot of a powerpc pseries_le_defconfig kernel produced these
-> > > > kernel messages:
-> > > >=20
-> > > >   CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc3 #2
-> > > >   Call Trace:
-> > > >   [c0000000073e3a80] [c0000000007bfd40] dump_stack_lvl+0x74/0xa8 (u=
-nreliable)
-> > > >   [c0000000073e3ac0] [c00000000057e3dc] __register_sysctl_table+0x6=
-0c/0x9f0
-> > > >   [c0000000073e3bd0] [c000000002041170] init_fs_stat_sysctls+0x48/0=
-x60
-> > > >   [c0000000073e3bf0] [c000000000012110] do_one_initcall+0x60/0x2d0
-> > > >   [c0000000073e3cd0] [c0000000020049f0] kernel_init_freeable+0x334/=
-0x3dc
-> > > >   [c0000000073e3db0] [c000000000012710] kernel_init+0x30/0x1a0
-> > > >   [c0000000073e3e10] [c00000000000cd64] ret_from_kernel_thread+0x5c=
-/0x64
-> > > >=20
-> > > > Presumably introduced by commit
-> > > >=20
-> > > >   b42bc9a3c511 ("Fix regression due to "fs: move binfmt_misc sysctl=
- to its own file"")   =20
-> > >=20
-> > > OK, I cannot reproduce this with just Linus' tree.  I will try to bis=
-ect. =20
+Some code in builtin-c2c.c calls bitmap_weight() to check if any bit of
+a given bitmap is set. It's better to use bitmap_empty() in that case
+because bitmap_empty() stops traversing the bitmap as soon as it finds
+first set bit, while bitmap_weight() counts all bits unconditionally.
 
-OK so that's not the issue.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ tools/perf/builtin-c2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> > It bisected to commit
-> >=20
-> >   43a9443d5da2 ("Merge branch 'akpm-current/current'")
-> >=20
-> > and both parents of that commit are fine :-(
+diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
+index 77dd4afacca4..14f787c67140 100644
+--- a/tools/perf/builtin-c2c.c
++++ b/tools/perf/builtin-c2c.c
+@@ -1080,7 +1080,7 @@ node_entry(struct perf_hpp_fmt *fmt __maybe_unused, struct perf_hpp *hpp,
+ 		bitmap_zero(set, c2c.cpus_cnt);
+ 		bitmap_and(set, c2c_he->cpuset, c2c.nodes[node], c2c.cpus_cnt);
+ 
+-		if (!bitmap_weight(set, c2c.cpus_cnt)) {
++		if (bitmap_empty(set, c2c.cpus_cnt)) {
+ 			if (c2c.node_info == 1) {
+ 				ret = scnprintf(hpp->buf, hpp->size, "%21s", " ");
+ 				advance_hpp(hpp, ret);
+@@ -1944,7 +1944,7 @@ static int set_nodestr(struct c2c_hist_entry *c2c_he)
+ 	if (c2c_he->nodestr)
+ 		return 0;
+ 
+-	if (bitmap_weight(c2c_he->nodeset, c2c.nodes_cnt)) {
++	if (!bitmap_empty(c2c_he->nodeset, c2c.nodes_cnt)) {
+ 		len = bitmap_scnprintf(c2c_he->nodeset, c2c.nodes_cnt,
+ 				      buf, sizeof(buf));
+ 	} else {
+-- 
+2.32.0
 
-FWIW Linus merged a more newer version of the regression fix, and only
-until today did we get that version on linux-next.
-
-> So it seems that the parent of "fs/binfmt_misc" is a permanently empty
-> directory - the is_empty_dir() check in insert_header() succeeds.
-
-I am not seeing this issue on x86_64 KVM guest with:
-
-CONFIG_BINFMT_MISC=3Dm
-or
-CONFIG_BINFMT_MISC=3Dy
-
-I think the issue might be that linux-next has Andrew's earlier
-version of the fix merged, and Linus now has the new version. So
-linux-next has these extra things below. But I can't understand
-why this is seen on ppc and not on x86_64.
-
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 241cfc6bc36f..788b9a34d5ab 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -2735,17 +2735,6 @@ static struct ctl_table vm_table[] =3D {
- 	{ }
- };
-=20
--static struct ctl_table fs_table[] =3D {
--#if defined(CONFIG_BINFMT_MISC) || defined(CONFIG_BINFMT_MISC_MODULE)
--	{
--		.procname	=3D "binfmt_misc",
--		.mode		=3D 0555,
--		.child		=3D sysctl_mount_point,
--	},
--#endif
--	{ }
--};
--
- static struct ctl_table debug_table[] =3D {
- #ifdef CONFIG_SYSCTL_EXCEPTION_TRACE
- 	{
-@@ -2765,7 +2754,6 @@ static struct ctl_table dev_table[] =3D {
-=20
- DECLARE_SYSCTL_BASE(kernel, kern_table);
- DECLARE_SYSCTL_BASE(vm, vm_table);
--DECLARE_SYSCTL_BASE(fs, fs_table);
- DECLARE_SYSCTL_BASE(debug, debug_table);
- DECLARE_SYSCTL_BASE(dev, dev_table);
-=20
-@@ -2773,7 +2761,6 @@ int __init sysctl_init_bases(void)
- {
- 	register_sysctl_base(kernel);
- 	register_sysctl_base(vm);
--	register_sysctl_base(fs);
- 	register_sysctl_base(debug);
- 	register_sysctl_base(dev);
-=20
