@@ -2,66 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51290C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiBJBVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:21:02 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38050 "EHLO
+        id S229469AbiBJBVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:21:05 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231213AbiBJBUy (ORCPT
+        with ESMTP id S231249AbiBJBUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 20:20:54 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C43431EC4A;
-        Wed,  9 Feb 2022 17:20:50 -0800 (PST)
-X-UUID: ab0fc616f57e41478d26d069261dab1e-20220210
-X-UUID: ab0fc616f57e41478d26d069261dab1e-20220210
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 862682013; Thu, 10 Feb 2022 09:15:39 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 10 Feb 2022 09:15:38 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Feb 2022 09:15:37 +0800
-Message-ID: <2707120457e962a78e3c4ffd231ca25a7138ae72.camel@mediatek.com>
-Subject: Re: [PATCH V5 0/3] Add compatible for Mediatek MT8186
-From:   Leilk Liu <leilk.liu@mediatek.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Date:   Thu, 10 Feb 2022 09:15:37 +0800
-In-Reply-To: <YgO+pXPtptHCQ9Zu@sirena.org.uk>
-References: <20220209014443.12443-1-leilk.liu@mediatek.com>
-         <YgO+pXPtptHCQ9Zu@sirena.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+X-Greylist: delayed 85738 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 09 Feb 2022 17:20:52 PST
+Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ED11EC50
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:20:51 -0800 (PST)
+X-QQ-mid: bizesmtp40t1644456039t9nh99gn
+Received: from localhost.localdomain (unknown [58.240.82.166])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 10 Feb 2022 09:20:34 +0800 (CST)
+X-QQ-SSF: 0140000000200010C000B00A0000000
+X-QQ-FEAT: Mx1dxJbW4IUnI3y2SrIKQ5MSdeobh2lcs2b75Si5IgzgCw7r9y38BqfW4vBA9
+        xk/kJQG3oS0EvLCXEVA/nZEskyBd5PkZlC2sGH4Qeu7pq02CiBtDFKPxqCPAyreZ983hXP5
+        SuIbS70XcvIsmXnX+tCEVcOYj8HUoCeJ05TmUdNmrgKgqPxAjCVnskHdx1Bpg6xB4tVwo+j
+        ef3S0f4JYv8YklAsA5X1srsGORy5DbieueM6g9APVE4OIxh5PRL2CAyy/n4Sfk5DGlhkATC
+        dqGLQY4/u2XR/vG3A3+Xvmk3CG9qfkZYbNOEdiEv/5OYJWxhSBIkrNYFbSYf7SKiK+eDCs0
+        HPJG4xZA67E82VLzHM=
+X-QQ-GoodBg: 2
+From:   Zhen Ni <nizhen@uniontech.com>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, mcgrof@kernel.org,
+        keescook@chromium.org
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        Zhen Ni <nizhen@uniontech.com>
+Subject: [PATCH] sched: move rt_period/runtime sysctls to rt.c
+Date:   Thu, 10 Feb 2022 09:20:30 +0800
+Message-Id: <20220210012030.8813-1-nizhen@uniontech.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybgforeign:qybgforeign6
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-09 at 13:16 +0000, Mark Brown wrote:
-> On Wed, Feb 09, 2022 at 09:44:40AM +0800, Leilk Liu wrote:
-> > V5:
-> > 1. re-send these patchs based on v5.17-rc1.
-> > 2. add the flags: "Reviewed-by Rob Herring".
-> 
-> Please do not submit new versions of already applied patches, please
-> submit incremental updates to the existing code.  Modifying existing
-> commits creates problems for other users building on top of those
-> commits so it's best practice to only change pubished git commits if
-> absolutely essential.
+move rt_period/runtime sysctls to rt.c and use the new
+register_sysctl_init() to register the sysctl interface.
 
-Sorry to ignore the applied mail before I sent this new versions,
-thanks for your reminder.
+Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+---
+ include/linux/sched/sysctl.h | 11 ---------
+ kernel/sched/core.c          | 13 -----------
+ kernel/sched/rt.c            | 44 +++++++++++++++++++++++++++++++++++-
+ kernel/sched/sched.h         |  4 ++++
+ kernel/sysctl.c              | 14 ------------
+ 5 files changed, 47 insertions(+), 39 deletions(-)
+
+diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
+index 1f07d14cf9fc..e18ce60d6c8c 100644
+--- a/include/linux/sched/sysctl.h
++++ b/include/linux/sched/sysctl.h
+@@ -23,15 +23,6 @@ enum sched_tunable_scaling {
+ 	SCHED_TUNABLESCALING_END,
+ };
+ 
+-/*
+- *  control realtime throttling:
+- *
+- *  /proc/sys/kernel/sched_rt_period_us
+- *  /proc/sys/kernel/sched_rt_runtime_us
+- */
+-extern unsigned int sysctl_sched_rt_period;
+-extern int sysctl_sched_rt_runtime;
+-
+ extern unsigned int sysctl_sched_dl_period_max;
+ extern unsigned int sysctl_sched_dl_period_min;
+ 
+@@ -48,8 +39,6 @@ extern int sched_rr_timeslice;
+ 
+ int sched_rr_handler(struct ctl_table *table, int write, void *buffer,
+ 		size_t *lenp, loff_t *ppos);
+-int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+-		size_t *lenp, loff_t *ppos);
+ int sysctl_numa_balancing(struct ctl_table *table, int write, void *buffer,
+ 		size_t *lenp, loff_t *ppos);
+ int sysctl_schedstats(struct ctl_table *table, int write, void *buffer,
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 1962111416e4..9742ad1276b0 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -80,12 +80,6 @@ const_debug unsigned int sysctl_sched_nr_migrate = 8;
+ const_debug unsigned int sysctl_sched_nr_migrate = 32;
+ #endif
+ 
+-/*
+- * period over which we measure -rt task CPU usage in us.
+- * default: 1s
+- */
+-unsigned int sysctl_sched_rt_period = 1000000;
+-
+ __read_mostly int scheduler_running;
+ 
+ #ifdef CONFIG_SCHED_CORE
+@@ -379,13 +373,6 @@ sched_core_dequeue(struct rq *rq, struct task_struct *p, int flags) { }
+ 
+ #endif /* CONFIG_SCHED_CORE */
+ 
+-/*
+- * part of the period that we allow rt tasks to run in us.
+- * default: 0.95s
+- */
+-int sysctl_sched_rt_runtime = 950000;
+-
+-
+ /*
+  * Serialization rules:
+  *
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 7b4f4fbbb404..5f23778c80b4 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -16,6 +16,47 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
+ 
+ struct rt_bandwidth def_rt_bandwidth;
+ 
++/*
++ * period over which we measure -rt task CPU usage in us.
++ * default: 1s
++ */
++unsigned int sysctl_sched_rt_period = 1000000;
++
++/*
++ * part of the period that we allow rt tasks to run in us.
++ * default: 0.95s
++ */
++int sysctl_sched_rt_runtime = 950000;
++
++static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
++		size_t *lenp, loff_t *ppos);
++#ifdef CONFIG_SYSCTL
++static struct ctl_table sched_rt_sysctls[] = {
++	{
++		.procname       = "sched_rt_period_us",
++		.data           = &sysctl_sched_rt_period,
++		.maxlen         = sizeof(unsigned int),
++		.mode           = 0644,
++		.proc_handler   = sched_rt_handler,
++	},
++	{
++		.procname       = "sched_rt_runtime_us",
++		.data           = &sysctl_sched_rt_runtime,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = sched_rt_handler,
++	},
++	{}
++};
++
++static void __init sched_rt_sysctl_init(void)
++{
++	register_sysctl_init("kernel", sched_rt_sysctls);
++}
++#else
++#define sched_rt_sysctl_init() do { } while (0)
++#endif
++
+ static enum hrtimer_restart sched_rt_period_timer(struct hrtimer *timer)
+ {
+ 	struct rt_bandwidth *rt_b =
+@@ -2471,6 +2512,7 @@ void __init init_sched_rt_class(void)
+ 		zalloc_cpumask_var_node(&per_cpu(local_cpu_mask, i),
+ 					GFP_KERNEL, cpu_to_node(i));
+ 	}
++	sched_rt_sysctl_init();
+ }
+ #endif /* CONFIG_SMP */
+ 
+@@ -2928,7 +2970,7 @@ static void sched_rt_do_global(void)
+ 	raw_spin_unlock_irqrestore(&def_rt_bandwidth.rt_runtime_lock, flags);
+ }
+ 
+-int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
++static int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+ 		size_t *lenp, loff_t *ppos)
+ {
+ 	int old_period, old_runtime;
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index de53be905739..695e280b063f 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -100,6 +100,10 @@ extern void calc_global_load_tick(struct rq *this_rq);
+ extern long calc_load_fold_active(struct rq *this_rq, long adjust);
+ 
+ extern void call_trace_sched_update_nr_running(struct rq *rq, int count);
++
++extern unsigned int sysctl_sched_rt_period;
++extern int sysctl_sched_rt_runtime;
++
+ /*
+  * Helpers for converting nanosecond timing to jiffy resolution
+  */
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index 78996c0c8852..88264300ce69 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1692,20 +1692,6 @@ static struct ctl_table kern_table[] = {
+ 		.extra2		= SYSCTL_ONE,
+ 	},
+ #endif /* CONFIG_NUMA_BALANCING */
+-	{
+-		.procname	= "sched_rt_period_us",
+-		.data		= &sysctl_sched_rt_period,
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= sched_rt_handler,
+-	},
+-	{
+-		.procname	= "sched_rt_runtime_us",
+-		.data		= &sysctl_sched_rt_runtime,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= sched_rt_handler,
+-	},
+ 	{
+ 		.procname	= "sched_deadline_period_max_us",
+ 		.data		= &sysctl_sched_dl_period_max,
+-- 
+2.20.1
+
+
 
