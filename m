@@ -2,98 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 780B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A73C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbiBJWnr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:43:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60810 "EHLO
+        id S1345167AbiBJWoE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 17:44:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244866AbiBJWno (ORCPT
+        with ESMTP id S1345168AbiBJWoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:43:44 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0F15F41;
-        Thu, 10 Feb 2022 14:43:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644533023; x=1676069023;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3M8IIwvsuOqGIFi2k0uaq5Qj6oZtRqaS6GfOESfH9CM=;
-  b=X0hya5ADAOmuvFoDifDsSXV/gmlS/M0AxwFneZhASUfMAVt4+XklMNf3
-   dZbe088wA7w24OtTlxPrJc4t9QCFHsy+ajI5rWAlr0gSOvh1NwUXnqR1O
-   fzL6GyaUfws6kOpWtv77YCn6DKBCvXN7IT3V4alvhExUhAJbYO043ArA/
-   wFW4FzidJMTvEJRHh9zCXBV7nI+5xhq1A8x9MLdMQcwW6dVXcm5FAC2xQ
-   ODxgXRFBPexpEEHGNuEkCHpkBtW5udrg1EaRYUhgVlTpLNE1NkLJO8c3I
-   sGxa43jwLYexxPn5Y16vIUscWi1X/FIxNeLTc+AD6s3luyGcnSEivqvL9
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249819281"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="249819281"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 14:43:43 -0800
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="500561782"
-Received: from pengyusu-mobl.amr.corp.intel.com (HELO [10.212.149.216]) ([10.212.149.216])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 14:43:42 -0800
-Message-ID: <4c216532-2b68-dd95-93f1-542df4786d7a@intel.com>
-Date:   Thu, 10 Feb 2022 14:43:39 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 18/35] mm: Add guard pages around a shadow stack.
-Content-Language: en-US
-To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mm@kvack.org,
-        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Eugene Syromiatnikov <esyr@redhat.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
-        Dave Martin <Dave.Martin@arm.com>,
-        Weijiang Yang <weijiang.yang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
-        kcc@google.com, eranian@google.com
-Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
-References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
- <20220130211838.8382-19-rick.p.edgecombe@intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220130211838.8382-19-rick.p.edgecombe@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 10 Feb 2022 17:44:02 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5855F4D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:44:02 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id t8-20020a259ac8000000b00619a3b5977fso15158602ybo.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:44:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=FWvONc6PPT7SOgcpYOOzYgnlsLgy4lIL2CKlJJtukzs=;
+        b=mBuynU6nVtUUhgSN/Mzp+TKEbV4pFhe3dtKgEyVMOiwApKF6+HLlSY4gE57X5hOP70
+         rAAiYgmNoRwzjL9PRCjeUoKyBvbWi9KRQIFADz3Q6trpDjsIh8e/dl0J/VD9kGCwAI+J
+         BESFy4HJ4E6dX5+yow+EWQQLwzm01n1PyiQJhfT9IrZs+BepkmJI7SxxevOSmOe5Zkde
+         eBCAolmAIMIZry/9HLPgsUjMn0zqebgFcw0PnbcfnYgLHiakd0mei8onuiCvnJNdqIbB
+         Mix+BHSyf/9IvbRtthvYA/aAELP0sccVnHZzFmlpWyLkFP2bSNkbmY8rnK0kh6Acc1Vw
+         G2Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=FWvONc6PPT7SOgcpYOOzYgnlsLgy4lIL2CKlJJtukzs=;
+        b=iaEe7fllx18D6SsvevV8FQe2VJUuln+vs7lv5w+VnivAaH4T56Z4c2ixlbKoDZAJRR
+         c2WlApvlwRNEHEPf7y0LwW4ezjtSkMq1xq5YepSav5lNidmcogxRq6siFvnFUJJAG++b
+         z8cJ/ZGCO0NvyQ92IySjDQDSxv7yZYjEnRtmZoRyDS4uGWRH2nmoQCh8EMBNmWh6RYkG
+         /llMhAtXmiO2pNKOWlJDBigdHr1MXJ12hTZRD3IkX0o5ZjJn3x309Odgf1gMO7MzzOFh
+         carpCRTUdceEuFROkL/rgkYCCv9y/HPVti+rS3OD38ME/f8/hvU0uKMzifYu7lsjV68w
+         QYuw==
+X-Gm-Message-State: AOAM5313PReSKviB2wmbzSMYEWRVxJfwlSftXhWkuGKsz74b7w6OE53c
+        IS8fBEwg7kPNt4uf4mc6ru7GvFwNPdGD1r/iKg==
+X-Google-Smtp-Source: ABdhPJxZHBnjRsaIEqwkHqdAbXT7GDJWvj+cAd1UkPLHhqa+mVsLffzcbYP42soJ9363QIkLwEeaj1E/kFGFAp78sg==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:8f02:232:ad86:2ab2])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:6f08:: with SMTP id
+ k8mr8699054ybc.469.1644533041615; Thu, 10 Feb 2022 14:44:01 -0800 (PST)
+Date:   Thu, 10 Feb 2022 14:41:43 -0800
+In-Reply-To: <20220210224220.4076151-1-kaleshsingh@google.com>
+Message-Id: <20220210224220.4076151-3-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220210224220.4076151-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH 2/7] KVM: arm64: Factor out private range VA allocation
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Walbran <qwandor@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/30/22 13:18, Rick Edgecombe wrote:
-> INCSSP(Q/D) increments shadow stack pointer and 'pops and discards' the
-> first and the last elements in the range, effectively touches those memory
-> areas.
-> 
-> The maximum moving distance by INCSSPQ is 255 * 8 = 2040 bytes and
-> 255 * 4 = 1020 bytes by INCSSPD.  Both ranges are far from PAGE_SIZE.
-> Thus, putting a gap page on both ends of a shadow stack prevents INCSSP,
-> CALL, and RET from going beyond.
+From: Quentin Perret <qperret@google.com>
 
-What is the downside of not applying this patch?  The shadow stack gap
-is 1MB instead of 4k?
+__pkvm_create_private_mapping() is currently responsible for allocating
+VA space in the hypervisor's "private" range and creating stage-1
+mappings. In order to allow reusing the VA space allocation logic from
+other places, let's factor it out in a standalone function. This is will
+be used to allocate private VA ranges for hypervisor stack guard pages
+in a subsequent patch in this series.
 
-That, frankly, doesn't seem too bad.  How badly do we *need* this patch?
+Signed-off-by: Quentin Perret <qperret@google.com>
+[Kalesh - Resolve conflicts and make hyp_alloc_private_va_range
+          available outside nvhe/mm.c, update commit message]
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
+ arch/arm64/kvm/hyp/include/nvhe/mm.h |  1 +
+ arch/arm64/kvm/hyp/nvhe/mm.c         | 28 +++++++++++++++++++---------
+ 2 files changed, 20 insertions(+), 9 deletions(-)
+
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/mm.h b/arch/arm64/kvm/hyp/include/nvhe/mm.h
+index 2d08510c6cc1..f53fb0e406db 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/mm.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/mm.h
+@@ -21,6 +21,7 @@ int pkvm_create_mappings(void *from, void *to, enum kvm_pgtable_prot prot);
+ int pkvm_create_mappings_locked(void *from, void *to, enum kvm_pgtable_prot prot);
+ unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+ 					    enum kvm_pgtable_prot prot);
++unsigned long hyp_alloc_private_va_range(size_t size);
+ 
+ static inline void hyp_vmemmap_range(phys_addr_t phys, unsigned long size,
+ 				     unsigned long *start, unsigned long *end)
+diff --git a/arch/arm64/kvm/hyp/nvhe/mm.c b/arch/arm64/kvm/hyp/nvhe/mm.c
+index 526a7d6fa86f..e196441e072f 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mm.c
++++ b/arch/arm64/kvm/hyp/nvhe/mm.c
+@@ -37,6 +37,22 @@ static int __pkvm_create_mappings(unsigned long start, unsigned long size,
+ 	return err;
+ }
+ 
++unsigned long hyp_alloc_private_va_range(size_t size)
++{
++	unsigned long addr = __io_map_base;
++
++	hyp_assert_lock_held(&pkvm_pgd_lock);
++	__io_map_base += PAGE_ALIGN(size);
++
++	/* Are we overflowing on the vmemmap ? */
++	if (__io_map_base > __hyp_vmemmap) {
++		__io_map_base = addr;
++		addr = (unsigned long)ERR_PTR(-ENOMEM);
++	}
++
++	return addr;
++}
++
+ unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+ 					    enum kvm_pgtable_prot prot)
+ {
+@@ -45,16 +61,10 @@ unsigned long __pkvm_create_private_mapping(phys_addr_t phys, size_t size,
+ 
+ 	hyp_spin_lock(&pkvm_pgd_lock);
+ 
+-	size = PAGE_ALIGN(size + offset_in_page(phys));
+-	addr = __io_map_base;
+-	__io_map_base += size;
+-
+-	/* Are we overflowing on the vmemmap ? */
+-	if (__io_map_base > __hyp_vmemmap) {
+-		__io_map_base -= size;
+-		addr = (unsigned long)ERR_PTR(-ENOMEM);
++	size = size + offset_in_page(phys);
++	addr = hyp_alloc_private_va_range(size);
++	if (IS_ERR((void *)addr))
+ 		goto out;
+-	}
+ 
+ 	err = kvm_pgtable_hyp_map(&pkvm_pgtable, addr, size, phys, prot);
+ 	if (err) {
+-- 
+2.35.1.265.g69c8d7142f-goog
+
