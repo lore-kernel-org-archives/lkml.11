@@ -2,66 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B55AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3059DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244050AbiBJQKt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:10:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34024 "EHLO
+        id S244058AbiBJQMM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:12:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243935AbiBJQKr (ORCPT
+        with ESMTP id S243839AbiBJQMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:10:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09702EB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:10:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9959C61CF3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:10:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62F0C004E1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:10:47 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="NAY0waXy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644509446;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zMTJh73oixvK6Cy3gBc0hlrts0aw+f6jfhpzT+nsqEQ=;
-        b=NAY0waXyNS81TVskAJwWZQ37GFWqduQzVTbOm731q8pjLPuohfvlW2sGYApr3ewRpm8eus
-        MdoXqZehxY+L7m2AdjcCzpa/gB/bQ2/WWvGEdjW+m6qDJj5W/GwxjncNoQDr4Hvo9xa08J
-        /6A0e0jCEiMWNLjQUT/Gj5d6w23I/LU=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 2618b095 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Thu, 10 Feb 2022 16:10:46 +0000 (UTC)
-Received: by mail-yb1-f174.google.com with SMTP id p19so16858497ybc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:10:46 -0800 (PST)
-X-Gm-Message-State: AOAM531EWfeLY6qmIXseEObxpdN6iWhYFIKDuClOgHVKwqy3fYUBYFgz
-        qUFBDHOYhdMwahZL/ek3ntaqiW2gfqwaVqV4mxQ=
-X-Google-Smtp-Source: ABdhPJwOB3XG5SV9Pr+nhI+tynR9SeQZA2ma1nZnZ5QLP9zBAeFpRl+WcJtHCt0ZUWgT/usR2spp2AbkSaBIwAJ8nR4=
-X-Received: by 2002:a25:c006:: with SMTP id c6mr7359036ybf.457.1644509445371;
- Thu, 10 Feb 2022 08:10:45 -0800 (PST)
+        Thu, 10 Feb 2022 11:12:10 -0500
+X-Greylist: delayed 1842 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 08:12:11 PST
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF340EB;
+        Thu, 10 Feb 2022 08:12:11 -0800 (PST)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21AEBMiK025584;
+        Thu, 10 Feb 2022 09:41:21 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=ZcE6+fIEhouQflq6SsdYNwRtkbBAzXLAZhmoezOqjSU=;
+ b=IlCoODTBMzey/Sj5wVEjA1csXujawVmllHw9glGsfo0i7WUSqNldfupDrQYKEg3hCof0
+ x8II4XGesbT+TGgJyIZzDhZ/LAbT4tqP7MmQXpiQNRVCasWZfQgsgHUr5LdyF8v8p80X
+ AzStJzdSoaC6LM43HAqU4pmIP88gFMKXHZLduYqanhBocWaS+An7+/uJs7lmVUMygdpl
+ GZfWjU+mbOyMVA+0X2693baBJNdObpjiLqSt4QUmnBC5t+euWsxIq48WUP7yvR7u0Uad
+ to7xjxb1Jg1Q2cnhWGV58qShodp+hXo+5j/QoGyiDVA3pjU3y47FiflMttroAqpadRVW IQ== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e4detskyx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 10 Feb 2022 09:41:21 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 10 Feb
+ 2022 15:41:19 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Thu, 10 Feb 2022 15:41:19 +0000
+Received: from ricardo-lws.crystal.cirrus.com (ricardo-lws.ad.cirrus.com [141.131.206.19])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id E66312A1;
+        Thu, 10 Feb 2022 15:41:18 +0000 (UTC)
+From:   Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+To:     <sre@kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
+CC:     Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+Subject: [RESEND v2 1/2] power: supply: Introduces bypass charging property
+Date:   Thu, 10 Feb 2022 09:41:07 -0600
+Message-ID: <20220210154108.641369-2-rriveram@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220210154108.641369-1-rriveram@opensource.cirrus.com>
+References: <20220210154108.641369-1-rriveram@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <20220210155012.136485-1-Jason@zx2c4.com> <20220210155012.136485-4-Jason@zx2c4.com>
-In-Reply-To: <20220210155012.136485-4-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 10 Feb 2022 17:10:34 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pc5NRLW4wUy57bqd_gX01PBVoydOQp9Z0rWT+j+fAb+Q@mail.gmail.com>
-Message-ID: <CAHmME9pc5NRLW4wUy57bqd_gX01PBVoydOQp9Z0rWT+j+fAb+Q@mail.gmail.com>
-Subject: Re: [PATCH 3/3] random: add proper SPDX header
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: EHQHKr75_rbswWjslGMUEHJFsMAt3tYY
+X-Proofpoint-ORIG-GUID: EHQHKr75_rbswWjslGMUEHJFsMAt3tYY
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Somebody pointed out to me online that the original license here was
-closer to BSD. I'll resubmit this, and also get linux-spdx on the
-thread, as we should be careful about this.
+Adds a POWER_SUPPLY_CHARGE_TYPE_BYPASS option to the POWER_SUPPLY_PROP_CHARGE_TYPE
+property to facilitate bypass charging operation.
 
-Jason
+In bypass charging operation, the charger bypasses the charging path around the
+integrated converter allowing for a "smart" wall adaptor to perform the power
+conversion externally.
+
+This operational mode is critical for the USB PPS standard of power adaptors and is
+becoming a common feature in modern charging ICs such as:
+
+- BQ25980
+- BQ25975
+- BQ25960
+- LN8000
+- LN8410
+
+Signed-off-by: Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+---
+ drivers/power/supply/power_supply_sysfs.c | 1 +
+ include/linux/power_supply.h              | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/supply/power_supply_sysfs.c
+index 6ac88fbee3cb..52c909bae457 100644
+--- a/drivers/power/supply/power_supply_sysfs.c
++++ b/drivers/power/supply/power_supply_sysfs.c
+@@ -89,6 +89,7 @@ static const char * const POWER_SUPPLY_CHARGE_TYPE_TEXT[] = {
+ 	[POWER_SUPPLY_CHARGE_TYPE_ADAPTIVE]	= "Adaptive",
+ 	[POWER_SUPPLY_CHARGE_TYPE_CUSTOM]	= "Custom",
+ 	[POWER_SUPPLY_CHARGE_TYPE_LONGLIFE]	= "Long Life",
++	[POWER_SUPPLY_CHARGE_TYPE_BYPASS]	= "Bypass",
+ };
+ 
+ static const char * const POWER_SUPPLY_HEALTH_TEXT[] = {
+diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
+index 86b4d5c4dab9..164779bc7e8f 100644
+--- a/include/linux/power_supply.h
++++ b/include/linux/power_supply.h
+@@ -49,6 +49,7 @@ enum {
+ 	POWER_SUPPLY_CHARGE_TYPE_ADAPTIVE,	/* dynamically adjusted speed */
+ 	POWER_SUPPLY_CHARGE_TYPE_CUSTOM,	/* use CHARGE_CONTROL_* props */
+ 	POWER_SUPPLY_CHARGE_TYPE_LONGLIFE,	/* slow speed, longer life */
++	POWER_SUPPLY_CHARGE_TYPE_BYPASS,	/* bypassing the charger */
+ };
+ 
+ enum {
+-- 
+2.25.1
+
