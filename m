@@ -2,96 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C59F2C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA9EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243180AbiBJOsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 09:48:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58758 "EHLO
+        id S243196AbiBJOsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 09:48:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243200AbiBJOsC (ORCPT
+        with ESMTP id S243170AbiBJOso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 09:48:02 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0D0D6A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:48:03 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id y17so2008207plg.7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UTlhzilwZJ+GV0G2sShDk8AU6wcwqOk4GnRwj06CIc0=;
-        b=Yl5VNVAN/O18uDWiOHZoyJaHv8Yj2hrpvi9Ai+sn/m8cHmMi3G/uOE7DuKDKtX/Eik
-         jV7mgLokb+hr+I90QsDfmFWsrOvAsm1JZFxwN0ai68h6ekLNQ8L0NG/P3eBQBhLbaCD+
-         mivFLnVauQDBJSFZIY4MGoRFJQFp6MM0ob9CMOneu/uA0OfUG4odyKXaLhcm4AjdUFXC
-         woeCqSWUNhX098pO/ko1m2rnp1n9iSzZaO+gXYbJ12/21rblVvhJdWDI3aDleljLpYmB
-         0OlGek5ROehPCw/ZUGRXIUs0QtTlN7AiUIEyQbDNlOxv5l3jWmYpyixt4ivSBPRBjm0g
-         rMGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UTlhzilwZJ+GV0G2sShDk8AU6wcwqOk4GnRwj06CIc0=;
-        b=TTk8KfRVAfs2iV1IfzhSRBKjlanEG76fMHriBYMBcM4j0UzwBaYJZtxQHS7kurKV87
-         O4GVm0x+Zh7ygn+PhWPsHLvu8kbc45gMcjX2ohk2CfduAfQ04iQCVIwUe8lYdBSEnEfq
-         n0bl7fbBiPYoz+C3jhP0bT4ZraFRNw/cLJ10lgR7KxUXU0Yd+87Lp9wW1Vq229S4LTGL
-         h1rKZ7HO39YaWsUM1kDc8l/6jUiIc2ZAhMFIFDLBCh04GU5immPRDiq0iH2eE7O8rWBu
-         b6q2T/1wG1hp9GEaUc4zw1Nm4ipToXdjeX0QLJeE1dKPHKX/xt6M/ZFwLVRs+zYffJs5
-         NtGw==
-X-Gm-Message-State: AOAM531p77mesOpqialXtzT2WU6L5F84osg0oFgk1NMAVDonXR27dgkZ
-        kWtSXXbeB8EpL6WpAdsrMf+u
-X-Google-Smtp-Source: ABdhPJzNPs7oJuxf+RGN9n4bAwd3UkaD8iV0GSwuukEFfop8/LTWoR3TpFFs+XL+xfJqsfA3hcVDWw==
-X-Received: by 2002:a17:902:b684:: with SMTP id c4mr8126073pls.122.1644504483364;
-        Thu, 10 Feb 2022 06:48:03 -0800 (PST)
-Received: from localhost.localdomain ([27.111.75.88])
-        by smtp.gmail.com with ESMTPSA id p11sm15960117pff.45.2022.02.10.06.48.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 06:48:03 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     lorenzo.pieralisi@arm.com, bhelgaas@google.com
-Cc:     svarbanov@mm-sol.com, bjorn.andersson@linaro.org, robh@kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2] PCI: qcom: Add support for handling MSIs from 8 endpoints
-Date:   Thu, 10 Feb 2022 20:17:45 +0530
-Message-Id: <20220210144745.135721-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 09:48:44 -0500
+X-Greylist: delayed 2277 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 06:48:45 PST
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6560DD1;
+        Thu, 10 Feb 2022 06:48:44 -0800 (PST)
+Date:   Thu, 10 Feb 2022 15:48:41 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644504522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OcHPrvVcYs9Ty2UbZsiMplAbbgNBGYaXgB9nXMXhgG8=;
+        b=ELuL39o9z+q10tH05N3Zn2zqcjfWA27lYq3JXFAdSJULZ5T7WIAKW1Pbpl+hPhRIrUdSm3
+        /tBFmNcHNdCDRc+F7YpTsQgb5G2yJHfrP1XMnW38zCbZkgcDk2qLWiBfzLf6T+eVZTQVNC
+        np2ysHyUzAEUSnMTvUG3dGIV8fvXR/IpTTWaADpHpJy71aalyOwUhXO00VUWbSX9YSj+cJ
+        MYF55sHFwEz1SiG2dQ98daLCnTsrnN8ZXrTY3h5/rPgk0S9vNNwyJagN2NjKDZCu0fWp11
+        tN9qSNtGOLQxMr1Uxzh3G0p+zo3fKWB+3A5iPrOyrs+5ZlmOb7uIO8/q+GSYhQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644504522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OcHPrvVcYs9Ty2UbZsiMplAbbgNBGYaXgB9nXMXhgG8=;
+        b=p+EDRGCV5/DzCUgeCAcIDMB0ElrLopWC//KGnO7b7PH5ersArOSmfhNGKGNWy/78RiIgrt
+        Deg7BmK5HdwPXqCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2] selftests/ftrace: Do not trace do_softirq because of
+ PREEMPT_RT
+Message-ID: <YgUlybNMlpheddiD@linutronix.de>
+References: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
+ <YgUXcGC1mH7VX1d9@linutronix.de>
+ <546f147d-1682-fb92-42e5-7247dc19dcf1@canonical.com>
+ <YgUc5HxfIdJ0Z5AN@linutronix.de>
+ <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DWC controller used in the Qcom Platforms are capable of addressing the
-MSIs generated from 8 different endpoints each with 32 vectors (256 in
-total). Currently the driver is using the default value of addressing the
-MSIs from 1 endpoint only. Extend it by passing the MAX_MSI_IRQS to the
-num_vectors field of pcie_port structure.
+On 2022-02-10 15:13:15 [+0100], Krzysztof Kozlowski wrote:
+> On 10/02/2022 15:10, Sebastian Andrzej Siewior wrote:
+> 
+> The purpose was explain - fix a failing test with PREEMPT_RT. I am not
+> planning to rework entire test, it is merely a fix.
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
+What I got confused by is the fact that you do
+s/do_softirq/scheduler_tick/ without any explanation why that is correct.
 
-Changes in v2:
+After looking into the test it appears that two random functions are
+enough to be specified because the actual purpose is it to figure out if
+the function is recorded and not the actual functionality behind the
+function.
 
-* Rebased on top of v5.17-rc1
+> >> The implementation detail is that do_softirq() is in ifndef.
+> > 
+> > So let me ask again.  We have
+> >    FUNC1="schedule"
+> >    FUNC2="do_softirq"
+> > 
+> > What is the purpose of this? Do you need FUNC2 when ksoftirqd is run or
+> > when softirqs are served? Not sure how scheduler_tick fits in all this.
+> 
+> I guess this is more a question to the author of the test. Unless you
+> are now questioning the entire purpose of this test?
 
- drivers/pci/controller/dwc/pcie-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+I questioned the purpose of FUNC2 in this context so I don't have to
+look into the actual test. But I did, see above ;)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index c19cd506ed3f..03e766f6937e 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -1556,6 +1556,7 @@ static int qcom_pcie_probe(struct platform_device *pdev)
- 	pci->dev = dev;
- 	pci->ops = &dw_pcie_ops;
- 	pp = &pci->pp;
-+	pp->num_vectors = MAX_MSI_IRQS;
- 
- 	pcie->pci = pci;
- 
--- 
-2.25.1
+> Best regards,
+> Krzysztof
 
+Sebastian
