@@ -2,131 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D869C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:54:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiBJFvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:51:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45288 "EHLO
+        id S234843AbiBJFyq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:54:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234986AbiBJFv0 (ORCPT
+        with ESMTP id S231797AbiBJFyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:51:26 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC62E1174
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:51:18 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id y18so908968plb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 21:51:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
-        b=fnfZc0AIG8SBxpjQDcaVBiRVbSpK8UXvadVoxtlMHcKr0gAVz662qCEZ2aLfHkaCrp
-         oiNJ+9QqhvaLMKcfaPl1GvDq/YUj/KRrfqu1TELLhPgEcxVBKkh5/LP578h0s79b1qwj
-         Y7SVefGUnaxDq3ntC/uarGxulVKTMh9zt2PhbZ5bJd2Bnb1UTvzXAAVcFv37EO3hG2OS
-         z27IWz2UqxPidErtJ6MEhNTczwPVKRGCWbxEC3/KRbK/xRRz5GP8MTSv/3LDlLwfNba8
-         osTFlbhy2375IUn5yHEpNyCH1aSPSULs4Q4hVFjmfd5Opdfvh1Tc1WsDh0arV08b9I13
-         RBSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Qlm9yJ5575SFpR6IPywQKZmVoP3waSVFMhfeayBNTbA=;
-        b=ssZ99h5P4nDhgMXXe8DSxLiYDCtdIrVUKD0IyTY38XmKQ+rShSX+Ctlx3AhHaK6I5X
-         PJHJoAN1+H1XJFzl/MD3aurr0UgDX1hFit379cl5003TcyNc5TcKiArt3tCdDZhLmyCY
-         PwccNdEtLxGZvUIB2zbIVlrifBMZOVkuXMfyC32NZngjhE2dKzLALIbdU9G2xVTabnLi
-         zEiw54tyOng4PPPkeyom2YQltEZbXgcCfovT38e82J0PXIhsluYl7GB06u52EkWaM8JN
-         5EpwIE4uR9z8xfASANTOS35IXI+fA5xHodnlIxsOIV53tyFHhGmDu25fA5vocKlM0Aue
-         0Ihg==
-X-Gm-Message-State: AOAM533GoU6ADw7OTokzpSsxMdn1q4VAwqaLHaUwwF+3h6S2mKBkcm/L
-        7Ss51ztTYlzNSaNrOH+nKYRutw==
-X-Google-Smtp-Source: ABdhPJyfhOIllPegTmHNIO0ywUxfTTaD2VxDT95TmWoHMJ394XuWoV97b8eft+oMdipg7wKw+LoPoQ==
-X-Received: by 2002:a17:903:2406:: with SMTP id e6mr6077678plo.98.1644472278347;
-        Wed, 09 Feb 2022 21:51:18 -0800 (PST)
-Received: from localhost.localdomain ([122.179.114.46])
-        by smtp.gmail.com with ESMTPSA id s32sm15192270pfw.80.2022.02.09.21.51.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 21:51:17 -0800 (PST)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
-Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        Alistair Francis <Alistair.Francis@wdc.com>,
-        Liush <liush@allwinnertech.com>,
-        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvm-riscv@lists.infradead.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v11 8/8] RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
-Date:   Thu, 10 Feb 2022 11:19:47 +0530
-Message-Id: <20220210054947.170134-9-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220210054947.170134-1-apatel@ventanamicro.com>
-References: <20220210054947.170134-1-apatel@ventanamicro.com>
+        Thu, 10 Feb 2022 00:54:40 -0500
+Received: from IND01-MA1-obe.outbound.protection.outlook.com (mail-ma1ind01olkn0168.outbound.protection.outlook.com [104.47.100.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3E71D6;
+        Wed,  9 Feb 2022 21:54:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LLMqN5W8Wd1Y9NbGyFlDiN/dCsm6QbsnFCTVBv/ZGyUv/fIe8r+Fn7nLTPsSeWbMAZ0iCSYKLWH1tq6xN5MbbyJibAsY7ytj2cNkegINsRUYlBHFp0TWj3IoBhVayPRxYThhFDIVfXwaqHo7sxk0IseI+uOvpBKdZNNEQtEETj5TWRRCDYRFyI+iRnQWwVfn0KuwVd9Urn0Mk/mM+dPsEg9FC7wlrdU7QvXFPcmS5IQZ5QAfvOXLfWVMjMbutTE8KQSZo10nZ3W1J8K57zqNq53X/bpHYAMaTYszyEuQyCVXmaWQ7RpgkJRqH+o0deYuMWnrd2VOZH4SscVwr7YNdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JqtCOiZqURTFMZ+gtzsSxcOqfT6krkYRHwNRIJ3LFWA=;
+ b=JKp+DthAemMTE/N7YrVap0xjV5iXhNOL7M9z2h3KC+eS1Z6YLv4XZueWkyXtXu3qdZGwC49yN9SNGyqI5NkWC4nUgtf6ZnmpzhhHsarkDTDpkFbMJisH86H3nqCp7I+iAlOCAHxQCdHMzvBHJyKZXX8opVCIvZS+RxcD4kQzt9IWczu3p9Fc+XmZw243tmocxwQ1/b2V3+pJBDYrd+1fWuS4BIjucG0RtMujGC5i8ZIWUklKXism/Icl5eb1UyVUPE2iK6mNrv3jmL/o91X4Y4ZE7jQvbhjiTY/2to1hyIcgrqZfWJN4g0xHB9cYP1zB9K7xktewkFQhGG6xmAj1fA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JqtCOiZqURTFMZ+gtzsSxcOqfT6krkYRHwNRIJ3LFWA=;
+ b=klBsvJp6yfRmpjbyntlu1x72/jtPR7OwsALGAc1rp0PBYIqr8NFkfwtwOswIBG0eDRAc9l+/1b5Yb6P3FhAT7hm3IDCdzEWaySLK0zfI7chNvJs78hhfz9KwVr2+5NWOkLPJh+wULKDKDdyiWJYUIo1tRrFoz+POVYNcgo4fxUPiRZxUBrLTbDHvP8sxspbu61FTl4nUAh8d51t4hHFYElOMfdbkBh2k33BDnwqjcLvuH2hWvPuO0k02F33IOUQNupGnxa81lKz8wYu1fb+Nua19eOgxlS+TVY6hD+jkl87VJohXsxYj/bOYFC63YQITAltoaehU691Ii+9GrQFGVA==
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
+ by BM1PR0101MB1220.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:25::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Thu, 10 Feb
+ 2022 05:54:34 +0000
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::d19b:7cd1:3760:b055]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::d19b:7cd1:3760:b055%9]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
+ 05:54:34 +0000
+From:   Aditya Garg <gargaditya08@live.com>
+To:     Matthew Garrett <mjg59@srcf.ucam.org>
+CC:     Ard Biesheuvel <ardb@kernel.org>, Jeremy Kerr <jk@ozlabs.org>,
+        "joeyli.kernel@gmail.com" <joeyli.kernel@gmail.com>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "eric.snowberg@oracle.com" <eric.snowberg@oracle.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "jlee@suse.com" <jlee@suse.com>,
+        "James.Bottomley@hansenpartnership.com" 
+        <James.Bottomley@HansenPartnership.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "mic@digikod.net" <mic@digikod.net>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aun-Ali Zaidi <admin@kodeit.net>
+Subject: Re: [PATCH] efi: Do not import certificates from UEFI Secure Boot for
+ T2 Macs
+Thread-Topic: [PATCH] efi: Do not import certificates from UEFI Secure Boot
+ for T2 Macs
+Thread-Index: AQHYHcE4ht34Z1CESEaNjR8+yzmieayLbqGAgAAURwCAAAlIgIAAvaYA
+Date:   Thu, 10 Feb 2022 05:54:34 +0000
+Message-ID: <A069AC2B-7F37-414E-A411-291DCF407AF8@live.com>
+References: <9D0C961D-9999-4C41-A44B-22FEAF0DAB7F@live.com>
+ <20220209164957.GB12763@srcf.ucam.org>
+ <5A3C2EBF-13FF-4C37-B2A0-1533A818109F@live.com>
+ <20220209183545.GA14552@srcf.ucam.org>
+In-Reply-To: <20220209183545.GA14552@srcf.ucam.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [UaDD2WGAm/O1gcf9fqoyIgMNS3CC01GJcZwpzTSxae16H4Xxil6PobQbOWV5LFVG]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7dc7c251-fdc3-48f4-c01e-08d9ec59d09e
+x-ms-traffictypediagnostic: BM1PR0101MB1220:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sf75rDWroWd5tIq/jIhi7GxRnTB5dwWpsVEsgJBC7f5xecHYjduUmiMUsVx9tySHLcDHa1Y8WXkSnt+cLQ8oBZFGUE6bgAj3Uv4ZzcVRrNs+XI6A31CdUaJhfiydihsXfixjav35/jHv7NJKtW1q7vPa/9fh7IHKfr9B0doGWI3QyeYrwxLAV+EFnc4PYoAO/TMJeNz4kkvT8JnNR8Ie9qGtZNNKzJCHuGaj1lz/b759t55SO2hBGMc2NLQMuEs+FdDbjjBCH2MFn70FQ00O+S9ZKvACg9TEFRFtqx6oTD2/BVjyPXZIiuC3KqUwojOBnaoj30n5WdI6bqamMcTRHCMZy2rE8G1UU0hzQZ15XrQuLKyD5lIK++VhmyQ1LJh+5u6zxv6V439mxqv7LghaEJa6VJ/mi2DzGvWxpbvBsDwxGD6vnT4Oc5u7MnKu3ekY4wpoNEkRjTiI2HdAsHpDWkWgn+o8rPzjAMDkioso+G9eixornw/p++UIfBPYEd5lXpPxjDU7fxibT/h/UB2iKUz7/RmM791W8mZVbeop9MyGz/VxK7m2a6TlP5/3UxlOsVNauq8Bbf254gjrHG3taw==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?n0oaiaq2kP/y+aj6D+eH68bYGrtG+cge2mmPSJzothDyucqjJ+1aoWL95kxj?=
+ =?us-ascii?Q?k6x6zsdwdQvgPGr/tki5qOwyLgz2dXS4tj3u3W6DHtpeiuPkbtMwOjMd9PEe?=
+ =?us-ascii?Q?x8X0HgPozp9RDLyoat9JIGmSrYztHEj6wJSi8exgSHXtZZYyZK1CgImJZSkY?=
+ =?us-ascii?Q?bdmki7QaHBWVuEPVinIUpJ7n6LdFRylWYibY7Z2cagN0ERr1x+ReruAzI6zO?=
+ =?us-ascii?Q?eIufQntCUNS7Tek64UX1wy6sZ8wXu2nFMZE2TgieRwhC3mQZQa1hEVBozq2x?=
+ =?us-ascii?Q?FlyP9lvtM8jIHUgHs4yFPTdGMPNv1YPjbWYXqpD/Fd+1raE4scniM1HYbeWn?=
+ =?us-ascii?Q?bRpoQ/2aaU7YPGkEJ4KoRlkbRWseIATzureyrel0r/sdRE4irm9FFS2NzDLG?=
+ =?us-ascii?Q?iEP7+MMiXlNFcXHffRTu3Lug22aJNqZKOSyv9fNaqdZdxU3exWKLbAkrs2gE?=
+ =?us-ascii?Q?dBbNOxW8vMrHcMZSFQTwR0lD6KlBtpMm0cjbXrjFn4vA8B0TPx8f3K5HPAow?=
+ =?us-ascii?Q?MiwUcjPVPQ3SPm5qsl2ztPQ5TccwoxP4xoCqYKlM+8Q7Vq8B8JkD1aWt00lS?=
+ =?us-ascii?Q?eijM6K6V1m7BBdUKMNJcH/0EH5CpOAUdWv1hzOwSYbL3S5gDBI+/nJIYRcNY?=
+ =?us-ascii?Q?evcyCTqJ+AAjKPPBXCHFOcz8iO9MYXXSKQ6kNiICelzdztOpdLxEnoWCXNk+?=
+ =?us-ascii?Q?R3vSufEAiaTcvOjNmdgxcpbO2tWskr+g69MAqlHlnsPJP7sbFN74VhAoEJr7?=
+ =?us-ascii?Q?bHp5nuxYzlaF8mEFoJ8vg7drugM8YAvAWtMWGpCuIlbPypbySKfmg32KW89D?=
+ =?us-ascii?Q?o+00eSOJtYh/KTW2FDWuGHAgpBKWnDBL77+/bxEEQstNzlYB/nPYwTL8GEIx?=
+ =?us-ascii?Q?2CrHCyJ1on4echB+tqEEEk0rt38E1hzUoPJgw2yBILwH2LPP0YFRRaZ7QTOu?=
+ =?us-ascii?Q?greinLiwq/NtHfXbRGTn/YRsJki4fKLuwXcHrY6im0Swc+NuoieGOakM4b5a?=
+ =?us-ascii?Q?N6vT1cN2KcVFim7Aq96y6DApmw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <A0A64CBA3BE0714DB71E34B4491AE05B@INDPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dc7c251-fdc3-48f4-c01e-08d9ec59d09e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2022 05:54:34.2820
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BM1PR0101MB1220
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anup Patel <anup.patel@wdc.com>
 
-We enable RISC-V SBI CPU Idle driver for QEMU virt machine to test
-SBI HSM Supend on QEMU.
+>=20
+> The LOAD_UEFI_KEYS code isn't doing anything special here - it's just=20
+> trying to read some variables. If we simply disable that then the=20
+> expectation would be that reading the same variables from userland would=
+=20
+> trigger the same failure. So the question is which of the variables that=
+=20
+> LOAD_UEFI_KEYS accesses is triggering the failure, and what's special=20
+> about that? If it's a specific variable GUID or name that's failing, we=20
+> should block that on Apple hardware in order to avoid issues caused by=20
+> userland performing equivalent accesses.
 
-Signed-off-by: Anup Patel <anup.patel@wdc.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/Kconfig.socs           | 3 +++
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 3 files changed, 5 insertions(+)
+The size log seems to be extra when crash occurs
 
-diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-index 6ec44a22278a..f4097a815201 100644
---- a/arch/riscv/Kconfig.socs
-+++ b/arch/riscv/Kconfig.socs
-@@ -36,6 +36,9 @@ config SOC_VIRT
- 	select GOLDFISH
- 	select RTC_DRV_GOLDFISH if RTC_CLASS
- 	select SIFIVE_PLIC
-+	select PM_GENERIC_DOMAINS if PM
-+	select PM_GENERIC_DOMAINS_OF if PM && OF
-+	select RISCV_SBI_CPUIDLE if CPU_IDLE
- 	help
- 	  This enables support for QEMU Virt Machine.
- 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index a5e0482a4969..b8c882b70b02 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -20,6 +20,7 @@ CONFIG_SOC_SIFIVE=y
- CONFIG_SOC_VIRT=y
- CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
-+CONFIG_PM=y
- CONFIG_CPU_IDLE=y
- CONFIG_VIRTUALIZATION=y
- CONFIG_KVM=m
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index d1b87db54d68..6f9a7c89bff9 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -20,6 +20,7 @@ CONFIG_SOC_VIRT=y
- CONFIG_ARCH_RV32I=y
- CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
-+CONFIG_PM=y
- CONFIG_CPU_IDLE=y
- CONFIG_VIRTUALIZATION=y
- CONFIG_KVM=m
--- 
-2.25.1
+integrity: Couldn't get size: 0x8000000000000015
+integrity: MODSIGN: Couldn't get UEFI db list
+efi: EFI Runtime Services are disabled!
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get UEFI dbx list
+integrity: Couldn't get size: 0x8000000000000015
+integrity: Couldn't get mokx list
+integrity: Couldn't get size: 0x80000000
 
