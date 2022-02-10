@@ -2,110 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17598C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243406AbiBJPFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:05:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46178 "EHLO
+        id S243419AbiBJPFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:05:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241861AbiBJPFf (ORCPT
+        with ESMTP id S243394AbiBJPFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:05:35 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F208C398
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644505536; x=1676041536;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+resf7s8/0bfeptpaysoY6mJLYoPAYzroKommF5fV40=;
-  b=knsRojKy0LD652lcK9YAICA1FnJ+67TAhSAFl6rFcE4SyySI38X1qe0O
-   cdgczVmoRlKkYwawH9czma/FTEcBjuC7UU52WCRsQuRu67LeWimAc3eDs
-   vQXLBlnyk///5Bu20yLw2DyzaGmcXpIWYf7J0ztw9K/15U/PaI6uIMpDk
-   V/J/GeGfURrDtsWqho1PpCkumOndYkgbWuks/hlTGPIDg1HbJZ7DbGaLz
-   xNACh5S9KUyi5jp73dBxMyb3gjSLOW1gJD1lz7mGhusJBM4e1PE5m+Amj
-   e/WtkcqO4xyjj1oy9LtygPOdGfTn92FcJsDRnqx6vp2nvzM1C5xTeNUWE
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230153205"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="230153205"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:36 -0800
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="500422594"
-Received: from barabano-mobl.ccr.corp.intel.com (HELO pujfalus-desk.ger.corp.intel.com) ([10.252.41.18])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:33 -0800
-From:   Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com
-Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
-        daniel.baluta@nxp.com, tiwai@suse.com,
-        linux-kernel@vger.kernel.org, fred.oh@linux.intel.com
-Subject: [PATCH v2 2/9] ASoC: SOF: Move the definition of enum sof_dsp_power_states to global header
-Date:   Thu, 10 Feb 2022 17:05:18 +0200
-Message-Id: <20220210150525.30756-3-peter.ujfalusi@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
-References: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
+        Thu, 10 Feb 2022 10:05:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5B7C53;
+        Thu, 10 Feb 2022 07:05:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB9B861B03;
+        Thu, 10 Feb 2022 15:05:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C73C340E5;
+        Thu, 10 Feb 2022 15:05:37 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 10:05:35 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2] selftests/ftrace: Do not trace do_softirq because of
+ PREEMPT_RT
+Message-ID: <20220210100535.01ad4978@gandalf.local.home>
+In-Reply-To: <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
+References: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
+        <YgUXcGC1mH7VX1d9@linutronix.de>
+        <546f147d-1682-fb92-42e5-7247dc19dcf1@canonical.com>
+        <YgUc5HxfIdJ0Z5AN@linutronix.de>
+        <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the enum sof_dsp_power_states to include/sound/sof.h
-to be accessible outside of the core SOF stack.
+On Thu, 10 Feb 2022 15:13:15 +0100
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
 
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
----
- include/sound/sof.h      | 8 ++++++++
- sound/soc/sof/sof-priv.h | 8 --------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+  
+> >> The implementation detail is that do_softirq() is in ifndef.  
+> > 
+> > So let me ask again.  We have
+> >    FUNC1="schedule"
+> >    FUNC2="do_softirq"
+> > 
+> > What is the purpose of this? Do you need FUNC2 when ksoftirqd is run or
+> > when softirqs are served? Not sure how scheduler_tick fits in all this.  
+> 
+> I guess this is more a question to the author of the test. Unless you
+> are now questioning the entire purpose of this test?
 
-diff --git a/include/sound/sof.h b/include/sound/sof.h
-index 813680ab9aad..7cdfc954df12 100644
---- a/include/sound/sof.h
-+++ b/include/sound/sof.h
-@@ -39,6 +39,14 @@ enum sof_fw_state {
- 	SOF_FW_CRASHED,
- };
- 
-+/* DSP power states */
-+enum sof_dsp_power_states {
-+	SOF_DSP_PM_D0,
-+	SOF_DSP_PM_D1,
-+	SOF_DSP_PM_D2,
-+	SOF_DSP_PM_D3,
-+};
-+
- /*
-  * SOF Platform data.
-  */
-diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 6358f8c84cce..2e474048d708 100644
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -79,14 +79,6 @@ bool sof_debug_check_flag(int mask);
- /* max number of DSP cores */
- #define SOF_MAX_DSP_NUM_CORES 8
- 
--/* DSP power state */
--enum sof_dsp_power_states {
--	SOF_DSP_PM_D0,
--	SOF_DSP_PM_D1,
--	SOF_DSP_PM_D2,
--	SOF_DSP_PM_D3,
--};
--
- struct sof_dsp_power_state {
- 	u32 state;
- 	u32 substate; /* platform-specific */
--- 
-2.35.1
+The test is just a smoke test on function triggers. These two functions
+have various triggers attached to them to see if it causes any harm (the
+test was added after some strange bugs happened in the past).
 
+Now, if "_printk" worked, it suggests that I need to look into this test
+because I'm guessing _printk would never trigger during the test. The
+reason we picked schedule and do_softirq was to get triggers in different
+contexts (do_softirq was in the softirq context, and schedule is in the
+normal context). The reason I suggested to pick "schedule_tick" is because
+that should happen in the interrupt context.
+
+But if _printk worked, then it probably didn't test that part. But that's a
+different bug than what this patch is addressing.
+
+Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+
+And I need to add to my TODO list, to look at this test and probably
+rewrite. it. :-p
+
+-- Steve
