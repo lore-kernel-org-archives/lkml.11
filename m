@@ -2,193 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD5BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:59:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DC1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243922AbiBJP7d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:59:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56024 "EHLO
+        id S243935AbiBJP7h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:59:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242713AbiBJP7a (ORCPT
+        with ESMTP id S243920AbiBJP7c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:59:30 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB74E8F;
-        Thu, 10 Feb 2022 07:59:30 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id e3so10490088wra.0;
-        Thu, 10 Feb 2022 07:59:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wr/mpMW4EpnCv7MPs1ONfoxatkkD3wtSd5+LnFAC/ls=;
-        b=UIbIDKYK9d0dFhT0rL5+4CTrr/VkRLJK7VAa7v/4+ct1O+qD9dhabrcLpReudCPMsq
-         4VrmhDM6h4BHctvod8HrFj43WLRjV7tUsoyqwKtE8h3h4bJr3p5hfcDJ7Jk9FI4g4ZRA
-         tzSFvK/2Y3zZOJZZthaeIkyvb9xt21NROHmAXA34wyzmN0WxWx3jdg1GVMd9U+GmN+F1
-         ebDvcPplYw6nrefHlRnbWfx6nuzX7Zka+Du+H4AZq++yRLvSfB7VZJs1tVoj5392aeBL
-         DVarCu2j57aqDxpXNhXdqf8ojdazmRee7l2cqd/su65Zo7A0F1wU9uboWtvyF5a4W+wd
-         jtBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wr/mpMW4EpnCv7MPs1ONfoxatkkD3wtSd5+LnFAC/ls=;
-        b=sxnEK1sbant136EW+CoId1nwq5HZOCdZ1RP3Xe5MNA34rq/0Lfd5WE53zxu9VwPWfP
-         MdMksYGoPa2bxhxQSCoDbQ0IgSz86gKFapTt7Nww0RAMstHhr8mLx13cO6Mjd4snbVC/
-         tWzq4kSCyeo/KrRZttFVHibQ3PzJd92h8BeuDmS5Be/gFYbhJtL9MNdOF+lSbC6v4zW7
-         7TwCqUz49NkCkYDX7DAM7xjPFyudACwGAq8uCl8f3n0b1joEhuFZUaEsVKvRtWJMQCWv
-         sZR9UWc8T5JjWXpvPAMS+eVGhpBqkMBJ7Nt4fQlwkFIt0xFyJ6BLfWSkvSpmTO4xCArN
-         UzTQ==
-X-Gm-Message-State: AOAM532cBHeo/eGVuztPQJvcJlt4MEttUvR+1GQ4gWArB0cAWI35XIMk
-        gN6B1P7CWWFiY1JiMITYUlYlQ/3uJG5l5A==
-X-Google-Smtp-Source: ABdhPJy+uvMG6WSh6EXji4GgYnku9sDMQAC5F67g4+xDxFtqd+V5EstFaCP0TmQwgokMxIzlg7QMvw==
-X-Received: by 2002:a05:6000:170e:: with SMTP id n14mr6927719wrc.595.1644508769206;
-        Thu, 10 Feb 2022 07:59:29 -0800 (PST)
-Received: from nergzd-desktop.localdomain ([62.122.67.26])
-        by smtp.gmail.com with ESMTPSA id p2sm12990551wrt.101.2022.02.10.07.59.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 07:59:28 -0800 (PST)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Alistair Francis <alistair@alistair23.me>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Joe Hung <joe_hung@ilitek.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: input/touchscreen: bindings for Imagis
-Date:   Thu, 10 Feb 2022 17:58:30 +0200
-Message-Id: <20220210155835.154421-2-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220210155835.154421-1-markuss.broks@gmail.com>
-References: <20220210155835.154421-1-markuss.broks@gmail.com>
+        Thu, 10 Feb 2022 10:59:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A30E87
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:59:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8C8361CC8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:59:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6D98C340EE;
+        Thu, 10 Feb 2022 15:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644508772;
+        bh=dIgio40C1V0AUEVczldmp/PFz0TwGbd4uOrumI1TjKs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W6srJBqUF2/+KCo/h3Ta6qgvtRrsGezTiaT6oiKgyQGPmShZwnJw7oUVcDAhcxrir
+         6QHI3ua4NPlJ0SXsj4khnhcRW0ZKFl2lSOQ5qe/CI6ynJrkNteWkQy9b1xX6MTGeVM
+         4M0/Or6M1G1c3ZIl4UoKrhxzX2VNB/hO6VE6aSIIdm5BOCpLheaJhpVdKtoYCYsxBl
+         6spqOuH/JUcbnu7mHMpNut+NYroWnwFpRRhF5lz/NqhJII87ELV0CqSD3E0+R0G5C6
+         h/T2AI6m4WBFRa1IB1j24wZeSwm+qfFvjz18w7HMcu5ue+lcyjyRMdquI9ngsha2h3
+         AC8plMVkcvZSw==
+Date:   Thu, 10 Feb 2022 16:59:29 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, catalin.marinas@arm.com, dave.hansen@linux.intel.com,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v3 5/7] sched/preempt: add PREEMPT_DYNAMIC using static
+ keys
+Message-ID: <20220210155929.GB567552@lothringen>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+ <20220209153535.818830-6-mark.rutland@arm.com>
+ <20220209174801.GA547263@lothringen>
+ <YgTn7pnZ/hxmHBha@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgTn7pnZ/hxmHBha@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds device-tree bindings for the Imagis
-IST3038C touch screen IC.
+On Thu, Feb 10, 2022 at 10:27:39AM +0000, Mark Rutland wrote:
+> On Wed, Feb 09, 2022 at 06:48:01PM +0100, Frederic Weisbecker wrote:
+> > On Wed, Feb 09, 2022 at 03:35:33PM +0000, Mark Rutland wrote:
+> > > +config HAVE_PREEMPT_DYNAMIC_KEY
+> > > +	bool
+> > > +	depends on JUMP_LABEL
+> > 
+> > This should probably be:
+> > 
+> >      depends on HAVE_ARCH_JUMP_LABEL && CC_HAS_ASM_GOTO
+> >      select JUMP_LABEL
+> > 
+> > Otherwise you may run into trouble if CONFIG_JUMP_LABEL is initially n.
+> 
+> I'll make that:
+> 
+>  config HAVE_PREEMPT_DYNAMIC_KEY
+>         bool
+>         depends on HAVE_ARCH_JUMP_LABEL && CC_HAS_ASM_GOTO
+>         ...
+> 
+> ... and 
+> 
+>  config PREEMPT_DYNAMIC
+>         bool "Preemption behaviour defined on boot"
+>         depends on HAVE_PREEMPT_DYNAMIC && !PREEMPT_RT
+>         select JUMP_LABEL if HAVE_PREEMPT_DYNAMIC_KEY
+>         ...
+> 
+> So that we don't force JUMP_LABEL on even when people aren't using it.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../input/touchscreen/imagis,ist3038c.yaml    | 78 +++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
- 2 files changed, 80 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
+Much better!
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml b/Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
-new file mode 100644
-index 000000000000..da1630eb957b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
-@@ -0,0 +1,78 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/input/touchscreen/imagis,ist3038c.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Imagis IST30XXC family touchscreen controller bindings
-+
-+maintainers:
-+  - Markuss Broks <markuss.broks@gmail.com>
-+
-+allOf:
-+  - $ref: touchscreen.yaml#
-+
-+properties:
-+  $nodename:
-+    pattern: "^touchscreen(@.*)?$"
-+
-+  compatible:
-+    items:
-+      - enum:
-+          - imagis,ist3038c
-+
-+  reg:
-+    description: I2C address
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Power supply regulator for the chip
-+
-+  vddio-supply:
-+    description: Power supply regulator for the I2C bus
-+
-+  touchscreen-size-x: true
-+  touchscreen-size-y: true
-+  touchscreen-fuzz-x: true
-+  touchscreen-fuzz-y: true
-+  touchscreen-fuzz-pressure: true
-+  touchscreen-inverted-x: true
-+  touchscreen-inverted-y: true
-+  touchscreen-swapped-x-y: true
-+  touchscreen-max-pressure: true
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - touchscreen-size-x
-+  - touchscreen-size-y
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      touchscreen@48 {
-+        compatible = "imagis,ist3038c";
-+        reg = <0x50>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
-+        vdd-supply = <&ldo1_reg>;
-+        vddio-supply = <&ldo2_reg>;
-+        touchscreen-size-x = <720>;
-+        touchscreen-size-y = <1280>;
-+        touchscreen-fuzz-x = <10>;
-+        touchscreen-fuzz-y = <10>;
-+        touchscreen-fuzz-pressure = <10>;
-+        touchscreen-inverted-x;
-+        touchscreen-inverted-y;
-+      };
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index a867f7102c35..bf44bb71c0b4 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -523,6 +523,8 @@ patternProperties:
-     description: Ingenieurburo Fur Ic-Technologie (I/F/I)
-   "^ilitek,.*":
-     description: ILI Technology Corporation (ILITEK)
-+  "^imagis,.*":
-+    description: Imagis Technologies Co., Ltd.
-   "^img,.*":
-     description: Imagination Technologies Ltd.
-   "^imi,.*":
--- 
-2.35.0
-
+Thanks!
