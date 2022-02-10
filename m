@@ -2,78 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642ADC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90C2CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236441AbiBJHrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 02:47:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56692 "EHLO
+        id S236509AbiBJHrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 02:47:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232529AbiBJHrM (ORCPT
+        with ESMTP id S236442AbiBJHrS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 02:47:12 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88535D71;
-        Wed,  9 Feb 2022 23:47:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644479234; x=1676015234;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=bIPlSUHLcLRq3UYEc4UmN0BqPH3Phpsz7g2u3ys/mdI=;
-  b=es+DCog7A7je/LYiuoo9nKxIPEcp/Wza5w7waT3FHZ3sI+/HjYCT87KY
-   UKRM2dm+5DKNK2AKoeGfwWyJ8HeQ+C5ZF43qzVAZxkc6Yc/Q1+sTVK8lw
-   wJrzzeB9aQs2Fd95O7W8ZvaR1gIQX3isPxq3E3gDkvHMRB8Gxesz9Q8PC
-   Zqe9wYrJdEiX37WnbfYAqLadzsvT8hWpCc84HjkfUGSwkFxBEgL7DW9t9
-   2QjnF3EfJ2n2iF4TPt+oIfVAQmXuMzGPg4IsCupLLF3EKe7dfi+oq7fZG
-   MMnYtaB3SBewxuPbLPhvja3bDwdafw93oI8YQXCu29J031On2uKIMa7Sw
-   w==;
-IronPort-SDR: suxqpfL4ko3hyLqWZgbY4h09mL+bEa37gsi8HtclSYV6qNYhm5gmxisVnQtvQBOn5aw/ndMIUK
- t7sTuirUuAxk+KzUgn1iQQfKMJsIbwRRwRrDartAingttvmMTfNcWfs6hNds3/bPufbza1wxX4
- PbE86ji8KD6LisUzjfCfZ4dB/v3ngIsk85MufYNZQpzn/ASAETmk6lWAE/6PcXThwaSLsWYsIg
- jcNLZ7/v/guWXzgnJSPODtHIWewfJr/eY0mX/U0UMIZ1q6AHz8BL2sIZJChcG6YT8DP1AtKgOD
- dyayKAa4mHLuVdQmiNU81VvV
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="152577833"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Feb 2022 00:47:11 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 10 Feb 2022 00:47:09 -0700
-Received: from kavya-HP-Compaq-6000-Pro-SFF-PC.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 10 Feb 2022 00:47:05 -0700
-From:   Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <ludovic.desroches@microchip.com>, <robh+dt@kernel.org>,
-        <lee.jones@linaro.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>, <Kavyasree.Kotagiri@microchip.com>,
-        <Manohar.Puri@microchip.com>
-Subject: [PATCH 0/2] Add support for LAN966 SoC flexcom shared configurations
-Date:   Thu, 10 Feb 2022 13:15:44 +0530
-Message-ID: <20220210074546.30669-1-kavyasree.kotagiri@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 10 Feb 2022 02:47:18 -0500
+Received: from qproxy6-pub.mail.unifiedlayer.com (qproxy6-pub.mail.unifiedlayer.com [69.89.23.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45A95D79
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:47:18 -0800 (PST)
+Received: from gproxy3-pub.mail.unifiedlayer.com (unknown [69.89.30.42])
+        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id AD603802B5AE
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:47:17 +0000 (UTC)
+Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
+        by progateway5.mail.pro1.eigbox.com (Postfix) with ESMTP id 1F008100401FA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:47:17 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id I4AenU1o8wm8iI4AenURtA; Thu, 10 Feb 2022 07:47:17 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=DpSTREz+ c=1 sm=1 tr=0 ts=6204c305
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=oGFeUVbbRNcA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dr0bLraTQWPAqmSC3au7EoBh3glfgjvbu8yHxdsY1Lc=; b=I2RuRv0Rsc52TZ1jPjqROWaZex
+        Gxvu+3VY/fXSGFZYDSerAKMYsILMcmf/w9mmSHXQZqpzReNJhCmkcRXZHE53aYl+Tz0gY1t4yFcKI
+        6paJu1wzdtcFJ+dA9xCIR74s4;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:53918 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1nI4Ae-001pw3-4e; Thu, 10 Feb 2022 00:47:16 -0700
+Message-ID: <0ccc1c8b-e056-599e-80e1-ec45f4aef047@w6rz.net>
+Date:   Wed, 9 Feb 2022 23:47:14 -0800
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 0/5] 5.15.23-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220209191249.980911721@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1nI4Ae-001pw3-4e
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:53918
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 13
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series adds support for flexcom shared and chip select
-configurations of LAN966 SoC.
+On 2/9/22 11:14, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.23 release.
+> There are 5 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.23-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Kavyasree Kotagiri (2):
-  mfd: dt-bindings: add bindings for lan966 flexcom shared
-    configurations
-  mfd: atmel-flexcom: Add support for lan966 flexcom shared
-    configurations
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
- .../devicetree/bindings/mfd/atmel-flexcom.txt | 12 +++++
- drivers/mfd/atmel-flexcom.c                   | 49 +++++++++++++++++++
- 2 files changed, 61 insertions(+)
-
--- 
-2.17.1
+Tested-by: Ron Economos <re@w6rz.net>
 
