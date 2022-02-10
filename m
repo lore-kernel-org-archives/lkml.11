@@ -2,77 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6340EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6050BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiBJBaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:30:16 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33276 "EHLO
+        id S232638AbiBJBaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:30:25 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232462AbiBJBaJ (ORCPT
+        with ESMTP id S232569AbiBJBaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:30:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE52FE8;
-        Wed,  9 Feb 2022 17:30:10 -0800 (PST)
+        Wed, 9 Feb 2022 20:30:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C03A10A0;
+        Wed,  9 Feb 2022 17:30:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DF42617F7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A42DBB823FC;
         Thu, 10 Feb 2022 01:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B9F32C340F1;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7020BC340ED;
         Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1644456609;
-        bh=QCCqocOBA0QXANoR9Th7qCJXBmcweW8s/m7U1ai9C5E=;
+        bh=qGQyGmjtozCv84Ye2BOs+8mk0SR0cVgFlFinrbcqULk=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fpB6X8Au1GTblA5imuus/BJFEuX9LTKozlgVvHcwfql2P0FgYwZZgSWigzkzUZkLj
-         Vg86Mp8NvLWFpmr4aP21pLetK+F/IT8sH+oWmUtDU/ErjWc5EkxirpayoJo/vQpiAg
-         akajpvR6h5ZUXZqCy+R0cAe5O6/eUekFoLSD1WAkL9UipJUnrHxqkgPpkg/6asOE1Z
-         8Ey8SttVebfkfytu7QmKjhmRmDnzt2be5IOszye8UP5BDbqfa7zUCYrgmSKX2lVRcc
-         WDK2tvpoQKl5bXBpLMsiGCJ7j9afCHYNx2Br2ASI4Fw3lcLgUhJL+oZ8ZHV5sh2u1t
-         tQIJYMEh21s6A==
+        b=ASgJytk3CD6RUrcArDfPMltQOgX3F6DcY8tpPSBoLsNCyYwOEGSTG+3MF+jTZecoD
+         oKE6caIpaOAcOOeGxF6KSdeBwGQLHmnQAZZFPxjaNESuvqPt0JLewCistNLwZihbWv
+         5DXWiQX+v+HCsSDLG0n/3x9pj67XuGjEyuwXMxCB539HefN3zqpSS2+fA2zKDchpQo
+         ZQ9MP6zT5pL48WnTxKgWHwsxgfvWlqJVlWGwwVPZMcAt8lVgyL5Lj5axLncrfnxQAO
+         tPV49f6PMv98lFvo/hsNqSRwCaOjHYf6TireDHqZo1bkRP2/AaxZAdmO2UQeJ0qM6R
+         xw5S3qdiN/4Ww==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8FE3E6D447;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5904AE6D447;
         Thu, 10 Feb 2022 01:30:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v8 net-next] net: drop_monitor: support drop reason
+Subject: Re: [PATCH net] net: usb: qmi_wwan: Add support for Dell DW5829e
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164445660968.21209.6215816253255469230.git-patchwork-notify@kernel.org>
+Message-Id: <164445660936.21209.3904165812207339582.git-patchwork-notify@kernel.org>
 Date:   Thu, 10 Feb 2022 01:30:09 +0000
-References: <20220209060838.55513-1-imagedong@tencent.com>
-In-Reply-To: <20220209060838.55513-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     idosch@idosch.org, nhorman@tuxdriver.com, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rostedt@goodmis.org,
-        dsahern@kernel.org, imagedong@tencent.com
+References: <20220209024717.8564-1-slark_xiao@163.com>
+In-Reply-To: <20220209024717.8564-1-slark_xiao@163.com>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     bjorn@mork.no, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  9 Feb 2022 14:08:38 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Wed,  9 Feb 2022 10:47:17 +0800 you wrote:
+> Dell DW5829e same as DW5821e except the CAT level.
+> DW5821e supports CAT16 but DW5829e supports CAT9.
+> Also, DW5829e includes normal and eSIM type.
+> Please see below test evidence:
 > 
-> In the commit c504e5c2f964 ("net: skb: introduce kfree_skb_reason()")
-> drop reason is introduced to the tracepoint of kfree_skb. Therefore,
-> drop_monitor is able to report the drop reason to users by netlink.
-> 
-> The drop reasons are reported as string to users, which is exactly
-> the same as what we do when reporting it to ftrace.
+> T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+> D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+> P:  Vendor=413c ProdID=81e6 Rev=03.18
+> S:  Manufacturer=Dell Inc.
+> S:  Product=DW5829e Snapdragon X20 LTE
+> S:  SerialNumber=0123456789ABCDEF
+> C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+> I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+> I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+> I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+> I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 > 
 > [...]
 
 Here is the summary with links:
-  - [v8,net-next] net: drop_monitor: support drop reason
-    https://git.kernel.org/netdev/net-next/c/5cad527d5ffa
+  - [net] net: usb: qmi_wwan: Add support for Dell DW5829e
+    https://git.kernel.org/netdev/net/c/8ecbb179286c
 
 You are awesome, thank you!
 -- 
