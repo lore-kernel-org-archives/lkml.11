@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07AC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A05BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:21:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231398AbiBJBVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:21:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39362 "EHLO
+        id S231366AbiBJBVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:21:50 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiBJBVX (ORCPT
+        with ESMTP id S231313AbiBJBVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:21:23 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5F53765F
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:21:11 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id y5so7472341pfe.4
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:21:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=c2lmvwsE/1j9LC0xH4Ggvv5+MmVn4wXWfeCKMOUehEg=;
-        b=NOfTGj6rOKPxHW41PFz28IuY2R3J9m+p9xbES58UR7k0vSzGjA+loqObxYCjY/3yMB
-         liFq0h4WfE6d5UTQuihwh2tAFSZa4OTDvO3IMwdHBQMvqaJaUq0I6gFeRl4GGRx8JGYf
-         1ldtOlhsyeSaoB77CaAS3cclDME0gC7ms4ue4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=c2lmvwsE/1j9LC0xH4Ggvv5+MmVn4wXWfeCKMOUehEg=;
-        b=XNwkj7AD11hwAes2MKfFuWKknMhxzEtYvaG4ukfJR7bAkG2qdiuQXjcWAzoeAN32n5
-         GaFjuWRCpo8JeDJQAR2DHt7GEYsK9VEEmFaKewmxG+RPf8ioEdHrVHhgsWteUYCUItgE
-         4LGv7up7q8f+sMsG2hsPt4eQvAEu9Rl8mkx0z5fYFRr8YoJ3uWNQmqw/4dIhP51Ms+pD
-         a6M+Au1VmrUhERyF86079eDuD/ZUaWT1wl90fVTYt+Y3pu1vWdaP5Apxb23/V+vEw0ip
-         hn9ycGn9oAYO2+XtlrY/EyIfGQ5yzyVVr1ggcdjWbSpfMuYpazlDee/2Op1jRtbk4Den
-         d6kA==
-X-Gm-Message-State: AOAM532Y3PObFl4pZcHiXHtZGTaapqJjhbfaSmM5GAhcDhgh7U8kgNYy
-        kTrkDcEVlrww6BAKAUort4Drd4f3pkSDbg==
-X-Google-Smtp-Source: ABdhPJx9mL2Iuod/IDSEPKulMSxpevKrZcxY8Fyu0OaAkF1WYnlQcQVBbGdEiDlDMfEThNluI3J+xg==
-X-Received: by 2002:a05:6602:2d95:: with SMTP id k21mr2586781iow.48.1644454774628;
-        Wed, 09 Feb 2022 16:59:34 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id e11sm10339982ioq.41.2022.02.09.16.59.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 16:59:34 -0800 (PST)
-Subject: Re: [PATCH 4.19 0/2] 4.19.229-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220209191248.596319706@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <75c46eb1-2496-415d-bc6c-d7d4a6b46c59@linuxfoundation.org>
-Date:   Wed, 9 Feb 2022 17:59:33 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 9 Feb 2022 20:21:34 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FF6764B;
+        Wed,  9 Feb 2022 17:21:34 -0800 (PST)
+X-UUID: 1ea264424cbd4dea919c7650eed40350-20220210
+X-UUID: 1ea264424cbd4dea919c7650eed40350-20220210
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <qizhong.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1356681870; Thu, 10 Feb 2022 09:21:31 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 10 Feb 2022 09:21:31 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Feb
+ 2022 09:21:31 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 10 Feb 2022 09:21:30 +0800
+From:   qizhong cheng <qizhong.cheng@mediatek.com>
+To:     Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+CC:     <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <stable@vger.kernel.org>,
+        <qizhong.cheng@mediatek.com>, <chuanjia.liu@mediatek.com>
+Subject: [PATCH v2] PCI: mediatek: Clear interrupt status before dispatching handler
+Date:   Thu, 10 Feb 2022 09:21:25 +0800
+Message-ID: <20220210012125.6420-1-qizhong.cheng@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220209191248.596319706@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 12:14 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.19.229 release.
-> There are 2 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.229-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+We found a failure when used iperf tool for wifi performance testing,
+there are some MSIs received while clearing the interrupt status,
+these MSIs cannot be serviced.
 
-Compiled and booted on my test system. No dmesg regressions.
+The interrupt status can be cleared even the MSI status still remaining,
+as an edge-triggered interrupts, its interrupt status should be cleared
+before dispatching to the handler of device.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: qizhong cheng <qizhong.cheng@mediatek.com>
+---
+v2:
+ - Update the subject line.
+ - Improve the commit log and code comments.
 
-thanks,
--- Shuah
+ drivers/pci/controller/pcie-mediatek.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
+index 2f3f974977a3..2856d74b2513 100644
+--- a/drivers/pci/controller/pcie-mediatek.c
++++ b/drivers/pci/controller/pcie-mediatek.c
+@@ -624,12 +624,17 @@ static void mtk_pcie_intr_handler(struct irq_desc *desc)
+ 		if (status & MSI_STATUS){
+ 			unsigned long imsi_status;
+ 
++			/*
++			 * The interrupt status can be cleared even the MSI
++			 * status still remaining, hence as an edge-triggered
++			 * interrupts, its interrupt status should be cleared
++			 * before dispatching handler.
++			 */
++			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+ 			while ((imsi_status = readl(port->base + PCIE_IMSI_STATUS))) {
+ 				for_each_set_bit(bit, &imsi_status, MTK_MSI_IRQS_NUM)
+ 					generic_handle_domain_irq(port->inner_domain, bit);
+ 			}
+-			/* Clear MSI interrupt status */
+-			writel(MSI_STATUS, port->base + PCIE_INT_STATUS);
+ 		}
+ 	}
+ 
+-- 
+2.25.1
+
