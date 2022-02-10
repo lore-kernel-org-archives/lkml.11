@@ -2,132 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7789CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233074AbiBJB51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:57:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33842 "EHLO
+        id S233241AbiBJB5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:57:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbiBJB4H (ORCPT
+        with ESMTP id S233301AbiBJB4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:56:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C262AA80;
-        Wed,  9 Feb 2022 17:36:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F65FB823EF;
-        Thu, 10 Feb 2022 00:56:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4934DC340E7;
-        Thu, 10 Feb 2022 00:56:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644454603;
-        bh=eYU7NV2lU87Te/oArn1NFLW6lyegJxoiFC+uPfhAoqM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UHNJ+HIGQETrnOyMDDQrDAi7CbpVHwry6k0dMz7Pll50RKFrgTdC7ep7ZJJsbkQ9o
-         nTH/ipeptiqJQB9LfMlZEXWuno7bbnE7pH/5O0B051E4cZsA5yGzWV3crxMqw4NgJ5
-         iXcswHuj30mc0r0F7U5EV/DfEEMJFq2/w/GPjlNJIf+/dLy0mLiXZGPAJ54Lc7wJaZ
-         nA1EOyKH0EGXRI7wJJJVLqMm1y1P4VenifBojYd7ZRMwkqsRRnWCoL/kQU085yNLkh
-         BKykwY5Er6HpdG7W3KbwpaLNIrrJeIyZyqKLsk7rLBrT/+cG+EftZhyCL6GUTVrQ74
-         r6qFp0TC9oHcg==
-Date:   Wed, 9 Feb 2022 19:04:07 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Keith Busch <kbusch@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] overflow: Provide constant expression struct_size
-Message-ID: <20220210010407.GA701603@embeddedor>
-References: <20220210004326.776574-1-keescook@chromium.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210004326.776574-1-keescook@chromium.org>
+        Wed, 9 Feb 2022 20:56:08 -0500
+Received: from mail-ot1-x34a.google.com (mail-ot1-x34a.google.com [IPv6:2607:f8b0:4864:20::34a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F96C2BB32
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:54:10 -0800 (PST)
+Received: by mail-ot1-x34a.google.com with SMTP id p17-20020a0568301d5100b005a3cd7c1e0bso2523097oth.7
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:54:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=w6tX9+LQQBgQkkL2Bmc0Ipn0ZYxEiQaM6qO9zXS/sD4=;
+        b=LyjUs12jFchRbYf+ASxBxNEsiClOdfJyVsWMQuJzQI0s4J1EDfEochhm9jtdOxvzSG
+         swfXSCSS0eDITV/XVz2A7h3CdX6ZbRxSVNgEmyCBbGkuQ2vxRFseuHb8Ym9aOaID3Mq7
+         DCtuv5TJLO4how//y3nZ6OHBTV0CAVTNUpPpfv9okzd/ucPaM2YF3IjIq8z11SpkrhQS
+         Oj/4q7ldfEpSIM/hKhG2eKnLRpaJT+KJk5ESLvNRoBLU+simsYvCINODJkCAfMbawKlY
+         F1AFB6IWWoBOHHCcxoXxHayWcKC7nYbnauL6bqLdpZhJZojGa10aAsdRirLHqVKjV3sP
+         GrUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=w6tX9+LQQBgQkkL2Bmc0Ipn0ZYxEiQaM6qO9zXS/sD4=;
+        b=6oGFvk+e/MzJkTUzmvk49MNgQCS1az2XzGLqVQ/xpiVmz5KALtuDpvCqC16v16M/63
+         5KKD9N2etoMrnmhk819RkrKo4HDY38EuqHQRR00QJg6Z+0FTmOfCoo4QlHj/fLY1TeAV
+         19Lr6wNgothERUACq+naJQMn8gKjtsnfxSu1stVOIuq3Mk1X3cnifzcAKbpNZpVze/zQ
+         9+7UrooTITSqhQAUoBzwSzMNAy0LZLyXc6TDQUv96FexkeyZHRZG/XcEKwWs2jLCZlgV
+         qT1WG6AvNWgCZ7SW9GX2cegttGfW0rqON4aPaosFua8yEOt8HsOh6uqu62IJEmNVDymR
+         Gzog==
+X-Gm-Message-State: AOAM531GREUdb+C2YMBHokprQw1MCZaoat1YXDTa5gqzpJc7iLI9OLqU
+        6JaOyfrXEhtcDYITTaO8Hsgf3+RNAhM=
+X-Google-Smtp-Source: ABdhPJxjQE6hDRgB3Yfh1egBA9CHmneYX+GIeGCDPvULa2hWWGNpM3Vp4gBNGaRiiDyaUPor7WTgh6F8ApM=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:17d2:7c05:7f59:da03])
+ (user=surenb job=sendgmr) by 2002:a81:4a07:: with SMTP id x7mr4764404ywa.245.1644452286222;
+ Wed, 09 Feb 2022 16:18:06 -0800 (PST)
+Date:   Wed,  9 Feb 2022 16:18:01 -0800
+Message-Id: <20220210001801.15413-1-surenb@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH 1/1] mm: Fix UAF when anon vma name is used after vma is freed
+From:   Suren Baghdasaryan <surenb@google.com>
+To:     akpm@linux-foundation.org
+Cc:     ccross@google.com, sumit.semwal@linaro.org, mhocko@suse.com,
+        dave.hansen@intel.com, keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, surenb@google.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 04:43:26PM -0800, Kees Cook wrote:
-> There have been cases where struct_size() (or flex_array_size()) needs
-> to be calculated for an initializer, which requires it be a constant
-> expression. This is possible when the "count" argument is a constant
-> expression, so provide this ability for the helpers.
-> 
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+When adjacent vmas are being merged it can result in the vma that was
+originally passed to madvise_update_vma being destroyed. In the current
+implementation, the name parameter passed to madvise_update_vma points
+directly to vma->anon_name->name and it is used after the call to
+vma_merge. In the cases when vma_merge merges the original vma and
+destroys it, this will result in use-after-free bug as shown below:
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Tested-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+madvise_vma_behavior << passes vma->anon_name->name as name param
+  madvise_update_vma(name)
+    vma_merge
+      __vma_adjust
+        vm_area_free <-- frees the vma
+    replace_vma_anon_name(name) <-- UAF
 
-Thanks!
---
-Gustavo
+Fix this by passing madvise_update_vma a copy of the name.
 
-> ---
->  include/linux/overflow.h | 10 +++++++---
->  lib/test_overflow.c      |  7 +++++++
->  2 files changed, 14 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/overflow.h b/include/linux/overflow.h
-> index 59d7228104d0..f1221d11f8e5 100644
-> --- a/include/linux/overflow.h
-> +++ b/include/linux/overflow.h
-> @@ -4,6 +4,7 @@
->  
->  #include <linux/compiler.h>
->  #include <linux/limits.h>
-> +#include <linux/const.h>
->  
->  /*
->   * We need to compute the minimum and maximum values representable in a given
-> @@ -221,8 +222,9 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
->   * Return: number of bytes needed or SIZE_MAX on overflow.
->   */
->  #define flex_array_size(p, member, count)				\
-> -	size_mul(count,							\
-> -		 sizeof(*(p)->member) + __must_be_array((p)->member))
-> +	__builtin_choose_expr(__is_constexpr(count),			\
-> +		(count) * sizeof(*(p)->member) + __must_be_array((p)->member),	\
-> +		size_mul(count, sizeof(*(p)->member) + __must_be_array((p)->member)))
->  
->  /**
->   * struct_size() - Calculate size of structure with trailing flexible array.
-> @@ -237,6 +239,8 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
->   * Return: number of bytes needed or SIZE_MAX on overflow.
->   */
->  #define struct_size(p, member, count)					\
-> -	size_add(sizeof(*(p)), flex_array_size(p, member, count))
-> +	__builtin_choose_expr(__is_constexpr(count),			\
-> +		sizeof(*(p)) + flex_array_size(p, member, count),	\
-> +		size_add(sizeof(*(p)), flex_array_size(p, member, count)))
->  
->  #endif /* __LINUX_OVERFLOW_H */
-> diff --git a/lib/test_overflow.c b/lib/test_overflow.c
-> index 712fb2351c27..d488ffaf56be 100644
-> --- a/lib/test_overflow.c
-> +++ b/lib/test_overflow.c
-> @@ -602,11 +602,18 @@ struct __test_flex_array {
->  
->  static int __init test_overflow_size_helpers(void)
->  {
-> +	/* Make sure struct_size() can be used in a constant expression. */
-> +	u8 ce_array[struct_size((struct __test_flex_array *)0, data, 55)];
->  	struct __test_flex_array *obj;
->  	int count = 0;
->  	int err = 0;
->  	int var;
->  
-> +	/* Verify constant expression against runtime version. */
-> +	var = 55;
-> +	OPTIMIZER_HIDE_VAR(var);
-> +	err |= sizeof(ce_array) != struct_size(obj, data, var);
-> +
->  #define check_one_size_helper(expected, func, args...)	({	\
->  	bool __failure = false;					\
->  	size_t _r;						\
-> -- 
-> 2.30.2
-> 
+Fixes: 9a10064f5625 ("mm: add a field to store names for private anonymous memory")
+Reported-by: syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+---
+ include/linux/mm.h |  2 ++
+ kernel/sys.c       |  1 -
+ mm/madvise.c       | 14 +++++++++++++-
+ 3 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 213cc569b192..e3490be76f35 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3370,6 +3370,8 @@ static inline int seal_check_future_write(int seals, struct vm_area_struct *vma)
+ 	return 0;
+ }
+ 
++#define ANON_VMA_NAME_MAX_LEN	80
++
+ #ifdef CONFIG_ANON_VMA_NAME
+ int madvise_set_anon_name(struct mm_struct *mm, unsigned long start,
+ 			  unsigned long len_in, const char *name);
+diff --git a/kernel/sys.c b/kernel/sys.c
+index ecc4cf019242..4cb6dc4bc09c 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -2263,7 +2263,6 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
+ 
+ #ifdef CONFIG_ANON_VMA_NAME
+ 
+-#define ANON_VMA_NAME_MAX_LEN		80
+ #define ANON_VMA_NAME_INVALID_CHARS	"\\`$[]"
+ 
+ static inline bool is_valid_name_char(char ch)
+diff --git a/mm/madvise.c b/mm/madvise.c
+index 5604064df464..f36a5a9942d8 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -976,6 +976,8 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
+ {
+ 	int error;
+ 	unsigned long new_flags = vma->vm_flags;
++	char name_buf[ANON_VMA_NAME_MAX_LEN];
++	const char *anon_name;
+ 
+ 	switch (behavior) {
+ 	case MADV_REMOVE:
+@@ -1040,8 +1042,18 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
+ 		break;
+ 	}
+ 
++	anon_name = vma_anon_name(vma);
++	if (anon_name) {
++		/*
++		 * Make a copy of the name because vma might be destroyed when
++		 * merged with another one and the name parameter might be used
++		 * after that.
++		 */
++		strcpy(name_buf, anon_name);
++		anon_name = name_buf;
++	}
+ 	error = madvise_update_vma(vma, prev, start, end, new_flags,
+-				   vma_anon_name(vma));
++				   anon_name);
+ 
+ out:
+ 	/*
+-- 
+2.35.0.263.gb82422642f-goog
+
