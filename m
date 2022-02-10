@@ -2,121 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C68C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:17:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237267AbiBJIRn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:17:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53930 "EHLO
+        id S237291AbiBJIR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:17:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237230AbiBJIRl (ORCPT
+        with ESMTP id S237266AbiBJIRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:17:41 -0500
-X-Greylist: delayed 918 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:17:39 PST
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8026C5;
-        Thu, 10 Feb 2022 00:17:39 -0800 (PST)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JvTfJ3SzxzdZbx;
-        Thu, 10 Feb 2022 15:59:04 +0800 (CST)
-Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 16:02:17 +0800
-Received: from huawei.com (10.175.104.170) by dggpemm500003.china.huawei.com
- (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Feb
- 2022 16:02:16 +0800
-From:   Liang Zhang <zhangliang5@huawei.com>
-To:     <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
-        <wanpengli@tencent.com>, <jmattson@google.com>, <joro@8bytes.org>,
-        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>
-CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhigang17@huawei.com>, <zhangliang5@huawei.com>
-Subject: [PATCH] KVM: x86/mmu: make apf token non-zero to fix bug
-Date:   Thu, 10 Feb 2022 16:41:13 +0800
-Message-ID: <20220210084113.73005-1-zhangliang5@huawei.com>
-X-Mailer: git-send-email 2.30.0
+        Thu, 10 Feb 2022 03:17:48 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D075DA9;
+        Thu, 10 Feb 2022 00:17:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644481070; x=1676017070;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=oy1isJLYwtuPuNrEw0LtVuMelYGGRN0YXlD3NuT4aUc=;
+  b=W0KuWYrJOfARnNftxF3GKLkUKlp6SY2VhXeUU+6oYOMM20nFsVW2LMFa
+   5pxlFhm4Rve8hFXtjbCuceDg41pxlsgiOQ/d+pWLChjJGWG+dUKkXSVN2
+   ZjQ7Ybo74wEDftJu7C9x1ruHnbkE/HSSQ/46VCF2eFwiKCjURNR5CK1YS
+   G6D7Ei5pbc/seVcompwdQyWkFx22H7dXKhDX8IR3RN8kIjV2OnlL8W4VA
+   OMQyNkkLMix/PbcdIWTMARyq7oEV69t3+66R2E7Snw4nkDw7hXmMQkZmD
+   tnLlTDcfff0Akzb71e7bG2dNeA1gq5X7pvzKzcR/SyOshbYlWUaY7fxXh
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="229407980"
+X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
+   d="scan'208";a="229407980"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 00:17:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
+   d="scan'208";a="568562945"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 10 Feb 2022 00:17:24 -0800
+Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
+ value of function xhci_check_args
+To:     =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>,
+        Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
+        mathias.nyman@intel.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20220209025234.25230-1-xy521521@gmail.com>
+ <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
+ <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Message-ID: <1e4bdc41-abcf-a082-140a-3dcead7073c6@linux.intel.com>
+Date:   Thu, 10 Feb 2022 10:18:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.170]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500003.china.huawei.com (7.185.36.56)
-X-CFilter-Loop: Reflected
+In-Reply-To: <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In current async pagefault logic, when a page is ready, KVM relies on
-kvm_arch_can_dequeue_async_page_present() to determine whether to deliver
-a READY event to the Guest. This function test token value of struct
-kvm_vcpu_pv_apf_data, which must be reset to zero by Guest kernel when a
-READY event is finished by Guest. If value is zero meaning that a READY
-event is done, so the KVM can deliver another.
-But the kvm_arch_setup_async_pf() may produce a valid token with zero
-value, which is confused with previous mention and may lead the loss of
-this READY event.
+On 10.2.2022 3.04, 谢泓宇 wrote:
+> Hi,
+> 
+> On 2022/2/9 17:29, Mathias Nyman wrote:
+>> On 9.2.2022 4.52, Hongyu Xie wrote:
+>>> From: Hongyu Xie <xiehongyu1@kylinos.cn>
+>>>
+>>> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+>>> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+>>> the return value of xhci_check_args <= 0.
+>>> This will cause a problem.
+>>> For example, r8152_submit_rx calling usb_submit_urb in
+>>> drivers/net/usb/r8152.c.
+>>> r8152_submit_rx will never get -ENODEV after submiting an urb
+>>> when xHC is halted,
+>>> because xhci_urb_enqueue returns -EINVAL in the very beginning.
+>>>
+>>> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+>>> Cc: stable@vger.kernel.org
+>>> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+>>> ---
+>> Thanks, added to queue.
+>> Changed the commit message and header a bit:
+>>
+>> "xhci: Prevent futile URB re-submissions due to incorrect return value.
+>>      The -ENODEV return value from xhci_check_args() is incorrectly changed
+>> to -EINVAL in a couple places before propagated further.
+>>      xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+>> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+>> the return value of xhci_check_args <= 0.
+>> This causes problems for example r8152_submit_rx, calling usb_submit_urb
+>> in drivers/net/usb/r8152.c.
+>> r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+>> is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
+>>
+>> Let me know if you disagree with this.
+>>
+>> Thanks
+>> -Mathias
+> 
+> Sounds good to me.
+> 
+> Do I have to send another patch with commit message and header changed?
+> 
+> Thanks
+> 
+> Hongyu Xie
+> 
 
-This bug may cause task blocked forever in Guest:
- INFO: task stress:7532 blocked for more than 1254 seconds.
-       Not tainted 5.10.0 #16
- "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
- task:stress          state:D stack:    0 pid: 7532 ppid:  1409
- flags:0x00000080
- Call Trace:
-  __schedule+0x1e7/0x650
-  schedule+0x46/0xb0
-  kvm_async_pf_task_wait_schedule+0xad/0xe0
-  ? exit_to_user_mode_prepare+0x60/0x70
-  __kvm_handle_async_pf+0x4f/0xb0
-  ? asm_exc_page_fault+0x8/0x30
-  exc_page_fault+0x6f/0x110
-  ? asm_exc_page_fault+0x8/0x30
-  asm_exc_page_fault+0x1e/0x30
- RIP: 0033:0x402d00
- RSP: 002b:00007ffd31912500 EFLAGS: 00010206
- RAX: 0000000000071000 RBX: ffffffffffffffff RCX: 00000000021a32b0
- RDX: 000000000007d011 RSI: 000000000007d000 RDI: 00000000021262b0
- RBP: 00000000021262b0 R08: 0000000000000003 R09: 0000000000000086
- R10: 00000000000000eb R11: 00007fefbdf2baa0 R12: 0000000000000000
- R13: 0000000000000002 R14: 000000000007d000 R15: 0000000000001000
+No need, I'll submit it.
 
-Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
----
- arch/x86/kvm/mmu/mmu.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 593093b52395..8e24f73bf60b 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3889,12 +3889,23 @@ static void shadow_page_table_clear_flood(struct kvm_vcpu *vcpu, gva_t addr)
- 	walk_shadow_page_lockless_end(vcpu);
- }
- 
-+static u32 alloc_apf_token(struct kvm_vcpu *vcpu)
-+{
-+	/* make sure the token value is not 0 */
-+	u32 id = vcpu->arch.apf.id;
-+
-+	if (id << 12 == 0)
-+		vcpu->arch.apf.id = 1;
-+
-+	return (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+}
-+
- static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 				    gfn_t gfn)
- {
- 	struct kvm_arch_async_pf arch;
- 
--	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+	arch.token = alloc_apf_token(vcpu);
- 	arch.gfn = gfn;
- 	arch.direct_map = vcpu->arch.mmu->direct_map;
- 	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
--- 
-2.30.0
-
+-Mathias
