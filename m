@@ -2,116 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBBE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237604AbiBJIes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:34:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37108 "EHLO
+        id S237619AbiBJIgM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:36:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232971AbiBJIen (ORCPT
+        with ESMTP id S233339AbiBJIgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:34:43 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8718A204
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:34:45 -0800 (PST)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4729B3F17B
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:34:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644482084;
-        bh=pGebfukMA0/cVNt1ZjmZH/7cNrKPzwQS8ExlqEeW/aA=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=lwnSlTzfmpcEx9Wh36NnaX5DTSjRKDDTSBLIpAHIIGq4aCPoLHqmzXK6fq9x2w87B
-         ceH1NQTB/RzDnb5QxFV/xbjqiS9gsYRLZyv0OaPDd3x5+n7xqatCyAn2GmSwJiTDnU
-         5sIaexIyYDdk44tcpi5fzaJWSRb98SYa8fTpz8V1KfpQDSogkxaNJ11jH+7nc3MKmC
-         18ySKAXkD2VxDsxV+arS2Ygom7EljaUB9kNtpi/lFfhUlbb++urf1NCcRCEnuZBf2v
-         nPSiddECJuJSGzPZP9lglkqY33oc3hXYuEtnRDNb/58/lMK0ugOYEMBQ/pMy/Ox4kY
-         cQBR2KfUZJrPg==
-Received: by mail-ej1-f71.google.com with SMTP id z26-20020a1709067e5a00b006cbe0628826so2368022ejr.10
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:34:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pGebfukMA0/cVNt1ZjmZH/7cNrKPzwQS8ExlqEeW/aA=;
-        b=xMQ7ZZo+ttQCat0YAkVdg9a7dfF5/uyyH1b113luG1qlPODW6WKvjrtTCA83g+TRVH
-         rqrmbdC0VIM+bCde9ig68taOg/vJHWIWWpjwF81/reo78WISVKDMsh+eR7Sh1+InEFD5
-         NzCYs37vgRIeiPcPXT4XGIZZsgAeLPqNHHHmNFO+EAXRAHK9+klWYfMQO8J8EVCwuAKb
-         q+MA3gCjvERVHwNc+YLdfnOmVidVr0aiAdP41W1Rlmhuw2iwgx77TFzsZwGXx2Fg5TA6
-         COkOnRAZn+ClIIs8ffQIBCSNfHAqxaNsjIuDTDzhzGAyIe4EvmlZ1878RLW5HVexmGvs
-         r8zA==
-X-Gm-Message-State: AOAM532YUqa5zk/0lht9RDemi68YojvBHnNe6ozbToLE6fv/UCfLfzW+
-        ZpAKcRQrwtKbs0yEe3AP9gZqggLVT5o84O60i0rCyy3lhq0fkl507PecYYy0G25mrg7hrC/A7vq
-        lcKiKmq88QOeSVhXr/Aopgjd3ulIQ9F3tGFCWQBfBlg==
-X-Received: by 2002:a17:906:648a:: with SMTP id e10mr5362012ejm.608.1644482083889;
-        Thu, 10 Feb 2022 00:34:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxi63reSP6zKskv4B7VSWKJyO4DkjBtRkrM6w8hTZY1HnS05jKb54fS63VtY8oyNWSo8tLgdA==
-X-Received: by 2002:a17:906:648a:: with SMTP id e10mr5362002ejm.608.1644482083651;
-        Thu, 10 Feb 2022 00:34:43 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id r22sm9289438edt.51.2022.02.10.00.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 00:34:42 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com
-Cc:     Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH v2] selftests/ftrace: Do not trace do_softirq because of PREEMPT_RT
-Date:   Thu, 10 Feb 2022 09:33:56 +0100
-Message-Id: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 10 Feb 2022 03:36:09 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8A3204;
+        Thu, 10 Feb 2022 00:36:09 -0800 (PST)
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A76RmZ015012;
+        Thu, 10 Feb 2022 09:35:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=y9L4Czc7A2FdXucdrY70AFh+b07oPp3FhPpaO2bKdQE=;
+ b=NOjCvEJ84ZRLEAj5IAIr7aiW0SHED5f+g80DdbZhQBditr4ddDK54uPHdj/t0JTOJ4Ch
+ a90v4pZoIdJ9xgOpaQ46Z3GfQ+srZvV2z52ngI/ZwzuOQNVTso06Qk3lzwe7URXggwnN
+ +T9FE2K774bG5WR/Cv/VTtgoAIFKKqQE7vU9S0tz+gDV12yn4/WgXpRIow/LgJwJRVM+
+ qqTMSBuQPUbnlZQhGLLEtpqhoQ07gUzuwHdseVI2E7RINS7VGAthylHjzDKu5u+Ob/Ay
+ N4EK4gbvB+fqpS1U8+DQ46yXlIh240Tzs33EcnPNIN7yf+KPDCyFFCl8+Q2WxqNuNBKP 4A== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4x1a8gvk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:35:46 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4BC4210002A;
+        Thu, 10 Feb 2022 09:35:46 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3D998210F83;
+        Thu, 10 Feb 2022 09:35:46 +0100 (CET)
+Received: from [10.201.21.201] (10.75.127.45) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
+ 2022 09:35:44 +0100
+Message-ID: <344eed6a-5367-35cf-49d8-eb53c50000e5@foss.st.com>
+Date:   Thu, 10 Feb 2022 09:35:43 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 01/12] ARM: dts: sti: ensure unique unit-address in
+ stih407-clock
+Content-Language: en-US
+To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
+        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20211202075105.195664-1-avolmat@me.com>
+ <20211202075105.195664-2-avolmat@me.com>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20211202075105.195664-2-avolmat@me.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PREEMPT_RT patchset does not use soft IRQs thus trying to filter for
-do_softirq fails for such kernel:
+Hi Alain
 
-  echo do_softirq
-  ftracetest: 81: echo: echo: I/O error
+On 12/2/21 08:50, Alain Volmat wrote:
+> Move quadfs and a9-mux clocks nodes into clockgen nodes so
+> that they can get the reg property from the parent node and
+> ensure only one node has the address.
+> 
+> Signed-off-by: Alain Volmat <avolmat@me.com>
+> ---
+>  arch/arm/boot/dts/stih407-clock.dtsi | 101 ++++++++++++---------------
+>  1 file changed, 46 insertions(+), 55 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/stih407-clock.dtsi b/arch/arm/boot/dts/stih407-clock.dtsi
+> index 9cce9541e26b..350bcfcf498b 100644
+> --- a/arch/arm/boot/dts/stih407-clock.dtsi
+> +++ b/arch/arm/boot/dts/stih407-clock.dtsi
+> @@ -29,7 +29,7 @@ clocks {
+>  		 */
+>  		clockgen-a9@92b0000 {
+>  			compatible = "st,clkgen-c32";
+> -			reg = <0x92b0000 0xffff>;
+> +			reg = <0x92b0000 0x10000>;
+>  
+>  			clockgen_a9_pll: clockgen-a9-pll {
+>  				#clock-cells = <1>;
+> @@ -37,32 +37,27 @@ clockgen_a9_pll: clockgen-a9-pll {
+>  
+>  				clocks = <&clk_sysin>;
+>  			};
+> -		};
+>  
+> -		/*
+> -		 * ARM CPU related clocks.
+> -		 */
+> -		clk_m_a9: clk-m-a9@92b0000 {
+> -			#clock-cells = <0>;
+> -			compatible = "st,stih407-clkgen-a9-mux";
+> -			reg = <0x92b0000 0x10000>;
+> -
+> -			clocks = <&clockgen_a9_pll 0>,
+> -				 <&clockgen_a9_pll 0>,
+> -				 <&clk_s_c0_flexgen 13>,
+> -				 <&clk_m_a9_ext2f_div2>;
+> +			clk_m_a9: clk-m-a9 {
+> +				#clock-cells = <0>;
+> +				compatible = "st,stih407-clkgen-a9-mux";
+>  
+> +				clocks = <&clockgen_a9_pll 0>,
+> +					 <&clockgen_a9_pll 0>,
+> +					 <&clk_s_c0_flexgen 13>,
+> +					 <&clk_m_a9_ext2f_div2>;
+>  
+> -			/*
+> -			 * ARM Peripheral clock for timers
+> -			 */
+> -			arm_periph_clk: clk-m-a9-periphs {
+> -				#clock-cells = <0>;
+> -				compatible = "fixed-factor-clock";
+> +				/*
+> +				 * ARM Peripheral clock for timers
+> +				 */
+> +				arm_periph_clk: clk-m-a9-periphs {
+> +					#clock-cells = <0>;
+> +					compatible = "fixed-factor-clock";
+>  
+> -				clocks = <&clk_m_a9>;
+> -				clock-div = <2>;
+> -				clock-mult = <1>;
+> +					clocks = <&clk_m_a9>;
+> +					clock-div = <2>;
+> +					clock-mult = <1>;
+> +				};
+>  			};
+>  		};
+>  
+> @@ -87,14 +82,6 @@ clk_s_a0_flexgen: clk-s-a0-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_c0_quadfs: clk-s-c0-quadfs@9103000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-pll";
+> -			reg = <0x9103000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clk_s_c0: clockgen-c@9103000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9103000 0x1000>;
+> @@ -113,6 +100,13 @@ clk_s_c0_pll1: clk-s-c0-pll1 {
+>  				clocks = <&clk_sysin>;
+>  			};
+>  
+> +			clk_s_c0_quadfs: clk-s-c0-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-pll";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_c0_flexgen: clk-s-c0-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih407-c0";
+> @@ -142,18 +136,17 @@ clk_m_a9_ext2f_div2: clk-m-a9-ext2f-div2s {
+>  			};
+>  		};
+>  
+> -		clk_s_d0_quadfs: clk-s-d0-quadfs@9104000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d0";
+> -			reg = <0x9104000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d0@9104000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9104000 0x1000>;
+>  
+> +			clk_s_d0_quadfs: clk-s-d0-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d0";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d0_flexgen: clk-s-d0-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih407-d0";
+> @@ -166,18 +159,17 @@ clk_s_d0_flexgen: clk-s-d0-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_d2_quadfs: clk-s-d2-quadfs@9106000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d2";
+> -			reg = <0x9106000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d2@9106000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9106000 0x1000>;
+>  
+> +			clk_s_d2_quadfs: clk-s-d2-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d2";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d2_flexgen: clk-s-d2-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih407-d2";
+> @@ -192,18 +184,17 @@ clk_s_d2_flexgen: clk-s-d2-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_d3_quadfs: clk-s-d3-quadfs@9107000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d3";
+> -			reg = <0x9107000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d3@9107000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9107000 0x1000>;
+>  
+> +			clk_s_d3_quadfs: clk-s-d3-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d3";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d3_flexgen: clk-s-d3-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih407-d3";
 
-Choose some other visible function for the test.
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-
----
-
-Changes since v1:
-1. Use scheduler_tick.
-2. Add review tag.
-
-Notes:
-I understand that the failure does not exist on mainline kernel (only
-with PREEMPT_RT patchset) but the change does not harm it.
-
-If it is not suitable alone, please consider it for RT patchset.
----
- .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-index e96e279e0533..25432b8cd5bd 100644
---- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-+++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-@@ -19,7 +19,7 @@ fail() { # mesg
- 
- FILTER=set_ftrace_filter
- FUNC1="schedule"
--FUNC2="do_softirq"
-+FUNC2="scheduler_tick"
- 
- ALL_FUNCS="#### all functions enabled ####"
- 
--- 
-2.32.0
-
+Thanks
+Patrice
