@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 310F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 245E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234871AbiBJFvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:51:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44342 "EHLO
+        id S234812AbiBJFvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:51:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234927AbiBJFu7 (ORCPT
+        with ESMTP id S234410AbiBJFu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:50:59 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB4E1138
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:50:56 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id om7so4203838pjb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 21:50:56 -0800 (PST)
+        Thu, 10 Feb 2022 00:50:57 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9271110A
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:50:41 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id y8so5621842pfa.11
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 21:50:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ventanamicro.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bmC/+wkdteWUT06WoOsBDTVO7k3IroiHUdnDEzTv3ZY=;
-        b=N+4hULz1YWTvkl0gNVTzANT2uevdhpKLxRbsVQLLQl40UOO6+fPdfuAfX99zMb2fPY
-         YwHBT1bhX9w0cKV0Ab345Csu+JPz3tsteSKt6S3BI7Ss6NsbAWUSl+F273dGzQ6BZseL
-         qbNwwVE+z6L8BlPW8odnkFk8WDmkZpg2L9DFkpJbWqesFNlRwSXmCphMDSIEVnkM6FkQ
-         dPvkFpFCcKo20ubK7SppAeFDi3pSIrHMLOSj09YXlAIw9GDG6Cn8Z0ZScI2PAHfttHmv
-         HquLombMXNRX5kY/T4oMCftSO4BhOk6daML74Yae7F1cDgMRWUHVopTQR+Ock0tPItHL
-         iF/A==
+        bh=k1DSKevVHfkvjZ5rQWGMsgYKCpAx+gTSiY0aIv7L4L8=;
+        b=AMFqLbXO+4XYUzWihu2CEm9cAUSMCKGSQrODZKtgDrM+QIGggWXDC1nP6JPzQ4T5pc
+         vvyCyoFw/5iCLx+QTrAweqRWMyl1yvPX6WqEzwXK8w+0eweP0N2WLyoKG/mgeUDMWAiW
+         vIMUp0ixihQCRjBKTr96SrV6nSgxBQ6F1/cPZosGprOhpky+nMo1P9rtqk5BJ29yTUbE
+         RJf6GdPJJXlrTAbhGXgywHI01/IEaSXQlgDSBVDoOGAiAv64IlLSZ1lB2apQxxFhLGjU
+         mNsDawB403CJi0nkj4ABqs9bkqCKO78rRw++yc0dVoOysJRKsMh0xWTxbjT3L/ene/vo
+         DL7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bmC/+wkdteWUT06WoOsBDTVO7k3IroiHUdnDEzTv3ZY=;
-        b=p/JQ4plLnPD2DwkZh1cBEU2gDUXHpNUWNCUzaY+QNz2o8EFrDFBkQxowgkF+Vpc967
-         YJaRkuo5mu8hpEqB40L8pHcatQaz4dkI1pxgOvIeMZKURtIBMmF0fLgf8yvOGUXeDDgp
-         Lm9rnY5ZHEgJH46DfyqVzT8bfN/PRaCQnkyWO40w/v/iMoao/fY8PgayjPEOmVTsUdRn
-         RdxIGxIafnYH4BwkFIbYT6EyzW0gFm8PHO6l59BMdT4wQLEpMEclhW4CpnUZ+KpE3RqD
-         8hzxLj3k0aSaLK3lL371c9Jji9LLn/V7DKEb0PxME7YAuu0xHlN/oGW3aqvKpqVevXyJ
-         UJOw==
-X-Gm-Message-State: AOAM5327rm3tKd3F7RIQmLgShrLhWLO3jQLS+2hg+bdXfR0bXbrlgoaH
-        lWcRcaoBJb17D0c3G6vWwDImZQ==
-X-Google-Smtp-Source: ABdhPJzOHNyO0oUDPitbt0tLcIV8qCE4beKAyR1gORX1sq5XbMF5u9UVy6MnP9yJrvHOyXq+28oH9w==
-X-Received: by 2002:a17:90a:c28d:: with SMTP id f13mr1070807pjt.163.1644472256044;
-        Wed, 09 Feb 2022 21:50:56 -0800 (PST)
+        bh=k1DSKevVHfkvjZ5rQWGMsgYKCpAx+gTSiY0aIv7L4L8=;
+        b=lDtjvlql0KQQvkYkUAJnESeBdHs+CNhfU5/Vh181cQmUssl0GBm8mGui1Y/8evRvZb
+         WgMMWodWipw8dVsFiVAnZMFjFVCaDArxQLxeQEabv4T38PfHMejEfaof5ER3VPGLz1yo
+         WqY03ZkLV+fDHAaZBGk1/4uV+FkmXFrjwbAjLy7RqMv1XSyuCX0eO4I6S2UIIRyYmY10
+         3bPBxxkNmxHCt4sS9kzxJY6XcsY/tOBiBbCh8AjnYUeYN+UB31nlli9yWjxKh5Ta3N6V
+         tNc2KH5ZjgEu6tqems4rMBttKqN8/iJtBb2WAyODYCvr22Q2lejQ5ojon9YiOmB6lHKS
+         sBmQ==
+X-Gm-Message-State: AOAM531wj1dXE2UeWJEEKckeR4OEmBAWZntO5LxCw1BuBZVI9h70IcjG
+        KyLqvuEeB3qedux8aMx6ek+cVw==
+X-Google-Smtp-Source: ABdhPJxpN9QZYSrVplTfejd9Z54+muNaAPM1NhSeYWn++tcqIGuuR9U5saCRaFJ8Hms1VmXGLgG9/w==
+X-Received: by 2002:a63:2a86:: with SMTP id q128mr4928013pgq.53.1644472241440;
+        Wed, 09 Feb 2022 21:50:41 -0800 (PST)
 Received: from localhost.localdomain ([122.179.114.46])
-        by smtp.gmail.com with ESMTPSA id s32sm15192270pfw.80.2022.02.09.21.50.49
+        by smtp.gmail.com with ESMTPSA id s32sm15192270pfw.80.2022.02.09.21.50.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 21:50:55 -0800 (PST)
+        Wed, 09 Feb 2022 21:50:40 -0800 (PST)
 From:   Anup Patel <apatel@ventanamicro.com>
 To:     Palmer Dabbelt <palmer@dabbelt.com>,
         Paul Walmsley <paul.walmsley@sifive.com>,
@@ -63,10 +63,12 @@ Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
         Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
         linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvm-riscv@lists.infradead.org, Anup Patel <apatel@ventanamicro.com>
-Subject: [PATCH v11 5/8] cpuidle: Factor-out power domain related code from PSCI domain driver
-Date:   Thu, 10 Feb 2022 11:19:44 +0530
-Message-Id: <20220210054947.170134-6-apatel@ventanamicro.com>
+        kvm-riscv@lists.infradead.org,
+        Anup Patel <apatel@ventanamicro.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH v11 3/8] RISC-V: Add arch functions for non-retentive suspend entry/exit
+Date:   Thu, 10 Feb 2022 11:19:42 +0530
+Message-Id: <20220210054947.170134-4-apatel@ventanamicro.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220210054947.170134-1-apatel@ventanamicro.com>
 References: <20220210054947.170134-1-apatel@ventanamicro.com>
@@ -78,547 +80,395 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Anup Patel <anup.patel@wdc.com>
 
-The generic power domain related code in PSCI domain driver is largely
-independent of PSCI and can be shared with RISC-V SBI domain driver
-hence we factor-out this code into dt_idle_genpd.c and dt_idle_genpd.h.
+The hart registers and CSRs are not preserved in non-retentative
+suspend state so we provide arch specific helper functions which
+will save/restore hart context upon entry/exit to non-retentive
+suspend state. These helper functions can be used by cpuidle
+drivers for non-retentive suspend entry/exit.
 
 Signed-off-by: Anup Patel <anup.patel@wdc.com>
 Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reviewed-by: Guo Ren <guoren@kernel.org>
 ---
- MAINTAINERS                           |   7 +
- drivers/cpuidle/Kconfig               |   4 +
- drivers/cpuidle/Kconfig.arm           |   1 +
- drivers/cpuidle/Makefile              |   1 +
- drivers/cpuidle/cpuidle-psci-domain.c | 138 +-------------------
- drivers/cpuidle/cpuidle-psci.h        |  15 ++-
- drivers/cpuidle/dt_idle_genpd.c       | 178 ++++++++++++++++++++++++++
- drivers/cpuidle/dt_idle_genpd.h       |  50 ++++++++
- 8 files changed, 259 insertions(+), 135 deletions(-)
- create mode 100644 drivers/cpuidle/dt_idle_genpd.c
- create mode 100644 drivers/cpuidle/dt_idle_genpd.h
+ arch/riscv/include/asm/asm.h      |  27 +++++++
+ arch/riscv/include/asm/suspend.h  |  36 +++++++++
+ arch/riscv/kernel/Makefile        |   2 +
+ arch/riscv/kernel/asm-offsets.c   |   3 +
+ arch/riscv/kernel/head.S          |  21 -----
+ arch/riscv/kernel/suspend.c       |  87 +++++++++++++++++++++
+ arch/riscv/kernel/suspend_entry.S | 124 ++++++++++++++++++++++++++++++
+ 7 files changed, 279 insertions(+), 21 deletions(-)
+ create mode 100644 arch/riscv/include/asm/suspend.h
+ create mode 100644 arch/riscv/kernel/suspend.c
+ create mode 100644 arch/riscv/kernel/suspend_entry.S
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 69a2935daf6c..39ece23e8d93 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5051,6 +5051,13 @@ S:	Supported
- F:	drivers/cpuidle/cpuidle-psci.h
- F:	drivers/cpuidle/cpuidle-psci-domain.c
+diff --git a/arch/riscv/include/asm/asm.h b/arch/riscv/include/asm/asm.h
+index 618d7c5af1a2..48b4baa4d706 100644
+--- a/arch/riscv/include/asm/asm.h
++++ b/arch/riscv/include/asm/asm.h
+@@ -67,4 +67,31 @@
+ #error "Unexpected __SIZEOF_SHORT__"
+ #endif
  
-+CPUIDLE DRIVER - DT IDLE PM DOMAIN
-+M:	Ulf Hansson <ulf.hansson@linaro.org>
-+L:	linux-pm@vger.kernel.org
-+S:	Supported
-+F:	drivers/cpuidle/dt_idle_genpd.c
-+F:	drivers/cpuidle/dt_idle_genpd.h
++#ifdef __ASSEMBLY__
 +
- CRAMFS FILESYSTEM
- M:	Nicolas Pitre <nico@fluxnic.net>
- S:	Maintained
-diff --git a/drivers/cpuidle/Kconfig b/drivers/cpuidle/Kconfig
-index c0aeedd66f02..f1afe7ab6b54 100644
---- a/drivers/cpuidle/Kconfig
-+++ b/drivers/cpuidle/Kconfig
-@@ -47,6 +47,10 @@ config CPU_IDLE_GOV_HALTPOLL
- config DT_IDLE_STATES
- 	bool
- 
-+config DT_IDLE_GENPD
-+	depends on PM_GENERIC_DOMAINS_OF
-+	bool
++/* Common assembly source macros */
 +
- menu "ARM CPU Idle Drivers"
- depends on ARM || ARM64
- source "drivers/cpuidle/Kconfig.arm"
-diff --git a/drivers/cpuidle/Kconfig.arm b/drivers/cpuidle/Kconfig.arm
-index 15d6c46c0a47..be7f512109f7 100644
---- a/drivers/cpuidle/Kconfig.arm
-+++ b/drivers/cpuidle/Kconfig.arm
-@@ -27,6 +27,7 @@ config ARM_PSCI_CPUIDLE_DOMAIN
- 	bool "PSCI CPU idle Domain"
- 	depends on ARM_PSCI_CPUIDLE
- 	depends on PM_GENERIC_DOMAINS_OF
-+	select DT_IDLE_GENPD
- 	default y
- 	help
- 	  Select this to enable the PSCI based CPUidle driver to use PM domains,
-diff --git a/drivers/cpuidle/Makefile b/drivers/cpuidle/Makefile
-index 26bbc5e74123..11a26cef279f 100644
---- a/drivers/cpuidle/Makefile
-+++ b/drivers/cpuidle/Makefile
-@@ -6,6 +6,7 @@
- obj-y += cpuidle.o driver.o governor.o sysfs.o governors/
- obj-$(CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED) += coupled.o
- obj-$(CONFIG_DT_IDLE_STATES)		  += dt_idle_states.o
-+obj-$(CONFIG_DT_IDLE_GENPD)		  += dt_idle_genpd.o
- obj-$(CONFIG_ARCH_HAS_CPU_RELAX)	  += poll_state.o
- obj-$(CONFIG_HALTPOLL_CPUIDLE)		  += cpuidle-haltpoll.o
- 
-diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
-index ff2c3f8e4668..755bbdfc5b82 100644
---- a/drivers/cpuidle/cpuidle-psci-domain.c
-+++ b/drivers/cpuidle/cpuidle-psci-domain.c
-@@ -47,73 +47,14 @@ static int psci_pd_power_off(struct generic_pm_domain *pd)
- 	return 0;
- }
- 
--static int psci_pd_parse_state_nodes(struct genpd_power_state *states,
--				     int state_count)
--{
--	int i, ret;
--	u32 psci_state, *psci_state_buf;
--
--	for (i = 0; i < state_count; i++) {
--		ret = psci_dt_parse_state_node(to_of_node(states[i].fwnode),
--					&psci_state);
--		if (ret)
--			goto free_state;
--
--		psci_state_buf = kmalloc(sizeof(u32), GFP_KERNEL);
--		if (!psci_state_buf) {
--			ret = -ENOMEM;
--			goto free_state;
--		}
--		*psci_state_buf = psci_state;
--		states[i].data = psci_state_buf;
--	}
--
--	return 0;
--
--free_state:
--	i--;
--	for (; i >= 0; i--)
--		kfree(states[i].data);
--	return ret;
--}
--
--static int psci_pd_parse_states(struct device_node *np,
--			struct genpd_power_state **states, int *state_count)
--{
--	int ret;
--
--	/* Parse the domain idle states. */
--	ret = of_genpd_parse_idle_states(np, states, state_count);
--	if (ret)
--		return ret;
--
--	/* Fill out the PSCI specifics for each found state. */
--	ret = psci_pd_parse_state_nodes(*states, *state_count);
--	if (ret)
--		kfree(*states);
--
--	return ret;
--}
--
--static void psci_pd_free_states(struct genpd_power_state *states,
--				unsigned int state_count)
--{
--	int i;
--
--	for (i = 0; i < state_count; i++)
--		kfree(states[i].data);
--	kfree(states);
--}
--
- static int psci_pd_init(struct device_node *np, bool use_osi)
- {
- 	struct generic_pm_domain *pd;
- 	struct psci_pd_provider *pd_provider;
- 	struct dev_power_governor *pd_gov;
--	struct genpd_power_state *states = NULL;
- 	int ret = -ENOMEM, state_count = 0;
- 
--	pd = kzalloc(sizeof(*pd), GFP_KERNEL);
-+	pd = dt_idle_pd_alloc(np, psci_dt_parse_state_node);
- 	if (!pd)
- 		goto out;
- 
-@@ -121,22 +62,6 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 	if (!pd_provider)
- 		goto free_pd;
- 
--	pd->name = kasprintf(GFP_KERNEL, "%pOF", np);
--	if (!pd->name)
--		goto free_pd_prov;
--
--	/*
--	 * Parse the domain idle states and let genpd manage the state selection
--	 * for those being compatible with "domain-idle-state".
--	 */
--	ret = psci_pd_parse_states(np, &states, &state_count);
--	if (ret)
--		goto free_name;
--
--	pd->free_states = psci_pd_free_states;
--	pd->name = kbasename(pd->name);
--	pd->states = states;
--	pd->state_count = state_count;
- 	pd->flags |= GENPD_FLAG_IRQ_SAFE | GENPD_FLAG_CPU_DOMAIN;
- 
- 	/* Allow power off when OSI has been successfully enabled. */
-@@ -149,10 +74,8 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 	pd_gov = state_count > 0 ? &pm_domain_cpu_gov : NULL;
- 
- 	ret = pm_genpd_init(pd, pd_gov, false);
--	if (ret) {
--		psci_pd_free_states(states, state_count);
--		goto free_name;
--	}
-+	if (ret)
-+		goto free_pd_prov;
- 
- 	ret = of_genpd_add_provider_simple(np, pd);
- 	if (ret)
-@@ -166,12 +89,10 @@ static int psci_pd_init(struct device_node *np, bool use_osi)
- 
- remove_pd:
- 	pm_genpd_remove(pd);
--free_name:
--	kfree(pd->name);
- free_pd_prov:
- 	kfree(pd_provider);
- free_pd:
--	kfree(pd);
-+	dt_idle_pd_free(pd);
- out:
- 	pr_err("failed to init PM domain ret=%d %pOF\n", ret, np);
- 	return ret;
-@@ -195,30 +116,6 @@ static void psci_pd_remove(void)
- 	}
- }
- 
--static int psci_pd_init_topology(struct device_node *np)
--{
--	struct device_node *node;
--	struct of_phandle_args child, parent;
--	int ret;
--
--	for_each_child_of_node(np, node) {
--		if (of_parse_phandle_with_args(node, "power-domains",
--					"#power-domain-cells", 0, &parent))
--			continue;
--
--		child.np = node;
--		child.args_count = 0;
--		ret = of_genpd_add_subdomain(&parent, &child);
--		of_node_put(parent.np);
--		if (ret) {
--			of_node_put(node);
--			return ret;
--		}
--	}
--
--	return 0;
--}
--
- static bool psci_pd_try_set_osi_mode(void)
- {
- 	int ret;
-@@ -282,7 +179,7 @@ static int psci_cpuidle_domain_probe(struct platform_device *pdev)
- 		goto no_pd;
- 
- 	/* Link genpd masters/subdomains to model the CPU topology. */
--	ret = psci_pd_init_topology(np);
-+	ret = dt_idle_pd_init_topology(np);
- 	if (ret)
- 		goto remove_pd;
- 
-@@ -314,28 +211,3 @@ static int __init psci_idle_init_domains(void)
- 	return platform_driver_register(&psci_cpuidle_domain_driver);
- }
- subsys_initcall(psci_idle_init_domains);
--
--struct device *psci_dt_attach_cpu(int cpu)
--{
--	struct device *dev;
--
--	dev = dev_pm_domain_attach_by_name(get_cpu_device(cpu), "psci");
--	if (IS_ERR_OR_NULL(dev))
--		return dev;
--
--	pm_runtime_irq_safe(dev);
--	if (cpu_online(cpu))
--		pm_runtime_get_sync(dev);
--
--	dev_pm_syscore_device(dev, true);
--
--	return dev;
--}
--
--void psci_dt_detach_cpu(struct device *dev)
--{
--	if (IS_ERR_OR_NULL(dev))
--		return;
--
--	dev_pm_domain_detach(dev, false);
--}
-diff --git a/drivers/cpuidle/cpuidle-psci.h b/drivers/cpuidle/cpuidle-psci.h
-index d8e925e84c27..4e132640ed64 100644
---- a/drivers/cpuidle/cpuidle-psci.h
-+++ b/drivers/cpuidle/cpuidle-psci.h
-@@ -10,8 +10,19 @@ void psci_set_domain_state(u32 state);
- int psci_dt_parse_state_node(struct device_node *np, u32 *state);
- 
- #ifdef CONFIG_ARM_PSCI_CPUIDLE_DOMAIN
--struct device *psci_dt_attach_cpu(int cpu);
--void psci_dt_detach_cpu(struct device *dev);
++#ifdef CONFIG_XIP_KERNEL
++.macro XIP_FIXUP_OFFSET reg
++	REG_L t0, _xip_fixup
++	add \reg, \reg, t0
++.endm
++.macro XIP_FIXUP_FLASH_OFFSET reg
++	la t1, __data_loc
++	li t0, XIP_OFFSET_MASK
++	and t1, t1, t0
++	li t1, XIP_OFFSET
++	sub t0, t0, t1
++	sub \reg, \reg, t0
++.endm
++_xip_fixup: .dword CONFIG_PHYS_RAM_BASE - CONFIG_XIP_PHYS_ADDR - XIP_OFFSET
++#else
++.macro XIP_FIXUP_OFFSET reg
++.endm
++.macro XIP_FIXUP_FLASH_OFFSET reg
++.endm
++#endif /* CONFIG_XIP_KERNEL */
 +
-+#include "dt_idle_genpd.h"
++#endif /* __ASSEMBLY__ */
 +
-+static inline struct device *psci_dt_attach_cpu(int cpu)
-+{
-+	return dt_idle_attach_cpu(cpu, "psci");
-+}
-+
-+static inline void psci_dt_detach_cpu(struct device *dev)
-+{
-+	dt_idle_detach_cpu(dev);
-+}
-+
- #else
- static inline struct device *psci_dt_attach_cpu(int cpu) { return NULL; }
- static inline void psci_dt_detach_cpu(struct device *dev) { }
-diff --git a/drivers/cpuidle/dt_idle_genpd.c b/drivers/cpuidle/dt_idle_genpd.c
+ #endif /* _ASM_RISCV_ASM_H */
+diff --git a/arch/riscv/include/asm/suspend.h b/arch/riscv/include/asm/suspend.h
 new file mode 100644
-index 000000000000..b37165514d4e
+index 000000000000..8be391c2aecb
 --- /dev/null
-+++ b/drivers/cpuidle/dt_idle_genpd.c
-@@ -0,0 +1,178 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/arch/riscv/include/asm/suspend.h
+@@ -0,0 +1,36 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
-+ * PM domains for CPUs via genpd.
-+ *
-+ * Copyright (C) 2019 Linaro Ltd.
-+ * Author: Ulf Hansson <ulf.hansson@linaro.org>
-+ *
 + * Copyright (c) 2021 Western Digital Corporation or its affiliates.
 + * Copyright (c) 2022 Ventana Micro Systems Inc.
 + */
 +
-+#define pr_fmt(fmt) "dt-idle-genpd: " fmt
++#ifndef _ASM_RISCV_SUSPEND_H
++#define _ASM_RISCV_SUSPEND_H
 +
-+#include <linux/cpu.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/pm_domain.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/slab.h>
-+#include <linux/string.h>
++#include <asm/ptrace.h>
 +
-+#include "dt_idle_genpd.h"
++struct suspend_context {
++	/* Saved and restored by low-level functions */
++	struct pt_regs regs;
++	/* Saved and restored by high-level functions */
++	unsigned long scratch;
++	unsigned long tvec;
++	unsigned long ie;
++#ifdef CONFIG_MMU
++	unsigned long satp;
++#endif
++};
 +
-+static int pd_parse_state_nodes(
-+			int (*parse_state)(struct device_node *, u32 *),
-+			struct genpd_power_state *states, int state_count)
++/* Low-level CPU suspend entry function */
++int __cpu_suspend_enter(struct suspend_context *context);
++
++/* High-level CPU suspend which will save context and call finish() */
++int cpu_suspend(unsigned long arg,
++		int (*finish)(unsigned long arg,
++			      unsigned long entry,
++			      unsigned long context));
++
++/* Low-level CPU resume entry function */
++int __cpu_resume_enter(unsigned long hartid, unsigned long context);
++
++#endif
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index 612556faa527..13fa5733f5e7 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -48,6 +48,8 @@ obj-$(CONFIG_RISCV_BOOT_SPINWAIT) += cpu_ops_spinwait.o
+ obj-$(CONFIG_MODULES)		+= module.o
+ obj-$(CONFIG_MODULE_SECTIONS)	+= module-sections.o
+ 
++obj-$(CONFIG_CPU_PM)		+= suspend_entry.o suspend.o
++
+ obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
+ obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
+ 
+diff --git a/arch/riscv/kernel/asm-offsets.c b/arch/riscv/kernel/asm-offsets.c
+index df0519a64eaf..df9444397908 100644
+--- a/arch/riscv/kernel/asm-offsets.c
++++ b/arch/riscv/kernel/asm-offsets.c
+@@ -13,6 +13,7 @@
+ #include <asm/thread_info.h>
+ #include <asm/ptrace.h>
+ #include <asm/cpu_ops_sbi.h>
++#include <asm/suspend.h>
+ 
+ void asm_offsets(void);
+ 
+@@ -113,6 +114,8 @@ void asm_offsets(void)
+ 	OFFSET(PT_BADADDR, pt_regs, badaddr);
+ 	OFFSET(PT_CAUSE, pt_regs, cause);
+ 
++	OFFSET(SUSPEND_CONTEXT_REGS, suspend_context, regs);
++
+ 	OFFSET(KVM_ARCH_GUEST_ZERO, kvm_vcpu_arch, guest_context.zero);
+ 	OFFSET(KVM_ARCH_GUEST_RA, kvm_vcpu_arch, guest_context.ra);
+ 	OFFSET(KVM_ARCH_GUEST_SP, kvm_vcpu_arch, guest_context.sp);
+diff --git a/arch/riscv/kernel/head.S b/arch/riscv/kernel/head.S
+index 5f4c6b6c4974..893b8bb69391 100644
+--- a/arch/riscv/kernel/head.S
++++ b/arch/riscv/kernel/head.S
+@@ -16,27 +16,6 @@
+ #include <asm/image.h>
+ #include "efi-header.S"
+ 
+-#ifdef CONFIG_XIP_KERNEL
+-.macro XIP_FIXUP_OFFSET reg
+-	REG_L t0, _xip_fixup
+-	add \reg, \reg, t0
+-.endm
+-.macro XIP_FIXUP_FLASH_OFFSET reg
+-	la t1, __data_loc
+-	li t0, XIP_OFFSET_MASK
+-	and t1, t1, t0
+-	li t1, XIP_OFFSET
+-	sub t0, t0, t1
+-	sub \reg, \reg, t0
+-.endm
+-_xip_fixup: .dword CONFIG_PHYS_RAM_BASE - CONFIG_XIP_PHYS_ADDR - XIP_OFFSET
+-#else
+-.macro XIP_FIXUP_OFFSET reg
+-.endm
+-.macro XIP_FIXUP_FLASH_OFFSET reg
+-.endm
+-#endif /* CONFIG_XIP_KERNEL */
+-
+ __HEAD
+ ENTRY(_start)
+ 	/*
+diff --git a/arch/riscv/kernel/suspend.c b/arch/riscv/kernel/suspend.c
+new file mode 100644
+index 000000000000..9ba24fb8cc93
+--- /dev/null
++++ b/arch/riscv/kernel/suspend.c
+@@ -0,0 +1,87 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2021 Western Digital Corporation or its affiliates.
++ * Copyright (c) 2022 Ventana Micro Systems Inc.
++ */
++
++#include <linux/ftrace.h>
++#include <asm/csr.h>
++#include <asm/suspend.h>
++
++static void suspend_save_csrs(struct suspend_context *context)
 +{
-+	int i, ret;
-+	u32 state, *state_buf;
-+
-+	for (i = 0; i < state_count; i++) {
-+		ret = parse_state(to_of_node(states[i].fwnode), &state);
-+		if (ret)
-+			goto free_state;
-+
-+		state_buf = kmalloc(sizeof(u32), GFP_KERNEL);
-+		if (!state_buf) {
-+			ret = -ENOMEM;
-+			goto free_state;
-+		}
-+		*state_buf = state;
-+		states[i].data = state_buf;
-+	}
-+
-+	return 0;
-+
-+free_state:
-+	i--;
-+	for (; i >= 0; i--)
-+		kfree(states[i].data);
-+	return ret;
-+}
-+
-+static int pd_parse_states(struct device_node *np,
-+			   int (*parse_state)(struct device_node *, u32 *),
-+			   struct genpd_power_state **states,
-+			   int *state_count)
-+{
-+	int ret;
-+
-+	/* Parse the domain idle states. */
-+	ret = of_genpd_parse_idle_states(np, states, state_count);
-+	if (ret)
-+		return ret;
-+
-+	/* Fill out the dt specifics for each found state. */
-+	ret = pd_parse_state_nodes(parse_state, *states, *state_count);
-+	if (ret)
-+		kfree(*states);
-+
-+	return ret;
-+}
-+
-+static void pd_free_states(struct genpd_power_state *states,
-+			    unsigned int state_count)
-+{
-+	int i;
-+
-+	for (i = 0; i < state_count; i++)
-+		kfree(states[i].data);
-+	kfree(states);
-+}
-+
-+void dt_idle_pd_free(struct generic_pm_domain *pd)
-+{
-+	pd_free_states(pd->states, pd->state_count);
-+	kfree(pd->name);
-+	kfree(pd);
-+}
-+
-+struct generic_pm_domain *dt_idle_pd_alloc(struct device_node *np,
-+			int (*parse_state)(struct device_node *, u32 *))
-+{
-+	struct generic_pm_domain *pd;
-+	struct genpd_power_state *states = NULL;
-+	int ret, state_count = 0;
-+
-+	pd = kzalloc(sizeof(*pd), GFP_KERNEL);
-+	if (!pd)
-+		goto out;
-+
-+	pd->name = kasprintf(GFP_KERNEL, "%pOF", np);
-+	if (!pd->name)
-+		goto free_pd;
++	context->scratch = csr_read(CSR_SCRATCH);
++	context->tvec = csr_read(CSR_TVEC);
++	context->ie = csr_read(CSR_IE);
 +
 +	/*
-+	 * Parse the domain idle states and let genpd manage the state selection
-+	 * for those being compatible with "domain-idle-state".
++	 * No need to save/restore IP CSR (i.e. MIP or SIP) because:
++	 *
++	 * 1. For no-MMU (M-mode) kernel, the bits in MIP are set by
++	 *    external devices (such as interrupt controller, timer, etc).
++	 * 2. For MMU (S-mode) kernel, the bits in SIP are set by
++	 *    M-mode firmware and external devices (such as interrupt
++	 *    controller, etc).
 +	 */
-+	ret = pd_parse_states(np, parse_state, &states, &state_count);
-+	if (ret)
-+		goto free_name;
 +
-+	pd->free_states = pd_free_states;
-+	pd->name = kbasename(pd->name);
-+	pd->states = states;
-+	pd->state_count = state_count;
-+
-+	pr_debug("alloc PM domain %s\n", pd->name);
-+	return pd;
-+
-+free_name:
-+	kfree(pd->name);
-+free_pd:
-+	kfree(pd);
-+out:
-+	pr_err("failed to alloc PM domain %pOF\n", np);
-+	return NULL;
++#ifdef CONFIG_MMU
++	context->satp = csr_read(CSR_SATP);
++#endif
 +}
 +
-+int dt_idle_pd_init_topology(struct device_node *np)
++static void suspend_restore_csrs(struct suspend_context *context)
 +{
-+	struct device_node *node;
-+	struct of_phandle_args child, parent;
-+	int ret;
++	csr_write(CSR_SCRATCH, context->scratch);
++	csr_write(CSR_TVEC, context->tvec);
++	csr_write(CSR_IE, context->ie);
 +
-+	for_each_child_of_node(np, node) {
-+		if (of_parse_phandle_with_args(node, "power-domains",
-+					"#power-domain-cells", 0, &parent))
-+			continue;
++#ifdef CONFIG_MMU
++	csr_write(CSR_SATP, context->satp);
++#endif
++}
 +
-+		child.np = node;
-+		child.args_count = 0;
-+		ret = of_genpd_add_subdomain(&parent, &child);
-+		of_node_put(parent.np);
-+		if (ret) {
-+			of_node_put(node);
-+			return ret;
-+		}
++int cpu_suspend(unsigned long arg,
++		int (*finish)(unsigned long arg,
++			      unsigned long entry,
++			      unsigned long context))
++{
++	int rc = 0;
++	struct suspend_context context = { 0 };
++
++	/* Finisher should be non-NULL */
++	if (!finish)
++		return -EINVAL;
++
++	/* Save additional CSRs*/
++	suspend_save_csrs(&context);
++
++	/*
++	 * Function graph tracer state gets incosistent when the kernel
++	 * calls functions that never return (aka finishers) hence disable
++	 * graph tracing during their execution.
++	 */
++	pause_graph_tracing();
++
++	/* Save context on stack */
++	if (__cpu_suspend_enter(&context)) {
++		/* Call the finisher */
++		rc = finish(arg, __pa_symbol(__cpu_resume_enter),
++			    (ulong)&context);
++
++		/*
++		 * Should never reach here, unless the suspend finisher
++		 * fails. Successful cpu_suspend() should return from
++		 * __cpu_resume_entry()
++		 */
++		if (!rc)
++			rc = -EOPNOTSUPP;
 +	}
 +
-+	return 0;
++	/* Enable function graph tracer */
++	unpause_graph_tracing();
++
++	/* Restore additional CSRs */
++	suspend_restore_csrs(&context);
++
++	return rc;
 +}
-+
-+struct device *dt_idle_attach_cpu(int cpu, const char *name)
-+{
-+	struct device *dev;
-+
-+	dev = dev_pm_domain_attach_by_name(get_cpu_device(cpu), name);
-+	if (IS_ERR_OR_NULL(dev))
-+		return dev;
-+
-+	pm_runtime_irq_safe(dev);
-+	if (cpu_online(cpu))
-+		pm_runtime_get_sync(dev);
-+
-+	dev_pm_syscore_device(dev, true);
-+
-+	return dev;
-+}
-+
-+void dt_idle_detach_cpu(struct device *dev)
-+{
-+	if (IS_ERR_OR_NULL(dev))
-+		return;
-+
-+	dev_pm_domain_detach(dev, false);
-+}
-diff --git a/drivers/cpuidle/dt_idle_genpd.h b/drivers/cpuidle/dt_idle_genpd.h
+diff --git a/arch/riscv/kernel/suspend_entry.S b/arch/riscv/kernel/suspend_entry.S
 new file mode 100644
-index 000000000000..a95483d08a02
+index 000000000000..4b07b809a2b8
 --- /dev/null
-+++ b/drivers/cpuidle/dt_idle_genpd.h
-@@ -0,0 +1,50 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __DT_IDLE_GENPD
-+#define __DT_IDLE_GENPD
++++ b/arch/riscv/kernel/suspend_entry.S
+@@ -0,0 +1,124 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2021 Western Digital Corporation or its affiliates.
++ * Copyright (c) 2022 Ventana Micro Systems Inc.
++ */
 +
-+struct device_node;
-+struct generic_pm_domain;
++#include <linux/linkage.h>
++#include <asm/asm.h>
++#include <asm/asm-offsets.h>
++#include <asm/csr.h>
 +
-+#ifdef CONFIG_DT_IDLE_GENPD
++	.text
++	.altmacro
++	.option norelax
 +
-+void dt_idle_pd_free(struct generic_pm_domain *pd);
++ENTRY(__cpu_suspend_enter)
++	/* Save registers (except A0 and T0-T6) */
++	REG_S	ra, (SUSPEND_CONTEXT_REGS + PT_RA)(a0)
++	REG_S	sp, (SUSPEND_CONTEXT_REGS + PT_SP)(a0)
++	REG_S	gp, (SUSPEND_CONTEXT_REGS + PT_GP)(a0)
++	REG_S	tp, (SUSPEND_CONTEXT_REGS + PT_TP)(a0)
++	REG_S	s0, (SUSPEND_CONTEXT_REGS + PT_S0)(a0)
++	REG_S	s1, (SUSPEND_CONTEXT_REGS + PT_S1)(a0)
++	REG_S	a1, (SUSPEND_CONTEXT_REGS + PT_A1)(a0)
++	REG_S	a2, (SUSPEND_CONTEXT_REGS + PT_A2)(a0)
++	REG_S	a3, (SUSPEND_CONTEXT_REGS + PT_A3)(a0)
++	REG_S	a4, (SUSPEND_CONTEXT_REGS + PT_A4)(a0)
++	REG_S	a5, (SUSPEND_CONTEXT_REGS + PT_A5)(a0)
++	REG_S	a6, (SUSPEND_CONTEXT_REGS + PT_A6)(a0)
++	REG_S	a7, (SUSPEND_CONTEXT_REGS + PT_A7)(a0)
++	REG_S	s2, (SUSPEND_CONTEXT_REGS + PT_S2)(a0)
++	REG_S	s3, (SUSPEND_CONTEXT_REGS + PT_S3)(a0)
++	REG_S	s4, (SUSPEND_CONTEXT_REGS + PT_S4)(a0)
++	REG_S	s5, (SUSPEND_CONTEXT_REGS + PT_S5)(a0)
++	REG_S	s6, (SUSPEND_CONTEXT_REGS + PT_S6)(a0)
++	REG_S	s7, (SUSPEND_CONTEXT_REGS + PT_S7)(a0)
++	REG_S	s8, (SUSPEND_CONTEXT_REGS + PT_S8)(a0)
++	REG_S	s9, (SUSPEND_CONTEXT_REGS + PT_S9)(a0)
++	REG_S	s10, (SUSPEND_CONTEXT_REGS + PT_S10)(a0)
++	REG_S	s11, (SUSPEND_CONTEXT_REGS + PT_S11)(a0)
 +
-+struct generic_pm_domain *dt_idle_pd_alloc(struct device_node *np,
-+			int (*parse_state)(struct device_node *, u32 *));
++	/* Save CSRs */
++	csrr	t0, CSR_EPC
++	REG_S	t0, (SUSPEND_CONTEXT_REGS + PT_EPC)(a0)
++	csrr	t0, CSR_STATUS
++	REG_S	t0, (SUSPEND_CONTEXT_REGS + PT_STATUS)(a0)
++	csrr	t0, CSR_TVAL
++	REG_S	t0, (SUSPEND_CONTEXT_REGS + PT_BADADDR)(a0)
++	csrr	t0, CSR_CAUSE
++	REG_S	t0, (SUSPEND_CONTEXT_REGS + PT_CAUSE)(a0)
 +
-+int dt_idle_pd_init_topology(struct device_node *np);
++	/* Return non-zero value */
++	li	a0, 1
 +
-+struct device *dt_idle_attach_cpu(int cpu, const char *name);
++	/* Return to C code */
++	ret
++END(__cpu_suspend_enter)
 +
-+void dt_idle_detach_cpu(struct device *dev);
++ENTRY(__cpu_resume_enter)
++	/* Load the global pointer */
++	.option push
++	.option norelax
++		la gp, __global_pointer$
++	.option pop
 +
-+#else
++#ifdef CONFIG_MMU
++	/* Save A0 and A1 */
++	add	t0, a0, zero
++	add	t1, a1, zero
 +
-+static inline void dt_idle_pd_free(struct generic_pm_domain *pd)
-+{
-+}
++	/* Enable MMU */
++	la	a0, swapper_pg_dir
++	XIP_FIXUP_OFFSET a0
++	call	relocate_enable_mmu
 +
-+static inline struct generic_pm_domain *dt_idle_pd_alloc(
-+			struct device_node *np,
-+			int (*parse_state)(struct device_node *, u32 *))
-+{
-+	return NULL;
-+}
-+
-+static inline int dt_idle_pd_init_topology(struct device_node *np)
-+{
-+	return 0;
-+}
-+
-+static inline struct device *dt_idle_attach_cpu(int cpu, const char *name)
-+{
-+	return NULL;
-+}
-+
-+static inline void dt_idle_detach_cpu(struct device *dev)
-+{
-+}
-+
++	/* Restore A0 and A1 */
++	add	a0, t0, zero
++	add	a1, t1, zero
 +#endif
 +
-+#endif
++	/* Make A0 point to suspend context */
++	add	a0, a1, zero
++
++	/* Restore CSRs */
++	REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_EPC)(a0)
++	csrw	CSR_EPC, t0
++	REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_STATUS)(a0)
++	csrw	CSR_STATUS, t0
++	REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_BADADDR)(a0)
++	csrw	CSR_TVAL, t0
++	REG_L	t0, (SUSPEND_CONTEXT_REGS + PT_CAUSE)(a0)
++	csrw	CSR_CAUSE, t0
++
++	/* Restore registers (except A0 and T0-T6) */
++	REG_L	ra, (SUSPEND_CONTEXT_REGS + PT_RA)(a0)
++	REG_L	sp, (SUSPEND_CONTEXT_REGS + PT_SP)(a0)
++	REG_L	gp, (SUSPEND_CONTEXT_REGS + PT_GP)(a0)
++	REG_L	tp, (SUSPEND_CONTEXT_REGS + PT_TP)(a0)
++	REG_L	s0, (SUSPEND_CONTEXT_REGS + PT_S0)(a0)
++	REG_L	s1, (SUSPEND_CONTEXT_REGS + PT_S1)(a0)
++	REG_L	a1, (SUSPEND_CONTEXT_REGS + PT_A1)(a0)
++	REG_L	a2, (SUSPEND_CONTEXT_REGS + PT_A2)(a0)
++	REG_L	a3, (SUSPEND_CONTEXT_REGS + PT_A3)(a0)
++	REG_L	a4, (SUSPEND_CONTEXT_REGS + PT_A4)(a0)
++	REG_L	a5, (SUSPEND_CONTEXT_REGS + PT_A5)(a0)
++	REG_L	a6, (SUSPEND_CONTEXT_REGS + PT_A6)(a0)
++	REG_L	a7, (SUSPEND_CONTEXT_REGS + PT_A7)(a0)
++	REG_L	s2, (SUSPEND_CONTEXT_REGS + PT_S2)(a0)
++	REG_L	s3, (SUSPEND_CONTEXT_REGS + PT_S3)(a0)
++	REG_L	s4, (SUSPEND_CONTEXT_REGS + PT_S4)(a0)
++	REG_L	s5, (SUSPEND_CONTEXT_REGS + PT_S5)(a0)
++	REG_L	s6, (SUSPEND_CONTEXT_REGS + PT_S6)(a0)
++	REG_L	s7, (SUSPEND_CONTEXT_REGS + PT_S7)(a0)
++	REG_L	s8, (SUSPEND_CONTEXT_REGS + PT_S8)(a0)
++	REG_L	s9, (SUSPEND_CONTEXT_REGS + PT_S9)(a0)
++	REG_L	s10, (SUSPEND_CONTEXT_REGS + PT_S10)(a0)
++	REG_L	s11, (SUSPEND_CONTEXT_REGS + PT_S11)(a0)
++
++	/* Return zero value */
++	add	a0, zero, zero
++
++	/* Return to C code */
++	ret
++END(__cpu_resume_enter)
 -- 
 2.25.1
 
