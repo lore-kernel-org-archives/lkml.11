@@ -2,103 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F61C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF520C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238696AbiBJJct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:32:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54056 "EHLO
+        id S238734AbiBJJdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:33:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238627AbiBJJco (ORCPT
+        with ESMTP id S232153AbiBJJdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:32:44 -0500
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF75192;
-        Thu, 10 Feb 2022 01:32:46 -0800 (PST)
-Received: by mail-vk1-f180.google.com with SMTP id 5so2693414vkq.9;
-        Thu, 10 Feb 2022 01:32:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3h7Fq6t1CyQhpx3fmaUEIuNQ6eeRZ0EVonG+Q/4aZ/M=;
-        b=FsunnLYWRGbn0GhiAu+ZzrMwXf3sS2D5zshBpwZ5rDZHjXfKOCuM/KZTJFZdDxSzla
-         5TxEG3sj1lZdkK0weIcNfwKgzPvvlOEEWz5Z1kEA0QUXXZKWMa32kbnOTr73ETYQc1RS
-         QsQ5UDUKX9ED2rDrJMeOCT+93W812AMU3nn+peWK4DV14B/fu/DakQaL25t9Nxzv/KJ1
-         9ClJ3bIkG4Ehz5IMcMab6dVjKEg42HUhq6oNHWeqRUx12oR4b8ZQZ3L5JIJUOTCYJ9s2
-         3TCojaD/qvylfT8rmtwGcHW1sElKTU9jx37vjEITmb7Jt6BonLa+OvvmaCNwSRw1pVac
-         zQyQ==
-X-Gm-Message-State: AOAM530ROjKsGyJ1kqPy2of2iGU9BvL8If27AFV79N+Rch7ZkOFdP7M6
-        2jj92O50MF+E5jtmgmR83DLUmfYTpgfG8g==
-X-Google-Smtp-Source: ABdhPJyeWmkzVty1o3HEXd1SUVHSE51cTI1/sE8s709QKYS53JxTJljNv0d3KgTc73dEH6p9wavEKw==
-X-Received: by 2002:a05:6122:a0a:: with SMTP id 10mr2266925vkn.17.1644485565262;
-        Thu, 10 Feb 2022 01:32:45 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id p186sm3256151vke.52.2022.02.10.01.32.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 01:32:45 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id 60so2710018uae.1;
-        Thu, 10 Feb 2022 01:32:44 -0800 (PST)
-X-Received: by 2002:a9f:2c0a:: with SMTP id r10mr2200791uaj.89.1644485564714;
- Thu, 10 Feb 2022 01:32:44 -0800 (PST)
+        Thu, 10 Feb 2022 04:33:43 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5B2C64;
+        Thu, 10 Feb 2022 01:33:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=I+KdT8Ft4gEDreuv2bs/lK/WKosbMae+Gs2ZDIi52r8=; b=v5x6DP/o1WOVzInYWj+OWguYjf
+        eLQpr7RM3CnxAAk3jaO2rcVftZ1e+5phpKIodTkLSxDXOwSvcTLi4qk5/ySJRc/hI1ychJkAen1z0
+        Zp9OoP3OirWBCpXqLYBpe9/Sj5681YQ0jr1jxFHLaRwcMpikdJabxjYU5JWHBXZkz9o4nzeVsrg6P
+        3kcm8y3Q7W1+pNSL5ou9mrCzcTeYQh59B1RYKiy79tD66DAHw03/JjWeZzPf9H4ShJonEVXh+vnnk
+        BnDNFiE1x/ux56JFcpXclclJQt/Xhc668p+s+htSe08/XCrlKbLPn7mqxLMMMLhiQWq2+o3CtuCxk
+        YxstcdEw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nI5p4-009J34-3j; Thu, 10 Feb 2022 09:33:06 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CBA9A3002DB;
+        Thu, 10 Feb 2022 10:33:03 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B6A72201D84A1; Thu, 10 Feb 2022 10:33:03 +0100 (CET)
+Date:   Thu, 10 Feb 2022 10:33:03 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Namhyung Kim <namhyung@kernel.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        rostedt <rostedt@goodmis.org>,
+        Byungchul Park <byungchul.park@lge.com>,
+        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
+        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        paulmck <paulmck@kernel.org>
+Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
+ lockdep/lock_stat (v1)
+Message-ID: <YgTbz55YtOQbnA3m@hirez.programming.kicks-ass.net>
+References: <20220208184208.79303-1-namhyung@kernel.org>
+ <20220209090908.GK23216@worktop.programming.kicks-ass.net>
+ <24fe6a08-5931-8e8d-8d77-459388c4654e@redhat.com>
+ <919214156.50301.1644431371345.JavaMail.zimbra@efficios.com>
+ <69e5f778-8715-4acf-c027-58b6ec4a9e77@redhat.com>
+ <CAM9d7ci=N2NVj57k=W0ebqBzfW+ThBqYSrx-CZbgwGcbOSrEGA@mail.gmail.com>
+ <718973621.50447.1644434890744.JavaMail.zimbra@efficios.com>
+ <CAM9d7cj=tj6pA48q_wkQOGn-2vUc9FRj63bMBOm5R7OukmMbTQ@mail.gmail.com>
+ <f8b7760f-16a2-6ada-de88-9e21a7e8fef9@redhat.com>
 MIME-Version: 1.0
-References: <20211218165258.16716-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20211218165258.16716-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CAMuHMdUg3=q7gyaVHP0XcYUOo3PQUUv8Hc8wp5faVQ+bTBpg4A@mail.gmail.com>
- <042a2183-3f04-088c-1861-656de870337d@gmail.com> <CAK8P3a3owi7YWmq-tckD-C7NK5HaX+swGNW-QBkWQuQgVsVWrA@mail.gmail.com>
- <d74ab454-9337-d168-9b21-842569431b4a@gmail.com> <CAK8P3a20mwJXN4Mb063zQG+HAevj_Odpj58EzPHkX-p6pbtnGA@mail.gmail.com>
- <7c47ce67-88ee-9cba-3356-a530b0d3e657@gmail.com>
-In-Reply-To: <7c47ce67-88ee-9cba-3356-a530b0d3e657@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 10 Feb 2022 10:32:33 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXEXjsea1DmebALTNwAQnJeJt4qV_0xkQ-5_OWx7ziF1g@mail.gmail.com>
-Message-ID: <CAMuHMdXEXjsea1DmebALTNwAQnJeJt4qV_0xkQ-5_OWx7ziF1g@mail.gmail.com>
-Subject: Re: [PATCH 2/3] i2c: sh_mobile: Use platform_get_irq_optional() to
- get the interrupt
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Linux-sh list <linux-sh@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f8b7760f-16a2-6ada-de88-9e21a7e8fef9@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sergei,
+On Wed, Feb 09, 2022 at 03:17:38PM -0500, Waiman Long wrote:
+> 
+> On 2/9/22 14:45, Namhyung Kim wrote:
+> > On Wed, Feb 9, 2022 at 11:28 AM Mathieu Desnoyers
+> > <mathieu.desnoyers@efficios.com> wrote:
+> > > ----- On Feb 9, 2022, at 2:22 PM, Namhyung Kim namhyung@kernel.org wrote:
+> > > > I'm also concerning dynamic allocated locks in a data structure.
+> > > > If we keep the info in a hash table, we should delete it when the
+> > > > lock is gone.  I'm not sure we have a good place to hook it up all.
+> > > I was wondering about this use case as well. Can we make it mandatory to
+> > > declare the lock "class" (including the name) statically, even though the
+> > > lock per-se is allocated dynamically ? Then the initialization of the lock
+> > > embedded within the data structure would simply refer to the lock class
+> > > definition.
+> > Isn't it still the same if we have static lock classes that the entry needs
+> > to be deleted from the hash table when it frees the data structure?
+> > I'm more concerned about free than alloc as there seems to be no
+> > API to track that in a place.
+> 
+> We may have to invent some new APIs to do that. For example,
+> spin_lock_exit() can be the counterpart of spin_lock_init() and so on. Of
+> course, existing kernel code have to be modified to designate the point
+> after which a lock is no longer being used or is freed.
 
-On Wed, Feb 9, 2022 at 4:48 PM Sergei Shtylyov
-<sergei.shtylyov@gmail.com> wrote:
-> On 2/9/22 6:18 PM, Arnd Bergmann wrote:
-> >>> I had another look at this after you asked about it on IRC. I don't
-> >>> know much SH assembly, but I suspect IRQ 0 has not been delivered
->
->    Neither do I, sigh...
->    I do know the instuctions are 16-bit and so there are no immediate
-> opperands... :-)
+The canonical name is _destroy(). We even have mutex_destroy() except
+it's usage isn't mandatory.
 
-There is byte immediate data (TIL).
+The easy way out is doing as lockdep does and hook into the memory
+allocators and check every free'd hunk of memory for a lock. It does
+hoever mean your data structure of choice needs to be able to answer: do
+I have an entry in @range. Which mostly disqualifies a hash-table.
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Still, I really don't think you need any of this, it's just bloat. A
+very limited stack unwind for one of the two tracepoints should allow
+you to find the offending lock just fine.
