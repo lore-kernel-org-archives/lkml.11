@@ -2,183 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD62C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E726C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345738AbiBJXgm (ORCPT
+        id S1345792AbiBJXiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:36:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45714 "EHLO
+        Thu, 10 Feb 2022 18:38:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345704AbiBJXgj (ORCPT
+        with ESMTP id S1345608AbiBJXiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:36:39 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216865F6C;
-        Thu, 10 Feb 2022 15:36:38 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id r14so7235293qtt.5;
-        Thu, 10 Feb 2022 15:36:38 -0800 (PST)
+        Thu, 10 Feb 2022 18:38:14 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898255F64
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:38:14 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id i62so9480612ioa.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:38:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=B90XLGkN1WAOFK2CFzfMG91YLQ/ZS8wjF5Kl3RkhK8g=;
-        b=Q9oW0XMP47GNdrN33zUk2h0sfaPbl2WXBu4fp5WOkNolo5Ii9QB2PssBOmkUaaKD1M
-         AimZzOblVR8A9rv/WJViikxMn4Z8X0s8fVtume6hrkGvh/9Ay5y3T9K+pQ3MY+zwuJXM
-         PzYiW0ij8/at+7kld0Qn0zqfvZS1sjEZ5WeHVVjY0Udm5O/MZbOs45Yn4AkX+EggrYdQ
-         T4qy+2hxI/cCtnsByOVOJp9PQESiFSVR1YlO3whb0EjhuC40JMeL9uzeW+VSyCrstigF
-         u59bw8CfTF315/QKhW+i86cf8GbVigYTzVmavUXwMxBA3dJeAaXln2rnXNvGsrcp9u5G
-         DJ8Q==
+        bh=9n2DdSbneN7v4fxKizWFeu7+3tSFKKa+21duzKl95Yk=;
+        b=AK2McL5crq3P5W/HMrl+HVMBiBdnvJJs/I9DFxsN28iywuaN2UqJNQpufEM/5yB+NS
+         WM8Ah7v54tNxhaygGs78Emy4tgph4sPVpst0aVD0SguR55ocuOu/qsF08EpW0Wo6U1tk
+         qpnL9Snt8YrLfZRyjPxqcx31oSV0Szk7umC8BTcBZNlJIlKF5M44te4ICNt/Vq+7Ofls
+         sv9Wi7ie72uM1j3zsENRKACYxiKCrC+kQFAKF4OXcd25TcneaY+BVbKSZq1hYZ7qX2Hh
+         lQVNwMxWZZsr0i3Zg+dYucoa5y4DOQy2eMNRoLj/XhULZxe7PEV/GOvG2TIrXHiLtJi4
+         nb7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B90XLGkN1WAOFK2CFzfMG91YLQ/ZS8wjF5Kl3RkhK8g=;
-        b=e3S+91SmWVw2oq1OlbC31ebvJvBUdbOQjdbVbzft7qwqoqg2njL0GyupMOscKSCHQo
-         Y02nOJgrjRe860Vt/jrW3kguSgMgtuFBg9G9iw1LsK3cELB73WsvfFcM3Bk4AUqURlKe
-         moxndvlvbx9PNrYOq9vYRQAtjg/Z3FTn45PoOW48gu7/ymiwSf/h7bgsnokmsi6nuDFi
-         DoyyKi4LCKH6+8yUYZH0CnLv3w6Xw8pBZvQWnwd/skEinI+QnapK+flXtj7TzVWOt2cz
-         K7eQ4MAA23t/XFl3EiwOTZtRa1HdsHfAbUqRep0M+CYzyj4hgYTMgrSdLe4fhtBOhBn4
-         YQvQ==
-X-Gm-Message-State: AOAM53314jQ4uI2h5GruH3xCaBpOaUCnPnLPAVIEA/zIZHbkZM8DQWDg
-        r2Gi7Ga1QBy6E6d2Dd4QIMY=
-X-Google-Smtp-Source: ABdhPJx0C5YxrDsqACEFsPhRLb0S8MQ3RQwqAaOznzjMtAZBRYleWSNjGKWuntjz9xD9X8FMTu7D8A==
-X-Received: by 2002:ac8:5808:: with SMTP id g8mr6617514qtg.483.1644536197314;
-        Thu, 10 Feb 2022 15:36:37 -0800 (PST)
-Received: from localhost.localdomain (c-67-187-90-124.hsd1.tn.comcast.net. [67.187.90.124])
-        by smtp.gmail.com with ESMTPSA id n19sm1854209qtk.66.2022.02.10.15.36.36
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9n2DdSbneN7v4fxKizWFeu7+3tSFKKa+21duzKl95Yk=;
+        b=XcyNqCB0i7E1jOgntG7qJ/GD89w4EX4kPLiwd5YZA7c+K2l/xM5o7xZcVsmwtNpJkS
+         Omwy8Fx2I9Yc0KtT2cCuve0XVYYIktVILURUoymgwrjxN1PBP/rZW0/mNazdd2INNIZh
+         tNVBS+akdnrKrISOxEpqHjgEdfd0hkhupaW/vTjaslc1dhZRXtHPhWocXVLm3qX+v9D2
+         gcnUZ5P+D91AgZ6alRWKBobkXyIRVeq4oyWgmv3PZ39Ur4ZTBJoNpEUSx3HKZ3pYumG8
+         6RNMZzsOdJkO8qW1W56OT47GWVRVScdcCFrr/BhHT2e7kcf3eO8dXNyZqtYF1mWI5Lz4
+         MVRA==
+X-Gm-Message-State: AOAM5306QP8QAhjXzyosn4qdYtk4hyXiTm/MWweCLxMy0JLNmrlQ+l9z
+        PhSYKxg8kBtT+Dx8OAzPqOM=
+X-Google-Smtp-Source: ABdhPJwQ659D3gO5ecBLF2AX0FyOLgCZ61yewOIUm7N0UW53PsKRiHqI+c9w8ufSKRcbdtxUOYhoAg==
+X-Received: by 2002:a05:6602:2c08:: with SMTP id w8mr5090325iov.182.1644536293918;
+        Thu, 10 Feb 2022 15:38:13 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id i30sm4549007ila.32.2022.02.10.15.38.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:36:36 -0800 (PST)
-From:   frowand.list@gmail.com
-To:     Jonathan Corbet <corbet@lwn.net>, David Gow <davidgow@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Kees Cook <keescook@chromium.org>, Rae Moar <rmoar@google.com>,
-        Tim.Bird@sony.com, Brendan Higgins <brendanhiggins@google.com>
-Cc:     rmr167@gmail.com, guillaume.tucker@collabora.com,
-        dlatypov@google.com, kernelci@groups.io,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 1/1] Documentation: dev-tools: clarify KTAP specification wording
-Date:   Thu, 10 Feb 2022 17:36:30 -0600
-Message-Id: <20220210233630.3304495-1-frowand.list@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 15:38:13 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH 21/49] genirq/affinity: replace cpumask_weight with cpumask_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:49:05 -0800
+Message-Id: <20220210224933.379149-22-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+__irq_build_affinity_masks() calls cpumask_weight() to check if
+any bit of a given cpumask is set. We can do it more efficiently with
+cpumask_empty() because cpumask_empty() stops traversing the cpumask as
+soon as it finds first set bit, while cpumask_weight() counts all bits
+unconditionally.
 
-Add the spec version to the title line.
-
-Explain likely source of "Unknown lines".
-
-"Unknown lines" in nested tests are optionally indented.
-
-Add "Unknown lines" items to differences between TAP & KTAP list
-
-Convert "Major differences between TAP and KTAP" from a bullet list
-to a table.  The bullet list was being formatted as a single
-paragraph.
-
-Reviewed-by: Tim Bird <Tim.Bird@sony.com>
-Reviewed-by: David Gow <davidgow@google.com>
-Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
+ kernel/irq/affinity.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'm not sure if I should include a review tag of patch 2/2 version 4:
-  Reviewed-by: Kees Cook <keescook@chromium.org>
-
-Changes since version 4
-  - Remove patch 2/2 (fixes to code-block directives)
-  - Remove patch 2/2 (conversion to table folded into this patch)
-
-Changes since version 3
-  - Add reviewed by Shuah
-
-Changes since version 2
-  - Add missing quote after word: incorrect
-  - Add Reviewed-by tags
-
-Changes since version 1
-  - Explain likely source of "Unknown lines"
-  - "Unknown line" in nested tests are optionally indented
-  - Add "Unknown lines" items to differences between TAP & KTAP list
-
-Fixes to code-block directives in version 3 were also submitted by
-Randy Dunlap in:
-https://lore.kernel.org/lkml/20220131003637.14274-1-rdunlap@infradead.org/T/
-
- Documentation/dev-tools/ktap.rst | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/dev-tools/ktap.rst b/Documentation/dev-tools/ktap.rst
-index 878530cb9c27..d7fe05de40b4 100644
---- a/Documentation/dev-tools/ktap.rst
-+++ b/Documentation/dev-tools/ktap.rst
-@@ -1,8 +1,8 @@
- .. SPDX-License-Identifier: GPL-2.0
+diff --git a/kernel/irq/affinity.c b/kernel/irq/affinity.c
+index f7ff8919dc9b..18740faf0eb1 100644
+--- a/kernel/irq/affinity.c
++++ b/kernel/irq/affinity.c
+@@ -258,7 +258,7 @@ static int __irq_build_affinity_masks(unsigned int startvec,
+ 	nodemask_t nodemsk = NODE_MASK_NONE;
+ 	struct node_vectors *node_vectors;
  
--========================================
--The Kernel Test Anything Protocol (KTAP)
--========================================
-+===================================================
-+The Kernel Test Anything Protocol (KTAP), version 1
-+===================================================
+-	if (!cpumask_weight(cpu_mask))
++	if (cpumask_empty(cpu_mask))
+ 		return 0;
  
- TAP, or the Test Anything Protocol is a format for specifying test results used
- by a number of projects. It's website and specification are found at this `link
-@@ -174,6 +174,13 @@ There may be lines within KTAP output that do not follow the format of one of
- the four formats for lines described above. This is allowed, however, they will
- not influence the status of the tests.
- 
-+This is an important difference from TAP.  Kernel tests may print messages
-+to the system console or a log file.  Both of these destinations may contain
-+messages either from unrelated kernel or userspace activity, or kernel
-+messages from non-test code that is invoked by the test.  The kernel code
-+invoked by the test likely is not aware that a test is in progress and
-+thus can not print the message as a diagnostic message.
-+
- Nested tests
- ------------
- 
-@@ -186,10 +193,13 @@ starting with another KTAP version line and test plan, and end with the overall
- result. If one of the subtests fail, for example, the parent test should also
- fail.
- 
--Additionally, all result lines in a subtest should be indented. One level of
-+Additionally, all lines in a subtest should be indented. One level of
- indentation is two spaces: "  ". The indentation should begin at the version
- line and should end before the parent test's result line.
- 
-+"Unknown lines" are not considered to be lines in a subtest and thus are
-+allowed to be either indented or not indented.
-+
- An example of a test with two nested subtests:
- 
- .. code-block::
-@@ -224,10 +234,15 @@ An example format with multiple levels of nested testing:
- Major differences between TAP and KTAP
- --------------------------------------
- 
--Note the major differences between the TAP and KTAP specification:
--- yaml and json are not recommended in diagnostic messages
--- TODO directive not recognized
--- KTAP allows for an arbitrary number of tests to be nested
-+==================================================   =========  ===============
-+Feature                                              TAP        KTAP
-+==================================================   =========  ===============
-+yaml and json in diagnosic message                   ok         not recommended
-+TODO directive                                       ok         not recognized
-+allows an arbitrary number of tests to be nested     no         yes
-+"Unknown lines" are in category of "Anything else"   yes        no
-+"Unknown lines" are                                  incorrect  allowed
-+==================================================   =========  ===============
- 
- The TAP14 specification does permit nested tests, but instead of using another
- nested version line, uses a line of the form
+ 	nodes = get_nodes_in_cpumask(node_to_cpumask, cpu_mask, &nodemsk);
 -- 
-Frank Rowand <frank.rowand@sony.com>
+2.32.0
 
