@@ -2,200 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51482C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:55:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237986AbiBJIwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:52:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49774 "EHLO
+        id S238038AbiBJIzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:55:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236738AbiBJIw2 (ORCPT
+        with ESMTP id S238013AbiBJIzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:52:28 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1ABC2A;
-        Thu, 10 Feb 2022 00:52:29 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id q7so8139683wrc.13;
-        Thu, 10 Feb 2022 00:52:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/u3kTCTXAUlICGSNYbAWHqQvCCJLwNc1nISblF5DusI=;
-        b=aH8Em/b4Z5PKPPXvyKGK0jM31ldxtfnQgj0TFX/o059vwj7zRuknKrNk9wsBxSGZ2z
-         ceSiTwFdoWYjeAmV5TQWyQPAC3lZjwDsvd+hBLPr3yUSaBG4CkoAohAzqbqppwAJpIdX
-         sCdcnemFGT6YAtNWplTo3Gfsg2f32Bv221qbe6JGT0VCj0KTqaqrpmYleVpMYu6lfb9f
-         tQx6Od/ugg3YcMUVCQvRUOly6ZAAO0S/b95yuq4ByC3gvuWRRvQvouzREc2mWQeptJ8U
-         sPH6Mto5Sjcep2ndfcGoGOM2RL0cE6zKfHr3r3vUjKZ5GZiEpsoMgsc0ZCmQPQTxplLa
-         Xu0g==
+        Thu, 10 Feb 2022 03:55:08 -0500
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D616BD4A;
+        Thu, 10 Feb 2022 00:55:09 -0800 (PST)
+Received: by mail-vk1-f174.google.com with SMTP id w207so2142594vkd.2;
+        Thu, 10 Feb 2022 00:55:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/u3kTCTXAUlICGSNYbAWHqQvCCJLwNc1nISblF5DusI=;
-        b=xIYkWmJWoAfawZ8MHYLv5PegFYx9Pjf/D7xdJXqs3jtQRbCv5B6XmdHzbxH3FgS8tB
-         Ce3eepPsi+LSAbXrcwgFgpxwvinnbdZKBp0RwHm4kSQicZrE0YuRb3AMREoDac1TvC12
-         2CbedeKG+whLocgb5RCDJkgCE6KsskO4Wa5IGlM3HCLTcGppww7yolc3QMG8baEUS4qZ
-         PzGXwIZSuzkgwQniJeUog+jzsc2w0VnCyFHYJscKkpaFU5i09jIrE01ihDYn2zga3t8O
-         yrGFwKM0qlQVHsYwHcngIaMrxEMYNN1E0dh6ag5kckUkd05oWWRlewkoqLkiBPRlYPQz
-         t83Q==
-X-Gm-Message-State: AOAM531B6EaBk88Vgv0u+eEXpV1S89a/If7y5FyTGGmxtElatZ/ofTGt
-        tG/ZHat6poQE02GhisWWaFg=
-X-Google-Smtp-Source: ABdhPJxY7SDfatLjxXJSeqHiZarkXhnTWabuPGCJV1jX4QZTGhs2au01uPWxYexF+yIUJ8rQKcpJlQ==
-X-Received: by 2002:a5d:5264:: with SMTP id l4mr5372844wrc.483.1644483147898;
-        Thu, 10 Feb 2022 00:52:27 -0800 (PST)
-Received: from oberon.com ([83.222.187.186])
-        by smtp.gmail.com with ESMTPSA id n29sm856773wms.8.2022.02.10.00.52.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 00:52:27 -0800 (PST)
-From:   "Tzvetomir Stoyanov (VMware)" <tz.stoyanov@gmail.com>
-To:     acme@kernel.org, jolsa@redhat.com
-Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] libperf: Add API for allocating new thread map
-Date:   Thu, 10 Feb 2022 10:52:25 +0200
-Message-Id: <20220210085225.551891-1-tz.stoyanov@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3WoIIEMj24t8PFRjDuDzok8HeC1xxHYqU5dE7ucu2Ks=;
+        b=ANtY4mZeTE0nJoQ+Qcmz4cBd5ftxgavmaCB+A2pFhOGdoGeQW9l/jLl6uf3n/gskUQ
+         YXYCQSVPHWBPnrNbWFH//z6SCo50wy/eLbSHH+vcoV7WLPN4ApbCl92mCDZGF32JafOk
+         /4J/f6ZZI2Ea4ofpHqO9QCi5PBHQau7vPJhCgwyAkmGunbO8+GgL1woH1XzpAgCdi+E6
+         qS0gVWoLf5IkGKXw5dcWGkzWwP8+xBocBVFWkPn1I9kSBhNXTqfalKO2aLxyM1gcAnNn
+         W0wAISuChQB9TWloRlj/IVGZ5i1auiiQQhqNqBBIJfU34efA0KB3mLM3B5mpYMzoyc72
+         bKog==
+X-Gm-Message-State: AOAM530CmS+yPa10uDfuaqZxS85ErMdS1QtkCn6gd+cDl2rReavVor3v
+        Xatdq/f9/kdc+adkizplU1F1ubmISu47gA==
+X-Google-Smtp-Source: ABdhPJzJMqj51Kru2IrMKdWHNU2o+sXqHfY9Ui+79DN8JUppbZBPxlNZKjZ0Ak3hpEZHr4NakPTzIg==
+X-Received: by 2002:a05:6122:507:: with SMTP id x7mr2178276vko.14.1644483308822;
+        Thu, 10 Feb 2022 00:55:08 -0800 (PST)
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com. [209.85.221.175])
+        by smtp.gmail.com with ESMTPSA id 66sm902864vsh.33.2022.02.10.00.55.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 00:55:08 -0800 (PST)
+Received: by mail-vk1-f175.google.com with SMTP id w207so2142554vkd.2;
+        Thu, 10 Feb 2022 00:55:08 -0800 (PST)
+X-Received: by 2002:a1f:2ac3:: with SMTP id q186mr1408230vkq.33.1644483307856;
+ Thu, 10 Feb 2022 00:55:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211218165258.16716-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20211218165258.16716-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdUg3=q7gyaVHP0XcYUOo3PQUUv8Hc8wp5faVQ+bTBpg4A@mail.gmail.com>
+ <042a2183-3f04-088c-1861-656de870337d@gmail.com> <CAK8P3a3owi7YWmq-tckD-C7NK5HaX+swGNW-QBkWQuQgVsVWrA@mail.gmail.com>
+ <d74ab454-9337-d168-9b21-842569431b4a@gmail.com> <CAK8P3a20mwJXN4Mb063zQG+HAevj_Odpj58EzPHkX-p6pbtnGA@mail.gmail.com>
+ <7c47ce67-88ee-9cba-3356-a530b0d3e657@gmail.com> <CAK8P3a0gf6TeK2vZ+u3NZ2VrrvrGUohAPz5WiZ4Mbk5QQg9FFg@mail.gmail.com>
+ <9a07be5a-914b-cec9-f6bc-8c1b0ecef766@gmail.com>
+In-Reply-To: <9a07be5a-914b-cec9-f6bc-8c1b0ecef766@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 10 Feb 2022 09:54:56 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV-zBMqHV4aC58E925Aiyqag4TModL8dR1SA8Cwg1Drkw@mail.gmail.com>
+Message-ID: <CAMuHMdV-zBMqHV4aC58E925Aiyqag4TModL8dR1SA8Cwg1Drkw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] i2c: sh_mobile: Use platform_get_irq_optional() to
+ get the interrupt
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Chris Brandt <chris.brandt@renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        linux-rpi-kernel <linux-rpi-kernel@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Linux-sh list <linux-sh@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The existing API perf_thread_map__new_dummy() allocates new thread map
-for one thread. I couldn't find a way to reallocate the map with more
-threads, or to allocate a new map for more than one thread. Having
-multiple threads in a thread map is essential for some use cases.
-That's why a new API is proposed, which allocates a new thread map
-for given number of threads:
- perf_thread_map__new()
+Hi Sergei,
 
-Signed-off-by: Tzvetomir Stoyanov (VMware) <tz.stoyanov@gmail.com>
----
- tools/lib/perf/Documentation/libperf.txt |  1 +
- tools/lib/perf/include/perf/threadmap.h  |  1 +
- tools/lib/perf/libperf.map               |  1 +
- tools/lib/perf/tests/test-threadmap.c    | 27 ++++++++++++++++++++++++
- tools/lib/perf/threadmap.c               | 15 +++++++++----
- 5 files changed, 41 insertions(+), 4 deletions(-)
+On Wed, Feb 9, 2022 at 5:08 PM Sergei Shtylyov
+<sergei.shtylyov@gmail.com> wrote:
+>    One more thing: the board code for those boards was added in 2011, we can assume
+> it was working back then, right? :-_
 
-diff --git a/tools/lib/perf/Documentation/libperf.txt b/tools/lib/perf/Documentation/libperf.txt
-index 32c5051c24eb..9cbd41c29bff 100644
---- a/tools/lib/perf/Documentation/libperf.txt
-+++ b/tools/lib/perf/Documentation/libperf.txt
-@@ -62,6 +62,7 @@ SYNOPSIS
-   struct perf_thread_map;
- 
-   struct perf_thread_map *perf_thread_map__new_dummy(void);
-+  struct perf_thread_map *perf_thread_map__new(int nr);
- 
-   void perf_thread_map__set_pid(struct perf_thread_map *map, int thread, pid_t pid);
-   char *perf_thread_map__comm(struct perf_thread_map *map, int thread);
-diff --git a/tools/lib/perf/include/perf/threadmap.h b/tools/lib/perf/include/perf/threadmap.h
-index a7c50de8d010..47d433416040 100644
---- a/tools/lib/perf/include/perf/threadmap.h
-+++ b/tools/lib/perf/include/perf/threadmap.h
-@@ -8,6 +8,7 @@
- struct perf_thread_map;
- 
- LIBPERF_API struct perf_thread_map *perf_thread_map__new_dummy(void);
-+LIBPERF_API struct perf_thread_map *perf_thread_map__new(int nr);
- 
- LIBPERF_API void perf_thread_map__set_pid(struct perf_thread_map *map, int thread, pid_t pid);
- LIBPERF_API char *perf_thread_map__comm(struct perf_thread_map *map, int thread);
-diff --git a/tools/lib/perf/libperf.map b/tools/lib/perf/libperf.map
-index 93696affda2e..240a2f087b70 100644
---- a/tools/lib/perf/libperf.map
-+++ b/tools/lib/perf/libperf.map
-@@ -11,6 +11,7 @@ LIBPERF_0.0.1 {
- 		perf_cpu_map__empty;
- 		perf_cpu_map__max;
- 		perf_cpu_map__has;
-+		perf_thread_map__new;
- 		perf_thread_map__new_dummy;
- 		perf_thread_map__set_pid;
- 		perf_thread_map__comm;
-diff --git a/tools/lib/perf/tests/test-threadmap.c b/tools/lib/perf/tests/test-threadmap.c
-index 5e2a0291e94c..3388bf36dfc0 100644
---- a/tools/lib/perf/tests/test-threadmap.c
-+++ b/tools/lib/perf/tests/test-threadmap.c
-@@ -11,9 +11,12 @@ static int libperf_print(enum libperf_print_level level,
- 	return vfprintf(stderr, fmt, ap);
- }
- 
-+#define THREADS_NR	5
-+
- int test_threadmap(int argc, char **argv)
- {
- 	struct perf_thread_map *threads;
-+	int i;
- 
- 	__T_START;
- 
-@@ -27,6 +30,30 @@ int test_threadmap(int argc, char **argv)
- 	perf_thread_map__put(threads);
- 	perf_thread_map__put(threads);
- 
-+	threads = perf_thread_map__new(THREADS_NR);
-+	if (!threads)
-+		tests_failed++;
-+
-+	if (perf_thread_map__nr(threads) != THREADS_NR)
-+		tests_failed++;
-+
-+	for (i = 0; i < THREADS_NR; i++) {
-+		if (perf_thread_map__pid(threads, i) != -1)
-+			tests_failed++;
-+	}
-+
-+	for (i = 1; i < THREADS_NR; i++)
-+		perf_thread_map__set_pid(threads, i, i * 100);
-+
-+	if (perf_thread_map__pid(threads, 0) != -1)
-+		tests_failed++;
-+
-+	for (i = 1; i < THREADS_NR; i++) {
-+		if (perf_thread_map__pid(threads, i) != i * 100)
-+			tests_failed++;
-+	}
-+	perf_thread_map__put(threads);
-+
- 	__T_END;
- 	return tests_failed == 0 ? 0 : -1;
- }
-diff --git a/tools/lib/perf/threadmap.c b/tools/lib/perf/threadmap.c
-index e92c368b0a6c..843fe1070cc9 100644
---- a/tools/lib/perf/threadmap.c
-+++ b/tools/lib/perf/threadmap.c
-@@ -42,18 +42,25 @@ char *perf_thread_map__comm(struct perf_thread_map *map, int thread)
- 	return map->map[thread].comm;
- }
- 
--struct perf_thread_map *perf_thread_map__new_dummy(void)
-+struct perf_thread_map *perf_thread_map__new(int nr)
- {
--	struct perf_thread_map *threads = thread_map__alloc(1);
-+	struct perf_thread_map *threads = thread_map__alloc(nr);
-+	int i;
- 
- 	if (threads != NULL) {
--		perf_thread_map__set_pid(threads, 0, -1);
--		threads->nr = 1;
-+		for (i = 0; i < nr; i++)
-+			perf_thread_map__set_pid(threads, i, -1);
-+		threads->nr = nr;
- 		refcount_set(&threads->refcnt, 1);
- 	}
- 	return threads;
- }
- 
-+struct perf_thread_map *perf_thread_map__new_dummy(void)
-+{
-+	return perf_thread_map__new(1);
-+}
-+
- static void perf_thread_map__delete(struct perf_thread_map *threads)
- {
- 	if (threads) {
--- 
-2.34.1
+This assumption may not be true: there is plenty of driver/board
+support that was only upstreamed partially.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
