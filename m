@@ -2,181 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242028AbiBJNNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:13:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46542 "EHLO
+        id S242041AbiBJNON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:14:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238484AbiBJNNR (ORCPT
+        with ESMTP id S238484AbiBJNOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:13:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F9C113F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:13:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23F71B824B3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737A4C004E1;
-        Thu, 10 Feb 2022 13:13:15 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="hR3fwfat"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644498794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IzzyXRQXp1fF2yvhjaLxOErxhAVSjKgIdCU6rMFCToc=;
-        b=hR3fwfatTqVS4+eNt/tG8z1aIvnKYVXs5swQt1n88Q2hgTzHZanflrrTR1rGNOy2ukspm6
-        X64RtyboJL6M1QvLRnrAnhw2Q48dI2G1sF49v0cNuPFsvuc/Y1jUN+/sVxr3LH7KOp2JA3
-        1hNkZbsmTxddm5GgbSmZZY8ILw/j4oM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 71accad9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 10 Feb 2022 13:13:13 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v2] random: tie batched entropy generation to base_crng generation
-Date:   Thu, 10 Feb 2022 14:13:04 +0100
-Message-Id: <20220210131304.97224-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9oo5y08skaOOXg-q0T9pDs580dOotm6Wz0t96AssZr2Pw@mail.gmail.com>
-References: <CAHmME9oo5y08skaOOXg-q0T9pDs580dOotm6Wz0t96AssZr2Pw@mail.gmail.com>
+        Thu, 10 Feb 2022 08:14:10 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DDE11142
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:14:10 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id z1so5120465qto.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:14:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=marek-ca.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y72MSrQ/DK9eOIq9d6AGRca4dPZsVxDBVqlBoGFZ7PY=;
+        b=NyLxq3vq0kHFKDhUJ3pSUKTCyqSSKWmMmkoEQQ/RaZv5k87LD+S5ayCPA9rkX12Ubb
+         iO6DXi5mylYQO8chgdnOlWthGsYc/Z9G9s+TvtQdLhjHM47cEW84IPMXXpMnFFGSI9lK
+         SJhsq4aJHNHEODdg/DMTQ55yYiHUG8iXGh9jS+kBzhuyFLHl0CC7y6vMD1Af1UvERi8n
+         0+frDrUi1GXSTKf7/b+p/2YgygJHjIHi8srH36Oy5r4DcuOGH3CjJWiUasfGbtNHaAaF
+         Bj0JDWxjJPThsPEDRVGai0fUGjwr+Hr3HT5Yvq8AsR9qCMJGMqnfxe2hbtWUmtYAC8Lr
+         +QOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y72MSrQ/DK9eOIq9d6AGRca4dPZsVxDBVqlBoGFZ7PY=;
+        b=3XicEUwSqeKFmu19/WuxcX/YWA7hcAksMJ1agZx95TugFK+wuYrQubqpGEgxij5voP
+         aEpcvcikKOd9s0BAwYnPwJB99BW4C3j2d7fIzkg0ph1mcLCPjIl/LX3CKrxhlYagOV5z
+         fNiVpAhpHi0B+HX1GBpAXoPIBTQdOtzYui2yN/FnksFxoefVjH/VRtR3GHm/F/8eBUCp
+         3E3cRbl4brc4DvVik0P//enl7mjDoTRle0w0w4wpWCmMQhQ0PK3Z6DpCb9Ny0P3DxTAi
+         YxKtGZMNhL7JuotRiDdFUPlYuIHyJl3klbm7KV/GnJWnt3UGXJ8IndTSv2VlCI4ks3Fv
+         n9rQ==
+X-Gm-Message-State: AOAM53275yh4usRIz8F4b0+hyCBXn8F4fcXu29aRTs9EbS4N+vxtU4p3
+        49Xmt24qI/K/FaXJZO7FPRVTF4PYB5Im0MATMdA=
+X-Google-Smtp-Source: ABdhPJwdx3+lYvsYAW0QRWrwsSv9Oo8NwlenWMTzFZT4ukvzzUu6UZVIHv7s8/G+EUO8UBHbDWjEtA==
+X-Received: by 2002:a05:622a:3d3:: with SMTP id k19mr4645920qtx.71.1644498849534;
+        Thu, 10 Feb 2022 05:14:09 -0800 (PST)
+Received: from localhost.localdomain (modemcable134.222-177-173.mc.videotron.ca. [173.177.222.134])
+        by smtp.gmail.com with ESMTPSA id p15sm10969824qtk.56.2022.02.10.05.14.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 05:14:09 -0800 (PST)
+From:   Jonathan Marek <jonathan@marek.ca>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     dmitry.baryshkov@linaro.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org (open list:PIN CONTROL SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 1/2] pinctrl: qcom: sm8450: Add egpio support
+Date:   Thu, 10 Feb 2022 08:12:08 -0500
+Message-Id: <20220210131210.24605-1-jonathan@marek.ca>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have an explicit base_crng generation counter, we don't need
-a separate one for batched entropy. Rather, we can just move the
-generation forward every time we change crng_init state or update the
-base_crng key.
+This mirrors egpio support added for sc7280. This change is necessary for
+gpios 165 to 209 to be driven by APSS.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jonathan Marek <jonathan@marek.ca>
 ---
-v2 always increments the generation after extraction, as suggested by
-Dominik.
+ drivers/pinctrl/qcom/pinctrl-sm8450.c | 106 +++++++++++++++-----------
+ 1 file changed, 61 insertions(+), 45 deletions(-)
 
- drivers/char/random.c | 29 ++++++++---------------------
- 1 file changed, 8 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 5beb421ec12b..57d36f13e3a6 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -431,8 +431,6 @@ static DEFINE_PER_CPU(struct crng, crngs) = {
- 
- static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
- 
--static void invalidate_batched_entropy(void);
--
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-  * path.  So we can't afford to dilly-dally. Returns the number of
-@@ -455,7 +453,7 @@ static size_t crng_fast_load(const void *cp, size_t len)
- 		src++; crng_init_cnt++; len--; ret++;
- 	}
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
--		invalidate_batched_entropy();
-+		++base_crng.generation;
- 		crng_init = 1;
- 	}
- 	spin_unlock_irqrestore(&base_crng.lock, flags);
-@@ -530,7 +528,6 @@ static void crng_reseed(void)
- 	WRITE_ONCE(base_crng.generation, next_gen);
- 	base_crng.birth = jiffies;
- 	if (crng_init < 2) {
--		invalidate_batched_entropy();
- 		crng_init = 2;
- 		finalize_init = true;
- 	}
-@@ -1277,8 +1274,9 @@ int __init rand_initialize(void)
- 	mix_pool_bytes(utsname(), sizeof(*(utsname())));
- 
- 	extract_entropy(base_crng.key, sizeof(base_crng.key));
-+	++base_crng.generation;
-+
- 	if (arch_init && trust_cpu && crng_init < 2) {
--		invalidate_batched_entropy();
- 		crng_init = 2;
- 		pr_notice("crng init done (trusting CPU's manufacturer)\n");
- 	}
-@@ -1628,8 +1626,6 @@ static int __init random_sysctls_init(void)
- device_initcall(random_sysctls_init);
- #endif	/* CONFIG_SYSCTL */
- 
--static atomic_t batch_generation = ATOMIC_INIT(0);
--
- struct batched_entropy {
- 	union {
- 		/* We make this 1.5x a ChaCha block, so that we get the
-@@ -1642,8 +1638,8 @@ struct batched_entropy {
- 		u32 entropy_u32[CHACHA_BLOCK_SIZE * 3 / (2 * sizeof(u32))];
- 	};
- 	local_lock_t lock;
-+	unsigned long generation;
- 	unsigned int position;
--	int generation;
+diff --git a/drivers/pinctrl/qcom/pinctrl-sm8450.c b/drivers/pinctrl/qcom/pinctrl-sm8450.c
+index c6fa3dbc14a1e..3110d7bf5698a 100644
+--- a/drivers/pinctrl/qcom/pinctrl-sm8450.c
++++ b/drivers/pinctrl/qcom/pinctrl-sm8450.c
+@@ -46,6 +46,8 @@
+ 		.mux_bit = 2,			\
+ 		.pull_bit = 0,			\
+ 		.drv_bit = 6,			\
++		.egpio_enable = 12,		\
++		.egpio_present = 11,		\
+ 		.oe_bit = 9,			\
+ 		.in_bit = 0,			\
+ 		.out_bit = 1,			\
+@@ -567,6 +569,7 @@ enum sm8450_functions {
+ 	msm_mux_ddr_pxi2,
+ 	msm_mux_ddr_pxi3,
+ 	msm_mux_dp_hot,
++	msm_mux_egpio,
+ 	msm_mux_gcc_gp1,
+ 	msm_mux_gcc_gp2,
+ 	msm_mux_gcc_gp3,
+@@ -719,6 +722,17 @@ static const char * const gpio_groups[] = {
+ 	"gpio207", "gpio208", "gpio209",
  };
  
- /*
-@@ -1662,14 +1658,14 @@ u64 get_random_u64(void)
- 	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
--	int next_gen;
-+	unsigned long next_gen;
++static const char * const egpio_groups[] = {
++	"gpio165", "gpio166", "gpio167", "gpio168", "gpio169", "gpio170",
++	"gpio171", "gpio172", "gpio173", "gpio174", "gpio175", "gpio176",
++	"gpio177", "gpio178", "gpio179", "gpio180", "gpio181", "gpio182",
++	"gpio183", "gpio184", "gpio185", "gpio186", "gpio187", "gpio188",
++	"gpio189", "gpio190", "gpio191", "gpio192", "gpio193", "gpio194",
++	"gpio195", "gpio196", "gpio197", "gpio198", "gpio199", "gpio200",
++	"gpio201", "gpio202", "gpio203", "gpio204", "gpio205", "gpio206",
++	"gpio207", "gpio208", "gpio209",
++};
++
+ static const char * const aon_cam_groups[] = {
+ 	"gpio108",
+ };
+@@ -1285,6 +1299,7 @@ static const struct msm_function sm8450_functions[] = {
+ 	FUNCTION(ddr_pxi2),
+ 	FUNCTION(ddr_pxi3),
+ 	FUNCTION(dp_hot),
++	FUNCTION(egpio),
+ 	FUNCTION(gcc_gp1),
+ 	FUNCTION(gcc_gp2),
+ 	FUNCTION(gcc_gp3),
+@@ -1571,51 +1586,51 @@ static const struct msm_pingroup sm8450_groups[] = {
+ 	[162] = PINGROUP(162, qlink2_request, _, _, _, _, _, _, _, _),
+ 	[163] = PINGROUP(163, qlink2_enable, _, _, _, _, _, _, _, _),
+ 	[164] = PINGROUP(164, qlink2_wmss, _, _, _, _, _, _, _, _),
+-	[165] = PINGROUP(165, _, _, _, _, _, _, _, _, _),
+-	[166] = PINGROUP(166, _, _, _, _, _, _, _, _, _),
+-	[167] = PINGROUP(167, _, _, _, _, _, _, _, _, _),
+-	[168] = PINGROUP(168, _, _, _, _, _, _, _, _, _),
+-	[169] = PINGROUP(169, _, _, _, _, _, _, _, _, _),
+-	[170] = PINGROUP(170, _, _, _, _, _, _, _, _, _),
+-	[171] = PINGROUP(171, _, _, _, _, _, _, _, _, _),
+-	[172] = PINGROUP(172, _, _, _, _, _, _, _, _, _),
+-	[173] = PINGROUP(173, _, _, _, _, _, _, _, _, _),
+-	[174] = PINGROUP(174, _, _, _, _, _, _, _, _, _),
+-	[175] = PINGROUP(175, _, _, _, _, _, _, _, _, _),
+-	[176] = PINGROUP(176, _, _, _, _, _, _, _, _, _),
+-	[177] = PINGROUP(177, _, _, _, _, _, _, _, _, _),
+-	[178] = PINGROUP(178, _, _, _, _, _, _, _, _, _),
+-	[179] = PINGROUP(179, _, _, _, _, _, _, _, _, _),
+-	[180] = PINGROUP(180, _, _, _, _, _, _, _, _, _),
+-	[181] = PINGROUP(181, _, _, _, _, _, _, _, _, _),
+-	[182] = PINGROUP(182, _, _, _, _, _, _, _, _, _),
+-	[183] = PINGROUP(183, _, _, _, _, _, _, _, _, _),
+-	[184] = PINGROUP(184, _, _, _, _, _, _, _, _, _),
+-	[185] = PINGROUP(185, _, _, _, _, _, _, _, _, _),
+-	[186] = PINGROUP(186, _, _, _, _, _, _, _, _, _),
+-	[187] = PINGROUP(187, _, _, _, _, _, _, _, _, _),
+-	[188] = PINGROUP(188, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[189] = PINGROUP(189, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[190] = PINGROUP(190, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[191] = PINGROUP(191, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[192] = PINGROUP(192, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[193] = PINGROUP(193, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[194] = PINGROUP(194, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[195] = PINGROUP(195, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[196] = PINGROUP(196, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[197] = PINGROUP(197, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[198] = PINGROUP(198, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[199] = PINGROUP(199, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[200] = PINGROUP(200, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[201] = PINGROUP(201, _, qdss_gpio, _, _, _, _, _, _, _),
+-	[202] = PINGROUP(202, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[203] = PINGROUP(203, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[204] = PINGROUP(204, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[205] = PINGROUP(205, qdss_gpio, _, _, _, _, _, _, _, _),
+-	[206] = PINGROUP(206, qup5, _, _, _, _, _, _, _, _),
+-	[207] = PINGROUP(207, qup5, _, _, _, _, _, _, _, _),
+-	[208] = PINGROUP(208, cci_i2c, _, _, _, _, _, _, _, _),
+-	[209] = PINGROUP(209, cci_i2c, _, _, _, _, _, _, _, _),
++	[165] = PINGROUP(165, _, _, _, _, _, _, _, _, egpio),
++	[166] = PINGROUP(166, _, _, _, _, _, _, _, _, egpio),
++	[167] = PINGROUP(167, _, _, _, _, _, _, _, _, egpio),
++	[168] = PINGROUP(168, _, _, _, _, _, _, _, _, egpio),
++	[169] = PINGROUP(169, _, _, _, _, _, _, _, _, egpio),
++	[170] = PINGROUP(170, _, _, _, _, _, _, _, _, egpio),
++	[171] = PINGROUP(171, _, _, _, _, _, _, _, _, egpio),
++	[172] = PINGROUP(172, _, _, _, _, _, _, _, _, egpio),
++	[173] = PINGROUP(173, _, _, _, _, _, _, _, _, egpio),
++	[174] = PINGROUP(174, _, _, _, _, _, _, _, _, egpio),
++	[175] = PINGROUP(175, _, _, _, _, _, _, _, _, egpio),
++	[176] = PINGROUP(176, _, _, _, _, _, _, _, _, egpio),
++	[177] = PINGROUP(177, _, _, _, _, _, _, _, _, egpio),
++	[178] = PINGROUP(178, _, _, _, _, _, _, _, _, egpio),
++	[179] = PINGROUP(179, _, _, _, _, _, _, _, _, egpio),
++	[180] = PINGROUP(180, _, _, _, _, _, _, _, _, egpio),
++	[181] = PINGROUP(181, _, _, _, _, _, _, _, _, egpio),
++	[182] = PINGROUP(182, _, _, _, _, _, _, _, _, egpio),
++	[183] = PINGROUP(183, _, _, _, _, _, _, _, _, egpio),
++	[184] = PINGROUP(184, _, _, _, _, _, _, _, _, egpio),
++	[185] = PINGROUP(185, _, _, _, _, _, _, _, _, egpio),
++	[186] = PINGROUP(186, _, _, _, _, _, _, _, _, egpio),
++	[187] = PINGROUP(187, _, _, _, _, _, _, _, _, egpio),
++	[188] = PINGROUP(188, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[189] = PINGROUP(189, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[190] = PINGROUP(190, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[191] = PINGROUP(191, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[192] = PINGROUP(192, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[193] = PINGROUP(193, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[194] = PINGROUP(194, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[195] = PINGROUP(195, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[196] = PINGROUP(196, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[197] = PINGROUP(197, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[198] = PINGROUP(198, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[199] = PINGROUP(199, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[200] = PINGROUP(200, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[201] = PINGROUP(201, _, qdss_gpio, _, _, _, _, _, _, egpio),
++	[202] = PINGROUP(202, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[203] = PINGROUP(203, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[204] = PINGROUP(204, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[205] = PINGROUP(205, qdss_gpio, _, _, _, _, _, _, _, egpio),
++	[206] = PINGROUP(206, qup5, _, _, _, _, _, _, _, egpio),
++	[207] = PINGROUP(207, qup5, _, _, _, _, _, _, _, egpio),
++	[208] = PINGROUP(208, cci_i2c, _, _, _, _, _, _, _, egpio),
++	[209] = PINGROUP(209, cci_i2c, _, _, _, _, _, _, _, egpio),
+ 	[210] = UFS_RESET(ufs_reset, 0xde000),
+ 	[211] = SDC_QDSD_PINGROUP(sdc2_clk, 0xd6000, 14, 6),
+ 	[212] = SDC_QDSD_PINGROUP(sdc2_cmd, 0xd6000, 11, 3),
+@@ -1651,6 +1666,7 @@ static const struct msm_pinctrl_soc_data sm8450_tlmm = {
+ 	.ngpios = 211,
+ 	.wakeirq_map = sm8450_pdc_map,
+ 	.nwakeirq_map = ARRAY_SIZE(sm8450_pdc_map),
++	.egpio_func = 9,
+ };
  
- 	warn_unseeded_randomness(&previous);
- 
- 	local_lock_irqsave(&batched_entropy_u64.lock, flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u64);
- 
--	next_gen = atomic_read(&batch_generation);
-+	next_gen = READ_ONCE(base_crng.generation);
- 	if (batch->position % ARRAY_SIZE(batch->entropy_u64) == 0 ||
- 	    next_gen != batch->generation) {
- 		_get_random_bytes(batch->entropy_u64, sizeof(batch->entropy_u64));
-@@ -1695,14 +1691,14 @@ u32 get_random_u32(void)
- 	unsigned long flags;
- 	struct batched_entropy *batch;
- 	static void *previous;
--	int next_gen;
-+	unsigned long next_gen;
- 
- 	warn_unseeded_randomness(&previous);
- 
- 	local_lock_irqsave(&batched_entropy_u32.lock, flags);
- 	batch = raw_cpu_ptr(&batched_entropy_u32);
- 
--	next_gen = atomic_read(&batch_generation);
-+	next_gen = READ_ONCE(base_crng.generation);
- 	if (batch->position % ARRAY_SIZE(batch->entropy_u32) == 0 ||
- 	    next_gen != batch->generation) {
- 		_get_random_bytes(batch->entropy_u32, sizeof(batch->entropy_u32));
-@@ -1718,15 +1714,6 @@ u32 get_random_u32(void)
- }
- EXPORT_SYMBOL(get_random_u32);
- 
--/* It's important to invalidate all potential batched entropy that might
-- * be stored before the crng is initialized, which we can do lazily by
-- * bumping the generation counter.
-- */
--static void invalidate_batched_entropy(void)
--{
--	atomic_inc(&batch_generation);
--}
--
- /**
-  * randomize_page - Generate a random, page aligned address
-  * @start:	The smallest acceptable address the caller will take.
+ static int sm8450_tlmm_probe(struct platform_device *pdev)
 -- 
-2.35.0
+2.26.1
 
