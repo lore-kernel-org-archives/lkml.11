@@ -2,108 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7B8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234928AbiBJIbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:31:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60742 "EHLO
+        id S237415AbiBJIby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:31:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237456AbiBJIb1 (ORCPT
+        with ESMTP id S237469AbiBJIbu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:31:27 -0500
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on2095.outbound.protection.outlook.com [40.107.255.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E4E111D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:31:29 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dEbDduTM83PI7VV+eZ04cMQnE0V4/dfr+yvqNNMsNZZxHQ6SRaR0OZvwARSJTIb2vvWjc596qNqgA3RMAazcO+1WLAZERApg7cdTqFERrslN5MfPO6Dyyj8K7h8HhU3Cn+qLcDUDDjjcoMN9OJU8Tb9BJeVP4LCMiqMdyZJqkJ3lnPPg3iMYnY5jc2EtA0QL3qRKOoFOFsJOaSpeT0r7UT3Qjm484hHDbKMKaUgdw6nRoKoy4pWIzBhxImlxiG/MMMgdMTpGcahaa4LL4CEAhYWO3adsIhxsLDTYgZSXXQGzYoqh41SwuxIXl8v7xEJdltGTjB//5dIh3UB+epXpuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2Ls5sY7eKX3KoYLbEWhtH4oGNSQd4bcjrtmiHPC8tbM=;
- b=leKx3Twiv/FJ7xb1mQebdYYXyqlnQKM0Sle2kvHoMbTnO3rPSc1WyDS3JLdxEW3BmsvDoZQmj3Zycf280vvzTX20uJbhITC+T+90UfrsJnKmd8lkMKW1UYZT9i3T2HiOpwbZWz+oQ7XNoT5jjF/Q8ManUEWQ0eukqgJ+dQhCX75AjJV5P277EpPOGdtcLDr2vbJDhN0SxNdZHCVspU7DdNPpqXQH5YBua+brABcm+FTMLjjHGqwIe02zUjZKQcEWl7q+Nf2u0Sz4+XZigSbSDYITT/a4UVzi0+kKAoS3hQjbDpyfv5/o82L2prc9KZCdPd3urEN49gbWF/fSVTx8vA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2Ls5sY7eKX3KoYLbEWhtH4oGNSQd4bcjrtmiHPC8tbM=;
- b=OFLLkZN8eqKWojFJ9IHgjWl/TpGCKS9zFIfP7qAGVFW4wONYB/WN82tn75wP6IxEMpzkzQAnK5SVeZed8rQo/4IPwZXDyIV7xEJteZ1x4g1T1INfLQsfF+UsIKLcORlPUxV8cVaqbtFeu1bFbaoab2WNZoUYvtUyiWfXCn7hFAA=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by PSAPR06MB4005.apcprd06.prod.outlook.com (2603:1096:301:3a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 08:31:27 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::80b4:e787:47a9:41bb]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::80b4:e787:47a9:41bb%4]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
- 08:31:26 +0000
-From:   Qing Wang <wangqing@vivo.com>
-To:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [PATCH] md: use time_after_eq() instead of jiffies judgment
-Date:   Thu, 10 Feb 2022 00:31:14 -0800
-Message-Id: <1644481874-14812-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0131.apcprd06.prod.outlook.com
- (2603:1096:1:1d::33) To SL2PR06MB3082.apcprd06.prod.outlook.com
- (2603:1096:100:37::17)
+        Thu, 10 Feb 2022 03:31:50 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B7D5115D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:31:47 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id cz16so9543838edb.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:31:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5HYctMBlbUcF9ELod876PiSjtl+wZnwlHpBP7i180qk=;
+        b=4W/BEEtH+1u66zjUlg4i2buOw0kWN7KslsuQrXrs1aoBF7XRoS/XyLbdULBOvzjoMT
+         ins3ef8qYhlshV9+4JrVgxpTcOlD1Z8rw4ZqH1UnEqKnW+PcD52kneTOgDNX16W7F+2V
+         XH4xaYi8qs3mcZHKcJKRSceaMVlzwlt1WKtb5wGZ2lL08nvwFNxHQ/sfhy3ZKmHp/Gzt
+         DUh2dZ2EuIsFdZDYNYd61JGy5o8fGmHq93ganHtWDC0PfyCKdoakDFNlr8JWE6kBXh41
+         Ha9b5YRx+36+UFJsKwrEOuYDyzxtZC404qHuszZ6tuxQgrhmtd55868dn+z1HZLd+2Eq
+         t81A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5HYctMBlbUcF9ELod876PiSjtl+wZnwlHpBP7i180qk=;
+        b=WNxPaqfrvN/m4RASKVBlxeFFsKxQ3dIV8gwuwZfP5B/++w9Ap0D8ixG7GyNt+meCvk
+         BaB3TT3DjMDXyWo6Ebo1jpXf4rRBHkoLMc7UM3xseWgiMifJ4FQp5ENNBYCKpkV1VUyH
+         ULtThf+UiFEOzOmH38WXCqXTXd3NNczYMMA0a4w4KTFUYd7O1AOIomFEl6rIAystThA+
+         Rp7gsTiNNjsBhHJs1u0l9BJJEiMpsXKvAjxWctbMzqdA1ytWEhL3PYGcLkEK3T0/f6KK
+         dJM2AVbn2MKh5uz2/AQAJpy42fEiPEao0NY7Ydzpub7kN39KBnxTrubgdgmaGCq+y+BG
+         2Hvw==
+X-Gm-Message-State: AOAM533zANy9L6dufgVkhHqauqOAYRJ3rSHgCLMt44SRn9nQ+qg0S3K8
+        ApvTCJCE6ZJ7f3Fj+vR//19m7w==
+X-Google-Smtp-Source: ABdhPJwkXWdDIgFnjmrqo4fAjO79Uexv7RWGiFdCHB/qPMBgT6O3kyw4f4gWUqmqti/XKFNiaJkzog==
+X-Received: by 2002:a05:6402:2691:: with SMTP id w17mr7107853edd.126.1644481905658;
+        Thu, 10 Feb 2022 00:31:45 -0800 (PST)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id gq1sm5882254ejb.58.2022.02.10.00.31.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 00:31:45 -0800 (PST)
+Message-ID: <fed43e8d-de8c-aa76-1451-877cf4cc76d2@blackwall.org>
+Date:   Thu, 10 Feb 2022 10:31:43 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e5f46a05-62e7-4c28-d48f-08d9ec6fba7d
-X-MS-TrafficTypeDiagnostic: PSAPR06MB4005:EE_
-X-Microsoft-Antispam-PRVS: <PSAPR06MB400546727DF61FEDA1DAE74BBD2F9@PSAPR06MB4005.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U4bAOwGPVzRncR25sOpRb7nmyofZJ2XT7ToGKXUXrGvKeFi4rulJDMQHzi477p+/qPZR/tkn92idTuEe06CO9c0eu7+MinvElkMrdiaTqio6PX42xDysYTo/QUQEO8tGhjaTrH9KNEO44cntfleGAPtOgGTUyCUQh8YzE81XrC/0FqkfMLqJ/nu3O8Cmx2aFSkZdvNht+Q2ursKqTrcb5RaKpKpOtf2hvQZbzIWCcXn+qHYjsOt3hqf6S40T4YilEBidinG32slyadSw6qSA8s5Mo9NRa36eQfBMRSzCds1iLeWQ9LmW/j/oOprntsA9ShFaX5Vw3jhJetBdCkM3oYYOvn4XTkU5r3pK4oUZz5Te5uMIaa/IUK7PvGiptNuUMV2KIpyS+h94+LexCyLfUiElfAabV8OeQrK8bX6ZKxwd6J5fa+ShGWaUN7Yf6+eLRU6g/9NuzHyFe/Z4NQTo1Y+x0ggIjIvKQzHfosVe+KG6+qbaKdur6I9n8okpQztVO61bukGW8AqXD6tawFSBTinr68+pnQlro0ag+voKOP6pMicGQfc1iMJAxPSkjg///M4l0xHUr1Bmc8w/w8ITY3B+kCPOhF8BmQFptwxep1LpTRJle1FXwqn2+oM6pjmh4xip+oYu6IlwxQsQpactdQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(508600001)(86362001)(316002)(6486002)(110136005)(186003)(2616005)(66476007)(26005)(83380400001)(107886003)(38350700002)(66556008)(52116002)(8936002)(38100700002)(6666004)(6512007)(6506007)(2906002)(8676002)(4744005)(5660300002)(66946007)(4326008)(21314003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: nqXdLOSssjdbWTEU3E/02CK6u+ogOgyehvk87xnGJFJPM26AUptxSBm1Q93Aiyoy7U0qttp8VyMwNIkwj6NMPyRoYzOtX/jo0l17Vo10c6CoA1YApTaZYKzAIDaDi/kDyZBBd4jrUygtIuRgLQOLko5TBorRBKZS3YZ0ED1FA4QlK3Gic9e6v3H8mz+lQ7yubLbrKMrUk9OJ5Re6pNpcurstXAx5ImdPy/F6+DMZ1e385v4Aq8FTFTQhU0imryXlz8OFJ0lBmbPFvqXOYqmNfF+hyOgkvUZjOEE3RzDd5AcutaGKY4v2C6TpNMh/vgKDNHHv/m+SdaDt0J+AtqTxtLVc6WGMb3Hej5qcFtXnLDhTfJsOIeTNDDRtLT1T6N6aNA3tKcTi9QkEPoq5qF5Dp9HfA4QgtpiuPZvTIsF25nmU3wTWDWWpsib0fZJxMjiO
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5f46a05-62e7-4c28-d48f-08d9ec6fba7d
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 08:31:26.8344
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wWhOFB6T7a5UNykUA/3oMEzCZq5pl98sf+ogzE1/ZyCokqKYoi4Lofn0dO2fZfrCtmkQ/3616ADAtgJGv6B87A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PSAPR06MB4005
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v2 5/5] net: bridge: Refactor bridge port in
+ locked mode to use jump labels
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <schultz.hans+lkml@gmail.com>,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
+ <20220209130538.533699-6-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220209130538.533699-6-schultz.hans+netdev@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+On 09/02/2022 15:05, Hans Schultz wrote:
+> From: Hans Schultz <schultz.hans+lkml@gmail.com>
+> 
+> As the locked mode feature is in the hot path of the bridge modules
+> reception of packets, it needs to be refactored to use jump labels
+> for optimization.
+> 
+> Signed-off-by: Hans Schultz <schultz.hans+lkml@gmail.com>
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
 
-It is better to use time_xxx() directly instead of jiffies judgment
-for understanding.
+Why two (almost) identical sign-offs?
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
----
- drivers/md/dm-thin.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Also, as Ido mentioned, please fold this patch into patch 01.
 
-diff --git a/drivers/md/dm-thin.c b/drivers/md/dm-thin.c
-index f4234d6..dced764
---- a/drivers/md/dm-thin.c
-+++ b/drivers/md/dm-thin.c
-@@ -161,7 +161,7 @@ static void throttle_work_start(struct throttle *t)
- 
- static void throttle_work_update(struct throttle *t)
- {
--	if (!t->throttle_applied && jiffies > t->threshold) {
-+	if (!t->throttle_applied && time_after(jiffies, t->threshold)) {
- 		down_write(&t->lock);
- 		t->throttle_applied = true;
- 	}
--- 
-2.7.4
+>  net/bridge/br_input.c   | 22 ++++++++++++++++++----
+>  net/bridge/br_netlink.c |  6 ++++++
+>  net/bridge/br_private.h |  2 ++
+>  3 files changed, 26 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 469e3adbce07..6fc428d6bac5 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -23,6 +23,18 @@
+>  #include "br_private.h"
+>  #include "br_private_tunnel.h"
+>  
+> +static struct static_key_false br_input_locked_port_feature;
+> +
+> +void br_input_locked_port_add(void)
+> +{
+> +	static_branch_inc(&br_input_locked_port_feature);
+> +}
+> +
+> +void br_input_locked_port_remove(void)
+> +{
+> +	static_branch_dec(&br_input_locked_port_feature);
+> +}
+> +
+>  static int
+>  br_netif_receive_skb(struct net *net, struct sock *sk, struct sk_buff *skb)
+>  {
+> @@ -91,10 +103,12 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  				&state, &vlan))
+>  		goto out;
+>  
+> -	if (p->flags & BR_PORT_LOCKED) {
+> -		fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+> -		if (!(fdb_entry && fdb_entry->dst == p))
+> -			goto drop;
+> +	if (static_branch_unlikely(&br_input_locked_port_feature)) {
+> +		if (p->flags & BR_PORT_LOCKED) {
+> +			fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+> +			if (!(fdb_entry && fdb_entry->dst == p))
+> +				goto drop;
+> +		}
+>  	}
+>  
+>  	nbp_switchdev_frame_mark(p, skb);
+> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> index 7d4432ca9a20..e3dbe9fed75c 100644
+> --- a/net/bridge/br_netlink.c
+> +++ b/net/bridge/br_netlink.c
+> @@ -860,6 +860,7 @@ static int br_set_port_state(struct net_bridge_port *p, u8 state)
+>  static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
+>  			     int attrtype, unsigned long mask)
+>  {
+> +	bool locked = p->flags & BR_PORT_LOCKED;
+>  	if (!tb[attrtype])
+>  		return;
+>  
+> @@ -867,6 +868,11 @@ static void br_set_port_flag(struct net_bridge_port *p, struct nlattr *tb[],
+>  		p->flags |= mask;
+>  	else
+>  		p->flags &= ~mask;
+> +
+> +	if ((p->flags & BR_PORT_LOCKED) && !locked)
+> +		br_input_locked_port_add();
+> +	if (!(p->flags & BR_PORT_LOCKED) && locked)
+> +		br_input_locked_port_remove();
+>  }
+>  
+>  /* Process bridge protocol info on port */
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index 2661dda1a92b..0ec3ef897978 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -832,6 +832,8 @@ void br_manage_promisc(struct net_bridge *br);
+>  int nbp_backup_change(struct net_bridge_port *p, struct net_device *backup_dev);
+>  
+>  /* br_input.c */
+> +void br_input_locked_port_add(void);
+> +void br_input_locked_port_remove(void);
+>  int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
+>  rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
+>  
 
