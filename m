@@ -2,55 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244954AbiBJQ5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:57:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39854 "EHLO
+        id S244786AbiBJQ5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:57:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244697AbiBJQ5G (ORCPT
+        with ESMTP id S244450AbiBJQ5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:57:06 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CC39D4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:57:06 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 7FB0620133D;
-        Thu, 10 Feb 2022 16:57:03 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id ACEC1805A4; Thu, 10 Feb 2022 17:46:10 +0100 (CET)
-Date:   Thu, 10 Feb 2022 17:46:10 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH 1/2] random: move fast_pool/fast_mix definitions to site
- of use
-Message-ID: <YgVBUiomkFz+RUit@owl.dominikbrodowski.net>
-References: <20220210160925.156697-1-Jason@zx2c4.com>
- <20220210160925.156697-2-Jason@zx2c4.com>
+        Thu, 10 Feb 2022 11:57:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A934D122
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:57:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D088B80B3E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 789DCC004E1;
+        Thu, 10 Feb 2022 16:57:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644512247;
+        bh=Fd0kc4ClVmsdMt5I8xjQsCXxmNuCaOh6XmyTDmrK5h0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SyLqH1XjRQ7awad+24hAAOTFKLqfbentRah/JnB0Ok0YK5PmNIaTGfxrdzOzaR00M
+         m90mNtfFt4zARiN61pnP3Q49IZY/zqUc1K7vAYRDewUu099zbl9WeLg3np1cWrC0nA
+         iPOdnqWLDdR708b2NjS6SO9KK0Q5ydFpOm8YGY5uwKsDvnbrmBKSTzgaRQlmhPvoV+
+         WK7VRUxpH41D+J79rAiAL6FGGrqg9uCo1veorAHl07KjN14lY4yWwmDYX/bIaIcgv+
+         S/clH3658HV3eYiuuE4ZmL1o5qQ4fdymZL8cSBFmBo35pGOyRr+5W5XwTfML4aoDDC
+         oobKMxK8fmdsA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>
+Subject: [PATCH] riscv: alternative only works on !XIP_KERNEL
+Date:   Fri, 11 Feb 2022 00:49:43 +0800
+Message-Id: <20220210164943.2646-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210160925.156697-2-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Thu, Feb 10, 2022 at 05:09:24PM +0100 schrieb Jason A. Donenfeld:
-> No actual code changes, just code position changes. Having to scroll up
-> and down by several hundred lines every time is confusing and hard to
-> follow. Instead cluster these together. Later when we're redocumenting
-> the file, it'll mean a smaller delta.
-> 
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+The alternative mechanism needs runtime code patching, it can't work
+on XIP_KERNEL. And the errata workarounds are implemented via the
+alternative mechanism. So add !XIP_KERNEL dependency for alternative
+and erratas.
 
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ arch/riscv/Kconfig.erratas | 1 +
+ arch/riscv/Kconfig.socs    | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Thanks,
-	Dominik
+diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
+index b44d6ecdb46e..0aacd7052585 100644
+--- a/arch/riscv/Kconfig.erratas
++++ b/arch/riscv/Kconfig.erratas
+@@ -2,6 +2,7 @@ menu "CPU errata selection"
+ 
+ config RISCV_ERRATA_ALTERNATIVE
+ 	bool "RISC-V alternative scheme"
++	depends on !XIP_KERNEL
+ 	default y
+ 	help
+ 	  This Kconfig allows the kernel to automatically patch the
+diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+index 6ec44a22278a..c112ab2a9052 100644
+--- a/arch/riscv/Kconfig.socs
++++ b/arch/riscv/Kconfig.socs
+@@ -14,8 +14,8 @@ config SOC_SIFIVE
+ 	select CLK_SIFIVE
+ 	select CLK_SIFIVE_PRCI
+ 	select SIFIVE_PLIC
+-	select RISCV_ERRATA_ALTERNATIVE
+-	select ERRATA_SIFIVE
++	select RISCV_ERRATA_ALTERNATIVE if !XIP_KERNEL
++	select ERRATA_SIFIVE if !XIP_KERNEL
+ 	help
+ 	  This enables support for SiFive SoC platform hardware.
+ 
+-- 
+2.34.1
+
