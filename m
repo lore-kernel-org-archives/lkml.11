@@ -2,194 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F076FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8585CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245076AbiBJRN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:13:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59464 "EHLO
+        id S245087AbiBJROM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 12:14:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245065AbiBJRNz (ORCPT
+        with ESMTP id S245065AbiBJROL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:13:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4196CD1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:13:56 -0800 (PST)
+        Thu, 10 Feb 2022 12:14:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3495E70;
+        Thu, 10 Feb 2022 09:14:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5033161D6F
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:13:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64B52C004E1;
-        Thu, 10 Feb 2022 17:13:55 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="aPePY1Vn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644513234;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GuAUPQO005cLWrVKY/RuEXRhjRLd9z9W/Gas83LmbBM=;
-        b=aPePY1Vn1uJikamHYDXKtBoTGxe38Pc8HH16iaEkmnHQev+r4BUB4u8Og4IbXVcWHYBwJF
-        jC1bNLOLs+07SLBfNqYh2tnDVXcFul0/LmLt+zNdZk5etHQ1+VZS07GLcKzE7+FLLyerCo
-        gJc5SXtKnlLKypE9A5TNQwowiZohsbA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 07341159 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 10 Feb 2022 17:13:53 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux@dominikbrodowski.net, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH v2] random: deobfuscate irq u32/u64 contributions
-Date:   Thu, 10 Feb 2022 18:13:22 +0100
-Message-Id: <20220210171322.165122-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9rieCnqNp=n2jOp2z+pS8qo59B0ULWBhRjCHM8awRWMPA@mail.gmail.com>
-References: <CAHmME9rieCnqNp=n2jOp2z+pS8qo59B0ULWBhRjCHM8awRWMPA@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 506B961DB5;
+        Thu, 10 Feb 2022 17:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8470C004E1;
+        Thu, 10 Feb 2022 17:14:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644513251;
+        bh=R4YGxkGRJP3UE9sHNERL+KlLwZq1bt4mwcWdie67LiM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HGI5Is9V3BrzKkuuVltpPwlLK5CAvDWRXEXC/cQkf9hsekWTvaZVyKVpncWf+da+C
+         4EmOo7nbt86m6RvoVE3eyKPERQH563Jfe3fmMgpF5BdUG2IrDgZ64clvOKrxKpjMDf
+         3+Tr71qjF2BF5kSWrld8T9n7zt7JR+Ocpxs72FbcxrsnbX23N3fQ3lnmODxrF9l9rV
+         lkLyvMR/wGWYb7ljYHHBK16ginEmoOdxErpWlDFwEybFQBoSlKbKsJ5bWMzbU2Kn9w
+         Rcpsq2UUmdZSkt3G/6pl7WrcPgi4Y+0c6CKMkgMsAl1TDqcmGQ0esa4tEvwJ8pMZc9
+         JjbmNoIXy5aEA==
+Date:   Thu, 10 Feb 2022 17:14:07 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Yun Zhou <yun.zhou@windriver.com>
+Cc:     "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Xue, Ying" <Ying.Xue@windriver.com>
+Subject: Re: =?utf-8?B?5Zue5aSN?= =?utf-8?Q?=3A?= [PATCH] spi: disable
+ chipselect after complete transfer
+Message-ID: <YgVH310gQ1sK6dlr@sirena.org.uk>
+References: <SN6PR11MB3008AF5619B0B026836FD7429F2F9@SN6PR11MB3008.namprd11.prod.outlook.com>
+ <YgU1+cIlANAkJCAL@sirena.org.uk>
+ <19c69765-8584-2e6b-25b8-7053a5afa5d4@windriver.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="RkQlFNxHBt14WPKO"
+Content-Disposition: inline
+In-Reply-To: <19c69765-8584-2e6b-25b8-7053a5afa5d4@windriver.com>
+X-Cookie: Only God can make random selections.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the irq handler, we fill out 16 bytes differently on 32-bit and
-64-bit platforms. Whether or not you like that, it is a matter of fact.
-But it might not be a fact you well realized until now, because the code
-that loaded the irq info into 4 32-bit words was quite confusing.
-Instead, this commit makes everything explicit by having separate
-(compile-time) branches for 32-bit and 64-bit machines. In the process,
-we now easily see that we were truncating the contribution of
-random_get_entropy() in mix_interrupt_randomness() which we rectify by
-using the correct integer type.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Changes v1->v2:
-- Expand commit message's description of mix_interrupt_randomness()
-  change.
+--RkQlFNxHBt14WPKO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
- drivers/char/random.c | 54 ++++++++++++++++++++++++-------------------
- 1 file changed, 30 insertions(+), 24 deletions(-)
+On Fri, Feb 11, 2022 at 01:01:20AM +0800, Yun Zhou wrote:
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 69b2c7f078d8..324574b03120 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -767,9 +767,12 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
- #endif
- 
- struct fast_pool {
-+	union {
-+		u64 pool64[2];
-+		u32 pool32[4];
-+	};
- 	struct work_struct mix;
- 	unsigned long last;
--	u32 pool[4];
- 	unsigned int count;
- 	u16 reg_idx;
- };
-@@ -780,10 +783,10 @@ struct fast_pool {
-  * collector. It's hardcoded for an 128 bit pool and assumes that any
-  * locks that might be needed are taken by the caller.
-  */
--static void fast_mix(struct fast_pool *f)
-+static void fast_mix(u32 pool[4])
- {
--	u32 a = f->pool[0],	b = f->pool[1];
--	u32 c = f->pool[2],	d = f->pool[3];
-+	u32 a = pool[0],	b = pool[1];
-+	u32 c = pool[2],	d = pool[3];
- 
- 	a += b;			c += d;
- 	b = rol32(b, 6);	d = rol32(d, 27);
-@@ -801,11 +804,10 @@ static void fast_mix(struct fast_pool *f)
- 	b = rol32(b, 16);	d = rol32(d, 14);
- 	d ^= a;			b ^= c;
- 
--	f->pool[0] = a;  f->pool[1] = b;
--	f->pool[2] = c;  f->pool[3] = d;
-+	pool[0] = a;  pool[1] = b;
-+	pool[2] = c;  pool[3] = d;
- }
- 
--
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
- 
- static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-@@ -826,15 +828,19 @@ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
- static void mix_interrupt_randomness(struct work_struct *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
--	u32 pool[ARRAY_SIZE(fast_pool->pool)];
-+	u32 pool[ARRAY_SIZE(fast_pool->pool32)];
- 
- 	/*
- 	 * Since this is the result of a trip through the scheduler, xor in
- 	 * a cycle counter. It can't hurt, and might help.
- 	 */
--	fast_pool->pool[3] ^= random_get_entropy();
-+	if (sizeof(unsigned long) == 8)
-+		fast_pool->pool64[1] ^= random_get_entropy();
-+	else
-+		fast_pool->pool32[3] ^= random_get_entropy();
-+
- 	/* Copy the pool to the stack so that the mixer always has a consistent view. */
--	memcpy(pool, fast_pool->pool, sizeof(pool));
-+	memcpy(pool, fast_pool->pool32, sizeof(pool));
- 	/* We take care to zero out the count only after we're done reading the pool. */
- 	WRITE_ONCE(fast_pool->count, 0);
- 	fast_pool->last = jiffies;
-@@ -851,26 +857,26 @@ void add_interrupt_randomness(int irq)
- 	unsigned long now = jiffies;
- 	cycles_t cycles = random_get_entropy();
- 	unsigned int new_count;
--	u32 c_high, j_high;
--	u64 ip;
- 
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
--	c_high = (sizeof(cycles) > 4) ? cycles >> 32 : 0;
--	j_high = (sizeof(now) > 4) ? now >> 32 : 0;
--	fast_pool->pool[0] ^= cycles ^ j_high ^ irq;
--	fast_pool->pool[1] ^= now ^ c_high;
--	ip = regs ? instruction_pointer(regs) : _RET_IP_;
--	fast_pool->pool[2] ^= ip;
--	fast_pool->pool[3] ^=
--		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
--
--	fast_mix(fast_pool);
-+
-+	if (sizeof(unsigned long) == 8) {
-+		fast_pool->pool64[0] ^= cycles ^ rol64(now, 32) ^ irq;
-+		fast_pool->pool64[1] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+	} else {
-+		fast_pool->pool32[0] ^= cycles ^ irq;
-+		fast_pool->pool32[1] ^= now;
-+		fast_pool->pool32[2] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+		fast_pool->pool32[3] ^= get_reg(fast_pool, regs);
-+	}
-+
-+	fast_mix(fast_pool->pool32);
- 	new_count = ++fast_pool->count;
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
--		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
-+		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 
-@@ -879,7 +885,7 @@ void add_interrupt_randomness(int irq)
- 			 * However, this only happens during boot, and then never
- 			 * again, so we live with it.
- 			 */
--			mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+			mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
- 		}
- 		return;
- 	}
--- 
-2.35.0
+> > > If there are multiple messages, and each message only has one xfer,
+> > > and the cs_change of each xfer is 1, during the transmission of the
+> > > messages, the CS will keep active even until at the end. This must be
+> > > unreasonable.
 
+> > This is not something that most drivers are expected to use, cs_change
+> > should only be being used at all for very unusual hardware and it should
+> > be used even less frequently for the last transfer in a message.  It is
+> > fragile and anyone using it really needs to know what they're doing but
+> > the feature is there.
+
+> Maybe it's not normal to set "cs_change" in the last xfer. However, in
+> most cases, SPI messages come from user space, and these messages may
+
+I would question your use of "most" here...
+
+> come from multiple different applications. We can't make the whole
+> controller fail to work normally due to an inappropriate message of one
+> application.
+
+This is one of the many hazards of using spidev, it is not an especially
+safe or robust interface.  To the extent that there's an issue here it's
+something that should be addressed at the spidev level, though I expect
+that there will be some users who want this facility and would want a
+way to disable any access controls.  I recommend writing device drivers
+in kernel.
+
+> > The feature predates me working on the SPI stack, the obvious examples
+> > would be a device that doesn't actually use chip select where you want
+> > to avoid all chip select changes or if you need to do some other actions
+> > in the middle of a SPI transaction for some reason (which would need a
+> > bunch of system level considerations to actually be safe/sensible like
+> > making sure you're not sharing the SPI bus).
+
+> At present, if "cs_change" is not set, CS will be changed back to inactive
+> after the transmission is completed. If "cs_change" is set, CS will not
+> be changed. This obviously violates the definition of "cs_change".
+
+No, it is exactly the specified behaviour of cs_change.  Please see
+spi.h.
+
+--RkQlFNxHBt14WPKO
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIFR94ACgkQJNaLcl1U
+h9BY7wf/WSXE2QTOHx2SZ5StZsWW87+Ik0mAmgSq4zVW9bQdn/yEA89AMmEbD0iC
+D5lM6yKqqPgX3DL8ZDPxqfUK2t2krs18sWVBX2LdAEjdIpI6SqzCttia5F/5N5l7
+zLpzHmpHct/20u5bHCfD0TGco5N+1lyNvu+Cbqk0oZOPRIfLqV+wo0Zq5TEpe+4Y
+Pme+2MEjVo7XuM98M3CDdNv/G46hA3zWL7EvvwajTfAaalwW06a1hdiGowul0Sb2
+xVTsqGtYXS3Y77SzxXrpxC42hTBkVBNAEBswyziQPw3i3Xyr25tUJjBRqM1XueSd
+14Hwkm7BFHgHnl+AQ2mNXUMQQtDCRg==
+=ERST
+-----END PGP SIGNATURE-----
+
+--RkQlFNxHBt14WPKO--
