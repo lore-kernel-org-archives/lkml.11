@@ -2,86 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D967CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38191C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244375AbiBJQhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:37:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47284 "EHLO
+        id S244488AbiBJQhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:37:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244314AbiBJQhA (ORCPT
+        with ESMTP id S244358AbiBJQhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:37:00 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3221ABB4;
-        Thu, 10 Feb 2022 08:37:01 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: krisman)
-        with ESMTPSA id E765C1F466A9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644511018;
-        bh=tmt/RUTO3WQQdc1xrkJt2F1mfYI1qJzuFPYRdC6aEGI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=TrpH3D44v62W53owTLnERl6bRFcJUoOqSZFhzA9Z2NAZ04ntgsq5uuDzkRhShmCaP
-         x3CpQpx6sZXFSQvfM+V4/gxrbKbm6YKLWpNK+BgqdHVcmGqkwceRJjITJNfEH4YFWk
-         k5xhrMWx12pNnozBT4UE9Nps3G/hcSQA+xdCpltiFp7uIp1huXA65A3tZFtDSaTFPD
-         dMKTpCjqTcpl3VYOSuG6cUjz97gevFUQ3HGlb4WobN2TwlWXbutOmHJ1u2qDx6/iUI
-         rqQ7JA2n0InfGrSqjRJxvur/oboM3itQboY/8VpU/Pgyun8zZqRdNlUK1J0uyP8Fdx
-         +1jZd7q1i0sOg==
-From:   Gabriel Krisman Bertazi <krisman@collabora.com>
-To:     Shreeya Patel <shreeya.patel@collabora.com>, brgl@bgdev.pl
-Cc:     linus.walleij@linaro.org, andy.shevchenko@gmail.com,
-        bgolaszewski@baylibre.com, wsa@kernel.org, kernel@collabora.com,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-i2c@vger.kernel.org, lkp@intel.com
-Subject: Re: [PATCH v4] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-References: <20211116093833.245542-1-shreeya.patel@collabora.com>
-Date:   Thu, 10 Feb 2022 11:36:54 -0500
-In-Reply-To: <20211116093833.245542-1-shreeya.patel@collabora.com> (Shreeya
-        Patel's message of "Tue, 16 Nov 2021 15:08:33 +0530")
-Message-ID: <874k56znix.fsf@collabora.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 10 Feb 2022 11:37:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85B99EAF
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:37:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644511025;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5WySc1RlGnG8P3T39mlzj8E39X8bwgB3Tm12/xbTZl0=;
+        b=TEBgsqv0DHjMI0cXBhHhQzhCNZuGIlGCfS14QEN8L7fD/PUjkEgGKrevAQPsgTS3n5K3D7
+        okDBuSk/7VNNlYo4Coalh0j0+pWR0UXNEy7Hnn4uH//ptTwo9MvJpzwegdW3izSMxm2+u2
+        96JDcsr6AsKwYMnSFtCquzZ9NraVagY=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-45-JU1A0gllMrOCqawAqpTh7A-1; Thu, 10 Feb 2022 11:36:59 -0500
+X-MC-Unique: JU1A0gllMrOCqawAqpTh7A-1
+Received: by mail-ed1-f69.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so3669368edb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5WySc1RlGnG8P3T39mlzj8E39X8bwgB3Tm12/xbTZl0=;
+        b=xmL2PSz6nhMOsDHEdfjomHUcAOr8nBZJwImGyhOEJdwD38GChYXFBD7FymHl098Wil
+         AVOf/8MKWXg+KFKz/psbnTN75jPH5Lxck9oqnml1+SNJf9iT/uc8+NaEs4BZiG8XTa2p
+         D6pPrsh6KnvQKhhXfgOrhIo9ENLkHWwGrw2Xa7aCfyhisefFdDyqvKE6L0ORacrYiiNj
+         WDWjSpQQTI0RrZygI3T45Hcb559f8jdnkWlpXtoGWQ+baVTyO7+0/ctAXWa8Jfn0Vv7M
+         0KaTdIdzdCdigWWoIt/AZ19ttb/ps7o1nLM8VQ7nzNfLuo7oaXZweJP2/Glfw7bxgapb
+         kmTQ==
+X-Gm-Message-State: AOAM533pGRh1IKDykBZl6g8fBlH6FL1YNFIVGRS+Q+nR7gLhrIAuKRFG
+        L9ZZPyJz5REUzFLnWhslxSrYOqfhqwZgP6DEp3B/oTR3/Jmwa07kBo12f46PhB41Jv4wyjrKbCj
+        oKm9B/IG+bN6FASfRKSPhMvnD
+X-Received: by 2002:a17:906:73ce:: with SMTP id n14mr6827048ejl.312.1644511018362;
+        Thu, 10 Feb 2022 08:36:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxDLWA297hpVfTcfKzBU3jAjpUisYVnV/ULWs53msCQUuZNZ+de98gW+3zY9Ew60sUlgr8XXw==
+X-Received: by 2002:a17:906:73ce:: with SMTP id n14mr6827032ejl.312.1644511018158;
+        Thu, 10 Feb 2022 08:36:58 -0800 (PST)
+Received: from [192.168.10.118] ([93.56.170.240])
+        by smtp.googlemail.com with ESMTPSA id m17sm8783672edr.62.2022.02.10.08.36.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 08:36:57 -0800 (PST)
+Message-ID: <042c4562-3eb8-f141-a363-67ec1def8e2c@redhat.com>
+Date:   Thu, 10 Feb 2022 17:33:40 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH MANUALSEL 5.16 5/8] KVM: SVM: Don't kill SEV guest if SMAP
+ erratum triggers in usermode
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, kvm@vger.kernel.org
+References: <20220209185635.48730-1-sashal@kernel.org>
+ <20220209185635.48730-5-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220209185635.48730-5-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Shreeya Patel <shreeya.patel@collabora.com> writes:
+On 2/9/22 19:56, Sasha Levin wrote:
+> From: Sean Christopherson <seanjc@google.com>
+> 
+> [ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
+> 
+> Inject a #GP instead of synthesizing triple fault to try to avoid killing
+> the guest if emulation of an SEV guest fails due to encountering the SMAP
+> erratum.  The injected #GP may still be fatal to the guest, e.g. if the
+> userspace process is providing critical functionality, but KVM should
+> make every attempt to keep the guest alive.
 
-> We are racing the registering of .to_irq when probing the
-> i2c driver. This results in random failure of touchscreen
-> devices.
->
-> Following errors could be seen in dmesg logs when gc->to_irq is NULL
->
-> [2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-> [2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
->
-> To avoid this situation, defer probing until to_irq is registered.
->
-> This issue has been reported many times in past and people have been
-> using workarounds like changing the pinctrl_amd to built-in instead
-> of loading it as a module or by adding a softdep for pinctrl_amd into
-> the config file.
->
-> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
-Hi guys,
+Paolo
 
-This seems to not have reached the Linus tree on 5.17.  If I'm not
-mistaken, it also hasn't reached linux-next as of today. Is there
-anything I'm missing here?
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+> Message-Id: <20220120010719.711476-10-seanjc@google.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
+>   1 file changed, 15 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index 3efada37272c0..d6a4acaa65742 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4530,7 +4530,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
+>   	is_user = svm_get_cpl(vcpu) == 3;
+>   	if (smap && (!smep || is_user)) {
+>   		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
+> -		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+> +
+> +		/*
+> +		 * If the fault occurred in userspace, arbitrarily inject #GP
+> +		 * to avoid killing the guest and to hopefully avoid confusing
+> +		 * the guest kernel too much, e.g. injecting #PF would not be
+> +		 * coherent with respect to the guest's page tables.  Request
+> +		 * triple fault if the fault occurred in the kernel as there's
+> +		 * no fault that KVM can inject without confusing the guest.
+> +		 * In practice, the triple fault is moot as no sane SEV kernel
+> +		 * will execute from user memory while also running with SMAP=1.
+> +		 */
+> +		if (is_user)
+> +			kvm_inject_gp(vcpu, 0);
+> +		else
+> +			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+>   	}
+>   
+>   	return false;
 
-This is required to prevent spurious probe crashes of devices like this
-FocalTech touchscreen, FT3528, when using pinctrl-amd. We've been
-carrying it downstream for quite a while.
-
-Thanks,
-
--- 
-Gabriel Krisman Bertazi
