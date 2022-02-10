@@ -2,83 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F328C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232661AbiBJBbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:31:05 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37438 "EHLO
+        id S232820AbiBJBbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:31:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232563AbiBJBbB (ORCPT
+        with ESMTP id S232674AbiBJBbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:31:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0712F22527;
-        Wed,  9 Feb 2022 17:31:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AD8F616B2;
-        Thu, 10 Feb 2022 01:06:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEB8C340E7;
-        Thu, 10 Feb 2022 01:06:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644455172;
-        bh=OBeVERzluy4DArHFC4mn3YZzQAgsdo26IY1UOV+S3po=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=neW6q5TJZCtjBdRjuhBPe+fIQsoITAs+gqkje+/Oguku7udHSpMNRMzCKSdgscQn6
-         7FmDKj+IO9dmg0svmZqafQNZ6HuHSeVuosT1ezyk+J5yEQbEWfb9JtxwbLHkUTBMBW
-         XktUDiEeL0sGM5Z+elyaa3276MG8A10Qk7Gb0/Or0qEMecOdvGmIpIyLuqbgvC0Cam
-         +PDuhw3lYYM8bFxNLSOWHdJOT/Tds/blKfKqAhEBhzcKvSyWiuwEvbHRoMElsQZ3z8
-         dnc6ltsVSwxCXn54z+6MxGujQXS6V4VyuZrRYWRuT52gneoQF8PV+TtD+ciQPvODcG
-         WsCeJxOtKjYaQ==
-Date:   Wed, 9 Feb 2022 17:06:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "lina.wang" <lina.wang@mediatek.com>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        "Kernel hackers" <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>, <zhuoliang@mediatek.com>,
-        <chao.song@mediatek.com>
-Subject: Re: [PATCH] net: fix wrong network header length
-Message-ID: <20220209170610.10694339@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
-References: <20220208025511.1019-1-lina.wang@mediatek.com>
-        <0300acca47b10384e6181516f32caddda043f3e4.camel@redhat.com>
-        <CANP3RGe8ko=18F2cr0_hVMKw99nhTyOCf4Rd_=SMiwBtQ7AmrQ@mail.gmail.com>
-        <a62abfeb0c06bf8be7f4fa271e2bcdef9d86c550.camel@redhat.com>
-        <5ca86c46109794a627e6e2a62b140963217984a0.camel@mediatek.com>
+        Wed, 9 Feb 2022 20:31:11 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCB122533
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:31:12 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id 9so4612143pfx.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:31:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=JNuH55wTGRw2CNKCDmZpYRQ9FVq8mQbAJA/99Xvogog=;
+        b=JGXX4ykemXQNdoTLEmz0NjLVOPq9hzvUeU/SBBNHvgfOoFfHFc+2JBBtgYlb7ih2AS
+         4MxIlGUzOmnpldQOxuuouEQV+inZjrhMPm+YefMjebVbO/PY3af/iTvmMncFcZuOFISu
+         FFa+lu4cPaKNs2fi1PSTSDYSYrdm1lrFYDct028sneLCxdWMIfE7kAbEgFWpT5AEgozl
+         pUQCwY93U2MpLvHdWRj2aPQXvvtkquNep2RlBKFeZ1DzwQ0flb5w1lAYxHLwUay1Kaeo
+         rz7lqe+ip3zF8wlv5YskSHt21q070KJfLHKsI+uEzYZ5Pfeaa946MbWyVvpkbcwPj0Lh
+         9UUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=JNuH55wTGRw2CNKCDmZpYRQ9FVq8mQbAJA/99Xvogog=;
+        b=FDAAiEaVBlnza2n/AUgm1/7iI4KFHJU6GzTm3qn4hGqtEJgo7SUZFFspddV8yKbYiI
+         YADghybnpCc96PHi75s4K5MW16kEwcdZiaugojYex4lGredUhPmLuqLjvgDpgh1w/arv
+         IOQInEPacVoZmwxw/fkX29u1AcI1CJXEVDfKrVRX3ZvxoQnxjAFp7GdUzc3F6yetEqOb
+         bZ0q5z9UxvolS/NSNvuJC6/9mEDNlBR/Eawf92kdq5avr3Ef3Zj84DSi5N5SvYdM0F/W
+         XrUPQ+0BsVWwjF4xL5xf39jnjAhFDR2iOuMNv3VFEEhwruAzHWApWN6eUaq/0BBDRdTo
+         78Ig==
+X-Gm-Message-State: AOAM532XNmu9DhidoHAFf0nxrSNs0Gp/hZTGQr7RjlgTlgZQYuFtw4HA
+        Wz+LPDsvOVag6oFZ5hZ4GUwWbg==
+X-Google-Smtp-Source: ABdhPJz8Wt+8lcJKZREuw8154zIwS0J+JbpHaY9co37OSVxEQFfth+/1EIUNNtqtIRoSxcqsPjQ3uA==
+X-Received: by 2002:a05:6a00:1a52:: with SMTP id h18mr5152362pfv.72.1644456672247;
+        Wed, 09 Feb 2022 17:31:12 -0800 (PST)
+Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
+        by smtp.gmail.com with ESMTPSA id lr8sm58982pjb.11.2022.02.09.17.31.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 17:31:11 -0800 (PST)
+From:   Kevin Hilman <khilman@baylibre.com>
+To:     Christian Hewitt <christianshewitt@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian Hewitt <christianshewitt@gmail.com>
+Subject: Re: [PATCH] arm64: dts: meson: remove CPU opps below 1GHz for G12B/SM1
+In-Reply-To: <20220209135535.29547-1-christianshewitt@gmail.com>
+References: <20220209135535.29547-1-christianshewitt@gmail.com>
+Date:   Wed, 09 Feb 2022 17:31:11 -0800
+Message-ID: <7h7da3o6cg.fsf@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 18:25:07 +0800 lina.wang wrote:
-> We use NETIF_F_GRO_FRAGLIST not for forwarding scenary, just for
-> software udp gro. Whatever NETIF_F_GRO_FRAGLIST or NETIF_F_GRO_FWD,
-> skb_segment_list should not have bugs.
-> 
-> We modify skb_segment_list, not in epbf. One point is traversing the
-> segments costly, another is what @Maciej said, *other* helper may have
-> the same problem. In skb_segment_list, it calls
-> skb_headers_offset_update to update different headroom, which implys
-> header maybe different.
+Christian Hewitt <christianshewitt@gmail.com> writes:
 
-Process notes:
- - the patch didn't apply so even if the discussion concludes that 
-   the patch was good you'll need to rebase on netdev/net and repost;
- - please don't top post.
+> Amlogic G12B and SM1 devices experience CPU stalls and random board
+> wedges when the system idles and CPU cores clock down to lower opp
+> points. Recent vendor kernels include a change to remove 100-250MHz
+> (with no explanation) [0] but other downstream sources also remove
+> the 500/667MHz points (also with no explanation). Unless 100-667Mhz
+> opps are removed or the CPU governor forced to performance, stalls
+> are observed, so let's remove them an improve stability/uptime.
+
+Just curious: what CPUfreq governor do you use by default for the
+LibreELEC kernel?
+
+Your patch greatly improves the stability I'm seeing, but doesn't quite
+elimitate it.
+
+I'm testing suspend/resume in a loop on VIM3, and with schedutil
+(default) or ondemand, it eventually hangs.  With either powersave or
+performance it's stable.  
+
+Kevin
