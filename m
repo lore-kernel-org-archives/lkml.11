@@ -2,192 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04542C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE1EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243830AbiBJPzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:55:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45246 "EHLO
+        id S243839AbiBJPzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:55:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243824AbiBJPzC (ORCPT
+        with ESMTP id S238388AbiBJPzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:55:02 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D7EFC2C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:55:02 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id w11so10398903wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:55:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gQDU3n0e11Xg2+7UZznvauAxifO/32EZJQ/CMSCp/cs=;
-        b=V844y5pKhCA2MbojDtVXu5FIu2uj/NkVHCvk21W67ci8RQSvzBPLQibKTq8ndC8xEp
-         /6lFy/eeOsQImxXKw4UhBgi94Da2VYfKMRMvMIZ3LbEswFXqmKr/89BLMVY3DQf0C5gn
-         jpfdPnfo81LkkCtqF4O41kjXgdEKa7EWh4gFe41x8mDCZXNaSwgZl0KWmf91aq5+EiTZ
-         8jbdSqsAlpfeNlnfTGi/5j0ArHAyRI4+OkzmSliRQFfl8zads48mqhkMnYeQjU6zS2SO
-         8zOwtJErL/EkrgGGUmDvSVce79Grxx7W0OsCqqfyl/XcYmpkzqxDvKefc2UDZu0VCLEE
-         N+WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=gQDU3n0e11Xg2+7UZznvauAxifO/32EZJQ/CMSCp/cs=;
-        b=N8a8PE5PdahHs3ir1j9q1Gdsfx7uhMjhKCNirduelARZC9Ztpxpn/Fajtz1/XPp0G/
-         JcVihe6Lk3pXbUa8BzXIhxz4qFonoW5NoAKkzAK2TACGwBFV9pYfmtFsnpC2OwhyjHeo
-         bpiWLDC8ID43NR+g766ixoaT1GhQGBfXOC5KhWc8/wfhA2tqX0Y/FFEHY3znKtYpt50D
-         1Uc72nL2KuG4LhoaVunrMblgRO2R+qbpZRP7jbdjEj8aw2Es2goOe9JD535dEsjGwoGA
-         fGsSCx7g6rjOd5M+tBbt3E8c1kQtbjoAyfqWxJ6gszm2efpWLV4ZUN+9FkROUkA/zTCS
-         KoIw==
-X-Gm-Message-State: AOAM532nYUBffXunS5vX15szVFj4yZOPcawr5WrYzX2moIBuSeaYUBlw
-        tz+J1bkfiveFnjcd81vx/kcS3PmA3R6axg==
-X-Google-Smtp-Source: ABdhPJw1iWrj+ENDvwHvi8dSh+4uDNTmnt8/bAdZlwC5WT33CxX/cREDi31wWF2rlbjKTt+awhJr4w==
-X-Received: by 2002:adf:f990:: with SMTP id f16mr6761115wrr.27.1644508500767;
-        Thu, 10 Feb 2022 07:55:00 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id d4sm21917972wri.39.2022.02.10.07.54.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 07:55:00 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     krzysztof.kozlowski@canonical.com, linux@roeck-us.net,
-        robh+dt@kernel.org, wim@linux-watchdog.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-watchdog@vger.kernel.org,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v3] dt-bindings: watchdog: convert faraday,ftwdt010 to yaml
-Date:   Thu, 10 Feb 2022 15:54:50 +0000
-Message-Id: <20220210155450.2939129-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 10:55:06 -0500
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9626C2D;
+        Thu, 10 Feb 2022 07:55:06 -0800 (PST)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21AFsWxL026635
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 10:54:33 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 97AF715C0040; Thu, 10 Feb 2022 10:54:32 -0500 (EST)
+Date:   Thu, 10 Feb 2022 10:54:32 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Jan Kara <jack@suse.cz>, Qian Cai <quic_qiancai@quicinc.com>,
+        Jan Kara <jack@suse.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-ext4@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
+Message-ID: <YgU1ONDsn9xgs/CG@mit.edu>
+References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
+ <20220209181010.gfn66rvip56i54df@quack3.lan>
+ <20220209201137.GY4285@paulmck-ThinkPad-P17-Gen-1>
+ <YgSdlew4B5FWY6Qm@mit.edu>
+ <20220210054357.GH4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210054357.GH4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Converts watchdog/faraday,ftwdt010.txt to yaml.
-This permits to detect missing properties like clocks and resets or
-compatible like moxa,moxart-watchdog.
+On Wed, Feb 09, 2022 at 09:43:57PM -0800, Paul E. McKenney wrote:
+> So the typical RCU approach (not involving SLAB_TYPESAFE_BY_RCU)
+> is to take the grace period at the time of the free.  This can be
+> done synchronously using synchronize_rcu(), but is often instead done
+> asynchronously using call_rcu() or kfree_rcu().  So in this case,
+> you don't need synchronize_rcu() on allocation because the required
+> grace period already happened at *free() time.
+> 
+> But there are a few situations where it makes sense to free blocks that
+> readers might still be referencing.  Readers must then add validity
+> checks to detect this case, and also prevent freeing, for example,
+> using a per-block spinlock for synchronization.  For example, a reader
+> might acquire a spinlock in the block to prevent changes, recheck the
+> lookup key, and if the key does not match, release the lock and pretend
+> not to have found the block.  If the key does match, anything attempting
+> to delete and free the block will be spinning on that same spinlock.
+> 
+> And so if you specify SLAB_TYPESAFE_BY_RCU, the slab allocator is
+> guaranteeing type safety to RCU readers instead of the usual existence
+> guarantee.  A memory block might be freed out from under an RCU reader,
+> but its type will remain the same.  This means that the grace period
+> happens internally to the slab allocator when a slab is returned to
+> the system.
+> 
+> So either the validation checks are quite novel, the kmem_cache_zalloc()
+> calls should be replaced by kmem_cache_alloc() plus validation checks,
+> or the SLAB_TYPESAFE_BY_RCU should be removed.
+> 
+> Just out of curiosity, what is your mental model of SLAB_TYPESAFE_BY_RCU?
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
-Changes since v1:
-- Added myself as maintainer as requested by Linus
-- Added $ref to watchdog.yaml
-- Removed useless quotes
-- Added blank lines between properties
-- Removed timeout-sec as already provided by watchdog.yaml
+Hmm, so the code in question the flag was called SLAB_DESTROY_BY_RCU
+in June 205 by commit de92c8caf16c ("jbd2: speedup
+jbd2_journal_get_[write|undo]_access()"), and it was written by Jan.
+I don't see anything to make sure the jh doesn't get freed until after
+the grace period, and so that looks like a problem unless I'm missing
+something.   Jan, what do you think?
 
-Change since v2:
-- rewrite compatible section
-
- .../bindings/watchdog/faraday,ftwdt010.txt    | 22 -------
- .../bindings/watchdog/faraday,ftwdt010.yaml   | 66 +++++++++++++++++++
- 2 files changed, 66 insertions(+), 22 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
- create mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-
-diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
-deleted file mode 100644
-index 9ecdb502e605..000000000000
---- a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
-+++ /dev/null
-@@ -1,22 +0,0 @@
--Faraday Technology FTWDT010 watchdog
--
--This is an IP part from Faraday Technology found in the Gemini
--SoCs and others.
--
--Required properties:
--- compatible : must be one of
--  "faraday,ftwdt010"
--  "cortina,gemini-watchdog", "faraday,ftwdt010"
--- reg : shall contain base register location and length
--- interrupts : shall contain the interrupt for the watchdog
--
--Optional properties:
--- timeout-sec : the default watchdog timeout in seconds.
--
--Example:
--
--watchdog@41000000 {
--	compatible = "faraday,ftwdt010";
--	reg = <0x41000000 0x1000>;
--	interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
--};
-diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-new file mode 100644
-index 000000000000..e7b90ba41093
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/faraday,ftwdt010.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Faraday Technology FTWDT010 watchdog
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+  - Corentin Labbe <clabbe@baylibre.com>
-+
-+description: |
-+  This is an IP part from Faraday Technology found in the Gemini
-+  SoCs and others.
-+
-+allOf:
-+  - $ref: "watchdog.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: faraday,ftwdt010
-+      - items:
-+        - enum:
-+          - cortina,gemini-watchdog
-+          - moxa,moxart-watchdog
-+        - const: faraday,ftwdt010
-+
-+  reg:
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: PCLK
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    watchdog@41000000 {
-+      compatible = "faraday,ftwdt010";
-+      reg = <0x41000000 0x1000>;
-+      interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-+    };
-+  - |
-+    watchdog: watchdog@98500000 {
-+      compatible = "moxa,moxart-watchdog", "faraday,ftwdt010";
-+      reg = <0x98500000 0x10>;
-+      clocks = <&clk_apb>;
-+      clock-names = "PCLK";
-+    };
-+...
--- 
-2.34.1
-
+					- Ted
