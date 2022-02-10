@@ -2,224 +2,542 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1496EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0059C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231561AbiBJBWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:22:40 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41662 "EHLO
+        id S231700AbiBJBW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:22:56 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:42538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231670AbiBJBW1 (ORCPT
+        with ESMTP id S231476AbiBJBWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:22:27 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742511EC42
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:22:28 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id y23so4389779oia.13
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:22:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=JX86RhdwH+HLeTAGV/cCxr8AGeUCEvZg7XB+IyNN+Wk=;
-        b=EJF5FTN2Wdt2IF113jUflgIzZd+oNnhqt2OOA9FEiEaXCtPLc51Gs4gSDh5YXi1Nl6
-         C9WGK3xhauPZdoWjmTqvkqrnVx1xrOQZAowXp+Uor0EvuPuYrXMvWbT0NoutuPcWSFrl
-         jlfUf29FdhVJYEXekEvF2Bh2y+xC7bG/lHR+o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=JX86RhdwH+HLeTAGV/cCxr8AGeUCEvZg7XB+IyNN+Wk=;
-        b=IwdYgV+3ec40Hf2W2wlH6XYG/lJpAxHJbzk2ODBt3djcHpus1kqHO/+pzu3EueGn6a
-         pRoo9yRhMb9KTR7BQaYmviJGnfJ1uzWdI2q2I26qmLT83I6V3mVyK355vaLwewObT2ic
-         q8zIpOCeUyn7GB5+se6CzJOZlFADDSs2+Ox8HOVns6p/CVDxRHk7txOxhjGhYXGEFDs4
-         jlcv0swlkkXYm31N+vBM5qn/ehEW9iKPkbsMNIwUvRVCbysrzsRorbGHDtChEEtu2Rfv
-         eL7P6pPDVp7y2ypGcBOaKZH6MrioQFbSo1IjzdWzCMw95nngTpY9q+K3EZpjUfUEytvV
-         Sb4Q==
-X-Gm-Message-State: AOAM532RJdJ6gKbO+p6IW4xxg0S2o15BkWJKTXGitlw8oEhxEhAXrEfS
-        OkcEm0N0q0yKrvZguHFaE7aptGK4FZ+ae2YnnKMZLw==
-X-Google-Smtp-Source: ABdhPJwIYJ3qnYUXQyFs3QSrJgHo6iuLeKq4ZRLVZ7VptIB57ekiTaeA9YPWqwH2NLVPlj9TKL1me+nBEG8AZuOe5ik=
-X-Received: by 2002:a05:6808:190f:: with SMTP id bf15mr68505oib.40.1644456147764;
- Wed, 09 Feb 2022 17:22:27 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Feb 2022 17:22:27 -0800
+        Wed, 9 Feb 2022 20:22:53 -0500
+Received: from condef-08.nifty.com (condef-08.nifty.com [202.248.20.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C1E767E;
+        Wed,  9 Feb 2022 17:22:54 -0800 (PST)
+Received: from conssluserg-05.nifty.com ([10.126.8.84])by condef-08.nifty.com with ESMTP id 21A0aquJ004113;
+        Thu, 10 Feb 2022 09:36:52 +0900
+Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 21A0aO2n010388;
+        Thu, 10 Feb 2022 09:36:25 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 21A0aO2n010388
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1644453385;
+        bh=gxjASy4yU28gsqLNibgVXOH1h+qkwzKge336qQ/QGKg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YP1SsRn3KwHVLZ79mE1I3F7r3IS5RWRn29Uc0PxFoIjB0qnkABndrRgSnw391Ip1j
+         Eb8llS7r2oPcl/NvkEqZY3Tq0mM5Nb3D44bRWr2fpxblwm+LWjN94Newk62rMDmlYV
+         gJqYLDt6e5zPbE1UCS1Z2x6EiW1RTW8al+GfyFeJmfeT0pV2a5QHWCR6LArh6+t/Xd
+         oXDhd/eyBkXLRt6BZbARD3UPmQ+P08N4ThwbAXWXAc4kgaKdLp+eiP1BMn9KWaO9mX
+         JoF3dvuW6Suoo09URHwbJPy3Pgk311Zjk0ZVJ3ae9vEy2iETpKaThr96HfNAVcwGnD
+         ACbDf64i6GO/g==
+X-Nifty-SrcIP: [209.85.216.50]
+Received: by mail-pj1-f50.google.com with SMTP id v13-20020a17090ac90d00b001b87bc106bdso6853913pjt.4;
+        Wed, 09 Feb 2022 16:36:25 -0800 (PST)
+X-Gm-Message-State: AOAM530q8UDdiBzyDI3K5VaPpDV9LMOIQXbMeRmA3HdSbhSIk3ImhBk/
+        dm6fmNgqV5XJ+kQvqui1nDlgxJ+EibAoaI/QnoY=
+X-Google-Smtp-Source: ABdhPJwNXUBTxEmzEGG7AZEUSnIuMPjraLWofy9i0YS+D8Y60QNIpGltEJ10tBO4+xCr+apLDhQVpV5hWojAfFrNN1c=
+X-Received: by 2002:a17:903:22c5:: with SMTP id y5mr2792908plg.99.1644453383904;
+ Wed, 09 Feb 2022 16:36:23 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1644396932-17932-5-git-send-email-quic_sbillaka@quicinc.com>
-References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com> <1644396932-17932-5-git-send-email-quic_sbillaka@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 9 Feb 2022 17:22:27 -0800
-Message-ID: <CAE-0n53vzv+NFWfkFktAJFEpo0Ss1=OpNn1saXXx5A5xAJZ3xA@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] drm/msm/dp: Add driver support to utilize drm panel
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        agross@kernel.org, airlied@linux.ie, bjorn.andersson@linaro.org,
-        daniel@ffwll.ch, devicetree@vger.kernel.org, dianders@chromium.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        krzysztof.kozlowski@canonical.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        robh+dt@kernel.org, sam@ravnborg.org, seanpaul@chromium.org,
-        thierry.reding@gmail.com
-Cc:     quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com,
-        quic_khsieh@quicinc.com, quic_mkrishn@quicinc.com,
-        quic_vproddut@quicinc.com,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+References: <20220208184309.148192-1-nick.alcock@oracle.com> <20220208184309.148192-3-nick.alcock@oracle.com>
+In-Reply-To: <20220208184309.148192-3-nick.alcock@oracle.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 10 Feb 2022 09:35:45 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAToG8ozUcMcro4osBKPiisqW4mpo+=uBeMUmVfztnNMDA@mail.gmail.com>
+Message-ID: <CAK7LNAToG8ozUcMcro4osBKPiisqW4mpo+=uBeMUmVfztnNMDA@mail.gmail.com>
+Subject: Re: [PATCH v8 2/6] kbuild: add modules_thick.builtin
+To:     Nick Alcock <nick.alcock@oracle.com>
+Cc:     "Luis R. Rodriguez" <mcgrof@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>, bas@baslab.org,
+        tglozar@gmail.com, Ast-x64@protonmail.com, viktor.malik@gmail.com,
+        Daniel Xu <dxu@dxuuu.xyz>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eugene Loh <eugene.loh@oracle.com>,
+        Kris Van Hees <kris.van.hees@oracle.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Sankeerth Billakanti (2022-02-09 00:55:32)
-> Add support in the DP driver to utilize the custom eDP panels
-> from drm/panels.
+On Wed, Feb 9, 2022 at 3:44 AM Nick Alcock <nick.alcock@oracle.com> wrote:
 >
-> An eDP panel is always connected to the platform. So, the eDP
-> connector can be reported as always connected. The display mode
-> will be sourced from the panel. The panel mode will be set after
-> the link training is completed.
+> This is similar to modules.builtin, and constructed in a similar way to
+> the way that used to be built before commit
+> 8b41fc4454e36fbfdbb23f940d023d4dece2de29, via tristate.conf inclusion
+> and recursive concatenation up the tree. Unlike modules.builtin,
+> modules_thick.builtin givs the names of the object files that make up
+> modules that are comprised of more than one object file, using a syntax
+> similar to that of makefiles, e.g.:
 >
-> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> crypto/crypto.o: crypto/api.o crypto/cipher.o crypto/compress.o crypto/memneq.o
+> crypto/crypto_algapi.o: crypto/algapi.o crypto/proc.o crypto/scatterwalk.o
+> crypto/aead.o:
+> crypto/geniv.o:
+>
+> (where the latter two are single-file modules).
+>
+> An upcoming commit will use this mapping to populate /proc/kallmodsyms.
+>
+> A parser is included that yields a stram of (module, objfile name[])
+> mappings: it's a bit baroque, but then parsing text files in C is quite
+> painful, and I'd rather put the complexity in here than in its callers.
+> The parser is not built in this commit, nor does it have any callers
+> yet; nor is any rule added that causes modules_thick.builtin to actually
+> be constructed.  (Again, see a later commit for that.)
+>
+> I am not wedded to the approach used to construct this file, but I don't
+> see any other way to do it despite spending a week or so trying to tie
+> it into Kbuild without using a separate Makefile.modbuiltin: unlike the
+> names of builtin modules (which are also recorded in the source files
+> themseves via MODULE_*() macros) the mapping from object file name to
+> built-in module name is not recorded anywhere but in the makefiles
+> themselves, so we have to at least reparse them with something to
+> indicate the builtin-ness of each module (i.e., tristate.conf) if we are
+> to figure out which modules are built-in and which are not.
+>
+> Signed-off-by: Nick Alcock <nick.alcock@oracle.com>
+> Reviewed-by: Kris Van Hees <kris.van.hees@oracle.com>
+
+
+modules.builtin was initially implemented in a terrible way,
+hence I cleaned up the code and removed the double recursion
+of the source tree.
+
+Honestly, I do not want to see you bringing back
+all the bloat.
+
+
+
+
+
 > ---
+>  .gitignore                  |   1 +
+>  Documentation/dontdiff      |   1 +
+>  Makefile                    |  19 +++-
+>  scripts/Kbuild.include      |   6 ++
+>  scripts/Makefile.modbuiltin |  56 ++++++++++
+>  scripts/modules_thick.c     | 200 ++++++++++++++++++++++++++++++++++++
+>  scripts/modules_thick.h     |  48 +++++++++
+>  7 files changed, 330 insertions(+), 1 deletion(-)
+>  create mode 100644 scripts/Makefile.modbuiltin
+>  create mode 100644 scripts/modules_thick.c
+>  create mode 100644 scripts/modules_thick.h
 >
-> Changes in v3:
->   None
+> diff --git a/.gitignore b/.gitignore
+> index 7afd412dadd2..b49cd96f587a 100644
+> --- a/.gitignore
+> +++ b/.gitignore
+> @@ -49,6 +49,7 @@
+>  *.zst
+>  Module.symvers
+>  modules.order
+> +modules_thick.builtin
 >
->  drivers/gpu/drm/msm/dp/dp_display.c |  8 ++++++
->  drivers/gpu/drm/msm/dp/dp_drm.c     | 54 +++++++++++++++++++++++++++++++++----
->  drivers/gpu/drm/msm/dp/dp_parser.h  |  3 +++
->  3 files changed, 60 insertions(+), 5 deletions(-)
+>  #
+>  # Top-level generic files
+> diff --git a/Documentation/dontdiff b/Documentation/dontdiff
+> index 910b30a2a7d9..6a78988547d0 100644
+> --- a/Documentation/dontdiff
+> +++ b/Documentation/dontdiff
+> @@ -183,6 +183,7 @@ modules.builtin
+>  modules.builtin.modinfo
+>  modules.nsdeps
+>  modules.order
+> +modules_thick.builtin
+>  modversions.h*
+>  nconf
+>  nconf-cfg
+> diff --git a/Makefile b/Makefile
+> index 199b6f388484..5e823fe8390f 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -1470,6 +1470,23 @@ __modinst_pre:
 >
-> diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-> index 7cc4d21..410fda4 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_display.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_display.c
-> @@ -1513,6 +1513,10 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
->                 return -EINVAL;
->         }
+>  endif # CONFIG_MODULES
 >
-> +       /* handle eDP on */
-
-This comment is obvious. Please remove.
-
-> +       if (dp->connector_type == DRM_MODE_CONNECTOR_eDP)
-> +               dp_hpd_plug_handle(dp_display, 0);
+> +# modules_thick.builtin maps from kernel modules (or rather the object file
+> +# names they would have had had they not been built in) to their constituent
+> +# object files: we can use this to determine which modules any given object
+> +# file is part of.  (We cannot eliminate the slight redundancy here without
+> +# double-expansion.)
 > +
->         mutex_lock(&dp_display->event_mutex);
->
->         /* stop sentinel checking */
-> @@ -1577,6 +1581,10 @@ int msm_dp_display_disable(struct msm_dp *dp, struct drm_encoder *encoder)
->
->         dp_display = container_of(dp, struct dp_display_private, dp_display);
->
-> +       /* handle edp off */
-
-This comment is obvious. Please remove.
-
-> +       if (dp->connector_type == DRM_MODE_CONNECTOR_eDP)
-> +               dp_hpd_unplug_handle(dp_display, 0);
+> +modthickbuiltin-files := $(addsuffix /modules_thick.builtin, $(build-dirs))
 > +
->         mutex_lock(&dp_display->event_mutex);
->
->         /* stop sentinel checking */
-> diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
-> index d4d360d..12fa8c1 100644
-> --- a/drivers/gpu/drm/msm/dp/dp_drm.c
-> +++ b/drivers/gpu/drm/msm/dp/dp_drm.c
-> @@ -39,6 +39,10 @@ static enum drm_connector_status dp_connector_detect(struct drm_connector *conn,
->
->         dp = to_dp_connector(conn)->dp_display;
->
-> +       /* eDP is always  connected */
-> +       if (dp->connector_type == DRM_MODE_CONNECTOR_eDP)
-> +               return connector_status_connected;
-
-Why not implement different connector ops for eDP and then not implement
-this function at all in that case?
-
+> +modules_thick.builtin: $(modthickbuiltin-files)
+> +       $(Q)$(AWK) '!x[$$0]++' $(addsuffix /$@, $(build-dirs)) > $@
 > +
->         DRM_DEBUG_DP("is_connected = %s\n",
->                 (dp->is_connected) ? "true" : "false");
+> +# tristate.conf is not included from this Makefile. Add it as a prerequisite
+> +# here to make it self-healing in case somebody accidentally removes it.
+> +$(modthickbuiltin-files): include/config/tristate.conf
+> +       $(Q)$(MAKE) $(modbuiltin)=$(patsubst %/modules_thick.builtin,%,$@) builtin-file=modules_thick.builtin
+> +
+> +
+>  ###
+>  # Cleaning is done on three levels.
+>  # make clean     Delete most generated files
+> @@ -1849,7 +1866,7 @@ clean: $(clean-dirs)
+>                 -o -name '*.lex.c' -o -name '*.tab.[ch]' \
+>                 -o -name '*.asn1.[ch]' \
+>                 -o -name '*.symtypes' -o -name 'modules.order' \
+> -               -o -name '.tmp_*.o.*' \
+> +               -o -name '.tmp_*.o.*' -o -name modules_thick.builtin \
+>                 -o -name '*.c.[012]*.*' \
+>                 -o -name '*.ll' \
+>                 -o -name '*.gcno' \
+> diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+> index 3514c2149e9d..167bbbd5fdf5 100644
+> --- a/scripts/Kbuild.include
+> +++ b/scripts/Kbuild.include
+> @@ -74,6 +74,12 @@ endef
+>  # $(Q)$(MAKE) $(build)=dir
+>  build := -f $(srctree)/scripts/Makefile.build obj
 >
-> @@ -123,6 +127,35 @@ static enum drm_mode_status dp_connector_mode_valid(
->         return dp_display_validate_mode(dp_disp, mode->clock);
->  }
->
-> +static int edp_connector_get_modes(struct drm_connector *connector)
+> +###
+> +# Shorthand for $(Q)$(MAKE) -f scripts/Makefile.modbuiltin obj=
+> +# Usage:
+> +# $(Q)$(MAKE) $(modbuiltin)=dir
+> +modbuiltin := -f $(srctree)/scripts/Makefile.modbuiltin obj
+> +
+>  ###
+>  # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.dtbinst obj=
+>  # Usage:
+> diff --git a/scripts/Makefile.modbuiltin b/scripts/Makefile.modbuiltin
+> new file mode 100644
+> index 000000000000..a27b692ea795
+> --- /dev/null
+> +++ b/scripts/Makefile.modbuiltin
+> @@ -0,0 +1,56 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +# ==========================================================================
+> +# Generating modules_thick.builtin
+> +# ==========================================================================
+> +
+> +src := $(obj)
+> +
+> +PHONY := __modbuiltin
+> +__modbuiltin:
+> +
+> +include include/config/auto.conf
+> +# tristate.conf sets tristate variables to uppercase 'Y' or 'M'
+> +# That way, we get the list of built-in modules in obj-Y
+> +include include/config/tristate.conf
+> +
+> +include scripts/Kbuild.include
+> +
+> +ifdef building_out_of_srctree
+> +# Create output directory if not already present
+> +_dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
+> +endif
+> +
+> +# The filename Kbuild has precedence over Makefile
+> +kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+> +kbuild-file := $(if $(wildcard $(kbuild-dir)/Kbuild),$(kbuild-dir)/Kbuild,$(kbuild-dir)/Makefile)
+> +include $(kbuild-file)
+> +
+> +include scripts/Makefile.lib
+> +
+> +modthickbuiltin-subdirs := $(patsubst %,%/modules_thick.builtin, $(subdir-ym))
+> +modthickbuiltin-target  := $(obj)/modules_thick.builtin
+> +
+> +__modbuiltin: $(obj)/$(builtin-file) $(subdir-ym)
+> +       @:
+> +
+> +$(modthickbuiltin-target): $(subdir-ym) FORCE
+> +       $(Q) rm -f $@
+> +       $(Q) $(foreach mod-o, $(filter %.o,$(obj-Y)),\
+> +               printf "%s:" $(addprefix $(obj)/,$(mod-o)) >> $@; \
+> +               printf " %s" $(sort $(strip $(addprefix $(obj)/,$($(mod-o:.o=-objs)) \
+> +                       $($(mod-o:.o=-y)) $($(mod-o:.o=-Y))))) >> $@; \
+> +               printf "\n" >> $@; ) \
+> +       cat /dev/null $(modthickbuiltin-subdirs) >> $@;
+> +
+> +PHONY += FORCE
+> +
+> +FORCE:
+> +
+> +# Descending
+> +# ---------------------------------------------------------------------------
+> +
+> +PHONY += $(subdir-ym)
+> +$(subdir-ym):
+> +       $(Q)$(MAKE) $(modbuiltin)=$@ builtin-file=$(builtin-file)
+> +
+> +.PHONY: $(PHONY)
+> diff --git a/scripts/modules_thick.c b/scripts/modules_thick.c
+> new file mode 100644
+> index 000000000000..9a15e99c1330
+> --- /dev/null
+> +++ b/scripts/modules_thick.c
+> @@ -0,0 +1,200 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * A simple modules_thick reader.
+> + *
+> + * (C) 2014, 2021 Oracle, Inc.  All rights reserved.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + */
+> +
+> +#include <errno.h>
+> +#include <stdio.h>
+> +#include <stdlib.h>
+> +#include <string.h>
+> +
+> +#include "modules_thick.h"
+> +
+> +/*
+> + * Read a modules_thick.builtin file and translate it into a stream of
+> + * name / module-name pairs.
+> + */
+> +
+> +/*
+> + * Construct a modules_thick.builtin iterator.
+> + */
+> +struct modules_thick_iter *
+> +modules_thick_iter_new(const char *modules_thick_file)
 > +{
-> +       struct msm_dp *dp;
+> +       struct modules_thick_iter *i;
 > +
-> +       if (!connector)
-
-Is this check really necessary? Why doesn't drm do it in higher layers?
-
-> +               return 0;
+> +       i = calloc(1, sizeof(struct modules_thick_iter));
+> +       if (i == NULL)
+> +               return NULL;
 > +
-> +       dp = to_dp_connector(connector)->dp_display;
+> +       i->f = fopen(modules_thick_file, "r");
 > +
-> +       return drm_bridge_get_modes(dp->panel_bridge, connector);
+> +       if (i->f == NULL) {
+> +               fprintf(stderr, "Cannot open builtin module file %s: %s\n",
+> +                       modules_thick_file, strerror(errno));
+> +               return NULL;
+> +       }
+> +
+> +       return i;
 > +}
 > +
-> +static enum drm_mode_status edp_connector_mode_valid(
-> +               struct drm_connector *connector,
-> +               struct drm_display_mode *mode)
+> +/*
+> + * Iterate, returning a new null-terminated array of object file names, and a
+> + * new dynamically-allocated module name.  (The module name passed in is freed.)
+> + *
+> + * The array of object file names should be freed by the caller: the strings it
+> + * points to are owned by the iterator, and should not be freed.
+> + */
+> +
+> +char ** __attribute__((__nonnull__))
+> +modules_thick_iter_next(struct modules_thick_iter *i, char **module_name)
 > +{
-> +       struct msm_dp *dp;
+> +       size_t npaths = 1;
+> +       char **module_paths;
+> +       char *last_slash;
+> +       char *last_dot;
+> +       char *trailing_linefeed;
+> +       char *object_name = i->line;
+> +       char *dash;
+> +       int composite = 0;
 > +
-> +       if (!connector)
-
-Is this check really necessary? Why doesn't drm do it in higher layers?
-
-> +               return 0;
+> +       /*
+> +        * Read in all module entries, computing the suffixless, pathless name
+> +        * of the module and building the next arrayful of object file names for
+> +        * return.
+> +        *
+> +        * Modules can consist of multiple files: in this case, the portion
+> +        * before the colon is the path to the module (as before): the portion
+> +        * after the colon is a space-separated list of files that should be
+> +        * considered part of this module.  In this case, the portion before the
+> +        * name is an "object file" that does not actually exist: it is merged
+> +        * into built-in.a without ever being written out.
+> +        *
+> +        * All module names have - translated to _, to match what is done to the
+> +        * names of the same things when built as modules.
+> +        */
 > +
-> +       dp = to_dp_connector(connector)->dp_display;
+> +       /*
+> +        * Reinvocation of exhausted iterator. Return NULL, once.
+> +        */
+> +retry:
+> +       if (getline(&i->line, &i->line_size, i->f) < 0) {
+> +               if (ferror(i->f)) {
+> +                       fprintf(stderr, "Error reading from modules_thick file:"
+> +                               " %s\n", strerror(errno));
+> +                       exit(1);
+> +               }
+> +               rewind(i->f);
+> +               return NULL;
+> +       }
 > +
-> +       if (mode->clock > EDP_MAX_PIXEL_CLK_KHZ)
-> +               return MODE_BAD;
-
-Why not return MODE_CLOCK_HIGH?
-
+> +       if (i->line[0] == '\0')
+> +               goto retry;
 > +
-> +       return MODE_OK;
+> +       /*
+> +        * Slice the line in two at the colon, if any.  If there is anything
+> +        * past the ': ', this is a composite module.  (We allow for no colon
+> +        * for robustness, even though one should always be present.)
+> +        */
+> +       if (strchr(i->line, ':') != NULL) {
+> +               char *name_start;
+> +
+> +               object_name = strchr(i->line, ':');
+> +               *object_name = '\0';
+> +               object_name++;
+> +               name_start = object_name + strspn(object_name, " \n");
+> +               if (*name_start != '\0') {
+> +                       composite = 1;
+> +                       object_name = name_start;
+> +               }
+> +       }
+> +
+> +       /*
+> +        * Figure out the module name.
+> +        */
+> +       last_slash = strrchr(i->line, '/');
+> +       last_slash = (!last_slash) ? i->line :
+> +               last_slash + 1;
+> +       free(*module_name);
+> +       *module_name = strdup(last_slash);
+> +       dash = *module_name;
+> +
+> +       while (dash != NULL) {
+> +               dash = strchr(dash, '-');
+> +               if (dash != NULL)
+> +                       *dash = '_';
+> +       }
+> +
+> +       last_dot = strrchr(*module_name, '.');
+> +       if (last_dot != NULL)
+> +               *last_dot = '\0';
+> +
+> +       trailing_linefeed = strchr(object_name, '\n');
+> +       if (trailing_linefeed != NULL)
+> +               *trailing_linefeed = '\0';
+> +
+> +       /*
+> +        * Multifile separator? Object file names explicitly stated:
+> +        * slice them up and shuffle them in.
+> +        *
+> +        * The array size may be an overestimate if any object file
+> +        * names start or end with spaces (very unlikely) but cannot be
+> +        * an underestimate.  (Check for it anyway.)
+> +        */
+> +       if (composite) {
+> +               char *one_object;
+> +
+> +               for (npaths = 0, one_object = object_name;
+> +                    one_object != NULL;
+> +                    npaths++, one_object = strchr(one_object + 1, ' '));
+> +       }
+> +
+> +       module_paths = malloc((npaths + 1) * sizeof(char *));
+> +       if (!module_paths) {
+> +               fprintf(stderr, "%s: out of memory on module %s\n", __func__,
+> +                       *module_name);
+> +               exit(1);
+> +       }
+> +
+> +       if (composite) {
+> +               char *one_object;
+> +               size_t i = 0;
+> +
+> +               while ((one_object = strsep(&object_name, " ")) != NULL) {
+> +                       if (i >= npaths) {
+> +                               fprintf(stderr, "%s: num_objs overflow on module "
+> +                                       "%s: this is a bug.\n", __func__,
+> +                                       *module_name);
+> +                               exit(1);
+> +                       }
+> +
+> +                       module_paths[i++] = one_object;
+> +               }
+> +       } else
+> +               module_paths[0] = i->line;      /* untransformed module name */
+> +
+> +       module_paths[npaths] = NULL;
+> +
+> +       return module_paths;
 > +}
 > +
->  static const struct drm_connector_funcs dp_connector_funcs = {
->         .detect = dp_connector_detect,
->         .fill_modes = drm_helper_probe_single_connector_modes,
-> @@ -137,6 +170,12 @@ static const struct drm_connector_helper_funcs dp_connector_helper_funcs = {
->         .mode_valid = dp_connector_mode_valid,
->  };
->
-> +static const struct drm_connector_helper_funcs edp_connector_helper_funcs = {
-> +       .get_modes = edp_connector_get_modes,
-> +       .mode_valid = edp_connector_mode_valid,
+> +/*
+> + * Free an iterator. Can be called while iteration is underway, so even
+> + * state that is freed at the end of iteration must be freed here too.
+> + */
+> +void
+> +modules_thick_iter_free(struct modules_thick_iter *i)
+> +{
+> +       if (i == NULL)
+> +               return;
+> +       fclose(i->f);
+> +       free(i->line);
+> +       free(i);
+> +}
+> diff --git a/scripts/modules_thick.h b/scripts/modules_thick.h
+> new file mode 100644
+> index 000000000000..f5edcaf9550c
+> --- /dev/null
+> +++ b/scripts/modules_thick.h
+> @@ -0,0 +1,48 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * A simple modules_thick reader.
+> + *
+> + * (C) 2014, 2021 Oracle, Inc.  All rights reserved.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + */
 > +
-
-Why the extra newline?
-
+> +#ifndef _LINUX_MODULES_THICK_H
+> +#define _LINUX_MODULES_THICK_H
+> +
+> +#include <stdio.h>
+> +#include <stddef.h>
+> +
+> +/*
+> + * modules_thick.builtin iteration state.
+> + */
+> +struct modules_thick_iter {
+> +       FILE *f;
+> +       char *line;
+> +       size_t line_size;
 > +};
 > +
->  /* connector initialization */
->  struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display)
->  {
-> @@ -160,12 +199,17 @@ struct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display)
->         if (ret)
->                 return ERR_PTR(ret);
+> +/*
+> + * Construct a modules_thick.builtin iterator.
+> + */
+> +struct modules_thick_iter *
+> +modules_thick_iter_new(const char *modules_thick_file);
+> +
+> +/*
+> + * Iterate, returning a new null-terminated array of object file names, and a
+> + * new dynamically-allocated module name.  (The module name passed in is freed.)
+> + *
+> + * The array of object file names should be freed by the caller: the strings it
+> + * points to are owned by the iterator, and should not be freed.
+> + */
+> +
+> +char ** __attribute__((__nonnull__))
+> +modules_thick_iter_next(struct modules_thick_iter *i, char **module_name);
+> +
+> +void
+> +modules_thick_iter_free(struct modules_thick_iter *i);
+> +
+> +#endif
+> --
+> 2.35.0.260.gb82b153193.dirty
 >
-> -       drm_connector_helper_add(connector, &dp_connector_helper_funcs);
-> +       if (dp_display->connector_type == DRM_MODE_CONNECTOR_eDP) {
-> +               drm_connector_helper_add(connector,
-> +                               &edp_connector_helper_funcs);
-> +       } else {
-> +               drm_connector_helper_add(connector, &dp_connector_helper_funcs);
->
-> -       /*
-> -        * Enable HPD to let hpd event is handled when cable is connected.
-> -        */
-> -       connector->polled = DRM_CONNECTOR_POLL_HPD;
-> +               /*
-> +                * Enable HPD to let hpd event is handled when cable is connected.
-> +                */
-> +               connector->polled = DRM_CONNECTOR_POLL_HPD;
-> +       }
->
->         drm_connector_attach_encoder(connector, dp_display->encoder);
->
+
+
+-- 
+Best Regards
+Masahiro Yamada
