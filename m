@@ -2,113 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73501C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E29C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231976AbiBJBz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:55:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60024 "EHLO
+        id S231844AbiBJB4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:56:07 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbiBJBzm (ORCPT
+        with ESMTP id S232119AbiBJBzm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 20:55:42 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 095B92B6BF
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:48:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644457683; x=1675993683;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BLre5/OKQreEUzM09SlpEwYktEpXzat0t85VCB8h+zE=;
-  b=HWE31+xIN3hBrpOoTG+u6o73p2ZzARHB87vRVJJL7ExoGsw4R2pKbLPr
-   Ws4/9FtrvJX9EI32u6X7mWN6Ar3yjacQtRTE94q43UG453ddZIx6KZtvL
-   fyHkxXOD24gprLdVtmskMtKdnG+KRiVpILrkGci82oThPu77gYLZHOvwu
-   iiLIl6ke4ZVsaKiVMBgARmQJcELK1Wx2hWQC1F3b9oUwkfEbsKcy3ZRbb
-   w36w1JL+ylr1Pgq2dUoSy3IdL/8h/UqT9ytbPRwIhSspSviAyqgtTbQoT
-   MGT81WCqyEbdqhPKRSJlK+VUdbgHu3+092WPSJPMFUay++VnlbywR6oRI
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="246950848"
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="246950848"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 15:44:41 -0800
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="526228822"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 15:44:41 -0800
-Date:   Wed, 9 Feb 2022 15:44:41 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc:     "hpa@zytor.com" <hpa@zytor.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "Yu, Fenghua" <fenghua.yu@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V8 13/44] mm/pkeys: Add initial PKS Test code
-Message-ID: <20220209234441.GO785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-14-ira.weiny@intel.com>
- <1ac1daf90285869ddfdf52daa8d39bc462253883.camel@intel.com>
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E9A2AAAF;
+        Wed,  9 Feb 2022 17:40:26 -0800 (PST)
+Received: by mail-yb1-f180.google.com with SMTP id o19so11053533ybc.12;
+        Wed, 09 Feb 2022 17:40:25 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3EibQva733Ukt948OLTo6btkyTLhec3MLRWkEWmaPwg=;
+        b=Q6/kKfuSalcaDyhP+3+T/ceswezcknBCvq4MyCnN3Xo8KuT12PCe6fG09UA8kxYPCg
+         eNwUl0GX49/8LDtDLJtLquwE8bQeVsz3UwBSEdpd+e9Pi8Xqko7zFcVx0xAw2clLwXXS
+         /Nknq2f6t1sW0diqZ2qvnoHjKr8+DboWSZ9qvpj1Z0wE96CNcXTyI+nYhgCSg/TDOn+r
+         pPtaUGeyGGHst+xbyI4ji9qPrzCj0xcoKXyEueYTivH0CUkSabmsP25HUbIQGlSHMOc5
+         HDShk+DSrv480MHe+zqk3sjbE3zfROhnRFWF526G5bN19/ziEV8YKc4H1B0o+rL916Y7
+         jUpQ==
+X-Gm-Message-State: AOAM5329iTEWBfJvbtTKA64J+JoGOf9kAU+q0hFm3p8Fn+TAvrW7GIA2
+        nHc+lsc+sEUPMwoM1lA5OibUgLZercI5
+X-Google-Smtp-Source: ABdhPJxCChio0ovak+VAyXBSpYB+F8cv7odWMUWIQmTPsU6/RvwafuEVhpp5eKU7rVZHTJqHN34+9g==
+X-Received: by 2002:a05:6830:43a8:: with SMTP id s40mr1995632otv.98.1644453552318;
+        Wed, 09 Feb 2022 16:39:12 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id j9sm7514743otp.23.2022.02.09.16.39.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 16:39:11 -0800 (PST)
+Received: (nullmailer pid 1272329 invoked by uid 1000);
+        Thu, 10 Feb 2022 00:39:10 -0000
+Date:   Wed, 9 Feb 2022 18:39:10 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     quentin.schulz@theobroma-systems.com
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        daniel@ffwll.ch, Quentin Schulz <foss+kernel@0leil.net>,
+        robh+dt@kernel.org, airlied@linux.ie,
+        Heiko Stuebner <heiko@sntech.de>, devicetree@vger.kernel.org,
+        sam@ravnborg.org, thierry.reding@gmail.com
+Subject: Re: [PATCH] dt-bindings: ltk050h3146w: replace Heiko Stuebner by
+ myself as maintainer
+Message-ID: <YgReroGOJQlWjFvt@robh.at.kernel.org>
+References: <20220131165439.717713-1-quentin.schulz@theobroma-systems.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1ac1daf90285869ddfdf52daa8d39bc462253883.camel@intel.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <20220131165439.717713-1-quentin.schulz@theobroma-systems.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 11:30:14AM -0800, Edgecombe, Rick P wrote:
-> On Thu, 2022-01-27 at 09:54 -0800, ira.weiny@intel.com wrote:
-> > +static void crash_it(void)
-> > +{
-> > +       struct pks_test_ctx *ctx;
-> > +       void *ptr;
-> > +
-> > +       pr_warn("     ***** BEGIN: Unhandled fault test *****\n");
-> > +
-> > +       ctx = alloc_ctx(PKS_KEY_TEST);
-> > +       if (IS_ERR(ctx)) {
-> > +               pr_err("Failed to allocate context???\n");
-> > +               return;
-> > +       }
-> > +
-> > +       ptr = alloc_test_page(ctx->pkey);
-> > +       if (!ptr) {
-> > +               pr_err("Failed to vmalloc page???\n");
-> > +               return;
-> > +       }
-> > +
-> > +       /* This purposely faults */
-> > +       memcpy(ptr, ctx->data, 8);
-> > +
-> > +       /* Should never get here if so the test failed */
-> > +       last_test_pass = false;
-> > +
-> > +       vfree(ptr);
-> > +       free_ctx(ctx);
+On Mon, 31 Jan 2022 17:54:39 +0100, quentin.schulz@theobroma-systems.com wrote:
+> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
 > 
-> So these only gets cleaned up if the test fails? Could you clean them
-> up in pks_release_file() like the later test patch?
+> Heiko does not work at Theobroma Systems anymore and the boards using
+> those panels are downstream, maintained internally by the company, so
+> let's relieve Heiko of maintainership duties.
+> 
+> Cc: Heiko Stuebner <heiko@sntech.de>
+> Cc: Quentin Schulz <foss+kernel@0leil.net>
+> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
+> ---
+>  .../devicetree/bindings/display/panel/leadtek,ltk050h3146w.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Not a bad idea.  Although if someone is running this they are most likely not
-concerned with it.
-
-> 
-> > +}
-> 
-> snip
-> 
-> > +
-> > +static void __exit pks_test_exit(void)
-> > +{
-> > +       debugfs_remove(pks_test_dentry);
-> > +       pr_info("test exit\n");
-> > +}
-> 
-> How does this get called?
-
-Left over from when this was a module.  Thanks for catching.
-
-Ira
+Applied, thanks!
