@@ -2,148 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 348AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233907AbiBJFd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:33:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33316 "EHLO
+        id S233974AbiBJFiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:38:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233826AbiBJFdZ (ORCPT
+        with ESMTP id S230464AbiBJFiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:33:25 -0500
-Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B02410C0;
-        Wed,  9 Feb 2022 21:33:25 -0800 (PST)
-Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nI255-000qlO-OE; Thu, 10 Feb 2022 05:33:23 +0000
-Date:   Thu, 10 Feb 2022 05:33:23 +0000
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jan Kara <jack@suse.cz>, linux-fsdevel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: Re: [PATCH v2 1/4] dcache: sweep cached negative dentries to the end
- of list of siblings
-Message-ID: <YgSjo5wascR9mfnA@zeniv-ca.linux.org.uk>
-References: <20220209231406.187668-1-stephen.s.brennan@oracle.com>
- <20220209231406.187668-2-stephen.s.brennan@oracle.com>
+        Thu, 10 Feb 2022 00:38:18 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EE110C2;
+        Wed,  9 Feb 2022 21:38:19 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3E727212BD;
+        Thu, 10 Feb 2022 05:38:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644471498; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZwfkqBM5Zq2qH7YykYoVqKGxBkb2fAt928sCyLRg1OI=;
+        b=rjyOsSJ0hdWbAYWMkIp/9yjJA7veoI1NwX3+OjWwkCt3XIX0tXAx6O8uG7pUWWi/i2Pksp
+        pcx98ZHuWm0xEfsG7u3jfVJCopb2Q4lSSuHgnoVhYuKmPEIZ9hw5fVkEpOuzkqN2kH4R7C
+        O3zg6cECKNLyidZeSKz29VI1e99Jc+U=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644471498;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ZwfkqBM5Zq2qH7YykYoVqKGxBkb2fAt928sCyLRg1OI=;
+        b=urUyVi5AjGEouNbZtkXB/wg+OqgZsjRXbihtRMQ4VlR86Ouftkxuz5BGH0eklSfSHWgYk+
+        7+l1LNJhi0d6DCBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 77B9213519;
+        Thu, 10 Feb 2022 05:38:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1e9RDMKkBGKdOAAAMHmgww
+        (envelope-from <neilb@suse.de>); Thu, 10 Feb 2022 05:38:10 +0000
+Subject: [PATCH 00/11]  Remove remaining parts of congestion tracking code.
+From:   NeilBrown <neilb@suse.de>
+To:     Andrew Morton <akpm@linux-foundation.org>, Jan Kara <jack@suse.cz>,
+        Wu Fengguang <fengguang.wu@intel.com>,
+        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Ilya Dryomov <idryomov@gmail.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Philipp Reisner <philipp.reisner@linbit.com>,
+        Lars Ellenberg <lars.ellenberg@linbit.com>,
+        Paolo Valente <paolo.valente@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-nilfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-ext4@vger.kernel.org,
+        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org
+Date:   Thu, 10 Feb 2022 16:37:52 +1100
+Message-ID: <164447124918.23354.17858831070003318849.stgit@noble.brown>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209231406.187668-2-stephen.s.brennan@oracle.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 03:14:03PM -0800, Stephen Brennan wrote:
+Here is a refresh of my "remove congestion tracking" series.
 
-> +static void sweep_negative(struct dentry *dentry)
-> +{
-> +	struct dentry *parent;
-> +
-> +	rcu_read_lock();
-> +	parent = lock_parent(dentry);
-> +	if (!parent) {
-> +		rcu_read_unlock();
-> +		return;
-> +	}
-> +
-> +	/*
-> +	 * If we did not hold a reference to dentry (as in the case of dput),
-> +	 * and dentry->d_lock was dropped in lock_parent(), then we could now be
-> +	 * holding onto a dead dentry. Be careful to check d_count and unlock
-> +	 * before dropping RCU lock, otherwise we could corrupt freed memory.
-> +	 */
-> +	if (!d_count(dentry) && d_is_negative(dentry) &&
-> +		!d_is_tail_negative(dentry)) {
-> +		dentry->d_flags |= DCACHE_TAIL_NEGATIVE;
-> +		list_move_tail(&dentry->d_child, &parent->d_subdirs);
-> +	}
-> +
-> +	spin_unlock(&parent->d_lock);
-> +	spin_unlock(&dentry->d_lock);
-> +	rcu_read_unlock();
-> +}
+It makes some small changes to readahead so that the effect of the
+inode_read_congested() test in readahead can be duplicated in the
+filesystem.  fuse uses this.
+It add some documentation for readahead, and for that to work, it
+cleans up related doco a bit.
 
-	I'm not sure if it came up the last time you'd posted this series
-(and I apologize if it had and I forgot the explanation), but... consider
-the comment in dentry_unlist().  What's to prevent the race described there
-making d_walk() skip a part of tree, by replacing the "lseek moving cursor
-in just the wrong moment" with "dput moving the negative dentry right next
-to the one being killed to the tail of the list"?
+Andrew: please drop the version of this that is currently in your tree
+even if you don't take this.  The changes to fuse/nfs/ceph are not
+appropriate.
 
-	The race in question:
-d_walk() is leaving a subdirectory.  We are here:
-        rcu_read_lock();
-ascend:
-        if (this_parent != parent) {
+Thanks,
+NeilBrown
 
-It isn't - we are not back to the root of tree being walked.
-At this point this_parent is the directory we'd just finished looking into.
+---
 
-                struct dentry *child = this_parent;
-                this_parent = child->d_parent;
+NeilBrown (11):
+      DOC: convert 'subsection' to 'section' in gfp.h
+      MM: document and polish read-ahead code.
+      MM: improve cleanup when ->readpages doesn't process all pages.
+      fuse: remove reliance on bdi congestion
+      nfs: remove reliance on bdi congestion
+      ceph: remove reliance on bdi congestion
+      Remove inode_congested()
+      Remove bdi_congested() and wb_congested() and related functions
+      f2fs: replace congestion_wait() calls with io_schedule_timeout()
+      block/bfq-iosched.c: use "false" rather than "BLK_RW_ASYNC"
+      Remove congestion tracking framework.
 
-... and now child points to it, and this_parent points to its parent.
 
-                spin_unlock(&child->d_lock);
+ Documentation/core-api/mm-api.rst |  19 ++++-
+ Documentation/filesystems/vfs.rst |  16 ++--
+ block/bfq-iosched.c               |   2 +-
+ drivers/block/drbd/drbd_int.h     |   3 -
+ drivers/block/drbd/drbd_req.c     |   3 +-
+ fs/ceph/addr.c                    |  22 +++---
+ fs/ceph/super.c                   |   1 +
+ fs/ceph/super.h                   |   1 +
+ fs/ext2/ialloc.c                  |   5 --
+ fs/f2fs/compress.c                |   4 +-
+ fs/f2fs/data.c                    |   3 +-
+ fs/f2fs/f2fs.h                    |   6 ++
+ fs/f2fs/segment.c                 |   8 +-
+ fs/f2fs/super.c                   |   6 +-
+ fs/fs-writeback.c                 |  37 ---------
+ fs/fuse/control.c                 |  17 ----
+ fs/fuse/dev.c                     |   8 --
+ fs/fuse/file.c                    |  17 ++++
+ fs/nfs/write.c                    |  14 +++-
+ fs/nilfs2/segbuf.c                |  15 ----
+ fs/xfs/xfs_buf.c                  |   3 -
+ include/linux/backing-dev-defs.h  |   8 --
+ include/linux/backing-dev.h       |  50 ------------
+ include/linux/fs.h                |   9 ++-
+ include/linux/nfs_fs_sb.h         |   1 +
+ include/trace/events/writeback.h  |  28 -------
+ mm/backing-dev.c                  |  57 --------------
+ mm/fadvise.c                      |   5 +-
+ mm/readahead.c                    | 126 +++++++++++++++++++++++++++---
+ mm/vmscan.c                       |  21 +----
+ 30 files changed, 214 insertions(+), 301 deletions(-)
 
-No locks held.  Another CPU gets through successful rmdir().  child gets
-unhashed and dropped.  It's off the ->d_subdirs of this_parent; its
-->d_child.next is still pointing where it used to, and whatever it points
-to won't be physically freed until rcu_read_unlock().
+--
+Signature
 
-Moreover, in the meanwhile this next sibling (negative, pinned) got dput().
-And had been moved to the tail of the this_parent->d_subdirs.  Since
-its ->d_child.prev does *NOT* point to child (which is off-list, about to
-be freed shortly, etc.), child->d_dchild.next is not modified - it still
-points to that (now moved) sibling.
-
-                spin_lock(&this_parent->d_lock);
-Got it.
-
-                /* might go back up the wrong parent if we have had a rename. */
-                if (need_seqretry(&rename_lock, seq))
-                        goto rename_retry;
-
-Nope, hadn't happened.
-
-                /* go into the first sibling still alive */
-                do {
-                        next = child->d_child.next;
-... and this is the moved sibling, now in the end of the ->d_subdirs.
-
-                        if (next == &this_parent->d_subdirs)
-                                goto ascend;
-
-No, it is not - it's the last element of the list, not its anchor.
-
-                        child = list_entry(next, struct dentry, d_child);
-
-Our moved negative dentry.
-
-                } while (unlikely(child->d_flags & DCACHE_DENTRY_KILLED));
-
-Not killed, that one.
-                rcu_read_unlock();
-                goto resume;
-
-... and since that sucker has no children, we proceed to look at it,
-ascend and now we are at the end of this_parent->d_subdirs.  And we
-ascend out of it, having entirely skipped all branches that used to
-be between the rmdir victim and the end of the parent's ->d_subdirs.
-
-What am I missing here?  Unlike the trick we used with cursors (see
-dentry_unlist()) we can't predict who won't get moved in this case...
-
-Note that treating "child is has DCACHE_DENTRY_KILLED" same as we do
-for rename_lock mismatches would not work unless you grab the spinlock
-component of rename_lock every time dentry becomes positive.  Which
-is obviously not feasible (it's a system-wide lock and cacheline
-pingpong alone would hurt us very badly, not to mention the contention
-issues due to the frequency of grabbing it going up by several orders
-of magnitude).
