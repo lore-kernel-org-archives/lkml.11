@@ -2,116 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9411BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238507AbiBJJ1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:27:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50050 "EHLO
+        id S238672AbiBJJ3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:29:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiBJJ1H (ORCPT
+        with ESMTP id S238558AbiBJJ3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:27:07 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A9A1039;
-        Thu, 10 Feb 2022 01:27:09 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A74Wqe017289;
-        Thu, 10 Feb 2022 09:36:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=h3BIBiAZxBPqsCaQuDCWXGUPrAUzursUIqsuIjIzP1c=;
- b=AIYmm9kRnOKEb3hrt8TowUTMDoPh4h0ZycwhNBOqk9VrqYh9jxF5thCkIqP4h3dZUHQW
- Z72/XnhZIHGjfZ3cAlr+vNh9Q1AnzNgOyL9+aVoP7Jh6ETLk+v+MF3p2Pebt4+c1+1sJ
- fFy6DENVfUZAE97twlFCieybW1YdlEqHLYBkSSsFEYyQ1A3xta2qjxjIX1tQIhxKX1II
- RIHBjq6P4chlSSisE/YG0W2xu4KS01QMrat7gHpyj+xeA9Xe5Chfa3oJlOr/ZVQ137/U
- CYV+F7q7yiwGKd0fbspOMO3Giyfq95fBqR9TzBilJFNAxd7IG+Gvpo7/m3/pUf4vdTLK 6w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4x0c0jcj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Feb 2022 09:36:58 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 33F8410002A;
-        Thu, 10 Feb 2022 09:36:57 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2BEBC2138DE;
-        Thu, 10 Feb 2022 09:36:57 +0100 (CET)
-Received: from [10.201.21.201] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
- 2022 09:36:56 +0100
-Message-ID: <d17800cd-bb7b-e59a-c8a5-afbd6e3e0c3d@foss.st.com>
-Date:   Thu, 10 Feb 2022 09:36:56 +0100
+        Thu, 10 Feb 2022 04:29:04 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EDA1089
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:06 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id o8-20020a056e0214c800b002bc2f9cffffso3571431ilk.8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=lbZClnawL85i6y/f1XZKEH3U2806L2hF7lFn0+Ro7Ew=;
+        b=SmwGTsRJmb9NNN5twJxnWmKFX3XJ0OTZ7M5dcMG2qi6Px7dEvfnDpE89abLKQXaZqt
+         li3JtXG0cW3ndTRrCxE1q+RACZ99wLv3Bj0EUABezDEj9vkP2OwwRcmKuutVHWALDXQx
+         dFDQYpT6ymzN6XILXxwAACmLHkc+QT//D3/lbOkrBwDoPxTjpu4/bFE6X9HP7/MLIl/b
+         2+0bmG39nceXi42VmnPtdS2PTOB8+9abP1cMVB2w6sdmgIfIZHMspdMQJk6QD5nKv00h
+         GNNEIj1gJUbhAbQz8V2wx45mZR/dG4YnbKXswzZER5t6/lquAeZe7R0D1ZvAkF/13wWe
+         knHQ==
+X-Gm-Message-State: AOAM5306hjtCQTqgEYcA2B2SbgU6TsN/D0R+AYH7f09POsQ6VgL0VfZp
+        5kHCFxm2Kjkd2/ODOQryIXKPgzERklmvtN+eod9b++eIwsAe
+X-Google-Smtp-Source: ABdhPJx22vdsd9ZwS5xcJlnZq2r7nAA5BqmnE9xXQOkXPLW5oeCWMIkcNmqMItDy/Lg+pycfhLQYxawcp7pQ1kDwS81fqOWh7+0x
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 05/12] ARM: dts: sti: update stih410-b2260 following
- stih407-family DT update
-Content-Language: en-US
-To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20211202075105.195664-1-avolmat@me.com>
- <20211202075105.195664-6-avolmat@me.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20211202075105.195664-6-avolmat@me.com>
+X-Received: by 2002:a02:aa0a:: with SMTP id r10mr3655553jam.246.1644485345948;
+ Thu, 10 Feb 2022 01:29:05 -0800 (PST)
+Date:   Thu, 10 Feb 2022 01:29:05 -0800
+In-Reply-To: <000000000000a16ad7059cbcbe43@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e238bf05d7a69450@google.com>
+Subject: Re: [syzbot] WARNING in bpf_warn_invalid_xdp_action
+From:   syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, andriin@fb.com, ast@kernel.org,
+        bpf@vger.kernel.org, corbet@lwn.net, daniel@iogearbox.net,
+        davem@davemloft.net, dsahern@gmail.com, dvyukov@google.com,
+        eric.dumazet@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, toke@redhat.com, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alain
+syzbot suspects this issue was fixed by commit:
 
-On 12/2/21 08:50, Alain Volmat wrote:
-> Put of the miphy28lp_phy node out of the soc section following similar
-> update within stih407-family.dtsi file update.
-> 
-> Signed-off-by: Alain Volmat <avolmat@me.com>
-> ---
->  arch/arm/boot/dts/stih410-b2260.dts | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/stih410-b2260.dts b/arch/arm/boot/dts/stih410-b2260.dts
-> index 9d579c16c295..c2d3b6de55d0 100644
-> --- a/arch/arm/boot/dts/stih410-b2260.dts
-> +++ b/arch/arm/boot/dts/stih410-b2260.dts
-> @@ -75,6 +75,13 @@ codec {
->  		};
->  	};
->  
-> +	miphy28lp_phy: miphy28lp {
-> +
-> +		phy_port1: port@9b2a000 {
-> +			st,osc-force-ext;
-> +		};
-> +	};
-> +
->  	soc {
->  		/* Low speed expansion connector */
->  		uart0: serial@9830000 {
-> @@ -196,13 +203,6 @@ hdmiddc: i2c@9541000 {
->  			status = "okay";
->  		};
->  
-> -		miphy28lp_phy: miphy28lp@0 {
-> -
-> -			phy_port1: port@9b2a000 {
-> -				st,osc-force-ext;
-> -			};
-> -		};
-> -
->  		sata1: sata@9b28000 {
->  			status = "okay";
->  		};
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
+commit 2cbad989033bff0256675c38f96f5faab852af4b
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Tue Nov 30 10:08:06 2021 +0000
 
-Thanks
-Patrice
+    bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d50baa700000
+start commit:   b3c8e0de473e Merge branch '40GbE' of git://git.kernel.org/..
+git tree:       net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1a86c22260afac2f
+dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=113c8a3bb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16eb4307b00000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
