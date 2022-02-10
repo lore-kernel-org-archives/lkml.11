@@ -2,120 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243886AbiBJP6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:58:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49056 "EHLO
+        id S243895AbiBJP6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:58:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243872AbiBJP6G (ORCPT
+        with ESMTP id S243877AbiBJP6H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:58:06 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2886FD81;
-        Thu, 10 Feb 2022 07:58:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644508687; x=1676044687;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=nJFK6EQR25scnNWxpyGTRLOMBGca0iR6pOuAC+VH89M=;
-  b=g7zfkK3lxIwZZA4G3PGyj9uDs6zC9Eves19pXZmlcmBUVNDBUCOolXm7
-   dXnInhbR5hkgI7W72ZG/B5i1Bjy5e1dF6qT1+0+mrAbVyp2BOE7QjfMRw
-   tzzzGmW2M4mCcErS51U979Fw54FWk1BXQLLeoTXqEA8t1Anc3KMM1sCpf
-   98P6AuTED36VzUjBVdlX/d4m6dogaE6s8asVfcpW1UEoPJmbrHwOeew/C
-   WR22YLSmPZvCmpOXgwpuxPBel45rVFD/3Qz+cWscHfQ/Fhr/zo/IyLPBg
-   w+fRHtBnl3TvGr1ZsWYDmj/1tc6YLTt1HLH538zn6c/UP5/8tjavc+BPJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="247104613"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="247104613"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:57:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="541659783"
-Received: from vchandol-mobl.gar.corp.intel.com (HELO [10.215.123.92]) ([10.215.123.92])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:57:45 -0800
-Message-ID: <6b5b3d5b-68c9-3f04-d9b7-b58951f5557a@linux.intel.com>
-Date:   Thu, 10 Feb 2022 21:27:31 +0530
+        Thu, 10 Feb 2022 10:58:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6F6CD6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:58:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC7D461CAE
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:58:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE13C004E1;
+        Thu, 10 Feb 2022 15:58:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644508687;
+        bh=fJz0mfpB47QMQtMUTnDAOyZFLprkCOZTHFgVXNMTvCA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fQdu/gY1hIYhmwvrgNpyofmzlsCOxzGe2azh+1Mlr3oBKY1Rl09Xl7aChZiJXZYB6
+         ve1k4JTINR8Pwn8hwVAL0BsApSNlGT7vQtlq6HqVLlTj9j4XKk3XE9jnd+75UNznvn
+         3hI7hCU8y8UD6hfBFUtJMu18RmUsuAuhg2dxL7em3RGS7et4okrWr2oGKow6FVw6ru
+         bz8qHIY95KCn6kbDwXhQsNVdlAWf5N+vZIm3P7wICE2Wh+j9AzytW/XWNsGGTr6a3m
+         Qevy7h6XkkHYO/UIt/N6T0pPEte13kdDMSspnVtfGnZg/NNXCRCSvkZANvKbTz6gfn
+         n2kXkGtpCvF2A==
+Date:   Thu, 10 Feb 2022 16:58:04 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org, ardb@kernel.org,
+        bp@alien8.de, catalin.marinas@arm.com, dave.hansen@linux.intel.com,
+        james.morse@arm.com, joey.gouly@arm.com, juri.lelli@redhat.com,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        peterz@infradead.org, tglx@linutronix.de,
+        valentin.schneider@arm.com, will@kernel.org
+Subject: Re: [PATCH v3 7/7] arm64: support PREEMPT_DYNAMIC
+Message-ID: <20220210155804.GA567552@lothringen>
+References: <20220209153535.818830-1-mark.rutland@arm.com>
+ <20220209153535.818830-8-mark.rutland@arm.com>
+ <20220209195709.GA557593@lothringen>
+ <YgTdHfmubmk1rUi8@FVFF77S0Q05N>
+ <YgT+eHjtgrHl+wWw@FVFF77S0Q05N>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] hwmon: (pmbus) Clear pmbus fault/warning bits before read
-Content-Language: en-US
-To:     Guenter Roeck <linux@roeck-us.net>, iwona.winiarska@intel.com,
-        jdelvare@suse.com, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220210124154.1304852-1-vikash.chandola@linux.intel.com>
- <46684682-a718-ca9a-b502-2031afd3a756@roeck-us.net>
-From:   Vikash Chandola <vikash.chandola@linux.intel.com>
-In-Reply-To: <46684682-a718-ca9a-b502-2031afd3a756@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgT+eHjtgrHl+wWw@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 10, 2022 at 12:00:56PM +0000, Mark Rutland wrote:
+> On Thu, Feb 10, 2022 at 09:38:37AM +0000, Mark Rutland wrote:
+> > On Wed, Feb 09, 2022 at 08:57:09PM +0100, Frederic Weisbecker wrote:
+> > > On Wed, Feb 09, 2022 at 03:35:35PM +0000, Mark Rutland wrote:
+> > > > Note that PREEMPT_DYNAMIC is `def bool y`, so this will default to
+> > > > enabled.
+> > > 
+> > > It should probably be "def_bool y if HAVE_STATIC_CALL_INLINE"...
+> > 
+> > Sure; I'm more than happy to fold that into patch 5.
+> 
+> For the moment I've made that:
+> 
+> 	def_bool y if HAVE_PREEMPT_DYNAMIC_CALL
+> 
+> ... since that fit more neatly with the other bits I had to add, and didn't
+> change the existing behaviour of 32-bit x86.
+> 
+> Please shout if you think that should be HAVE_STATIC_CALL_INLINE specifically!
 
+I seem to remember peterz didn't mind keeping it default y as long as
+HAVE_STATIC_CALL*. So I guess that's fine.
 
-On 2/10/2022 8:14 PM, Guenter Roeck wrote:
-> On 2/10/22 04:41, Vikash Chandola wrote:
->> pmbus fault and warning bits are not cleared by itself once fault/warning
->> condition is not valid anymore. As per pmbus datasheet faults must be
->> cleared by user.
->> Modify hwmon behavior to clear latched status bytes if any bit in status
->> register is high prior to returning fresh data to userspace. If
->> fault/warning conditions are still applicable fault/warning bits will be
->> set and we will get updated data in second read.
->>
->> Hwmon behavior is changed here. Now sysfs reads will reflect latest
->> values from pmbus slave, not latched values.
->> In case a transient warning/fault has happened in the past, it will no
->> longer be reported to userspace.
->>
-> 
-> 
-> NACK.
-> 
-> Reporting that information is exactly the point of the current code.
-> We _do_ want to report at least once that a problem occurred in the past,
-> and only clear the warning flag(s) afterwards.
-> 
-> Guenter
-> 
-But as per current implementation we will continue to report fault even 
-after fault condition is cleared. I could not find sysfs entry or any 
-other means by which user/kernel can clear the faults/warnings after it 
-is reported. Please point if I am missing anything.
-
->> Signed-off-by: Vikash Chandola <vikash.chandola@linux.intel.com>
->> ---
->>   drivers/hwmon/pmbus/pmbus_core.c | 9 +++++++++
->>   1 file changed, 9 insertions(+)
->>
->> diff --git a/drivers/hwmon/pmbus/pmbus_core.c 
->> b/drivers/hwmon/pmbus/pmbus_core.c
->> index 776ee2237be2..1cc82d644079 100644
->> --- a/drivers/hwmon/pmbus/pmbus_core.c
->> +++ b/drivers/hwmon/pmbus/pmbus_core.c
->> @@ -577,6 +577,15 @@ static int pmbus_get_status(struct i2c_client 
->> *client, int page, int reg)
->>           break;
->>       default:
->>           status = _pmbus_read_byte_data(client, page, reg);
->> +        if (status > 0) {
->> +            /*
->> +             * Status greater than 0 could mean that there was a 
->> fault/warning.
->> +             * Clear faults and do a second read to make sure we are 
->> not getting
->> +             * stale values.
->> +             */
->> +            pmbus_clear_fault_page(client, page);
->> +            status = _pmbus_read_byte_data(client, page, reg);
->> +        }
->>           break;
->>       }
->>       if (status < 0)
-> 
+Thanks!
