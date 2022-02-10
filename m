@@ -2,100 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4789C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233293AbiBJB6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:58:21 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60050 "EHLO
+        id S233310AbiBJB6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:58:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233589AbiBJB5h (ORCPT
+        with ESMTP id S233117AbiBJB5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:57:37 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60FB92AAB9;
-        Wed,  9 Feb 2022 17:42:18 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id i186so7640840pfe.0;
-        Wed, 09 Feb 2022 17:42:18 -0800 (PST)
+        Wed, 9 Feb 2022 20:57:22 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA3D2BB37
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:55:00 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id m6so11194048ybc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:55:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fznXHsB7fq3yx1Wr3eNck2JRmWHFRDu7wO8b3fegyhQ=;
-        b=K7vtY4fcgIqJ4HJSiqq2au6PruCtlk060uUEezTZDkvdc6kiNQkeRI6Vj+ufMYS0pL
-         Hi0m0j8SgtDXsJ4nqR2pQammy4kqnppm5RL5TJAT6gUTjDI1MeTm9k6fbqBwK6aCT9mo
-         A/tDrvas/wS8UWIqYZZiE8bBrBToZxZGcmVeM+rVxcEMOF738UiM1V0xRwWQC4z1271n
-         yNQOX2SlB2E7nHTegFa7BY7pA9zx/c1F1W21haZ9tnXwhGLbbQRHuXr3v7gNR+CyaRat
-         IRx/cVyUnQvH0opQh1z3jXuRmIXVNAWNpUo/zkWexFlwabFOVzo6lo4DZPQkxYd2ljUW
-         xgsw==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=0jP63mve8H7yBEGolFIfscf414Fuk0ZZChDlzPkF8fg=;
+        b=FK4YaRssCrYX/rQURcgTQV1W9baUIrKwtFGR4CVDIH672hMCO35bwfWKPKDo8tLtVL
+         04faMa/bqsL8ivTGG7yNy3ilyPX8CtsauYYehwEHEZkZ2L/g5CetNv4fKEtRS8m1mgWq
+         qHBqDa11EblbK+mJYR8WWjxh2YvLpRD9NtzPM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fznXHsB7fq3yx1Wr3eNck2JRmWHFRDu7wO8b3fegyhQ=;
-        b=wd/kDrxt2CdMl3VFOTkE1E0k1JdBY2W85wwuiqj6uOXmGKeLNtC7eP5C/iC2961Eqv
-         aYHOz6jz1G9b5c72ZDuNo1VFH84IMF3K70vYWbsdzmVBKG4PO7G5eWisYdbdR3a8PGjB
-         OJMcwipfLIGblroOSlWlq0AZ+/FJsJUo427XDJG4Ukn5p2v6iqs4dUDB2h0GFW5UQTtY
-         iKJcju9oRC++3o+NbpK3dNVOSZAdbkm9HH9i8q9Ihcz4qByOOYI9+htkbqaWxi/TO1TM
-         KVoU9tNdUjdZR9LT/l31wbIb4lKL9hVycTZizD7JOwT5V4Z3m8L0TpWjO1LAS9SOA+OU
-         jy7Q==
-X-Gm-Message-State: AOAM532Jr8Yipk44O+mncSVY5HGGijgX2mhnP5FJDzqOss7V+z7zKS1J
-        XJJB/4WgaVpETNDH9QT4cXRx0b2HiNM=
-X-Google-Smtp-Source: ABdhPJyJQcYxSpteE/xAVBfy/rxhoRCgxRtEmG3VtwpT48g1U4W5N6+0o3Iwz6Zbne1VLnM95s1W2g==
-X-Received: by 2002:a05:6214:27ce:: with SMTP id ge14mr3327269qvb.24.1644450731816;
-        Wed, 09 Feb 2022 15:52:11 -0800 (PST)
-Received: from [192.168.1.201] (pool-108-18-137-133.washdc.fios.verizon.net. [108.18.137.133])
-        by smtp.googlemail.com with ESMTPSA id f5sm9142922qkp.97.2022.02.09.15.52.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 15:52:11 -0800 (PST)
-Subject: Re: [PATCH] pinctrl: k210: Fix bias-pull-up
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220209182822.640905-1-seanga2@gmail.com>
- <fb3e9786-87e9-6346-cf84-2617adfa5b8d@opensource.wdc.com>
-From:   Sean Anderson <seanga2@gmail.com>
-Message-ID: <4911f3a7-fe4b-8eb0-f504-667ee5ea1294@gmail.com>
-Date:   Wed, 9 Feb 2022 18:52:11 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=0jP63mve8H7yBEGolFIfscf414Fuk0ZZChDlzPkF8fg=;
+        b=vEqgFNf3X3ucN3vekE0fOcgOlyNyeK4vA4Z6MQK78kUjg75DhrMkh5Q3dhqJWFHQ/S
+         vMNaTIb4SNSKv32CAERGvXyhTiF9EhwXRHGKcjFYaf9i6hRGgL2VRfbtgMbXBgySpAmR
+         gRUsXP8Ddvy8R4xGt/K4SIu/3DO7oY6ZTx3OnMc3hoJiBJDi3hxhCz10uRwkwiSXnfay
+         Vh03e7yZxqWjK8mBQAq4aubpjOFK2Ii5iD4hJDxmmjrMitBPAFzGC2P7dKeGdxpmw3EJ
+         g7vxIWAiWNdqSkc5X724HAiwjMhU6wNk+/lPoHGARENZzpHrNUbRbkpEasUaFnqB/ZsN
+         6t/A==
+X-Gm-Message-State: AOAM533096ngciywcSdi9iM7S4ayazJ66s5CwZF+BiC4XivjSgL0mJsd
+        /564oSA4fwqeO9I3PQOT7Z3sO82lcCEbrFgo5BIBjnY9Sr4=
+X-Google-Smtp-Source: ABdhPJxBNYckVAU5af+ocW3WmiCXFblNyx2pqrI/7GNXk2TZNNX8HLoZNfZLakpxuuOxommIU6+LK22M5EfyBLvATMw=
+X-Received: by 2002:a05:6830:1489:: with SMTP id s9mr2002170otq.126.1644451654382;
+ Wed, 09 Feb 2022 16:07:34 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 9 Feb 2022 16:07:33 -0800
 MIME-Version: 1.0
-In-Reply-To: <fb3e9786-87e9-6346-cf84-2617adfa5b8d@opensource.wdc.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <30805a84-b523-842c-d223-bc0d2043fa00@quicinc.com>
+References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com>
+ <1644334454-16719-2-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n50PAtGfvHXjNrvQYe6edNEfJvEc1uYZFUeW2KHxn6fsBA@mail.gmail.com> <30805a84-b523-842c-d223-bc0d2043fa00@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 9 Feb 2022 16:07:33 -0800
+Message-ID: <CAE-0n538CdY3a64jG556se=AhgJpXr_oENG_spGM29c5gdQRYQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] arm64: dts: qcom: sc7280: Add pinmux for I2S
+ speaker and Headset
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 6:34 PM, Damien Le Moal wrote:
-> On 2/10/22 03:28, Sean Anderson wrote:
->> Using bias-pull-up would actually cause the pin to have its pull-down
->> enabled. Fix this.
->>
->> Signed-off-by: Sean Anderson <seanga2@gmail.com>
->> ---
->>
->>   drivers/pinctrl/pinctrl-k210.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/pinctrl/pinctrl-k210.c b/drivers/pinctrl/pinctrl-k210.c
->> index 49e32684dbb2..1ad61b32ec88 100644
->> --- a/drivers/pinctrl/pinctrl-k210.c
->> +++ b/drivers/pinctrl/pinctrl-k210.c
->> @@ -527,7 +527,7 @@ static int k210_pinconf_set_param(struct pinctrl_dev *pctldev,
->>   	case PIN_CONFIG_BIAS_PULL_UP:
->>   		if (!arg)
->>   			return -EINVAL;
->> -		val |= K210_PC_PD;
->> +		val |= K210_PC_PU;
->>   		break;
->>   	case PIN_CONFIG_DRIVE_STRENGTH:
->>   		arg *= 1000;
-> 
-> Ooops... My bad :)
+Quoting Srinivasa Rao Mandadapu (2022-02-09 05:42:40)
+>
+> On 2/9/2022 2:38 AM, Stephen Boyd wrote:
+> > Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:12)
+> >>   &qspi_cs0 {
+> >>          bias-disable;
+> >> @@ -491,6 +524,13 @@
+> >>   };
+> >>
+> >>   &tlmm {
+> >> +       amp_en: amp-en {
+> >> +               pins = "gpio63";
+> >> +               function = "gpio";
+> >> +               bias-disable;
+> > Is there an external pull?
+> I think no external pull. In trogdor mentioned bias-pull-down but you
+> suggested to remove it.
 
-(This is in U-Boot as well, so it looks like it's my bad)
+Maybe on trogdor there was an external pull inside the amp that this pin
+is connected to? Usually we have a comment like /* Has external
+pull-{up,down} */ so please add that here depending on which way the
+pull goes.
