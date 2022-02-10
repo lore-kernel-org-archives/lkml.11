@@ -2,92 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C766C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860A2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:54:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343543AbiBJSvJ (ORCPT
+        id S1343566AbiBJSyd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:51:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38254 "EHLO
+        Thu, 10 Feb 2022 13:54:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiBJSvI (ORCPT
+        with ESMTP id S243255AbiBJSyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:51:08 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E122E7F;
-        Thu, 10 Feb 2022 10:51:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mEKCxhU+JNeT1eMVQTnlAK3ulpLxB/CwopnVgEI95lA=; b=0cvSbH4Y/kCukzwjlS9gIBRS9q
-        dlBTzfjS8ziXZfcR+CMHsEhjsW2GEW1VYCrlMfcE+mYjv62nsLJtP83VGg1D7qh9Q4eJYe3lNhCsJ
-        RHk/cxEZvK1ZiJeGTg8iSaPYN7SpO7ECLYNa0Wbg9vm4YDgAjyXrhU8h2fAZGGW16QRXUatVgk/71
-        2rgmFNeCSDTu5WQ4CtEnayeDCr/nQbR/oL3zD+10caFRB1eVMHFmUh4OajwwJO/DQaxDFNBVoqiqB
-        e+RMqxk4oLD2lqlu64XvAviH70qmscakTpquZlrjpT8OR/XLMFVsRK4shrjSwHq00P3BoR00beij8
-        E8VHEIEA==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIEWw-004g2X-9h; Thu, 10 Feb 2022 18:50:58 +0000
-Date:   Thu, 10 Feb 2022 10:50:58 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Aaron Tomlin <atomlin@redhat.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "atomlin@atomlin.com" <atomlin@atomlin.com>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Subject: Re: [PATCH v5 01/13] module: Move all into module/
-Message-ID: <YgVekoAxiV5nw22q@bombadil.infradead.org>
-References: <20220209170358.3266629-1-atomlin@redhat.com>
- <20220209170358.3266629-2-atomlin@redhat.com>
- <a22eb1b0-3fb5-a70e-cf6f-022571538efb@csgroup.eu>
- <CANfR36jh3yg9nqXkpCUWPeHV+sSD6yne9j1=uA5vyUpYOC8t9g@mail.gmail.com>
- <926e5c35d50ec5f6d7e789831be96744ca8d6423.camel@perches.com>
+        Thu, 10 Feb 2022 13:54:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC64FF54;
+        Thu, 10 Feb 2022 10:54:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8657A60C79;
+        Thu, 10 Feb 2022 18:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E112C004E1;
+        Thu, 10 Feb 2022 18:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644519272;
+        bh=cJZMxTErs9pjcy2gQC8c6spFkWFZsvMX5ljqxIN6Or0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sR+cpFkta7JODYHVPFIsfrZrWtOsb8GI9mYFBMjDzH5XOHyasIWfqkDTsinc5TFnQ
+         bhNBTFlgszBDGuZK0KqMAz3fHLFpb7gi9vjcoNcNEwk0dShcSLIX/T4AY+upT8M/HH
+         kWzGim7Nw1RsK+c5dMgqPoXqH/3XVHtIRwOB7cNAfPez3JmDY+uU+XDQo20lTEuLP5
+         iHzExPp2WRAeuvi/shfi/Z6PlXcGvHxJjNTSpinlN/rMpvoe4yeCVYLjQ3oOMstwSr
+         y51pcQXVW/te9c5FuJSwF0wdyVZyfzAraMvX4D5O2qv91iVG/JFJ+Hmqvj3v3Gz3Ec
+         9O2MzlHkB8SOA==
+Date:   Thu, 10 Feb 2022 10:54:29 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sagi Grimberg <sagi@grimberg.me>, Len Brown <lenb@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        m.heingbecker@googlemail.com,
+        linux-nvme <linux-nvme@lists.infradead.org>,
+        Nirmal Patel <nirmal.patel@linux.intel.com>,
+        Jonathan Derrick <jonathan.derrick@linux.dev>
+Subject: Re: [Bug] nvme blocks PC10 since v5.15 - bisected
+Message-ID: <20220210185429.GC1617879@dhcp-10-100-145-180.wdc.com>
+References: <CAJZ5v0hvvYedSn5u-i7sjpoEHU4P65t7i1b2pVn=S1q0nHWgqQ@mail.gmail.com>
+ <20220121210905.GA1114868@dhcp-10-100-145-180.wdc.com>
+ <CAJZ5v0gybg+Wk+008UBFnm2WqrxowOarhst9Eh+91BN823mqNA@mail.gmail.com>
+ <20220210145635.GA1617879@dhcp-10-100-145-180.wdc.com>
+ <20220210182423.GB16171@lst.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <926e5c35d50ec5f6d7e789831be96744ca8d6423.camel@perches.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <20220210182423.GB16171@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 09:02:09AM -0800, Joe Perches wrote:
-> On Thu, 2022-02-10 at 14:45 +0000, Aaron Tomlin wrote:
-> > On Thu 2022-02-10 11:11 +0000, Christophe Leroy wrote:
-> > > > diff --git a/MAINTAINERS b/MAINTAINERS
-> []
-> > > > @@ -13001,7 +13001,7 @@ L:    linux-kernel@vger.kernel.org
-> > > >   S:    Maintained
-> > > >   T:    git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
-> > > >   F:    include/linux/module.h
-> > > > -F:    kernel/module.c
-> > > > +F:    kernel/module/main.c
-> > > 
-> > > Shouldn't it be the entire directory ?
-> > 
-> > Indeed it should. Moving forward: kernel/module/*
+On Thu, Feb 10, 2022 at 07:24:23PM +0100, Christoph Hellwig wrote:
+> On Thu, Feb 10, 2022 at 06:56:35AM -0800, Keith Busch wrote:
+> > Apparently it works fine when you disable VMD, so sounds like the
+> > acpi_storage_d3 is set, but we fail to find the correct acpi companion
+> > device when it's in a VMD domain.
 > 
-> Better would be:
+> I guess the acpi_storage_d3 is set on the VMD device and we need
+> to propagate that down the entire bus hanging off it.
 > 
-> F:	kernel/module/
+> Which kinda makes sense in the twisted world where vmd was invented,
+> given that vmd is Intel's evil plot so that only their Windows driver
+> can bind to these devices, so the property also needs to be set on
+> the vmd device.
 > 
-> in case it ever gets subdirectories too.
+> Nirmal and Jonathan, can you help to sort this mess out?
 
-Yes, that also later allows us to add entries for things like say
-livepatching. Or we peg the livepatching file to the livepatching
-tag. Either way, one of the side goals of the split is to eventually
-help scale maintenance.
-
-  Luis
+Just fyi, I'm not sure now if my previous comment is entirely accurate.
+I'll get some more info from the reporter to confirm.
