@@ -2,114 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235055AbiBJGE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:04:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51606 "EHLO
+        id S235022AbiBJGFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:05:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233740AbiBJGEr (ORCPT
+        with ESMTP id S231761AbiBJGFe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 01:04:47 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EEA1D9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:04:47 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 27645201427;
-        Thu, 10 Feb 2022 06:04:46 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id E935E805A4; Thu, 10 Feb 2022 07:00:33 +0100 (CET)
-Date:   Thu, 10 Feb 2022 07:00:33 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] random: tie batched entropy generation to base_crng
- generation
-Message-ID: <YgSqAbggkgdAtkcm@owl.dominikbrodowski.net>
-References: <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
- <20220209215406.18850-1-Jason@zx2c4.com>
+        Thu, 10 Feb 2022 01:05:34 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC071D9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:05:36 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id c14so3929158qvl.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 22:05:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=libE9Yn1tWBYKLkyjSY/ju5fNvytYicqcfgJwizlZcE=;
+        b=dLKYw75qu4bpXdwIh3rv48k15nRreYPToUXnAHn/slr1zvyL8DqWHxmixuR93gw4M/
+         bl/4oFr9hfl7mJEKZCMyx40iWCZt47TgKsAmz8HPsDddE0OQEZ9XOJ1w+5YorWITCBZF
+         12sEovbYFwSkEoXtBUV6cFGloa1ocqMLIORVaB1Wsbrvo/LfNRN9gpcGdvV4uu3DIXUU
+         2Tt2u4JahD2Rubi12QtPNP2cqjMEyHII+HqeU7PUIcKvnh4xU2olUyaO19hjOYuIu/X4
+         c23BPIS/SyCkCMzMpdYIdclcuagKi40wKsmbnMu37uYpK9HR/CoOxnxj4UarpC0Ca1SU
+         7f+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=libE9Yn1tWBYKLkyjSY/ju5fNvytYicqcfgJwizlZcE=;
+        b=xLBZ1z53zJ5IYCoO06/qSNY/9L6bKyEaB+DH9vpTRHZ6QH56rre7PvhYX927gTo1x+
+         hCWmpJvDFAXXhqkRvye2cdFOa12rU3kvKRe4p1p4Eb48ioiDVfVUKHPGpjW8cGilU9Xq
+         EdG+t4Nqkt93p9BWHrPjUr8lPPoc5U8nSjDu/XtuP0xtbXX9iX5Bq1zsWw7vfYVIQuOv
+         71NJFwVtF5dOBzpR6IJUgPUOyMiYNvzAq+gYntzXRKakGU6UbfmSyO3EcnPMGP7QOBg8
+         CauJYGJ66MIu0XF3XxXaurpNls2fBVUWWUYUAt5SbE8dVgSMrQPeEh4aqj2VH9buH0P2
+         78EA==
+X-Gm-Message-State: AOAM531E07JtR3jm5esSDrreWedWep/XvzSyVCBNb/EXiKQdWUYr2FL6
+        vlJVbTIyZPNLnJ/g877fPcGWRzjmKbs=
+X-Google-Smtp-Source: ABdhPJwPEeBaJnQZEpGh/G4E2EiYfU9a5wjU9luZd+NapvxeRAesLQVAOTyq3zmZ8C+PR6Xyefuvtg==
+X-Received: by 2002:a05:6214:62b:: with SMTP id a11mr3968947qvx.99.1644473135358;
+        Wed, 09 Feb 2022 22:05:35 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id d6sm10331723qtb.55.2022.02.09.22.05.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 22:05:35 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     kishon@ti.com
+Cc:     vkoul@kernel.org, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] drivers/phy: remove unneeded ret variable
+Date:   Thu, 10 Feb 2022 06:05:29 +0000
+Message-Id: <20220210060529.1608027-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220209215406.18850-1-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Wed, Feb 09, 2022 at 10:54:06PM +0100 schrieb Jason A. Donenfeld:
-> Now that we have an explicit base_crng generation counter, we don't need
-> a separate one for batched entropy. Rather, we can just move the
-> generation forward every time we change crng_init state.
-> 
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 28 +++++++---------------------
->  1 file changed, 7 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index 999f1d164e72..f4d432305869 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -431,8 +431,6 @@ static DEFINE_PER_CPU(struct crng, crngs) = {
->  
->  static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
->  
-> -static void invalidate_batched_entropy(void);
-> -
->  /*
->   * crng_fast_load() can be called by code in the interrupt service
->   * path.  So we can't afford to dilly-dally. Returns the number of
-> @@ -455,7 +453,7 @@ static size_t crng_fast_load(const void *cp, size_t len)
->  		src++; crng_init_cnt++; len--; ret++;
->  	}
->  	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-> -		invalidate_batched_entropy();
-> +		++base_crng.generation;
->  		crng_init = 1;
->  	}
->  	spin_unlock_irqrestore(&base_crng.lock, flags);
+From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
 
-This will only ever increase base_crng.generation from 0 to 1, and the
-proper lock is held. The base_crng.key has changed, so it's appropriate
-to state that it has reached a new generation.
+Return value from regmap_update_bits() directly instead
+of taking this in another redundant variable.
 
-> @@ -536,7 +534,6 @@ static void crng_reseed(void)
->  	spin_unlock_irqrestore(&base_crng.lock, flags);
->  	memzero_explicit(key, sizeof(key));
->  	if (finalize_init) {
-> -		invalidate_batched_entropy();
->  		process_random_ready_list();
->  		wake_up_interruptible(&crng_init_wait);
->  		kill_fasync(&fasync, SIGIO, POLL_IN);
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+---
+ drivers/phy/ti/phy-ti-pipe3.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-In crng_reseed(), base_crng.generation is incremented above while holding
-the lock, and checked that it doesn't reach ULONG_MAX. OK.
+diff --git a/drivers/phy/ti/phy-ti-pipe3.c b/drivers/phy/ti/phy-ti-pipe3.c
+index 2cbc91e535d4..060b68c69ab8 100644
+--- a/drivers/phy/ti/phy-ti-pipe3.c
++++ b/drivers/phy/ti/phy-ti-pipe3.c
+@@ -318,7 +318,6 @@ static void ti_pipe3_disable_clocks(struct ti_pipe3 *phy);
+ 
+ static int ti_pipe3_power_off(struct phy *x)
+ {
+-	int ret;
+ 	struct ti_pipe3 *phy = phy_get_drvdata(x);
+ 
+ 	if (!phy->phy_power_syscon) {
+@@ -326,9 +325,8 @@ static int ti_pipe3_power_off(struct phy *x)
+ 		return 0;
+ 	}
+ 
+-	ret = regmap_update_bits(phy->phy_power_syscon, phy->power_reg,
++	return regmap_update_bits(phy->phy_power_syscon, phy->power_reg,
+ 				 PIPE3_PHY_PWRCTL_CLK_CMD_MASK, 0);
+-	return ret;
+ }
+ 
+ static void ti_pipe3_calibrate(struct ti_pipe3 *phy);
+-- 
+2.25.1
 
-> @@ -1278,7 +1275,7 @@ int __init rand_initialize(void)
->  
->  	extract_entropy(base_crng.key, sizeof(base_crng.key));
->  	if (arch_init && trust_cpu && crng_init < 2) {
-> -		invalidate_batched_entropy();
-> +		++base_crng.generation;
->  		crng_init = 2;
->  		pr_notice("crng init done (trusting CPU's manufacturer)\n");
->  	}
-
-Here we do not need to take a lock (single-threaded operation), can only be
-at generation 0 or 1, and the base_crng.key has changed. Which leads me to
-ask: shouldn't we increase the generation counter always (or at least if
-arch_init is true)? And just make icnrementing crng_init to 2 depending on
-trust_cpu?
-
-To sum it up:
-
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-
-Thanks,
-	Dominik
