@@ -2,116 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87717C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 19:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 19:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343976AbiBJT1Z (ORCPT
+        id S1343982AbiBJT1m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 14:27:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60040 "EHLO
+        Thu, 10 Feb 2022 14:27:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343947AbiBJT1V (ORCPT
+        with ESMTP id S1343544AbiBJT1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 14:27:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33668115A
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 11:27:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644521241;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GNtwi8xnD/wpxMJkxYRgc+GcsRTLVGTfs9JYaKnP9Qg=;
-        b=Xj47WjX8EdLO60xj3lY+608dTfJo2xaS5Nu4ydBnQHYkbm+swdg7EH3wtKMlY5Z9lCMWSo
-        wSt4xG/TJZpYF/9AKrvIXdpnXheEadVP519jbrwDv+bx4LavfiA+p5OcTG0sZjkh9osDRz
-        QUKpoMiB3z6DnCheNl7DTitBxEgj0aA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-rLoL6nCFOp2CnnYG8WrfgQ-1; Thu, 10 Feb 2022 14:27:18 -0500
-X-MC-Unique: rLoL6nCFOp2CnnYG8WrfgQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4E5AB46861;
-        Thu, 10 Feb 2022 19:27:15 +0000 (UTC)
-Received: from [10.22.19.255] (unknown [10.22.19.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B8EE5E482;
-        Thu, 10 Feb 2022 19:27:12 +0000 (UTC)
-Message-ID: <52de2e14-33d9-bdda-4b37-3e72ae9954c7@redhat.com>
-Date:   Thu, 10 Feb 2022 14:27:11 -0500
+        Thu, 10 Feb 2022 14:27:39 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9CC51BF;
+        Thu, 10 Feb 2022 11:27:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644521259; x=1676057259;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=KgGGYz1uf3JX/t90pBcGCFyoEJL2Bi12Sok3epGvjoU=;
+  b=Q3XCtvxEN8ejztXdjfWGuXT/iSEa5/ftyrHs/SecpTNtpO8MpeifNCR2
+   ZXw0zmf9xMvGLExjFyyRe17N0ZXTYJyPdjnQ5HQw8Tcu4k7xG+4dyWjRc
+   yvshqU2pSsMCzhMQgLpltaOO6p1xsoI+/y+jvoAUKo5ytCa4bakLv8nyJ
+   7JJKzH4yKKn+BdyR+E/yc7/mBv2VFJ1CIRHX5g0it0Q/isMYBhhelnnF5
+   Mr2t7mapvSS+VrPZG05Tv9N8bpjiCe1hhEzP1tIoAdr1ZfZj7dWs2agLG
+   QqW7iKPtn21GpwbdAd+IFgwpv0BUxNyxgoogwPV/KzbeoJlXZDNG7rkUA
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="335996186"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="335996186"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 11:27:39 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="500514005"
+Received: from pengyusu-mobl.amr.corp.intel.com (HELO [10.212.149.216]) ([10.212.149.216])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 11:27:37 -0800
+Message-ID: <fc2274d4-4f1d-d86b-38ad-d80141c3115c@intel.com>
+Date:   Thu, 10 Feb 2022 11:27:34 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
- lockdep/lock_stat (v1)
+ Thunderbird/91.5.0
 Content-Language: en-US
-To:     paulmck@kernel.org, Peter Zijlstra <peterz@infradead.org>
-Cc:     Namhyung Kim <namhyung@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
+To:     Rick Edgecombe <rick.p.edgecombe@intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
-        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>
-References: <20220208184208.79303-1-namhyung@kernel.org>
- <20220209090908.GK23216@worktop.programming.kicks-ass.net>
- <CAM9d7cgq+jxu6FJuKhZkprn7dO4DiG5pDjmYZzneQYTfKOM85g@mail.gmail.com>
- <YgTXUQ9CBoo3+A+c@hirez.programming.kicks-ass.net>
- <20220210191404.GM4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220210191404.GM4285@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mm@kvack.org,
+        linux-arch@vger.kernel.org, linux-api@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Eugene Syromiatnikov <esyr@redhat.com>,
+        Florian Weimer <fweimer@redhat.com>,
+        "H . J . Lu" <hjl.tools@gmail.com>, Jann Horn <jannh@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        Oleg Nesterov <oleg@redhat.com>, Pavel Machek <pavel@ucw.cz>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "Ravi V . Shankar" <ravi.v.shankar@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>,
+        Weijiang Yang <weijiang.yang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        joao.moreira@intel.com, John Allen <john.allen@amd.com>,
+        kcc@google.com, eranian@google.com
+Cc:     Yu-cheng Yu <yu-cheng.yu@intel.com>
+References: <20220130211838.8382-1-rick.p.edgecombe@intel.com>
+ <20220130211838.8382-22-rick.p.edgecombe@intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 21/35] mm/mprotect: Exclude shadow stack from
+ preserve_write
+In-Reply-To: <20220130211838.8382-22-rick.p.edgecombe@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/10/22 14:14, Paul E. McKenney wrote:
-> On Thu, Feb 10, 2022 at 10:13:53AM +0100, Peter Zijlstra wrote:
->> On Wed, Feb 09, 2022 at 04:32:58PM -0800, Namhyung Kim wrote:
->>> On Wed, Feb 9, 2022 at 1:09 AM Peter Zijlstra <peterz@infradead.org> wrote:
->>>> On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
->>>>
->>>>> Eventually I'm mostly interested in the contended locks only and I
->>>>> want to reduce the overhead in the fast path.  By moving that, it'd be
->>>>> easy to track contended locks with timing by using two tracepoints.
->>>> So why not put in two new tracepoints and call it a day?
->>>>
->>>> Why muck about with all that lockdep stuff just to preserve the name
->>>> (and in the process continue to blow up data structures etc..). This
->>>> leaves distros in a bind, will they enable this config and provide
->>>> tracepoints while bloating the data structures and destroying things
->>>> like lockref (which relies on sizeof(spinlock_t)), or not provide this
->>>> at all.
->>> If it's only lockref, is it possible to change it to use arch_spinlock_t
->>> so that it can remain in 4 bytes?  It'd be really nice if we can keep
->>> spin lock size, but it'd be easier to carry the name with it for
->>> analysis IMHO.
->> It's just vile and disgusting to blow up the lock size for convenience
->> like this.
->>
->> And no, there's more of that around. A lot of effort has been spend to
->> make sure spinlocks are 32bit and we're not going to give that up for
->> something as daft as this.
->>
->> Just think harder on the analysis side. Like said; I'm thinking the
->> caller IP should be good enough most of the time.
-> Another option is to keep any additional storage in a separate data
-> structure keyed off of lock address, lockdep class, or whatever.
->
-> Whether or not this is a -good- option, well, who knows?  ;-)
+On 1/30/22 13:18, Rick Edgecombe wrote:
+> In change_pte_range(), when a PTE is changed for prot_numa, _PAGE_RW is
+> preserved to avoid the additional write fault after the NUMA hinting fault.
+> However, pte_write() now includes both normal writable and shadow stack
+> (RW=0, Dirty=1) PTEs, but the latter does not have _PAGE_RW and has no need
+> to preserve it.
 
-I have suggested that too. Unfortunately, I was replying to an email 
-with your wrong email address. So you might not have received it.
+This series creates an interesting situation: it causes a logical
+disconnection between things that were tightly coupled before.  For
+instance, before this series, _PAGE_RW=1 and "writable" really were
+synonyms.  They meant the same thing.
 
-Cheers,
-Longman
+One of the complexities in this series is differentiating the two.  For
+instance, a shadow stack page can be written to, even though it has
+_PAGE_RW=0.
 
+This particular patch seems to be hacking around the problem that a
+p*_mkwrite() doesn't work on shadow stack PTE/PMDs.  First, that makes
+me wonder what *actually* happens if we do a plain pte_mkwrite() on a
+shadow stack PTE.  I *think* it will take the [Write=0,Dirty=1] PTE and
+
+       pte = pte_set_flags(pte, _PAGE_RW);
+
+so we'll end up with [Write=1,Dirty=1], which is bad.
+
+Let's say pte_mkwrite() can't be fixed.  We should probably make it
+VM_BUG_ON() if it's ever asked to muck with a shadow stack PTE.
+
+It's also weird because we have this pte_write()==1 PTE in a !VM_WRITE
+VMA.  Then, we're trying to pte_mkwrite() under this !VM_WRITE VMA.
+
+	pte_write() <-- returns true for on shadow stack PTE!
+	pte_mkwrite() <-- illegal on shadow stack PTE
+
+I need to think about this a little more.  I don't have a solution.
+But, as-is, it seems untenable.  The rules are just too counter
+intuitive to live.
