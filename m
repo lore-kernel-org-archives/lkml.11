@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BEB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7634C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240340AbiBJKzv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:55:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33808 "EHLO
+        id S240363AbiBJKzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:55:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240321AbiBJKzi (ORCPT
+        with ESMTP id S240317AbiBJKzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:55:38 -0500
+        Thu, 10 Feb 2022 05:55:39 -0500
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C841011
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:55:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC151008
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:55:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644490535; x=1676026535;
+  t=1644490541; x=1676026541;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zG0rPmc+M7NnPQ92kjKfNGFNbwAdhoZlDMjs1VeaqKs=;
-  b=U77VGfW5F+6R7JBYgSJAmpIaAYUUXsJ9t85gcVeH4wMHCxq524tJD+/8
-   UX3+xtMGr/b6oPeEttxdo6bLPBkDD5dnvmlX0bjJeRguUcHFIIQsRpAkH
-   80Hh7+Fhg+nTnqIrXfTsWf69OMdqadqFmMLtjvc56vRcyffraKktrZCok
-   eZNM6EtPy/ttqWUhuTCwhgpzwCytSIMcr/M75ZbktDMdMkiazPO5/SXhF
-   NZ8n2AYcPSDa9MLhkU+5KQaZmAmmeF/bxPQL9xX4xGsgqgM8iQ/fcZ0gX
-   Qw997Vrp60BryIJQGbDw8g6fqtuZVOPTcUVBlynu7u6B6BhGqfxYwtozy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="310202856"
+  bh=avB9gfF1dQpf9ouXWAEoycsyJSGtDd8lbJbB9o+Q0FQ=;
+  b=SQLvg+vcl6IkroVr5mD+MM4eYRtV4yjGlTqAH5J41SLsplHPca8lYIq0
+   j0ptX/b8I0T+4ogBAtmIazPkx8xPKPEqioN2WjUlTTyl5cOAhRa+EGTEa
+   sR3x/SQ1b75j7SLFinU21W8ivBcLILjusc2Bq/mkn6d2GwUdj3UDIQBVr
+   he3KpfJVc761f+9LD5EisGENIXEEKr+u09bQpjpacDvlodybMwkdxtHG5
+   lcEnCvHgctL0m+rEjTfnvkzJknIYKi5CWaEPoa6m5xtRh9iFILGajLN91
+   DVO2IQmT4/N8Opjp+YbFp5/UOQy+JSUrqm0AeAodZA+HDXq5cB6L6XKL/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="310202872"
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="310202856"
+   d="scan'208";a="310202872"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:55:35 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:55:41 -0800
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="679106853"
+   d="scan'208";a="679106859"
 Received: from barabano-mobl.ccr.corp.intel.com (HELO pujfalus-desk.ger.corp.intel.com) ([10.252.41.18])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:55:32 -0800
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 02:55:38 -0800
 From:   Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 To:     lgirdwood@gmail.com, broonie@kernel.org,
         pierre-louis.bossart@linux.intel.com,
@@ -44,9 +44,9 @@ To:     lgirdwood@gmail.com, broonie@kernel.org,
 Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
         daniel.baluta@nxp.com, tiwai@suse.com,
         linux-kernel@vger.kernel.org, fred.oh@linux.intel.com
-Subject: [PATCH 4/9] ASoC: SOF: Split up utils.c into sof-utils and iomem-utils
-Date:   Thu, 10 Feb 2022 12:55:14 +0200
-Message-Id: <20220210105519.19795-5-peter.ujfalusi@linux.intel.com>
+Subject: [PATCH 6/9] ASoC: SOF: sof-client: Add support for clients not managed by pm framework
+Date:   Thu, 10 Feb 2022 12:55:16 +0200
+Message-Id: <20220210105519.19795-7-peter.ujfalusi@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220210105519.19795-1-peter.ujfalusi@linux.intel.com>
 References: <20220210105519.19795-1-peter.ujfalusi@linux.intel.com>
@@ -56,282 +56,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The utils.c contains wrappers and implementation for accessing iomem mapped
-regions and a single unrelated function to create a compressed page table
-from snd_dma_buffer for firmware use.
-
-The latter is used by the PCM and the dma trace code and it needs to be
-moved to a generic source/header for the client conversion to be possible.
+Some SOF client can be of 'passive' type, meaning that they do not handle
+PM framework callbacks by themselves but rely on the auxiliary driver's
+suspend and resume callbacks to be notified about the core's suspend or
+resume event.
 
 Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
 Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
 Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 ---
- sound/soc/sof/Makefile                   |  5 +-
- sound/soc/sof/{utils.c => iomem-utils.c} | 61 +------------------
- sound/soc/sof/pcm.c                      |  1 +
- sound/soc/sof/sof-priv.h                 |  4 --
- sound/soc/sof/sof-utils.c                | 77 ++++++++++++++++++++++++
- sound/soc/sof/sof-utils.h                | 19 ++++++
- sound/soc/sof/trace.c                    |  1 +
- 7 files changed, 103 insertions(+), 65 deletions(-)
- rename sound/soc/sof/{utils.c => iomem-utils.c} (59%)
- create mode 100644 sound/soc/sof/sof-utils.c
- create mode 100644 sound/soc/sof/sof-utils.h
+ sound/soc/sof/pm.c         | 13 ++++++++++-
+ sound/soc/sof/sof-client.c | 46 ++++++++++++++++++++++++++++++++++++++
+ sound/soc/sof/sof-priv.h   | 12 ++++++++++
+ 3 files changed, 70 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
-index 964b429146be..4b9fccacc2b7 100644
---- a/sound/soc/sof/Makefile
-+++ b/sound/soc/sof/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+diff --git a/sound/soc/sof/pm.c b/sound/soc/sof/pm.c
+index 197a88695fef..7300ecadabd9 100644
+--- a/sound/soc/sof/pm.c
++++ b/sound/soc/sof/pm.c
+@@ -167,6 +167,9 @@ static int sof_resume(struct device *dev, bool runtime_resume)
+ 		return ret;
+ 	}
  
- snd-sof-objs := core.o ops.o loader.o ipc.o pcm.o pm.o debug.o topology.o\
--		control.o trace.o utils.o sof-audio.o stream-ipc.o
-+		control.o trace.o iomem-utils.o sof-audio.o stream-ipc.o
- 
- snd-sof-$(CONFIG_SND_SOC_SOF_DEBUG_PROBES) += sof-probes.o
- snd-sof-$(CONFIG_SND_SOC_SOF_COMPRESS) += compress.o
-@@ -12,9 +12,12 @@ snd-sof-of-objs := sof-of-dev.o
- 
- snd-sof-nocodec-objs := nocodec.o
- 
-+snd-sof-utils-objs := sof-utils.o
++	/* Notify clients not managed by pm framework about core resume */
++	sof_resume_clients(sdev);
 +
- obj-$(CONFIG_SND_SOC_SOF) += snd-sof.o
- obj-$(CONFIG_SND_SOC_SOF_NOCODEC) += snd-sof-nocodec.o
+ 	/* notify DSP of system resume */
+ 	ret = sof_send_pm_ctx_ipc(sdev, SOF_IPC_PM_CTX_RESTORE);
+ 	if (ret < 0)
+@@ -180,6 +183,7 @@ static int sof_resume(struct device *dev, bool runtime_resume)
+ static int sof_suspend(struct device *dev, bool runtime_suspend)
+ {
+ 	struct snd_sof_dev *sdev = dev_get_drvdata(dev);
++	pm_message_t pm_state;
+ 	u32 target_state = 0;
+ 	int ret;
  
-+obj-$(CONFIG_SND_SOC_SOF) += snd-sof-utils.o
+@@ -205,16 +209,23 @@ static int sof_suspend(struct device *dev, bool runtime_suspend)
+ 	}
  
- obj-$(CONFIG_SND_SOC_SOF_ACPI_DEV) += snd-sof-acpi.o
- obj-$(CONFIG_SND_SOC_SOF_OF_DEV) += snd-sof-of.o
-diff --git a/sound/soc/sof/utils.c b/sound/soc/sof/iomem-utils.c
-similarity index 59%
-rename from sound/soc/sof/utils.c
-rename to sound/soc/sof/iomem-utils.c
-index 66fa6602fb67..3f57f6cf6542 100644
---- a/sound/soc/sof/utils.c
-+++ b/sound/soc/sof/iomem-utils.c
-@@ -3,7 +3,7 @@
- // This file is provided under a dual BSD/GPLv2 license.  When using or
- // redistributing this file, you may do so under either license.
- //
--// Copyright(c) 2018 Intel Corporation. All rights reserved.
-+// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
- //
- // Author: Keyon Jie <yang.jie@linux.intel.com>
- //
-@@ -125,62 +125,3 @@ int sof_block_read(struct snd_sof_dev *sdev, enum snd_sof_fw_blk_type blk_type,
- 	return 0;
+ 	target_state = snd_sof_dsp_power_target(sdev);
++	pm_state.event = target_state;
+ 
+ 	/* Skip to platform-specific suspend if DSP is entering D0 */
+-	if (target_state == SOF_DSP_PM_D0)
++	if (target_state == SOF_DSP_PM_D0) {
++		/* Notify clients not managed by pm framework about core suspend */
++		sof_suspend_clients(sdev, pm_state);
+ 		goto suspend;
++	}
+ 
+ 	sof_tear_down_pipelines(sdev, false);
+ 
+ 	/* release trace */
+ 	snd_sof_release_trace(sdev);
+ 
++	/* Notify clients not managed by pm framework about core suspend */
++	sof_suspend_clients(sdev, pm_state);
++
+ #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE)
+ 	/* cache debugfs contents during runtime suspend */
+ 	if (runtime_suspend)
+diff --git a/sound/soc/sof/sof-client.c b/sound/soc/sof/sof-client.c
+index 6f747d051b59..932bdea49c24 100644
+--- a/sound/soc/sof/sof-client.c
++++ b/sound/soc/sof/sof-client.c
+@@ -169,6 +169,52 @@ int sof_client_ipc_tx_message(struct sof_client_dev *cdev, void *ipc_msg,
  }
- EXPORT_SYMBOL(sof_block_read);
--
--/*
-- * Generic buffer page table creation.
-- * Take the each physical page address and drop the least significant unused
-- * bits from each (based on PAGE_SIZE). Then pack valid page address bits
-- * into compressed page table.
-- */
--
--int snd_sof_create_page_table(struct device *dev,
--			      struct snd_dma_buffer *dmab,
--			      unsigned char *page_table, size_t size)
--{
--	int i, pages;
--
--	pages = snd_sgbuf_aligned_pages(size);
--
--	dev_dbg(dev, "generating page table for %p size 0x%zx pages %d\n",
--		dmab->area, size, pages);
--
--	for (i = 0; i < pages; i++) {
--		/*
--		 * The number of valid address bits for each page is 20.
--		 * idx determines the byte position within page_table
--		 * where the current page's address is stored
--		 * in the compressed page_table.
--		 * This can be calculated by multiplying the page number by 2.5.
--		 */
--		u32 idx = (5 * i) >> 1;
--		u32 pfn = snd_sgbuf_get_addr(dmab, i * PAGE_SIZE) >> PAGE_SHIFT;
--		u8 *pg_table;
--
--		dev_vdbg(dev, "pfn i %i idx %d pfn %x\n", i, idx, pfn);
--
--		pg_table = (u8 *)(page_table + idx);
--
--		/*
--		 * pagetable compression:
--		 * byte 0     byte 1     byte 2     byte 3     byte 4     byte 5
--		 * ___________pfn 0__________ __________pfn 1___________  _pfn 2...
--		 * .... ....  .... ....  .... ....  .... ....  .... ....  ....
--		 * It is created by:
--		 * 1. set current location to 0, PFN index i to 0
--		 * 2. put pfn[i] at current location in Little Endian byte order
--		 * 3. calculate an intermediate value as
--		 *    x = (pfn[i+1] << 4) | (pfn[i] & 0xf)
--		 * 4. put x at offset (current location + 2) in LE byte order
--		 * 5. increment current location by 5 bytes, increment i by 2
--		 * 6. continue to (2)
--		 */
--		if (i & 1)
--			put_unaligned_le32((pg_table[0] & 0xf) | pfn << 4,
--					   pg_table);
--		else
--			put_unaligned_le32(pfn, pg_table);
--	}
--
--	return pages;
--}
--EXPORT_SYMBOL(snd_sof_create_page_table);
-diff --git a/sound/soc/sof/pcm.c b/sound/soc/sof/pcm.c
-index 37fb8e6cd493..62cb61655761 100644
---- a/sound/soc/sof/pcm.c
-+++ b/sound/soc/sof/pcm.c
-@@ -19,6 +19,7 @@
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_PROBES)
- #include "sof-probes.h"
- #endif
-+#include "sof-utils.h"
+ EXPORT_SYMBOL_NS_GPL(sof_client_ipc_tx_message, SND_SOC_SOF_CLIENT);
  
- /* Create DMA buffer page table for DSP */
- static int create_page_table(struct snd_soc_component *component,
-diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 2e474048d708..27d2f3ca2f06 100644
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -502,10 +502,6 @@ void snd_sof_complete(struct device *dev);
- 
- void snd_sof_new_platform_drv(struct snd_sof_dev *sdev);
- 
--int snd_sof_create_page_table(struct device *dev,
--			      struct snd_dma_buffer *dmab,
--			      unsigned char *page_table, size_t size);
--
- /*
-  * Firmware loading.
-  */
-diff --git a/sound/soc/sof/sof-utils.c b/sound/soc/sof/sof-utils.c
-new file mode 100644
-index 000000000000..a3300ecee062
---- /dev/null
-+++ b/sound/soc/sof/sof-utils.c
-@@ -0,0 +1,77 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-+//
-+// This file is provided under a dual BSD/GPLv2 license.  When using or
-+// redistributing this file, you may do so under either license.
-+//
-+// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
-+//
-+// Author: Keyon Jie <yang.jie@linux.intel.com>
-+//
-+
-+#include <asm/unaligned.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+#include <linux/device.h>
-+#include <sound/memalloc.h>
-+#include <linux/module.h>
-+#include "sof-utils.h"
-+
-+/*
-+ * Generic buffer page table creation.
-+ * Take the each physical page address and drop the least significant unused
-+ * bits from each (based on PAGE_SIZE). Then pack valid page address bits
-+ * into compressed page table.
-+ */
-+
-+int snd_sof_create_page_table(struct device *dev,
-+			      struct snd_dma_buffer *dmab,
-+			      unsigned char *page_table, size_t size)
++int sof_suspend_clients(struct snd_sof_dev *sdev, pm_message_t state)
 +{
-+	int i, pages;
++	struct auxiliary_driver *adrv;
++	struct sof_client_dev *cdev;
 +
-+	pages = snd_sgbuf_aligned_pages(size);
++	mutex_lock(&sdev->ipc_client_mutex);
 +
-+	dev_dbg(dev, "generating page table for %p size 0x%zx pages %d\n",
-+		dmab->area, size, pages);
++	list_for_each_entry(cdev, &sdev->ipc_client_list, list) {
++		/* Skip devices without loaded driver */
++		if (!cdev->auxdev.dev.driver)
++			continue;
 +
-+	for (i = 0; i < pages; i++) {
-+		/*
-+		 * The number of valid address bits for each page is 20.
-+		 * idx determines the byte position within page_table
-+		 * where the current page's address is stored
-+		 * in the compressed page_table.
-+		 * This can be calculated by multiplying the page number by 2.5.
-+		 */
-+		u32 idx = (5 * i) >> 1;
-+		u32 pfn = snd_sgbuf_get_addr(dmab, i * PAGE_SIZE) >> PAGE_SHIFT;
-+		u8 *pg_table;
-+
-+		dev_vdbg(dev, "pfn i %i idx %d pfn %x\n", i, idx, pfn);
-+
-+		pg_table = (u8 *)(page_table + idx);
-+
-+		/*
-+		 * pagetable compression:
-+		 * byte 0     byte 1     byte 2     byte 3     byte 4     byte 5
-+		 * ___________pfn 0__________ __________pfn 1___________  _pfn 2...
-+		 * .... ....  .... ....  .... ....  .... ....  .... ....  ....
-+		 * It is created by:
-+		 * 1. set current location to 0, PFN index i to 0
-+		 * 2. put pfn[i] at current location in Little Endian byte order
-+		 * 3. calculate an intermediate value as
-+		 *    x = (pfn[i+1] << 4) | (pfn[i] & 0xf)
-+		 * 4. put x at offset (current location + 2) in LE byte order
-+		 * 5. increment current location by 5 bytes, increment i by 2
-+		 * 6. continue to (2)
-+		 */
-+		if (i & 1)
-+			put_unaligned_le32((pg_table[0] & 0xf) | pfn << 4,
-+					   pg_table);
-+		else
-+			put_unaligned_le32(pfn, pg_table);
++		adrv = to_auxiliary_drv(cdev->auxdev.dev.driver);
++		if (adrv->suspend)
++			adrv->suspend(&cdev->auxdev, state);
 +	}
 +
-+	return pages;
++	mutex_unlock(&sdev->ipc_client_mutex);
++
++	return 0;
 +}
-+EXPORT_SYMBOL(snd_sof_create_page_table);
++EXPORT_SYMBOL_NS_GPL(sof_suspend_clients, SND_SOC_SOF_CLIENT);
 +
-+MODULE_LICENSE("Dual BSD/GPL");
-diff --git a/sound/soc/sof/sof-utils.h b/sound/soc/sof/sof-utils.h
-new file mode 100644
-index 000000000000..6f902893807e
---- /dev/null
-+++ b/sound/soc/sof/sof-utils.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-+/*
-+ * This file is provided under a dual BSD/GPLv2 license.  When using or
-+ * redistributing this file, you may do so under either license.
-+ *
-+ * Copyright(c) 2022 Intel Corporation. All rights reserved.
-+ */
++int sof_resume_clients(struct snd_sof_dev *sdev)
++{
++	struct auxiliary_driver *adrv;
++	struct sof_client_dev *cdev;
 +
-+#ifndef __SOC_SOF_UTILS_H
-+#define __SOC_SOF_UTILS_H
++	mutex_lock(&sdev->ipc_client_mutex);
 +
-+struct snd_dma_buffer;
-+struct device;
++	list_for_each_entry(cdev, &sdev->ipc_client_list, list) {
++		/* Skip devices without loaded driver */
++		if (!cdev->auxdev.dev.driver)
++			continue;
 +
-+int snd_sof_create_page_table(struct device *dev,
-+			      struct snd_dma_buffer *dmab,
-+			      unsigned char *page_table, size_t size);
++		adrv = to_auxiliary_drv(cdev->auxdev.dev.driver);
++		if (adrv->resume)
++			adrv->resume(&cdev->auxdev);
++	}
 +
-+#endif
-diff --git a/sound/soc/sof/trace.c b/sound/soc/sof/trace.c
-index 2335d0f06d42..104388c551cb 100644
---- a/sound/soc/sof/trace.c
-+++ b/sound/soc/sof/trace.c
-@@ -12,6 +12,7 @@
- #include <linux/sched/signal.h>
- #include "sof-priv.h"
- #include "ops.h"
-+#include "sof-utils.h"
++	mutex_unlock(&sdev->ipc_client_mutex);
++
++	return 0;
++}
++EXPORT_SYMBOL_NS_GPL(sof_resume_clients, SND_SOC_SOF_CLIENT);
++
+ struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev)
+ {
+ 	return cdev->sdev->debugfs_root;
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index f641833f3ff9..39bbba5aeab2 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -653,6 +653,8 @@ int sof_register_clients(struct snd_sof_dev *sdev);
+ void sof_unregister_clients(struct snd_sof_dev *sdev);
+ void sof_client_ipc_rx_dispatcher(struct snd_sof_dev *sdev, void *msg_buf);
+ void sof_client_fw_state_dispatcher(struct snd_sof_dev *sdev);
++int sof_suspend_clients(struct snd_sof_dev *sdev, pm_message_t state);
++int sof_resume_clients(struct snd_sof_dev *sdev);
+ #else /* CONFIG_SND_SOC_SOF_CLIENT */
+ static inline int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name,
+ 					  u32 id, const void *data, size_t size)
+@@ -681,6 +683,16 @@ static inline void sof_client_ipc_rx_dispatcher(struct snd_sof_dev *sdev, void *
+ static inline void sof_client_fw_state_dispatcher(struct snd_sof_dev *sdev)
+ {
+ }
++
++static inline int sof_suspend_clients(struct snd_sof_dev *sdev, pm_message_t state)
++{
++	return 0;
++}
++
++static inline int sof_resume_clients(struct snd_sof_dev *sdev)
++{
++	return 0;
++}
+ #endif /* CONFIG_SND_SOC_SOF_CLIENT */
  
- #define TRACE_FILTER_ELEMENTS_PER_ENTRY 4
- #define TRACE_FILTER_MAX_CONFIG_STRING_LENGTH 1024
+ #endif
 -- 
 2.35.1
 
