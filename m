@@ -2,88 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  9 Feb 2022 23:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60427C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231437AbiBIXid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 18:38:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50596 "EHLO
+        id S230418AbiBJBU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:20:27 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiBIXiN (ORCPT
+        with ESMTP id S229469AbiBJBUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 18:38:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81F41E02E500;
-        Wed,  9 Feb 2022 15:38:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B73E616B7;
-        Wed,  9 Feb 2022 23:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5AA8C340E7;
-        Wed,  9 Feb 2022 23:38:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644449894;
-        bh=KFa4++TEaAXLAeJN/VQvwvpnzo4zYedWhTuwEdr/RBg=;
-        h=Date:From:To:Cc:Subject:Reply-To:From;
-        b=LKykyeSv7GnzxiJou5lpGzYV3DCEIbYLSKi37Nj0oF8LSdWvhvx6GpMG6xjxU43SF
-         LygnFVjUlrY/Svo4iTz/gLAkHA3vSQv0bDcFUuw/RGWEgn5c2BPkvN9lHzcYcBrYwI
-         G4uISAsfpbjzxcDgZv9kX3598i6879SKnqnIuRj43L+pBfmTQ7RBRRYTD2SiCmttRi
-         oxPWxjWK+6EcHDeNtsmzTUObwhvfJUK6Ew1YV4JipsD9zRyAlvggvUfsP8HVPcCVNf
-         TrzehjBljVulydJUJzAqO2Bh4jpH675Ye9NiJWvPz0EMMRGBANNMrQXP67WLviCWns
-         FSvRoAmtapdhA==
-Date:   Thu, 10 Feb 2022 00:38:11 +0100
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     paulmck@kernel.org
-Cc:     kernel-team@fb.com, linux-kernel@vger.kernel.org,
-        quic_mojha@quicinc.com, rcu@vger.kernel.org, rostedt@goodmis.org,
-        tj@kernel.org, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH rcu 3/3] rcu: Allow expedited RCU grace periods on
- incoming CPUs
-Message-ID: <20220209233811.GC557593@lothringen>
-Reply-To: 20220204225507.4193113-3-paulmck@kernel.org
+        Wed, 9 Feb 2022 20:20:21 -0500
+Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C92E84;
+        Wed,  9 Feb 2022 17:20:18 -0800 (PST)
+X-UUID: f752996293804c03af1205c5fae73d9a-20220210
+X-CPASD-INFO: 10bbcf6a07a64175b9b2a3889822b914@eoCcgpCYZJFcV6OCg3SCb4JqkmKRX1i
+        He3JSYpBpXVSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3gHKcgpOUZg==
+X-CPASD-FEATURE: 0.0
+X-CLOUD-ID: 10bbcf6a07a64175b9b2a3889822b914
+X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
+        VAL:133.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:151.0,IP:-2.0,MAL:0.0,ATTNUM:0
+        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
+        OB:0.0,SPC:0.0,SIG:-5,AUF:15,DUF:32547,ACD:190,DCD:292,SL:0,AG:0,CFC:0.522,CF
+        SR:0.063,UAT:0,RAF:2,VERSION:2.3.4
+X-CPASD-ID: f752996293804c03af1205c5fae73d9a-20220210
+X-CPASD-BLOCK: 1000
+X-CPASD-STAGE: 1, 1
+X-UUID: f752996293804c03af1205c5fae73d9a-20220210
+X-User: xiehongyu1@kylinos.cn
+Received: from [172.20.4.10] [(116.128.244.169)] by nksmu.kylinos.cn
+        (envelope-from <xiehongyu1@kylinos.cn>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
+        with ESMTP id 1501960626; Thu, 10 Feb 2022 09:17:13 +0800
+Message-ID: <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
+Date:   Thu, 10 Feb 2022 09:04:40 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
+ value of function xhci_check_args
+Content-Language: en-US
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
+        mathias.nyman@intel.com
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+References: <20220209025234.25230-1-xy521521@gmail.com>
+ <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
+From:   =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>
+In-Reply-To: <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 02:55:07PM -0800, Paul E. McKenney wrote:
-> Although it is usually safe to invoke synchronize_rcu_expedited() from a
-> preemption-enabled CPU-hotplug notifier, if it is invoked from a notifier
-> between CPUHP_AP_RCUTREE_ONLINE and CPUHP_AP_ACTIVE, its attempts to
-> invoke a workqueue handler will hang due to RCU waiting on a CPU that
-> the scheduler is not paying attention to.  This commit therefore expands
-> use of the existing workqueue-independent synchronize_rcu_expedited()
-> from early boot to also include CPUs that are being hotplugged.
-> 
-> Link: https://lore.kernel.org/lkml/7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com/
-> Reported-by: Mukesh Ojha <quic_mojha@quicinc.com>
-> Cc: Tejun Heo <tj@kernel.org>
-> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Hi,
 
-I'm surprised by this scheduler behaviour.
+On 2022/2/9 17:29, Mathias Nyman wrote:
+> On 9.2.2022 4.52, Hongyu Xie wrote:
+>> From: Hongyu Xie <xiehongyu1@kylinos.cn>
+>>
+>> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+>> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+>> the return value of xhci_check_args <= 0.
+>> This will cause a problem.
+>> For example, r8152_submit_rx calling usb_submit_urb in
+>> drivers/net/usb/r8152.c.
+>> r8152_submit_rx will never get -ENODEV after submiting an urb
+>> when xHC is halted,
+>> because xhci_urb_enqueue returns -EINVAL in the very beginning.
+>>
+>> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+>> ---
+> Thanks, added to queue.
+> Changed the commit message and header a bit:
+>
+> "xhci: Prevent futile URB re-submissions due to incorrect return value.
+>      
+> The -ENODEV return value from xhci_check_args() is incorrectly changed
+> to -EINVAL in a couple places before propagated further.
+>      
+> xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+> the return value of xhci_check_args <= 0.
+> This causes problems for example r8152_submit_rx, calling usb_submit_urb
+> in drivers/net/usb/r8152.c.
+> r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+> is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
+>
+> Let me know if you disagree with this.
+>
+> Thanks
+> -Mathias
 
-Since sched_cpu_activate() hasn't been called yet,
-rq->balance_callback = balance_push_callback. As a result, balance_push() should
-be called at the end of schedule() when the workqueue is picked as the next task.
-Then eventually the workqueue should be immediately preempted by the stop task to
-be migrated elsewhere.
+Sounds good to me.
 
-So I must be missing something. For the fun, I booted the following and it
-didn't produce any issue:
+Do I have to send another patch with commit message and header changed?
 
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index 80faf2273ce9..b1e74a508881 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -4234,6 +4234,8 @@ int rcutree_online_cpu(unsigned int cpu)
- 
- 	// Stop-machine done, so allow nohz_full to disable tick.
- 	tick_dep_clear(TICK_DEP_BIT_RCU);
-+	if (cpu != 0)
-+		synchronize_rcu_expedited();
- 	return 0;
- }
- 
+Thanks
+
+Hongyu Xie
+
