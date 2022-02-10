@@ -2,82 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69242C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4503BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344928AbiBJWXx (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:23:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49862 "EHLO
+        id S243932AbiBJWZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 17:25:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344917AbiBJWXv (ORCPT
+        with ESMTP id S229541AbiBJWZO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:23:51 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683B6218E;
-        Thu, 10 Feb 2022 14:23:52 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 488F21F4697B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644531830;
-        bh=RgI9opHTA8T3KBo/qgOPw6qU7NMZ7C5YJme0G3lmwOk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DE8sxEwGN0RlDd3neWzxykMly3jHRT51EyVefOfc0zSRUfCOi9dP33tyE+aigzzvE
-         2whaT+Dp4az2AvTHX65p5WV+dqL4ZL387Z7nKXlJ3y5m2mKMBtSV9BwMLyXq8JF/wB
-         Ph33eDxmhWWylw7ZgSprEGQ8GmN0kPQKL+JBV5dx1v+y/onQ1/JDMI2XktWfcErfdI
-         YPH7wMfDHVmtdVGSTPgyiHZs3765lI29T2r8aSWOdw14+7dnC5kIKEOeKQc+iTGnY9
-         z+vMyb7xU2/Jr753oeVyGCH2NWpRdZVXqq9oPFED8+AiHQW/RakTAtL4jWHfDadzr0
-         Zav0l3sTuLuwg==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, kernelci@groups.io,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2] selftests/exec: Rename file binfmt_script to binfmt_script.py
-Date:   Fri, 11 Feb 2022 03:23:19 +0500
-Message-Id: <20220210222319.1864680-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 10 Feb 2022 17:25:14 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2700218E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:25:14 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id u6so13090146lfc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:25:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+9taNQqr53065W1oX4JDNtAk/+njpm3x8DzxRxP1lHU=;
+        b=D959OvVwl7BXuwDxGu0YH5B8iaG9JycwJXSActYL0Rhkvl1XpSclE6R6SP/TS9KpOb
+         uIITo6yOM2u/NW7Lpt2qvugxdahKXm7DxUSfw4CvZOax6yiLj0PuPiJD0kxUvrCoLRZE
+         8+tEADL2hNCtlzAphVfr0GXuxsruicxdkryZKu4A3EZQYGNy1YGT2PXBJWQ7cmvCU5sT
+         JmTq6TyMVzqerdn7CZcyv983bkS+4BRuAEOfAWl2vQTFGVVjXWYx7YXbhJ8zrn9tghSq
+         n6Z4aZpGnza7LI6CgiHjzXoxAuxZQeb8ZX3fWnC9sHKXTbS9MAdJvXlr3WYwA+ZhdPb1
+         7tbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+9taNQqr53065W1oX4JDNtAk/+njpm3x8DzxRxP1lHU=;
+        b=28aSS8GZgFKh3Y4vEgWwQJ2xUB9c4QGaCBvNa6jg9G46HCvzooPqLNZtb4qV7VwWn3
+         1FjOvNPfwKNVuC1uVPkWaFWuCRaj/nuJE7jQFe49HUDC59xSi+uNyrxkCG0eNBZodiAR
+         OWFqhBlUVGn9ODakVyFlOsf0+9ACeB974rohzLdKgzO3wDIeYWRplIUDyuxh1tgo0zGc
+         7Oi5KkqU9yVp90AB8uj0RFifQeXkG1nUdyR/vLe662BMLJ/flRc/eVXIfyhM/NK219bH
+         tv9DQdBRYT4AM5VJzIBQ43P2KFbNaQdDertURdgOw5S8ZZ8hQdUcQhpDNiK1iN/i3SpF
+         Q5tQ==
+X-Gm-Message-State: AOAM533UkwiiTLw+Y7IQbp/Iwtf5bsR04OO/CRGHn1izZdSRiWDukV6P
+        Evl2oDa7HZ+pA1b3ae2jcycx0w5vV4LbYvr8i8AEww==
+X-Google-Smtp-Source: ABdhPJyM1osoqKEaHQe/4Fm9kFoRNB8nnlkgffkyJW13U9ZE2XGrrPprjfDe61hw1PjYuIsv/WI+Ymv70pU4S4b9iCg=
+X-Received: by 2002:ac2:43ad:: with SMTP id t13mr6592317lfl.8.1644531912995;
+ Thu, 10 Feb 2022 14:25:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220210081437.1884008-1-shakeelb@google.com> <20220210081437.1884008-3-shakeelb@google.com>
+ <YgVvgCbbTrDPb5tT@carbon.dhcp.thefacebook.com>
+In-Reply-To: <YgVvgCbbTrDPb5tT@carbon.dhcp.thefacebook.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 10 Feb 2022 14:25:01 -0800
+Message-ID: <CALvZod5FBEHzNcXD-Wo5BPmMxu+Kf-ZA8s6N9EmD6TeFocs3_w@mail.gmail.com>
+Subject: Re: [PATCH 2/4] memcg: unify force charging conditions
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Chris Down <chris@chrisdown.name>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename file for readability purpose. Update its usage and references.
+On Thu, Feb 10, 2022 at 12:03 PM Roman Gushchin <guro@fb.com> wrote:
+>
+> On Thu, Feb 10, 2022 at 12:14:35AM -0800, Shakeel Butt wrote:
+> > Currently the kernel force charges the allocations which have __GFP_HIGH
+> > flag without triggering the memory reclaim. __GFP_HIGH indicates that
+> > the caller is high priority and since commit 869712fd3de5 ("mm:
+> > memcontrol: fix network errors from failing __GFP_ATOMIC charges") the
+> > kernel let such allocations do force charging. Please note that
+> > __GFP_ATOMIC has been replaced by __GFP_HIGH.
+> >
+> > __GFP_HIGH does not tell if the caller can block or can trigger reclaim.
+> > There are separate checks to determine that. So, there is no need to
+> > skip reclaim for __GFP_HIGH allocations. So, handle __GFP_HIGH together
+> > with __GFP_NOFAIL which also does force charging.
+>
+> This sounds very reasonable. But shouldn't we check if __GFP_DIRECT_RECLAIM
+> is set and bail out otherwise?
+>
 
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
-This path was suggested while review of the following patch. Please
-apply it after applying that one first:
-	selftests/exec: Add non-regular to TEST_GEN_PROGS
-Changes in V2:
-	Remove changes from binfmt_script.py, they were wrong
----
- tools/testing/selftests/exec/Makefile                           | 2 +-
- .../testing/selftests/exec/{binfmt_script => binfmt_script.py}  | 0
- 2 files changed, 1 insertion(+), 1 deletion(-)
- rename tools/testing/selftests/exec/{binfmt_script => binfmt_script.py} (100%)
-
-diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
-index a89ba6de79870..a0b8688b08369 100644
---- a/tools/testing/selftests/exec/Makefile
-+++ b/tools/testing/selftests/exec/Makefile
-@@ -3,7 +3,7 @@ CFLAGS = -Wall
- CFLAGS += -Wno-nonnull
- CFLAGS += -D_GNU_SOURCE
- 
--TEST_PROGS := binfmt_script
-+TEST_PROGS := binfmt_script.py
- TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
- TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
- # Makefile is a run-time dependency, since it's accessed by the execveat test
-diff --git a/tools/testing/selftests/exec/binfmt_script b/tools/testing/selftests/exec/binfmt_script.py
-similarity index 100%
-rename from tools/testing/selftests/exec/binfmt_script
-rename to tools/testing/selftests/exec/binfmt_script.py
--- 
-2.30.2
-
+We already have a gfpflags_allow_blocking() check which checks for
+__GFP_DIRECT_RECLAIM.
