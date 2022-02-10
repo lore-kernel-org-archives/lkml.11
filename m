@@ -2,94 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6759DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F66C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346392AbiBKAeY (ORCPT
+        id S1346396AbiBKAfr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:34:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60250 "EHLO
+        Thu, 10 Feb 2022 19:35:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346352AbiBKAeX (ORCPT
+        with ESMTP id S245125AbiBKAfn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:34:23 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31BB5F7C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:34:22 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id i62so9595515ioa.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:34:22 -0800 (PST)
+        Thu, 10 Feb 2022 19:35:43 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D685F66
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:35:43 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id o3so7353855qtm.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:35:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0B0HAkZcpI/s7VWBoglKXXLpyOgKkv9v/vmy+ecRN2c=;
-        b=YBFn8vHLtalzAuPUIkC8ZRtcGrbAZ6xVdORgh64HH7qdo5w8AwPW4zzB2QVhqAaw0p
-         sqsJOybZdeXuJEC0zh5ShXnUMTddnvMYWVCQzsItaAeMJm5+wdihCjUSoPBlXFRJlAqw
-         zsfUPhL58MBf9iJS6VzFibDJnfNNkCmeQT9sI=
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=OWAdmxyB++0+PrjBMyb2j1q4M+ZTDvPBI87BwMKOTA4=;
+        b=px25tVfseTRg17nKrinckLpm5Os6T2EDwYc8LKgshVBbe8wsdoAH40zqblIKerCD/M
+         9FOLPx46bt7sHkinZB7cbxFBdikM66T7mIE2f+XeWCQEEWgZ6+Fj8c60iMtssJ2j4Ax5
+         ywQwibJ3q+gTnIvO+B0epbOGU2k7wcFwtAmB2Ekl9ZcADK2LwleSSxyJRs3DD/O5DZ2q
+         3TtJYkbVmKfY7d2ve4Ep5xreuUGke1oZrOtsnTBOvbkyt9qrnwapvEabYRk+An2u5fDB
+         srQ7MLPu2N9T8Fk0fsc3+eu95bT6srOmeEd1PY3YKp7ljCULaG+YIorAkRi025pE/HtS
+         At7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0B0HAkZcpI/s7VWBoglKXXLpyOgKkv9v/vmy+ecRN2c=;
-        b=YeGWgdf0JP3Kgzia8lTtCqo/Q2KKPzJfIzN6FL3L0RSB6FAe62dS91KgEuWoPQiw+A
-         JNmQbyPD1gps2cMTwLgBfQMtSVpv37BcittCJfmEcs0sJZmo0zH3G7ShXjyFtc7iboN3
-         brK7l1QEUST3BpNjHVXuL3dny5uRC2EusGg5e+HBu6Mb/Dc/m0ju/aZv34HwuQWf6N88
-         Rf+rg1o9asWWuFYaEAfRSG57zhQaJ65BtjijQld3POMMnPtYyGEXE1+xtFBvGSWsju3R
-         qkirZ7rxBeek4OsP+2XKTYwLAEXdumhgHiHwBs/CIqqbZu8KSgE52dTv7ZgmaLqER31f
-         TDAg==
-X-Gm-Message-State: AOAM530IYcZkNKQIJRepVOzE18TpxZJZvM6aitJNuNeERGM+ouYcjjWR
-        gOntERaNByBQTMp3Adago/IezA==
-X-Google-Smtp-Source: ABdhPJzHuToV0Q1odU9rDTAN7VCzDbuxMxH0XgDEurznyKV9NzWsA3E+IwHXFpemFoFHBEjUzmREIA==
-X-Received: by 2002:a05:6602:26c7:: with SMTP id g7mr5219039ioo.56.1644539662196;
-        Thu, 10 Feb 2022 16:34:22 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id b12sm8381564ilv.68.2022.02.10.16.34.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 16:34:21 -0800 (PST)
-Subject: Re: [PATCH V2] selftests/exec: Rename file binfmt_script to
- binfmt_script.py
-To:     Kees Cook <keescook@chromium.org>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
-        kernelci@groups.io, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220210222319.1864680-1-usama.anjum@collabora.com>
- <202202101555.EE737A35@keescook>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <18cf9c45-b270-2c44-9eb8-d6f3e947ae49@linuxfoundation.org>
-Date:   Thu, 10 Feb 2022 17:34:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OWAdmxyB++0+PrjBMyb2j1q4M+ZTDvPBI87BwMKOTA4=;
+        b=Nqair/vDeS2BUuKINeYHkwBe78SI351hrXzh/AMoNbldp6hcS9CA8MWJ3vOOe0Tegp
+         rrUk0+sWHcPXBmCaWv1VrQnLaz1sE9Bqes5TT8gug6T4GGSnq0D3M4WakkHIEpIEDTmz
+         jawHYWnCQF0c+ZuqCBOwjxx1gSLa37Q7ZIOuWtI9daXZqD7GbBHgHHQuQFBSkUDaNKOV
+         zDWMwMXtcpxaOrd3qTaQWZChzEW2qtRfoqF9FooSqy9AuwxWkuQB6QDZ76HDVYOl/whZ
+         ZCJWOMe3no0XTQZGaNlnpAIcgLn0hXBFloQEAIt3z1Tsv4NOilhpg0pufYSmu7YaTmLL
+         mfNQ==
+X-Gm-Message-State: AOAM533zG5zuN1evAY5B2mKOsLNkeaT/1CfjbK4NV05k46qH7zAf1OUW
+        Blq0NAv1vKoz6myCjSVeko4=
+X-Google-Smtp-Source: ABdhPJwKE/7L+78ImyHSzKItwQ+7D0kCNRZ6HRgstwY/P0UGJdT1+mnItTy7cbAEdrMnsxIjkAmO9Q==
+X-Received: by 2002:ac8:5747:: with SMTP id 7mr6794649qtx.95.1644539742833;
+        Thu, 10 Feb 2022 16:35:42 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id k13sm11581386qko.45.2022.02.10.16.35.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 16:35:42 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH 47/49] nodemask: add num_node_state_eq()
+Date:   Thu, 10 Feb 2022 14:49:31 -0800
+Message-Id: <20220210224933.379149-48-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <202202101555.EE737A35@keescook>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/10/22 4:55 PM, Kees Cook wrote:
-> On Fri, Feb 11, 2022 at 03:23:19AM +0500, Muhammad Usama Anjum wrote:
->> Rename file for readability purpose. Update its usage and references.
->>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->> This path was suggested while review of the following patch. Please
->> apply it after applying that one first:
->> 	selftests/exec: Add non-regular to TEST_GEN_PROGS
->> Changes in V2:
->> 	Remove changes from binfmt_script.py, they were wrong
-> 
-> Thanks! :)
-> 
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> 
+Page allocator uses num_node_state() to compare number of nodes with a
+given number. The underlying code calls bitmap_weight(), and we can do
+it more efficiently with num_node_state_eq because conditional nodes_weight
+may stop traversing the nodemask earlier, as soon as condition is (or is
+not) met.
 
-Thank you both. I will queue this up for Linux 5.18-rc1
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ include/linux/nodemask.h | 5 +++++
+ mm/page_alloc.c          | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-thanks,
--- Shuah
+diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
+index 197598e075e9..c5014dbf3cce 100644
+--- a/include/linux/nodemask.h
++++ b/include/linux/nodemask.h
+@@ -466,6 +466,11 @@ static inline int num_node_state(enum node_states state)
+ 	return nodes_weight(node_states[state]);
+ }
+ 
++static inline int num_node_state_eq(enum node_states state, int num)
++{
++	return nodes_weight_eq(node_states[state], num);
++}
++
+ #define for_each_node_state(__node, __state) \
+ 	for_each_node_mask((__node), node_states[__state])
+ 
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index cface1d38093..897e64b66ca4 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -8434,7 +8434,7 @@ void __init page_alloc_init(void)
+ 	int ret;
+ 
+ #ifdef CONFIG_NUMA
+-	if (num_node_state(N_MEMORY) == 1)
++	if (num_node_state_eq(N_MEMORY, 1))
+ 		hashdist = 0;
+ #endif
+ 
+-- 
+2.32.0
+
