@@ -2,108 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4330BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:58:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49573C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345954AbiBJX6c (ORCPT
+        id S1345983AbiBKAAR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:58:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57820 "EHLO
+        Thu, 10 Feb 2022 19:00:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345953AbiBJX6b (ORCPT
+        with ESMTP id S1344855AbiBKAAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:58:31 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683BCB43
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:58:31 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id i21so11675186pfd.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:58:31 -0800 (PST)
+        Thu, 10 Feb 2022 19:00:16 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E2DB43;
+        Thu, 10 Feb 2022 16:00:17 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id c188so9484478iof.6;
+        Thu, 10 Feb 2022 16:00:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YR8IQtD/vI0Y1e+M6XizQtHy3b7jDPUDq92ShhvVhXY=;
-        b=WvA699vcudQ1Hqvg534eT88SqkZZUu9XbncYlIq5YSfbGxBOgf79rNjbQdJgyRASIM
-         IqXbeJNG9EwbVYDcgKbqz8oFuhmymUJc7Q9wEocpEmasEjTf4UA1D230t3+ca8bhyhvT
-         oJ+nwmJJMXpfwpxuSESZteARqV4U//GOcancE=
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=1VzDs/UF8yNYolinMWkkLgNxpJN0NuoP4WS4+Lqu0sA=;
+        b=m35rj5AcGg4ZoO/CaQ6n0yBhN80NZMhAZaAYPc5oQ5QLdbRk6Sl/E8joLQn53J4ff3
+         2Q4sVyUWGAiW9X/8aoIfgolVHBX39NTLvrHb/NT1sL9Ckw7tjAj0TA2/Mf+TMPFdlKhe
+         E/D2qMjz7iKjdcFKzXN01mzzHTOMC7ys6tQ7P5WAjTgXg7NNG67Tn7WARC/UTrpPNLu/
+         p53LCn/B4zYErDdyOIsWeNVIQlH5nblQtYEZAqvmI6fWAjalLCk1MiS0Wix4HmyL1m/7
+         /fcQYKq/1C0EpHDZ+djamC1YqlAZ5ps0Tw7cMdqna9BtQRZ1tlLH8EZAZlG8OgZ/vokz
+         YQJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YR8IQtD/vI0Y1e+M6XizQtHy3b7jDPUDq92ShhvVhXY=;
-        b=M+S4LPtYLjCn5l+kJN/Xmd9Tf3CnpdgRWwnBtQ3nRSDoLRgqXuU4b9a1zxVYraaCSP
-         x4OwsW3t5ZU+mRkO7dm89oM4ZnozkdfCMDpIRf6R/w3ZpBo9zE7TUuKRRxOZa061CdR9
-         iFDn2Njr3LOE9cg5ScVe8rwRVAkcA1z5A4pvjuYrqErn2yi9JYzm2K1sQdrzklJH1/A4
-         PrXFOdhyFHgMDulHr4s2c+64hyLrLgz4Dk/oos5ENFSRHUo3pWacP4819nrcGy3AEuDc
-         uNwaZ3IxVIKlxtN4HAEQP0ZXe6PuYFErvdeURrifq9uSIkqhaKk1AtlvkUkwxzgiiSRd
-         tQUw==
-X-Gm-Message-State: AOAM532/VX3Jc6sNwe2nOlwsfjo+kag6ZTfU4xYYYC6VmB8NxoAzZPrg
-        0aMa4rci+AfpS6DyEzYckmAyBg==
-X-Google-Smtp-Source: ABdhPJy5GMvA9RQgKwwGxZBjLxt0zVyf7HQK+78xkNaQvwD4gItRzhujUXj26y9sjkcRX+zQA5Fdng==
-X-Received: by 2002:a05:6a02:119:: with SMTP id bg25mr2380854pgb.351.1644537510931;
-        Thu, 10 Feb 2022 15:58:30 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d12sm17362167pgk.29.2022.02.10.15.58.30
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1VzDs/UF8yNYolinMWkkLgNxpJN0NuoP4WS4+Lqu0sA=;
+        b=Zju7Ck6xu/Agr/t93XDt/4p8c391UDeERVDtbVb1tJjcGC7sgrXgMDveebI62ab3FP
+         /uxWwEZbHK225FEIMli81Er4Tb5NViHt2o2iwqVJ7i0eac2n3WsOkyVjeWtv5jcBBmEy
+         TBBDNVA6ZR/w4CyGTESsBaxdhRU3kxU4C8/lhFIldDI51TqTY5xLgM/CzExItbfWt8vT
+         G8t1fYe6wVMurzAr0+v7muJcFHebKIYutWIxSQUVXBx6lvwtgTqnhntnwAJeCEm1ucbz
+         YbwCTV9Yq8k+QGpEw/JlQ9TPYGgswfwlkJ1y4wC9QgqnVkrLHQznUAJHD5xNQtaPHAW0
+         dubA==
+X-Gm-Message-State: AOAM5339rAB14H7Dix/65hY4Ud1PKg2/L08m6wwnTyGFRGYC7gRMVMh7
+        VC1TgxGF7m8fTKwn/pCewcw=
+X-Google-Smtp-Source: ABdhPJxIsukjl91lmQIP9KGBjssEZgccEFXHxU6BJidUIyqZB50gNcturaZWfIbyxXDkBQagwZ6erQ==
+X-Received: by 2002:a05:6602:148c:: with SMTP id a12mr5156955iow.139.1644537616646;
+        Thu, 10 Feb 2022 16:00:16 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id x1sm11412699ilc.34.2022.02.10.16.00.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:58:30 -0800 (PST)
-Date:   Thu, 10 Feb 2022 15:58:29 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Sherry Yang <sherry.yang@oracle.com>, skhan@linuxfoundation.org,
-        shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
-        christian@brauner.io, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-Message-ID: <202202101558.497F6FC@keescook>
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
- <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
+        Thu, 10 Feb 2022 16:00:16 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 31/49] octeontx2-pf: replace bitmap_weight with bitmap_weight_{eq,gt}
+Date:   Thu, 10 Feb 2022 14:49:15 -0800
+Message-Id: <20220210224933.379149-32-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 04:14:17AM +0500, Muhammad Usama Anjum wrote:
-> On 2/11/22 1:30 AM, Sherry Yang wrote:
-> > seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-> > and 48 global.user_notification_filter_empty_threaded when it's
-> > tested on updated kernel but with old kernel headers. Because old
-> > kernel headers don't have definition of macro __NR_clone3 which is
-> > required for these two tests. Since under selftests/, we can install
-> > headers once for all tests (the default INSTALL_HDR_PATH is
-> > usr/include), fix it by adding usr/include to the list of directories
-> > to be searched. Use "-isystem" to indicate it's a system directory as
-> > the real kernel headers directories are.
-> > 
-> > Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-> > Tested-by: Sherry Yang <sherry.yang@oracle.com>
-> > ---
-> >  tools/testing/selftests/seccomp/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-> > index 0ebfe8b0e147..585f7a0c10cb 100644
-> > --- a/tools/testing/selftests/seccomp/Makefile
-> > +++ b/tools/testing/selftests/seccomp/Makefile
-> > @@ -1,5 +1,5 @@
-> >  # SPDX-License-Identifier: GPL-2.0
-> > -CFLAGS += -Wl,-no-as-needed -Wall
-> > +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
-> 
-> "../../../../usr/include/" directory doesn't have header files if
-> different output directory is used for kselftests build like "make -C
-> tools/tests/selftest O=build". Can you try adding recently added
-> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
-> easy and correct for other build combinations as well?
+OcteonTX2 code calls bitmap_weight() to compare the weight of bitmap with
+a given number. We can do it more efficiently with bitmap_weight_{eq,gt}
+because conditional bitmap_weight may stop traversing the bitmap earlier,
+as soon as condition is (or can't be) met.
 
-Ah, if that's true I think there are some other instances in the tree
-that need fixing too.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c   | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index abe5267210ef..152890066c2a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -287,7 +287,7 @@ static int otx2_set_channels(struct net_device *dev,
+ 	if (!channel->rx_count || !channel->tx_count)
+ 		return -EINVAL;
+ 
+-	if (bitmap_weight(&pfvf->rq_bmap, pfvf->hw.rx_queues) > 1) {
++	if (bitmap_weight_gt(&pfvf->rq_bmap, pfvf->hw.rx_queues, 1)) {
+ 		netdev_err(dev,
+ 			   "Receive queues are in use by TC police action\n");
+ 		return -EINVAL;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 80b2d64b4136..55c899a6fcdd 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -1170,8 +1170,8 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
+ 		 * interface mac address and configure CGX/RPM block in
+ 		 * promiscuous mode
+ 		 */
+-		if (bitmap_weight(&flow_cfg->dmacflt_bmap,
+-				  flow_cfg->dmacflt_max_flows) == 1)
++		if (bitmap_weight_eq(&flow_cfg->dmacflt_bmap,
++				     flow_cfg->dmacflt_max_flows, 1))
+ 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
+ 	} else {
+ 		err = otx2_remove_flow_msg(pfvf, flow->entry, false);
 -- 
-Kees Cook
+2.32.0
+
