@@ -2,167 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB95CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBA1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 14:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243153AbiBJOrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 09:47:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56372 "EHLO
+        id S243159AbiBJOrz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 09:47:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243134AbiBJOrU (ORCPT
+        with ESMTP id S237792AbiBJOry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 09:47:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60710C4D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:47:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F210B61A78
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:47:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5729CC004E1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:47:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644504440;
-        bh=O3JOfPmpBwP/gmoNJ7OcEd8I9SFz30bb2+bBccRllQo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UG557PE0zKLLnOzvvt/XPxcYZtX2VYIeGz3rd+I50f5mCxayksCvm3SOIoREvUKDz
-         yeqHjK1VhFBiHZLF+qPoeRhxg1qcRqUrL0klmNDz1o54X3PFsW5nISll9zhmP7nys0
-         GzYRGHTit0QS+ZSuiqTvMz3Am3kgREsZaFhKgAuTT0NhojJBjzVEj3Jk7KTxi7FQRI
-         xBFrokui8CvRxiAc3RoZcWSvUW5spHTQyYJlknePvkdBSORrdXhPpLYeFozH/0deBD
-         N/Z4eElMKAqfBmseWEctG1HPJeeH2gHgsenDcApGh8IxivUeZ9yD4PLelHZpFA1mz6
-         XCWVFLLNt6Riw==
-Received: by mail-ed1-f44.google.com with SMTP id f17so11405827edd.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 06:47:20 -0800 (PST)
-X-Gm-Message-State: AOAM53388Ryx5PmBJfswDaI9etGF6nOZhwcBBNTu1aZ+dsU+Qn/0UN5a
-        bf2tBsF4szxmTigLA+zMHnBjQCbHQjesYDpjBQ==
-X-Google-Smtp-Source: ABdhPJxpwUZeJ0qluZsLz3I68UmvPC5zgdCoTcIEq2Zdeqtnc4dwKsGWjpYJoB+Qs4sdmpTJIWsWCoOUl8JTom8pf4k=
-X-Received: by 2002:aa7:c418:: with SMTP id j24mr8683068edq.451.1644504438640;
- Thu, 10 Feb 2022 06:47:18 -0800 (PST)
-MIME-Version: 1.0
-References: <20220210124638.2330904-1-jstephan@baylibre.com>
-In-Reply-To: <20220210124638.2330904-1-jstephan@baylibre.com>
-From:   Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Date:   Thu, 10 Feb 2022 22:47:05 +0800
-X-Gmail-Original-Message-ID: <CAAOTY__gw5GZT3+=R4CiaVX=DTRGTs2vtOvXxV6v+tw7LwnU2g@mail.gmail.com>
-Message-ID: <CAAOTY__gw5GZT3+=R4CiaVX=DTRGTs2vtOvXxV6v+tw7LwnU2g@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/mediatek: allow commands to be sent during video mode
-To:     Julien STEPHAN <jstephan@baylibre.com>
-Cc:     CK Hu <ck.hu@mediatek.com>,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Thu, 10 Feb 2022 09:47:54 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D00A1;
+        Thu, 10 Feb 2022 06:47:54 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so6643032ooi.2;
+        Thu, 10 Feb 2022 06:47:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=8fxH81jreNlAG66dkkm12iasx5L3uqki8uR5z92L6jE=;
+        b=IcaeN86BBP6r3hcPjZf7jimED2wTzOYFUlvtL3nmcNAVpFZvdf6wuk4G4WIBTmeCBf
+         k3hMuf1LYAnlNisqGKXShiJcl1wTcRZKt72P5x+DyNmb3u0ab8Cr3O8/LgDXlxBRlxnJ
+         m9JEVDCo0761eP6fL5GiL3zE8hutecgCNljpnZ/vmrpSYFCIIc2c/D2kfWsEo+di+EXQ
+         mwAB+heow6unMhyn0abjLnlAxRkBLmwIpIswY/an5uDy8BCroHj3+7AjEpVCAylHXLVJ
+         ReBQ1JHvFdUeiH8unx6LKMeOUTYMkIt/8z1D8QOP3VxENlkHYZntmGYF2QsehmppejLL
+         xFcw==
+X-Gm-Message-State: AOAM530eUSJ8ccTRVPYUpPIIlPb9oPENLTa43/BvcL0dB2IZYBGxlC5L
+        xwEI/x3hi+Vlp3DSa+jYSx1P+iX7xA==
+X-Google-Smtp-Source: ABdhPJyAkIAnn1SjTWT3DVfZeP9xM7w/tc1EWhAce6OrhewoxIv9CXgMpmVC3NcjSxhSQcTlfxldQA==
+X-Received: by 2002:a05:6870:ea05:: with SMTP id g5mr904565oap.181.1644504474040;
+        Thu, 10 Feb 2022 06:47:54 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id b8sm7983446otk.36.2022.02.10.06.47.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 06:47:53 -0800 (PST)
+Received: (nullmailer pid 2624781 invoked by uid 1000);
+        Thu, 10 Feb 2022 14:47:52 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Guodong Liu <guodong.liu@mediatek.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        linux-mediatek@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
         Matthias Brugger <matthias.bgg@gmail.com>,
-        "open list:DRM DRIVERS FOR MEDIATEK" 
-        <dri-devel@lists.freedesktop.org>,
-        "moderated list:DRM DRIVERS FOR MEDIATEK" 
-        <linux-mediatek@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        linux-gpio@vger.kernel.org, Sean Wang <sean.wang@kernel.org>,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220210062122.23974-2-guodong.liu@mediatek.com>
+References: <20220210062122.23974-1-guodong.liu@mediatek.com> <20220210062122.23974-2-guodong.liu@mediatek.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: pinctrl: mt8186: add pinctrl file and binding document
+Date:   Thu, 10 Feb 2022 08:47:52 -0600
+Message-Id: <1644504472.320340.2624780.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Julien:
-
-Julien STEPHAN <jstephan@baylibre.com> =E6=96=BC 2022=E5=B9=B42=E6=9C=8810=
-=E6=97=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=888:47=E5=AF=AB=E9=81=93=EF=BC=
-=9A
->
-> Mipi dsi panel drivers can use mipi_dsi_dcs_{set,get}_display_brightness(=
-)
-> to request backlight changes.
->
-> This can be done during panel initialization (dsi is in command mode)
-> or afterwards (dsi is in Video Mode).
->
-> When the DSI is in Video Mode, all commands are rejected.
->
-> Detect current DSI mode in mtk_dsi_host_transfer() and switch modes
-> temporarily to allow commands to be sent.
-
-Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-
->
-> Signed-off-by: Julien STEPHAN <jstephan@baylibre.com>
-> Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
+On Thu, 10 Feb 2022 14:21:20 +0800, Guodong Liu wrote:
+> 1. This patch adds pinctrl file for mt8186.
+> 2. This patch adds mt8186 compatible node in binding document.
+> 
+> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
 > ---
-> Changes in v2:
->   - update commit message to be more descriptive
->
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 34 ++++++++++++++++++++++--------
->  1 file changed, 25 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediate=
-k/mtk_dsi.c
-> index 5d90d2eb0019..7d66fdc7f81d 100644
-> --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-> +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-> @@ -891,24 +891,34 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_ds=
-i_host *host,
->         u8 read_data[16];
->         void *src_addr;
->         u8 irq_flag =3D CMD_DONE_INT_FLAG;
-> -
-> -       if (readl(dsi->regs + DSI_MODE_CTRL) & MODE) {
-> -               DRM_ERROR("dsi engine is not command mode\n");
-> -               return -EINVAL;
-> +       u32 dsi_mode;
-> +
-> +       dsi_mode =3D readl(dsi->regs + DSI_MODE_CTRL);
-> +       if (dsi_mode & MODE) {
-> +               mtk_dsi_stop(dsi);
-> +               if (mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500=
-)) {
-> +                       recv_cnt =3D -EINVAL;
-> +                       goto restore_dsi_mode;
-> +               }
->         }
->
->         if (MTK_DSI_HOST_IS_READ(msg->type))
->                 irq_flag |=3D LPRX_RD_RDY_INT_FLAG;
->
-> -       if (mtk_dsi_host_send_cmd(dsi, msg, irq_flag) < 0)
-> -               return -ETIME;
-> +       if (mtk_dsi_host_send_cmd(dsi, msg, irq_flag) < 0) {
-> +               recv_cnt =3D -ETIME;
-> +               goto restore_dsi_mode;
-> +       }
->
-> -       if (!MTK_DSI_HOST_IS_READ(msg->type))
-> -               return 0;
-> +       if (!MTK_DSI_HOST_IS_READ(msg->type)) {
-> +               recv_cnt =3D 0;
-> +               goto restore_dsi_mode;
-> +       }
->
->         if (!msg->rx_buf) {
->                 DRM_ERROR("dsi receive buffer size may be NULL\n");
-> -               return -EINVAL;
-> +               recv_cnt =3D -EINVAL;
-> +               goto restore_dsi_mode;
->         }
->
->         for (i =3D 0; i < 16; i++)
-> @@ -933,6 +943,12 @@ static ssize_t mtk_dsi_host_transfer(struct mipi_dsi=
-_host *host,
->         DRM_INFO("dsi get %d byte data from the panel address(0x%x)\n",
->                  recv_cnt, *((u8 *)(msg->tx_buf)));
->
-> +restore_dsi_mode:
-> +       if (dsi_mode & MODE) {
-> +               mtk_dsi_set_mode(dsi);
-> +               mtk_dsi_start(dsi);
-> +       }
-> +
->         return recv_cnt;
->  }
->
-> --
-> 2.35.1
->
+>  .../bindings/pinctrl/pinctrl-mt8186.yaml      |  313 +++++
+>  include/dt-bindings/pinctrl/mt8186-pinfunc.h  | 1174 +++++++++++++++++
+>  2 files changed, 1487 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
+>  create mode 100644 include/dt-bindings/pinctrl/mt8186-pinfunc.h
+> 
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml: properties:reg-names: {'description': 'Gpio base register names.\n', 'items': [{'const': 'iocfg0'}, {'const': 'iocfg_bm'}, {'const': 'iocfg_bl'}, {'const': 'iocfg_br'}, {'const': 'iocfg_lm'}, {'const': 'iocfg_rb'}, {'const': 'iocfg_tl'}, {'const': 'eint'}], 'maxItems': 8} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml: ignoring, error in schema: properties: reg-names
+Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.example.dt.yaml:0:0: /example-0/pinctrl@10005000: failed to match any schema with compatible: ['mediatek,mt8186-pinctrl']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1590838
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
