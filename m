@@ -2,107 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60427C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED64C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230418AbiBJBU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:20:27 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:36226 "EHLO
+        id S231149AbiBJBUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:20:42 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiBJBUV (ORCPT
+        with ESMTP id S229469AbiBJBUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:20:21 -0500
-Received: from nksmu.kylinos.cn (mailgw.kylinos.cn [123.150.8.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C92E84;
-        Wed,  9 Feb 2022 17:20:18 -0800 (PST)
-X-UUID: f752996293804c03af1205c5fae73d9a-20220210
-X-CPASD-INFO: 10bbcf6a07a64175b9b2a3889822b914@eoCcgpCYZJFcV6OCg3SCb4JqkmKRX1i
-        He3JSYpBpXVSVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3gHKcgpOUZg==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: 10bbcf6a07a64175b9b2a3889822b914
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:133.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:151.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:15,DUF:32547,ACD:190,DCD:292,SL:0,AG:0,CFC:0.522,CF
-        SR:0.063,UAT:0,RAF:2,VERSION:2.3.4
-X-CPASD-ID: f752996293804c03af1205c5fae73d9a-20220210
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: f752996293804c03af1205c5fae73d9a-20220210
-X-User: xiehongyu1@kylinos.cn
-Received: from [172.20.4.10] [(116.128.244.169)] by nksmu.kylinos.cn
-        (envelope-from <xiehongyu1@kylinos.cn>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES128-GCM-SHA256 128/128)
-        with ESMTP id 1501960626; Thu, 10 Feb 2022 09:17:13 +0800
-Message-ID: <59231732-82a3-3a0c-db0c-eec252b35d3b@kylinos.cn>
-Date:   Thu, 10 Feb 2022 09:04:40 +0800
+        Wed, 9 Feb 2022 20:20:39 -0500
+Received: from condef-07.nifty.com (condef-07.nifty.com [202.248.20.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 746072629;
+        Wed,  9 Feb 2022 17:20:38 -0800 (PST)
+Received: from conssluserg-02.nifty.com ([10.126.8.81])by condef-07.nifty.com with ESMTP id 21A0sXbt021538;
+        Thu, 10 Feb 2022 09:54:33 +0900
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 21A0s7YW021042;
+        Thu, 10 Feb 2022 09:54:08 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 21A0s7YW021042
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1644454448;
+        bh=GzF9d1CPJ6YQKFkbbGBhv3+4+f8c6oA7UoFBRscMx1o=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xvGvf1XYqFFIJt4Otcj/oDt5pe8gRh6D7SbUOuChUJOgUD5sptvKTvlrK7lDb2hqp
+         NBb0T5F/mj1Zf43Pke58lSfGTU2XaLdZ0HuNo5u6a8xGDLl7i04ApNkv0WijbKup3w
+         +9wZrS6yaJu4vMSopyBIppW8ic52RbYqR9DpZmjqFgRUiy7jhP0jxb/IC/302wis/I
+         GG4RW0/n6aQkhzwUtDXdE6e5KrAXFAIm+cfnhajL2izuqSAxt/df8wFRFWlFh59H9I
+         HJgjz8PmFdnNEU2RmJEq2l+kQF+0mT3HQV8rOzlplllBR2PRCyhJ1nn7AnabZNLobs
+         pofTxmTSjMfNw==
+X-Nifty-SrcIP: [209.85.216.47]
+Received: by mail-pj1-f47.google.com with SMTP id c8-20020a17090a674800b001b91184b732so4448996pjm.5;
+        Wed, 09 Feb 2022 16:54:08 -0800 (PST)
+X-Gm-Message-State: AOAM533OpxsU4JIrDxZI5PJt4Bd76G/Jbc632UaLIAWf0uqFECOrh08V
+        WKzMTdrpbl8ZfhbMcZd4zRuAEhECJyD+lyX+u14=
+X-Google-Smtp-Source: ABdhPJxYNdvbvsgfJh3s8wRrHOxkb+ZVxnQom67+weOLsIwyXbGJaZTgP6KgRQYD3yXAWw8K9ul72rUx61a9pv7ueFo=
+X-Received: by 2002:a17:903:22c5:: with SMTP id y5mr2853067plg.99.1644454447226;
+ Wed, 09 Feb 2022 16:54:07 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next v2] xhci: fix two places when dealing with return
- value of function xhci_check_args
-Content-Language: en-US
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Hongyu Xie <xy521521@gmail.com>, gregkh@linuxfoundation.org,
-        mathias.nyman@intel.com
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220209025234.25230-1-xy521521@gmail.com>
- <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
-From:   =?UTF-8?B?6LCi5rOT5a6H?= <xiehongyu1@kylinos.cn>
-In-Reply-To: <89d59749-8ca3-b30b-4da6-a6e567528d1b@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220208062618.1869210-1-masahiroy@kernel.org>
+In-Reply-To: <20220208062618.1869210-1-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Thu, 10 Feb 2022 09:53:32 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASojfnOaAmgwwCsA9J-nhYtRzJx8AKmy8OpRm50uWfegQ@mail.gmail.com>
+Message-ID: <CAK7LNASojfnOaAmgwwCsA9J-nhYtRzJx8AKmy8OpRm50uWfegQ@mail.gmail.com>
+Subject: Re: [PATCH] kconfig: fix missing fclose() on error paths
+To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Cc:     Ryan Cai <ycaibb@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 2022/2/9 17:29, Mathias Nyman wrote:
-> On 9.2.2022 4.52, Hongyu Xie wrote:
->> From: Hongyu Xie <xiehongyu1@kylinos.cn>
->>
->> xhci_check_args returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
->> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
->> the return value of xhci_check_args <= 0.
->> This will cause a problem.
->> For example, r8152_submit_rx calling usb_submit_urb in
->> drivers/net/usb/r8152.c.
->> r8152_submit_rx will never get -ENODEV after submiting an urb
->> when xHC is halted,
->> because xhci_urb_enqueue returns -EINVAL in the very beginning.
->>
->> Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
->> ---
-> Thanks, added to queue.
-> Changed the commit message and header a bit:
+On Tue, Feb 8, 2022 at 3:26 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> "xhci: Prevent futile URB re-submissions due to incorrect return value.
->      
-> The -ENODEV return value from xhci_check_args() is incorrectly changed
-> to -EINVAL in a couple places before propagated further.
->      
-> xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-> xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-> the return value of xhci_check_args <= 0.
-> This causes problems for example r8152_submit_rx, calling usb_submit_urb
-> in drivers/net/usb/r8152.c.
-> r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-> is halted because xhci_urb_enqueue returns -EINVAL in the very beginning."
+> The file is not closed when ferror() fails.
 >
-> Let me know if you disagree with this.
+> Fixes: 00d674cb3536 ("kconfig: refactor conf_write_dep()")
+> Fixes: 57ddd07c4560 ("kconfig: refactor conf_write_autoconf()")
+> Reported-by: Ryan Cai <ycaibb@gmail.com>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
+
+
+Applied to linux-kbuild/fixes.
+
+
 >
-> Thanks
-> -Mathias
+>  scripts/kconfig/confdata.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+> index 59717be31210..16897cb8cefd 100644
+> --- a/scripts/kconfig/confdata.c
+> +++ b/scripts/kconfig/confdata.c
+> @@ -979,10 +979,10 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+>
+>         fprintf(out, "\n$(deps_config): ;\n");
+>
+> -       if (ferror(out)) /* error check for all fprintf() calls */
+> -               return -1;
+> -
+> +       ret = ferror(out); /* error check for all fprintf() calls */
+>         fclose(out);
+> +       if (ret)
+> +               return -1;
+>
+>         if (rename(tmp, name)) {
+>                 perror("rename");
+> @@ -1093,10 +1093,10 @@ static int __conf_write_autoconf(const char *filename,
+>                         print_symbol(file, sym);
+>
+>         /* check possible errors in conf_write_heading() and print_symbol() */
+> -       if (ferror(file))
+> -               return -1;
+> -
+> +       ret = ferror(file);
+>         fclose(file);
+> +       if (ret)
+> +               return -1;
+>
+>         if (rename(tmp, filename)) {
+>                 perror("rename");
+> --
+> 2.32.0
+>
 
-Sounds good to me.
 
-Do I have to send another patch with commit message and header changed?
-
-Thanks
-
-Hongyu Xie
-
+-- 
+Best Regards
+Masahiro Yamada
