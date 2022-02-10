@@ -2,111 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239449AbiBJKJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:09:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34680 "EHLO
+        id S239482AbiBJKQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:16:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238921AbiBJKJv (ORCPT
+        with ESMTP id S236365AbiBJKQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:09:51 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BED2FD6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:09:53 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nI6OZ-0001lk-IQ; Thu, 10 Feb 2022 11:09:47 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nI6OX-00FgT6-PY; Thu, 10 Feb 2022 11:09:45 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nI6OW-00EN0I-8N; Thu, 10 Feb 2022 11:09:44 +0100
-Date:   Thu, 10 Feb 2022 11:09:44 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Qing Wang <wangqing@vivo.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] pwm: use div64_u64() instead of do_div()
-Message-ID: <20220210100944.ebkiezfablofqitj@pengutronix.de>
-References: <1644395998-4397-1-git-send-email-wangqing@vivo.com>
- <20220209152609.gqeivcehkuzgz3sk@pengutronix.de>
- <9273cd6497354dd882faf55b194ff590@AcuMS.aculab.com>
+        Thu, 10 Feb 2022 05:16:30 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89ADCEF
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:31 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id k25so14047654ejp.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cqd+nHAtyHPX1TFwEse8byzK8ys5i5RMjcpqTUGLpbY=;
+        b=ZzQq1zGYJdLFyrdECQKUokfzSmpV8AqALMPLO487lPqoVwtNE3ikjy6gqgwnwpJ+xU
+         dlmywpWlofAFYfYsu6oGnCUuSX/BKLw+aDeW8YK7gZqUfz8So29y1bznaQA4VtrNAZcA
+         9yXqneAa99/xv4+GK3e59lboF7swv/mALq4i91wXZqGS4itER6DavxIQG0VjOEYPGavD
+         peWfE52Wm4urJbKxbSk+M55S03CC/7ton5MYmIdQa0qFKwuety67toEnOLBCFD8ZdHHA
+         Py4jsMsW7Dqi7DJLvhPgOaAfbEksUOqlw2sCAgzSac852Mt888jxrXQwMe5dtjXA1uCz
+         VA7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=cqd+nHAtyHPX1TFwEse8byzK8ys5i5RMjcpqTUGLpbY=;
+        b=KW1Wb01+Tox6IIAbYpd2Q3+bDAnfebN60xKEt1ksbUVAWHnQDkHVX5sDZ5WyxNqNX3
+         oOwVyRjc/OWWETH3pO3Vv2VZEReoUu9uItyvF8SqcNMIa/wrk7gflMsnJKhvnMbHq7iL
+         r2/IErL4nLJ/OKnm/7eylcD97kp28sjrfQmS80JnOz30qMQhbnIVLB+hkOGXkvAgftmX
+         JzlkqpfOAZHNkNBFqHn+v+rrfhfL3oar0FLxaodpEvIORSt/o1wUcwJs7l39TUHxX+Lk
+         4AVVgd7LXq3do2281Rl+aAo43NZdoFUMVOuclReVgpSkV+oQynvT9CAPVTS2+dGiv+pN
+         K7FA==
+X-Gm-Message-State: AOAM531R0SpiXXquw58Fpc7jGBQwEVW6dsn8p/VTZnXEOLNcBxVFSCB9
+        sMvfFrEatD6vp4/rCQUB/73hktxGL9M=
+X-Google-Smtp-Source: ABdhPJw6GGKIy6Xla66jzDmfg+MfJVxsugVCLGL94ScZSCChCbM/0W0cOwAyiwMYiLv6ofnO+/QFcw==
+X-Received: by 2002:a17:907:d01:: with SMTP id gn1mr5853708ejc.507.1644488190439;
+        Thu, 10 Feb 2022 02:16:30 -0800 (PST)
+Received: from localhost.localdomain (ip5f5abb5a.dynamic.kabel-deutschland.de. [95.90.187.90])
+        by smtp.gmail.com with ESMTPSA id i9sm7994855eda.35.2022.02.10.02.16.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 02:16:30 -0800 (PST)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH v2 0/2] staging: r8188eu: clean up ieee80211.h
+Date:   Thu, 10 Feb 2022 11:16:21 +0100
+Message-Id: <20220210101623.13758-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="y2i7qhj2ao7l5u5v"
-Content-Disposition: inline
-In-Reply-To: <9273cd6497354dd882faf55b194ff590@AcuMS.aculab.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This set removes unused structs and enums from the ieee80211.h header.
 
---y2i7qhj2ao7l5u5v
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+v2:
+Fixed a typo in the commit message of patch 1/2.
+strutures -> structures
 
-On Thu, Feb 10, 2022 at 09:48:44AM +0000, David Laight wrote:
-> From: Uwe Kleine-K=F6nig
-> > Sent: 09 February 2022 15:26
-> ...
-> > > -	do_div(cycles, period_ns);
-> > > +	div64_u64(cycles, period_ns);
-> >=20
-> > This is wrong, div64_u64() has a different calling convention than do_d=
-iv().
-> >=20
-> > The issue however is real. Please add
->=20
-> Not really although I can't see a check I'd assume that period_ns
-> is expected to be much less than a second - so well under 32 bits
-> There is certainly a general expectation that multiplying by
-> other 'largish' values won't exceed 64 bits.
+Michael Straube (2):
+  staging: r8188eu: remove unused structs from ieee80211.h
+  staging: r8188eu: remove unused enums from ieee80211.h
 
-I'd consider such expectations a bug and hope to catch this type of
-problem for new drivers. However I'm not surprised if you can point out
-several such problems in the code base. Please fix at will :-)
+ drivers/staging/r8188eu/include/ieee80211.h | 266 --------------------
+ 1 file changed, 266 deletions(-)
 
-> Plausible the pwm 'period' should actually be a u32.
-> But then care would be needed to ensure the multiplies have
-> 64bit results.
+-- 
+2.35.1
 
-There are definitely consumers expecting to be able to set bigger
-periods, see a9d887dc1c60ed67f2271d66560cdcf864c4a578.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---y2i7qhj2ao7l5u5v
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIE5GQACgkQwfwUeK3K
-7Al9NwgAk6OM7KdG3nsMvl8IKkiFnZyxKG7EO70mqkeXD387kU+iOvf+UpAEaMGx
-itlqP/2akcfuwSvHAajqDH6LS2HLp7FRlcllYjlIXjuB1ZTBwtMjY3v1fL20mpfq
-cr6nn6yYIZ3To+OUgxcBz/QORIh2E+HO6r4OxnVjd1Ov/+7ah/nTBeFk4Utrpnw9
-yCIqEtgB7fUPqDOJI2v4KgQrxXgiOhJ9ZHP2SdpNdZ0Gm+TiGve49wP1Zy5Soghz
-HO8GvcU9JqgOCoI7Pxxv69CcZyttAf8YuGY3+8kubIcJbaOwDtmSxSpnTsYZtnwL
-KdeaNeTXYKzwGN+yoCOCDl7HLwwjFQ==
-=J/um
------END PGP SIGNATURE-----
-
---y2i7qhj2ao7l5u5v--
