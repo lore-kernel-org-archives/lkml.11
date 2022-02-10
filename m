@@ -2,181 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:35:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243663AbiBJPep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:34:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33714 "EHLO
+        id S243671AbiBJPfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:35:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243638AbiBJPeo (ORCPT
+        with ESMTP id S243665AbiBJPfC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:34:44 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980211D6;
-        Thu, 10 Feb 2022 07:34:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644507285; x=1676043285;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/CpZixoP9LqieCKr1GT1o2hb5f+axkirfN4SJnts4rY=;
-  b=BpMWv8fDvaE7Ld4ChjfyvBVo9OaGza/u9Vgw8tU2pdD83p5SzyapGUfb
-   NykTs2b9iHV/nnw2td7Srs4y/9LCBEIuvYIE89ZfiXIkTUrSvnU5sraO4
-   9VKFQ+1VTiqtm5RalhlafeIk+lV4dIPkoAVOlxlzpvk3JGTwX8QL8gKIl
-   7Eiee14PZVE1DmoNUFCwv+21v/WnR38O3m2y/gvQabFdX/WE5iefkWTZg
-   MgqPmNVedTJZr6sOTEvw4yco1bUn0hTeWKnWpT+DRD9iF5w/E71GKPvu3
-   Zz545YIpEA8g2nUspxTXFOqSOqW7XoN6FWwCBFHOwfsT4V7YBZ62SjQ+s
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="310253233"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="310253233"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:34:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="701724952"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga005.jf.intel.com with ESMTP; 10 Feb 2022 07:34:44 -0800
-Received: from [10.252.133.207] (dgupta-mobl1.amr.corp.intel.com [10.252.133.207])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Thu, 10 Feb 2022 10:35:02 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C14A1F1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:35:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id C15A8580A8B;
-        Thu, 10 Feb 2022 07:34:43 -0800 (PST)
-Message-ID: <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
-Date:   Thu, 10 Feb 2022 10:34:42 -0500
+        by sin.source.kernel.org (Postfix) with ESMTPS id DEC04CE2497
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:35:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8FEC340EF;
+        Thu, 10 Feb 2022 15:34:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644507300;
+        bh=clEGNTWIfRsJvrby4PkDFMXE3z2jyTpXZkiGNgCi+OI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qNoQcbB5Pj3ix0LecXz1t15EonLl6Gw+r+2yHLfKFJ2XIU7wB5fdADfV0RYF1YyDj
+         frxzzJ8Ob8m3qpCMr+JHIxJ1RuLMID6b55O5msWNKkuz1rtSktQfgATm3kCwfVQYlE
+         8aVQkrL6TZQ2wNS/XomcQpSQLHs4O0Cc6JH66R30jQ/g2+7cOJeY4WSDdp7XJpLwWy
+         g1ZqdaFdO2dSw4RWqE8rHdi5XDpqUCrg1ehEMq8cy/HwMl6iwUc1MIaCibNNz71kNA
+         tQxA+YQqOlQm1+obo3Yb2x72psaeIsX0GPGQ9ZHmQBWp4HSirqbCMZKWtGzaQZhkhL
+         OgK8J+p8ZOZSQ==
+Date:   Thu, 10 Feb 2022 23:27:09 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
+Message-ID: <YgUuzZp/eiNoXejK@xhacker>
+References: <20220129004226.32868-1-changbin.du@gmail.com>
+ <YgAEb425uqy5/dw1@xhacker>
+ <20220207123850.l4r5qjswaegwisbx@mail.google.com>
+ <YgE7XRE/Uc6gTCWd@xhacker>
+ <20220208003502.62gi5xhyg6bk2t2h@mail.google.com>
+ <YgP6y99LWFSoxjHg@xhacker>
+ <20220210133758.yzebffln6j76zme6@mail.google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-Content-Language: en-US
-To:     David Dunn <daviddunn@google.com>,
-        Dave Hansen <dave.hansen@intel.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Like Xu <like.xu.linux@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Stephane Eranian <eranian@google.com>
-References: <20220117085307.93030-1-likexu@tencent.com>
- <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net>
- <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
- <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
- <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220210133758.yzebffln6j76zme6@mail.google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Feb 10, 2022 at 09:37:58PM +0800, Changbin Du wrote:
+> On Thu, Feb 10, 2022 at 01:32:59AM +0800, Jisheng Zhang wrote:
+> [snip]
+> > Hi Changbin,
+> > 
+> > I read the code and find that current riscv frame records during
+> > exception isn't as completed as other architectures. riscv only
+> > records frames from the ret_from_exception(). If we add completed
+> What do you mean for 'record'?
+> 
+
+stack frame record.
+
+> > frame records as other arch do, then the issue you saw can also
+> > be fixed at the same time.
+> > 
+> I don't think so. The problem is __builtin_return_address(1) trigger page fault
+> here.
+
+There's misunderstanding here. I interpret this bug as incomplete
+stackframes.
+
+This is current riscv stackframe during exception:
+
+high
+ 	----------------
+top	|		|  <- ret_from_exception
+	----------------
+	|		|  <- trace_hardirqs_on
+	-----------------
+low
+
+As you said, the CALLER_ADDR1 a.k.a __builtin_return_address(1) needs
+at least two parent call frames. 
+
+If we complete the stackframes during exception as other arch does:
+
+high
+ 	----------------
+top	|		|  <- the synthetic stackframe from the interrupted point
+ 	----------------
+	      .....	      
+        ----------------
+	|		|  <- ret_from_exception
+	----------------
+	|		|  <- trace_hardirqs_on
+	-----------------
+low
 
 
-On 2/9/2022 2:24 PM, David Dunn wrote:
-> Dave,
-> 
-> In my opinion, the right policy depends on what the host owner and
-> guest owner are trying to achieve.
-> 
-> If the PMU is being used to locate places where performance could be
-> improved in the system, there are two sub scenarios:
->     - The host and guest are owned by same entity that is optimizing
-> overall system.  In this case, the guest doesn't need PMU access and
-> better information is provided by profiling the entire system from the
-> host.
->     - The host and guest are owned by different entities.  In this
-> case, profiling from the host can identify perf issues in the guest.
-> But what action can be taken?  The host entity must communicate issues
-> back to the guest owner through some sort of out-of-band information
-> channel.  On the other hand, preempting the host PMU to give the guest
-> a fully functional PMU serves this use case well.
-> 
-> TDX and SGX (outside of debug mode) strongly assume different
-> entities.  And Intel is doing this to reduce insight of the host into
-> guest operations.  So in my opinion, preemption makes sense.
-> 
-> There are also scenarios where the host owner is trying to identify
-> systemwide impacts of guest actions.  For example, detecting memory
-> bandwidth consumption or split locks.  In this case, host control
-> without preemption is necessary.
-> 
-> To address these various scenarios, it seems like the host needs to be
-> able to have policy control on whether it is willing to have the PMU
-> preempted by the guest.
-> 
-> But I don't see what scenario is well served by the current situation
-> in KVM.  Currently the guest will either be told it has no PMU (which
-> is fine) or that it has full control of a PMU.  If the guest is told
-> it has full control of the PMU, it actually doesn't.  But instead of
-> losing counters on well defined events (from the guest perspective),
-> they simply stop counting depending on what the host is doing with the
-> PMU.
+Then we meet the "at least two parent call frames" requirement. IOW, my
+solution solve the problem from the entry.S side. One of the advantages
+would be we let interrupted point show up in dump_stack() as other arch
+do. What I'm not sure is whether it's safe to do so now since rc3 is
+released.
 
-For the current perf subsystem, a PMU should be shared among different 
-users via the multiplexing mechanism if the resource is limited. No one 
-has full control of a PMU for lifetime. A user can only have the PMU in 
-its given period. I think the user can understand how long it runs via 
-total_time_enabled and total_time_running.
-
-For a guest, it should rely on the host to tell whether the PMU resource 
-is available. But unfortunately, I don't think we have such a 
-notification mechanism in KVM. The guest has the wrong impression that 
-the guest can have full control of the PMU.
-
-In my opinion, we should add the notification mechanism in KVM. When the 
-PMU resource is limited, the guest can know whether it's multiplexing or 
-can choose to reschedule the event.
-
-But seems the notification mechanism may not work for TDX case?
 > 
-> On the other hand, if we flip it around the semantics are more clear.
-> A guest will be told it has no PMU (which is fine) or that it has full
-> control of the PMU.  If the guest is told that it has full control of
-> the PMU, it does.  And the host (which is the thing that granted the
-> full PMU to the guest) knows that events inside the guest are not
-> being measured.  This results in all entities seeing something that
-> can be reasoned about from their perspective.
->
-
-I assume that this is for the TDX case (where the notification mechanism 
-  doesn't work). The host still control all the PMU resources. The TDX 
-guest is treated as a super-user who can 'own' a PMU. The admin in the 
-host can configure/change the owned PMUs of the TDX. Personally, I think 
-it makes sense. But please keep in mind that the counters are not 
-identical. There are some special events that can only run on a specific 
-counter. If the special counter is assigned to TDX, other entities can 
-never run some events. We should let other entities know if it happens. 
-Or we should never let non-host entities own the special counter.
-
-
-Thanks,
-Kan
-
-> Thanks,
+> > However, I'm not sure what's the best choice now.
+> > 
+> > A simple demo to this incomplete frames:
+> > add dump_stack() in any ISR, then
+> > 
+> > in riscv:
+> > [    2.961294] Call Trace:
+> > [    2.961460] [<ffffffff8000485e>] dump_backtrace+0x1c/0x24
+> > [    2.961823] [<ffffffff805ed980>] show_stack+0x2c/0x38
+> > [    2.962153] [<ffffffff805f292e>] dump_stack_lvl+0x40/0x58
+> > [    2.962483] [<ffffffff805f295a>] dump_stack+0x14/0x1c
+> > [    2.962792] [<ffffffff805f31a0>] serial8250_interrupt+0x20/0x82
+> > [    2.963139] [<ffffffff80053032>] __handle_irq_event_percpu+0x4c/0x106
+> > [    2.963526] [<ffffffff80053170>] handle_irq_event+0x38/0x80
+> > [    2.963856] [<ffffffff80056a32>] handle_fasteoi_irq+0x96/0x188
+> > [    2.964198] [<ffffffff800526ce>] generic_handle_domain_irq+0x28/0x3a
+> > [    2.964567] [<ffffffff802f0ae4>] plic_handle_irq+0x88/0xec
+> > [    2.964896] [<ffffffff800526ce>] generic_handle_domain_irq+0x28/0x3a
+> > [    2.965264] [<ffffffff802f08e4>] riscv_intc_irq+0x34/0x5c
+> > [    2.965584] [<ffffffff805f6dc8>] generic_handle_arch_irq+0x4a/0x74
+> > [    2.966068] [<ffffffff80002fe8>] ret_from_exception+0x0/0xc
+> > 
+> > in x86:
+> > [    1.191274] Call Trace:
+> > [    1.192223]  <IRQ>
+> > [    1.192758]  dump_stack_lvl+0x45/0x59
+> > [    1.192982]  serial8250_interrupt+0x24/0x88
+> > [    1.193105]  __handle_irq_event_percpu+0x66/0x1b0
+> > [    1.193239]  handle_irq_event+0x34/0x70
+> > [    1.193345]  handle_edge_irq+0x85/0x1e0
+> > [    1.193455]  __common_interrupt+0x38/0x90
+> > [    1.193573]  common_interrupt+0x73/0x90
+> > [    1.193809]  </IRQ>
+> > [    1.193889]  <TASK>
+> > [    1.193956]  asm_common_interrupt+0x1b/0x40
+> > [    1.194318] RIP: 0010:_raw_spin_unlock_irqrestore+0x1b/0x40
+> > [    1.194566] Code: 24 be 01 02 00 00 e9 54 20 bf ff 0f 1f 40 00 0f 1f
+> > 44 00 00 f7 c6 00f
+> > [    1.195137] RSP: 0000:ffff888000243b68 EFLAGS: 00000246
+> > [    1.195314] RAX: 0000000000000000 RBX: ffffffff82025840 RCX:
+> > 0000000000000000
+> > [    1.195482] RDX: 0000000000000001 RSI: 0000000000000000 RDI:
+> > 0000000000000001
+> > [    1.195645] RBP: 0000000000000202 R08: ffffffffffffffff R09:
+> > 0000000000000000
+> > [    1.195808] R10: 00000000000000eb R11: 0000000000000000 R12:
+> > 0000000000000000
+> > [    1.195972] R13: 0000000000000040 R14: 0000000000000000 R15:
+> > ffff888000c39000
+> > [    1.196245]  ? _raw_spin_unlock_irqrestore+0x15/0x40
+> > [    1.196373]  serial8250_do_startup+0x42d/0x600
+> > [    1.196502]  uart_port_startup+0x11b/0x270
+> > [    1.196619]  uart_port_activate+0x3f/0x60
+> > [    1.196729]  tty_port_open+0x7e/0xd0
+> > [    1.196835]  ? _raw_spin_unlock+0x12/0x30
+> > [    1.196942]  uart_open+0x1a/0x30
+> > [    1.197036]  tty_open+0x153/0x7c0
+> > [    1.197144]  chrdev_open+0xbf/0x230
+> > [    1.197253]  ? cdev_device_add+0x90/0x90
+> > [    1.197359]  do_dentry_open+0x13c/0x360
+> > [    1.197470]  path_openat+0xb0c/0xe00
+> > [    1.197577]  ? update_load_avg+0x5f/0x640
+> > [    1.197691]  ? finish_task_switch.isra.0+0xac/0x240
+> > [    1.197821]  do_filp_open+0xb2/0x150
+> > [    1.197935]  ? preempt_schedule_thunk+0x16/0x18
+> > [    1.198049]  ? preempt_schedule_common+0x90/0xd0
+> > [    1.198167]  ? preempt_schedule_thunk+0x16/0x18
+> > [    1.198291]  file_open_name+0xf1/0x1b0
+> > [    1.198397]  filp_open+0x2c/0x50
+> > [    1.198495]  console_on_rootfs+0x19/0x52
+> > [    1.198648]  kernel_init_freeable+0x19a/0x1c7
+> > [    1.198765]  ? rest_init+0xc0/0xc0
+> > [    1.198867]  kernel_init+0x16/0x110
+> > [    1.198965]  ret_from_fork+0x1f/0x30
+> > [    1.199131]  </TASK>
+> > 
+> As I said before, this issue is not related to stackdump.
 > 
-> Dave Dunn
+> Besides, you can see more calltrace on x86 that because x86 iterate all stacks
+> (kernel, irq or exception) when dumping stacktrace. While RISCV only show
+> calltrace of current stack.
 > 
-> On Wed, Feb 9, 2022 at 10:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
-> 
->>> I was referring to gaps in the collection of data that the host perf
->>> subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
->>> guest. This can potentially be a problem if someone is trying to
->>> measure events per unit of time.
->>
->> Ahh, that makes sense.
->>
->> Does SGX cause problem for these people?  It can create some of the same
->> collection gaps:
->>
->>          performance monitoring activities are suppressed when entering
->>          an opt-out (of performance monitoring) enclave.
+
+I'm not sure whether there's misunderstanding. See above.
+
+Thanks
