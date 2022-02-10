@@ -2,189 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4126C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244042AbiBJQJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:09:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32990 "EHLO
+        id S244038AbiBJQKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:10:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244026AbiBJQJl (ORCPT
+        with ESMTP id S238711AbiBJQKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:09:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C67EB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:09:42 -0800 (PST)
+        Thu, 10 Feb 2022 11:10:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E153EB;
+        Thu, 10 Feb 2022 08:10:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CEA161D0C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:09:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA9CC004E1;
-        Thu, 10 Feb 2022 16:09:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="c/wcIGWb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644509380;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qE60YeWa/s+S2GHC5gb4WBfkI+YE+RQRZu/hdGfvy2s=;
-        b=c/wcIGWb+OoIYMt/QY1g/YqgnpxfJzWTe+Up7z9rk6DTaC7vjk0d+LDDHjAgCwG5tmMQEC
-        ElnDJigftQTzI/tbSHuSZVd7haSqyN4pXD3Vb5ctneXLpoBlGyw+XuB/ff2TYdsN3MImhn
-        FfhSxQjnfbLB5cdO4QB84LKzn7QfaCM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f2e38b22 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 10 Feb 2022 16:09:40 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux@dominikbrodowski.net, linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH 2/2] random: deobfuscate irq u32/u64 contributions
-Date:   Thu, 10 Feb 2022 17:09:25 +0100
-Message-Id: <20220210160925.156697-3-Jason@zx2c4.com>
-In-Reply-To: <20220210160925.156697-1-Jason@zx2c4.com>
-References: <20220210160925.156697-1-Jason@zx2c4.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id B2557B82656;
+        Thu, 10 Feb 2022 16:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A3A9C004E1;
+        Thu, 10 Feb 2022 16:09:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644509412;
+        bh=ZAorFPJpvUFVFfC8NuB8t266XcSbj42njOVNokd0dNI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZeNgkJL9Trv43cyPqcRNLgzsO9LuxFTQK2vJ1dEhPqEN7KQ3PmsPrIwNYbDpvKGZn
+         69d0QHkczLmrGiQqx+EbiEEYNRPZupkA2CJ70hnLTad+V4HKubd5nfhRlgJVAOROLF
+         +yhe7l1O2oYK/N+DTMpY5XAMN2O/GjdubZisOnu+ZMRIDx/C1U9h6t0DK/RmDS+gDz
+         k9KrryjofYBOiuRRRVj71l4dCBP8uNIfapILtwiz03tA6wE9GyNBYT8iiIYSqcKeyc
+         dXGm3ASW46sBzRiPJ4Mfd+l8b2SM6KZMU8E4PS/u+VAkDizpgLU0qpPcSuxXng9Pa8
+         rLGhJD9zkLtyQ==
+Date:   Fri, 11 Feb 2022 00:01:42 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, wefu@redhat.com, liush@allwinnertech.com,
+        guoren@kernel.org, atishp@atishpatra.org, anup@brainfault.org,
+        drew@beagleboard.org, hch@lst.de, arnd@arndb.de, wens@csie.org,
+        maxime@cerno.tech, gfavor@ventanamicro.com,
+        andrea.mondelli@huawei.com, behrensj@mit.edu, xinhaoqu@huawei.com,
+        huffman@cadence.com, mick@ics.forth.gr,
+        allen.baum@esperantotech.com, jscheid@ventanamicro.com,
+        rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
+        philipp.tomsich@vrull.eu
+Subject: Re: [PATCH v6 00/14] riscv: support for Svpbmt and D1 memory types
+Message-ID: <YgU25sWTf8EXTina@xhacker>
+References: <20220209123800.269774-1-heiko@sntech.de>
+ <YgP+n5OMhQPSbICV@xhacker>
+ <14426959.46CLvVMboC@diego>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <14426959.46CLvVMboC@diego>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the irq handler, we fill out 16 bytes differently on 32-bit and
-64-bit platforms. Whether or not you like that, it is a matter of fact.
-But it might not be a fact you well realized until now, because the code
-that loaded the irq info into 4 32-bit words was quite confusing.
-Instead, this commit makes everything explicit by having separate
-(compile-time) branches for 32-bit and 64-bit machines. In the process,
-it exposed a shortcoming in in mix_interrupt_randomness() which we
-rectify.
+On Thu, Feb 10, 2022 at 12:44:04AM +0100, Heiko Stübner wrote:
+> Hi,
+> 
+> Am Mittwoch, 9. Februar 2022, 18:49:19 CET schrieb Jisheng Zhang:
+> > On Wed, Feb 09, 2022 at 01:37:46PM +0100, Heiko Stuebner wrote:
+> > > Svpbmt is an extension defining "Supervisor-mode: page-based memory types"
+> > > for things like non-cacheable pages or I/O memory pages.
+> > > 
+> > > 
+> > > So this is my 2nd try at implementing Svpbmt (and the diverging D1 memory
+> > > types) using the alternatives framework.
+> > > 
+> > > This includes a number of changes to the alternatives mechanism itself.
+> > > The biggest one being the move to a more central location, as I expect
+> > > in the future, nearly every chip needing some sort of patching, be it
+> > > either for erratas or for optional features (svpbmt or others).
+> > > 
+> > > The dt-binding for svpbmt itself is of course not finished and is still
+> > > using the binding introduced in previous versions, as where to put
+> > > a svpbmt-property in the devicetree is still under dicussion.
+> > > Atish seems to be working on a framework for extensions [0],
+> > > 
+> > > The series also introduces support for the memory types of the D1
+> > > which are implemented differently to svpbmt. But when patching anyway
+> > > it's pretty clean to add the D1 variant via ALTERNATIVE_2 to the same
+> > > location.
+> > > 
+> > > The only slightly bigger difference is that the "normal" type is not 0
+> > > as with svpbmt, so kernel patches for this PMA type need to be applied
+> > > even before the MMU is brought up, so the series introduces a separate
+> > > stage for that.
+> > > 
+> > > 
+> > > In theory this series is 3 parts:
+> > > - sbi cache-flush / null-ptr
+> > > - alternatives improvements
+> > > - svpbmt+d1
+> > > 
+> > > So expecially patches from the first 2 areas could be applied when
+> > > deemed ready, I just thought to keep it together to show-case where
+> > > the end-goal is and not requiring jumping between different series.
+> > > 
+> > > 
+> > > The sbi cache-flush patch is based on Atish's sparse-hartid patch [1],
+> > > as it touches a similar area in mm/cacheflush.c
+> > > 
+> > > 
+> > > I picked the recipient list from the previous version, hopefully
+> > > I didn't forget anybody.
+> > > 
+> > > changes in v6:
+> > > - rebase onto 5.17-rc1
+> > > - handle sbi null-ptr differently
+> > > - improve commit messages
+> > > - use riscv,mmu as property name
+> > > 
+> > > changes in v5:
+> > > - move to use alternatives for runtime-patching
+> > 
+> > another choice is using static key mechanism. Pros: no need to coding
+> > in asm, all in c.
+> > 
+> > To support new arch features, I see other arch sometimes use static
+> > key, sometimes use alternative mechanism, so one question here would
+> > be which mechanism is better? Any guide?
+> 
+> For me it's also a bit of a learn-as-you-go experience, but I do see some
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 54 ++++++++++++++++++++++++-------------------
- 1 file changed, 30 insertions(+), 24 deletions(-)
+I hope old hands can give some suggestions here about static key VS.
+alternative ;). When to use which mechanism, and why.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 923a8f861437..1eb3c059025b 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -731,9 +731,12 @@ EXPORT_SYMBOL_GPL(add_disk_randomness);
- #endif
- 
- struct fast_pool {
-+	union {
-+		u64 pool64[2];
-+		u32 pool32[4];
-+	};
- 	struct work_struct mix;
- 	unsigned long last;
--	u32 pool[4];
- 	unsigned int count;
- 	u16 reg_idx;
- };
-@@ -744,10 +747,10 @@ struct fast_pool {
-  * collector. It's hardcoded for an 128 bit pool and assumes that any
-  * locks that might be needed are taken by the caller.
-  */
--static void fast_mix(struct fast_pool *f)
-+static void fast_mix(u32 pool[4])
- {
--	u32 a = f->pool[0],	b = f->pool[1];
--	u32 c = f->pool[2],	d = f->pool[3];
-+	u32 a = pool[0],	b = pool[1];
-+	u32 c = pool[2],	d = pool[3];
- 
- 	a += b;			c += d;
- 	b = rol32(b, 6);	d = rol32(d, 27);
-@@ -765,11 +768,10 @@ static void fast_mix(struct fast_pool *f)
- 	b = rol32(b, 16);	d = rol32(d, 14);
- 	d ^= a;			b ^= c;
- 
--	f->pool[0] = a;  f->pool[1] = b;
--	f->pool[2] = c;  f->pool[3] = d;
-+	pool[0] = a;  pool[1] = b;
-+	pool[2] = c;  pool[3] = d;
- }
- 
--
- static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
- 
- static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
-@@ -790,15 +792,19 @@ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
- static void mix_interrupt_randomness(struct work_struct *work)
- {
- 	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
--	u32 pool[ARRAY_SIZE(fast_pool->pool)];
-+	u32 pool[ARRAY_SIZE(fast_pool->pool32)];
- 
- 	/*
- 	 * Since this is the result of a trip through the scheduler, xor in
- 	 * a cycle counter. It can't hurt, and might help.
- 	 */
--	fast_pool->pool[3] ^= random_get_entropy();
-+	if (sizeof(unsigned long) == 8)
-+		fast_pool->pool64[1] ^= random_get_entropy();
-+	else
-+		fast_pool->pool32[3] ^= random_get_entropy();
-+
- 	/* Copy the pool to the stack so that the mixer always has a consistent view. */
--	memcpy(pool, fast_pool->pool, sizeof(pool));
-+	memcpy(pool, fast_pool->pool32, sizeof(pool));
- 	/* We take care to zero out the count only after we're done reading the pool. */
- 	WRITE_ONCE(fast_pool->count, 0);
- 	fast_pool->last = jiffies;
-@@ -815,26 +821,26 @@ void add_interrupt_randomness(int irq)
- 	unsigned long now = jiffies;
- 	cycles_t cycles = random_get_entropy();
- 	unsigned int new_count;
--	u32 c_high, j_high;
--	u64 ip;
- 
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
--	c_high = (sizeof(cycles) > 4) ? cycles >> 32 : 0;
--	j_high = (sizeof(now) > 4) ? now >> 32 : 0;
--	fast_pool->pool[0] ^= cycles ^ j_high ^ irq;
--	fast_pool->pool[1] ^= now ^ c_high;
--	ip = regs ? instruction_pointer(regs) : _RET_IP_;
--	fast_pool->pool[2] ^= ip;
--	fast_pool->pool[3] ^=
--		(sizeof(ip) > 4) ? ip >> 32 : get_reg(fast_pool, regs);
--
--	fast_mix(fast_pool);
-+
-+	if (sizeof(unsigned long) == 8) {
-+		fast_pool->pool64[0] ^= cycles ^ rol64(now, 32) ^ irq;
-+		fast_pool->pool64[1] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+	} else {
-+		fast_pool->pool32[0] ^= cycles ^ irq;
-+		fast_pool->pool32[1] ^= now;
-+		fast_pool->pool32[2] ^= regs ? instruction_pointer(regs) : _RET_IP_;
-+		fast_pool->pool32[3] ^= get_reg(fast_pool, regs);
-+	}
-+
-+	fast_mix(fast_pool->pool32);
- 	new_count = ++fast_pool->count;
- 
- 	if (unlikely(crng_init == 0)) {
- 		if (new_count >= 64 &&
--		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
-+		    crng_fast_load(fast_pool->pool32, sizeof(fast_pool->pool32)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 
-@@ -843,7 +849,7 @@ void add_interrupt_randomness(int irq)
- 			 * However, this only happens during boot, and then never
- 			 * again, so we live with it.
- 			 */
--			mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
-+			mix_pool_bytes(&fast_pool->pool32, sizeof(fast_pool->pool32));
- 		}
- 		return;
- 	}
--- 
-2.35.0
+> advantages in using alternatives:
+> 
+> - Static keys need the jump-label infrastructure, which the RiscV kernel
+>   only seems to provide on non-XIP kernels [0]
+
+I think you found one bug here.
+I believe alternative mechanism also doesn't work for XIP kernel. I will
+submit a patch for this case.
+
+> - the amount of asm here is somewhat minimal for the core no-cache and io
+>   types (load immediate + shift)
+> - using the static key mechanism still does incur more overhead for the
+>   conditional
+
+do you mean the icache overhead due to the other disabled branch of
+static key? It deserves a check.
+
+> - and if we want to support the strange family-members like the D1,
+>   (and it seems we do want that) this would create more conditionals
+
+Maybe implement the standard svpbmt via. static key and cope with D1 as
+errata alternative.
+>   as we have to test for svpbmt, d1 and maybe future special cases,
+
+From Documentation/riscv/patch-acceptance.rst, the "Submit Checklist
+Addendum" section, "we'll only to accept patches for extensions that
+have been officially frozen or ratified by the RISC-V Foundation."
+This rule hasn't been changed.
+Per my understanding of history of the svpbmt patch set, no future
+special cases any more.
+
+>   where alternatives-patching on the other hand simply replaces the
+>   relevant code with the appropriate variant.
+> 
 
