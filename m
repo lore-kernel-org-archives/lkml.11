@@ -2,267 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECDDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:22:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A3AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231506AbiBJBWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:22:03 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40502 "EHLO
+        id S231483AbiBJBWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:22:21 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiBJBVz (ORCPT
+        with ESMTP id S231313AbiBJBWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:21:55 -0500
-Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E40F1EC6D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:21:55 -0800 (PST)
-Received: by mail-oo1-xc32.google.com with SMTP id u25-20020a4ad0d9000000b002e8d4370689so4566348oor.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:21:55 -0800 (PST)
+        Wed, 9 Feb 2022 20:22:16 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF57767E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:22:18 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id i62so5549327ioa.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:22:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=eEcY0jIVJ2FZN3p48D7MwNjcdlBILBxWpdQKujjHv4Y=;
-        b=gc4jh1TdvPUm9DniH+6ruKyjuA0469iUnwjtdL63Kb/eX3hbsGZDWHCOETMCYrr5wX
-         eWbF5t4Re8fvLymy92Lu06ClAgFBTzLBRQfIXxnM1yAqobBRjTSziAWwjrEyoKHvsxPM
-         CNLP8XqqrX0uCpjdWfy6Fzb3oQ4LntZUHCcpg=
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cdxLMgsmmoWwNr6QfX9BlZQEHtbyyDeBFlgL8Ttf6Ko=;
+        b=N3Jh70Kzppxzw5ToFBbrHwsdpEYL7Ulz422DOUp85ChwME4TCxIutPfGQ4F5q67Tpl
+         yjr0s3JQDx/sZk9JI3B90NAVBQTjDDmlUeHsUf1t2+VIMHEas29Vj/WnDw4V0u2+AZr4
+         eTCpZw7W4nUyjncOMMZkouKFIlqqJN8EuUkaY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=eEcY0jIVJ2FZN3p48D7MwNjcdlBILBxWpdQKujjHv4Y=;
-        b=KLTUlY8YL+sbfUNSNI2Tzq1DOiwO9wJ8+DbnZcD6QqLOrFQRaUeRvdHiTkJImC4JNN
-         bs4QTI8VlRUH7sE7oMA9XJKzMitDxF6NxkI0iK95VSTDtznhR3s89Yq/4YhPDZMLOW9i
-         TSIpC6zBpXWpDiaIBOzjE2vMdP6YyqcZrtyMqRoQehRK1MnrrPrAzc1G7GpAv3XKNf8V
-         OTTk8/m0PcoVFHuf/14h1Rll/LU9LuZTo619lpl04pd9GDN9ZJW1vrFKYuLECWpxRJoE
-         akXMO7dFl284+le1J+sJAush4Qz0mH+FVhehH4LkHkH1bqor4J5PL1B6tu8mq4JuQ34O
-         i2zQ==
-X-Gm-Message-State: AOAM5337iB1HIThYzpgwDFu4sk6+gnDHbjGp1N3hfH+uC62ZHkw78RsZ
-        o5Z8Y8EhZI1bi8GLVtjR/00NHcxiMjUQrZfz4rq+aLFuKOk=
-X-Google-Smtp-Source: ABdhPJxUbJDE1ITWIOPoJ+PyC2BINa96V6D7KopkUeDSzUtFAIAdXa6h3caphf6qob5RB7AGuragu1Gd6okEtDqTYLs=
-X-Received: by 2002:a05:6870:d413:: with SMTP id i19mr45015oag.54.1644455697628;
- Wed, 09 Feb 2022 17:14:57 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 9 Feb 2022 17:14:57 -0800
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cdxLMgsmmoWwNr6QfX9BlZQEHtbyyDeBFlgL8Ttf6Ko=;
+        b=C3YYgwhpX8ArGIj8RNq5LpHuKmZYR8Q5j/R2mSV9IIk0fXuoWwudC1wYxhxEpvjVey
+         LccaWmJA5RRuHZXOT3UcMJW9DOSGNeYlwL+S5iW7bASrJFcVkvb+wzWev+3fKP3zHZeZ
+         OMb3XsGnRsB8B9lu1+e9Q1ilTHymTMmW78phpT7xE7aYntw7Y5rTNyoVzD6DEnOkw+/R
+         bfGZuLynPcftu3f5XQzTZOWRhk5kE73LQdSPYqgqmzlJk8RefwjcmHd2trMGgsBPtEEV
+         LjtLIf6dW+6KVl7oZXJsBOnL363DWsUrZBZQgaRVTy9M3PFSB5390LU5ZyMqgxM8zfDG
+         9BzQ==
+X-Gm-Message-State: AOAM530+441ENKgR0CppHUlGxIugS3N0gJqNgjz7VEv+GBOwZ7/XFkK6
+        bT8XTlq4lQu+9Uo4D4CLeWVngfwxZSq2DA==
+X-Google-Smtp-Source: ABdhPJxodiyAREzkXOkvY/SMzh82G1BjPwhNRwtVULqYbCK8pb81TiorkVba9Cl+gCSEui2k7UzWhw==
+X-Received: by 2002:a5e:8509:: with SMTP id i9mr2520057ioj.28.1644454750744;
+        Wed, 09 Feb 2022 16:59:10 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id y7sm4092385ila.7.2022.02.09.16.59.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 09 Feb 2022 16:59:10 -0800 (PST)
+Subject: Re: [PATCH 5.4 0/1] 5.4.179-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220209191248.688351316@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <401c0a7a-9af9-e871-32a0-0688e684c0b6@linuxfoundation.org>
+Date:   Wed, 9 Feb 2022 17:59:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <1644396932-17932-3-git-send-email-quic_sbillaka@quicinc.com>
-References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com> <1644396932-17932-3-git-send-email-quic_sbillaka@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Wed, 9 Feb 2022 17:14:56 -0800
-Message-ID: <CAE-0n53OxjWD7ybT-AhseO4h3BBG+aFiJZxar5TZYsYgC0ci1w@mail.gmail.com>
-Subject: Re: [PATCH v3 2/4] arm64: dts: qcom: sc7280: Add support for eDP
- panel on CRD
-To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
-        agross@kernel.org, airlied@linux.ie, bjorn.andersson@linaro.org,
-        daniel@ffwll.ch, devicetree@vger.kernel.org, dianders@chromium.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        krzysztof.kozlowski@canonical.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        robh+dt@kernel.org, sam@ravnborg.org, seanpaul@chromium.org,
-        thierry.reding@gmail.com
-Cc:     quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com,
-        quic_khsieh@quicinc.com, quic_mkrishn@quicinc.com,
-        quic_vproddut@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220209191248.688351316@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Sankeerth Billakanti (2022-02-09 00:55:30)
-> Enable the eDP display panel support without HPD on sc7280 platform.
->
-> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-> ---
->
-> Changes in v3:
->   - Sort the nodes alphabetically
->   - Use - instead of _ as node names
->   - Place the backlight and panel nodes under root
->   - Change the name of edp_out to mdss_edp_out
->   - Change the names of regulator nodes
->   - Delete unused properties in the board file
->
->
-> Changes in v2:
->   - Sort node references alphabetically
->   - Improve readability
->   - Move the pwm pinctrl to pwm node
->   - Move the regulators to root
->   - Define backlight power
->   - Remove dummy regulator node
->   - Cleanup pinctrl definitions
->
->  arch/arm64/boot/dts/qcom/sc7280-crd.dts | 122 ++++++++++++++++++++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280.dtsi    |   2 +-
->  2 files changed, 123 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> index e2efbdd..2a490a0 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> @@ -21,6 +21,59 @@
->         chosen {
->                 stdout-path = "serial0:115200n8";
->         };
-> +
-> +       backlight_3v3_regulator: backlight-3v3-regulator {
-> +               compatible = "regulator-fixed";
-> +               regulator-name = "backlight_3v3_regulator";
-> +
-> +               regulator-min-microvolt = <3300000>;
-> +               regulator-max-microvolt = <3300000>;
-> +
-> +               gpio = <&pm8350c_gpios 7 GPIO_ACTIVE_HIGH>;
-> +               enable-active-high;
-> +
-> +               pinctrl-names = "default";
-> +               pinctrl-0 = <&edp_bl_power>;
-> +       };
-> +
-> +       edp_3v3_regulator: edp-3v3-regulator {
-> +               compatible = "regulator-fixed";
-> +               regulator-name = "edp_3v3_regulator";
-> +
-> +               regulator-min-microvolt = <3300000>;
-> +               regulator-max-microvolt = <3300000>;
-> +
-> +               gpio = <&tlmm 80 GPIO_ACTIVE_HIGH>;
-> +               enable-active-high;
-> +
-> +               pinctrl-names = "default";
-> +               pinctrl-0 = <&edp_panel_power>;
-> +       };
-> +
-> +       edp_backlight: edp-backlight {
-> +               compatible = "pwm-backlight";
-> +
-> +               power-supply = <&backlight_3v3_regulator>;
-> +               pwms = <&pm8350c_pwm 3 65535>;
-> +       };
-> +
-> +       edp_panel: edp-panel {
-> +               compatible = "sharp,lq140m1jw46";
-> +
-> +               power-supply = <&edp_3v3_regulator>;
-> +               backlight = <&edp_backlight>;
-> +
-> +               ports {
-> +                       #address-cells = <1>;
-> +                       #size-cells = <0>;
-> +                       port@0 {
-> +                               reg = <0>;
-> +                               edp_panel_in: endpoint {
-> +                                       remote-endpoint = <&edp_out>;
+On 2/9/22 12:14 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.4.179 release.
+> There are 1 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.179-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Where is edp_out now?
+Compiled and booted on my test system. No dmesg regressions.
 
-> +                               };
-> +                       };
-> +               };
-> +       };
->  };
->
->  &apps_rsc {
-> @@ -76,6 +129,44 @@ ap_ts_pen_1v8: &i2c13 {
->         };
->  };
->
-> +&mdss {
-> +       status = "okay";
-> +};
-> +
-> +&mdss_dp {
-> +       status = "okay";
-> +
-> +       pinctrl-names = "default";
-> +       pinctrl-0 = <&dp_hot_plug_det>;
-> +       data-lanes = <0 1>;
-> +       vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +       vdda-0p9-supply = <&vreg_l1b_0p8>;
-> +};
-> +
-> +&mdss_edp {
-> +       status = "okay";
-> +
-> +       vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +       vdda-0p9-supply = <&vreg_l10c_0p8>;
-> +       /delete-property/ pinctrl-names;
-> +       /delete-property/ pinctrl-0;
-> +};
-> +
-> +&mdss_edp_out {
-> +       remote-endpoint = <&edp_panel_in>;
-> +};
-> +
-> +&mdss_edp_phy {
-> +       status = "okay";
-> +
-> +       vdda-1p2-supply = <&vreg_l6b_1p2>;
-> +       vdda-0p9-supply = <&vreg_l10c_0p8>;
-> +};
-> +
-> +&mdss_mdp {
-> +       status = "okay";
-> +};
-> +
->  &nvme_3v3_regulator {
->         gpio = <&tlmm 51 GPIO_ACTIVE_HIGH>;
->  };
-> @@ -84,7 +175,38 @@ ap_ts_pen_1v8: &i2c13 {
->         pins = "gpio51";
->  };
->
-> +&pm8350c_gpios {
-> +       edp_bl_power: edp-bl-power {
-> +               pins = "gpio7";
-> +               function = "normal";
-> +               qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-> +               bias-disable;
-> +               output-low;
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-Is the 'output-low' necessary?
-
-> +       };
-> +
-> +       edp_bl_pwm: edp-bl-pwm {
-> +               pins = "gpio8";
-> +               function = "func1";
-> +               qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
-> +               bias-disable;
-> +               output-low;
-
-Same question.
-
-> +       };
-> +};
-> +
-> +&pm8350c_pwm {
-> +       status = "okay";
-> +
-> +       pinctrl-names = "default";
-> +       pinctrl-0 = <&edp_bl_pwm>;
-> +};
-> +
->  &tlmm {
-> +       edp_panel_power: edp-panel-power {
-> +               pins = "gpio80";
-> +               function = "gpio";
-> +               bias-pull-down;
-> +       };
-> +
->         tp_int_odl: tp-int-odl {
->                 pins = "gpio7";
->                 function = "gpio";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 3572399..eca403a 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -3066,7 +3066,7 @@
->
->                                         port@1 {
->                                                 reg = <1>;
-> -                                               edp_out: endpoint { };
-> +                                               mdss_edp_out: endpoint { };
->                                         };
-
-It feels like this should be a different patch for this phandle rename.
+thanks,
+-- Shuah
