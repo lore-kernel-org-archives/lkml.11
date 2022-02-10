@@ -2,93 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 662AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:39:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 441B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238844AbiBJJju convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:39:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58510 "EHLO
+        id S238854AbiBJJkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:40:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238786AbiBJJjs (ORCPT
+        with ESMTP id S238786AbiBJJkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:39:48 -0500
-X-Greylist: delayed 102 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 01:39:49 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88AA220;
-        Thu, 10 Feb 2022 01:39:48 -0800 (PST)
-Received: from mail-wm1-f45.google.com ([209.85.128.45]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M3Eqr-1nJSJC0kQ9-003h6D; Thu, 10 Feb 2022 10:39:47 +0100
-Received: by mail-wm1-f45.google.com with SMTP id i19so1652570wmq.5;
-        Thu, 10 Feb 2022 01:39:47 -0800 (PST)
-X-Gm-Message-State: AOAM531cb0eqtPrq/hCj9B/hPBhQNdci/UadveB7HA3H/hnCgUdoURyD
-        GycahrxyX7E3dkwlbQAmsYFFmtQe7P7Nov0WHIk=
-X-Google-Smtp-Source: ABdhPJzUBE9AmHKtA86Xv3LRiM760+wqDeJhZfBxDNdjYz5WjMMMxnuXS2W7stLYFq1NMZvK6WNceMm+VXnOfCsZ8qY=
-X-Received: by 2002:a05:600c:1f06:: with SMTP id bd6mr1419523wmb.98.1644485986746;
- Thu, 10 Feb 2022 01:39:46 -0800 (PST)
+        Thu, 10 Feb 2022 04:40:05 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2ED10B4;
+        Thu, 10 Feb 2022 01:40:04 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=14;SR=0;TI=SMTPD_---0V43zTg4_1644485997;
+Received: from 30.240.123.68(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V43zTg4_1644485997)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 10 Feb 2022 17:39:59 +0800
+Message-ID: <362d7c9c-4c5e-94f5-8168-39c007465771@linux.alibaba.com>
+Date:   Thu, 10 Feb 2022 17:39:56 +0800
 MIME-Version: 1.0
-References: <20220210021129.3386083-1-masahiroy@kernel.org> <20220210021129.3386083-3-masahiroy@kernel.org>
-In-Reply-To: <20220210021129.3386083-3-masahiroy@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 10 Feb 2022 10:39:31 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1qbAXeKuuswuCSmMqC8k4wC-uQZqjiSd8WsFuqM906MA@mail.gmail.com>
-Message-ID: <CAK8P3a1qbAXeKuuswuCSmMqC8k4wC-uQZqjiSd8WsFuqM906MA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] shmbuf.h: add asm/shmbuf.h to UAPI compile-test coverage
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:jyMslo3fNya4WydPD3YHn1XYJyEHge1unk7I3p/UHh5+V+hBae5
- wgwCe5jLJ7oH/GBSFMm+AzIAUuyxeWRUzleqR1Kg4VjxdY+wUtO2cBkAWo80I7QcJR0QdGC
- SSd23Vwu7H9HxnW/jJg5UFRzKhoTzz9XFoJLe1u8gcCE3xFYjAY9CpYgp88mhorTOTzoOgt
- C9plEZhksApmrn2eQq4nw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qkRBoUw9+k8=:lXxLoYCwEmC9akTlT8jJQI
- 6kbqoGW9UuaUcSJ1ZBgsrj8IPjccg4OIYivU0eoXpC7uAzD+JtBooH1dxwvvUuaof27+GU8Y+
- 6LgmrIXEVHL7B7rmhM+AHKQVhFtaor6+NLv9FFVKOBJnuj8DqfvZQnv9XXR2SSlZegoqK7YrP
- /gHmqkNruerBOpcrU0GWwvBfqMjydhwiT7ImPkmcU8E8A9zSPJnuZXOE3T4KDUR4z7M/T8Etj
- nU4Nhn5kPWo4Ea87WOVjRnG7KQvevb8xS9Uy8YgHJrcmGJE9MSEkp4GPGCH1r48+cO4CPSCB2
- OVJrNoaBdZBjlX/r4IqO2WO9cZgiHLLJV7wNcOukIaxTISzF29vTvq6PVZCqgBurxWbk2w1MH
- 0HtDCM5j/INvXcnlL663pl5mTD83RZNSZlMBk/xj7A6sUqRbY4EibnVCBXZAI/0Mr1hc3PlE/
- m56xyLVy36Gz42Kf2qZY9wyXp7EUw/HheO2JvckLkm1BTT9QhF85BUfezhmGlqHFXU3U/jcCj
- CMSzU7vBA2pRSpsA7XRMluWEpVU8ZWU6X2l3koizq7OZ5wSf2kcRoJThd9tuILN8OPhPv05GY
- V8BIe5KgdDpz100hFhtOnejFtUYaYj19GyHrzBddHTvmajCQeqH8GyjNyupFfMZg3+x7RrU0n
- TR9qFV6tQXktJLcrSrswbQTU1t+gFLqmdN0iiwXSx8B2gSyErTiHpII7BKvm/Biif511qU6z1
- rR0OBWlvI4GY55v2t5sCYm0FOtOXqV5j3GVr++TuPZkteqBeKLOGSdkE0LUv8E0fJT5hcbd6V
- imjiOhtcrki+7JriX/1dlX488JJ2humobMlx0Ww+tCMCgDdMjU=
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH v7 1/2] ACPI: APEI: explicit init HEST and GHES in
+ apci_init
+Content-Language: en-US
+To:     helgaas@kernel.org, rafael@kernel.org
+Cc:     bp@alien8.de, tony.luck@intel.com, james.morse@arm.com,
+        lenb@kernel.org, rjw@rjwysocki.net, bhelgaas@google.com,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com,
+        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org
+References: <20211126070422.73234-1-xueshuai@linux.alibaba.com>
+ <20220122052618.1074-1-xueshuai@linux.alibaba.com>
+From:   Shuai Xue <xueshuai@linux.alibaba.com>
+In-Reply-To: <20220122052618.1074-1-xueshuai@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 3:11 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> asm/shmbuf.h is currently excluded from the UAPI compile-test because of
-> the errors like follows:
->
->     HDRTEST usr/include/asm/shmbuf.h
->   In file included from ./usr/include/asm/shmbuf.h:6,
->                    from <command-line>:
->   ./usr/include/asm-generic/shmbuf.h:26:33: error: field ‘shm_perm’ has incomplete type
->      26 |         struct ipc64_perm       shm_perm;       /* operation perms */
->         |                                 ^~~~~~~~
->   ./usr/include/asm-generic/shmbuf.h:27:9: error: unknown type name ‘size_t’
->      27 |         size_t                  shm_segsz;      /* size of segment (bytes) */
->         |         ^~~~~~
->   ./usr/include/asm-generic/shmbuf.h:40:9: error: unknown type name ‘__kernel_pid_t’
->      40 |         __kernel_pid_t          shm_cpid;       /* pid of creator */
->         |         ^~~~~~~~~~~~~~
->   ./usr/include/asm-generic/shmbuf.h:41:9: error: unknown type name ‘__kernel_pid_t’
->      41 |         __kernel_pid_t          shm_lpid;       /* pid of last operator */
->         |         ^~~~~~~~~~~~~~
->
-> The errors can be fixed by replacing size_t with __kernel_size_t and by
-> including proper headers.
->
-> Then, remove the no-header-test entry from user/include/Makefile.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+在 2022/1/22 PM1:26, Shuai Xue 写道:
+> From commit e147133a42cb ("ACPI / APEI: Make hest.c manage the estatus
+> memory pool") was merged, ghes_init() relies on acpi_hest_init() to manage
+> the estatus memory pool. On the other hand, ghes_init() relies on
+> sdei_init() to detect the SDEI version and (un)register events. The
+> dependencies are as follows:
+> 
+>     ghes_init() => acpi_hest_init() => acpi_bus_init() => acpi_init()
+>     ghes_init() => sdei_init()
+> 
+> HEST is not PCI-specific and initcall ordering is implicit and not
+> well-defined within a level.
+> 
+> Based on above, remove acpi_hest_init() from acpi_pci_root_init() and
+> convert ghes_init() and sdei_init() from initcalls to explicit calls in the
+> following order:
+> 
+>     acpi_hest_init()
+>     ghes_init()
+>         sdei_init()
+> 
+> Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
+> ---
+>  drivers/acpi/apei/ghes.c    | 19 ++++++++-----------
+>  drivers/acpi/bus.c          |  2 ++
+>  drivers/acpi/pci_root.c     |  3 ---
+>  drivers/firmware/Kconfig    |  1 +
+>  drivers/firmware/arm_sdei.c | 13 ++-----------
+>  include/acpi/apei.h         |  4 +++-
+>  include/linux/arm_sdei.h    |  2 ++
+>  7 files changed, 18 insertions(+), 26 deletions(-)
+> 
+> diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+> index 0c5c9acc6254..aadc0a972f18 100644
+> --- a/drivers/acpi/apei/ghes.c
+> +++ b/drivers/acpi/apei/ghes.c
+> @@ -1457,33 +1457,35 @@ static struct platform_driver ghes_platform_driver = {
+>  	.remove		= ghes_remove,
+>  };
+>  
+> -static int __init ghes_init(void)
+> +void __init ghes_init(void)
+>  {
+>  	int rc;
+>  
+> +	sdei_init();
+> +
+>  	if (acpi_disabled)
+> -		return -ENODEV;
+> +		return;
+>  
+>  	switch (hest_disable) {
+>  	case HEST_NOT_FOUND:
+> -		return -ENODEV;
+> +		return;
+>  	case HEST_DISABLED:
+>  		pr_info(GHES_PFX "HEST is not enabled!\n");
+> -		return -EINVAL;
+> +		return;
+>  	default:
+>  		break;
+>  	}
+>  
+>  	if (ghes_disable) {
+>  		pr_info(GHES_PFX "GHES is not enabled!\n");
+> -		return -EINVAL;
+> +		return;
+>  	}
+>  
+>  	ghes_nmi_init_cxt();
+>  
+>  	rc = platform_driver_register(&ghes_platform_driver);
+>  	if (rc)
+> -		goto err;
+> +		return;
+>  
+>  	rc = apei_osc_setup();
+>  	if (rc == 0 && osc_sb_apei_support_acked)
+> @@ -1494,9 +1496,4 @@ static int __init ghes_init(void)
+>  		pr_info(GHES_PFX "APEI firmware first mode is enabled by APEI bit.\n");
+>  	else
+>  		pr_info(GHES_PFX "Failed to enable APEI firmware first mode.\n");
+> -
+> -	return 0;
+> -err:
+> -	return rc;
+>  }
+> -device_initcall(ghes_init);
+> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+> index 07f604832fd6..3f403db20f69 100644
+> --- a/drivers/acpi/bus.c
+> +++ b/drivers/acpi/bus.c
+> @@ -1331,6 +1331,8 @@ static int __init acpi_init(void)
+>  
+>  	pci_mmcfg_late_init();
+>  	acpi_iort_init();
+> +	acpi_hest_init();
+> +	ghes_init();
+>  	acpi_scan_init();
+>  	acpi_ec_init();
+>  	acpi_debugfs_init();
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index b76db99cced3..6f9e75d14808 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -22,8 +22,6 @@
+>  #include <linux/slab.h>
+>  #include <linux/dmi.h>
+>  #include <linux/platform_data/x86/apple.h>
+> -#include <acpi/apei.h>	/* for acpi_hest_init() */
+> -
+>  #include "internal.h"
+>  
+>  #define ACPI_PCI_ROOT_CLASS		"pci_bridge"
+> @@ -943,7 +941,6 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
+>  
+>  void __init acpi_pci_root_init(void)
+>  {
+> -	acpi_hest_init();
+>  	if (acpi_pci_disabled)
+>  		return;
+>  
+> diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+> index 75cb91055c17..ad114d9cdf8e 100644
+> --- a/drivers/firmware/Kconfig
+> +++ b/drivers/firmware/Kconfig
+> @@ -40,6 +40,7 @@ config ARM_SCPI_POWER_DOMAIN
+>  config ARM_SDE_INTERFACE
+>  	bool "ARM Software Delegated Exception Interface (SDEI)"
+>  	depends on ARM64
+> +	select ACPI_APEI_GHES
+>  	help
+>  	  The Software Delegated Exception Interface (SDEI) is an ARM
+>  	  standard for registering callbacks from the platform firmware
+> diff --git a/drivers/firmware/arm_sdei.c b/drivers/firmware/arm_sdei.c
+> index a7e762c352f9..1e1a51510e83 100644
+> --- a/drivers/firmware/arm_sdei.c
+> +++ b/drivers/firmware/arm_sdei.c
+> @@ -1059,14 +1059,14 @@ static bool __init sdei_present_acpi(void)
+>  	return true;
+>  }
+>  
+> -static int __init sdei_init(void)
+> +void __init sdei_init(void)
+>  {
+>  	struct platform_device *pdev;
+>  	int ret;
+>  
+>  	ret = platform_driver_register(&sdei_driver);
+>  	if (ret || !sdei_present_acpi())
+> -		return ret;
+> +		return;
+>  
+>  	pdev = platform_device_register_simple(sdei_driver.driver.name,
+>  					       0, NULL, 0);
+> @@ -1076,17 +1076,8 @@ static int __init sdei_init(void)
+>  		pr_info("Failed to register ACPI:SDEI platform device %d\n",
+>  			ret);
+>  	}
+> -
+> -	return ret;
+>  }
+>  
+> -/*
+> - * On an ACPI system SDEI needs to be ready before HEST:GHES tries to register
+> - * its events. ACPI is initialised from a subsys_initcall(), GHES is initialised
+> - * by device_initcall(). We want to be called in the middle.
+> - */
+> -subsys_initcall_sync(sdei_init);
+> -
+>  int sdei_event_handler(struct pt_regs *regs,
+>  		       struct sdei_registered_event *arg)
+>  {
+> diff --git a/include/acpi/apei.h b/include/acpi/apei.h
+> index ece0a8af2bae..4e60dd73c3bb 100644
+> --- a/include/acpi/apei.h
+> +++ b/include/acpi/apei.h
+> @@ -27,14 +27,16 @@ extern int hest_disable;
+>  extern int erst_disable;
+>  #ifdef CONFIG_ACPI_APEI_GHES
+>  extern bool ghes_disable;
+> +void __init ghes_init(void);
+>  #else
+>  #define ghes_disable 1
+> +static inline void ghes_init(void) { }
+>  #endif
+>  
+>  #ifdef CONFIG_ACPI_APEI
+>  void __init acpi_hest_init(void);
+>  #else
+> -static inline void acpi_hest_init(void) { return; }
+> +static inline void acpi_hest_init(void) { }
+>  #endif
+>  
+>  int erst_write(const struct cper_record_header *record);
+> diff --git a/include/linux/arm_sdei.h b/include/linux/arm_sdei.h
+> index 0a241c5c911d..14dc461b0e82 100644
+> --- a/include/linux/arm_sdei.h
+> +++ b/include/linux/arm_sdei.h
+> @@ -46,9 +46,11 @@ int sdei_unregister_ghes(struct ghes *ghes);
+>  /* For use by arch code when CPU hotplug notifiers are not appropriate. */
+>  int sdei_mask_local_cpu(void);
+>  int sdei_unmask_local_cpu(void);
+> +void __init sdei_init(void);
+>  #else
+>  static inline int sdei_mask_local_cpu(void) { return 0; }
+>  static inline int sdei_unmask_local_cpu(void) { return 0; }
+> +static inline void sdei_init(void) { }
+>  #endif /* CONFIG_ARM_SDE_INTERFACE */
+>  
+>  
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Hi folks,
+
+I am wondering if you have any comments on this series of patches?
+
+Thank you.
+
+Best Regards,
+Shuai
