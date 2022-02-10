@@ -2,157 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7E1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55834C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343531AbiBJSpT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:45:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35526 "EHLO
+        id S242174AbiBJSqJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:46:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343524AbiBJSpR (ORCPT
+        with ESMTP id S1343524AbiBJSqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:45:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49F3110C
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:45:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73B2860B1B
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 18:45:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 675DFC004E1;
-        Thu, 10 Feb 2022 18:45:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644518716;
-        bh=wvfEGrY0MHLRsAYRmJL2epSHtuP9v2yQKNUUlZ2QWnM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dSGtudvL5+88wbnfNvDeamZnOhxKVfQ67KI3gpoNEo9k/3dam2ZBqZ5p2FoB4FC7B
-         VQ1K4BwpPRUegCb0pzUcLT3sleSZNg1aUvZHTOhFEk427HrGWRfV/kJ8JzdWxz/shQ
-         GMSC7OwVShs6UcsFE+uOz6BYSOmyNe5TRtl9vJUcTVH/dHgb+YXcDBY7R9UWLzYT1g
-         DuHJx/rFuRymRvY6ioRzrG/oi29eo0oAcDDhM2uyNhR16jXxKDzFrRu9WtKH3eyUFZ
-         AzdCTISHV/ksm2TADunckUUP3N1OgOT5mfx03DZuf5tUdrX6rVoMOUTH3IN5qNNqI8
-         YNJfy32FpZEKQ==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 00A6A400FE; Thu, 10 Feb 2022 15:45:13 -0300 (-03)
-Date:   Thu, 10 Feb 2022 15:45:13 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCHSET 0/6] perf lock: Random updates for the locking
- analysis (v2)
-Message-ID: <YgVdOe/cqX/a3LIl@kernel.org>
-References: <20220127000050.3011493-1-namhyung@kernel.org>
+        Thu, 10 Feb 2022 13:46:07 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12377F47
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:46:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644518768; x=1676054768;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rwYtZDJpiN5pbfbdwSd8f9sWHmJpVk7KWW+5mNsUYHk=;
+  b=F7tmy2vBDwfS7DOk+vQdGY6TgPZzQVpBv/j1aZWQTjE57vwXStQV3jkU
+   CGAy5C5nkq+WSoW4fbh54uqzfyv1Wpj5IexIj37Ovc8bGjwLodxnMKXNF
+   1hVJtjDvFFI4Bem10pQfc9Ygkts9KBT/Hy59rNiEj+oRUQnKRKIQBtO+/
+   +H0tb1xNKop3JfdLjZV5TKDOM9jNlUyKQ1wIfBIKHQLQPoEZOumN6HKiv
+   ku7kRVWwQHunFfpaa810zCKYKQK+D6QbL10kfgQ6wbJ6QJycUvKXfaEbW
+   x20Pv9qWEFjOz0szWcH/jqGPobwPp6Ggi1pdnx1se9WJzvuWsdmCn6IX2
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="229531437"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="229531437"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 10:46:07 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="537402098"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 10:46:07 -0800
+Date:   Thu, 10 Feb 2022 10:49:04 -0800
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Fenghua Yu <fenghua.yu@intel.com>
+Cc:     "Thomas Gleixner" <tglx@linutronix.de>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Tony Luck" <tony.luck@intel.com>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Ashok Raj" <ashok.raj@intel.com>,
+        "Ravi V Shankar" <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, "x86" <x86@kernel.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <20220210104904.6c6131f2@jacob-builder>
+In-Reply-To: <20220209191614.5a3b42d4@jacob-builder>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+        <20220207230254.3342514-6-fenghua.yu@intel.com>
+        <20220209191614.5a3b42d4@jacob-builder>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220127000050.3011493-1-namhyung@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Wed, Jan 26, 2022 at 04:00:44PM -0800, Namhyung Kim escreveu:
-> Hello,
-> 
-> I have some updates in the perf lock command (focused on 'report').
-> The main change is to add -c (or --combine-locks) option to aggregate
-> results based on lock class name.
-> 
->  * changes from v1)
->   - rebased onto recent acme/perf/core
->   - add Jiri's Acked-by
 
-Thanks, applied.
+On Wed, 9 Feb 2022 19:16:14 -0800, Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
 
-- Arnaldo
+> Hi Fenghua,
+> 
+> On Mon,  7 Feb 2022 15:02:48 -0800, Fenghua Yu <fenghua.yu@intel.com>
+> wrote:
+> 
+> > @@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device
+> > *dev, struct mm_struct *mm, void }
+> >  
+> >  	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
+> > -	if (IS_ERR_OR_NULL(sva))
+> > -		intel_svm_free_pasid(mm);  
+> If bind fails, the PASID has no IOMMU nor CPU context. It should be safe
+> to free here.
+> 
+Actually, here we cannot tell if the bind is the first of the mm so I think
+this is fine.
 
- 
-> Without this option, the result deals with lock addresses so instances
-> in the same lock class will have separate entries like below:
-> 
->   # perf lock report
->                   Name   acquired  contended   avg wait (ns) total wait (ns)   max wait (ns)   min wait (ns) 
-> 
->          rcu_read_lock     251225          0               0               0               0               0 
->    &(ei->i_block_re...       8731          0               0               0               0               0 
->    &sb->s_type->i_l...       8731          0               0               0               0               0 
->    hrtimer_bases.lo...       5261          0               0               0               0               0 
->    hrtimer_bases.lo...       2626          0               0               0               0               0 
->    hrtimer_bases.lo...       1953          0               0               0               0               0 
->    hrtimer_bases.lo...       1382          0               0               0               0               0 
->    cpu_hotplug_lock...       1350          0               0               0               0               0 
->    hrtimer_bases.lo...       1273          0               0               0               0               0 
->    hrtimer_bases.lo...       1269          0               0               0               0               0 
->    hrtimer_bases.lo...       1198          0               0               0               0               0 
->    hrtimer_bases.lo...       1116          0               0               0               0               0 
->            &base->lock       1109          0               0               0               0               0 
->    hrtimer_bases.lo...       1067          0               0               0               0               0 
->    hrtimer_bases.lo...       1052          0               0               0               0               0 
->    hrtimer_bases.lo...        957          0               0               0               0               0 
->    hrtimer_bases.lo...        948          0               0               0               0               0 
->           css_set_lock        791          0               0               0               0               0 
->    hrtimer_bases.lo...        752          0               0               0               0               0 
->    &lruvec->lru_loc...        747          5           11254           56272           18317            1412 
->    hrtimer_bases.lo...        738          0               0               0               0               0 
->    &newf->file_lock...        706         15            1025           15388            2279             618 
->    hrtimer_bases.lo...        702          0               0               0               0               0 
->    hrtimer_bases.lo...        694          0               0               0               0               0 
->   ...
-> 
-> With -c option, the hrtimer_bases.lock would be combined into a single
-> entry.  Also note that the lock names are correctly displayed now.
-> 
->   # perf lock report -c
->                   Name   acquired  contended   avg wait (ns) total wait (ns)   max wait (ns)   min wait (ns) 
->   
->          rcu_read_lock     251225          0               0               0               0               0 
->     hrtimer_bases.lock      39449          0               0               0               0               0 
->    &sb->s_type->i_l...      10301          1             662             662             662             662 
->       ptlock_ptr(page)      10173          2             701            1402             760             642 
->    &(ei->i_block_re...       8732          0               0               0               0               0 
->            &base->lock       6705          0               0               0               0               0 
->            &p->pi_lock       5549          0               0               0               0               0 
->    &dentry->d_lockr...       5010          4            1274            5097            1844             789 
->              &ep->lock       2750          0               0               0               0               0 
->    &(__futex_data.q...       2331          0               0               0               0               0 
->                 (null)       1878          0               0               0               0               0 
->       cpu_hotplug_lock       1350          0               0               0               0               0 
->       &____s->seqcount       1349          0               0               0               0               0 
->       &newf->file_lock       1001         15            1025           15388            2279             618 
->   ...
-> 
-> Maybe we can make it default later (with a config and --no-combine-locks).
-> 
-> You can get it from 'perf/lock-combine-v2' branch at
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
-> 
+Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+
 > Thanks,
-> Namhyung
 > 
-> 
-> Namhyung Kim (6):
->   perf lock: Convert lockhash_table to use hlist
->   perf lock: Change type of lock_stat->addr to u64
->   perf lock: Sort map info based on class name
->   perf lock: Fix lock name length check for printing
->   perf lock: Add -c/--combine-locks option
->   perf lock: Carefully combine lock stats for discarded entries
-> 
->  tools/perf/Documentation/perf-lock.txt |   4 +
->  tools/perf/builtin-lock.c              | 155 +++++++++++++++++++------
->  2 files changed, 124 insertions(+), 35 deletions(-)
-> 
-> 
-> base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
-> -- 
-> 2.35.0.rc0.227.g00780c9af4-goog
+> Jacob
 
--- 
 
-- Arnaldo
+Thanks,
+
+Jacob
