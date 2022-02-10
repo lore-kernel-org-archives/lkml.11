@@ -2,98 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4378C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7198AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:40:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241661AbiBJMh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 07:37:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55422 "EHLO
+        id S240069AbiBJMku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 07:40:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiBJMhv (ORCPT
+        with ESMTP id S233218AbiBJMkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 07:37:51 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C255FDA
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:37:53 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so5417143pjm.2
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:37:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oDahdnw06IsGwB/7M26luCqPUnRrkijqY+ZjOYkno4A=;
-        b=tpGNdIY2hwVGwRhbVAEv6E5VyLyH6hl7LUw7SLZyLIw8PMoLNcP/DUGn0A+TA43MA3
-         DAp3ueB1y4QZ01hqgxcV1mb3FD1UWVfLo9aGY6MkmnYv1rOx2LYVOFu5ECBqxxAlZ6h7
-         +fYloX/Dkjb81uKdqULv2aHbXuLal3uHsATiys2WgJE7mplGe4YGnpxk3Z0z9gm5fdvJ
-         Fvl59LuYztWU/omTw0zQNUWaMxPJB3cNt2Hzp19Bnjfm+NtW+p+D6/+bjn6Ikjry2ySE
-         7IJqRMvlWxRjZy4PkrIHOFY8qSvSNocEuSXW3CRF3ibl5YTyGYBL49XvaPC+KX6yN7Yk
-         TAAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oDahdnw06IsGwB/7M26luCqPUnRrkijqY+ZjOYkno4A=;
-        b=vm1Vw5M+DAhTLyr03lnimxr6L/0Kx/5rcYNCuRGPncDcDVLzu9/C8HsUa2Lot/vLTb
-         TTFwVgOTrrklyorowQoFCkBU9dEwcFYRrigR2PZKeZqv3tjGZ9hcpXKuWmrCDdLWY/rA
-         slx/oqDuQhazwLY4qBNMZpA66SUADBaw0DHimXo3WAPbQJMRvrI93c1z2yB5dhFQJdv1
-         UK9vsEFB5Tx+st2mTsGgDXYHqPQzaeEwI7HhydmR5wsO34amWY7gToPT1P0jvbEDywzR
-         QDKKlQ7XIa5Rw5slB/WgQH7kQ5r+7DufMzlUWgRrHhweqbL7cDl9KkoyA0Ao+lmiHpgS
-         23WQ==
-X-Gm-Message-State: AOAM531sk1V/Sq3/5jxciL9eGmSlcZllujmZouu75SBnXGRd5EzmxIfO
-        BrZrha0R0N6HSoUZqz1K9JYUZw==
-X-Google-Smtp-Source: ABdhPJzn0l92vEIhPNZDK6wnPCBAAD+wPaRAZsukzdXyxqRwg+i/PIhMukVTcN6WwYR8rEu1ZtzJfQ==
-X-Received: by 2002:a17:90a:fe15:: with SMTP id ck21mr2602609pjb.95.1644496673004;
-        Thu, 10 Feb 2022 04:37:53 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.237])
-        by smtp.gmail.com with ESMTPSA id i8sm11767812pgf.94.2022.02.10.04.37.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 04:37:52 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     akpm@linux-foundation.org, zi.yan@cs.rutgers.edu,
-        kirill.shutemov@linux.intel.com, rientjes@google.com,
-        lars.persson@axis.com, mike.kravetz@oracle.com, ziy@nvidia.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        duanxiongchun@bytedance.com, fam.zheng@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v5 7/7] mm: replace multiple dcache flush with flush_dcache_folio()
-Date:   Thu, 10 Feb 2022 20:30:58 +0800
-Message-Id: <20220210123058.79206-8-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220210123058.79206-1-songmuchun@bytedance.com>
-References: <20220210123058.79206-1-songmuchun@bytedance.com>
+        Thu, 10 Feb 2022 07:40:47 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597151036
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:40:48 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A5E1E21115;
+        Thu, 10 Feb 2022 12:40:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644496846; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=F9ZbzBgnxPunXqjYGK83et/vqjK6YE0/d/TYWMUW5n8=;
+        b=sOOedZfG3mAXqF2Xghmmi6/8PqkLVcjEIfwWB5Llzc+Mw2cDNcri6STJXa5GG8nHO148nV
+        DrTHbR/DHi9cJOwwlK+W/ON0zOfxvNNvXR7OzAHbYj/nkR92F25aMpzTa2wxK+hw8c1WHQ
+        pTyqYfJp7+bXUgbEHfdA6OYr6WwEfQA=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 25F55A3B83;
+        Thu, 10 Feb 2022 12:40:45 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 13:40:45 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     akpm@linux-foundation.org, ccross@google.com,
+        sumit.semwal@linaro.org, dave.hansen@intel.com,
+        keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2 1/1] mm: fix use-after-free when anon vma name is used
+ after vma is freed
+Message-ID: <YgUHzSqltDp2dr70@dhcp22.suse.cz>
+References: <20220210043215.42794-1-surenb@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210043215.42794-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify the code by using flush_dcache_folio().
+On Wed 09-02-22 20:32:15, Suren Baghdasaryan wrote:
+> When adjacent vmas are being merged it can result in the vma that was
+> originally passed to madvise_update_vma being destroyed. In the current
+> implementation, the name parameter passed to madvise_update_vma points
+> directly to vma->anon_name->name and it is used after the call to
+> vma_merge. In the cases when vma_merge merges the original vma and
+> destroys it, this will result in use-after-free bug as shown below:
+> 
+> madvise_vma_behavior << passes vma->anon_name->name as name param
+>   madvise_update_vma(name)
+>     vma_merge
+>       __vma_adjust
+>         vm_area_free <-- frees the vma
+>     replace_vma_anon_name(name) <-- UAF
+> 
+> Fix this by raising the name refcount and stabilizing it. Introduce
+> vma_anon_name_{get/put} API for this purpose.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
----
- mm/migrate.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c418e8d92b9c..daf2b3508670 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -933,12 +933,8 @@ static int move_to_new_page(struct page *newpage, struct page *page,
- 		if (!PageMappingFlags(page))
- 			page->mapping = NULL;
- 
--		if (likely(!is_zone_device_page(newpage))) {
--			int i, nr = compound_nr(newpage);
--
--			for (i = 0; i < nr; i++)
--				flush_dcache_page(newpage + i);
--		}
-+		if (likely(!is_zone_device_page(newpage)))
-+			flush_dcache_folio(page_folio(newpage));
- 	}
- out:
- 	return rc;
+What is the reason that madvise_update_vma uses the naked name rather
+than the encapsulated anon_vma_name? This really just begs for problems.
 -- 
-2.11.0
-
+Michal Hocko
+SUSE Labs
