@@ -2,153 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:04:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245500AbiBJSCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:02:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60240 "EHLO
+        id S245504AbiBJSEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:04:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245489AbiBJSCH (ORCPT
+        with ESMTP id S245472AbiBJSEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:02:07 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24FD525D1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:02:08 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id u6so11961936lfc.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:02:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=nlOsd5JgRXIirKifvmJwXeIxdew5ZbaSyuXwRWkioH4=;
-        b=p1GAK1V8eXcEzq47Fvq2vN9jx3rSPu4w/KYVw6B2MwJZIhieAFZD4nHhhsr/5D5fFW
-         g0ZGd45Bu7sSltUo7FscaMHJcboP9NblAwTc6OzmdmI2SH31xEnj7Yyeb8F6SfKckWBS
-         ZAQ7iBQ0A+GAl4d5knFsT9gF8ab6dF9duoJ5FleSD2zEiOoi8OxZWSY/W8GCUaaJ933K
-         /kH2LbCOZUIIK0AcX2mgiWFc71+8ECcUBXSBWDi4Ac8llgvUsWQQm2/tEzsBViZW2+PC
-         iKELZEYjQ0R8ePbJnNleYy1k0ExoUt4hR8depXVTZ2P8KU35T+IjMKykOn8gqZv02w6K
-         Q3Eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=nlOsd5JgRXIirKifvmJwXeIxdew5ZbaSyuXwRWkioH4=;
-        b=0gneeT6pjtDf1E1nlkK/CwDxNB2XfY0JDVRoPAQT3oRV3wtqC5i8yHVDsYf+Ftm5YU
-         qP5K0SBiS9zaxnrJd6KM20CjEGtAgLFDlbEzeSsAbTKpFIQtTgs678IextufsZUv0Xvl
-         Rfss65F0XmKYXb9Q+NqHMcYDMDy+L4WyociS5QtjcElFfHCINz5M3oT4pxbeBwq9kg+j
-         pHMSHDHHr6F2j4+l7HIRjA3O16tYzlxwWv14qBS+OuPdPORuicL88BeeCaHF2RC+fjxs
-         YAjFYkgQnOZknDXe3NZlgG3n5/rg4tJqUI52wk5u+Jp+JGvSkjWkaMFddnYWP3Tm8HY8
-         2XvQ==
-X-Gm-Message-State: AOAM5300JDlkve0sUGjI/s3AUdmukcc2WJ7dMRFC5DHYKTEYOA7ZeG3/
-        g82KOEeMnEJyiIX22+mjFGwZHzk2+rd0aG/KXVX+sQ==
-X-Google-Smtp-Source: ABdhPJyJEKNknsqObHfl8Uoa9tzMLpWuOL4UjvrRNQVehKzVHcdc3TUq0BVCGVfxFdgfFKhYlXHSFbkL5zLAvcjxMiI=
-X-Received: by 2002:a19:ee04:: with SMTP id g4mr5780832lfb.157.1644516126252;
- Thu, 10 Feb 2022 10:02:06 -0800 (PST)
+        Thu, 10 Feb 2022 13:04:23 -0500
+X-Greylist: delayed 5975 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 10:04:23 PST
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E022B100A;
+        Thu, 10 Feb 2022 10:04:23 -0800 (PST)
+Date:   Thu, 10 Feb 2022 19:04:20 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644516261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m0wxMDmMyxL17wjeOYSooOciALzgNfAa7MCixAamkeY=;
+        b=gW3bCZksqzrMGBN/ii6E2YX/6r1rur56DYJ1OaolYQmSYFVubsnWW0erBMmQ+laUJFLUmr
+        IHMwmsZr90TzVeLOeA2qmNR2U2xSD2X2g6djKsZCUwEPSjzT9tqnyaOhlRdjpBR2MijmTk
+        izz147aOtCisMFxfltjdWaIG++xnQho55ZqxjhmOGkxve5biE3R8gXJEn5kd/cPQ+ri5GH
+        Ki3KwMca69jhGRdi/S0Iq1OwJYzi7S9WDcLB/4WP8yD7a/YQfgPgcLl2KNBsMlObXoOI2B
+        qwgj+KodTcPEOCbRgcTrM2Xj34Hlb6laIAK7CYpzbCegwMacK8XvtYgvyvXQ7g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644516261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=m0wxMDmMyxL17wjeOYSooOciALzgNfAa7MCixAamkeY=;
+        b=fRNC9ew52gchYcanfTNu8VeReTjwndEhYEEpxOAIhZKBttTBDpguYvpl1hjFdMGRp+PmqJ
+        P1+jUjCfKDJU8uDQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Eric Biggers <ebiggers@kernel.org>
+Subject: Re: [PATCH v4 2/2] random: defer fast pool mixing to worker
+Message-ID: <YgVTpI/sYLecyWa3@linutronix.de>
+References: <20220209125644.533876-1-Jason@zx2c4.com>
+ <20220209125644.533876-3-Jason@zx2c4.com>
 MIME-Version: 1.0
-References: <20220210025321.787113-1-keescook@chromium.org>
- <20220210025321.787113-2-keescook@chromium.org> <CAG48ez1m7XJ1wJvTHtNorH480jTWNgdrn5Q1LTZZQ4uve3r4Sw@mail.gmail.com>
- <202202100935.FB3E60FA5@keescook>
-In-Reply-To: <202202100935.FB3E60FA5@keescook>
-From:   Jann Horn <jannh@google.com>
-Date:   Thu, 10 Feb 2022 19:01:39 +0100
-Message-ID: <CAG48ez3fG7S1dfE2-JAtyOZUK=0_iZ03scf+oD6gwVyD1Qp33g@mail.gmail.com>
-Subject: Re: [PATCH 1/3] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        =?UTF-8?B?Um9iZXJ0IMWad2nEmWNraQ==?= <robert@swiecki.net>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220209125644.533876-3-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 6:37 PM Kees Cook <keescook@chromium.org> wrote:
-> On Thu, Feb 10, 2022 at 05:18:39PM +0100, Jann Horn wrote:
-> > On Thu, Feb 10, 2022 at 3:53 AM Kees Cook <keescook@chromium.org> wrote=
-:
-> > > Fatal SIGSYS signals were not being delivered to pid namespace init
-> > > processes. Make sure the SIGNAL_UNKILLABLE doesn't get set for these
-> > > cases.
-> > >
-> > > Reported-by: Robert =C5=9Awi=C4=99cki <robert@swiecki.net>
-> > > Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> > > Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced sigan=
-ls do not get changed")
-> > > Cc: stable@vger.kernel.org
-> > > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > > ---
-> > >  kernel/signal.c | 5 +++--
-> > >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/kernel/signal.c b/kernel/signal.c
-> > > index 38602738866e..33e3ee4f3383 100644
-> > > --- a/kernel/signal.c
-> > > +++ b/kernel/signal.c
-> > > @@ -1342,9 +1342,10 @@ force_sig_info_to_task(struct kernel_siginfo *=
-info, struct task_struct *t,
-> > >         }
-> > >         /*
-> > >          * Don't clear SIGNAL_UNKILLABLE for traced tasks, users won'=
-t expect
-> > > -        * debugging to leave init killable.
-> > > +        * debugging to leave init killable, unless it is intended to=
- exit.
-> > >          */
-> > > -       if (action->sa.sa_handler =3D=3D SIG_DFL && !t->ptrace)
-> > > +       if (action->sa.sa_handler =3D=3D SIG_DFL &&
-> > > +           (!t->ptrace || (handler =3D=3D HANDLER_EXIT)))
-> > >                 t->signal->flags &=3D ~SIGNAL_UNKILLABLE;
-> >
-> > You're changing the subclause:
-> >
-> > !t->ptrace
-> >
-> > to:
-> >
-> > (!t->ptrace || (handler =3D=3D HANDLER_EXIT))
-> >
-> > which means that the change only affects cases where the process has a
-> > ptracer, right? That's not the scenario the commit message is talking
-> > about...
->
-> Sorry, yes, I was not as accurate as I should have been in the commit
-> log. I have changed it to:
->
-> Fatal SIGSYS signals (i.e. seccomp RET_KILL_* syscall filter actions)
-> were not being delivered to ptraced pid namespace init processes. Make
-> sure the SIGNAL_UNKILLABLE doesn't get set for these cases.
+On 2022-02-09 13:56:44 [+0100], Jason A. Donenfeld wrote:
+> +static void mix_interrupt_randomness(struct work_struct *work)
+> +{
+> +	struct fast_pool *fast_pool =3D container_of(work, struct fast_pool, mi=
+x);
+> +	u8 pool[sizeof(fast_pool->pool)];
 
-So basically force_sig_info() is trying to figure out whether
-get_signal() will later on check for SIGNAL_UNKILLABLE (the SIG_DFL
-case), and if so, it clears the flag from the target's signal_struct
-that marks the process as unkillable?
+So.
+- CPU1 schedules a worker
+- CPU1 goes offline before the gets on the CPU.
+- The worker runs CPU2
+- CPU2 is back online
+- and now
+   CPU1						CPU2
+   new_count =3D ++fast_pool->count;
+    reg =3D fast_pool->count (FAST_POOL_MIX_INFLIGHT | 64)
+    incl reg (FAST_POOL_MIX_INFLIGHT | 65)
+    						WRITE_ONCE(fast_pool->count, 0);
+    fast_pool->count =3D reg ((FAST_POOL_MIX_INFLIGHT | 65)
 
-This used to be:
+So we lost the WRITE_ONCE(, 0), FAST_POOL_MIX_INFLIGHT is still set and
+worker is not scheduled. Not easy to trigger, not by an ordinary user.
+Just wanted to mention=E2=80=A6
 
-if (action->sa.sa_handler =3D=3D SIG_DFL)
-    t->signal->flags &=3D ~SIGNAL_UNKILLABLE;
+=E2=80=A6
+> @@ -999,9 +1016,10 @@ void add_interrupt_randomness(int irq)
+> =20
+>  	fast_mix(fast_pool);
+>  	add_interrupt_bench(cycles);
+> +	new_count =3D ++fast_pool->count;
+> =20
+>  	if (unlikely(crng_init =3D=3D 0)) {
+> -		if ((fast_pool->count >=3D 64) &&
+> +		if (new_count >=3D 64 &&
+>  		    crng_fast_load((u8 *)fast_pool->pool, sizeof(fast_pool->pool)) > 0=
+) {
 
-Then someone noticed that in the ptrace case, the signal might not
-actually end up being consumed by the target process, and added the
-"&& !t->ptrace" clause in commit
-eb61b5911bdc923875cde99eb25203a0e2b06d43.
+crng_fast_load() does spin_trylock_irqsave() in hardirq context. It does
+not produce any warning on RT but is still wrong IMHO:
+- lockdep will see a random task and I remember in the past it produced
+  strange lock chains based on this.
 
-And now Robert Swiecki noticed that that still didn't accurately model
-what'll happen in get_signal().
+- Should another task attempt to acquire this lock then it will PI-boost the
+  wrong task.
 
+If we just could move this, too.
 
-This seems hacky to me, and also racy: What if, while you're going
-through a SECCOMP_RET_KILL_PROCESS in an unkillable process, some
-other thread e.g. concurrently changes the disposition of SIGSYS from
-a custom handler to SIG_DFL?
+I don't know how timing critical this is but the first backtrace from
+crng_fast_load() came (to my surprise) from hwrng_fillfn() (a kthread)
+and added 64bytes in one go.
 
-Instead of trying to figure out whether the signal would have been
-fatal without SIGNAL_UNKILLABLE, I think it would be better to find a
-way to tell the signal-handling code that SIGNAL_UNKILLABLE should be
-bypassed for this specific signal, or something along those lines...
-but of course that's also kind of messy because the signal-sending
-code might fall back to just using the pending signal mask on
-allocation failure IIRC?
+I did move that crng_fast_load() into the worker and did made some
+numbers:
+           <idle>-0       [000] d..h1..     2.069924: add_interrupt_randomn=
+ess: Tick
+
+first interrupt
+=E2=80=A6
+        swapper/0-1       [000] d..h.11     2.341938: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h.11     2.341938: add_interrupt_randomn=
+ess: work
+
+the 64th interrupt, scheduling the worker.
+
+        swapper/0-1       [000] d..h.11     2.345937: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h111     2.349938: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h.11     2.353939: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h.11     2.357940: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h111     2.361939: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h111     2.365939: add_interrupt_randomn=
+ess: Tick
+        swapper/0-1       [000] d..h.11     2.369941: add_interrupt_randomn=
+ess: Tick
+     kworker/0:0H-6       [000] .......     2.384714: mix_interrupt_randomn=
+ess: load
+     kworker/0:0H-6       [000] .......     2.384715: crng_fast_load: 16
+           <idle>-0       [001] dn.h1..     3.205766: add_interrupt_randomn=
+ess: Tick
+           <idle>-0       [019] dn.h1..     6.771047: add_interrupt_randomn=
+ess: Tick
+
+7 interrupts got lost before the worker could run & load first 16 bytes.
+The workqueue core gets initialized at that point and spawns first
+worker. After that the interrupts took a break.
+And then the work-to-load delay was quite low:
+
+           <idle>-0       [019] dn.h1..     7.586234: add_interrupt_randomn=
+ess: Tick
+           <idle>-0       [019] dn.h1..     7.586234: add_interrupt_randomn=
+ess: work
+    kworker/19:0H-175     [019] .......     7.586504: mix_interrupt_randomn=
+ess: load
+    kworker/19:0H-175     [019] .......     7.586507: crng_fast_load: 16
+           <idle>-0       [020] dn.h1..     7.614649: add_interrupt_randomn=
+ess: Tick
+           <idle>-0       [020] dn.h1..     7.614651: add_interrupt_randomn=
+ess: work
+           <idle>-0       [020] dn.h1..     7.614736: add_interrupt_randomn=
+ess: Tick
+    kworker/20:0H-183     [020] dn.h...     7.614859: add_interrupt_randomn=
+ess: Tick
+    kworker/20:0H-183     [020] .......     7.614871: mix_interrupt_randomn=
+ess: load
+    kworker/20:0H-183     [020] .......     7.614872: crng_fast_load: 16
+           <idle>-0       [018] dn.h1..     8.352423: add_interrupt_randomn=
+ess: Tick
+           <idle>-0       [018] dn.h1..     8.352423: add_interrupt_randomn=
+ess: work
+    kworker/18:0H-167     [018] dn.h1..     8.352438: add_interrupt_randomn=
+ess: Tick
+    kworker/18:0H-167     [018] dn.h1..     8.352448: add_interrupt_randomn=
+ess: Tick
+    kworker/18:0H-167     [018] dn.h1..     8.352459: add_interrupt_randomn=
+ess: Tick
+    kworker/18:0H-167     [018] dn.h1..     8.352491: add_interrupt_randomn=
+ess: Tick
+    kworker/18:0H-167     [018] .......     8.352505: mix_interrupt_randomn=
+ess: load
+    kworker/18:0H-167     [018] .......     8.352506: crng_fast_load: 16
+
+In total we lost 13 ticks.
+I did the same test on PREEMPT_VOLUNTARY and lost 2 ticks only.
+
+Sebastian
