@@ -2,151 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 036CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 21:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9153FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 21:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344543AbiBJVNu (ORCPT
+        id S1344551AbiBJVPV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 16:13:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41206 "EHLO
+        Thu, 10 Feb 2022 16:15:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236222AbiBJVNt (ORCPT
+        with ESMTP id S236222AbiBJVPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 16:13:49 -0500
-X-Greylist: delayed 307 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 13:13:41 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C7AF47;
-        Thu, 10 Feb 2022 13:13:41 -0800 (PST)
-Received: from leknes.fjasle.eu ([46.142.99.154]) by mrelayeu.kundenserver.de
- (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1Mnac9-1nyzQT0gvl-00jYQB; Thu, 10 Feb 2022 22:08:24 +0100
-Received: from localhost.fjasle.eu (unknown [IPv6:fd00::6f0:21ff:fe91:394])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (Client did not present a certificate)
-        by leknes.fjasle.eu (Postfix) with ESMTPS id 8705A3C050;
-        Thu, 10 Feb 2022 22:08:19 +0100 (CET)
-Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
-Received: by localhost.fjasle.eu (Postfix, from userid 1000)
-        id 25BC318B0; Thu, 10 Feb 2022 22:00:56 +0100 (CET)
-Date:   Thu, 10 Feb 2022 22:00:56 +0100
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] kbuild: replace $(if A,A,B) with $(or A,B)
-Message-ID: <YgV9CHKpS/ptY3my@bergen.fjasle.eu>
-References: <20220210093342.2118196-1-masahiroy@kernel.org>
+        Thu, 10 Feb 2022 16:15:20 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAFD8F47
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:15:20 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id t14-20020a17090a3e4e00b001b8f6032d96so6854306pjm.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 13:15:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=82DdbPKP7kjeLQlK5oCbxLVQbpRl6tS9veakwafAfwM=;
+        b=ZEgxS2NOiSTPvF4gN2vTfXSBM/PmC9lw6FPvap3HY16dNy4VNKxbvttaJBVkXJ8rUK
+         6tdvCy7z0n07CEwKw/4F1g2AnT2vriBgeofTEt84Pl71phnqqkLb0SOPvlvQWMCTFWl8
+         fciN7Uw2+iODzzOhcAo0UKbmoVqipKz/K/i68=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=82DdbPKP7kjeLQlK5oCbxLVQbpRl6tS9veakwafAfwM=;
+        b=RfwXDX4GZrUToTgRfEPcnRX+BRzKoN2TGgQ5FRmn26QheG4z4a5qvIJErI93Oc2/aB
+         yHvKZJWdcC8yUBHFJlEfI9pZQA7AAck11g2eC6BLm8BQko5EKqhbb2iBWZPfmhfL0fm/
+         ZNEheSOVFWSXZXZ4sKU0zfcoefF/whHEPK6NRc8TOrt1KJ8nMPXJRRZ8Ixylo1/OC9nO
+         Z2or91KtUDDtWraEzP4SLgYRxEl/fb5i6obwno1DSX10POm1VF9ogSkxHCbu7ITxGJ6l
+         QeynvzCH3ufhC/72AiC9sxBge7y5rnZk57jGSDACx1xwImuzGNUb+W5QzvLo4YrBufar
+         d1sg==
+X-Gm-Message-State: AOAM530NlbKHpl5MAmexNfrMKJOFBkVVCNrE4caPA6P/trashN10cPL9
+        bB2w1bzKB+kESuA2UqseiKhC/Q==
+X-Google-Smtp-Source: ABdhPJyI/iJYt6Y+8VDXdnZEL290wYjAu5cUAZCCuNrgPtqzAfbVr/nbwnhidTNEy2XeQfmPSKHERw==
+X-Received: by 2002:a17:902:7d97:: with SMTP id a23mr9176121plm.92.1644527720463;
+        Thu, 10 Feb 2022 13:15:20 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u13sm25914929pfg.151.2022.02.10.13.15.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 13:15:20 -0800 (PST)
+Date:   Thu, 10 Feb 2022 13:15:19 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
+        kernelci@groups.io, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests/exec: Rename file binfmt_script to
+ binfmt_script.py
+Message-ID: <202202101312.23076F5@keescook>
+References: <20220210192845.1533204-1-usama.anjum@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220210093342.2118196-1-masahiroy@kernel.org>
-Jabber-ID: nicolas@jabber.no
-X-Operating-System: Debian GNU/Linux bookworm/sid
-X-Provags-ID: V03:K1:apwdst/S/4MvpD5SeWBwUhd/SEKva7BSqmtXbCEgsgotW4V5moE
- KqINi4CGet4lvPWXMlYDaNrgn7V2RTMdF4hBZuZK+OyLzH0RUURko9mYfH4uwgz4Kvw17oi
- RgxVS/4jQqHYDUw2ir9SeZipIYxutwdx7tk6fJa5aa96IvmirbbmtHiJclS8CfgIOoEziwH
- /YvBZXpDJddXhMk8T1zTg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:BjgAJG7ufrk=:SKnf7B6DC4QEBqtc8z0vov
- rLMtIJ5Mz0KJm86bSwOrHXAbcjKtUQISLXoGCntfXzlCLvRk9rMgCHv/mDcigFYHHLBjRdyXg
- LhwGl+jasbDhdhQvwSm1BHJQTe/KAm+Xi1CSIFE8+Y2NbkDgql5d8JI6Nhc34mazDWGXZO3X8
- 0tIZNUHW1Xv93qc2A1EZyncCyh5FW+jgQ6Fj/dOH/nTCqEc5vj1pRGa2ZFa4iXRklzaIwnWML
- QwHZuRj1szcJ/mrJSUEvswhG+tBuSawCGe6eZNyflCBOLzGMHqfdoyGwlt1GoXqE53UHYQwiJ
- BPZk+FrIHBzm2AeevAvnBSUMI/+y6OheE0E+YDc9/NMC20Gxgqns1n7C7FX8CtzKM7BXeUvLf
- jCHaxPjlPMq3aRka4E2ye2Cdpg2aFtHvb4/9rcft8byVRdDGEyHqvHgE2FtSiG7JnfuFKZMDW
- J5QVAnzFB59NDEnlZOdwykPiur4NHJe+MNT1o2VnBbFBVvKm0JyE5v4KLj+ODn1+QBseb6x/E
- kJUGSR0WwAcOe2WcJXIfoFrfP+95dUX9gL77JZaxk5loIbObySz03EsRx876eaYfU8vnWABEi
- Tt63qfWTMaC6Wu1Tw/MSEkVBDAbzYd3Gc9X8ERBRdYGIQN3uOTC3f7nVnHHpPPWhLIhQ1l/8G
- YbgboL9PeR+ImjvYIkLG71Jd6/aJJktZbYTM/MiuvpsQUS86YbOrtMCvXPfAl7RNK0/U=
+In-Reply-To: <20220210192845.1533204-1-usama.anjum@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-På to. 10. feb. 2022 kl. 18.33 +0000 skrev Masahiro Yamada:
-> Date:   Thu, 10 Feb 2022 18:33:42 +0900
-> From: Masahiro Yamada <masahiroy@kernel.org>
-> To: linux-kbuild@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>
-> Subject: [PATCH] kbuild: replace $(if A,A,B) with $(or A,B)
-> Message-Id: <20220210093342.2118196-1-masahiroy@kernel.org>
-> X-Mailer: git-send-email 2.32.0
-> X-Mailing-List: linux-kbuild@vger.kernel.org
+On Fri, Feb 11, 2022 at 12:28:45AM +0500, Muhammad Usama Anjum wrote:
+> Rename file for readability purpose. Update its usage and references.
 > 
-> $(or ...) is available since GNU Make 3.81, and useful to shorten the
-> code in some places.
-> 
-> Covert as follows:
-> 
->   $(if A,A,B)  -->  $(or A,B)
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 > ---
+> This path was suggested while review of the following patch. Please
+> apply it after applying that one first:
+> 	selftests/exec: Add non-regular to TEST_GEN_PROGS
+> ---
+>  tools/testing/selftests/exec/Makefile          |  2 +-
+>  .../exec/{binfmt_script => binfmt_script.py}   | 18 +++++++++---------
+>  2 files changed, 10 insertions(+), 10 deletions(-)
+>  rename tools/testing/selftests/exec/{binfmt_script => binfmt_script.py} (90%)
 > 
->  Makefile                                    | 8 ++++----
->  scripts/Makefile.build                      | 3 +--
->  scripts/Makefile.clean                      | 2 +-
->  scripts/Makefile.lib                        | 4 ++--
->  tools/bpf/bpftool/Makefile                  | 4 ++--
->  tools/build/Makefile                        | 2 +-
->  tools/counter/Makefile                      | 2 +-
->  tools/gpio/Makefile                         | 2 +-
->  tools/hv/Makefile                           | 2 +-
->  tools/iio/Makefile                          | 2 +-
->  tools/lib/api/Makefile                      | 2 +-
->  tools/lib/bpf/Makefile                      | 2 +-
->  tools/lib/perf/Makefile                     | 2 +-
->  tools/lib/subcmd/Makefile                   | 2 +-
->  tools/objtool/Makefile                      | 2 +-
->  tools/pci/Makefile                          | 2 +-
->  tools/perf/Makefile.perf                    | 4 ++--
->  tools/power/x86/intel-speed-select/Makefile | 2 +-
->  tools/scripts/utilities.mak                 | 2 +-
->  tools/spi/Makefile                          | 6 +++---
->  tools/tracing/rtla/Makefile                 | 2 +-
->  tools/usb/Makefile                          | 2 +-
->  22 files changed, 30 insertions(+), 31 deletions(-)
+> diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
+> index a89ba6de79870..a0b8688b08369 100644
+> --- a/tools/testing/selftests/exec/Makefile
+> +++ b/tools/testing/selftests/exec/Makefile
+> @@ -3,7 +3,7 @@ CFLAGS = -Wall
+>  CFLAGS += -Wno-nonnull
+>  CFLAGS += -D_GNU_SOURCE
+>  
+> -TEST_PROGS := binfmt_script
+> +TEST_PROGS := binfmt_script.py
+>  TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
+>  TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
+>  # Makefile is a run-time dependency, since it's accessed by the execveat test
+> diff --git a/tools/testing/selftests/exec/binfmt_script b/tools/testing/selftests/exec/binfmt_script.py
+> similarity index 90%
+> rename from tools/testing/selftests/exec/binfmt_script
+> rename to tools/testing/selftests/exec/binfmt_script.py
+
+Everything from here up, yes. Thank you! :)
+
+All the rest aren't right: it's talking about the binfmt_script subsystem
+of the kernel, rather than the binfmt_script.py test script file itself.
+
+> index 05f94a741c7aa..6f717fedc97bd 100755
+> --- a/tools/testing/selftests/exec/binfmt_script
+> +++ b/tools/testing/selftests/exec/binfmt_script.py
+> @@ -28,11 +28,11 @@ foreach my $a (@ARGV) {
+>  '''
+>  
+>  ##
+> -# test - produce a binfmt_script hashbang line for testing
+> +# test - produce a binfmt_script.py hashbang line for testing
+>  #
+>  # @size:     bytes for bprm->buf line, including hashbang but not newline
+>  # @good:     whether this script is expected to execute correctly
+> -# @hashbang: the special 2 bytes for running binfmt_script
+> +# @hashbang: the special 2 bytes for running binfmt_script.py
+>  # @leading:  any leading whitespace before the executable path
+>  # @root:     start of executable pathname
+>  # @target:   end of executable pathname
+> @@ -45,7 +45,7 @@ def test(name, size, good=True, leading="", root="./", target="/perl",
+>      global test_num, tests, NAME_MAX
+>      test_num += 1
+>      if test_num > tests:
+> -        raise ValueError("more binfmt_script tests than expected! (want %d, expected %d)"
+> +        raise ValueError("more binfmt_script.py tests than expected! (want %d, expected %d)"
+>                           % (test_num, tests))
+>  
+>      middle = ""
+> @@ -68,7 +68,7 @@ def test(name, size, good=True, leading="", root="./", target="/perl",
+>      if len(newline) > 0:
+>          buf += 'echo this is not really perl\n'
+>  
+> -    script = "binfmt_script-%s" % (name)
+> +    script = "binfmt_script.py-%s" % (name)
+>      open(script, "w").write(buf)
+>      os.chmod(script, 0o755)
+>  
+> @@ -78,17 +78,17 @@ def test(name, size, good=True, leading="", root="./", target="/perl",
+>  
+>      if proc.returncode == 0 and b'Executed interpreter' in stdout:
+>          if good:
+> -            print("ok %d - binfmt_script %s (successful good exec)"
+> +            print("ok %d - binfmt_script.py %s (successful good exec)"
+>                    % (test_num, name))
+>          else:
+> -            print("not ok %d - binfmt_script %s succeeded when it should have failed"
+> +            print("not ok %d - binfmt_script.py %s succeeded when it should have failed"
+>                    % (test_num, name))
+>      else:
+>          if good:
+> -            print("not ok %d - binfmt_script %s failed when it should have succeeded (rc:%d)"
+> +            print("not ok %d - binfmt_script.py %s failed when it should have succeeded (rc:%d)"
+>                    % (test_num, name, proc.returncode))
+>          else:
+> -            print("ok %d - binfmt_script %s (correctly failed bad exec)"
+> +            print("ok %d - binfmt_script.py %s (correctly failed bad exec)"
+>                    % (test_num, name))
+>  
+>      # Clean up crazy binaries
+> @@ -167,5 +167,5 @@ test(name="two-under-leading",   size=int(SIZE/2), leading=" ")
+>  test(name="two-under-lead-trunc-arg", size=int(SIZE/2), leading=" ", arg=" ")
+>  
+>  if test_num != tests:
+> -    raise ValueError("fewer binfmt_script tests than expected! (ran %d, expected %d"
+> +    raise ValueError("fewer binfmt_script.py tests than expected! (ran %d, expected %d"
+>                       % (test_num, tests))
+> -- 
+> 2.30.2
 > 
-[...]
-> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-> index f947b61b2107..df1f6ff7bc49 100644
-> --- a/tools/lib/bpf/Makefile
-> +++ b/tools/lib/bpf/Makefile
-> @@ -60,7 +60,7 @@ ifndef VERBOSE
->    VERBOSE = 0
->  endif
->  
-> -INCLUDES = -I$(if $(OUTPUT),$(OUTPUT),.)				\
-> +INCLUDES = -I$(or $(OUTPUT),.)				\
->  	   -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
-
-I think I'd have shortened the whitespaces before the stray backslash.
-
->  
->  export prefix libdir src obj
-> diff --git a/tools/lib/perf/Makefile b/tools/lib/perf/Makefile
-> index 08fe6e3c4089..2d985d6a3a96 100644
-> --- a/tools/lib/perf/Makefile
-> +++ b/tools/lib/perf/Makefile
-> @@ -153,7 +153,7 @@ $(TESTS_STATIC): $(TESTS_IN) $(LIBPERF_A) $(LIBAPI)
->  	$(QUIET_LINK)$(CC) -o $@ $^
->  
->  $(TESTS_SHARED): $(TESTS_IN) $(LIBAPI)
-> -	$(QUIET_LINK)$(CC) -o $@ -L$(if $(OUTPUT),$(OUTPUT),.) $^ -lperf
-> +	$(QUIET_LINK)$(CC) -o $@ -L$(if $(OUTPUT),.) $^ -lperf
-
-$(if ...)  -> $(or ...)
-
-With this one fixed:
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
-
-Thanks for that patch.  I have never seen $(or) in use before but it 
-definitively makes sense!
-
-Kind regards,
-Nicolas
-
 
 -- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+Kees Cook
