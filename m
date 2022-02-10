@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD232C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236071AbiBJH31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 02:29:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42762 "EHLO
+        id S236260AbiBJH3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 02:29:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236059AbiBJH3J (ORCPT
+        with ESMTP id S236243AbiBJH3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 02:29:09 -0500
+        Thu, 10 Feb 2022 02:29:13 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1150F1107
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:29:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9E2D8E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:29:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=TSWyCw4vTztBPyo8GxLIqXsPXAE8x+o+jpACo+bXu6c=; b=oSmCihDDzwnQJJ4E4o39wq3Slx
-        52mHicQDU0zSXwx43YEq6IOz4IYt60RdsycENj8zZcAFvw8I7lRVXAulr0ZVd0YxpqNmwWWniKMQV
-        bNVbMzo497280gAcXnC/zNLrxgEEpn6bJy0O9WPDsKBIFUk/w6eVbcuiM3sjtODw6Y9peBipr0Mye
-        v5ppQ2i/idgT48OCGURSTG3U/h2mBknI1m4Gev2Ak2hMWguXHxrHctLnIv6QJhVQHU6vZST/DhSMX
-        w+9CJkncRUNbaE+WvBvriDiscnYI2sxtK98paCB+Wrdgn8rBmSYKXptI41qNjGRZOr6ku1AQOW3My
-        +qccZulA==;
+        bh=7G8J3RPmwqONc2HXCUGJwHrFv6lx9mr3fODzxz3GZ8Y=; b=uUYieNnJaHfU8LFV1HvS+chCMy
+        jcAqrinM6uesfhHoQXNQ/yIbALOtnqg/X7rgXJFF6HmxAU0+4dzexPBN2EnDi2dapZPLQOWgiAeOf
+        tzVORYmrL7VdJLyW6S053AW0DDzF7ZmU1dwjhi7rK+HqXEtwduphWLaaWJ2i9FXW1FL/pTVPhl6u3
+        LE+m2AisM2E2hg6ORWM9biX6jJgiGfqln2ncrqHbXOopuoXLSc1S3T1+fNmZtbayRnW6HXsAIFF0m
+        nvn1VGJiJ6QqjxIbHtJmIW7tSVeSa7IIbBXeRBYA674ZY5WukXl78wQ6Z+MIK6VEYF2kn6OeA5Q60
+        +XxfFLEg==;
 Received: from [2001:4bb8:188:3efc:8014:b2f2:fdfd:57ea] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nI3sx-002rw3-Fx; Thu, 10 Feb 2022 07:29:00 +0000
+        id 1nI3t3-002s0C-1N; Thu, 10 Feb 2022 07:29:05 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Dan Williams <dan.j.williams@intel.com>
@@ -44,9 +44,9 @@ Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
         linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 10/27] mm: refactor check_and_migrate_movable_pages
-Date:   Thu, 10 Feb 2022 08:28:11 +0100
-Message-Id: <20220210072828.2930359-11-hch@lst.de>
+Subject: [PATCH 12/27] mm: refactor the ZONE_DEVICE handling in migrate_vma_pages
+Date:   Thu, 10 Feb 2022 08:28:13 +0100
+Message-Id: <20220210072828.2930359-13-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220210072828.2930359-1-hch@lst.de>
 References: <20220210072828.2930359-1-hch@lst.de>
@@ -57,135 +57,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove up to two levels of indentation by using continue statements
-and move variables to local scope where possible.
+Make the flow a little more clear and prepare for adding a new
+ZONE_DEVICE memory type.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- mm/gup.c | 81 ++++++++++++++++++++++++++++++--------------------------
- 1 file changed, 44 insertions(+), 37 deletions(-)
+ mm/migrate.c | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index a9d4d724aef749..37d6c24ca71225 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -1868,72 +1868,79 @@ static long check_and_migrate_movable_pages(unsigned long nr_pages,
- 					    struct page **pages,
- 					    unsigned int gup_flags)
- {
--	unsigned long i;
--	unsigned long isolation_error_count = 0;
--	bool drain_allow = true;
--	LIST_HEAD(movable_page_list);
--	long ret = 0;
-+	unsigned long isolation_error_count = 0, i;
- 	struct page *prev_head = NULL;
--	struct page *head;
--	struct migration_target_control mtc = {
--		.nid = NUMA_NO_NODE,
--		.gfp_mask = GFP_USER | __GFP_NOWARN,
--	};
-+	LIST_HEAD(movable_page_list);
-+	bool drain_allow = true;
-+	int ret = 0;
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 30ecd7223656c1..746e1230886ddb 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -2788,24 +2788,21 @@ void migrate_vma_pages(struct migrate_vma *migrate)
  
- 	for (i = 0; i < nr_pages; i++) {
--		head = compound_head(pages[i]);
-+		struct page *head = compound_head(pages[i]);
-+
- 		if (head == prev_head)
- 			continue;
- 		prev_head = head;
-+
-+		if (is_pinnable_page(head))
-+			continue;
-+
- 		/*
--		 * If we get a movable page, since we are going to be pinning
--		 * these entries, try to move them out if possible.
-+		 * Try to move out any movable page before pinning the range.
- 		 */
--		if (!is_pinnable_page(head)) {
--			if (PageHuge(head)) {
--				if (!isolate_huge_page(head, &movable_page_list))
--					isolation_error_count++;
--			} else {
--				if (!PageLRU(head) && drain_allow) {
--					lru_add_drain_all();
--					drain_allow = false;
--				}
-+		if (PageHuge(head)) {
-+			if (!isolate_huge_page(head, &movable_page_list))
-+				isolation_error_count++;
-+			continue;
-+		}
+ 		mapping = page_mapping(page);
  
--				if (isolate_lru_page(head)) {
--					isolation_error_count++;
+-		if (is_zone_device_page(newpage)) {
+-			if (is_device_private_page(newpage)) {
+-				/*
+-				 * For now only support private anonymous when
+-				 * migrating to un-addressable device memory.
+-				 */
+-				if (mapping) {
+-					migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
 -					continue;
 -				}
--				list_add_tail(&head->lru, &movable_page_list);
--				mod_node_page_state(page_pgdat(head),
--						    NR_ISOLATED_ANON +
--						    page_is_file_lru(head),
--						    thp_nr_pages(head));
--			}
-+		if (!PageLRU(head) && drain_allow) {
-+			lru_add_drain_all();
-+			drain_allow = false;
-+		}
-+
-+		if (isolate_lru_page(head)) {
-+			isolation_error_count++;
+-			} else {
+-				/*
+-				 * Other types of ZONE_DEVICE page are not
+-				 * supported.
+-				 */
++		if (is_device_private_page(newpage)) {
++			/*
++			 * For now only support private anonymous when migrating
++			 * to un-addressable device memory.
++			 */
++			if (mapping) {
+ 				migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
+ 				continue;
+ 			}
++		} else if (is_zone_device_page(newpage)) {
++			/*
++			 * Other types of ZONE_DEVICE page are not supported.
++			 */
++			migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
 +			continue;
  		}
-+		list_add_tail(&head->lru, &movable_page_list);
-+		mod_node_page_state(page_pgdat(head),
-+				    NR_ISOLATED_ANON + page_is_file_lru(head),
-+				    thp_nr_pages(head));
- 	}
  
-+	if (!list_empty(&movable_page_list) || isolation_error_count)
-+		goto unpin_pages;
-+
- 	/*
- 	 * If list is empty, and no isolation errors, means that all pages are
- 	 * in the correct zone.
- 	 */
--	if (list_empty(&movable_page_list) && !isolation_error_count)
--		return nr_pages;
-+	return nr_pages;
- 
-+unpin_pages:
- 	if (gup_flags & FOLL_PIN) {
- 		unpin_user_pages(pages, nr_pages);
- 	} else {
- 		for (i = 0; i < nr_pages; i++)
- 			put_page(pages[i]);
- 	}
-+
- 	if (!list_empty(&movable_page_list)) {
-+		struct migration_target_control mtc = {
-+			.nid = NUMA_NO_NODE,
-+			.gfp_mask = GFP_USER | __GFP_NOWARN,
-+		};
-+
- 		ret = migrate_pages(&movable_page_list, alloc_migration_target,
- 				    NULL, (unsigned long)&mtc, MIGRATE_SYNC,
- 				    MR_LONGTERM_PIN, NULL);
--		if (ret && !list_empty(&movable_page_list))
--			putback_movable_pages(&movable_page_list);
-+		if (ret > 0) /* number of pages not migrated */
-+			ret = -ENOMEM;
- 	}
- 
--	return ret > 0 ? -ENOMEM : ret;
-+	if (ret && !list_empty(&movable_page_list))
-+		putback_movable_pages(&movable_page_list);
-+	return ret;
- }
- #else
- static long check_and_migrate_movable_pages(unsigned long nr_pages,
+ 		r = migrate_page(mapping, newpage, page, MIGRATE_SYNC_NO_COPY);
 -- 
 2.30.2
 
