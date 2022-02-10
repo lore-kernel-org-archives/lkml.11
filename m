@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F134BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239523AbiBJKQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:16:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37354 "EHLO
+        id S239523AbiBJKSu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:18:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239557AbiBJKQx (ORCPT
+        with ESMTP id S237520AbiBJKSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:16:53 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8494DFFB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:50 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id j14so7265911lja.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=3ne9afkcEMUgeoGNnWkV++QClTAUsFhKUiDokSSK4gs=;
-        b=cpwqd0ostl/K+0LDjp2O6emA6OJVYcuj390GkHObcgJdcYkRtqUketq5yz81ZW1ECl
-         XNHUYvbLv6X9XrwkTOPMd0aj8dFeJivC7rqhA/EwEwFsHu/2/2VYqiP4gmU1vK1v5bgH
-         0r1SH59cy3GO/YFDMyrJ90Z9jcifx/DZvIZ+Smo8syz3lY5yQByFDE+P5EK0qRWKKzVc
-         6D17AWW2PEHr/FfcoztmL0216RO4PipqiK8X08Zedwbl90LI3Dkv5sTl0B5SJr2o9ONs
-         JgS3JxvDgP0iqwaryvvqtf8raA7fGcBKOV9bXpANRbVytEfgzOPqqB4852ysoRhjbuN+
-         NDkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3ne9afkcEMUgeoGNnWkV++QClTAUsFhKUiDokSSK4gs=;
-        b=sP61b+ofPP5ZcIkwSdzjX7B7+dPxmlpw2YWlO58Pn7i5uhVEEFlSgJZSgY4Mo4UxzC
-         8WLSIFhENqH3sVNAjha8gOwg1bJ2BHLYGV9tELivX6h1mW8Avyvlc9P4vS3chu8TND3D
-         Ug2+pTM97PPX5Ehk1A7tpaTdkGlAdBU0XOR4T8HzciZ5HYEeFSnGByh8nNNO855aPq/S
-         aVnqjoERHZIclMxIgDX3nl/ugkPobHg4HqyImoLamvL3GdJnn+co75P4C7GotY5tFvnW
-         Lm687mxLOT3ibVqKII0sNiEPo2SJFm5oO8GSeYlvaZpLiUzEfbCOBoM8a0LYqIisCdhl
-         eYbA==
-X-Gm-Message-State: AOAM531kRBVXQoOAfdDwqUs1xV1BSsr9lj5NhIySSliQUjT9lKRPpT50
-        l13KxqhL4MOmmR2+v5TKNUF1rQ==
-X-Google-Smtp-Source: ABdhPJxjobzeo5yzVqpZ1edrDcbPHOwnY2/Az6fBOhCPktWcPtktCsDi7eYsUWXornR+W6Dt96frYg==
-X-Received: by 2002:a05:651c:1413:: with SMTP id u19mr4516534lje.240.1644488208827;
-        Thu, 10 Feb 2022 02:16:48 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id a6sm2841646ljb.93.2022.02.10.02.16.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 02:16:48 -0800 (PST)
-Message-ID: <19b96972-cee7-937f-21ce-c78982ed2048@linaro.org>
-Date:   Thu, 10 Feb 2022 13:16:46 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] media: qcom: use div64_u64() instead of do_div()
-Content-Language: en-GB
-To:     Qing Wang <wangqing@vivo.com>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        Thu, 10 Feb 2022 05:18:49 -0500
+Received: from out28-125.mail.aliyun.com (out28-125.mail.aliyun.com [115.124.28.125])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC11C2;
+        Thu, 10 Feb 2022 02:18:49 -0800 (PST)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1530151|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.00618255-0.00198199-0.991836;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047212;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.MnxRg3g_1644488326;
+Received: from 192.168.88.129(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.MnxRg3g_1644488326)
+          by smtp.aliyun-inc.com(10.147.44.145);
+          Thu, 10 Feb 2022 18:18:46 +0800
+Subject: Re: [PATCH] pinctrl: ingenic: Fix regmap on X series SoCs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        paul@crapouillou.net, linus.walleij@linaro.org
+Cc:     linux-mips@vger.kernel.org, linux-gpio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-References: <1644395913-4091-1-git-send-email-wangqing@vivo.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <1644395913-4091-1-git-send-email-wangqing@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220209230452.19535-1-aidanmacdonald.0x0@gmail.com>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <ad12e876-e3d2-dc6e-e89e-819686fe9eff@wanyeetech.com>
+Date:   Thu, 10 Feb 2022 18:18:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20220209230452.19535-1-aidanmacdonald.0x0@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/02/2022 11:38, Qing Wang wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> do_div() does a 64-by-32 division.
-> When the divisor is u64, do_div() truncates it to 32 bits, this means it
-> can test non-zero and be truncated to zero for division.
-> 
-> fix do_div.cocci warning:
-> do_div() does a 64-by-32 division, please consider using div64_u64 instead.
+Hi Aidan,
 
-
-NAK
-
-The div64_u64 is not equivalent to do_div. It returns the quotient
-rather than modifying the first arg. Moreover it is unoptimal on 32-bit
-arches.
-
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+On 2022/2/10 上午7:04, Aidan MacDonald wrote:
+> The X series Ingenic SoCs have a shadow GPIO group which
+> is at a higher offset than the other groups, and is used
+> for all GPIO configuration. The regmap did not take this
+> offset into account and set max_register too low. Writes
+> to the shadow group registers were blocked, which made it
+> impossible to change any pin configuration.
+>
+> Fix this by pretending there are at least 8 chips on any
+> 'X' SoC for the purposes of calculating max_register. This
+> ensures the shadow group is accessible.
+>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 > ---
->   drivers/media/platform/qcom/venus/vdec.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/media/platform/qcom/venus/vdec.c b/drivers/media/platform/qcom/venus/vdec.c
-> index 91da3f5..941a904
-> --- a/drivers/media/platform/qcom/venus/vdec.c
-> +++ b/drivers/media/platform/qcom/venus/vdec.c
-> @@ -435,7 +435,7 @@ static int vdec_s_parm(struct file *file, void *fh, struct v4l2_streamparm *a)
->   		return -EINVAL;
->   
->   	fps = (u64)USEC_PER_SEC;
-> -	do_div(fps, us_per_frame);
-> +	div64_u64(fps, us_per_frame);
->   
->   	inst->fps = fps;
->   	inst->timeperframe = *timeperframe;
+>   drivers/pinctrl/pinctrl-ingenic.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
 
 
--- 
-With best wishes
-Dmitry
+The M200 SoC (once planned to be called JZ4785) has a different shadow 
+register offset address,
+
+if it needs to be supported in the future, then we need to deal with it 
+further, but fortunately pinctrl-ingenic.c
+
+does not involve M200 support yet, so:
+
+
+Reviewed-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+
+
+Thanks and best regards!
+
+
+>
+> diff --git a/drivers/pinctrl/pinctrl-ingenic.c b/drivers/pinctrl/pinctrl-ingenic.c
+> index 2712f51eb238..9d2bccda50f1 100644
+> --- a/drivers/pinctrl/pinctrl-ingenic.c
+> +++ b/drivers/pinctrl/pinctrl-ingenic.c
+> @@ -4168,7 +4168,10 @@ static int __init ingenic_pinctrl_probe(struct platform_device *pdev)
+>   		return PTR_ERR(base);
+>   
+>   	regmap_config = ingenic_pinctrl_regmap_config;
+> -	regmap_config.max_register = chip_info->num_chips * chip_info->reg_offset;
+> +	if (chip_info->version >= ID_X1000)
+> +		regmap_config.max_register = MIN(8, chip_info->num_chips) * chip_info->reg_offset;
+> +	else
+> +		regmap_config.max_register = chip_info->num_chips * chip_info->reg_offset;
+>   
+>   	jzpc->map = devm_regmap_init_mmio(dev, base, &regmap_config);
+>   	if (IS_ERR(jzpc->map)) {
