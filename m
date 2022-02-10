@@ -2,235 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E41C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA243C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240206AbiBJKuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:50:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58922 "EHLO
+        id S240215AbiBJKuS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:50:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240181AbiBJKuE (ORCPT
+        with ESMTP id S240208AbiBJKuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:50:04 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9BA1122
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:05 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id y129so14126282ybe.7
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5r/KOmabvwfACUVjtuB3yUeJeF7bxhYRxcHnGYT5KbE=;
-        b=EhOfGx8zrnhEVI+lDTZsOqqPxLNEcv5SCT92uQ6q2ByjTJ0ryuBTKtKcCeDlrova4Z
-         V6wGkW/f1nfFXW4xVyLbk+gQfsmJkaK40RWYzjwXKOjFT08tGPIcDmh+V5NNy39QvRuc
-         XPVkCymTn0QaJwz8QKXDcWw2plRd6df+jPMhNDpLJW5wJl2Kyb0Nadfvux5yK6/mHWvP
-         0zSMf1sgfqCiKs78iTp9K+Gj28G9xE0UOTj7xWgTy8k5DkpPI1BOtPRAe+4p0jHlq2GQ
-         cOXklaWKhj6rq1LSGSYYw0Ivc9OBOcln/aaOmlE8THtdKk6dmBF8xu/XsXlXoTluzvTY
-         4IdA==
+        Thu, 10 Feb 2022 05:50:16 -0500
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086A4100A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:18 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id q15-20020a92ca4f000000b002be3e7707ffso3710490ilo.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5r/KOmabvwfACUVjtuB3yUeJeF7bxhYRxcHnGYT5KbE=;
-        b=PcwGp1RjsVCJQFc2c0wIvmOTLRkk/YHoT9Df2gEf5sTlcOF3tSb/9EnG/LtTNBEddM
-         28I4Un6GpgUrImjxqaGlbC4IbVeKvQYZOThhrPZ07GpEAQaBIUtuGH1MwtpmAPV67W2E
-         Yd1JNVFK+m1x+b/IzVI7qikbSwjJkY172hNIRWchWdIoJLlK7LembR9CyHfz2pDAJLSh
-         RM1Oq2GbFcEW1icrcjqqQBTq57hJGotqBJKXJoTBAlorLMrK4ZtESucgXoDL+a/QnZ3g
-         QGIgVtFn+kf05BoET3UzK2nZ+LlZYO7+4l7a+BfgJhWh5ziUvcmSeev0WgiZ3rEz9iN5
-         I6hQ==
-X-Gm-Message-State: AOAM530n8+EERKCcVcrcMbrv9YuOyJwkIMewN7LYF6YTFChuirz4N3UT
-        nXU99Ka4skcADqNOU5s8oCipEevlvsAefnCqZ2zEpQ==
-X-Google-Smtp-Source: ABdhPJz5BIWFzsJBDhZTw0AIWDCQkQvkRSyMkQrExAECwf4xMEyBOSrT80eg9SAbb1LRekvtSn0VA+ZdFRSBtPLwAbE=
-X-Received: by 2002:a81:a403:: with SMTP id b3mr6383105ywh.310.1644490204701;
- Thu, 10 Feb 2022 02:50:04 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=sxYpZJUZ2c9zNF0g11fgItZpAgYz7w3rafFkaJxtZEQ=;
+        b=6Eutxt3C58LvlZ/DWvWYx53UDpaTPwMUCdf+/rkGpnLuS4MS9JQH3AihrT1yAi2cCw
+         EIFRAYf7bm9P+qYdZfAVCwvFUxf3l1bsk//13A0fdiXYmdYTVwGDEE/PVFmK9vUJ4w/G
+         5I3do46AIjmJ8eBlvko+mru1QPbbLkN4CMLp/s/JCxTpV4r2+hJudIyInXF82K9f0XBw
+         GoyKMNn91Yvk7LKsVfMSBYm5xINaMXKudLsVvwWxhbFFZDQYZnWK8ITGycZX6uOGxSh/
+         JAARFAAkFi6KOyIC/5sOifVyoXaAQHJYlkK0/jzkfQqGP9pQWpuj7rWblTZJkFPjlBcG
+         t/Wg==
+X-Gm-Message-State: AOAM5338dGFjOgemBtR+YdueiibqpuDZ/SF6fkGBOVwj+/biolTiJVcu
+        LuUN3knp+YjgZkr6PDj/A0IIikIXVkxYEDKswd8UnkEyDg64
+X-Google-Smtp-Source: ABdhPJzDPwxNgGEw7MSf2dUinV4AhG1lZH2BM4eClEPzLE93HkKhYeXKN5whaoqHy9jESUgvFBAgh+EYiT8naivCOjHaQBhUIyma
 MIME-Version: 1.0
-References: <20220209191249.980911721@linuxfoundation.org>
-In-Reply-To: <20220209191249.980911721@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 10 Feb 2022 16:19:53 +0530
-Message-ID: <CA+G9fYuXGCtb20onu-yFaAMSPbEwPxSDUcbprnRr1_yxGXr1yw@mail.gmail.com>
-Subject: Re: [PATCH 5.15 0/5] 5.15.23-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
+X-Received: by 2002:a6b:7219:: with SMTP id n25mr3519606ioc.12.1644490217356;
+ Thu, 10 Feb 2022 02:50:17 -0800 (PST)
+Date:   Thu, 10 Feb 2022 02:50:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003e009a05d7a7b77f@google.com>
+Subject: [syzbot] KCSAN: data-race in copy_page_to_iter / strncpy (4)
+From:   syzbot <syzbot+88a9b535e28311efdcd4@syzkaller.appspotmail.com>
+To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tytso@mit.edu
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 at 00:45, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.23 release.
-> There are 5 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.23-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hello,
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+syzbot found the following issue on:
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=109133b4700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=1dcc3374da7c1f7c
+dashboard link: https://syzkaller.appspot.com/bug?extid=88a9b535e28311efdcd4
+compiler:       Debian clang version 11.0.1-2, GNU ld (GNU Binutils for Debian) 2.35.2
 
-## Build
-* kernel: 5.15.23-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: 722769939d600370e0f75656c6076add1736919a
-* git describe: v5.15.21-118-g722769939d60
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.21-118-g722769939d60
+Unfortunately, I don't have any reproducer for this issue yet.
 
-## Test Regressions (compared to v5.15.21-112-g0472630a5621)
-No test regressions found.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+88a9b535e28311efdcd4@syzkaller.appspotmail.com
 
-## Metric Regressions (compared to v5.15.21-112-g0472630a5621)
-No metric regressions found.
+==================================================================
+BUG: KCSAN: data-race in copy_page_to_iter / strncpy
 
-## Test Fixes (compared to v5.15.21-112-g0472630a5621)
-No test fixes found.
+write to 0xffff888108b1b488 of 1 bytes by task 16090 on cpu 1:
+ strncpy+0xcf/0x150 lib/string.c:114
+ ext4_sample_last_mounted fs/ext4/file.c:828 [inline]
+ ext4_file_open+0x3a6/0x4e0 fs/ext4/file.c:847
+ do_dentry_open+0x52c/0x860 fs/open.c:824
+ vfs_open+0x43/0x50 fs/open.c:959
+ do_open fs/namei.c:3476 [inline]
+ path_openat+0x170c/0x1f30 fs/namei.c:3609
+ do_filp_open+0x105/0x220 fs/namei.c:3636
+ do_sys_openat2+0xb5/0x2b0 fs/open.c:1214
+ do_sys_open fs/open.c:1230 [inline]
+ __do_sys_open fs/open.c:1238 [inline]
+ __se_sys_open fs/open.c:1234 [inline]
+ __x64_sys_open+0xe2/0x110 fs/open.c:1234
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-## Metric Fixes (compared to v5.15.21-112-g0472630a5621)
-No metric fixes found.
+read to 0xffff888108b1b400 of 1024 bytes by task 10450 on cpu 0:
+ instrument_copy_to_user include/linux/instrumented.h:119 [inline]
+ copyout lib/iov_iter.c:154 [inline]
+ copy_page_to_iter_iovec lib/iov_iter.c:226 [inline]
+ __copy_page_to_iter lib/iov_iter.c:850 [inline]
+ copy_page_to_iter+0x2cb/0x950 lib/iov_iter.c:878
+ copy_folio_to_iter include/linux/uio.h:153 [inline]
+ filemap_read+0x1126/0x1430 mm/filemap.c:2727
+ blkdev_read_iter+0x2cc/0x380 block/fops.c:614
+ call_read_iter include/linux/fs.h:2068 [inline]
+ new_sync_read fs/read_write.c:400 [inline]
+ vfs_read+0x66c/0x750 fs/read_write.c:481
+ ksys_read+0xd9/0x190 fs/read_write.c:619
+ __do_sys_read fs/read_write.c:629 [inline]
+ __se_sys_read fs/read_write.c:627 [inline]
+ __x64_sys_read+0x3e/0x50 fs/read_write.c:627
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-## Test result summary
-total: 87812, pass: 74191, fail: 495, skip: 10102, xfail: 824
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 10450 Comm: udevd Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+==================================================================
+I/O error, dev loop2, sector 0 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 0
 
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 259 total, 259 passed, 0 failed
-* arm64: 37 total, 37 passed, 0 failed
-* i386: 35 total, 35 passed, 0 failed
-* mips: 34 total, 34 passed, 0 failed
-* parisc: 12 total, 12 passed, 0 failed
-* powerpc: 52 total, 39 passed, 13 failed
-* riscv: 24 total, 20 passed, 4 failed
-* s390: 18 total, 18 passed, 0 failed
-* sh: 24 total, 24 passed, 0 failed
-* sparc: 12 total, 12 passed, 0 failed
-* x86_64: 37 total, 37 passed, 0 failed
 
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm64/arm64.btitest.bti_c_func
-* kselftest-arm64/arm64.btitest.bti_j_func
-* kselftest-arm64/arm64.btitest.bti_jc_func
-* kselftest-arm64/arm64.btitest.bti_none_func
-* kselftest-arm64/arm64.btitest.nohint_func
-* kselftest-arm64/arm64.btitest.paciasp_func
-* kselftest-arm64/arm64.nobtitest.bti_c_func
-* kselftest-arm64/arm64.nobtitest.bti_j_func
-* kselftest-arm64/arm64.nobtitest.bti_jc_func
-* kselftest-arm64/arm64.nobtitest.bti_none_func
-* kselftest-arm64/arm64.nobtitest.nohint_func
-* kselftest-arm64/arm64.nobtitest.paciasp_func
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-membarrier
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
---
-Linaro LKFT
-https://lkft.linaro.org
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
