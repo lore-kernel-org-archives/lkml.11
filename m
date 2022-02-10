@@ -2,76 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0652DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E53DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:47:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237904AbiBJIrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:47:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45416 "EHLO
+        id S237928AbiBJIrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:47:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237870AbiBJIrG (ORCPT
+        with ESMTP id S237870AbiBJIrh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:47:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2811E7;
-        Thu, 10 Feb 2022 00:47:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ADE860EFB;
-        Thu, 10 Feb 2022 08:47:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0412C340ED;
-        Thu, 10 Feb 2022 08:47:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644482827;
-        bh=38hpu9snVYLkh52SddNroOa3n7Mojq75rM3tru+Si1M=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=ptm/3qISA+Z/QNILqwZUknrnwihP60fcjaBWDXHpEyMclieqiWh+33qXp7JGdENi8
-         RNam1xnsOb+80zCyoCoI/hw6WXdeMbLWs8TFqCRg/t6b/fooMMx86VHFLa7HDC4fwE
-         l1LRnJRWR1bdZw+q4/3Kg6zuEey0r/plSbgdmAk4/O87MGhljeqaTLm+R1LQNx/puq
-         Rau74jEJzeSFVmTo/dN3KX2FUwoB6rMMqXWnQJCcf3XIxJ+3hish8GQxCZdpF3rHie
-         Di8mvsjGS7piZhL7/uCcu2vkP8wu6hNlZh7xybMgNxQ5T648kIyAikxt8qnU+2jI6+
-         ViGrjjEUfHmdA==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 10 Feb 2022 03:47:37 -0500
+X-Greylist: delayed 2116 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:47:35 PST
+Received: from plekste.mt.lv (bute.mt.lv [IPv6:2a02:610:7501:2000::195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0DD10B2;
+        Thu, 10 Feb 2022 00:47:34 -0800 (PST)
+Received: from [2a02:610:7501:feff:1ccf:41ff:fe50:18b9] (helo=localhost.localdomain)
+        by plekste.mt.lv with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <gatis@mikrotik.com>)
+        id 1nI4Yi-0005NK-8N; Thu, 10 Feb 2022 10:12:08 +0200
+From:   Gatis Peisenieks <gatis@mikrotik.com>
+To:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
+        dchickles@marvell.com, tully@mikrotik.com, antons@mikrotik.com,
+        eric.dumazet@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gatis Peisenieks <gatis@mikrotik.com>
+Subject: [PATCH net] atl1c: fix tx timeout after link flap on Mikrotik 10/25G NIC
+Date:   Thu, 10 Feb 2022 10:12:01 +0200
+Message-Id: <20220210081201.4184834-1-gatis@mikrotik.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] brcmfmac: of: remove redundant variable len
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220207133329.336664-1-colin.i.king@gmail.com>
-References: <20220207133329.336664-1-colin.i.king@gmail.com>
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Chung-hsien Hsu <chung-hsien.hsu@infineon.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <164448282223.15541.14523972377351410590.kvalo@kernel.org>
-Date:   Thu, 10 Feb 2022 08:47:03 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Colin Ian King <colin.i.king@gmail.com> wrote:
+If NIC had packets in tx queue at the moment link down event
+happened, it could result in tx timeout when link got back up.
 
-> The variable len is being assigned bit is never used. The variable
-> and the strlen call are redundant and can be removed.
-> 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Since device has more than one tx queue we need to reset them
+accordingly.
 
-Patch applied to wireless-next.git, thanks.
+Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
+---
+ drivers/net/ethernet/atheros/atl1c/atl1c_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-2fd6d2ef6860 brcmfmac: of: remove redundant variable len
-
+diff --git a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+index da595242bc13..f50604f3e541 100644
+--- a/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
++++ b/drivers/net/ethernet/atheros/atl1c/atl1c_main.c
+@@ -900,7 +900,7 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
+ 		atl1c_clean_buffer(pdev, buffer_info);
+ 	}
+ 
+-	netdev_reset_queue(adapter->netdev);
++	netdev_tx_reset_queue(netdev_get_tx_queue(adapter->netdev, queue));
+ 
+ 	/* Zero out Tx-buffers */
+ 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220207133329.336664-1-colin.i.king@gmail.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.31.1
 
