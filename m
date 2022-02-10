@@ -2,160 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17154C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACAAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345384AbiBJXCu (ORCPT
+        id S1345392AbiBJXC6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:02:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55192 "EHLO
+        Thu, 10 Feb 2022 18:02:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345039AbiBJXCt (ORCPT
+        with ESMTP id S1345039AbiBJXCy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:02:49 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EDD27A;
-        Thu, 10 Feb 2022 15:02:49 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id k10so7163472ljq.2;
-        Thu, 10 Feb 2022 15:02:49 -0800 (PST)
+        Thu, 10 Feb 2022 18:02:54 -0500
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E0CD1107;
+        Thu, 10 Feb 2022 15:02:54 -0800 (PST)
+Received: by mail-il1-x12f.google.com with SMTP id m8so5613457ilg.7;
+        Thu, 10 Feb 2022 15:02:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=utz0VRFK/Z4T1V8Xj6WH93qgAKh3TJKNnOSR9iLg9ic=;
-        b=Tohe9kBajf8I3Veod2AThoiouhOpdws6koyqaGcfiM/5AatC8ADlPeXTzP9K+U7xxy
-         nJ7/DV2KZ+ptjt+NxZi5y53elUaAiebmmRh8/SeVhccMpPgz0kxuAiiqtZ+ejtUbBmnd
-         i5eiHBSHABKrj5GEbYs2eCMpkP2ZDJcFCw4odvV7AtdAHNUQOCrvWj80PVkANMngwvUC
-         /FOv+S5rzmyB/6a0c+1t4GLz7MIry0fLnQh+TujqNdH88vunQDBt+KnEa7zyFjCI2bFb
-         IV+z2yxuudte9uaS2Zb3BJQqL0dbpHL7i0wr7W3bCAArLumz2C3mARUsq3Bk50L3q9X0
-         KV5A==
+        bh=x5y11i0zdnz/BX0MaBmAp+uRfUX2Rak/fHPY7uFI9V0=;
+        b=CSDL1Vj/nWsuuxYBwx/1wZqFN7bmDSB+ohNjATtPUS/FmhKwM8U3HzQsAuHa9fxhdw
+         4Jz3dKN1fN/o+4qihImxLWv+8hHfE0gxZLyEK1R//WED6Y4hZewiadnqdFSpUy5z0lxd
+         lmW8scFb12dfcMOtEH2AdhXB3ZaHAM6AzRoLsapN1LJb1Ng2nN7e6DuYgJSNhKBPQv37
+         Za/uaPxa9OZzjDClHWB4tE9R4ub2sYccHlPLr9lZL9ZjugJwdvgdi67a+QlwHiDQXNF8
+         gufo35FdLMxm4rYABpmBVhdRWQxoj1egoyHZJzvxhzdCt+PUML3+Uln5r0OWfgGCDVoa
+         uptw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=utz0VRFK/Z4T1V8Xj6WH93qgAKh3TJKNnOSR9iLg9ic=;
-        b=VkZOrX4HNSJg2Rb4M1blTWkb8vtbU+2JCdqoyHT7CQj7uEOIKKK1sfRrpGatGmU3x6
-         5weQqFyw5ya2tVKNRty/+Sgzm31sQ09qPOpjzUelIjokPw/SyJWF+8vOBTEdrAmvspcN
-         ZeBlsHTyeP+0xulgIX+a2AQGMOI19zUrXA915GdmvQxSz+j8JXnDXTmlCmPO1OEGGoVR
-         fmCikixmG21aBhQ2Hl35daHFvHX3qbeqcMoPTJTUcBhZsl29W84Nl7/sbaQFkgbrGmZH
-         63kJJf4BayP6jQdfmdwo+y0xTOdmElFUQ/Ec3ftf5RKAau5Y3kLILdVtEjsEOGZGDrLP
-         fxxw==
-X-Gm-Message-State: AOAM531WhAF3nTDPA+JZc+V3HEzu6cyyhnaaF/QzNZgHROQG2lzORbVO
-        fAxGJl4x5PspnlBMX2HDxtYCSkq3D3A=
-X-Google-Smtp-Source: ABdhPJwfh/ttJ3hH2u54w//qvoPdv8NShKMDdgORtEo/D2Hw/LBLfo4X5Pv/kZbgdNawQJjTDHP0fw==
-X-Received: by 2002:a2e:9916:: with SMTP id v22mr6014431lji.232.1644534167305;
-        Thu, 10 Feb 2022 15:02:47 -0800 (PST)
-Received: from localhost.localdomain (h-155-4-221-129.NA.cust.bahnhof.se. [155.4.221.129])
-        by smtp.gmail.com with ESMTPSA id h2sm1022378lfv.10.2022.02.10.15.02.46
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=x5y11i0zdnz/BX0MaBmAp+uRfUX2Rak/fHPY7uFI9V0=;
+        b=1xg0xXMb9MCzKdp6ToWjUCV87e1WFC+7uyVu5Mc9AQ7v/YDo+F07OB1lZ6U0A9BXDr
+         UxODn5JZ4LBwCrmND86/C4fiyyJ2rtSCXtH9eFoX/Whcdszza8w+y/RO1bkfeIS8pV+d
+         Tnx2whCGX1aVfAwKihEp9ZCmqP64FFA+WtEgrX8MreEF+zLULxoj1ewBUa70qknnq/Lb
+         xD+nGMSvQspGkHvPSbFHisFOVNivj8ShitbcKv3FgtOUeoewtaqlpSS+22weWT4xZ5K3
+         mTu3UXMp5njuvZNuR1zfOIEd0bmKj1OtIB7WaBSIIRw4kRtkbEeuM9HvRRxDZl3NDalJ
+         K2tg==
+X-Gm-Message-State: AOAM5324b9HOfdIcdOoYESoY3tImeMnEzwgTZTb/LrKem461CNyn2moO
+        6Zm9ENFA6LidaM06OHfPpow=
+X-Google-Smtp-Source: ABdhPJzPA3K644w+KPqoBt0nZGj9yYw0gW84+vIzUuBQFk1Yiwg2zu/FkqSM3NWQY8+eYGjQJPYgSw==
+X-Received: by 2002:a05:6e02:1090:: with SMTP id r16mr5059802ilj.183.1644534173993;
+        Thu, 10 Feb 2022 15:02:53 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id d12sm11567868ilv.42.2022.02.10.15.02.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:02:46 -0800 (PST)
-From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
-To:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-cxl@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Subject: [PATCH] cxl/core: Constify static attribute_group structs
-Date:   Fri, 11 Feb 2022 00:02:35 +0100
-Message-Id: <20220210230235.4463-1-rikard.falkeborn@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 10 Feb 2022 15:02:53 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [RFC PATCH 05/49] qed: rework qed_rdma_bmap_free()
+Date:   Thu, 10 Feb 2022 14:48:49 -0800
+Message-Id: <20220210224933.379149-6-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only usage of these is to put their address in arrays of pointers to
-const struct attribute_group, so make them const to allow the compiler
-to put them in read-only memory.
+qed_rdma_bmap_free() is mostly an opencoded version of printk("%*pb").
+Using %*pb format simplifies the code, and helps to avoid inefficient
+usage of bitmap_weight().
 
-Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+While here, reorganize logic to avoid calculating bmap weight if check
+is false.
+
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/cxl/core/bus.c    | 8 ++++----
- drivers/cxl/core/core.h   | 2 +-
- drivers/cxl/core/memdev.c | 6 +++---
- 3 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/cxl/core/bus.c b/drivers/cxl/core/bus.c
-index 3f9b98ecd18b..4532ef8b806f 100644
---- a/drivers/cxl/core/bus.c
-+++ b/drivers/cxl/core/bus.c
-@@ -38,7 +38,7 @@ static struct attribute *cxl_base_attributes[] = {
- 	NULL,
- };
+This is RFC because it changes lines printing format to bitmap %*pb. If
+it hurts userspace, it's better to drop the patch.
+
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c | 45 +++++++---------------
+ 1 file changed, 14 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index 23b668de4640..f4c04af9d4dd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -319,44 +319,27 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
+ void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
+ 			struct qed_bmap *bmap, bool check)
+ {
+-	int weight = bitmap_weight(bmap->bitmap, bmap->max_count);
+-	int last_line = bmap->max_count / (64 * 8);
+-	int last_item = last_line * 8 +
+-	    DIV_ROUND_UP(bmap->max_count % (64 * 8), 64);
+-	u64 *pmap = (u64 *)bmap->bitmap;
+-	int line, item, offset;
+-	u8 str_last_line[200] = { 0 };
+-
+-	if (!weight || !check)
++	unsigned int bit, weight, nbits;
++	unsigned long *b;
++
++	if (!check)
++		goto end;
++
++	weight = bitmap_weight(bmap->bitmap, bmap->max_count);
++	if (!weight)
+ 		goto end;
  
--struct attribute_group cxl_base_attribute_group = {
-+const struct attribute_group cxl_base_attribute_group = {
- 	.attrs = cxl_base_attributes,
- };
+ 	DP_NOTICE(p_hwfn,
+ 		  "%s bitmap not free - size=%d, weight=%d, 512 bits per line\n",
+ 		  bmap->name, bmap->max_count, weight);
  
-@@ -136,7 +136,7 @@ static struct attribute *cxl_decoder_base_attrs[] = {
- 	NULL,
- };
+-	/* print aligned non-zero lines, if any */
+-	for (item = 0, line = 0; line < last_line; line++, item += 8)
+-		if (bitmap_weight((unsigned long *)&pmap[item], 64 * 8))
++	for (bit = 0; bit < bmap->max_count; bit += 512) {
++		b =  bmap->bitmap + BITS_TO_LONGS(bit);
++		nbits = min(bmap->max_count - bit, 512);
++
++		if (!bitmap_empty(b, nbits))
+ 			DP_NOTICE(p_hwfn,
+-				  "line 0x%04x: 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
+-				  line,
+-				  pmap[item],
+-				  pmap[item + 1],
+-				  pmap[item + 2],
+-				  pmap[item + 3],
+-				  pmap[item + 4],
+-				  pmap[item + 5],
+-				  pmap[item + 6], pmap[item + 7]);
+-
+-	/* print last unaligned non-zero line, if any */
+-	if ((bmap->max_count % (64 * 8)) &&
+-	    (bitmap_weight((unsigned long *)&pmap[item],
+-			   bmap->max_count - item * 64))) {
+-		offset = sprintf(str_last_line, "line 0x%04x: ", line);
+-		for (; item < last_item; item++)
+-			offset += sprintf(str_last_line + offset,
+-					  "0x%016llx ", pmap[item]);
+-		DP_NOTICE(p_hwfn, "%s\n", str_last_line);
++				  "line 0x%04x: %*pb\n", bit / 512, nbits, b);
+ 	}
  
--static struct attribute_group cxl_decoder_base_attribute_group = {
-+static const struct attribute_group cxl_decoder_base_attribute_group = {
- 	.attrs = cxl_decoder_base_attrs,
- };
- 
-@@ -148,7 +148,7 @@ static struct attribute *cxl_decoder_root_attrs[] = {
- 	NULL,
- };
- 
--static struct attribute_group cxl_decoder_root_attribute_group = {
-+static const struct attribute_group cxl_decoder_root_attribute_group = {
- 	.attrs = cxl_decoder_root_attrs,
- };
- 
-@@ -164,7 +164,7 @@ static struct attribute *cxl_decoder_switch_attrs[] = {
- 	NULL,
- };
- 
--static struct attribute_group cxl_decoder_switch_attribute_group = {
-+static const struct attribute_group cxl_decoder_switch_attribute_group = {
- 	.attrs = cxl_decoder_switch_attrs,
- };
- 
-diff --git a/drivers/cxl/core/core.h b/drivers/cxl/core/core.h
-index e0c9aacc4e9c..1c0562cc9297 100644
---- a/drivers/cxl/core/core.h
-+++ b/drivers/cxl/core/core.h
-@@ -7,7 +7,7 @@
- extern const struct device_type cxl_nvdimm_bridge_type;
- extern const struct device_type cxl_nvdimm_type;
- 
--extern struct attribute_group cxl_base_attribute_group;
-+extern const struct attribute_group cxl_base_attribute_group;
- 
- struct cxl_send_command;
- struct cxl_mem_query_commands;
-diff --git a/drivers/cxl/core/memdev.c b/drivers/cxl/core/memdev.c
-index 61029cb7ac62..ac2d40741686 100644
---- a/drivers/cxl/core/memdev.c
-+++ b/drivers/cxl/core/memdev.c
-@@ -106,16 +106,16 @@ static struct attribute *cxl_memdev_ram_attributes[] = {
- 	NULL,
- };
- 
--static struct attribute_group cxl_memdev_attribute_group = {
-+static const struct attribute_group cxl_memdev_attribute_group = {
- 	.attrs = cxl_memdev_attributes,
- };
- 
--static struct attribute_group cxl_memdev_ram_attribute_group = {
-+static const struct attribute_group cxl_memdev_ram_attribute_group = {
- 	.name = "ram",
- 	.attrs = cxl_memdev_ram_attributes,
- };
- 
--static struct attribute_group cxl_memdev_pmem_attribute_group = {
-+static const struct attribute_group cxl_memdev_pmem_attribute_group = {
- 	.name = "pmem",
- 	.attrs = cxl_memdev_pmem_attributes,
- };
+ end:
 -- 
-2.35.1
+2.32.0
 
