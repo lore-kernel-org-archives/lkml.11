@@ -2,91 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:36:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB11FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244255AbiBJQgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:36:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46098 "EHLO
+        id S244266AbiBJQgI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:36:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232641AbiBJQgF (ORCPT
+        with ESMTP id S244254AbiBJQgG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:36:05 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB71137;
-        Thu, 10 Feb 2022 08:36:06 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id k1so10578702wrd.8;
-        Thu, 10 Feb 2022 08:36:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
-        b=nd/5t16q2dZeSUXeLARHqs1r2kr182kK742RAKdzthI6qpbsztn0Jl15mbQ4Khd7uU
-         IZl1CVv03mdQzSrtA22Rs+EUVMfzQv/TXgFjmEUz7rJ9NSnNFg7hb+/YMHtKAsaYbI7K
-         QwEkvtkdBiIsp/Hop8+q+savBqyxD1bUlsPBg6HK5hSH1GmB2UuVf/WxEFWJd2f/kRYY
-         fCTAs6XR5DJKslcZH7x6Jd150NCyVElAp59wyt9X1jk5tzgI25mh/xn2GAumUy6z6B4K
-         C/DMNmM6OHGaX9clEk1ntOqRpO8uauDjtlCbjdVE3I2Y1yzzZnnIXXv0gkmJLX7flc5c
-         0wmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4bsK/ywYRhNd6B9acdjFBjLw6uCbq8GkPqEAUDJ0Iq0=;
-        b=jLbQTQFLpLWNaigM5VoPHZrLRLscs9YlVhq06Qmf5+fszcKzXiKTgCFqzLW2BMdPA/
-         NwenMFWhUYAUqGPgSsca9obN9uN25Us5gbXy885gEIOde1BIvFLz3meSzlEec0VVd3Ul
-         PznxDdwoa0xwpSGm8TjXOnJUAzSBo6qs2wYXw01+QBItoL/L7zuSGWarqi+p7bU/Bw+5
-         EOIxqqhA2Yr2ZNzWdi4sEUsbZwvLaWKczIxW6/xZeXveK/j7vSrU0WY2xArK/dv96FxK
-         1BGcXGHGW1m1rcEyRS9b7ARE4lKrV2ZVCbVbZHkKtuGbkBJM+HXzye1hmvTxEmLP2XHk
-         rmHw==
-X-Gm-Message-State: AOAM530gdjHqgbWWWt6ME1dgG1HQR8bHyMtbvG08fMyN8VK/2h84g2kl
-        LRUiN39lmJSQNisrzX7/f9JIel4/uZD4UA==
-X-Google-Smtp-Source: ABdhPJw3E1DbJcu/NQe2RVRdi2hEvEpWrfv2F9Vzy6kkcP9oZkdso+/gVayKkwaIiZJxNkDECxCTUw==
-X-Received: by 2002:adf:f592:: with SMTP id f18mr7196852wro.179.1644510965064;
-        Thu, 10 Feb 2022 08:36:05 -0800 (PST)
-Received: from nergzd-desktop.localdomain ([62.122.67.26])
-        by smtp.gmail.com with ESMTPSA id i2sm2354057wmq.45.2022.02.10.08.36.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 08:36:04 -0800 (PST)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 0/2] Add support for Imagis touchscreens
-Date:   Thu, 10 Feb 2022 18:35:37 +0200
-Message-Id: <20220210163540.162727-1-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.0
+        Thu, 10 Feb 2022 11:36:06 -0500
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E0F1A8;
+        Thu, 10 Feb 2022 08:36:07 -0800 (PST)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21AAJL0J008359;
+        Thu, 10 Feb 2022 08:36:04 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=+YXeHLopDlrVI9hkQTBypubMSt1yVf2ZrvrNt0+T0pc=;
+ b=WQ1/S+3WfAQz19ta23v1dpXtwFOslCeIlCjDyynztfW32Io1qrDo+eCg5tJwLilsFVdT
+ zBl0q3r+y+kPeoIpM4HcbwkwOI+9+r3pEsxwHTtj3RXHF4SUD2ZWa+SehXoONQ+hPVFH
+ OVogL1e161aujkvbTaL5hdl7XE+eXQ+QbmR623Y09YUjLAhq7XdDft8zJd96b+lrfUe0
+ W8ERQ29pxYUHqA/FT3oH+leN9nlsn4FPrL5jhCydBTg75orSMIZTMDq6KLwDsC87qvNl
+ Qt+gQnIohFr1rUGBh9RbcbEjAvnN449fshRHGDhX11nhW3+Hey8hyHZ42zqtFmDaWwFC PA== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3e50uc9mga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 08:36:04 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 10 Feb
+ 2022 08:36:02 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 10 Feb 2022 08:36:02 -0800
+Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
+        by maili.marvell.com (Postfix) with ESMTP id 097D73F706B;
+        Thu, 10 Feb 2022 08:35:58 -0800 (PST)
+From:   Hariprasad Kelam <hkelam@marvell.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <kuba@kernel.org>, <davem@davemloft.net>, <sgoutham@marvell.com>,
+        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
+        <sbhatta@marvell.com>, <hkelam@marvell.com>
+Subject: [net-next PATCH] octeontx2-af: fix array bound error
+Date:   Thu, 10 Feb 2022 22:05:57 +0530
+Message-ID: <20220210163557.7256-1-hkelam@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 1xIyoBmz22_zbQOTThAQXlOzR5aC6Bye
+X-Proofpoint-ORIG-GUID: 1xIyoBmz22_zbQOTThAQXlOzR5aC6Bye
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_07,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for Imagis touchscreens, used on various mobile
-devices such as Samsung Galaxy J5 (2015), J3 (2015), J5 (2016).
+This patch fixes below error by using proper data type.
 
-v2: rebase on top of the correct tree
+drivers/net/ethernet/marvell/octeontx2/af/rpm.c: In function
+'rpm_cfg_pfc_quanta_thresh':
+include/linux/find.h:40:23: error: array subscript 'long unsigned
+int[0]' is partly outside array bounds of 'u16[1]' {aka 'short unsigned
+int[1]'} [-Werror=array-bounds]
+   40 |                 val = *addr & GENMASK(size - 1, offset);
 
-Markuss Broks (2):
-  dt-bindings: input/touchscreen: bindings for Imagis
-  Input: add Imagis touchscreen driver
+Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/af/rpm.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- .../input/touchscreen/imagis,ist3038c.yaml    |  78 +++++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- MAINTAINERS                                   |   6 +
- drivers/input/touchscreen/Kconfig             |  10 +
- drivers/input/touchscreen/Makefile            |   1 +
- drivers/input/touchscreen/imagis.c            | 329 ++++++++++++++++++
- 6 files changed, 426 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
- create mode 100644 drivers/input/touchscreen/imagis.c
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+index d7a8aad46e12..47e83d7a5804 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
+@@ -141,14 +141,15 @@ int rpm_lmac_get_pause_frm_status(void *rpmd, int lmac_id,
+ 	return 0;
+ }
+ 
+-static void rpm_cfg_pfc_quanta_thresh(rpm_t *rpm, int lmac_id, u16 pfc_en,
++static void rpm_cfg_pfc_quanta_thresh(rpm_t *rpm, int lmac_id,
++				      unsigned long pfc_en,
+ 				      bool enable)
+ {
+ 	u64 quanta_offset = 0, quanta_thresh = 0, cfg;
+ 	int i, shift;
+ 
+ 	/* Set pause time and interval */
+-	for_each_set_bit(i, (unsigned long *)&pfc_en, 16) {
++	for_each_set_bit(i, &pfc_en, 16) {
+ 		switch (i) {
+ 		case 0:
+ 		case 1:
 -- 
-2.35.0
+2.17.1
 
