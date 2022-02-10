@@ -2,89 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0630AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232536AbiBJFAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:00:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39642 "EHLO
+        id S232021AbiBJFII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:08:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiBJFAH (ORCPT
+        with ESMTP id S229802AbiBJFIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:00:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 275061F7;
-        Wed,  9 Feb 2022 21:00:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53CF8B80E19;
-        Thu, 10 Feb 2022 05:00:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49067C004E1;
-        Thu, 10 Feb 2022 05:00:05 +0000 (UTC)
-Date:   Thu, 10 Feb 2022 00:00:03 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com
-Subject: Re: [PATCH] selftests/ftrace: Do not trace do_softirq because of
- PREEMPT_RT
-Message-ID: <20220210000003.6b6142f9@gandalf.local.home>
-In-Reply-To: <20220209162430.286578-1-krzysztof.kozlowski@canonical.com>
-References: <20220209162430.286578-1-krzysztof.kozlowski@canonical.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 10 Feb 2022 00:08:00 -0500
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5551628C;
+        Wed,  9 Feb 2022 21:08:00 -0800 (PST)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21A57X4O005422
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 00:07:34 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 96ED815C0040; Thu, 10 Feb 2022 00:07:33 -0500 (EST)
+Date:   Thu, 10 Feb 2022 00:07:33 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Jan Kara <jack@suse.cz>, Qian Cai <quic_qiancai@quicinc.com>,
+        Jan Kara <jack@suse.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-ext4@vger.kernel.org,
+        rcu@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] jbd2: avoid __GFP_ZERO with SLAB_TYPESAFE_BY_RCU
+Message-ID: <YgSdlew4B5FWY6Qm@mit.edu>
+References: <20220209165742.5659-1-quic_qiancai@quicinc.com>
+ <20220209181010.gfn66rvip56i54df@quack3.lan>
+ <20220209201137.GY4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209201137.GY4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  9 Feb 2022 17:24:30 +0100
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+On Wed, Feb 09, 2022 at 12:11:37PM -0800, Paul E. McKenney wrote:
+> On Wed, Feb 09, 2022 at 07:10:10PM +0100, Jan Kara wrote:
+> > 
+> > No, the performance impact of this would be just horrible. Can you
+> > ellaborate a bit why SLAB_TYPESAFE_BY_RCU + __GFP_ZERO is a problem and why
+> > synchronize_rcu() would be needed here before the memset() please? I mean
+> > how is zeroing here any different from the memory just being used?
+> 
+> Suppose a reader picks up a pointer to a memory block, then that memory
+> is freed.  No problem, given that this is a SLAB_TYPESAFE_BY_RCU slab,
+> so the memory won't be freed while the reader is accessing it.  But while
+> the reader is in the process of validating the block, it is zeroed.
+> 
+> How does the validation step handle this in all cases?
+> 
+> If you have a way of handling this, I will of course drop the patch.
+> And learn something new, which is always a good thing.  ;-)
 
-> The PREEMPT_RT patchset does not use soft IRQs thus trying to filter for
-> do_softirq fails for such kernel:
-> 
->   echo do_softirq
->   ftracetest: 81: echo: echo: I/O error
-> 
-> Choose some other externally visible function for the test.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> 
-> ---
-> 
-> I understand that the failure does not exist on mainline kernel (only
-> with PREEMPT_RT patchset) but the change does not harm it.
-> 
-> If it is not suitable alone, please consider it for RT patchset.
-> ---
->  .../selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc      | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> index e96e279e0533..1d0c7601865f 100644
-> --- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> +++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
-> @@ -19,7 +19,7 @@ fail() { # mesg
->  
->  FILTER=set_ftrace_filter
->  FUNC1="schedule"
-> -FUNC2="do_softirq"
-> +FUNC2="_printk"
+I must be missing something.  The change is on the allocation path,
+and why would kmem_cache_[z]alloc() return a memory chunk which could
+still be in use by a reader?  Shouldn't the allocator _not_ return a
+particular chunk until it is sure there aren't any readers left that
+would be discombobulated by that memory being used for some new use
+case?
 
-The problem with the above, is that it is not guaranteed to trigger (and
-probably will not), where as the do_softirq is. The filtering is suppose to
-trace something that actually happens.
+Otherwise we would have to add synchronize_rcu(); after every single
+kmem_cache allocation which might be using RCU, and that would be
+terrible, no?
 
-How about using: scheduler_tick ?
-
--- Steve
+					- Ted
 
 
->  
->  ALL_FUNCS="#### all functions enabled ####"
->  
-
+> > > ---
+> > >  fs/jbd2/journal.c | 9 ++++++---
+> > >  1 file changed, 6 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/fs/jbd2/journal.c b/fs/jbd2/journal.c
+> > > index c2cf74b01ddb..323112de5921 100644
+> > > --- a/fs/jbd2/journal.c
+> > > +++ b/fs/jbd2/journal.c
+> > > @@ -2861,15 +2861,18 @@ static struct journal_head *journal_alloc_journal_head(void)
+> > >  #ifdef CONFIG_JBD2_DEBUG
+> > >  	atomic_inc(&nr_journal_heads);
+> > >  #endif
+> > > -	ret = kmem_cache_zalloc(jbd2_journal_head_cache, GFP_NOFS);
+> > > +	ret = kmem_cache_alloc(jbd2_journal_head_cache, GFP_NOFS);
+> > >  	if (!ret) {
+> > >  		jbd_debug(1, "out of memory for journal_head\n");
+> > >  		pr_notice_ratelimited("ENOMEM in %s, retrying.\n", __func__);
+> > > -		ret = kmem_cache_zalloc(jbd2_journal_head_cache,
+> > > +		ret = kmem_cache_alloc(jbd2_journal_head_cache,
+> > >  				GFP_NOFS | __GFP_NOFAIL);
+> > >  	}
+> > > -	if (ret)
+> > > +	if (ret) {
+> > > +		synchronize_rcu();
+> > > +		memset(ret, 0, sizeof(*ret));
+> > >  		spin_lock_init(&ret->b_state_lock);
+> > > +	}
+> > >  	return ret;
+> > >  }
+> > >  
+> > > -- 
+> > > 2.30.2
+> > > 
+> > -- 
+> > Jan Kara <jack@suse.com>
+> > SUSE Labs, CR
