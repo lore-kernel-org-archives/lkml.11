@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD47BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:26:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244185AbiBJQ0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:26:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41508 "EHLO
+        id S244189AbiBJQ0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:26:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244167AbiBJQ0L (ORCPT
+        with ESMTP id S244177AbiBJQ0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:26:11 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54B2DC26;
-        Thu, 10 Feb 2022 08:26:11 -0800 (PST)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21AEBMiL025584;
-        Thu, 10 Feb 2022 09:41:22 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=iAIOic3fs3DHgtceBaD28ld8RhX+XmG05O99KFICyHU=;
- b=OPz9mg1lCGDZFcdrjNWJ1hjxWGEdoO1jB+ngD8AWBqiUWuBULOfNxyhbtIl1s1bRC+nE
- WUDLJ+HsoQkkmvaO36rYOsztpW7kGyiDfTMtD8INGF1z8RlZlffHA+jeLN6xLvbRKwFh
- n44n9bI/jQ0dNoYlV2Md7EJIaZ5TtHgctrcwYSf6ICy8tue/hZ7o67P11En6yDEvrbHf
- 4nYHzGr6NDRrfIRffHjJGE5Q646xsPaSr/Z099XvqFKynhUZvGSt1/Kqr1iDdAV4TZzT
- 7X0SotbkfJPF7NEaT0/Je3rlImax2cNFpOAN2rktjeVbfZF10boLWI/zwSrY/jPVvi+p wg== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3e4detskyx-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 10 Feb 2022 09:41:21 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 10 Feb
- 2022 15:41:20 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Thu, 10 Feb 2022 15:41:20 +0000
-Received: from ricardo-lws.crystal.cirrus.com (ricardo-lws.ad.cirrus.com [141.131.206.19])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 10A532A1;
-        Thu, 10 Feb 2022 15:41:19 +0000 (UTC)
-From:   Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
-To:     <sre@kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-CC:     Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
-Subject: [RESEND v2 2/2] power: supply: bq25980: Implements POWER_SUPPLY_CHARGE_TYPE_BYPASS
-Date:   Thu, 10 Feb 2022 09:41:08 -0600
-Message-ID: <20220210154108.641369-3-rriveram@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220210154108.641369-1-rriveram@opensource.cirrus.com>
-References: <20220210154108.641369-1-rriveram@opensource.cirrus.com>
+        Thu, 10 Feb 2022 11:26:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 544C2CC6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:26:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644510400;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rY3phGFyqzvqC5XqBvgZRHwWvJirMd+irMKZuvfo6EI=;
+        b=MY5TpNx97fcJ3wiV/4Ov1NVh+PgOh8buMoGlUNCBSYSBXOWsSQMpDGEFC0GCZJvKBmDjo2
+        FHgRh/EaiIXioo6yP03EAFQ+AHa+CQNb5WAiVUl8npEWej39ifd2OxV352VUyWO2ntpZE9
+        ZMQvkjugiJucKsB5SJZlDHrMETWQ51s=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-364-NiKtVzJLOUyC7tiPHOP9Yg-1; Thu, 10 Feb 2022 11:26:39 -0500
+X-MC-Unique: NiKtVzJLOUyC7tiPHOP9Yg-1
+Received: by mail-lj1-f199.google.com with SMTP id bd23-20020a05651c169700b0023bc6f845beso2791028ljb.17
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:26:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rY3phGFyqzvqC5XqBvgZRHwWvJirMd+irMKZuvfo6EI=;
+        b=iLNORUZ2ZbBXTzrNUtfRGv+CMt+mEKJBXudLvt4WpbRCeq8iSzVEcjAU4q+CXjQ6fA
+         UrbrZ3YgzqiCgqFnMKQsxixOCg96H7VU/dI+OmfV8UWci6W449aN/SMWQUDVsKdr4Hmh
+         Q1qc72elMGbiEDe3MBIXhf2HzTVWepiW3b92ik47VahvQXkOp0tLrJr3EsdLl02gAT9B
+         EBChWglHHDpk5pof+1W7gTYvBLkDiiQ97L2wUMEGRctDxT86PiOEjIT4DeP/fbS0h8KX
+         vsNC+u6rxQlaBZqkDsvv/gUXjLOaxzcl9maOAwSKM/1ezwYlbTPnc5GgJBzDhayopu2Y
+         b+Kw==
+X-Gm-Message-State: AOAM532eIv9dLjSykswWkS99yjmQmE1iNmJL4qzSWJaBNQB0OxUNEpoL
+        O7ymiepibYdkgzm/aKO2v3iPmMA6gf/ePR4RyNtnAvpLQR3uMkUu1wfYV66CwZEdSQ7TNBry61e
+        iPaVj8PG5H4TbV0VFe64mq1nnydyqpI5nob5zZDY=
+X-Received: by 2002:a2e:9b42:: with SMTP id o2mr5338854ljj.85.1644510397726;
+        Thu, 10 Feb 2022 08:26:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw9JIlgHvIwzA75M+U5BYw5VLOvJhfEKK89UxctqRfc/hcGRqbB7269Gq1HJ/earlGgnR33FLSJpEfMa8PkcNk=
+X-Received: by 2002:a2e:9b42:: with SMTP id o2mr5338822ljj.85.1644510397492;
+ Thu, 10 Feb 2022 08:26:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: feDhXOyhHV27GLGeJJQd63wmvEu18Zvo
-X-Proofpoint-ORIG-GUID: feDhXOyhHV27GLGeJJQd63wmvEu18Zvo
-X-Proofpoint-Spam-Reason: safe
+References: <20220209170358.3266629-1-atomlin@redhat.com> <20220209170358.3266629-3-atomlin@redhat.com>
+ <f40fd2b2-2038-a53b-23ec-8f63941a2103@csgroup.eu>
+In-Reply-To: <f40fd2b2-2038-a53b-23ec-8f63941a2103@csgroup.eu>
+From:   Aaron Tomlin <atomlin@redhat.com>
+Date:   Thu, 10 Feb 2022 16:26:26 +0000
+Message-ID: <CANfR36jWjL9c1p8huGR8mh=XWXoNEc=Y8SmwXFCusEQ6CbuKmA@mail.gmail.com>
+Subject: Re: [PATCH v5 02/13] module: Simple refactor in preparation for split
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "cl@linux.com" <cl@linux.com>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "atomlin@atomlin.com" <atomlin@atomlin.com>,
+        "ghalat@redhat.com" <ghalat@redhat.com>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
+        "void@manifault.com" <void@manifault.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "msuchanek@suse.de" <msuchanek@suse.de>,
+        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch remaps the bypass operation from POWER_SUPPLY_CHARGE_TYPE_FAST
-to POWER_SUPPLY_CHARGE_TYPE_BYPASS.
+On Thu 2022-02-10 11:18 +0000, Christophe Leroy wrote:
+> > +#define MODULE_SECT_READ_SIZE (3 /* "0x", "\n" */ + (BITS_PER_LONG / 4))
+>
+> This is used only in sysfs.c, why move it to internal.h ?
 
-Signed-off-by: Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
----
- drivers/power/supply/bq25980_charger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Agreed. Since use is exclusive to kernel/module/sysfs.c it should be moved.
 
-diff --git a/drivers/power/supply/bq25980_charger.c b/drivers/power/supply/bq25980_charger.c
-index 9daa6d14db4d..9339f5649282 100644
---- a/drivers/power/supply/bq25980_charger.c
-+++ b/drivers/power/supply/bq25980_charger.c
-@@ -764,7 +764,7 @@ static int bq25980_get_charger_property(struct power_supply *psy,
- 		if (!state.ce)
- 			val->intval = POWER_SUPPLY_CHARGE_TYPE_NONE;
- 		else if (state.bypass)
--			val->intval = POWER_SUPPLY_CHARGE_TYPE_FAST;
-+			val->intval = POWER_SUPPLY_CHARGE_TYPE_BYPASS;
- 		else if (!state.bypass)
- 			val->intval = POWER_SUPPLY_CHARGE_TYPE_STANDARD;
- 		break;
+Kind regards,
+
 -- 
-2.25.1
+Aaron Tomlin
 
