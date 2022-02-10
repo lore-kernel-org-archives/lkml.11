@@ -2,70 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB23C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD54C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234680AbiBJCAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:00:18 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60380 "EHLO
+        id S234352AbiBJCAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:00:23 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbiBJB7S (ORCPT
+        with ESMTP id S234503AbiBJB7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:59:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC75728CF4;
-        Wed,  9 Feb 2022 17:36:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60345616D6;
-        Thu, 10 Feb 2022 00:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CC71C340E7;
-        Thu, 10 Feb 2022 00:58:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644454711;
-        bh=mam86/hmxQgJVtMNzGAN4d9yDX7tUd/mNwP63YOf5F0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V43w39BD+F7dgNOypAmevLK7ZC6WIHOc6o8/cF+MhMVC/EVUxmqPQ8vDQHiDCvV/f
-         irB7Wz9NLzP1SlVu6aNFPaBgJOstrhxffUFNNxu7k6VlPF4jCI2nWhjbjGNUgqVs59
-         ebtdYPEEZynoQ6PT8+hSwJWjYwlc5fpsjIYH4H0CnnVDlaAtitTDvs7nTOHCfqFMxQ
-         qpkZudq2YjYMmvS2UlMID9yAiKRMAJBm1EEhW8XWOyF463eudtGIpR7ye03BHMogZa
-         O0ZqLg7Se1rLLIsOKb1hRR41IA2qmnOTOIdoKeX029kqv7d7sFheCZn05VmNx4roUK
-         t6EIKQRONKUFg==
-Date:   Wed, 9 Feb 2022 16:58:30 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cpp Code <cpp.code.lv@gmail.com>
-Cc:     Pravin Shelar <pravin.ovn@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        ovs dev <dev@openvswitch.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6 extension
- header support
-Message-ID: <20220209165830.5f3645ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAASuNyWRh4++uLh4zPuJAuwX4NhYa4HvO1M7iMYdg3Dm0Qbc7Q@mail.gmail.com>
-References: <20211124193327.2736-1-cpp.code.lv@gmail.com>
-        <CAOrHB_AUCGG0uF4d30Eb4dguPqwvDL8A2c=2EGXqdcqkqLZK-g@mail.gmail.com>
-        <CAASuNyWViYk6rt7bpqVApMFJB+k9NKSwasm1H_70uMMRUHxoHw@mail.gmail.com>
-        <CAOrHB_D1HKirnub8AQs=tjX60Mc+EP=aWf+xpr9YdOCOAPsi2Q@mail.gmail.com>
-        <CAASuNyUKj+dsf++7mhdkjm2mabQggYW4x42_BV=y+VPPSBFqfA@mail.gmail.com>
-        <CAOrHB_CyBoTYO8Qn-qtcfrbqfVc9TjaU6ib_2ZSQx-R9ns-bUQ@mail.gmail.com>
-        <CAASuNyWRh4++uLh4zPuJAuwX4NhYa4HvO1M7iMYdg3Dm0Qbc7Q@mail.gmail.com>
+        Wed, 9 Feb 2022 20:59:20 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8172BB0A
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:49:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644457748; x=1675993748;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=A1arXDdvviAbJmFHB0JiZO8bM7BMFQsEYKo+h0boyLo=;
+  b=FiYj4PBKlEb7PaQUxDrL13qDVvEbPRDti4Mzgsjkvy6w77u2q/KSbuoB
+   s1ruyLif2giCPHdhWmqiQAxvri5x7dBDnWxbq7xMXvOiplESPv2ZfEa0V
+   RZdz2BKJqE/K70EnUZAgHghX5C505nBpPZG4dywmLXhiAtiKYA4FubXYM
+   4XgYXijLDJNTfkSQmOs3BuKac5uPgi4i/vla5BqjBPAwRHixvzonT/s36
+   PAbf49HnmzjPR1hAPQbMet6J3lLtFTPWWtvMRRmoMDIXQES6xttUyuty2
+   NxNYemmzAlYIyjYoP7aeJU7ykYin7fEDO3GJAVneRB5m2vF8RpUeDbnS5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="249585930"
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="249585930"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 16:45:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
+   d="scan'208";a="678966591"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 09 Feb 2022 16:45:46 -0800
+Message-ID: <b83e4324-6ef8-1cf0-b5e2-00d0802a6f75@linux.intel.com>
+Date:   Thu, 10 Feb 2022 08:44:34 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 02/10] iommu: Remove guest pasid related interfaces and
+ definitions
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
+ <20220208012559.1121729-3-baolu.lu@linux.intel.com>
+ <20220209132954.GT4160@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220209132954.GT4160@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 9 Feb 2022 12:46:01 -0800 Cpp Code wrote:
-> > ok, I see advantage of using skb_header_pointer() in this case, but
-> > replacing all check_header() with skb_header_pointer() would add lot
-> > of copy operation in flow extract. Anyways for this use case
-> > skb_header_pointer() is fine.
-> >
-> > Acked-by: Pravin B Shelar <pshelar@ovn.org>  
-> 
-> Could this be applied please.
+Hi Jason,
 
-Please repost with Pravin's ack included.
+On 2/9/22 9:29 PM, Jason Gunthorpe wrote:
+>> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+>> index 59178fc229ca..65d8b0234f69 100644
+>> --- a/include/uapi/linux/iommu.h
+>> +++ b/include/uapi/linux/iommu.h
+>> @@ -158,185 +158,4 @@ struct iommu_page_response {
+>>   	__u32	code;
+>>   };
+> What is the plan for the rest of the dead code in this file?
+
+The remaining code are IOMMU fault related. I can look into them in a
+separated series where I plan to make the I/O page fault framework
+generic.
+
+Best regards,
+baolu
