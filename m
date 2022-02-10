@@ -2,118 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E397C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345595AbiBJXUm (ORCPT
+        id S1345606AbiBJXUs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:20:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37670 "EHLO
+        Thu, 10 Feb 2022 18:20:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345587AbiBJXUi (ORCPT
+        with ESMTP id S1345587AbiBJXUq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:20:38 -0500
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0B9B5F57;
-        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
-Received: by mail-qk1-x733.google.com with SMTP id 200so6608218qki.2;
-        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
+        Thu, 10 Feb 2022 18:20:46 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00C245F57
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:20:44 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id 10so3210281plj.1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:20:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=OI8hrqvEfZeAPpQf8rC+vBfmKoqD6QuGtPPDNoK9uS4=;
-        b=EQfXcPTDBcYmVj4+j4y/o25JVZVDwsWDx+EHUAOF3zMYUn3kQLX/MQfzHc/YKh7FN+
-         wm3IVR3uXroLe/72PTmQlUcmmno8zHVeYAM0auen7rv+y/jThDNnkafJjcgmONPKaZx5
-         gDKoXCQtUHorfeynZcINw3BfDvjNFg1UfPdLYBp9UNxk8+r/ONDMKXrWVWxHFGs4MioI
-         4Qo6KmzZXo6xLcPq6A2malt5UGXvTQ0/AN4hdbapLw/4UqjI/nUuIbUbfUEXo9K8538z
-         v9P/ZZOoEfZt7peFCpLO9LS5MNJS7WxJgbU0lBrAZ25AQUta31Bg+sR9XeKHm/qqs1wE
-         GMsA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YEYBOwazyXBB4q5swn+VHc3cWEwmBk8oN2W6oZO8MnU=;
+        b=MzhO8xcLsRI7FWAY02lyiPIXr7mHwL1mJGN5kGNR8IvvlT9AHw/RgTFstkhVslQ9lA
+         EZFFcZVJRCDhb3xMs+Ux9fF+trUl+zP/ZMsduNwa6eJWrsGX/5jtlTcHcgrFK4JHESp4
+         0vG5jcKgzHMFjgNN136mdmTfBH5V5xz4Hv97M2bXKpBT/8GnWqX55ro9B3Rx1uqW7dTe
+         6H9V6fNxaECJvTRsfAgjUW8HKbBvMAzhV7yS+ETdhQIA0wCOr1eP/D6IgvpusmOEJcyG
+         MvnRg/JUO8xYdmc2+FMI2Dxx4v0wiaDuh8Zx3OUaJdP68gubm4PA+k9QV92uMx6PfsI+
+         nzQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OI8hrqvEfZeAPpQf8rC+vBfmKoqD6QuGtPPDNoK9uS4=;
-        b=UCYQSb3Pzs2xa8qitu7UTbrUwQ72zJbSk+i29PfseM5LzrMK5pODUFPc5fT9ERWToW
-         7n+l6fe7qgjUuvyopYxxioJGZUtP/KmGGt1/V/yHS0euf0agDasPsuEYvLdjTlGKLA/G
-         MszWX06Yk8G3YRjWSbckyKxh9r59szR28HtpqcTB9v7T6gkaCc2fNkBegr3g6fsvp/QH
-         /cEIdxT+ub8P/1iPeLrvYtSjfZoe6+S2tJ8s34nTip0CepDri9Bq7MyUfkCFghgqf50E
-         0254QeweafMDsuHT1ouRr6GcbyGlr4bktF1ZukHzcpUmcofYVn4Fh+EM8tieIVhZKUrh
-         mSuQ==
-X-Gm-Message-State: AOAM532jO7txafanMGY7sBYAGKS69YBNbzmYdQ65tzUOWafDfO/FZXXB
-        NNg6A3cAs3qIgCotqJ/nG+M=
-X-Google-Smtp-Source: ABdhPJyfmC4ftc0tGVwbWyGGCrs8QXCUCRrbYeGrdw/pzG5Dj57MnQrgDJcGdetfGIydZXZ3xW6zSg==
-X-Received: by 2002:a05:620a:4043:: with SMTP id i3mr5211591qko.14.1644535235068;
-        Thu, 10 Feb 2022 15:20:35 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id v12sm10661466qkl.74.2022.02.10.15.20.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YEYBOwazyXBB4q5swn+VHc3cWEwmBk8oN2W6oZO8MnU=;
+        b=j+F63GAH7mCmmnyfiFcL1PiyD0DXrckBdCiowAH2YjI0eZxZDtP8tX+Bj78VbffuTO
+         pWKCMSKhZvF+MOHdRWoHbRGota7DGiB4SJv58jyTbsERck8dbI3dKmiJJpoCwJ/00Z8k
+         /a4J4yVXcPoPiTmFOk9nuYPgppF5qM3XYn11aIT5ka8+eMFTyYWAl/M86ze5EXKOnvby
+         K/j9vHAtG8rA5Hb2VixqKvWryS3WZAyUyduc2JGUQvfPmUmYpP56vfeQyX4XnniA4RQt
+         iaq3tv5VPQK7vOJY5qbTUT16ZuOpqCfaPZ2FFZbIv6V/RZP4pZ72YwNz+UDgC50VNacy
+         FtJw==
+X-Gm-Message-State: AOAM530HMDJwyr3aTMp0s8t8HjSLe46TT+f/HvelAPNQ3OiFY+76R/dw
+        Nd4uaGkRVPoVIDxt6q1k1JoRew==
+X-Google-Smtp-Source: ABdhPJyhYDtkDRNZ6HXA+/v9rlFDnE0EuMGR4gHDzmuf1fZWBqX1CDR1beqTGYtqoNv3a1Xd6i9I2A==
+X-Received: by 2002:a17:902:d4c1:: with SMTP id o1mr9966260plg.167.1644535244250;
+        Thu, 10 Feb 2022 15:20:44 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id 3sm3097905pjk.29.2022.02.10.15.20.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:20:34 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH 13/49] perf tools: replace bitmap_weight with bitmap_empty where appropriate
-Date:   Thu, 10 Feb 2022 14:48:57 -0800
-Message-Id: <20220210224933.379149-14-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 15:20:43 -0800 (PST)
+Date:   Thu, 10 Feb 2022 23:20:40 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+Subject: Re: [PATCH 04/12] KVM: MMU: WARN if PAE roots linger after
+ kvm_mmu_unload
+Message-ID: <YgWdyN3uarajuLdG@google.com>
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-5-pbonzini@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209170020.1775368-5-pbonzini@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some code in builtin-c2c.c calls bitmap_weight() to check if any bit of
-a given bitmap is set. It's better to use bitmap_empty() in that case
-because bitmap_empty() stops traversing the bitmap as soon as it finds
-first set bit, while bitmap_weight() counts all bits unconditionally.
+On Wed, Feb 09, 2022, Paolo Bonzini wrote:
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c | 17 +++++++++++++----
+>  1 file changed, 13 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index e0c0f0bc2e8b..7b5765ced928 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -5065,12 +5065,21 @@ int kvm_mmu_load(struct kvm_vcpu *vcpu)
+>  	return r;
+>  }
+>  
+> +static void __kvm_mmu_unload(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu)
+> +{
+> +	int i;
+> +	kvm_mmu_free_roots(vcpu, mmu, KVM_MMU_ROOTS_ALL);
+> +	WARN_ON(VALID_PAGE(mmu->root_hpa));
+> +	if (mmu->pae_root) {
+> +		for (i = 0; i < 4; ++i)
+> +			WARN_ON(IS_VALID_PAE_ROOT(mmu->pae_root[i]));
+> +	}
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- tools/perf/builtin-c2c.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+I'm somewhat ambivalent, but if you're at all on the fence, I vote to drop this
+one.  I've always viewed the WARN on root_hpa as gratuitous.
 
-diff --git a/tools/perf/builtin-c2c.c b/tools/perf/builtin-c2c.c
-index 77dd4afacca4..14f787c67140 100644
---- a/tools/perf/builtin-c2c.c
-+++ b/tools/perf/builtin-c2c.c
-@@ -1080,7 +1080,7 @@ node_entry(struct perf_hpp_fmt *fmt __maybe_unused, struct perf_hpp *hpp,
- 		bitmap_zero(set, c2c.cpus_cnt);
- 		bitmap_and(set, c2c_he->cpuset, c2c.nodes[node], c2c.cpus_cnt);
- 
--		if (!bitmap_weight(set, c2c.cpus_cnt)) {
-+		if (bitmap_empty(set, c2c.cpus_cnt)) {
- 			if (c2c.node_info == 1) {
- 				ret = scnprintf(hpp->buf, hpp->size, "%21s", " ");
- 				advance_hpp(hpp, ret);
-@@ -1944,7 +1944,7 @@ static int set_nodestr(struct c2c_hist_entry *c2c_he)
- 	if (c2c_he->nodestr)
- 		return 0;
- 
--	if (bitmap_weight(c2c_he->nodeset, c2c.nodes_cnt)) {
-+	if (!bitmap_empty(c2c_he->nodeset, c2c.nodes_cnt)) {
- 		len = bitmap_scnprintf(c2c_he->nodeset, c2c.nodes_cnt,
- 				      buf, sizeof(buf));
- 	} else {
--- 
-2.32.0
-
+But, if it helped during development, then why not...
