@@ -2,92 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF863C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237237AbiBJIQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:16:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53310 "EHLO
+        id S237267AbiBJIRn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:17:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237105AbiBJIQt (ORCPT
+        with ESMTP id S237230AbiBJIRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:16:49 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BAFB109E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:16:51 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D700C2223A;
-        Thu, 10 Feb 2022 09:16:48 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1644481009;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7m8O9Deg7PEc5nH7BFt1L+WAoZvzxBi1x9zZ6x9/wyw=;
-        b=HhmM1Milpq1OFgxp15YjBaVOuBV6HH1Htrgqa/j3DjI3kC3lNqp1rOBMy9yyj+z+CqxGXx
-        PLGNgW3bUBicVoIyB5s5J/lRG0qR5G+D+KZnmfSk+beDBOIjtGUPW8cjjotR9prYvDQryw
-        9x+ngHfiDFlkA2WYq8EcbyZ+XszdWLM=
+        Thu, 10 Feb 2022 03:17:41 -0500
+X-Greylist: delayed 918 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:17:39 PST
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8026C5;
+        Thu, 10 Feb 2022 00:17:39 -0800 (PST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JvTfJ3SzxzdZbx;
+        Thu, 10 Feb 2022 15:59:04 +0800 (CST)
+Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 10 Feb 2022 16:02:17 +0800
+Received: from huawei.com (10.175.104.170) by dggpemm500003.china.huawei.com
+ (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Feb
+ 2022 16:02:16 +0800
+From:   Liang Zhang <zhangliang5@huawei.com>
+To:     <pbonzini@redhat.com>, <seanjc@google.com>, <vkuznets@redhat.com>,
+        <wanpengli@tencent.com>, <jmattson@google.com>, <joro@8bytes.org>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <x86@kernel.org>, <hpa@zytor.com>
+CC:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhigang17@huawei.com>, <zhangliang5@huawei.com>
+Subject: [PATCH] KVM: x86/mmu: make apf token non-zero to fix bug
+Date:   Thu, 10 Feb 2022 16:41:13 +0800
+Message-ID: <20220210084113.73005-1-zhangliang5@huawei.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 10 Feb 2022 09:16:48 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor.Ambarus@microchip.com
-Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com
-Subject: Re: [PATCH v1 11/14] mtd: spi-nor: spansion: slightly rework control
- flow in late_init()
-In-Reply-To: <f004399f-36b0-2099-b2a0-8ab0ecd114b7@microchip.com>
-References: <20220202145853.4187726-1-michael@walle.cc>
- <20220202145853.4187726-12-michael@walle.cc>
- <f004399f-36b0-2099-b2a0-8ab0ecd114b7@microchip.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <ced74caa2ad507615b9cf1645d10fa87@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.170]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500003.china.huawei.com (7.185.36.56)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-10 04:26, schrieb Tudor.Ambarus@microchip.com:
-> On 2/2/22 16:58, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> Increase readability of the code. Instead of returning early if the
->> flash size is smaller or equal than 16MiB and then do the fixups for
->> larger flashes, do it within the condition.
->> 
-> 
-> mm, no, I'm not sure this improves readability, I see the two 
-> equivalent.
-> The original version has the benefit of no indentation. Pratyush?
+In current async pagefault logic, when a page is ready, KVM relies on
+kvm_arch_can_dequeue_async_page_present() to determine whether to deliver
+a READY event to the Guest. This function test token value of struct
+kvm_vcpu_pv_apf_data, which must be reset to zero by Guest kernel when a
+READY event is finished by Guest. If value is zero meaning that a READY
+event is done, so the KVM can deliver another.
+But the kvm_arch_setup_async_pf() may produce a valid token with zero
+value, which is confused with previous mention and may lead the loss of
+this READY event.
 
-This is a preparation patch for 12/14, where the current version isn't
-working anyway. If that is not enough reason why this is bad IMHO, I'll
-give you two more.
+This bug may cause task blocked forever in Guest:
+ INFO: task stress:7532 blocked for more than 1254 seconds.
+       Not tainted 5.10.0 #16
+ "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+ task:stress          state:D stack:    0 pid: 7532 ppid:  1409
+ flags:0x00000080
+ Call Trace:
+  __schedule+0x1e7/0x650
+  schedule+0x46/0xb0
+  kvm_async_pf_task_wait_schedule+0xad/0xe0
+  ? exit_to_user_mode_prepare+0x60/0x70
+  __kvm_handle_async_pf+0x4f/0xb0
+  ? asm_exc_page_fault+0x8/0x30
+  exc_page_fault+0x6f/0x110
+  ? asm_exc_page_fault+0x8/0x30
+  asm_exc_page_fault+0x1e/0x30
+ RIP: 0033:0x402d00
+ RSP: 002b:00007ffd31912500 EFLAGS: 00010206
+ RAX: 0000000000071000 RBX: ffffffffffffffff RCX: 00000000021a32b0
+ RDX: 000000000007d011 RSI: 000000000007d000 RDI: 00000000021262b0
+ RBP: 00000000021262b0 R08: 0000000000000003 R09: 0000000000000086
+ R10: 00000000000000eb R11: 00007fefbdf2baa0 R12: 0000000000000000
+ R13: 0000000000000002 R14: 000000000007d000 R15: 0000000000001000
 
-I'd agree with you if that function was called
-spansion_late_init_smaller_flashes() or something like that. But it is
-a generic function valid for all flashes. And if you read it you might
-get the impression there are only flashes smaller or equal than 16MiB.
-You have to look twice to notice it was the intention that the
-assignment afterwards are just for the smaller flashes (and you will
-need to notice that there aren't any assignments for all spansion
-flashes). There is no direct connection between the assignment and
-the condition. Whereas with
-   if (condition) {
-     some_action();
-   }
-It is clear that some_action() was intended to only execute if
-condition is true.
+Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
+---
+ arch/x86/kvm/mmu/mmu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-Also - and that is worse IMHO - it might easily be missed as someone
-just add stuff to the end of the function which might goes unnoticed
-but it won't work for flashes >16MiB.
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 593093b52395..8e24f73bf60b 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -3889,12 +3889,23 @@ static void shadow_page_table_clear_flood(struct kvm_vcpu *vcpu, gva_t addr)
+ 	walk_shadow_page_lockless_end(vcpu);
+ }
+ 
++static u32 alloc_apf_token(struct kvm_vcpu *vcpu)
++{
++	/* make sure the token value is not 0 */
++	u32 id = vcpu->arch.apf.id;
++
++	if (id << 12 == 0)
++		vcpu->arch.apf.id = 1;
++
++	return (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
++}
++
+ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 				    gfn_t gfn)
+ {
+ 	struct kvm_arch_async_pf arch;
+ 
+-	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
++	arch.token = alloc_apf_token(vcpu);
+ 	arch.gfn = gfn;
+ 	arch.direct_map = vcpu->arch.mmu->direct_map;
+ 	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
+-- 
+2.30.0
 
--michael
