@@ -2,171 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4559DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0B6C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243467AbiBJPN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:13:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52044 "EHLO
+        id S243501AbiBJPSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:18:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243267AbiBJPN0 (ORCPT
+        with ESMTP id S243485AbiBJPSg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:13:26 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2073.outbound.protection.outlook.com [40.107.93.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4083A137;
-        Thu, 10 Feb 2022 07:13:27 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZHP+KLSGV63rOf3m0XN+MX+YYSdpGM4U+zCj+7mlZmkmp22X395411cA0WYkxeLt02/P0+TSVGhzHg2wvwNFC+7bCDtj450BlJV0c3odhuOvY8s92sbF+QZXBm1IMBxZj6bLtfDWkW1edq0/2x1RPg3muDSesWyWXjd2+i1NlVX1pPJ50xnDpczKfk3QxeTIYSIIuwTu0/IHNAlU4Q2Gy/lIhvzspudN/197pXpnaQ+gSdIBYngSnOoe2g9Vm9gbBbxvtvKwuHqacop7e+kjgtL1+3AVfiPh1Z9mJ96Ha3ydivhtdsngy7FgQzzP72K6+3hDfZudskezFbAjm76brA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4W1tDUBMGjvkLDBU5YF1ncnLJVd3Zu3+GdSGRVtEtrQ=;
- b=QRa3tnxIMv5phI2Bd4ENO/MEOMJXb8gfOfXjL/HqRBlEhBdt3BubUAz4ySR1fHybrxJuU3xTaQVGV2+6kFm4m7uca65fFEY4U8G8TaXBTXP2zj5veb8VALYpIk/0EPZq5EsK+i3zBUCGe6S6yCpqGbq2RzpC68GTAJYVi4z+jl+LJOKJcRkP/j7gsDo1HKc8LvqbCCwJHK2i3z+I54Xna7OKSuFa98Qp2HDM3GNiVWDh9CyWAsnSl+t9vAoxW7EqgKgKluLMHHIwdUXulHi9qdzONJwhEINAWn5j/UYmJl1TWDeoLdfXQAgF3h5DG1G9wx7CF55Lg1Fltl5g0BT65A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
+        Thu, 10 Feb 2022 10:18:36 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2981B3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:18:36 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id bt13so16464165ybb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:18:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4W1tDUBMGjvkLDBU5YF1ncnLJVd3Zu3+GdSGRVtEtrQ=;
- b=U5rCCDA4uaaZ1KLvb0mtXwBWH5Vq5XDvSEhw/iuFxqb/bqQkSYuGAXunk7stdmLcao5phlgjDxbLuy3pvM4sV/T3cs49RRq/K4JiCLQDgtZ8O6wS0jwbwLeuRIdelBQ8qbVstCKprwi53nBlxQFP1KZnhXhshmL08Pg/X8BZpwU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silabs.com;
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
- by BY5PR11MB3927.namprd11.prod.outlook.com (2603:10b6:a03:186::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Thu, 10 Feb
- 2022 15:13:24 +0000
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::1b3:e483:7396:1f98]) by PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::1b3:e483:7396:1f98%3]) with mapi id 15.20.4975.014; Thu, 10 Feb 2022
- 15:13:24 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org,
-        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v9 05/24] wfx: add main.c/main.h
-Date:   Thu, 10 Feb 2022 16:13:16 +0100
-Message-ID: <39159625.OdyKsPGY69@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <87ee4a3hd4.fsf@kernel.org>
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <4055223.VTxhiZFAix@pc-42> <87ee4a3hd4.fsf@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: PR2P264CA0045.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:101:1::33) To PH0PR11MB5657.namprd11.prod.outlook.com
- (2603:10b6:510:ee::19)
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WSJt8CAQGYy8+Qr3AHVnbVBwslNc59d9Xks8fwy34k4=;
+        b=FnBkguaVd+krz0Rmqf9XinS18oXA5REL/KikbJTnfijjYxkKuz3GpqE5OEsEiUpEeO
+         3Gszr4f8RsYKtHT86TEo0oXjtCM4KbijQg/JLQM/G3os8sCR6yl9LheQ6HDGYg2M8OOT
+         PnB7JKNy4lY16c2ttZArEOhFLXsAvTNjm8oDZ/ubC4f6StCJeqsvcsMBMztW3rb5/4Nn
+         vYxuPC+iFrN7VP2ckjfwNIEBG4s8GlwUNfBvoAqtiCx5BQw9gZl2gfVqp4QmwzZ5TKnf
+         zVE7TYIkXokjXNZwt8cG2uFtb8ac9Zb0vRr1aMiki2ZXn1gAs20GikT+NwCHDvb5w8ro
+         M3lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WSJt8CAQGYy8+Qr3AHVnbVBwslNc59d9Xks8fwy34k4=;
+        b=sLCubkDw8Xm9fjQ391SaayF08ImDhknZ5ntcqtfO9o3yP0n7RAntMgn0+6cvA72bjr
+         DclT9RJYxwgLmCJEJXxNZC0EOJyC2L4vKNudmKA7ZMYqSpX5bNRG+S73Ex5aAXxT2uGW
+         XVNr6knOwcG2r4l+FAhZXTg77KJB8MF5b043tKvJHDrh9H/GK03QBsMyDK1DHGxghYUk
+         V8ei78Xvge3sex7S8z/v3UxgE3IkqCR+bRLE7ZAGIgLAhxBJ9rZPn/P6EDfPD2fVNvmd
+         oVjT2FBDw1CH0/vlKefA+l3FFJo2QuMfXF58d77cg/eww/GpPzeaosZsrBp9wUyEbqvv
+         qhdQ==
+X-Gm-Message-State: AOAM532VUY7rNZYkS7IVm0LrOcBx1rxJlkwhwTVt4fPILrBvGY8T6RF5
+        w7+SIxxCFDvPTgQ0yxzRO6g7A95f+T+Ga6i9hWlJ1Q==
+X-Google-Smtp-Source: ABdhPJz2b1gN5kCrvKQtWO5ov0VVk5Qmgz0rZFVdfy820O8pdCfysTPmN7H0fwfgqmMeUddkGJPYN0vUDyWr5r951C4=
+X-Received: by 2002:a81:7e4f:: with SMTP id p15mr7600216ywn.180.1644506315505;
+ Thu, 10 Feb 2022 07:18:35 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ce58b25f-569e-4e3d-1c35-08d9eca7e1b8
-X-MS-TrafficTypeDiagnostic: BY5PR11MB3927:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR11MB3927831E42CBA7056DDB895F932F9@BY5PR11MB3927.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tQ7bhfdYri6+g0QWum2DpNJiDg8S0CoTqLL7eTlkDtD2QGlZf3zy9qkz5gbIJC3PsNW4oZOYqoNDBDINTITbTM1VEMG14X3W3Aj3YL2Rx4xKYYqPON09P69xpXRl3XisfIA2PC6KSy8F+DTbM/7VMcTO49nM7E5R0e+gG+6hlaQ1/ulk9A8oqFCdgzqRj9rwlcRm6rileeP8EyJzpe8K/EkzZ93Tjy5vUm244GsVlFQSeIJeMXjmYuDdLWycUraCPVn2GrmNwrwcuix6nslxIscKGatGv9272erwiHT3QF1JdZhKr9G/suPVCLXpyj/9xAsjhdzyJWp5fiKi2gTYj+F+Eo6SXzVbBH8YfSTHs4KgwIGigd4N5Evn6NJB2Lp6NC9TPrRvBtxmaI/vj8sUtKhw0tPcAm27XV/YvEORLoQtsxYxn3mJ2FAzdD0f/gggmqLLQ5aq06BJwJx/Brviw0/c18dt+dvK/2TqetbTd610joq/ccK7mVzoZpbFOGpLSRuZLwxF7pYX+LwYsXnUCIWXy6Ou24wy+Q+P5f57LY0P6ZWlT5d3UhjcjoTdwJrXZmaVNip3C38eVHmkmzUtJ9t4YdA7nqzvf5rRwmva2tNWljFkfBD9moG7zGBos08AnSHg6kSND/K8AMb1Zar0fpRdapl+oC4utAotekDDg4mIM27B7byFHkEnL3lC+htmjg6fUZLYUpkeDf86Hw+GLevZ2iIPUFf4Slqei57pYYk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(6666004)(8936002)(66946007)(508600001)(86362001)(54906003)(52116002)(33716001)(6506007)(36916002)(316002)(38350700002)(8676002)(6916009)(9686003)(66476007)(66556008)(6512007)(5660300002)(186003)(83380400001)(66574015)(7416002)(38100700002)(26005)(6486002)(4326008)(2906002)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?I3+dqSU2Md0Dr7fS9oa+kB4Vqn6XROHqUN3ZXnaB6ApHYiWiB8Em3RhMe0?=
- =?iso-8859-1?Q?tj0b9HzO4GRbMgum+t+N458YCVcVHFm47JesiI/EJuxbFCkReTpsUWSQwc?=
- =?iso-8859-1?Q?YLvhmSfov3GiBF7leOZbRzTyMe0XTLryXX+v+sGLynvg6x7leOTellg+nz?=
- =?iso-8859-1?Q?5YxR2kdxXhP0RaLtbhYqwC/wM1WeMNoPu+YbYbzxdFR0g4iM204H0J1Q2k?=
- =?iso-8859-1?Q?EhreXqiAPUBeRBfSPb2WEkEWdB1CY7EKNh+QFY9ZkXYZzYX97b8tv9jCI8?=
- =?iso-8859-1?Q?hp182Iq5xdcnNMQt1pDLExNxb7IzUNrttBu9Nkj9LmJKaD1tqt07XwpGNm?=
- =?iso-8859-1?Q?oh2OVzCcY+US3Ln1tm7GiLApV0W13j7a1iHq/XQVWA+tXzb7sPZseO5iDX?=
- =?iso-8859-1?Q?E/mVi5KwPtudh3w0f4CQ16tkUM0Z6EI5g2Ky+L7h9j8X9B4wfn7KwfPxOW?=
- =?iso-8859-1?Q?hTE8GhVVNk5ajlUB4ZfMzqExaG+3mSr3yAZbypLTIe6dWtfoHmWOffZvLq?=
- =?iso-8859-1?Q?GEUW0pAW84ABnk9Zi6ZAqgXIMyvL3QiVmSE/eV8mA2Ghag5ZRWL2uStDtR?=
- =?iso-8859-1?Q?+wfGAb4PeQtwAw0AGjoWvl7XtFz+ZgWpRqQKDQxElRzdV7+0dgc9bmHEEn?=
- =?iso-8859-1?Q?iL/baoP7khbjQ1uohoWYhSBh89Rrszu1WemRSZswY0keYnnkFfHMu5slp6?=
- =?iso-8859-1?Q?bNSZRyf6WaIoPXBg0Dcph0tb7WX8i6Ykq68gRteQZKBNoEPefdzLFhWPcv?=
- =?iso-8859-1?Q?68D7YxpolfoOMJcNYrSNHXdM67fOTKsxQo9rSeZAdtXz4EMnDU+u7xYZjD?=
- =?iso-8859-1?Q?kfnBYHIzu7Ml85FbSaev89VSCNfRd1MrtYvObQs8Ld/EDTjyVF7Pf5Y+qs?=
- =?iso-8859-1?Q?eiE7rBxp3sJxD7pjWhQ2Dblru6KZydQpCBXhz9vrrQuYVHJIz5b6QehYDX?=
- =?iso-8859-1?Q?GkPH5wflpAO5kdYK49h3BTIDjrhT1UTqvJtfB4/Z7degvMq3wpqXv3+VYH?=
- =?iso-8859-1?Q?iEzeROMNzsbe4cg0hOUmcd5xzvgT9H1uFvqabtOSA9dXl7nInw8NEmGexg?=
- =?iso-8859-1?Q?aF25klocoDR+qzCt3IWN16KQK3+l5gr6lB5AjkNMAocU8yjn0YBnt7GZ2V?=
- =?iso-8859-1?Q?UvW7v2vdj0oQlpZN1pHZ6CT5ryB0Bnw/zYkiehywuyvFXTqMj6xvBa+Wfy?=
- =?iso-8859-1?Q?9YpWvLuO4yz/9pkmDLlW6iKWoYT56feMVsDcZuzZZAavm0wXBEZeAjnWeq?=
- =?iso-8859-1?Q?Y46jKwc7DZTEwJttJ08aQGlOiTdln7XXAjVjrQz/vaG6+P5B6ovjlXHRSn?=
- =?iso-8859-1?Q?0DRtsNUY9J/aYueMZcK9XU2F65FaiITocidCJ1NYzMxSO5Ch1DN94mO8RA?=
- =?iso-8859-1?Q?OHxVYBVWQ7tqBUlNoBNbxV47OLcsvDekeT0hKmHttH+o3LKOvBIMazK9lw?=
- =?iso-8859-1?Q?KrU/sh8u20Li+FCC+7CGbySS3yr0jDH1EFd8mWCirlIjB1n0w55yQfDA9E?=
- =?iso-8859-1?Q?YuBx9DiGh/YRCHWPzVffsz15phEWy/Zio6KUKhVWLPyHTWpm52G2b9zJnw?=
- =?iso-8859-1?Q?9l5zkRzmsUdRepPQdwrVCxOe8QHgn2Oa+XU26DWRVQe454d/RUVbie9Jw+?=
- =?iso-8859-1?Q?Ag3r44yBD4LL6zDOxSYNYhMwkTqG2suEo6WfV94y787kiPya+v2bUwYk0d?=
- =?iso-8859-1?Q?yx45COqNa4zxs5NWnbY=3D?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce58b25f-569e-4e3d-1c35-08d9eca7e1b8
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 15:13:24.2769
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OqpakgH/vVpWhT6fHz95FsBkkDefp6NmOEPHuxlnagA/nrFuUa5OInP+YMkq1yfU7x01h2zwhJMUopzqYG3cjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB3927
+References: <20220210043215.42794-1-surenb@google.com> <YgUHzSqltDp2dr70@dhcp22.suse.cz>
+In-Reply-To: <YgUHzSqltDp2dr70@dhcp22.suse.cz>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Thu, 10 Feb 2022 07:18:24 -0800
+Message-ID: <CAJuCfpGkW7MoWW=E1tqEib24M3JjxDKF_zgmMnvWo8wJP6cy2g@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] mm: fix use-after-free when anon vma name is used
+ after vma is freed
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Colin Cross <ccross@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        Chris Hyser <chris.hyser@oracle.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Peter Collingbourne <pcc@google.com>, caoxiaofeng@yulong.com,
+        David Hildenbrand <david@redhat.com>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@android.com>,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 10 February 2022 15:51:03 CET Kalle Valo wrote:
-> J=E9r=F4me Pouiller <jerome.pouiller@silabs.com> writes:
-> > On Thursday 10 February 2022 15:20:56 CET Kalle Valo wrote:
-> >> J=E9r=F4me Pouiller <jerome.pouiller@silabs.com> writes:
-> >>
-> >> > Kalle, is this function what you expected? If it is right for you, I=
- am
-> >> > going to send it to the staging tree.
-> >>
-> >> Looks better, but I don't get why '{' and '}' are still needed. Ah, do=
-es
-> >> the firmware require to have them?
+On Thu, Feb 10, 2022 at 4:40 AM 'Michal Hocko' via kernel-team
+<kernel-team@android.com> wrote:
+>
+> On Wed 09-02-22 20:32:15, Suren Baghdasaryan wrote:
+> > When adjacent vmas are being merged it can result in the vma that was
+> > originally passed to madvise_update_vma being destroyed. In the current
+> > implementation, the name parameter passed to madvise_update_vma points
+> > directly to vma->anon_name->name and it is used after the call to
+> > vma_merge. In the cases when vma_merge merges the original vma and
+> > destroys it, this will result in use-after-free bug as shown below:
 > >
-> > Indeed. If '{' and '}' are not present, I guarantee the firmware will r=
-eturn
-> > an error (or assert). However, I am more confident in the driver than i=
-n the
-> > firmware to report errors to the user.
->=20
-> Agreed.
->=20
-> > If there is no other comment, I am going to:
-> >   - submit this change to the staging tree
->=20
-> Good, it's important that you get all your changes to the staging tree
-> before the next merge window.
->=20
-> >   - publish the tool that generate this new format
-> >   - submit the PDS files referenced in bus_{sdio,spi}.c to linux-firmwa=
-re
-> >   - send the v10 of this PR
->=20
-> I'm not sure if there's a need to send a full patchset anymore? We are
-> so close now anyway and the full driver is available from the staging
-> tree, at least that's what I will use from now on when reviewing wfx.
->=20
-> What about the Device Tree bindings? That needs to be acked by the DT
-> maintainers, so that's good to submit as a separate patch for review.
+> > madvise_vma_behavior << passes vma->anon_name->name as name param
+> >   madvise_update_vma(name)
+> >     vma_merge
+> >       __vma_adjust
+> >         vm_area_free <-- frees the vma
+> >     replace_vma_anon_name(name) <-- UAF
+> >
+> > Fix this by raising the name refcount and stabilizing it. Introduce
+> > vma_anon_name_{get/put} API for this purpose.
+>
+> What is the reason that madvise_update_vma uses the naked name rather
+> than the encapsulated anon_vma_name? This really just begs for problems.
 
-There is also the patch 01/24 about the SDIO IDs.
+The reason for that is the second place it's being used from the prctl syscall:
 
-I think the v10 could contain only 3 patches:
+prctl_set_vma
+  madvise_set_anon_name
+    madvise_vma_anon_name
+      madvise_update_vma
 
-    1. mmc: sdio: add SDIO IDs for Silabs WF200 chip
-    2. dt-bindings: introduce silabs,wfx.yaml
-    3. [all the patches 3 to 24 squashed]
+In that case the name parameter is not part of any anon_vma_name
+struct and therefore is stable. I can add a comment to
+madvise_update_vma indicating that the name parameter has to be stable
+if that helps.
 
-Would it be right for you?
-
---=20
-J=E9r=F4me Pouiller
-
-
+> --
+> Michal Hocko
+> SUSE Labs
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
+>
