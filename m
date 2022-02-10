@@ -2,79 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7719C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53498C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:04:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236899AbiBJIBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:01:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44914 "EHLO
+        id S236904AbiBJIEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:04:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234323AbiBJIBo (ORCPT
+        with ESMTP id S234323AbiBJIE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:01:44 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 220121088
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:01:44 -0800 (PST)
+        Thu, 10 Feb 2022 03:04:28 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11991088
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:04:28 -0800 (PST)
 Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 924112223A;
-        Thu, 10 Feb 2022 09:01:40 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id A53D42223A;
+        Thu, 10 Feb 2022 09:04:26 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1644480101;
+        t=1644480266;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=f/wqfZ7Tr1j9aSdCRb6UxeY6aGR1bPLimuxomNP4AWQ=;
-        b=DIkgjIue5Cuw5V1TANoCyK23hr+AMqR+LeQLRZd5aglf77JppssV8wm8LBHnvv5akISPrd
-        xjHkI/PRZ7Zo7I7Erxswr67nxpdG4pymxpkolZCsGNnphd3W9Y15lsAvQR8SXwbKLsufsZ
-        0PIx1UjLjieWSA6Dx6wxMNgflIisecY=
+        bh=bCRjulaua8nbar2xx5MsVkSgjkg/+PvqvIadAhk7kp0=;
+        b=pypwTD4zSgrT/56iiczgSgNcWigGU0stm268lPi1hbcoaYT0nyWhFwNqv3HQlgcWxSHRFL
+        8yT1XWrnGXLEjcBzZac7XhwuKespg+iI4znKJOFoi3V4SRodv3OZMyVKmQ20CsOynneoLW
+        +vj23a2IUqTDmbKdhTsUunQvHmVWTf8=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-Date:   Thu, 10 Feb 2022 09:01:39 +0100
+Date:   Thu, 10 Feb 2022 09:04:26 +0100
 From:   Michael Walle <michael@walle.cc>
 To:     Tudor.Ambarus@microchip.com
 Cc:     linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
         p.yadav@ti.com, miquel.raynal@bootlin.com, richard@nod.at,
         vigneshr@ti.com
-Subject: Re: [PATCH v1 02/14] mtd: spi-nor: slightly refactor the
- spi_nor_setup()
-In-Reply-To: <f4a7a2c2-579c-f558-3d85-cf0709a6060c@microchip.com>
+Subject: Re: [PATCH v1 05/14] mtd: spi-nor: xilinx: rename vendor specific
+ functions and defines
+In-Reply-To: <68aa414b-7a9d-1330-531c-37b2db2ab09d@microchip.com>
 References: <20220202145853.4187726-1-michael@walle.cc>
- <20220202145853.4187726-3-michael@walle.cc>
- <f4a7a2c2-579c-f558-3d85-cf0709a6060c@microchip.com>
+ <20220202145853.4187726-6-michael@walle.cc>
+ <68aa414b-7a9d-1330-531c-37b2db2ab09d@microchip.com>
 User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <0280538304fe8c837af0356ae469f428@walle.cc>
+Message-ID: <73d3d8ed2cb4ca1b06902b767fe529c3@walle.cc>
 X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-10 04:00, schrieb Tudor.Ambarus@microchip.com:
+Am 2022-02-10 04:08, schrieb Tudor.Ambarus@microchip.com:
 > On 2/2/22 16:58, Michael Walle wrote:
 >> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
 >> the content is safe
 >> 
->> Instead of always using a function pointer (and initializing it to our
->> default), just call the default function if the flash didn't set its 
->> own
->> one. That will make the call flow easier to follow.
->> 
->> Also mark the parameter as optional now.
+>> Drop the generic spi_nor prefix for all the xilinx functions.
 > 
-> what should be done in the future?
+> mm, no, I would keep the spi_nor prefix because xilinx_sr_ready is too
+> generic and can conflict with methods from other subsystems.
 
-What do you mean? IMHO the default path should be visible in the
-function. Eg.
+But all the other functions in this file start with xilinx_ ;)
 
-int spi_nor_bla(nor) {
-     if (nor->some_exceptional_cb)
-         return nor->some_exceptional_cb(nor);
-
-    return usual_cb(nor);
-}
+I don't have a strong opinion here, other than it shouldn't
+be called spi_nor_read_blaba() because that looks like a
+standard spi nor function belonging in core.c
 
 -michael
