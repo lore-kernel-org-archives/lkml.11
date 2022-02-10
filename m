@@ -2,103 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB7DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C349C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:08:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235022AbiBJGFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:05:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52158 "EHLO
+        id S234724AbiBJGIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:08:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbiBJGFe (ORCPT
+        with ESMTP id S231782AbiBJGIF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 01:05:34 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC071D9
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:05:36 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id c14so3929158qvl.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 22:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=libE9Yn1tWBYKLkyjSY/ju5fNvytYicqcfgJwizlZcE=;
-        b=dLKYw75qu4bpXdwIh3rv48k15nRreYPToUXnAHn/slr1zvyL8DqWHxmixuR93gw4M/
-         bl/4oFr9hfl7mJEKZCMyx40iWCZt47TgKsAmz8HPsDddE0OQEZ9XOJ1w+5YorWITCBZF
-         12sEovbYFwSkEoXtBUV6cFGloa1ocqMLIORVaB1Wsbrvo/LfNRN9gpcGdvV4uu3DIXUU
-         2Tt2u4JahD2Rubi12QtPNP2cqjMEyHII+HqeU7PUIcKvnh4xU2olUyaO19hjOYuIu/X4
-         c23BPIS/SyCkCMzMpdYIdclcuagKi40wKsmbnMu37uYpK9HR/CoOxnxj4UarpC0Ca1SU
-         7f+A==
+        Thu, 10 Feb 2022 01:08:05 -0500
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE2C1F5
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:08:07 -0800 (PST)
+Received: by mail-il1-f200.google.com with SMTP id m3-20020a056e02158300b002b6e3d1f97cso3259443ilu.19
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 22:08:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=libE9Yn1tWBYKLkyjSY/ju5fNvytYicqcfgJwizlZcE=;
-        b=xLBZ1z53zJ5IYCoO06/qSNY/9L6bKyEaB+DH9vpTRHZ6QH56rre7PvhYX927gTo1x+
-         hCWmpJvDFAXXhqkRvye2cdFOa12rU3kvKRe4p1p4Eb48ioiDVfVUKHPGpjW8cGilU9Xq
-         EdG+t4Nqkt93p9BWHrPjUr8lPPoc5U8nSjDu/XtuP0xtbXX9iX5Bq1zsWw7vfYVIQuOv
-         71NJFwVtF5dOBzpR6IJUgPUOyMiYNvzAq+gYntzXRKakGU6UbfmSyO3EcnPMGP7QOBg8
-         CauJYGJ66MIu0XF3XxXaurpNls2fBVUWWUYUAt5SbE8dVgSMrQPeEh4aqj2VH9buH0P2
-         78EA==
-X-Gm-Message-State: AOAM531E07JtR3jm5esSDrreWedWep/XvzSyVCBNb/EXiKQdWUYr2FL6
-        vlJVbTIyZPNLnJ/g877fPcGWRzjmKbs=
-X-Google-Smtp-Source: ABdhPJwPEeBaJnQZEpGh/G4E2EiYfU9a5wjU9luZd+NapvxeRAesLQVAOTyq3zmZ8C+PR6Xyefuvtg==
-X-Received: by 2002:a05:6214:62b:: with SMTP id a11mr3968947qvx.99.1644473135358;
-        Wed, 09 Feb 2022 22:05:35 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id d6sm10331723qtb.55.2022.02.09.22.05.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 22:05:35 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kishon@ti.com
-Cc:     vkoul@kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] drivers/phy: remove unneeded ret variable
-Date:   Thu, 10 Feb 2022 06:05:29 +0000
-Message-Id: <20220210060529.1608027-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=hxxPMFG7Sy5R8OTw+DHD+CiI9MhDe02HH/eavpKJlVI=;
+        b=A9WHhWUXQrf3ilNJClGCB4zXvQvSRnK2UAg0fJ8MDz9bCUQ3HErI3CKMy2931MHlXM
+         Z0hG/5CXU/zbVPd9DqO+/5U036FwVtf9QoaIalZOWD+6V2sNrm1AUYoH6pPYw8Q5yT7a
+         xRMFErvPRFoi0YG2erMsnRNP76CItKWqQDieQ0y9ouKECcc/qT9UR7lIsV8Cd0aftmRD
+         QVqCrBMybYC90BPT5z628ZO8qkYcW4rGL49EkLpHpq6tDH69AN0Z9JRRsSLDz5O5gv30
+         fpqKUlX5vyyen78scDGhB7rDXZZ0tUYJySAFxJLIy820M3YKEJiLV9eiCj8fRXkMm9TU
+         oevg==
+X-Gm-Message-State: AOAM533wPAvJPnCw76FwvSGAAwYIFvWCa9yOSmpD/y3ET0QIdu/OWS7R
+        l+G5D0+TeST4z+5T/WFNLrwDTvygxR0ZW9OGdv1FM4Gs9H8a
+X-Google-Smtp-Source: ABdhPJxoAleQUKXdKQfyFJ/lU/DvKG+eN88p4ZFdGI/Tl2jq2ibPHrnZmPgShLp0DuHR0xD1pBw8UCAuxjN2bbrZc03Lii2YDBgU
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:2cd2:: with SMTP id j18mr3118329iow.92.1644473287137;
+ Wed, 09 Feb 2022 22:08:07 -0800 (PST)
+Date:   Wed, 09 Feb 2022 22:08:07 -0800
+In-Reply-To: <000000000000a3571605d27817b5@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001f60ef05d7a3c6ad@google.com>
+Subject: Re: [syzbot] WARNING: kmalloc bug in xdp_umem_create (2)
+From:   syzbot <syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andrii@kernel.org, ast@kernel.org,
+        bjorn.topel@gmail.com, bjorn.topel@intel.com, bjorn@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        fgheet255t@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
+        jonathan.lemon@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        magnus.karlsson@intel.com, mudongliangabcd@gmail.com,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
+        w@1wt.eu, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Minghao Chi (CGEL ZTE)" <chi.minghao@zte.com.cn>
+syzbot has bisected this issue to:
 
-Return value from regmap_update_bits() directly instead
-of taking this in another redundant variable.
+commit 7661809d493b426e979f39ab512e3adf41fbcc69
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed Jul 14 16:45:49 2021 +0000
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
----
- drivers/phy/ti/phy-ti-pipe3.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+    mm: don't allow oversized kvmalloc() calls
 
-diff --git a/drivers/phy/ti/phy-ti-pipe3.c b/drivers/phy/ti/phy-ti-pipe3.c
-index 2cbc91e535d4..060b68c69ab8 100644
---- a/drivers/phy/ti/phy-ti-pipe3.c
-+++ b/drivers/phy/ti/phy-ti-pipe3.c
-@@ -318,7 +318,6 @@ static void ti_pipe3_disable_clocks(struct ti_pipe3 *phy);
- 
- static int ti_pipe3_power_off(struct phy *x)
- {
--	int ret;
- 	struct ti_pipe3 *phy = phy_get_drvdata(x);
- 
- 	if (!phy->phy_power_syscon) {
-@@ -326,9 +325,8 @@ static int ti_pipe3_power_off(struct phy *x)
- 		return 0;
- 	}
- 
--	ret = regmap_update_bits(phy->phy_power_syscon, phy->power_reg,
-+	return regmap_update_bits(phy->phy_power_syscon, phy->power_reg,
- 				 PIPE3_PHY_PWRCTL_CLK_CMD_MASK, 0);
--	return ret;
- }
- 
- static void ti_pipe3_calibrate(struct ti_pipe3 *phy);
--- 
-2.25.1
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13bc74c2700000
+start commit:   f4bc5bbb5fef Merge tag 'nfsd-5.17-2' of git://git.kernel.o..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=107c74c2700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17bc74c2700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5707221760c00a20
+dashboard link: https://syzkaller.appspot.com/bug?extid=11421fbbff99b989670e
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e514a4700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15fcdf8a700000
 
+Reported-by: syzbot+11421fbbff99b989670e@syzkaller.appspotmail.com
+Fixes: 7661809d493b ("mm: don't allow oversized kvmalloc() calls")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
