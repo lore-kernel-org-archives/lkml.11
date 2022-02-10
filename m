@@ -2,112 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB76C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345944AbiBJXzv (ORCPT
+        id S1345951AbiBJXz4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:55:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55696 "EHLO
+        Thu, 10 Feb 2022 18:55:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345909AbiBJXzu (ORCPT
+        with ESMTP id S1345909AbiBJXzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:55:50 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6355B5F88
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:55:50 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso7229218pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:55:50 -0800 (PST)
+        Thu, 10 Feb 2022 18:55:55 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ADE65F83;
+        Thu, 10 Feb 2022 15:55:55 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id c188so9475771iof.6;
+        Thu, 10 Feb 2022 15:55:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dlMqHYWmeFE9YutBKgR2EWRsK4ahNPNhY+dEU62idVs=;
-        b=U+LPgDEPgoz09gCSOxee5fvC3VuxGKKndS6TlMMy9IQ7jRkw/xAxF6fQZK8UTkyltx
-         whl7YNhPbjG1RVFkAnQIoF917YJGVWExCqY1t5u0AMOKku8nMOHB9T13oQDjrvqzFJ1X
-         eIAzDSm9n97m5x8oa/2fIfW9UEeHpZSiv0G5Q=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9Poe1QU0FyqYAnHH8Q+q/1vr6hVBL5HGB2D6185D4Dc=;
+        b=g31QJrIdHnrArxOcj+UtssUsmwnWEpH4lQAi2PZOos3OiL1YRpDRz8LhpX0UqO019M
+         VbAjG0CpxRcTaZ9F2Z5FfMfKvoymkuIxkojwKOyOspqzdoQuZuukn/CD6iH4hXlMql6a
+         y1emREWzbvfX8nKyVV+eNehAExdOMASWVGrEC5hJRbX6TlrY29oEs7aIlM/9mRm9xHgV
+         Rre3uyOgzPJZl799rdCZyxHLg7qjtxkKfJHCwnLgkd0TTvy57u4IHey9pRNlwJqKLpgN
+         dNTv5O/2hn7LRQQh2QoZ7blZYoTLIx3M6TjJwkeAUSxg/+K3RWUmOxa+YMxKXRQeSygm
+         6arQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dlMqHYWmeFE9YutBKgR2EWRsK4ahNPNhY+dEU62idVs=;
-        b=WZWB98lMuiG4aSbQkHD4rOIuwebCom8/+7k5VoxtSG4zZ7uGiPG5C+LYmcqYnQY4Bh
-         tkjlVN5kCwHJJilS1Ltt2Pr3jVJbLQToRI62IjgoNaaF1NuYeCR9rQQ80mNsRSd5HKZK
-         5FAUWH5wOyU3Cgv5TAOaqOl3x31jKRdnbPSFe5i9eF49KwFBc0A2wLSs1dtE1RK8DrMl
-         wtfDhj6ghGhPWhzfDxsjJQe/e8ZN4Btu9iDmBYqf4pw0cwlKvvCPBGaPorZzw38JsxhN
-         6U3v9qDGL3apUJV1wxTTReEBIcTULnioxSsB5k8bU5qvkZh3xWtpdXjhZnZqcoSJitTt
-         Sf9Q==
-X-Gm-Message-State: AOAM533MLMEHJoQ745wkqjVsYldHYLMxipJVowrWrXcO0eSp7inoqlPN
-        AKD9rgkz917I/gBtOrdfFSLIKQ==
-X-Google-Smtp-Source: ABdhPJwWbQAdWi1tu+pJMuOU18Jq/YySWVk/7i1eFjfDT/ZHvGMexKGSOXjumML3yxu4jQLNtqBEZQ==
-X-Received: by 2002:a17:90b:4f41:: with SMTP id pj1mr5347261pjb.209.1644537349836;
-        Thu, 10 Feb 2022 15:55:49 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j4sm25018194pfc.217.2022.02.10.15.55.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9Poe1QU0FyqYAnHH8Q+q/1vr6hVBL5HGB2D6185D4Dc=;
+        b=7QpP4semKo/wDBdvWxzR+iiha9Fp1mX2js8qSXiO9q8pqSXEI+wFFfpYV4clqmtvaj
+         D5wJksbwKiVkbF6fklMbBbm+TAWm4c0pUOwEKsd3lL8krXad5h7P6yvm72hPckWh6lsB
+         zrKqEfRAKG2ubY9kTAuxmU81gzSJg83l3rFy8gSD9V3OyWCJY2RfWI0pZfhxb1bkt/YV
+         1M4HBsl69teBu8oZr2oAJfMxy23Ta3PMUSik8AoImZen2rAI1kpNzebkLeo7CKd0xfFg
+         E//hyTANlhDr141vnD0GD4ULM9VfsbIjJq6upoz+LrqkdUciQLUYio5MpoyRhV6k2yW8
+         9A+w==
+X-Gm-Message-State: AOAM531l6+DnVytj+ykAv+cLciKRlvygdPhW2ylInC1ydFfLcpvUHF1j
+        OevOTrBeFD4YpgmmiTHK3bw=
+X-Google-Smtp-Source: ABdhPJxH+VGiGx9FUazjFDcnU7odGVOPzznh3sg75Vp+ADEFdLGkzCpLhCud0L3DRIIA/OcM2o86vA==
+X-Received: by 2002:a02:3f42:: with SMTP id c2mr5403680jaf.161.1644537354570;
+        Thu, 10 Feb 2022 15:55:54 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id e20sm6388176ioc.35.2022.02.10.15.55.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:55:49 -0800 (PST)
-Date:   Thu, 10 Feb 2022 15:55:48 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
-        kernelci@groups.io, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2] selftests/exec: Rename file binfmt_script to
- binfmt_script.py
-Message-ID: <202202101555.EE737A35@keescook>
-References: <20220210222319.1864680-1-usama.anjum@collabora.com>
+        Thu, 10 Feb 2022 15:55:54 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Colin Ian King <colin.king@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Shubhankar Kuranagatti <shubhankarvk@gmail.com>,
+        linux-mmc@vger.kernel.org
+Cc:     Shubhankar Kuranagatti <shubhankar.vk@gmail.com>
+Subject: [PATCH 29/49] memstick: replace bitmap_weight with bitmap_weight_eq where appropriate
+Date:   Thu, 10 Feb 2022 14:49:13 -0800
+Message-Id: <20220210224933.379149-30-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210222319.1864680-1-usama.anjum@collabora.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 03:23:19AM +0500, Muhammad Usama Anjum wrote:
-> Rename file for readability purpose. Update its usage and references.
-> 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
-> This path was suggested while review of the following patch. Please
-> apply it after applying that one first:
-> 	selftests/exec: Add non-regular to TEST_GEN_PROGS
-> Changes in V2:
-> 	Remove changes from binfmt_script.py, they were wrong
+msb_validate_used_block_bitmap() calls bitmap_weight() to compare the
+weight of bitmap with a given number. We can do it more efficiently with
+bitmap_weight_eq because conditional bitmap_weight may stop traversing the
+bitmap earlier, as soon as condition is (or can't be) met.
 
-Thanks! :)
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Acked-by: Shubhankar Kuranagatti <shubhankar.vk@gmail.com>
+---
+ drivers/memstick/core/ms_block.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-
--Kees
-
-> ---
->  tools/testing/selftests/exec/Makefile                           | 2 +-
->  .../testing/selftests/exec/{binfmt_script => binfmt_script.py}  | 0
->  2 files changed, 1 insertion(+), 1 deletion(-)
->  rename tools/testing/selftests/exec/{binfmt_script => binfmt_script.py} (100%)
-> 
-> diff --git a/tools/testing/selftests/exec/Makefile b/tools/testing/selftests/exec/Makefile
-> index a89ba6de79870..a0b8688b08369 100644
-> --- a/tools/testing/selftests/exec/Makefile
-> +++ b/tools/testing/selftests/exec/Makefile
-> @@ -3,7 +3,7 @@ CFLAGS = -Wall
->  CFLAGS += -Wno-nonnull
->  CFLAGS += -D_GNU_SOURCE
->  
-> -TEST_PROGS := binfmt_script
-> +TEST_PROGS := binfmt_script.py
->  TEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular
->  TEST_GEN_FILES := execveat.symlink execveat.denatured script subdir
->  # Makefile is a run-time dependency, since it's accessed by the execveat test
-> diff --git a/tools/testing/selftests/exec/binfmt_script b/tools/testing/selftests/exec/binfmt_script.py
-> similarity index 100%
-> rename from tools/testing/selftests/exec/binfmt_script
-> rename to tools/testing/selftests/exec/binfmt_script.py
-> -- 
-> 2.30.2
-> 
-
+diff --git a/drivers/memstick/core/ms_block.c b/drivers/memstick/core/ms_block.c
+index 0cda6c6baefc..5cdd987e78f7 100644
+--- a/drivers/memstick/core/ms_block.c
++++ b/drivers/memstick/core/ms_block.c
+@@ -155,8 +155,8 @@ static int msb_validate_used_block_bitmap(struct msb_data *msb)
+ 	for (i = 0; i < msb->zone_count; i++)
+ 		total_free_blocks += msb->free_block_count[i];
+ 
+-	if (msb->block_count - bitmap_weight(msb->used_blocks_bitmap,
+-					msb->block_count) == total_free_blocks)
++	if (bitmap_weight_eq(msb->used_blocks_bitmap, msb->block_count,
++				msb->block_count - total_free_blocks))
+ 		return 0;
+ 
+ 	pr_err("BUG: free block counts don't match the bitmap");
 -- 
-Kees Cook
+2.32.0
+
