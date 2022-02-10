@@ -2,104 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E726C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345792AbiBJXiQ (ORCPT
+        id S1345759AbiBJXjD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:38:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46570 "EHLO
+        Thu, 10 Feb 2022 18:39:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345608AbiBJXiO (ORCPT
+        with ESMTP id S1345717AbiBJXjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:38:14 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898255F64
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:38:14 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id i62so9480612ioa.1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:38:14 -0800 (PST)
+        Thu, 10 Feb 2022 18:39:01 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BCD5F6E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:39:01 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id p19so20086774ybc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:39:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=9n2DdSbneN7v4fxKizWFeu7+3tSFKKa+21duzKl95Yk=;
-        b=AK2McL5crq3P5W/HMrl+HVMBiBdnvJJs/I9DFxsN28iywuaN2UqJNQpufEM/5yB+NS
-         WM8Ah7v54tNxhaygGs78Emy4tgph4sPVpst0aVD0SguR55ocuOu/qsF08EpW0Wo6U1tk
-         qpnL9Snt8YrLfZRyjPxqcx31oSV0Szk7umC8BTcBZNlJIlKF5M44te4ICNt/Vq+7Ofls
-         sv9Wi7ie72uM1j3zsENRKACYxiKCrC+kQFAKF4OXcd25TcneaY+BVbKSZq1hYZ7qX2Hh
-         lQVNwMxWZZsr0i3Zg+dYucoa5y4DOQy2eMNRoLj/XhULZxe7PEV/GOvG2TIrXHiLtJi4
-         nb7g==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XWem/pFj/duUmLXR87z8cwj1is547stEysJJncrBbyU=;
+        b=nM5t4eZrZMgsT2rSz/IB1/EOFC/nvlZMyN2Xy5qFaJYNZTBobuDmDPcux2czjubZ4Z
+         Ku1jaS1Hu5W7ArCQ+Rv/drYv+XCnkJHgF1qiKJu6ewwGWbBTCbmrYSWc1+u+HzNpjqEs
+         lhxOOlxuIhfW671gHw1NSfLLl3tIIvP/UatwKYNmNw1VQIadGNUc122zLOoBbVk89fP1
+         eEIBbGM8sg9eGGyBej2+RtrQB1KGUmV4AXBPcf2MCzrqu9varZHbAR5S8KzwWbbt+Pto
+         RlY+DkMIsvoOWmBN4KnYKVOt19jbaAL+CvlYG1EYyn4xcC3bwNW44uNC+bZA0O3AApg8
+         OZJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9n2DdSbneN7v4fxKizWFeu7+3tSFKKa+21duzKl95Yk=;
-        b=XcyNqCB0i7E1jOgntG7qJ/GD89w4EX4kPLiwd5YZA7c+K2l/xM5o7xZcVsmwtNpJkS
-         Omwy8Fx2I9Yc0KtT2cCuve0XVYYIktVILURUoymgwrjxN1PBP/rZW0/mNazdd2INNIZh
-         tNVBS+akdnrKrISOxEpqHjgEdfd0hkhupaW/vTjaslc1dhZRXtHPhWocXVLm3qX+v9D2
-         gcnUZ5P+D91AgZ6alRWKBobkXyIRVeq4oyWgmv3PZ39Ur4ZTBJoNpEUSx3HKZ3pYumG8
-         6RNMZzsOdJkO8qW1W56OT47GWVRVScdcCFrr/BhHT2e7kcf3eO8dXNyZqtYF1mWI5Lz4
-         MVRA==
-X-Gm-Message-State: AOAM5306QP8QAhjXzyosn4qdYtk4hyXiTm/MWweCLxMy0JLNmrlQ+l9z
-        PhSYKxg8kBtT+Dx8OAzPqOM=
-X-Google-Smtp-Source: ABdhPJwQ659D3gO5ecBLF2AX0FyOLgCZ61yewOIUm7N0UW53PsKRiHqI+c9w8ufSKRcbdtxUOYhoAg==
-X-Received: by 2002:a05:6602:2c08:: with SMTP id w8mr5090325iov.182.1644536293918;
-        Thu, 10 Feb 2022 15:38:13 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id i30sm4549007ila.32.2022.02.10.15.38.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:38:13 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
-Subject: [PATCH 21/49] genirq/affinity: replace cpumask_weight with cpumask_empty where appropriate
-Date:   Thu, 10 Feb 2022 14:49:05 -0800
-Message-Id: <20220210224933.379149-22-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XWem/pFj/duUmLXR87z8cwj1is547stEysJJncrBbyU=;
+        b=OXiinFddOVLaW4FAYjZ9dP4908TB8+881aPt7xwHnpo8nMpg5yZjtlWZ1g+zB+yeJz
+         a0gzudsbURZ4h1MayuI2b53U4sQ3USuHD7bq32NDbtn1103s+Urgsxy+lkWyGeTd8hHx
+         0RQb1mUmwmECzalTNvy5dLEyM7MNGuzbmVK2tAo9GkIEOu2JL0akhu0xQRLc9KHjhOzM
+         3oZzR2pWR6jmmzfDmSf7ZUDNhwEi6uyT9tcPovdD7ma5hC12PXxXp1xfRSdYitr+9cQh
+         JlBCNJMYRUsPcrV3AhuzpsL7UDAXA+D963y5CTmYY9gzClN77xLkU/n9IRmpOv45b8lo
+         OASg==
+X-Gm-Message-State: AOAM533PPgMiTqPlJOb8GGBNzSzqrNvbNmuJJRpgofPjLUDJXiiTWSpa
+        iYGL6A2mhc1MvBmdaVQIJoXXZnJmsCTHySK8bFIiiQ==
+X-Google-Smtp-Source: ABdhPJw/AGERv/Fuv3ciYuJgOH/qQi8Md7cZRastkPHUJ8bgZqlEllKxFpsPteU4o/HqNEvvCOtqGQ7w/rsnkAjSUUw=
+X-Received: by 2002:a25:103:: with SMTP id 3mr9244416ybb.110.1644536340427;
+ Thu, 10 Feb 2022 15:39:00 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220209162607.1118325-1-maz@kernel.org> <20220209162607.1118325-4-maz@kernel.org>
+In-Reply-To: <20220209162607.1118325-4-maz@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 11 Feb 2022 00:38:49 +0100
+Message-ID: <CACRpkdZkw1efC5viWwr_72V0K_E+txwxGLzwe=NJV3FEdnGinA@mail.gmail.com>
+Subject: Re: [PATCH 03/10] irqchip/gic: Switch to dynamic chip name output
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__irq_build_affinity_masks() calls cpumask_weight() to check if
-any bit of a given cpumask is set. We can do it more efficiently with
-cpumask_empty() because cpumask_empty() stops traversing the cpumask as
-soon as it finds first set bit, while cpumask_weight() counts all bits
-unconditionally.
+On Wed, Feb 9, 2022 at 5:26 PM Marc Zyngier <maz@kernel.org> wrote:
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- kernel/irq/affinity.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> The last dynamic aspect of the GIC's irq_chip structure is the
+> name that is associated to it.
+>
+> Move the output of that name to the relevant callback, which
+> allows us to do a bit of cleanup and mark the structures const.
+>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
 
-diff --git a/kernel/irq/affinity.c b/kernel/irq/affinity.c
-index f7ff8919dc9b..18740faf0eb1 100644
---- a/kernel/irq/affinity.c
-+++ b/kernel/irq/affinity.c
-@@ -258,7 +258,7 @@ static int __irq_build_affinity_masks(unsigned int startvec,
- 	nodemask_t nodemsk = NODE_MASK_NONE;
- 	struct node_vectors *node_vectors;
- 
--	if (!cpumask_weight(cpu_mask))
-+	if (cpumask_empty(cpu_mask))
- 		return 0;
- 
- 	nodes = get_nodes_in_cpumask(node_to_cpumask, cpu_mask, &nodemsk);
--- 
-2.32.0
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+This naming was once introduced for the ARM PB11MPCore
+that had two cascaded GICs (commit 58b8964990dc6)
+so it became a pain to see which one
+was being used in /proc/interrupts
+arch/arm/boot/dts/arm-realview-pb11mp.dts
+
+I see it is not appreciated to use /proc/interrupts for this
+type of diagnostics. Ugh. I suppose people do it for the
+same reason they keep using the GPIO sysfs, they like
+it and they know it.
+
+Yours,
+Linus Walleij
