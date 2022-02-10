@@ -2,127 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E05C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237311AbiBJIU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:20:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55880 "EHLO
+        id S237335AbiBJI0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:26:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237267AbiBJIU5 (ORCPT
+        with ESMTP id S237267AbiBJI0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:20:57 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DD210B5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:20:58 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id i186so9037825pfe.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:20:58 -0800 (PST)
+        Thu, 10 Feb 2022 03:26:23 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BED50109E;
+        Thu, 10 Feb 2022 00:26:24 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id y3so13484705ejf.2;
+        Thu, 10 Feb 2022 00:26:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Krb0rzTOGW2eoN3LEJWPKbRX68tZZeijjPHmNpJEiuw=;
-        b=X4RptU//lXEDz6B2GaWL43her2cGYbE8ScvsaqQ3JDFxx7ikqIOgZzJmDbrBWJYIH5
-         qFWOEB6GALcHvoB9kXYuJR5deJQVuDVhdvONH8VdK58lVe8RJJ2CzniSMQ1IT643zYW3
-         PN6gZCJ+G6BNsA4cbPKAjvuqSwBnwSOnQBKnoHWK9neRlFGmQHS9sscwrzLpDjmqa+P5
-         FUlmw9/4CLC4p9yw8X3lg4aFSRFRPZ4EbOESz6GaPBadEFPM+5bEuIrlN0ioqc3YgVm4
-         1Klc4wADjbs44eiQkPkkcIcqBJ7+CDOGUnPiLqXW+ynjBDI23rBhQQPAaQd3wWK2OTkO
-         QWng==
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=yMHDyZywBQd4qMNkOk8QdP2+6QiKb0trxcrPY+YQbc4=;
+        b=njgqt5Nj5PmminE0N6pUUfw9Lfk2kRzztnY5MzbS4OAamt4Ex61GJBcWaWTHZqnR60
+         NPVyuZSsGMMksKLVbbnkVga3AwAiFM381T8penb0vHzc0xfk+x4GBTD3EoHzYoaDLPge
+         cNK5S4F54gPZ0JDk4BOUVOjC9iL2UuBwVCSWHkexnogkx20jZdhgj7DSVibOZbbStq99
+         /PlLs1jXH50MMx37dZpwHbtzVSoYqJ5ZHX7dLDv08Kv+fQU6/KoXcxgsbdVnHJrNPFwU
+         MxOuicrLyUag7gFEk9+bA5KIGDHhXVIruUEc7IP+lKJRLrhjvkc+cmiChBtGQSIM6Wo7
+         j1cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Krb0rzTOGW2eoN3LEJWPKbRX68tZZeijjPHmNpJEiuw=;
-        b=haABHRtXATMxYd/31RdV6+yt7fMr9ASM+VW8n1xnuAwCKs++YALCtVoUfft18sVGq+
-         w5VVeB8Qm3+Mzf1Da2+XRdzaU8qS4M1jUOpbwavvx1b3JOmBG73xhDt/WPFcGpQ4O534
-         +0w8GSzQftcGKrisNhMG0PpTYw//zLY4zmXIO8Tc3AoJomqNLw97ltqV40Np9EqhKrpU
-         2PAe8g1983hms6b/X0FIpDsTd4R3Gs9uYpcMbcmYsK5pHWm0qgqloFzP4BzxfsRX8Xsv
-         FjCxkTtZONOTXjwoqg0Cf1G3mYo71fLDCQPQp5AYIGWzDQQyFOA7p73QL3FjrZd6ErQO
-         04Yg==
-X-Gm-Message-State: AOAM530QrmiXGi4mJbtyhy7/9qi7qsS8AmUYe0hQF+IQMqW3CSCy+uH1
-        TxytnBBw1UDGloxST/29UL9DjW4+w8DkfA==
-X-Google-Smtp-Source: ABdhPJyK+1a3UQV6u+LP1EI1H/P04vpG2Owo6ZPLmkdSsqC12revmFlKMy2HiNOC46200H7wPK8xIg==
-X-Received: by 2002:a63:81c8:: with SMTP id t191mr5242468pgd.321.1644481258472;
-        Thu, 10 Feb 2022 00:20:58 -0800 (PST)
-Received: from [10.76.15.169] ([61.120.150.76])
-        by smtp.gmail.com with ESMTPSA id p4sm21374590pfw.133.2022.02.10.00.20.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 00:20:57 -0800 (PST)
-Subject: Re: RE: [PATCH 2/3] virtio-crypto: introduce akcipher service
-To:     "Gonglei (Arei)" <arei.gonglei@huawei.com>
-Cc:     "jasowang@redhat.com" <jasowang@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "helei.sig11@bytedance.com" <helei.sig11@bytedance.com>,
-        "mst@redhat.com" <mst@redhat.com>
-References: <20220121022438.1042547-1-pizhenwei@bytedance.com>
- <20220121022438.1042547-3-pizhenwei@bytedance.com>
- <15e960491a684b649e5d0179a32848a2@huawei.com>
-From:   zhenwei pi <pizhenwei@bytedance.com>
-Message-ID: <540f29e4-12ef-3786-bd54-9a94ba6ee7ab@bytedance.com>
-Date:   Thu, 10 Feb 2022 16:18:09 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=yMHDyZywBQd4qMNkOk8QdP2+6QiKb0trxcrPY+YQbc4=;
+        b=Ksancc8GKT11G+0w4c4EsGhvHtrhafI3saCQh1QoJ+/cFoAuo1m4R9ntnQjSP0ZPao
+         Tyy/W2f+2vXBCQgmMTwvhPw3Agxe22IU6FwEbdRjr1vNxl6xuHVR31i0r7uoyVFZgguG
+         pNZ758KC8i3gn5V3+Z8Yj1jxuER0iELrPcbelkBUbtlpSlMHScX+SxSPB0bdxXmsWv/p
+         JzpSmf6q0H9Fgxy+/Oht45yRLLQq+N3IGzqQajE8JT/BhHLQZXbA/TcpaAolBDIeker0
+         W8JKt9BKUA34mqFvNB+jf2MWMZdogFn65fZQo6tLeL1NKgYzvhVZBwIN2Z+SeBdHAQyC
+         +bzA==
+X-Gm-Message-State: AOAM533+B5B1xxlTBKWadfU3Em+nlx7AEE5PvDgIUOE0IkWj27XFjiHA
+        I0SBb7IiPK/B8KSMxs0QWOY=
+X-Google-Smtp-Source: ABdhPJy2aJBdHEv7yXFSHSWwQi9rBTIFJ3j4Ilx4K+6p/rvSfIY2fclFlF8scT3AreCRJkaecWgQLQ==
+X-Received: by 2002:a17:907:7207:: with SMTP id dr7mr5412184ejc.500.1644481583146;
+        Thu, 10 Feb 2022 00:26:23 -0800 (PST)
+Received: from ?IPv6:2001:a61:259f:9401:c29b:34d:c30:c5de? ([2001:a61:259f:9401:c29b:34d:c30:c5de])
+        by smtp.gmail.com with ESMTPSA id t8sm3573172eji.94.2022.02.10.00.26.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 00:26:22 -0800 (PST)
+Message-ID: <9cd8a336ed31eaf6bea2ad53f185abac22dc8474.camel@gmail.com>
+Subject: Re: [PATCH v5 1/4] iio:frequency:admv1014: add support for ADMV1014
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 10 Feb 2022 09:26:21 +0100
+In-Reply-To: <YgOtN+wha+j3ZFIO@smile.fi.intel.com>
+References: <20220131100102.15372-1-antoniu.miclaus@analog.com>
+         <Yf7AjXsRuhFeFTpD@smile.fi.intel.com>
+         <e59fce3747428f30afdf77f9839910664e3e8524.camel@gmail.com>
+         <YgOtN+wha+j3ZFIO@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-In-Reply-To: <15e960491a684b649e5d0179a32848a2@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>   /* The accelerator hardware is ready */  #define
->> VIRTIO_CRYPTO_S_HW_READY  (1 << 0) @@ -442,6 +520,7 @@ struct
->> virtio_crypto_config {
->>   	__le32 reserve;
->>   	/* Maximum size of each crypto request's content */
->>   	__le64 max_size;
->> +	__le32 akcipher_algo;
->>   };
->>
-> You can use the reserve attribute. Keeping 64-bit aligned.
+On Wed, 2022-02-09 at 14:01 +0200, Andy Shevchenko wrote:
+> On Mon, Feb 07, 2022 at 09:29:54PM +0100, Nuno Sá wrote:
+> > On Sat, 2022-02-05 at 20:23 +0200, Andy Shevchenko wrote:
+> > > On Mon, Jan 31, 2022 at 12:00:59PM +0200, Antoniu Miclaus wrote:
+> > > > The ADMV1014 is a silicon germanium (SiGe), wideband,
+> > > > microwave downconverter optimized for point to point microwave
+> > > > radio designs operating in the 24 GHz to 44 GHz frequency
+> > > > range.
+> > > 
+> > > Excellent job!
+> > > A few comments / questions below.
+> > > 
+> > > ...
+> > > 
+> > > > +config ADMV1014
+> > > > +       tristate "Analog Devices ADMV1014 Microwave
+> > > > Downconverter"
+> > > > +       depends on SPI && COMMON_CLK && 64BIT
+> > > 
+> > > Why 64BIT only?
+> > 
+> > Could not resist on this one... The thing is that CCF uses unsigned
+> > long for rates and this part operates in high GHz values. That
+> > means,
+> > as CCF stands, this cannot work on 32bit.
 > 
->>   struct virtio_crypto_inhdr {
->> --
->> 2.25.1
+> I read it a bit differently, i.e. CCF has a bug that needs to be
+> addressed.
 > 
 
-Can I use the "__le32 reserve;" field directly?
+Totally agreed...
 
-struct virtio_crypto_config {
-         /* See VIRTIO_CRYPTO_OP_* above */
-         __le32  status;
+However, this can be something that might take time
+to support in CCF (I definetly have plans to send a RFC to, at least,
+start the discussion around this) so I guess we can already support
+this device like this. I believe this is somethig straight to remove
+as soon as CCF works in 32bit archs for high speed devices...
 
-         /*
-          * Maximum number of data queue
-          */
-         __le32  max_dataqueues;
-
-         /*
-          * Specifies the services mask which the device support,
-          * see VIRTIO_CRYPTO_SERVICE_* above
-          */
-         __le32 crypto_services;
-
-         /* Detailed algorithms mask */
-         __le32 cipher_algo_l;
-         __le32 cipher_algo_h;
-         __le32 hash_algo;
-         __le32 mac_algo_l;
-         __le32 mac_algo_h;
-         __le32 aead_algo;
-         /* Maximum length of cipher key */
-         __le32 max_cipher_key_len;
-         /* Maximum length of authenticated key */
-         __le32 max_auth_key_len;
-         __le32 reserve;            -->    __le32 akcipher_algo;
-         /* Maximum size of each crypto request's content */
-         __le64 max_size;
-};
-
--- 
-zhenwei pi
+- Nuno Sá
