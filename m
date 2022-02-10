@@ -2,200 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBFF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 872F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:35:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243671AbiBJPfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:35:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33984 "EHLO
+        id S243681AbiBJPfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:35:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243665AbiBJPfC (ORCPT
+        with ESMTP id S234987AbiBJPfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:35:02 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C14A1F1
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:35:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id DEC04CE2497
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8FEC340EF;
-        Thu, 10 Feb 2022 15:34:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644507300;
-        bh=clEGNTWIfRsJvrby4PkDFMXE3z2jyTpXZkiGNgCi+OI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qNoQcbB5Pj3ix0LecXz1t15EonLl6Gw+r+2yHLfKFJ2XIU7wB5fdADfV0RYF1YyDj
-         frxzzJ8Ob8m3qpCMr+JHIxJ1RuLMID6b55O5msWNKkuz1rtSktQfgATm3kCwfVQYlE
-         8aVQkrL6TZQ2wNS/XomcQpSQLHs4O0Cc6JH66R30jQ/g2+7cOJeY4WSDdp7XJpLwWy
-         g1ZqdaFdO2dSw4RWqE8rHdi5XDpqUCrg1ehEMq8cy/HwMl6iwUc1MIaCibNNz71kNA
-         tQxA+YQqOlQm1+obo3Yb2x72psaeIsX0GPGQ9ZHmQBWp4HSirqbCMZKWtGzaQZhkhL
-         OgK8J+p8ZOZSQ==
-Date:   Thu, 10 Feb 2022 23:27:09 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Changbin Du <changbin.du@gmail.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
-Message-ID: <YgUuzZp/eiNoXejK@xhacker>
-References: <20220129004226.32868-1-changbin.du@gmail.com>
- <YgAEb425uqy5/dw1@xhacker>
- <20220207123850.l4r5qjswaegwisbx@mail.google.com>
- <YgE7XRE/Uc6gTCWd@xhacker>
- <20220208003502.62gi5xhyg6bk2t2h@mail.google.com>
- <YgP6y99LWFSoxjHg@xhacker>
- <20220210133758.yzebffln6j76zme6@mail.google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+        Thu, 10 Feb 2022 10:35:46 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2117.outbound.protection.outlook.com [40.107.94.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B28D1F4;
+        Thu, 10 Feb 2022 07:35:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M3IaxRIzaRKaxV0yRng3MX+8ELFId1bbWkSuq5LxByNpcEv+78wDMg3WdeLHrrVcJoIQKmJZbrRtXPn2B7zTxWGUyjOtskD7LrJyBNIhUdLORrKg2M9/RLAaty3S6+F/UP/bBf+sZBCssWdbk4J9dbx/xuEgNuojC8hMWCjUM+lU5Z371CzOYw5Gy6U+OdEockHTIvRx5qQic4TEYTlZHyeBhVrlYYVSUVMzbvxti7MJZpn90MuCyhxilcFxGosnzjj7XnP6suRdxXKLr4dRDBd56YyBwIbFloTkxZd18Loi0DHBNdmsgO0MSKt6jONmmhmWd2vgzOPmdiOPR2/G9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bQibbOYoz3j4663IAMto4myREgWjBOgK3ROCVjflfI8=;
+ b=dXqsQXwE8iQiCoqYkO+2Lcnqqq6GtAT8kOfo8opSnI+qD6rJlPPhc4jaJ3jJdBgzMPFiGW/KREmkiHpGqNwDHAiPpEWB6affnHOEQ0eZ46pVlz2xgQin5j8BdzL1ZYZmuMm66b9gFtq8tyCOiNZL+Mqyvc7VYVhTABgKFcFS9JpibuTq4EU0SOY7jZPtDRNrQabZTMfMuR4Ta9NmUy4TA7fONiaXyhzn1H1I+ZBwJt0x1rIzY+M4BXSA8MjWsr761qur567nKlgjIZ5CVz1YSwvZdKxvK6WcnFVvYTMeZEAaq8H9ernfV+j+BJk3fDVxV4ct65npcjDSRGM8gtGRfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bQibbOYoz3j4663IAMto4myREgWjBOgK3ROCVjflfI8=;
+ b=UmZdCTFcYoVRPmDzstbO08sjWf/JuDsPqd3szermoXBOdyYxtGW2n9u+CEvd6UOP36COi+jHzwIW8ZbNXUQQ/VOtjRhPk+BiPaLwZH9bJmIm+IYD6I8Mf85zQwRlPZGXmL9yD1TqoidsbK/fdFdVw9Of8uHqB5j2YHrKPSkxoR0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by DM6PR10MB3307.namprd10.prod.outlook.com
+ (2603:10b6:5:1a1::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.18; Thu, 10 Feb
+ 2022 15:35:44 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.4975.012; Thu, 10 Feb 2022
+ 15:35:44 +0000
+Date:   Thu, 10 Feb 2022 07:35:40 -0800
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: Re: [PATCH v6 net-next 5/5] net: mscc: ocelot: use bulk reads for
+ stats
+Message-ID: <20220210153540.GC354478@euler>
+References: <20220210041345.321216-1-colin.foster@in-advantage.com>
+ <20220210041345.321216-6-colin.foster@in-advantage.com>
+ <20220210103636.gtkky2l2q7jyn7y5@skbuf>
+ <20220210152103.GB354478@euler>
+ <20220210152712.jchztf34gf3pgsyf@skbuf>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220210133758.yzebffln6j76zme6@mail.google.com>
+In-Reply-To: <20220210152712.jchztf34gf3pgsyf@skbuf>
+X-ClientProxiedBy: CO2PR05CA0088.namprd05.prod.outlook.com
+ (2603:10b6:104:1::14) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1c0b06cc-3b5e-4146-19c6-08d9ecab003b
+X-MS-TrafficTypeDiagnostic: DM6PR10MB3307:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB33078BAF89AE56B140E935C2A42F9@DM6PR10MB3307.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: SuGx1W/3ZRidts7vA3HS/SJmmF/6Itn8ZHbrVSR1I8oC/375FLeKr6nlUJR5KxzaSmYtw0NDyjf+6t8H/pEbLAwq3lOSIYtkSDu1Y0sOuTmg3FCJxf/uAnNmsvRmQJDML5NPSCi4TKFLEvFNwFWtcYS7TERCt+xFDYdcr/2b5csWEhTJOE1Zc5vFkFtZN2SvSD+IYopR1wRLEFHTfSJq+MPCYYWjj+LlgzoxsXolq8pCFG/0qf7OQVtBGQatq4Ic6lV9LV/rWnaSB8K6woNCo8vakh4ZCqSU4dq5qPgPDkDp9FBjv8iBtvcyoFHQPTDPvGB4xlJiec6jHTuFkdy5CfBGqe0AYzBRersoxP7i4HQIwwMlKs5OYp6aeVNrO0e/nIGY+6gZPHp0xGkdritZT1giJ3k0/Z9Z8HW6LmfArwqu5CPyxGMNDXNc/1o0p9J9P/F6MaBi7TebgqnFrs0mYOB/JK1LTLyFp+39YahuMoGd6YEPy15obu2wL8qNys/9DMcP8umDCTIbOcH1T30JIHiIGa0wsMONvpizc+1d2SjSdCvwcNKWjb/1TTEmXOAJvGFk1xOphEOpihJ/TO8oKv1KfIJDFOW3QRT17lE1mm3VaL2uxgtAYyC6JLAxGZ2M8I/kcYNXnmmnSZLA7e8evlqSf7QIYrF4yS1QILFzMyapr9XEX4+nibubtPZrRNY3V82sQG+nsV18zDWNgNH3gg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(39840400004)(136003)(346002)(42606007)(366004)(396003)(376002)(33716001)(52116002)(6666004)(4326008)(44832011)(9686003)(6512007)(33656002)(83380400001)(66476007)(86362001)(38100700002)(508600001)(5660300002)(66556008)(8936002)(6506007)(6486002)(38350700002)(8676002)(2906002)(186003)(4744005)(6916009)(54906003)(66946007)(26005)(316002)(1076003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9Rv5++Q+65HCELKWCjfTM/wStuqB7snhvaw1O3gw5pwlzhcMONyXg/mRXZQl?=
+ =?us-ascii?Q?Dr6FQYpz+ECe2BfOAPN/ng7ONOaNtPj7Q9951eYg9+sPyFdS1EXnL9Rp2Z4N?=
+ =?us-ascii?Q?yLIZFSD42TJVO55AL3HRLVYJfOZX6fqc0JCo/lb6ZoZDm/KD4Q6valkE1GO7?=
+ =?us-ascii?Q?zw32AMVOiQIYidVKHyo5CCuWlGzjevRZwFaDRqBN4PY3nNm7DvUmTOehych0?=
+ =?us-ascii?Q?EiI1lCvOJOF9vqrx3srJnWRJo+GupxdkHk0COh3sMmTkE0EE2sHaAYqXrgsf?=
+ =?us-ascii?Q?vigQDoLUd7Nxoc+ze3gtoeqmUthKzIiEC9HbaWay9a7hqLJ6eZ/4ek2SlfLu?=
+ =?us-ascii?Q?wjKWjdARtJMXIM4C/njGTyR4nUvXAV0m8yqojHrPyednd4LkaIuZozUZUTzA?=
+ =?us-ascii?Q?oNjnAMkjGiJ5XUQaCRFKggpIwWLUXHt/Fdfc8gy8cmfNmziZQ5ph08nsFz0U?=
+ =?us-ascii?Q?gdwX3gsj452ny4rurqMsohxFuQDPt3YP/iBH04db1uwTgznleaiI8nzM5TJi?=
+ =?us-ascii?Q?sanBvbWbHsLGZxV+nLiJazL24XoqHP8iuS31sAIh8Su7duIWyaDzOYRePv2Y?=
+ =?us-ascii?Q?lkY80VhtT5k1aI1Xf69LbDZs3Ujz4to8URfRrqM1QU2cLspUp9dP4e4x3z5p?=
+ =?us-ascii?Q?sAdSXqeTogbqgkfpVUNnx9QSpQOjjbvvAX2/7/or1/f5dAd1EpKOaervzuxN?=
+ =?us-ascii?Q?b8BO3QEaZatFKsntehwCRgifn52qgnvlyXSX7HyfaIgUtAg4MltqY0V+Efud?=
+ =?us-ascii?Q?7Knb/Y9fmZATI7Lt+4xwgVE0bkRNeLVr76sxNkTtaINHUqcapjjCkYspkv3P?=
+ =?us-ascii?Q?0ecc1s29TAf17CY17zYre5X1DEf6RBclZrht+gLwQ8FLR7bWBZfamgi6CvWX?=
+ =?us-ascii?Q?lZVdgYNML+2T6rlm3aBM55LPoexk7cndzj79mrxFgM61eRUcp4A8mTCGkpEb?=
+ =?us-ascii?Q?Q5EBwyYenCDFIkTz2WrGyB+YxPq1vA4fdPJnC8GCtlcDfy4DT50aNQVxYsnM?=
+ =?us-ascii?Q?aSI5wQlRJIhgtbIYObNrKnm6os8YZahZ9Af/o8jJa3IcVa+kf++7Jl6GyL4Q?=
+ =?us-ascii?Q?SKsnmXRmJt6GwalVY4AekGDSdW///lryUkoDqjutGx9X4PZ1ZcyaSilLp37E?=
+ =?us-ascii?Q?RwhEB88U5KjSb3ho9dwvn/ABwWPD2KIgQXxNMHJtHsGY6J5Prk41Zkojsft6?=
+ =?us-ascii?Q?0++Rl1yf1ZZKlHmh6S2Ws2tdAIGZXjRHe/njdHD1wTdMLnsAHjRwI59ehCcJ?=
+ =?us-ascii?Q?MQIm+AKDV4c73jIyznh8Tm5exKl5DJVPPcZiH/2ggfXZEKM9zguI8WxD/iCa?=
+ =?us-ascii?Q?pviJh9eosswaHVawckctbZSifcq9NklxuqaqY1YlhinMmnpkwtZnZXcFQkos?=
+ =?us-ascii?Q?6kR82vAE+Fkp4ZSpiS51Xemvjd5CNnUdL1YNGUJE+DSYZ1Tgf0swWE6GDfuW?=
+ =?us-ascii?Q?ed3Ghf2KwR/DUgLfy0yV+ySGuePphShMiF1/07MVOZzFTdfvHbZUhM/4FHfy?=
+ =?us-ascii?Q?AgsKfQVMaYNGro9YJLGTUxS667CS8WbQgLKmDa0pYnMDVGdl9YuIGQZrv5bC?=
+ =?us-ascii?Q?99xwFosZlJJAIN3q8ODX60a5vUgXl+WD23nfiMCEceaNaE+OyhCQZMvzc1UV?=
+ =?us-ascii?Q?GZ5EfG8oVz2Hcza8fbTiEiBgQMv9SlnoBCgF+Ocd5jlNOont5n31bjpw34Aj?=
+ =?us-ascii?Q?WDe//3pShFCJb5mvsfbSw/q2oqM=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1c0b06cc-3b5e-4146-19c6-08d9ecab003b
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 15:35:44.8008
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C2huxfnJJ+q1sAkeqer5Dbwk4QqH/eXys/wSH2NrQqh+pw2ML08tR7iXqRt62yie3yR+2QKcoGeJR0OFVG4s+f50A1COQWso70UnIhK9UWc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB3307
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 09:37:58PM +0800, Changbin Du wrote:
-> On Thu, Feb 10, 2022 at 01:32:59AM +0800, Jisheng Zhang wrote:
-> [snip]
-> > Hi Changbin,
+On Thu, Feb 10, 2022 at 03:27:13PM +0000, Vladimir Oltean wrote:
+> On Thu, Feb 10, 2022 at 07:21:03AM -0800, Colin Foster wrote:
+> > > ocelot_check_stats_work() should also check for errors.
 > > 
-> > I read the code and find that current riscv frame records during
-> > exception isn't as completed as other architectures. riscv only
-> > records frames from the ret_from_exception(). If we add completed
-> What do you mean for 'record'?
+> > Another change I'm catching: I assume calling dev_err while holding a
+> > mutex is frowned upon, so I'm moving this err check after the counter
+> > copy / mutex unlock. I'll submit that fix after patch 1 gets merged into
+> > net / mainline.
 > 
+> Where did you read that? Doing work that doesn't need to be under a lock
+> while that work is held isn't preferable, of course, but what is special
+> about dev_err?
 
-stack frame record.
-
-> > frame records as other arch do, then the issue you saw can also
-> > be fixed at the same time.
-> > 
-> I don't think so. The problem is __builtin_return_address(1) trigger page fault
-> here.
-
-There's misunderstanding here. I interpret this bug as incomplete
-stackframes.
-
-This is current riscv stackframe during exception:
-
-high
- 	----------------
-top	|		|  <- ret_from_exception
-	----------------
-	|		|  <- trace_hardirqs_on
-	-----------------
-low
-
-As you said, the CALLER_ADDR1 a.k.a __builtin_return_address(1) needs
-at least two parent call frames. 
-
-If we complete the stackframes during exception as other arch does:
-
-high
- 	----------------
-top	|		|  <- the synthetic stackframe from the interrupted point
- 	----------------
-	      .....	      
-        ----------------
-	|		|  <- ret_from_exception
-	----------------
-	|		|  <- trace_hardirqs_on
-	-----------------
-low
-
-
-Then we meet the "at least two parent call frames" requirement. IOW, my
-solution solve the problem from the entry.S side. One of the advantages
-would be we let interrupted point show up in dump_stack() as other arch
-do. What I'm not sure is whether it's safe to do so now since rc3 is
-released.
-
-> 
-> > However, I'm not sure what's the best choice now.
-> > 
-> > A simple demo to this incomplete frames:
-> > add dump_stack() in any ISR, then
-> > 
-> > in riscv:
-> > [    2.961294] Call Trace:
-> > [    2.961460] [<ffffffff8000485e>] dump_backtrace+0x1c/0x24
-> > [    2.961823] [<ffffffff805ed980>] show_stack+0x2c/0x38
-> > [    2.962153] [<ffffffff805f292e>] dump_stack_lvl+0x40/0x58
-> > [    2.962483] [<ffffffff805f295a>] dump_stack+0x14/0x1c
-> > [    2.962792] [<ffffffff805f31a0>] serial8250_interrupt+0x20/0x82
-> > [    2.963139] [<ffffffff80053032>] __handle_irq_event_percpu+0x4c/0x106
-> > [    2.963526] [<ffffffff80053170>] handle_irq_event+0x38/0x80
-> > [    2.963856] [<ffffffff80056a32>] handle_fasteoi_irq+0x96/0x188
-> > [    2.964198] [<ffffffff800526ce>] generic_handle_domain_irq+0x28/0x3a
-> > [    2.964567] [<ffffffff802f0ae4>] plic_handle_irq+0x88/0xec
-> > [    2.964896] [<ffffffff800526ce>] generic_handle_domain_irq+0x28/0x3a
-> > [    2.965264] [<ffffffff802f08e4>] riscv_intc_irq+0x34/0x5c
-> > [    2.965584] [<ffffffff805f6dc8>] generic_handle_arch_irq+0x4a/0x74
-> > [    2.966068] [<ffffffff80002fe8>] ret_from_exception+0x0/0xc
-> > 
-> > in x86:
-> > [    1.191274] Call Trace:
-> > [    1.192223]  <IRQ>
-> > [    1.192758]  dump_stack_lvl+0x45/0x59
-> > [    1.192982]  serial8250_interrupt+0x24/0x88
-> > [    1.193105]  __handle_irq_event_percpu+0x66/0x1b0
-> > [    1.193239]  handle_irq_event+0x34/0x70
-> > [    1.193345]  handle_edge_irq+0x85/0x1e0
-> > [    1.193455]  __common_interrupt+0x38/0x90
-> > [    1.193573]  common_interrupt+0x73/0x90
-> > [    1.193809]  </IRQ>
-> > [    1.193889]  <TASK>
-> > [    1.193956]  asm_common_interrupt+0x1b/0x40
-> > [    1.194318] RIP: 0010:_raw_spin_unlock_irqrestore+0x1b/0x40
-> > [    1.194566] Code: 24 be 01 02 00 00 e9 54 20 bf ff 0f 1f 40 00 0f 1f
-> > 44 00 00 f7 c6 00f
-> > [    1.195137] RSP: 0000:ffff888000243b68 EFLAGS: 00000246
-> > [    1.195314] RAX: 0000000000000000 RBX: ffffffff82025840 RCX:
-> > 0000000000000000
-> > [    1.195482] RDX: 0000000000000001 RSI: 0000000000000000 RDI:
-> > 0000000000000001
-> > [    1.195645] RBP: 0000000000000202 R08: ffffffffffffffff R09:
-> > 0000000000000000
-> > [    1.195808] R10: 00000000000000eb R11: 0000000000000000 R12:
-> > 0000000000000000
-> > [    1.195972] R13: 0000000000000040 R14: 0000000000000000 R15:
-> > ffff888000c39000
-> > [    1.196245]  ? _raw_spin_unlock_irqrestore+0x15/0x40
-> > [    1.196373]  serial8250_do_startup+0x42d/0x600
-> > [    1.196502]  uart_port_startup+0x11b/0x270
-> > [    1.196619]  uart_port_activate+0x3f/0x60
-> > [    1.196729]  tty_port_open+0x7e/0xd0
-> > [    1.196835]  ? _raw_spin_unlock+0x12/0x30
-> > [    1.196942]  uart_open+0x1a/0x30
-> > [    1.197036]  tty_open+0x153/0x7c0
-> > [    1.197144]  chrdev_open+0xbf/0x230
-> > [    1.197253]  ? cdev_device_add+0x90/0x90
-> > [    1.197359]  do_dentry_open+0x13c/0x360
-> > [    1.197470]  path_openat+0xb0c/0xe00
-> > [    1.197577]  ? update_load_avg+0x5f/0x640
-> > [    1.197691]  ? finish_task_switch.isra.0+0xac/0x240
-> > [    1.197821]  do_filp_open+0xb2/0x150
-> > [    1.197935]  ? preempt_schedule_thunk+0x16/0x18
-> > [    1.198049]  ? preempt_schedule_common+0x90/0xd0
-> > [    1.198167]  ? preempt_schedule_thunk+0x16/0x18
-> > [    1.198291]  file_open_name+0xf1/0x1b0
-> > [    1.198397]  filp_open+0x2c/0x50
-> > [    1.198495]  console_on_rootfs+0x19/0x52
-> > [    1.198648]  kernel_init_freeable+0x19a/0x1c7
-> > [    1.198765]  ? rest_init+0xc0/0xc0
-> > [    1.198867]  kernel_init+0x16/0x110
-> > [    1.198965]  ret_from_fork+0x1f/0x30
-> > [    1.199131]  </TASK>
-> > 
-> As I said before, this issue is not related to stackdump.
-> 
-> Besides, you can see more calltrace on x86 that because x86 iterate all stacks
-> (kernel, irq or exception) when dumping stacktrace. While RISCV only show
-> calltrace of current stack.
-> 
-
-I'm not sure whether there's misunderstanding. See above.
-
-Thanks
+I didn't read it anywhere, just a hunch about string formatting
+overhead. Either way - not necessary to do inside of stats_lock, so I
+moved it out. Next round will hopefully be early next week.
