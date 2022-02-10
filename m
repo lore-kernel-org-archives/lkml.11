@@ -2,89 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F328C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4B6CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232820AbiBJBbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:31:37 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37768 "EHLO
+        id S232836AbiBJBbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:31:51 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:38880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232674AbiBJBbL (ORCPT
+        with ESMTP id S232726AbiBJBbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:31:11 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCB122533
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:31:12 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id 9so4612143pfx.12
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:31:12 -0800 (PST)
+        Wed, 9 Feb 2022 20:31:45 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579DC43
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:31:47 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id i5so4478293oih.1
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:31:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=JNuH55wTGRw2CNKCDmZpYRQ9FVq8mQbAJA/99Xvogog=;
-        b=JGXX4ykemXQNdoTLEmz0NjLVOPq9hzvUeU/SBBNHvgfOoFfHFc+2JBBtgYlb7ih2AS
-         4MxIlGUzOmnpldQOxuuouEQV+inZjrhMPm+YefMjebVbO/PY3af/iTvmMncFcZuOFISu
-         FFa+lu4cPaKNs2fi1PSTSDYSYrdm1lrFYDct028sneLCxdWMIfE7kAbEgFWpT5AEgozl
-         pUQCwY93U2MpLvHdWRj2aPQXvvtkquNep2RlBKFeZ1DzwQ0flb5w1lAYxHLwUay1Kaeo
-         rz7lqe+ip3zF8wlv5YskSHt21q070KJfLHKsI+uEzYZ5Pfeaa946MbWyVvpkbcwPj0Lh
-         9UUQ==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=8+Nru2NcToVw10SMtgwpUUD5V5gNRuUchLBb5mwzcTo=;
+        b=TXHV4iS/LnExFOG16+ujTQmMvV1cNm5vPFzItoWZDg8A8T/YPbRQnR5VB+jSEMaxFU
+         Pt/WKTUgnSrBXxgCyeIzvTEs7ZzqHTpju3FkNOxVi1T4xx3SI1l6pK+TLwjynJqb/OSP
+         R19+UJ4qOCkEjvQcpQOFlPTR99isRfg19NWdQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=JNuH55wTGRw2CNKCDmZpYRQ9FVq8mQbAJA/99Xvogog=;
-        b=FDAAiEaVBlnza2n/AUgm1/7iI4KFHJU6GzTm3qn4hGqtEJgo7SUZFFspddV8yKbYiI
-         YADghybnpCc96PHi75s4K5MW16kEwcdZiaugojYex4lGredUhPmLuqLjvgDpgh1w/arv
-         IOQInEPacVoZmwxw/fkX29u1AcI1CJXEVDfKrVRX3ZvxoQnxjAFp7GdUzc3F6yetEqOb
-         bZ0q5z9UxvolS/NSNvuJC6/9mEDNlBR/Eawf92kdq5avr3Ef3Zj84DSi5N5SvYdM0F/W
-         XrUPQ+0BsVWwjF4xL5xf39jnjAhFDR2iOuMNv3VFEEhwruAzHWApWN6eUaq/0BBDRdTo
-         78Ig==
-X-Gm-Message-State: AOAM532XNmu9DhidoHAFf0nxrSNs0Gp/hZTGQr7RjlgTlgZQYuFtw4HA
-        Wz+LPDsvOVag6oFZ5hZ4GUwWbg==
-X-Google-Smtp-Source: ABdhPJz8Wt+8lcJKZREuw8154zIwS0J+JbpHaY9co37OSVxEQFfth+/1EIUNNtqtIRoSxcqsPjQ3uA==
-X-Received: by 2002:a05:6a00:1a52:: with SMTP id h18mr5152362pfv.72.1644456672247;
-        Wed, 09 Feb 2022 17:31:12 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id lr8sm58982pjb.11.2022.02.09.17.31.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 17:31:11 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Christian Hewitt <christianshewitt@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>
-Subject: Re: [PATCH] arm64: dts: meson: remove CPU opps below 1GHz for G12B/SM1
-In-Reply-To: <20220209135535.29547-1-christianshewitt@gmail.com>
-References: <20220209135535.29547-1-christianshewitt@gmail.com>
-Date:   Wed, 09 Feb 2022 17:31:11 -0800
-Message-ID: <7h7da3o6cg.fsf@baylibre.com>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=8+Nru2NcToVw10SMtgwpUUD5V5gNRuUchLBb5mwzcTo=;
+        b=O9idf7zZbUif7xS2eNnhcTrHQ+a4DfsMnJ46NZvF4p2CfUJzeo3ohSvKO+YLbLvwhx
+         HXCqrvlhQo1/5MlGGcoo04XUXOFKimYUS9DWVED+OFHmA3tNbkAPIy1c0w/x/X5VPJ7h
+         k3gxW7bXUqxu+/JqxwJMs83YOViy4CSo95ljgJI2f1pl03Z4zTvurBa067rAm8UXSKoj
+         rMUgMmKUujhVfCny3NjFVhzk2lXgUjppL4EtTXfmE0XK6NUaVxXmo1hHg+hywhtzWLYY
+         RhWbvm09QpXgJeVAWPs7Hg4pTrZWmF3wciBFgmn82JSyWB5ddlEKxmWi5yHVEOo1kY7w
+         dLzA==
+X-Gm-Message-State: AOAM533fLbVnw9P31pLgmBrBChzWu1nvOZC5ItisvCgMpJO7ewHB+Ia4
+        vlm0K5edBtl6NpsFsh6pT25D9XULvtR6g7XjRpmGoEcD/Q4=
+X-Google-Smtp-Source: ABdhPJziJIFTknz84SWo9mVGHh0qE57URGU8n7DntwMHca8it42Jy2AZliHDBlgXQCx9Gscxm97mfnNa5Z0YJT9CftY=
+X-Received: by 2002:a05:6870:d413:: with SMTP id i19mr1648649oag.54.1644451410730;
+ Wed, 09 Feb 2022 16:03:30 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 9 Feb 2022 16:03:30 -0800
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <a1c2a7e6-8d76-6ee6-4bc4-e7ea8013af02@quicinc.com>
+References: <1644334454-16719-1-git-send-email-quic_srivasam@quicinc.com>
+ <1644334454-16719-4-git-send-email-quic_srivasam@quicinc.com>
+ <CAE-0n50jBeOnkpogPFm+zqTf8bqQs-Bo0Gma658uFE6aA=Edxg@mail.gmail.com> <a1c2a7e6-8d76-6ee6-4bc4-e7ea8013af02@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 9 Feb 2022 16:03:30 -0800
+Message-ID: <CAE-0n52LqrdLXk4=WMQY3WXVYLjpwXH+FP2z71gKMAkjiPR4Xg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] arm64: dts: qcom: sc7280: Add wcd9380 pinmux
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christian Hewitt <christianshewitt@gmail.com> writes:
+Quoting Srinivasa Rao Mandadapu (2022-02-09 06:26:58)
+>
+> On 2/9/2022 2:42 AM, Stephen Boyd wrote:
+> > Quoting Srinivasa Rao Mandadapu (2022-02-08 07:34:14)
+> >
+> >> +                       pins = "gpio83";
+> >> +                       function = "gpio";
+> >> +                       drive-strength = <16>;
+> >> +                       output-high;
+> >> +       };
+> >> +
+> >> +       wcd938x_reset_sleep: wcd938x_reset_sleep {
+> >> +                       pins = "gpio83";
+> >> +                       function = "gpio";
+> >> +                       drive-strength = <16>;
+> >> +                       bias-disable;
+> >> +                       output-low;
+> > Why doesn't the device drive the reset gpio by requesting the gpio and
+> > asserting and deasserting it? We shouldn't need to use pinctrl settings
+> > to toggle reset gpios.
+> Okay. Verified without these nodes and didn't see any impact. But
+> similar way it's mentioned in sm8250-mtp.dts. Could You please suggest
+> on it how to go ahead on this?.
 
-> Amlogic G12B and SM1 devices experience CPU stalls and random board
-> wedges when the system idles and CPU cores clock down to lower opp
-> points. Recent vendor kernels include a change to remove 100-250MHz
-> (with no explanation) [0] but other downstream sources also remove
-> the 500/667MHz points (also with no explanation). Unless 100-667Mhz
-> opps are removed or the CPU governor forced to performance, stalls
-> are observed, so let's remove them an improve stability/uptime.
+I'd expect the wcd938x codec device node to have a 'reset-gpios'
+property like
 
-Just curious: what CPUfreq governor do you use by default for the
-LibreELEC kernel?
+	reset-gpios = <&tlmm 83 GPIO_ACTIVE_LOW>
 
-Your patch greatly improves the stability I'm seeing, but doesn't quite
-elimitate it.
+and then the driver to request that gpio via
 
-I'm testing suspend/resume in a loop on VIM3, and with schedutil
-(default) or ondemand, it eventually hangs.  With either powersave or
-performance it's stable.  
+	reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
 
-Kevin
+so it gets the gpio during driver probe. Then the gpio can be deasserted
+during suspend and reasserted on resume, if that's even important?
