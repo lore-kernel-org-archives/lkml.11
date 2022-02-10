@@ -2,150 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F94C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:02:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A159C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 20:05:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245227AbiBJUCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 15:02:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56118 "EHLO
+        id S1343858AbiBJUFi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 15:05:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239246AbiBJUCW (ORCPT
+        with ESMTP id S239246AbiBJUFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 15:02:22 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CC0D5595
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 12:02:22 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id n5so5258054ilk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 12:02:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language;
-        bh=q9BQkY9/bsdcNqzrqiGJlipJ/U8/3m/snLiGHC4NOug=;
-        b=NHPAM8WqSogOX6IOd7vjaLXEaMg8oSAr40lFInvdoYd1PPLSX/c93+NLB5O/nS4EgS
-         zEp2kJpKAf6UXYs/6lGql7Op6v0c2hribfFydNR2tJ7RCfFzxlR5oP9YiQlnCXbPVKo1
-         H6mOtLYOnW3bsj9OnI7Zf/XFo3/CoTm00BVjU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language;
-        bh=q9BQkY9/bsdcNqzrqiGJlipJ/U8/3m/snLiGHC4NOug=;
-        b=nag65UexRfp/RF8fQvWHvDuK4QW5w2fgElyM3eROWwoT54hl5DXHbIpLuUuVF2QNbp
-         HBMaWLSTdeNdyaI3J+BD2gKnpHb8DzSfyTkXmZ4C7IMF2l8o/wJiF9VO4TnKi4K7E5kN
-         hCXrQIxSBQN7G3I0YS9bRRCkYxV1p0tduoNkFrEk8nddXVmeX1eP27w+LSQlUpl5FD/j
-         gGOsuAxjeFYoqAI/7LZpKk7navBwE6tgKycfyrcFFj/2Fkr3qZtRaXGjEzJZTOexmj+5
-         +yoW7TST+yUj66IztmitI3F40mXzs/IUF1HT0C0rgzm+KRC6ZcaNDeK3lFpFlgJSspqT
-         W5/A==
-X-Gm-Message-State: AOAM532y7B2+7ZGGd7LmTVkydkBqdBQ04XuDd7D5LjqNpreUdFdT9lD3
-        YATAOyk9dQIaEfNNIavfq5L52iyTu0BukA==
-X-Google-Smtp-Source: ABdhPJzhwg//+iILtTe5CMQKGul1Y0xRjp3+boym/DzmEQ7G76eLETPfL6tJLDCAQRVc7PIRXeyVxQ==
-X-Received: by 2002:a92:cecb:: with SMTP id z11mr4540304ilq.116.1644523341494;
-        Thu, 10 Feb 2022 12:02:21 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id m4sm11046812iln.48.2022.02.10.12.02.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 12:02:21 -0800 (PST)
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Subject: [GIT PULL] KUnit fixes update for Linux 5.17-rc4
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <3a0311b2-33af-d13e-e92b-111bfb357a19@linuxfoundation.org>
-Date:   Thu, 10 Feb 2022 13:02:20 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 10 Feb 2022 15:05:37 -0500
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F14726F3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 12:05:37 -0800 (PST)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
+ id b2f2cd1e5498de8e; Thu, 10 Feb 2022 21:05:35 +0100
+Received: from kreacher.localnet (unknown [213.134.175.120])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id BBC2266B514;
+        Thu, 10 Feb 2022 21:05:34 +0100 (CET)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Dan Williams <dan.j.williams@intel.co>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH] ACPI: scan: Use ida_alloc() instead of ida_simple_get()
+Date:   Thu, 10 Feb 2022 21:05:33 +0100
+Message-ID: <2645186.mvXUDI8C0e@kreacher>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="------------6F0591AA410D673919C28020"
-Content-Language: en-US
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.175.120
+X-CLIENT-HOSTNAME: 213.134.175.120
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddriedugddufeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudejhedruddvtdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddujeehrdduvddtpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeegpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepuggrnhdrjhdrfihilhhlihgrmhhssehinhhtvghlrdgtohdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghl
+ rdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=4 Fuz1=4 Fuz2=4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------6F0591AA410D673919C28020
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Hi Linus,
+As recommended in include/linux/idr.h, use ida_alloc() instead of
+ida_simple_get() for creating unique device object names and for
+symmetry replace ida_simple_remove() with ida_free() (and fix up
+the related overly long code line while at it).
 
-Please pull the following KUnit fixes update for Linux 5.17-rc4.
+Also drop the ACPI_MAX_DEVICE_INSTANCES limit that is not necessary
+any more and may not be sufficient for future platforms.
 
-This KUnit fixes update for Linux 5.17-rc4 consists of bug fixes
-to the test and usage documentation.
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+ drivers/acpi/internal.h |    2 --
+ drivers/acpi/scan.c     |    5 +++--
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
-Note: The doc fix patch resolves a bugzilla issue.
-
-diff is attached.
-
-thanks,
--- Shuah
-
-----------------------------------------------------------------
-The following changes since commit 235528072f28b3b0a1446279b7eaddda36dbf743:
-
-   kunit: tool: Import missing importlib.abc (2022-01-25 12:59:43 -0700)
-
-are available in the Git repository at:
-
-   git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-kunit-fixes-5.17-rc4
-
-for you to fetch changes up to 92a68053c3468705e2c7c752c9a3f256304a35a6:
-
-   Documentation: KUnit: Fix usage bug (2022-02-08 13:16:20 -0700)
-
-----------------------------------------------------------------
-linux-kselftest-kunit-fixes-5.17-rc4
-
-This KUnit fixes update for Linux 5.17-rc4 consists of bug fixes
-to the test and usage documentation.
-
-----------------------------------------------------------------
-Akira Kawata (1):
-       Documentation: KUnit: Fix usage bug
-
-Daniel Latypov (1):
-       kunit: fix missing f in f-string in run_checks.py
-
-  Documentation/dev-tools/kunit/usage.rst | 2 +-
-  tools/testing/kunit/run_checks.py       | 2 +-
-  2 files changed, 2 insertions(+), 2 deletions(-)
-
-----------------------------------------------------------------
-
---------------6F0591AA410D673919C28020
-Content-Type: text/x-patch; charset=UTF-8;
- name="linux-kselftest-kunit-fixes-5.17-rc4.diff"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="linux-kselftest-kunit-fixes-5.17-rc4.diff"
-
-diff --git a/Documentation/dev-tools/kunit/usage.rst b/Documentation/dev-tools/kunit/usage.rst
-index 76af931a332c..1c83e7d60a8a 100644
---- a/Documentation/dev-tools/kunit/usage.rst
-+++ b/Documentation/dev-tools/kunit/usage.rst
-@@ -242,7 +242,7 @@ example:
+Index: linux-pm/drivers/acpi/internal.h
+===================================================================
+--- linux-pm.orig/drivers/acpi/internal.h
++++ linux-pm/drivers/acpi/internal.h
+@@ -96,8 +96,6 @@ void acpi_scan_table_notify(void);
  
- 	int rectangle_area(struct shape *this)
- 	{
--		struct rectangle *self = container_of(this, struct shape, parent);
-+		struct rectangle *self = container_of(this, struct rectangle, parent);
+ extern struct list_head acpi_bus_id_list;
  
- 		return self->length * self->width;
- 	};
-diff --git a/tools/testing/kunit/run_checks.py b/tools/testing/kunit/run_checks.py
-index 4f32133ed77c..13d854afca9d 100755
---- a/tools/testing/kunit/run_checks.py
-+++ b/tools/testing/kunit/run_checks.py
-@@ -61,7 +61,7 @@ def main(argv: Sequence[str]) -> None:
- 		elif isinstance(ex, subprocess.CalledProcessError):
- 			print(f'{name}: FAILED')
- 		else:
--			print('{name}: unexpected exception: {ex}')
-+			print(f'{name}: unexpected exception: {ex}')
- 			continue
+-#define ACPI_MAX_DEVICE_INSTANCES	4096
+-
+ struct acpi_device_bus_id {
+ 	const char *bus_id;
+ 	struct ida instance_ida;
+Index: linux-pm/drivers/acpi/scan.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/scan.c
++++ linux-pm/drivers/acpi/scan.c
+@@ -477,7 +477,8 @@ static void acpi_device_del(struct acpi_
+ 	list_for_each_entry(acpi_device_bus_id, &acpi_bus_id_list, node)
+ 		if (!strcmp(acpi_device_bus_id->bus_id,
+ 			    acpi_device_hid(device))) {
+-			ida_simple_remove(&acpi_device_bus_id->instance_ida, device->pnp.instance_no);
++			ida_free(&acpi_device_bus_id->instance_ida,
++				 device->pnp.instance_no);
+ 			if (ida_is_empty(&acpi_device_bus_id->instance_ida)) {
+ 				list_del(&acpi_device_bus_id->node);
+ 				kfree_const(acpi_device_bus_id->bus_id);
+@@ -642,7 +643,7 @@ static int acpi_device_set_name(struct a
+ 	struct ida *instance_ida = &acpi_device_bus_id->instance_ida;
+ 	int result;
  
- 		output = ex.output
+-	result = ida_simple_get(instance_ida, 0, ACPI_MAX_DEVICE_INSTANCES, GFP_KERNEL);
++	result = ida_alloc(instance_ida, GFP_KERNEL);
+ 	if (result < 0)
+ 		return result;
+ 
 
---------------6F0591AA410D673919C28020--
+
+
