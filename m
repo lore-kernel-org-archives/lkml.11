@@ -2,120 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD61DC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01580C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233189AbiBJB4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:56:33 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60176 "EHLO
+        id S233188AbiBJB4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:56:37 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232734AbiBJBzn (ORCPT
+        with ESMTP id S232923AbiBJB4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:55:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B3D2BB1E
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:51:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46267B823D9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:33:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E4E8C340E7;
-        Thu, 10 Feb 2022 00:33:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1644453205;
-        bh=LvshK/blNNVzjkEFCNCcODobmLPbLezmfObyMz21JLY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iXFPm4+XAR1cgGN6izstu1RlRZRLR4ZLvjOpqVKT2tdGSkKHtwvb5jbU9bx5eXVGR
-         X7HPykgv7WpYJkKx3lYLX72T1YIFOM+Olv02Jcf53F8baw3xh/wowyrhv/nT34+SGI
-         3gJ6Bpv+EaRwkFV3R0P0VfnzVpeGr4oStgMDDHFY=
-Date:   Wed, 9 Feb 2022 16:33:24 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     ccross@google.com, sumit.semwal@linaro.org, mhocko@suse.com,
-        dave.hansen@intel.com, keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] mm: Fix UAF when anon vma name is used after vma is
- freed
-Message-Id: <20220209163324.bbf26e7462b217d453c5a34f@linux-foundation.org>
-In-Reply-To: <20220210001801.15413-1-surenb@google.com>
-References: <20220210001801.15413-1-surenb@google.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 9 Feb 2022 20:56:00 -0500
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294CF270FC
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:34:07 -0800 (PST)
+Received: by mail-vs1-xe34.google.com with SMTP id j5so1406373vsm.5
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:34:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CpXL3kPoVZ7att1zdwN8Mf8Da7ajP98VvjIjGbgaZGA=;
+        b=ENY37unj6f6SjoHK/K0Df/VIBp8PpZN9GGdjmw2F5RHMgth0BKvyfe7sX2l5TwfuMv
+         Bw72HuoCoav/n3JPrtIVxRyg7PhW6XYai1AIx9e9CG7QfpdEhEDh7DNsywpBfEYsuHG0
+         PC/EAciecqkqFtBE+fMv5STFjECmxiVAH8eSI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CpXL3kPoVZ7att1zdwN8Mf8Da7ajP98VvjIjGbgaZGA=;
+        b=Xoajm94P9uEvi/97w9VT/XFqURmIZQszBYCYFArhA+DiZ1M7Nw9qGOWJsiLEJLFehg
+         6CFBL1ExL8bUOvZoJZvhwzXnmQ/581dYyhXzu7vdKxK10Du9HiGYzYhcOIn/iTY3eNzJ
+         4vnDpID0ZII2wDoc3NfLy77H7TTi/94FQ+5QAIalH4HxehGxmQxnyY26nlfrV5v/nPuD
+         Ew4k8h/xbJFvKYL6abcgF78V9ZS2VnhG17iSw1XlsIKNvExbdkTSGLEHh9ApKuoRcPOO
+         d/tKfEUpcr98O/W9iIJHBMhmvIMM9l6/kKBAmZ+hO8/vniz3dgNF4HT4vzWQw6JpkC5E
+         V7Tw==
+X-Gm-Message-State: AOAM530nPHg4LD2FTJmKiyGB6x+Woa0+KUOWeBQHBEscM8aTIDoxOyBp
+        eRyj9hdalA9kcHkHC7UA14u/s2dvNqdndDDuOavpifhpf3ijCQ==
+X-Google-Smtp-Source: ABdhPJz8Fs/lByCRrqqXLa3uco/tN8npZwUZ9fqdEfcHy+dfvEkvZxsQSmSiX8brFmaAbGdrbukbIMqI5en+3f8e4rg=
+X-Received: by 2002:a05:6102:cc8:: with SMTP id g8mr1471720vst.39.1644453157351;
+ Wed, 09 Feb 2022 16:32:37 -0800 (PST)
+MIME-Version: 1.0
+References: <20211006224659.21434-1-digetx@gmail.com> <20211006224659.21434-4-digetx@gmail.com>
+ <YWimShkkxkR+bQLK@robh.at.kernel.org> <CAODwPW-2othAhTC9a_joBdHScA86iqs-FkZJZDrK5LxrJm8F8Q@mail.gmail.com>
+ <d69f99ed-75a4-9b8c-addb-3eaa2b2be6a6@canonical.com> <CAODwPW-AMqQ+ZbnvUTuxP5Bbxdcy08GSXnhcLC+V6BW=OPYaqg@mail.gmail.com>
+ <6568fd31-113f-1581-4eff-45a4a1eb4e5d@canonical.com> <c33c9de2-ff0f-0ba7-b424-728d316dcca2@gmail.com>
+In-Reply-To: <c33c9de2-ff0f-0ba7-b424-728d316dcca2@gmail.com>
+From:   Julius Werner <jwerner@chromium.org>
+Date:   Wed, 9 Feb 2022 16:32:25 -0800
+Message-ID: <CAODwPW-VfbvWs3OVON1m=WWFXN2V86o9jqurVDShpfTrSn=Mkw@mail.gmail.com>
+Subject: Re: [PATCH v5 3/9] dt-bindings: memory: lpddr2: Add revision-id properties
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Julius Werner <jwerner@chromium.org>,
+        Rob Herring <robh@kernel.org>, linux-tegra@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  9 Feb 2022 16:18:01 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
+> I don't mind, but I also don't see where the revision-id property of
+> LPDDR3 is used at all. I can't find any device-tree with LPDDR3
+> revision-id and don't see it being used in the code either. Maybe it's
+> the LPDDR3 binding that needs to be changed?
 
-> When adjacent vmas are being merged it can result in the vma that was
-> originally passed to madvise_update_vma being destroyed. In the current
-> implementation, the name parameter passed to madvise_update_vma points
-> directly to vma->anon_name->name and it is used after the call to
-> vma_merge. In the cases when vma_merge merges the original vma and
-> destroys it, this will result in use-after-free bug as shown below:
-> 
-> madvise_vma_behavior << passes vma->anon_name->name as name param
->   madvise_update_vma(name)
->     vma_merge
->       __vma_adjust
->         vm_area_free <-- frees the vma
->     replace_vma_anon_name(name) <-- UAF
-> 
-> Fix this by passing madvise_update_vma a copy of the name.
-> 
-> ...
->
-> --- a/kernel/sys.c
-> +++ b/kernel/sys.c
-> @@ -2263,7 +2263,6 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
->  
->  #ifdef CONFIG_ANON_VMA_NAME
->  
-> -#define ANON_VMA_NAME_MAX_LEN		80
->  #define ANON_VMA_NAME_INVALID_CHARS	"\\`$[]"
->  
->  static inline bool is_valid_name_char(char ch)
-> diff --git a/mm/madvise.c b/mm/madvise.c
-> index 5604064df464..f36a5a9942d8 100644
-> --- a/mm/madvise.c
-> +++ b/mm/madvise.c
-> @@ -976,6 +976,8 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
->  {
->  	int error;
->  	unsigned long new_flags = vma->vm_flags;
-> +	char name_buf[ANON_VMA_NAME_MAX_LEN];
-> +	const char *anon_name;
->  
->  	switch (behavior) {
->  	case MADV_REMOVE:
-> @@ -1040,8 +1042,18 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
->  		break;
->  	}
->  
-> +	anon_name = vma_anon_name(vma);
-> +	if (anon_name) {
-> +		/*
-> +		 * Make a copy of the name because vma might be destroyed when
-> +		 * merged with another one and the name parameter might be used
-> +		 * after that.
-> +		 */
-> +		strcpy(name_buf, anon_name);
-> +		anon_name = name_buf;
-> +	}
->  	error = madvise_update_vma(vma, prev, start, end, new_flags,
-> -				   vma_anon_name(vma));
-> +				   anon_name);
+We are using the revision ID in userspace (read through
+/proc/device-tree) for runtime memory identification. We don't have a
+kernel driver bound to it. Our boot firmware is inserting this value
+at runtime into the FDT (that's basically the reason we have this, our
+firmware auto-detects memory during boot and we use the FDT to report
+what it found to userspace), that's why you can't find it anywhere in
+the static device trees in boot/dts/.
 
-anon_name is refcounted.  Why not use kref_get()/kref_put() instead of
-taking a copy?
+> I made each LPDDR2 revision-id property to correspond to a dedicated MR
+> of LPDDR, which feels okay to me to since it matches h/w.
 
+I'm not super married to my solution, so if that makes things easier
+we can standardize on the two-property version as well. I mostly
+designed it my way because I thought we may one day also want to do
+something like this for the 8-byte LPDDR5 serial-id, and then it would
+get kinda cumbersome to have serial-id1 through serial-id8 all as
+separate properties. But that's also a bridge we can cross when we get
+there.
+
+My use case is in a position where we could still change this now
+without requiring backwards-compatibility. Krzysztof, would you be
+okay if I instead changed the "jedec,lpddr3" to the same thing
+"jedec,lpddr2" does -- seeing as the original patch was from me, my
+use case could handle the switch, there has never been any actual
+kernel code using the property, and it seems very unlikely that anyone
+else has silently started using the same thing in the time it's been
+in the tree? Or do we also need to go the official deprecation route
+for that?
