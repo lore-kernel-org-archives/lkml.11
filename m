@@ -2,96 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5506AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD94C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242154AbiBJNYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:24:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52522 "EHLO
+        id S242167AbiBJN1T convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:27:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbiBJNYm (ORCPT
+        with ESMTP id S239660AbiBJN1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:24:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956BC1B5;
-        Thu, 10 Feb 2022 05:24:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41AB7B82542;
-        Thu, 10 Feb 2022 13:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97DEC004E1;
-        Thu, 10 Feb 2022 13:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644499481;
-        bh=ViynvLIQDsJVAJBLbYN5w/IOJ3P4Uxv4v6juOv+xZyk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gItkCPtKoy6GdMXg82CIa87ENm4a3P3P9M+aF0xm3hfzRif0qZPfQgr+UnNMZL/Ds
-         KAYO/5+G2nfRuMg44tsmx8PYtt2PO5xWuCiuJEwGvj+W4PO9jAt2Kn2oG8B026iKpr
-         pkQfi/N8iQgdy9vsOwLgj/ljjroVLCvUCPJA6tJ+HuvjHhGMPBj1WZCPm5M/rcboiS
-         Y0NR/iF09U+VYu4gj5OoD9Tkj9YYZ/14obS7bOXYXxYKAiEx7vODQIwKXAO+LunibS
-         08Y7YOtWxrrBoD5YDKwHLYy5H42R3VcZxKa5ThCJWKC0ZH0eblm/nx/5hrjrv4SAiu
-         lTh2xd9mmXKyQ==
-Date:   Thu, 10 Feb 2022 13:24:34 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Apertis package maintainers <packagers@lists.apertis.org>
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
-        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
-        ariel.dalessandro@collabora.com, festevam@gmail.com,
-        krzysztof.kozlowski@canonical.com, lgirdwood@gmail.com,
-        michael@amarulasolutions.com, robh+dt@kernel.org,
-        s.hauer@pengutronix.de, shawnguo@kernel.org
-Subject: Re: [PATCH 1/2] ASoC: bindings: fsl-asoc-card: Add compatible for
- tlv320aic31xx codec
-Message-ID: <YgUSEvMGMoSQYy5v@sirena.org.uk>
-References: <20220207164946.558862-1-packagers@lists.apertis.org>
+        Thu, 10 Feb 2022 08:27:17 -0500
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724E3204
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:27:18 -0800 (PST)
+Received: by mail-io1-f72.google.com with SMTP id h1-20020a056602008100b0061152382337so4004399iob.18
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:27:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-transfer-encoding;
+        bh=DlpPZGGKliMKcWhjenaLMpD1ZyJmKZB8Ha4yhKNSbSo=;
+        b=nJO3QpipZW3vXPA6EYmq0PG3DAIktB9JgbH4URL0c6NQUJ7irkAOwA//D3TO1Ueb6n
+         8Ehta/K5p4sLKM1ow4MmR3XqhHh36rPP59IYKWrjhpXmGS7o9Rr4YFylNVxvs734fltd
+         WZGyej+tbO15Ahu1BkzASKK150qewZMAaC6GIme/6MN8tHwx5f5sDVg8pyvxRPWt8Kua
+         pguEnsuCUoouIXj7ps4mvjZ3NtjZbFNRAkGey691Cvsg+K2lOCl47uG6YkFRf6f19/Iv
+         uScy4kUWL7Dpp73Uww/v+eC3CX/OiMOAHeASRKzvAidkv3p6v7LWL0Oi6cdn1nYV8VSO
+         KAww==
+X-Gm-Message-State: AOAM533xNRMGdNVg9+hcP0MEyF1loaRIlGNkxkojvv2077Gh5CQVyHlc
+        QmldI2EGpr3D3rPBVjHX1qg7zQvEj8ohubroDBHme4yGACjq
+X-Google-Smtp-Source: ABdhPJxktaqc2MT8TGypSv3S6tvzNRIrDITqBFmZIMUyTf+hsDOhN0yqT8VFBTUt97hEaujKN31FgFE53ED94o/E0F7FMTp9X6eh
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="CYrnMS08Bmr4w452"
-Content-Disposition: inline
-In-Reply-To: <20220207164946.558862-1-packagers@lists.apertis.org>
-X-Cookie: Only God can make random selections.
+X-Received: by 2002:a05:6e02:1906:: with SMTP id w6mr3703475ilu.43.1644499637838;
+ Thu, 10 Feb 2022 05:27:17 -0800 (PST)
+Date:   Thu, 10 Feb 2022 05:27:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bf2b0705d7a9e8ac@google.com>
+Subject: [syzbot] net-next test error: WARNING: suspicious RCU usage in hsr_node_get_first
+From:   syzbot <syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com>
+To:     andrew@lunn.ch, claudiajkang@gmail.com, davem@davemloft.net,
+        ennoerlangen@gmail.com, george.mccollister@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        marco.wenzel@a-eberle.de, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
---CYrnMS08Bmr4w452
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following issue on:
 
-On Mon, Feb 07, 2022 at 01:49:45PM -0300, Apertis package maintainers wrote:
-> From: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
->=20
-> Commit 8c9b9cfb7724 ("ASoC: fsl-asoc-card: Support
-> fsl,imx-audio-tlv320aic31xx codec")' added support for tlv320aic31xx
-> codec to fsl-asoc-card, but missed the related device-tree compatible
-> string documentation. Fix this.
->=20
-> Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
-> ---
+HEAD commit:    45230829827b Merge git://git.kernel.org/pub/scm/linux/kern..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12e2f52c700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3fa7f88a3821006b
+dashboard link: https://syzkaller.appspot.com/bug?extid=f0eb4f3876de066b128c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-This has a signoff from Ariel but the mail comes from something called
-"Apertis package maintainers" and I really can't tell if there's a good
-signoff chain here, please see Documentation/process/submitting-patches.rst
-for details on what this is and why it's important.  The submission
-really needs to come from an actual person who's providing a signoff.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+f0eb4f3876de066b128c@syzkaller.appspotmail.com
 
---CYrnMS08Bmr4w452
-Content-Type: application/pgp-signature; name="signature.asc"
+batman_adv: batadv0: The MTU of interface batadv_slave_1 is too small (1500) to handle the transport of batman-adv packets. Packets going over this interface will be fragmented on layer2 which could impact the performance. Setting the MTU to 1560 would solve the problem.
+batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
+=============================
+WARNING: suspicious RCU usage
+5.17.0-rc2-syzkaller-00903-g45230829827b #0 Not tainted
+-----------------------------
+net/hsr/hsr_framereg.c:34 suspicious rcu_dereference_check() usage!
 
------BEGIN PGP SIGNATURE-----
+other info that might help us debug this:
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIFEhEACgkQJNaLcl1U
-h9DDqgf8CJDwEojZnDvk8O6VbLMqNsI7vZnNWIite24PPFflMdCzOcl2IVhXN4T5
-apANt9Yr2O8JzrVxlcFO2rfi0cRDtZoF7Vx/jnpLuVm9jlsLmO+K+HlHUZBUL2XZ
-YUyCW4rigVG6DEoecWrb5Qn6aEqiJ1LAg6G8MLXo9cxe1e2qLZoMVQqcxrbsuFrv
-yo0cAeBtxUqdShl5BZPi6kdT46fHEXMyosHIDNjpN+82h89Bi9ZwHety4rUYGRA9
-civSqSx4+uVuCih0WZJWUNc2U2Mu0RVWjX6HXMrbL3WZxEXNh1nJpv8YIp4jbush
-8DxcuUQz2QS9oyXliknsdIJdLIkCsg==
-=8Brv
------END PGP SIGNATURE-----
 
---CYrnMS08Bmr4w452--
+rcu_scheduler_active = 2, debug_locks = 1
+2 locks held by syz-executor.0/3597:
+ #0: ffffffff8d32ca28 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8d32ca28 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3be/0xb80 net/core/rtnetlink.c:5591
+ #1: ffff888073fa55f0 (&hsr->list_lock){+...}-{2:2}, at: spin_lock_bh include/linux/spinlock.h:354 [inline]
+ #1: ffff888073fa55f0 (&hsr->list_lock){+...}-{2:2}, at: hsr_create_self_node+0x225/0x650 net/hsr/hsr_framereg.c:108
+
+stack backtrace:
+CPU: 1 PID: 3597 Comm: syz-executor.0 Not tainted 5.17.0-rc2-syzkaller-00903-g45230829827b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ hsr_node_get_first+0x9b/0xb0 net/hsr/hsr_framereg.c:34
+ hsr_create_self_node+0x22d/0x650 net/hsr/hsr_framereg.c:109
+ hsr_dev_finalize+0x2c1/0x7d0 net/hsr/hsr_device.c:514
+ hsr_newlink+0x315/0x730 net/hsr/hsr_netlink.c:102
+ __rtnl_newlink+0x107c/0x1760 net/core/rtnetlink.c:3481
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3529
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5594
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x539/0x7e0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x904/0xe00 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ __sys_sendto+0x21c/0x320 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7fca68e2ae1c
+Code: fa fa ff ff 44 8b 4c 24 2c 4c 8b 44 24 20 89 c5 44 8b 54 24 28 48 8b 54 24 18 b8 2c 00 00 00 48 8b 74 24 10 8b 7c 24 08 0f 05 <48> 3d 00 f0 ff ff 77 34 89 ef 48 89 44 24 08 e8 20 fb ff ff 48 8b
+RSP: 002b:00007ffcd2955580 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
+RAX: ffffffffffffffda RBX: 00007fca69ec3320 RCX: 00007fca68e2ae1c
+RDX: 0000000000000048 RSI: 00007fca69ec3370 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 00007ffcd29555d4 R09: 000000000000000c
+R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
+R13: 00007fca69ec3370 R14: 0000000000000003 R15: 0000000000000000
+ </TASK>
+device hsr_slave_0 entered promiscuous mode
+device hsr_slave_1 entered promiscuous mode
+netdevsim netdevsim0 netdevsim0: renamed from eth0
+netdevsim netdevsim0 netdevsim1: renamed from eth1
+netdevsim netdevsim0 netdevsim2: renamed from eth2
+netdevsim netdevsim0 netdevsim3: renamed from eth3
+bridge0: port 2(bridge_slave_1) entered blocking state
+bridge0: port 2(bridge_slave_1) entered forwarding state
+bridge0: port 1(bridge_slave_0) entered blocking state
+bridge0: port 1(bridge_slave_0) entered forwarding state
+8021q: adding VLAN 0 to HW filter on device bond0
+8021q: adding VLAN 0 to HW filter on device team0
+IPv6: ADDRCONF(NETDEV_CHANGE): hsr0: link becomes ready
+8021q: adding VLAN 0 to HW filter on device batadv0
+device veth0_vlan entered promiscuous mode
+device veth1_vlan entered promiscuous mode
+device veth0_macvtap entered promiscuous mode
+device veth1_macvtap entered promiscuous mode
+batman_adv: batadv0: Interface activated: batadv_slave_0
+batman_adv: batadv0: Interface activated: batadv_slave_1
+netdevsim netdevsim0 netdevsim0: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
+syz-executor.0 (3597) used greatest stack depth: 22400 bytes left
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
