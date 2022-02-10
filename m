@@ -2,167 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBF0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344958AbiBJWcR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:32:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54506 "EHLO
+        id S243209AbiBJWcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 17:32:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242808AbiBJWcP (ORCPT
+        with ESMTP id S1344965AbiBJWcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:32:15 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5C8BD9
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:32:15 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id a12-20020a056902056c00b0061dc0f2a94aso15016846ybt.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:32:15 -0800 (PST)
+        Thu, 10 Feb 2022 17:32:17 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E891BD9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:32:17 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id w27-20020a9d5a9b000000b005a17d68ae89so4766603oth.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 14:32:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=gl08/uxFVlmi2wSTq5+9dUe3B/HwzYiRuJoJTn+segs=;
-        b=BdC/fKhWAhUYwCbX8kX1FDzZtTY9aXZLZxD44qMz+MrqHmpo9XxkQ1C7btl4i+KBVV
-         2Ttqt8x0eMP9PuQygYLTj0RxfbJGpXIFw5IZjpN/3or4BSXmsMctd17EhXpz9MgID3jO
-         Q70qwhcGZZ8Q9ILF3wfH79Moln9rfUCDFOmkxEJ40b7+4WFJRQmCmCZl6Gv+hi3LgMGZ
-         WQJEhU9pRiMZ2Kl2UcNgWBheBv/L/Q+B9jAavghoGDh76uwwOd+etdfMAMGK2thVbD7W
-         cLh1JCBDeH/t5HCTavnLVT+ygkAhzWIOeOoVs5j7GDPwte7Qo8aRpEKtRHBfxq58hsKf
-         RM5g==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JrHddR19ZD1tkokZWOCBaXxsomwE9JN1w01NkG4YDyU=;
+        b=AOxrl24mI7dYWR6YtN6FZh7Gl8Pj9u1/oljFksQs78r7CJZJVslHGJgUXkU3T118zO
+         5MabSKCGeA7XPcl6ZBXZ+ckDl4624CJhaTRZIvaYdMPWDswR7kRx2BnBROovCkRS5KAb
+         v/dNvZSkxZ4eOyeO8ieSlwckmJ6DsV2Mu0bqephhV80yiUd6PiAibe/CXd0OUMBlSJXl
+         fW0se2KH0qWF/80+Qhj3bCRSE2mHsyNIUsnlRC3kFbXUCRtMo/svqx2QM8V09K1Th68f
+         qgJgmdXGbHyRfqqNF6jgkASk6+VHUf9/+aNcb/aceiaWgrrgUtF4wgFrBn6OXZl9Ohpv
+         Tedw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=gl08/uxFVlmi2wSTq5+9dUe3B/HwzYiRuJoJTn+segs=;
-        b=31wiwnQWRBo1c39kavC4QDAvVDuomhn/Ombe37Vvd8OylIR5bdB9mbufxUEqQpc5DB
-         2jsMc+eUVlkKwhf8OBgVjvAnMZjE3IvkcWhjps/K3WRK6HJ1h3kr1LWZXOs8KTjabjTC
-         AZwBUJJ5+FG0A6R0pR+JjlqmyBC3FJGkC+P6M1IePglCFyjJfJSZvej03TgGV9OrT6Y1
-         +1UyHfGrUtPl2fL2LsWgwGjv1myowgWYvvbp2fXDGLnJPf6+SSbSHF2X6vimW/5cfkrD
-         mErwi3ArR+xLEEu/cyMwxoZuNlOta0tJNRPfH0i85KvzlZ4zuxmvSLYyxkE3kzYDroj7
-         92xQ==
-X-Gm-Message-State: AOAM5300KV1Ds8eD2PuAZArypgpFboHv8KnPCxRmpKkU/QAQKYQPbITM
-        8DyomU2MOrCkp935M7/fyPXIxOHX
-X-Google-Smtp-Source: ABdhPJzsflLFTtrCxYLYUbOG68XKxeYHkfS3xyNJorZcxmlFdOO6bvUPqjcNKP1xFAdasYI3UiPhTZ8wNQ==
-X-Received: from fawn.svl.corp.google.com ([2620:15c:2cd:202:2f6e:60d0:d1d5:6d5b])
- (user=morbo job=sendgmr) by 2002:a25:3285:: with SMTP id y127mr9242337yby.205.1644532334603;
- Thu, 10 Feb 2022 14:32:14 -0800 (PST)
-Date:   Thu, 10 Feb 2022 14:31:34 -0800
-In-Reply-To: <20220204005742.1222997-1-morbo@google.com>
-Message-Id: <20220210223134.233757-1-morbo@google.com>
-Mime-Version: 1.0
-References: <20220204005742.1222997-1-morbo@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v4] x86: use builtins to read eflags
-From:   Bill Wendling <morbo@google.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Juergen Gross <jgross@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>, llvm@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, Bill Wendling <morbo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JrHddR19ZD1tkokZWOCBaXxsomwE9JN1w01NkG4YDyU=;
+        b=W5VD9Lzc3wGcT3QNSVaHic+HIcxv7PZIbmG0nlzXygWiIp6z6cs5RLWAtZIJGZARD4
+         qqSOvlNA23ntJGwfaz9znjGQaV9a8JWHIYoq8+UwmRkLEik8ED3bAa8YyhPaK/ia6/HW
+         Ey5HHmzAclUTFoxK90Jl6VNa/oZPyxcWBhiQYl5THvfNvGHpremz21/JAJqV0ZOn1Inc
+         mZECx0BWPg3Cl5C/xGuTKVOVOyzj90/0/oHysUzMQ5JG2fVfyRkXngLZ564eDuw4CDGN
+         TVx8esZyD2JW68zeUdV6qHjBLwGHKGEqkUiP6u2xJGfHe36KarHTalecYh5hQN+VLLQK
+         5Avg==
+X-Gm-Message-State: AOAM532VskwYbZyAlHSHZTEpgCpt28woNopuJ1RQ61z/DbjIwo5L7cku
+        XytwqunhiZhGgINZyvh9kOnmRg==
+X-Google-Smtp-Source: ABdhPJxJ7/q4RbdB3oTSoXedG6ikpzgyv4pQn6CfOszGopvOcDpzuPeg37Y9NWvFxF93GL7eMhYPBg==
+X-Received: by 2002:a05:6830:92a:: with SMTP id v42mr3756586ott.48.1644532336413;
+        Thu, 10 Feb 2022 14:32:16 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id 6sm8819888oig.29.2022.02.10.14.32.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 14:32:15 -0800 (PST)
+Date:   Thu, 10 Feb 2022 14:34:30 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Rob Clark <robdclark@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 2/2] drm/msm/dp: Implement oob_hotplug_event()
+Message-ID: <YgWS9iZ+1uJBd9Lj@ripper>
+References: <20220208044328.588860-1-bjorn.andersson@linaro.org>
+ <20220208044328.588860-2-bjorn.andersson@linaro.org>
+ <YgIecy+W/lGzL6ac@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgIecy+W/lGzL6ac@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GCC and Clang both have builtins to read and write the EFLAGS register.
-This allows the compiler to determine the best way to generate this
-code, which can improve code generation.
+On Mon 07 Feb 23:40 PST 2022, Greg Kroah-Hartman wrote:
 
-This issue arose due to Clang's issue with the "=rm" constraint.  Clang
-chooses to be conservative in these situations, and so uses memory
-instead of registers. This is a known issue, which is currently being
-addressed.
+> On Mon, Feb 07, 2022 at 08:43:28PM -0800, Bjorn Andersson wrote:
+> > The Qualcomm DisplayPort driver contains traces of the necessary
+> > plumbing to hook up USB HPD, in the form of the dp_hpd module and the
+> > dp_usbpd_cb struct. Use this as basis for implementing the
+> > oob_hotplug_event() callback, by amending the dp_hpd module with the
+> > missing logic.
+> > 
+> > Overall the solution is similar to what's done downstream, but upstream
+> > all the code to disect the HPD notification lives on the calling side of
+> > drm_connector_oob_hotplug_event().
+> > 
+> > drm_connector_oob_hotplug_event() performs the lookup of the
+> > drm_connector based on fwnode, hence the need to assign the fwnode in
+> > dp_drm_connector_init().
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  drivers/gpu/drm/msm/dp/dp_display.c |  8 ++++++++
+> >  drivers/gpu/drm/msm/dp/dp_display.h |  2 ++
+> >  drivers/gpu/drm/msm/dp/dp_drm.c     | 10 ++++++++++
+> >  drivers/gpu/drm/msm/dp/dp_hpd.c     | 19 +++++++++++++++++++
+> >  drivers/gpu/drm/msm/dp/dp_hpd.h     |  4 ++++
+> >  5 files changed, 43 insertions(+)
+> > 
+> > diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+> > index 7cc4d21f2091..124a2f794382 100644
+> > --- a/drivers/gpu/drm/msm/dp/dp_display.c
+> > +++ b/drivers/gpu/drm/msm/dp/dp_display.c
+> > @@ -414,6 +414,13 @@ static int dp_display_usbpd_configure_cb(struct device *dev)
+> >  	return dp_display_process_hpd_high(dp);
+> >  }
+> >  
+> > +void dp_display_oob_hotplug_event(struct msm_dp *dp_display, bool hpd_state)
+> > +{
+> > +	struct dp_display_private *dp = container_of(dp_display, struct dp_display_private, dp_display);
+> > +
+> > +	dp->usbpd->oob_event(dp->usbpd, hpd_state);
+> > +}
+> > +
+> >  static int dp_display_usbpd_disconnect_cb(struct device *dev)
+> >  {
+> >  	struct dp_display_private *dp = dev_get_dp_display_private(dev);
+> > @@ -1251,6 +1258,7 @@ static int dp_display_probe(struct platform_device *pdev)
+> >  	dp->pdev = pdev;
+> >  	dp->name = "drm_dp";
+> >  	dp->dp_display.connector_type = desc->connector_type;
+> > +	dp->dp_display.dev = &pdev->dev;
+> 
+> You did not properly reference count this pointer you just saved.  What
+> is to keep that pointer from going away without you knowing about it?
+> 
 
-However, using builtins is beneficial in general, because it removes the
-burden of determining what's the way to read the flags register from the
-programmer and places it on to the compiler, which has the information
-needed to make that decision. Indeed, this piece of code has had several
-changes over the years, some of which were pinging back and forth to
-determine the correct constraints to use.
+The "dp" object only lives while &pdev->dev is alive, both logically and
+as its devres allocated on &pdev-dev. So for this reference I don't see
+that we should refcount it.
 
-With this change, Clang generates better code:
+> And you already have a pointer to pdev, why save another one here?
+> 
 
-Original code:
-        movq    $0, -48(%rbp)
-        #APP
-        # __raw_save_flags
-        pushfq
-        popq    -48(%rbp)
-        #NO_APP
-        movq    -48(%rbp), %rbx
+The Qualcomm DisplayPort driver has per-c-file private context structs
+and "dp" is one such object. So I simply can't dereference it and get to
+pdev from the other c-file in the same driver...
 
-New code:
-        pushfq
-        popq    %rbx
-        #APP
+But I only need it in dp_drm.c to during initialization to get a
+reference to the associated fwnode, so it seems that I can rework this
+and pass the pointer as a parameter to dp_drm_connector_init().
 
-Note that the stack slot in the original code is no longer needed in the
-new code, saving a small amount of stack space.
+That looks to be cleaner as well.
 
-There is no change to GCC's output:
-
-Original code:
-
-        # __raw_save_flags
-        pushf ; pop %r13        # flags
-
-New code:
-
-        pushfq
-        popq    %r13    # _23
-
-Signed-off-by: Bill Wendling <morbo@google.com>
----
-v4: - Clang now no longer generates stack frames when using these builtins.
-    - Corrected misspellings.
-v3: - Add blurb indicating that GCC's output hasn't changed.
-v2: - Kept the original function to retain the out-of-line symbol.
-    - Improved the commit message.
-    - Note that I couldn't use Nick's suggestion of
-
-        return IS_ENABLED(CONFIG_X86_64) ? ...
-
-      because Clang complains about using __builtin_ia32_readeflags_u32 in
-      64-bit mode.
----
- arch/x86/include/asm/irqflags.h | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
-
-diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
-index 87761396e8cc..f31a035f3c6a 100644
---- a/arch/x86/include/asm/irqflags.h
-+++ b/arch/x86/include/asm/irqflags.h
-@@ -19,20 +19,11 @@
- extern inline unsigned long native_save_fl(void);
- extern __always_inline unsigned long native_save_fl(void)
- {
--	unsigned long flags;
--
--	/*
--	 * "=rm" is safe here, because "pop" adjusts the stack before
--	 * it evaluates its effective address -- this is part of the
--	 * documented behavior of the "pop" instruction.
--	 */
--	asm volatile("# __raw_save_flags\n\t"
--		     "pushf ; pop %0"
--		     : "=rm" (flags)
--		     : /* no input */
--		     : "memory");
--
--	return flags;
-+#ifdef CONFIG_X86_64
-+	return __builtin_ia32_readeflags_u64();
-+#else
-+	return __builtin_ia32_readeflags_u32();
-+#endif
- }
- 
- static __always_inline void native_irq_disable(void)
--- 
-2.35.1.265.g69c8d7142f-goog
-
+Thanks,
+Bjorn
