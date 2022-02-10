@@ -2,89 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E989C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345545AbiBJXOc (ORCPT
+        id S1345554AbiBJXPQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:14:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33798 "EHLO
+        Thu, 10 Feb 2022 18:15:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345532AbiBJXOa (ORCPT
+        with ESMTP id S1344689AbiBJXPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:14:30 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296D25F45;
-        Thu, 10 Feb 2022 15:14:31 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 2EC861F469B4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644534869;
-        bh=o9q78kTwG5UmK6/5Bu7ra/nY0WB8DC6T1nn3SDr51bM=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=OWjwy7ePObdQwYLGZ827EpObqOzhn+TNJ4HTTUKnn02v1nnpHj7SkPSXT1I4fdEG6
-         M8vNVbqFqLR948xyhEoi27Bd5Z1pNZ1/6ipD/Eg+8AhiTmDdNBb4dABjrmCJEu6PQG
-         KlgcZFLoHY12EEZP7W6gwnHz0KT4YnplsdBOfx0GiGWYkoqKGhjupnXfSeeNRbmFBa
-         +BHqNCbMIdoXYSVEYlyTulOF5bP8/AmGrsjOiXDJWrB+6tzjfeGiNFxoHDDWSHQcN+
-         AEmsFODOXyjZOQVxJH0prJunaBafHD0423ghUKUWWe2bs+Xv1YH5K2wpX/MGroYU3B
-         6KNZvMp22yXVQ==
-Message-ID: <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
-Date:   Fri, 11 Feb 2022 04:14:17 +0500
+        Thu, 10 Feb 2022 18:15:15 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCFE5F44
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:15:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644534916; x=1676070916;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Lh6tjCWAtV9Sv/IHSE2GQfvx+Z+uUWNu3HE21O/Ggpo=;
+  b=YyDEIyPfT4zHrvVlbpaR7QvU7mc4TuNTKlSowSHhVwCmaRIdUlgc2Zr0
+   ++MwaAoBo8K7hfzloEoSS9t65xhxavULJDl8tkR100g02KQNThqoGSKsp
+   10JoINDPEMqboDh1+4c/SfvmEXBCOFpq0mf/unfCJ8nKtobbkUayCVQQv
+   veT9mB17LdSopOzz4B39GCG/mJdFW+4iugn4G1LCUedymC0dwgucE0nDA
+   7xChMYrhmgYMezZsqfdhP1S/1/UoVeOyGHnPraNRZ1WDVUmmMtQN1oGFc
+   662juvD5MuKrv1Bmue2pnHTB3CedoZKnZWC9erOCnkafa3sVOqhiFbreX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="336037762"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="336037762"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 15:15:16 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="633862803"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 15:15:15 -0800
+Date:   Thu, 10 Feb 2022 15:15:10 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YgWcfhbu3o5C6jQT@otcwcpicx3.sc.intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-6-fenghua.yu@intel.com>
+ <20220209191614.5a3b42d4@jacob-builder>
+ <20220210104904.6c6131f2@jacob-builder>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     usama.anjum@collabora.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
- missing headers
-Content-Language: en-US
-To:     Sherry Yang <sherry.yang@oracle.com>, skhan@linuxfoundation.org,
-        shuah@kernel.org, keescook@chromium.org, luto@amacapital.net,
-        wad@chromium.org, christian@brauner.io, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org
-References: <20220210203049.67249-1-sherry.yang@oracle.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220210203049.67249-1-sherry.yang@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210104904.6c6131f2@jacob-builder>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/11/22 1:30 AM, Sherry Yang wrote:
-> seccomp_bpf failed on tests 47 global.user_notification_filter_empty
-> and 48 global.user_notification_filter_empty_threaded when it's
-> tested on updated kernel but with old kernel headers. Because old
-> kernel headers don't have definition of macro __NR_clone3 which is
-> required for these two tests. Since under selftests/, we can install
-> headers once for all tests (the default INSTALL_HDR_PATH is
-> usr/include), fix it by adding usr/include to the list of directories
-> to be searched. Use "-isystem" to indicate it's a system directory as
-> the real kernel headers directories are.
+On Thu, Feb 10, 2022 at 10:49:04AM -0800, Jacob Pan wrote:
 > 
-> Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
-> Tested-by: Sherry Yang <sherry.yang@oracle.com>
-> ---
->  tools/testing/selftests/seccomp/Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Wed, 9 Feb 2022 19:16:14 -0800, Jacob Pan
+> <jacob.jun.pan@linux.intel.com> wrote:
 > 
-> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
-> index 0ebfe8b0e147..585f7a0c10cb 100644
-> --- a/tools/testing/selftests/seccomp/Makefile
-> +++ b/tools/testing/selftests/seccomp/Makefile
-> @@ -1,5 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0
-> -CFLAGS += -Wl,-no-as-needed -Wall
-> +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
+> > Hi Fenghua,
+> > 
+> > On Mon,  7 Feb 2022 15:02:48 -0800, Fenghua Yu <fenghua.yu@intel.com>
+> > wrote:
+> > 
+> > > @@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device
+> > > *dev, struct mm_struct *mm, void }
+> > >  
+> > >  	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
+> > > -	if (IS_ERR_OR_NULL(sva))
+> > > -		intel_svm_free_pasid(mm);  
+> > If bind fails, the PASID has no IOMMU nor CPU context. It should be safe
+> > to free here.
+> > 
+> Actually, here we cannot tell if the bind is the first of the mm so I think
+> this is fine.
+> 
+> Reviewed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-"../../../../usr/include/" directory doesn't have header files if
-different output directory is used for kselftests build like "make -C
-tools/tests/selftest O=build". Can you try adding recently added
-variable, KHDR_INCLUDES here which makes this kind of headers inclusion
-easy and correct for other build combinations as well?
+Thank you very much for your review, Jacob!
 
-
+-Fenghua
