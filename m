@@ -2,125 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA9DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB6DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242399AbiBJNrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:47:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47438 "EHLO
+        id S242405AbiBJNre (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:47:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242384AbiBJNrM (ORCPT
+        with ESMTP id S240115AbiBJNrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:47:12 -0500
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6D2D73;
-        Thu, 10 Feb 2022 05:47:13 -0800 (PST)
-Received: by mail-ej1-x642.google.com with SMTP id fy20so15431505ejc.0;
-        Thu, 10 Feb 2022 05:47:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3O5dxW8Yi3OGBQsUph2cEFwlLeho+NaqEkL3/CgaS64=;
-        b=UKZG9UDkHLOigLdNLKeZ0FMk/1dFBQae/6nrOMlCiK4oKFBaClwv655PPDg/cf7/Cn
-         x6QIyIowFHjt1tVUIhBnVGU0/QTY0GsbNysAdzdo9nioSB35CA74mDKDxwCanMaKgzZa
-         QQ0QrC3oD7yE1GSkJAwi/6CJoSooxTPiqEWzO+eP+P4cY0RXxCRId1dhG5Tl6B2LbXfC
-         3kSJeyqj6PpHNcoS+2Qf9j264sHgYzxbMXzGPY4nqmMYDPdIwunS4IM+OXlJsWPYWkfs
-         EtIYLpndqbz+NdSMUTrsozOYMfz3qnioawWsMTa5xiDMGgtuK4YPtvVdA2IGSkGpR6S5
-         I56Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3O5dxW8Yi3OGBQsUph2cEFwlLeho+NaqEkL3/CgaS64=;
-        b=of/pj6Nm2MxdYLglRcjOAQNJ7Ij2f+oXi51FxZaGAHT6d/J7VF8SCCTlKgOPV7GLs0
-         ap8mBe6dfSe6pXPkLM8qm21uWxPS6v91HW+Wp+vaFd4XXaXMkcXck+XPZcuP5HBfBitU
-         ndBz3/9IioSjTr+8b9uaDiFcwGuXGSO2B72ub206BycXmnjBmoeKnIbUx1QzSk/oOrr3
-         rHpWlpRmKucnItUH0lhSgtP7IYjTZnmzD3OUeVUyb2phGn4goyBch03cJt0JFJxz5YlK
-         iwrFopkzy3T8Dx5Z/ykaPB1aXh8Ej8259n3zXUG1XdM9O0mCO3PtA13RZM9o9g0L/QnG
-         e7cw==
-X-Gm-Message-State: AOAM532rMBwG+dEE7wc0OoPpkjsPGOAOeto6uX0ecTNT1rR8sZtAWqDT
-        eIISOCs2wcPV5y3XO873Ds1Yov6lYJXhms+Dm1U=
-X-Google-Smtp-Source: ABdhPJyWMp7m4+apEwVy+wWt18FsYjZ2B+C1emhDUEB7/gfu8NcXsUiOi8gdQjmNxvt9Gj9xNCMK4dBf4z0+vyyc7Uw=
-X-Received: by 2002:a17:906:b819:: with SMTP id dv25mr6409626ejb.689.1644500829972;
- Thu, 10 Feb 2022 05:47:09 -0800 (PST)
+        Thu, 10 Feb 2022 08:47:32 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1C6DC2;
+        Thu, 10 Feb 2022 05:47:33 -0800 (PST)
+Date:   Thu, 10 Feb 2022 14:47:28 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644500849;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zSr2ss2XeDq1uSx/52DLJxAukEh718lajFixXSZYo0Y=;
+        b=XzVSm1oGXQRb9fGaQie8jawnpDq2BileH+QA9VnwZkHOtdaJscOuZag9iuGfUsX5Mmv9cz
+        sKmdKhGiGANr7YXNajGqAnpNNo4TzxiUng3Ns6Y8bCvLJfdROw64vAL2OvnRlgCk7UVas1
+        KYT9EwD9Yorv05neTRDuylIYm+MiFDcqLEPC7qkcczGHEIUR6XUCOUi64T/1P9UyRBTou2
+        o1zwe+3ZBM0+Y66ZXT8FBZwTpkYQFrOZTMM/6v1RX1ZXo00kpymGLFQRRW8d5Ws9PxC++1
+        1qhUFgK4s+Oteimvo5MVFzP8aB0yL/nZH6RjGoE2icCU8quiN4VdDLyHMXAoVg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644500849;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zSr2ss2XeDq1uSx/52DLJxAukEh718lajFixXSZYo0Y=;
+        b=sX7FCscNJWJk5dqwgIws8B0emR5gI5UgS+LF0QYJ+0lQeQ6hTuHRSxw9ZRtEAXfhAsrs97
+        VIuYiR5sEFFcW5Dw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH v2] selftests/ftrace: Do not trace do_softirq because of
+ PREEMPT_RT
+Message-ID: <YgUXcGC1mH7VX1d9@linutronix.de>
+References: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-References: <20220128073319.1017084-1-imagedong@tencent.com>
- <20220128073319.1017084-2-imagedong@tencent.com> <0029e650-3f38-989b-74a3-58c512d63f6b@gmail.com>
- <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com> <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 10 Feb 2022 21:42:14 +0800
-Message-ID: <CADxym3ZajjCV2EHF6+2xa5ewZuVqxwk6bSqF0KuA+J6sGnShbQ@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/7] net: skb_drop_reason: add document for
- drop reasons
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@gmail.com>, David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        pablo@netfilter.org, kadlec@netfilter.org,
-        Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Eric Dumazet <edumazet@google.com>, alobakin@pm.me,
-        paulb@nvidia.com, Kees Cook <keescook@chromium.org>,
-        talalahmad@google.com, haokexin@gmail.com, memxor@gmail.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 1:12 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 10 Feb 2022 11:19:49 +0800 Menglong Dong wrote:
-> > I'm doing the job of using kfree_skb_reason() for the TCP layer,
-> > and I have some puzzles.
-> >
-> > When collecting drop reason for tcp_v4_inbound_md5_hash() in
-> > tcp_v4_rcv(), I come up with 2 ways:
-> >
-> > First way: pass the address of reason to tcp_v4_inbound_md5_hash()
-> > like this:
-> >
-> >  static bool tcp_v4_inbound_md5_hash(const struct sock *sk,
-> >                       const struct sk_buff *skb,
-> > -                    int dif, int sdif)
-> > +                    int dif, int sdif,
-> > +                    enum skb_drop_reason *reason)
-> >
-> > This can work, but many functions like tcp_v4_inbound_md5_hash()
-> > need to do such a change.
-> >
-> > Second way: introduce a 'drop_reason' field to 'struct sk_buff'. Therefore,
-> > drop reason can be set by 'skb->drop_reason = SKB_DROP_REASON_XXX'
-> > anywhere.
-> >
-> > For TCP, there are many cases where you can't get a drop reason in
-> > the place where skb is freed, so I think there needs to be a way to
-> > deeply collect drop reasons. The second can resolve this problem
-> > easily, but extra fields may have performance problems.
-> >
-> > Do you have some better ideas?
->
-> On a quick look tcp_v4_inbound_md5_hash() returns a drop / no drop
-> decision, so you could just change the return type to enum
-> skb_drop_reason. SKB_DROP_REASON_NOT_SPECIFIED is 0 is false,
-> so if (reason) goto drop; logic will hold up.
+On 2022-02-10 09:33:56 [+0100], Krzysztof Kozlowski wrote:
+> The PREEMPT_RT patchset does not use soft IRQs thus trying to filter for
+> do_softirq fails for such kernel:
 
-Yeah, that's an idea. But some functions are more complex, such as
-tcp_rcv_state_process() and tcp_rcv_state_process()->tcp_v4_conn_request().
-The return value of tcp_rcv_state_process() can't be reused, and it's hard
-to add a function param of type 'enum skb_drop_reason *' to
-tcp_v4_conn_request().
+PREEMPT_RT does use soft IRQs.
 
-There are some nice drop reasons in tcp_v4_conn_request(), it's a pity to
-give up them.
+>   echo do_softirq
+>   ftracetest: 81: echo: echo: I/O error
+>=20
+> Choose some other visible function for the test.
+>=20
+=E2=80=A6
 
-How about introducing a field to 'struct sock' for drop reasons? As sk is
-locked during the packet process in tcp_v4_do_rcv(), this seems to work.
+> --- a/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+> +++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+> @@ -19,7 +19,7 @@ fail() { # mesg
+> =20
+>  FILTER=3Dset_ftrace_filter
+>  FUNC1=3D"schedule"
+> -FUNC2=3D"do_softirq"
+> +FUNC2=3D"scheduler_tick"
 
-Thanks!
-Menglong Dong
+What is the purpose of this?
+
+>  ALL_FUNCS=3D"#### all functions enabled ####"
+> =20
+
+Sebastian
