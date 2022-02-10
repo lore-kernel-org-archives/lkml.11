@@ -2,81 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7198AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D74C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 12:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240069AbiBJMku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 07:40:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57724 "EHLO
+        id S241640AbiBJMoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 07:44:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbiBJMkr (ORCPT
+        with ESMTP id S241455AbiBJMoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 07:40:47 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597151036
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:40:48 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A5E1E21115;
-        Thu, 10 Feb 2022 12:40:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644496846; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=F9ZbzBgnxPunXqjYGK83et/vqjK6YE0/d/TYWMUW5n8=;
-        b=sOOedZfG3mAXqF2Xghmmi6/8PqkLVcjEIfwWB5Llzc+Mw2cDNcri6STJXa5GG8nHO148nV
-        DrTHbR/DHi9cJOwwlK+W/ON0zOfxvNNvXR7OzAHbYj/nkR92F25aMpzTa2wxK+hw8c1WHQ
-        pTyqYfJp7+bXUgbEHfdA6OYr6WwEfQA=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 25F55A3B83;
-        Thu, 10 Feb 2022 12:40:45 +0000 (UTC)
-Date:   Thu, 10 Feb 2022 13:40:45 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, ccross@google.com,
-        sumit.semwal@linaro.org, dave.hansen@intel.com,
-        keescook@chromium.org, willy@infradead.org,
-        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
-        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
-        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        kernel-team@android.com,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2 1/1] mm: fix use-after-free when anon vma name is used
- after vma is freed
-Message-ID: <YgUHzSqltDp2dr70@dhcp22.suse.cz>
-References: <20220210043215.42794-1-surenb@google.com>
+        Thu, 10 Feb 2022 07:44:08 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1327AF48
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:44:09 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id b9so10188241lfq.6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 04:44:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kYLyrvK0lBlYHTzi+wQsHNbyaWDy5kqoghsteHCo+O4=;
+        b=kYbXENzl7JVQX8/fGz513ufsSQRYWQ+FSIXDK+hS0NMudgKgaXcRBcj9yBweMTtlME
+         uvgpJf32AGx0ak8tqS6vEO+D8CDQQqzq4uwTCDBRoYpiHQQ080GOsA2KgAUONA7Wwki7
+         LjGu2ZDP4aQSSN34Y0Hvr0ei8XlzsXK/5LSWIefrIvAv4ac2kgcMUtENs6bbqQM4IRQb
+         8UECuUY1t2SLsVdmVZ4SMalKvQrf1iMdMEi//UuTmMddyz4KtLs4RI4R/Y0AP0eR5G9E
+         lRsH5NJRFFe03BHuoU5u1NojOrT4UGluw1pNJH4e7b+sCZKS+ttXueJPsX1pHngDmxDp
+         aNJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kYLyrvK0lBlYHTzi+wQsHNbyaWDy5kqoghsteHCo+O4=;
+        b=rZLTwrymT3r1c3XYhb/XpC071hokY7P0IOynKrJAQvhSuKTbHsc93ZU+waCyW/fpiG
+         Nf1D+OhrqpCoR92+EDNOU4sGUQSzZeIFSvpzxCK54aTQi5THngagijiBb7w1uH2ghxo1
+         lUM16sefMVJfM+D7VDHry9KpE6G13ibjZ/oJpcoaaOy7eRxandulL8mNN87rASkiicLK
+         haPVHKB2dwdJsGBZZ6+isBNNV2nz7HHo0R3ykLiatTt+lsP61TquaALdqiiyaI6dUuez
+         47A8z976Zw/wjn3IxuYhoxbIcXrDhF04Zu7vtioDjv1qqHDRYE6jinR7BIyTcsZZzMi4
+         8Wuw==
+X-Gm-Message-State: AOAM531RY4LkDbvuHtJxt5xiZSXS7SbNabA+ceuXhbbpkBby1ym8GMEg
+        7yrrfzeCJhvaUnYRfi8Wm7E7Wg==
+X-Google-Smtp-Source: ABdhPJx96KjqtNknDEz2fAkwXtdH3zsGBS+a/kKIYgOnMOqGX9zLxiwKPQT9pL2LLLkUi27wjDlJVw==
+X-Received: by 2002:ac2:4d34:: with SMTP id h20mr5152537lfk.52.1644497047417;
+        Thu, 10 Feb 2022 04:44:07 -0800 (PST)
+Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
+        by smtp.gmail.com with ESMTPSA id z8sm2863676ljn.89.2022.02.10.04.44.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 04:44:07 -0800 (PST)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     mpe@ellerman.id.au
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH] powerpc/lib/sstep: fix 'ptesync' build error
+Date:   Thu, 10 Feb 2022 13:44:04 +0100
+Message-Id: <20220210124404.34773-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210043215.42794-1-surenb@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 09-02-22 20:32:15, Suren Baghdasaryan wrote:
-> When adjacent vmas are being merged it can result in the vma that was
-> originally passed to madvise_update_vma being destroyed. In the current
-> implementation, the name parameter passed to madvise_update_vma points
-> directly to vma->anon_name->name and it is used after the call to
-> vma_merge. In the cases when vma_merge merges the original vma and
-> destroys it, this will result in use-after-free bug as shown below:
-> 
-> madvise_vma_behavior << passes vma->anon_name->name as name param
->   madvise_update_vma(name)
->     vma_merge
->       __vma_adjust
->         vm_area_free <-- frees the vma
->     replace_vma_anon_name(name) <-- UAF
-> 
-> Fix this by raising the name refcount and stabilizing it. Introduce
-> vma_anon_name_{get/put} API for this purpose.
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
 
-What is the reason that madvise_update_vma uses the naked name rather
-than the encapsulated anon_vma_name? This really just begs for problems.
+{standard input}: Assembler messages:
+{standard input}:2088: Error: unrecognized opcode: `ptesync'
+make[3]: *** [/builds/linux/scripts/Makefile.build:287: arch/powerpc/lib/sstep.o] Error 1
+
+Re-add the ifdef __powerpc64__ around the 'ptesync' in function
+'emulate_update_regs()' to like it is in 'analyse_instr()'. Since it looks like
+it got dropped inadvertently by commit 3cdfcbfd32b9 ("powerpc: Change
+analyse_instr so it doesn't modify *regs").
+
+Cc: stable@vger.kernel.org # v4.14+
+Fixes: 3cdfcbfd32b9 ("powerpc: Change analyse_instr so it doesn't modify *regs")
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ arch/powerpc/lib/sstep.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
+index a94b0cd0bdc5..d23772f91a36 100644
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -3264,12 +3264,14 @@ void emulate_update_regs(struct pt_regs *regs, struct instruction_op *op)
+ 		case BARRIER_EIEIO:
+ 			eieio();
+ 			break;
++#ifdef __powerpc64__
+ 		case BARRIER_LWSYNC:
+ 			asm volatile("lwsync" : : : "memory");
+ 			break;
+ 		case BARRIER_PTESYNC:
+ 			asm volatile("ptesync" : : : "memory");
+ 			break;
++#endif
+ 		}
+ 		break;
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.34.1
+
