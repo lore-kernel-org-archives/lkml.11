@@ -2,173 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71DCAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCD49C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 05:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234524AbiBJFuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 00:50:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43752 "EHLO
+        id S234654AbiBJFum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 00:50:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiBJFuA (ORCPT
+        with ESMTP id S231986AbiBJFuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 00:50:00 -0500
-Received: from IND01-BMX-obe.outbound.protection.outlook.com (mail-bmxind01olkn2096.outbound.protection.outlook.com [40.92.103.96])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FE410CC;
-        Wed,  9 Feb 2022 21:49:58 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lhDhGF0cZvAQsugQ+U/be9+B7ykc9AydWQhp9O8EF/gwi9iaOcpWrYiiecXQi2fpTELh9zNjEGO7acAuRJmihRH9a9a/IPvhML53ElrZXEPPd0xdBZY2sff6p1hoX9EfIQrC7rDIGDWnoWwaLAWtuVH3e50AwHywmXlC6mrkLJtdEdCC2yV+tivbmRxamYyo9c4czCX5AVomXLmw9Nz7cvm5PMQiCAlvHkL8uAQPVPVr/I/jdaH4oQSZOCQVWExSylClQzPaNoIeAcTRjJCXioDVIRs/Jdw5V2ITyKc8p7INdKkg9ynxBEVbBuetHukG/Mu0J2vMNfOJ2RlBOdFHNg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7gJv/KZL3G8uBMc+qxf5xFrjc/bt0cRhhhQxWqz111Q=;
- b=nZVUekKgmoKN5ZwmygOqsTKMy0XQCFWd/QrPDU4jzQ/81sLZZGQDxG5c0K3l8WksLxfe4BrPWuG0rHwwH8N2X7uJlYNERX/VUx/TplbGvJCSwvWgXWLnqu1hcHj4I0daSN8mepf16cXZCR4hE2DivAxWTHusOGfMTPZBLg+rOzzVrCOZ5/OoqM8ZKnu6oyBuN6U/eAFRT+7rzfpL6ZTWlfDzgotfO1gsHU60SnAudoIAXKmeWGPtQUB/cOyqF1xBH/EI/jDBTQGQDcE3LQOETt+fhIW2VZW3nqwBdJLrIeSy6Yz0JdQSM2GaFLlc2ZuAWaU7a5RBl7t0TIDZ1o7PZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7gJv/KZL3G8uBMc+qxf5xFrjc/bt0cRhhhQxWqz111Q=;
- b=QTFnbegGtig74sYlWNB6vHNdrWVw1wHEZ34hsGNd9W3ukh8Owj6PFmy3e286qASIxcZD5/K4VI7V9g2sgPNbrV+bKIqD/n6LxXmjDC1vjIsyQwyq0pDnlMDIlPDnkfgEqdQVxBXQ9RFQlwup5ZP11og/vuH+NU7x9DntibztYb0H8KeqgUe8shLdkxG2G1b3LH25mNJv5/Nw1sgrivl9sTXzu16D7p1S0EPCZR+nTvteZvuOJ+LbmEsW4INarWK/2scCXY69YiBQDHwRSuD7Fu9D38j7bB0ZMUZp8BsZtg0I6NiOd76gp02LSi1IbHqg2O8kPPJnFQrs1sudte54gw==
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
- by MAZPR01MB6188.INDPRD01.PROD.OUTLOOK.COM (2603:1096:a01:4f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 05:49:50 +0000
-Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::d19b:7cd1:3760:b055]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::d19b:7cd1:3760:b055%9]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
- 05:49:50 +0000
-From:   Aditya Garg <gargaditya08@live.com>
-To:     Matthew Garrett <mjg59@srcf.ucam.org>
-CC:     Ard Biesheuvel <ardb@kernel.org>, Jeremy Kerr <jk@ozlabs.org>,
-        "joeyli.kernel@gmail.com" <joeyli.kernel@gmail.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "eric.snowberg@oracle.com" <eric.snowberg@oracle.com>,
-        "dhowells@redhat.com" <dhowells@redhat.com>,
-        "jlee@suse.com" <jlee@suse.com>,
-        "James.Bottomley@hansenpartnership.com" 
-        <James.Bottomley@HansenPartnership.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "mic@digikod.net" <mic@digikod.net>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aun-Ali Zaidi <admin@kodeit.net>
-Subject: Re: [PATCH] efi: Do not import certificates from UEFI Secure Boot for
- T2 Macs
-Thread-Topic: [PATCH] efi: Do not import certificates from UEFI Secure Boot
- for T2 Macs
-Thread-Index: AQHYHcE4ht34Z1CESEaNjR8+yzmieayLbqGAgAAURwCAAAlIgIAAESOAgACrMQA=
-Date:   Thu, 10 Feb 2022 05:49:50 +0000
-Message-ID: <2F1CC5DE-5A03-46D2-95E7-DD07A4EF2766@live.com>
-References: <9D0C961D-9999-4C41-A44B-22FEAF0DAB7F@live.com>
- <20220209164957.GB12763@srcf.ucam.org>
- <5A3C2EBF-13FF-4C37-B2A0-1533A818109F@live.com>
- <20220209183545.GA14552@srcf.ucam.org> <20220209193705.GA15463@srcf.ucam.org>
-In-Reply-To: <20220209193705.GA15463@srcf.ucam.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-tmn:  [AVVt1TY7MbivUqU6cOCQy8ZG7cDzk9RcEw9FfLkWhI0av+dBQRVfd5jk3lapYitL]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5c9a40b-9aef-47ee-c1ef-08d9ec59272f
-x-ms-traffictypediagnostic: MAZPR01MB6188:EE_
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mZvaVHq2r4OfPlIup445oHc+udzhB6VS55g85fLFTpkui/cobq0kIir9jOVsv8M21oOJ9oK+7IBY5e+1mmAy7Yd+iB8LnEaetiIgiFmpwDktMENLtHW3cs2aTXzxuKlIoH6TxbvSjgqqPH+vEoUJ9j2KMhAnj75PzcGv7SjZFhVLYnBsiYkqhjwpoB5YoQvUGj9LmeD9Pc0KBbbpJTFa7WNKz1QIyyv/sy6YviOiryl5d9q8Y6VatA/rpXfH+mC47iFBPqF8Tm2o/zu7xRYeOADiNpjpz6xmStCXGA/6BoHY6Vo0T4tjEGzHsna92D/UOAgSuEsq7MHAKzytf2KfKQNQU0Waxy4thFTlGzYGxSwV6qBAN/sNMtAci0uzdp/vFGu69SU0TlIpDpY0xpDSuMfJCqXBsSf7GooDP6nh8yFW23o4/81f6/HQ1AtrM3OmX3GAkIVwVo3taRvPHa0XsRX9TPakwXmTdda8Gc2Mi2TCNT82pbCI4EqY62bqzeKkmeH5cWltYHW0LanYnIrt2DF1y/yEUpsWrmH0p054eLwp7sr2YuEZUYEljg8vwuAflbrMZzMs8NdjKm27p3puUA==
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?STdNekdnWkM1Ymg0Z1M4K1ptWGt3SElPclREc1JVaU9rbkdaSitITTV6Y3ly?=
- =?utf-8?B?azh0ZkxZUVlhdEtNTnVLRFFDb2RTdjdPSDB3Ulk0SUtMa0ljb1BjRy84NWo5?=
- =?utf-8?B?WDFKTGV6R2JIN3o3OENtWjFLOWRudC9SSGg4UkFiMm1yMWF5TVF1WEh6VjJs?=
- =?utf-8?B?SzBjUGJBcHR3YnM2QkJCVklXemdMTlluN2Z1NG4zWnB3dWxlMkpySkVKVUlM?=
- =?utf-8?B?Um9uNkJUTFo4TlZNdTFjY1VNK2x0NThqU1JTZk1RWlJZL0JrMDUwc0d0M3RO?=
- =?utf-8?B?QUZMRmI2czJXYWh2aThhaEtsZ1hXUURxODVHK2xXaWtvWG1zdmV3akNkZXRW?=
- =?utf-8?B?ZkNiaGNiYkM0S3lFcS9LVUkvblpDcjlJV1RMdUlOMFJudWFRYm13RjltQWZL?=
- =?utf-8?B?eDlVV2lMeEZSbnRuZUwvaEdUMDdKNWw2eUZWdm1KM21FQ1Q1UDltTDVTTmlw?=
- =?utf-8?B?V3o3RTJQZy83RUkyRnVScGZMdmtOS1NvTkxJdTZURENQTFZkNlRBdlpjbG9E?=
- =?utf-8?B?dXVKbStaYVF4YzJaV09rQ0UveVBtNGpNenNSQ1lCMlJaS20vRWtwb0FBMTVZ?=
- =?utf-8?B?c2xONGEyNFdyZnFzdllZa05FTWFDTmhMU2NYZEFpK2ROeXhQOFY5N3Z6Sm5P?=
- =?utf-8?B?TEU4QXFRWkYxTEJYYUtOdE9xTUFMTWJVUFpTL2hqVjhYWTV2S05kZ05QQjR1?=
- =?utf-8?B?M0hHUHN6ZlM3ZjhWRnIzYkh1c3UvWndsVUdhVEJxL01RR3FhTWFaNXpJOHFp?=
- =?utf-8?B?VEdGTDNXMUpjSXV1bTRyUzJuTzVwZjRsYzFJYXdmVDNrcDdnNWhseE1GVHl3?=
- =?utf-8?B?ejdTbjJ2QjY5UkcwZDRkT0dVZExUZkt5TVBKdjNkY0hOOUJPUWlWWWdTa0cw?=
- =?utf-8?B?YWlGWjJqdWdZUEswRGJTYlc3U3A2aVM4eWd4WUc0RlR4RTlBeFZIV0lTSE9V?=
- =?utf-8?B?RWlaa3BaUEN3anZCcHhpYm1yNGw5VTJUZkozWjd0TlV6OWhOaG1PMHI1czcz?=
- =?utf-8?B?R0luT3pvYThxVXRCRDlGVGpQY2dEUFhtMVlEQWhwS2xOTVM3M0tzUDQ3cTRx?=
- =?utf-8?B?OTdxTkVNY2crQXl2VlRLMDN2amZ1MDlYVUUwSXMzYTFqWk9iWU1zclZrMVhN?=
- =?utf-8?B?eUtRQ2FjY1hoQmtZeUpTdlcwMUZRcC9NUC9tcnhtL3hIbVZJbmN1eTdPUFBD?=
- =?utf-8?B?dTV4Nktid01xbDlyYUk2TVFiK0oySG50TFlTcUM0aU54UTk0dzFVQ0hmdGZ6?=
- =?utf-8?B?RlpuNDFpMytYQnh4cWJBM2VaTyt2elpXZ0dVc3pEOFIvanMyZlZzbXpaUDVs?=
- =?utf-8?B?L0JrMmlBZ3psaFVrVFZNYzZJVE51RzRlWGRqS3hCekxRWkx6TjJrMnBHR2gv?=
- =?utf-8?B?VWNTRlByYlFDWlE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2B2E4E3AD804984D8D68CE5D5841228F@INDPRD01.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        Thu, 10 Feb 2022 00:50:18 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00D510CE
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 21:50:19 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id 9so5462527pfx.12
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 21:50:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UuYvub3Z8EBowURerfOySZ1eEDSGZNWibhgVNvKw2rA=;
+        b=n2BOKto+S5qvwcPV9B3PxUAGJddz5awCGs9hneNmZQKmE+BULKzAi3rm/a7Mv5ANxw
+         drO9JtmltNRZg7zBwwN4SHzwkGD1rSdgMpmJrB36ZRHbMEGBAsmSE6XRT4sFsJ1CMJc0
+         O4JunSoTrmKX9xWBGQtcyD6huLCb8gw9YAoXFf437P8DKgucsJGdik2YEDbuwbr9Bx6p
+         wKTJLWPFNGxCdJJGfwtTGCzY6WBKlMmiwbieN5uF29DFwQLsYjj+rsdmlnXGeOmLhhmU
+         XLmKK3YqJ2+RGHZZAYeGtMyrLUA/8iwNUQtUhFTU1bdWZeZ10zj6qXrVaBzv11DkcX3B
+         +skQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UuYvub3Z8EBowURerfOySZ1eEDSGZNWibhgVNvKw2rA=;
+        b=CL3pri6SkjxrdJLy82AQVaM+2nPptagvaUb7iSThy6gSgm6O25owBIjZdWY191zODV
+         VK4GPy7J4cqUzs7mCeCT5rz5iICl8kQmqP8jIdsTJeyIUzZEvtNtkjDAjvKb3Yw5yoal
+         F2IQAaYHeBOjFeiER5M3wG8eSXyQOAMaJlCK9lm1Z27aezsondrLmn1H6KnMzYygrE4U
+         B5AIGcN3aoB7x/6pyZgSdHYyKigvPRkY+d+PounMeGhWmuX2Zdm4K7ejCMzMN+t0UX6a
+         DFYyGQsR/nZfsXDIYCgZuFGjMsI3JAiGyQWonV4lfYrOvtN4KQuy8HYx072pCKd1ufaX
+         cfIg==
+X-Gm-Message-State: AOAM531un0reMGXHCmfv5Y7QtoXT1qKq1tQHlD5xlU2ISw/vo4mnvjjV
+        z1aS4tm++4lYlIE67rIM13WOKA==
+X-Google-Smtp-Source: ABdhPJyXYV31XW1XO52vFcxi9ex8CQM/n5s3f5qUEZi2p/CP9x1LoGOoZJ8+PS18busvh/WRPM9plA==
+X-Received: by 2002:a63:5144:: with SMTP id r4mr4892868pgl.382.1644472219329;
+        Wed, 09 Feb 2022 21:50:19 -0800 (PST)
+Received: from localhost.localdomain ([122.179.114.46])
+        by smtp.gmail.com with ESMTPSA id s32sm15192270pfw.80.2022.02.09.21.50.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Feb 2022 21:50:18 -0800 (PST)
+From:   Anup Patel <apatel@ventanamicro.com>
+To:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>
+Cc:     Sandeep Tripathy <milun.tripathy@gmail.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Liush <liush@allwinnertech.com>,
+        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvm-riscv@lists.infradead.org
+Subject: [PATCH v11 0/8] RISC-V CPU Idle Support
+Date:   Thu, 10 Feb 2022 11:19:39 +0530
+Message-Id: <20220210054947.170134-1-apatel@ventanamicro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5c9a40b-9aef-47ee-c1ef-08d9ec59272f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2022 05:49:50.2852
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MAZPR01MB6188
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCg0KPiBpZSwgY2FuIHlvdSB0cnkgc29tZXRoaW5nIGxpa2UgdGhpcz8NCj4gDQo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2Zpcm13YXJlL2VmaS9ydW50aW1lLXdyYXBwZXJzLmMgYi9kcml2ZXJz
-L2Zpcm13YXJlL2VmaS9ydW50aW1lLXdyYXBwZXJzLmMNCj4gaW5kZXggZjNlNTRmNjYxNmYwLi4w
-MWNiZDQ4MTFkMWUgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvZmlybXdhcmUvZWZpL3J1bnRpbWUt
-d3JhcHBlcnMuYw0KPiArKysgYi9kcml2ZXJzL2Zpcm13YXJlL2VmaS9ydW50aW1lLXdyYXBwZXJz
-LmMNCj4gQEAgLTMyLDYgKzMyLDggQEANCj4gI2luY2x1ZGUgPGxpbnV4L3N0cmluZ2lmeS5oPg0K
-PiAjaW5jbHVkZSA8bGludXgvd29ya3F1ZXVlLmg+DQo+ICNpbmNsdWRlIDxsaW51eC9jb21wbGV0
-aW9uLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvdWNzMl9zdHJpbmcuaD4NCj4gKyNpbmNsdWRlIDxs
-aW51eC9zbGFiLmg+DQo+IA0KPiAjaW5jbHVkZSA8YXNtL2VmaS5oPg0KPiANCj4gQEAgLTIwMyw2
-ICsyMDUsMjEgQEAgc3RhdGljIHZvaWQgZWZpX2NhbGxfcnRzKHN0cnVjdCB3b3JrX3N0cnVjdCAq
-d29yaykNCj4gCQkJCSAgICAgICAoZWZpX3RpbWVfdCAqKWFyZzIpOw0KPiAJCWJyZWFrOw0KPiAJ
-Y2FzZSBFRklfR0VUX1ZBUklBQkxFOg0KPiArCQl1bnNpZ25lZCBsb25nIHV0ZjhfbmFtZV9zaXpl
-Ow0KPiArCQljaGFyICp1dGY4X25hbWU7DQo+ICsJCWNoYXIgZ3VpZF9zdHJbc2l6ZW9mKGVmaV9n
-dWlkX3QpKzFdOw0KPiArDQo+ICsJCXV0ZjhfbmFtZV9zaXplID0gdWNzMl91dGY4c2l6ZSgoZWZp
-X2NoYXIxNl90ICopYXJnMSk7DQo+ICsJCXV0ZjhfbmFtZSA9IGttYWxsb2ModXRmOF9uYW1lX3Np
-emUrMSwgR0ZQX0tFUk5FTCk7DQo+ICsJCWlmICghdXRmOF9uYW1lKSB7DQo+ICsJCQlwcmludGso
-S0VSTl9JTkZPICJmYWlsZWQgdG8gYWxsb2NhdGUgVVRGOCBidWZmZXJcbiIpOw0KPiArCQkJYnJl
-YWs7DQo+ICsJCX0NCj4gKw0KPiArCQl1Y3MyX2FzX3V0ZjgodXRmOF9uYW1lLCAoZWZpX2NoYXIx
-Nl90ICopYXJnMSwgdXRmOF9uYW1lX3NpemUgKyAxKTsNCj4gKwkJZWZpX2d1aWRfdG9fc3RyKChl
-ZmlfZ3VpZF90ICopYXJnMiwgZ3VpZF9zdHIpOw0KPiArDQo+ICsJCXByaW50ayhLRVJOX0lORk8g
-IlJlYWRpbmcgRUZJIHZhcmlhYmxlICVzLSVzXG4iLCB1dGY4X25hbWUsIGd1aWRfc3RyKTsNCj4g
-CQlzdGF0dXMgPSBlZmlfY2FsbF92aXJ0KGdldF92YXJpYWJsZSwgKGVmaV9jaGFyMTZfdCAqKWFy
-ZzEsDQo+IAkJCQkgICAgICAgKGVmaV9ndWlkX3QgKilhcmcyLCAodTMyICopYXJnMywNCj4gCQkJ
-CSAgICAgICAodW5zaWduZWQgbG9uZyAqKWFyZzQsICh2b2lkICopYXJnNSk7DQoNCkxvb2tzIGxp
-a2UgdGhlcmUgaXMgc29tZSBlcnJvciBpbiB0aGlzIHBhdGNoDQoNCg0KZHJpdmVycy9maXJtd2Fy
-ZS9lZmkvcnVudGltZS13cmFwcGVycy5jOjIwODozOiBlcnJvcjogYSBsYWJlbCBjYW4gb25seSBi
-ZSBwYXJ0IG9mIGEgc3RhdGVtZW50IGFuZCBhIGRlY2xhcmF0aW9uIGlzIG5vdCBhIHN0YXRlbWVu
-dA0KICAyMDggfCAgIHVuc2lnbmVkIGxvbmcgdXRmOF9uYW1lX3NpemU7DQogICAgICB8ICAgXn5+
-fn5+fn4NCmRyaXZlcnMvZmlybXdhcmUvZWZpL3J1bnRpbWUtd3JhcHBlcnMuYzoyMDk6MzogZXJy
-b3I6IGV4cGVjdGVkIGV4cHJlc3Npb24gYmVmb3JlIOKAmGNoYXLigJkNCiAgMjA5IHwgICBjaGFy
-ICp1dGY4X25hbWU7DQogICAgICB8ICAgXn5+fg0KZHJpdmVycy9maXJtd2FyZS9lZmkvcnVudGlt
-ZS13cmFwcGVycy5jOjIxMDozOiB3YXJuaW5nOiBJU08gQzkwIGZvcmJpZHMgbWl4ZWQgZGVjbGFy
-YXRpb25zIGFuZCBjb2RlIFstV2RlY2xhcmF0aW9uLWFmdGVyLXN0YXRlbWVudF0NCiAgMjEwIHwg
-ICBjaGFyIGd1aWRfc3RyW3NpemVvZihlZmlfZ3VpZF90KSsxXTsNCiAgICAgIHwgICBefn5+DQpk
-cml2ZXJzL2Zpcm13YXJlL2VmaS9ydW50aW1lLXdyYXBwZXJzLmM6MjEzOjM6IGVycm9yOiDigJh1
-dGY4X25hbWXigJkgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24pDQogIDIx
-MyB8ICAgdXRmOF9uYW1lID0ga21hbGxvYyh1dGY4X25hbWVfc2l6ZSsxLCBHRlBfS0VSTkVMKTsN
-CiAgICAgIHwgICBefn5+fn5+fn4NCmRyaXZlcnMvZmlybXdhcmUvZWZpL3J1bnRpbWUtd3JhcHBl
-cnMuYzoyMTM6Mzogbm90ZTogZWFjaCB1bmRlY2xhcmVkIGlkZW50aWZpZXIgaXMgcmVwb3J0ZWQg
-b25seSBvbmNlIGZvciBlYWNoIGZ1bmN0aW9uIGl0IGFwcGVhcnMgaW4NCm1ha2VbNl06ICoqKiBb
-c2NyaXB0cy9NYWtlZmlsZS5idWlsZDoyODc6IGRyaXZlcnMvZmlybXdhcmUvZWZpL3J1bnRpbWUt
-d3JhcHBlcnMub10gRXJyb3IgMQ0KbWFrZVs1XTogKioqIFtzY3JpcHRzL01ha2VmaWxlLmJ1aWxk
-OjU0OTogZHJpdmVycy9maXJtd2FyZS9lZmldIEVycm9yIDINCm1ha2VbNF06ICoqKiBbc2NyaXB0
-cy9NYWtlZmlsZS5idWlsZDo1NDk6IGRyaXZlcnMvZmlybXdhcmVdIEVycm9yIDINCm1ha2VbNF06
-ICoqKiBXYWl0aW5nIGZvciB1bmZpbmlzaGVkIGpvYnMuLi4uDQoNCg==
+From: Anup Patel <anup.patel@wdc.com>
+
+This series adds RISC-V CPU Idle support using SBI HSM suspend function.
+The RISC-V SBI CPU idle driver added by this series is highly inspired
+from the ARM PSCI CPU idle driver.
+
+At high-level, this series includes the following changes:
+1) Preparatory arch/riscv patches (Patches 1 to 3)
+2) Defines for RISC-V SBI HSM suspend (Patch 4)
+3) Preparatory patch to share code between RISC-V SBI CPU idle driver
+   and ARM PSCI CPU idle driver (Patch 5)
+4) RISC-V SBI CPU idle driver and related DT bindings (Patches 6 to 7)
+
+These patches can be found in riscv_sbi_hsm_suspend_v11 branch of
+https://github.com/avpatel/linux.git
+
+Special thanks Sandeep Tripathy for providing early feeback on SBI HSM
+support in all above projects (RISC-V SBI specification, OpenSBI, and
+Linux RISC-V).
+
+Changes since v10:
+ - Rebased on Linux-5.17-rc3
+ - Typo fix in commit description of PATCH6
+
+Changes since v9:
+ - Rebased on Linux-5.17-rc1
+
+Changes since v8:
+ - Rebased on Linux-5.15-rc5
+ - Fixed DT schema check errors in PATCH7
+
+Changes since v7:
+ - Rebased on Linux-5.15-rc3
+ - Renamed cpuidle-sbi.c to cpuidle-riscv-sbi.c in PATCH6
+
+Changes since v6:
+ - Fixed error reported by "make DT_CHECKER_FLAGS=-m dt_binding_check"
+
+Changes since v5:
+ - Rebased on Linux-5.13-rc5
+ - Removed unnecessary exports from PATCH5
+ - Removed stray ";" from PATCH5
+ - Moved sbi_cpuidle_pd_power_off() under "#ifdef CONFIG_DT_IDLE_GENPD"
+   in PATCH6
+
+Changes since v4:
+ - Rebased on Linux-5.13-rc2
+ - Renamed all dt_idle_genpd functions to have "dt_idle_" prefix
+ - Added MAINTAINERS file entry for dt_idle_genpd
+
+Changes since v3:
+ - Rebased on Linux-5.13-rc2
+ - Fixed __cpu_resume_enter() which was broken due to XIP kernel support
+ - Removed "struct dt_idle_genpd_ops" abstraction which simplifies code
+   sharing between ARM PSCI and RISC-V SBI drivers in PATCH5
+
+Changes since v2:
+ - Rebased on Linux-5.12-rc3
+ - Updated PATCH7 to add common DT bindings for both ARM and RISC-V
+   idle states
+ - Added "additionalProperties = false" for both idle-states node and
+   child nodes in PATCH7
+
+Changes since v1:
+ - Fixex minor typo in PATCH1
+ - Use just "idle-states" as DT node name for CPU idle states
+ - Added documentation for "cpu-idle-states" DT property in
+   devicetree/bindings/riscv/cpus.yaml
+ - Added documentation for "riscv,sbi-suspend-param" DT property in
+   devicetree/bindings/riscv/idle-states.yaml
+
+Anup Patel (8):
+  RISC-V: Enable CPU_IDLE drivers
+  RISC-V: Rename relocate() and make it global
+  RISC-V: Add arch functions for non-retentive suspend entry/exit
+  RISC-V: Add SBI HSM suspend related defines
+  cpuidle: Factor-out power domain related code from PSCI domain driver
+  cpuidle: Add RISC-V SBI CPU idle driver
+  dt-bindings: Add common bindings for ARM and RISC-V idle states
+  RISC-V: Enable RISC-V SBI CPU Idle driver for QEMU virt machine
+
+ .../bindings/arm/msm/qcom,idle-state.txt      |   2 +-
+ .../devicetree/bindings/arm/psci.yaml         |   2 +-
+ .../bindings/{arm => cpu}/idle-states.yaml    | 228 ++++++-
+ .../devicetree/bindings/riscv/cpus.yaml       |   6 +
+ MAINTAINERS                                   |  14 +
+ arch/riscv/Kconfig                            |   7 +
+ arch/riscv/Kconfig.socs                       |   3 +
+ arch/riscv/configs/defconfig                  |   2 +
+ arch/riscv/configs/rv32_defconfig             |   2 +
+ arch/riscv/include/asm/asm.h                  |  27 +
+ arch/riscv/include/asm/cpuidle.h              |  24 +
+ arch/riscv/include/asm/sbi.h                  |  27 +-
+ arch/riscv/include/asm/suspend.h              |  36 +
+ arch/riscv/kernel/Makefile                    |   2 +
+ arch/riscv/kernel/asm-offsets.c               |   3 +
+ arch/riscv/kernel/cpu_ops_sbi.c               |   2 +-
+ arch/riscv/kernel/head.S                      |  28 +-
+ arch/riscv/kernel/process.c                   |   3 +-
+ arch/riscv/kernel/suspend.c                   |  87 +++
+ arch/riscv/kernel/suspend_entry.S             | 124 ++++
+ arch/riscv/kvm/vcpu_sbi_hsm.c                 |   4 +-
+ drivers/cpuidle/Kconfig                       |   9 +
+ drivers/cpuidle/Kconfig.arm                   |   1 +
+ drivers/cpuidle/Kconfig.riscv                 |  15 +
+ drivers/cpuidle/Makefile                      |   5 +
+ drivers/cpuidle/cpuidle-psci-domain.c         | 138 +---
+ drivers/cpuidle/cpuidle-psci.h                |  15 +-
+ drivers/cpuidle/cpuidle-riscv-sbi.c           | 627 ++++++++++++++++++
+ drivers/cpuidle/dt_idle_genpd.c               | 178 +++++
+ drivers/cpuidle/dt_idle_genpd.h               |  50 ++
+ 30 files changed, 1484 insertions(+), 187 deletions(-)
+ rename Documentation/devicetree/bindings/{arm => cpu}/idle-states.yaml (74%)
+ create mode 100644 arch/riscv/include/asm/cpuidle.h
+ create mode 100644 arch/riscv/include/asm/suspend.h
+ create mode 100644 arch/riscv/kernel/suspend.c
+ create mode 100644 arch/riscv/kernel/suspend_entry.S
+ create mode 100644 drivers/cpuidle/Kconfig.riscv
+ create mode 100644 drivers/cpuidle/cpuidle-riscv-sbi.c
+ create mode 100644 drivers/cpuidle/dt_idle_genpd.c
+ create mode 100644 drivers/cpuidle/dt_idle_genpd.h
+
+-- 
+2.25.1
+
