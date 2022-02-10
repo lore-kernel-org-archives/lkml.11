@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD232C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2FEC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbiBJH3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 02:29:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42866 "EHLO
+        id S236286AbiBJH3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 02:29:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236243AbiBJH3N (ORCPT
+        with ESMTP id S236244AbiBJH3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 02:29:13 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9E2D8E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BE1D6D
         for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:29:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=7G8J3RPmwqONc2HXCUGJwHrFv6lx9mr3fODzxz3GZ8Y=; b=uUYieNnJaHfU8LFV1HvS+chCMy
-        jcAqrinM6uesfhHoQXNQ/yIbALOtnqg/X7rgXJFF6HmxAU0+4dzexPBN2EnDi2dapZPLQOWgiAeOf
-        tzVORYmrL7VdJLyW6S053AW0DDzF7ZmU1dwjhi7rK+HqXEtwduphWLaaWJ2i9FXW1FL/pTVPhl6u3
-        LE+m2AisM2E2hg6ORWM9biX6jJgiGfqln2ncrqHbXOopuoXLSc1S3T1+fNmZtbayRnW6HXsAIFF0m
-        nvn1VGJiJ6QqjxIbHtJmIW7tSVeSa7IIbBXeRBYA674ZY5WukXl78wQ6Z+MIK6VEYF2kn6OeA5Q60
-        +XxfFLEg==;
+        bh=wCdTPi8sABXHaeJsId/JTSLi+c8Rwwiec5m8oAEznlg=; b=0e+HFPbe1yvFskke6QJO8jYN43
+        BL27P4rhMpZrOyRnm/Q2IFdFK02AdjcEHuLHbNOgqaLpJ3k/+8sdPvBcS5BMSWbYwm818f8/pHJQ9
+        N6oYv7ggwmp8pNG9UCE+nV9x3jkbmqJnBv5FDZzSl++H9pOEAFWok4hWRhxOgmkhE64XUtmaenhWA
+        Lh/ETXt+Tg9Ly39G8h9Zs+lMnNyI8iCH6l06TLjGId++3ApOcROW1jra68QUFiTSPijOLQlJqTfYy
+        PPFccOKbpQRr0/fwy/8IDnvxqIcU/bJJQOB6XJcncTYxCVdGbrUPwCTMYwjK/GOD7R6PdxZnOrdmu
+        srX0uIbw==;
 Received: from [2001:4bb8:188:3efc:8014:b2f2:fdfd:57ea] (helo=localhost)
         by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nI3t3-002s0C-1N; Thu, 10 Feb 2022 07:29:05 +0000
+        id 1nI3t0-002ryS-8V; Thu, 10 Feb 2022 07:29:02 +0000
 From:   Christoph Hellwig <hch@lst.de>
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Dan Williams <dan.j.williams@intel.com>
@@ -44,9 +44,9 @@ Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
         linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
         nvdimm@lists.linux.dev, linux-mm@kvack.org
-Subject: [PATCH 12/27] mm: refactor the ZONE_DEVICE handling in migrate_vma_pages
-Date:   Thu, 10 Feb 2022 08:28:13 +0100
-Message-Id: <20220210072828.2930359-13-hch@lst.de>
+Subject: [PATCH 11/27] mm: refactor the ZONE_DEVICE handling in migrate_vma_insert_page
+Date:   Thu, 10 Feb 2022 08:28:12 +0100
+Message-Id: <20220210072828.2930359-12-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220210072828.2930359-1-hch@lst.de>
 References: <20220210072828.2930359-1-hch@lst.de>
@@ -62,50 +62,55 @@ ZONE_DEVICE memory type.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- mm/migrate.c | 27 ++++++++++++---------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+ mm/migrate.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
 diff --git a/mm/migrate.c b/mm/migrate.c
-index 30ecd7223656c1..746e1230886ddb 100644
+index 8e0370a73f8a43..30ecd7223656c1 100644
 --- a/mm/migrate.c
 +++ b/mm/migrate.c
-@@ -2788,24 +2788,21 @@ void migrate_vma_pages(struct migrate_vma *migrate)
+@@ -2670,26 +2670,25 @@ static void migrate_vma_insert_page(struct migrate_vma *migrate,
+ 	 */
+ 	__SetPageUptodate(page);
  
- 		mapping = page_mapping(page);
+-	if (is_zone_device_page(page)) {
+-		if (is_device_private_page(page)) {
+-			swp_entry_t swp_entry;
++	if (is_device_private_page(page)) {
++		swp_entry_t swp_entry;
  
--		if (is_zone_device_page(newpage)) {
--			if (is_device_private_page(newpage)) {
--				/*
--				 * For now only support private anonymous when
--				 * migrating to un-addressable device memory.
--				 */
--				if (mapping) {
--					migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
--					continue;
--				}
--			} else {
--				/*
--				 * Other types of ZONE_DEVICE page are not
--				 * supported.
--				 */
-+		if (is_device_private_page(newpage)) {
-+			/*
-+			 * For now only support private anonymous when migrating
-+			 * to un-addressable device memory.
-+			 */
-+			if (mapping) {
- 				migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
- 				continue;
- 			}
-+		} else if (is_zone_device_page(newpage)) {
-+			/*
-+			 * Other types of ZONE_DEVICE page are not supported.
-+			 */
-+			migrate->src[i] &= ~MIGRATE_PFN_MIGRATE;
-+			continue;
+-			if (vma->vm_flags & VM_WRITE)
+-				swp_entry = make_writable_device_private_entry(
+-							page_to_pfn(page));
+-			else
+-				swp_entry = make_readable_device_private_entry(
+-							page_to_pfn(page));
+-			entry = swp_entry_to_pte(swp_entry);
+-		} else {
+-			/*
+-			 * For now we only support migrating to un-addressable
+-			 * device memory.
+-			 */
++		if (vma->vm_flags & VM_WRITE)
++			swp_entry = make_writable_device_private_entry(
++						page_to_pfn(page));
++		else
++			swp_entry = make_readable_device_private_entry(
++						page_to_pfn(page));
++		entry = swp_entry_to_pte(swp_entry);
++	} else {
++		/*
++		 * For now we only support migrating to un-addressable device
++		 * memory.
++		 */
++		if (is_zone_device_page(page)) {
+ 			pr_warn_once("Unsupported ZONE_DEVICE page type.\n");
+ 			goto abort;
  		}
- 
- 		r = migrate_page(mapping, newpage, page, MIGRATE_SYNC_NO_COPY);
+-	} else {
+ 		entry = mk_pte(page, vma->vm_page_prot);
+ 		if (vma->vm_flags & VM_WRITE)
+ 			entry = pte_mkwrite(pte_mkdirty(entry));
 -- 
 2.30.2
 
