@@ -2,933 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98653C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:06:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94026C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243477AbiBJPF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:05:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46644 "EHLO
+        id S243493AbiBJPGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:06:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243428AbiBJPFz (ORCPT
+        with ESMTP id S243462AbiBJPFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 10:05:55 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F78EF05
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:05:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644505553; x=1676041553;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0a13th8h9Lv5Z+IwxFrXbqOGa1xLawzT2dOPjxWpNgI=;
-  b=SLS42mGuUgMCZIzqA0mCb6DkyQfJOpauAtBhG+peGhnYisu90djRvBmA
-   E5zKL5aRMig0Q9DH+9arW+JvP9ZHHqFVlmzMzD8v+Dz7MbEjDEKbM7wLw
-   F7y3c1KNZacjHH3RtcZs9fk3NOxB1DeK15E69Tg2XwEs1OCpMw6M9AT+P
-   Qj5hjDdXyl6jYODJnZtowEEw3+sfsITZUUUqrha//W750pgbe8DYLxxXU
-   PlsycPHpO0wxvMbzvMUiqL0qBmZO02Z/V2Gm6juegEdhMOsYYz2K7VQVB
-   UZvkU33ilnoVFpLLDqpKcmXcjdvhP9Ys8Xeo9Qr6F/nje+EkdKvWLUHNC
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230153314"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="230153314"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="500422691"
-Received: from barabano-mobl.ccr.corp.intel.com (HELO pujfalus-desk.ger.corp.intel.com) ([10.252.41.18])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:49 -0800
-From:   Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org,
-        pierre-louis.bossart@linux.intel.com,
-        ranjani.sridharan@linux.intel.com
-Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
-        daniel.baluta@nxp.com, tiwai@suse.com,
-        linux-kernel@vger.kernel.org, fred.oh@linux.intel.com
-Subject: [PATCH v2 7/9] ASoC: SOF: Convert the generic IPC flood test into SOF client
-Date:   Thu, 10 Feb 2022 17:05:23 +0200
-Message-Id: <20220210150525.30756-8-peter.ujfalusi@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
-References: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
+Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120070.outbound.protection.outlook.com [40.107.12.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E244F0C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:05:54 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ej/x9lYZlfcsGuxVjGQK/fAWELXcf4eMhbkZwbux+K/MHSebZ1zJa1naAIpoWl/hCnA+8bd2f9EVt6C22Rrph1eiUhdhu5HnSHGZCpUpfLE3s7lXEw9VZFnfjFlmoWAq44lu0jApHH/7gE7CyK9z7FNAlzYh0se4ApHaZdzC4pr+KS7lqdxgjzcAaTU18b7QYUCSF96+LcBf0wb2M4874tCJn1JPi2L+uSwwQDC1KL4K9RsDAImlc75fZGMrkhCgwMdijFRJYkn/GL9oQyb1Hurdg2CbtRZH0VUNbaTDee/0FnotxFucUwunA/nJ84xOCfSAEkM/K6ymE3XVgyrbwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=t4o6/BPx8G9Tz+Qja+8EXlZx1EtNhhA19o1AQpXrysM=;
+ b=eOWKaD8WchyQHm2CYKtwML57hgujNz2m84az5oNSg2MzwLvev1mvA1z7S4AdPy4J97tgQ3gk8huBfa4vsb/wEgXOJk4le3AIh5sPW6D0bEBQgT2JKQrPoCiyx7eGemsAa5toz8yiG9vFi86gWkmicPh1DB8dFxy9HoRmr5raeuW9/ogJrtVlg69ehoGLP8Iprz+2kEqGAA5yeYsCeRf2rZrUw1tBa/LyRR2JdHgf3gf2Ar6soU0BjT14kC9DWUsA5X9+hTozarCspsKHiBrZwkdnC4M/5UVnay4FhLQT/+UugpT1kraW/pjyWcLEkhCupWBkas+zEQW5MRgijB+7JA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by MR1P264MB2322.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:33::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.12; Thu, 10 Feb
+ 2022 15:05:52 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1%9]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
+ 15:05:52 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Steven Rostedt <rostedt@goodmis.org>
+CC:     Ingo Molnar <mingo@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Subject: Re: [PATCH] tracing: uninline trace_trigger_soft_disabled()
+Thread-Topic: [PATCH] tracing: uninline trace_trigger_soft_disabled()
+Thread-Index: AQHYHlrunD/YgRuIXUqfiNw5JA4bxKyM156AgAALDoA=
+Date:   Thu, 10 Feb 2022 15:05:51 +0000
+Message-ID: <d60a60ff-cc16-75b0-2415-482cb70a2e5e@csgroup.eu>
+References: <38191e96ec6d331662ee7278e26edb79cdf95402.1644482771.git.christophe.leroy@csgroup.eu>
+ <20220210092617.2bb40912@gandalf.local.home>
+In-Reply-To: <20220210092617.2bb40912@gandalf.local.home>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8200a592-0389-4c91-197d-08d9eca6d44f
+x-ms-traffictypediagnostic: MR1P264MB2322:EE_
+x-microsoft-antispam-prvs: <MR1P264MB2322CFD69122109DEA2759B4ED2F9@MR1P264MB2322.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: di1GMOl+77CDzCOdNKe8QgtBc4O4qL/+MCAjq3DOsDnQUyhNtXXLPZoYWSphf0/XMDMlOn2lV4hTixchQHcjFoKgDL7gTJP4hgF1al5UNuS694sPrmDf0CbcvdYSEIcWLzb9E3NANiY8iQ3/532E/ytMcxPHTyzVsYQ7NHNI9mfUFW2ej4ak0wRnPU9KQNrnBLCVO6JEqKVN+pMXE9xzOXabyawv0g6k+9NTMMNGtto/ADtPPg/j+hl+6hEK+RfqflVeWRSC7aHSRLgpfsp/eKgQVPJPVdQYsClLJP9+1JV2D9QGdZAEB/xbnvRwlEjJ8f34k4WWE9hwE5xmaLS0r5zMAUVtmixRdlgDbxiUDxqGxfzkEyEyh4KszCBDWJCASXN+e6P+AxzpFlvjEO7bDezVDdpdJbjA9Px+97R08UIVMBy6c39oxIZtPd6GPNccQ4iwNfRBwMCd6Uwkn90haztqXdr3cYzareBBXmD+Di9LN5WpOKeBY0z2JF6DDmtyFlfY14J1V0N+Z+EMRLT+/fPvA1CLxsoqVJfM66qqfTV3n+VuuDW5I2mX5MYhVjXERax9XMHk39k5xJyO3tOMzAkTuNdCEfpbmotQvz2RIZPOzz5/+QoXbMeT86jmXOXC2ghBnxj3PORCpxXNiEhC1oIabU5mJo8HjjxOljErmQk9nJlwHnKQG2e8HFE5phlb83foG/xVcYSZrShRWEDbc0thW8CqcCnqhm97BRKw7ixDLJZdgjXiwkTPPI0+OYPt4ResFJmS+IvAY6cHzXzqFA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(316002)(38070700005)(54906003)(71200400001)(38100700002)(86362001)(76116006)(66946007)(66556008)(66476007)(66446008)(64756008)(4326008)(122000001)(31696002)(91956017)(8676002)(6486002)(6916009)(6506007)(8936002)(5660300002)(36756003)(83380400001)(2616005)(2906002)(6512007)(66574015)(26005)(186003)(44832011)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?aW1Ub2FHYWMrL3JjcHM4MThDcmpleVIwbE80bXNrSHBLRTF1d2FlNW5pc0dC?=
+ =?utf-8?B?amltTzBXMEJwbWh2RVVyVUN5Wi9seXR1TGVzNU9XbDBtTnZwcFVHekVPWUky?=
+ =?utf-8?B?NW5vL3RjY0lrSzh5MjdDbHRXOTMyOThoYTFURHNIR0c2Y3k3Rmg0WFBrK3hq?=
+ =?utf-8?B?VTc3cGltd1psaXVyd2RTcW9vTWpqZTJ5RjVYdkxQc0tadWZ1RGNGTjhVZ2Vz?=
+ =?utf-8?B?WTgybEhXK3BmaFlPU3lzQmVIRjA4Y3BxT1ZhQ2dwOVVBQXhrQWd0R3NzL1o3?=
+ =?utf-8?B?SVVNbEZQSjJuaDRVbHlKYVRRUDB6SllNZlZsY2JPa0VwL2txNDFrVHZGc0Q0?=
+ =?utf-8?B?NTYxMHFrTFB0TXZKY0hGcWx2L0V5TmwyczJyUVhkT2x3YmRJUkNwRG11cG5E?=
+ =?utf-8?B?anpQeldRbWV0VmJiUlRPelZVbjhBV0VQMlNpZ2J0RGFHRUQ3aEhLTW9QTStK?=
+ =?utf-8?B?Y1B1UWRyYXArY1c1VTJINHE0SEoxRDM4dDNzZDArM29zZGxRK2FvdkxZNXht?=
+ =?utf-8?B?WFlBWWYyRGx3WXprWFdpcmlXajMvTUttOERZRHptSXlRYWM5KzU2ellZSVN2?=
+ =?utf-8?B?RmU0dHl1NEt4dDB4bmNKT3p4V1dXS05HS21LcStoN0ZvcmtLRE9Sbys1UE5y?=
+ =?utf-8?B?RmlFSVB2QUZmMnlRcWZVeHBQeWREbHBZWmoybU82UFRhUVFTZlptSlZ6STUw?=
+ =?utf-8?B?aHI1OFh5TDFKdFg3c2lYM09XeXhGTC9HcC9EMEtOWjhaTEw2ODVXeUhBWkVs?=
+ =?utf-8?B?VjBHR3dYbyt3U2gzbXpHd2wyak5Sc2RodnVxUTIzZDNTTUZEUnpCT3VtTzRB?=
+ =?utf-8?B?aDRZNC9KRG52MU5OT2VIM0NpaTVyYS9lK0VwTmgyemNxb1RoQ2NuNWIrdzBq?=
+ =?utf-8?B?SkxwMnlINStjWVoxSWhMempFbFc2SnZxYWhyMGdKTVhRZUNyM1h0eFVvQ2di?=
+ =?utf-8?B?aHpTVGoybFdLSUdZZUUrL0lZd2hLN3dxY056ai8ydmJRNEc5QWJEbU1iZm9v?=
+ =?utf-8?B?TENBUllwWnN1OWhkcFc1dFVzbFBybWo3azRLOFNuMVl4MDl1eElQTkhNTDFE?=
+ =?utf-8?B?U2tiYUl4ZlNxeXUySGtFeXpSdVcwbVgvR2J5SGNuQUoxRElUY2NaU3ZJVk9J?=
+ =?utf-8?B?b1BlOTg3aGJaYWI3NW9XejNvMXNGWjUwdTN5WWdqck1jU0hCVDMycmpKWlhW?=
+ =?utf-8?B?MjR2dTZ2RjRVa0l5ZndFMFZNZzJ5dmRzaEE5WHcrQ01BVktYcTk1d2hKa0l6?=
+ =?utf-8?B?TS9BekNjSUNSdktkUUFpQ3ViOHFWcklQM24xclgxQUpzcXJTanpCNm12VnRB?=
+ =?utf-8?B?VUpwR2kwY0lVaGo3RzZGQjcwaTFuQnh3VTNSZWVHejhwU0NMSy8rM1ZXNTJH?=
+ =?utf-8?B?VjJFRGlneENZUzlTQzFhNlN0L0xrVG1CZjFjUWhpKzJaS0xlSkYrZEFBQTFG?=
+ =?utf-8?B?QnNlSTR3WFlaZ09vSFVLL05kSWxDbEY5NEpCb1JSRGhPemNMYzI2bk85YnFo?=
+ =?utf-8?B?SWRTOE5ZQ3drUG9HdEI0Vk1HUmVQWDFOUVlYOVVqYmZRUXp3d01ZWGh1UFI1?=
+ =?utf-8?B?Nmp5UnFYZWpzeVRvaUg1dDFKdVlCa3NHKzY5dHpDUEU4eTYrd09hV29kT0hl?=
+ =?utf-8?B?UlJETW92V1NMVnZ0bU5nQk42OFRCcit0RTFuYTFnYmxnWjF0aVJ0KzVkRHQ3?=
+ =?utf-8?B?VkJPV0VZYWI1M2tHakVmcE9IbVdCREtvYXZ3YUE3SmhmTGdCOEtvNFRISDBp?=
+ =?utf-8?B?L3Zla0RvME93OWhhUDRZelJFRzZrdG8vZUhBRjRUQ0FzRVFITU1xU3YxUXZt?=
+ =?utf-8?B?N0FFZjFRRE5xYVl5b01yck5yaDNHY3BkWTJzVkQwMUJMT3pkWDMxMFlSZGJS?=
+ =?utf-8?B?ZWJxZ2Q3QlBxY0NqMk1aanR4bXBST2VoQjkzWXBHWkpTTS93elB2RWMwLzBC?=
+ =?utf-8?B?Nkx3NFE2ekZXdjIvTFdVT3ByU0NmTWppKzNKcjlqa2h0aDJnc3I4dFBESm5S?=
+ =?utf-8?B?L251OFJSdXVIMUR6RVcvdEpHdkRYMzJyeVNad2tZVllQQWlWS2lBVFFnZUhP?=
+ =?utf-8?B?WmJGcVQ4Tzd5MHZYVXBvUFJGUnZSRE8wYTYzcnZiWk9ldW8rTkw0SVBVR292?=
+ =?utf-8?B?NXhTcEVTcGZsYm12OW5WSnd4emlubVFJMG9sdG5MV09hV21EeklNa2wvTEoz?=
+ =?utf-8?B?ZU1oTWVybXdwaDFwczFKZkZNTjY4bkJQcm1HT1NtS1NFUEJtSUtVa3pjc2o0?=
+ =?utf-8?Q?TMWnrfufO7xeNmofadVtKbfvR0pH1kU3VAU0uCKGyQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9700B345CF2CDC43BD77A71AD2F27D2A@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8200a592-0389-4c91-197d-08d9eca6d44f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Feb 2022 15:05:51.9690
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8Dr7jnLjlmxiJ50mxhBCiqD8OlhDVqZp96VyUpHxEOfzZvXKkvGcPfEdVRVjn6dEuayP7pilM3WhvVMfB1GW6MblFqL7IzDgTAErXrLvpa8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB2322
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-
-Move the IPC flood test code out from the debug file as separate SOF client
-driver.
-
-Based on the kernel configuration, the device registration for the new IPC
-flood test is going to happen in the core.
-With the separate client driver it is going to be possible to run multiple
-flood tests in parallel to increase the stress, the new Kconfig option can
-be used to select this (defaults to 1).
-In order to preserve backward compatibility with existing SW/scripts, the
-first IPC flood test's debugfs files have been linked to the old files.
-
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
-Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
----
- sound/soc/sof/Kconfig                     |  16 +-
- sound/soc/sof/Makefile                    |   4 +
- sound/soc/sof/core.c                      |   1 +
- sound/soc/sof/debug.c                     | 231 -------------
- sound/soc/sof/sof-client-ipc-flood-test.c | 396 ++++++++++++++++++++++
- sound/soc/sof/sof-client.c                |  56 ++-
- sound/soc/sof/sof-priv.h                  |   6 +-
- 7 files changed, 469 insertions(+), 241 deletions(-)
- create mode 100644 sound/soc/sof/sof-client-ipc-flood-test.c
-
-diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
-index 468d7c113dae..3f8a2cadd2f8 100644
---- a/sound/soc/sof/Kconfig
-+++ b/sound/soc/sof/Kconfig
-@@ -194,13 +194,23 @@ config SND_SOC_SOF_DEBUG_ENABLE_FIRMWARE_TRACE
- 	  If unsure, select "N".
- 
- config SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST
--	bool "SOF enable IPC flood test"
-+	tristate "SOF enable IPC flood test"
-+	select SND_SOC_SOF_CLIENT
- 	help
--	  This option enables the IPC flood test which can be used to flood
--	  the DSP with test IPCs and gather stats about response times.
-+	  This option enables a separate client device for IPC flood test
-+	  which can be used to flood the DSP with test IPCs and gather stats
-+	  about response times.
- 	  Say Y if you want to enable IPC flood test.
- 	  If unsure, select "N".
- 
-+config SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_NUM
-+	int "Number of IPC flood test clients"
-+	range 1 32
-+	default 2
-+	depends on SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST
-+	help
-+	  Select the number of IPC flood test clients to be created.
-+
- config SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR
- 	bool "SOF enable IPC message injector"
- 	help
-diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
-index 38ce2fe376fa..964eff43c9ba 100644
---- a/sound/soc/sof/Makefile
-+++ b/sound/soc/sof/Makefile
-@@ -11,6 +11,8 @@ snd-sof-pci-objs := sof-pci-dev.o
- snd-sof-acpi-objs := sof-acpi-dev.o
- snd-sof-of-objs := sof-of-dev.o
- 
-+snd-sof-ipc-flood-test-objs := sof-client-ipc-flood-test.o
-+
- snd-sof-nocodec-objs := nocodec.o
- 
- snd-sof-utils-objs := sof-utils.o
-@@ -24,6 +26,8 @@ obj-$(CONFIG_SND_SOC_SOF_ACPI_DEV) += snd-sof-acpi.o
- obj-$(CONFIG_SND_SOC_SOF_OF_DEV) += snd-sof-of.o
- obj-$(CONFIG_SND_SOC_SOF_PCI_DEV) += snd-sof-pci.o
- 
-+obj-$(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST) += snd-sof-ipc-flood-test.o
-+
- obj-$(CONFIG_SND_SOC_SOF_INTEL_TOPLEVEL) += intel/
- obj-$(CONFIG_SND_SOC_SOF_IMX_TOPLEVEL) += imx/
- obj-$(CONFIG_SND_SOC_SOF_AMD_TOPLEVEL) += amd/
-diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
-index 2aabaac9007f..f29fe573ec3c 100644
---- a/sound/soc/sof/core.c
-+++ b/sound/soc/sof/core.c
-@@ -484,3 +484,4 @@ MODULE_AUTHOR("Liam Girdwood");
- MODULE_DESCRIPTION("Sound Open Firmware (SOF) Core");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_ALIAS("platform:sof-audio");
-+MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
-diff --git a/sound/soc/sof/debug.c b/sound/soc/sof/debug.c
-index 6d6757075f7c..e3a5f77bbd4d 100644
---- a/sound/soc/sof/debug.c
-+++ b/sound/soc/sof/debug.c
-@@ -234,107 +234,6 @@ static int snd_sof_debugfs_probe_item(struct snd_sof_dev *sdev,
- }
- #endif
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--#define MAX_IPC_FLOOD_DURATION_MS 1000
--#define MAX_IPC_FLOOD_COUNT 10000
--#define IPC_FLOOD_TEST_RESULT_LEN 512
--
--static int sof_debug_ipc_flood_test(struct snd_sof_dev *sdev,
--				    struct snd_sof_dfsentry *dfse,
--				    bool flood_duration_test,
--				    unsigned long ipc_duration_ms,
--				    unsigned long ipc_count)
--{
--	struct sof_ipc_cmd_hdr hdr;
--	struct sof_ipc_reply reply;
--	u64 min_response_time = U64_MAX;
--	ktime_t start, end, test_end;
--	u64 avg_response_time = 0;
--	u64 max_response_time = 0;
--	u64 ipc_response_time;
--	int i = 0;
--	int ret;
--
--	/* configure test IPC */
--	hdr.cmd = SOF_IPC_GLB_TEST_MSG | SOF_IPC_TEST_IPC_FLOOD;
--	hdr.size = sizeof(hdr);
--
--	/* set test end time for duration flood test */
--	if (flood_duration_test)
--		test_end = ktime_get_ns() + ipc_duration_ms * NSEC_PER_MSEC;
--
--	/* send test IPC's */
--	while (1) {
--		start = ktime_get();
--		ret = sof_ipc_tx_message(sdev->ipc, hdr.cmd, &hdr, hdr.size,
--					 &reply, sizeof(reply));
--		end = ktime_get();
--
--		if (ret < 0)
--			break;
--
--		/* compute min and max response times */
--		ipc_response_time = ktime_to_ns(ktime_sub(end, start));
--		min_response_time = min(min_response_time, ipc_response_time);
--		max_response_time = max(max_response_time, ipc_response_time);
--
--		/* sum up response times */
--		avg_response_time += ipc_response_time;
--		i++;
--
--		/* test complete? */
--		if (flood_duration_test) {
--			if (ktime_to_ns(end) >= test_end)
--				break;
--		} else {
--			if (i == ipc_count)
--				break;
--		}
--	}
--
--	if (ret < 0)
--		dev_err(sdev->dev,
--			"error: ipc flood test failed at %d iterations\n", i);
--
--	/* return if the first IPC fails */
--	if (!i)
--		return ret;
--
--	/* compute average response time */
--	do_div(avg_response_time, i);
--
--	/* clear previous test output */
--	memset(dfse->cache_buf, 0, IPC_FLOOD_TEST_RESULT_LEN);
--
--	if (flood_duration_test) {
--		dev_dbg(sdev->dev, "IPC Flood test duration: %lums\n",
--			ipc_duration_ms);
--		snprintf(dfse->cache_buf, IPC_FLOOD_TEST_RESULT_LEN,
--			 "IPC Flood test duration: %lums\n", ipc_duration_ms);
--	}
--
--	dev_dbg(sdev->dev,
--		"IPC Flood count: %d, Avg response time: %lluns\n",
--		i, avg_response_time);
--	dev_dbg(sdev->dev, "Max response time: %lluns\n",
--		max_response_time);
--	dev_dbg(sdev->dev, "Min response time: %lluns\n",
--		min_response_time);
--
--	/* format output string */
--	snprintf(dfse->cache_buf + strlen(dfse->cache_buf),
--		 IPC_FLOOD_TEST_RESULT_LEN - strlen(dfse->cache_buf),
--		 "IPC Flood count: %d\nAvg response time: %lluns\n",
--		 i, avg_response_time);
--
--	snprintf(dfse->cache_buf + strlen(dfse->cache_buf),
--		 IPC_FLOOD_TEST_RESULT_LEN - strlen(dfse->cache_buf),
--		 "Max response time: %lluns\nMin response time: %lluns\n",
--		 max_response_time, min_response_time);
--
--	return ret;
--}
--#endif
- 
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR)
- static ssize_t msg_inject_read(struct file *file, char __user *buffer,
-@@ -437,15 +336,6 @@ static int snd_sof_debugfs_msg_inject_item(struct snd_sof_dev *sdev,
- static ssize_t sof_dfsentry_write(struct file *file, const char __user *buffer,
- 				  size_t count, loff_t *ppos)
- {
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--	struct snd_sof_dfsentry *dfse = file->private_data;
--	struct snd_sof_dev *sdev = dfse->sdev;
--	unsigned long ipc_duration_ms = 0;
--	bool flood_duration_test = false;
--	unsigned long ipc_count = 0;
--	struct dentry *dentry;
--	int err;
--#endif
- 	size_t size;
- 	char *string;
- 	int ret;
-@@ -457,78 +347,6 @@ static ssize_t sof_dfsentry_write(struct file *file, const char __user *buffer,
- 	size = simple_write_to_buffer(string, count, ppos, buffer, count);
- 	ret = size;
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--	/*
--	 * write op is only supported for ipc_flood_count or
--	 * ipc_flood_duration_ms debugfs entries atm.
--	 * ipc_flood_count floods the DSP with the number of IPC's specified.
--	 * ipc_duration_ms test floods the DSP for the time specified
--	 * in the debugfs entry.
--	 */
--	dentry = file->f_path.dentry;
--	if (strcmp(dentry->d_name.name, "ipc_flood_count") &&
--	    strcmp(dentry->d_name.name, "ipc_flood_duration_ms")) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	if (!strcmp(dentry->d_name.name, "ipc_flood_duration_ms"))
--		flood_duration_test = true;
--
--	/* test completion criterion */
--	if (flood_duration_test)
--		ret = kstrtoul(string, 0, &ipc_duration_ms);
--	else
--		ret = kstrtoul(string, 0, &ipc_count);
--	if (ret < 0)
--		goto out;
--
--	/* limit max duration/ipc count for flood test */
--	if (flood_duration_test) {
--		if (!ipc_duration_ms) {
--			ret = size;
--			goto out;
--		}
--
--		/* find the minimum. min() is not used to avoid warnings */
--		if (ipc_duration_ms > MAX_IPC_FLOOD_DURATION_MS)
--			ipc_duration_ms = MAX_IPC_FLOOD_DURATION_MS;
--	} else {
--		if (!ipc_count) {
--			ret = size;
--			goto out;
--		}
--
--		/* find the minimum. min() is not used to avoid warnings */
--		if (ipc_count > MAX_IPC_FLOOD_COUNT)
--			ipc_count = MAX_IPC_FLOOD_COUNT;
--	}
--
--	ret = pm_runtime_get_sync(sdev->dev);
--	if (ret < 0 && ret != -EACCES) {
--		dev_err_ratelimited(sdev->dev,
--				    "error: debugfs write failed to resume %d\n",
--				    ret);
--		pm_runtime_put_noidle(sdev->dev);
--		goto out;
--	}
--
--	/* flood test */
--	ret = sof_debug_ipc_flood_test(sdev, dfse, flood_duration_test,
--				       ipc_duration_ms, ipc_count);
--
--	pm_runtime_mark_last_busy(sdev->dev);
--	err = pm_runtime_put_autosuspend(sdev->dev);
--	if (err < 0)
--		dev_err_ratelimited(sdev->dev,
--				    "error: debugfs write failed to idle %d\n",
--				    err);
--
--	/* return size if test is successful */
--	if (ret >= 0)
--		ret = size;
--out:
--#endif
- 	kfree(string);
- 	return ret;
- }
-@@ -544,24 +362,6 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
- 	int size;
- 	u8 *buf;
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--	struct dentry *dentry;
--
--	dentry = file->f_path.dentry;
--	if ((!strcmp(dentry->d_name.name, "ipc_flood_count") ||
--	     !strcmp(dentry->d_name.name, "ipc_flood_duration_ms"))) {
--		if (*ppos)
--			return 0;
--
--		count = strlen(dfse->cache_buf);
--		size_ret = copy_to_user(buffer, dfse->cache_buf, count);
--		if (size_ret)
--			return -EFAULT;
--
--		*ppos += count;
--		return count;
--	}
--#endif
- 	size = dfse->size;
- 
- 	/* validate position & count */
-@@ -719,19 +519,6 @@ int snd_sof_debugfs_buf_item(struct snd_sof_dev *sdev,
- 	dfse->size = size;
- 	dfse->sdev = sdev;
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--	if (!strncmp(name, "ipc_flood", strlen("ipc_flood"))) {
--		/*
--		 * cache_buf is unused for SOF_DFSENTRY_TYPE_BUF debugfs entries.
--		 * So, use it to save the results of the last IPC flood test.
--		 */
--		dfse->cache_buf = devm_kzalloc(sdev->dev, IPC_FLOOD_TEST_RESULT_LEN,
--					       GFP_KERNEL);
--		if (!dfse->cache_buf)
--			return -ENOMEM;
--	}
--#endif
--
- 	debugfs_create_file(name, mode, sdev->debugfs_root, dfse,
- 			    &sof_dfs_fops);
- 	/* add to dfsentry list */
-@@ -892,24 +679,6 @@ int snd_sof_dbg_init(struct snd_sof_dev *sdev)
- 		return err;
- #endif
- 
--#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
--	/* create read-write ipc_flood_count debugfs entry */
--	err = snd_sof_debugfs_buf_item(sdev, NULL, 0,
--				       "ipc_flood_count", 0666);
--
--	/* errors are only due to memory allocation, not debugfs */
--	if (err < 0)
--		return err;
--
--	/* create read-write ipc_flood_duration_ms debugfs entry */
--	err = snd_sof_debugfs_buf_item(sdev, NULL, 0,
--				       "ipc_flood_duration_ms", 0666);
--
--	/* errors are only due to memory allocation, not debugfs */
--	if (err < 0)
--		return err;
--#endif
--
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR)
- 	err = snd_sof_debugfs_msg_inject_item(sdev, "ipc_msg_inject", 0644,
- 					      &msg_inject_fops);
-diff --git a/sound/soc/sof/sof-client-ipc-flood-test.c b/sound/soc/sof/sof-client-ipc-flood-test.c
-new file mode 100644
-index 000000000000..db3a052c5dd2
---- /dev/null
-+++ b/sound/soc/sof/sof-client-ipc-flood-test.c
-@@ -0,0 +1,396 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Copyright(c) 2022 Intel Corporation. All rights reserved.
-+//
-+// Authors: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-+//	    Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-+//
-+
-+#include <linux/auxiliary_bus.h>
-+#include <linux/completion.h>
-+#include <linux/debugfs.h>
-+#include <linux/ktime.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <sound/sof/header.h>
-+
-+#include "sof-client.h"
-+
-+#define MAX_IPC_FLOOD_DURATION_MS	1000
-+#define MAX_IPC_FLOOD_COUNT		10000
-+#define IPC_FLOOD_TEST_RESULT_LEN	512
-+#define SOF_IPC_CLIENT_SUSPEND_DELAY_MS	3000
-+
-+#define DEBUGFS_IPC_FLOOD_COUNT		"ipc_flood_count"
-+#define DEBUGFS_IPC_FLOOD_DURATION	"ipc_flood_duration_ms"
-+
-+struct sof_ipc_flood_priv {
-+	struct dentry *dfs_root;
-+	struct dentry *dfs_link[2];
-+	char *buf;
-+};
-+
-+static int sof_ipc_flood_dfs_open(struct inode *inode, struct file *file)
-+{
-+	struct sof_client_dev *cdev = inode->i_private;
-+	int ret;
-+
-+	if (sof_client_get_fw_state(cdev) == SOF_FW_CRASHED)
-+		return -ENODEV;
-+
-+	ret = debugfs_file_get(file->f_path.dentry);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	ret = simple_open(inode, file);
-+	if (ret)
-+		debugfs_file_put(file->f_path.dentry);
-+
-+	return ret;
-+}
-+
-+/*
-+ * helper function to perform the flood test. Only one of the two params, ipc_duration_ms
-+ * or ipc_count, will be non-zero and will determine the type of test
-+ */
-+static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
-+				    bool flood_duration_test,
-+				    unsigned long ipc_duration_ms,
-+				    unsigned long ipc_count)
-+{
-+	struct sof_ipc_flood_priv *priv = cdev->data;
-+	struct device *dev = &cdev->auxdev.dev;
-+	struct sof_ipc_cmd_hdr hdr;
-+	struct sof_ipc_reply reply;
-+	u64 min_response_time = U64_MAX;
-+	ktime_t start, end, test_end;
-+	u64 avg_response_time = 0;
-+	u64 max_response_time = 0;
-+	u64 ipc_response_time;
-+	int i = 0;
-+	int ret;
-+
-+	/* configure test IPC */
-+	hdr.cmd = SOF_IPC_GLB_TEST_MSG | SOF_IPC_TEST_IPC_FLOOD;
-+	hdr.size = sizeof(hdr);
-+
-+	/* set test end time for duration flood test */
-+	if (flood_duration_test)
-+		test_end = ktime_get_ns() + ipc_duration_ms * NSEC_PER_MSEC;
-+
-+	/* send test IPC's */
-+	while (1) {
-+		start = ktime_get();
-+		ret = sof_client_ipc_tx_message(cdev, &hdr, &reply, sizeof(reply));
-+		end = ktime_get();
-+
-+		if (ret < 0)
-+			break;
-+
-+		/* compute min and max response times */
-+		ipc_response_time = ktime_to_ns(ktime_sub(end, start));
-+		min_response_time = min(min_response_time, ipc_response_time);
-+		max_response_time = max(max_response_time, ipc_response_time);
-+
-+		/* sum up response times */
-+		avg_response_time += ipc_response_time;
-+		i++;
-+
-+		/* test complete? */
-+		if (flood_duration_test) {
-+			if (ktime_to_ns(end) >= test_end)
-+				break;
-+		} else {
-+			if (i == ipc_count)
-+				break;
-+		}
-+	}
-+
-+	if (ret < 0)
-+		dev_err(dev, "ipc flood test failed at %d iterations\n", i);
-+
-+	/* return if the first IPC fails */
-+	if (!i)
-+		return ret;
-+
-+	/* compute average response time */
-+	do_div(avg_response_time, i);
-+
-+	/* clear previous test output */
-+	memset(priv->buf, 0, IPC_FLOOD_TEST_RESULT_LEN);
-+
-+	if (!ipc_count) {
-+		dev_dbg(dev, "IPC Flood test duration: %lums\n", ipc_duration_ms);
-+		snprintf(priv->buf, IPC_FLOOD_TEST_RESULT_LEN,
-+			 "IPC Flood test duration: %lums\n", ipc_duration_ms);
-+	}
-+
-+	dev_dbg(dev, "IPC Flood count: %d, Avg response time: %lluns\n",
-+		i, avg_response_time);
-+	dev_dbg(dev, "Max response time: %lluns\n", max_response_time);
-+	dev_dbg(dev, "Min response time: %lluns\n", min_response_time);
-+
-+	/* format output string and save test results */
-+	snprintf(priv->buf + strlen(priv->buf),
-+		 IPC_FLOOD_TEST_RESULT_LEN - strlen(priv->buf),
-+		 "IPC Flood count: %d\nAvg response time: %lluns\n",
-+		 i, avg_response_time);
-+
-+	snprintf(priv->buf + strlen(priv->buf),
-+		 IPC_FLOOD_TEST_RESULT_LEN - strlen(priv->buf),
-+		 "Max response time: %lluns\nMin response time: %lluns\n",
-+		 max_response_time, min_response_time);
-+
-+	return ret;
-+}
-+
-+/*
-+ * Writing to the debugfs entry initiates the IPC flood test based on
-+ * the IPC count or the duration specified by the user.
-+ */
-+static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buffer,
-+				       size_t count, loff_t *ppos)
-+{
-+	struct sof_client_dev *cdev = file->private_data;
-+	struct device *dev = &cdev->auxdev.dev;
-+	unsigned long ipc_duration_ms = 0;
-+	bool flood_duration_test = false;
-+	unsigned long ipc_count = 0;
-+	struct dentry *dentry;
-+	int err;
-+	size_t size;
-+	char *string;
-+	int ret;
-+
-+	string = kzalloc(count + 1, GFP_KERNEL);
-+	if (!string)
-+		return -ENOMEM;
-+
-+	size = simple_write_to_buffer(string, count, ppos, buffer, count);
-+
-+	/*
-+	 * write op is only supported for ipc_flood_count or
-+	 * ipc_flood_duration_ms debugfs entries atm.
-+	 * ipc_flood_count floods the DSP with the number of IPC's specified.
-+	 * ipc_duration_ms test floods the DSP for the time specified
-+	 * in the debugfs entry.
-+	 */
-+	dentry = file->f_path.dentry;
-+	if (strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_COUNT) &&
-+	    strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_DURATION)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (!strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_DURATION))
-+		flood_duration_test = true;
-+
-+	/* test completion criterion */
-+	if (flood_duration_test)
-+		ret = kstrtoul(string, 0, &ipc_duration_ms);
-+	else
-+		ret = kstrtoul(string, 0, &ipc_count);
-+	if (ret < 0)
-+		goto out;
-+
-+	/* limit max duration/ipc count for flood test */
-+	if (flood_duration_test) {
-+		if (!ipc_duration_ms) {
-+			ret = size;
-+			goto out;
-+		}
-+
-+		/* find the minimum. min() is not used to avoid warnings */
-+		if (ipc_duration_ms > MAX_IPC_FLOOD_DURATION_MS)
-+			ipc_duration_ms = MAX_IPC_FLOOD_DURATION_MS;
-+	} else {
-+		if (!ipc_count) {
-+			ret = size;
-+			goto out;
-+		}
-+
-+		/* find the minimum. min() is not used to avoid warnings */
-+		if (ipc_count > MAX_IPC_FLOOD_COUNT)
-+			ipc_count = MAX_IPC_FLOOD_COUNT;
-+	}
-+
-+	ret = pm_runtime_get_sync(dev);
-+	if (ret < 0 && ret != -EACCES) {
-+		dev_err_ratelimited(dev, "debugfs write failed to resume %d\n", ret);
-+		pm_runtime_put_noidle(dev);
-+		goto out;
-+	}
-+
-+	/* flood test */
-+	ret = sof_debug_ipc_flood_test(cdev, flood_duration_test,
-+				       ipc_duration_ms, ipc_count);
-+
-+	pm_runtime_mark_last_busy(dev);
-+	err = pm_runtime_put_autosuspend(dev);
-+	if (err < 0)
-+		dev_err_ratelimited(dev, "debugfs write failed to idle %d\n", err);
-+
-+	/* return size if test is successful */
-+	if (ret >= 0)
-+		ret = size;
-+out:
-+	kfree(string);
-+	return ret;
-+}
-+
-+/* return the result of the last IPC flood test */
-+static ssize_t sof_ipc_flood_dfs_read(struct file *file, char __user *buffer,
-+				      size_t count, loff_t *ppos)
-+{
-+	struct sof_client_dev *cdev = file->private_data;
-+	struct sof_ipc_flood_priv *priv = cdev->data;
-+	size_t size_ret;
-+
-+	struct dentry *dentry;
-+
-+	dentry = file->f_path.dentry;
-+	if (!strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_COUNT) ||
-+	    !strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_DURATION)) {
-+		if (*ppos)
-+			return 0;
-+
-+		count = min_t(size_t, count, strlen(priv->buf));
-+		size_ret = copy_to_user(buffer, priv->buf, count);
-+		if (size_ret)
-+			return -EFAULT;
-+
-+		*ppos += count;
-+		return count;
-+	}
-+	return count;
-+}
-+
-+static int sof_ipc_flood_dfs_release(struct inode *inode, struct file *file)
-+{
-+	debugfs_file_put(file->f_path.dentry);
-+
-+	return 0;
-+}
-+
-+static const struct file_operations sof_ipc_flood_fops = {
-+	.open = sof_ipc_flood_dfs_open,
-+	.read = sof_ipc_flood_dfs_read,
-+	.llseek = default_llseek,
-+	.write = sof_ipc_flood_dfs_write,
-+	.release = sof_ipc_flood_dfs_release,
-+
-+	.owner = THIS_MODULE,
-+};
-+
-+/*
-+ * The IPC test client creates a couple of debugfs entries that will be used
-+ * flood tests. Users can write to these entries to execute the IPC flood test
-+ * by specifying either the number of IPCs to flood the DSP with or the duration
-+ * (in ms) for which the DSP should be flooded with test IPCs. At the
-+ * end of each test, the average, min and max response times are reported back.
-+ * The results of the last flood test can be accessed by reading the debugfs
-+ * entries.
-+ */
-+static int sof_ipc_flood_probe(struct auxiliary_device *auxdev,
-+			       const struct auxiliary_device_id *id)
-+{
-+	struct sof_client_dev *cdev = auxiliary_dev_to_sof_client_dev(auxdev);
-+	struct dentry *debugfs_root = sof_client_get_debugfs_root(cdev);
-+	struct device *dev = &auxdev->dev;
-+	struct sof_ipc_flood_priv *priv;
-+
-+	/* allocate memory for client data */
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->buf = devm_kmalloc(dev, IPC_FLOOD_TEST_RESULT_LEN, GFP_KERNEL);
-+	if (!priv->buf)
-+		return -ENOMEM;
-+
-+	cdev->data = priv;
-+
-+	/* create debugfs root folder with device name under parent SOF dir */
-+	priv->dfs_root = debugfs_create_dir(dev_name(dev), debugfs_root);
-+	if (!IS_ERR_OR_NULL(priv->dfs_root)) {
-+		/* create read-write ipc_flood_count debugfs entry */
-+		debugfs_create_file(DEBUGFS_IPC_FLOOD_COUNT, 0644, priv->dfs_root,
-+				    cdev, &sof_ipc_flood_fops);
-+
-+		/* create read-write ipc_flood_duration_ms debugfs entry */
-+		debugfs_create_file(DEBUGFS_IPC_FLOOD_DURATION, 0644,
-+				    priv->dfs_root, cdev, &sof_ipc_flood_fops);
-+
-+		if (auxdev->id == 0) {
-+			/*
-+			 * Create symlinks for backwards compatibility to the
-+			 * first IPC flood test instance
-+			 */
-+			char target[100];
-+
-+			snprintf(target, 100, "%s/" DEBUGFS_IPC_FLOOD_COUNT,
-+				 dev_name(dev));
-+			priv->dfs_link[0] =
-+				debugfs_create_symlink(DEBUGFS_IPC_FLOOD_COUNT,
-+						       debugfs_root, target);
-+
-+			snprintf(target, 100, "%s/" DEBUGFS_IPC_FLOOD_DURATION,
-+				 dev_name(dev));
-+			priv->dfs_link[1] =
-+				debugfs_create_symlink(DEBUGFS_IPC_FLOOD_DURATION,
-+						       debugfs_root, target);
-+		}
-+	}
-+
-+	/* enable runtime PM */
-+	pm_runtime_set_autosuspend_delay(dev, SOF_IPC_CLIENT_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_idle(dev);
-+
-+	return 0;
-+}
-+
-+static void sof_ipc_flood_remove(struct auxiliary_device *auxdev)
-+{
-+	struct sof_client_dev *cdev = auxiliary_dev_to_sof_client_dev(auxdev);
-+	struct sof_ipc_flood_priv *priv = cdev->data;
-+
-+	pm_runtime_disable(&auxdev->dev);
-+
-+	if (auxdev->id == 0) {
-+		debugfs_remove(priv->dfs_link[0]);
-+		debugfs_remove(priv->dfs_link[1]);
-+	}
-+
-+	debugfs_remove_recursive(priv->dfs_root);
-+}
-+
-+static const struct auxiliary_device_id sof_ipc_flood_client_id_table[] = {
-+	{ .name = "snd_sof.ipc_flood" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(auxiliary, sof_ipc_flood_client_id_table);
-+
-+/*
-+ * No need for driver pm_ops as the generic pm callbacks in the auxiliary bus
-+ * type are enough to ensure that the parent SOF device resumes to bring the DSP
-+ * back to D0.
-+ * Driver name will be set based on KBUILD_MODNAME.
-+ */
-+static struct auxiliary_driver sof_ipc_flood_client_drv = {
-+	.probe = sof_ipc_flood_probe,
-+	.remove = sof_ipc_flood_remove,
-+
-+	.id_table = sof_ipc_flood_client_id_table,
-+};
-+
-+module_auxiliary_driver(sof_ipc_flood_client_drv);
-+
-+MODULE_DESCRIPTION("SOF IPC Flood Test Client Driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
-diff --git a/sound/soc/sof/sof-client.c b/sound/soc/sof/sof-client.c
-index 932bdea49c24..0ffe7a26a19a 100644
---- a/sound/soc/sof/sof-client.c
-+++ b/sound/soc/sof/sof-client.c
-@@ -66,18 +66,70 @@ static int sof_client_dev_add_data(struct sof_client_dev *cdev, const void *data
- 	return 0;
- }
- 
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
-+static int sof_register_ipc_flood_test(struct snd_sof_dev *sdev)
-+{
-+	int ret = 0;
-+	int i;
-+
-+	for (i = 0; i < CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_NUM; i++) {
-+		ret = sof_client_dev_register(sdev, "ipc_flood", i, NULL, 0);
-+		if (ret < 0)
-+			break;
-+	}
-+
-+	if (ret) {
-+		for (; i >= 0; --i)
-+			sof_client_dev_unregister(sdev, "ipc_flood", i);
-+	}
-+
-+	return ret;
-+}
-+
-+static void sof_unregister_ipc_flood_test(struct snd_sof_dev *sdev)
-+{
-+	int i;
-+
-+	for (i = 0; i < CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_NUM; i++)
-+		sof_client_dev_unregister(sdev, "ipc_flood", i);
-+}
-+#else
-+static inline int sof_register_ipc_flood_test(struct snd_sof_dev *sdev)
-+{
-+	return 0;
-+}
-+
-+static inline void sof_unregister_ipc_flood_test(struct snd_sof_dev *sdev) {}
-+#endif /* CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST */
-+
- int sof_register_clients(struct snd_sof_dev *sdev)
- {
-+	int ret;
-+
-+	/* Register platform independent client devices */
-+	ret = sof_register_ipc_flood_test(sdev);
-+	if (ret) {
-+		dev_err(sdev->dev, "IPC flood test client registration failed\n");
-+		return ret;
-+	}
-+
-+	/* Platform depndent client device registration */
-+
- 	if (sof_ops(sdev) && sof_ops(sdev)->register_ipc_clients)
--		return sof_ops(sdev)->register_ipc_clients(sdev);
-+		ret = sof_ops(sdev)->register_ipc_clients(sdev);
- 
--	return 0;
-+	if (ret)
-+		sof_unregister_ipc_flood_test(sdev);
-+
-+	return ret;
- }
- 
- void sof_unregister_clients(struct snd_sof_dev *sdev)
- {
- 	if (sof_ops(sdev) && sof_ops(sdev)->unregister_ipc_clients)
- 		sof_ops(sdev)->unregister_ipc_clients(sdev);
-+
-+	sof_unregister_ipc_flood_test(sdev);
- }
- 
- int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, u32 id,
-diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
-index 39bbba5aeab2..1af61ff89345 100644
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -69,10 +69,6 @@ bool sof_debug_check_flag(int mask);
- #define SOF_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE | \
- 	SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_FLOAT)
- 
--#define ENABLE_DEBUGFS_CACHEBUF \
--	(IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE) || \
--	 IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST))
--
- /* So far the primary core on all DSPs has ID 0 */
- #define SOF_DSP_PRIMARY_CORE 0
- 
-@@ -326,7 +322,7 @@ struct snd_sof_dfsentry {
- 	 * or if it is accessible only when the DSP is in D0.
- 	 */
- 	enum sof_debugfs_access_type access_type;
--#if ENABLE_DEBUGFS_CACHEBUF
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE)
- 	char *cache_buf; /* buffer to cache the contents of debugfs memory */
- #endif
- #if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_MSG_INJECTOR)
--- 
-2.35.1
-
+DQoNCkxlIDEwLzAyLzIwMjIgw6AgMTU6MjYsIFN0ZXZlbiBSb3N0ZWR0IGEgw6ljcml0wqA6DQo+
+IE9uIFRodSwgMTAgRmViIDIwMjIgMDk6NDc6NTIgKzAxMDANCj4gQ2hyaXN0b3BoZSBMZXJveSA8
+Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1PiB3cm90ZToNCj4gDQo+PiBPbiBhIHBwYzMyIGJ1
+aWxkIHdpdGggQ09ORklHX0NDX09QVElNSVNFX0ZPUl9TSVpFLA0KPj4gdHJhY2VfdHJpZ2dlcl9z
+b2Z0X2Rpc2FibGVkKCkgYXBwZWFycyBtb3JlIHRoYW4gNTAgdGltZXMgaW4gdm1saW51eC4NCj4+
+DQo+PiBUaGF0IGZ1bmN0aW9uIGlzIHJhdGhlciBiaWcgZm9yIGFuIGlubGluZWQgZnVuY3Rpb24s
+IGFuZA0KPj4gaXQgZG9lc24ndCBiZW5lZml0IG11Y2ggZnJvbSBpbmxpbmluZyBhcyBpdHMgb25s
+eSBwYXJhbWV0ZXINCj4+IGlzIGEgcG9pbnRlciB0byBhIHN0cnVjdCBpbiBtZW1vcnk6DQo+IA0K
+PiBUaGUgbnVtYmVyIG9mIHBhcmFtZXRlcnMgaXMgbm90IHRoZSByZWFzb24gZm9yIGl0IGJlaW5n
+IGlubGluZWQuIEl0J3MgaW4gYQ0KPiAqdmVyeSogaG90IHBhdGgsIGFuZCBhIGZ1bmN0aW9uIGNh
+bGwgY2F1c2VzIGEgbm90aWNlYWJsZSBwZXJmb3JtYW5jZSBoaXQuDQoNCkZhaXIgZW5vdWdoDQoN
+Cj4gDQo+IA0KPj4NCj4+DQo+PiBJdCBkb2Vzbid0IGJlbmVmaXQgbXVjaCBmcm9tIGlubGluaW5n
+IGFzIGl0cyBvbmx5IHBhcmFtZXRlciBpcyBhDQo+PiBwb2ludGVyIHRvIGEgc3RydWN0IGluIG1l
+bW9yeSBzbyBubyBjb25zdGFudCBmb2xkaW5nIGlzIGludm9sdmVkLg0KPj4NCj4+IFVuaW5saW5l
+IGl0IGFuZCBtb3ZlIGl0IGludG8ga2VybmVsL3RyYWNlL3RyYWNlX2V2ZW50c190cmlnZ2VyLmMN
+Cj4+DQo+PiBJdCByZWR1Y2VzIHRoZSBzaXplIG9mIHZtbGludXggYnkgYXBwcm94aW1hdGVseSAx
+MCBrYnl0ZXMuDQo+IA0KPiBJZiB5b3UgaGF2ZSBhbiBpc3N1ZSB3aXRoIHRoZSBzaXplLCBwZXJo
+YXBzIHRoZSBmdW5jdGlvbiBjYW4gYmUgbW9kaWZpZWQgdG8NCj4gY29uZGVuc2UgaXQuIEknbSBo
+YXBweSB0byBoYXZlIGEgc2l6ZSByZWR1Y3Rpb24sIGJ1dCBJIHdpbGwgTkFDSyBtYWtpbmcgaXQN
+Cj4gaW50byBhIGZ1bmN0aW9uIGNhbGwuDQo+IA0KDQpXZWxsLCBteSBmaXJzdCBpc3N1ZSBpcyB0
+aGF0IEkgZ2V0IGl0IGR1cGxpY2F0ZWQgNTAgdGltZXMgYmVjYXVzZSBHQ0MgDQpmaW5kIGl0IHRv
+byBiaWcgdG8gZ2V0IGlubGluZWQuIFNvIGl0IGlzIGEgZnVuY3Rpb24gY2FsbCBhbnl3YXkuDQoN
+CkZvciBpbnN0YW5jZSwgd2hlbiBidWlsZGluZyBhcmNoL3Bvd2VycGMva2VybmVsL2lycS5vIHdo
+aWNoIC1XaW5saW5lLCBJIGdldDoNCg0KLi9pbmNsdWRlL2xpbnV4L3BlcmZfZXZlbnQuaDoxMTY5
+OjIwOiBlcnJvcjogaW5saW5pbmcgZmFpbGVkIGluIGNhbGwgdG8gDQoncGVyZl9mZXRjaF9jYWxs
+ZXJfcmVncyc6IGNhbGwgaXMgdW5saWtlbHkgYW5kIGNvZGUgc2l6ZSB3b3VsZCBncm93IA0KWy1X
+ZXJyb3I9aW5saW5lXQ0KLi9pbmNsdWRlL2xpbnV4L3BlcmZfZXZlbnQuaDoxMTY5OjIwOiBlcnJv
+cjogaW5saW5pbmcgZmFpbGVkIGluIGNhbGwgdG8gDQoncGVyZl9mZXRjaF9jYWxsZXJfcmVncyc6
+IGNhbGwgaXMgdW5saWtlbHkgYW5kIGNvZGUgc2l6ZSB3b3VsZCBncm93IA0KWy1XZXJyb3I9aW5s
+aW5lXQ0KLi9pbmNsdWRlL2xpbnV4L3BlcmZfZXZlbnQuaDoxMTY5OjIwOiBlcnJvcjogaW5saW5p
+bmcgZmFpbGVkIGluIGNhbGwgdG8gDQoncGVyZl9mZXRjaF9jYWxsZXJfcmVncyc6IGNhbGwgaXMg
+dW5saWtlbHkgYW5kIGNvZGUgc2l6ZSB3b3VsZCBncm93IA0KWy1XZXJyb3I9aW5saW5lXQ0KLi9p
+bmNsdWRlL2xpbnV4L3BlcmZfZXZlbnQuaDoxMTY5OjIwOiBlcnJvcjogaW5saW5pbmcgZmFpbGVk
+IGluIGNhbGwgdG8gDQoncGVyZl9mZXRjaF9jYWxsZXJfcmVncyc6IGNhbGwgaXMgdW5saWtlbHkg
+YW5kIGNvZGUgc2l6ZSB3b3VsZCBncm93IA0KWy1XZXJyb3I9aW5saW5lXQ0KLi9pbmNsdWRlL2xp
+bnV4L3RyYWNlX2V2ZW50cy5oOjcxMjoxOiBlcnJvcjogaW5saW5pbmcgZmFpbGVkIGluIGNhbGwg
+dG8gDQondHJhY2VfdHJpZ2dlcl9zb2Z0X2Rpc2FibGVkJzogY2FsbCBpcyB1bmxpa2VseSBhbmQg
+Y29kZSBzaXplIHdvdWxkIGdyb3cgDQpbLVdlcnJvcj1pbmxpbmVdDQouL2luY2x1ZGUvbGludXgv
+dHJhY2VfZXZlbnRzLmg6NzEyOjE6IGVycm9yOiBpbmxpbmluZyBmYWlsZWQgaW4gY2FsbCB0byAN
+Cid0cmFjZV90cmlnZ2VyX3NvZnRfZGlzYWJsZWQnOiBjYWxsIGlzIHVubGlrZWx5IGFuZCBjb2Rl
+IHNpemUgd291bGQgZ3JvdyANClstV2Vycm9yPWlubGluZV0NCi4vaW5jbHVkZS9saW51eC90cmFj
+ZV9ldmVudHMuaDo3MTI6MTogZXJyb3I6IGlubGluaW5nIGZhaWxlZCBpbiBjYWxsIHRvIA0KJ3Ry
+YWNlX3RyaWdnZXJfc29mdF9kaXNhYmxlZCc6IGNhbGwgaXMgdW5saWtlbHkgYW5kIGNvZGUgc2l6
+ZSB3b3VsZCBncm93IA0KWy1XZXJyb3I9aW5saW5lXQ0KLi9pbmNsdWRlL2xpbnV4L3RyYWNlX2V2
+ZW50cy5oOjcxMjoxOiBlcnJvcjogaW5saW5pbmcgZmFpbGVkIGluIGNhbGwgdG8gDQondHJhY2Vf
+dHJpZ2dlcl9zb2Z0X2Rpc2FibGVkJzogY2FsbCBpcyB1bmxpa2VseSBhbmQgY29kZSBzaXplIHdv
+dWxkIGdyb3cgDQpbLVdlcnJvcj1pbmxpbmVdDQoNCg0KDQpJZiBoYXZpbmcgaXQgYSBmdW5jdGlv
+biBjYWxsIGlzIHJlYWxseSBhbiBpc3N1ZSwgdGhlbiBpdCBzaG91bGQgYmUgDQpfX2Fsd2F5c19p
+bmxpbmUNCg0KSSB3aWxsIHNlZSB0aGUgaW1wYWN0IG9uIHNpemUgd2hlbiB3ZSBkbyBzby4NCg0K
+DQpXaGF0IGlzIGluIHRoZSBob3QgcGF0aCByZWFsbHkgPyBJdCBpcyB0aGUgZW50aXJlIGZ1bmN0
+aW9uIG9yIG9ubHkgdGhlIA0KZmlyc3QgdGVzdCA/DQoNCldoYXQgYWJvdXQ6DQoNCnN0YXRpYyBp
+bmxpbmUgYm9vbA0KdHJhY2VfdHJpZ2dlcl9zb2Z0X2Rpc2FibGVkKHN0cnVjdCB0cmFjZV9ldmVu
+dF9maWxlICpmaWxlKQ0Kew0KCXVuc2lnbmVkIGxvbmcgZWZsYWdzID0gZmlsZS0+ZmxhZ3M7DQoN
+CglpZiAoIShlZmxhZ3MgJiBFVkVOVF9GSUxFX0ZMX1RSSUdHRVJfQ09ORCkpDQoJCXJldHVybiBv
+dXRsaW5lZF90cmFjZV90cmlnZ2VyX3NvZnRfZGlzYWJsZWQoLi4uKTsNCglyZXR1cm4gZmFsc2U7
+DQp9DQoNCg0KT3IgaXMgdGhlcmUgbW9yZSBpbiB0aGUgaG90IHBhdGggPw0KDQpUaGFua3MNCkNo
+cmlzdG9waGU=
