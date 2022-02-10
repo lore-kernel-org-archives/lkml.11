@@ -2,137 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A231CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 118D7C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233527AbiBJB6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:58:06 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33882 "EHLO
+        id S233481AbiBJB6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:58:17 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233743AbiBJB4N (ORCPT
+        with ESMTP id S233113AbiBJB5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:56:13 -0500
-Received: from mail-oo1-xc2b.google.com (mail-oo1-xc2b.google.com [IPv6:2607:f8b0:4864:20::c2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51637E7B
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:49:55 -0800 (PST)
-Received: by mail-oo1-xc2b.google.com with SMTP id c7-20020a4ad207000000b002e7ab4185d2so4650700oos.6
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:49:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uFbiXZ661Ew9fjYfgC6u/MqjxislkKWsUWOZlueLXog=;
-        b=byGrfDBXU40CMAMH+QnRmZB2hgpnzd4NGTUutUKY82+AwMVd2EJaISHTE/1ECUa4pn
-         MUX+upwrE8IMcQhdBgL9c9HMqEiPyB75Gbk2uvK+EAH5RDmJeWfvinBuuZDxPbUpxGSS
-         lmdcQLNrhT7C7ORUJn3fReuqyYy4BRYSW1wZk=
+        Wed, 9 Feb 2022 20:57:22 -0500
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A53027D4C;
+        Wed,  9 Feb 2022 17:34:18 -0800 (PST)
+Received: by mail-oo1-f45.google.com with SMTP id t75-20020a4a3e4e000000b002e9c0821d78so4657239oot.4;
+        Wed, 09 Feb 2022 17:34:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uFbiXZ661Ew9fjYfgC6u/MqjxislkKWsUWOZlueLXog=;
-        b=16tVwiMsve2UOo+dg8WDYWid9NEb1sbdqd+GCebDuXL0uMPJT/xa8ZSKjeMkZPFd15
-         TkYRRS2iuPcg0Tbm2GNpr5ET8bhF+N24EzFnriR/oFKRztq4f1D6XoZ9pIduE6eoHNPB
-         t6GKJaYm7ROx3PwQe1y3Q0waRle4L7cD5NhckwJmvF4SQSk4knpOiSCv5sPnVNtr6n78
-         BmTnvCTyT0dyabt7tEjuuLULY+p7gPiILLOkCRql4uf14KSIDA4SC2tb8JoDEEX3HqYe
-         5jArH0GM4Na9CF4hZnYQ1PGTbFmxG3X1P49CvcSwxKhQlvErOjfcVhtMb+0jMQW5fapP
-         MM/A==
-X-Gm-Message-State: AOAM533oQeFRz3RPWj9qHQjH68h99pUcwXtD0nClZpJKXKxGDyzGxxC0
-        1huRzidvDrYNie5FPH3D+VbCtrLZsq/3WQ==
-X-Google-Smtp-Source: ABdhPJw+ZghIulP0lt/u5PYX2r5k/dJWK03itV6SCLMJRIfcICpmHfG8aQwsu7+Iq2Lfh3+XNlri9w==
-X-Received: by 2002:a17:90b:314d:: with SMTP id ip13mr18418pjb.42.1644453808447;
-        Wed, 09 Feb 2022 16:43:28 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id r12sm15047114pgn.6.2022.02.09.16.43.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XNiOWPd36obXvgkEnxsQWaURMDInYrYIQkiEeqpKVQA=;
+        b=w4KGe1YvxshAcnK70ia1WX59OOtFo8YOs5a015MLNg9nmHEYtu4V7Z4c9WffagoaJ8
+         Wi4rAK5BwC5KiApC1o21aeaMOudCyhSTwSAzbIIcct7NExmi7m7ZGBNE4nsmRPfz8yFd
+         YlRE3ZYNlIwxwIrRUcDTNd2OMHFPzFAxqCU25eJ508Y/zZuYrWEdH/wcb+HabZxWirtm
+         R4oKRXEgc0fZCP4IzK7jCUpdNwrNFXsTSOagatOeby8VrC8nZpasuz4FVpk65LUDP4Ub
+         NPHDmJFcsMMpdwCly6VtUlVCg1Xu4ppIVqee3F4xMreBzfqM5vnTcZdMVqdCFM1qdzCd
+         NqpQ==
+X-Gm-Message-State: AOAM5305Kd2S1NvoIAy+KniFAmBEB4tJRSPOW10zN+RJcaxN023TkOwo
+        UVfrUOMr0qZzMe3P22mm9dNIasN8MVvo
+X-Google-Smtp-Source: ABdhPJyzaCGC5eLQBASxyTGmEs5hjG9Z5P2Np9DRVceWLWDDoZhFzxyTV+VDN+pMiqQnGuiyEqs6xw==
+X-Received: by 2002:a05:6871:581:: with SMTP id u1mr1833250oan.5.1644453499047;
+        Wed, 09 Feb 2022 16:38:19 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id c13sm7199740otf.5.2022.02.09.16.38.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:43:28 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A . R . Silva" <gustavoars@kernel.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Keith Busch <kbusch@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH] overflow: Provide constant expression struct_size
-Date:   Wed,  9 Feb 2022 16:43:26 -0800
-Message-Id: <20220210004326.776574-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 09 Feb 2022 16:38:18 -0800 (PST)
+Received: (nullmailer pid 1270516 invoked by uid 1000);
+        Thu, 10 Feb 2022 00:38:17 -0000
+Date:   Wed, 9 Feb 2022 18:38:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     linux@roeck-us.net, linus.walleij@linaro.org,
+        wim@linux-watchdog.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: watchdog: convert faraday,ftwdt010 to yaml
+Message-ID: <YgReeZX3pc9G8yWp@robh.at.kernel.org>
+References: <20220128204856.494643-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2666; h=from:subject; bh=14Ho7e3+FD8cqq+qkLYHbJIZoGsnOpApzExmvlYtrYc=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiBF+tnHoL+rQk6Nngev4Kq+u30muSK0zNRaDjdCOE 1Oj38ieJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgRfrQAKCRCJcvTf3G3AJs6FD/ 9avPoQ7Z4IlMHbSykAxXrGFYSF+wvMgfe0LImCrE+GjGwL4rIgyN23by0prK/cgL3Y8vaggBM7gWub J532rvb1aGcwXl9AX6g4IT1r59xMvTB/+476o42yRpyBWHCkuZ2zdOTPWAmYb7oogKxfjH4pRlbGb0 54LugsOVNG9aiPEM8IvRmpuuNldJUUytI+7gDBxNnpkjBQnNXspdQoAqnu32RJhud1yrkDsi8++eQv afTWFDCZr1aQsThpcScXNOjBwvnVDnecEfuBzLKkLQ2GcETyd2J+qM6hlmHgofPhhof/jW8CE5QkiA VXhBfe6dd3JeSx/YN6Whg/stKHHJav9N/ye42U0uVV5UfjuzLxqLQPQ9OPjL5wu8X42x2tnKtJnRHu aGOtDi8V6JLqU3oDGtq8eVjgbhrjWKvgWOYxm0i7ZkE0qDThvkMKyNwtmv4AeyaAV+F9M3Dlh/s0Zq j60wyEwq82qbLk9v29YGRkbwrkqGmOPy5t1bznogdUjxg1lm3nX7E0SmO/jdkZXITYuRsPsXT5IDFu ZrTu8MlrtTor6sSB6MTu+J3YI+sq++lnl0fSNZ2986hrzFyqFeyCoju2Ckv5U6o2j/IMpeTAVG8fGs B1z8nyvOKcTrHfsPaMmWzWuTx9TQ/tZYcVaWLFI2UTgUeZZyXn9pApEK/Yjw==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220128204856.494643-1-clabbe@baylibre.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There have been cases where struct_size() (or flex_array_size()) needs
-to be calculated for an initializer, which requires it be a constant
-expression. This is possible when the "count" argument is a constant
-expression, so provide this ability for the helpers.
+On Fri, Jan 28, 2022 at 08:48:56PM +0000, Corentin Labbe wrote:
+> Converts watchdog/faraday,ftwdt010.txt to yaml.
+> This permits to detect missing properties like clocks and resets or
+> compatible like moxa,moxart-watchdog.
+> 
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  .../bindings/watchdog/faraday,ftwdt010.txt    | 22 -------
+>  .../bindings/watchdog/faraday,ftwdt010.yaml   | 60 +++++++++++++++++++
+>  2 files changed, 60 insertions(+), 22 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+>  create mode 100644 Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+> deleted file mode 100644
+> index 9ecdb502e605..000000000000
+> --- a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.txt
+> +++ /dev/null
+> @@ -1,22 +0,0 @@
+> -Faraday Technology FTWDT010 watchdog
+> -
+> -This is an IP part from Faraday Technology found in the Gemini
+> -SoCs and others.
+> -
+> -Required properties:
+> -- compatible : must be one of
+> -  "faraday,ftwdt010"
+> -  "cortina,gemini-watchdog", "faraday,ftwdt010"
+> -- reg : shall contain base register location and length
+> -- interrupts : shall contain the interrupt for the watchdog
+> -
+> -Optional properties:
+> -- timeout-sec : the default watchdog timeout in seconds.
+> -
+> -Example:
+> -
+> -watchdog@41000000 {
+> -	compatible = "faraday,ftwdt010";
+> -	reg = <0x41000000 0x1000>;
+> -	interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
+> new file mode 100644
+> index 000000000000..377529b21267
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/watchdog/faraday,ftwdt010.yaml
+> @@ -0,0 +1,60 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/watchdog/faraday,ftwdt010.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Faraday Technology FTWDT010 watchdog
+> +
+> +maintainers:
+> +  - Linus Walleij <linus.walleij@linaro.org>
+> +
+> +description: |
+> +  This is an IP part from Faraday Technology found in the Gemini
+> +  SoCs and others.
+> +
 
-Signed-off-by: Kees Cook <keescook@chromium.org>
----
- include/linux/overflow.h | 10 +++++++---
- lib/test_overflow.c      |  7 +++++++
- 2 files changed, 14 insertions(+), 3 deletions(-)
+Need a $ref to watchdog.yaml
 
-diff --git a/include/linux/overflow.h b/include/linux/overflow.h
-index 59d7228104d0..f1221d11f8e5 100644
---- a/include/linux/overflow.h
-+++ b/include/linux/overflow.h
-@@ -4,6 +4,7 @@
- 
- #include <linux/compiler.h>
- #include <linux/limits.h>
-+#include <linux/const.h>
- 
- /*
-  * We need to compute the minimum and maximum values representable in a given
-@@ -221,8 +222,9 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
-  * Return: number of bytes needed or SIZE_MAX on overflow.
-  */
- #define flex_array_size(p, member, count)				\
--	size_mul(count,							\
--		 sizeof(*(p)->member) + __must_be_array((p)->member))
-+	__builtin_choose_expr(__is_constexpr(count),			\
-+		(count) * sizeof(*(p)->member) + __must_be_array((p)->member),	\
-+		size_mul(count, sizeof(*(p)->member) + __must_be_array((p)->member)))
- 
- /**
-  * struct_size() - Calculate size of structure with trailing flexible array.
-@@ -237,6 +239,8 @@ static inline size_t __must_check size_sub(size_t minuend, size_t subtrahend)
-  * Return: number of bytes needed or SIZE_MAX on overflow.
-  */
- #define struct_size(p, member, count)					\
--	size_add(sizeof(*(p)), flex_array_size(p, member, count))
-+	__builtin_choose_expr(__is_constexpr(count),			\
-+		sizeof(*(p)) + flex_array_size(p, member, count),	\
-+		size_add(sizeof(*(p)), flex_array_size(p, member, count)))
- 
- #endif /* __LINUX_OVERFLOW_H */
-diff --git a/lib/test_overflow.c b/lib/test_overflow.c
-index 712fb2351c27..d488ffaf56be 100644
---- a/lib/test_overflow.c
-+++ b/lib/test_overflow.c
-@@ -602,11 +602,18 @@ struct __test_flex_array {
- 
- static int __init test_overflow_size_helpers(void)
- {
-+	/* Make sure struct_size() can be used in a constant expression. */
-+	u8 ce_array[struct_size((struct __test_flex_array *)0, data, 55)];
- 	struct __test_flex_array *obj;
- 	int count = 0;
- 	int err = 0;
- 	int var;
- 
-+	/* Verify constant expression against runtime version. */
-+	var = 55;
-+	OPTIMIZER_HIDE_VAR(var);
-+	err |= sizeof(ce_array) != struct_size(obj, data, var);
-+
- #define check_one_size_helper(expected, func, args...)	({	\
- 	bool __failure = false;					\
- 	size_t _r;						\
--- 
-2.30.2
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - const: "faraday,ftwdt010"
+> +      - items:
+> +          - const: "cortina,gemini-watchdog"
+> +          - const: "faraday,ftwdt010"
+> +      - items:
+> +          - const: "moxa,moxart-watchdog"
+> +          - const: "faraday,ftwdt010"
 
+Don't need quotes
+
+blank line
+
+> +  reg:
+> +    maxItems: 1
+
+blank line...
+
+> +  resets:
+> +    maxItems: 1
+> +  clocks:
+> +    maxItems: 1
+> +  clock-names:
+> +    const: PCLK
+> +  interrupts:
+> +    maxItems: 1
+> +  timeout-sec:
+> +    description: the default watchdog timeout in seconds.
+
+Don't need to describe common properties.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    watchdog@41000000 {
+> +      compatible = "faraday,ftwdt010";
+> +      reg = <0x41000000 0x1000>;
+> +      interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
+> +    };
+> +  - |
+> +    watchdog: watchdog@98500000 {
+> +      compatible = "moxa,moxart-watchdog", "faraday,ftwdt010";
+> +      reg = <0x98500000 0x10>;
+> +      clocks = <&clk_apb>;
+> +      clock-names = "PCLK";
+> +    };
+> +...
+> -- 
+> 2.34.1
+> 
+> 
