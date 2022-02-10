@@ -2,116 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE43DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 753AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237388AbiBJI34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:29:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59024 "EHLO
+        id S237415AbiBJIaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:30:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237335AbiBJI3z (ORCPT
+        with ESMTP id S237335AbiBJIaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:29:55 -0500
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2101.outbound.protection.outlook.com [40.107.215.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E65541098;
-        Thu, 10 Feb 2022 00:29:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jxvU6SHjj8ymU2hejdtjb6BkFlBBoeQ1p9VNC6jXHrgELfjXAg0RrHUF2D6pXglj7TgOdQxwIfkp9CRgjTzLhGWQbHcH6gf++EwQHqQfZBmRLkagwsSTRIRqbKk08r6VkujI8ptCQfyPg/UATjp6WdjkYI1fBU/zqagK/zYnjlAUBkJMmXa1p/cYVZCYz5bmtKvsF1PcPEezoXrAhsu53ZI48sxzGOov5okxtDZB7lHJm3pRzBSKPLG5Xq0zfrUyLR4K/dvpmFcKYU7TiqTwLSfxdDVPqKMK2wwuoqSlIScpv7C+KWP1bPipmTzKzPyV32IBQmDpJ3/Xm6rbJCegpg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5zTdH9OmQOVBYL3+63Hoblp0gCbAJct32sY54CQy0Co=;
- b=H9uLK0ybx0bTnSl/4JdNc2vq0bFgIZ4OaQdJj1Wj05SP0Ph5AdWzw2Kcutv/yOL9IY49mfyZAoyibReUgpZ6gAg2ScPqLM8eBpRln6wN9D+VArF/3HPCayLcszS4yEA+ZMQDbgeR2VpjOR8iam5U2ifL7pXGsHogbhnViS08/HPtAo7ztNrhddekg/IzC4TqBwZDg91tsMaJPLadJmJ8m8TV8Mwt2iNiCr9w0wGo/9BETsSQieTSvy74DvBQdMdW9XjougAUI+g5HzQXJIMVGXhsOCBa2dcH/DnGky7P31Ut0mzpHY7rrMwHnd/4S/CRsvAiFfXAI2Ex4+XUIhidWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5zTdH9OmQOVBYL3+63Hoblp0gCbAJct32sY54CQy0Co=;
- b=VIyjbq0JHDhESFE0BaS4ndGZyKcks4Bi3HxDDC30vEP5ZEuubN2nwpy3xuWG3/vmM5mBg07XzpyF1vqoQUsWmy98aHIFVnIc2JlgmN//mtp10gCayYgyMhS6hML+63JqXRSaBy4HyKFcECvjogvHAUYYhxWBTJpe7akHcQgtM2w=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com (2603:1096:100:37::17)
- by PSAPR06MB4005.apcprd06.prod.outlook.com (2603:1096:301:3a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.12; Thu, 10 Feb
- 2022 08:29:54 +0000
-Received: from SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::80b4:e787:47a9:41bb]) by SL2PR06MB3082.apcprd06.prod.outlook.com
- ([fe80::80b4:e787:47a9:41bb%4]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
- 08:29:54 +0000
-From:   Qing Wang <wangqing@vivo.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Wang Qing <wangqing@vivo.com>
-Subject: [PATCH] clk: mvebu: use time_after_eq() instead of jiffies judgment
-Date:   Thu, 10 Feb 2022 00:29:43 -0800
-Message-Id: <1644481784-14524-1-git-send-email-wangqing@vivo.com>
-X-Mailer: git-send-email 2.7.4
-Content-Type: text/plain
-X-ClientProxiedBy: HKAPR04CA0002.apcprd04.prod.outlook.com
- (2603:1096:203:d0::12) To SL2PR06MB3082.apcprd06.prod.outlook.com
- (2603:1096:100:37::17)
+        Thu, 10 Feb 2022 03:30:03 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0CE1096
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:30:04 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id s7so9634509edd.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:30:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nFVx2uyUwEL9JccJxCnRlNoz/WeSHaDLh1Q2sLN/nLc=;
+        b=JeayG2uLl84LlrgN+b3XhZ/aZ35BlX3p/thApDPovpnzz6Q2hYUY31dDcrQWHnHFFy
+         qriWgTk3hTEMkzzi4IZSK2yWhWbGwX0By6lqGcWL/Ykoe7XYW1WvZJpcu4fYeC5f4Ewu
+         hCH5neeVzlpiIJDE9q02b/fFJaMO5gnGBGRQnbLtb9jNFzk6SkaCQxaciYcBaqeYIJL4
+         ngZTsoHGKP5WcJvpJBtzwZtcPj3XVZgUaOLNCRfb1qKmHoA2tqp3XSDaJcykl8qUK79q
+         OAHkRoM2i3qmUFxhJu1wNb7U20DYb1xLxt+vYmaS8BXJAkyhqvpoygjWcL7PNUBSRUTi
+         NOjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nFVx2uyUwEL9JccJxCnRlNoz/WeSHaDLh1Q2sLN/nLc=;
+        b=SR2xLZu1Wb648kzCDvHjIrftgDrZ+nX9K1RUAFPNMLdMSh2S2Fc/ukDvJI8Z9PdCQ0
+         NLTFv31hy3tJnRY7giL5DMyx29QPk5m+Qe5KAfqpO1fryb9FSGIo2f+b+15IP5IqPNmK
+         mP0+oLA0u2hIHDgSzhZkd73BVuTGRJZ7pobOp3dGXbb3/hienWJCYtCLPS/KzANwpInc
+         kpd4qilEUckexV1CnFFdP/+ozEFiD1CRQ8+2KxBAtGzImQWNi66q93v82J7QI27t8Y3H
+         u9r21Cpf3z7+8Hd3L01Y4i8+6dpx+/FPnt+ZBlC09KPkIthq6VkwwxwnluXKHTPTnFM1
+         t4lQ==
+X-Gm-Message-State: AOAM532nsiwvLrjEzpNgFwJ8Ud+3BDMEScb1u336Yo/2/NZdOAnv1X4c
+        8hByY/wzB0NYwz0ONKW8uaDr4A==
+X-Google-Smtp-Source: ABdhPJz+sKZ2/lzyH0cTED44yAAMbF+VsjDbQ3W6kJBjl9PyJt5JaHSFnE19z0fwH2cQ/f/XIzMTJg==
+X-Received: by 2002:a05:6402:50c8:: with SMTP id h8mr7153309edb.144.1644481803111;
+        Thu, 10 Feb 2022 00:30:03 -0800 (PST)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id re22sm3495879ejb.51.2022.02.10.00.30.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 00:30:02 -0800 (PST)
+Message-ID: <c821f05b-94e1-cf48-f2a6-40a689678c2b@blackwall.org>
+Date:   Thu, 10 Feb 2022 10:30:01 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 204def8f-4597-4753-6df9-08d9ec6f8363
-X-MS-TrafficTypeDiagnostic: PSAPR06MB4005:EE_
-X-Microsoft-Antispam-PRVS: <PSAPR06MB4005838C971FE27AD6477D81BD2F9@PSAPR06MB4005.apcprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: V+1SOAsVgVJD3xbaMM0O/2TZgEGKpSCk3UY5GLJJ2bnbJzqErZpXdBlrQswp+MkDls3USJyqJhrDtr525F2zCbbbj1tWwNrtTni6dvUPfOir26N5/FDcXA0/TY/aVHBlOvDWjTzmG6hha9YL400ZM7y/0fWBseExejXG47xSXAGxQRrwlNqq4BShN2B4nebD51spW7BIzpY6eLovuF4rAS36qvLNIRE+Eo0TjbhQaXt2I6bJTbrFxq9Y1TT0SOStwFR+kaFzoP1CQfay3QOkD2dQM/zN+3B6YgmTRNp9uZppkdsArIU+VTrJX0/tyHal3Lr6bek1OmBhAvASBcpQSNAlcMRq1Or9+BwhY2yKxKQT4KLyCIhH6SavIfuJrIdrtHLlsEcuIMu2SGwhEFERztIdECRWCduDjng8DvkRWo0t8V5jP3NPLUyDJJ8K7TspavooZvN82I0oq6QVZyYupb4McHXrDMHrNn+IpWeawEQ5BsyMow1zRwZj+w03q5pRtWezBOw2ZQRTmCaV6fkbbSeJpXouc4LE+w83ZLDeYzg4mOZVszEzIkJpKpCHHqmThOSVydH0p9dz/rIoBHcfe3dpPuHC9CLaRKFWSJsnYth+yiWJCLwoZKTrLS7zpyR8R6zmGcpijuVNHCdIP4LLkQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2PR06MB3082.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(8676002)(66946007)(5660300002)(52116002)(8936002)(38100700002)(38350700002)(66556008)(6666004)(6512007)(6506007)(4326008)(6486002)(316002)(186003)(2616005)(110136005)(36756003)(86362001)(508600001)(83380400001)(107886003)(26005)(66476007)(21314003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: I+iG38xxuJuHcSbL7RoyeSJqMic9xXB86Z43oQkNf8TOP2s4dAJBcvIGGbLkk4WsFumEwvpbU3ynE68dLk8ETHqFIiqgVtNdYEpre0lZnTCkMznUk0sdtn0jwhp6//G2B0J9GYJiEVS0KNHb2wmIl0q0G0O8mpPG+0MEUSoVllu//3KEwcnfyjsz+oRu4H7VdeJRZQtAGUexEBwznaPjHhC0RJ3kN3laYhIm0AtBAbxqkveFHD9i7RdQoAA+6RX6GzJwYz1gw+3/Di0ONRhkIkUzaNh0zcAJkS7h6RY0fJtmvoa+x9PQoasMVTbCFSRlExe+HcSmai9/dxRGM0X84TEq3TSqf7C5eb+dlNh4DHrLS3NQT7jFCl+hrTUF9zAmDxXIajG0LNAwAb1UhRLt77xsfyLeGvVPzmsZs2Ra8pJzsRytTf6Wy0+ZOsVsPqch
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 204def8f-4597-4753-6df9-08d9ec6f8363
-X-MS-Exchange-CrossTenant-AuthSource: SL2PR06MB3082.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 08:29:54.2460
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9hOrpPN1qjQWs/Lno6ECgX4nt/RTyEwWvf4/zbB+AauzYHwAq6WnmoA3v/rC9QtH56eEOKm2RWvNDW4cK8Vj9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PSAPR06MB4005
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH net-next v2 1/5] net: bridge: Add support for bridge port
+ in locked mode
+Content-Language: en-US
+To:     Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <20220209130538.533699-1-schultz.hans+netdev@gmail.com>
+ <20220209130538.533699-2-schultz.hans+netdev@gmail.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <20220209130538.533699-2-schultz.hans+netdev@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Qing <wangqing@vivo.com>
+On 09/02/2022 15:05, Hans Schultz wrote:
+> In a 802.1X scenario, clients connected to a bridge port shall not
+> be allowed to have traffic forwarded until fully authenticated.
+> A static fdb entry of the clients MAC address for the bridge port
+> unlocks the client and allows bidirectional communication.
+> 
+> This scenario is facilitated with setting the bridge port in locked
+> mode, which is also supported by various switchcore chipsets.
+> 
+> Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
+> ---
 
-It is better use time_xxx() directly instead of jiffies judgment
-for understanding.
+Hi,
+I'm writing from my private email because for some reason I'm not receiving the full
+patch-set in my nvidia mail, a few comments below..
 
-Signed-off-by: Wang Qing <wangqing@vivo.com>
----
- drivers/clk/mvebu/armada-37xx-periph.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+>  include/linux/if_bridge.h    |  1 +
+>  include/uapi/linux/if_link.h |  1 +
+>  net/bridge/br_input.c        | 10 +++++++++-
+>  net/bridge/br_netlink.c      |  6 +++++-
+>  4 files changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+> index 509e18c7e740..3aae023a9353 100644
+> --- a/include/linux/if_bridge.h
+> +++ b/include/linux/if_bridge.h
+> @@ -58,6 +58,7 @@ struct br_ip_list {
+>  #define BR_MRP_LOST_CONT	BIT(18)
+>  #define BR_MRP_LOST_IN_CONT	BIT(19)
+>  #define BR_TX_FWD_OFFLOAD	BIT(20)
+> +#define BR_PORT_LOCKED		BIT(21)
+>  
+>  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+>  
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 6218f93f5c1a..a45cc0a1f415 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -537,6 +537,7 @@ enum {
+>  	IFLA_BRPORT_MRP_IN_OPEN,
+>  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+>  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+> +	IFLA_BRPORT_LOCKED,
+>  	__IFLA_BRPORT_MAX
+>  };
+>  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index b50382f957c1..469e3adbce07 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -69,6 +69,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  	struct net_bridge_port *p = br_port_get_rcu(skb->dev);
+>  	enum br_pkt_type pkt_type = BR_PKT_UNICAST;
+>  	struct net_bridge_fdb_entry *dst = NULL;
+> +	struct net_bridge_fdb_entry *fdb_entry;
 
-diff --git a/drivers/clk/mvebu/armada-37xx-periph.c b/drivers/clk/mvebu/armada-37xx-periph.c
-index 32ac6b6..14d73f8
---- a/drivers/clk/mvebu/armada-37xx-periph.c
-+++ b/drivers/clk/mvebu/armada-37xx-periph.c
-@@ -25,6 +25,7 @@
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/jiffies.h>
- 
- #define TBG_SEL		0x0
- #define DIV_SEL0	0x4
-@@ -541,7 +542,7 @@ static void clk_pm_cpu_set_rate_wa(struct clk_pm_cpu *pm_cpu,
- 	 * We are going to L0 with rate >= 1GHz. Check whether we have been at
- 	 * L1 for long enough time. If not, go to L1 for 20ms.
- 	 */
--	if (pm_cpu->l1_expiration && jiffies >= pm_cpu->l1_expiration)
-+	if (pm_cpu->l1_expiration && time_after_eq(jiffies, pm_cpu->l1_expiration))
- 		goto invalidate_l1_exp;
- 
- 	regmap_update_bits(base, ARMADA_37XX_NB_CPU_LOAD,
--- 
-2.7.4
+move fdb_entry below to where it is used
 
+>  	struct net_bridge_mcast_port *pmctx;
+>  	struct net_bridge_mdb_entry *mdst;
+>  	bool local_rcv, mcast_hit = false;
+> @@ -81,6 +82,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  	if (!p || p->state == BR_STATE_DISABLED)
+>  		goto drop;
+>  
+> +	br = p->br;
+> +
+
+please drop the extra new line
+
+>  	brmctx = &p->br->multicast_ctx;
+>  	pmctx = &p->multicast_ctx;
+>  	state = p->state;
+> @@ -88,10 +91,15 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  				&state, &vlan))
+>  		goto out;
+>  
+> +	if (p->flags & BR_PORT_LOCKED) {
+
+fdb_entry should be defined in this scope only, and please rename it to something
+like fdb_src or just "src" as we already have "dst".
+
+> +		fdb_entry = br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+> +		if (!(fdb_entry && fdb_entry->dst == p))
+
+if (!fdb_entry || READ_ONCE(fdb_entry->dst) != p
+
+> +			goto drop;
+> +	}
+> +
+>  	nbp_switchdev_frame_mark(p, skb);
+>  
+>  	/* insert into forwarding database after filtering to avoid spoofing */
+> -	br = p->br;
+>  	if (p->flags & BR_LEARNING)
+>  		br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, 0);
+>  
+> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> index 2ff83d84230d..7d4432ca9a20 100644
+> --- a/net/bridge/br_netlink.c
+> +++ b/net/bridge/br_netlink.c
+> @@ -184,6 +184,7 @@ static inline size_t br_port_info_size(void)
+>  		+ nla_total_size(1)	/* IFLA_BRPORT_VLAN_TUNNEL */
+>  		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
+>  		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
+> +		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
+>  		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
+>  		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
+>  		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
+> @@ -269,7 +270,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+>  							  BR_MRP_LOST_CONT)) ||
+>  	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
+>  		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
+> -	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)))
+> +	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)) ||
+> +	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)))
+>  		return -EMSGSIZE;
+>  
+>  	timerval = br_timer_value(&p->message_age_timer);
+> @@ -827,6 +829,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+>  	[IFLA_BRPORT_GROUP_FWD_MASK] = { .type = NLA_U16 },
+>  	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
+>  	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
+> +	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
+>  	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
+>  	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
+>  };
+> @@ -893,6 +896,7 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
+>  	br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
+>  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
+>  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+> +	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+>  
+>  	changed_mask = old_flags ^ p->flags;
+>  
+
+Thanks,
+ Nik
