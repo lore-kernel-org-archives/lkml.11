@@ -2,104 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1719AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:33:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E4AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 08:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237558AbiBJIdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:33:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35298 "EHLO
+        id S237584AbiBJIdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 03:33:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237530AbiBJIdE (ORCPT
+        with ESMTP id S237561AbiBJIdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:33:04 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290D7D8A;
-        Thu, 10 Feb 2022 00:33:04 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JvVPW1kZPz4xNn;
-        Thu, 10 Feb 2022 19:33:03 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1644481983;
-        bh=E+FtqzckTxmcWbMLn2k22WXUJefWAeHDdlsXk10dyok=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NsDBkqsuJr7HIQ6Baa/iBaKSMYAYaD9+gWizkSxAl9C4nfOtH412vLq4+kmDItkD+
-         eC69PtyF9O5AKyy4tMNHyMZlPoiMcH8clKu8J3BH8qnOcHnztiauDD2xOkGZu224WL
-         fyVUhwGkdRmJS4gAkSOO/BhytSTEjjTvKZPtlOKgdzUl1l7nyoQ49DBqku9N6p44Uw
-         fwLV6hz6sH94pwhle9VJeJw7v0V5ffHUy/ta1O3Y4U6pBMANg9hfF+yQLspWeVrubr
-         nyhROu5m60eQyNFe54E7+h/BCEkvtvPCl7i66vzqsdsmUZMIELNn1pK9YkOxwh3Zjj
-         KJiLnojVRIjMg==
-Date:   Thu, 10 Feb 2022 19:33:02 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Domenico Andreoli <domenico.andreoli@linux.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: boottime warning from todays linux-next
-Message-ID: <20220210193302.686fa61a@canb.auug.org.au>
-In-Reply-To: <20220210184340.7eba108a@canb.auug.org.au>
-References: <20220210184340.7eba108a@canb.auug.org.au>
+        Thu, 10 Feb 2022 03:33:40 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE782E98;
+        Thu, 10 Feb 2022 00:33:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644482018; x=1676018018;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LzOxzSeQrSKYMob1v9yP9wi1VnFt4rvaqvnm3nMKecY=;
+  b=CVZ74q2gc2O8MoOdLW2QdbXZIeyzkgalIv1YxyT9pLXesCgTo1jYEMSa
+   /hdaSWXvL1Ui0qPO3MZsd2tdvfUAqtjN29PLOk+pBXwILHzz2e8vDXOHX
+   NmLy1qJl2H0rxVv4olBTLFxywXRmbSor6Y20LJad7MlnHQ3cjTYj/MCZn
+   /X598aY+97xpItjEg71PkAcPkkbkc5bqrh8o3PkMItvxrIG6UHy1LujAt
+   8oOYOSpuC2486kQbrGYtuJENPX4s0KJLfA2mAgNvLrYpwEoUJ6L4vhPE9
+   sTz7smbxGEufVvXr5pvNxFCsCeATvliPFlcsKoeABvpTnZpYYSMp3L3Mx
+   Q==;
+IronPort-SDR: N93H+dZ4I9GuDMVEQt638SoceWSMWlGupYrkEB2K/o2uVwTPRZlp3lDxCofP6CQ3sgxJmASdPo
+ smAxgZVtZCf8Dul7D6Gwm8su9Gzj0wJPtDC4A3FRadgIbREO8Wzphj8e66Pjhkb/RYVnAb3PeG
+ DG+Y0K+9Gu49E2xmAhoMN87jztzpJzmkop+vbgBLSoBfcJSZv4qu3d3iB9UUJDk1s589yUSbhe
+ KBrDvN8x/MQDRM2eh/ttLeYaqpK55ABi7Ayd6aaxaf04Hmv8l4lB+pGCIeaXSrmO3TsGTlRm2/
+ 7lSEA3qhmM4XkUBCSYoisobW
+X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
+   d="scan'208";a="161755490"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 10 Feb 2022 01:33:38 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 10 Feb 2022 01:33:37 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 10 Feb 2022 01:33:37 -0700
+Date:   Thu, 10 Feb 2022 09:36:12 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Andrew Lunn <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH net-next] net: lan966x: Fix when CONFIG_IPV6 is not set
+Message-ID: <20220210083612.4mszzwgcrvmn67rn@soft-dev3-1.localhost>
+References: <20220209101823.1270489-1-horatiu.vultur@microchip.com>
+ <YgPHjxpo0N4ND1ch@lunn.ch>
+ <20220209180620.3699bf25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/2ADvCwIdjLZxpqlDQgzJpML";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220209180620.3699bf25@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/2ADvCwIdjLZxpqlDQgzJpML
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The 02/09/2022 18:06, Jakub Kicinski wrote:
 
-Hi all,
+Hi Andrew, Jakub
+> 
+> On Wed, 9 Feb 2022 14:54:23 +0100 Andrew Lunn wrote:
+> > On Wed, Feb 09, 2022 at 11:18:23AM +0100, Horatiu Vultur wrote:
+> > > When CONFIG_IPV6 is not set, then the compilation of the lan966x driver
+> 
+> compilation or linking?
 
-On Thu, 10 Feb 2022 18:43:40 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> My qemu boot of a powerpc pseries_le_defconfig kernel produced these
-> kernel messages:
->=20
->   CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.17.0-rc3 #2
->   Call Trace:
->   [c0000000073e3a80] [c0000000007bfd40] dump_stack_lvl+0x74/0xa8 (unrelia=
-ble)
->   [c0000000073e3ac0] [c00000000057e3dc] __register_sysctl_table+0x60c/0x9=
-f0
->   [c0000000073e3bd0] [c000000002041170] init_fs_stat_sysctls+0x48/0x60
->   [c0000000073e3bf0] [c000000000012110] do_one_initcall+0x60/0x2d0
->   [c0000000073e3cd0] [c0000000020049f0] kernel_init_freeable+0x334/0x3dc
->   [c0000000073e3db0] [c000000000012710] kernel_init+0x30/0x1a0
->   [c0000000073e3e10] [c00000000000cd64] ret_from_kernel_thread+0x5c/0x64
->=20
-> Presumably introduced by commit
->=20
->   b42bc9a3c511 ("Fix regression due to "fs: move binfmt_misc sysctl to it=
-s own file"")
+It is a linking error. I will fix in the next version
 
-OK, I cannot reproduce this with just Linus' tree.  I will try to bisect.
+> 
+> > > fails with the following error:
+> > >
+> > > drivers/net/ethernet/microchip/lan966x/lan966x_main.c:444: undefined
+> > > reference to `ipv6_mc_check_mld'
+> > >
+> > > The fix consists in adding #ifdef around this code.
+> >
+> > It might be better to add a stub function for when IPv6 is
+> > disabled. We try to avoid #if in C code.
 
---=20
-Cheers,
-Stephen Rothwell
+What do you think if I do something like this in the lan966x_main.h
 
---Sig_/2ADvCwIdjLZxpqlDQgzJpML
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+---
+#if IS_ENABLED(CONFIG_IPV6)
+static inline bool lan966x_hw_offload_ipv6(struct sk_buff *skb)
+{
+	if (skb->protocol == htons(ETH_P_IPV6) &&
+	    ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr) &&
+	    !ipv6_mc_check_mld(skb))
+		return false;
 
------BEGIN PGP SIGNATURE-----
+	return true;
+}
+#else
+static inline bool lan966x_hw_offload_ipv6(struct sk_buff *skb)
+{
+	return false;
+}
+#endif
+---
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIEzb4ACgkQAVBC80lX
-0GwOPggAo8y9fTP5XIjhAfCoybh2AdkSVWLYHqC/wrZLgmIgTzbiPQTNg93x+YzJ
-zgXATsbKibq/Vjnm1ph1zxhTkd7ku/azsjTuqdUeiaE1XcHK9txJHxQ0YrX2x+au
-a4ZOCBZZoPr6dkszIfPPRCMWtfJiuu2WP+SYfRKoRYjP4zo9qIyyBorLfqdYZsoz
-TAbUi4in0tx1Dske+1nfzUzdb7vQP80QtkKJM7bGHoR2DvHMT0gYEwsMW/c8Tmgc
-DiAmwWrsAYmLc858aeIBxPZvlR+rvjFYyRXGucb6UrkEZ2WL3rKbTxZ058O+uvcy
-CjNtvV3Po0VFua7GZbZaccGJASFsbA==
-=wnAm
------END PGP SIGNATURE-----
+And then in lan966x_main.c just call this function.
 
---Sig_/2ADvCwIdjLZxpqlDQgzJpML--
+> 
+> If it's linking we can do:
+> 
+>         if (IS_ENABLED(CONFIG_IPV6) &&
+>             skb->protocol == htons(ETH_P_IPV6) &&
+>             ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr) &&
+>             !ipv6_mc_check_mld(skb))
+>                 return false;
+> 
+> But beware that IPV6 can be a module, you may need a Kconfig dependency.
+
+I was also looking at other drivers on how they use 'ipv6_mc_check_mld'.
+Then I have seen that drivers/net/amt.c and net/bridge/br_multicast.c
+they wrap this function with #if.
+But then there is net/batman-adv/multicast.c which doesn't do that and
+it can compile and link without CONFIG_IPV6 and I just don't see how
+that is working.
+
+-- 
+/Horatiu
