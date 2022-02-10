@@ -2,76 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9411BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:29:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238672AbiBJJ3U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:29:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51042 "EHLO
+        id S236092AbiBJJ3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:29:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbiBJJ3E (ORCPT
+        with ESMTP id S238585AbiBJJ3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:29:04 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EDA1089
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:06 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id o8-20020a056e0214c800b002bc2f9cffffso3571431ilk.8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:29:06 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=lbZClnawL85i6y/f1XZKEH3U2806L2hF7lFn0+Ro7Ew=;
-        b=SmwGTsRJmb9NNN5twJxnWmKFX3XJ0OTZ7M5dcMG2qi6Px7dEvfnDpE89abLKQXaZqt
-         li3JtXG0cW3ndTRrCxE1q+RACZ99wLv3Bj0EUABezDEj9vkP2OwwRcmKuutVHWALDXQx
-         dFDQYpT6ymzN6XILXxwAACmLHkc+QT//D3/lbOkrBwDoPxTjpu4/bFE6X9HP7/MLIl/b
-         2+0bmG39nceXi42VmnPtdS2PTOB8+9abP1cMVB2w6sdmgIfIZHMspdMQJk6QD5nKv00h
-         GNNEIj1gJUbhAbQz8V2wx45mZR/dG4YnbKXswzZER5t6/lquAeZe7R0D1ZvAkF/13wWe
-         knHQ==
-X-Gm-Message-State: AOAM5306hjtCQTqgEYcA2B2SbgU6TsN/D0R+AYH7f09POsQ6VgL0VfZp
-        5kHCFxm2Kjkd2/ODOQryIXKPgzERklmvtN+eod9b++eIwsAe
-X-Google-Smtp-Source: ABdhPJx22vdsd9ZwS5xcJlnZq2r7nAA5BqmnE9xXQOkXPLW5oeCWMIkcNmqMItDy/Lg+pycfhLQYxawcp7pQ1kDwS81fqOWh7+0x
+        Thu, 10 Feb 2022 04:29:18 -0500
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00031134;
+        Thu, 10 Feb 2022 01:29:18 -0800 (PST)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A74UHh017191;
+        Thu, 10 Feb 2022 09:36:21 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=G/1l6JpUGOidRb9dQ6UMR2ViJBXgtTFNmfutsOzLvFc=;
+ b=J2hDc5Bu/cs0d8uvuowAVawTd+ivgAzCtXVnPDrSXJWrcOZAnjuYfdqEHPEAtO1MhbC9
+ G9obSLHoeAYwZiMOveVDF+ivlLiQaYD4Vteg5zzCfNaFRPjE8Q/QjtoFvQNaN2m810fi
+ KphFAi3oDR6FBzRsSB7p6LoN+ZSPWQaS5mq9WmnM7Pei8zA/AWQYOSTurkED/8hBdHE5
+ T9rYB/tKMevcGb15jZbzX6RI6MvDOIogdtmrX4lrIWgWWqzeTPJ7FLmWyFoOV8mj/+fX
+ ByWrm5DNs/y1Opnkp+6TY8WFZqknYKufgZbwujt5+ywli1tLCR1EmIEbL5RjSHIotnaG Tw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4x0c0j8u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 09:36:21 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4BA7D10002A;
+        Thu, 10 Feb 2022 09:36:20 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 44B452138DE;
+        Thu, 10 Feb 2022 09:36:20 +0100 (CET)
+Received: from [10.201.21.201] (10.75.127.47) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
+ 2022 09:36:19 +0100
+Message-ID: <2dfbf110-9c08-5a4e-7714-6e9e960afae5@foss.st.com>
+Date:   Thu, 10 Feb 2022 09:36:14 +0100
 MIME-Version: 1.0
-X-Received: by 2002:a02:aa0a:: with SMTP id r10mr3655553jam.246.1644485345948;
- Thu, 10 Feb 2022 01:29:05 -0800 (PST)
-Date:   Thu, 10 Feb 2022 01:29:05 -0800
-In-Reply-To: <000000000000a16ad7059cbcbe43@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e238bf05d7a69450@google.com>
-Subject: Re: [syzbot] WARNING in bpf_warn_invalid_xdp_action
-From:   syzbot <syzbot+8ce4113dadc4789fac74@syzkaller.appspotmail.com>
-To:     andrii@kernel.org, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, corbet@lwn.net, daniel@iogearbox.net,
-        davem@davemloft.net, dsahern@gmail.com, dvyukov@google.com,
-        eric.dumazet@gmail.com, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, toke@redhat.com, yhs@fb.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 03/12] ARM: dts: sti: ensure unique unit-address in
+ stih418-clock
+Content-Language: en-US
+To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
+        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20211202075105.195664-1-avolmat@me.com>
+ <20211202075105.195664-4-avolmat@me.com>
+From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
+In-Reply-To: <20211202075105.195664-4-avolmat@me.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Hi Alain
 
-commit 2cbad989033bff0256675c38f96f5faab852af4b
-Author: Paolo Abeni <pabeni@redhat.com>
-Date:   Tue Nov 30 10:08:06 2021 +0000
+On 12/2/21 08:50, Alain Volmat wrote:
+> Move quadfs and a9-mux clocks nodes into clockgen nodes so
+> that they can get the reg property from the parent node and
+> ensure only one node has the address.
+> 
+> Signed-off-by: Alain Volmat <avolmat@me.com>
+> ---
+>  arch/arm/boot/dts/stih418-clock.dtsi | 101 +++++++++++++--------------
+>  1 file changed, 48 insertions(+), 53 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/stih418-clock.dtsi b/arch/arm/boot/dts/stih418-clock.dtsi
+> index e84c476b83ed..e1749e92a2e7 100644
+> --- a/arch/arm/boot/dts/stih418-clock.dtsi
+> +++ b/arch/arm/boot/dts/stih418-clock.dtsi
+> @@ -32,7 +32,7 @@ clocks {
+>  		 */
+>  		clockgen-a9@92b0000 {
+>  			compatible = "st,clkgen-c32";
+> -			reg = <0x92b0000 0xffff>;
+> +			reg = <0x92b0000 0x10000>;
+>  
+>  			clockgen_a9_pll: clockgen-a9-pll {
+>  				#clock-cells = <1>;
+> @@ -40,30 +40,29 @@ clockgen_a9_pll: clockgen-a9-pll {
+>  
+>  				clocks = <&clk_sysin>;
+>  			};
+> -		};
+> -
+> -		/*
+> -		 * ARM CPU related clocks.
+> -		 */
+> -		clk_m_a9: clk-m-a9@92b0000 {
+> -			#clock-cells = <0>;
+> -			compatible = "st,stih407-clkgen-a9-mux", "st,clkgen-mux";
+> -			reg = <0x92b0000 0x10000>;
+> -
+> -			clocks = <&clockgen_a9_pll 0>,
+> -				 <&clockgen_a9_pll 0>,
+> -				 <&clk_s_c0_flexgen 13>,
+> -				 <&clk_m_a9_ext2f_div2>;
+>  
+>  			/*
+> -			 * ARM Peripheral clock for timers
+> +			 * ARM CPU related clocks.
+>  			 */
+> -			arm_periph_clk: clk-m-a9-periphs {
+> +			clk_m_a9: clk-m-a9 {
+>  				#clock-cells = <0>;
+> -				compatible = "fixed-factor-clock";
+> -				clocks = <&clk_m_a9>;
+> -				clock-div = <2>;
+> -				clock-mult = <1>;
+> +				compatible = "st,stih407-clkgen-a9-mux", "st,clkgen-mux";
+> +
+> +				clocks = <&clockgen_a9_pll 0>,
+> +					 <&clockgen_a9_pll 0>,
+> +					 <&clk_s_c0_flexgen 13>,
+> +					 <&clk_m_a9_ext2f_div2>;
+> +
+> +				/*
+> +				 * ARM Peripheral clock for timers
+> +				 */
+> +				arm_periph_clk: clk-m-a9-periphs {
+> +					#clock-cells = <0>;
+> +					compatible = "fixed-factor-clock";
+> +					clocks = <&clk_m_a9>;
+> +					clock-div = <2>;
+> +					clock-mult = <1>;
+> +				};
+>  			};
+>  		};
+>  
+> @@ -88,14 +87,6 @@ clk_s_a0_flexgen: clk-s-a0-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_c0_quadfs: clk-s-c0-quadfs@9103000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-pll";
+> -			reg = <0x9103000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clk_s_c0: clockgen-c@9103000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9103000 0x1000>;
+> @@ -114,6 +105,13 @@ clk_s_c0_pll1: clk-s-c0-pll1 {
+>  				clocks = <&clk_sysin>;
+>  			};
+>  
+> +			clk_s_c0_quadfs: clk-s-c0-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-pll";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_c0_flexgen: clk-s-c0-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih418-c0";
+> @@ -143,18 +141,17 @@ clk_m_a9_ext2f_div2: clk-m-a9-ext2f-div2s {
+>  			};
+>  		};
+>  
+> -		clk_s_d0_quadfs: clk-s-d0-quadfs@9104000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d0";
+> -			reg = <0x9104000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d0@9104000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9104000 0x1000>;
+>  
+> +			clk_s_d0_quadfs: clk-s-d0-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d0";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d0_flexgen: clk-s-d0-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih410-d0";
+> @@ -167,18 +164,17 @@ clk_s_d0_flexgen: clk-s-d0-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_d2_quadfs: clk-s-d2-quadfs@9106000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d2";
+> -			reg = <0x9106000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d2@9106000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9106000 0x1000>;
+>  
+> +			clk_s_d2_quadfs: clk-s-d2-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d2";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d2_flexgen: clk-s-d2-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih418-d2";
+> @@ -193,18 +189,17 @@ clk_s_d2_flexgen: clk-s-d2-flexgen {
+>  			};
+>  		};
+>  
+> -		clk_s_d3_quadfs: clk-s-d3-quadfs@9107000 {
+> -			#clock-cells = <1>;
+> -			compatible = "st,quadfs-d3";
+> -			reg = <0x9107000 0x1000>;
+> -
+> -			clocks = <&clk_sysin>;
+> -		};
+> -
+>  		clockgen-d3@9107000 {
+>  			compatible = "st,clkgen-c32";
+>  			reg = <0x9107000 0x1000>;
+>  
+> +			clk_s_d3_quadfs: clk-s-d3-quadfs {
+> +				#clock-cells = <1>;
+> +				compatible = "st,quadfs-d3";
+> +
+> +				clocks = <&clk_sysin>;
+> +			};
+> +
+>  			clk_s_d3_flexgen: clk-s-d3-flexgen {
+>  				#clock-cells = <1>;
+>  				compatible = "st,flexgen", "st,flexgen-stih407-d3";
+Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
 
-    bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10d50baa700000
-start commit:   b3c8e0de473e Merge branch '40GbE' of git://git.kernel.org/..
-git tree:       net
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1a86c22260afac2f
-dashboard link: https://syzkaller.appspot.com/bug?extid=8ce4113dadc4789fac74
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=113c8a3bb00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16eb4307b00000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Thanks
+Patrice
