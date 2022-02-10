@@ -2,118 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C14C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:55:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AAB3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345334AbiBJWzV (ORCPT
+        id S1345346AbiBJW4S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:55:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43504 "EHLO
+        Thu, 10 Feb 2022 17:56:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344698AbiBJWzS (ORCPT
+        with ESMTP id S1344698AbiBJW4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:55:18 -0500
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3375A55B2;
-        Thu, 10 Feb 2022 14:55:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
-        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=qks3yg9iI4qDFGsh2BRdcXvx9gE+lfvznavyp5NtJdI=; b=Sf9q1WTPyhuB1tGsyP9dI+S2+F
-        R/4nAXULzUgiIobtxd/OByP5KKiWeeAIebRkNrm5RTrk8hSi04MxZKhuufQUf9QpcnPKzyKCoKyex
-        6BP8v+EMAJCDkR6gh4rZTxG+WP/GbljqR/oEJOtUgoSumfCxto77mdMWWfdMYaYCw/W0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:55240 helo=pettiford)
-        by mail.hugovil.com with esmtpa (Exim 4.92)
-        (envelope-from <hugo@hugovil.com>)
-        id 1nIILH-0005sm-95; Thu, 10 Feb 2022 17:55:13 -0500
-Date:   Thu, 10 Feb 2022 17:55:10 -0500
-From:   Hugo Villeneuve <hugo@hugovil.com>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-        linux-rtc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <20220210175510.c99eb77c6367d4df5d8bb9a2@hugovil.com>
-In-Reply-To: <YgWSgGTKR63g+S9e@piout.net>
-References: <20220125200009.900660-1-hugo@hugovil.com>
-        <20220125200009.900660-11-hugo@hugovil.com>
-        <YgMy/CYL8lmf6Y+J@robh.at.kernel.org>
-        <20220210171234.4e317c8a5d5f91f358382b07@hugovil.com>
-        <YgWSgGTKR63g+S9e@piout.net>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: Re: [PATCH 10/10] dt-bindings: rtc: pcf2127: add PCF2131 INT_A and
- INT_B support
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+        Thu, 10 Feb 2022 17:56:15 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D213A55A4;
+        Thu, 10 Feb 2022 14:56:15 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id a28so6647069qvb.10;
+        Thu, 10 Feb 2022 14:56:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=U+3vkzFEGdGmmOjt1hV/DkqJX2a2lDje4tkvz+fEZaQ=;
+        b=MFInfE/srC1pPDAgWjrnrRsQPNZIeBeOJeGNEpcwJWUHy5BMVWL1fOMhBwZlPtHJ7U
+         5+f1DO4pOifTAEDBOPhFoA/C+0OyKnEvmniHExfoa6cTBor9+2wvjUlLQzfxqeEybm6x
+         qfWlqqfDBqMeSdLtUXEtDSRryd+N7lu01bXnLYqvyo4/FLvUFyU4wZhtVt6jvLtVSECd
+         cOuSyWxl738PHxvFhnUvNoeVKQigAJ6KajAfW0lsUfEAMrvkcq+FyMbshLeXQjStCI0k
+         b6MEWuwYm17L7/+dtp8iAPjFhhLX/TUU5rfVoBX6mQtu/ioNLZ9o8CSaMO4yQWr5+vEO
+         SLPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=U+3vkzFEGdGmmOjt1hV/DkqJX2a2lDje4tkvz+fEZaQ=;
+        b=Jij3xI+ZDRGhCfg92+HwenrtsDp8cz0RK+VUAyv6qf6609SToArghho8x0sizok/hi
+         j404Z9aBc/thtlUg8Lkfxk67SVdeH33PnTTGA0908QTNTe0/YD2mR8NK8tYBHDESMpgf
+         6/2eTwb/BQq7ZPpiX47I3V0gZEAGKbenDXLRUTJD1/2sfKKdc3igknFedJRbzDPwD/P+
+         ZrFM+KM8QH2xzOIkN/ySfTGJ+vcRbrC9/w3mRUvxGPm6xR+YT7THNCFLM3vEgUO4TAQr
+         17+HvrO4E36IUrRuRvhRliZn0hR7mS7WjWAOdXYu8bQqlEFjbN1otsUYukp6kmv5PX6J
+         9tJA==
+X-Gm-Message-State: AOAM530AVFC6wCWZ0bXL5zqjOdP8QaPnmzsG9edPF4Xdc17gv/fH1fd6
+        g0YP8GOdRykwNegTR40ORao=
+X-Google-Smtp-Source: ABdhPJwtwRaFQJWdH3kBC2E+PysWAfr7+FtW7sdEitaMsJ++lw+fh4m6p8FaQrmqF1WnluhFWEb7Zw==
+X-Received: by 2002:a05:6214:401c:: with SMTP id kd28mr2551247qvb.111.1644533774923;
+        Thu, 10 Feb 2022 14:56:14 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id g17sm9045729qkl.122.2022.02.10.14.56.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 14:56:14 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller " <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH 02/49] net: systemport: don't use bitmap_weight() in bcm_sysport_rule_set()
+Date:   Thu, 10 Feb 2022 14:48:46 -0800
+Message-Id: <20220210224933.379149-3-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 23:32:32 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+Don't call bitmap_weight() if the following code can get by
+without it.
 
-> On 10/02/2022 17:12:34-0500, Hugo Villeneuve wrote:
-> > On Tue, 8 Feb 2022 21:20:28 -0600
-> > Rob Herring <robh@kernel.org> wrote:
-> > 
-> > > On Tue, Jan 25, 2022 at 03:00:09PM -0500, Hugo Villeneuve wrote:
-> > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > 
-> > > > The PCF2131 has two output interrupt pins, named INT_A and INT_B.
-> > > > 
-> > > > Add properties to identify onto which pin we want the alarm interrupt
-> > > > to be routed. It can be either one, or both.
-> > > > 
-> > > > These properties are automatically set to false for variants other
-> > > > than PCF2131 (ex: PCF2127).
-> > > > 
-> > > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > ---
-> > > >  .../devicetree/bindings/rtc/nxp,pcf2127.yaml  | 23 +++++++++++++++++++
-> > > >  1 file changed, 23 insertions(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > > index 57eb0a58afa3..83656dd2f97f 100644
-> > > > --- a/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > > +++ b/Documentation/devicetree/bindings/rtc/nxp,pcf2127.yaml
-> > > > @@ -24,6 +24,16 @@ properties:
-> > > >    interrupts:
-> > > >      maxItems: 1
-> > > >  
-> > > > +  alarm-output-a:
-> > > 
-> > > nxp,alarm-output-a
-> > 
-> > Ok, this will be fixed for V2.
-> > 
-> 
-> Actually, this property has to be made more generic and thought out.
-> There are multiple RTCs that have multiple interrupt pins where one of
-> the pin can be used for different interrupt or clock output.
-> 
-> With your binding, there is no way to separate which interrupt is going
-> to which pin and so there is no way to get the alarm and BLF or the
-> watchdog on different pins and we certainly don't want to have a
-> property per interrupt type.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bcmsysport.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Hi,
-can you please suggest how you would prefer it to be done?
-
-> Also, the documentation is missing the fact that the driver makes having
-> one of the property mandatory.
-
-I will add it.
-
-Thank you, Hugo.
-
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 60dde29974bf..5284a5c961db 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -2180,13 +2180,9 @@ static int bcm_sysport_rule_set(struct bcm_sysport_priv *priv,
+ 	if (nfc->fs.ring_cookie != RX_CLS_FLOW_WAKE)
+ 		return -EOPNOTSUPP;
+ 
+-	/* All filters are already in use, we cannot match more rules */
+-	if (bitmap_weight(priv->filters, RXCHK_BRCM_TAG_MAX) ==
+-	    RXCHK_BRCM_TAG_MAX)
+-		return -ENOSPC;
+-
+ 	index = find_first_zero_bit(priv->filters, RXCHK_BRCM_TAG_MAX);
+ 	if (index >= RXCHK_BRCM_TAG_MAX)
++		/* All filters are already in use, we cannot match more rules */
+ 		return -ENOSPC;
+ 
+ 	/* Location is the classification ID, and index is the position
 -- 
-Hugo Villeneuve <hugo@hugovil.com>
+2.32.0
+
