@@ -2,117 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83CDC43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345698AbiBJXaf (ORCPT
+        id S1345700AbiBJXbk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:30:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42398 "EHLO
+        Thu, 10 Feb 2022 18:31:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345643AbiBJXad (ORCPT
+        with ESMTP id S231627AbiBJXbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:30:33 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399925F4E;
-        Thu, 10 Feb 2022 15:30:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=VDWZ1wyLkqnqT/23Ht0M/a/jxjSGdpdjwIwIjoTRRRI=; b=2qwKcjjD3mCCh/1mVgk1hdA+xC
-        o2mTeS3P/3a/J49I96p9n7gshQPUYwIog5WvpAFPL31pFS8p2fRNxgmU8mEX5RoaNTgPuZnXMDfLZ
-        JWZ1ZbigBEZevMhTDtYwDT28JH8nWX3HftkxCd5K7OmQ/7bRzk06Mhs+kn2Xh5QGjm6JwLn8Ik+Nn
-        z4536VqIxXodC18gOtdY4kjUl8LClWDdhQxHTG+8VLLoqNd7ENE89lRlK/bMSBVTPJwoy+TnOd1Iq
-        71uF/rfluUzxshhkFlCJzD8kq9rzIK5fF7MRS32xDLlMRMmy474AtN1n1zA+pqAb6gpeyqrHVfGv2
-        iKoIQMYg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIItQ-005Awh-D2; Thu, 10 Feb 2022 23:30:28 +0000
-Date:   Thu, 10 Feb 2022 15:30:28 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Michal Suchanek <msuchanek@suse.de>,
-        David Howells <dhowells@redhat.com>,
-        Aaron Tomlin <atomlin@redhat.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        kexec@lists.infradead.org, Philipp Rudo <prudo@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
-        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Frank van der Linden <fllinden@amazon.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 0/6] KEXEC_SIG with appended signature
-Message-ID: <YgWgFMRdpLvBiht7@bombadil.infradead.org>
-References: <cover.1641900831.git.msuchanek@suse.de>
- <YfBd/EDGUx9UIHcb@bombadil.infradead.org>
- <87pmnwlkaa.fsf@mpe.ellerman.id.au>
+        Thu, 10 Feb 2022 18:31:38 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BCF55AD
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:31:39 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id h11so5643990ilq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:31:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cBa2U3XOOVlsojEDVXj/o83IuBw5ETmXBNJi4yT/mck=;
+        b=jHSBDPHH5F/Vu7vkrUGPef+o7tUEfAEhl2PoRlxgkCIVVBSidmw9uoJm5ymTT6uz7U
+         3pffuiDZNdBK94zTP95WUpBGuA4KamvVVf+MC7XSjB2nZG+dK2TvwXlQ6Bckx4CEO+Yo
+         e0MBSfMLtj2iby5Q2GF35xLHWDBso6GFt1XjoBnPxNu86jWo1lCR2vG4HtD5+tH/9aJP
+         OAruOIYwdHx6XDS8/GY+DdK51p13TeK26Uf/QDWOoZldYjOXc5rWsvHHoTuWsRjT3/AS
+         10ubpI+g8KCocxoIO6IF2muT6+nBFRdueT1NFzZW82akR34riORhlm6VJ3wgO4FgV413
+         BSJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cBa2U3XOOVlsojEDVXj/o83IuBw5ETmXBNJi4yT/mck=;
+        b=zquFIBEOb2WeNy7b5INI8vuNexyM8BkJ9d4OfdwsSqX5CGcmYxA7IwV47x09PXBv5P
+         v4aFfG5akTPOMehLA5DkRtElJzNK8NT9YED46HrRJ1OP6sto4w9PxcKYqqcJbiBCXy3T
+         rj6AHpDf778V4ttb14P2/TLNoP0cnQKkNtrhsbM0ABZLnJMAIHuyhLnXH2z+xHpLQRbt
+         82SOMPq7LehTuvGuGP3Q0EGkrrEvlmdzfyn0ZIRjMhIxJQNVlGL8aggGAupLGVlmeLQ3
+         0CS/I5JE+q/dhiFgFm3R/oiRUbmDqVoUXHaIBeG+uMH2W+RCVcOMt8J3NJ5hhlw3pSM6
+         1Qmg==
+X-Gm-Message-State: AOAM5334VhWz2CyeAG0f2pgX2xlXHRcZctO0k8sWtg2ThQd1UVYiF558
+        wk+ODqHvj6eo1xYMQvC5FKA=
+X-Google-Smtp-Source: ABdhPJy8lL1944IEHiv7kjDJbzucordqvuC8LbtZQRP1RQFcCYSZIqSbwhqVBTtPLxpQaswpU1x/lA==
+X-Received: by 2002:a05:6e02:148:: with SMTP id j8mr4737390ilr.218.1644535898397;
+        Thu, 10 Feb 2022 15:31:38 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id l6sm7395096ilt.16.2022.02.10.15.31.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 15:31:38 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc:     Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 18/49] drm/i915/pmu: replace cpumask_weight with cpumask_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:49:02 -0800
+Message-Id: <20220210224933.379149-19-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87pmnwlkaa.fsf@mpe.ellerman.id.au>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 03:46:05PM +1100, Michael Ellerman wrote:
-> Luis Chamberlain <mcgrof@kernel.org> writes:
-> > On Tue, Jan 11, 2022 at 12:37:42PM +0100, Michal Suchanek wrote:
-> >> Hello,
-> >> 
-> >> This is a refresh of the KEXEC_SIG series.
-> >> 
-> >> This adds KEXEC_SIG support on powerpc and deduplicates the code dealing
-> >> with appended signatures in the kernel.
-> >> 
-> >> powerpc supports IMA_KEXEC but that's an exception rather than the norm.
-> >> On the other hand, KEXEC_SIG is portable across platforms.
-> >> 
-> >> For distributions to have uniform security features across platforms one
-> >> option should be used on all platforms.
-> >> 
-> >> Thanks
-> >> 
-> >> Michal
-> >> 
-> >> Previous revision: https://lore.kernel.org/linuxppc-dev/cover.1637862358.git.msuchanek@suse.de/
-> >> Patched kernel tree: https://github.com/hramrach/kernel/tree/kexec_sig
-> >> 
-> >> Michal Suchanek (6):
-> >>   s390/kexec_file: Don't opencode appended signature check.
-> >>   powerpc/kexec_file: Add KEXEC_SIG support.
-> >>   kexec_file: Don't opencode appended signature verification.
-> >>   module: strip the signature marker in the verification function.
-> >>   module: Use key_being_used_for for log messages in
-> >>     verify_appended_signature
-> >>   module: Move duplicate mod_check_sig users code to mod_parse_sig
-> >
-> > What tree should this go through? I'd prefer if over through modules
-> > tree as it can give a chance for Aaron Tomlin to work with this for his
-> > code refactoring of kernel/module*.c to kernel/module/
-> 
-> Yeah that's fine by me, the arch changes are pretty minimal and unlikely
-> to conflict much.
+i915_pmu_cpu_online() calls cpumask_weight() to check if any bit of a
+given cpumask is set. We can do it more efficiently with cpumask_empty()
+because cpumask_empty() stops traversing the cpumask as soon as it finds
+first set bit, while cpumask_weight() counts all bits unconditionally.
 
-Ok sounds good thanks.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+---
+ drivers/gpu/drm/i915/i915_pmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  Luis
+diff --git a/drivers/gpu/drm/i915/i915_pmu.c b/drivers/gpu/drm/i915/i915_pmu.c
+index cfc21042499d..7299ed9937dd 100644
+--- a/drivers/gpu/drm/i915/i915_pmu.c
++++ b/drivers/gpu/drm/i915/i915_pmu.c
+@@ -1050,7 +1050,7 @@ static int i915_pmu_cpu_online(unsigned int cpu, struct hlist_node *node)
+ 	GEM_BUG_ON(!pmu->base.event_init);
+ 
+ 	/* Select the first online CPU as a designated reader. */
+-	if (!cpumask_weight(&i915_pmu_cpumask))
++	if (cpumask_empty(&i915_pmu_cpumask))
+ 		cpumask_set_cpu(cpu, &i915_pmu_cpumask);
+ 
+ 	return 0;
+-- 
+2.32.0
+
