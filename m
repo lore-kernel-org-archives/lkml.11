@@ -2,152 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBB3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 544E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240231AbiBJKub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:50:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59306 "EHLO
+        id S240242AbiBJKuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:50:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240214AbiBJKu3 (ORCPT
+        with ESMTP id S240214AbiBJKum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:50:29 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE52FFE
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:31 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id d187so9487205pfa.10
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:50:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pfPmHTNS3kNf2REIYVPxP0rI8dFehD3FUEuoa/nfhmQ=;
-        b=LV+Wgp8y3d5XDi3wv3BsyrxVE/eJEg914rTG32ssP43QX2iCrRuh4WUb+6RwJP8n9A
-         XKmpvwvmhZnw8XJ21kf3VZH2jlpzWbQqfvtmkYF/0MR3b+qZZv+o6iF3q6JAoarRHqGZ
-         o9azkiYLnrXoaq1SASw1qMZ5pFQRTKiWtXzvUBbZBy31W8MslfIfFpoM9K+y9eSGBw+X
-         0R4NYYYnq/OSOh15JpFvO9i4lnYSx3CpHXeZgdERKYb2eprNuqRDbD4TYmvvFNbDRDDu
-         8gTdmCz3Tg9ewAdRsYcolPHOYiS2PvpRu3SooESMNWcbJGvogpPyZoSZV4/hKLei8tn1
-         N3oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pfPmHTNS3kNf2REIYVPxP0rI8dFehD3FUEuoa/nfhmQ=;
-        b=tsgvyzXzanlYB8iFQ+xocwXZjMeupjZQb+alq35k+/tRfVBJaZuqYBAU9taNFoTDZz
-         CPk6XUMpRod/IOuAGeRK/Km42LiAddUpv0sUzyjbX8m+UgRgTGZI8WHq+Q6CAvmkItzw
-         dk0w4hFtFiIXIS6PnMy1TRk44GcldlWsmoXcG6GgTWzbYVo38SVM6STZD6pSwXZnrZpk
-         Dxex+7o6x21jQUYQNnaDc6gMgu7zLwo+NSAH0REYNoxaFlNlQZU2rFED7iW4AGCZEWFt
-         4/72mNsRjDqtwP646vgpFJ1RptaXwAMVWfBj5t+/PehokhX9cX9h+yX7W0Be+RPTPZeQ
-         TRBg==
-X-Gm-Message-State: AOAM532HNfD/zFT8qy/os//m0TKuxCdP0UcOFYi3c1yGAcrhkm6ev9XN
-        P/VAzL/bRBQlT2Mpkw6xBdqI
-X-Google-Smtp-Source: ABdhPJwX5eFiJ34Kps0Uoal21jJAK99NMgslIAbYgaiigOPC9RkZIznR1OV86VyQA1xPKb9GDAqA6w==
-X-Received: by 2002:a63:dd0f:: with SMTP id t15mr5652799pgg.12.1644490230574;
-        Thu, 10 Feb 2022 02:50:30 -0800 (PST)
-Received: from thinkpad ([27.111.75.88])
-        by smtp.gmail.com with ESMTPSA id t9sm1794782pjg.44.2022.02.10.02.50.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 02:50:30 -0800 (PST)
-Date:   Thu, 10 Feb 2022 16:20:23 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Rob Herring <robh@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [RFC PATCH 0/5] PCIe EPF support for internal DMAC handling and
- driver update for R-Car PCIe EP to support DMAC
-Message-ID: <20220210105023.GB69529@thinkpad>
-References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220210084052.GA69529@thinkpad>
- <CA+V-a8tivrjPoae69pqH1D+B=_Bd7ZzKjCA0PcfBz7Rpf022mA@mail.gmail.com>
+        Thu, 10 Feb 2022 05:50:42 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12663101;
+        Thu, 10 Feb 2022 02:50:39 -0800 (PST)
+X-UUID: f22d432b66fd4044b7d9032c26b2248f-20220210
+X-UUID: f22d432b66fd4044b7d9032c26b2248f-20220210
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <cheng-jui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1612641741; Thu, 10 Feb 2022 18:50:35 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 10 Feb 2022 18:50:34 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 10 Feb 2022 18:50:33 +0800
+From:   Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>
+CC:     Will Deacon <will@kernel.org>, Waiman Long <longman@redhat.com>,
+        "Boqun Feng" <boqun.feng@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <stable@vger.kernel.org>,
+        <wsd_upstream@mediatek.com>,
+        Eason-YH Lin <eason-yh.lin@mediatek.com>,
+        Kobe-CP Wu <kobe-cp.wu@mediatek.com>,
+        Jeff-CC Hsu <jeff-cc.hsu@mediatek.com>,
+        Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+Subject: [PATCH] lockdep: Correct lock_classes index mapping
+Date:   Thu, 10 Feb 2022 18:50:11 +0800
+Message-ID: <20220210105011.21712-1-cheng-jui.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+V-a8tivrjPoae69pqH1D+B=_Bd7ZzKjCA0PcfBz7Rpf022mA@mail.gmail.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 09:24:19AM +0000, Lad, Prabhakar wrote:
-> Hi,
-> 
-> On Thu, Feb 10, 2022 at 8:40 AM Manivannan Sadhasivam
-> <manivannan.sadhasivam@linaro.org> wrote:
-> >
-> > Hi,
-> >
-> > On Wed, Jan 26, 2022 at 07:50:38PM +0000, Lad Prabhakar wrote:
-> > > Hi All,
-> > >
-> > > The current PCIe EPF framework supports DMA data transfers using external
-> > > DMA only, this patch series aims to add support for platforms supporting
-> > > internal DMAC on PCIe for data transfers.
-> > >
-> > > R-Car PCIe supports internal DMAC to transfer data between Internal Bus to
-> > > PCI Express and vice versa. Last patch fills up the required flags and ops
-> > > to support internal DMAC.
-> > >
-> > > Patches 1-3 are for PCIe EPF core to support internal DMAC handling, patch
-> > > 4/5 is to fix test cases based on the conversation [1].
-> > >
-> >
-> > This looks similar to the Synopsys eDMA IP [1] that goes with the Synopsys PCIe
-> > endpoint IP. Why can't you represent it as a dmaengine driver and use the
-> > existing DMA support?
-> >
-> Let me have a look. Could you please share a link to the Synopsys PCIe
-> endpoint HW manual (the driver doesn't have a binding doc).
-> 
+A kernel exception was hit when trying to dump /proc/lockdep_chains after
+lockdep report "BUG: MAX_LOCKDEP_CHAIN_HLOCKS too low!":
 
-I don't think the PCIe reference manual is available publicly. And you are right
-that the driver is not tied to devicetree. The reason is, it gets probed using
-the PCI ID of the EP and all the resources are defined statically in the driver
-itself.
+Unable to handle kernel paging request at virtual address 00054005450e05c3
+...
+00054005450e05c3] address between user and kernel address ranges
+...
+pc : [0xffffffece769b3a8] string+0x50/0x10c
+lr : [0xffffffece769ac88] vsnprintf+0x468/0x69c
+...
+ Call trace:
+  string+0x50/0x10c
+  vsnprintf+0x468/0x69c
+  seq_printf+0x8c/0xd8
+  print_name+0x64/0xf4
+  lc_show+0xb8/0x128
+  seq_read_iter+0x3cc/0x5fc
+  proc_reg_read_iter+0xdc/0x1d4
 
-Thanks,
-Mani
+The cause of the problem is the function lock_chain_get_class() will
+shift lock_classes index by 1, but the index don't need to be shifted
+anymore since commit 01bb6f0af992 ("locking/lockdep: Change the range of
+class_idx in held_lock struct") already change the index to start from
+0.
 
-> Cheers,
-> Prabhakar
-> 
-> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/dma/dw-edma
-> >
-> > > Patches are based on top of [1] next branch.
-> > >
-> > > [0] https://www.spinics.net/lists/linux-pci/msg92385.html
-> > > [1] https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git
-> > >
-> > > Cheers,
-> > > Prabhakar
-> > >
-> > > Lad Prabhakar (5):
-> > >   PCI: endpoint: Add ops and flag to support internal DMAC
-> > >   PCI: endpoint: Add support to data transfer using internal dmac
-> > >   misc: pci_endpoint_test: Add driver data for Renesas RZ/G2{EHMN}
-> > >   misc: pci_endpoint_test: Add support to pass flags for buffer
-> > >     allocation
-> > >   PCI: rcar-ep: Add support for DMAC
-> > >
-> > >  drivers/misc/pci_endpoint_test.c              |  56 ++++-
-> > >  drivers/pci/controller/pcie-rcar-ep.c         | 227 ++++++++++++++++++
-> > >  drivers/pci/controller/pcie-rcar.h            |  23 ++
-> > >  drivers/pci/endpoint/functions/pci-epf-test.c | 184 ++++++++++----
-> > >  drivers/pci/endpoint/pci-epf-core.c           |  32 +++
-> > >  include/linux/pci-epc.h                       |   8 +
-> > >  include/linux/pci-epf.h                       |   7 +
-> > >  7 files changed, 483 insertions(+), 54 deletions(-)
-> > >
-> > > --
-> > > 2.25.1
-> > >
+The lock_classes[-1] located at chain_hlocks array. When printing
+lock_classes[-1] after the chain_hlocks entries are modified, the
+exception happened.
+
+The output of lockdep_chains are incorrect due to this problem too.
+
+Fixes: f611e8cf98ec ("lockdep: Take read/write status in consideration when generate chainkey")
+
+Signed-off-by: Cheng Jui Wang <cheng-jui.wang@mediatek.com>
+---
+ kernel/locking/lockdep.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 4a882f83aeb9..f8a0212189ca 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -3462,7 +3462,7 @@ struct lock_class *lock_chain_get_class(struct lock_chain *chain, int i)
+ 	u16 chain_hlock = chain_hlocks[chain->base + i];
+ 	unsigned int class_idx = chain_hlock_class_idx(chain_hlock);
+ 
+-	return lock_classes + class_idx - 1;
++	return lock_classes + class_idx;
+ }
+ 
+ /*
+@@ -3530,7 +3530,7 @@ static void print_chain_keys_chain(struct lock_chain *chain)
+ 		hlock_id = chain_hlocks[chain->base + i];
+ 		chain_key = print_chain_key_iteration(hlock_id, chain_key);
+ 
+-		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id) - 1);
++		print_lock_name(lock_classes + chain_hlock_class_idx(hlock_id));
+ 		printk("\n");
+ 	}
+ }
+-- 
+2.18.0
+
