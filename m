@@ -2,257 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E64BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243651AbiBJPeD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:34:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33326 "EHLO
+        id S243663AbiBJPep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:34:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243638AbiBJPeB (ORCPT
+        with ESMTP id S243638AbiBJPeo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 10:34:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B34C11DF;
-        Thu, 10 Feb 2022 07:34:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 10 Feb 2022 10:34:44 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980211D6;
+        Thu, 10 Feb 2022 07:34:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644507285; x=1676043285;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/CpZixoP9LqieCKr1GT1o2hb5f+axkirfN4SJnts4rY=;
+  b=BpMWv8fDvaE7Ld4ChjfyvBVo9OaGza/u9Vgw8tU2pdD83p5SzyapGUfb
+   NykTs2b9iHV/nnw2td7Srs4y/9LCBEIuvYIE89ZfiXIkTUrSvnU5sraO4
+   9VKFQ+1VTiqtm5RalhlafeIk+lV4dIPkoAVOlxlzpvk3JGTwX8QL8gKIl
+   7Eiee14PZVE1DmoNUFCwv+21v/WnR38O3m2y/gvQabFdX/WE5iefkWTZg
+   MgqPmNVedTJZr6sOTEvw4yco1bUn0hTeWKnWpT+DRD9iF5w/E71GKPvu3
+   Zz545YIpEA8g2nUspxTXFOqSOqW7XoN6FWwCBFHOwfsT4V7YBZ62SjQ+s
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="310253233"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="310253233"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:34:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="701724952"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga005.jf.intel.com with ESMTP; 10 Feb 2022 07:34:44 -0800
+Received: from [10.252.133.207] (dgupta-mobl1.amr.corp.intel.com [10.252.133.207])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D844BCE249E;
-        Thu, 10 Feb 2022 15:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91140C004E1;
-        Thu, 10 Feb 2022 15:33:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644507238;
-        bh=BKeitxpfCGIJQJTATObfn7bUY4xpEWQny+fdU8bKBgg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i5uVIOpEclbZZ3IneV185GXY860waI1Ss4TIko7UGsQyI9pzMlQfunc2xKUJTLDBY
-         PLIlyt50KiwOImwL0Z7UI+v7iD7TASoWEQeUBN3oXC9mbgVmqviNPj6oLRj//z4loK
-         FR47sNNdeeeBp9iVykUDSxtjqlG5+nohsB7jjYogxBX4RGO0Q4vNNBFMcrXYS8ggZs
-         I17f7KiYUjx3AEzf2x0Ve3N++TrUT7H0wDS068kDh7bnuGUO/yEfE6FsIs0tC5Uu8h
-         NSt1Ig03zrBTZX27rmmfokPEA/qZ83c29MWAoWJ3kXQE5nT+DEUW2UCPXU3Kd2y2XB
-         SYi6SnOsfWfug==
-Date:   Thu, 10 Feb 2022 15:40:35 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <qing-wu.li@leica-geosystems.com.cn>
-Cc:     "lars@metafoo.de" <lars@metafoo.de>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "tomas.melin@vaisala.com" <tomas.melin@vaisala.com>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH V1 2/6] iio: accel: sca3300: Add interface for operation
- modes.
-Message-ID: <20220210154035.62ef7bf6@jic23-huawei>
-In-Reply-To: <AM9PR06MB78448AE3641602CA8E52603AD72F9@AM9PR06MB7844.eurprd06.prod.outlook.com>
-References: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
-        <20220124093912.2429190-3-Qing-wu.Li@leica-geosystems.com.cn>
-        <20220130114014.38923fb4@jic23-huawei>
-        <AM9PR06MB78448AE3641602CA8E52603AD72F9@AM9PR06MB7844.eurprd06.prod.outlook.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        by linux.intel.com (Postfix) with ESMTPS id C15A8580A8B;
+        Thu, 10 Feb 2022 07:34:43 -0800 (PST)
+Message-ID: <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
+Date:   Thu, 10 Feb 2022 10:34:42 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
+ perfmon_event_map[] directly
+Content-Language: en-US
+To:     David Dunn <daviddunn@google.com>,
+        Dave Hansen <dave.hansen@intel.com>
+Cc:     Jim Mattson <jmattson@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Like Xu <like.xu.linux@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
+        Stephane Eranian <eranian@google.com>
+References: <20220117085307.93030-1-likexu@tencent.com>
+ <20220117085307.93030-3-likexu@tencent.com>
+ <20220202144308.GB20638@worktop.programming.kicks-ass.net>
+ <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
+ <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net>
+ <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
+ <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
+ <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
+ <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 10:08:53 +0000
-LI Qingwu <qing-wu.li@leica-geosystems.com.cn> wrote:
-
-> Thanks a lot all of your inputs, I'm just back from long holiday and star=
-t to rework on the patches.
->=20
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Sunday, January 30, 2022 7:40 PM
-> > To: LI Qingwu <qing-wu.li@leica-geosystems.com.cn>
-> > Cc: lars@metafoo.de; robh+dt@kernel.org; tomas.melin@vaisala.com;
-> > andy.shevchenko@gmail.com; devicetree@vger.kernel.org;
-> > linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH V1 2/6] iio: accel: sca3300: Add interface for oper=
-ation
-> > modes.
-> >=20
-> > This email is not from Hexagon=E2=80=99s Office 365 instance. Please be=
- careful while
-> > clicking links, opening attachments, or replying to this email.
-> >=20
-> >=20
-> > On Mon, 24 Jan 2022 09:39:08 +0000
-> > LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
-> >  =20
-> > > The acceleration scale and the frequency were set via operation modes,
-> > > the scal and frequency are both non-uniqueness, this leads to logic
-> > > confusion for setting scale.and.frequency.
-> > > it getting worse if add more different sensor types into the driver.
-> > >
-> > > The commit add an interface for set and get the operation modes.
-> > > the following interfaces added:
-> > > in_accel_op_mode_available
-> > > in_op_mode
-> > >
-> > > SCA3300 operation modes table:
-> > > | Mode | Full-scale | low pass filter frequency |
-> > > | ---- | ---------- | ------------------------- |
-> > > | 1    | =C2=B1 3 g      | 70 Hz                     |
-> > > | 2    | =C2=B1 6 g      | 70 Hz                     |
-> > > | 3    | =C2=B1 1.5 g    | 70 Hz                     |
-> > > | 4    | =C2=B1 1.5 g    | 10 Hz                     |
-> > >
-> > > Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> =20
-> >=20
-> > While it may seem convenient to expose this to userspace, the reality i=
-s that
-> > generic userspace has no way to know how to use it.
-> >=20
-> > That makes supplying this control a bad idea however convenient it may =
-seem.
-> > It's not unusual to have these sorts of constraints on devices and so t=
-he ABI
-> > always assumes any setting may modify any other and / or change what is
-> > available for a given setting.
-> >=20
-> > If you need a particular combination for your own userspace, then make =
-the
-> > userspace aware of the constraints rather than exposing it as a 'mode' =
-which
-> > the userspace will need to know about anyway.
-> >=20
-> > Jonathan =20
->=20
-
-+cc linux-iio@vger.kernel.org
-
-> Thanks a lot Jonathan, I couldn't agree with you more, the mode is not go=
-od for userspace,
-> I would like to ask you how to handle this.
-> Since the change for 'mode' was a prepare for support SCL3300,
-> For SCL3300, mode 3 and mode 4 are totally same for both scale and freque=
-ncy.
-> The only different is mode 4 is low noise mode, but no difference from so=
-ftware point of view.
-> Then it's impossible to set to between mode 3/4, let's say normal noise a=
-nd low noise mode, with index of frequency and scale.
-> Set between mode 3 and 4 is necessary, I have no idea how to handle it.
-
-Why would a user ever select the 'high noise' option?
-My guess is power saving?  Probably not enough to be relevant
-in a system running Linux.
-
-I would suggest just not supporting that option.
-It is not uncommon for some modes to make limited sense and
-to just be there as an artefact of the underlying hardware
-architecture.  Doesn't mean we have to support them :)
-
-Jonathan
 
 
+On 2/9/2022 2:24 PM, David Dunn wrote:
+> Dave,
+> 
+> In my opinion, the right policy depends on what the host owner and
+> guest owner are trying to achieve.
+> 
+> If the PMU is being used to locate places where performance could be
+> improved in the system, there are two sub scenarios:
+>     - The host and guest are owned by same entity that is optimizing
+> overall system.  In this case, the guest doesn't need PMU access and
+> better information is provided by profiling the entire system from the
+> host.
+>     - The host and guest are owned by different entities.  In this
+> case, profiling from the host can identify perf issues in the guest.
+> But what action can be taken?  The host entity must communicate issues
+> back to the guest owner through some sort of out-of-band information
+> channel.  On the other hand, preempting the host PMU to give the guest
+> a fully functional PMU serves this use case well.
+> 
+> TDX and SGX (outside of debug mode) strongly assume different
+> entities.  And Intel is doing this to reduce insight of the host into
+> guest operations.  So in my opinion, preemption makes sense.
+> 
+> There are also scenarios where the host owner is trying to identify
+> systemwide impacts of guest actions.  For example, detecting memory
+> bandwidth consumption or split locks.  In this case, host control
+> without preemption is necessary.
+> 
+> To address these various scenarios, it seems like the host needs to be
+> able to have policy control on whether it is willing to have the PMU
+> preempted by the guest.
+> 
+> But I don't see what scenario is well served by the current situation
+> in KVM.  Currently the guest will either be told it has no PMU (which
+> is fine) or that it has full control of a PMU.  If the guest is told
+> it has full control of the PMU, it actually doesn't.  But instead of
+> losing counters on well defined events (from the guest perspective),
+> they simply stop counting depending on what the host is doing with the
+> PMU.
+
+For the current perf subsystem, a PMU should be shared among different 
+users via the multiplexing mechanism if the resource is limited. No one 
+has full control of a PMU for lifetime. A user can only have the PMU in 
+its given period. I think the user can understand how long it runs via 
+total_time_enabled and total_time_running.
+
+For a guest, it should rely on the host to tell whether the PMU resource 
+is available. But unfortunately, I don't think we have such a 
+notification mechanism in KVM. The guest has the wrong impression that 
+the guest can have full control of the PMU.
+
+In my opinion, we should add the notification mechanism in KVM. When the 
+PMU resource is limited, the guest can know whether it's multiplexing or 
+can choose to reschedule the event.
+
+But seems the notification mechanism may not work for TDX case?
+> 
+> On the other hand, if we flip it around the semantics are more clear.
+> A guest will be told it has no PMU (which is fine) or that it has full
+> control of the PMU.  If the guest is told that it has full control of
+> the PMU, it does.  And the host (which is the thing that granted the
+> full PMU to the guest) knows that events inside the guest are not
+> being measured.  This results in all entities seeing something that
+> can be reasoned about from their perspective.
+>
+
+I assume that this is for the TDX case (where the notification mechanism 
+  doesn't work). The host still control all the PMU resources. The TDX 
+guest is treated as a super-user who can 'own' a PMU. The admin in the 
+host can configure/change the owned PMUs of the TDX. Personally, I think 
+it makes sense. But please keep in mind that the counters are not 
+identical. There are some special events that can only run on a specific 
+counter. If the special counter is assigned to TDX, other entities can 
+never run some events. We should let other entities know if it happens. 
+Or we should never let non-host entities own the special counter.
 
 
+Thanks,
+Kan
 
->=20
-> | Mode             | Full-scale   | frequency |
-> | -------------------      | ----------------- | ------------- |
-> | 1                 | =C2=B1 1.2 g     | 40 Hz    |
-> | 2                 | =C2=B1 2.4 g     | 70 Hz    |
-> | 3                 | =C2=B1 0.6 g     | 10 Hz    |
-> | 4 (Low noise mode)  | =C2=B1 0.6 g     | 10 Hz    |  =20
->               =20
-> The link of the SCL3300 datasheet:
-> https://www.murata.com/-/media/webrenewal/products/sensor/pdf/datasheet/d=
-atasheet_scl3300-d01.ashx?la=3Den&cvid=3D20210316063715000000
->=20
-> >=20
-> >  =20
-> > > ---
-> > >  drivers/iio/accel/sca3300.c | 55
-> > > +++++++++++++++++++++++++++++++++++++
-> > >  1 file changed, 55 insertions(+)
-> > >
-> > > diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
-> > > index 083ae2a47ad9..e26b3175b3c6 100644
-> > > --- a/drivers/iio/accel/sca3300.c
-> > > +++ b/drivers/iio/accel/sca3300.c
-> > > @@ -42,6 +42,38 @@
-> > >  /* Device return status and mask */
-> > >  #define SCA3300_VALUE_RS_ERROR       0x3
-> > >  #define SCA3300_MASK_RS_STATUS       GENMASK(1, 0)
-> > > +enum sca3300_op_mode_indexes {
-> > > +     OP_MOD_1 =3D 0,
-> > > +     OP_MOD_2,
-> > > +     OP_MOD_3,
-> > > +     OP_MOD_4,
-> > > +     OP_MOD_CNT
-> > > +};
-> > > +
-> > > +static const char * const sca3300_op_modes[] =3D {
-> > > +     [OP_MOD_1] =3D "1",
-> > > +     [OP_MOD_2] =3D "2",
-> > > +     [OP_MOD_3] =3D "3",
-> > > +     [OP_MOD_4] =3D "4"
-> > > +};
-> > > +
-> > > +static int sca3300_get_op_mode(struct iio_dev *indio_dev,
-> > > +             const struct iio_chan_spec *chan); static int
-> > > +sca3300_set_op_mode(struct iio_dev *indio_dev,
-> > > +             const struct iio_chan_spec *chan, unsigned int mode);
-> > > +
-> > > +static const struct iio_enum sca3300_op_mode_enum =3D {
-> > > +     .items =3D sca3300_op_modes,
-> > > +     .num_items =3D ARRAY_SIZE(sca3300_op_modes),
-> > > +     .get =3D sca3300_get_op_mode,
-> > > +     .set =3D sca3300_set_op_mode,
-> > > +};
-> > > +
-> > > +static const struct iio_chan_spec_ext_info sca3300_ext_info[] =3D {
-> > > +     IIO_ENUM("op_mode", IIO_SHARED_BY_DIR, =20
-> > &sca3300_op_mode_enum), =20
-> > > +     IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
-> > > +     { }
-> > > +};
-> > >
-> > >  enum sca3300_scan_indexes {
-> > >       SCA3300_ACC_X =3D 0,
-> > > @@ -70,6 +102,7 @@ enum sca3300_scan_indexes {
-> > >               .storagebits =3D 16, =20
-> > \ =20
-> > >               .endianness =3D IIO_CPU, =20
-> > \ =20
-> > >       }, =20
-> > \ =20
-> > > +     .ext_info =3D sca3300_ext_info, =20
-> > \ =20
-> > >  }
-> > >
-> > >  #define SCA3300_TEMP_CHANNEL(index, reg) =20
-> > {                           \ =20
-> > > @@ -400,6 +433,28 @@ static int sca3300_read_avail(struct iio_dev =20
-> > *indio_dev, =20
-> > >       }
-> > >  }
-> > >
-> > > +static int sca3300_get_op_mode(struct iio_dev *indio_dev,
-> > > +             const struct iio_chan_spec *chan) {
-> > > +     int mode;
-> > > +     int ret;
-> > > +     struct sca3300_data *data =3D iio_priv(indio_dev);
-> > > +
-> > > +     ret =3D sca3300_read_reg(data, SCA3300_REG_MODE, &mode);
-> > > +     if (ret)
-> > > +             return ret;
-> > > +     return mode;
-> > > +
-> > > +}
-> > > +
-> > > +static int sca3300_set_op_mode(struct iio_dev *indio_dev,
-> > > +             const struct iio_chan_spec *chan, unsigned int mode) {
-> > > +     struct sca3300_data *data =3D iio_priv(indio_dev);
-> > > +
-> > > +     return sca3300_write_reg(data, SCA3300_REG_MODE, mode); }
-> > > +
-> > >  static const struct iio_info sca3300_info =3D {
-> > >       .read_raw =3D sca3300_read_raw,
-> > >       .write_raw =3D sca3300_write_raw, =20
->=20
-
+> Thanks,
+> 
+> Dave Dunn
+> 
+> On Wed, Feb 9, 2022 at 10:57 AM Dave Hansen <dave.hansen@intel.com> wrote:
+> 
+>>> I was referring to gaps in the collection of data that the host perf
+>>> subsystem doesn't know about if ATTRIBUTES.PERFMON is set for a TDX
+>>> guest. This can potentially be a problem if someone is trying to
+>>> measure events per unit of time.
+>>
+>> Ahh, that makes sense.
+>>
+>> Does SGX cause problem for these people?  It can create some of the same
+>> collection gaps:
+>>
+>>          performance monitoring activities are suppressed when entering
+>>          an opt-out (of performance monitoring) enclave.
