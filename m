@@ -2,79 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FDDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244333AbiBJQhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:37:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47204 "EHLO
+        id S244369AbiBJQhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:37:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244303AbiBJQgz (ORCPT
+        with ESMTP id S244334AbiBJQg6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:36:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FF11128
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:56 -0800 (PST)
+        Thu, 10 Feb 2022 11:36:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EBB4D1A8
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511015;
+        s=mimecast20190719; t=1644511018;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=tGyAY7S0fEMf+HiiMqPZ5dVmfNGg1qu42t5IPGFjuEs=;
-        b=dc4pOBv0sXy8Er5ITaR1zFgNDjjHEvdYkQSm9gckTeZ3JxY6RBFRJQJyjpY6huzv+5dyF6
-        cb4RjbPSro1/gk4Rpdy/97MIW4bfaXgDYltbDc4DaObpU0so5DpBpjO3Ni91AtnD8cS8hZ
-        Nilwm44QmgO4XiOhGPgnSZeJD7iidQ4=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=f/F8usK/+OWwDrS2Mysaltt+CBSk5zwPQAlyY9XUelc=;
+        b=enVV39vcTf/HPRxWPI9XWwNkAhA4HPcqOj0uFgQG6Ebg2Cz4CikAFRn6fracv0cCZiqCa7
+        CzZI+yzyK8uoPaO+6rGmnD14UHgFZ2PXslFyU4OBZfFxEjJzRJJGMMcsdLrkx8bqGDX+fq
+        ldXxGatXjDnyY3G9PyfPCbm2h3QCdCo=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-sjqqGQkwN4qkquArA8a1uQ-1; Thu, 10 Feb 2022 11:36:54 -0500
-X-MC-Unique: sjqqGQkwN4qkquArA8a1uQ-1
-Received: by mail-ej1-f70.google.com with SMTP id ho37-20020a1709070ea500b006cd51be5cd8so2992801ejc.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:53 -0800 (PST)
+ us-mta-232-7w-Pyi-nO5S4lTiaOqmoZw-1; Thu, 10 Feb 2022 11:36:56 -0500
+X-MC-Unique: 7w-Pyi-nO5S4lTiaOqmoZw-1
+Received: by mail-ej1-f72.google.com with SMTP id z26-20020a1709067e5a00b006cbe0628826so2993985ejr.10
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=tGyAY7S0fEMf+HiiMqPZ5dVmfNGg1qu42t5IPGFjuEs=;
-        b=caTRib5XO4y1N1roPAtYbgWvSACievh8Rytx6UVcUAxD7LmIUS5U03RMP+AFLmqTfY
-         6hW5WYH/rx/0TMK5cmDcwCAmiFM2zA/5YldHn4l3vTel+7K45uZaMfpDa/Wqtf9VYnD9
-         VcJpLqUuA5re8qDXlw+5rju6j41ziOoqCm+WXrXyGbb16EVBkeGBDVV5GqH61cXxCBz2
-         SGwazsOxhSgwoFquOJMzgZ8jXTio1pSV0hHEYUvx2G40mW1ItcSpf2wzQncJMN6GKrzl
-         Q3SNLO4jRluiVmmPhI6o6GVCE2Dbp9xkOcVZhWEXmX/7/ZbQ+6u5zzPxkPHUWApQ1SRJ
-         rU2A==
-X-Gm-Message-State: AOAM530Rhx7zdlMmsWz+BoMWJ70ypOQBofomtvfuwV0AnPIN/5hJFsaq
-        6uj7WkxNkYMEvMwkyuenoXvzXUIyMQCjeRUfngirpz3gKDTGF3r3Mjt7AaSprSbSzgFELNO1FT+
-        fE75nGQFwIRPtI1GjST2G2hp7
-X-Received: by 2002:a17:907:6e1f:: with SMTP id sd31mr5315521ejc.28.1644511012796;
-        Thu, 10 Feb 2022 08:36:52 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzLkK07eKD24fdrWFmZ3g7ujiBXMY17A2qUP16uPkxka9tE7ZZcJXRFoRaOZzq9VvJ4dF4THQ==
-X-Received: by 2002:a17:907:6e1f:: with SMTP id sd31mr5315498ejc.28.1644511012496;
-        Thu, 10 Feb 2022 08:36:52 -0800 (PST)
+        bh=f/F8usK/+OWwDrS2Mysaltt+CBSk5zwPQAlyY9XUelc=;
+        b=vLfcJ3R8R//m7oMb0zQPPB4ET+rR9sxRiTcNhOv5CpdVlWfBzvPuBtq3y40uosTAHt
+         IZSmpu8nL3Q233VjWbg09xtJAW2HbGHCXCnwX1C0epPgau2S6k8gRQVCp2j16f3SNqD3
+         59D1NqYsw3pMq31tJ6n2oTbO4ZlNhfeRQalgJc2JbDVayg3Sws8OgqCn25ImmPubbRrN
+         Jzd1mSBZyp453id6r40AHsk5CJF2/OdlmGinIbsDPLcrnfCMba+0PpfEanRGRFC4LGeL
+         oKiVo2XH/7a+8H77EwyvYU0J1rgombG8HL9RcaWlC38LvpTA7OgzuG03jvq7uEoucOjo
+         nOaA==
+X-Gm-Message-State: AOAM532G51MGwz1LX5RcnidVKz99SHGfYOOaHwAW3JS3eIVEdcGu5KmB
+        K/tnP9sKHD6CgvURwY5T1h/bMyQhLk2PqXNmq5r53bIZjYrUupqFPuAuoSfiJTe+JSORIibqFj/
+        s6qmUQmTrAuwfKy1ZfCMB0bBu
+X-Received: by 2002:a17:906:2ed1:: with SMTP id s17mr7342462eji.174.1644511015574;
+        Thu, 10 Feb 2022 08:36:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzC0ul3dl+hcrAmDYZTPnQFJaDZrWBZxFPAbbw2BCoE9Jfu0NVY0ZSkzikKjxBe05mTUn5T4A==
+X-Received: by 2002:a17:906:2ed1:: with SMTP id s17mr7342447eji.174.1644511015370;
+        Thu, 10 Feb 2022 08:36:55 -0800 (PST)
 Received: from [192.168.10.118] ([93.56.170.240])
-        by smtp.googlemail.com with ESMTPSA id z6sm7232015ejd.96.2022.02.10.08.36.37
+        by smtp.googlemail.com with ESMTPSA id b17sm5678470ejd.34.2022.02.10.08.36.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:36:50 -0800 (PST)
-Message-ID: <b2eb4236-5091-28bd-6952-23cd3ece150a@redhat.com>
-Date:   Thu, 10 Feb 2022 17:36:14 +0100
+        Thu, 10 Feb 2022 08:36:54 -0800 (PST)
+Message-ID: <52ec7622-efcf-dfd6-2560-3114f90f7618@redhat.com>
+Date:   Thu, 10 Feb 2022 17:35:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.10 6/6] KVM: VMX: Set vmcs.PENDING_DBG.BS on
- #DB in STI/MOVSS blocking shadow
+Subject: Re: [PATCH MANUALSEL 5.10 4/6] KVM: nVMX: WARN on any attempt to
+ allocate shadow VMCS for vmcs02
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Alexander Graf <graf@amazon.de>, tglx@linutronix.de,
+Cc:     Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
 References: <20220209185714.48936-1-sashal@kernel.org>
- <20220209185714.48936-6-sashal@kernel.org>
+ <20220209185714.48936-4-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185714.48936-6-sashal@kernel.org>
+In-Reply-To: <20220209185714.48936-4-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -84,100 +82,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 2/9/22 19:57, Sasha Levin wrote:
 > From: Sean Christopherson <seanjc@google.com>
 > 
-> [ Upstream commit b9bed78e2fa9571b7c983b20666efa0009030c71 ]
-
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
-
-Paolo
-
-
-> Set vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS, a.k.a. the pending single-step
-> breakpoint flag, when re-injecting a #DB with RFLAGS.TF=1, and STI or
-> MOVSS blocking is active.  Setting the flag is necessary to make VM-Entry
-> consistency checks happy, as VMX has an invariant that if RFLAGS.TF is
-> set and STI/MOVSS blocking is true, then the previous instruction must
-> have been STI or MOV/POP, and therefore a single-step #DB must be pending
-> since the RFLAGS.TF cannot have been set by the previous instruction,
-> i.e. the one instruction delay after setting RFLAGS.TF must have already
-> expired.
+> [ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
 > 
-> Normally, the CPU sets vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS appropriately
-> when recording guest state as part of a VM-Exit, but #DB VM-Exits
-> intentionally do not treat the #DB as "guest state" as interception of
-> the #DB effectively makes the #DB host-owned, thus KVM needs to manually
-> set PENDING_DBG.BS when forwarding/re-injecting the #DB to the guest.
+> WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
+> VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
+> a "real" shadow VMCS for L2.
 > 
-> Note, although this bug can be triggered by guest userspace, doing so
-> requires IOPL=3, and guest userspace running with IOPL=3 has full access
-> to all I/O ports (from the guest's perspective) and can crash/reboot the
-> guest any number of ways.  IOPL=3 is required because STI blocking kicks
-> in if and only if RFLAGS.IF is toggled 0=>1, and if CPL>IOPL, STI either
-> takes a #GP or modifies RFLAGS.VIF, not RFLAGS.IF.
+> The previous code WARNed but continued anyway with the allocation,
+> presumably in an attempt to avoid NULL pointer dereference.
+> However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
+> indeed the sole caller does:
 > 
-> MOVSS blocking can be initiated by userspace, but can be coincident with
-> a #DB if and only if DR7.GD=1 (General Detect enabled) and a MOV DR is
-> executed in the MOVSS shadow.  MOV DR #GPs at CPL>0, thus MOVSS blocking
-> is problematic only for CPL0 (and only if the guest is crazy enough to
-> access a DR in a MOVSS shadow).  All other sources of #DBs are either
-> suppressed by MOVSS blocking (single-step, code fetch, data, and I/O),
-> are mutually exclusive with MOVSS blocking (T-bit task switch), or are
-> already handled by KVM (ICEBP, a.k.a. INT1).
+> 	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
+> 		goto out_shadow_vmcs;
 > 
-> This bug was originally found by running tests[1] created for XSA-308[2].
-> Note that Xen's userspace test emits ICEBP in the MOVSS shadow, which is
-> presumably why the Xen bug was deemed to be an exploitable DOS from guest
-> userspace.  KVM already handles ICEBP by skipping the ICEBP instruction
-> and thus clears MOVSS blocking as a side effect of its "emulation".
+> which makes it not a useful attempt.
 > 
-> [1] http://xenbits.xenproject.org/docs/xtf/xsa-308_2main_8c_source.html
-> [2] https://xenbits.xen.org/xsa/advisory-308.html
-> 
-> Reported-by: David Woodhouse <dwmw2@infradead.org>
-> Reported-by: Alexander Graf <graf@amazon.de>
 > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Message-Id: <20220120000624.655815-1-seanjc@google.com>
+> Message-Id: <20220125220527.2093146-1-seanjc@google.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kvm/vmx/vmx.c | 25 +++++++++++++++++++++++++
->   1 file changed, 25 insertions(+)
+>   arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
+>   1 file changed, 12 insertions(+), 10 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index 351ef5cf1436a..94f5f2129e3b4 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -4846,8 +4846,33 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
->   		dr6 = vmx_get_exit_qual(vcpu);
->   		if (!(vcpu->guest_debug &
->   		      (KVM_GUESTDBG_SINGLESTEP | KVM_GUESTDBG_USE_HW_BP))) {
-> +			/*
-> +			 * If the #DB was due to ICEBP, a.k.a. INT1, skip the
-> +			 * instruction.  ICEBP generates a trap-like #DB, but
-> +			 * despite its interception control being tied to #DB,
-> +			 * is an instruction intercept, i.e. the VM-Exit occurs
-> +			 * on the ICEBP itself.  Note, skipping ICEBP also
-> +			 * clears STI and MOVSS blocking.
-> +			 *
-> +			 * For all other #DBs, set vmcs.PENDING_DBG_EXCEPTIONS.BS
-> +			 * if single-step is enabled in RFLAGS and STI or MOVSS
-> +			 * blocking is active, as the CPU doesn't set the bit
-> +			 * on VM-Exit due to #DB interception.  VM-Entry has a
-> +			 * consistency check that a single-step #DB is pending
-> +			 * in this scenario as the previous instruction cannot
-> +			 * have toggled RFLAGS.TF 0=>1 (because STI and POP/MOV
-> +			 * don't modify RFLAGS), therefore the one instruction
-> +			 * delay when activating single-step breakpoints must
-> +			 * have already expired.  Note, the CPU sets/clears BS
-> +			 * as appropriate for all other VM-Exits types.
-> +			 */
->   			if (is_icebp(intr_info))
->   				WARN_ON(!skip_emulated_instruction(vcpu));
-> +			else if ((vmx_get_rflags(vcpu) & X86_EFLAGS_TF) &&
-> +				 (vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) &
-> +				  (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
-> +				vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS,
-> +					    vmcs_readl(GUEST_PENDING_DBG_EXCEPTIONS) | DR6_BS);
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index 0c2389d0fdafe..0734a98eaaad1 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -4786,18 +4786,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
+>   	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
 >   
->   			kvm_queue_exception_p(vcpu, DB_VECTOR, dr6);
->   			return 1;
+>   	/*
+> -	 * We should allocate a shadow vmcs for vmcs01 only when L1
+> -	 * executes VMXON and free it when L1 executes VMXOFF.
+> -	 * As it is invalid to execute VMXON twice, we shouldn't reach
+> -	 * here when vmcs01 already have an allocated shadow vmcs.
+> +	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
+> +	 * when L1 executes VMXOFF or the vCPU is forced out of nested
+> +	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
+> +	 * should be impossible to already have an allocated shadow VMCS.  KVM
+> +	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
+> +	 * always be the loaded VMCS.
+>   	 */
+> -	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
+> +	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
+> +		return loaded_vmcs->shadow_vmcs;
+> +
+> +	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
+> +	if (loaded_vmcs->shadow_vmcs)
+> +		vmcs_clear(loaded_vmcs->shadow_vmcs);
+>   
+> -	if (!loaded_vmcs->shadow_vmcs) {
+> -		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
+> -		if (loaded_vmcs->shadow_vmcs)
+> -			vmcs_clear(loaded_vmcs->shadow_vmcs);
+> -	}
+>   	return loaded_vmcs->shadow_vmcs;
+>   }
+>   
+
+NACK
 
