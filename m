@@ -2,114 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2022EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:00:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AAD6C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:00:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238069AbiBJJAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:00:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36250 "EHLO
+        id S238130AbiBJJAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:00:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233937AbiBJI75 (ORCPT
+        with ESMTP id S232598AbiBJJAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 03:59:57 -0500
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752FF1038;
-        Thu, 10 Feb 2022 00:59:59 -0800 (PST)
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A78R43010574;
-        Thu, 10 Feb 2022 09:59:44 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=kJhS4sbXo/E16hFG2YvWZRb6ph5i6ukwSDD1RKORhvQ=;
- b=BmZUxt0r0PBrbkc7e4QDqKHdeyQDvtlsvHqNUpYK5Qz8xzxnPlk9GwKGtZr/04kvOrin
- pY6YZkn03yQ3KJ5JIOtUEHIcxncTwj7txeeykINmlvEXhRc0/zv1OY+YzntwLpHjqGqn
- jLOEzUf8dPmJ8dgdYDBjOOCctTM+3bJIgwD4yZ6ECj9mEYVlHc9MEbMkGzNYGiutlk7M
- CDFB4xr3+jzWv4WrdFHmO1iy3LwhvFfr71anAgSfotae1mPD5bpUjswfif9GOb+PTzsy
- CiFui6Ixeg1xiiEMmgxXYv5+njzEUKeRv/OzYuKfiXbnWZXl15ADNkPt+KNfuUGmQEcN yg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e4x268nj5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Feb 2022 09:59:44 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 607F310002A;
-        Thu, 10 Feb 2022 09:59:42 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5897221513B;
-        Thu, 10 Feb 2022 09:59:42 +0100 (CET)
-Received: from [10.201.21.201] (10.75.127.44) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Thu, 10 Feb
- 2022 09:59:41 +0100
-Message-ID: <014f2de2-6b6c-c60e-1f5d-98a74649b8e7@foss.st.com>
-Date:   Thu, 10 Feb 2022 09:59:40 +0100
+        Thu, 10 Feb 2022 04:00:22 -0500
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80080.outbound.protection.outlook.com [40.107.8.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED79E103B;
+        Thu, 10 Feb 2022 01:00:23 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fmbQzc0Iz/pITxnIanirTae3TpJBMopard+F3wTTmy7MciGF21kFrng6ecRfoMzC24VW4ovACwsTJXkvBhgIfHj8Uqb5mXJLNEGudickNY/ChOzc3kEx/AUPmQdTFdtmzgI23zbNkxuwlsekDC3sD3YfTTb5Dl9EYREVPkJr4O5c6sywlw49KwOXKMl/z0gkQNTloqEds+T+qUzd9XCes6r0Dt9VaYoTzEM6IJ3JNpeRLW8qPb24yLA0GN5n+tE3OTghM6jTKn4kJXdA2SCVpye8Ek24VXp8elUTIb7YRt1/14KIH0Rl0Ux9psNpY2NE9AV5FTnc4YCbB4rdBTWg9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fUj1NqG0RgwyfmMAe0QmaM0YL/tf5B657F3c+6Xeh0Y=;
+ b=oA0TQMyEsmNwyMtJbwEXkvmyFHn+MW1xl+l/ukJSqoJ7u7DL9BaO4jCBcPRDeaH9XaNSpQAUWeJnAyZts3xypBLkxIf7JenbuP5wvV8Z4gHa67uHR6WtDNFS4QpucFPPOJmhn0m5YnrRleGYrbm7AuozklGm7toJ8Iy/ftjE1FJJ0M8YLsJswr06wtpKZlIlToOycYNM+m1TEzJ6rlV81eH0t0iLxcSvyahLjy3cvV8a73NS8DYUrpgmVIpbeeeIfnxkVpvwGpOrPkN7q5ny3ai4/U6NnTKVPloaLWyjuQLjaexqAZTSjvgzZ+u+6/MPRG9Ql48KKbY7UMBmPfEtow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=KoCoConnector.onmicrosoft.com; s=selector2-KoCoConnector-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fUj1NqG0RgwyfmMAe0QmaM0YL/tf5B657F3c+6Xeh0Y=;
+ b=SKfeyeja/r6HnyTdd7wZdItUWqjE+EupJSlTqmC2a6L8sLSJVo2GQZq4iWGMtaY6bQlhlkPTMsO75qNpVMZcDupldQRAaQGpR4y4uq/UrmvgBvxKxEZSj6QRbSPeWTGROFxnhDAsm8rNa9pThJTNGuOS+lfeaOQ8ePRVyARHIoQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kococonnector.com;
+Received: from AM9PR09MB4884.eurprd09.prod.outlook.com (2603:10a6:20b:281::9)
+ by VI1PR0902MB2221.eurprd09.prod.outlook.com (2603:10a6:802:e::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Thu, 10 Feb
+ 2022 09:00:20 +0000
+Received: from AM9PR09MB4884.eurprd09.prod.outlook.com
+ ([fe80::3c7a:2af6:3623:4c3d]) by AM9PR09MB4884.eurprd09.prod.outlook.com
+ ([fe80::3c7a:2af6:3623:4c3d%7]) with mapi id 15.20.4975.011; Thu, 10 Feb 2022
+ 09:00:20 +0000
+Date:   Thu, 10 Feb 2022 09:49:40 +0100
+From:   Oliver Graute <oliver.graute@kococonnector.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Carlis <zhangxuezhi1@yulong.com>, dri-devel@lists.freedesktop.org,
+        linux-fbdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] fbtft: fb_st7789v: added reset on init_display()
+Message-ID: <20220210084940.GE10212@optiplex>
+References: <20210813062511.14537-1-oliver.graute@kococonnector.com>
+ <YRYrPfEHrcvDL4va@kroah.com>
+ <20210813125430.GA1527@optiplex>
+ <YRaJDyYquuklht6C@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YRaJDyYquuklht6C@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: AM0PR02CA0007.eurprd02.prod.outlook.com
+ (2603:10a6:208:3e::20) To AM9PR09MB4884.eurprd09.prod.outlook.com
+ (2603:10a6:20b:281::9)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 00/12] ARM: dts: sti: various DT fixes to avoid warnings
-Content-Language: en-US
-To:     Alain Volmat <avolmat@me.com>, <patrice.chotard@st.com>,
-        <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20211202075105.195664-1-avolmat@me.com>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-In-Reply-To: <20211202075105.195664-1-avolmat@me.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-10_03,2022-02-09_01,2021-12-02_01
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7e348b5a-081c-4067-d67e-08d9ec73c3bc
+X-MS-TrafficTypeDiagnostic: VI1PR0902MB2221:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR0902MB222156A90CF1D7AE003D093DEB2F9@VI1PR0902MB2221.eurprd09.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1148;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XXk7IP0Hj+dEdP3yQ1wAWoQxqeNpFxF71ap5/aBeJZe5Tut9ffoPXbyh/NFGw16CNByMFbaugBqNhYOrsyDgEvVWWea8bdM+gnYuQhJxqQkacFrhMSc0bUaz9yF5JSv85fstb/iDkCMhUbGC56mhCWEGZOJ0SPGdHU5KTQvy+B2+nTrglqHsEbkXyoaxjlPuzecqm3mZfHLSNDFvCddqF/cvdAPbOrtkS9w4BZssANyXLjt1zhV69d5oTZFBop26GUaLa9Vg9DLrD/xsoCBtR+MYjcjjbWFkeLqyfxA96MXwEhwTh68MX5DyuhKNV2B6m3uP+Kng9a4qEePToT+mu+FdRzMsEmm06c9X1Y4HlC7YTOfAX73elgcRUw3wpD8oX10LGAj4gUNXPv8f40xwLTIFUS1S6GxbzIfSIXC4Wgqk7xAx1QmyR9Ive1Jv0BxSZFI1C0DXwbWhoSEJ2cnbwp5BtC+YNAJsmkK6YeLFfTO0l8N3IEiVJ/3IzSVMrN2Lv98qPz5orkdUwfMdc4zEABPbtyZo47vj0nH2cGa7s6tXigydJr+scxywd5Cogk/V5r6MaBxrppra63jAY/Zr2wt/g03WWlyvRBHWQwLtBActQN861KlGAlulEdEK08mTNsMv2Ldi+elogb1qAx5/K57mizvds+2OyJLatz2ZJlaQ1YGbQfzfiIRSD/UDKBrG
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR09MB4884.eurprd09.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(376002)(396003)(136003)(39840400004)(346002)(38100700002)(33656002)(66946007)(26005)(86362001)(38350700002)(33716001)(316002)(44832011)(6916009)(5660300002)(2906002)(66556008)(508600001)(8936002)(8676002)(6666004)(9686003)(186003)(6486002)(1076003)(6512007)(66476007)(6506007)(52116002)(4326008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?26uIgihGhQnwcr6cdQs/NwgGuc1ifAVUZ8E+8A2uvhmcViMxIdCdUH55j53F?=
+ =?us-ascii?Q?x59sYrk4r3F5QoksgyXrFtVO2j21/OvIIWryw5PJrqMCA41SVCQXBpkDS46F?=
+ =?us-ascii?Q?hbiEr4uxgpmEESHN9EkjOvUSRRzHuvGnAbv+lGYhvCksIYF7WoFf9+LaTzUN?=
+ =?us-ascii?Q?4Dyg2/zqc/2HuTANBNeBIMLy8vLT8hGU9jUDGvACPJWX7hYOWoq7GMjqKM9Q?=
+ =?us-ascii?Q?ipTDZjqGfhXkAujz3ao6TzYqtNx3+WUxKsz2DHN3mbbMf5GocmQuwJ9W71gP?=
+ =?us-ascii?Q?k8ip/tFsJAGLQ5+CteFi8pLcyfWzuSOa6rGvfMwASRpxSkwdtPtQSI1Rv75O?=
+ =?us-ascii?Q?sLnn1ZnP5O1xg/YNV+AbnELbK0CSjeycYbfEusQk7r1Oe8XVCnkox4jL5m02?=
+ =?us-ascii?Q?JAqBRzsOsVRj/Tg+nS0H2QO2TQ9igCti/hZ4wlycHVJwuWhop5CTlX+nJmd2?=
+ =?us-ascii?Q?E4jHP+ThII3vBBO4L6sIXndrTaAKGj4gYqCi0Sr7CLgR/wfSc7cGEdGMjKOF?=
+ =?us-ascii?Q?SuByYQifClilsQprNbj2JLaSQO/VsauLpBLSA7pyV9cUv975AQspBlEuBOpv?=
+ =?us-ascii?Q?2yEav935QwqC9Dr/wE9zfXXRBkOg3TU7bfw+ddj2tDetA8LnsN54J2x4NeKc?=
+ =?us-ascii?Q?nB5iSbP3NSvzNw+vcOkozngEvkCawBrdbZvu+YZIO+XbTgWuWXJhxiT8ckxm?=
+ =?us-ascii?Q?xgqQ5yjXYir4HdakUNIbjIrNzCHNZmLnNeKJsGVVN2PFpo436Pl+DmiajpP1?=
+ =?us-ascii?Q?ci5DoUfrKQxTh6fRFBlSVqChSpFkzVPIsudO1OCFR4qgqHo0gBtcLc9niEhS?=
+ =?us-ascii?Q?msACw1+6f8+H7wxTN3jjpujE5xDjvsOkdDlq26NIBBtERGpTA3lNCOdwpyeN?=
+ =?us-ascii?Q?6+0bs4fBaYsRMFnlXbwA/VZl+qSyktl4FZIpVZdxFx+NDT4JhtL+bSqCUW5N?=
+ =?us-ascii?Q?2+crfIFF9FERNo3F4Kw8zEtdHoQkp0smYfkrX7umNCLCzI/9nSl0q5uSB2AI?=
+ =?us-ascii?Q?bHFYq8ZxWLx6XlmeTp/cRspHSVbuCr4skRamcOvFHQf6Yp4IpoPPfnw9/KBa?=
+ =?us-ascii?Q?kwKx2mJmitIghE6KFOoxK1JmJ5VPAqIXlL9SdUb0oeJ89z//oyYZ7WmfTXDB?=
+ =?us-ascii?Q?zXSb36BZGf/juKrjV8aBzrV2ztE940rLyhfkzzFpXy0GFipjqZx6SL5ahRB9?=
+ =?us-ascii?Q?JaxHNWr/wSgC2c4drRkz4wqKOksjsdpq0u03qNnPWE2riWK1GZo9QJwbZ5Gc?=
+ =?us-ascii?Q?FDq5FaP/rhHQbyx5LoDVuBXOsKqLxDBZdwROuqd3XCA5OuC32S20w2ZxX8pm?=
+ =?us-ascii?Q?EYbPHdrLmz/D0sa+hi+1oVWh3Gv5/FUWEbL5vidjATO67bRCeg+u3dEnzUWR?=
+ =?us-ascii?Q?zDjieKUN5C3sBwRmfsBmAPyzgKbipN9S2Qg/Iwdo1OvNkkYxO3OA5IcO0iOm?=
+ =?us-ascii?Q?dmeA3x+Q1HtU6PIy55pbM2DFqhRKEB/7wOGeK5EgM843xxji/orcHsD7Yucf?=
+ =?us-ascii?Q?1OpMXy//7+TbUv5tyJgzdXtoWSJe3foXG/vI/Yx14N0CtFKJoRf6rmhn5iWc?=
+ =?us-ascii?Q?+Q6xe0UI5NfqU40JXoJu8pTbS1hflf0fpIo1LOtrfJjO6co7lYyHsSVtdU0+?=
+ =?us-ascii?Q?SO/eVIMXQvoq2CZX1uZ+2j6h2A2kRJFGZahaXY+de+/2LDFFGqzH1Ru8vP6P?=
+ =?us-ascii?Q?z3dFyA=3D=3D?=
+X-OriginatorOrg: kococonnector.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e348b5a-081c-4067-d67e-08d9ec73c3bc
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR09MB4884.eurprd09.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 09:00:20.2243
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 59845429-0644-4099-bd7e-17fba65a2f2b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hL4qpTbfJimjSalbmQw6N5YypjWe3H0IUxEAR5XsTi69XoCbU2TpNqlFrIoZQbM1s0wrYiyCgHamX4SBA0nAamDbhthFlYuC3/qJMhCwuOo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0902MB2221
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alain
+On 13/08/21, Greg KH wrote:
+> On Fri, Aug 13, 2021 at 02:54:30PM +0200, Oliver Graute wrote:
+> > On 13/08/21, Greg KH wrote:
+> > > On Fri, Aug 13, 2021 at 08:25:10AM +0200, Oliver Graute wrote:
+> > > > staging: fbtft: fb_st7789v: reset display before initialization
+> > > 
+> > > What is this line here, and why is this not your subject line instead?
+> > 
+> > I'll put the line as subject instead.
+> > 
+> > > > In rare cases the display is flipped or mirrored. This was observed more
+> > > > often in a low temperature environment. A clean reset on init_display()
+> > > > should help to get registers in a sane state.
+> > > > 
+> > > > Signed-off-by: Oliver Graute <oliver.graute@kococonnector.com>
+> > > 
+> > > What commit does this fix?
+> > 
+> > this is a fix for a rare behavior of the fb_st7789v display. Not a
+> > bugfix for a specific commit.
+> 
+> So if it has always been broken, list the commit where the code was
+> added to the kernel, as this should be backported to the stable kernels,
+> right?
 
-Pleased resubmit this series by squashing PATCH 1/4/5/6/7 together, the 
-compilation is broken and doesn't allow bisection.
+ok thx, will list the commit and add stable@vger.kernel.org to cc
 
-The same with patches 9/11/12.
+thx,
 
-Thanks
-Patrice
-
-On 12/2/21 08:50, Alain Volmat wrote:
-> A first serie to correct a large amount of DT warnings seen when
-> building with the W=1 option and mainly due to having several time
-> the same reg property (clock) or having unnecessary reg value.
-> 
-> The first 3 patches related to clocks require that recent serie [1] of
-> clock drivers improvements be first merged.
-> 
-> [1] https://lore.kernel.org/linux-clk/20211202072850.194314-1-avolmat@me.com/T/#t
-> 
-> Alain Volmat (12):
->   ARM: dts: sti: ensure unique unit-address in stih407-clock
->   ARM: dts: sti: ensure unique unit-address in stih410-clock
->   ARM: dts: sti: ensure unique unit-address in stih418-clock
->   ARM: dts: sti: move some nodes out of the soc section in
->     stih407-family.dtsi
->   ARM: dts: sti: update stih410-b2260 following stih407-family DT update
->   ARM: dts: sti: update stih418-b2199 following stih407-family DT update
->   ARM: dts: sti: update stihxxx-b2120 following stih407-family DT update
->   ARM: dts: sti: remove delta node from stih410.dtsi
->   ARM: dts: sti: move usb picophy nodes out of soc in stih410.dtsi
->   ARM: dts: sti: move usb picophy nodes out of soc in stih418.dtsi
->   ARM: dts: sti: move usb picophy nodes in stih410-b2120.dts
->   ARM: dts: sti: move usb picophy nodes in stih410-b2260.dts
-> 
->  arch/arm/boot/dts/stih407-clock.dtsi  | 101 +++++-----
->  arch/arm/boot/dts/stih407-family.dtsi | 262 +++++++++++++-------------
->  arch/arm/boot/dts/stih410-b2120.dts   |  16 +-
->  arch/arm/boot/dts/stih410-b2260.dts   |  30 +--
->  arch/arm/boot/dts/stih410-clock.dtsi  | 100 +++++-----
->  arch/arm/boot/dts/stih410.dtsi        |  52 ++---
->  arch/arm/boot/dts/stih418-b2199.dts   |  22 +--
->  arch/arm/boot/dts/stih418-clock.dtsi  | 101 +++++-----
->  arch/arm/boot/dts/stih418.dtsi        |  38 ++--
->  arch/arm/boot/dts/stihxxx-b2120.dtsi  |  22 +--
->  10 files changed, 351 insertions(+), 393 deletions(-)
-> 
+Oliver
