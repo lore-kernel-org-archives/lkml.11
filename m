@@ -2,120 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D187C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B230BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:41:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244564AbiBJQlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:41:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52174 "EHLO
+        id S244576AbiBJQlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:41:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244570AbiBJQlH (ORCPT
+        with ESMTP id S244570AbiBJQlJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:41:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 36E991A8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:41:08 -0800 (PST)
+        Thu, 10 Feb 2022 11:41:09 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F3A6D44
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:41:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511267;
+        s=mimecast20190719; t=1644511268;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=0l/m87uQUmT5CdzB+3f+eMwCEX3CAuEYEJDghPjLWUg=;
-        b=eF8paujx6WLC/UXm2UsrQt/QJk02UIBm3lE2r6ABy3c3zVNlXzHWTe5ZDFOQktUwXErOHT
-        E06tDDy2XIrY9wQNEp0eKIezwTg6BKU+xdjDBZO7CfzI0VaWCTMr0qUBc5o63ul+j18+yt
-        lnbudSbuTVhVbPSz7VnZEWmidz6/4Pg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=sln1XK4tfQf7DanR/XnCkN/+xUa92Bv7r8YPe73yBKo=;
+        b=UGnP26JE9I3gJ1YXSdebAjHjqoMlqx1kaeZfLMpm0LZtJTEG4kf9kNSHldjCtbskjdMSt1
+        Zi2NzsbGxPFtP5eFFR9SNjhzMTTpBzXzP0xQfxGd8pL/r6ZZAI3xYAocJKUOurERriessZ
+        zT44gyYsyoi4lEJJWLn1n62iZoKAb+A=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-159-zn2PGcbFMrWwV6cEoudXsA-1; Thu, 10 Feb 2022 11:41:00 -0500
-X-MC-Unique: zn2PGcbFMrWwV6cEoudXsA-1
-Received: by mail-ed1-f69.google.com with SMTP id k5-20020a508ac5000000b00408dec8390aso3627508edk.13
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:41:03 -0800 (PST)
+ us-mta-500-F4FoH272MvKXv2VYuWQPMg-1; Thu, 10 Feb 2022 11:41:07 -0500
+X-MC-Unique: F4FoH272MvKXv2VYuWQPMg-1
+Received: by mail-ej1-f70.google.com with SMTP id la22-20020a170907781600b006a7884de505so2998046ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:41:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=0l/m87uQUmT5CdzB+3f+eMwCEX3CAuEYEJDghPjLWUg=;
-        b=m55D3BVOvYb5/b6Bx0WOpAo2cqKkpIGXpNpRlKWDQ3kHkgmrXLI9Ist6kt0Pt4xAVW
-         Qa1Ts49SYiRX55KdoUIgfma2ULZ9vMN4v8uZPI/dRNAZPYJFliO2/71p4Agme20TjU8j
-         c6f+R5ht2jjMh+ZcyBXdTzpYOLpitM7+vqPJ4XvPrmlZZ7I5IP5YToIncHToOaAlV635
-         aQQg+JrGK2Pz6c1PJGy0tqOvjudwfTX/ne7LKzfuHmvXFiCjGBwpZV5nqxxRXAjyD87J
-         xCjvhLUsCGAMs8WzwqRy/aVOERKeh/RgmSlOGH25ftQ2XSdW7TySOytwklauhQBGrlQj
-         QAag==
-X-Gm-Message-State: AOAM53015lUSfx4grOxYFPrwV9hdzElW/KCkuTPU0+FeOf4ONayTYOCA
-        GFMxQC4MWGceYyBPdSHhf0QLT63aJ9pxMrsPPsizX3Jqem+EnHWnTbuzBUFwjsPrv1P4I7TdLUt
-        L5zTLvuCkPqE4sFt2KZ5k9h6C
-X-Received: by 2002:a05:6402:4490:: with SMTP id er16mr9338799edb.453.1644511262947;
-        Thu, 10 Feb 2022 08:41:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyZECJ9IV0hUhjUbenMOOxBbaVN6c3Lw279B4RgPUaIqhBLIYpmJT4dWjQTktndy3A8BvGpTw==
-X-Received: by 2002:a05:6402:4490:: with SMTP id er16mr9338778edb.453.1644511262720;
-        Thu, 10 Feb 2022 08:41:02 -0800 (PST)
+        bh=sln1XK4tfQf7DanR/XnCkN/+xUa92Bv7r8YPe73yBKo=;
+        b=YbhM7dgqfxVGoQwJ0kZYaOtQ8HopojitwnJaeIMlC4PqeOKepnezQNyObv6CfT1+te
+         6UdeUZ0w7wXWFXRH08wdBb+dFcgFy7YG5o/HSJPhg0wKG3KKCT246FRzhDcnZMhm72kz
+         YLadddwRla6DpJbj3aMw1yKI1dX+sSvC91DF+CCMWRk+mtqSIAuowXhFvaaLUjAIzEoS
+         VSMbkiiPX7GEYc8ba/KZgseiEst49sWXtmMKe3qm/L+yprmEpSUZr0lCyUjFHEnjmAWy
+         Ct9jGhJUIAdnkGYzDehYyEKRRAhcbnJ7S7qV42AwJYppHgvnPwkpONStP5i8B2D1o6NZ
+         lSaQ==
+X-Gm-Message-State: AOAM53336+XQ2xFzzhbUwEuQ52nTc7K6Qabzb08xoJu8povZC82jb9bM
+        K2/MWkjvHjGl+nb45+0BDTnVpDOD9g2iqaJFUWRkAdtpsuKQy3JLzfoR4RPzaUMD5D9oteLH1sl
+        R2NYJMprtlLuR4K/o5k2ALj0f
+X-Received: by 2002:a17:906:4dd5:: with SMTP id f21mr7170802ejw.474.1644511266285;
+        Thu, 10 Feb 2022 08:41:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwGOGqdYFiEZXU4V7DS1VnbbmistQSNDrX9YO/QZtUoiRFpBftVTVgsIgQj5HPkbrLvluWCiA==
+X-Received: by 2002:a17:906:4dd5:: with SMTP id f21mr7170779ejw.474.1644511265988;
+        Thu, 10 Feb 2022 08:41:05 -0800 (PST)
 Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
-        by smtp.googlemail.com with ESMTPSA id f28sm2372477ejl.46.2022.02.10.08.40.42
+        by smtp.googlemail.com with ESMTPSA id w17sm9076036edd.18.2022.02.10.08.41.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:41:02 -0800 (PST)
-Message-ID: <14850b2d-f55f-712a-41fe-b6ee4a291de0@redhat.com>
-Date:   Thu, 10 Feb 2022 17:40:40 +0100
+        Thu, 10 Feb 2022 08:41:05 -0800 (PST)
+Message-ID: <6f3d4ed7-f3c1-7c06-d5cf-1bd824731e43@redhat.com>
+Date:   Thu, 10 Feb 2022 17:41:03 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.10 3/6] KVM: nVMX: Also filter
- MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
+Subject: Re: [PATCH MANUALSEL 5.16 1/8] KVM: eventfd: Fix false positive RCU
+ usage warning
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-References: <20220209185714.48936-1-sashal@kernel.org>
- <20220209185714.48936-3-sashal@kernel.org>
+Cc:     Hou Wenlong <houwenlong93@linux.alibaba.com>,
+        Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org
+References: <20220209185635.48730-1-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185714.48936-3-sashal@kernel.org>
+In-Reply-To: <20220209185635.48730-1-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 19:57, Sasha Levin wrote:
-> From: Vitaly Kuznetsov <vkuznets@redhat.com>
+On 2/9/22 19:56, Sasha Levin wrote:
+> From: Hou Wenlong <houwenlong93@linux.alibaba.com>
 > 
-> [ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
+> [ Upstream commit 6a0c61703e3a5d67845a4b275e1d9d7bc1b5aad7 ]
 
 Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
 Paolo
 
-> Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
-> MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
-> MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
-> MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
-> on 'true' MSR data.
+> Fix the following false positive warning:
+>   =============================
+>   WARNING: suspicious RCU usage
+>   5.16.0-rc4+ #57 Not tainted
+>   -----------------------------
+>   arch/x86/kvm/../../../virt/kvm/eventfd.c:484 RCU-list traversed in non-reader section!!
 > 
-> Note, none of the currently existing Windows/Hyper-V versions are known
-> to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
-> is aimed at making the filtering future proof.
+>   other info that might help us debug this:
 > 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+>   rcu_scheduler_active = 2, debug_locks = 1
+>   3 locks held by fc_vcpu 0/330:
+>    #0: ffff8884835fc0b0 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x88/0x6f0 [kvm]
+>    #1: ffffc90004c0bb68 (&kvm->srcu){....}-{0:0}, at: vcpu_enter_guest+0x600/0x1860 [kvm]
+>    #2: ffffc90004c0c1d0 (&kvm->irq_srcu){....}-{0:0}, at: kvm_notify_acked_irq+0x36/0x180 [kvm]
+> 
+>   stack backtrace:
+>   CPU: 26 PID: 330 Comm: fc_vcpu 0 Not tainted 5.16.0-rc4+
+>   Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+>   Call Trace:
+>    <TASK>
+>    dump_stack_lvl+0x44/0x57
+>    kvm_notify_acked_gsi+0x6b/0x70 [kvm]
+>    kvm_notify_acked_irq+0x8d/0x180 [kvm]
+>    kvm_ioapic_update_eoi+0x92/0x240 [kvm]
+>    kvm_apic_set_eoi_accelerated+0x2a/0xe0 [kvm]
+>    handle_apic_eoi_induced+0x3d/0x60 [kvm_intel]
+>    vmx_handle_exit+0x19c/0x6a0 [kvm_intel]
+>    vcpu_enter_guest+0x66e/0x1860 [kvm]
+>    kvm_arch_vcpu_ioctl_run+0x438/0x7f0 [kvm]
+>    kvm_vcpu_ioctl+0x38a/0x6f0 [kvm]
+>    __x64_sys_ioctl+0x89/0xc0
+>    do_syscall_64+0x3a/0x90
+>    entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Since kvm_unregister_irq_ack_notifier() does synchronize_srcu(&kvm->irq_srcu),
+> kvm->irq_ack_notifier_list is protected by kvm->irq_srcu. In fact,
+> kvm->irq_srcu SRCU read lock is held in kvm_notify_acked_irq(), making it
+> a false positive warning. So use hlist_for_each_entry_srcu() instead of
+> hlist_for_each_entry_rcu().
+> 
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Hou Wenlong <houwenlong93@linux.alibaba.com>
+> Message-Id: <f98bac4f5052bad2c26df9ad50f7019e40434512.1643265976.git.houwenlong.hwl@antgroup.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kvm/vmx/evmcs.c | 1 +
->   1 file changed, 1 insertion(+)
+>   virt/kvm/eventfd.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index c0d6fee9225fe..5b68034ec5f9c 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
->   	case MSR_IA32_VMX_PROCBASED_CTLS2:
->   		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
->   		break;
-> +	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
->   	case MSR_IA32_VMX_PINBASED_CTLS:
->   		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
->   		break;
+> diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+> index 2ad013b8bde96..59b1dd4a549ee 100644
+> --- a/virt/kvm/eventfd.c
+> +++ b/virt/kvm/eventfd.c
+> @@ -463,8 +463,8 @@ bool kvm_irq_has_notifier(struct kvm *kvm, unsigned irqchip, unsigned pin)
+>   	idx = srcu_read_lock(&kvm->irq_srcu);
+>   	gsi = kvm_irq_map_chip_pin(kvm, irqchip, pin);
+>   	if (gsi != -1)
+> -		hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+> -					 link)
+> +		hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
+> +					  link, srcu_read_lock_held(&kvm->irq_srcu))
+>   			if (kian->gsi == gsi) {
+>   				srcu_read_unlock(&kvm->irq_srcu, idx);
+>   				return true;
+> @@ -480,8 +480,8 @@ void kvm_notify_acked_gsi(struct kvm *kvm, int gsi)
+>   {
+>   	struct kvm_irq_ack_notifier *kian;
+>   
+> -	hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+> -				 link)
+> +	hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
+> +				  link, srcu_read_lock_held(&kvm->irq_srcu))
+>   		if (kian->gsi == gsi)
+>   			kian->irq_acked(kian);
+>   }
 
