@@ -2,179 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 800BFC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239509AbiBJKQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:16:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36956 "EHLO
+        id S239523AbiBJKQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:16:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239504AbiBJKQh (ORCPT
+        with ESMTP id S239557AbiBJKQx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:16:37 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B80F38
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:39 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id c192so3124245wma.4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:38 -0800 (PST)
+        Thu, 10 Feb 2022 05:16:53 -0500
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8494DFFB
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:50 -0800 (PST)
+Received: by mail-lj1-x236.google.com with SMTP id j14so7265911lja.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 02:16:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=p2L2JMGAHF/fA4cXJq0+NeV9Ap/R7fib8dscPh33vcg=;
-        b=F27+3Ao6twgPUQ/BOE7bCH1y1UIIqmAONzGU3oxFPBf0mAFdO1zuL2KUYM1O++g2kx
-         0QthHn6iinSXUj64X8vvdhOqtR+XWYwn5E/Gw+bJlWic6yenGNohxjvoICKo1CA/v5wh
-         dZGA4pMay8u5aQAVuBZJ9srKDSwgWE/ddXN47oMMFEcWNd53Fe5zwF8cdwre7J051wLF
-         ItDcXZiEPwC7ClNhh568QmdIVrjuPnmTtWwlVTn3hykOQGuNeu6OtXK7BEc5b2gRMv6/
-         7r1aC+tQNy80dt1ZZUiEtUXIHLwa4b8xT03cNBWZKJQJ3w+AQX5CpSGRsTrvE9geY6Nj
-         P3iw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=3ne9afkcEMUgeoGNnWkV++QClTAUsFhKUiDokSSK4gs=;
+        b=cpwqd0ostl/K+0LDjp2O6emA6OJVYcuj390GkHObcgJdcYkRtqUketq5yz81ZW1ECl
+         XNHUYvbLv6X9XrwkTOPMd0aj8dFeJivC7rqhA/EwEwFsHu/2/2VYqiP4gmU1vK1v5bgH
+         0r1SH59cy3GO/YFDMyrJ90Z9jcifx/DZvIZ+Smo8syz3lY5yQByFDE+P5EK0qRWKKzVc
+         6D17AWW2PEHr/FfcoztmL0216RO4PipqiK8X08Zedwbl90LI3Dkv5sTl0B5SJr2o9ONs
+         JgS3JxvDgP0iqwaryvvqtf8raA7fGcBKOV9bXpANRbVytEfgzOPqqB4852ysoRhjbuN+
+         NDkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=p2L2JMGAHF/fA4cXJq0+NeV9Ap/R7fib8dscPh33vcg=;
-        b=s77VQ7XnZqL0svNecHAzV3PeWoCyRGivS4YGgytyXkGrhGJmpsrfPUGRJsCVdkGbTr
-         IO2377BJkikLBBKwekp2C+ZkzvVt0D5woEp5bClX8RADyS2TC7W7FXFAxnwechyDkgWL
-         38/1802ULndPCRERl/rLb0/H/2ZueQ40v0rU89w7YRxm+BXE4ULsosj9XHPehrU/sV9T
-         Nw76SA6aBfNckuZxNOqrlAKbBuNfmefOGwi7BirFkP3NaQEgbwt9MfuPS1z2XN3Tglbd
-         wIdUddruAUHsO3UVbMTv4NNjFPIRlYPNxx1/oE/0kFWZWVbA7rOX7kN+zj41FhaZ3tqO
-         z3sw==
-X-Gm-Message-State: AOAM533pSmMQ3OnnW/Nja+/BXUqdrytqOr350phgPK4TG1AsN4p42FPw
-        sa5N9oTzMPduyTeM3bNMM9GpGQ==
-X-Google-Smtp-Source: ABdhPJyqF2XvTy7u6DWP/6ivautdkeYnX0LG3m5hhXZW9KBraONCYgZP5/iwGcxiCbFl24LtFFh+PA==
-X-Received: by 2002:a05:600c:2058:: with SMTP id p24mr1538504wmg.3.1644488197579;
-        Thu, 10 Feb 2022 02:16:37 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id y1sm1328053wmi.36.2022.02.10.02.15.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 02:15:55 -0800 (PST)
-Date:   Thu, 10 Feb 2022 10:15:52 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Stable <stable@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        cluster-devel@redhat.com,
-        syzbot+0ed9f769264276638893@syzkaller.appspotmail.com
-Subject: Re: [PATCH 1/1] Revert "iomap: fall back to buffered writes for
- invalidation failures"
-Message-ID: <YgTl2Lm9Vk50WNSj@google.com>
-References: <20220209085243.3136536-1-lee.jones@linaro.org>
- <20220210045911.GF8338@magnolia>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3ne9afkcEMUgeoGNnWkV++QClTAUsFhKUiDokSSK4gs=;
+        b=sP61b+ofPP5ZcIkwSdzjX7B7+dPxmlpw2YWlO58Pn7i5uhVEEFlSgJZSgY4Mo4UxzC
+         8WLSIFhENqH3sVNAjha8gOwg1bJ2BHLYGV9tELivX6h1mW8Avyvlc9P4vS3chu8TND3D
+         Ug2+pTM97PPX5Ehk1A7tpaTdkGlAdBU0XOR4T8HzciZ5HYEeFSnGByh8nNNO855aPq/S
+         aVnqjoERHZIclMxIgDX3nl/ugkPobHg4HqyImoLamvL3GdJnn+co75P4C7GotY5tFvnW
+         Lm687mxLOT3ibVqKII0sNiEPo2SJFm5oO8GSeYlvaZpLiUzEfbCOBoM8a0LYqIisCdhl
+         eYbA==
+X-Gm-Message-State: AOAM531kRBVXQoOAfdDwqUs1xV1BSsr9lj5NhIySSliQUjT9lKRPpT50
+        l13KxqhL4MOmmR2+v5TKNUF1rQ==
+X-Google-Smtp-Source: ABdhPJxjobzeo5yzVqpZ1edrDcbPHOwnY2/Az6fBOhCPktWcPtktCsDi7eYsUWXornR+W6Dt96frYg==
+X-Received: by 2002:a05:651c:1413:: with SMTP id u19mr4516534lje.240.1644488208827;
+        Thu, 10 Feb 2022 02:16:48 -0800 (PST)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id a6sm2841646ljb.93.2022.02.10.02.16.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 02:16:48 -0800 (PST)
+Message-ID: <19b96972-cee7-937f-21ce-c78982ed2048@linaro.org>
+Date:   Thu, 10 Feb 2022 13:16:46 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220210045911.GF8338@magnolia>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] media: qcom: use div64_u64() instead of do_div()
+Content-Language: en-GB
+To:     Qing Wang <wangqing@vivo.com>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1644395913-4091-1-git-send-email-wangqing@vivo.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1644395913-4091-1-git-send-email-wangqing@vivo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 09 Feb 2022, Darrick J. Wong wrote:
-
-> On Wed, Feb 09, 2022 at 08:52:43AM +0000, Lee Jones wrote:
-> > This reverts commit 60263d5889e6dc5987dc51b801be4955ff2e4aa7.
-> > 
-> > Reverting since this commit opens a potential avenue for abuse.
+On 09/02/2022 11:38, Qing Wang wrote:
+> From: Wang Qing <wangqing@vivo.com>
 > 
-> What kind of abuse?  Did you conclude there's an avenue solely because
-> some combination of userspace rigging produced a BUG warning?  Or is
-> this a real problem that someone found?
-
-Genuine question: Is the ability for userspace to crash the kernel
-not enough to cause concern?  I would have thought that we'd want to
-prevent this.
-
-If by 'real problem' you mean; privilege escalation, memory corruption
-or data leakage, then no, I haven't found any evidence of that.
-However, that's not to say these aren't possible as a result of this
-issue, just that I do not have the skills or knowledge to be able to
-turn this into a demonstrable attack vector.
-
-However, if you say there is no issue, I'm happy to take your word.
-
-> > The C-reproducer and more information can be found at the link below.
+> do_div() does a 64-by-32 division.
+> When the divisor is u64, do_div() truncates it to 32 bits, this means it
+> can test non-zero and be truncated to zero for division.
 > 
-> No.  Post the information and your analysis here.  I'm not going to dig
-> into some Google site to find out what happened, and I'm not going to
-> assume that future developers will be able to access that URL to learn
-> why this patch was created.
+> fix do_div.cocci warning:
+> do_div() does a 64-by-32 division, please consider using div64_u64 instead.
 
-The link provided doesn't contain any further analysis.  Only the
-reproducer and kernel configuration used, which are both too large to
-enter into a Git commit.
 
-> >   kernel BUG at fs/ext4/inode.c:2647!
-> >   invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> >   CPU: 0 PID: 459 Comm: syz-executor359 Tainted: G        W         5.10.93-syzkaller-01028-g0347b1658399 #0
+NAK
+
+The div64_u64 is not equivalent to do_div. It returns the quotient
+rather than modifying the first arg. Moreover it is unoptimal on 32-bit
+arches.
+
 > 
-> What BUG on fs/ext4/inode.c:2647?
+> Signed-off-by: Wang Qing <wangqing@vivo.com>
+> ---
+>   drivers/media/platform/qcom/venus/vdec.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/fs/ext4/inode.c?h=v5.10.93#n2647
-> 
-> All I see is a call to pagevec_release()?  There's a BUG_ON further up
-> if we wait for page writeback but then it still has Writeback set.  But
-> I don't see anything in pagevec_release that would actually result in a
-> BUG warning.
+> diff --git a/drivers/media/platform/qcom/venus/vdec.c b/drivers/media/platform/qcom/venus/vdec.c
+> index 91da3f5..941a904
+> --- a/drivers/media/platform/qcom/venus/vdec.c
+> +++ b/drivers/media/platform/qcom/venus/vdec.c
+> @@ -435,7 +435,7 @@ static int vdec_s_parm(struct file *file, void *fh, struct v4l2_streamparm *a)
+>   		return -EINVAL;
+>   
+>   	fps = (u64)USEC_PER_SEC;
+> -	do_div(fps, us_per_frame);
+> +	div64_u64(fps, us_per_frame);
+>   
+>   	inst->fps = fps;
+>   	inst->timeperframe = *timeperframe;
 
-Right, this BUG back-trace was taken from the kernel I received the
-bug report for.  I should have used the one I triggered in Mainline,
-apologies for that.
-
-The real source of the BUG is in the inlined call to page_buffers().
-
-Here is the link for the latest release kernel:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/fs/ext4/inode.c?h=v5.16#n2620
-
-#define page_buffers(page)                                      \
-        ({                                                      \
-                BUG_ON(!PagePrivate(page));                     \
-                ((struct buffer_head *)page_private(page));     \
-        })
-
-> Oh, right, this is one of those inscrutable syzkaller things, where a
-> person can spend hours figuring out what the hell it set up.
-
-A link to the config used (again too big to enter into a commit
-message), can be easily sourced from the link provided.
-
-> Yeah...no, you don't get to submit patches to core kernel code, claim
-> it's not your responsibility to know anything about a subsystem that you
-> want to patch, and then expect us to do the work for you.  If you pick
-> up a syzkaller report, you get to figure out what broke, why, and how to
-> fix it in a reasonable manner.
-> 
-> You're a maintainer, would you accept a patch like this?
-
-No.  I would share my knowledge to provide a helpful review and work
-with the contributor to find a solution (if applicable).
-
-> OH WAIT, you're running this on the Android 5.10 kernel, aren't you?
-> The BUG report came from page_buffers failing to find any buffer heads
-> attached to the page.
-> https://android.googlesource.com/kernel/common/+/refs/heads/android12-5.10-2022-02/fs/ext4/inode.c#2647
-
-Yes, the H/W I have to prototype these on is a phone and the report
-that came in was specifically built against the aforementioned
-kernel.
-
-> Yeah, don't care.
-
-"There is nothing to worry about, as it's intended behaviour"?
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+With best wishes
+Dmitry
