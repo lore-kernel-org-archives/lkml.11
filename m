@@ -2,213 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05551C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 17:59:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245453AbiBJR7L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 12:59:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58220 "EHLO
+        id S245460AbiBJR7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 12:59:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245442AbiBJR7I (ORCPT
+        with ESMTP id S245439AbiBJR7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 12:59:08 -0500
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B751A8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 09:59:08 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21AHwxYR033936;
-        Thu, 10 Feb 2022 11:58:59 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644515939;
-        bh=B2bHIKbB6eJK04fx2EZ+8k0DR+9c9Sj3ZRCNCaJmzEI=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=NEmmy2gSKxq7R+VpCsDJIr9xebEQoRhRQoKdG+meCePsj0YQOvgj5Sj/OmnUpPSjo
-         jH0b5dEOaJPkNNPLQVl4ctwXqXW4mL8DMVd629q6St9Ss+Rxz9eBMxS1ZGaWT8rgOs
-         SeDloTlfNFvUtyYWGOla2qA15xkzaMGsfsZjujzo=
-Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21AHwxa4095188
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 10 Feb 2022 11:58:59 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 10
- Feb 2022 11:58:58 -0600
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 10 Feb 2022 11:58:58 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21AHww4O120840;
-        Thu, 10 Feb 2022 11:58:58 -0600
-From:   Dave Gerlach <d-gerlach@ti.com>
-To:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>
-CC:     Dave Gerlach <d-gerlach@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: [PATCH 1/1] firmware: ti_sci: Switch transport to polled mode during system suspend
-Date:   Thu, 10 Feb 2022 11:58:58 -0600
-Message-ID: <20220210175858.11247-2-d-gerlach@ti.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220210175858.11247-1-d-gerlach@ti.com>
-References: <20220210175858.11247-1-d-gerlach@ti.com>
+        Thu, 10 Feb 2022 12:59:48 -0500
+X-Greylist: delayed 382 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 09:59:48 PST
+Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80EA7F2D;
+        Thu, 10 Feb 2022 09:59:48 -0800 (PST)
+Message-ID: <b6032dd3-eb49-50dc-5847-484d8cc35195@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1644515602;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7jGGXtZuM+egD69FXEvOYIvlU7UKlZOrjM0E5mMf6D8=;
+        b=WqmTzxxG9nAZftgELIJe0xs5GpfBkJeFazaVzCiTTY+BXZES5aog1sKX0YTch2Fu0bdDvM
+        6Dt6wOxvNsZMMQps89B6WK1/RQ3fZhSPqPJZfxdqhRk3oBTFmIOv5V54ofuBOa109mNonk
+        yixSs4rj9Cn7hrw9EkbRr1YHBqPHpag=
+Date:   Thu, 10 Feb 2022 10:52:59 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Subject: Re: [PATCH v3] PCI: vmd: Honor ACPI _OSC on PCIe features
+Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Nirmal Patel <nirmal.patel@linux.intel.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220209213638.GA587920@bhelgaas>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Jonathan Derrick <jonathan.derrick@linux.dev>
+In-Reply-To: <20220209213638.GA587920@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During system suspend it is completely valid for devices to invoke TISCI
-commands during the noirq phase of the suspend path. Specifically this
-will always be seen for devices that define a power-domains DT property
-and make use of the ti_sci_pm_domains genpd implementation.
-The genpd_finish_suspend call will power off devices during the noirq
-phase, which will invoke TISCI.
 
-In order to support this, the ti_sci driver must switch to not use
-wait_for_completion_timeout during suspend, but instead rely on a manual
-check for if the completion is not yet done, and proceed only if this is
-the case.
 
-Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
----
- drivers/firmware/ti_sci.c | 61 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 55 insertions(+), 6 deletions(-)
+On 2/9/2022 2:36 PM, Bjorn Helgaas wrote:
+> On Tue, Dec 07, 2021 at 02:15:04PM +0100, Rafael J. Wysocki wrote:
+>> On Tue, Dec 7, 2021 at 12:12 AM Keith Busch <kbusch@kernel.org> wrote:
+>>> On Fri, Dec 03, 2021 at 11:15:41AM +0800, Kai-Heng Feng wrote:
+>>>> When Samsung PCIe Gen4 NVMe is connected to Intel ADL VMD, the
+>>>> combination causes AER message flood and drags the system performance
+>>>> down.
+>>>>
+>>>> The issue doesn't happen when VMD mode is disabled in BIOS, since AER
+>>>> isn't enabled by acpi_pci_root_create() . When VMD mode is enabled, AER
+>>>> is enabled regardless of _OSC:
+>>>> [    0.410076] acpi PNP0A08:00: _OSC: platform does not support [AER]
+>>>> ...
+>>>> [    1.486704] pcieport 10000:e0:06.0: AER: enabled with IRQ 146
+>>>>
+>>>> Since VMD is an aperture to regular PCIe root ports, honor ACPI _OSC to
+>>>> disable PCIe features accordingly to resolve the issue.
+>>>
+>>> At least for some versions of this hardare, I recall ACPI is unaware of
+>>> any devices in the VMD domain; the platform can not see past the VMD
+>>> endpoint, so I throught the driver was supposed to always let the VMD
+>>> domain use OS native support regardless of the parent's ACPI _OSC.
+>>
+>> This is orthogonal to whether or not ACPI is aware of the VMD domain
+>> or the devices in it.
+>>
+>> If the platform firmware does not allow the OS to control specific
+>> PCIe features at the physical host bridge level, that extends to the
+>> VMD "bus", because it is just a way to expose a hidden part of the
+>> PCIe hierarchy.
+> 
+> I don't understand what's going on here.  Do we understand the AER
+> message flood?  Are we just papering over it by disabling AER?
+> 
+> If an error occurs below a VMD, who notices and reports it?  If we
+> disable native AER below VMD because of _OSC, as this patch does, I
+> guess we're assuming the platform will handle AER events below VMD.
+> Is that really true?  Does the platform know how to find AER log
+> registers of devices below VMD?
+ACPI (and the specific UEFI implementation) might remain unaware of
+VMD domains. It's possible that the system management mode (SMM)
+controller which typically handles firmware-first errors would be
+capable of handling VMD errors in the vendor-specific manner.
+However if _OSC hadn't taken into account VMD ports, SMM wouldn't
+be capable of handling those errors and silently disabling AER on
+VMD domains is a bad idea.
 
-diff --git a/drivers/firmware/ti_sci.c b/drivers/firmware/ti_sci.c
-index 5ae2040b8b02..7f1844e16c47 100644
---- a/drivers/firmware/ti_sci.c
-+++ b/drivers/firmware/ti_sci.c
-@@ -2,7 +2,7 @@
- /*
-  * Texas Instruments System Control Interface Protocol Driver
-  *
-- * Copyright (C) 2015-2016 Texas Instruments Incorporated - https://www.ti.com/
-+ * Copyright (C) 2015-2022 Texas Instruments Incorporated - https://www.ti.com/
-  *	Nishanth Menon
-  */
- 
-@@ -12,6 +12,7 @@
- #include <linux/debugfs.h>
- #include <linux/export.h>
- #include <linux/io.h>
-+#include <linux/iopoll.h>
- #include <linux/kernel.h>
- #include <linux/mailbox_client.h>
- #include <linux/module.h>
-@@ -96,6 +97,7 @@ struct ti_sci_desc {
-  * @node:	list head
-  * @host_id:	Host ID
-  * @users:	Number of users of this instance
-+ * @is_suspending: Flag set to indicate in suspend path.
-  */
- struct ti_sci_info {
- 	struct device *dev;
-@@ -114,7 +116,7 @@ struct ti_sci_info {
- 	u8 host_id;
- 	/* protected by ti_sci_list_mutex */
- 	int users;
--
-+	bool is_suspending;
- };
- 
- #define cl_to_ti_sci_info(c)	container_of(c, struct ti_sci_info, cl)
-@@ -349,6 +351,8 @@ static struct ti_sci_xfer *ti_sci_get_one_xfer(struct ti_sci_info *info,
- 
- 	hdr = (struct ti_sci_msg_hdr *)xfer->tx_message.buf;
- 	xfer->tx_message.len = tx_message_size;
-+	xfer->tx_message.chan_rx = info->chan_rx;
-+	xfer->tx_message.timeout_rx_ms = info->desc->max_rx_timeout_ms;
- 	xfer->rx_len = (u8)rx_message_size;
- 
- 	reinit_completion(&xfer->done);
-@@ -406,6 +410,7 @@ static inline int ti_sci_do_xfer(struct ti_sci_info *info,
- 	int ret;
- 	int timeout;
- 	struct device *dev = info->dev;
-+	bool done_state = true;
- 
- 	ret = mbox_send_message(info->chan_tx, &xfer->tx_message);
- 	if (ret < 0)
-@@ -413,13 +418,27 @@ static inline int ti_sci_do_xfer(struct ti_sci_info *info,
- 
- 	ret = 0;
- 
--	/* And we wait for the response. */
--	timeout = msecs_to_jiffies(info->desc->max_rx_timeout_ms);
--	if (!wait_for_completion_timeout(&xfer->done, timeout)) {
-+	if (!info->is_suspending) {
-+		/* And we wait for the response. */
-+		timeout = msecs_to_jiffies(info->desc->max_rx_timeout_ms);
-+		if (!wait_for_completion_timeout(&xfer->done, timeout))
-+			ret = -ETIMEDOUT;
-+	} else {
-+		/*
-+		 * If we are suspending, we cannot use wait_for_completion_timeout
-+		 * during noirq phase, so we must manually poll the completion.
-+		 */
-+		ret = read_poll_timeout_atomic(try_wait_for_completion, done_state,
-+					       true, 1,
-+					       info->desc->max_rx_timeout_ms * 1000,
-+					       false, &xfer->done);
-+	}
-+
-+	if (ret == -ETIMEDOUT || !done_state) {
- 		dev_err(dev, "Mbox timedout in resp(caller: %pS)\n",
- 			(void *)_RET_IP_);
--		ret = -ETIMEDOUT;
- 	}
-+
- 	/*
- 	 * NOTE: we might prefer not to need the mailbox ticker to manage the
- 	 * transfer queueing since the protocol layer queues things by itself.
-@@ -3264,6 +3283,35 @@ static int tisci_reboot_handler(struct notifier_block *nb, unsigned long mode,
- 	return NOTIFY_BAD;
- }
- 
-+static void ti_sci_set_is_suspending(struct ti_sci_info *info, bool is_suspending)
-+{
-+	info->is_suspending = is_suspending;
-+}
-+
-+static int ti_sci_suspend(struct device *dev)
-+{
-+	struct ti_sci_info *info = dev_get_drvdata(dev);
-+	/*
-+	 * We must switch operation to polled mode now as drivers and the genpd
-+	 * layer may make late TI SCI calls to change clock and device states
-+	 * from the noirq phase of suspend.
-+	 */
-+	ti_sci_set_is_suspending(info, true);
-+
-+	return 0;
-+}
-+
-+static int ti_sci_resume(struct device *dev)
-+{
-+	struct ti_sci_info *info = dev_get_drvdata(dev);
-+
-+	ti_sci_set_is_suspending(info, false);
-+
-+	return 0;
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(ti_sci_pm_ops, ti_sci_suspend, ti_sci_resume);
-+
- /* Description for K2G */
- static const struct ti_sci_desc ti_sci_pmmc_k2g_desc = {
- 	.default_host_id = 2,
-@@ -3472,6 +3520,7 @@ static struct platform_driver ti_sci_driver = {
- 	.driver = {
- 		   .name = "ti-sci",
- 		   .of_match_table = of_match_ptr(ti_sci_of_match),
-+		   .pm = &ti_sci_pm_ops,
- 	},
- };
- module_platform_driver(ti_sci_driver);
--- 
-2.35.0
+The bugzilla made it sound like a specific platform/drive combination.
+What about a DMI match to mask the Corrected Physical Layer bits?
 
+> 
+>> The platform firmware does that through ACPI _OSC under the host
+>> bridge device (not under the VMD device) which it is very well aware
+>> of.
