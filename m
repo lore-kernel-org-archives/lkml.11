@@ -2,114 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48819C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD61DC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbiBJB4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:56:22 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60226 "EHLO
+        id S233189AbiBJB4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:56:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiBJBzn (ORCPT
+        with ESMTP id S232734AbiBJBzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 9 Feb 2022 20:55:43 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F2512B6AD
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:44:52 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id c3so528498pls.5
-        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:44:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FeQIZwYV9Kr9xuueKFIwhbOFaFrQZ6eikRo6PhomRJ0=;
-        b=HyP0G2xVMdq2VnlsZov6+NhKm2+A8CE6JKO3PZuIkSe952Mf2X7Tyk2LNNrhVao/RJ
-         MaxjSCCpfnkbhmTlTDOJ+ov9Ph5M1U3H38ZkRPw0+Ya/cLM2p9QCFBYrpxbHg7Bxxt91
-         djknGKt1nsczuyoQ9wbTeN1/DzJfLYlVThpCBRhG7ERfQ6lXgjrQ+7L+0pc04qxCJNQd
-         9KwZn6CZjVljGizTubX32VnRR7mqswelugRWXOAchatkQobdqySfZqswOKGGJpXUeGVR
-         ySvFAeQRsQHbn8++ILwblyHIqqdSVA+9Sq+ge4uED81RzeJVfzIXiJHbouKVF1ZidkYv
-         SdHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FeQIZwYV9Kr9xuueKFIwhbOFaFrQZ6eikRo6PhomRJ0=;
-        b=I5icHrBGzmTJ67exbhYlUm7Aibt0xQ/p+tJMVIvw51xQh802OaQGgjBZWAWTooxth0
-         4TDNw/SBFLueiOO9i3lqCGC5vm3S9fMrl6gFO5A+0R9YM4S00MChK9mcVu6Yp1Coyo05
-         3K1v1nrxREqYsSURSGADCuyUFWWLWpX0bCS9qdUO2SkII2utqHezg1HGHVt2XPlyx9ij
-         M+9UwgDudlPtLzHawuWshyvCAYwMhepj6Y+wCEVO52xaORESV2827SDB5C0TreuXDLBt
-         CzTgIOibcvRTnz1iVDByucYaCQYBFfYysNxXZFEnKNP9vBLkvJXvYoZJZOhoJZ0FpoLg
-         xt+A==
-X-Gm-Message-State: AOAM533cvKR90U31iclaEaULlDv/abDCGB5+uMfJ705xhMk+yfjK015E
-        2XE3XI3lALtQTKWikq8mVJ42Sh4k+J4Cww==
-X-Google-Smtp-Source: ABdhPJwFGI08SMoF42QjabCXD1l2JAJoIhfk+mU1gxaZWTzjAYyCs2422HTKsZ96FXJ1qNg2rSVMFg==
-X-Received: by 2002:a17:902:9308:: with SMTP id bc8mr5081998plb.147.1644454064446;
-        Wed, 09 Feb 2022 16:47:44 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id b20sm2043396pfv.31.2022.02.09.16.47.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 16:47:43 -0800 (PST)
-Date:   Thu, 10 Feb 2022 00:47:40 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        dmatlack@google.com, vkuznets@redhat.com
-Subject: Re: [PATCH 07/23] KVM: MMU: remove kvm_mmu_calc_root_page_role
-Message-ID: <YgRgrCxLM0Ctfwrj@google.com>
-References: <20220204115718.14934-1-pbonzini@redhat.com>
- <20220204115718.14934-8-pbonzini@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220204115718.14934-8-pbonzini@redhat.com>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B3D2BB1E
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:51:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46267B823D9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 00:33:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E4E8C340E7;
+        Thu, 10 Feb 2022 00:33:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1644453205;
+        bh=LvshK/blNNVzjkEFCNCcODobmLPbLezmfObyMz21JLY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iXFPm4+XAR1cgGN6izstu1RlRZRLR4ZLvjOpqVKT2tdGSkKHtwvb5jbU9bx5eXVGR
+         X7HPykgv7WpYJkKx3lYLX72T1YIFOM+Olv02Jcf53F8baw3xh/wowyrhv/nT34+SGI
+         3gJ6Bpv+EaRwkFV3R0P0VfnzVpeGr4oStgMDDHFY=
+Date:   Wed, 9 Feb 2022 16:33:24 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     ccross@google.com, sumit.semwal@linaro.org, mhocko@suse.com,
+        dave.hansen@intel.com, keescook@chromium.org, willy@infradead.org,
+        kirill.shutemov@linux.intel.com, vbabka@suse.cz,
+        hannes@cmpxchg.org, ebiederm@xmission.com, brauner@kernel.org,
+        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
+        chris.hyser@oracle.com, dave@stgolabs.net, pcc@google.com,
+        caoxiaofeng@yulong.com, david@redhat.com, gorcunov@gmail.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com,
+        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] mm: Fix UAF when anon vma name is used after vma is
+ freed
+Message-Id: <20220209163324.bbf26e7462b217d453c5a34f@linux-foundation.org>
+In-Reply-To: <20220210001801.15413-1-surenb@google.com>
+References: <20220210001801.15413-1-surenb@google.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022, Paolo Bonzini wrote:
-> Since the guest PGD is now loaded after the MMU has been set up
-> completely, the desired role for a cache hit is simply the current
-> mmu_role.  There is no need to compute it again, so __kvm_mmu_new_pgd
-> can be folded in kvm_mmu_new_pgd.
-> 
-> As an aside, the !tdp_enabled case in the function was dead code,
-> and that also gets mopped up as a side effect.
-> 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> ---
+On Wed,  9 Feb 2022 16:18:01 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
 
-...
-
-> @@ -4871,7 +4864,7 @@ void kvm_init_shadow_npt_mmu(struct kvm_vcpu *vcpu, unsigned long cr0,
+> When adjacent vmas are being merged it can result in the vma that was
+> originally passed to madvise_update_vma being destroyed. In the current
+> implementation, the name parameter passed to madvise_update_vma points
+> directly to vma->anon_name->name and it is used after the call to
+> vma_merge. In the cases when vma_merge merges the original vma and
+> destroys it, this will result in use-after-free bug as shown below:
+> 
+> madvise_vma_behavior << passes vma->anon_name->name as name param
+>   madvise_update_vma(name)
+>     vma_merge
+>       __vma_adjust
+>         vm_area_free <-- frees the vma
+>     replace_vma_anon_name(name) <-- UAF
+> 
+> Fix this by passing madvise_update_vma a copy of the name.
+> 
+> ...
+>
+> --- a/kernel/sys.c
+> +++ b/kernel/sys.c
+> @@ -2263,7 +2263,6 @@ int __weak arch_prctl_spec_ctrl_set(struct task_struct *t, unsigned long which,
 >  
->  	shadow_mmu_init_context(vcpu, context, &regs, new_role);
->  	reset_shadow_zero_bits_mask(vcpu, context, is_efer_nx(context));
-> -	__kvm_mmu_new_pgd(vcpu, nested_cr3, new_role.base);
-> +	kvm_mmu_new_pgd(vcpu, nested_cr3);
+>  #ifdef CONFIG_ANON_VMA_NAME
+>  
+> -#define ANON_VMA_NAME_MAX_LEN		80
+>  #define ANON_VMA_NAME_INVALID_CHARS	"\\`$[]"
+>  
+>  static inline bool is_valid_name_char(char ch)
+> diff --git a/mm/madvise.c b/mm/madvise.c
+> index 5604064df464..f36a5a9942d8 100644
+> --- a/mm/madvise.c
+> +++ b/mm/madvise.c
+> @@ -976,6 +976,8 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
+>  {
+>  	int error;
+>  	unsigned long new_flags = vma->vm_flags;
+> +	char name_buf[ANON_VMA_NAME_MAX_LEN];
+> +	const char *anon_name;
+>  
+>  	switch (behavior) {
+>  	case MADV_REMOVE:
+> @@ -1040,8 +1042,18 @@ static int madvise_vma_behavior(struct vm_area_struct *vma,
+>  		break;
+>  	}
+>  
+> +	anon_name = vma_anon_name(vma);
+> +	if (anon_name) {
+> +		/*
+> +		 * Make a copy of the name because vma might be destroyed when
+> +		 * merged with another one and the name parameter might be used
+> +		 * after that.
+> +		 */
+> +		strcpy(name_buf, anon_name);
+> +		anon_name = name_buf;
+> +	}
+>  	error = madvise_update_vma(vma, prev, start, end, new_flags,
+> -				   vma_anon_name(vma));
+> +				   anon_name);
 
-I'm not a fan of this change.  Conceptually it makes perfect sense, but I really,
-really don't like the hidden dependency between shadow_mmu_init_context() and
-kvm_mmu_new_pgd().
+anon_name is refcounted.  Why not use kref_get()/kref_put() instead of
+taking a copy?
 
-It's less bad once patch 01 is jettisoned, but I still don't love.  Yes, it's
-silly to call __kvm_mmu_new_pgd() before the role is set, but it is robust.  And
-either way we end up with an incoherent state, e.g. with this change, the role of
-the shadow page pointed at by mmu->root_hpa doesn't match the role of the mmu itself.
-
-Furthermore, the next patch to take advantage of this change is subtly broken/wrong.
-It drops kvm_mmu_calc_root_page_role() from kvm_mmu_new_pgd() under the guise that
-kvm_mmu_new_pgd() is called with an up-to-date mmu_role, but that is incorrect for
-both nested VM-Enter with TDP disabled in the host and nested VM-Exit (regardless of
-TDP enabling).
-
-Both nested_vmx_load_cr3() and nested_svm_load_cr3() load a new CR3 before updating
-the mmu.  Why, I have no idea.  Probably a historical wart
-
-The nested mess is likely easily solved, I don't see any obvious issue with swapping
-the order.  But I still don't love the subtlety.  I do like shaving cycles, just
-not the subtlety...
-
-If we do rework things to have kvm_mmu_new_pgd() pull the role from the mmu, then
-we should first add a long overdue audit/warn that KVM never runs with a mmu_role
-that isn't consistent with respect to its root SP's role.  E.g. finally get rid of
-mmu_audit.c, add a proper CONFIG_KVM_AUDIT_MMU (which I'll happily turn on for all
-my kernels), and start adding WARNs and other assertions.
