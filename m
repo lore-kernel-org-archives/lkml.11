@@ -2,110 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:19:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0850C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238403AbiBJJTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:19:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46048 "EHLO
+        id S238421AbiBJJVR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:21:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238391AbiBJJTl (ORCPT
+        with ESMTP id S238406AbiBJJVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:19:41 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D496F10B3;
-        Thu, 10 Feb 2022 01:19:41 -0800 (PST)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JvWPV1Sttz9sXd;
-        Thu, 10 Feb 2022 17:18:06 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 17:19:24 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 17:19:24 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <axboe@kernel.dk>, <hch@lst.de>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yuyufen@huawei.com>, <guohanjun@huawei.com>,
-        <wangxiongfeng2@huawei.com>
-Subject: [RFC PATCH] blk-mq: avoid housekeeping CPUs scheduling a worker on a non-housekeeping CPU
-Date:   Thu, 10 Feb 2022 17:35:32 +0800
-Message-ID: <20220210093532.182818-1-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 10 Feb 2022 04:21:13 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B640E10B3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:21:12 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-45-lEkQ6zw7PZWqGm8NVfJVHw-1; Thu, 10 Feb 2022 09:21:09 +0000
+X-MC-Unique: lEkQ6zw7PZWqGm8NVfJVHw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 10 Feb 2022 09:21:08 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 10 Feb 2022 09:21:08 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Dan Carpenter' <dan.carpenter@oracle.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+CC:     'Jiapeng Chong' <jiapeng.chong@linux.alibaba.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: RE: [PATCH] staging: pi433: using div64_u64() instead of do_div()
+Thread-Topic: [PATCH] staging: pi433: using div64_u64() instead of do_div()
+Thread-Index: AQHYDr0JeXBHu5JbA0ymi5sg9Q/cbqxteQpggB8TuXeAABPU4A==
+Date:   Thu, 10 Feb 2022 09:21:08 +0000
+Message-ID: <eefeb019b58e4b1a814462c709d224b6@AcuMS.aculab.com>
+References: <20220121114955.96979-1-jiapeng.chong@linux.alibaba.com>
+ <03591933cc384d7e91ede82f0cdd76a8@AcuMS.aculab.com>
+ <9c563d78-f883-65ee-9e7b-cf44e3b238e8@wanadoo.fr>
+ <20220210080603.GJ1951@kadam>
+In-Reply-To: <20220210080603.GJ1951@kadam>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When NOHZ_FULL is enabled, such as in HPC situation, CPUs are divided
-into housekeeping CPUs and non-housekeeping CPUs. Non-housekeeping CPUs
-are NOHZ_FULL CPUs and are often monopolized by the userspace process,
-such HPC application process. Any sort of interruption is not expected.
+From: Dan Carpenter
+> Sent: 10 February 2022 08:06
+> 
+> On Wed, Feb 09, 2022 at 08:15:13PM +0100, Christophe JAILLET wrote:
+> > Le 21/01/2022 à 14:34, David Laight a écrit :
+> > > From: Jiapeng Chong
+> > > > Sent: 21 January 2022 11:50
+> > > > Subject: [PATCH] staging: pi433: using div64_u64() instead of do_div()
+> > > >
+> > > > Clean the following coccicheck warning:
+> > > >
+> > > > ./drivers/staging/pi433/rf69.c:286:1-7: WARNING: do_div() does a
+> > > > 64-by-32 division, please consider using div64_u64 instead.
+> > >
+> > > That is one of patchcheck's worse warnings.
+> > >
+> > > You need to check the domain of the divisor, not its type.
+> > >
+> > > do_div() exists to avoid expensive 64bit divides when the
+> > > divisor is small.
+> > >
+> > > 	David
+> > >
+> > > -
+> > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > > Registration No: 1397386 (Wales)
+> > >
+> > >
+> >
+> > Moreover, the patch is broken by itself.
+> >
+> > See [1] were it was already reported that do_div() and div64_u64() don't
+> > have the same calling convention.
+> >
+> > Looks that div64_u64() and div64_ul() works the same way.
+> 
+> We could mark those as __must_check functions.
 
-blk_mq_hctx_next_cpu() selects each cpu in 'hctx->cpumask' alternately
-to schedule the work thread blk_mq_run_work_fn(). When 'hctx->cpumask'
-contains housekeeping CPU and non-housekeeping CPU at the same time, a
-housekeeping CPU, which want to request a IO, may schedule a worker on a
-non-housekeeping CPU. This may affect the performance of the userspace
-application running on non-housekeeping CPUs.
+That, and some kind of AI system to filter out untested patches
+from (presumably) students who think that the output from these
+tools 'must be right'.
 
-So let's just schedule the worker thread on the current CPU when the
-current CPU is housekeeping CPU.
+Same for all the patches for using swap(), min() LIST_HEAD() etc.
+They are at best churn and make the code harder to read.
 
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- block/blk-mq.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+	David
 
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 1adfe4824ef5..ff9a4bf16858 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -24,6 +24,7 @@
- #include <linux/sched/sysctl.h>
- #include <linux/sched/topology.h>
- #include <linux/sched/signal.h>
-+#include <linux/sched/isolation.h>
- #include <linux/delay.h>
- #include <linux/crash_dump.h>
- #include <linux/prefetch.h>
-@@ -2036,6 +2037,8 @@ static int blk_mq_hctx_next_cpu(struct blk_mq_hw_ctx *hctx)
- static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
- 					unsigned long msecs)
- {
-+	int work_cpu;
-+
- 	if (unlikely(blk_mq_hctx_stopped(hctx)))
- 		return;
- 
-@@ -2050,7 +2053,17 @@ static void __blk_mq_delay_run_hw_queue(struct blk_mq_hw_ctx *hctx, bool async,
- 		put_cpu();
- 	}
- 
--	kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx), &hctx->run_work,
-+	/*
-+	 * Avoid housekeeping CPUs scheduling a worker on a non-housekeeping
-+	 * CPU
-+	 */
-+	if (tick_nohz_full_enabled() && housekeeping_cpu(smp_processor_id(),
-+							 HK_FLAG_WQ))
-+		work_cpu = smp_processor_id();
-+	else
-+		work_cpu = blk_mq_hctx_next_cpu(hctx);
-+
-+	kblockd_mod_delayed_work_on(work_cpu, &hctx->run_work,
- 				    msecs_to_jiffies(msecs));
- }
- 
--- 
-2.20.1
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
