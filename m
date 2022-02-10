@@ -2,120 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C336C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 18:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245472AbiBJSAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 13:00:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59236 "EHLO
+        id S245472AbiBJSCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 13:02:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239511AbiBJSAT (ORCPT
+        with ESMTP id S245482AbiBJSCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 13:00:19 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF373F5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:00:19 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id k25so17231954ejp.5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:00:19 -0800 (PST)
+        Thu, 10 Feb 2022 13:02:01 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA03115A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:02:01 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id w7so8367757ioj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 10:02:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VyiRrCTCvD3kSlcteklEwF1Z7ulIFO497MFIShZC2EQ=;
-        b=lDJDV3gk7vJd8epZow77aLEhctdFJiMdWg4bPXyRqV+P8SCznLTjg9qaMrl4uBKi4W
-         FIa5xSqiTkfMTDDaQX3a6eOR3PULr05leKgBb7dtj1Z9aBTmqdnSEHwpCDlCePcizdIr
-         RL4deMl0WEaY0Jh1Ab9JXnycY4MaE3/yjJweZ3uE1EswISDRfgGvftKiIcyY4+H4cJmx
-         ksSJIN7XeO+LqnG802F/TkZsEYNXr+GmnNkQS0ZABy7zH5ImLkTkhCeBnSYlJHR3czCM
-         ubCKLT2cdNKaVcXthXtuVbskMddyIIhCb3KdDg7PxHdghxxP8+GQpQM+WnSRcdvK6IOK
-         wuSg==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YepB74YlwePIkAaR4jtJTCENwnjxuVeuYeoAzgmVff4=;
+        b=bXMJH/qYLpSGVC+53Dxuy73NFXsj3RTkKnyj0yhH2RrVLo0bm5WgGOa67Qrf9N+Siw
+         s7PWaw8C1karEO3Pz9b6Ti5PK/1HjVIZ//eqWs8JWlJ/DJByvN23Ycp2EG4vUz7o8jYr
+         JmkKYdMJNUozDO9Z/c9yNb5b1NVKBhWVatPxY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VyiRrCTCvD3kSlcteklEwF1Z7ulIFO497MFIShZC2EQ=;
-        b=419pYnMGGb9Vv20okCDNRX8msXiuesbQajmZIcnR6biQzzuOPSgDEwfy9EK4o/FAoa
-         6CQzuYaxE9iaoO0Ic8nFNpPi3IP9JjjPcTKSbP9GEzrlr7d39gamTeXkXgi/BatwEjI0
-         HYLr9RvEhDEUSUH/h4dgKz9TGDn/xCGzxUo8sSCw+kqFcYahXK4F6Pcw7MVzvAix/DfN
-         HNHYypVgdZ6fw52yyhrQp7lBA1Q/1nJjbMgFEgkayGFOsKmDPvDLIE4RkdA4utxTFk46
-         NHeH4pvjgCJawsuYwAu0G4+3JNlawponUqUSk/sRNPSudRlfK6BrEnl9q0+NwdFIwmwP
-         O6uA==
-X-Gm-Message-State: AOAM5329OA0DUZeDn4erd7pBOCD4KSaJ03J+Bbx6AuPd/qj+bZFLU1qR
-        vjrKJUBn1jfKGpIP1yu/VC1mcuaKgxPjgUuWGMkWDw==
-X-Google-Smtp-Source: ABdhPJxJuyhh7OCTVxsg1XD+thnzuteOezciR0odv+RtncFHrFra5L3HMOaU0zxHkSa4CRu6l4IZA/I4m8Gi0BaaQrw=
-X-Received: by 2002:a17:906:7948:: with SMTP id l8mr7308424ejo.636.1644516018273;
- Thu, 10 Feb 2022 10:00:18 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YepB74YlwePIkAaR4jtJTCENwnjxuVeuYeoAzgmVff4=;
+        b=f7DvE6RK+sdofZDGcWPjTXEbACfh1DUnmolnz1CfPAbMRUF98Ue7rFufnRspOQuyhO
+         caTFvkeVWmVa1T4q8HtXh4nYEnFx+c5ls3vn8SuziCuTmDlqX/fqvLNSw3OkeDaBQ2vD
+         cr7b5jxLd+1fmwlfzXWL4HCyxyi76SOeHL8PK7WBUqN1ium1/KpQRo+H2GqqKRznLJgr
+         U90+cC8FR0wnUyxNx16X7E9LbPBndZmLud/w5FlU9qGFP0HH2w1UrOBVouMha/Q4H0rI
+         E35d/idwamNHJW2YTBQG5XzPLJQNxKQN1vj+/1nSE+snHS7SBlfPiNA2CcQnIkrqEbn0
+         u20Q==
+X-Gm-Message-State: AOAM530Ise7a7Ob2FJC1Qu2sMzbTlJ2esv2HgCm6oyTygsrCCaxNyQ5k
+        Y+Ym2667gn+iYocXF9lvy8VgSQ==
+X-Google-Smtp-Source: ABdhPJwEuUFKMBsXzMtvsJ6U3tEwNExOh8IkrPx4WikpPszvu5J46DYU+pTWMhwP4AnfJ2XywHgyWw==
+X-Received: by 2002:a05:6638:2050:: with SMTP id t16mr4618952jaj.144.1644516121336;
+        Thu, 10 Feb 2022 10:02:01 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id p16sm8482826ilm.85.2022.02.10.10.02.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Feb 2022 10:02:01 -0800 (PST)
+Subject: Re: [PATCH V2] selftests: kvm: Remove absent target file
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Shuah Khan <shuah@kernel.org>, Peter Gonda <pgonda@google.com>
+Cc:     kernel@collabora.com, kernelci@groups.io,
+        "kernelci.org bot" <bot@kernelci.org>, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220210172352.1317554-1-usama.anjum@collabora.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <f9893f6a-b68b-e759-54f5-eef73e8a9eef@linuxfoundation.org>
+Date:   Thu, 10 Feb 2022 11:02:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-References: <20211116093833.245542-1-shreeya.patel@collabora.com> <874k56znix.fsf@collabora.com>
-In-Reply-To: <874k56znix.fsf@collabora.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 10 Feb 2022 19:00:07 +0100
-Message-ID: <CAMRc=MdByxO3+hJruvUkULtXAaB7aWewTd=Wv0MbWyX2vykdjA@mail.gmail.com>
-Subject: Re: [PATCH v4] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-To:     Gabriel Krisman Bertazi <krisman@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        wsa@kernel.org, kernel@collabora.com,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220210172352.1317554-1-usama.anjum@collabora.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 5:36 PM Gabriel Krisman Bertazi
-<krisman@collabora.com> wrote:
->
-> Shreeya Patel <shreeya.patel@collabora.com> writes:
->
-> > We are racing the registering of .to_irq when probing the
-> > i2c driver. This results in random failure of touchscreen
-> > devices.
-> >
-> > Following errors could be seen in dmesg logs when gc->to_irq is NULL
-> >
-> > [2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-> > [2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
-> >
-> > To avoid this situation, defer probing until to_irq is registered.
-> >
-> > This issue has been reported many times in past and people have been
-> > using workarounds like changing the pinctrl_amd to built-in instead
-> > of loading it as a module or by adding a softdep for pinctrl_amd into
-> > the config file.
-> >
-> > BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-> > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
->
-> Hi guys,
->
-> This seems to not have reached the Linus tree on 5.17.  If I'm not
-> mistaken, it also hasn't reached linux-next as of today. Is there
-> anything I'm missing here?
->
-> This is required to prevent spurious probe crashes of devices like this
-> FocalTech touchscreen, FT3528, when using pinctrl-amd. We've been
-> carrying it downstream for quite a while.
->
-> Thanks,
->
-> --
-> Gabriel Krisman Bertazi
+On 2/10/22 10:23 AM, Muhammad Usama Anjum wrote:
+> There is no vmx_pi_mmio_test file. Remove it to get rid of error while
+> creation of selftest archive:
+> 
+> rsync: [sender] link_stat "/kselftest/kvm/x86_64/vmx_pi_mmio_test" failed: No such file or directory (2)
+> rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
+> 
+> Fixes: 6a58150859fd ("selftest: KVM: Add intra host migration tests")
+> Reported-by: "kernelci.org bot" <bot@kernelci.org>
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> ---
+> Changes in V2:
+> Edited the subject line
+> ---
+>   tools/testing/selftests/kvm/Makefile | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+> index d61286208e242..b970397f725c7 100644
+> --- a/tools/testing/selftests/kvm/Makefile
+> +++ b/tools/testing/selftests/kvm/Makefile
+> @@ -82,7 +82,6 @@ TEST_GEN_PROGS_x86_64 += x86_64/tsc_msrs_test
+>   TEST_GEN_PROGS_x86_64 += x86_64/vmx_pmu_msrs_test
+>   TEST_GEN_PROGS_x86_64 += x86_64/xen_shinfo_test
+>   TEST_GEN_PROGS_x86_64 += x86_64/xen_vmcall_test
+> -TEST_GEN_PROGS_x86_64 += x86_64/vmx_pi_mmio_test
+>   TEST_GEN_PROGS_x86_64 += x86_64/sev_migrate_tests
+>   TEST_GEN_PROGS_x86_64 += x86_64/amx_test
+>   TEST_GEN_PROGS_x86_64 += access_tracking_perf_test
+> 
 
-Hi Gabriel!
+I am fine with the change itself. For this patch:
 
-My email address changed in September, that's why I didn't see the
-email you sent in November to my old one.
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
 
-gpiod_to_irq() can be used in context other than driver probing, I'm
-worried existing users would not know how to handle it. Also: how come
-you can get the GPIO descriptor from the provider but its interrupts
-are not yet set up?
+However, are we missing a vmx_pi_mmio_test and that test needs to be added.
 
-Bart
+Just in case the test didn't make it into the 6a58150859fd and the intent
+was to add it - hence the Makefile addition? This can be addressed in
+another patch. Just want to make sure we aren't missing a test.
+
+Peter Gonda can confirm perhaps?
+
+thanks,
+-- Shuah
