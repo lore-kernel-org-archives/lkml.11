@@ -2,92 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C36E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiBJCA6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:00:58 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33092 "EHLO
+        id S229705AbiBJCBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:01:06 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234438AbiBJB7T (ORCPT
+        with ESMTP id S233972AbiBJB77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:59:19 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C843E2B694;
-        Wed,  9 Feb 2022 17:43:38 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id a11-20020a17090a740b00b001b8b506c42fso7094303pjg.0;
-        Wed, 09 Feb 2022 17:43:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Cry3Wtr/RMzYLNnlssa/FegDG6Szz3AAHVIwYbF14p4=;
-        b=BuwyrIlQTSYfuDOGgaCnFkGWHitNYmF2EOoFcP4H6rNyqYyuL/I+De5T49WH51elcU
-         zcsrXoYrAGLEZbApNAumQoTQGxJu1EloQUA2W+AghURVpw1WsbpYmij+6PQOGpjy+aAb
-         4kvUr+U4RuOWtAriGCWY8CQr0TTTY5xkMaPOULbLjdK/sUJ7Cew+bh4IvdfkgbOItcYU
-         nq2WetauqN68Avk5DxTo60Qm15W3ujMuyxhPp2PqPf+uqdxH2XCpGXYDQCzTxZnYME0U
-         j52q9n913KdvXUVjsGWkzOtxVv20xkKc4raZ7AybC9i2YNQw30i3ytD2mgpsYfq3oKKY
-         WpBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Cry3Wtr/RMzYLNnlssa/FegDG6Szz3AAHVIwYbF14p4=;
-        b=NDF/8HpyrPjl4pYvLHOfciyDOVhIItl5BADcHtZoqhFntKqSn2Sw3BSRAyaI859fq8
-         DyARDscBfbAreMZe97MOZdatdkc4pX9o2xKOCQ+kxE9oFhy4jK04Vf8oQ4bC3a+KmHTH
-         vo5L/UzSm/uxjlJja6rtNr+01aCfVqROJwJIIuFYFxOVE8f/YUCc+TblYkDQtvqURs3P
-         Nh/d8M2tr5vNnYb1hhp7tqrWjFuDca/zBuFN+eK5A7WDkiB+z1cnFYAYmSsHvK75TQXr
-         JA81DMDRani/7Fjg5qht2PRkrp404Hj/eS/OlDDgqB1+qvbl5jrgv/h5QbOP+bb8HLBB
-         47OA==
-X-Gm-Message-State: AOAM533kdHrD756mAJWJFPaRfJstu+/MTLCUs2v1hQXY9asl6WVO6FHK
-        OyVgVUs0WMa0Y3cOdgBD/sk=
-X-Google-Smtp-Source: ABdhPJyit4iS9692syMqC3i5QWytBR9MtfPSX9pD4s8pKYuhVTzTVNq8ikdrOFgxPyNuPu6WCSEeEg==
-X-Received: by 2002:a17:90a:d343:: with SMTP id i3mr241380pjx.104.1644457418391;
-        Wed, 09 Feb 2022 17:43:38 -0800 (PST)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id a3sm61728pjq.43.2022.02.09.17.43.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Feb 2022 17:43:38 -0800 (PST)
-Message-ID: <e7ce363c-c154-50b7-016f-0f98bf13a0b9@gmail.com>
-Date:   Thu, 10 Feb 2022 10:43:34 +0900
+        Wed, 9 Feb 2022 20:59:59 -0500
+Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAED728CC1
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:34:57 -0800 (PST)
+Received: from twspam01.aspeedtech.com (localhost [127.0.0.2] (may be forged))
+        by twspam01.aspeedtech.com with ESMTP id 21A0uWOt069631
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:56:32 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 21A0tKwB069583;
+        Thu, 10 Feb 2022 08:55:20 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 10 Feb
+ 2022 09:03:31 +0800
+Message-ID: <fcad21a9-c7f6-4dd9-7fa8-8a6e6f3853f2@aspeedtech.com>
+Date:   Thu, 10 Feb 2022 09:03:35 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] docs: Makefile: Add -no-shell-escape option to LATEXOPTS
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH v2] media: aspeed: Use full swing as JFIF to fix incorrect
+ color
 Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Akira Yokosawa <akiyks@gmail.com>
-References: <519bd2d9-1bee-03e1-eeb4-d9883c18be0c@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <519bd2d9-1bee-03e1-eeb4-d9883c18be0c@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+CC:     "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "joel@jms.id.au" <joel@jms.id.au>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220209084225.4456-1-jammy_huang@aspeedtech.com>
+ <f790f9aa-fcb7-d163-9c1c-9eb107d4b1bd@molgen.mpg.de>
+From:   Jammy Huang <jammy_huang@aspeedtech.com>
+In-Reply-To: <f790f9aa-fcb7-d163-9c1c-9eb107d4b1bd@molgen.mpg.de>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.2.115]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 21A0tKwB069583
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 10:26:53 +0900,
-Akira Yokosawa wrote:
-> By adding this option, message of "restricted \write18 enabled" from
-> LaTeX can be silenced.
-> 
-> As there is no use of \write18 in LaTeX sources from sphinx-build, it
-> is safe to add this option.
+Dear Paul,
 
-Jon,
-JFYI, there is a ticket on the message at:
+OK, I will update a new patch per your suggestion.
 
-    https://tex.stackexchange.com/questions/76105/what-does-restricted-write18-enabled-mean-and-why-does-texlive-keep-reporting
+Thanks for your help.
 
-I think David Carlisle's answer covers most of your concerns.
+On 2022/2/9 下午 05:06, Paul Menzel wrote:
+> Dear Jammy,
+>
+>
+> Am 09.02.22 um 09:42 schrieb Jammy Huang:
+>> Current settings for video capture rgb-2-yuv is BT.601(studio swing),
+>> but JFIF uses BT.601(full swing) to deocde. This mismatch will lead
+>> to incorrect color. For example, input RGB value, (0, 0, 255), will
+>> become (16, 16, 235) after jpg decoded.
+>>
+>> Add an enum, aspeed_video_capture_format, to define VR008[7:6]
+>> capture format and correct default settings for video capture to fix
+>> the problem.
+> Maybe quote the datasheet:
+>
+> VR008[7:6] will decide the data format for video capture:
+> 00: CCIR601 studio swing compliant YUV format
+> 01: CCIR601 full swing compliant YUV format
+> 10: RGB format
+> 11: Gray color mode
+>
+>> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+>> ---
+>> v2:
+>>    - update subject from 'media: aspeed: Fix-incorrect-color' to
+>>      'media: aspeed: Use full swing as JFIF to fix incorrect'
+>>    - update commit message
+>>    - add enum, aspeed_video_capture_format, to define VR008[7:6]
+>> ---
+>>    drivers/media/platform/aspeed-video.c | 14 +++++++++++---
+>>    1 file changed, 11 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+>> index eb9c17ac0e14..5bcf60b4628b 100644
+>> --- a/drivers/media/platform/aspeed-video.c
+>> +++ b/drivers/media/platform/aspeed-video.c
+>> @@ -86,8 +86,6 @@
+>>    #define  VE_CTRL_SOURCE			BIT(2)
+>>    #define  VE_CTRL_INT_DE			BIT(4)
+>>    #define  VE_CTRL_DIRECT_FETCH		BIT(5)
+>> -#define  VE_CTRL_YUV			BIT(6)
+>> -#define  VE_CTRL_RGB			BIT(7)
+>>    #define  VE_CTRL_CAPTURE_FMT		GENMASK(7, 6)
+>>    #define  VE_CTRL_AUTO_OR_CURSOR		BIT(8)
+>>    #define  VE_CTRL_CLK_INVERSE		BIT(11)
+>> @@ -202,6 +200,15 @@ enum {
+>>    	VIDEO_CLOCKS_ON,
+>>    };
+>>    
+>> +// for VE_CTRL_CAPTURE_FMT
+>> +enum aspeed_video_capture_format {
+>> +	VIDEO_CAP_FMT_YUV_STUDIO = 0,
+> Maybe also append `_SWING`?
+>
+>> +	VIDEO_CAP_FMT_YUV_FULL,
+>> +	VIDEO_CAP_FMT_RGB,
+>> +	VIDEO_CAP_FMT_GRAY,
+>> +	VIDEO_CAP_FMT_MAX
+>> +};
+>> +
+>>    struct aspeed_video_addr {
+>>    	unsigned int size;
+>>    	dma_addr_t dma;
+>> @@ -1089,7 +1096,8 @@ static void aspeed_video_init_regs(struct aspeed_video *video)
+>>    	u32 comp_ctrl = VE_COMP_CTRL_RSVD |
+>>    		FIELD_PREP(VE_COMP_CTRL_DCT_LUM, video->jpeg_quality) |
+>>    		FIELD_PREP(VE_COMP_CTRL_DCT_CHR, video->jpeg_quality | 0x10);
+>> -	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR;
+>> +	u32 ctrl = VE_CTRL_AUTO_OR_CURSOR |
+>> +		FIELD_PREP(VE_CTRL_CAPTURE_FMT, VIDEO_CAP_FMT_YUV_FULL);
+>>    	u32 seq_ctrl = video->jpeg_mode;
+>>    
+>>    	if (video->frame_rate)
+> Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+>
+>
+> Kind regards,
+>
+> Paul
 
-        Thanks, Akira 
-
-> 
-> Reported-by: Jonathan Corbet <corbet@lwn.net>
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> ---
-[...]
+-- 
+Best Regards
+Jammy
 
