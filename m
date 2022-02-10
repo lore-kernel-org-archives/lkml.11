@@ -2,111 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3075C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345507AbiBJXLq (ORCPT
+        id S1345522AbiBJXLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:11:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60500 "EHLO
+        Thu, 10 Feb 2022 18:11:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242400AbiBJXLp (ORCPT
+        with ESMTP id S1345508AbiBJXLw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:11:45 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D415F45;
-        Thu, 10 Feb 2022 15:11:45 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id x5so7142207qtw.10;
-        Thu, 10 Feb 2022 15:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=ZBdSYHCr3USYo6W485UfRkjDE4guUfBuyMH5Mb4JqDU=;
-        b=noirHY6GF4V4i8t+uu5JZQoNb9aCpruRdnEm1zuUkGMxjiGL/QA+2jJvW5q696QSYt
-         ArH2xdXNKzx5VAWJf1ZbXj6Kin8p6qbXiG8tHG5RXG6uOggXjgywln0c3VNSq7sLigyy
-         z7NvvKNREN8owyh9M01OFt2t8EjXllkRx7rL32xroe+PX7EzcvAgPKIArIqn+8ZjlOOK
-         BwiWD5bNNWfkAbLL7OZzG+zIgoGXfWQmbCHioMYE/Hixd6D2RclBD1TwsJtxlKfyxR1a
-         3Iql8/K0PmZQ89a+14GQBXllOV38XKrUISn4vaAL9wPTv2tPQ/awzdPhwhPpDuTRlRvK
-         fafA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZBdSYHCr3USYo6W485UfRkjDE4guUfBuyMH5Mb4JqDU=;
-        b=T/ArRcZvgshtDP5falXRVxZIoXaUH3aibUQH7mteOqyVjtM888YPFuSl+n4AR1dAAY
-         0y8G9wD7pgV0mnfRErAWxNap014CmfLCG468+8YuH0ge3XLIXaQCC4z3eKZ8pvWT+bhn
-         fauyjpfMGvN5o+h9opSRZ5mcdZz3KTV2ToQeFBSmvxo5Qh8gb7NZD5M0Yx743qPgNcIo
-         KXKhenNcsIM2T19WbOEjNvnXPP2olxlRGlGmEUpJAGsENAfV3k3KhM6EJhsP2Bpf4jnE
-         C8H9zUKkQ0iigpx6f3mor0+r4OGlTps+KUMLVcV6oluLPyHbUhxAUNEfZai9v2EJ6fc/
-         fH2w==
-X-Gm-Message-State: AOAM530mccGS8+RQAR+VBqiWOmDy6BA4CM2eQsStI65ra4Gb/OagNf4y
-        GLGnXvNBObXrlJGSB1BSFEU=
-X-Google-Smtp-Source: ABdhPJyRNHJTVVPj+RR6tyohLG29mySY3xnZq28upNS8nrO1spe/OPmQyWpzHExT/NjogD+tlz2nxw==
-X-Received: by 2002:a05:622a:349:: with SMTP id r9mr6655005qtw.37.1644534704732;
-        Thu, 10 Feb 2022 15:11:44 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id h5sm11242509qti.95.2022.02.10.15.11.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:11:44 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH 09/49] ice: replace bitmap_weight with bitmap_empty
-Date:   Thu, 10 Feb 2022 14:48:53 -0800
-Message-Id: <20220210224933.379149-10-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 18:11:52 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC455F5D;
+        Thu, 10 Feb 2022 15:11:52 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id 1E5A31F469B1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644534711;
+        bh=xJk1X1Ou6Pj/lU4m3+l3X4A8FKv0b4TtWehWstyFtXM=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=lkNkBwNu3iDeSbxbxmet/aqfx3hhFrQ3FBBRbXIoO+lQStXrobNg3t/g4nl3tQ1gX
+         FIZPublwfNFKTq0N+K3/aOdozYJVx5cKySe/NoLst7xgG5oghsf/2DTe1rKAmYXk52
+         OSHezvvvrA2ceJ0fxhgAi35xzbqLDZN6a4Z+DN2AQNHnQT92cxiCzYGSaZhHpD6tqQ
+         bYRF3c7Sh6e/B7vfE1bxu5Iji30pldoNAFuBGMvg47DAV/WAwWUVdBtNjDaC3tYaeB
+         zUzQ3D2nvsEL2zJywXcCRm+3Lp9K0H4azyW19a8BUVPwPwRd0vy8w/V1khLtWkOR22
+         7fPgtj9o+VzXg==
+Message-ID: <63e239fc-9282-0276-50b2-3172a446262d@collabora.com>
+Date:   Fri, 11 Feb 2022 04:11:40 +0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     usama.anjum@collabora.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
+ missing headers
+Content-Language: en-US
+To:     Sherry Yang <sherry.yang@oracle.com>, skhan@linuxfoundation.org,
+        shuah@kernel.org, keescook@chromium.org, luto@amacapital.net,
+        wad@chromium.org, christian@brauner.io, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org
+References: <20220210203049.67249-1-sherry.yang@oracle.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220210203049.67249-1-sherry.yang@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ice_vf_has_no_qs_ena() calls bitmap_weight() to check if any bit
-of a given bitmap is set. It's better to use bitmap_empty() in that
-case because bitmap_empty() stops traversing the bitmap as soon as it
-finds first set bit, while bitmap_weight() counts all bits
-unconditionally.
-
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 39b80124d282..9a86eeb6e3f2 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -267,8 +267,8 @@ ice_set_pfe_link(struct ice_vf *vf, struct virtchnl_pf_event *pfe,
-  */
- static bool ice_vf_has_no_qs_ena(struct ice_vf *vf)
- {
--	return (!bitmap_weight(vf->rxq_ena, ICE_MAX_RSS_QS_PER_VF) &&
--		!bitmap_weight(vf->txq_ena, ICE_MAX_RSS_QS_PER_VF));
-+	return bitmap_empty(vf->rxq_ena, ICE_MAX_RSS_QS_PER_VF) &&
-+		bitmap_empty(vf->txq_ena, ICE_MAX_RSS_QS_PER_VF);
- }
- 
- /**
--- 
-2.32.0
+On 2/11/22 1:30 AM, Sherry Yang wrote:
+> seccomp_bpf failed on tests 47 global.user_notification_filter_empty
+> and 48 global.user_notification_filter_empty_threaded when it's
+> tested on updated kernel but with old kernel headers. Because old
+> kernel headers don't have definition of macro __NR_clone3 which is
+> required for these two tests. Since under selftests/, we can install
+> headers once for all tests (the default INSTALL_HDR_PATH is
+> usr/include), fix it by adding usr/include to the list of directories
+> to be searched. Use "-isystem" to indicate it's a system directory as
+> the real kernel headers directories are.
+> 
+> Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+> Tested-by: Sherry Yang <sherry.yang@oracle.com>
+> ---
+>  tools/testing/selftests/seccomp/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+> index 0ebfe8b0e147..585f7a0c10cb 100644
+> --- a/tools/testing/selftests/seccomp/Makefile
+> +++ b/tools/testing/selftests/seccomp/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -CFLAGS += -Wl,-no-as-needed -Wall
+> +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/"../../../../usr/include/" directory doesn't have header files if
+different output directory is used for kselftests build like "make -C
+tools/tests/selftest O=build". Can you try adding recently added
+variable, KHDR_INCLUDES here which makes this kind of headers inclusion
+easy and correct for other build combinations as well?
 
