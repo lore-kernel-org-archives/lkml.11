@@ -2,117 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F75C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240706AbiBJLQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 06:16:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49334 "EHLO
+        id S240720AbiBJLRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 06:17:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240723AbiBJLQT (ORCPT
+        with ESMTP id S237619AbiBJLRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 06:16:19 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 650461021
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 03:16:20 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E9DBED1;
-        Thu, 10 Feb 2022 03:16:20 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.47.24])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 272A03F73B;
-        Thu, 10 Feb 2022 03:16:17 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-arm-kernel@lists.infradead.org
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH V2] arm64/hugetlb: Define __hugetlb_valid_size()
-Date:   Thu, 10 Feb 2022 16:46:10 +0530
-Message-Id: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 10 Feb 2022 06:17:04 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1631CED;
+        Thu, 10 Feb 2022 03:17:04 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 5790E1F38A;
+        Thu, 10 Feb 2022 11:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644491823; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qaooyu4Nb81yGZ9DFfBDmT32pNnVNgtVFQXDFuQbTA4=;
+        b=hN+nLrL1PalurFF1yrllCaO7m2K1R2oXDoYf8Gjfy2xlTmmhH52gsseq/gQq6kLhtgebEd
+        1AKq02wXfHEcJ5O04DYN2BsKqlgODyu/5txcawihe+lGIjAmyyuUnnyDW0V82+VnbJCuVA
+        0/K1Veq9+TRRjn18RyKRV38BKlcHmEE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644491823;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qaooyu4Nb81yGZ9DFfBDmT32pNnVNgtVFQXDFuQbTA4=;
+        b=enUuOAnfG8kKL9D3WUqhSyV8sgzGDmVRlfZLiLIrlCRH7Adv65mZxtgGdUHIY1MhIYFzUm
+        r56A6bZv04MnMEDw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 00EC613B43;
+        Thu, 10 Feb 2022 11:17:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id z2ebOi70BGJdCAAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Thu, 10 Feb 2022 11:17:02 +0000
+Message-ID: <03daab0b-979b-0a8d-3a80-514de646b2d0@suse.de>
+Date:   Thu, 10 Feb 2022 12:17:02 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 01/19] fbcon: delete a few unneeded forward decl
+Content-Language: en-US
+To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+Cc:     Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+        Du Cheng <ducheng2@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Claudio Suarez <cssk@net-c.es>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-2-daniel.vetter@ffwll.ch>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220208210824.2238981-2-daniel.vetter@ffwll.ch>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------cEN1KyUBu0mcocQ9omzXEtbb"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch_hugetlb_valid_size() can be just factored out to create another helper
-to be used in arch_hugetlb_migration_supported() as well. This just defines
-__hugetlb_valid_size() for that purpose.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------cEN1KyUBu0mcocQ9omzXEtbb
+Content-Type: multipart/mixed; boundary="------------aSh4Fex3IobC0EHWCJhrYAFh";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Daniel Vetter <daniel.vetter@ffwll.ch>,
+ DRI Development <dri-devel@lists.freedesktop.org>
+Cc: Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+ linux-fbdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ Sam Ravnborg <sam@ravnborg.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Daniel Vetter <daniel.vetter@intel.com>, Helge Deller <deller@gmx.de>,
+ Daniel Vetter <daniel@ffwll.ch>, Du Cheng <ducheng2@gmail.com>,
+ Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+ Claudio Suarez <cssk@net-c.es>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Message-ID: <03daab0b-979b-0a8d-3a80-514de646b2d0@suse.de>
+Subject: Re: [PATCH v2 01/19] fbcon: delete a few unneeded forward decl
+References: <20220208210824.2238981-1-daniel.vetter@ffwll.ch>
+ <20220208210824.2238981-2-daniel.vetter@ffwll.ch>
+In-Reply-To: <20220208210824.2238981-2-daniel.vetter@ffwll.ch>
 
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
-This applies on v5.17-rc3
+--------------aSh4Fex3IobC0EHWCJhrYAFh
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Changes in V2:
+DQoNCkFtIDA4LjAyLjIyIHVtIDIyOjA4IHNjaHJpZWIgRGFuaWVsIFZldHRlcjoNCj4gSSBk
+aWRuJ3QgYm90aGVyIHdpdGggYW55IGNvZGUgbW92ZW1lbnQgdG8gZml4IHRoZSBvdGhlcnMs
+IHRoZXNlIGp1c3QNCj4gZ290IGEgYml0IGluIHRoZSB3YXkuDQo+IA0KPiB2MjogUmViYXNl
+IG9uIHRvcCBvZiBIZWxnZSdzIHJldmVydHMuDQo+IA0KPiBBY2tlZC1ieTogU2FtIFJhdm5i
+b3JnIDxzYW1AcmF2bmJvcmcub3JnPiAodjEpDQo+IFJldmlld2VkLWJ5OiBHZWVydCBVeXR0
+ZXJob2V2ZW4gPGdlZXJ0QGxpbnV4LW02OGsub3JnPiAodjEpDQo+IFNpZ25lZC1vZmYtYnk6
+IERhbmllbCBWZXR0ZXIgPGRhbmllbC52ZXR0ZXJAaW50ZWwuY29tPg0KPiBDYzogSGVsZ2Ug
+RGVsbGVyIDxkZWxsZXJAZ214LmRlPg0KPiBDYzogRGFuaWVsIFZldHRlciA8ZGFuaWVsQGZm
+d2xsLmNoPg0KPiBDYzogVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1tZXJtYW5uQHN1c2UuZGU+
+DQo+IENjOiBEdSBDaGVuZyA8ZHVjaGVuZzJAZ21haWwuY29tPg0KPiBDYzogVGV0c3VvIEhh
+bmRhIDxwZW5ndWluLWtlcm5lbEBJLWxvdmUuU0FLVVJBLm5lLmpwPg0KPiBDYzogQ2xhdWRp
+byBTdWFyZXogPGNzc2tAbmV0LWMuZXM+DQo+IENjOiBHcmVnIEtyb2FoLUhhcnRtYW4gPGdy
+ZWdraEBsaW51eGZvdW5kYXRpb24ub3JnPg0KDQpBY2tlZC1ieTogVGhvbWFzIFppbW1lcm1h
+bm4gPHR6aW1tZXJtYW5uQHN1c2UuZGU+DQoNCj4gLS0tDQo+ICAgZHJpdmVycy92aWRlby9m
+YmRldi9jb3JlL2ZiY29uLmMgfCAxNyArLS0tLS0tLS0tLS0tLS0tLQ0KPiAgIDEgZmlsZSBj
+aGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMTYgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0t
+Z2l0IGEvZHJpdmVycy92aWRlby9mYmRldi9jb3JlL2ZiY29uLmMgYi9kcml2ZXJzL3ZpZGVv
+L2ZiZGV2L2NvcmUvZmJjb24uYw0KPiBpbmRleCAyZmMxYjgwYTI2YWQuLjIzNWVhYWIzN2Q4
+NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy92aWRlby9mYmRldi9jb3JlL2ZiY29uLmMNCj4g
+KysrIGIvZHJpdmVycy92aWRlby9mYmRldi9jb3JlL2ZiY29uLmMNCj4gQEAgLTE2MywyOSAr
+MTYzLDE0IEBAIHN0YXRpYyBpbnQgZmJjb25fY3Vyc29yX25vYmxpbms7DQo+ICAgICogIElu
+dGVyZmFjZSB1c2VkIGJ5IHRoZSB3b3JsZA0KPiAgICAqLw0KPiAgIA0KPiAtc3RhdGljIGNv
+bnN0IGNoYXIgKmZiY29uX3N0YXJ0dXAodm9pZCk7DQo+IC1zdGF0aWMgdm9pZCBmYmNvbl9p
+bml0KHN0cnVjdCB2Y19kYXRhICp2YywgaW50IGluaXQpOw0KPiAtc3RhdGljIHZvaWQgZmJj
+b25fZGVpbml0KHN0cnVjdCB2Y19kYXRhICp2Yyk7DQo+IC1zdGF0aWMgdm9pZCBmYmNvbl9j
+bGVhcihzdHJ1Y3QgdmNfZGF0YSAqdmMsIGludCBzeSwgaW50IHN4LCBpbnQgaGVpZ2h0LA0K
+PiAtCQkJaW50IHdpZHRoKTsNCj4gLXN0YXRpYyB2b2lkIGZiY29uX3B1dGMoc3RydWN0IHZj
+X2RhdGEgKnZjLCBpbnQgYywgaW50IHlwb3MsIGludCB4cG9zKTsNCj4gLXN0YXRpYyB2b2lk
+IGZiY29uX3B1dGNzKHN0cnVjdCB2Y19kYXRhICp2YywgY29uc3QgdW5zaWduZWQgc2hvcnQg
+KnMsDQo+IC0JCQlpbnQgY291bnQsIGludCB5cG9zLCBpbnQgeHBvcyk7DQo+ICAgc3RhdGlj
+IHZvaWQgZmJjb25fY2xlYXJfbWFyZ2lucyhzdHJ1Y3QgdmNfZGF0YSAqdmMsIGludCBib3R0
+b21fb25seSk7DQo+IC1zdGF0aWMgdm9pZCBmYmNvbl9jdXJzb3Ioc3RydWN0IHZjX2RhdGEg
+KnZjLCBpbnQgbW9kZSk7DQo+ICAgc3RhdGljIHZvaWQgZmJjb25fYm1vdmUoc3RydWN0IHZj
+X2RhdGEgKnZjLCBpbnQgc3ksIGludCBzeCwgaW50IGR5LCBpbnQgZHgsDQo+ICAgCQkJaW50
+IGhlaWdodCwgaW50IHdpZHRoKTsNCj4gLXN0YXRpYyBpbnQgZmJjb25fc3dpdGNoKHN0cnVj
+dCB2Y19kYXRhICp2Yyk7DQo+IC1zdGF0aWMgaW50IGZiY29uX2JsYW5rKHN0cnVjdCB2Y19k
+YXRhICp2YywgaW50IGJsYW5rLCBpbnQgbW9kZV9zd2l0Y2gpOw0KPiAgIHN0YXRpYyB2b2lk
+IGZiY29uX3NldF9wYWxldHRlKHN0cnVjdCB2Y19kYXRhICp2YywgY29uc3QgdW5zaWduZWQg
+Y2hhciAqdGFibGUpOw0KPiAgIA0KPiAgIC8qDQo+ICAgICogIEludGVybmFsIHJvdXRpbmVz
+DQo+ICAgICovDQo+IC1zdGF0aWMgX19pbmxpbmVfXyB2b2lkIHl3cmFwX3VwKHN0cnVjdCB2
+Y19kYXRhICp2YywgaW50IGNvdW50KTsNCj4gLXN0YXRpYyBfX2lubGluZV9fIHZvaWQgeXdy
+YXBfZG93bihzdHJ1Y3QgdmNfZGF0YSAqdmMsIGludCBjb3VudCk7DQo+IC1zdGF0aWMgX19p
+bmxpbmVfXyB2b2lkIHlwYW5fdXAoc3RydWN0IHZjX2RhdGEgKnZjLCBpbnQgY291bnQpOw0K
+PiAtc3RhdGljIF9faW5saW5lX18gdm9pZCB5cGFuX2Rvd24oc3RydWN0IHZjX2RhdGEgKnZj
+LCBpbnQgY291bnQpOw0KPiAgIHN0YXRpYyB2b2lkIGZiY29uX2Jtb3ZlX3JlYyhzdHJ1Y3Qg
+dmNfZGF0YSAqdmMsIHN0cnVjdCBmYmNvbl9kaXNwbGF5ICpwLCBpbnQgc3ksIGludCBzeCwN
+Cj4gICAJCQkgICAgaW50IGR5LCBpbnQgZHgsIGludCBoZWlnaHQsIGludCB3aWR0aCwgdV9p
+bnQgeV9icmVhayk7DQo+ICAgc3RhdGljIHZvaWQgZmJjb25fc2V0X2Rpc3Aoc3RydWN0IGZi
+X2luZm8gKmluZm8sIHN0cnVjdCBmYl92YXJfc2NyZWVuaW5mbyAqdmFyLA0KPiBAQCAtMTk0
+LDggKzE3OSw4IEBAIHN0YXRpYyB2b2lkIGZiY29uX3JlZHJhd19tb3ZlKHN0cnVjdCB2Y19k
+YXRhICp2Yywgc3RydWN0IGZiY29uX2Rpc3BsYXkgKnAsDQo+ICAgCQkJICAgICAgaW50IGxp
+bmUsIGludCBjb3VudCwgaW50IGR5KTsNCj4gICBzdGF0aWMgdm9pZCBmYmNvbl9tb2RlY2hh
+bmdlZChzdHJ1Y3QgZmJfaW5mbyAqaW5mbyk7DQo+ICAgc3RhdGljIHZvaWQgZmJjb25fc2V0
+X2FsbF92Y3Moc3RydWN0IGZiX2luZm8gKmluZm8pOw0KPiAtc3RhdGljIHZvaWQgZmJjb25f
+c3RhcnQodm9pZCk7DQo+ICAgc3RhdGljIHZvaWQgZmJjb25fZXhpdCh2b2lkKTsNCj4gKw0K
+PiAgIHN0YXRpYyBzdHJ1Y3QgZGV2aWNlICpmYmNvbl9kZXZpY2U7DQo+ICAgDQo+ICAgI2lm
+ZGVmIENPTkZJR19GUkFNRUJVRkZFUl9DT05TT0xFX1JPVEFUSU9ODQoNCi0tIA0KVGhvbWFz
+IFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUg
+U29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJn
+LCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJl
+cjogSXZvIFRvdGV2DQo=
 
-- s/arm64_hugetlb_valid_size/__hugetlb_valid_size per Catalin
-- Restored back warning in arch_hugetlb_migration_supported() per Catalin
-- Updated the commit message subject line as required
+--------------aSh4Fex3IobC0EHWCJhrYAFh--
 
-Changes in V1:
+--------------cEN1KyUBu0mcocQ9omzXEtbb
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-https://lore.kernel.org/all/1644197468-26755-1-git-send-email-anshuman.khandual@arm.com/
+-----BEGIN PGP SIGNATURE-----
 
- arch/arm64/mm/hugetlbpage.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIE9C4FAwAAAAAACgkQlh/E3EQov+BE
+cQ//Q2CaZBkIceF3bUoO9v3HwBzBvjDXynz1Z4g+9Lf9yY8avg8SSqYarwhXmwxBKgPDrpuvaFwt
+QH+Tc8IbNxgpMF+6Qc2E11bBL//ux3NS4xHqbUxahepzMgai7AuluoEoik3x5LPMlr00CgPmFHDn
+gcvlLvA+RgmGe2/O4prZFZlT1dT39bZRz5qq/8Ji9bt8mC1eK0jMz0vvb1PMPwfJHeW05URL+UVW
+72gtN7HfMkXZxGqs0LojkSsH5sfNwex8Nw+fZlWUHCojdsIyuj1s/antcd2fMmeqbE1GTbEnWVQL
+oHEbPzYzi2pG8jjv4D50QEVQiUBb6K3nIEwAWR01Z+usih7Fgi3Y+gVkedN4CoKugtdRShrN7b0Q
+IKX011fQR8OblydwUoRcUBRKmLejvu72ivbtZP8DdETCmf+0OV59SwvLI2hmakeNY3N97k5BesjB
+HP0SAI1go19iP6BByLYvC1zEflImpFvCvn81su1gcPS/d82eJZicA0Y6OuSJTQVYkv8XFf5JZ/Yr
+M0RjemnAILfLbXPU386UpypkS6v1PgpPDLM87DREpbwlkuLNjZXorlLOFrl6bUdLc0ea2Ht6YVjR
+ogMnjgjAHUiefCCO6AM8kuitxzbFpyEQAQnVmq4W0sB1tbrPpKSNEXnreQa1LyATschb7L7AY6cB
+jIU=
+=FdDm
+-----END PGP SIGNATURE-----
 
-diff --git a/arch/arm64/mm/hugetlbpage.c b/arch/arm64/mm/hugetlbpage.c
-index ffb9c229610a..72ed07fe2c84 100644
---- a/arch/arm64/mm/hugetlbpage.c
-+++ b/arch/arm64/mm/hugetlbpage.c
-@@ -56,24 +56,19 @@ void __init arm64_hugetlb_cma_reserve(void)
- }
- #endif /* CONFIG_CMA */
- 
-+static bool __hugetlb_valid_size(unsigned long size);
-+
- #ifdef CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
- bool arch_hugetlb_migration_supported(struct hstate *h)
- {
- 	size_t pagesize = huge_page_size(h);
- 
--	switch (pagesize) {
--#ifndef __PAGETABLE_PMD_FOLDED
--	case PUD_SIZE:
--		return pud_sect_supported();
--#endif
--	case PMD_SIZE:
--	case CONT_PMD_SIZE:
--	case CONT_PTE_SIZE:
--		return true;
--	}
--	pr_warn("%s: unrecognized huge page size 0x%lx\n",
-+	if (!__hugetlb_valid_size(pagesize)) {
-+		pr_warn("%s: unrecognized huge page size 0x%lx\n",
- 			__func__, pagesize);
--	return false;
-+		return false;
-+	}
-+	return true;
- }
- #endif
- 
-@@ -504,7 +499,7 @@ static int __init hugetlbpage_init(void)
- }
- arch_initcall(hugetlbpage_init);
- 
--bool __init arch_hugetlb_valid_size(unsigned long size)
-+static bool __hugetlb_valid_size(unsigned long size)
- {
- 	switch (size) {
- #ifndef __PAGETABLE_PMD_FOLDED
-@@ -519,3 +514,8 @@ bool __init arch_hugetlb_valid_size(unsigned long size)
- 
- 	return false;
- }
-+
-+bool __init arch_hugetlb_valid_size(unsigned long size)
-+{
-+	return __hugetlb_valid_size(size);
-+}
--- 
-2.20.1
-
+--------------cEN1KyUBu0mcocQ9omzXEtbb--
