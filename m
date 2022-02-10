@@ -2,84 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17598C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9829AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243419AbiBJPFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:05:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46254 "EHLO
+        id S243394AbiBJPFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:05:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243394AbiBJPFi (ORCPT
+        with ESMTP id S243368AbiBJPFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 10:05:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5B7C53;
-        Thu, 10 Feb 2022 07:05:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB9B861B03;
-        Thu, 10 Feb 2022 15:05:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C73C340E5;
-        Thu, 10 Feb 2022 15:05:37 +0000 (UTC)
-Date:   Thu, 10 Feb 2022 10:05:35 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org, joseph.salisbury@canonical.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH v2] selftests/ftrace: Do not trace do_softirq because of
- PREEMPT_RT
-Message-ID: <20220210100535.01ad4978@gandalf.local.home>
-In-Reply-To: <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
-References: <20220210083356.11212-1-krzysztof.kozlowski@canonical.com>
-        <YgUXcGC1mH7VX1d9@linutronix.de>
-        <546f147d-1682-fb92-42e5-7247dc19dcf1@canonical.com>
-        <YgUc5HxfIdJ0Z5AN@linutronix.de>
-        <429dd2fd-3ceb-6780-f970-4ea9b115388c@canonical.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6354E39
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:05:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644505539; x=1676041539;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kNx55RY7X0IIBJcH0/hbI5dhEt5+Ybz6eMFNnHsll1c=;
+  b=EL8NRZqc4ufGQPuqF2EuFrpBIfEKu7TvaFenp4yv7umOXJ839wDnlV15
+   DjSxD9N+3ODTy8QtgSmVBk8p0V+8VtgTvOqzb9pSQGRwY0mTJbCjrEqqG
+   38MD4nL244aaf0jddSwvZxBHRsgE4/xx6Fwb8n/yj5JGYus1UKhQTQLyU
+   Q/heduOjKs764j02YUFmepGwnkgGkEgRThAVwI77nc/Ea21RkXMZT3taT
+   K70do/fXVzMXbd+2F6UdU91CcXeDLguyyMehVUL2wHe6i2OuxEGc/9THJ
+   kbVc68QljrToysTVsdpgj/lsuSH7sTtTjik9xsm3LIBecEYf6KRvyeaup
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230153225"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="230153225"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:39 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="500422625"
+Received: from barabano-mobl.ccr.corp.intel.com (HELO pujfalus-desk.ger.corp.intel.com) ([10.252.41.18])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 07:05:36 -0800
+From:   Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org,
+        pierre-louis.bossart@linux.intel.com,
+        ranjani.sridharan@linux.intel.com
+Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
+        daniel.baluta@nxp.com, tiwai@suse.com,
+        linux-kernel@vger.kernel.org, fred.oh@linux.intel.com
+Subject: [PATCH v2 3/9] ASoC: SOF: ipc: Read and pass the whole message to handlers for IPC events
+Date:   Thu, 10 Feb 2022 17:05:19 +0200
+Message-Id: <20220210150525.30756-4-peter.ujfalusi@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
+References: <20220210150525.30756-1-peter.ujfalusi@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 15:13:15 +0100
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+Change the parameter list for the firmware initiated message (IPC event)
+handler functions to:
+handler(struct snd_sof_dev *sdev, void *full_msg);
 
-  
-> >> The implementation detail is that do_softirq() is in ifndef.  
-> > 
-> > So let me ask again.  We have
-> >    FUNC1="schedule"
-> >    FUNC2="do_softirq"
-> > 
-> > What is the purpose of this? Do you need FUNC2 when ksoftirqd is run or
-> > when softirqs are served? Not sure how scheduler_tick fits in all this.  
-> 
-> I guess this is more a question to the author of the test. Unless you
-> are now questioning the entire purpose of this test?
+Allocate memory and read the whole message in snd_sof_ipc_msgs_rx() then
+pass the pointer to the function handling the message.
+Do this only if we actually have a function which is tasked to process the
+given type.
 
-The test is just a smoke test on function triggers. These two functions
-have various triggers attached to them to see if it causes any harm (the
-test was added after some strange bugs happened in the past).
+Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+---
+ sound/soc/sof/ipc.c | 85 +++++++++++++++++++++++----------------------
+ 1 file changed, 44 insertions(+), 41 deletions(-)
 
-Now, if "_printk" worked, it suggests that I need to look into this test
-because I'm guessing _printk would never trigger during the test. The
-reason we picked schedule and do_softirq was to get triggers in different
-contexts (do_softirq was in the softirq context, and schedule is in the
-normal context). The reason I suggested to pick "schedule_tick" is because
-that should happen in the interrupt context.
+diff --git a/sound/soc/sof/ipc.c b/sound/soc/sof/ipc.c
+index 16a0d7a059f3..ee56d4fa4053 100644
+--- a/sound/soc/sof/ipc.c
++++ b/sound/soc/sof/ipc.c
+@@ -18,8 +18,10 @@
+ #include "sof-audio.h"
+ #include "ops.h"
+ 
+-static void ipc_trace_message(struct snd_sof_dev *sdev, u32 msg_type);
+-static void ipc_stream_message(struct snd_sof_dev *sdev, u32 msg_cmd);
++typedef void (*ipc_rx_callback)(struct snd_sof_dev *sdev, void *msg_buf);
++
++static void ipc_trace_message(struct snd_sof_dev *sdev, void *msg_buf);
++static void ipc_stream_message(struct snd_sof_dev *sdev, void *msg_buf);
+ 
+ /*
+  * IPC message Tx/Rx message handling.
+@@ -477,44 +479,30 @@ void snd_sof_ipc_reply(struct snd_sof_dev *sdev, u32 msg_id)
+ }
+ EXPORT_SYMBOL(snd_sof_ipc_reply);
+ 
+-static void ipc_comp_notification(struct snd_sof_dev *sdev,
+-				  struct sof_ipc_cmd_hdr *hdr)
++static void ipc_comp_notification(struct snd_sof_dev *sdev, void *msg_buf)
+ {
++	struct sof_ipc_cmd_hdr *hdr = msg_buf;
+ 	u32 msg_type = hdr->cmd & SOF_CMD_TYPE_MASK;
+-	struct sof_ipc_ctrl_data *cdata;
+-	int ret;
+ 
+ 	switch (msg_type) {
+ 	case SOF_IPC_COMP_GET_VALUE:
+ 	case SOF_IPC_COMP_GET_DATA:
+-		cdata = kmalloc(hdr->size, GFP_KERNEL);
+-		if (!cdata)
+-			return;
+-
+-		/* read back full message */
+-		ret = snd_sof_ipc_msg_data(sdev, NULL, cdata, hdr->size);
+-		if (ret < 0) {
+-			dev_err(sdev->dev,
+-				"error: failed to read component event: %d\n", ret);
+-			goto err;
+-		}
+ 		break;
+ 	default:
+ 		dev_err(sdev->dev, "error: unhandled component message %#x\n", msg_type);
+ 		return;
+ 	}
+ 
+-	snd_sof_control_notify(sdev, cdata);
+-
+-err:
+-	kfree(cdata);
++	snd_sof_control_notify(sdev, msg_buf);
+ }
+ 
+ /* DSP firmware has sent host a message  */
+ void snd_sof_ipc_msgs_rx(struct snd_sof_dev *sdev)
+ {
++	ipc_rx_callback rx_callback = NULL;
+ 	struct sof_ipc_cmd_hdr hdr;
+-	u32 cmd, type;
++	void *msg_buf;
++	u32 cmd;
+ 	int err;
+ 
+ 	/* read back header */
+@@ -523,10 +511,15 @@ void snd_sof_ipc_msgs_rx(struct snd_sof_dev *sdev)
+ 		dev_warn(sdev->dev, "failed to read IPC header: %d\n", err);
+ 		return;
+ 	}
++
++	if (hdr.size < sizeof(hdr)) {
++		dev_err(sdev->dev, "The received message size is invalid\n");
++		return;
++	}
++
+ 	ipc_log_header(sdev->dev, "ipc rx", hdr.cmd);
+ 
+ 	cmd = hdr.cmd & SOF_GLB_TYPE_MASK;
+-	type = hdr.cmd & SOF_CMD_TYPE_MASK;
+ 
+ 	/* check message type */
+ 	switch (cmd) {
+@@ -551,20 +544,35 @@ void snd_sof_ipc_msgs_rx(struct snd_sof_dev *sdev)
+ 	case SOF_IPC_GLB_PM_MSG:
+ 		break;
+ 	case SOF_IPC_GLB_COMP_MSG:
+-		ipc_comp_notification(sdev, &hdr);
++		rx_callback = ipc_comp_notification;
+ 		break;
+ 	case SOF_IPC_GLB_STREAM_MSG:
+-		/* need to pass msg id into the function */
+-		ipc_stream_message(sdev, hdr.cmd);
++		rx_callback = ipc_stream_message;
+ 		break;
+ 	case SOF_IPC_GLB_TRACE_MSG:
+-		ipc_trace_message(sdev, type);
++		rx_callback = ipc_trace_message;
+ 		break;
+ 	default:
+-		dev_err(sdev->dev, "error: unknown DSP message 0x%x\n", cmd);
++		dev_err(sdev->dev, "%s: Unknown DSP message: 0x%x\n", __func__, cmd);
+ 		break;
+ 	}
+ 
++	if (rx_callback) {
++		/* read the full message as we have rx handler for it */
++		msg_buf = kmalloc(hdr.size, GFP_KERNEL);
++		if (!msg_buf)
++			return;
++
++		err = snd_sof_ipc_msg_data(sdev, NULL, msg_buf, hdr.size);
++		if (err < 0)
++			dev_err(sdev->dev, "%s: Failed to read message: %d\n",
++				__func__, err);
++		else
++			rx_callback(sdev, msg_buf);
++
++		kfree(msg_buf);
++	}
++
+ 	ipc_log_header(sdev->dev, "ipc rx done", hdr.cmd);
+ }
+ EXPORT_SYMBOL(snd_sof_ipc_msgs_rx);
+@@ -573,19 +581,14 @@ EXPORT_SYMBOL(snd_sof_ipc_msgs_rx);
+  * IPC trace mechanism.
+  */
+ 
+-static void ipc_trace_message(struct snd_sof_dev *sdev, u32 msg_type)
++static void ipc_trace_message(struct snd_sof_dev *sdev, void *msg_buf)
+ {
+-	struct sof_ipc_dma_trace_posn posn;
+-	int ret;
++	struct sof_ipc_cmd_hdr *hdr = msg_buf;
++	u32 msg_type = hdr->cmd & SOF_CMD_TYPE_MASK;
+ 
+ 	switch (msg_type) {
+ 	case SOF_IPC_TRACE_DMA_POSITION:
+-		/* read back full message */
+-		ret = snd_sof_ipc_msg_data(sdev, NULL, &posn, sizeof(posn));
+-		if (ret < 0)
+-			dev_warn(sdev->dev, "failed to read trace position: %d\n", ret);
+-		else
+-			snd_sof_trace_update_pos(sdev, &posn);
++		snd_sof_trace_update_pos(sdev, msg_buf);
+ 		break;
+ 	default:
+ 		dev_err(sdev->dev, "error: unhandled trace message %#x\n", msg_type);
+@@ -667,11 +670,11 @@ static void ipc_xrun(struct snd_sof_dev *sdev, u32 msg_id)
+ }
+ 
+ /* stream notifications from DSP FW */
+-static void ipc_stream_message(struct snd_sof_dev *sdev, u32 msg_cmd)
++static void ipc_stream_message(struct snd_sof_dev *sdev, void *msg_buf)
+ {
+-	/* get msg cmd type and msd id */
+-	u32 msg_type = msg_cmd & SOF_CMD_TYPE_MASK;
+-	u32 msg_id = SOF_IPC_MESSAGE_ID(msg_cmd);
++	struct sof_ipc_cmd_hdr *hdr = msg_buf;
++	u32 msg_type = hdr->cmd & SOF_CMD_TYPE_MASK;
++	u32 msg_id = SOF_IPC_MESSAGE_ID(hdr->cmd);
+ 
+ 	switch (msg_type) {
+ 	case SOF_IPC_STREAM_POSITION:
+-- 
+2.35.1
 
-But if _printk worked, then it probably didn't test that part. But that's a
-different bug than what this patch is addressing.
-
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
-And I need to add to my TODO list, to look at this test and probably
-rewrite. it. :-p
-
--- Steve
