@@ -2,77 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F319C4321E
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:36:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244292AbiBJQgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:36:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47094 "EHLO
+        id S244326AbiBJQgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:36:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244280AbiBJQgv (ORCPT
+        with ESMTP id S244267AbiBJQgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:36:51 -0500
+        Thu, 10 Feb 2022 11:36:52 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F330EC51
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C34C0128
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1644511011;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/fQVdIUzzjQxIpql8Jx49HwHgnVddQNgjxM6PvOna24=;
-        b=ZjyXNwg2MHqj5kpWkrnWtCyeqPfHQGeAhnWtxoNHhIssL+tmQf5lqN6fBdsQe46vezovJQ
-        Y5v4QeEAOTAyYK/7ACste6wWD4H2On2iwKzv+g2QhJFG8q8KmBXbzFYaY5+pUNTQQpW7fK
-        KG9CON76oOxtWXg8NqZpz7xSHpOT4SE=
+        bh=UqSpSbLAke/1OnLd6EmGmfWxLdKIpRgwdlPw5Vgh4vE=;
+        b=ElqIO/0CrkZOnKLP5RogCOAFlI0RNnAcQzDSQVdzxPHP1EMij87lrqHrY9qsmN6gROnogG
+        HLp03RliVOm79dnCEHFa03G/9MERhPX6+PoqPZ6tZ0y/jb45YYMwufr5SLuH7efJq3NwQL
+        /fzF+SLVz9rCKnnuIWoQ6l2Nbr12IkA=
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
  [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-fLBn2L1nMLS1956ogk2WMA-1; Thu, 10 Feb 2022 11:36:49 -0500
-X-MC-Unique: fLBn2L1nMLS1956ogk2WMA-1
-Received: by mail-ed1-f70.google.com with SMTP id ee7-20020a056402290700b0040f680071c9so3630117edb.9
+ us-mta-530-cM05wTXPPzG5aQg6ZNmeNQ-1; Thu, 10 Feb 2022 11:36:50 -0500
+X-MC-Unique: cM05wTXPPzG5aQg6ZNmeNQ-1
+Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso3641278edt.20
         for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=/fQVdIUzzjQxIpql8Jx49HwHgnVddQNgjxM6PvOna24=;
-        b=F/Awrq8d6Aja42Ah/SMJQtuofwJuYDXAkKCUrC46lrEJoPHCFxVz9hA+GcvK8KXYwA
-         DpfmPc1/vC/pIqdA8w+pH6SpgRywOQZh+IaoWd8Y8+wKiRX6CzoUt7BmaMs+VUmqJc6O
-         FOshJu0RkfVpW0wd+1pDqYWU8lGRRB43+LiMNSR9WDzdVDgIM4c1SWRqNPO8Yf/iDbO3
-         n/myRgrWDQrv4EVv4/j5NdjQYvMqmgXMIC7In5bpI3EgfMeaZwHHIKhSH1PtMZDknbt5
-         68wB5K+b3FUXr6eUyHy4xpr1VTnZUfKKp2sgjw+a0sz9Ssr6bXyFOkMN2fXA6xgv4Wcf
-         ISnA==
-X-Gm-Message-State: AOAM531dXM0pPH3ENcm7E87pBhjCKdUDWEOXvmD2jjxKsVGzzs/Xruze
-        3vPAeE6YCVImnRxAxAUQHb3BdC3g0CYxWiS6Rj6+ztV7/+4aWqEJ9CPt5CdEKYRkpvU0dpaD9jy
-        s2ViYffetc2k4AYUeAMK09GOn
-X-Received: by 2002:a17:907:7244:: with SMTP id ds4mr7265202ejc.726.1644511008400;
+        bh=UqSpSbLAke/1OnLd6EmGmfWxLdKIpRgwdlPw5Vgh4vE=;
+        b=c65ocYu88A6LKjP57HDEVgna8bINb9KudcYPiMYgF7uuX3XMBAbYYR5CzgG1+28zHZ
+         PDevz0RBtwOe6Vh1J727yqME8mIFFp5To3ubfdXR+jOQJGDnxdTwrspiUp+mGc/n7suI
+         I7fe/sjGsRJacQ9WEwfHdjPUZeiobFUGP8Qw0VOp072GQ07Iep1SioBKiaIUe4xLoNZk
+         +xzivWaUoMFaB0NECQq9v4nn53loCA3Bi06EzX32npNZUUHLgu0xkmUGdtYXWUILLfc7
+         xT1H2lv6P84OVs/gtGtUNdk/Jprc/DTN+XbgNad5kpG032AR/71ronZyAKz5AiMr249L
+         YHig==
+X-Gm-Message-State: AOAM5300q2q3ukBE/LIhiYtsLVsVwZ4ieBX/8iD9ZR7aywPmIYdYDQoP
+        zlH3auRDaurIrAiPCcxMthztuYczyxWqP9I+tq0T4HKRMdEMuNXytXfMPC2Zxg6tdhSXrHUhLth
+        +RmfH1R7h4kkh9Mct6LQCsZxc
+X-Received: by 2002:a17:907:c01a:: with SMTP id ss26mr7188161ejc.734.1644511008858;
         Thu, 10 Feb 2022 08:36:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw6CN/+k3HOwVp0gN4FoNF8oTtdpf2diiDEjSfqTdMHbRz9eh1mpO7OJBm9xmaOP360bR4laQ==
-X-Received: by 2002:a17:907:7244:: with SMTP id ds4mr7265187ejc.726.1644511008170;
+X-Google-Smtp-Source: ABdhPJxsICHo+zXE5V4n/hNFUlselQb7/jJjtRQ0Tylf3AFGMRI+O1AdLAbOvro//iFc+e5nfma5eg==
+X-Received: by 2002:a17:907:c01a:: with SMTP id ss26mr7188140ejc.734.1644511008634;
         Thu, 10 Feb 2022 08:36:48 -0800 (PST)
 Received: from [192.168.10.118] ([93.56.170.240])
-        by smtp.googlemail.com with ESMTPSA id cz12sm4919434edb.30.2022.02.10.08.36.37
+        by smtp.googlemail.com with ESMTPSA id m25sm7118243edr.104.2022.02.10.08.36.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Thu, 10 Feb 2022 08:36:47 -0800 (PST)
-Message-ID: <d24f6c79-070a-846d-276f-9ab15d8fda3b@redhat.com>
-Date:   Thu, 10 Feb 2022 17:35:23 +0100
+Message-ID: <d1d25157-6511-a37d-0e19-2ef8335a7882@redhat.com>
+Date:   Thu, 10 Feb 2022 17:35:56 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.4 2/2] KVM: nVMX: WARN on any attempt to
- allocate shadow VMCS for vmcs02
+Subject: Re: [PATCH MANUALSEL 5.4 1/2] KVM: nVMX: eVMCS: Filter out
+ VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
 References: <20220209185733.49157-1-sashal@kernel.org>
- <20220209185733.49157-2-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185733.49157-2-sashal@kernel.org>
+In-Reply-To: <20220209185733.49157-1-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -80,67 +79,43 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 2/9/22 19:57, Sasha Levin wrote:
-> From: Sean Christopherson <seanjc@google.com>
+> From: Vitaly Kuznetsov <vkuznets@redhat.com>
 > 
-> [ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
+> [ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
+
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+
+Paolo
+
+> Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
+> PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
+> sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
 > 
-> WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
-> VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
-> a "real" shadow VMCS for L2.
+> Note, none of the currently existing Windows/Hyper-V versions are known
+> to enable 'save VMX-preemption timer value' when eVMCS is in use, the
+> change is aimed at making the filtering future proof.
 > 
-> The previous code WARNed but continued anyway with the allocation,
-> presumably in an attempt to avoid NULL pointer dereference.
-> However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
-> indeed the sole caller does:
-> 
-> 	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
-> 		goto out_shadow_vmcs;
-> 
-> which makes it not a useful attempt.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Message-Id: <20220125220527.2093146-1-seanjc@google.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
->   1 file changed, 12 insertions(+), 10 deletions(-)
+>   arch/x86/kvm/vmx/evmcs.h | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index 3041015b05f71..44e11f6db3efe 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -4360,18 +4360,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
->   	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
+> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+> index 07ebf6882a458..632bed227152e 100644
+> --- a/arch/x86/kvm/vmx/evmcs.h
+> +++ b/arch/x86/kvm/vmx/evmcs.h
+> @@ -58,7 +58,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+>   	 SECONDARY_EXEC_SHADOW_VMCS |					\
+>   	 SECONDARY_EXEC_TSC_SCALING |					\
+>   	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
+> -#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
+> +#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
+> +	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
+> +	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
+>   #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+>   #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
 >   
->   	/*
-> -	 * We should allocate a shadow vmcs for vmcs01 only when L1
-> -	 * executes VMXON and free it when L1 executes VMXOFF.
-> -	 * As it is invalid to execute VMXON twice, we shouldn't reach
-> -	 * here when vmcs01 already have an allocated shadow vmcs.
-> +	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
-> +	 * when L1 executes VMXOFF or the vCPU is forced out of nested
-> +	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
-> +	 * should be impossible to already have an allocated shadow VMCS.  KVM
-> +	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
-> +	 * always be the loaded VMCS.
->   	 */
-> -	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
-> +	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
-> +		return loaded_vmcs->shadow_vmcs;
-> +
-> +	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-> +	if (loaded_vmcs->shadow_vmcs)
-> +		vmcs_clear(loaded_vmcs->shadow_vmcs);
->   
-> -	if (!loaded_vmcs->shadow_vmcs) {
-> -		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
-> -		if (loaded_vmcs->shadow_vmcs)
-> -			vmcs_clear(loaded_vmcs->shadow_vmcs);
-> -	}
->   	return loaded_vmcs->shadow_vmcs;
->   }
->   
-
-NACK
 
