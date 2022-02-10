@@ -2,78 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16990C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8203BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244267AbiBJQg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:36:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47116 "EHLO
+        id S244343AbiBJQhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:37:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244291AbiBJQgw (ORCPT
+        with ESMTP id S244288AbiBJQgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:36:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 875381A8
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:53 -0800 (PST)
+        Thu, 10 Feb 2022 11:36:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 17963137
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511012;
+        s=mimecast20190719; t=1644511014;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=H+SJ/8jiWh1yqA7v50jSrldDjAEMOLgFk+1GemkI9co=;
-        b=OjKQjdvqI66HIhFDk+UAt1Ynn64KThZp7Ni3mzqrJz7J18HxnNw45kSFYey1i2Ah+ZrQnn
-        h1FVFcobbqqV/eu9SDF3LihzchklrUTuhB3Zrm/G5k0AGUGJ2mKKLwqJ+3pnBXzkcEoPog
-        TBTJEwe1VX79vdnz0l2UQRdgfWEFdr8=
+        bh=C2hvu0iP1ozzImdwOawq7RtiNZp/sNLo/TZHQM9dTsg=;
+        b=BwlTkMZXpqsUSUb11xzLgJFbYp6LYoHDz9CJaBrt3ipzB1REf4FKQGcTjrriNhsA6K9LUG
+        5joyATGbZe3gXjhyd/8QikN7IilYG7Yps/f44cH6RmiZjw0miP7ESyClV3IJ5N5VmgvrJZ
+        a4A9H26JeyjtAuK3QJ6grkibsbwPQ4Q=
 Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
  [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-333-oDRzzYN-PNKXA5SN5BlJOg-1; Thu, 10 Feb 2022 11:36:51 -0500
-X-MC-Unique: oDRzzYN-PNKXA5SN5BlJOg-1
-Received: by mail-ej1-f71.google.com with SMTP id hq19-20020a1709073f1300b006cdd7712c2cso333321ejc.11
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:51 -0800 (PST)
+ us-mta-332-gdZxSdYxMlqE_gHVxxW0Xw-1; Thu, 10 Feb 2022 11:36:53 -0500
+X-MC-Unique: gdZxSdYxMlqE_gHVxxW0Xw-1
+Received: by mail-ej1-f71.google.com with SMTP id o4-20020a170906768400b006a981625756so3024202ejm.0
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:36:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=H+SJ/8jiWh1yqA7v50jSrldDjAEMOLgFk+1GemkI9co=;
-        b=IISwYk53RCiF6QYqlsZTpZTea7JLxW393f3jwtr26mphmlhqicVW7izE2idABZq0Zg
-         bVL28q6Dpr0zhasW/rRYq0ktdPy7ER2QnK8u6Q6wVcVnQBY7JMm255R1PLUEh9zEda+i
-         Orn9pH6zpNlXbKcErYv+iXBlsXNV2Ms2hLRQyoK8Rnc76kN/+Zej0k+eAhQvZ3LwH9cj
-         okkri2RFztK9gg7CgR4+GENBzQUvE/6W9i9rno57XDs2uIGpvjRY6N8ogolSBF9HZ1aV
-         ldFBkQscG2WfbXHsnukPCIDGL5NnhpkipH3PNmAmcFkjzm/VVYiaiYc138KDhG1BRT6o
-         Yxew==
-X-Gm-Message-State: AOAM532jAHxJglYhEcehRK7MwWt5vSbuzny22YEtWzBThSFJA/1Kh4GG
-        bvLD3AHCu8XtPVYsvEjQisC5u2ql1SltDWCvFtWR+Rt93JWay47Ke0PZ2P7qYQLVZqx3JbKfhrN
-        4ewlJ0Q54hSCUMqdfGn7FEraP
-X-Received: by 2002:a17:907:7e92:: with SMTP id qb18mr7386257ejc.555.1644511010332;
-        Thu, 10 Feb 2022 08:36:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxj9sY5pMOYIOBuRdGDDcyfQz6bxkiuJax77x8qRDfWDnHYKBW8dd3yXbZ6EKAQ5L3qvK4moA==
-X-Received: by 2002:a17:907:7e92:: with SMTP id qb18mr7386243ejc.555.1644511010094;
-        Thu, 10 Feb 2022 08:36:50 -0800 (PST)
+        bh=C2hvu0iP1ozzImdwOawq7RtiNZp/sNLo/TZHQM9dTsg=;
+        b=AJBD41dSvBjRcROTltHlUGGRZzk9KOgsGY+Y4CgQa2XXNis5oQyQKDakakzTZvLqS6
+         vu8fau948QNocOv9TyVgbIw2b3R2Xy29/7wgBZoZooShOOkRHFQzW/KR+nYbNEYSCb9r
+         XNFlcFqFawXQ0Xfg1TerdYCgI8pCv1aFlGrChJ1FntIJFh0bwE5uRilXh4lJaoVmggVv
+         3KaZzoNNdfXx9Gg4zIMKg7vclrIQmLAaHQ7PC/+uf8CVBiUG0R3uGyIxgSJST16tjSog
+         yeDf8dCoVNJ3dcqNDX0KdYtwQ8x1XlYuphb0zjedHfqa+WoF46avlkWuBm+H+jnT2AyP
+         gJqw==
+X-Gm-Message-State: AOAM530tqSnl67f9vbZwH5LSNLVUQQA+2Iz13N0LErx3Cs+DXS711So1
+        ZnmMqYi0gEnRf86U0bxhZfT24l/B7Cu1DJpC/uYGef6IfUCpLxBI9Miltzh2yWCO0hZzkIw5xOD
+        y7abDHGM/n+h27PP/pJ1WHd/G
+X-Received: by 2002:a05:6402:348b:: with SMTP id v11mr9188568edc.58.1644511011948;
+        Thu, 10 Feb 2022 08:36:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzJfC1GU+5eGfGNQQxuYJPtmnQ9Njp+YLT1I+95acuMLcAIv38IH5OD1zORnBLD/pfnnJ+cWw==
+X-Received: by 2002:a05:6402:348b:: with SMTP id v11mr9188549edc.58.1644511011762;
+        Thu, 10 Feb 2022 08:36:51 -0800 (PST)
 Received: from [192.168.10.118] ([93.56.170.240])
-        by smtp.googlemail.com with ESMTPSA id cz12sm4919441edb.30.2022.02.10.08.36.38
+        by smtp.googlemail.com with ESMTPSA id g19sm4365247ejd.62.2022.02.10.08.36.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:36:49 -0800 (PST)
-Message-ID: <7d142721-bdbc-1d82-64b5-9df4368f1c67@redhat.com>
-Date:   Thu, 10 Feb 2022 17:33:48 +0100
+        Thu, 10 Feb 2022 08:36:50 -0800 (PST)
+Message-ID: <fd3ffa55-5421-fd18-9dc2-82805b694e14@redhat.com>
+Date:   Thu, 10 Feb 2022 17:33:21 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.16 6/8] KVM: SVM: Explicitly require
- DECODEASSISTS to enable SEV support
+Subject: Re: [PATCH MANUALSEL 5.16 4/8] KVM: nVMX: WARN on any attempt to
+ allocate shadow VMCS for vmcs02
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Liam Merwick <liam.merwick@oracle.com>, tglx@linutronix.de,
+Cc:     Sean Christopherson <seanjc@google.com>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
 References: <20220209185635.48730-1-sashal@kernel.org>
- <20220209185635.48730-6-sashal@kernel.org>
+ <20220209185635.48730-4-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185635.48730-6-sashal@kernel.org>
+In-Reply-To: <20220209185635.48730-4-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -83,44 +82,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 2/9/22 19:56, Sasha Levin wrote:
 > From: Sean Christopherson <seanjc@google.com>
 > 
-> [ Upstream commit c532f2903b69b775d27016511fbe29a14a098f95 ]
+> [ Upstream commit d6e656cd266cdcc95abd372c7faef05bee271d1a ]
 > 
-> Add a sanity check on DECODEASSIST being support if SEV is supported, as
-> KVM cannot read guest private memory and thus relies on the CPU to
-> provide the instruction byte stream on #NPF for emulation.  The intent of
-> the check is to document the dependency, it should never fail in practice
-> as producing hardware that supports SEV but not DECODEASSISTS would be
-> non-sensical.
+> WARN if KVM attempts to allocate a shadow VMCS for vmcs02.  KVM emulates
+> VMCS shadowing but doesn't virtualize it, i.e. KVM should never allocate
+> a "real" shadow VMCS for L2.
+> 
+> The previous code WARNed but continued anyway with the allocation,
+> presumably in an attempt to avoid NULL pointer dereference.
+> However, alloc_vmcs (and hence alloc_shadow_vmcs) can fail, and
+> indeed the sole caller does:
+> 
+> 	if (enable_shadow_vmcs && !alloc_shadow_vmcs(vcpu))
+> 		goto out_shadow_vmcs;
+> 
+> which makes it not a useful attempt.
 > 
 > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-> Message-Id: <20220120010719.711476-5-seanjc@google.com>
+> Message-Id: <20220125220527.2093146-1-seanjc@google.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kvm/svm/sev.c | 9 +++++++--
->   1 file changed, 7 insertions(+), 2 deletions(-)
+>   arch/x86/kvm/vmx/nested.c | 22 ++++++++++++----------
+>   1 file changed, 12 insertions(+), 10 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-> index be28831412209..932afd713a02c 100644
-> --- a/arch/x86/kvm/svm/sev.c
-> +++ b/arch/x86/kvm/svm/sev.c
-> @@ -2099,8 +2099,13 @@ void __init sev_hardware_setup(void)
->   	if (!sev_enabled || !npt_enabled)
->   		goto out;
+> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+> index c605c2c01394b..9cd68e1fcf602 100644
+> --- a/arch/x86/kvm/vmx/nested.c
+> +++ b/arch/x86/kvm/vmx/nested.c
+> @@ -4827,18 +4827,20 @@ static struct vmcs *alloc_shadow_vmcs(struct kvm_vcpu *vcpu)
+>   	struct loaded_vmcs *loaded_vmcs = vmx->loaded_vmcs;
 >   
-> -	/* Does the CPU support SEV? */
-> -	if (!boot_cpu_has(X86_FEATURE_SEV))
-> +	/*
-> +	 * SEV must obviously be supported in hardware.  Sanity check that the
-> +	 * CPU supports decode assists, which is mandatory for SEV guests to
-> +	 * support instruction emulation.
-> +	 */
-> +	if (!boot_cpu_has(X86_FEATURE_SEV) ||
-> +	    WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_DECODEASSISTS)))
->   		goto out;
+>   	/*
+> -	 * We should allocate a shadow vmcs for vmcs01 only when L1
+> -	 * executes VMXON and free it when L1 executes VMXOFF.
+> -	 * As it is invalid to execute VMXON twice, we shouldn't reach
+> -	 * here when vmcs01 already have an allocated shadow vmcs.
+> +	 * KVM allocates a shadow VMCS only when L1 executes VMXON and frees it
+> +	 * when L1 executes VMXOFF or the vCPU is forced out of nested
+> +	 * operation.  VMXON faults if the CPU is already post-VMXON, so it
+> +	 * should be impossible to already have an allocated shadow VMCS.  KVM
+> +	 * doesn't support virtualization of VMCS shadowing, so vmcs01 should
+> +	 * always be the loaded VMCS.
+>   	 */
+> -	WARN_ON(loaded_vmcs == &vmx->vmcs01 && loaded_vmcs->shadow_vmcs);
+> +	if (WARN_ON(loaded_vmcs != &vmx->vmcs01 || loaded_vmcs->shadow_vmcs))
+> +		return loaded_vmcs->shadow_vmcs;
+> +
+> +	loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
+> +	if (loaded_vmcs->shadow_vmcs)
+> +		vmcs_clear(loaded_vmcs->shadow_vmcs);
 >   
->   	/* Retrieve SEV CPUID information */
+> -	if (!loaded_vmcs->shadow_vmcs) {
+> -		loaded_vmcs->shadow_vmcs = alloc_vmcs(true);
+> -		if (loaded_vmcs->shadow_vmcs)
+> -			vmcs_clear(loaded_vmcs->shadow_vmcs);
+> -	}
+>   	return loaded_vmcs->shadow_vmcs;
+>   }
+>   
 
-NACK
+NACK, it's just extra care but not particularly useful.
+
+Paolo
 
