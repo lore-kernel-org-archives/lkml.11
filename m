@@ -2,108 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 945A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4330BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345975AbiBJX6H (ORCPT
+        id S1345954AbiBJX6c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:58:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57454 "EHLO
+        Thu, 10 Feb 2022 18:58:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345964AbiBJX6F (ORCPT
+        with ESMTP id S1345953AbiBJX6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:58:05 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354723AF;
-        Thu, 10 Feb 2022 15:58:06 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id c188so9480085iof.6;
-        Thu, 10 Feb 2022 15:58:06 -0800 (PST)
+        Thu, 10 Feb 2022 18:58:31 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683BCB43
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:58:31 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id i21so11675186pfd.13
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:58:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=wCe8l6BzIf39UXY71HrtaLDcF4n6vO18YFKJdpw4cXQ=;
-        b=fI2SwxxZTVMqpxGhquBSWDyfIQ9U9DsAgpF9gRFwhpoAula9Vdzc1QlFVFHC1U6hwI
-         ABtDL5EahVrOMWQOjSc1cxNHQioV9menjUMsuOH/Cnz8hecA97jxN6sPuk95u7nVfkQV
-         v9wtNrSgpkd8oKfTH9OUi7v/x70ZavMozIl54AC5RULi2izx6U5HggOLYqF4OGCV8xvC
-         S2cFxQ+81wUoSrp358Cp/BnH7gOLObY9fktA/0i7ZL+H0LeU4Gh8hM6p7+fRhxCwSkx6
-         mo4eV4AeXA5Mg/ksXKxD2Mw7++3/aR12BIxW+0jlVA0zfkk45kSAnE0jXh1mlQ8+k9e9
-         HVjQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YR8IQtD/vI0Y1e+M6XizQtHy3b7jDPUDq92ShhvVhXY=;
+        b=WvA699vcudQ1Hqvg534eT88SqkZZUu9XbncYlIq5YSfbGxBOgf79rNjbQdJgyRASIM
+         IqXbeJNG9EwbVYDcgKbqz8oFuhmymUJc7Q9wEocpEmasEjTf4UA1D230t3+ca8bhyhvT
+         oJ+nwmJJMXpfwpxuSESZteARqV4U//GOcancE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wCe8l6BzIf39UXY71HrtaLDcF4n6vO18YFKJdpw4cXQ=;
-        b=vOoOGJkTXl1/xJAci7WVAv8LPEgWzHzOUoeu+uu+6AUAe/we+WIt278IVZddlc/BfE
-         w42Noycd7YAaNw/nGfBFjnVtr17Lfo5re7NQByJPGO41uuXS/+5MLvlloQ9ZRu7d3Afw
-         n8tDWxUDtbIbdDoxyK+sckpgdUI3Ez+ygeuhFyAQB/j8ys1XeeBwDeHuhZY0xnlrjBB3
-         JECbe6MRTradiW6PNfa1303aMTpw6YruLgHZj65xTgXOg572vOxHzBTSShFOstMEFnqJ
-         3JLAHisLYOGEiJ+QFm9V+O0u6Rvy6tAHRVU4TrLYYLNkhDvS4cDZAwOepfw9Uc6XGgxw
-         2YhA==
-X-Gm-Message-State: AOAM533H8A67IBTF9xr0wqatuIj3UO0xWQEkWCweRHfXiv+8YVKd0TZx
-        4wkr3xP1fP+i42Q5pXuFUj0=
-X-Google-Smtp-Source: ABdhPJyy7xzUjWAsxQE/FjXnUixngXgx0pMBOB0uizulIEe8wbp5Hbd+lionqAo02gVkXrx+e9ndLw==
-X-Received: by 2002:a05:6602:492:: with SMTP id y18mr4939747iov.95.1644537485609;
-        Thu, 10 Feb 2022 15:58:05 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id t6sm12773865iov.39.2022.02.10.15.58.04
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YR8IQtD/vI0Y1e+M6XizQtHy3b7jDPUDq92ShhvVhXY=;
+        b=M+S4LPtYLjCn5l+kJN/Xmd9Tf3CnpdgRWwnBtQ3nRSDoLRgqXuU4b9a1zxVYraaCSP
+         x4OwsW3t5ZU+mRkO7dm89oM4ZnozkdfCMDpIRf6R/w3ZpBo9zE7TUuKRRxOZa061CdR9
+         iFDn2Njr3LOE9cg5ScVe8rwRVAkcA1z5A4pvjuYrqErn2yi9JYzm2K1sQdrzklJH1/A4
+         PrXFOdhyFHgMDulHr4s2c+64hyLrLgz4Dk/oos5ENFSRHUo3pWacP4819nrcGy3AEuDc
+         uNwaZ3IxVIKlxtN4HAEQP0ZXe6PuYFErvdeURrifq9uSIkqhaKk1AtlvkUkwxzgiiSRd
+         tQUw==
+X-Gm-Message-State: AOAM532/VX3Jc6sNwe2nOlwsfjo+kag6ZTfU4xYYYC6VmB8NxoAzZPrg
+        0aMa4rci+AfpS6DyEzYckmAyBg==
+X-Google-Smtp-Source: ABdhPJy5GMvA9RQgKwwGxZBjLxt0zVyf7HQK+78xkNaQvwD4gItRzhujUXj26y9sjkcRX+zQA5Fdng==
+X-Received: by 2002:a05:6a02:119:: with SMTP id bg25mr2380854pgb.351.1644537510931;
+        Thu, 10 Feb 2022 15:58:30 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d12sm17362167pgk.29.2022.02.10.15.58.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:58:05 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH 30/49] ixgbe: replace bitmap_weight with bitmap_weight_eq
-Date:   Thu, 10 Feb 2022 14:49:14 -0800
-Message-Id: <20220210224933.379149-31-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 15:58:30 -0800 (PST)
+Date:   Thu, 10 Feb 2022 15:58:29 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Sherry Yang <sherry.yang@oracle.com>, skhan@linuxfoundation.org,
+        shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        christian@brauner.io, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH v2] selftests/seccomp: Fix seccomp failure by adding
+ missing headers
+Message-ID: <202202101558.497F6FC@keescook>
+References: <20220210203049.67249-1-sherry.yang@oracle.com>
+ <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <755ec9b2-8781-a75a-4fd0-39fb518fc484@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ixgbe_disable_sriov calls bitmap_weight() to compare the weight of bitmap
-with a given number. We can do it more efficiently with bitmap_weight_eq
-because conditional bitmap_weight may stop traversing the bitmap earlier,
-as soon as condition is (or can't be) met.
+On Fri, Feb 11, 2022 at 04:14:17AM +0500, Muhammad Usama Anjum wrote:
+> On 2/11/22 1:30 AM, Sherry Yang wrote:
+> > seccomp_bpf failed on tests 47 global.user_notification_filter_empty
+> > and 48 global.user_notification_filter_empty_threaded when it's
+> > tested on updated kernel but with old kernel headers. Because old
+> > kernel headers don't have definition of macro __NR_clone3 which is
+> > required for these two tests. Since under selftests/, we can install
+> > headers once for all tests (the default INSTALL_HDR_PATH is
+> > usr/include), fix it by adding usr/include to the list of directories
+> > to be searched. Use "-isystem" to indicate it's a system directory as
+> > the real kernel headers directories are.
+> > 
+> > Signed-off-by: Sherry Yang <sherry.yang@oracle.com>
+> > Tested-by: Sherry Yang <sherry.yang@oracle.com>
+> > ---
+> >  tools/testing/selftests/seccomp/Makefile | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+> > index 0ebfe8b0e147..585f7a0c10cb 100644
+> > --- a/tools/testing/selftests/seccomp/Makefile
+> > +++ b/tools/testing/selftests/seccomp/Makefile
+> > @@ -1,5 +1,5 @@
+> >  # SPDX-License-Identifier: GPL-2.0
+> > -CFLAGS += -Wl,-no-as-needed -Wall
+> > +CFLAGS += -Wl,-no-as-needed -Wall -isystem ../../../../usr/include/
+> 
+> "../../../../usr/include/" directory doesn't have header files if
+> different output directory is used for kselftests build like "make -C
+> tools/tests/selftest O=build". Can you try adding recently added
+> variable, KHDR_INCLUDES here which makes this kind of headers inclusion
+> easy and correct for other build combinations as well?
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Ah, if that's true I think there are some other instances in the tree
+that need fixing too.
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-index 214a38de3f41..35297d8a488b 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -246,7 +246,7 @@ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
- #endif
- 
- 	/* Disable VMDq flag so device will be set in VM mode */
--	if (bitmap_weight(adapter->fwd_bitmask, adapter->num_rx_pools) == 1) {
-+	if (bitmap_weight_eq(adapter->fwd_bitmask, adapter->num_rx_pools, 1)) {
- 		adapter->flags &= ~IXGBE_FLAG_VMDQ_ENABLED;
- 		adapter->flags &= ~IXGBE_FLAG_SRIOV_ENABLED;
- 		rss = min_t(int, ixgbe_max_rss_indices(adapter),
 -- 
-2.32.0
-
+Kees Cook
