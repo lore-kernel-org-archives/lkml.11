@@ -2,97 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE160C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D45C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 01:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231837AbiBJBXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 20:23:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44400 "EHLO
+        id S231863AbiBJBYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 20:24:03 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:45076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231857AbiBJBXm (ORCPT
+        with ESMTP id S231936AbiBJBX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 20:23:42 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650931EC7D
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:23:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644456220; x=1675992220;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3TVWAm9LlhlLa2IkCVU8wnRmJGrW+1uk41RrCt4p/Tc=;
-  b=nIveuFRjgR54ayuDiKg1FgrmA2M6tKaD/CUQGoG1yYChZZzEqGEfDYzt
-   +SnpZkf6dVZMf9lzR7Cp8/V/vsrgKjapPuwNtmneUShkNqkcJZs2WS5Hg
-   bi/TT9Nx1iMaCVtcmmYZIjWMXhtyQieE5epfa2CQSMoFgsaWILmB3N2rM
-   ILoLDMyib7eF5tH1DclwpLKvnekhLd8GuoT4d1VkyTItTsC+GUM+X5lgr
-   MOWAR5gnuqCgfDaCT2PXZu1Wykg7Q0jKiF3KmcIl336oB99QyipfqYWar
-   E5BKL3lUIG44ScRU41CUytJpDYz7F1bJWlI1kMGCT6td9UklYhQT+fr8g
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="273923635"
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="273923635"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2022 16:52:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,357,1635231600"; 
-   d="scan'208";a="678968070"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 09 Feb 2022 16:52:21 -0800
-Message-ID: <27fbcb02-4f13-3377-eadd-e689ce063348@linux.intel.com>
-Date:   Thu, 10 Feb 2022 08:51:08 +0800
+        Wed, 9 Feb 2022 20:23:59 -0500
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0ED6205E8
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 17:24:01 -0800 (PST)
+Received: by mail-oi1-x234.google.com with SMTP id m10so4463632oie.2
+        for <linux-kernel@vger.kernel.org>; Wed, 09 Feb 2022 17:24:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=x2k5/p2+1EreJcvphg39ZeoqokALorRFjM7MtNKPEW8=;
+        b=fLnwc+dZF5T7HAKKi4KAZvW+YcEzG6KqggXlylHCzvgPRpHFw4TMhuXKeSzGG151L+
+         C0xOcGsNr4rJkVaFUgnFnCsNZEOzEOLzW65GoVSP4WCWs/rtWSM+xcc7IGI0RjnRGQFH
+         DECB2VQvrMJKzGQ6zSTf2E0tUXzXnxTEQgNyE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=x2k5/p2+1EreJcvphg39ZeoqokALorRFjM7MtNKPEW8=;
+        b=5DIJHJLW44AqnZb/EAvJ5lczMRJm2e6BlbxZbQcARN4rbzAUREDWfPpPnhUpwLUKwk
+         DwzoTLQyRfnNZYPK+j+pdV3cHmOkV5kOUu0OWYup7TaTIzK6JJBI+t8vl2X4fmqr3GrL
+         4zNYOD01mLHqt08baveOwuCW+92eYXNzYWd/Gh7ST4+Z/sf6O0h6KsuIB/ab7ZFK+YWb
+         /npYNSfj7dqGjMnYiqhlMG+zpAFgR4nQrtufhnYGxmcaTV/EANbgrWg7ida0PYUce07/
+         647dLk10UXwWS0Xzq/z6JmjcmgGZiR4+Ebo6v2Ce8Nkhx72sJ5yvY9CWWtBjBlGMJ9J0
+         HpSA==
+X-Gm-Message-State: AOAM5302x+ChXOg+Q3ABBwEF9AeOdFi/bnTia8PtS0Tt9/lqSSmNDZnD
+        MQKUmSqSHySePSGfqqlcf0bXnXfXR5CHaK0slHUQtNyYbQU=
+X-Google-Smtp-Source: ABdhPJwLYBmMx5NDKo9m7NEKru/pKEgLewZGXLcS52Fihf8YUAInfps3SIKFvwGtmzu/zeGA/Q/klzGVKCkvVQjfOf4=
+X-Received: by 2002:a05:6808:190f:: with SMTP id bf15mr60866oib.40.1644455804491;
+ Wed, 09 Feb 2022 17:16:44 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 9 Feb 2022 17:16:44 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 08/10] iommu: Remove unused argument in
- is_attach_deferred
-Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>
-References: <20220208012559.1121729-1-baolu.lu@linux.intel.com>
- <20220208012559.1121729-9-baolu.lu@linux.intel.com>
- <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <290a89f0-8318-6130-468c-6412add62cfb@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1644396932-17932-4-git-send-email-quic_sbillaka@quicinc.com>
+References: <1644396932-17932-1-git-send-email-quic_sbillaka@quicinc.com> <1644396932-17932-4-git-send-email-quic_sbillaka@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Wed, 9 Feb 2022 17:16:43 -0800
+Message-ID: <CAE-0n50FK4FSr6Xau9-UBYk9-0kVrETkCPr8TaDrPGS7BN6pMQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/4] drm/panel-edp: Add eDP sharp panel support
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>,
+        agross@kernel.org, airlied@linux.ie, bjorn.andersson@linaro.org,
+        daniel@ffwll.ch, devicetree@vger.kernel.org, dianders@chromium.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        krzysztof.kozlowski@canonical.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        robh+dt@kernel.org, sam@ravnborg.org, seanpaul@chromium.org,
+        thierry.reding@gmail.com
+Cc:     quic_kalyant@quicinc.com, quic_abhinavk@quicinc.com,
+        quic_khsieh@quicinc.com, quic_mkrishn@quicinc.com,
+        quic_vproddut@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 9:52 PM, Robin Murphy wrote:
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 2b5f4e57a8bb..80f1294be634 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -5052,8 +5052,7 @@ intel_iommu_dev_disable_feat(struct device *dev, 
->> enum iommu_dev_features feat)
->>       }
->>   }
->> -static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
->> -                       struct device *dev)
->> +static bool intel_iommu_is_attach_deferred(struct device *dev)
->>   {
->>       return attach_deferred(dev);
-> 
-> Seems like there's no need to wrap this now?
+Quoting Sankeerth Billakanti (2022-02-09 00:55:31)
+> Add support for the 14" sharp,lq140m1jw46 eDP panel.
+>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> ---
 
-Yes. It's pointless.
-
-Best regards,
-baolu
-
+Can you share the edid-decode for this panel here under the cut "---"?
+It would help to see the timings and make sure everything matches.
