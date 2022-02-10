@@ -2,180 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241084AbiBJLkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 06:40:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41704 "EHLO
+        id S241097AbiBJLlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 06:41:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241058AbiBJLko (ORCPT
+        with ESMTP id S241058AbiBJLlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 06:40:44 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3913BFF0;
-        Thu, 10 Feb 2022 03:40:45 -0800 (PST)
-Received: from kwepemi100001.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JvZT763HKz1FCY9;
-        Thu, 10 Feb 2022 19:36:27 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100001.china.huawei.com (7.221.188.215) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 10 Feb 2022 19:40:41 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 10 Feb
- 2022 19:40:40 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <ming.lei@redhat.com>, <tj@kernel.org>, <axboe@kernel.dk>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH v9] block: cancel all throttled bios in del_gendisk()
-Date:   Thu, 10 Feb 2022 19:56:37 +0800
-Message-ID: <20220210115637.1074927-1-yukuai3@huawei.com>
+        Thu, 10 Feb 2022 06:41:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D777101E;
+        Thu, 10 Feb 2022 03:41:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2746F61D1F;
+        Thu, 10 Feb 2022 11:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C632EC004E1;
+        Thu, 10 Feb 2022 11:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644493275;
+        bh=YX1gi59/HZbFW3O0Wnmg+lqGfVhLTyza+iIoN+OkqZ4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WdhEQGRtOpRhyZ6JWVwUVoJSQt9Imap+QU8DPJgQYnD4UI6NkPC67iN6XW2w4X4zx
+         sRcVtwhOm9l3tiEY6pMPQlccFPEDowvg7IVRhr1hTosIlbhx0RZR6Jc21emXLIX7KY
+         XCjFH6rdRXbkuSQVEii+16t3UZk3uWOPbmBz2dcPsjtIwfsa66vLxkxdwvOi8nMCbS
+         aN4h77DFeEsc+PMnpyxGgfGQZzAn0a8zKoiJZtrEBK6v8mXBJvShV++3j1pbL2zItX
+         6FhW2VjPqdwm2xjlFNP8oPu04Cfn5eT88xdnXL2UynMZ9jwKj69rKFpOQ9cJwKrw9p
+         JmVgwIN2YxCBw==
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     linux-arm-msm@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Kalyan Thota <quic_kalyant@quicinc.com>,
+        Mark Yacoub <markyacoub@google.com>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] drm/msm/dpu: Remove set but unused variables
+Date:   Thu, 10 Feb 2022 17:11:04 +0530
+Message-Id: <20220210114106.290669-1-vkoul@kernel.org>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Throttled bios can't be issued after del_gendisk() is done, thus
-it's better to cancel them immediately rather than waiting for
-throttle is done.
+We get warning:
 
-For example, if user thread is throttled with low bps while it's
-issuing large io, and the device is deleted. The user thread will
-wait for a long time for io to return.
+In function ‘dpu_encoder_virt_enable’: drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:1145:33:
+warning: variable ‘priv’ set but not used [-Wunused-but-set-variable]
+ 1145 |         struct msm_drm_private *priv;
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+In function ‘dpu_encoder_virt_disable’: drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:1182:33:
+warning: variable ‘priv’ set but not used [-Wunused-but-set-variable]
+ 1182 |         struct msm_drm_private *priv;
+
+Remove these unused but set variables
+
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 ---
-Changes in v9:
- - some minor changes as suggested by Ming.
-Changes in v8:
- - fold two patches into one
-Changes in v7:
- - use the new solution as suggested by Ming.
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
- block/blk-throttle.c | 44 +++++++++++++++++++++++++++++++++++++++++---
- block/blk-throttle.h |  2 ++
- block/genhd.c        |  2 ++
- 3 files changed, 45 insertions(+), 3 deletions(-)
-
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 7c462c006b26..ca92e5fa2769 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -43,8 +43,12 @@
- static struct workqueue_struct *kthrotld_workqueue;
- 
- enum tg_state_flags {
--	THROTL_TG_PENDING	= 1 << 0,	/* on parent's pending tree */
--	THROTL_TG_WAS_EMPTY	= 1 << 1,	/* bio_lists[] became non-empty */
-+	/* on parent's pending tree */
-+	THROTL_TG_PENDING	= 1 << 0,
-+	/* bio_lists[] became non-empty */
-+	THROTL_TG_WAS_EMPTY	= 1 << 1,
-+	/* starts to cancel all bios, will be set if the disk is deleted */
-+	THROTL_TG_CANCELING	= 1 << 2,
- };
- 
- #define rb_entry_tg(node)	rb_entry((node), struct throtl_grp, rb_node)
-@@ -871,7 +875,8 @@ static bool tg_may_dispatch(struct throtl_grp *tg, struct bio *bio,
- 	       bio != throtl_peek_queued(&tg->service_queue.queued[rw]));
- 
- 	/* If tg->bps = -1, then BW is unlimited */
--	if (bps_limit == U64_MAX && iops_limit == UINT_MAX) {
-+	if ((bps_limit == U64_MAX && iops_limit == UINT_MAX) ||
-+	    tg->flags & THROTL_TG_CANCELING) {
- 		if (wait)
- 			*wait = 0;
- 		return true;
-@@ -1763,6 +1768,39 @@ static bool throtl_hierarchy_can_upgrade(struct throtl_grp *tg)
- 	return false;
- }
- 
-+void blk_throtl_cancel_bios(struct request_queue *q)
-+{
-+	struct cgroup_subsys_state *pos_css;
-+	struct blkcg_gq *blkg;
-+
-+	spin_lock_irq(&q->queue_lock);
-+	/*
-+	 * queue_lock is held, rcu lock is not needed here technically.
-+	 * However, rcu lock is still held to emphasize that following
-+	 * path need RCU protection and to prevent warning from lockdep.
-+	 */
-+	rcu_read_lock();
-+	blkg_for_each_descendant_post(blkg, pos_css, q->root_blkg) {
-+		struct throtl_grp *tg = blkg_to_tg(blkg);
-+		struct throtl_service_queue *sq = &tg->service_queue;
-+
-+		/*
-+		 * Set the flag to make sure throtl_pending_timer_fn() won't
-+		 * stop until all throttled bios are dispatched.
-+		 */
-+		blkg_to_tg(blkg)->flags |= THROTL_TG_CANCELING;
-+		/*
-+		 * Update disptime after setting the above flag to make sure
-+		 * throtl_select_dispatch() won't exit without dispatching.
-+		 */
-+		tg_update_disptime(tg);
-+
-+		throtl_schedule_pending_timer(sq, jiffies + 1);
-+	}
-+	rcu_read_unlock();
-+	spin_unlock_irq(&q->queue_lock);
-+}
-+
- static bool throtl_can_upgrade(struct throtl_data *td,
- 	struct throtl_grp *this_tg)
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 1e648db439f9..132844801e92 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1142,14 +1142,12 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
  {
-diff --git a/block/blk-throttle.h b/block/blk-throttle.h
-index 175f03abd9e4..2ae467ac17ea 100644
---- a/block/blk-throttle.h
-+++ b/block/blk-throttle.h
-@@ -160,12 +160,14 @@ static inline void blk_throtl_exit(struct request_queue *q) { }
- static inline void blk_throtl_register_queue(struct request_queue *q) { }
- static inline void blk_throtl_charge_bio_split(struct bio *bio) { }
- static inline bool blk_throtl_bio(struct bio *bio) { return false; }
-+static inline void blk_throtl_cancel_bios(struct request_queue *q) { }
- #else /* CONFIG_BLK_DEV_THROTTLING */
- int blk_throtl_init(struct request_queue *q);
- void blk_throtl_exit(struct request_queue *q);
- void blk_throtl_register_queue(struct request_queue *q);
- void blk_throtl_charge_bio_split(struct bio *bio);
- bool __blk_throtl_bio(struct bio *bio);
-+void blk_throtl_cancel_bios(struct request_queue *q);
- static inline bool blk_throtl_bio(struct bio *bio)
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+ 	int ret = 0;
+-	struct msm_drm_private *priv;
+ 	struct drm_display_mode *cur_mode = NULL;
+ 
+ 	dpu_enc = to_dpu_encoder_virt(drm_enc);
+ 
+ 	mutex_lock(&dpu_enc->enc_lock);
+ 	cur_mode = &dpu_enc->base.crtc->state->adjusted_mode;
+-	priv = drm_enc->dev->dev_private;
+ 
+ 	trace_dpu_enc_enable(DRMID(drm_enc), cur_mode->hdisplay,
+ 			     cur_mode->vdisplay);
+@@ -1179,7 +1177,6 @@ static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+ static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
  {
- 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
-diff --git a/block/genhd.c b/block/genhd.c
-index 9589d1d59afa..6acc98cd0365 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -29,6 +29,7 @@
- #include "blk.h"
- #include "blk-mq-sched.h"
- #include "blk-rq-qos.h"
-+#include "blk-throttle.h"
+ 	struct dpu_encoder_virt *dpu_enc = NULL;
+-	struct msm_drm_private *priv;
+ 	int i = 0;
  
- static struct kobject *block_depr;
+ 	dpu_enc = to_dpu_encoder_virt(drm_enc);
+@@ -1188,8 +1185,6 @@ static void dpu_encoder_virt_disable(struct drm_encoder *drm_enc)
+ 	mutex_lock(&dpu_enc->enc_lock);
+ 	dpu_enc->enabled = false;
  
-@@ -625,6 +626,7 @@ void del_gendisk(struct gendisk *disk)
+-	priv = drm_enc->dev->dev_private;
+-
+ 	trace_dpu_enc_disable(DRMID(drm_enc));
  
- 	blk_mq_freeze_queue_wait(q);
- 
-+	blk_throtl_cancel_bios(disk->queue);
- 	rq_qos_exit(q);
- 	blk_sync_queue(q);
- 	blk_flush_integrity();
+ 	/* wait for idle */
 -- 
 2.31.1
 
