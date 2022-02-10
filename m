@@ -2,194 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71735C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 07:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236519AbiBJHag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 02:30:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42866 "EHLO
+        id S236056AbiBJHcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 02:32:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236398AbiBJHaF (ORCPT
+        with ESMTP id S235920AbiBJHca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 02:30:05 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC43D97
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:29:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=WUHmc3dSNcUNqOsNJ/yfYus8kADkbxrTR1ASOELOLwk=; b=tR+LnJoC7w5g1gHletQUyisSha
-        psPuJRmTU97k6ChwYiq94y5OUxVAu3yqd+upJEkbmKMiEavQ78bRGTs9SKf5NVuTHQZAiWMqit4I0
-        tx3suf2lropDxJIW/JfY5dFG4SnpDLYV628vFgZdCCMeesad8J6qJKleEg9+DDBlZH3/COFZvUyEa
-        cWNzZhvWegX4levw9i1cSVWpMPSh3kO2WIKLxgKnbJ4+TdVQrGiHGGXUiZ+uauTGBOUuBPJMIB9Tg
-        aq/NGHBFNDYZr6zconCPgtuOyTA+frhWJcAM/q076dr8KmT7jHJLhsSjeP0vS+8UL8HGz3SbnzzvC
-        Gu5+QKWw==;
-Received: from [2001:4bb8:188:3efc:8014:b2f2:fdfd:57ea] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nI3tj-002sT3-TU; Thu, 10 Feb 2022 07:29:48 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Dan Williams <dan.j.williams@intel.com>
-Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Alistair Popple <apopple@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        nvdimm@lists.linux.dev, linux-mm@kvack.org,
-        Alex Sierra <alex.sierra@amd.com>
-Subject: [PATCH 27/27] tools: add hmm gup test for long term pinned device pages
-Date:   Thu, 10 Feb 2022 08:28:28 +0100
-Message-Id: <20220210072828.2930359-28-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220210072828.2930359-1-hch@lst.de>
-References: <20220210072828.2930359-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Thu, 10 Feb 2022 02:32:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 860A626F
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 23:32:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644478351;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e2T/bGv5SE/3iMXaB7ccHf1v787MJc0e3nfVyRIUlLs=;
+        b=AwoJEQgNCTl98r9kaaEu57UqnBSS8iMVq6WxPO6V4nkvR3/tX2jR+cK2jXv6m/dUrFF/MY
+        DgIaz9WUzMpSrTRt1zb7WSogi7COwBRkK86HYR2cgK1xigMMSCvZ98FG23RtxUrQ0IgCiW
+        wWb16MpyY45mFSo5bKM7AUoZVv1grMw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-400-m3RdIlQ-NxuT0AM__2YCRg-1; Thu, 10 Feb 2022 02:32:26 -0500
+X-MC-Unique: m3RdIlQ-NxuT0AM__2YCRg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 235B683DD22;
+        Thu, 10 Feb 2022 07:32:25 +0000 (UTC)
+Received: from localhost (unknown [10.64.242.145])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 15C915BC42;
+        Thu, 10 Feb 2022 07:32:23 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 16:32:23 +0900 (JST)
+Message-Id: <20220210.163223.178142214622738771.yamato@redhat.com>
+To:     zeha@debian.org
+Cc:     matorola@gmail.com, kzak@redhat.com, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, util-linux@vger.kernel.org
+Subject: Re: [ANNOUNCE] util-linux v2.38-rc1
+From:   Masatake YAMATO <yamato@redhat.com>
+In-Reply-To: <20220206164734.cgdrkcuvwzy76pyy@zeha.at>
+References: <20220202.232106.1642450897216370276.yamato@redhat.com>
+        <20220205.030324.1280110384368183671.yamato@redhat.com>
+        <20220206164734.cgdrkcuvwzy76pyy@zeha.at>
+Organization: Red Hat Japan, Inc.
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Sierra <alex.sierra@amd.com>
+From: Chris Hofstaedtler <zeha@debian.org>
+Subject: Re: [ANNOUNCE] util-linux v2.38-rc1
+Date: Sun, 6 Feb 2022 17:47:34 +0100
 
-The intention is to test device coherent type pages that have been
-called through get user pages with PIN_LONGTERM flag set. These pages
-should get migrated back to normal system memory.
+> Hello Masatake YAMATO,
+> 
+> Thank you for the followup.
+> 
+> * Masatake YAMATO <yamato@redhat.com> [220204 19:03]:
+>> > Could you tell me what kind of file system for /etc/passwd do you use for testing?
+> 
+> sbuild/schroot can use different mechanisms, but in this case / is
+> overlayfs (the underlying fs is ext4):
+>    unstable-amd64-sbuild on / type overlay (rw,relatime,...)
 
-Signed-off-by: Alex Sierra <alex.sierra@amd.com>
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- tools/testing/selftests/vm/Makefile    |  2 +-
- tools/testing/selftests/vm/hmm-tests.c | 81 ++++++++++++++++++++++++++
- 2 files changed, 82 insertions(+), 1 deletion(-)
+Thank you for reporiting.
+I'm inspecting the bug.
 
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 1607322a112c91..58c8427114f0c2 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -142,7 +142,7 @@ $(OUTPUT)/mlock-random-test $(OUTPUT)/memfd_secret: LDLIBS += -lcap
- 
- $(OUTPUT)/gup_test: ../../../../mm/gup_test.h
- 
--$(OUTPUT)/hmm-tests: local_config.h
-+$(OUTPUT)/hmm-tests: local_config.h ../../../../mm/gup_test.h
- 
- # HMM_EXTRA_LIBS may get set in local_config.mk, or it may be left empty.
- $(OUTPUT)/hmm-tests: LDLIBS += $(HMM_EXTRA_LIBS)
-diff --git a/tools/testing/selftests/vm/hmm-tests.c b/tools/testing/selftests/vm/hmm-tests.c
-index 84ec8c4a1dc7b6..11b83a8084fee2 100644
---- a/tools/testing/selftests/vm/hmm-tests.c
-+++ b/tools/testing/selftests/vm/hmm-tests.c
-@@ -36,6 +36,7 @@
-  * in the usual include/uapi/... directory.
-  */
- #include "../../../../lib/test_hmm_uapi.h"
-+#include "../../../../mm/gup_test.h"
- 
- struct hmm_buffer {
- 	void		*ptr;
-@@ -60,6 +61,8 @@ enum {
- #define NTIMES		10
- 
- #define ALIGN(x, a) (((x) + (a - 1)) & (~((a) - 1)))
-+/* Just the flags we need, copied from mm.h: */
-+#define FOLL_WRITE	0x01	/* check pte is writable */
- 
- FIXTURE(hmm)
- {
-@@ -1766,4 +1769,82 @@ TEST_F(hmm, exclusive_cow)
- 	hmm_buffer_free(buffer);
- }
- 
-+/*
-+ * Test get user device pages through gup_test. Setting PIN_LONGTERM flag.
-+ * This should trigger a migration back to system memory for both, private
-+ * and coherent type pages.
-+ * This test makes use of gup_test module. Make sure GUP_TEST_CONFIG is added
-+ * to your configuration before you run it.
-+ */
-+TEST_F(hmm, hmm_gup_test)
-+{
-+	struct hmm_buffer *buffer;
-+	struct gup_test gup;
-+	int gup_fd;
-+	unsigned long npages;
-+	unsigned long size;
-+	unsigned long i;
-+	int *ptr;
-+	int ret;
-+	unsigned char *m;
-+
-+	gup_fd = open("/sys/kernel/debug/gup_test", O_RDWR);
-+	if (gup_fd == -1)
-+		SKIP(return, "Skipping test, could not find gup_test driver");
-+
-+	npages = 4;
-+	ASSERT_NE(npages, 0);
-+	size = npages << self->page_shift;
-+
-+	buffer = malloc(sizeof(*buffer));
-+	ASSERT_NE(buffer, NULL);
-+
-+	buffer->fd = -1;
-+	buffer->size = size;
-+	buffer->mirror = malloc(size);
-+	ASSERT_NE(buffer->mirror, NULL);
-+
-+	buffer->ptr = mmap(NULL, size,
-+			   PROT_READ | PROT_WRITE,
-+			   MAP_PRIVATE | MAP_ANONYMOUS,
-+			   buffer->fd, 0);
-+	ASSERT_NE(buffer->ptr, MAP_FAILED);
-+
-+	/* Initialize buffer in system memory. */
-+	for (i = 0, ptr = buffer->ptr; i < size / sizeof(*ptr); ++i)
-+		ptr[i] = i;
-+
-+	/* Migrate memory to device. */
-+	ret = hmm_migrate_sys_to_dev(self->fd, buffer, npages);
-+	ASSERT_EQ(ret, 0);
-+	ASSERT_EQ(buffer->cpages, npages);
-+	/* Check what the device read. */
-+	for (i = 0, ptr = buffer->mirror; i < size / sizeof(*ptr); ++i)
-+		ASSERT_EQ(ptr[i], i);
-+
-+	gup.nr_pages_per_call = npages;
-+	gup.addr = (unsigned long)buffer->ptr;
-+	gup.gup_flags = FOLL_WRITE;
-+	gup.size = size;
-+	/*
-+	 * Calling gup_test ioctl. It will try to PIN_LONGTERM these device pages
-+	 * causing a migration back to system memory for both, private and coherent
-+	 * type pages.
-+	 */
-+	if (ioctl(gup_fd, PIN_LONGTERM_BENCHMARK, &gup)) {
-+		perror("ioctl on PIN_LONGTERM_BENCHMARK\n");
-+		goto out_test;
-+	}
-+
-+	/* Take snapshot to make sure pages have been migrated to sys memory */
-+	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
-+	ASSERT_EQ(ret, 0);
-+	ASSERT_EQ(buffer->cpages, npages);
-+	m = buffer->mirror;
-+	for (i = 0; i < npages; i++)
-+		ASSERT_EQ(m[i], HMM_DMIRROR_PROT_WRITE);
-+out_test:
-+	close(gup_fd);
-+	hmm_buffer_free(buffer);
-+}
- TEST_HARNESS_MAIN
--- 
-2.30.2
+Masatake YAMATO
+
+> ls -la /etc/passwd
+> -rw-r--r-- 1 root root 2397 Feb  6 16:41 /etc/passwd
+> stat /etc/passwd
+>   File: /etc/passwd
+>   Size: 2397            Blocks: 8          IO Block: 4096   regular file
+> Device: 33h/51d Inode: 1311528     Links: 1
+> Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+> Access: 2022-02-06 16:41:26.880589326 +0000
+> Modify: 2022-02-06 16:41:26.720591039 +0000
+> Change: 2022-02-06 16:41:26.720591039 +0000
+>  Birth: -
+> mount
+> 
+>> As I commented on GitHub, I made a pull request for fixing this issue.
+>> I found a bug in the test case, not in lsfd itself.
+>> 
+>> https://github.com/util-linux/util-linux/pull/1595
+>> https://github.com/util-linux/util-linux/pull/1595/commits/abd93fcecfbb1a1fac7032fac9d2903c5d2d3a38
+>>
+>> > When trying to reproduce the bug, could you applying the following change?
+> 
+> I have applied abd93fcecfbb1a1fac7032fac9d2903c5d2d3a38 alone, which
+> does not help in my case (DEV[STR] is 0 instead of 1).
+> 
+> I have also applied #1595 in full in a second build, see output
+> below.
+> 
+> Many thanks,
+> Chris
+> 
+> 
+> 
+>      script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-ro-regular-file
+>    commands: /<<PKGBUILDDIR>>/
+>     helpers: /<<PKGBUILDDIR>>/
+>     sub dir: /<<PKGBUILDDIR>>/tests/ts/lsfd
+>     top dir: /<<PKGBUILDDIR>>/tests
+>        self: /<<PKGBUILDDIR>>/tests/ts/lsfd
+>   test name: mkfds-ro-regular-file
+>   test desc: read-only regular file
+>   component: lsfd
+>   namespace: lsfd/mkfds-ro-regular-file
+>     verbose: yes
+>      output: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file
+>   error log: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.err
+>   exit code: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.exit_code
+>    valgrind: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file.vgdump
+>    expected: /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-ro-regular-file{.err}
+>  mountpoint: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file-mnt
+> 
+>          lsfd: read-only regular file         ... FAILED (lsfd/mkfds-ro-regular-file)
+> ========= script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-ro-regular-file =================
+> ================= OUTPUT =====================
+>      1	ABC         3  r--  REG /etc/passwd   1
+>      2	COMMAND,ASSOC,MODE,TYPE,NAME,POS: 0
+>      3	PID[RUN]: 0
+>      4	PID[STR]: 0
+>      5	INODE[RUN]: 0
+>      6	INODE[STR]: 0
+>      7	UID[RUN]: 0
+>      8	UID[STR]: 0
+>      9	USER[RUN]: 0
+>     10	USER[STR]: 0
+>     11	SIZE[RUN]: 0
+>     12	SIZE[STR]: 0
+>     13	MNTID[RUN]: 0
+>     14	DEV[RUN]: 0
+>     15	FINDMNT[RUN]: 0
+>     16	DEV[STR]: 1
+>     17	MNTID: 312
+>     18	DEV: 0:50
+>     19	MNTID DEV: 312 0:50
+>     20	FINDMNT_MNTID_DEV: 312 0:48
+> ================= EXPECTED ===================
+>      1	ABC         3  r--  REG /etc/passwd   1
+>      2	COMMAND,ASSOC,MODE,TYPE,NAME,POS: 0
+>      3	PID[RUN]: 0
+>      4	PID[STR]: 0
+>      5	INODE[RUN]: 0
+>      6	INODE[STR]: 0
+>      7	UID[RUN]: 0
+>      8	UID[STR]: 0
+>      9	USER[RUN]: 0
+>     10	USER[STR]: 0
+>     11	SIZE[RUN]: 0
+>     12	SIZE[STR]: 0
+>     13	MNTID[RUN]: 0
+>     14	DEV[RUN]: 0
+>     15	FINDMNT[RUN]: 0
+>     16	DEV[STR]: 0
+> ================= O/E diff ===================
+> --- /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-ro-regular-file	2022-02-06 16:37:28.111146267 +0000
+> +++ /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-ro-regular-file	2022-01-31 14:57:47.000000000 +0000
+> @@ -13,8 +13,4 @@
+>  MNTID[RUN]: 0
+>  DEV[RUN]: 0
+>  FINDMNT[RUN]: 0
+> -DEV[STR]: 1
+> -MNTID: 312
+> -DEV: 0:50
+> -MNTID DEV: 312 0:50
+> -FINDMNT_MNTID_DEV: 312 0:48
+> +DEV[STR]: 0
+> ==============================================
+> 
+>      script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-rw-character-device
+>    commands: /<<PKGBUILDDIR>>/
+>     helpers: /<<PKGBUILDDIR>>/
+>     sub dir: /<<PKGBUILDDIR>>/tests/ts/lsfd
+>     top dir: /<<PKGBUILDDIR>>/tests
+>        self: /<<PKGBUILDDIR>>/tests/ts/lsfd
+>   test name: mkfds-rw-character-device
+>   test desc: character device with O_RDWR
+>   component: lsfd
+>   namespace: lsfd/mkfds-rw-character-device
+>     verbose: yes
+>      output: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device
+>   error log: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.err
+>   exit code: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.exit_code
+>    valgrind: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device.vgdump
+>    expected: /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-rw-character-device{.err}
+>  mountpoint: /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device-mnt
+> 
+>          lsfd: character device with O_RDWR   ... FAILED (lsfd/mkfds-rw-character-device)
+> ========= script: /<<PKGBUILDDIR>>/tests/ts/lsfd/mkfds-rw-character-device =================
+> ================= OUTPUT =====================
+>      1	    3  rw-  CHR /dev/zero  mem:5   0     1:5    mem    char  1:5
+>      2	ASSOC,MODE,TYPE,NAME,SOURCE,POS,MAJ:MIN,CHRDRV,DEVTYPE,RDEV: 0
+>      3	MNTID[RUN]: 0
+>      4	DEV[RUN]: 0
+>      5	FINDMNT[RUN]: 0
+>      6	DEV[STR]: 1
+>      7	MNTID: 312
+>      8	DEV: 0:50
+>      9	MNTID DEV: 312 0:50
+>     10	FINDMNT_MNTID_DEV: 312 0:48
+> ================= EXPECTED ===================
+>      1	    3  rw-  CHR /dev/zero  mem:5   0     1:5    mem    char  1:5
+>      2	ASSOC,MODE,TYPE,NAME,SOURCE,POS,MAJ:MIN,CHRDRV,DEVTYPE,RDEV: 0
+>      3	MNTID[RUN]: 0
+>      4	DEV[RUN]: 0
+>      5	FINDMNT[RUN]: 0
+>      6	DEV[STR]: 0
+> ================= O/E diff ===================
+> --- /<<PKGBUILDDIR>>/tests/output/lsfd/mkfds-rw-character-device	2022-02-06 16:37:28.675140230 +0000
+> +++ /<<PKGBUILDDIR>>/tests/expected/lsfd/mkfds-rw-character-device	2022-01-31 14:57:47.000000000 +0000
+> @@ -3,8 +3,4 @@
+>  MNTID[RUN]: 0
+>  DEV[RUN]: 0
+>  FINDMNT[RUN]: 0
+> -DEV[STR]: 1
+> -MNTID: 312
+> -DEV: 0:50
+> -MNTID DEV: 312 0:50
+> -FINDMNT_MNTID_DEV: 312 0:48
+> +DEV[STR]: 0
+> ==============================================
+> 
 
