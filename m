@@ -2,110 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C1FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD937C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242063AbiBJNQy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:16:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48294 "EHLO
+        id S242092AbiBJNSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:18:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237360AbiBJNQv (ORCPT
+        with ESMTP id S242074AbiBJNSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:16:51 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DEF1142
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 05:16:53 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id F0F4F1F391;
-        Thu, 10 Feb 2022 13:16:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644499012; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=YTZipR0AHH/3JqUp1siZN5/DeW54S/X1Be4gcHmMiN4=;
-        b=ZMpsYB/5pf7AqZsawRLtReJBCSmGV1NOXBregl7I2VX/8IFUCBRWCAqojwbk3zRLGz/IXU
-        9Ffw4CzRGx7Hxjt3BOemPLSQFBTj8YhYq3FvLu1cc39wJhoF1eMnJcrAK27j6c/Ie6Fv7m
-        87Gzo/cxDw9Bgkih9srx1UXjaDJih5U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644499012;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=YTZipR0AHH/3JqUp1siZN5/DeW54S/X1Be4gcHmMiN4=;
-        b=kv3wNPpXOwpNUU7nJVaX0XP9kJxepzVGb0PzM2Ps4Z2L/UN34bsGylM5Okmk1lPoC6iBiR
-        /lS4jXrJsYalLbDw==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        by relay2.suse.de (Postfix) with ESMTP id 47B68A3B87;
-        Thu, 10 Feb 2022 13:16:50 +0000 (UTC)
-From:   Michal Suchanek <msuchanek@suse.de>
-To:     kexec@lists.infradead.org
-Cc:     Michal Suchanek <msuchanek@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kees Cook <keescook@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Colin Ian King <colin.king@intel.com>,
+        Thu, 10 Feb 2022 08:18:22 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CAF24F;
+        Thu, 10 Feb 2022 05:18:22 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 306B92223A;
+        Thu, 10 Feb 2022 14:18:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1644499101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=C8tNsmFwAl/pwyP5rr2PBLk9G+wdOYB4a+CNX0oUTrA=;
+        b=CXnAG7GsSE+J7GEhexQn4K1g1eXywqfzbKUxHfsKGFsaUe1ojQ45MZirgpuLaCSIBCEBY5
+        n3QH0BipSvwW2oC4lJuZWSaSg6wne6ipyAAwuL1ibPXKak/nJcK90a4gTOqAZWSivKvXmo
+        l1Aw5eoKBszuy816tvAjgIdz69l+Ivw=
+From:   Michael Walle <michael@walle.cc>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] kexec: move KEXEC_SIG_FORCE from arch/x86 to arch
-Date:   Thu, 10 Feb 2022 14:16:48 +0100
-Message-Id: <20220210131648.16276-1-msuchanek@suse.de>
-X-Mailer: git-send-email 2.31.1
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v2] dt-bindings: arm: at91: add Kontron's new KSwitches
+Date:   Thu, 10 Feb 2022 14:18:17 +0100
+Message-Id: <20220210131817.484922-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is nothing x86-specific about KEXEC_SIG_FORCE
+The Kontron KSwitch D10 MMT series ethernet switches features a LAN9668
+SoC with either 8 copper ports or 6 copper port and two SFP cages.
 
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- arch/Kconfig     | 7 +++++++
- arch/x86/Kconfig | 7 -------
- 2 files changed, 7 insertions(+), 7 deletions(-)
+changes since v1:
+ - just use one entry with an enum, thanks Krzysztof
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 678a80713b21..dc2446f01ac1 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -24,6 +24,13 @@ config KEXEC_ELF
- config HAVE_IMA_KEXEC
- 	bool
+ Documentation/devicetree/bindings/arm/atmel-at91.yaml | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.yaml b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+index c612e1f48dba..9d46ff78739f 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-at91.yaml
++++ b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+@@ -174,6 +174,15 @@ properties:
+           - const: microchip,lan9668
+           - const: microchip,lan966
  
-+config KEXEC_SIG_FORCE
-+	bool "Require a valid signature in kexec_file_load() syscall"
-+	depends on KEXEC_SIG
-+	help
-+	  This option makes kernel signature verification mandatory for
-+	  the kexec_file_load() syscall.
++      - description: Kontron KSwitch D10 MMT series
++        items:
++          - enum:
++              - kontron,kswitch-d10-mmt-8g
++              - kontron,kswitch-d10-mmt-6g-2gs
++          - const: kontron,s1921
++          - const: microchip,lan9668
++          - const: microchip,lan966
 +
- config SET_FS
- 	bool
- 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..3ea648dad6b6 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2032,13 +2032,6 @@ config KEXEC_SIG
- 	  verification for the corresponding kernel image type being
- 	  loaded in order for this to work.
- 
--config KEXEC_SIG_FORCE
--	bool "Require a valid signature in kexec_file_load() syscall"
--	depends on KEXEC_SIG
--	help
--	  This option makes kernel signature verification mandatory for
--	  the kexec_file_load() syscall.
--
- config KEXEC_BZIMAGE_VERIFY_SIG
- 	bool "Enable bzImage signature verification support"
- 	depends on KEXEC_SIG
+       - items:
+           - enum:
+               - atmel,sams70j19
 -- 
-2.31.1
+2.30.2
 
