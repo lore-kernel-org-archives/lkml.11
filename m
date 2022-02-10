@@ -2,78 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B36C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 10:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239898AbiBJKfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 05:35:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47228 "EHLO
+        id S239933AbiBJKf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 05:35:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239860AbiBJKfN (ORCPT
+        with ESMTP id S239917AbiBJKfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 05:35:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F961038;
-        Thu, 10 Feb 2022 02:35:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B652B8247A;
-        Thu, 10 Feb 2022 10:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50923C36AE2;
-        Thu, 10 Feb 2022 10:35:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644489310;
-        bh=3UAY9lqkQR8YyUxNwNgQ/uSCRirIpixHQJe3MseOGWU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=odv1Wg1dbLt2NFqVzex4rqgPb9lqVE1IEfcP7m2NXH4O1WbF41JfCsup0BiVJVrzW
-         lIo8GTFnL3Wi+RTxcMs3cdi/kvV6lGoP9/zylFKoptF8aYwTI8XF0wfc984f5CvY2t
-         udq8jvYkNaCNAEES3bCElHByA51Ztcq+fCkdkqedl8WotH0R5s5cXyPZDPxgeoq1fW
-         Gqzl+IbHQlrySNOn+g8pD8pU4+01TA+VtGYc6KhWfzolDd9i4dB741Vmdsp7awKI2w
-         pMJ2cRNjNEIaKS8jCPdBr8NzBg0SM7eQMOIdibFPCcOlzQDw7r3nmEwQHL5TsxohcZ
-         UTKRLS+Cpu4dA==
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     linux-arm-msm@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org
-Subject: [REPOST PATCH v4 09/13] drm/msm: Add missing structure documentation
-Date:   Thu, 10 Feb 2022 16:04:19 +0530
-Message-Id: <20220210103423.271016-10-vkoul@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220210103423.271016-1-vkoul@kernel.org>
-References: <20220210103423.271016-1-vkoul@kernel.org>
+        Thu, 10 Feb 2022 05:35:12 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D7BFF1;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id n23so9501155pfo.1;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OyHKEWDVKlKy9kwRRGPyuapqQZ9EQT0MCaFn+0fLSY4=;
+        b=KamH/nE7RyCGAJiELKI8ttpxAJ9wkggTJ5s0F/Y9wop+T3gwUgiqgAhfmpOoLrzghl
+         HHMFronttCK7irfax/sVkRSs4TvRVaDclnH/+hJtc9lRpJ7WR4KpJRRkTnR7bGqm8IpH
+         1rJeZr4InqU66DRe5dK8jEg8oysCN5u0uEPLLRuHg5gqHLfQVgeap/XnOOEimXVQm8qj
+         JrmcdPeh97sq3w/tXGzK4VLZ8VfQWF1UtGTEVSwxX+vCCDOzINd6nBfbKy2DulL+C1xB
+         z2fO8zUunZ+wqe404S7xjpHFgrI3UUlzG9iHpKis5Gs/fOXWg7aDFVJeP9fC/DtW+vL8
+         wV3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OyHKEWDVKlKy9kwRRGPyuapqQZ9EQT0MCaFn+0fLSY4=;
+        b=67/h6wlJBlu8ktifa8MMrUgfFUtkp4uhJb0VZGRKaAsYMZaSN2CGAaRAWm0NgfMxKb
+         KI1c60Z7mjO1nnor7Mwg5+ACLZEn8QDvR7CKgK5LXx0Ejrd/DRmrk9yYs8FDQ5tdEgrU
+         YNxSSjoo0GLWiWQXnRXIaYR2B5FwoiM6JmLqDRD3lyoUwJGUlDWknrWTw3Mz8hRnXxIV
+         PEku2tnkQ21zY6RJB+SUfE/e+GL366/qzKd2CbramTcVj2iNV6q+XfseYIxaWe7vR18D
+         t7wP6kQxaPMMoIrq0P5P1YCyLda1O8yfPCXEKzzJWsX6iimgOlH3R3SaAm0FFcWC/UwS
+         wHng==
+X-Gm-Message-State: AOAM532mi7imh7Qvt18Z56EVtLWJKye5l4ABngl+aKX7sJkmb+K/3Y+Q
+        deYehv7FY6ptVD6eVLLexfY=
+X-Google-Smtp-Source: ABdhPJyHB7MuV96LGULlUp4tGXnFXjvLg7pzcsrt/mwATW5OK7J1WrWnm4frTCS4r2tuWK+a4RMWEA==
+X-Received: by 2002:a63:4e:: with SMTP id 75mr5682216pga.461.1644489312338;
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+Received: from localhost.localdomain (192.243.120.166.16clouds.com. [192.243.120.166])
+        by smtp.gmail.com with ESMTPSA id y20sm23063496pfi.78.2022.02.10.02.35.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 02:35:12 -0800 (PST)
+From:   davidcomponentone@gmail.com
+To:     gregkh@linuxfoundation.org
+Cc:     davidcomponentone@gmail.com, jirislaby@kernel.org, joel@jms.id.au,
+        andrew@aj.id.au, zev@bewilderbeest.net, johan@kernel.org,
+        yang.guang5@zte.com.cn, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH v2] serial: 8259_aspeed_vuart: replace snprintf with sysfs_emit
+Date:   Thu, 10 Feb 2022 18:34:45 +0800
+Message-Id: <a0f3e5d6d438710413d1909365f99ae4d2a4bacc.1644399683.git.yang.guang5@zte.com.cn>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Somehow documentation for dspp was missed, so add that
+From: Yang Guang <yang.guang5@zte.com.cn>
 
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+coccinelle report:
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:85:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:174:8-16:
+WARNING: use scnprintf or sprintf
+./drivers/tty/serial/8250/8250_aspeed_vuart.c:127:8-16:
+WARNING: use scnprintf or sprintf
+
+Use sysfs_emit instead of scnprintf or sprintf makes more sense.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Yang Guang <yang.guang5@zte.com.cn>
+CC: David Yang <davidcomponentone@gmail.com>
+
 ---
- drivers/gpu/drm/msm/msm_drv.h | 1 +
- 1 file changed, 1 insertion(+)
+Change from v1-v2:
+- Modify the patch title
+- Use the CC for patch sender
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-index e7a312edfe67..6425a42e997c 100644
---- a/drivers/gpu/drm/msm/msm_drv.h
-+++ b/drivers/gpu/drm/msm/msm_drv.h
-@@ -102,6 +102,7 @@ enum msm_event_wait {
-  * @num_lm:       number of layer mixers used
-  * @num_enc:      number of compression encoder blocks used
-  * @num_intf:     number of interfaces the panel is mounted on
-+ * @num_dspp:     number of dspp blocks used
-  */
- struct msm_display_topology {
- 	u32 num_lm;
+---
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 2350fb3bb5e4..36c39b8ea7af 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -82,7 +82,7 @@ static ssize_t lpc_address_show(struct device *dev,
+ 	addr = (aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRH) << 8) |
+ 		(aspeed_vuart_readb(vuart, ASPEED_VUART_ADDRL));
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "0x%x\n", addr);
++	return sysfs_emit(buf, "0x%x\n", addr);
+ }
+ 
+ static int aspeed_vuart_set_lpc_address(struct aspeed_vuart *vuart, u32 addr)
+@@ -124,7 +124,7 @@ static ssize_t sirq_show(struct device *dev,
+ 	reg &= ASPEED_VUART_GCRB_HOST_SIRQ_MASK;
+ 	reg >>= ASPEED_VUART_GCRB_HOST_SIRQ_SHIFT;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg);
++	return sysfs_emit(buf, "%u\n", reg);
+ }
+ 
+ static int aspeed_vuart_set_sirq(struct aspeed_vuart *vuart, u32 sirq)
+@@ -171,7 +171,7 @@ static ssize_t sirq_polarity_show(struct device *dev,
+ 	reg = aspeed_vuart_readb(vuart, ASPEED_VUART_GCRA);
+ 	reg &= ASPEED_VUART_GCRA_HOST_SIRQ_POLARITY;
+ 
+-	return snprintf(buf, PAGE_SIZE - 1, "%u\n", reg ? 1 : 0);
++	return sysfs_emit(buf, "%u\n", reg ? 1 : 0);
+ }
+ 
+ static void aspeed_vuart_set_sirq_polarity(struct aspeed_vuart *vuart,
 -- 
-2.31.1
+2.30.2
 
