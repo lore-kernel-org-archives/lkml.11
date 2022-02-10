@@ -2,77 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E75CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D73AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 16:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244725AbiBJQnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 11:43:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55416 "EHLO
+        id S242082AbiBJQo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 11:44:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244633AbiBJQml (ORCPT
+        with ESMTP id S244672AbiBJQmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 11:42:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C0E0EEBD
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:42:28 -0800 (PST)
+        Thu, 10 Feb 2022 11:42:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71361E5D
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:42:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644511345;
+        s=mimecast20190719; t=1644511355;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=WbSB3R6hIGKbcN8v0UfyEPhUaSJxd4lV0BVYGbHqWLw=;
-        b=AhneOZbz559ivCsjIAU/Ba5VJf7rB0GMKMA7dinXE61vrSS830V39FwmbbI/tKQnPXndNc
-        8KlPG09qUYVpcI7rjERBT/k0555N4rpHNX8snEqmE1xU4ZS8v/AxUz0qSEVnVpLgvRMRTq
-        xSOneVUCk7SOoOkXcc04zu4XBBTWjWU=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=y4Ac6XF4HP0Mqen8lxd/lGplaxbe1LsFAya7FwhDOWs=;
+        b=FcMewjfRa9iO3+5wI/Zm2qJalj/8BUUHPvhVPsZA3fPbAsMuVeAFVFpHIWqOk/01v4j8Vj
+        YkxN3+QfHsSqzKlhTqqiJJdCxAOBhoRlW+mIHQMwQudqvlugQQmeF2kFfL+KveTwICnJqR
+        5yicqcAmZw+8dEcOSKnIqfXxkDkdH8M=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-H09Bc5rWNFiTQ2106pkFAg-1; Thu, 10 Feb 2022 11:42:24 -0500
-X-MC-Unique: H09Bc5rWNFiTQ2106pkFAg-1
-Received: by mail-ed1-f70.google.com with SMTP id u24-20020a50d518000000b0040f8cef2463so3638971edi.21
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:42:24 -0800 (PST)
+ us-mta-478-mVvQ3P3qN6mMV0Ryo4J_Hw-1; Thu, 10 Feb 2022 11:42:34 -0500
+X-MC-Unique: mVvQ3P3qN6mMV0Ryo4J_Hw-1
+Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso3650638edt.20
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 08:42:33 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=WbSB3R6hIGKbcN8v0UfyEPhUaSJxd4lV0BVYGbHqWLw=;
-        b=5Zu21Ka2VzToTUpyxTALydDaYqPSYesiSSrKZHBdWuznuyNd3NLKg8XYT094eVReo2
-         TWOn7i9r4ELcdcPoYslz5SpO9bU1mXEJ6eiUoDgLxBKrNDhhpy1gkUhE5pyu+PTWP+mq
-         q8vrKHyAqOGz2WfqZ8VxeNptrQgEcT0ZkMwGBLcC4MTCyF7fuODF9fXD2z8S6xzX4Udk
-         1V5I1+YIrvhHKmr0ri70x1Xsdztd/7lpwLD5LqxoDQnbaetY65Ep1kNRZCxjlkILpHPR
-         JXJZSnAOTuYqV05hM9ZBnsUgtGW3w310NkcspOr4Whpb+Rgud+x4N4SbRQi4OYKsO0sC
-         kXQg==
-X-Gm-Message-State: AOAM532fo9UKwnwsbyvm2E14n7oTr/OsfDQBU2JAlKgm/OFULM3QT1nG
-        cbdJYdW4xIf+02S49VBByW+fJrJI5zusY58IaS1Qvx+gTB1K3N6mk1KYNdQiwdo05WeQ5tIxtXp
-        aqLOERttNeXsbNNO+wiJI1a9X
-X-Received: by 2002:aa7:db01:: with SMTP id t1mr9168311eds.394.1644511343076;
-        Thu, 10 Feb 2022 08:42:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwRpAdwmweVJR5mrpCOkEu5s3jJ7kkaz6E46rw+PJmDvR6QqXd7P3MHY69LFpm8vPahzz5dhw==
-X-Received: by 2002:aa7:db01:: with SMTP id t1mr9168289eds.394.1644511342899;
-        Thu, 10 Feb 2022 08:42:22 -0800 (PST)
+        bh=y4Ac6XF4HP0Mqen8lxd/lGplaxbe1LsFAya7FwhDOWs=;
+        b=0RW7nqBVja0TGVDRtDmOpuW4sKQs3QWDb40tIMUsmNoqcJu8Deo8+i3MKpNcGNoPpk
+         Z5Oggd6G2Y1dobGPoA2yAttzGeDkormp1Y0eBjzyALmCscYdAwhsFK6YsaTWvUxo//9z
+         kmhfNUM1Pxv8acATNDktfjEUcnt7YPcdFJP8XXSos6xVc+CDFiEjAiTKaE8r2mvb80KD
+         NhoIW8hNP61/TuC7aG4sSTzadp2jGy4VeYzm6SEIux4kTubMiV74kcB7WyAj/q89bCa8
+         r32NgGxye7EylpCb7BqXom+ugx4PdEPpDCZPH2Y74urzSWwiMBycNMcmUKv/hiblhfVr
+         NggQ==
+X-Gm-Message-State: AOAM530yZzwSqhTgoXEDqqcZ3XNci7kiVAjpYFDzgIHayHMSSIfkZlsi
+        DcZwRdeOqwkzrhMawKV0Wzb9KK41daSajHl2BzBuuD0AxDLW7tWJJBX/EoUMdQ+dXkEgdNi9VRN
+        axmtnsHeXVefCWCNcWWHiLteI
+X-Received: by 2002:a05:6402:124a:: with SMTP id l10mr8986540edw.237.1644511352886;
+        Thu, 10 Feb 2022 08:42:32 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzQ41LAYYSNrmAdji60FgHmRAuft1HoXk2n9c2tJe7U43nrjhJ21BvaTfpCiJXHRm9uyCJlcw==
+X-Received: by 2002:a05:6402:124a:: with SMTP id l10mr8986523edw.237.1644511352674;
+        Thu, 10 Feb 2022 08:42:32 -0800 (PST)
 Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
-        by smtp.googlemail.com with ESMTPSA id f26sm6975948edq.73.2022.02.10.08.42.21
+        by smtp.googlemail.com with ESMTPSA id h19sm5754121ejc.126.2022.02.10.08.42.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 08:42:22 -0800 (PST)
-Message-ID: <f1222fef-b5cd-f27e-780e-b69ac1b8f704@redhat.com>
-Date:   Thu, 10 Feb 2022 17:42:21 +0100
+        Thu, 10 Feb 2022 08:42:32 -0800 (PST)
+Message-ID: <b1aa66c6-8a5d-d38f-175c-3320fe1d1854@redhat.com>
+Date:   Thu, 10 Feb 2022 17:42:30 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH MANUALSEL 5.16 3/8] KVM: nVMX: Also filter
- MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
+Subject: Re: [PATCH MANUALSEL 5.16 7/8] KVM: VMX: Set vmcs.PENDING_DBG.BS on
+ #DB in STI/MOVSS blocking shadow
 Content-Language: en-US
 To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
         stable@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, tglx@linutronix.de,
+Cc:     Sean Christopherson <seanjc@google.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Alexander Graf <graf@amazon.de>, tglx@linutronix.de,
         mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
         x86@kernel.org, kvm@vger.kernel.org
 References: <20220209185635.48730-1-sashal@kernel.org>
- <20220209185635.48730-3-sashal@kernel.org>
+ <20220209185635.48730-7-sashal@kernel.org>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220209185635.48730-3-sashal@kernel.org>
+In-Reply-To: <20220209185635.48730-7-sashal@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -80,42 +82,102 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 2/9/22 19:56, Sasha Levin wrote:
-> From: Vitaly Kuznetsov <vkuznets@redhat.com>
+> From: Sean Christopherson <seanjc@google.com>
 > 
-> [ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
-> 
-> Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
-> MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
-> MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
-> MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
-> on 'true' MSR data.
-> 
-> Note, none of the currently existing Windows/Hyper-V versions are known
-> to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
-> is aimed at making the filtering future proof.
+> [ Upstream commit b9bed78e2fa9571b7c983b20666efa0009030c71 ]
 
 Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
 Paolo
 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+> 
+> Set vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS, a.k.a. the pending single-step
+> breakpoint flag, when re-injecting a #DB with RFLAGS.TF=1, and STI or
+> MOVSS blocking is active.  Setting the flag is necessary to make VM-Entry
+> consistency checks happy, as VMX has an invariant that if RFLAGS.TF is
+> set and STI/MOVSS blocking is true, then the previous instruction must
+> have been STI or MOV/POP, and therefore a single-step #DB must be pending
+> since the RFLAGS.TF cannot have been set by the previous instruction,
+> i.e. the one instruction delay after setting RFLAGS.TF must have already
+> expired.
+> 
+> Normally, the CPU sets vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS appropriately
+> when recording guest state as part of a VM-Exit, but #DB VM-Exits
+> intentionally do not treat the #DB as "guest state" as interception of
+> the #DB effectively makes the #DB host-owned, thus KVM needs to manually
+> set PENDING_DBG.BS when forwarding/re-injecting the #DB to the guest.
+> 
+> Note, although this bug can be triggered by guest userspace, doing so
+> requires IOPL=3, and guest userspace running with IOPL=3 has full access
+> to all I/O ports (from the guest's perspective) and can crash/reboot the
+> guest any number of ways.  IOPL=3 is required because STI blocking kicks
+> in if and only if RFLAGS.IF is toggled 0=>1, and if CPL>IOPL, STI either
+> takes a #GP or modifies RFLAGS.VIF, not RFLAGS.IF.
+> 
+> MOVSS blocking can be initiated by userspace, but can be coincident with
+> a #DB if and only if DR7.GD=1 (General Detect enabled) and a MOV DR is
+> executed in the MOVSS shadow.  MOV DR #GPs at CPL>0, thus MOVSS blocking
+> is problematic only for CPL0 (and only if the guest is crazy enough to
+> access a DR in a MOVSS shadow).  All other sources of #DBs are either
+> suppressed by MOVSS blocking (single-step, code fetch, data, and I/O),
+> are mutually exclusive with MOVSS blocking (T-bit task switch), or are
+> already handled by KVM (ICEBP, a.k.a. INT1).
+> 
+> This bug was originally found by running tests[1] created for XSA-308[2].
+> Note that Xen's userspace test emits ICEBP in the MOVSS shadow, which is
+> presumably why the Xen bug was deemed to be an exploitable DOS from guest
+> userspace.  KVM already handles ICEBP by skipping the ICEBP instruction
+> and thus clears MOVSS blocking as a side effect of its "emulation".
+> 
+> [1] http://xenbits.xenproject.org/docs/xtf/xsa-308_2main_8c_source.html
+> [2] https://xenbits.xen.org/xsa/advisory-308.html
+> 
+> Reported-by: David Woodhouse <dwmw2@infradead.org>
+> Reported-by: Alexander Graf <graf@amazon.de>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Message-Id: <20220120000624.655815-1-seanjc@google.com>
 > Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 > Signed-off-by: Sasha Levin <sashal@kernel.org>
 > ---
->   arch/x86/kvm/vmx/evmcs.c | 1 +
->   1 file changed, 1 insertion(+)
+>   arch/x86/kvm/vmx/vmx.c | 25 +++++++++++++++++++++++++
+>   1 file changed, 25 insertions(+)
 > 
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index 09fac0ddac8bd..87e3dc10edf40 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
->   	case MSR_IA32_VMX_PROCBASED_CTLS2:
->   		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
->   		break;
-> +	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
->   	case MSR_IA32_VMX_PINBASED_CTLS:
->   		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
->   		break;
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 7f4e6f625abcf..fe4a36c984460 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -4811,8 +4811,33 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
+>   		dr6 = vmx_get_exit_qual(vcpu);
+>   		if (!(vcpu->guest_debug &
+>   		      (KVM_GUESTDBG_SINGLESTEP | KVM_GUESTDBG_USE_HW_BP))) {
+> +			/*
+> +			 * If the #DB was due to ICEBP, a.k.a. INT1, skip the
+> +			 * instruction.  ICEBP generates a trap-like #DB, but
+> +			 * despite its interception control being tied to #DB,
+> +			 * is an instruction intercept, i.e. the VM-Exit occurs
+> +			 * on the ICEBP itself.  Note, skipping ICEBP also
+> +			 * clears STI and MOVSS blocking.
+> +			 *
+> +			 * For all other #DBs, set vmcs.PENDING_DBG_EXCEPTIONS.BS
+> +			 * if single-step is enabled in RFLAGS and STI or MOVSS
+> +			 * blocking is active, as the CPU doesn't set the bit
+> +			 * on VM-Exit due to #DB interception.  VM-Entry has a
+> +			 * consistency check that a single-step #DB is pending
+> +			 * in this scenario as the previous instruction cannot
+> +			 * have toggled RFLAGS.TF 0=>1 (because STI and POP/MOV
+> +			 * don't modify RFLAGS), therefore the one instruction
+> +			 * delay when activating single-step breakpoints must
+> +			 * have already expired.  Note, the CPU sets/clears BS
+> +			 * as appropriate for all other VM-Exits types.
+> +			 */
+>   			if (is_icebp(intr_info))
+>   				WARN_ON(!skip_emulated_instruction(vcpu));
+> +			else if ((vmx_get_rflags(vcpu) & X86_EFLAGS_TF) &&
+> +				 (vmcs_read32(GUEST_INTERRUPTIBILITY_INFO) &
+> +				  (GUEST_INTR_STATE_STI | GUEST_INTR_STATE_MOV_SS)))
+> +				vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS,
+> +					    vmcs_readl(GUEST_PENDING_DBG_EXCEPTIONS) | DR6_BS);
+>   
+>   			kvm_queue_exception_p(vcpu, DB_VECTOR, dr6);
+>   			return 1;
 
