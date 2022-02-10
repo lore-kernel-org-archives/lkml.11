@@ -2,100 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D13E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:22:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240844AbiBJLWI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 06:22:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32982 "EHLO
+        id S240857AbiBJLW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 06:22:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240774AbiBJLWF (ORCPT
+        with ESMTP id S239716AbiBJLWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 06:22:05 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC263F46;
-        Thu, 10 Feb 2022 03:22:06 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 77D27ED1;
-        Thu, 10 Feb 2022 03:22:06 -0800 (PST)
-Received: from [10.57.17.101] (unknown [10.57.17.101])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ED6A03F73B;
-        Thu, 10 Feb 2022 03:22:03 -0800 (PST)
-Subject: Re: [PATCH v5 6/7] thermal: netlink: Add a new event to notify CPU
- capabilities change
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ricardo Neri <ricardo.neri-calderon@linux.intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-References: <20220127193454.12814-1-ricardo.neri-calderon@linux.intel.com>
- <20220127193454.12814-7-ricardo.neri-calderon@linux.intel.com>
- <CAJZ5v0hbtmP6LHngWg0J47G2PwTxNwmjb=KMyz1zi1FM09cF8g@mail.gmail.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-Message-ID: <ede29257-d356-9fc6-5f1a-c42721c0d072@arm.com>
-Date:   Thu, 10 Feb 2022 11:22:02 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Thu, 10 Feb 2022 06:22:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A528F46
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 03:22:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC13461CEA
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 11:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41173C004E1;
+        Thu, 10 Feb 2022 11:22:25 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 11:22:22 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V2] arm64/hugetlb: Define __hugetlb_valid_size()
+Message-ID: <YgT1bg7WS6Qd8iAM@arm.com>
+References: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJZ5v0hbtmP6LHngWg0J47G2PwTxNwmjb=KMyz1zi1FM09cF8g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644491770-16108-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/30/22 3:20 PM, Rafael J. Wysocki wrote:
-> On Thu, Jan 27, 2022 at 8:33 PM Ricardo Neri
-> <ricardo.neri-calderon@linux.intel.com> wrote:
->>
->> From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->>
->> Add a new netlink event to notify change in CPU capabilities in terms of
->> performance and efficiency.
->>
->> Firmware may change CPU capabilities as a result of thermal events in the
->> system or to account for changes in the TDP (thermal design power) level.
->>
->> This notification type will allow user space to avoid running workloads
->> on certain CPUs or proactively adjust power limits to avoid future events.
->>
->> The netlink message consists of a nested attribute
->> (THERMAL_GENL_ATTR_CPU_CAPABILITY) with three attributes:
->>
->>   * THERMAL_GENL_ATTR_CPU_CAPABILITY_ID (type u32):
->>     -- logical CPU number
->>   * THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE (type u32):
->>     -- Scaled performance from 0-1023
->>   * THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY (type u32):
->>     -- Scaled efficiency from 0-1023
->>
->> Cc: Andi Kleen <ak@linux.intel.com>
->> Cc: Aubrey Li <aubrey.li@linux.intel.com>
->> Cc: Lukasz Luba <lukasz.luba@arm.com>
->> Cc: Tim Chen <tim.c.chen@linux.intel.com>
->> Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
->> Reviewed-by: Len Brown <len.brown@intel.com>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+On Thu, Feb 10, 2022 at 04:46:10PM +0530, Anshuman Khandual wrote:
+> arch_hugetlb_valid_size() can be just factored out to create another helper
+> to be used in arch_hugetlb_migration_supported() as well. This just defines
+> __hugetlb_valid_size() for that purpose.
 > 
-> Daniel, Lukasz, if you have any comments or concerns regarding this
-> patch, please let me know.
-> 
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-My apologies Rafael, I missed that email.
-
-I've looked at the patches 6/7 and 7/7 and they look OK with the
-scaling.
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
