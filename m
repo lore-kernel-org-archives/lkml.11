@@ -2,60 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA7B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 06:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235001AbiBJGEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 01:04:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51604 "EHLO
+        id S235055AbiBJGE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 01:04:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233149AbiBJGEr (ORCPT
+        with ESMTP id S233740AbiBJGEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 01:04:47 -0500
 Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E991C5;
-        Wed,  9 Feb 2022 22:04:47 -0800 (PST)
-X-isilmar-external: YES
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EEA1D9
+        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 22:04:47 -0800 (PST)
 X-isilmar-external: YES
 X-isilmar-external: YES
 X-isilmar-external: YES
 Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 2627D201421;
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 27645201427;
         Thu, 10 Feb 2022 06:04:46 +0000 (UTC)
 Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 8EB9D804B3; Thu, 10 Feb 2022 06:43:42 +0100 (CET)
-Date:   Thu, 10 Feb 2022 06:43:42 +0100
+        id E935E805A4; Thu, 10 Feb 2022 07:00:33 +0100 (CET)
+Date:   Thu, 10 Feb 2022 07:00:33 +0100
 From:   Dominik Brodowski <linux@dominikbrodowski.net>
 To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Theodore Ts'o <tytso@mit.edu>, LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Subject: Re: [PATCH] random: fix locking for crng_init in crng_reseed()
-Message-ID: <YgSmDtA2hlrDBmrH@owl.dominikbrodowski.net>
-References: <YgQOgqWr0nwqZCh6@owl.dominikbrodowski.net>
- <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] random: tie batched entropy generation to base_crng
+ generation
+Message-ID: <YgSqAbggkgdAtkcm@owl.dominikbrodowski.net>
+References: <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
+ <20220209215406.18850-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9pZB1fWf2nZNwTHw07hrnxZYYymA0_Dy=jauDt9TbF69A@mail.gmail.com>
+In-Reply-To: <20220209215406.18850-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+Am Wed, Feb 09, 2022 at 10:54:06PM +0100 schrieb Jason A. Donenfeld:
+> Now that we have an explicit base_crng generation counter, we don't need
+> a separate one for batched entropy. Rather, we can just move the
+> generation forward every time we change crng_init state.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  drivers/char/random.c | 28 +++++++---------------------
+>  1 file changed, 7 insertions(+), 21 deletions(-)
+> 
+> diff --git a/drivers/char/random.c b/drivers/char/random.c
+> index 999f1d164e72..f4d432305869 100644
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -431,8 +431,6 @@ static DEFINE_PER_CPU(struct crng, crngs) = {
+>  
+>  static DECLARE_WAIT_QUEUE_HEAD(crng_init_wait);
+>  
+> -static void invalidate_batched_entropy(void);
+> -
+>  /*
+>   * crng_fast_load() can be called by code in the interrupt service
+>   * path.  So we can't afford to dilly-dally. Returns the number of
+> @@ -455,7 +453,7 @@ static size_t crng_fast_load(const void *cp, size_t len)
+>  		src++; crng_init_cnt++; len--; ret++;
+>  	}
+>  	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+> -		invalidate_batched_entropy();
+> +		++base_crng.generation;
+>  		crng_init = 1;
+>  	}
+>  	spin_unlock_irqrestore(&base_crng.lock, flags);
 
-Am Wed, Feb 09, 2022 at 10:39:17PM +0100 schrieb Jason A. Donenfeld:
-> Thanks, applied. I changed complete_init to finalize_init, to match
-> our naming scheme from earlier, and I moved
-> invalidate_batched_entropy() to outside the lock and after
-> crng_init=2, since now it uses atomics, and it should probably be
-> ordered after crng_init = 2, so the new batch gets the new entropy.
+This will only ever increase base_crng.generation from 0 to 1, and the
+proper lock is held. The base_crng.key has changed, so it's appropriate
+to state that it has reached a new generation.
 
-Doesn't that mean that there is a small window where crng_init == 2, but
-get_random_u64/get_random_u32 still returns old data, with potentially
-insufficient entropy (as obtained at a time when crng_init was still < 2)?
-That's why I moved invalidate_batched_entropy() under the lock.
+> @@ -536,7 +534,6 @@ static void crng_reseed(void)
+>  	spin_unlock_irqrestore(&base_crng.lock, flags);
+>  	memzero_explicit(key, sizeof(key));
+>  	if (finalize_init) {
+> -		invalidate_batched_entropy();
+>  		process_random_ready_list();
+>  		wake_up_interruptible(&crng_init_wait);
+>  		kill_fasync(&fasync, SIGIO, POLL_IN);
 
-But with your subsequent patch, it doesn't matter any more.
+In crng_reseed(), base_crng.generation is incremented above while holding
+the lock, and checked that it doesn't reach ULONG_MAX. OK.
+
+> @@ -1278,7 +1275,7 @@ int __init rand_initialize(void)
+>  
+>  	extract_entropy(base_crng.key, sizeof(base_crng.key));
+>  	if (arch_init && trust_cpu && crng_init < 2) {
+> -		invalidate_batched_entropy();
+> +		++base_crng.generation;
+>  		crng_init = 2;
+>  		pr_notice("crng init done (trusting CPU's manufacturer)\n");
+>  	}
+
+Here we do not need to take a lock (single-threaded operation), can only be
+at generation 0 or 1, and the base_crng.key has changed. Which leads me to
+ask: shouldn't we increase the generation counter always (or at least if
+arch_init is true)? And just make icnrementing crng_init to 2 depending on
+trust_cpu?
+
+To sum it up:
+
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
 Thanks,
 	Dominik
