@@ -2,284 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F55C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:02:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 440DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 11:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240421AbiBJLCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 06:02:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38202 "EHLO
+        id S240448AbiBJLDX convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 06:03:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240390AbiBJLCS (ORCPT
+        with ESMTP id S232915AbiBJLDW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 06:02:18 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331EBFDB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 03:02:19 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id 9so6673470pfx.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 03:02:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D3n9GGBmDktyoUOPvx6bv8pnSzGQstasxqMB02evq5Y=;
-        b=i0SrODC31YHkgfQRD4n8OMDj+NFU1Vq1WCcnbgUx57RNw+QVi584LCQLISQYBW6k22
-         LtCz9NpQeiy8iizL03jsva87BNjRzegD/8yTtpT9cpK4uQ2TXoEHnyopgjAT3U7Rb7yR
-         Q37m9xZ/oxkxSI3d8FuDPwjishj4mFQTJoL9pPB0WuWd2mlzJFhzqOT20ZFduPkYEwma
-         eo22FGV/6rmm4WbzIDGP3rggbi06kskL8cGccnR17auRrNhayehgnYhHFtfcEW3SRSHV
-         rj5J9Zt4odyPc96JPh0zCJ3d9gwvltzvtmitLaTjOe9anof4SzJDdkARbAoLE36TIM4b
-         mwTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D3n9GGBmDktyoUOPvx6bv8pnSzGQstasxqMB02evq5Y=;
-        b=7EFiu65COrnAJYArxSwt3AZGFQPf+UtQOlFEuhKgS9GAnX5kRq48GgcEzbxYXZ+aZ0
-         FSSsTlY7myuoECiDeaM0+STSAjr3zp6czWFplOO+1wzrQSAsc+bT8V2A1vvDa5bMEpX3
-         dyCIEFU13xWLOv3DFG0CeoHrWNdZr8gjNOVRdEF529WtxVjMXJj9yFMVwS742t30icJe
-         NuP66vuM+s6RGDWnmCXTt6+/q/BfkSL5T9TBPc/xH88V5DzcRijFcW71Y9A1b3g6dmSQ
-         LIY9T/eqpaCSYe/xyC6EZS3a2AZiBu9uiAdhmxbL4rT49NgR+TINAvQNbqHJchc6/RFa
-         w/bw==
-X-Gm-Message-State: AOAM532I80ZvpxVFvCfvLQhiJp6VJj31gH5rmVS/pffAj10igKvbWlL9
-        QsVmk3sh2AQp5bV9QS/p6tBT
-X-Google-Smtp-Source: ABdhPJxu3t6vJViDB9slmnnfMVZr3euogAjFa+bxRwkWwfcx6AwWlt5EvzczDuFNojXgeCvMRRMIig==
-X-Received: by 2002:a05:6a00:140e:: with SMTP id l14mr7055920pfu.22.1644490938557;
-        Thu, 10 Feb 2022 03:02:18 -0800 (PST)
-Received: from thinkpad ([27.111.75.88])
-        by smtp.gmail.com with ESMTPSA id y5sm6851248pfw.165.2022.02.10.03.02.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 03:02:17 -0800 (PST)
-Date:   Thu, 10 Feb 2022 16:32:12 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Xiaowei Bao <xiaowei.bao@nxp.com>,
-        Om Prakash Singh <omp@nvidia.com>,
-        Vidya Sagar <vidyas@nvidia.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] PCI: designware-ep: Fix the access to DBI/iATU
- registers before enabling controller
-Message-ID: <20220210110212.GC69529@thinkpad>
-References: <1630473361-27198-1-git-send-email-hayashi.kunihiko@socionext.com>
- <1630473361-27198-3-git-send-email-hayashi.kunihiko@socionext.com>
- <576457dd-3e66-a3b9-f51c-ea94bc267fdb@ti.com>
+        Thu, 10 Feb 2022 06:03:22 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B8CB6B;
+        Thu, 10 Feb 2022 03:03:23 -0800 (PST)
+Date:   Thu, 10 Feb 2022 11:03:13 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH] pinctrl: ingenic: Fix regmap on X series SoCs
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     linus.walleij@linaro.org, linux-mips@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <DD537R.K2D13DXGNPGH@crapouillou.net>
+In-Reply-To: <20220209230452.19535-1-aidanmacdonald.0x0@gmail.com>
+References: <20220209230452.19535-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <576457dd-3e66-a3b9-f51c-ea94bc267fdb@ti.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kishon,
+Hi Aidan,
 
-On Fri, Dec 03, 2021 at 10:36:00AM +0530, Kishon Vijay Abraham I wrote:
-> Hi Kunihiko,
+Le mer., févr. 9 2022 at 23:04:54 +0000, Aidan MacDonald 
+<aidanmacdonald.0x0@gmail.com> a écrit :
+> The X series Ingenic SoCs have a shadow GPIO group which
+> is at a higher offset than the other groups, and is used
+> for all GPIO configuration. The regmap did not take this
+> offset into account and set max_register too low. Writes
+> to the shadow group registers were blocked, which made it
+> impossible to change any pin configuration.
 > 
-> On 01/09/21 10:46 am, Kunihiko Hayashi wrote:
-> > The driver using core_init_notifier, e.g. pcie-tegra194.c, runs according
-> > to the following sequence:
-> > 
-> >     probe()
-> >         dw_pcie_ep_init()
-> > 
-> >     bind()
-> >         dw_pcie_ep_start()
-> >             enable_irq()
-> > 
-> >     (interrupt occurred)
-> >     handler()
-> >         [enable controller]
-> >         dw_pcie_ep_init_complete()
-> >         dw_pcie_ep_init_notify()
-> > 
-> > After receiving an interrupt from RC, the handler enables the controller
-> > and the controller registers can be accessed.
-> > So accessing the registers should do in dw_pcie_ep_init_complete().
-> > 
-> > Currently dw_pcie_ep_init() has functions dw_iatu_detect() and
-> > dw_pcie_ep_find_capability() that include accesses to DWC registers.
-> > As a result, accessing the registers before enabling the controller,
-> > the access will fail.
-> > 
-> > The function dw_pcie_ep_init() shouldn't have any access to DWC registers
-> > if the controller is enabled after calling bind(). This moves access codes
-> > to DBI/iATU registers and depending variables from dw_pcie_ep_init() to
-> > dw_pcie_ep_init_complete().
+> Fix this by pretending there are at least 8 chips on any
+> 'X' SoC for the purposes of calculating max_register. This
+> ensures the shadow group is accessible.
+
+I don't like your solution, it sounds very hacky. I think it would make 
+more sense to use a dedicated x1000_pinctrl_regmap_config that would be 
+used for the X1000 SoC. That would also allow you to express that there 
+are no registers in the 0x400-0x700 range (through 
+regmap_config.wr_table / .rd_table).
+
+Cheers,
+-Paul
+
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  drivers/pinctrl/pinctrl-ingenic.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> Ideally pci_epc_create() should be the last step by the controller driver before
-> handing the control to the core EPC framework. Since after this step the EPC
-> framework can start invoking the epc_ops.
+> diff --git a/drivers/pinctrl/pinctrl-ingenic.c 
+> b/drivers/pinctrl/pinctrl-ingenic.c
+> index 2712f51eb238..9d2bccda50f1 100644
+> --- a/drivers/pinctrl/pinctrl-ingenic.c
+> +++ b/drivers/pinctrl/pinctrl-ingenic.c
+> @@ -4168,7 +4168,10 @@ static int __init ingenic_pinctrl_probe(struct 
+> platform_device *pdev)
+>  		return PTR_ERR(base);
 > 
-> Here more stuff is being added to dw_pcie_ep_init_complete() which is required
-> for epc_ops and this could result in aborts for platforms which does not add
-> core_init_notifier.
+>  	regmap_config = ingenic_pinctrl_regmap_config;
+> -	regmap_config.max_register = chip_info->num_chips * 
+> chip_info->reg_offset;
+> +	if (chip_info->version >= ID_X1000)
+> +		regmap_config.max_register = MIN(8, chip_info->num_chips) * 
+> chip_info->reg_offset;
+> +	else
+> +		regmap_config.max_register = chip_info->num_chips * 
+> chip_info->reg_offset;
+> 
+>  	jzpc->map = devm_regmap_init_mmio(dev, base, &regmap_config);
+>  	if (IS_ERR(jzpc->map)) {
+> --
+> 2.34.1
 > 
 
-Is there a better way to handle this situation? IMO the existing situation is
-messy. Assume that if EP is gonna powered separately by an independent power
-rail not tied to host PCIe domain (that's the typical endpoint device usecase),
-the EP driver will fail to probe due to PHY link not getting stabilized.
 
-So ultimately the board design needs to take care of an extra logic to power the
-EP device after powering the host properly and that's not ideal.
-
-Thanks,
-Mani
-
-> Thanks,
-> Kishon
-> 
-> > 
-> > Cc: Xiaowei Bao <xiaowei.bao@nxp.com>
-> > Cc: Vidya Sagar <vidyas@nvidia.com>
-> > Fixes: 6bfc9c3a2c70 ("PCI: designware-ep: Move the function of getting MSI capability forward")
-> > Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-> > Acked-by: Om Prakash Singh <omp@nvidia.com>
-> > Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
-> > ---
-> >  drivers/pci/controller/dwc/pcie-designware-ep.c | 81 +++++++++++++------------
-> >  1 file changed, 41 insertions(+), 40 deletions(-)
-> > 
-> > diff --git a/drivers/pci/controller/dwc/pcie-designware-ep.c b/drivers/pci/controller/dwc/pcie-designware-ep.c
-> > index 998b698..00ce83c 100644
-> > --- a/drivers/pci/controller/dwc/pcie-designware-ep.c
-> > +++ b/drivers/pci/controller/dwc/pcie-designware-ep.c
-> > @@ -636,16 +636,56 @@ static unsigned int dw_pcie_ep_find_ext_capability(struct dw_pcie *pci, int cap)
-> >  int dw_pcie_ep_init_complete(struct dw_pcie_ep *ep)
-> >  {
-> >  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> > +	struct dw_pcie_ep_func *ep_func;
-> > +	struct device *dev = pci->dev;
-> >  	unsigned int offset;
-> >  	unsigned int nbars;
-> >  	u8 hdr_type;
-> > +	u8 func_no;
-> > +	void *addr;
-> >  	u32 reg;
-> >  	int i;
-> >  
-> > +	dw_pcie_iatu_detect(pci);
-> > +
-> > +	ep->ib_window_map = devm_kcalloc(dev,
-> > +					 BITS_TO_LONGS(pci->num_ib_windows),
-> > +					 sizeof(long),
-> > +					 GFP_KERNEL);
-> > +	if (!ep->ib_window_map)
-> > +		return -ENOMEM;
-> > +
-> > +	ep->ob_window_map = devm_kcalloc(dev,
-> > +					 BITS_TO_LONGS(pci->num_ob_windows),
-> > +					 sizeof(long),
-> > +					 GFP_KERNEL);
-> > +	if (!ep->ob_window_map)
-> > +		return -ENOMEM;
-> > +
-> > +	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
-> > +			    GFP_KERNEL);
-> > +	if (!addr)
-> > +		return -ENOMEM;
-> > +	ep->outbound_addr = addr;
-> > +
-> > +	for (func_no = 0; func_no < ep->epc->max_functions; func_no++) {
-> > +		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
-> > +		if (!ep_func)
-> > +			return -ENOMEM;
-> > +
-> > +		ep_func->func_no = func_no;
-> > +		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
-> > +							      PCI_CAP_ID_MSI);
-> > +		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
-> > +							       PCI_CAP_ID_MSIX);
-> > +
-> > +		list_add_tail(&ep_func->list, &ep->func_list);
-> > +	}
-> > +
-> >  	hdr_type = dw_pcie_readb_dbi(pci, PCI_HEADER_TYPE) &
-> >  		   PCI_HEADER_TYPE_MASK;
-> >  	if (hdr_type != PCI_HEADER_TYPE_NORMAL) {
-> > -		dev_err(pci->dev,
-> > +		dev_err(dev,
-> >  			"PCIe controller is not set to EP mode (hdr_type:0x%x)!\n",
-> >  			hdr_type);
-> >  		return -EIO;
-> > @@ -674,8 +714,6 @@ EXPORT_SYMBOL_GPL(dw_pcie_ep_init_complete);
-> >  int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-> >  {
-> >  	int ret;
-> > -	void *addr;
-> > -	u8 func_no;
-> >  	struct resource *res;
-> >  	struct pci_epc *epc;
-> >  	struct dw_pcie *pci = to_dw_pcie_from_ep(ep);
-> > @@ -683,7 +721,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-> >  	struct platform_device *pdev = to_platform_device(dev);
-> >  	struct device_node *np = dev->of_node;
-> >  	const struct pci_epc_features *epc_features;
-> > -	struct dw_pcie_ep_func *ep_func;
-> >  
-> >  	INIT_LIST_HEAD(&ep->func_list);
-> >  
-> > @@ -705,8 +742,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-> >  		}
-> >  	}
-> >  
-> > -	dw_pcie_iatu_detect(pci);
-> > -
-> >  	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "addr_space");
-> >  	if (!res)
-> >  		return -EINVAL;
-> > @@ -714,26 +749,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-> >  	ep->phys_base = res->start;
-> >  	ep->addr_size = resource_size(res);
-> >  
-> > -	ep->ib_window_map = devm_kcalloc(dev,
-> > -					 BITS_TO_LONGS(pci->num_ib_windows),
-> > -					 sizeof(long),
-> > -					 GFP_KERNEL);
-> > -	if (!ep->ib_window_map)
-> > -		return -ENOMEM;
-> > -
-> > -	ep->ob_window_map = devm_kcalloc(dev,
-> > -					 BITS_TO_LONGS(pci->num_ob_windows),
-> > -					 sizeof(long),
-> > -					 GFP_KERNEL);
-> > -	if (!ep->ob_window_map)
-> > -		return -ENOMEM;
-> > -
-> > -	addr = devm_kcalloc(dev, pci->num_ob_windows, sizeof(phys_addr_t),
-> > -			    GFP_KERNEL);
-> > -	if (!addr)
-> > -		return -ENOMEM;
-> > -	ep->outbound_addr = addr;
-> > -
-> >  	if (pci->link_gen < 1)
-> >  		pci->link_gen = of_pci_get_max_link_speed(np);
-> >  
-> > @@ -750,20 +765,6 @@ int dw_pcie_ep_init(struct dw_pcie_ep *ep)
-> >  	if (ret < 0)
-> >  		epc->max_functions = 1;
-> >  
-> > -	for (func_no = 0; func_no < epc->max_functions; func_no++) {
-> > -		ep_func = devm_kzalloc(dev, sizeof(*ep_func), GFP_KERNEL);
-> > -		if (!ep_func)
-> > -			return -ENOMEM;
-> > -
-> > -		ep_func->func_no = func_no;
-> > -		ep_func->msi_cap = dw_pcie_ep_find_capability(ep, func_no,
-> > -							      PCI_CAP_ID_MSI);
-> > -		ep_func->msix_cap = dw_pcie_ep_find_capability(ep, func_no,
-> > -							       PCI_CAP_ID_MSIX);
-> > -
-> > -		list_add_tail(&ep_func->list, &ep->func_list);
-> > -	}
-> > -
-> >  	if (ep->ops->ep_init)
-> >  		ep->ops->ep_init(ep);
-> >  
-> > 
