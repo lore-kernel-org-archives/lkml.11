@@ -2,114 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C39C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29CDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238487AbiBJJXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:23:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48158 "EHLO
+        id S238003AbiBJJYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:24:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235335AbiBJJXA (ORCPT
+        with ESMTP id S229534AbiBJJYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:23:00 -0500
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD5CE1039;
-        Thu, 10 Feb 2022 01:22:57 -0800 (PST)
-X-UUID: afb321ee218148edac629f71eafe2e47-20220210
-X-UUID: afb321ee218148edac629f71eafe2e47-20220210
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <lina.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1793166532; Thu, 10 Feb 2022 17:22:52 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 10 Feb 2022 17:22:50 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 10 Feb 2022 17:22:49 +0800
-From:   Lina Wang <lina.wang@mediatek.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, <maze@google.com>,
-        <willemb@google.com>, <edumazet@google.com>,
-        <zhuoliang.zhang@mediatek.com>, <chao.song@mediatek.com>,
-        Lina Wang <lina.wang@mediatek.com>
-Subject: [PATCH net v2] net: fix wrong network header length
-Date:   Thu, 10 Feb 2022 17:16:55 +0800
-Message-ID: <20220210091655.17231-1-lina.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Thu, 10 Feb 2022 04:24:44 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FC5D94;
+        Thu, 10 Feb 2022 01:24:46 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id c6so13623216ybk.3;
+        Thu, 10 Feb 2022 01:24:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TpXloTlHsM1ntk3sqSjk73sshHjTMcoczp7h9ZRIX5M=;
+        b=nG29oYDVD0/CTfWlZlBTSYZYkCvfxxAe2ytLf/1ynW7ACv4wOR+kS5nLbgNWO2cwRZ
+         3Ij2aZCSYTEkTmMSPSlSfWMgEfPqIZvmyaGa8tmGFzhMUFE2+O2zqecFSoGkWwRl0jZs
+         M+WaWwq+eBUHgvWShFJbAdVFJRGokJbQY8t6UP7UVfPcr02Lbaq22WgI8NPIPmEjBTk7
+         nPW+6TyijgTBSh70Z30FssDYCEuTSB2J+Sdl9nphMYf1+stA3ecTIsBgceW+fzEpFaYw
+         LX123oN0/7N25IN7mdCJN3L/oT5PrXZOLZbV5QLRqMBEJcX9KdyBp1GRJEuGIyDxxjwU
+         NnQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TpXloTlHsM1ntk3sqSjk73sshHjTMcoczp7h9ZRIX5M=;
+        b=vRTYu81L6g4IHulWtqq8JA4lIwvzhIsNvBOVewQxDVG1dVU+FRcTs3SUmbh75YeYf1
+         55pQY/YKG8HuuafHwhP3SVHocS/A+l+khBIiI/VLQbKFE3Y0ZDHz99RPX7xl0Yt3vORk
+         3FZE1OwaIwTbsu4N5XDdgTI2xZ6Z1VobveEhkmZKcyp3B7MoH+Rdo6Bm2QKAYsCRHpfB
+         6MAGKnmDQA0nMug8Ds5sUNmTNR6+Wd+e7AMtExBA/jNZynU55MfzcKJnVWYq8PT2e+8s
+         zBzVVImKNbrNFLKqzhpGGhtnszNbtTE34wfnSvR5CDVV/9kx6MO7SEh/DVGv+SytOEti
+         rk7w==
+X-Gm-Message-State: AOAM5327JW4oR6zDJTr9A9RaMBoCU9Y6CMCr67PpIIdFTFdRRxwV6nW1
+        P/Ph5r6kXxF5DzXQN+8srmqc+ERjw4UCgqCZVpV0HMYGHqxcxA==
+X-Google-Smtp-Source: ABdhPJz++32w1O5FkVObhtJdMj6KLqzBo+ajd9SwAzC/wnU3f93LjZv5QlOZX9jC+CIinuCj1qagS6bWtzuF3Wz/kNo=
+X-Received: by 2002:a25:be50:: with SMTP id d16mr5721263ybm.41.1644485085432;
+ Thu, 10 Feb 2022 01:24:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220210084052.GA69529@thinkpad>
+In-Reply-To: <20220210084052.GA69529@thinkpad>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Thu, 10 Feb 2022 09:24:19 +0000
+Message-ID: <CA+V-a8tivrjPoae69pqH1D+B=_Bd7ZzKjCA0PcfBz7Rpf022mA@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/5] PCIe EPF support for internal DMAC handling and
+ driver update for R-Car PCIe EP to support DMAC
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Rob Herring <robh@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
-several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
-ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
-network_header\transport_header\mac_header have been updated as ipv4 acts,
-but other skbs in frag_list didnot update anything, just ipv6 packets.
+Hi,
 
-udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
-frag_list and make sure right udp payload is delivered to user space.
-Unfortunately, other skbs in frag_list who are still ipv6 packets are
-updated like the first skb and will have wrong transport header length.
+On Thu, Feb 10, 2022 at 8:40 AM Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> wrote:
+>
+> Hi,
+>
+> On Wed, Jan 26, 2022 at 07:50:38PM +0000, Lad Prabhakar wrote:
+> > Hi All,
+> >
+> > The current PCIe EPF framework supports DMA data transfers using external
+> > DMA only, this patch series aims to add support for platforms supporting
+> > internal DMAC on PCIe for data transfers.
+> >
+> > R-Car PCIe supports internal DMAC to transfer data between Internal Bus to
+> > PCI Express and vice versa. Last patch fills up the required flags and ops
+> > to support internal DMAC.
+> >
+> > Patches 1-3 are for PCIe EPF core to support internal DMAC handling, patch
+> > 4/5 is to fix test cases based on the conversation [1].
+> >
+>
+> This looks similar to the Synopsys eDMA IP [1] that goes with the Synopsys PCIe
+> endpoint IP. Why can't you represent it as a dmaengine driver and use the
+> existing DMA support?
+>
+Let me have a look. Could you please share a link to the Synopsys PCIe
+endpoint HW manual (the driver doesn't have a binding doc).
 
-e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
-has the same network_header(24)& transport_header(64), after
-bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
-skb's network_header is 44,transport_header is 64, other skbs in frag_list
-didnot change.After skb_segment_list, the other skbs in frag_list has
-different network_header(24) and transport_header(44), so there will be 20
-bytes difference,that is difference between ipv6 header and ipv4 header.
+Cheers,
+Prabhakar
 
-Actually, there are two solutions to fix it, one is traversing all skbs
-and changing every skb header in bpf_skb_proto_6_to_4, the other is
-modifying frag_list skb's header in skb_segment_list. Considering
-efficiency, adopt the second one--- when the first skb and other skbs in
-frag_list has different network_header length, restore them to make sure
-right udp payload is delivered to user space.
-
-
-Signed-off-by: Lina Wang <lina.wang@mediatek.com>
-
----
- net/core/skbuff.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 0118f0afaa4f..68172817bcd6 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3866,6 +3866,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 	struct sk_buff *tail = NULL;
- 	struct sk_buff *nskb, *tmp;
- 	int err;
-+	int len_diff = 0;
- 
- 	skb_push(skb, -skb_network_offset(skb) + offset);
- 
-@@ -3905,9 +3906,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
- 		skb_release_head_state(nskb);
-+		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
- 		__copy_skb_header(nskb, skb);
- 
- 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
-+		nskb->transport_header += len_diff;
- 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
- 						 nskb->data - tnl_hlen,
- 						 offset + tnl_hlen);
--- 
-2.18.0
-
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/dma/dw-edma
+>
+> > Patches are based on top of [1] next branch.
+> >
+> > [0] https://www.spinics.net/lists/linux-pci/msg92385.html
+> > [1] https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git
+> >
+> > Cheers,
+> > Prabhakar
+> >
+> > Lad Prabhakar (5):
+> >   PCI: endpoint: Add ops and flag to support internal DMAC
+> >   PCI: endpoint: Add support to data transfer using internal dmac
+> >   misc: pci_endpoint_test: Add driver data for Renesas RZ/G2{EHMN}
+> >   misc: pci_endpoint_test: Add support to pass flags for buffer
+> >     allocation
+> >   PCI: rcar-ep: Add support for DMAC
+> >
+> >  drivers/misc/pci_endpoint_test.c              |  56 ++++-
+> >  drivers/pci/controller/pcie-rcar-ep.c         | 227 ++++++++++++++++++
+> >  drivers/pci/controller/pcie-rcar.h            |  23 ++
+> >  drivers/pci/endpoint/functions/pci-epf-test.c | 184 ++++++++++----
+> >  drivers/pci/endpoint/pci-epf-core.c           |  32 +++
+> >  include/linux/pci-epc.h                       |   8 +
+> >  include/linux/pci-epf.h                       |   7 +
+> >  7 files changed, 483 insertions(+), 54 deletions(-)
+> >
+> > --
+> > 2.25.1
+> >
