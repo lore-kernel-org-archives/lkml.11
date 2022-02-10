@@ -2,125 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A69C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 22:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345298AbiBJWxq (ORCPT
+        id S1345308AbiBJWyE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 17:53:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42558 "EHLO
+        Thu, 10 Feb 2022 17:54:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238083AbiBJWxp (ORCPT
+        with ESMTP id S238083AbiBJWyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 17:53:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7724273D;
-        Thu, 10 Feb 2022 14:53:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99A88B827BB;
-        Thu, 10 Feb 2022 22:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00B51C004E1;
-        Thu, 10 Feb 2022 22:53:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644533623;
-        bh=UWJBiNM1e5s58iDH2kQaRabS4o2/BGSKcudejnGvHQk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=VDZo6yYpPCxmhgs6YUPFLdHvi098Th/D3Ymqa8EINDqYnQlW95gQ6SO/Q9thIFq5d
-         SxvDEbxk5fyL2SZ83hYI7MbQjeVRQuwk6BnF54zBYjS7qnLWqZbxRUkj7jgSnosgiR
-         2GwWUkT2kryjvw/RBswjYYewFbrCDFnyL4i3CC3TKDzTEKQ1Lp+nEmxhTQtc0Gsshx
-         i7hPh9C7+6+7mcfaTL4qomDyvcX3ftk3koGthf7AwWShnTCKkoEUZgSfPpMbxhH83d
-         mdO9oHdrhiCxWBsPhw2C161hWN/nYM7wraxNs7Bf7iI2htlbQVqOxrX2clWzFKQUZm
-         GBAGyiN4t7tbw==
-Date:   Thu, 10 Feb 2022 16:53:41 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     "Yang, Shunyong" <shunyong.yang@hxt-semitech.com>
-Cc:     "okaya@kernel.org" <okaya@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Zheng, Joey" <yu.zheng@hxt-semitech.com>
-Subject: Re: [PATCH v2 1/2] PCI: Add HXT vendor ID and ACS quirk
-Message-ID: <20220210225341.GA660963@bhelgaas>
+        Thu, 10 Feb 2022 17:54:01 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD0F55A4;
+        Thu, 10 Feb 2022 14:54:02 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id h7so9358264iof.3;
+        Thu, 10 Feb 2022 14:54:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=VUKtrHLt0fjPmTgGEZzFREYA4A6F0kdoS7SyUvKa0qA=;
+        b=O4LOqpJXDQnBxYPr0uj95YnMfkewxiGbbQ/CJY8h9XDEPOvDjwh5qXW6DLwNj/4efC
+         P5rQp/xAmEmeII8/061Ts7JTt7EVmLB+11xoYOuxl7Aj0qEYkDOLJXycZvl5sufYs5DF
+         4vgFdiDGtrUyNKnS0E80RAJT2kAGsFDMrBOB59uXItyZqs3bPTBgtjGn6yYWYd71QIEW
+         8KOtB1BJ6WgWf06cjSV8ERv8TMMgsw5f8McINFBn9SGaJ/oPcElXl8/Qyis/NPO2ABMh
+         WOFjIQmst1HJnqh3/u46Cy212ZQva5eXTTBHPDZw+ohS/wXIhQ4nIa2v1/cyXJNuAQAX
+         FndA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=VUKtrHLt0fjPmTgGEZzFREYA4A6F0kdoS7SyUvKa0qA=;
+        b=ChNSB6q5ku8zlDdlNMr7s6ZV4KdXrcvnRGXcNXTUii0pJwXgivl1Ag29XMp9HHeYQn
+         teG2SSycs0FxW6k+SJZvPBwY0YOnT33z6or8FFwz+l+Fl9A7vdiTIjAd67bBxJBxzzOF
+         D1g5u65zm4HSUw7PolBbfrja/d6FPUjxfLN6A8tmZOGcSzRBLYl2xIPlyijjeNf3+MfH
+         wazvh9dMghQFf9xfgBJLW+5hbqVFGtLqog9IqCCt9jbv94fQRZGnWVAwKLWhX1pQkaOc
+         uNBHynbqVVnoLIoCbOaaJ5JOOpy66LRYwYpf4hiORQtMuvwWSz3wr6X4ivc2bEqSusHP
+         jA+g==
+X-Gm-Message-State: AOAM530oEcxM0DdC/p7UYeWBrAYcCcFWtZliBpATdg8cqsPBWLHXQqrg
+        i2GqOUZX8dmSWqOY1ENYTh4=
+X-Google-Smtp-Source: ABdhPJzaRpwSbO6X1WBTl+WfBx/q4TwWiCIEqIJ9Q6DkzZZR70REkK2F4cQiJwbzEUceoLbWMe36Mg==
+X-Received: by 2002:a02:cd0a:: with SMTP id g10mr5229490jaq.223.1644533641691;
+        Thu, 10 Feb 2022 14:54:01 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id a15sm6591675ilq.24.2022.02.10.14.54.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 14:54:01 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 01/49] net: dsa: don't use bitmap_weight() in b53_arl_read()
+Date:   Thu, 10 Feb 2022 14:48:45 -0800
+Message-Id: <20220210224933.379149-2-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6b4a41788f0d4b1c8388ebfb4d5abea4@HXTBJIDCEMVIW01.hxtcorp.net>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 11, 2019 at 12:52:29AM +0000, Yang, Shunyong wrote:
-> Hi, Bjorn,
-> 
-> Thank you for reminding me. I will check with our IC team for these
-> design issues.
-> Sorry for the delay as I was taking Chinese New Year holiday.
+Don't call bitmap_weight() if the following code can get by
+without it.
 
-Hi, happened to apply a new similar quirk for Qualcomm today, so just
-checking in to see whether there are any new HXT devices that also
-require this quirk, or whether we should apply the quirk for *all* HXT
-devices as we do for Intel.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/b53/b53_common.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-Bjorn
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index a3b98992f180..d99813bf3cdd 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -1620,12 +1620,8 @@ static int b53_arl_read(struct b53_device *dev, u64 mac,
+ 		return 0;
+ 	}
+ 
+-	if (bitmap_weight(free_bins, dev->num_arl_bins) == 0)
+-		return -ENOSPC;
+-
+ 	*idx = find_first_bit(free_bins, dev->num_arl_bins);
+-
+-	return -ENOENT;
++	return *idx >= dev->num_arl_bins ? -ENOSPC : -ENOENT;
+ }
+ 
+ static int b53_arl_op(struct b53_device *dev, int op, int port,
+-- 
+2.32.0
 
-> On 2019/2/2 7:19, Bjorn Helgaas wrote:
-> > On Wed, Nov 07, 2018 at 03:24:12PM +0800, Shunyong Yang wrote:
-> >> Add the HXT vendor ID to pci_ids.h and use it in quirks. As the
-> >> design of HXT SD4800 ACS feature is the same as QCOM QDF2xxx,
-> >> pci_quirk_qcom_rp_acs() is reused for SD4800 quirk.
-> >>
-> >> cc: Joey Zheng <yu.zheng@hxt-semitech.com>
-> >> Reviewed-by: Sinan Kaya <okaya@kernel.org>
-> >> Signed-off-by: Shunyong Yang <shunyong.yang@hxt-semitech.com>
-> > 
-> > I applied both of these to pci/misc for v5.1, thanks!
-> > 
-> > As I'm sure you know, both the ACS and the pciehp issues are cases where
-> > the part does not conform to the PCIe spec.  Hopefully future parts will
-> > change the design so they *do* conform to the spec so we don't have to add
-> > quirks for every new part.  Adding quirks works around the problem, but
-> > it's a hassle for customers (and developers and distributors) because they
-> > need kernel updates when they wouldn't otherwise.
-> > 
-> > Bjorn
-> > 
-> >> ---
-> >> v2:
-> >>   Add Reviewed-by: Sinan Kaya.
-> >>
-> >> v1:
-> >>   Initial version.
-> >> ---
-> >>
-> >> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> >> index 4700d24e5d55..1e00ef6a88f4 100644
-> >> --- a/drivers/pci/quirks.c
-> >> +++ b/drivers/pci/quirks.c
-> >> @@ -4495,6 +4495,8 @@ static int pci_quirk_mf_endpoint_acs(struct pci_dev *dev, u16 acs_flags)
-> >>  	/* QCOM QDF2xxx root ports */
-> >>  	{ PCI_VENDOR_ID_QCOM, 0x0400, pci_quirk_qcom_rp_acs },
-> >>  	{ PCI_VENDOR_ID_QCOM, 0x0401, pci_quirk_qcom_rp_acs },
-> >> +	/* HXT SD4800 root ports. The ACS design is same as QCOM QDF2xxx */
-> >> +	{ PCI_VENDOR_ID_HXT, 0x0401, pci_quirk_qcom_rp_acs },
-> >>  	/* Intel PCH root ports */
-> >>  	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, pci_quirk_intel_pch_acs },
-> >>  	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, pci_quirk_intel_spt_pch_acs },
-> >> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-> >> index 69f0abe1ba1a..e60a6bc38298 100644
-> >> --- a/include/linux/pci_ids.h
-> >> +++ b/include/linux/pci_ids.h
-> >> @@ -2565,6 +2565,8 @@
-> >>  
-> >>  #define PCI_VENDOR_ID_HYGON		0x1d94
-> >>  
-> >> +#define PCI_VENDOR_ID_HXT		0x1dbf
-> >> +
-> >>  #define PCI_VENDOR_ID_TEKRAM		0x1de1
-> >>  #define PCI_DEVICE_ID_TEKRAM_DC290	0xdc29
-> >>  
-> >> -- 
-> >> 1.8.3.1
-> >>
-> > 
-> 
