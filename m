@@ -2,183 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F35AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 02:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233023AbiBJCJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 9 Feb 2022 21:09:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55398 "EHLO
+        id S231551AbiBJCJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 9 Feb 2022 21:09:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235580AbiBJCIc (ORCPT
+        with ESMTP id S232023AbiBJCHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 9 Feb 2022 21:08:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C49A2689
-        for <linux-kernel@vger.kernel.org>; Wed,  9 Feb 2022 18:07:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644458870;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oUsTTVWPTu9SLb0rd7kS3Ca3AP7hL4/yBQYIagj3IYs=;
-        b=EWbvVCA1Bl/HyJBt6jyKRSBQ9uHYqWaIif6oGz2f42HxTT4e3Bk++Xmy62+mZhyrYDY+xm
-        MmdVSD4byEiifJ5gCrf1Fg3ZchX7FrHC27U/Qshs92+6zNJaGqiOaqk3IDWMesdj2syEa1
-        fLYac+Q6k8ViICBeZIaHVJokCygTh1g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-389-5h-u4r_HMnWTD0OLMV0CVg-1; Wed, 09 Feb 2022 21:07:49 -0500
-X-MC-Unique: 5h-u4r_HMnWTD0OLMV0CVg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4A4ED1F2DA;
-        Thu, 10 Feb 2022 02:07:48 +0000 (UTC)
-Received: from [10.22.9.207] (unknown [10.22.9.207])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 80AA3879C0;
-        Thu, 10 Feb 2022 02:07:47 +0000 (UTC)
-Message-ID: <97416d9f-abce-3dba-80fd-3f5d03a8e4d5@redhat.com>
-Date:   Wed, 9 Feb 2022 21:07:46 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] locking/semaphore: Use wake_q to wake up processes
- outside lock critical section
+        Wed, 9 Feb 2022 21:07:39 -0500
+Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB4522C77;
+        Wed,  9 Feb 2022 18:03:36 -0800 (PST)
+Received: from pps.filterd (m0250811.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21A1YZif025886;
+        Thu, 10 Feb 2022 02:03:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=subject : to : cc
+ : references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=PPS06212021;
+ bh=nK6M3YbKOK89j9Puv+pru4QdL+CPSgw/3fWcICp6zbI=;
+ b=JG2V+FXQu/5NM8SzI065+AglRI/e4JCNhl7aDdnT9zUP0yMVkRtZs+WsYMYVfrTHYiLl
+ lDFB+W4FAwB42+1udpgj51TcXYqWSnbzNmb7qYaox1zKjKVXkzkTTsn2q3V0yPi7NR6R
+ MjGrm8NG32+3TtFe+YKKN3qCsqTjVmtRLjcaMwNf+5pK/rbky1pAUHAmfkX+IxFpwtM1
+ p4BAwewuWINQlj6RxrJO4UHWLpvWpMSnpYpJsRF08an8+pO7y1mIdd1yNkeaku6E2auS
+ XPAmTTi1HQO5Rvi2fuJ6R49rk5YyNSXuvvtZl0Is7xcuiYjAZyEJfogtt49qtVhPiSJU Cw== 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2048.outbound.protection.outlook.com [104.47.66.48])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3e4fyvrfmv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 10 Feb 2022 02:03:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eIaPIuPLhgfCvP+WVgLRAiNrdeFmCOfE38GLZnG3SslTTbo2biHP8WCFpK6rGn0BgmUgsCV9M7wiMPC6q+9MDrgp0CEpsoYhYN9tPJVSuUGLNNw1izvJ60U8O2GLlxv/yVMBHlkqOTuAWTWd0EU8mCUO/H1cYRrsuJ68oHUtiqfHr/wmC8mFbeo7Fp7FrkqxG4EYBMgc6k+wFlGyh+BP1K1THgESboHN6XqN8U+tCyCIuVEJ9IUCBJFHNsghnrtDjTNbOuKnUwGzVKgUx+2J/1dx/fvYI8TwIyw+DsgrWSRw7zd24XF30gxsf+w0dSVQLrCObCp7K3UltankEyKMUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VOB+H3ngmIsaUoNyAFat0vv8yFoDWD4QE9a2dNk5NDg=;
+ b=I2QeNqDUC/5BLO3X4FQZ+Oh4YVmdnnkhSMImwOJzq8Sfk+RW+WxG1jcJVQHxCIpM5mhrkn7WUgGE7EC+A7TW4+XHWm2eAPBcBmtZefMbzm40DYuIYvH4hbLyMCaNH8tKyX+CXpDpq4NRXR7oS7Fj0rLZ82jM2Iqvq5MMedBSyUF31YqJLaui8EyRKWrfHsXp0L3jNB0nLz077TkyMAcv2yafolWfV37GpHn3d1OV4/ZprhrYsaAXn6wAfd2dFaUhAl4IKYmuQ/m0AkLtQb1PZ/QjSnmAC8cEUx2KnZbHD6NDjrjcMsZQ6dvg83NBjItYmOpWliD0WeRTh92moTFa0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from SN6PR11MB3008.namprd11.prod.outlook.com (2603:10b6:805:cf::18)
+ by DM5PR11MB1948.namprd11.prod.outlook.com (2603:10b6:3:112::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.14; Thu, 10 Feb
+ 2022 02:03:24 +0000
+Received: from SN6PR11MB3008.namprd11.prod.outlook.com
+ ([fe80::d8f7:376f:d7ee:cfb3]) by SN6PR11MB3008.namprd11.prod.outlook.com
+ ([fe80::d8f7:376f:d7ee:cfb3%4]) with mapi id 15.20.4951.019; Thu, 10 Feb 2022
+ 02:03:24 +0000
+Subject: Re: [PATCH] spi: disable chipselect after complete transfer
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ying.xue@windriver.com
+References: <20220209100042.22941-1-yun.zhou@windriver.com>
+ <YgPEWyEj7lbQJgAn@sirena.org.uk>
+From:   Yun Zhou <yun.zhou@windriver.com>
+Message-ID: <07aca74d-c74e-c2a3-b8eb-bdcf9ed21a55@windriver.com>
+Date:   Thu, 10 Feb 2022 10:03:16 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+In-Reply-To: <YgPEWyEj7lbQJgAn@sirena.org.uk>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Boqun Feng <boqun.feng@gmail.com>
-Cc:     linux-kernel@vger.kernel.org
-References: <20220118153254.358748-1-longman@redhat.com>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <20220118153254.358748-1-longman@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-ClientProxiedBy: HK0PR01CA0064.apcprd01.prod.exchangelabs.com
+ (2603:1096:203:a6::28) To SN6PR11MB3008.namprd11.prod.outlook.com
+ (2603:10b6:805:cf::18)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: af93c26c-496f-429a-2f48-08d9ec398519
+X-MS-TrafficTypeDiagnostic: DM5PR11MB1948:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR11MB194838BF596A6BA609597FA39F2F9@DM5PR11MB1948.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: C5mtsEp+7/LyfbjNvt8p0fn4A4csALYf+yr1VaRsFPquE4fkEwPfUmo48ezNtFfi8X1+oMVm2PiR4DjSF6VfPiZCk/olcAmjLAzC/ifbEa4BTy4aK7lrxkwMVf+M1NKKoUe2V2X8PmH5uxyXLI9ls80SDDY3nGndIIU1NewkwUW81PlwhDr9rz+V9HKc8RtBhT7WYKoxvYwCefyZI/h22WU1gHStZABj4T6B+Q448fIUKL0f9Fg6KDyecIVfjsAvGt7oOMajGHFPCR02PKUJsY5UOWWi1PCVnMWEWD9DOKSffmQv54SyBMZmNQh7dhCi0OGC4PBlGw9tYtYJZ+1rbBB9vJqA/WKdELHQT1KyBOclZ/lMXvJTSZOlEGzqM77AY++95xqFWKgYqmVpJpAXR3jiizp6BKDkiq1y8huEd16bGqHk7qUl2w5WKaNUgnW9ttxXVZqO1ur2li+fZW79CoEiye26xyaHCSSUFEhrhlQL0OobTZXJJUeOfhuJkXgd2onhpM3j0WswbU8Ec9nZjlwPqNv8NU/rdw2MjtlzeB8eXVEk2zz18+0aICzMfdIQN3alkQN36Ah+PB7D+2YP09cil6o9bVdJwtVetHeCS7C6tJqgkc+1GEbxNIZkVcFcKNGZ8gfRPDsie9yAlRLPpmg9N3zir+IU5R06hwWuw3yarj5BdT/DCdVbIuqpm9a5zaa4+TgYAwEXViiEd13Sk0jXNcYE4XDptbV10VMjlrymRf1qFEndJLRN2UjiUyE+6XfoliDp5RIMs9qElpKQJQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3008.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(38100700002)(107886003)(66556008)(44832011)(6512007)(66946007)(36756003)(4326008)(8936002)(2616005)(66476007)(5660300002)(8676002)(6506007)(38350700002)(186003)(26005)(2906002)(6486002)(31696002)(6916009)(508600001)(31686004)(316002)(6666004)(83380400001)(52116002)(53546011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?Windows-1252?Q?+x7DVJOl84aeBgRmd6/kSWA1bl86OQ5raOb5UxD1sLWeitx81VGCyspc?=
+ =?Windows-1252?Q?gVruFtdyXi+/y1ytcGWuAiEfsx/w0E0AdIxAQVLai4huxI4hd6NQe73b?=
+ =?Windows-1252?Q?CpY/4ZtXZ3mkimO5jcrW2ZXgdoSyIQp0/lUh8U+5q4bWyGCYL/B4cE1Q?=
+ =?Windows-1252?Q?elakDyCcJI6AYeLexBovvXhpH0csyfDD22fam97pw07Twi6RNKklWJl+?=
+ =?Windows-1252?Q?kOQvUWbPv6Cf41mreiBGL7O34roeQBgtGpuH3iKMMA3XOfUz6daptKMD?=
+ =?Windows-1252?Q?F/iMI17+y4+mUDWSEcQHkDaxJNR5W989S8i/EuOfPush3DrFR1oYC3gN?=
+ =?Windows-1252?Q?+503BwW2YYayjJ1qotLIS+nv975WYQJCp+NrlrCm2PYUYVwwbtdfLZHx?=
+ =?Windows-1252?Q?tK/i+IoGa5wkt2WNBtj56FHuqo2F6Zwii0d1jG/Mdv44QI8WOyPG2D75?=
+ =?Windows-1252?Q?z24x+zoEtv8ei0ClS2vloLKUQAOrI6ObeJ89plFW8Cetu2MlJai6z7Ku?=
+ =?Windows-1252?Q?6Jvy3mu65rgbw+meNLslWYRBPVdfVTKMqc0rVXuXT1UfyOTgi0t8+AI4?=
+ =?Windows-1252?Q?reGUWWIeR0finj8zmGBY8XHOIO7am2wT3GjZcNI80cKVx1VxgUkWGHZn?=
+ =?Windows-1252?Q?tIuboU4KHDjMz+SXYk7j3QgCG+r2sedrLzkjELZcWe7t17LHb3ypJBvK?=
+ =?Windows-1252?Q?/oKPe5fReOvNYNA5O205JO3BWY5DgZGfxWzlHbBSYSRq9Z3VVNQQ/5dD?=
+ =?Windows-1252?Q?9APZDjo0I1vUB9l5eAgwiPCWMwpYt47SrVnUzyRn8Xn3Gqe+VhFl67Ky?=
+ =?Windows-1252?Q?wFdrOVEb5frP2EkcPrA6aZJ5U63cdYZcRJownR5WjLcz4wuX1xqrPXWt?=
+ =?Windows-1252?Q?AWIjKYucYH5cjT3bjGSKSJaxNyXpNzcRUo7QTUcw+WQAUE0T2hcz/smV?=
+ =?Windows-1252?Q?EBViLijLB14abbToPqgsXU/yYxRdqUTcYcEony9aHBXMIfXUDcihBq88?=
+ =?Windows-1252?Q?Ka3qCM0vUhRFTT/ssyxId9tEv+fjvbn/bBzm7/N7TCTpeUv1rOR3pG4y?=
+ =?Windows-1252?Q?ZcwvgGSL9QPVVs9eSEbpnW002jEXoJlfO1kvaUn+3pjiGmxZGGTyUupF?=
+ =?Windows-1252?Q?ZiOWpdSb32rT6qA0huAmYWZQ8oHyTxXiaM0UaCm/h4ico05iSxJpaaqn?=
+ =?Windows-1252?Q?sXqYiPJ9nQ8tlCZ0h+SqRmhdO3J3exZ2uWJbHjA82VbAYP+FikOkmJgB?=
+ =?Windows-1252?Q?Dw6NNc29xOli3+4aqnr8JpYKyeNFin4pRjydU+wLhXLaVDjWvfPGUQsC?=
+ =?Windows-1252?Q?36VD9/E+9qoGiOR5IRcOwh82DmAUvRPf6BcGFVXY/98JvuqJHIYHBzTL?=
+ =?Windows-1252?Q?eioCQgLtsL5cwK+EfN+nc+PBkt2gWpafyuZLpSq65nRrCmtgbK1LhvNr?=
+ =?Windows-1252?Q?XacNROdszuOIpJXT7HwYdVoiWkFOnSTGtpYqsb1Bp9UhO/c5sWfg/3Ad?=
+ =?Windows-1252?Q?pyuwgPaQGkiJGmns7mqEglY5HolMnetTqHbn3go6/SIYGxB8eg8eQQN5?=
+ =?Windows-1252?Q?qLSw8kLTteqYDwMBGclVUQ8OptmqXLujuawQE3ckpybPMyaz5UChcGsG?=
+ =?Windows-1252?Q?zdfz0BvwXH5DYIxoMsuHmZGTz/bQP0aOVZkdXTXVMNALN4HOYlecZ4vu?=
+ =?Windows-1252?Q?HmWEO10b5QE/TsbRDKoBP/5J1GLU3sjcHFvAQpC4O/elzf8qbKdrG2Dz?=
+ =?Windows-1252?Q?p7KKlgKsLtFN6bjQN2M=3D?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: af93c26c-496f-429a-2f48-08d9ec398519
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3008.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Feb 2022 02:03:24.3071
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gKMTYVvclF/L2fZu5nOFr6KrEM3X4sawG9n8ZHphLIMdagO/vsNQUh/QRuoLB5wnIFMxbwu2ktLE25pC5wDi+A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1948
+X-Proofpoint-GUID: mFTj6VOh5QLiLBexP9mx3uBBeZAsJrte
+X-Proofpoint-ORIG-GUID: mFTj6VOh5QLiLBexP9mx3uBBeZAsJrte
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-09_12,2022-02-09_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
+ spamscore=0 phishscore=0 bulkscore=0 impostorscore=0 malwarescore=0
+ mlxlogscore=746 clxscore=1011 priorityscore=1501 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202100010
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 10:32, Waiman Long wrote:
-> The following lockdep splat was observed:
->
-> [ 9776.459819] ======================================================
-> [ 9776.459820] WARNING: possible circular locking dependency detected
-> [ 9776.459821] 5.14.0-0.rc4.35.el9.x86_64+debug #1 Not tainted
-> [ 9776.459823] ------------------------------------------------------
-> [ 9776.459824] stress-ng/117708 is trying to acquire lock:
-> [ 9776.459825] ffffffff892d41d8 ((console_sem).lock){-...}-{2:2}, at: down_trylock+0x13/0x70
->
-> [ 9776.459831] but task is already holding lock:
-> [ 9776.459832] ffff888e005f6d18 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x27/0x130
->
-> [ 9776.459837] which lock already depends on the new lock.
->        :
-> [ 9776.459857] -> #1 (&p->pi_lock){-.-.}-{2:2}:
-> [ 9776.459860]        __lock_acquire+0xb72/0x1870
-> [ 9776.459861]        lock_acquire+0x1ca/0x570
-> [ 9776.459862]        _raw_spin_lock_irqsave+0x40/0x90
-> [ 9776.459863]        try_to_wake_up+0x9d/0x1210
-> [ 9776.459864]        up+0x7a/0xb0
-> [ 9776.459864]        __up_console_sem+0x33/0x70
-> [ 9776.459865]        console_unlock+0x3a1/0x5f0
-> [ 9776.459866]        vprintk_emit+0x23b/0x2b0
-> [ 9776.459867]        devkmsg_emit.constprop.0+0xab/0xdc
-> [ 9776.459868]        devkmsg_write.cold+0x4e/0x78
-> [ 9776.459869]        do_iter_readv_writev+0x343/0x690
-> [ 9776.459870]        do_iter_write+0x123/0x340
-> [ 9776.459871]        vfs_writev+0x19d/0x520
-> [ 9776.459871]        do_writev+0x110/0x290
-> [ 9776.459872]        do_syscall_64+0x3b/0x90
-> [ 9776.459873]        entry_SYSCALL_64_after_hwframe+0x44/0xae
->        :
-> [ 9776.459905] Chain exists of:
-> [ 9776.459906]   (console_sem).lock --> &p->pi_lock --> &rq->__lock
->
-> [ 9776.459911]  Possible unsafe locking scenario:
->
-> [ 9776.459913]        CPU0                    CPU1
-> [ 9776.459914]        ----                    ----
-> [ 9776.459914]   lock(&rq->__lock);
-> [ 9776.459917]                                lock(&p->pi_lock);
-> [ 9776.459919]                                lock(&rq->__lock);
-> [ 9776.459921]   lock((console_sem).lock);
->
-> [ 9776.459923]  *** DEADLOCK ***
->
-> The problematic locking sequence ((console_sem).lock --> &p->pi_lock)
-> was caused by the fact the semaphore up() function is calling
-> wake_up_process() while holding the semaphore raw spinlock.
->
-> By moving the wake_up_processs() call out of the raw spinlock critical
-> section using wake_q, it will break the problematic locking sequence as
-> well as reducing raw spinlock hold time which will be good for
-> PREEMPT_RT.
->
-> Signed-off-by: Waiman Long <longman@redhat.com>
-> ---
->   kernel/locking/semaphore.c | 13 +++++++++----
->   1 file changed, 9 insertions(+), 4 deletions(-)
->
-> diff --git a/kernel/locking/semaphore.c b/kernel/locking/semaphore.c
-> index 9ee381e4d2a4..a26c915430ba 100644
-> --- a/kernel/locking/semaphore.c
-> +++ b/kernel/locking/semaphore.c
-> @@ -29,6 +29,7 @@
->   #include <linux/export.h>
->   #include <linux/sched.h>
->   #include <linux/sched/debug.h>
-> +#include <linux/sched/wake_q.h>
->   #include <linux/semaphore.h>
->   #include <linux/spinlock.h>
->   #include <linux/ftrace.h>
-> @@ -37,7 +38,7 @@ static noinline void __down(struct semaphore *sem);
->   static noinline int __down_interruptible(struct semaphore *sem);
->   static noinline int __down_killable(struct semaphore *sem);
->   static noinline int __down_timeout(struct semaphore *sem, long timeout);
-> -static noinline void __up(struct semaphore *sem);
-> +static noinline void __up(struct semaphore *sem, struct wake_q_head *wake_q);
->   
->   /**
->    * down - acquire the semaphore
-> @@ -182,13 +183,16 @@ EXPORT_SYMBOL(down_timeout);
->   void up(struct semaphore *sem)
->   {
->   	unsigned long flags;
-> +	DEFINE_WAKE_Q(wake_q);
->   
->   	raw_spin_lock_irqsave(&sem->lock, flags);
->   	if (likely(list_empty(&sem->wait_list)))
->   		sem->count++;
->   	else
-> -		__up(sem);
-> +		__up(sem, &wake_q);
->   	raw_spin_unlock_irqrestore(&sem->lock, flags);
-> +	if (!wake_q_empty(&wake_q))
-> +		wake_up_q(&wake_q);
->   }
->   EXPORT_SYMBOL(up);
->   
-> @@ -256,11 +260,12 @@ static noinline int __sched __down_timeout(struct semaphore *sem, long timeout)
->   	return __down_common(sem, TASK_UNINTERRUPTIBLE, timeout);
->   }
->   
-> -static noinline void __sched __up(struct semaphore *sem)
-> +static noinline void __sched __up(struct semaphore *sem,
-> +				  struct wake_q_head *wake_q)
->   {
->   	struct semaphore_waiter *waiter = list_first_entry(&sem->wait_list,
->   						struct semaphore_waiter, list);
->   	list_del(&waiter->list);
->   	waiter->up = true;
-> -	wake_up_process(waiter->task);
-> +	wake_q_add(wake_q, waiter->task);
->   }
+Hi Brown,
 
-Peter, is this patch good enough to be merged?
+Nice to get feedback from you!
+
+In current source code of spi_transfer_one_message(),
+
+1420     bool keep_cs = false;
+
+1488         if (xfer->cs_change) {
+1489             if (list_is_last(&xfer->transfer_list,
+1490                      &msg->transfers)) {
+1491                 keep_cs = true;
+1492             } else {
+1493                 spi_set_cs(msg->spi, false, false);
+1494                 _spi_transfer_cs_change_delay(msg, xfer);
+1495                 spi_set_cs(msg->spi, true, false);
+1496             }
+1497         }
+
+1502 out:
+1503     if (ret != 0 || !keep_cs)
+1504         spi_set_cs(msg->spi, false, false);
+
+if the last xfer->cs_change is true, keep_cs will be true, and it will 
+not call spi_set_cs() to set CS to false. Do you mean to keep CS enabled 
+in this case?
+
+On 2/9/22 9:40 PM, Mark Brown wrote:
+> On Wed, Feb 09, 2022 at 06:00:42PM +0800, Yun Zhou wrote:
+>> If there are 2 slaves or more on a spi bus, e.g. A and B, we processed a
+>> transfer to A, the CS will be selected for A whose 'last_cs_enable' will
+>> be recorded to true at the same time. Then we processed a transfer to B,
+>> the CS will be switched to B. And then if we transmit data to A again, it
+>> will not enable CS back to A because 'last_cs_enable' is true.
+>> In addition, if CS is not disabled, Some controllers in automatic
+>> transmission state will receive unpredictable data, such as Cadence SPI
+>> controller.
+> This sounds like you've got an issue with mixing devices with and
+> without CS_HIGH - that is probably broken but...
+>
+>>   out:
+>> -	if (ret != 0 || !keep_cs)
+>> -		spi_set_cs(msg->spi, false, false);
+>> +	spi_set_cs(msg->spi, false, false);
+> ...this will obviously break cs_change support, clearly that's not OK.
+> The last_cs_high should be moved to the device.
+
+I do not think it will break cs_change support. In my understanding, 
+cs_change indicates whether or not change CS after an xfer completed. 
+But at present if the last xfer->cs_change is true, we will not change 
+CS to disabled state. Is this the result we want? I'm confused.
+
+I look forward to your help and explanation.
 
 Regards,
-Longman
+
+Yun
 
