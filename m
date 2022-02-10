@@ -2,482 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD05C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 447B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 15:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243921AbiBJP7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 10:59:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56220 "EHLO
+        id S243954AbiBJP7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 10:59:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243941AbiBJP7i (ORCPT
+        with ESMTP id S243942AbiBJP7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 10 Feb 2022 10:59:38 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2E3E98;
-        Thu, 10 Feb 2022 07:59:37 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id q7so10312523wrc.13;
-        Thu, 10 Feb 2022 07:59:37 -0800 (PST)
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B01CE9C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:59:38 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id k127-20020a1ca185000000b0037bc4be8713so5471750wme.3
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 07:59:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o9WWdOnAJGDrko4MYP2GAnQQo+ImSCqfJE2Zgl5uTpo=;
-        b=p499XPWFh9YrvPJmk2ebEBm/TVSd1+L4gA4pYTwx6pn57rlQlbTki3gHNHCZTLO1qx
-         SikUvREPb9nO35G3rRw50ESx9YJTyy6UYVvviw2XROnzJI5BeqJcmSjoxBoYBX9bVNyH
-         OQg/fePcALkIYOxw7iaQOEiG3ey3BfXtyvcndOJNJrrrUjiFTWWNmsKpjE7JkgaCgoXj
-         9TM2etEzJaf4Hk9mWHo+ASuXeQjJRQlOb5Td81S9aZF2L52Gywe+rbQcHTBqltrfNJlQ
-         46PukfPsO1uJlYhRVyIpDHa0Db/4JnV4NNLGa0n5pfa5ZaM4mWMlYeCzLQi8bQXNWn2p
-         oDcQ==
+        d=jrtc27.com; s=gmail.jrtc27.user;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=EDKE0XUF34XjrkFY4l0pOlQwE89KPDkqeFJG5WC7NDI=;
+        b=h65YM/61sSvHy5I60WleieWpN4nnYo28ZtlvvRk5H56eZNMmXWqg0JO4SQLSn8qZFp
+         0i+QcZo3XebXWIDA6cbnztXPjV1eqHw/LAPKxegfKp3BjTqGEMEtdReB+vCxzRtSL4tw
+         2krSOMQSQJKIrGSMXEUKVGLk3TVT4oXsSHQ+i7DNQ3XRJkfKzNDWt/DZZEhmyC9zHXQn
+         gu6DpfZEPv0sRrlM3AWue/d2bnLfPoxSdYqGXiYf4Hpm7iVpqjOitvAlDWbHIcD6zB6S
+         ZcadMmvbRJD0op/Gd1n8RvN71pnuw0zjrQd6LQMXiA8FDxuL/SQi7UWXAYBnj+S6YMDT
+         7NZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o9WWdOnAJGDrko4MYP2GAnQQo+ImSCqfJE2Zgl5uTpo=;
-        b=U2lypPpBay6PEhs2B/PZVKqdQbgMfV46By1zqwd5JVx5J1J8YcWfsGdOojGjx3If3O
-         ae68g00SUogIkSSd/NG5UMVDdiIzz/m1ZFacEJU0qMY1ObFQCBABmS8nAFRe1YhPw1vv
-         NrK9a7h5UWoHuSwfnurlKfhnTDfuh/II6QUYbgAxxKmnAa4ux5SytZBQD+DBxnSjfCjk
-         itQc6qAfjBDHwArhD/v/028zfbEA61lxJk29Mt7D+7eA/CmZKfJMF6M3jMdM6q66QnV9
-         Gs2aiTklkgSuyhwA/4INbMRQwFgQWuyhcR1a+7EaqbgHtjUbzAyx54SOqMU2PA2Vcgsa
-         8vQg==
-X-Gm-Message-State: AOAM532kqOgNwi6n2fyawJkVmvq4+HFomdVCWOowl+M+sgMIYwAaojGy
-        dGa+yTYld1aFBE13yIdNq1+Td5y2HfYrDA==
-X-Google-Smtp-Source: ABdhPJz90xV6TUqJeFd0DzbkH2F7N0nNj3o4bF4rVHr42C2MhDGN2c7gu9FkL9tl34t5ukmyQWmoOQ==
-X-Received: by 2002:a5d:5589:: with SMTP id i9mr4466573wrv.389.1644508775743;
-        Thu, 10 Feb 2022 07:59:35 -0800 (PST)
-Received: from nergzd-desktop.localdomain ([62.122.67.26])
-        by smtp.gmail.com with ESMTPSA id p2sm12990551wrt.101.2022.02.10.07.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 07:59:35 -0800 (PST)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Henrik Rydberg <rydberg@bitmath.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Alistair Francis <alistair@alistair23.me>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hao Fang <fanghao11@huawei.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Vincent Knecht <vincent.knecht@mailoo.org>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Joe Hung <joe_hung@ilitek.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        Giulio Benetti <giulio.benetti@benettiengineering.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 2/2] Input: add Imagis touchscreen driver
-Date:   Thu, 10 Feb 2022 17:58:31 +0200
-Message-Id: <20220210155835.154421-3-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220210155835.154421-1-markuss.broks@gmail.com>
-References: <20220210155835.154421-1-markuss.broks@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=EDKE0XUF34XjrkFY4l0pOlQwE89KPDkqeFJG5WC7NDI=;
+        b=b6J1l+aLFvds8LmO7Mdj5EJ15ABfq6a2K/pmPpyxrffPoKSf87tE5TA+BEEmAWy/+/
+         1V4SN6FMFncO5Gt4jiTpB6Za9dXEcwWCUty3L2wPFAwFLaFwFsISwST++y8OiehYyda1
+         G6+TGE+u3mAVC0FT+x/qBGbwOYNTmwfAoppgSVGXAP/VMGJAHdxsw/Cd1Jg7j1u8+KnV
+         f1DLYx0/Th+Dw/gDYKuvyrSgXwIjsQj5q1EWiLqrJCcRXa0rRf27zg5VLgrPPrh/hEHZ
+         PdmBaosovKXtVvVZlQr4Ag99yitRav2ACRD/PWY3jEadkJ2bh3hFRlwn0FHdoCJRyCjm
+         sTFA==
+X-Gm-Message-State: AOAM530Ai9CbO0m3gPWQKBaRZelut9wHihvE3UCYrunSJCxSMMg+l5ub
+        pOxu09oc/Ue7vd0yUhOO31JIjfrilLFI8g==
+X-Google-Smtp-Source: ABdhPJz1JSHSDCF+ylWcFsJvXFRHabDouoJyMu2fpSIH6XdoPZV4NeON70cwyMobD0KgmTTayQoenA==
+X-Received: by 2002:a7b:c38b:: with SMTP id s11mr2764427wmj.8.1644508776921;
+        Thu, 10 Feb 2022 07:59:36 -0800 (PST)
+Received: from smtpclient.apple (global-5-143.nat-2.net.cam.ac.uk. [131.111.5.143])
+        by smtp.gmail.com with ESMTPSA id e15sm4636433wrg.6.2022.02.10.07.59.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 10 Feb 2022 07:59:36 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH v2] riscv: fix oops caused by irq on/off tracer
+From:   Jessica Clarke <jrtc27@jrtc27.com>
+In-Reply-To: <YgUuzZp/eiNoXejK@xhacker>
+Date:   Thu, 10 Feb 2022 15:59:35 +0000
+Cc:     Changbin Du <changbin.du@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <0D51738E-C4C0-4D30-BCDF-55786E0CC201@jrtc27.com>
+References: <20220129004226.32868-1-changbin.du@gmail.com>
+ <YgAEb425uqy5/dw1@xhacker> <20220207123850.l4r5qjswaegwisbx@mail.google.com>
+ <YgE7XRE/Uc6gTCWd@xhacker> <20220208003502.62gi5xhyg6bk2t2h@mail.google.com>
+ <YgP6y99LWFSoxjHg@xhacker> <20220210133758.yzebffln6j76zme6@mail.google.com>
+ <YgUuzZp/eiNoXejK@xhacker>
+To:     Jisheng Zhang <jszhang@kernel.org>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for the IST3038C touchscreen IC from Imagis, based on
-downstream driver. The driver supports multi-touch (10 touch points)
-The IST3038C IC supports touch keys, but the support isn't added
-because the touch screen used for testing doesn't utilize touch keys.
-Looking at the downstream driver, it is possible to add support
-for other Imagis ICs of IST30**C series.
+On 10 Feb 2022, at 15:27, Jisheng Zhang <jszhang@kernel.org> wrote:
+> On Thu, Feb 10, 2022 at 09:37:58PM +0800, Changbin Du wrote:
+>> On Thu, Feb 10, 2022 at 01:32:59AM +0800, Jisheng Zhang wrote:
+>> [snip]
+>>> Hi Changbin,
+>>>=20
+>>> I read the code and find that current riscv frame records during
+>>> exception isn't as completed as other architectures. riscv only
+>>> records frames from the ret_from_exception(). If we add completed
+>> What do you mean for 'record'?
+>>=20
+>=20
+> stack frame record.
+>=20
+>>> frame records as other arch do, then the issue you saw can also
+>>> be fixed at the same time.
+>>>=20
+>> I don't think so. The problem is __builtin_return_address(1) trigger =
+page fault
+>> here.
+>=20
+> There's misunderstanding here. I interpret this bug as incomplete
+> stackframes.
+>=20
+> This is current riscv stackframe during exception:
+>=20
+> high
+> 	----------------
+> top	|		|  <- ret_from_exception
+> 	----------------
+> 	|		|  <- trace_hardirqs_on
+> 	-----------------
+> low
+>=20
+> As you said, the CALLER_ADDR1 a.k.a __builtin_return_address(1) needs
+> at least two parent call frames.=20
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- MAINTAINERS                        |   6 +
- drivers/input/touchscreen/Kconfig  |  10 +
- drivers/input/touchscreen/Makefile |   1 +
- drivers/input/touchscreen/imagis.c | 329 +++++++++++++++++++++++++++++
- 4 files changed, 346 insertions(+)
- create mode 100644 drivers/input/touchscreen/imagis.c
+No it doesn=E2=80=99t, you=E2=80=99re off by one, it only needs a valid =
+current frame.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c032a19f13ae..08f28245425e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9130,6 +9130,12 @@ F:	Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
- F:	Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
- F:	drivers/iio/afe/iio-rescale.c
- 
-+IMAGIS TOUCHSCREEN DRIVER
-+M:	Markuss Broks <markuss.broks@gmail.com>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/input/touchscreen/imagis,ist3038c.yaml
-+F:	drivers/input/touchscreen/imagis.c
-+
- IKANOS/ADI EAGLE ADSL USB DRIVER
- M:	Matthieu Castet <castet.matthieu@free.fr>
- M:	Stanislaw Gruszka <stf_xl@wp.pl>
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 0f86e248b366..f6c2a1d03ca1 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -1375,4 +1375,14 @@ config TOUCHSCREEN_HIMAX852X
- 		To compile this driver as a module, choose M here: the
- 		module will be called himax_852xES.
- 
-+config TOUCHSCREEN_IMAGIS
-+	tristate "Imagis touchscreen support"
-+	depends on I2C
-+	help
-+		Say Y here if you have an Imagis IST30xxC touchscreen.
-+		If unsure, say N.
-+
-+		To compile this driver as a module, choose M here: the
-+		module will be called imagis.
-+
- endif
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index 847bceb11e5a..50f2ba03adf6 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -115,3 +115,4 @@ obj-$(CONFIG_TOUCHSCREEN_RASPBERRYPI_FW)	+= raspberrypi-ts.o
- obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
- obj-$(CONFIG_TOUCHSCREEN_ZINITIX)	+= zinitix.o
- obj-$(CONFIG_TOUCHSCREEN_HIMAX852X)	+= himax_852xES.o
-+obj-$(CONFIG_TOUCHSCREEN_IMAGIS)	+= imagis.o
-diff --git a/drivers/input/touchscreen/imagis.c b/drivers/input/touchscreen/imagis.c
-new file mode 100644
-index 000000000000..cfc547273245
---- /dev/null
-+++ b/drivers/input/touchscreen/imagis.c
-@@ -0,0 +1,329 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/delay.h>
-+#include <linux/i2c.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/input.h>
-+#include <linux/input/mt.h>
-+#include <linux/input/touchscreen.h>
-+
-+#define IST3038_ADDR_LEN		4
-+#define IST3038_DATA_LEN		4
-+#define IST3038_HIB_ACCESS		(0x800B << 16)
-+#define IST3038_DIRECT_ACCESS   BIT(31)
-+#define IST3038_REG_CHIPID      0x40001000
-+
-+#define IST3038_REG_HIB_BASE		(0x30000100)
-+#define IST3038_REG_TOUCH_STATUS        (IST3038_REG_HIB_BASE | IST3038_HIB_ACCESS)
-+#define IST3038_REG_TOUCH_COORD        (IST3038_REG_HIB_BASE | IST3038_HIB_ACCESS | 0x8)
-+#define IST3038_REG_INTR_MESSAGE        (IST3038_REG_HIB_BASE | IST3038_HIB_ACCESS | 0x4)
-+
-+#define IST3038C_WHOAMI			0x38c
-+#define CHIP_ON_DELAY				60 // ms
-+
-+#define I2C_RETRY_COUNT			3
-+
-+#define MAX_SUPPORTED_FINGER_NUM		10
-+
-+struct imagis_ts {
-+	struct i2c_client *client;
-+	struct input_dev *input_dev;
-+	struct touchscreen_properties prop;
-+	struct regulator_bulk_data supplies[2];
-+};
-+
-+static int imagis_i2c_read_reg(struct imagis_ts *ts,
-+			       unsigned int reg, unsigned int *buffer)
-+{
-+	unsigned int reg_be = __cpu_to_be32(reg);
-+	struct i2c_msg msg[] = {
-+		{
-+			.addr = ts->client->addr,
-+			.flags = 0,
-+			.buf = (unsigned char *)&reg_be,
-+			.len = IST3038_ADDR_LEN,
-+		}, {
-+			.addr = ts->client->addr,
-+			.flags = I2C_M_RD,
-+			.buf = (unsigned char *)buffer,
-+			.len = IST3038_DATA_LEN,
-+		},
-+	};
-+	int res;
-+	int error;
-+	int retry = I2C_RETRY_COUNT;
-+
-+	do {
-+		res = i2c_transfer(ts->client->adapter, msg, ARRAY_SIZE(msg));
-+		if (res == ARRAY_SIZE(msg)) {
-+			*buffer = __be32_to_cpu(*buffer);
-+			return 0;
-+		}
-+
-+		error = res < 0 ? res : -EIO;
-+		dev_err(&ts->client->dev,
-+			"%s - i2c_transfer failed: %d (%d)\n",
-+			__func__, error, res);
-+	} while (--retry);
-+
-+	return error;
-+}
-+
-+static irqreturn_t imagis_interrupt(int irq, void *dev_id)
-+{
-+	struct imagis_ts *ts = dev_id;
-+	unsigned int finger_status, intr_message;
-+	int ret, i, finger_count, finger_pressed;
-+
-+	ret = imagis_i2c_read_reg(ts, IST3038_REG_INTR_MESSAGE, &intr_message);
-+	if (ret) {
-+		dev_err(&ts->client->dev, "failed to read the interrupt message\n");
-+		return IRQ_HANDLED;
-+	}
-+
-+	finger_count = (intr_message >> 12) & 0xF;
-+	finger_pressed = intr_message & 0x3FF;
-+	if (finger_count > 10) {
-+		dev_err(&ts->client->dev, "finger count is more than maximum supported\n");
-+		return IRQ_HANDLED;
-+	}
-+
-+	for (i = 0; i < finger_count; i++) {
-+		ret = imagis_i2c_read_reg(ts, IST3038_REG_TOUCH_COORD + (i * 4), &finger_status);
-+		if (ret) {
-+			dev_err(&ts->client->dev, "failed to read coordinates for finger %d\n", i);
-+			return IRQ_HANDLED;
-+		}
-+		input_mt_slot(ts->input_dev, i);
-+		input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER,
-+					   (finger_pressed & BIT(i)) ? 1 : 0);
-+		touchscreen_report_pos(ts->input_dev, &ts->prop,
-+				       (finger_status >> 12) & 0xFFF, finger_status & 0xFFF, 1);
-+		input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, (finger_status >> 24) & 0xFFF);
-+	}
-+	input_mt_sync_frame(ts->input_dev);
-+	input_sync(ts->input_dev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int imagis_start(struct imagis_ts *ts)
-+{
-+	int error;
-+
-+	error = regulator_bulk_enable(ARRAY_SIZE(ts->supplies),
-+				      ts->supplies);
-+	if (error) {
-+		dev_err(&ts->client->dev,
-+			"Failed to enable regulators: %d\n", error);
-+		return error;
-+	}
-+
-+	msleep(CHIP_ON_DELAY);
-+
-+	enable_irq(ts->client->irq);
-+	return 0;
-+}
-+
-+static int imagis_stop(struct imagis_ts *ts)
-+{
-+	int error;
-+
-+	disable_irq(ts->client->irq);
-+
-+	error = regulator_bulk_disable(ARRAY_SIZE(ts->supplies),
-+				       ts->supplies);
-+	if (error) {
-+		dev_err(&ts->client->dev,
-+			"Failed to disable regulators: %d\n", error);
-+		return error;
-+	}
-+
-+	return 0;
-+}
-+
-+static int imagis_input_open(struct input_dev *dev)
-+{
-+	struct imagis_ts *ts = input_get_drvdata(dev);
-+
-+	return imagis_start(ts);
-+}
-+
-+static void imagis_input_close(struct input_dev *dev)
-+{
-+	struct imagis_ts *ts = input_get_drvdata(dev);
-+
-+	imagis_stop(ts);
-+}
-+
-+static int imagis_init_input_dev(struct imagis_ts *ts)
-+{
-+	struct input_dev *input_dev;
-+	int error;
-+
-+	input_dev = devm_input_allocate_device(&ts->client->dev);
-+	if (!input_dev) {
-+		dev_err(&ts->client->dev,
-+			"Failed to allocate input device.");
-+		return -ENOMEM;
-+	}
-+
-+	ts->input_dev = input_dev;
-+
-+	input_dev->name = "Imagis capacitive touchscreen";
-+	input_dev->phys = "input/ts";
-+	input_dev->id.bustype = BUS_I2C;
-+	input_dev->open = imagis_input_open;
-+	input_dev->close = imagis_input_close;
-+
-+	input_set_drvdata(input_dev, ts);
-+
-+	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_X);
-+	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_Y);
-+	input_set_abs_params(input_dev, ABS_MT_WIDTH_MAJOR, 0, 255, 0, 0);
-+	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
-+
-+	touchscreen_parse_properties(input_dev, true, &ts->prop);
-+	if (!ts->prop.max_x || !ts->prop.max_y) {
-+		dev_err(&ts->client->dev,
-+			"Touchscreen-size-x and/or touchscreen-size-y not set in dts\n");
-+		return -EINVAL;
-+	}
-+
-+	error = input_mt_init_slots(input_dev, MAX_SUPPORTED_FINGER_NUM,
-+				    INPUT_MT_DIRECT | INPUT_MT_DROP_UNUSED);
-+	if (error) {
-+		dev_err(&ts->client->dev,
-+			"Failed to initialize MT slots: %d", error);
-+		return error;
-+	}
-+
-+	error = input_register_device(input_dev);
-+	if (error) {
-+		dev_err(&ts->client->dev,
-+			"Failed to register input device: %d", error);
-+		return error;
-+	}
-+
-+	return 0;
-+}
-+
-+static int imagis_init_regulators(struct imagis_ts *ts)
-+{
-+	struct i2c_client *client = ts->client;
-+	int error;
-+
-+	ts->supplies[0].supply = "vdd";
-+	ts->supplies[1].supply = "vddio";
-+	error = devm_regulator_bulk_get(&client->dev,
-+					ARRAY_SIZE(ts->supplies),
-+					ts->supplies);
-+	if (error < 0) {
-+		dev_err(&client->dev, "Failed to get regulators: %d\n", error);
-+		return error;
-+	}
-+
-+	return 0;
-+}
-+
-+static int imagis_probe(struct i2c_client *i2c)
-+{
-+	struct device *dev;
-+	struct imagis_ts *ts;
-+	int chip_id, ret;
-+
-+	dev = &i2c->dev;
-+
-+	ts = devm_kzalloc(dev, sizeof(*ts), GFP_KERNEL);
-+	if (!ts)
-+		return -ENOMEM;
-+
-+	ts->client = i2c;
-+
-+	ret = devm_request_threaded_irq(dev, i2c->irq,
-+					NULL, imagis_interrupt,
-+					IRQF_ONESHOT | IRQF_TRIGGER_FALLING,
-+					"imagis-touchscreen", ts);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "IRQ allocation failure: %d\n", ret);
-+
-+	ret = imagis_init_regulators(ts);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "regulator init error: %d\n", ret);
-+
-+	ret = imagis_start(ts);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "regulator enable error: %d\n", ret);
-+
-+	ret = imagis_i2c_read_reg(ts, IST3038_REG_CHIPID | IST3038_DIRECT_ACCESS, &chip_id);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "chip ID read failure: %d\n", ret);
-+
-+	if (chip_id == IST3038C_WHOAMI)
-+		dev_info(dev, "Detected IST3038C chip\n");
-+	else
-+		return dev_err_probe(dev, -EINVAL, "unknown chip ID: 0x%x\n", chip_id);
-+
-+	ret = imagis_init_input_dev(ts);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "input subsystem init error: %d\n", ret);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused imagis_suspend(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct imagis_ts *ts = i2c_get_clientdata(client);
-+
-+	mutex_lock(&ts->input_dev->mutex);
-+
-+	if (input_device_enabled(ts->input_dev))
-+		imagis_stop(ts);
-+
-+	mutex_unlock(&ts->input_dev->mutex);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused imagis_resume(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct imagis_ts *ts = i2c_get_clientdata(client);
-+
-+	mutex_lock(&ts->input_dev->mutex);
-+
-+	if (input_device_enabled(ts->input_dev))
-+		imagis_start(ts);
-+
-+	mutex_unlock(&ts->input_dev->mutex);
-+
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(imagis_pm_ops, imagis_suspend, imagis_resume);
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id imagis_of_match[] = {
-+	{ .compatible = "imagis,ist3038c", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, imagis_of_match);
-+#endif
-+
-+static struct i2c_driver imagis_ts_driver = {
-+	.driver = {
-+		   .name = "imagis-touchscreen",
-+		   .pm = &imagis_pm_ops,
-+		   .of_match_table = of_match_ptr(imagis_of_match),
-+	},
-+	.probe_new	= imagis_probe,
-+};
-+
-+module_i2c_driver(imagis_ts_driver);
-+
-+MODULE_DESCRIPTION("Imagis IST3038C Touchscreen Driver");
-+MODULE_AUTHOR("Markuss Broks <markuss.broks@gmail.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.35.0
+Jess
+
+> If we complete the stackframes during exception as other arch does:
+>=20
+> high
+> 	----------------
+> top	|		|  <- the synthetic stackframe from the =
+interrupted point
+> 	----------------
+> 	      .....	     =20
+>        ----------------
+> 	|		|  <- ret_from_exception
+> 	----------------
+> 	|		|  <- trace_hardirqs_on
+> 	-----------------
+> low
+>=20
+>=20
+> Then we meet the "at least two parent call frames" requirement. IOW, =
+my
+> solution solve the problem from the entry.S side. One of the =
+advantages
+> would be we let interrupted point show up in dump_stack() as other =
+arch
+> do. What I'm not sure is whether it's safe to do so now since rc3 is
+> released.
+>=20
+>>=20
+>>> However, I'm not sure what's the best choice now.
+>>>=20
+>>> A simple demo to this incomplete frames:
+>>> add dump_stack() in any ISR, then
+>>>=20
+>>> in riscv:
+>>> [    2.961294] Call Trace:
+>>> [    2.961460] [<ffffffff8000485e>] dump_backtrace+0x1c/0x24
+>>> [    2.961823] [<ffffffff805ed980>] show_stack+0x2c/0x38
+>>> [    2.962153] [<ffffffff805f292e>] dump_stack_lvl+0x40/0x58
+>>> [    2.962483] [<ffffffff805f295a>] dump_stack+0x14/0x1c
+>>> [    2.962792] [<ffffffff805f31a0>] serial8250_interrupt+0x20/0x82
+>>> [    2.963139] [<ffffffff80053032>] =
+__handle_irq_event_percpu+0x4c/0x106
+>>> [    2.963526] [<ffffffff80053170>] handle_irq_event+0x38/0x80
+>>> [    2.963856] [<ffffffff80056a32>] handle_fasteoi_irq+0x96/0x188
+>>> [    2.964198] [<ffffffff800526ce>] =
+generic_handle_domain_irq+0x28/0x3a
+>>> [    2.964567] [<ffffffff802f0ae4>] plic_handle_irq+0x88/0xec
+>>> [    2.964896] [<ffffffff800526ce>] =
+generic_handle_domain_irq+0x28/0x3a
+>>> [    2.965264] [<ffffffff802f08e4>] riscv_intc_irq+0x34/0x5c
+>>> [    2.965584] [<ffffffff805f6dc8>] =
+generic_handle_arch_irq+0x4a/0x74
+>>> [    2.966068] [<ffffffff80002fe8>] ret_from_exception+0x0/0xc
+>>>=20
+>>> in x86:
+>>> [    1.191274] Call Trace:
+>>> [    1.192223]  <IRQ>
+>>> [    1.192758]  dump_stack_lvl+0x45/0x59
+>>> [    1.192982]  serial8250_interrupt+0x24/0x88
+>>> [    1.193105]  __handle_irq_event_percpu+0x66/0x1b0
+>>> [    1.193239]  handle_irq_event+0x34/0x70
+>>> [    1.193345]  handle_edge_irq+0x85/0x1e0
+>>> [    1.193455]  __common_interrupt+0x38/0x90
+>>> [    1.193573]  common_interrupt+0x73/0x90
+>>> [    1.193809]  </IRQ>
+>>> [    1.193889]  <TASK>
+>>> [    1.193956]  asm_common_interrupt+0x1b/0x40
+>>> [    1.194318] RIP: 0010:_raw_spin_unlock_irqrestore+0x1b/0x40
+>>> [    1.194566] Code: 24 be 01 02 00 00 e9 54 20 bf ff 0f 1f 40 00 0f =
+1f
+>>> 44 00 00 f7 c6 00f
+>>> [    1.195137] RSP: 0000:ffff888000243b68 EFLAGS: 00000246
+>>> [    1.195314] RAX: 0000000000000000 RBX: ffffffff82025840 RCX:
+>>> 0000000000000000
+>>> [    1.195482] RDX: 0000000000000001 RSI: 0000000000000000 RDI:
+>>> 0000000000000001
+>>> [    1.195645] RBP: 0000000000000202 R08: ffffffffffffffff R09:
+>>> 0000000000000000
+>>> [    1.195808] R10: 00000000000000eb R11: 0000000000000000 R12:
+>>> 0000000000000000
+>>> [    1.195972] R13: 0000000000000040 R14: 0000000000000000 R15:
+>>> ffff888000c39000
+>>> [    1.196245]  ? _raw_spin_unlock_irqrestore+0x15/0x40
+>>> [    1.196373]  serial8250_do_startup+0x42d/0x600
+>>> [    1.196502]  uart_port_startup+0x11b/0x270
+>>> [    1.196619]  uart_port_activate+0x3f/0x60
+>>> [    1.196729]  tty_port_open+0x7e/0xd0
+>>> [    1.196835]  ? _raw_spin_unlock+0x12/0x30
+>>> [    1.196942]  uart_open+0x1a/0x30
+>>> [    1.197036]  tty_open+0x153/0x7c0
+>>> [    1.197144]  chrdev_open+0xbf/0x230
+>>> [    1.197253]  ? cdev_device_add+0x90/0x90
+>>> [    1.197359]  do_dentry_open+0x13c/0x360
+>>> [    1.197470]  path_openat+0xb0c/0xe00
+>>> [    1.197577]  ? update_load_avg+0x5f/0x640
+>>> [    1.197691]  ? finish_task_switch.isra.0+0xac/0x240
+>>> [    1.197821]  do_filp_open+0xb2/0x150
+>>> [    1.197935]  ? preempt_schedule_thunk+0x16/0x18
+>>> [    1.198049]  ? preempt_schedule_common+0x90/0xd0
+>>> [    1.198167]  ? preempt_schedule_thunk+0x16/0x18
+>>> [    1.198291]  file_open_name+0xf1/0x1b0
+>>> [    1.198397]  filp_open+0x2c/0x50
+>>> [    1.198495]  console_on_rootfs+0x19/0x52
+>>> [    1.198648]  kernel_init_freeable+0x19a/0x1c7
+>>> [    1.198765]  ? rest_init+0xc0/0xc0
+>>> [    1.198867]  kernel_init+0x16/0x110
+>>> [    1.198965]  ret_from_fork+0x1f/0x30
+>>> [    1.199131]  </TASK>
+>>>=20
+>> As I said before, this issue is not related to stackdump.
+>>=20
+>> Besides, you can see more calltrace on x86 that because x86 iterate =
+all stacks
+>> (kernel, irq or exception) when dumping stacktrace. While RISCV only =
+show
+>> calltrace of current stack.
+>>=20
+>=20
+> I'm not sure whether there's misunderstanding. See above.
+>=20
+> Thanks
+>=20
+> _______________________________________________
+> linux-riscv mailing list
+> linux-riscv@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-riscv
 
