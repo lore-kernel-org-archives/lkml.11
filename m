@@ -2,89 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E642DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E77C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345806AbiBJXli (ORCPT
+        id S1345817AbiBJXmm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:41:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48422 "EHLO
+        Thu, 10 Feb 2022 18:42:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345798AbiBJXlg (ORCPT
+        with ESMTP id S240069AbiBJXmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:41:36 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B335F6E
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:41:37 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id c6so20125724ybk.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:41:36 -0800 (PST)
+        Thu, 10 Feb 2022 18:42:40 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86BA4AF
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:42:40 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id h11so5659016ilq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:42:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cDt7Ebs5orxS5hLnuynWW12WJImDk7oKJlaVl614dTM=;
-        b=V0saLM/p5DnDyFfmBWvLAFv0jmBUdEthHyCS9/tiD23yPsWrM4p0MB1WbvesRBC+cC
-         eBYY3E9XYvSUyF7FpRC2EsM9OzPLBPSFGueRxTtn9P+9bWCo6qMe5Q3S2fmubb6YZXXy
-         58rPbQebXK+kYDWQs6YZDvnoK5DKVr8BQUn/EXw/Ozmxn56zhryR1DqiYpsXFlGzEbqJ
-         +tCUV3KDZm/H1BhFtPkz2DNYEdM5iZbOUIQHFaFWL6d5cS4Dcm0ZEvCcsIifRtsb3PQk
-         YBmBdRcDlh5yiH6Khhc3294l9Ix7Dgmd/VlykdfrFQK+lAimT8HIyL9nGGxbc/ketC95
-         Te6Q==
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=IfuV7BErsL/W0NpxTgurt/IeS+0DSJusaRrjkOZT71M=;
+        b=V/sbZHygSE1dk4L3f+z50ccoEdc9sz/a/RRC4yulJXVwN6WdNnOhqjtQ5cK1rlbwpC
+         mMMvV3GAPff6zbHgTIblif68WqzZegiNCcV8+EvQkiKppnfLw1/wFAQddm+MAuLz5hKn
+         YJHfx/spl1RzxGn8l+lCGkhtEkCZryEYEk0XVL5UsN/rJX43G+VBpRb5VlBtQ3Lld4eW
+         d8i3QirNuscL7GPG9HtrTU50V0QMM5olYoLQ6p/BehBgEqIM2qWzD8Fuhisb0Xfn+I4g
+         z7bcSzNOZ2Ed+7oZBLJNvnIiQ1G9MDl6KXspbq41/2Cq6r94bgtfU6of+oGXWHNlkEKr
+         zs5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cDt7Ebs5orxS5hLnuynWW12WJImDk7oKJlaVl614dTM=;
-        b=TQFiBBsnkGpVQr9s0WKvNqLSZA0XYhr7SVJ9KUYvEEpPxFylO3HTJmQWtdRuaG2D/5
-         gxmm/iyAGelI+xFjvCISUeBEwNs+0bNbEYim6H+gA5dYRCx8HrK1vS8Fq0+F1xwAxX+C
-         qdtmzkb8pVlMIJQdOmUm8BnjZKrm+O6fowfD/u514nPJXRebyFhBhbaEyL0tz55oyx8N
-         gaYTi7wmsTVDXflxctMLs0Da6mDHf67g+IcuqBh+o9kAb+eZdgn8c3mnd90T/938psoV
-         eaNrsUF3JWrZAnFRHOe/NpziOv3We2IT7kxPTIYaiPoYjYVHEGpk6nl+Df7QqqiSC7Bf
-         PtBg==
-X-Gm-Message-State: AOAM532GHeTvKBCZJVB6sigYsS8IwLyPD4U0pOkvVN2wOn5+RfLDww8H
-        yMXJ8C+vB7Qd8ZPnWmd0XaZo4HntmS55ejViaI5kVQ==
-X-Google-Smtp-Source: ABdhPJzqbzQXwiSY/HRVQ6yHaGH6/eIk40oZ0otDKgO9LGJYCiQ3w/BtkOyc3sxs+lJAIebQ8jaOn+tvJPqGbzw1bvQ=
-X-Received: by 2002:a81:ad1e:: with SMTP id l30mr9669943ywh.151.1644536496271;
- Thu, 10 Feb 2022 15:41:36 -0800 (PST)
-MIME-Version: 1.0
-References: <20220209162607.1118325-1-maz@kernel.org>
-In-Reply-To: <20220209162607.1118325-1-maz@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 00:41:25 +0100
-Message-ID: <CACRpkdYfrAexUhFV6e86QW+GSc3hM=38VNucKLhPppJ2ZdQ7fA@mail.gmail.com>
-Subject: Re: [PATCH 00/10] irqchip: Prevent drivers abusing irq_chip::name
-To:     Marc Zyngier <maz@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=IfuV7BErsL/W0NpxTgurt/IeS+0DSJusaRrjkOZT71M=;
+        b=JPbxmK5ScKnLqplFNg8upz1WZs3Had6Go2Cui/7FgL/o1SwoXJgnfou9ZhJ3PniOnF
+         PT25qEVOiG46LAXNASoIY7GcGL0sL8fPI6+lOslet2c5Gh3VU3NYf83nI87Yj1JAdq+K
+         ZZuVTjlAqxOk3pLAolp5W4Xa4cZJWKQCRwgcUmd1KmecexCaeXuyiX5XD8DvDzXi+rqA
+         IBN9zfYt8R36Hz/vXOu/cyrt68/hbjCa0jApRithOH5lfdeIjwULsR0Y2kvL8IIBckHk
+         SouFizYFG8P9yLuaAupHLnZjt6e6DGzlFR/rAMonOxLGOusTdfAaHgEXyw7711RFSLYJ
+         S6cg==
+X-Gm-Message-State: AOAM530dpx8NEU2czQRHdW5uxB76cIloO7sd5vSxJO5MH8UJw0XW17oN
+        HxW+bjfj6b0nf1bhtCpeXnA=
+X-Google-Smtp-Source: ABdhPJyMCRQgDaf6eA53pG3YvPxmIVTNvMprTGUlUaqGwilmflBxGPm7MqMOwsRkroMJ9y4fsTf4uw==
+X-Received: by 2002:a05:6e02:1489:: with SMTP id n9mr4735605ilk.49.1644536559934;
+        Thu, 10 Feb 2022 15:42:39 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id x10sm3286383ill.60.2022.02.10.15.42.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 15:42:39 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
         Emil Renner Berthing <kernel@esmil.dk>,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, John Stultz <john.stultz@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 23/49] clocksource: replace cpumask_weight with cpumask_empty in clocksource.c
+Date:   Thu, 10 Feb 2022 14:49:07 -0800
+Message-Id: <20220210224933.379149-24-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 9, 2022 at 5:26 PM Marc Zyngier <maz@kernel.org> wrote:
+clocksource_verify_percpu() calls cpumask_weight() to check if any bit of
+a given cpumask is set. We can do it more efficiently with cpumask_empty()
+because cpumask_empty() stops traversing the cpumask as soon as it finds
+first set bit, while cpumask_weight() counts all bits unconditionally.
 
-> Having done that, we can cleanup a few irqchip drivers and make their
-> irq_chip structure const (which requires touching a handful of core
-> functions). Whilst we're at it, we do the same for a couple of gpio
-> drivers.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ kernel/time/clocksource.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The series:
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
+index 95d7ca35bdf2..cee5da1e54c4 100644
+--- a/kernel/time/clocksource.c
++++ b/kernel/time/clocksource.c
+@@ -343,7 +343,7 @@ void clocksource_verify_percpu(struct clocksource *cs)
+ 	cpus_read_lock();
+ 	preempt_disable();
+ 	clocksource_verify_choose_cpus();
+-	if (cpumask_weight(&cpus_chosen) == 0) {
++	if (cpumask_empty(&cpus_chosen)) {
+ 		preempt_enable();
+ 		cpus_read_unlock();
+ 		pr_warn("Not enough CPUs to check clocksource '%s'.\n", cs->name);
+-- 
+2.32.0
 
-Since Bartosz is queueing GPIO patches and I am mostly
-playing with a baby during the daytime it's good if you also
-get an ACK from Bartosz on this one before applying the
-series.
-
-Yours,
-Linus Walleij
