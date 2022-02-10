@@ -2,108 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23929C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB53C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345902AbiBJXva (ORCPT
+        id S1345924AbiBJXxH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:51:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53506 "EHLO
+        Thu, 10 Feb 2022 18:53:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345898AbiBJXv2 (ORCPT
+        with ESMTP id S1345902AbiBJXxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:51:28 -0500
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35885F75
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:51:28 -0800 (PST)
-Received: by mail-io1-xd36.google.com with SMTP id c188so9467168iof.6
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:51:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=5dCk4FzrvHhwMLJneJLOY/dcPEyndJPxlHaJYZoEpFk=;
-        b=B1e0SDNthk73k00xBMHULPHNIG3scZT8MMQCtDDPnU+ASlc9VWbUNkMJUQyffY7IX3
-         ivfLQgs2A0MMN67WzKhJN1yYRIeVxUbOJC97r1Uo7/Ud5PSY+sMUmiE3J2p98UTQG6GP
-         YjbJLQlKrjHocWLIvy91hrv2GnSfof1DojUtZvNFpr9clikRnI5AbeBFI8/LzGFF8yvc
-         PWBDZnWUwg3yTvitIhOsZbIsvGDr8RlY2ppLGa1yYFFJnLF0RsW89FGsn0vD0bLq0Qua
-         O/Y5CXY31dui1uTHUtqZeyfGc1gsBTxupgmi1RZNfFmWHPLRsj52a+D//O0z3xR4USab
-         Kklw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5dCk4FzrvHhwMLJneJLOY/dcPEyndJPxlHaJYZoEpFk=;
-        b=PT3WSn7aZetEyB6g/82iMAbOqd285RIgUXzgjD5LgGXP+gIjtRB4GfFe0FC2GlgmBe
-         H6aXXJB+c27ATtDx3ux2eL4Tv5NdWBaPTM54jZvbzfbrH7+XYgvj6TjoOyUY4sgomOaT
-         AQIHzpH0L3cS+2OhQMqtEAf31OQCB9wuZ0Q9l1KpWcQTFg4Vi3d/75J2JIdJnXT5vo1T
-         Wk5/ECRWMTBawJjhGs/hSlU/4q8AHqdby1DgG8yJ4/3eGigT6DBBi1t0yu86WnL+UEPw
-         QVnSdG1ZPh7OmgTpX0I5rynFxE4dffVOCgo832YJoB1F1DTYCII0fP9Y4QcLgkqzAL/q
-         8o0A==
-X-Gm-Message-State: AOAM5317RTrqx914BWwHZb/bZ2R3URHblD6JJdbeCIsRqoqc9ZgB+WPp
-        rrO0A6KWsSBDwsajsVZzEWc=
-X-Google-Smtp-Source: ABdhPJysecqyF1xHXIb448cPo+Fqbe1UTP2z1seIWAOfE9T/8KCaZ4AyX268s5gQTwQDF3OArZz/Ag==
-X-Received: by 2002:a05:6638:260b:: with SMTP id m11mr5150240jat.55.1644537088359;
-        Thu, 10 Feb 2022 15:51:28 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id q2sm6614751ilt.33.2022.02.10.15.51.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:51:27 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
+        Thu, 10 Feb 2022 18:53:05 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AB5A5F5C
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:53:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644537185; x=1676073185;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rAJ/Ka3KYOlYrr0XwA5mDVcFqlX2bUdMJ4Sl3xcYWDE=;
+  b=dVy2M2SPO7Rg/nnZ+NtGpQp723flVkE/f5iO5qWIQCqqBQ+TuCcaEDBM
+   8VxoLwXQLWle1JxXDjY8W3JoaB2I7/fGRj024WaAULHJ2JNoN280a37H3
+   01GwBhkRYO8q2OTQyRtheP56hC8nPjncWTLpoq2aUmUkUYwFxxCSYib8K
+   svpV0wXFXPrvOGxnHCL8tZb5vV++vsomiQuuzCDaGV+IFUoqkTZpE1JVt
+   qZv3A3UtJVqRHZ7mok1vlCHReRs4IQvBRMz3/MjG51lSxP+5B7IMTDff0
+   Tm1+I7y8PpjexB5LQCGC4M1uuFhU7rDBJ+cKqDbtvkWzU160EeKssdqnJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="248452436"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="248452436"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 15:53:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="526731918"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 15:53:04 -0800
+Date:   Thu, 10 Feb 2022 15:52:58 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     "Luck, Tony" <tony.luck@intel.com>
+Cc:     Jacob Pan <jacob.jun.pan@linux.intel.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org
-Subject: [PATCH 27/49] arch/x86: replace bitmap_weight with bitmap_weight_{eq,gt,ge,lt,le} where appropriate
-Date:   Thu, 10 Feb 2022 14:49:11 -0800
-Message-Id: <20220210224933.379149-28-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <YgWlWh8wTJLpHTfq@otcwcpicx3.sc.intel.com>
+References: <20220207230254.3342514-1-fenghua.yu@intel.com>
+ <20220207230254.3342514-6-fenghua.yu@intel.com>
+ <20220209191614.5a3b42d4@jacob-builder>
+ <YgU9Bsq8a2NWzBvE@otcwcpicx3.sc.intel.com>
+ <YgVKYgby67brla9Z@agluck-desk3.sc.intel.com>
+ <YgVaB2kcqeGL+/Or@otcwcpicx3.sc.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgVaB2kcqeGL+/Or@otcwcpicx3.sc.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-__init_one_rdt_domain in rdtgroup.c code calls bitmap_weight() to compare
-the weight of bitmap with a given number. We can do it more efficiently
-with bitmap_weight_lt because conditional bitmap_weight() may stop
-traversing the bitmap earlier, as soon as condition is (or can't be) met.
+Hi, Tony,
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- arch/x86/kernel/cpu/resctrl/rdtgroup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Thu, Feb 10, 2022 at 10:31:42AM -0800, Fenghua Yu wrote:
+> 
+> On Thu, Feb 10, 2022 at 09:24:50AM -0800, Luck, Tony wrote:
+> > On Thu, Feb 10, 2022 at 08:27:50AM -0800, Fenghua Yu wrote:
+> > > Hi, Jacob,
+> > > 
+> > > On Wed, Feb 09, 2022 at 07:16:14PM -0800, Jacob Pan wrote:
+> > > > Hi Fenghua,
+> > > > 
+> > > > On Mon,  7 Feb 2022 15:02:48 -0800, Fenghua Yu <fenghua.yu@intel.com> wrote:
+> > > > 
+> > > > > @@ -1047,8 +1040,6 @@ struct iommu_sva *intel_svm_bind(struct device
+> > > > > *dev, struct mm_struct *mm, void }
+> > > > >  
+> > > > >  	sva = intel_svm_bind_mm(iommu, dev, mm, flags);
+> > > > > -	if (IS_ERR_OR_NULL(sva))
+> > > > > -		intel_svm_free_pasid(mm);
+> > > > If bind fails, the PASID has no IOMMU nor CPU context. It should be safe to
+> > > > free here.
+> > > 
+> > > The PASID can not be freed even if bind fails. The PASID allocated earlier
+> > > (either in this thread or in another thread) might be populated to other
+> > > threads already and being used now.
+> > > 
+> > > Without freeing the PASID on bind failure, the worst case is the PASID might
+> > > not be used in the process (and will be freed on process exit anyway).
+> > > 
+> > > This all matches with the PASID life time described in the commit message.
+> > 
+> > But what does this mean for the user that failed that intel_svm_bind_mm()?
+> > 
+> 
+> That means the user may have a PASID but there is no PASID entry for the
+> device. Then ENQCMD cannot be executed successfully.
+> 
+> > Here's a scenario:
+> > 
+> > Process sets up to use PASID capable device #1. Everything works,
+> > so the process has mm->pasid, and the IOMMU has the tables to map
+> > virtual addresses coming from device #1 using that PASID.
+> > 
+> > Now the same process asks to start using PASID capable device #2,
+> > but there is a failure at intel_svm_bind_mm().
+> > 
+> > Fenghua is right that we shouldn't free the PASID. It is in use
+> > by at least one thread of the process to access device #1.
+> > 
+> > But what happens with device #2? Does the caller of intel_svm_bind()
+> > do the right thing with the IS_ERR_OR_NULL return value to let the
+> > user know that device #2 isn't accessible?
+> 
+> A driver caller of intel_svm_bind() should handle this failure, i.e. fail
+> the binding and let the user know the failure.
+> 
+> Even if the driver doesn't do the right thing to handle the failure,
+> intel_svm_bind() doesn't set up a PASID entry for device #2.
+> 
+> One example is IDXD driver. User calls open()->IDXD driver idxd_cdev_open()
+> ->intel_svm_bind()->intel_svm_bind_mm(). idxd_cdev_open() gets failed "sva"
+> and passes the PTR_ERR(sva) to the user and the user cannot open the device.
+> Due to the failure, no PASID entry is set up for the device.
+> 
+> Even if the user ignores the open() failure and tries to run ENQCMD on
+> device #2, a PASID table fault will be generated due to no PASID entry
+> for the device and the ENQCMD execution will fail.
 
-diff --git a/arch/x86/kernel/cpu/resctrl/rdtgroup.c b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-index e23ff03290b8..9d42e592c1cf 100644
---- a/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-+++ b/arch/x86/kernel/cpu/resctrl/rdtgroup.c
-@@ -2752,7 +2752,7 @@ static int __init_one_rdt_domain(struct rdt_domain *d, struct resctrl_schema *s,
- 	 * bitmap_weight() does not access out-of-bound memory.
- 	 */
- 	tmp_cbm = cfg->new_ctrl;
--	if (bitmap_weight(&tmp_cbm, r->cache.cbm_len) < r->cache.min_cbm_bits) {
-+	if (bitmap_weight_lt(&tmp_cbm, r->cache.cbm_len, r->cache.min_cbm_bits)) {
- 		rdt_last_cmd_printf("No space on %s:%d\n", s->name, d->id);
- 		return -ENOSPC;
- 	}
--- 
-2.32.0
+Plus, the above behavior of handling intel_svm_bind_mm() failure is expected
+right behavior and the current series doesn't need to be changed.
 
+Thanks.
+ 
+-Fenghua
