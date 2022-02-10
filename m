@@ -2,90 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FFC0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99942C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 13:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241968AbiBJNHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:07:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43558 "EHLO
+        id S241979AbiBJNII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:08:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233456AbiBJNHs (ORCPT
+        with ESMTP id S233456AbiBJNIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 08:07:48 -0500
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD56C1A7;
-        Thu, 10 Feb 2022 05:07:49 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id b2so3026779vkl.1;
-        Thu, 10 Feb 2022 05:07:49 -0800 (PST)
+        Thu, 10 Feb 2022 08:08:06 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 180641A7;
+        Thu, 10 Feb 2022 05:08:08 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id ki18-20020a17090ae91200b001b8be87e9abso1826660pjb.1;
+        Thu, 10 Feb 2022 05:08:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pOt73+jWS3QDyWvbhqbKIWv7cG6j1CumkbcqQm/qDyA=;
+        b=XKPERMNc0jHgDVuciwfgf9Y+qdYBieZJCcA7GT4bZyZ7Z9OJJthfsARhO2Yprffulm
+         qcIKyyTgK+cRxPxfbDaIg5G/YeLAEYRAyJE1jApeDXiFLYyhK7Axqb29hr92jKFNCqbd
+         5eMKYD1j61AKZUxmLytHi/7JdsHgNPKZTq7ch7ZBRWj24KpElfvUI3fA59A0lVoT+Tvd
+         ny4MzPWU8iLj/QJfUJQG1DL0x+PfunPC4Pw3H2UVzkAwWDggn29EZi40QNc+eM7SiViR
+         JZcJuric1cqh1GCFsiz/6GD1gk1z8v+Ur4frNnC4onINfwPOFrH9W+HvEnqwTErVVwms
+         PG7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9xSDkfGA7Gbw9lubbu8lfvfHIM/jNHECsHfMyY0SuGE=;
-        b=bO6RaScuERw3GXVA1DRl1JfheXTC9eP+i0yiS4PhaE58qtBR/633FNWC10gxVpRfaL
-         hz+srg73qHj43kG+d73xS9Hz6mQDPmjqoxjfChXrp0YgEJn6R4Ba9PqDqUpZwyBsROyZ
-         PED5b8G4G2OMfvc70Q3B40VkLXNKg7dzMCP2Avv5ObYJUJBtb1m27VbzUrvNiE7+scn1
-         AL5BahMBzw0fxL2v9nkD/nM3BTO7yuBMR2BGEdk4YqdT+3Q+yLTBFgSwZZUBhI56UwRP
-         jMzOdNGDp/zoRELmzIHZxj9aArCUH2mMFjYx0nZYWQB/8gdJMxcq3x8co5neVEC9O+Eq
-         xmzQ==
-X-Gm-Message-State: AOAM530eqhXHZMhigdTH5Tgx98OXm9vNQE96GRvh6N4yllSs2CoAgZZQ
-        IGsAfDf5CIdZcNFXRKBhRpAbab+4AS2Phg==
-X-Google-Smtp-Source: ABdhPJzsuCoIpxIyzoLNmr4cvl9yb0J3mW4bbHtKwyfaLdkjoo0STed/5HGv4Mfp8fADBo4HBC+ZAw==
-X-Received: by 2002:a05:6122:588:: with SMTP id i8mr2560846vko.41.1644498468895;
-        Thu, 10 Feb 2022 05:07:48 -0800 (PST)
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com. [209.85.217.47])
-        by smtp.gmail.com with ESMTPSA id g27sm1394621vkd.17.2022.02.10.05.07.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 05:07:48 -0800 (PST)
-Received: by mail-vs1-f47.google.com with SMTP id z62so4070774vsz.2;
-        Thu, 10 Feb 2022 05:07:48 -0800 (PST)
-X-Received: by 2002:a05:6102:34d9:: with SMTP id a25mr2360386vst.68.1644498468038;
- Thu, 10 Feb 2022 05:07:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pOt73+jWS3QDyWvbhqbKIWv7cG6j1CumkbcqQm/qDyA=;
+        b=6Z1h1Zeo5qsz9CNesj6D2Rs5nqL8CrEp77W9bV/RBFjF7TTFAh4qxG4Wb7DMTZLCTB
+         dsHhCZaTd7ua/ldWuoJTbpOnDxJqYHrX2jOvMwKX4LMYRUiHuPGQ36xrT556nKKQJBJH
+         a6tWDKK+zo6Mshhd0ynAClCp2k58ebAZ3Uf7ozC4NJa44HnWah2reP4Mfs+7Jf5BppFo
+         8DRQUvQ0AG581qbuUw9b8wN/7tWLFk48/OmdjUC55S7v+eymo+w4qGGD6pepNNT02YEG
+         pJ4i5ygATHfOjC6Bn2nLzitQtEzeE9zb83597Im6aXeaA0lpIleaPY2q6eq3wPw9y5il
+         O3vw==
+X-Gm-Message-State: AOAM5312G5SuLO3tULHbQo+7SYyFpWFhvE5BrVldBN7W+rB5vgcBQaTL
+        wg/X/vXfoNlQ0Wqo2LBsS40=
+X-Google-Smtp-Source: ABdhPJwhAw6Veu9/mGuyi2Dcb4vqIUkoRMsLJvXxS5P6eL5cKb2Ru7N5Piaa0TRn8rBDmqxAgcKtvg==
+X-Received: by 2002:a17:90b:1d90:: with SMTP id pf16mr2726635pjb.245.1644498487525;
+        Thu, 10 Feb 2022 05:08:07 -0800 (PST)
+Received: from localhost.localdomain ([2402:4000:2280:c25e:b741:a72a:453d:8a4e])
+        by smtp.gmail.com with ESMTPSA id 19sm2378018pjb.42.2022.02.10.05.08.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 05:08:06 -0800 (PST)
+From:   Husni Faiz <ahamedhusni73@gmail.com>
+To:     b-liu@ti.com, gregkh@linuxfoundation.org
+Cc:     Husni Faiz <ahamedhusni73@gmail.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers/usb: Fix Coding Style Error
+Date:   Thu, 10 Feb 2022 18:38:01 +0530
+Message-Id: <20220210130801.377918-1-ahamedhusni73@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220130143333.552646-1-laurent@vivier.eu> <20220130143333.552646-3-laurent@vivier.eu>
-In-Reply-To: <20220130143333.552646-3-laurent@vivier.eu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 10 Feb 2022 14:07:37 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVX_DTZDTad9iU2DkTT_KTyducGJWtisj8wpTOzWdZMgg@mail.gmail.com>
-Message-ID: <CAMuHMdVX_DTZDTad9iU2DkTT_KTyducGJWtisj8wpTOzWdZMgg@mail.gmail.com>
-Subject: Re: [PATCH v14 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 3:33 PM Laurent Vivier <laurent@vivier.eu> wrote:
-> Revert
-> commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->
-> and define gf_ioread32()/gf_iowrite32() to be able to use accessors
-> defined by the architecture.
->
-> Cc: stable@vger.kernel.org # v5.11+
-> Fixes: da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Gr{oetje,eeting}s,
+Removed trailing whitespace.
 
-                        Geert
+---
+ drivers/usb/musb/musb_host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+diff --git a/drivers/usb/musb/musb_host.c b/drivers/usb/musb/musb_host.c
+index 9ff7d891b4b7..cf25a2b7e3bb 100644
+--- a/drivers/usb/musb/musb_host.c
++++ b/drivers/usb/musb/musb_host.c
+@@ -563,7 +563,7 @@ musb_rx_reinit(struct musb *musb, struct musb_qh *qh, u8 epnum)
+ 	ep->rx_reinit = 0;
+ }
+ 
+-static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep, 
++static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep,
+ 					struct musb_qh *qh,
+ 					u32 *length, u8 *mode)
+ {
+-- 
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
