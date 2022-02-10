@@ -2,124 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F9C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E1DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 23:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345578AbiBJXRu (ORCPT
+        id S1345589AbiBJXSX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 18:17:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36200 "EHLO
+        Thu, 10 Feb 2022 18:18:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345151AbiBJXRs (ORCPT
+        with ESMTP id S1345151AbiBJXSW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 18:17:48 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8878FB37;
-        Thu, 10 Feb 2022 15:17:48 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id c15so10144902ljf.11;
-        Thu, 10 Feb 2022 15:17:48 -0800 (PST)
+        Thu, 10 Feb 2022 18:18:22 -0500
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2225F4E
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:18:22 -0800 (PST)
+Received: by mail-io1-xd2a.google.com with SMTP id s18so9364978ioa.12
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 15:18:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YBwbR1kfaUcjXLL/JErsVbZh7K8KaPOAlgJd4IsVbZo=;
-        b=itgm2BhEwvfTMxc68Ux/piIvgdWhkdxG8vl3df2oj1msFZ1ZWlT380bgQlANY7Mh2h
-         X+WycdEPITqd/4zalr0KJUbSHM9QHNSRi5PDh22MaqADuCJPXuuFLkQYgC9pxGmevmXx
-         6XTvJ/x6k/mccGMSOLo00J13yAhAsQJE+/BadNPoSXU6etZP6QSpsUMKqdAzIicJ3KGm
-         jyNEG1Jef6PsWZvWEZxd2KD8f+KmEgOJxVyMQtZLTg2iqtpdx8sI1U0yjBoZ+bidhCHK
-         ocpokCe+ehBN6c2rH8Jr0g2qFFzKmJcKQxe3Finci59H1cRoUwn8ptuDCFmarrgNCUfR
-         neWA==
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=TZjvXmQL+ezx3++i6ywjCYX2+WSMiXHIFAoZu2xGMQA=;
+        b=dh1iu5XVFR9JgGmMSioQ2P16YMuiIHmUjr61dP4GMbiQ/DBV+xy86sSdWmO7JGy9if
+         SiLJjyrhAkltJyEffBig8nn7rsqFuMeuHJldrAgRTAtSTjv8EpjOdC6vIIDTuX1vQG8X
+         tyHGhTZ88Kz+/3L0/sgBvY4LT8htAeWWCbvSN6jtFh9goqGhVxab8f4MrhWEbhotDg6L
+         D4rDahldztLcHt5JGGWa7cSD6YDdH1+OScMRhdxHt5HBLYDySnNVxkvB/+UwZ4lyLXil
+         hJs2m820KUfV0pMU7wth5QjgU8v0NZ4f1LIii2okFvCOfDuYH3BHp1hpFfvaosO6XBbb
+         ncUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YBwbR1kfaUcjXLL/JErsVbZh7K8KaPOAlgJd4IsVbZo=;
-        b=sILqZ72fdd+ybUG+g9/zF70gmxN8lr/TX23WXd44haeKjf2tf9zgwuglB2LnESF7ZW
-         eFGWP5/nANH38CO6+tEy9U4O2Ao+mBy3QGusNXhpTsMUyWdbg2WBaYwkJbyXS6JwbzFz
-         rkj+O8UydqpJZiMRQIZ17OtXqGztnjYzpbZjLYs8ioOc4ZpgdFpTsuLMnUf0HswQaAUX
-         Qwg4lZej0WntUeT+SwXQPpoQHOArVfUWGbbSqwoDesGJ9Qw7vRBhyCizzQp3ka1b5sFf
-         Flp53Pu2xOVCUcmu0emT7tMKvKLQZTKqLEP3pmCFnOcbyx9Yge9DmZ16NFpVnO8SPUgQ
-         f0PQ==
-X-Gm-Message-State: AOAM5304YQlH+Di02KvOUGlPSq2AVBSGaX3UwuQO6ZW59BwNAl+Xz7iI
-        zo5sV9LI83A6RvlIVh1j4FA=
-X-Google-Smtp-Source: ABdhPJxyjKx22xANHqMYIJ2sFOBupzDvlwNvb6SN7kz1mlL+wLImv7HdWxxuq50N7/N+BbwlDuR98w==
-X-Received: by 2002:a2e:878f:: with SMTP id n15mr6321873lji.159.1644535066762;
-        Thu, 10 Feb 2022 15:17:46 -0800 (PST)
-Received: from dimatab (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
-        by smtp.gmail.com with ESMTPSA id f30sm1433412lfj.112.2022.02.10.15.17.45
+        bh=TZjvXmQL+ezx3++i6ywjCYX2+WSMiXHIFAoZu2xGMQA=;
+        b=RXBY0e9SZqhaGPhmOXPDDLMnnBG9M2q5sFG3WxbPh0F1RbBlEi0z+x4P1IgQMQA23a
+         AsfU0+1QfOQXYA02JBuBOwO2Fsej8GuyxCde5vSkh2a/sN6m8b0RcOL+PpFMNJuHUJkG
+         eH+hlioj2G0lfP+/ChvKGZZOR5FIkN+83QxzHl5UiyDjqs4rqwOOpA6Snn0fY1wX+ftm
+         rVqvsDKFNE+4CQ3dVQZNzBYyp875g855vQQ4LJruF3Ut5r3PhTzOExM49KTXahkX18kC
+         b3GtjHlaFnA8wfRYOa/4SgBIW+eKiLpeICLzKf6JS42eODV52LpjR+ljS1mfCktgDuhc
+         FgmQ==
+X-Gm-Message-State: AOAM532OAke8JNP3A14NoEn7xdVmCsYTLiH17VVSAQpszoSExCh3akXI
+        cHfmuqzV0EfOo8nywD0cHrU=
+X-Google-Smtp-Source: ABdhPJzpdxrXi7jABYsEM7idoWZV3Dcam0pULppAeFkiKjAPVbRQOvUhQvFaYJB7D2HMiS0CGqRkmw==
+X-Received: by 2002:a05:6602:2b10:: with SMTP id p16mr5163745iov.44.1644535101887;
+        Thu, 10 Feb 2022 15:18:21 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id p16sm8877673ilm.85.2022.02.10.15.18.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 15:17:46 -0800 (PST)
-Date:   Fri, 11 Feb 2022 02:17:39 +0300
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Julius Werner <jwerner@chromium.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh@kernel.org>, linux-tegra@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v5 3/9] dt-bindings: memory: lpddr2: Add revision-id
- properties
-Message-ID: <20220211021739.14f3614c@dimatab>
-In-Reply-To: <CAODwPW-VfbvWs3OVON1m=WWFXN2V86o9jqurVDShpfTrSn=Mkw@mail.gmail.com>
-References: <20211006224659.21434-1-digetx@gmail.com>
-        <20211006224659.21434-4-digetx@gmail.com>
-        <YWimShkkxkR+bQLK@robh.at.kernel.org>
-        <CAODwPW-2othAhTC9a_joBdHScA86iqs-FkZJZDrK5LxrJm8F8Q@mail.gmail.com>
-        <d69f99ed-75a4-9b8c-addb-3eaa2b2be6a6@canonical.com>
-        <CAODwPW-AMqQ+ZbnvUTuxP5Bbxdcy08GSXnhcLC+V6BW=OPYaqg@mail.gmail.com>
-        <6568fd31-113f-1581-4eff-45a4a1eb4e5d@canonical.com>
-        <c33c9de2-ff0f-0ba7-b424-728d316dcca2@gmail.com>
-        <CAODwPW-VfbvWs3OVON1m=WWFXN2V86o9jqurVDShpfTrSn=Mkw@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; arm-unknown-linux-gnueabihf)
+        Thu, 10 Feb 2022 15:18:21 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Qi Liu <liuqi115@huawei.com>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 12/49] perf: replace bitmap_weight with bitmap_empty where appropriate
+Date:   Thu, 10 Feb 2022 14:48:56 -0800
+Message-Id: <20220210224933.379149-13-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=D0=92 Wed, 9 Feb 2022 16:32:25 -0800
-Julius Werner <jwerner@chromium.org> =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+In some places, drivers/perf code calls bitmap_weight() to check if any
+bit of a given bitmap is set. It's better to use bitmap_empty() in that
+case because bitmap_empty() stops traversing the bitmap as soon as it
+finds first set bit, while bitmap_weight() counts all bits unconditionally.
 
-> > I don't mind, but I also don't see where the revision-id property of
-> > LPDDR3 is used at all. I can't find any device-tree with LPDDR3
-> > revision-id and don't see it being used in the code either. Maybe
-> > it's the LPDDR3 binding that needs to be changed? =20
->=20
-> We are using the revision ID in userspace (read through
-> /proc/device-tree) for runtime memory identification. We don't have a
-> kernel driver bound to it. Our boot firmware is inserting this value
-> at runtime into the FDT (that's basically the reason we have this, our
-> firmware auto-detects memory during boot and we use the FDT to report
-> what it found to userspace), that's why you can't find it anywhere in
-> the static device trees in boot/dts/.
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ drivers/perf/arm-cci.c                   | 2 +-
+ drivers/perf/arm_pmu.c                   | 4 ++--
+ drivers/perf/hisilicon/hisi_uncore_pmu.c | 2 +-
+ drivers/perf/xgene_pmu.c                 | 2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
 
-Thank you for the clarification. Which device is that and why userspace
-needs to know so much about memory?
-
-> > I made each LPDDR2 revision-id property to correspond to a
-> > dedicated MR of LPDDR, which feels okay to me to since it matches
-> > h/w. =20
->=20
-> I'm not super married to my solution, so if that makes things easier
-> we can standardize on the two-property version as well. I mostly
-> designed it my way because I thought we may one day also want to do
-> something like this for the 8-byte LPDDR5 serial-id, and then it would
-> get kinda cumbersome to have serial-id1 through serial-id8 all as
-> separate properties. But that's also a bridge we can cross when we get
-> there.
->=20
-> My use case is in a position where we could still change this now
-> without requiring backwards-compatibility. Krzysztof, would you be
-> okay if I instead changed the "jedec,lpddr3" to the same thing
-> "jedec,lpddr2" does -- seeing as the original patch was from me, my
-> use case could handle the switch, there has never been any actual
-> kernel code using the property, and it seems very unlikely that anyone
-> else has silently started using the same thing in the time it's been
-> in the tree? Or do we also need to go the official deprecation route
-> for that?
-
-If you're going to use multiple cells for other properties, then indeed
-will be better to keep it consistent.
+diff --git a/drivers/perf/arm-cci.c b/drivers/perf/arm-cci.c
+index 54aca3a62814..96e09fa40909 100644
+--- a/drivers/perf/arm-cci.c
++++ b/drivers/perf/arm-cci.c
+@@ -1096,7 +1096,7 @@ static void cci_pmu_enable(struct pmu *pmu)
+ {
+ 	struct cci_pmu *cci_pmu = to_cci_pmu(pmu);
+ 	struct cci_pmu_hw_events *hw_events = &cci_pmu->hw_events;
+-	int enabled = bitmap_weight(hw_events->used_mask, cci_pmu->num_cntrs);
++	bool enabled = !bitmap_empty(hw_events->used_mask, cci_pmu->num_cntrs);
+ 	unsigned long flags;
+ 
+ 	if (!enabled)
+diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
+index 295cc7952d0e..a31b302b0ade 100644
+--- a/drivers/perf/arm_pmu.c
++++ b/drivers/perf/arm_pmu.c
+@@ -524,7 +524,7 @@ static void armpmu_enable(struct pmu *pmu)
+ {
+ 	struct arm_pmu *armpmu = to_arm_pmu(pmu);
+ 	struct pmu_hw_events *hw_events = this_cpu_ptr(armpmu->hw_events);
+-	int enabled = bitmap_weight(hw_events->used_mask, armpmu->num_events);
++	bool enabled = !bitmap_empty(hw_events->used_mask, armpmu->num_events);
+ 
+ 	/* For task-bound events we may be called on other CPUs */
+ 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
+@@ -785,7 +785,7 @@ static int cpu_pm_pmu_notify(struct notifier_block *b, unsigned long cmd,
+ {
+ 	struct arm_pmu *armpmu = container_of(b, struct arm_pmu, cpu_pm_nb);
+ 	struct pmu_hw_events *hw_events = this_cpu_ptr(armpmu->hw_events);
+-	int enabled = bitmap_weight(hw_events->used_mask, armpmu->num_events);
++	bool enabled = !bitmap_empty(hw_events->used_mask, armpmu->num_events);
+ 
+ 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
+ 		return NOTIFY_DONE;
+diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+index a738aeab5c04..358e4e284a62 100644
+--- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
++++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+@@ -393,7 +393,7 @@ EXPORT_SYMBOL_GPL(hisi_uncore_pmu_read);
+ void hisi_uncore_pmu_enable(struct pmu *pmu)
+ {
+ 	struct hisi_pmu *hisi_pmu = to_hisi_pmu(pmu);
+-	int enabled = bitmap_weight(hisi_pmu->pmu_events.used_mask,
++	bool enabled = !bitmap_empty(hisi_pmu->pmu_events.used_mask,
+ 				    hisi_pmu->num_counters);
+ 
+ 	if (!enabled)
+diff --git a/drivers/perf/xgene_pmu.c b/drivers/perf/xgene_pmu.c
+index 5283608dc055..0c32dffc7ede 100644
+--- a/drivers/perf/xgene_pmu.c
++++ b/drivers/perf/xgene_pmu.c
+@@ -867,7 +867,7 @@ static void xgene_perf_pmu_enable(struct pmu *pmu)
+ {
+ 	struct xgene_pmu_dev *pmu_dev = to_pmu_dev(pmu);
+ 	struct xgene_pmu *xgene_pmu = pmu_dev->parent;
+-	int enabled = bitmap_weight(pmu_dev->cntr_assign_mask,
++	bool enabled = !bitmap_empty(pmu_dev->cntr_assign_mask,
+ 			pmu_dev->max_counters);
+ 
+ 	if (!enabled)
+-- 
+2.32.0
 
