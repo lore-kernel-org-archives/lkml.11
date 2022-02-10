@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A03CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF8FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239104AbiBJJts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:49:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37642 "EHLO
+        id S239080AbiBJJu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:50:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239035AbiBJJtl (ORCPT
+        with ESMTP id S234025AbiBJJu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:49:41 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A1B1BC;
-        Thu, 10 Feb 2022 01:49:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644486582; x=1676022582;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=QD7diRDjosCEK96P8HtODobHDCAMfgamv9O2SqAn5T8=;
-  b=bXFLTH+d4CTCsHh/02B2eT8t8ffTPoVbEmFd8izEHiZtHvcOxnAWlaVj
-   i0Of0zNHqItzZXZ9PeumDwa5322GPzm3DZvCMTtYlrAQLqRyAaTC3LbXY
-   KWXR8hYiR/pKvu2b1d8H1fDHgtsOTlMMA6CQiCAKYamjSOtQlIjs1KTao
-   cxbDNsiXkBbZw+SE2P/cV0baMYf4A/DwH4L3GCusrPNUGM4AhDiSwJpoF
-   /atG3pnlOGbWqsJgqMm5grxnsmPlKjx+0CokkVP9At5TTWesNyh7t6uiY
-   Wv2+ydv2F2s75Nx2p3pfsPkbbyKVfv9wwtWZdO7EHLOMCaIDX9WloPaFs
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="312742027"
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="312742027"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 01:49:42 -0800
-X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="541538900"
-Received: from duan-server-s2600bt.bj.intel.com ([10.240.192.123])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 01:49:40 -0800
-From:   Zhenzhong Duan <zhenzhong.duan@intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com
-Subject: [PATCH v2] KVM: x86: Fix emulation in writing cr8
-Date:   Thu, 10 Feb 2022 17:45:06 +0800
-Message-Id: <20220210094506.20181-1-zhenzhong.duan@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 10 Feb 2022 04:50:27 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55375138;
+        Thu, 10 Feb 2022 01:50:28 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id D2B99223EA;
+        Thu, 10 Feb 2022 10:50:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1644486626;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DVCxNyNvPkbMQcEKg8ORdo0LOt/uaTbu/hLOmPArtaw=;
+        b=icSLTfk5pjfOEhowZinpJNH6ieyAkZGgik2WzyfLogOnOR15CipBMQAb/mgxK3Z3rnOBsZ
+        dqHD4hiO0WTurBJpGyJrtYlsqtvGp13DaNmofKnd36M/3LHUUNfAIA74iXdGmVtzVBNAod
+        nKzhCf3AQR8sbbZv9Kx1udFHggyQTlQ=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 10 Feb 2022 10:50:25 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Kavyasree.Kotagiri@microchip.com
+Cc:     Manohar.Puri@microchip.com, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, arnd@arndb.de,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Nicolas.Ferre@microchip.com,
+        olof@lixom.net, robh+dt@kernel.org, soc@kernel.org
+Subject: Re: [PATCH v4] ARM: dts: add DT for lan966 SoC and 2-port board
+ pcb8291
+In-Reply-To: <CO1PR11MB486534A2987684CC7402CE06922F9@CO1PR11MB4865.namprd11.prod.outlook.com>
+References: <20220209111318.21112-1-kavyasree.kotagiri@microchip.com>
+ <20220209184600.1230365-1-michael@walle.cc>
+ <CO1PR11MB486534A2987684CC7402CE06922F9@CO1PR11MB4865.namprd11.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <97bcfa4417d5f8c41cc6aa1e411c8747@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In emulation of writing to cr8, one of the lowest four bits in TPR[3:0]
-is kept.
+Am 2022-02-10 10:40, schrieb Kavyasree.Kotagiri@microchip.com:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+>> the
+>> content is safe
 
-According to Intel SDM 10.8.6.1(baremetal scenario):
-"APIC.TPR[bits 7:4] = CR8[bits 3:0], APIC.TPR[bits 3:0] = 0";
+>> > +     clocks {
+>> [..]
+>> > +
+>> > +             nic_clk: nic_clk {
+>> 
+>> What does nic_clk stand for? If I had to guess, it
+>> has something to do with network. But..
+>> 
+> NIC clock is the clock used by AXI, AHB fabric and APB bridges which
+> connects all the peripherals.
+> It is named so because the AXI fabric is based on NIC400 IP from ARM
 
-and SDM 28.3(use TPR shadow):
-"MOV to CR8. The instruction stores bits 3:0 of its source operand into
-bits 7:4 of VTPR; the remainder of VTPR (bits 3:0 and bits 31:8) are
-cleared.";
+Ok, thanks for clarification.
 
-and AMD's APM 16.6.4:
-"Task Priority Sub-class (TPS)-Bits 3 : 0. The TPS field indicates the
-current sub-priority to be used when arbitrating lowest-priority messages.
-This field is written with zero when TPR is written using the architectural
-CR8 register.";
 
-so in KVM emulated scenario, clear TPR[3:0] to make a consistent behavior
-as in other scenarios.
+>> > +             watchdog: watchdog@e0090000 {
+>> > +                     compatible = "snps,dw-wdt";
+>> > +                     reg = <0xe0090000 0x1000>;
+>> > +                     interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+>> > +                     clocks = <&nic_clk>;
+>> 
+>> Btw. can we disable all nodes by default and enable them
+>> in the board dts files?
+> I would like to have only board specific nodes enabled in dts files
+> and rest of them in dtsi file
 
-This doesn't impact evaluation and delivery of pending virtual interrupts
-because processor does not use the processor-priority sub-class to
-determine which interrupts to delivery and which to inhibit.
+And how do you know which ones are board specific? E.g. I would like
+to add our board which is also based on the lan9668. Maybe I don't
+want a watchdog (or whatever node). Of course I could use
 
-Sub-class is used by hardware to arbitrate lowest priority interrupts,
-but KVM just does a round-robin style delivery.
+&watchdog {
+   status = "disabled";
+};
 
-Fixes: b93463aa59d6 ("KVM: Accelerated apic support")
-Signed-off-by: Zhenzhong Duan <zhenzhong.duan@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
----
-v2: Add Sean's comments and "Fixes:" to patch description
+But IMHO opt-in is better. At least thats what we are doing for
+the layerscape over on arm64.
 
- arch/x86/kvm/lapic.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index d7e6fde82d25..306025db9959 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2242,10 +2242,7 @@ void kvm_set_lapic_tscdeadline_msr(struct kvm_vcpu *vcpu, u64 data)
- 
- void kvm_lapic_set_tpr(struct kvm_vcpu *vcpu, unsigned long cr8)
- {
--	struct kvm_lapic *apic = vcpu->arch.apic;
--
--	apic_set_tpr(apic, ((cr8 & 0x0f) << 4)
--		     | (kvm_lapic_get_reg(apic, APIC_TASKPRI) & 4));
-+	apic_set_tpr(vcpu->arch.apic, (cr8 & 0x0f) << 4);
- }
- 
- u64 kvm_lapic_get_cr8(struct kvm_vcpu *vcpu)
--- 
-2.25.1
-
+-michael
