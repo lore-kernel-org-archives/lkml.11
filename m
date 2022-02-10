@@ -2,123 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1174C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CEFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 10 Feb 2022 09:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238795AbiBJJe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 04:34:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55838 "EHLO
+        id S238786AbiBJJgo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 04:36:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235553AbiBJJez (ORCPT
+        with ESMTP id S234258AbiBJJgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 04:34:55 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B2210BB
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:34:57 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id o24so5763098wro.3
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:34:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:organization:in-reply-to:content-transfer-encoding;
-        bh=G+YDDnr2slUFHsUM/IlbFGkS85HzAaIxJtVEmZjhqMI=;
-        b=fFvqalnJA8sWVtzDVywLCenoPVSbM4BhkZK9XFrkh6Uhpi+h4y/LKiKPi0+ZpMMW/Z
-         8oUWKgTy+/vB6iqVkziuScLT+kEEaPx4cW97cxs178WEC9/LpV1PbchEV0yhArLeUKei
-         Mlqk8nmMSwVxPZPMdo7PhJzx9J9flAKp6V/antjKCI6D9JvcSZIa993aC67gdMa40vNi
-         iKaOYZWoizEF4zUNkT7BdkzPJ0w9QQSZNiE4Tkh/yi1bZG8tc6HGVwyxPS8oH35Nuysb
-         fBd++IIZ5lX81lBwDZ4ywBPbYiCD3/fndjabl0NGgG41OW1NKXnrFD1wVZveXOfhwjmg
-         bMNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=G+YDDnr2slUFHsUM/IlbFGkS85HzAaIxJtVEmZjhqMI=;
-        b=HsxnmpJChPxoNINRDJxZCk4MkHirDaqVGGs2L6ExM3+xCPFMXIoC1P7M8U742vyDes
-         UlYOw9u4wGbmuDEgyG6XOezIuwT0nAgsLUJr2hCdP6mrmg+SLiIOn2kmftycr0a4ylJZ
-         Dn1o3BhiYaNY3lu+wrY15XH4WixBJj/jsm1/lQeRej/+5v3ZDzk4u1GMSIn4xQuRQE7o
-         ptN7F1aF2HLICHfqKWSxkz4Cgnw8rcb2Uv3FVIK5vqcWSqvH9GITXEynA0GDblOIPVF0
-         J3j/U94PXRCZHQShAGauP1VqGs8vHHx96CmqOxsMFPxQZ/pojPonuE43uhK/6bn9xSP0
-         8vvA==
-X-Gm-Message-State: AOAM5306WDDzT5c1Z47Qo4w6Zq6vQTkJDOVLQqbqrd3kBaARAPLefbj9
-        yzlHQVUC+Z6cLO8ob/dO1fMeKg==
-X-Google-Smtp-Source: ABdhPJxBmsNmtY10oYaIzh1QwOHqjXPf7ItHPImfVqE1FxspgN0H8jxhkM1pdM6mESt6dmgnlo306g==
-X-Received: by 2002:a5d:4c85:: with SMTP id z5mr5695114wrs.225.1644485695484;
-        Thu, 10 Feb 2022 01:34:55 -0800 (PST)
-Received: from ?IPV6:2001:861:44c0:66c0:76d9:bf0e:e516:58a9? ([2001:861:44c0:66c0:76d9:bf0e:e516:58a9])
-        by smtp.gmail.com with ESMTPSA id x5sm9483363wrv.63.2022.02.10.01.34.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Feb 2022 01:34:54 -0800 (PST)
-Message-ID: <640ef0b2-fcba-50a6-71c2-8156181682b0@baylibre.com>
-Date:   Thu, 10 Feb 2022 10:34:53 +0100
+        Thu, 10 Feb 2022 04:36:43 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1B5AEC64
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 01:36:44 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-78-7VZKaTpWPSS90nYkjpkWNg-1; Thu, 10 Feb 2022 09:36:42 +0000
+X-MC-Unique: 7VZKaTpWPSS90nYkjpkWNg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Thu, 10 Feb 2022 09:36:41 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Thu, 10 Feb 2022 09:36:41 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Arnd Bergmann' <arnd@kernel.org>, Michal Simek <monstr@monstr.eu>
+CC:     Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] microblaze: remove CONFIG_SET_FS
+Thread-Topic: [PATCH] microblaze: remove CONFIG_SET_FS
+Thread-Index: AQHYHcQ6EgAhsRrDe0u1y8RgHhFzdayMhlsA
+Date:   Thu, 10 Feb 2022 09:36:41 +0000
+Message-ID: <80c6df0717014472aa81093ae3894d39@AcuMS.aculab.com>
+References: <20220209144910.1484686-1-arnd@kernel.org>
+In-Reply-To: <20220209144910.1484686-1-arnd@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] drivers: meson: vdec: add VP9 support to GXM
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Christian Hewitt <christianshewitt@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-media@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        devel@driverdev.osuosl.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-References: <20220209153150.30688-1-christianshewitt@gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <20220209153150.30688-1-christianshewitt@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/02/2022 16:31, Christian Hewitt wrote:
-> VP9 support for GXM appears to have been missed from the original
-> codec submission [0] but it works well, so let's add support.
+From: Arnd
+> Sent: 09 February 2022 14:49
 > 
-> [0] https://github.com/torvalds/linux/commit/00c43088aa680989407b6afbda295f67b3f123f1
+> Remove the address space override API set_fs().  The microblaze user
+> address space is now limited to TASK_SIZE.
 > 
-> Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-> ---
-> Tested with LibreELEC 11 nightly 'AMLGX' dev images for Khadas VIM2
-> and WeTek Core2 GXM devices which can be found here [1]. The images
-> combine Linux 5.16.y [2] with Kodi v20 [3] and FFmpeg 4.4 [4] which
-> notably includes many V4L2 refinements for stability and usability.
+> To support this we implement and wire in __get_kernel_nofault and
+> __set_kernel_nofault.
 > 
-> [1] https://test.libreelec.tv/
-> [2] https://github.com/chewitt/linux/commits/amlogic-5.16.y
-> [3] https://github.com/xbmc/xbmc/
-> [4] https://github.com/jc-kynesim/rpi-ffmpeg/commits/dev/4.4/rpi_import_1
+> The function user_addr_max is removed as there is a default definition
+> provided when CONFIG_SET_FS is not used.
+...
+>  static inline int access_ok(const void __user *addr, unsigned long size)
+>  {
+>  	if (!size)
+>  		goto ok;
 > 
->   drivers/staging/media/meson/vdec/vdec_platform.c | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/staging/media/meson/vdec/vdec_platform.c b/drivers/staging/media/meson/vdec/vdec_platform.c
-> index eabbebab2da2..88c9d72e1c83 100644
-> --- a/drivers/staging/media/meson/vdec/vdec_platform.c
-> +++ b/drivers/staging/media/meson/vdec/vdec_platform.c
-> @@ -103,6 +103,18 @@ static const struct amvdec_format vdec_formats_gxl[] = {
->   
->   static const struct amvdec_format vdec_formats_gxm[] = {
->   	{
-> +		.pixfmt = V4L2_PIX_FMT_VP9,
-> +		.min_buffers = 16,
-> +		.max_buffers = 24,
-> +		.max_width = 3840,
-> +		.max_height = 2160,
-> +		.vdec_ops = &vdec_hevc_ops,
-> +		.codec_ops = &codec_vp9_ops,
-> +		.firmware_path = "meson/vdec/gxl_vp9.bin",
-> +		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
-> +		.flags = V4L2_FMT_FLAG_COMPRESSED |
-> +			 V4L2_FMT_FLAG_DYN_RESOLUTION,
-> +	}, {
->   		.pixfmt = V4L2_PIX_FMT_H264,
->   		.min_buffers = 2,
->   		.max_buffers = 24,
+> -	if ((get_fs().seg < ((unsigned long)addr)) ||
+> -			(get_fs().seg < ((unsigned long)addr + size - 1))) {
+> -		pr_devel("ACCESS fail at 0x%08x (size 0x%x), seg 0x%08x\n",
+> -			(__force u32)addr, (u32)size,
+> -			(u32)get_fs().seg);
+> +	if ((((unsigned long)addr) > TASK_SIZE) ||
+> +	    (((unsigned long)addr + size - 1) > TASK_SIZE)) {
+> +		pr_devel("ACCESS fail at 0x%08x (size 0x%x)",
+> +			(__force u32)addr, (u32)size);
+>  		return 0;
 
+Isn't that the wrong check?
+If 'size' is big 'addr + size' can wrap.
 
-Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+It needs to be (addr >= TASK_SIZE || size > TASK_SIZE - addr)
+
+Which is pretty much a generic version.
+Although typical 64bit architectures can use the faster:
+	((addr | size) >> 62)
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
