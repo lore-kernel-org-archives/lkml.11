@@ -2,107 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA9AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F467C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351962AbiBKRMj (ORCPT
+        id S1352009AbiBKRNW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:12:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35816 "EHLO
+        Fri, 11 Feb 2022 12:13:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242158AbiBKRMh (ORCPT
+        with ESMTP id S1351987AbiBKRNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:12:37 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B838DBD6;
-        Fri, 11 Feb 2022 09:12:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=IAJVndvC2D0wZes8TKvqkXkv156AHKT6iLNSSoGjHCM=; b=IBcTNrW3dnUQdfHlL1i4TFT2FK
-        ZzM4dp4CkSwhVVCIctn7UWQjm5pdv9cIfUSyg0EQvE7zsrj2NVImDvYrymK6ZBMhpzYLa5V+5A29Q
-        T+rjHzYt64BjaVY2UqPZLru6D06FMatJz0hVRUnd1M1EiHNKPk9u7+5wbt9tWRbcEHFBZHAFfLYn0
-        fg9XyyrDPOLDVNgRPk8afJnWNfgWS39QzcTD2X7nD4APdUJbqKNskDZVptut1a5NJhV8vhnooQsd9
-        UoLAFlG94O7uOi/9eKrciA2l4KkJzk/Frz1MkO5ojeamnBdAnVEtZqYStrop2H4HC1QF0A6l3VEoo
-        N3Fax3Qg==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIZT4-00AaM7-GV; Fri, 11 Feb 2022 17:12:22 +0000
-Message-ID: <376dd5c9-199c-25af-d431-d1f0541f08c0@infradead.org>
-Date:   Fri, 11 Feb 2022 09:12:18 -0800
+        Fri, 11 Feb 2022 12:13:19 -0500
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3792E8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:13:17 -0800 (PST)
+Received: by mail-il1-x12d.google.com with SMTP id i10so7373932ilm.4
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:13:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=s7mGcCDwRakb27nJ+hvyeCmB5+buamXTCZy5wLIRtRg=;
+        b=fdomvHt9zMMnngWxveYBK7C1iFPQy7YFQkSeuwToo7/UZg+ppFxZs0Fw3zN6ixIwaQ
+         VXQnU2ouajTpSQ2eoUlvf6o71S1OtOngn9AI/mJVsIkvRwcTaJ+L2voh+dW10QNq9D9b
+         8F1hoRb4YxlbTzngZ1UTU8CJDV5l4NpeIjmzU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=s7mGcCDwRakb27nJ+hvyeCmB5+buamXTCZy5wLIRtRg=;
+        b=c/2lb7drZrio9cpEagan8wJUTv2cor5cSU0culdEBSeEu/wY75bfT2wcCnaF78sBxF
+         EkfGHRl8pUOZb4jRNJYFuGDLgHDd0ur2eCqkx+XR+Z1VH/p34FUaic9BueTTsKWM2yUh
+         dJZu5CowFtn78TX//6Vu/hzoMeQYmZpcE/jo4TriKZRPWinHbcVVlLLKI0XV+68HhTDW
+         3cklsMGt8Fb/onX/qkKloJFod2IfDIxdGX1Soo3TZndHNztxPPRePqtcIl8sYBWmIBOC
+         pdimkgAPIm+/VcDN5/CptpPXiwpSlbXE4LXCvevZgKoZTYS+EkXcjHyUSwan8dM7uz47
+         3/Qg==
+X-Gm-Message-State: AOAM5318JP3oOEA2ffFdkLF2Ila6XCKz2u71nLE4LXsm8nUMrcTprCYl
+        DedUzua3TeFn5mJBxvXkJA8mdQ==
+X-Google-Smtp-Source: ABdhPJzQxZAzYhrwCZEUCoks+3wdFiATxCz/aohhMfPrkypn1nXkiEYj5RZUxC0OLhuRar6INy0rHQ==
+X-Received: by 2002:a92:1311:: with SMTP id 17mr1371108ilt.42.1644599597132;
+        Fri, 11 Feb 2022 09:13:17 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id u8sm5050640ilb.39.2022.02.11.09.13.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Feb 2022 09:13:16 -0800 (PST)
+Subject: Re: [PATCH 1/2] selftests: x86: allow expansion of $(CC)
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "open list:INTEL SGX" <linux-sgx@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     "kernel@collabora.com" <kernel@collabora.com>,
+        "kernelci@groups.io" <kernelci@groups.io>,
+        "kernelci.org bot" <bot@kernelci.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220210190642.1477814-1-usama.anjum@collabora.com>
+ <20220210190642.1477814-2-usama.anjum@collabora.com>
+ <a34f2fc8-f4aa-fef4-d1dd-f3fdb5114f72@linuxfoundation.org>
+ <99625ceecead4e9eb73de2fc8acb2ae9@AcuMS.aculab.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <7a501981-e4ce-fb08-7c1e-6aca26245cef@linuxfoundation.org>
+Date:   Fri, 11 Feb 2022 10:13:15 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH] PM: cleanup comments
+In-Reply-To: <99625ceecead4e9eb73de2fc8acb2ae9@AcuMS.aculab.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     trix@redhat.com, rafael@kernel.org, len.brown@intel.com,
-        pavel@ucw.cz, gregkh@linuxfoundation.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220211161027.2516447-1-trix@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220211161027.2516447-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/11/22 08:10, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
+On 2/11/22 9:47 AM, David Laight wrote:
+> From: Shuah Khan
+>> Sent: 10 February 2022 20:52
+>>
+>> On 2/10/22 12:06 PM, Muhammad Usama Anjum wrote:
+>>> CC can have multiple sub-strings like "ccache gcc". Erorr pops up if
+>>> it is treated as single string and double quote are used around it.
+>>> This can be fixed by removing the quotes and not treating CC a single
+>>> string.
+>>>
+>>> Fixes: e9886ace222e ("selftests, x86: Rework x86 target architecture detection")
+>>> Reported-by: "kernelci.org bot" <bot@kernelci.org>
+>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>>> ---
+>>>    tools/testing/selftests/x86/check_cc.sh | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/tools/testing/selftests/x86/check_cc.sh b/tools/testing/selftests/x86/check_cc.sh
+>>> index 3e2089c8cf549..aff2c15018b53 100755
+>>> --- a/tools/testing/selftests/x86/check_cc.sh
+>>> +++ b/tools/testing/selftests/x86/check_cc.sh
+>>> @@ -7,7 +7,7 @@ CC="$1"
+>>>    TESTPROG="$2"
+>>>    shift 2
+>>>
+>>> -if "$CC" -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
+>>> +if $CC -o /dev/null "$TESTPROG" -O0 "$@" 2>/dev/null; then
+>>>        echo 1
+>>>    else
+>>>        echo 0
+>>>
+>>
+>> The intent is testing if $CC is set. Does this change work when
+>> $CC is not set?
 > 
-> Remove the second 'the'.
-> Replace the second 'of' with 'the'.
-> Replace 'couter' with 'counter'.
+> More by luck than judgement. Before and after.
+> If $CC might be empty you probably want:
 > 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-
-Thanks.
-
-> ---
->  drivers/base/power/wakeirq.c | 2 +-
->  drivers/base/power/wakeup.c  | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
+> [ -n "$CC" ] && { echo 0; return; }
 > 
-> diff --git a/drivers/base/power/wakeirq.c b/drivers/base/power/wakeirq.c
-> index 0004db4a9d3b..d487a6bac630 100644
-> --- a/drivers/base/power/wakeirq.c
-> +++ b/drivers/base/power/wakeirq.c
-> @@ -289,7 +289,7 @@ EXPORT_SYMBOL_GPL(dev_pm_disable_wake_irq);
->   *
->   * Enables wakeirq conditionally. We need to enable wake-up interrupt
->   * lazily on the first rpm_suspend(). This is needed as the consumer device
-> - * starts in RPM_SUSPENDED state, and the the first pm_runtime_get() would
-> + * starts in RPM_SUSPENDED state, and the first pm_runtime_get() would
->   * otherwise try to disable already disabled wakeirq. The wake-up interrupt
->   * starts disabled with IRQ_NOAUTOEN set.
->   *
-> diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
-> index 8666590201c9..a57d469676ca 100644
-> --- a/drivers/base/power/wakeup.c
-> +++ b/drivers/base/power/wakeup.c
-> @@ -587,7 +587,7 @@ static bool wakeup_source_not_registered(struct wakeup_source *ws)
->   * @ws: Wakeup source to handle.
->   *
->   * Update the @ws' statistics and, if @ws has just been activated, notify the PM
-> - * core of the event by incrementing the counter of of wakeup events being
-> + * core of the event by incrementing the counter of the wakeup events being
->   * processed.
->   */
->  static void wakeup_source_activate(struct wakeup_source *ws)
-> @@ -733,7 +733,7 @@ static void wakeup_source_deactivate(struct wakeup_source *ws)
->  
->  	/*
->  	 * Increment the counter of registered wakeup events and decrement the
-> -	 * couter of wakeup events in progress simultaneously.
-> +	 * counter of wakeup events in progress simultaneously.
->  	 */
->  	cec = atomic_add_return(MAX_IN_PROGRESS, &combined_event_count);
->  	trace_wakeup_source_deactivate(ws->name, cec);
+> The subject is also wrong. Should be "allow field splitting' of ${CC}.
+> (no brace or curly braces, not round ones.)
+> 
 
--- 
-~Randy
+Good points. It would be good enhancement to add the check - since the
+current logic doesn't handle the null CC
+
+thanks,
+-- Shuah
