@@ -2,146 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 097FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:51:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB05C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349623AbiBKLv2 (ORCPT
+        id S1349661AbiBKLyP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:51:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41204 "EHLO
+        Fri, 11 Feb 2022 06:54:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238409AbiBKLv0 (ORCPT
+        with ESMTP id S1345558AbiBKLyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:51:26 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68DFF4F;
-        Fri, 11 Feb 2022 03:51:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BHPbXDxWBtuDI9YYnGdugRaUKtQ7K4m6+zQLsPmD+c4=; b=dR8Q5ZU2i/N7HitiOzfANLpiaz
-        5qF/SGYCLXmE3e/dkF3v4vQlXl0pelPeb6ZkNEXzLADKV9kE23rp79jq4mfm03lr+heVNBw6SiiaY
-        6Z1pKGNxXXmfGBcyaBr6PSJcpbz8Sdshm9m2BBMjbHme/kSazx7WqGhKRwogi4Xwnv6NNTZsBkMSl
-        FG16DeaXr1JW6GU+rgKjMw3/dKdJvXb6j/XE3kxeGiExzW4cOIhaKmi9tqzv+Uf1tvOu9gdhNB4qx
-        +LB1CCgDn3ykbmNyqqv+jJyTAUNskEwK3OFdtohRrAqlCJ7QbjcAlAePlTps3tau2u4nzTWSfA3hd
-        HZgeVPvg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIUSJ-00AN1Y-C0; Fri, 11 Feb 2022 11:51:15 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7C45D9853C7; Fri, 11 Feb 2022 12:51:14 +0100 (CET)
-Date:   Fri, 11 Feb 2022 12:51:14 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Zhen Ni <nizhen@uniontech.com>
-Cc:     mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, mcgrof@kernel.org,
-        keescook@chromium.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH] sched: move rr_timeslice sysctls to rt.c
-Message-ID: <20220211115114.GU23216@worktop.programming.kicks-ass.net>
-References: <20220210060831.26689-1-nizhen@uniontech.com>
+        Fri, 11 Feb 2022 06:54:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F62EB0;
+        Fri, 11 Feb 2022 03:54:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0317A618CF;
+        Fri, 11 Feb 2022 11:54:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A932C340E9;
+        Fri, 11 Feb 2022 11:54:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644580452;
+        bh=WDr1wYMBqsy40Pudk1eNzGhiianFBoaG1uB42EhH/Yc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=u49P4uxiQ8AM049ZlWIPnkLHjZ67u6iifufSVkM+/VCa2CGf6B2KIGa8bO7R8XMkB
+         4117f4S7/Gph1wsIv/zM+IZVIcnUsisEtKgbws39L0sauD6MwyDF0ctJ4rsjfTZRVW
+         TbDIxa565YhCP84rZ4IuLAIWSes88H8CD2E0HcnD9xVO6Aene4TXKLrDPNolK0wF3z
+         XfA4bWdqPEF2mM+UFvic6IENeDs4jS9uXWK6GmG27VfFia34d+ozJX6THND1O8qBCX
+         PdOhsbTyDAHABTiJKmO1tw4LJkHuaSyiHFGJzg+/7cENP753NJxHEwKtqZUo/HU+CF
+         3IW5kocrVanZw==
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v8 00/11] fprobe: Introduce fprobe function entry/exit probe 
+Date:   Fri, 11 Feb 2022 20:54:06 +0900
+Message-Id: <164458044634.586276.3261555265565111183.stgit@devnote2>
+X-Mailer: git-send-email 2.25.1
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210060831.26689-1-nizhen@uniontech.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 02:08:31PM +0800, Zhen Ni wrote:
-> move rr_timeslice sysctls to rt.c and use the new
-> register_sysctl_init() to register the sysctl interface.
-> 
-> Signed-off-by: Zhen Ni <nizhen@uniontech.com>
+Hi,
 
-OK, I've had it with this nonsense. Can you *please* redo all of sched
-such that:
+Here is the 8th version of fprobe. This version fixes a build error
+when CONFIG_FUNCTION_TRACER=n, and add a KUnit based selftest.
 
- - In the Subject:, the first letter after the subsystem prefix (sched:)
-   is capitalized.
- - the lot actually applies to tip/sched/core (so far not a single one
-   of these patches applied without needing -- mostly trivial --
-   fixups).
- - Do obvious cleanups.. see below.
- - Don't have more than a single *sysctl_init() per .c file.
- - It's a full series that does all instead of random little patches
-   that conflict with one another when applied out of turn.
+The previous version is here[1];
 
-> ---
->  include/linux/sched/sysctl.h |  3 ---
->  kernel/sched/rt.c            | 28 ++++++++++++++++++++++++++--
->  kernel/sysctl.c              |  7 -------
->  3 files changed, 26 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/linux/sched/sysctl.h b/include/linux/sched/sysctl.h
-> index d416d8f45186..f6466040883c 100644
-> --- a/include/linux/sched/sysctl.h
-> +++ b/include/linux/sched/sysctl.h
-> @@ -45,11 +45,8 @@ extern unsigned int sysctl_sched_uclamp_util_min_rt_default;
->  extern unsigned int sysctl_sched_autogroup_enabled;
->  #endif
->  
-> -extern int sysctl_sched_rr_timeslice;
->  extern int sched_rr_timeslice;
+[1] https://lore.kernel.org/all/164360522462.65877.1891020292202285106.stgit@devnote2/T/#u
 
-Why leave sched_rr_timeslice here? It doesn't belong here.
+This series introduces the fprobe, the function entry/exit probe
+with multiple probe point support. This also introduces the rethook
+for hooking function return as same as the kretprobe does. This
+abstraction will help us to generalize the fgraph tracer,
+because we can just switch to it from the rethook in fprobe,
+depending on the kernel configuration.
 
+The patch [1/10] is from Jiri's series[2].
 
-> +#ifdef CONFIG_SYSCTL
-> +static struct ctl_table sched_rr_sysctls[] = {
-> +	{
-> +		.procname       = "sched_rr_timeslice_ms",
-> +		.data           = &sysctl_sched_rr_timeslice,
-> +		.maxlen         = sizeof(int),
-> +		.mode           = 0644,
-> +		.proc_handler   = sched_rr_handler,
-> +	},
-> +	{}
-> +};
-> +
-> +static void __init sched_rr_sysctl_init(void)
-> +{
-> +	register_sysctl_init("kernel", sched_rr_sysctls);
-> +}
-> +#else
-> +#define sched_rr_sysctl_init() do { } while (0)
-> +#endif
-> +
->  static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
->  
->  struct rt_bandwidth def_rt_bandwidth;
-> @@ -2471,6 +2494,7 @@ void __init init_sched_rt_class(void)
->  		zalloc_cpumask_var_node(&per_cpu(local_cpu_mask, i),
->  					GFP_KERNEL, cpu_to_node(i));
->  	}
-> +	sched_rr_sysctl_init();
->  }
+[2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
 
-When I combine this with: patches/zhen_ni-sched-move_rt_period_runtime_sysctls_to_rt_c.patch
+And the patch [9/10] adds the FPROBE_FL_KPROBE_SHARED flag for the case
+if user wants to share the same code (or share a same resource) on the
+fprobe and the kprobes.
 
-That ends up as:
+I forcibly updated my kprobes/fprobe branch, you can pull this series
+from:
 
-@@ -2471,6 +2535,8 @@ void __init init_sched_rt_class(void)
-                zalloc_cpumask_var_node(&per_cpu(local_cpu_mask, i),
-                                        GFP_KERNEL, cpu_to_node(i));
-        }
-+       sched_rt_sysctl_init();
-+       sched_rr_sysctl_init();
- }
- #endif /* CONFIG_SMP */
+ https://git.kernel.org/pub/scm/linux/kernel/git/mhiramat/linux.git kprobes/fprobe
 
-Like srsly?
+Thank you,
+
+---
+
+Jiri Olsa (1):
+      ftrace: Add ftrace_set_filter_ips function
+
+Masami Hiramatsu (10):
+      fprobe: Add ftrace based probe APIs
+      rethook: Add a generic return hook
+      rethook: x86: Add rethook x86 implementation
+      ARM: rethook: Add rethook arm implementation
+      arm64: rethook: Add arm64 rethook implementation
+      fprobe: Add exit_handler support
+      fprobe: Add sample program for fprobe
+      fprobe: Introduce FPROBE_FL_KPROBE_SHARED flag for fprobe
+      docs: fprobe: Add fprobe description to ftrace-use.rst
+      fprobe: Add a selftest for fprobe
 
 
-So I've dropped the whole lot I had:
+ Documentation/trace/fprobe.rst                |  171 +++++++++++++
+ Documentation/trace/index.rst                 |    1 
+ arch/arm/Kconfig                              |    1 
+ arch/arm/include/asm/stacktrace.h             |    4 
+ arch/arm/kernel/stacktrace.c                  |    6 
+ arch/arm/probes/Makefile                      |    1 
+ arch/arm/probes/rethook.c                     |   71 +++++
+ arch/arm64/Kconfig                            |    1 
+ arch/arm64/include/asm/stacktrace.h           |    2 
+ arch/arm64/kernel/probes/Makefile             |    1 
+ arch/arm64/kernel/probes/rethook.c            |   25 ++
+ arch/arm64/kernel/probes/rethook_trampoline.S |   87 ++++++
+ arch/arm64/kernel/stacktrace.c                |    7 -
+ arch/x86/Kconfig                              |    1 
+ arch/x86/include/asm/unwind.h                 |    8 +
+ arch/x86/kernel/Makefile                      |    1 
+ arch/x86/kernel/kprobes/common.h              |    1 
+ arch/x86/kernel/rethook.c                     |  115 ++++++++
+ include/linux/fprobe.h                        |  105 ++++++++
+ include/linux/ftrace.h                        |    3 
+ include/linux/kprobes.h                       |    3 
+ include/linux/rethook.h                       |  100 +++++++
+ include/linux/sched.h                         |    3 
+ kernel/exit.c                                 |    2 
+ kernel/fork.c                                 |    3 
+ kernel/trace/Kconfig                          |   26 ++
+ kernel/trace/Makefile                         |    2 
+ kernel/trace/fprobe.c                         |  341 +++++++++++++++++++++++++
+ kernel/trace/ftrace.c                         |   58 ++++
+ kernel/trace/rethook.c                        |  313 +++++++++++++++++++++++
+ lib/Kconfig.debug                             |   12 +
+ lib/Makefile                                  |    2 
+ lib/test_fprobe.c                             |  125 +++++++++
+ samples/Kconfig                               |    7 +
+ samples/Makefile                              |    1 
+ samples/fprobe/Makefile                       |    3 
+ samples/fprobe/fprobe_example.c               |  120 +++++++++
+ 37 files changed, 1719 insertions(+), 14 deletions(-)
+ create mode 100644 Documentation/trace/fprobe.rst
+ create mode 100644 arch/arm/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook.c
+ create mode 100644 arch/arm64/kernel/probes/rethook_trampoline.S
+ create mode 100644 arch/x86/kernel/rethook.c
+ create mode 100644 include/linux/fprobe.h
+ create mode 100644 include/linux/rethook.h
+ create mode 100644 kernel/trace/fprobe.c
+ create mode 100644 kernel/trace/rethook.c
+ create mode 100644 lib/test_fprobe.c
+ create mode 100644 samples/fprobe/Makefile
+ create mode 100644 samples/fprobe/fprobe_example.c
 
-patches/zhen_ni-sched-move_energy_aware_sysctls_to_topology_c.patch
-patches/zhen_ni-sched-move_cfs_bandwidth_slice_sysctls_to_fair_c.patch
-patches/zhen_ni-sched-move_uclamp_util_sysctls_to_core_c.patch
-patches/zhen_ni-sched-move_schedstats_sysctls_to_core_c.patch
-patches/zhen_ni-sched-move_deadline_period_sysctls_to_deadline_c.patch
-patches/zhen_ni-sched-move_rt_period_runtime_sysctls_to_rt_c.patch
-patches/zhen_ni-sched-move_rr_timeslice_sysctls_to_rt_c.patch
-
-And I expect a single coherent series or I'll forgo all this.
+--
+Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
