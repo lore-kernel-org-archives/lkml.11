@@ -2,75 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2715DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351461AbiBKQYi (ORCPT
+        id S1351472AbiBKQZ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:24:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53034 "EHLO
+        Fri, 11 Feb 2022 11:25:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242296AbiBKQYh (ORCPT
+        with ESMTP id S229522AbiBKQZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:24:37 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 948D93B6;
-        Fri, 11 Feb 2022 08:24:35 -0800 (PST)
-Date:   Fri, 11 Feb 2022 17:24:30 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644596672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w9FBzUJaxUaUqloJIitm2mdcnB7QrKXegO9P62+prTM=;
-        b=xiZw248UeLoC3g67wqzAkRjUjwKLgeYx9o4Oltad9mL3jm8ER4ogHp1SUDjaxpSyd0pvEU
-        mY9PEzhaJdFr4wcKAPngG9v1l5fzKp0JIc4TVh/WHkI0oLl/XHc8XwdS8EVwpeQJU3FAQx
-        dP5FbjWx+CtTIC24gs5pS/Ax9hRE/NRx+wUm3jgM0pzjrKmTGLvktBjy7hcNm35VIytIDZ
-        o9Wk0dmogjFtaPwffKW8aTvboM107MBF8JOzsPhGaPayFEp72X49tUEuVNTiNHA6sKsq6+
-        B5czW12xKpEjWYsk+t0cblghxxvO8srI0C6w2QBtvFtBiY1ria7eJ+Z8GR/GDQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644596672;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=w9FBzUJaxUaUqloJIitm2mdcnB7QrKXegO9P62+prTM=;
-        b=oHUny/7EC0zgMFYaGvQpnGX2CGFIu7z6Ugu72SCHD3nW4d8ApaOvc4eRLRvBgUY/jGo+kj
-        /WP5BaB9E0z+9jAA==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>
-Subject: Re: [PATCH] random: ensure mix_interrupt_randomness() is consistent
-Message-ID: <YgaNvnf5NHQEi5G3@linutronix.de>
-References: <CAHmME9pGwyZKu=9yCben-V30hR+zEjb9iZGWr5_RAE-uXt_Ofw@mail.gmail.com>
- <20220211011446.392673-1-Jason@zx2c4.com>
- <YgYbRa+5cC0ivWrK@linutronix.de>
- <CAHmME9oBCt=bvjQLwmppr29W9FdJ612+d1a8gUExyWZuZHVWZw@mail.gmail.com>
- <YgZ36ShvikQhcQYl@linutronix.de>
- <CAHmME9p9RVRtD_GQ7FPdj64_a6aArQTtdE6Ch7X_8AQngi1pUQ@mail.gmail.com>
+        Fri, 11 Feb 2022 11:25:26 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBBBF38C;
+        Fri, 11 Feb 2022 08:25:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644596724; x=1676132724;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=M1mHs7WEgatmlRjx4H6HCF+8F6e5ANVvjld7uTPgqFk=;
+  b=JbHa6SfIrrmKG1LZ84MMoG7JLgIHx3nHidHKyaxsdpXs75fhydMFy7at
+   cKVR+OhQWD2Jd8mJP1WWlZZD2Gg7k04bZO9Ob3cPcRUiYKGLfvFrehPxs
+   Z1F9FCcK02YSeirLueXWPZKuBM87VVN2k+8KThThCv2YXGvRg3p8ELAPq
+   zrXrrEdWLeFbWWc+pbsmZW4YebRdU1mnmaggveanPjCLKI1l0ovsNSRui
+   H7cbwTxWUnaMFwME0GpHXSf65sf2uJFsR/S2d/QX5UQV1QvWxI/3+bOJL
+   dMlqbH/jz9ZCWNJjD8OEWCpzxlPlv6P3qhdFDLs/Cgde6+C5+dMaeaCzK
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="229725979"
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="229725979"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 08:25:24 -0800
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="527010658"
+Received: from rriverox-mobl.ger.corp.intel.com (HELO localhost) ([10.252.19.108])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 08:25:20 -0800
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v4 1/6] drm/format-helper: Add
+ drm_fb_xrgb8888_to_gray8_line()
+In-Reply-To: <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220211091927.2988283-1-javierm@redhat.com>
+ <20220211091927.2988283-2-javierm@redhat.com>
+ <YgY6OqN+guBlt/ED@smile.fi.intel.com>
+ <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com>
+ <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com>
+ <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de> <87pmnt7gm3.fsf@intel.com>
+ <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
+Date:   Fri, 11 Feb 2022 18:25:17 +0200
+Message-ID: <87fsop74lu.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAHmME9p9RVRtD_GQ7FPdj64_a6aArQTtdE6Ch7X_8AQngi1pUQ@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-11 17:19:21 [+0100], Jason A. Donenfeld wrote:
-> Hi Sebastian,
-Hi,
+On Fri, 11 Feb 2022, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> On Fri, Feb 11, 2022 at 02:05:56PM +0200, Jani Nikula wrote:
+>> On Fri, 11 Feb 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
+>> > Am 11.02.22 um 12:12 schrieb Andy Shevchenko:
+>> >> On Fri, Feb 11, 2022 at 11:40:13AM +0100, Javier Martinez Canillas wrote:
+>> >>> On 2/11/22 11:28, Andy Shevchenko wrote:
+>> >>>> On Fri, Feb 11, 2022 at 10:19:22AM +0100, Javier Martinez Canillas wrote:
+>
+> ...
+>
+>> >>>>> +static void drm_fb_xrgb8888_to_gray8_line(u8 *dst, const u32 *src, unsigned int pixels)
+>> >>>>> +{
+>> >>>>> +	unsigned int x;
+>> >>>>> +
+>> >>>>> +	for (x = 0; x < pixels; x++) {
+>> >>>>> +		u8 r = (*src & 0x00ff0000) >> 16;
+>> >>>>> +		u8 g = (*src & 0x0000ff00) >> 8;
+>> >>>>> +		u8 b =  *src & 0x000000ff;
+>> >>>>> +
+>> >>>>> +		/* ITU BT.601: Y = 0.299 R + 0.587 G + 0.114 B */
+>> >>>>> +		*dst++ = (3 * r + 6 * g + b) / 10;
+>> >>>>> +		src++;
+>> >>>>> +	}
+>> >>>>
+>> >>>> Can be done as
+>> >>>>
+>> >>>> 	while (pixels--) {
+>> >>>> 		...
+>> >>>> 	}
+>> >>>>
+>> >>>> or
+>> >>>>
+>> >>>> 	do {
+>> >>>> 		...
+>> >>>> 	} while (--pixels);
+>> >>>>
+>> >>>
+>> >>> I don't see why a while loop would be an improvement here TBH.
+>> >> 
+>> >> Less letters to parse when reading the code.
+>> >
+>> > It's a simple refactoring of code that has worked well so far. Let's 
+>> > leave it as-is for now.
+>> 
+>> IMO *always* prefer a for loop over while or do-while.
+>> 
+>> The for (i = 0; i < N; i++) is such a strong paradigm in C. You
+>> instantly know how many times you're going to loop, at a glance. Not so
+>> with with the alternatives, which should be used sparingly.
+>
+> while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
 
-> I'll do the cmpxchg and send you a v+1. Sorry it wasn't in the last
-> one. It only now clicked with me what that code would look like, after
-> I stepped away from the screen for a bit to defrobulate my brains.
+And while() is just syntax sugar for goto. :p
 
-No worries. As much as I liked my first series, I like even more where
-this is heading to ;)
+The for loop written as for (i = 0; i < N; i++) is hands down the most
+obvious counting loop pattern there is in C.
 
-> Jason
+>> And yes, the do-while suggested above is buggy, and you actually need to
+>> stop and think to see why.
+>
+> It depends if pixels can be 0 or not and if it's not, then does it contain last
+> or number.
+>
+> The do {} while (--pixels); might be buggy iff pixels may be 0.
 
-Sebastian
+Yeah. And how long does it take to figure that out?
+
+
+BR,
+Jani.
+
+-- 
+Jani Nikula, Intel Open Source Graphics Center
