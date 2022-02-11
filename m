@@ -2,116 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:59:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36423C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237728AbiBKS7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 13:59:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34672 "EHLO
+        id S238878AbiBKTAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 14:00:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbiBKS7r (ORCPT
+        with ESMTP id S231374AbiBKS76 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 13:59:47 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E251CD8;
-        Fri, 11 Feb 2022 10:59:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644605986; x=1676141986;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=10MNTyWKrFElxhMmkbbRa8eHQjuoljFrhQU1QJPnd58=;
-  b=JKr3XVndKeATPGzOtQLIpr+M7xnWoUVRJXFyjvCiFeghuHJAaLzR/ZVd
-   0PUxViCZ5PelSnkwPr49PhNn8Q3OYrosumZkCpGTb3zZ4HkDcDStFLkHW
-   k89f6lHBbfIMx9Z3X4+KnJR3s/uThcLYj28M8Vu+FH/lMYO35XEylM08o
-   g=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 11 Feb 2022 10:59:46 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 10:59:44 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 11 Feb 2022 10:59:44 -0800
-Received: from [10.38.246.233] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Fri, 11 Feb
- 2022 10:59:41 -0800
-Message-ID: <654d620b-9e14-c47f-b48c-762dc0bd32a1@quicinc.com>
-Date:   Fri, 11 Feb 2022 10:59:39 -0800
+        Fri, 11 Feb 2022 13:59:58 -0500
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F2D2CE7;
+        Fri, 11 Feb 2022 10:59:57 -0800 (PST)
+Received: by mail-pl1-f180.google.com with SMTP id p6so5213844plf.10;
+        Fri, 11 Feb 2022 10:59:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YVf2MMefe7JarpYrftbPjGY+T6Frea6p9y08VS6g0s4=;
+        b=pL2UdlhEh/5x5FBC82s1/CfS7zQyfjHH3kcRZr4ppYA4uu1dAla5pcxOOuDrFYvXxb
+         /U9xEVTwipyIFowfz8N0q51hXAwCBJlpbjzFRLblMnz9bIWH2R5r8xZe6f+4gR4DVOKk
+         td1iTLwZpMxwGxrTHfxA8djyYEpdvvbGPhZWYLC566pt5EzYHcpzkkO3hJodJvl/1+CB
+         Zri+nq9J+9qkfy8O/wTi6PJ1E4ERlFpXxaxmn4eOeHFM0AbAPftuI9QMDoXVeCeAlUfw
+         2BNUhfmE4xzVlWTgVRGynlWe1wKDFLnavLfTBCLCiVYd8F5ClzMrENrBipIx7uwJZC1n
+         v0mA==
+X-Gm-Message-State: AOAM532h08+i/oTedm3Ar0+3GiFp8I+fZ7/fzVY3JIvxSj/XH1nOR5UC
+        hJWv4UaoO+rdDr/t0qFzbsLdC8WzxxDqSA==
+X-Google-Smtp-Source: ABdhPJwkyLc1MFtmoGkbxDrARkdlH+igPcIeSSJO06I0oobmySyyqX0rEHvpJfh5h5MLxvjX/vVM7w==
+X-Received: by 2002:a17:903:32c3:: with SMTP id i3mr2808782plr.46.1644605996745;
+        Fri, 11 Feb 2022 10:59:56 -0800 (PST)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id oo7sm6691567pjb.33.2022.02.11.10.59.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Feb 2022 10:59:55 -0800 (PST)
+Message-ID: <8ea57ddf-a09c-43f2-4285-4dfb908ad967@acm.org>
+Date:   Fri, 11 Feb 2022 10:59:54 -0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.1
-Subject: Re: [PATCH] devcoredump: increase the device delete timeout to 10
- mins
+Subject: Re: [syzbot] possible deadlock in worker_thread
 Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <johannes@sipsolutions.net>, <linux-kernel@vger.kernel.org>,
-        <rafael@kernel.org>, <robdclark@gmail.com>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <seanpaul@chromium.org>,
-        <swboyd@chromium.org>, <nganji@codeaurora.org>,
-        <aravindh@codeaurora.org>, <khsieh@codeaurora.org>,
-        <daniel@ffwll.ch>, <dmitry.baryshkov@linaro.org>
-References: <1644349472-31077-1-git-send-email-quic_abhinavk@quicinc.com>
- <YgZD8vPqB7ISpRpZ@kroah.com>
-From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
-In-Reply-To: <YgZD8vPqB7ISpRpZ@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     syzbot <syzbot+831661966588c802aae9@syzkaller.appspotmail.com>,
+        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, syzkaller-bugs@googlegroups.com
+References: <0000000000005975a605d7aef05e@google.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <0000000000005975a605d7aef05e@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg
+On 2/10/22 11:27, syzbot wrote:
+> ======================================================
+> WARNING: possible circular locking dependency detected
+> 5.17.0-rc2-syzkaller-00398-gd8ad2ce873ab #0 Not tainted
+> ------------------------------------------------------
 
-Thanks for the response.
+Since the SRP initiator driver is involved, I will take a look. However, 
+I'm not sure yet when I will have the time to post a fix.
 
-On 2/11/2022 3:09 AM, Greg KH wrote:
-> On Tue, Feb 08, 2022 at 11:44:32AM -0800, Abhinav Kumar wrote:
->> There are cases where depending on the size of the devcoredump and the speed
->> at which the usermode reads the dump, it can take longer than the current 5 mins
->> timeout.
->>
->> This can lead to incomplete dumps as the device is deleted once the timeout expires.
->>
->> One example is below where it took 6 mins for the devcoredump to be completely read.
->>
->> 04:22:24.668 23916 23994 I HWDeviceDRM::DumpDebugData: Opening /sys/class/devcoredump/devcd6/data
->> 04:28:35.377 23916 23994 W HWDeviceDRM::DumpDebugData: Freeing devcoredump node
-> 
-> What makes this so slow?  Reading from the kernel shouldn't be the
-> limit, is it where the data is being sent to?
+Thanks,
 
-We are still checking this. We are seeing better read times when we bump 
-up the thread priority of the thread which was reading this.
-We are also trying to check if bumping up CPU speed is helping.
-But, results have not been consistently good enough. So we thought we 
-should also increase the timeout to be safe.
-
-
-> 
->> Increase the timeout to 10 mins to accommodate system delays and large coredump
->> sizes.
-> 
-> Nit, please wrap your changelog texts at 72 columns.
-> 
-Yes, i will fix this when I re-post.
-
-> And what is "large"?
-
-We are seeing devcoredumps in the range of 2.5MB-3MB. I can also mention 
-this in the commit text in the next post.
-
-Thanks
-
-Abhinav
-
-> 
-> thanks,
-> 
-> greg k-h
+Bart.
