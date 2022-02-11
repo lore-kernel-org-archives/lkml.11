@@ -2,152 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAFB5C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353842AbiBKVns (ORCPT
+        id S1353846AbiBKVnx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 16:43:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55556 "EHLO
+        Fri, 11 Feb 2022 16:43:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353817AbiBKVnl (ORCPT
+        with ESMTP id S1353827AbiBKVnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 16:43:41 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD595C6A;
-        Fri, 11 Feb 2022 13:43:38 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21BKvctB008037;
-        Fri, 11 Feb 2022 21:43:36 GMT
+        Fri, 11 Feb 2022 16:43:42 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8078C65;
+        Fri, 11 Feb 2022 13:43:40 -0800 (PST)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21BJ0IXv000511;
+        Fri, 11 Feb 2022 21:43:39 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=WzdZMG/whTUs+Pg2BPbKBbWbH/Bgl2PhL0oTxCv4vhY=;
- b=j1S8hKtcFnMPvphtQYooMWyEhV0UD79TG3zihlQ657DGS5ucKhnXV0JJ/044038mRQ6q
- u+KKZi/c83zM+/eV6bG88EhAFc9by22lWtysVbis+BAfY1athBi1xhqcHAzvwz2Jjig4
- 9JN96C8n1HuhQhC0eMbwbozThC65arKHRPCf8sOOVltNZsp0R0ta/meAieDOG9inlKrp
- kltVgH6PUuzzA7INSn9Vs4K4/F15SCd+a+mgVdmN11P0/iFqbC/jqNe6JZ3o88oyvjdp
- 5iv+eCcbVScv3LGPPcH0+v1AGuK696pU4rdwHj0fh2O+NGftT55qhnk+z9+58aZcsKio Fw== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5y9yrpmt-1
+ bh=y0TAq5uOzk+Jle3ny7B++D4HVgPEgEWaFU3XPVXJg8U=;
+ b=T8sLZ8xULYEMvomCVknG+yk6o8oeP1vY/fZArCAQmTX/X7kyMd4Gc3Y/acjYFs8DRs4X
+ lymdloDZ7W+HNyhpfpg8XOUHFzhQm41dSrS69SGkYLbX9304iJ/KdxAghf3rmiX8ynTA
+ 2UzDOgldevhF3wCDyGCxnHCZ8gV2s/Z4froN2qhVmOqN8sMQwAFW7cfQYKYZdxbws3dT
+ ORQ8GOdsKON26MPB9spcEwNuDHd3c4SRJTe+Zlm3N3vbciR5aRJT1WJW3EGvV+S6v+H0
+ aU4o72gxbTRiYpkHgt2+v/R2N8MM23HR5OTdQyQM3ggekAOmkGXahyxSoMpCL2zEiQ2Y 4w== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5rq59xef-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 11 Feb 2022 21:43:39 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21BLX6BI009135;
+        Fri, 11 Feb 2022 21:43:37 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e1gvad4g9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Fri, 11 Feb 2022 21:43:36 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21BLYAiX005339;
-        Fri, 11 Feb 2022 21:43:34 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e1ggkw71v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 21:43:34 +0000
 Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21BLhQVj41419008
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21BLhXUL44696012
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Feb 2022 21:43:26 GMT
+        Fri, 11 Feb 2022 21:43:33 GMT
 Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 595A052063;
-        Fri, 11 Feb 2022 21:43:26 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 661F152054;
+        Fri, 11 Feb 2022 21:43:33 +0000 (GMT)
 Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com.com (unknown [9.65.69.128])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3C00D52051;
-        Fri, 11 Feb 2022 21:43:25 +0000 (GMT)
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 967E65204E;
+        Fri, 11 Feb 2022 21:43:32 +0000 (GMT)
 From:   Mimi Zohar <zohar@linux.ibm.com>
 To:     linux-integrity@vger.kernel.org
 Cc:     Mimi Zohar <zohar@linux.ibm.com>,
         Eric Biggers <ebiggers@kernel.org>,
         Stefan Berger <stefanb@linux.ibm.com>,
         linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 4/8] ima: define a new template field 'd-type' and a new template 'ima-ngv2'
-Date:   Fri, 11 Feb 2022 16:43:06 -0500
-Message-Id: <20220211214310.119257-5-zohar@linux.ibm.com>
+Subject: [PATCH v5 8/8] fsverity: update the documentation
+Date:   Fri, 11 Feb 2022 16:43:10 -0500
+Message-Id: <20220211214310.119257-9-zohar@linux.ibm.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220211214310.119257-1-zohar@linux.ibm.com>
 References: <20220211214310.119257-1-zohar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: bv5CSTVcyW8Ge5R9LKFPi7WcfO_CN7GU
-X-Proofpoint-ORIG-GUID: bv5CSTVcyW8Ge5R9LKFPi7WcfO_CN7GU
+X-Proofpoint-ORIG-GUID: BdSioIeZylpxI8-02CEi3FGTIHfo42Bc
+X-Proofpoint-GUID: BdSioIeZylpxI8-02CEi3FGTIHfo42Bc
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-11_05,2022-02-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 phishscore=0 clxscore=1015 bulkscore=0 priorityscore=1501
- mlxscore=0 spamscore=0 suspectscore=0 mlxlogscore=999 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 bulkscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ phishscore=0 spamscore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0
+ mlxlogscore=913 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2201110000 definitions=main-2202110108
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to differentiate between regular IMA file hashes and
-fs-verity's file digests, define a new template field named 'd-type'.
-Define a new template named 'ima-ngv2', which includes the new 'd-type'
-field.
+Update the fsverity documentation related to IMA signature support.
 
 Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 ---
- security/integrity/ima/ima_template.c     |  3 +++
- security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
- security/integrity/ima/ima_template_lib.h |  2 ++
- 3 files changed, 18 insertions(+)
+ Documentation/filesystems/fsverity.rst | 22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
-diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-index db1ad6d7a57f..b321342e5bee 100644
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
- static struct ima_template_desc builtin_templates[] = {
- 	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
- 	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
-+	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
- 	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
- 	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
- 	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
-@@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
- 	 .field_show = ima_show_template_digest_ng},
- 	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
- 	 .field_show = ima_show_template_string},
-+	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
-+	 .field_show = ima_show_template_string},
- 	{.field_id = "sig", .field_init = ima_eventsig_init,
- 	 .field_show = ima_show_template_sig},
- 	{.field_id = "buf", .field_init = ima_eventbuf_init,
-diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-index 7155d17a3b75..a213579e825e 100644
---- a/security/integrity/ima/ima_template_lib.c
-+++ b/security/integrity/ima/ima_template_lib.c
-@@ -383,6 +383,19 @@ int ima_eventdigest_ng_init(struct ima_event_data *event_data,
- 					   hash_algo, field_data);
- }
+diff --git a/Documentation/filesystems/fsverity.rst b/Documentation/filesystems/fsverity.rst
+index 1d831e3cbcb3..28a47488848e 100644
+--- a/Documentation/filesystems/fsverity.rst
++++ b/Documentation/filesystems/fsverity.rst
+@@ -74,8 +74,12 @@ authenticating the files is up to userspace.  However, to meet some
+ users' needs, fs-verity optionally supports a simple signature
+ verification mechanism where users can configure the kernel to require
+ that all fs-verity files be signed by a key loaded into a keyring; see
+-`Built-in signature verification`_.  Support for fs-verity file hashes
+-in IMA (Integrity Measurement Architecture) policies is also planned.
++`Built-in signature verification`_.
++
++IMA supports including fs-verity file digests and signatures in the
++IMA (Integrity Measurement Architecture) measurement list and
++verifying fs-verity based file signatures stored as security.ima
++xattrs, based on policy.
  
-+/*
-+ * This function writes the digest type of an event.
-+ */
-+int ima_eventdigest_type_init(struct ima_event_data *event_data,
-+			      struct ima_field_data *field_data)
-+{
-+	static const char * const digest_type[] = {"ima"};
-+
-+	return ima_write_template_field_data(digest_type[0],
-+					     strlen(digest_type[0]),
-+					     DATA_FMT_STRING, field_data);
-+}
-+
- /*
-  * This function writes the digest of the file which is expected to match the
-  * digest contained in the file's appended signature.
-diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
-index c71f1de95753..539a5e354925 100644
---- a/security/integrity/ima/ima_template_lib.h
-+++ b/security/integrity/ima/ima_template_lib.h
-@@ -38,6 +38,8 @@ int ima_eventname_init(struct ima_event_data *event_data,
- 		       struct ima_field_data *field_data);
- int ima_eventdigest_ng_init(struct ima_event_data *event_data,
- 			    struct ima_field_data *field_data);
-+int ima_eventdigest_type_init(struct ima_event_data *event_data,
-+			      struct ima_field_data *field_data);
- int ima_eventdigest_modsig_init(struct ima_event_data *event_data,
- 				struct ima_field_data *field_data);
- int ima_eventname_ng_init(struct ima_event_data *event_data,
+ User API
+ ========
+@@ -653,13 +657,13 @@ weren't already directly answered in other parts of this document.
+     hashed and what to do with those hashes, such as log them,
+     authenticate them, or add them to a measurement list.
+ 
+-    IMA is planned to support the fs-verity hashing mechanism as an
+-    alternative to doing full file hashes, for people who want the
+-    performance and security benefits of the Merkle tree based hash.
+-    But it doesn't make sense to force all uses of fs-verity to be
+-    through IMA.  As a standalone filesystem feature, fs-verity
+-    already meets many users' needs, and it's testable like other
+-    filesystem features e.g. with xfstests.
++    IMA supports the fs-verity hashing mechanism as an alternative
++    to doing full file hashes, for people who want the performance
++    and security benefits of the Merkle tree based hash.  But it
++    doesn't make sense to force all uses of fs-verity to be through
++    IMA.  As a standalone filesystem feature, fs-verity already meets
++    many users' needs, and it's testable like other filesystem
++    features e.g. with xfstests.
+ 
+ :Q: Isn't fs-verity useless because the attacker can just modify the
+     hashes in the Merkle tree, which is stored on-disk?
 -- 
 2.27.0
 
