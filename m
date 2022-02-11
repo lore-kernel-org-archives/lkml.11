@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07923C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F800C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349785AbiBKL6r (ORCPT
+        id S1349786AbiBKL7l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:58:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47240 "EHLO
+        Fri, 11 Feb 2022 06:59:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234144AbiBKL6q (ORCPT
+        with ESMTP id S234592AbiBKL7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:58:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E109EAE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:58:45 -0800 (PST)
+        Fri, 11 Feb 2022 06:59:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40D4F54;
+        Fri, 11 Feb 2022 03:59:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9D55619D7
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:58:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B7CAC340E9;
-        Fri, 11 Feb 2022 11:58:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 83D8DB8294F;
+        Fri, 11 Feb 2022 11:59:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1541DC340EF;
+        Fri, 11 Feb 2022 11:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644580724;
-        bh=pgz5WoyfElnAyzBIovA0IXn76dZ8q1uHsh96lNL+XAI=;
+        s=k20201202; t=1644580772;
+        bh=PiUJ14tYj47Er2g/nnFkWUDiTAM0HXvy8rHp6sWes4Q=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V5oUialuPGmZ70jHjuFpzC/zncDrcjgmjV/chXHS1MOpvH46ZCdBB6gPoeOwyuDs5
-         S0FH6N6snATeM/uDQ0tOrdbfcbKTZ1zU2Af6fzcN+ZaUq7jdZgk7DlKlcw5n0FfDbN
-         T9TRnHyjoi4SV/Q+VBCw/EJZP+LIz1M9WjOeTqy6LSm7WECz0Pd2t1S7pqGrxxYTYw
-         QFnRyReKldltujYEXPImbvKFMiRzLk9AA6OGOlHau0W9dSk2C/ylZI0gbRxXvZpZba
-         05rjN2QwlljnC++eiK/8VAFO4Hr7bAP/qnsXblASkVmiu258weJTz/VoudFkHcZaIn
-         yoMCanTuXa1nQ==
-Date:   Fri, 11 Feb 2022 11:58:39 +0000
+        b=dVjjoDYjljaSNrrw28tEpXjxzCBjDiRorduusFsO+h0pDRy+ol6iJZjGRNysfKtmi
+         erIckeqPuzh4HCUGrp0eeYjW+7SU41PZy6krRpJNqfekJK1CFmrARXzrX+SGTjzDgI
+         0m5mrqmSCGh/MDUy4Ugxuks5ptufdHykeYSyVkBWY4NSILvIw5IcVFbpWjytq3lpkJ
+         Q09791mpgTDNE+nFaoIB9o7vsh8GrvhpXclHMw1x828OqYQ7lRgxjbqlcCl5NvqElu
+         5j3iWEh+UF6Ag1SCGDvrf6UgAUnyZs/DghbfnIXtX7+NH/IAX3Mj/xaMHUb2ueoIYg
+         p6AnKE/VLl3ig==
+Date:   Fri, 11 Feb 2022 11:59:26 +0000
 From:   Mark Brown <broonie@kernel.org>
-To:     Luiz Sampaio <sampaio.ime@gmail.com>
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Chanwoo Choi <cw00.choi@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 31/31] sound: soc: sof: changing LED_* from enum
- led_brightness to actual value
-Message-ID: <YgZPb39aPMm64gSL@sirena.org.uk>
-References: <20220121165436.30956-1-sampaio.ime@gmail.com>
- <20220121165436.30956-32-sampaio.ime@gmail.com>
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] regulator: dt-bindings: maxim,max77843: add
+ MAX77843 bindings
+Message-ID: <YgZPnjbYq21BWNOT@sirena.org.uk>
+References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
+ <20220111174805.223732-4-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="plmduE3cU0Ei6ORP"
+        protocol="application/pgp-signature"; boundary="ova0lu0FGhibrYcp"
 Content-Disposition: inline
-In-Reply-To: <20220121165436.30956-32-sampaio.ime@gmail.com>
+In-Reply-To: <20220111174805.223732-4-krzysztof.kozlowski@canonical.com>
 X-Cookie: do {
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---plmduE3cU0Ei6ORP
+--ova0lu0FGhibrYcp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-On Fri, Jan 21, 2022 at 01:54:36PM -0300, Luiz Sampaio wrote:
-> The enum led_brightness, which contains the declaration of LED_OFF,
-> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
-> max_brightness.
-> ---
+On Tue, Jan 11, 2022 at 06:48:03PM +0100, Krzysztof Kozlowski wrote:
+> Document the bindings for MAX77843 regulator driver.  The bindings are
+> almost identical to MAX77693 bindings, except the actual names of
+> regulators.
 
-You've not provided a Signed-off-by for this so I can't do anything with
-it, please see Documentation/process/submitting-patches.rst for details
-on what this is and why it's important.
+Reviewed-by: Mark Brown <broonie@kernel.org>
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
-
---plmduE3cU0Ei6ORP
+--ova0lu0FGhibrYcp
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGT24ACgkQJNaLcl1U
-h9Dligf+M7qs1xkty0Kg+UH9bpC0lH91jFsVPaoq+vPltqshE0VI0JvJryAUdaA3
-040Qmc5PWko17MNBzyf+9ME5bDy+gQzhgiREmqPnNnQQYg6p4/ib9VtPQ01U+juB
-5cSXcNp5YHv/1Ewum9vvSGUDgLnHeTqp8NDF0CyosRL88EvPEcA93jrFh+KzzB7y
-mrSNhEpXNcFaCHpUgN/PjjEpOzgRuwwEihTa5IFoeAoiLqkT0rZUvi3pW3ieyUpN
-0oIMw5VKrUN/q+Ub5yXgZc6qdCtyy9VlHPsk/2jPfw/EwBOb39u1A5JVCmeqP+DL
-/LwIe7ZulmRGqnE02dtCKbujcehWdA==
-=nfQH
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGT54ACgkQJNaLcl1U
+h9A77Af/SZ/OT9yzOh5MHwXqhEaftBX041jmWBTNrBn8l/t3s7vs4wdjxvKUAOMY
+aUcWsiHgTcleTHRClpBjo5y89ViTuCjDIerQXLv9G5EjY51zcmSpbsOnmyCAzUVR
+qAK9vEUvDrROJpeZCAR6Av8tRcmoXYuSpqObjIxmbeYWb98x7Q7RXOK4x3iUnzul
+Zphttov/KJxuYO032xRWRcQ00VR0G4jBP/alQzz/6m2OGkqxDoS+uLHwF87Feebo
+NEZCzAHioggTCaB0kCWZTFV+qBnza6ih3ZdeImBS5DalTE0PAZSWUtnzjXXeld0r
+0Kub2EdrdVsiHFzby3w33WohjQ6viA==
+=hIKA
 -----END PGP SIGNATURE-----
 
---plmduE3cU0Ei6ORP--
+--ova0lu0FGhibrYcp--
