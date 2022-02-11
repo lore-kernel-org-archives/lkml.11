@@ -2,110 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1280C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF63C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:08:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351251AbiBKPDR (ORCPT
+        id S1351231AbiBKPIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 10:03:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54424 "EHLO
+        Fri, 11 Feb 2022 10:08:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351238AbiBKPDN (ORCPT
+        with ESMTP id S1351221AbiBKPIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 10:03:13 -0500
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D128EFF;
-        Fri, 11 Feb 2022 07:03:11 -0800 (PST)
-Received: by mail-qt1-f171.google.com with SMTP id l14so9228183qtp.7;
-        Fri, 11 Feb 2022 07:03:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/ku3rnuhABpjmC2Eeug92tBeXyU5N8pEMH3pcJ24UQk=;
-        b=fQt0OsntoYdlJrqEnT3PqAEP46ktAuNSBmLyqFISEfrkrm2SpotyZXRXitn36q1gV4
-         NldueAQeKly5dhupkRH57LhtqOb5ZA9uPgxROYb3gm+D/VdgWzVRTkKqLxzZi3NTXKdN
-         9tVD+3LvLE6UnvtkXRdM+bZzCfYxdSpJB2al2cnFE6aWn1ZVe/LUtfVqEjiSL40rGNa/
-         ZIkwuMZj8jRBuQBGtaGlfqrpWDacgRRrOujoQVy/Nw/PtLRgF62mXts5zStWA+VMy16A
-         9VvsIgCm196ZgnThWhrgRtQQ80pNlZY6+R0SQCoFxdUQehmGpv0uJRtESm8OF3zH4Y2M
-         J//w==
-X-Gm-Message-State: AOAM531AdXo/E4j2TncHA9dOyEMihGII0glwBp89JoY9k9oEbcpnWsHi
-        mjTfdf1fWL5ntOBfQWdV6Q==
-X-Google-Smtp-Source: ABdhPJxaSWsNdORxuo8Y8BQZfEAbE5cAgspJtSvjyPmVmHhgld8W3y5Q7hYinuqmx2N65aqAF01blQ==
-X-Received: by 2002:a05:622a:1006:: with SMTP id d6mr1373542qte.575.1644591790918;
-        Fri, 11 Feb 2022 07:03:10 -0800 (PST)
-Received: from robh.at.kernel.org ([2607:fb90:20d7:a802:e6b0:6d9c:32f7:4bd9])
-        by smtp.gmail.com with ESMTPSA id u17sm11056272qkj.44.2022.02.11.07.03.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 07:03:09 -0800 (PST)
-Received: (nullmailer pid 363394 invoked by uid 1000);
-        Fri, 11 Feb 2022 15:03:06 -0000
-Date:   Fri, 11 Feb 2022 09:03:06 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 05/66] dt-bindings: sun6i-a31-mipi-dphy: Add optional
- direction property
-Message-ID: <YgZ6qsdO+SfTemPZ@robh.at.kernel.org>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-6-paul.kocialkowski@bootlin.com>
+        Fri, 11 Feb 2022 10:08:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA042309
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 07:08:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644592096;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xonPRQVnJi+0YPcuDGy+YT0IDKCipuXLPrLPfAZe99w=;
+        b=f2utigNFX2LI6iDXju5xfUTUqtfByLYubq36QkKiXH+CXN1Xp3TZK/G7tfZwWSy5bFYRLs
+        FcBQjEXNFYr3UXoxBIq9qSPPC4Tfc2+I6xy+IiSprruTahtQ2mg3bS4pcs3JaRGotobFRc
+        1VUMwmvL3gaNdt7wAjmsImceGd7pN1Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-aPzRtt6OPrichVePzjoisw-1; Fri, 11 Feb 2022 10:08:13 -0500
+X-MC-Unique: aPzRtt6OPrichVePzjoisw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5C58E10247AC;
+        Fri, 11 Feb 2022 15:08:08 +0000 (UTC)
+Received: from [10.22.34.66] (unknown [10.22.34.66])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A174F5B28A;
+        Fri, 11 Feb 2022 15:08:07 +0000 (UTC)
+Message-ID: <70ccc7df-d536-5c8f-fd72-0797bb566e07@redhat.com>
+Date:   Fri, 11 Feb 2022 10:08:07 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220205185429.2278860-6-paul.kocialkowski@bootlin.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] locking/semaphore: Use wake_q to wake up processes
+ outside lock critical section
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
+References: <20220118153254.358748-1-longman@redhat.com>
+ <YgTms3tGYeQ4HYFZ@hirez.programming.kicks-ass.net>
+ <e30a6464-708b-4946-65f0-c9a1e6bf2b35@redhat.com>
+ <20220211105106.GS23216@worktop.programming.kicks-ass.net>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220211105106.GS23216@worktop.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 07:53:28PM +0100, Paul Kocialkowski wrote:
-> The Allwinner A31 MIPI D-PHY block supports both tx and rx directions,
-> although each instance of the block is meant to be used in one
-> direction only. There will typically be one instance for MIPI DSI and
-> one for MIPI CSI-2 (it seems unlikely to ever see a shared instance).
-> 
-> Describe the direction with a new allwinner,direction property.
-> For backwards compatibility, the property is optional and tx mode
-> should be assumed by default.
-> 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> ---
->  .../bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml  | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-> index d0b541a461f3..22636c9fdab8 100644
-> --- a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
-> @@ -37,6 +37,18 @@ properties:
->    resets:
->      maxItems: 1
->  
-> +  allwinner,direction:
-> +    $ref: '/schemas/types.yaml#/definitions/string'
-> +    description: |
-> +      Direction of the D-PHY:
-> +      - "rx" for receiving (e.g. when used with MIPI CSI-2);
-> +      - "tx" for transmitting (e.g. when used with MIPI DSI).
-> +
-> +    enum:
-> +      - tx
-> +      - rx
-> +    default: tx
+On 2/11/22 05:51, Peter Zijlstra wrote:
+> On Thu, Feb 10, 2022 at 12:04:59PM -0500, Waiman Long wrote:
+>> On 2/10/22 05:19, Peter Zijlstra wrote:
+>> I am sorry that I might have stripped out too much for the lockdep splat to
+>> make it understandable. Below is the full lockdep splat:
+> Right, so please just transcribe the relevant bits instead of including
+> this massive splat. It really isn't too complicated.
+>
+> That can be summarized as:
+>
+> 	0:		1:		2:
+> 	pi_lock		rq->lock	console_sem
+> 	  rq->lock	  console_sem	  pi_lock
+>
+> Which is *much* shorter and *much* easier to read.
+>
+OK, got it. However, I thought the circular dependency has been 
+explained by that part of the lockdep splat:
 
-Can you the phy mode to imply the direction?
+[ 9776.459905] Chain exists of:
+[ 9776.459906]   (console_sem).lock --> &p->pi_lock --> &rq->__lock
 
-Rob
+[ 9776.459911]  Possible unsafe locking scenario:
+
+[ 9776.459913]        CPU0                    CPU1
+[ 9776.459914]        ----                    ----
+[ 9776.459914]   lock(&rq->__lock);
+[ 9776.459917] 				lock(&p->pi_lock);
+[ 9776.459919] 				lock(&rq->__lock);
+[ 9776.459921]   lock((console_sem).lock);
+
+This should convey the same information. Though I think I need to describe where those locking sequence happen.
+
+>>> More concerning, that ordering is invalid to begin with, so the above
+>>> seems like a very poor justification for this patch.
+>> Which lock ordering are you considered invalid?
+> 1: above. You cannot take a semaphore inside a (raw) spinlock.
+You may have been confused by the name "console_sem". A semaphore is 
+basically a count protected by a raw spinlock. So console_sem.lock is 
+actually a raw spinlock. It is perfectly legal to take a raw spinlock 
+after holding another raw spinlock.
+>
+>> The stack trace included in the patch description show the
+>> (console_sem).lock --> &p->pi_lock --> &rq->__lock sequence because of the
+>> wake_up_process() call while holding the console_sem.lock.
+>>
+>> The reverse &rq->__lock lock may happen when a printk() statement is called
+>> while holding the rq lock.
+>>
+>> In this case, the printk() is triggered by a SCHED_WARN_ON() statement in
+>> update_rq_clock() which don't call printk_deferred and so won't have
+>> LOGLEVEL_SCHED set. I guess there is alternative way to work around this
+>> issue, but moving the process wakeup out from the semaphore spinlock will
+>> solve this problem in case there are other corner cases like that.
+>>
+>> I will update the patch description to include this additional information.
+> The right solution is to burn printk_deferred at the stake and most of
+> printk along with it (they're working on it).
+>
+> Hitting that WARN is the real problem, the rest is collateral damage and
+> I'm really not interested in fixing that.
+
+Yes, hitting the WARN is the cause of this lockdep splat. In the v2 
+patch, I list the alternatives as either banning WARN inside rq lock or 
+make a WARN that work with rq lock if we are not going to fix the 
+semaphore. So what is your recommendation about handling that?
+
+Cheers,
+Longman
+
