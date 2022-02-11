@@ -2,96 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D408C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352542AbiBKSPl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 13:15:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55408 "EHLO
+        id S234899AbiBKSQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 13:16:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352508AbiBKSPT (ORCPT
+        with ESMTP id S1343636AbiBKSQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 13:15:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880C8CF5;
-        Fri, 11 Feb 2022 10:15:18 -0800 (PST)
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644603317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=An8sejACWdvpFe+0xRHo7AseACg3JQzOaIfRXUshpP4=;
-        b=NARq7CRKp2oDkLGnfeobnnJ29QT7pRs0iM8vCshdXDiq2e6YjM9Y1ieee/G3eZ3xDSy03b
-        F7xRV+u0zfjsqL7bncoA90wNQSCqyI3dSDldvxTEBLZehwnQkIsXv+HIUqHgdw8BGUN0U/
-        YuNahORbgMxr/bxomwhFwhIHf0MQKyRibsi3wynm6uOKURGzNxOP2O08WQ+uQlKkVdb8u7
-        +DLPxuacNsZbex48IUoHVoRablVzvRbOBZMw/Mg29mwevrXD/shpZTp9icWuTYdYGZFZXa
-        zTPGSV0V8ZhhnfSncBba9laxo4/vd56AgZpD0Y8PdwvD0crQCrnL5LZEvkTFxA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644603317;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=An8sejACWdvpFe+0xRHo7AseACg3JQzOaIfRXUshpP4=;
-        b=0CgFF1kBSfhzXy7ccJmZkN1Vgek7S1AU9/rKcNKYR3KliKVCxVgRh/3fPhp897170McYhC
-        M0I2VN41cyQJh0DQ==
-To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v4 6/7] net: usb: lan78xx: Use generic_handle_irq_safe().
-Date:   Fri, 11 Feb 2022 19:14:59 +0100
-Message-Id: <20220211181500.1856198-7-bigeasy@linutronix.de>
-In-Reply-To: <20220211181500.1856198-1-bigeasy@linutronix.de>
-References: <20220211181500.1856198-1-bigeasy@linutronix.de>
+        Fri, 11 Feb 2022 13:16:37 -0500
+X-Greylist: delayed 194 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 10:16:35 PST
+Received: from st43p00im-ztbu10073601.me.com (st43p00im-ztbu10073601.me.com [17.58.63.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850C3D4F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 10:16:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1644603394; bh=5BSwyJv82sZwTHNuaRP1rRbMvUJ08vkgvnKFa9JwMmo=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=vDt/4C0ud2P9NGxudzEpnpHDu4gk/4DOHCttYSCmvYtwAw4mejZYGJFoYp1d74kKI
+         bWQBL1BU4b7ZVwuTEAi/D9JjCge+j3/e1s/ecy+pcthLny0yiI0eU7BGu6binG/v0b
+         5CgYSmeIG+g1/JBgWUhI0K9gcW/b4UtzKt6yEWIIJ68t7K/v/EdlpfsUxXRmf9HRoT
+         z+MuwWXYYB+i0Y3WXlGk7K148ko66cwr2x2VE4MOnbZaZ23gOHDDDrDQHSQF7Zge8d
+         b2MAswppuCMqwWQtpIItMZAcKZb41kl0TbVcNVc7uuU7jBneubnYDjvJlQRWv+EEie
+         vSOB6q0wYboFA==
+Received: from localhost (lfbn-lyo-1-306-208.w2-7.abo.wanadoo.fr [2.7.142.208])
+        by st43p00im-ztbu10073601.me.com (Postfix) with ESMTPSA id A651E5A05C3;
+        Fri, 11 Feb 2022 18:16:30 +0000 (UTC)
+From:   Alain Volmat <avolmat@me.com>
+To:     Patrice Chotard <patrice.chotard@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, avolmat@me.com
+Subject: [PATCH v2 0/7] ARM: dts: sti: various DT fixes to avoid warnings
+Date:   Fri, 11 Feb 2022 19:16:07 +0100
+Message-Id: <20220211181614.683497-1-avolmat@me.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-14=5F01:2022-01-14=5F01,2020-02-14=5F11,2020-01-23?=
+ =?UTF-8?Q?=5F02_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=534
+ clxscore=1015 bulkscore=0 adultscore=0 spamscore=0 malwarescore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2202110099
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of manually disabling interrupts before invoking use
-generic_handle_irq_safe() which can be invoked with enabled and disabled
-interrupts.
+A first serie to correct a large amount of DT warnings seen when
+building with the W=1 option and mainly due to having several time
+the same reg property (clock) or having unnecessary reg value.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/net/usb/lan78xx.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+The first 3 patches related to clocks require that recent serie [1] of
+clock drivers improvements be first merged.
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index b8e20a3f2b84e..415f16662f88e 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -1537,11 +1537,8 @@ static void lan78xx_status(struct lan78xx_net *dev, =
-struct urb *urb)
- 		netif_dbg(dev, link, dev->net, "PHY INTR: 0x%08x\n", intdata);
- 		lan78xx_defer_kevent(dev, EVENT_LINK_RESET);
-=20
--		if (dev->domain_data.phyirq > 0) {
--			local_irq_disable();
--			generic_handle_irq(dev->domain_data.phyirq);
--			local_irq_enable();
--		}
-+		if (dev->domain_data.phyirq > 0)
-+			generic_handle_irq_safe(dev->domain_data.phyirq);
- 	} else {
- 		netdev_warn(dev->net,
- 			    "unexpected interrupt: 0x%08x\n", intdata);
---=20
-2.34.1
+[1] https://lore.kernel.org/linux-clk/20211202072850.194314-1-avolmat@me.com/T/#t
+
+v2: squash together several patches from the previous serie in order to
+    avoid compilation issues
+
+Alain Volmat (7):
+  ARM: dts: sti: ensure unique unit-address in stih407-clock
+  ARM: dts: sti: ensure unique unit-address in stih410-clock
+  ARM: dts: sti: ensure unique unit-address in stih418-clock
+  ARM: dts: sti: move some nodes out of the soc section in
+    stih407-family.dtsi
+  ARM: dts: sti: remove delta node from stih410.dtsi
+  ARM: dts: sti: move usb picophy nodes out of soc in stih410.dtsi
+  ARM: dts: sti: move usb picophy nodes out of soc in stih418.dtsi
+
+ arch/arm/boot/dts/stih407-clock.dtsi  | 101 +++++-----
+ arch/arm/boot/dts/stih407-family.dtsi | 262 +++++++++++++-------------
+ arch/arm/boot/dts/stih410-b2120.dts   |  16 +-
+ arch/arm/boot/dts/stih410-b2260.dts   |  30 +--
+ arch/arm/boot/dts/stih410-clock.dtsi  | 100 +++++-----
+ arch/arm/boot/dts/stih410.dtsi        |  52 ++---
+ arch/arm/boot/dts/stih418-b2199.dts   |  22 +--
+ arch/arm/boot/dts/stih418-clock.dtsi  | 101 +++++-----
+ arch/arm/boot/dts/stih418.dtsi        |  38 ++--
+ arch/arm/boot/dts/stihxxx-b2120.dtsi  |  22 +--
+ 10 files changed, 351 insertions(+), 393 deletions(-)
+
+-- 
+2.25.1
 
