@@ -2,102 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 191A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED077C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:00:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344303AbiBKI60 (ORCPT
+        id S1348330AbiBKJAC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:58:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47384 "EHLO
+        Fri, 11 Feb 2022 04:00:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234134AbiBKI6Y (ORCPT
+        with ESMTP id S234134AbiBKJAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:58:24 -0500
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34491E62;
-        Fri, 11 Feb 2022 00:58:23 -0800 (PST)
-Received: by mail-ed1-x541.google.com with SMTP id da4so15354476edb.4;
-        Fri, 11 Feb 2022 00:58:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t0SaSiI4ixJP954QSUF/b/uxkkfR3Kxx/Wa5KAVhb8I=;
-        b=ALK6NKHcBobueyxzQjYqIHBdYXdtmXhyPKwQBa2NS3xX9rI1543sn5Fe1P4QDpg8mk
-         6eH4ryG3YvnTdPEFa/QNNpGkat6PNfUbm8Mnd3Bo01MmnhSMRld1ZRQtGZRV2NqiVesf
-         8dMfvPTwgFn1RuVQmGPaWK2358Jes2ClYUbEYezLy/HTDD6EEeTZ7e5nW2z7RmSk/Tzi
-         wi/+QbbGPZIiZO8G5toupQuRiAbr5rKW3pwTBz7dC0KyD/1rg6H4uwfIaYOcPFlCFKsS
-         ITCZdUgOhXRV5gBh9qlBhYE2WQLv9lCokAE9RdCTW2LwAp+y4wkyJQ4gsPo3byO6SXDt
-         qXRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t0SaSiI4ixJP954QSUF/b/uxkkfR3Kxx/Wa5KAVhb8I=;
-        b=jvtq8lIU6EIrbw7LiLu05w3VpneGRStWFXgv453XZHr5cQWLGRCB173Lu68jAXm3Vj
-         E7ZT9K3AwfGO4Onq/upGzZ0H27cxfPMwhEJc/VSOcG7QzxSYlpt9vxs3mn5glrVIEmtJ
-         isLMFLdgcXyyQhIDFO6IX5ccsxER1Cq5iqGTCHpITqgE2Ln2UpYdrlMN+uJZzRyEv9Id
-         rCsuJzCqmF0esrdtQeGaHTOkzorakzr4LVUQ5Tg8pmgixRCIzhjA9luE6PsVq8vnBxb1
-         vpUNBbALtlo5w2GIkZYtg5YIyyEpsvgtL5hArqbzNteMte5Z0f5yAOcVgV7OzPUnTyqE
-         +8MA==
-X-Gm-Message-State: AOAM532H4bl7eFnkBK5XFuAE9ZvC1tKUVj3ffrwkkVPCasA+yfZrugQR
-        en2aBORWQQlRb8lJFW2BVbK7bGAsBaYGshSylaLnsrAL
-X-Google-Smtp-Source: ABdhPJxY9gHp7yK3gCnyKPifEIkGseBjrcIwtGDK1XyM9tpdpVQ8ECjGke1iEYe3L9KC0x5E3ySS+TcIb2gAWheS+ao=
-X-Received: by 2002:aa7:d541:: with SMTP id u1mr763824edr.388.1644569901803;
- Fri, 11 Feb 2022 00:58:21 -0800 (PST)
+        Fri, 11 Feb 2022 04:00:00 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E62218;
+        Fri, 11 Feb 2022 00:59:59 -0800 (PST)
+Received: from ip4d144895.dynamic.kabel-deutschland.de ([77.20.72.149] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nIRmX-00009c-Ch; Fri, 11 Feb 2022 09:59:57 +0100
+Message-ID: <def03073-3fab-3b34-6ffc-702bb1b3758f@leemhuis.info>
+Date:   Fri, 11 Feb 2022 09:59:56 +0100
 MIME-Version: 1.0
-References: <20220128073319.1017084-1-imagedong@tencent.com>
- <20220128073319.1017084-2-imagedong@tencent.com> <0029e650-3f38-989b-74a3-58c512d63f6b@gmail.com>
- <CADxym3akuxC_Cr07Vzvv+BD55XgMEx7nqU4qW8WHowGR0jeoOQ@mail.gmail.com>
- <20220209211202.7cddd337@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CADxym3ZajjCV2EHF6+2xa5ewZuVqxwk6bSqF0KuA+J6sGnShbQ@mail.gmail.com>
- <20220210081322.566488f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CANn89iKhkQ_0TbSJnPtMJrC57nz=0iiRXR-XzeZj5q6OPYZnFA@mail.gmail.com>
-In-Reply-To: <CANn89iKhkQ_0TbSJnPtMJrC57nz=0iiRXR-XzeZj5q6OPYZnFA@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Fri, 11 Feb 2022 16:53:25 +0800
-Message-ID: <CADxym3b0COE3c8J8Qb6B61OZySzyZevrE2WDBWFBHOKuDjJ9hg@mail.gmail.com>
-Subject: Re: [PATCH v3 net-next 1/7] net: skb_drop_reason: add document for
- drop reasons
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>,
-        David Ahern <dsahern@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Menglong Dong <imagedong@tencent.com>,
-        Alexander Lobakin <alobakin@pm.me>, paulb@nvidia.com,
-        Kees Cook <keescook@chromium.org>,
-        Talal Ahmad <talalahmad@google.com>,
-        Kevin Hao <haokexin@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, Cong Wang <cong.wang@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Unable to transfer big files to Nokia N9
+Content-Language: en-BS
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev,
+        Takashi Iwai <tiwai@suse.com>
+References: <eb6d86eb-d156-d7ac-0965-181719023d51@molgen.mpg.de>
+ <CABBYNZLENxvXMCh6XbBSnu0jasV1F0QestEK5v2mnNUpJdw3Vw@mail.gmail.com>
+ <cf71bdea-ec22-e4c9-016c-69e94a130607@molgen.mpg.de>
+ <a93c0fa7-7b84-6aea-265b-c913e0c84678@molgen.mpg.de>
+ <d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de>
+ <371027df-7f32-edab-208d-d4cdd2202ba6@leemhuis.info>
+ <d41d8b41-c347-47e7-e52b-39d7211c8952@molgen.mpg.de>
+ <aa3ee7ac-6c52-3861-1798-3cc1a37f6ebf@molgen.mpg.de>
+ <9cb4b1ae-760f-f8ec-b3fe-a5d0be0dba25@leemhuis.info>
+ <1c1e4143-0750-3dc5-eb63-2e8f52699e7c@molgen.mpg.de>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <1c1e4143-0750-3dc5-eb63-2e8f52699e7c@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1644569999;2afef0c4;
+X-HE-SMSGID: 1nIRmX-00009c-Ch
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 12:29 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Feb 10, 2022 at 8:13 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Thu, 10 Feb 2022 21:42:14 +0800 Menglong Dong wrote:
-> > > How about introducing a field to 'struct sock' for drop reasons? As sk is
-> > > locked during the packet process in tcp_v4_do_rcv(), this seems to work.
-> >
-> > I find adding temporary storage to persistent data structures awkward.
-> > You can put a structure on the stack and pass it thru the call chain,
-> > that's just my subjective preference, tho, others may have better ideas.
->
-> I had a similar TODO item, because stuff like 'waking up task' or free
-> one skb (or list of skb) could be performed outside of socket lock.
+On 11.02.22 09:29, Paul Menzel wrote:
+> Am 10.02.22 um 11:36 schrieb Thorsten Leemhuis:
+>> Hi, this is your Linux kernel regression tracker speaking. Top-posting
+>> for once, to make this easy accessible to everyone.
+>>
+>> Hey bluetooth-maintainers, what's the status here? I already asked for a
+>> status update more that a week ago and didn't get a reply. Paul also
+>> confirmed recently the issue is still present and no reply either. IOW:
+>> this is talking way to long for a issue that was bisected?
+>>
+>> Could you please comment on this? What can be done to get this rolling?
+>> Or do I have to ask upstream maintainers to revert the culprit?
+> 
+> I sent two reverts [1], and probably forgot to add a tag to reference
+> this discussion.
+> 
+> Luiz asked me two provide more logs. Hopefully, I am going to come
+> around to that today, but maybe it’s better to revert so that Linux 5.16
+> can also be fixed.
 
-May I ask what it's like? Is it used to solve this kind of problem?
+Ahh, thx, great to see this finally got things running.
 
-Thanks!
-Menglong Dong
+This will let regzbot know about it:
+
+#regzbot monitor:
+https://lore.kernel.org/linux-bluetooth/20220208221911.57058-1-pmenzel@molgen.mpg.de/
+
+With a proper "Link:" tag this would have happened automatically, but no
+worries, a lot of people forget to set it. :-D
+
+Ciao, Thorsten
