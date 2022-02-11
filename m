@@ -2,112 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6591C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C807C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349478AbiBKLgF (ORCPT
+        id S1349510AbiBKLhD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:36:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50412 "EHLO
+        Fri, 11 Feb 2022 06:37:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349469AbiBKLgD (ORCPT
+        with ESMTP id S240820AbiBKLhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:36:03 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7182E9A;
-        Fri, 11 Feb 2022 03:36:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644579362; x=1676115362;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bTdjHFPr4nUGXu4pkdc+I1g9MpzgJ+mPYB+7OmSpI0M=;
-  b=kUmus4ZgUHJybwx9oGpA7n5rWQbC0XkmCMJnmdpam9V7xIiMpuqmU8Jc
-   qllVEuhGnUBwdXzOztoiaFkRACCBgoAnsHeC9RQ2nGeflCUwu05S/3wfS
-   UTkkajLoOl9ilvlSqyShMwCmPAhWNezEdj9OidyoEC00Htsh4Sa+lirdv
-   3s6drvE5Z3xihd7ZT+0vq8l9QThOTDqmLfgQFV7k5cYuSwn6rWBujgUBy
-   qrcBYNHRxvKqAhwtFowyT6fu9f9iBmO0ffKgeOIel8kszWGhiuQrRcdL7
-   1JLJEnSxZQE8EAJjgzOWU21sjeo3xPYndb/vYfDtY3WK26BzM3kaqXGYs
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249924371"
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="249924371"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:36:02 -0800
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="500756801"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:36:00 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nIUCc-003QOI-Io;
-        Fri, 11 Feb 2022 13:35:02 +0200
-Date:   Fri, 11 Feb 2022 13:35:02 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Javier Martinez Canillas <javierm@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Sam Ravnborg <sam@ravnborg.org>, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v4 6/6] dt-bindings: display: ssd1307fb: Add myself as
- binding co-maintainer
-Message-ID: <YgZJ5jX9BUZ4/0Ed@smile.fi.intel.com>
-References: <20220211091927.2988283-1-javierm@redhat.com>
- <20220211092253.2988843-1-javierm@redhat.com>
+        Fri, 11 Feb 2022 06:37:01 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D106E9B;
+        Fri, 11 Feb 2022 03:36:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=75NWpP1F3muQ7eU77nN0HqewB2XELKQjhwajLBBcmi4=; b=PSN+UiFDV4kXfaO/wz7emyjBKj
+        k23Ik9QPVvS3SLNFogCYSikiE7DGGSJHir26m6VUCwHZfVbG4JYkv+wdDf4HhBJ2mGt/PbF4DceIo
+        gxAAIsuysAEz+lx8/wv8UO+1fW3FAJA03zGAm2WtR4Wg53ioRsCcbGYnWbloETzZr7H0QWnwp/xlq
+        6YeHeMC4s55AlC32NStEhjdxlulhtn5NcSPiRVGG2tOOpoR0xDu6DYsNdyV8Z/tHT8Mx95o9IjHCA
+        r5V9bmOCDdcfZqL8u5lb8vfG7uR3qLB+EODQrfE7h0DdQEW/viB9+HXxhGl1WIOdkKnx+pLJhL2Eu
+        q+DZThWA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nIUEG-00AMT3-DH; Fri, 11 Feb 2022 11:36:44 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 66C149853C7; Fri, 11 Feb 2022 12:36:43 +0100 (CET)
+Date:   Fri, 11 Feb 2022 12:36:43 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Wen Yang <simon.wy@alibaba-inc.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] perf/x86: improve the event scheduling to avoid
+ unnecessary pmu_stop/start
+Message-ID: <20220211113643.GT23216@worktop.programming.kicks-ass.net>
+References: <20220210043930.34311-1-simon.wy@alibaba-inc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211092253.2988843-1-javierm@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220210043930.34311-1-simon.wy@alibaba-inc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 10:22:53AM +0100, Javier Martinez Canillas wrote:
-> The ssd130x DRM driver also makes use of this Device Tree binding to allow
-> existing users of the fbdev driver to migrate without the need to change
-> their Device Trees.
+On Thu, Feb 10, 2022 at 12:39:30PM +0800, Wen Yang wrote:
+> This issue has been there for a long time, we could reproduce it as follows:
 > 
-> Add myself as another maintainer of the binding, to make sure that I will
-> be on Cc when patches are proposed for it.
+> 1, run a script that periodically collects perf data, eg:
+> while true
+> do
+>     perf stat -e cache-misses,cache-misses,cache-misses -C 1 sleep 2
+>     perf stat -e cache-misses -C 1 sleep 2
+>     sleep 1
+> done
+> 
+> 2, run another one to capture the IPC, eg:
+> perf stat -e cycles:D,instructions:D  -C 1 -I 1000
+> 
+> Then we could observe that the counter used by cycles:D changes frequently:
+> crash> struct  cpu_hw_events.n_events,assign,event_list,events  ffff88bf7f44f420
+>   n_events = 3
+>   assign = {33, 1, 32, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+>   event_list = {0xffff88bf77b85000, 0xffff88b72db82000, 0xffff88b72db85800, 0xffff88ff6cfcb000, 0xffff88ff609f1800, 0xffff88ff609f1800, 0xffff88ff5f46a800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+>   events = {0x0, 0xffff88b72db82000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xffff88b72db85800, 0xffff88bf77b85000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+> 
+> crash> struct  cpu_hw_events.n_events,assign,event_list,events  ffff88bf7f44f420
+>   n_events = 6
+>   assign = {33, 3, 32, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+>   event_list = {0xffff88bf77b85000, 0xffff88b72db82000, 0xffff88b72db85800, 0xffff88bf46c34000, 0xffff88bf46c35000, 0xffff88bf46c30000, 0xffff88ff5f46a800, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+>   events = {0xffff88bf46c34000, 0xffff88bf46c35000, 0xffff88bf46c30000, 0xffff88b72db82000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xffff88b72db85800, 0xffff88bf77b85000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The above is unreadable; consider rewriting it in something other than a
+raw data dump.
 
-> Suggested-by: Sam Ravnborg <sam@ravnborg.org>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
-> 
-> Changes in v4:
-> - Add Rob Herring Acked-by tag to patch adding as DT binding co-maintainer.
-> 
-> Changes in v2:
-> - Add myself as co-maintainer of the ssd1370fb DT binding (Sam Ravnborg).
-> 
->  Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> index 2ed2a7d0ca2f..9baafd0c42dd 100644
-> --- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> +++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-> @@ -8,6 +8,7 @@ title: Solomon SSD1307 OLED Controller Framebuffer
->  
->  maintainers:
->    - Maxime Ripard <mripard@kernel.org>
-> +  - Javier Martinez Canillas <javierm@redhat.com>
->  
->  properties:
->    compatible:
-> -- 
-> 2.34.1
-> 
+> The reason is that NMI watchdog permanently consumes one FP,
+> so cycles can only use one GP, and its hweight is 5,
+> but the hweight of other events (cache misses) is 4,
+> so the counter used by cycles will be frequently taken away,
+> resulting in unnecessary pmu_stop/start.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+And the solution..... ? Or should I try and reverse engineer from the
+proposed patch? If I do, how do I know it is what you intended?
