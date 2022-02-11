@@ -2,287 +2,444 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1182C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8415C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:19:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348426AbiBKJRY (ORCPT
+        id S1348439AbiBKJTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:17:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58124 "EHLO
+        Fri, 11 Feb 2022 04:19:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237952AbiBKJRW (ORCPT
+        with ESMTP id S1345116AbiBKJTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:17:22 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BBE102D;
-        Fri, 11 Feb 2022 01:17:20 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21B8ciEo015018;
-        Fri, 11 Feb 2022 09:17:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : references : from : subject : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=BepGLEN3A2hawUn04CXKRhRJv1ry5IbqIi7zt/wNAU8=;
- b=O4q6xEeSFvGDsoiENhHdkGvPlKTM89FhIc7OwjdX5zOLpCIjooKPYNddQyX33lwrFbd5
- ZTBaBiaP6wYsDCgW/2NTYvQFjOMhNti26hkYg/nOddD4Y64w5hurGLTUB1UqVOuDbFKL
- PXCZZ3+R7tmXSO3/y+CBJiC3frqh3pomvRkyQ6D3c/dJXKTT9hlcxQxWVBuoF+qeqyUe
- 5as+HjrDJ0MiF3Arpwfv0T/2pGrOdH7BpyPiCbO14SHH0uxS+PtG5oScXfDbBjeQdQf5
- SaS/ig231ECgb+sRqGMbsuSVNeT1PnebCjBORs4BOK1j6zpscQlPlCMPmsBaBSynGoOt Dg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5gt84dba-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 09:17:20 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21B90FYu020099;
-        Fri, 11 Feb 2022 09:17:19 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5gt84daj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 09:17:19 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21B990xj025512;
-        Fri, 11 Feb 2022 09:17:17 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e1gva8099-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 09:17:17 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21B9HCXm39649560
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Feb 2022 09:17:12 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AC7D0A4059;
-        Fri, 11 Feb 2022 09:17:12 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2780FA405E;
-        Fri, 11 Feb 2022 09:17:12 +0000 (GMT)
-Received: from [9.145.74.171] (unknown [9.145.74.171])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 11 Feb 2022 09:17:12 +0000 (GMT)
-Message-ID: <95cd44de-f035-4371-812f-5d6bad68cd7b@linux.ibm.com>
-Date:   Fri, 11 Feb 2022 10:17:11 +0100
+        Fri, 11 Feb 2022 04:19:36 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227EF333;
+        Fri, 11 Feb 2022 01:19:35 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jw7Lv6phRz9rwj;
+        Fri, 11 Feb 2022 17:17:59 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Feb
+ 2022 17:19:32 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <jaegeuk@kernel.org>, <chao@kernel.org>,
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH -next v2] ext4:fix file system corrupted when rmdir non empty directory with IO error
+Date:   Fri, 11 Feb 2022 17:35:27 +0800
+Message-ID: <20220211093527.3335518-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-References: <20220209170422.1910690-1-scgl@linux.ibm.com>
- <20220209170422.1910690-10-scgl@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-Subject: Re: [PATCH v3 09/10] KVM: s390: Update api documentation for memop
- ioctl
-In-Reply-To: <20220209170422.1910690-10-scgl@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5rSCGnlk0XX_Vi0IZ2nqSi2CuhLASZHe
-X-Proofpoint-ORIG-GUID: GZNDZloHbp0U3jss8-w8KJATKjPfIo8q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-11_03,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- mlxscore=0 spamscore=0 priorityscore=1501 mlxlogscore=999 bulkscore=0
- clxscore=1015 lowpriorityscore=0 suspectscore=0 malwarescore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202110051
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 18:04, Janis Schoetterl-Glausch wrote:
-> Document all currently existing operations, flags and explain under
-> which circumstances they are available. Document the recently
-> introduced absolute operations and the storage key protection flag,
-> as well as the existing SIDA operations.
-> 
-> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+We inject IO error when rmdir non empty direcory, then got issue as follows:
+step1: mkfs.ext4 -F /dev/sda
+step2: mount /dev/sda  test
+step3: cd test
+step4: mkdir -p 1/2
+step5: rmdir 1
+	[  110.920551] ext4_empty_dir: inject fault
+	[  110.921926] EXT4-fs warning (device sda): ext4_rmdir:3113: inode #12:
+	comm rmdir: empty directory '1' has too many links (3)
+step6: cd ..
+step7: umount test
+step8: fsck.ext4 -f /dev/sda
+	e2fsck 1.42.9 (28-Dec-2013)
+	Pass 1: Checking inodes, blocks, and sizes
+	Pass 2: Checking directory structure
+	Entry '..' in .../??? (13) has deleted/unused inode 12.  Clear<y>? yes
+	Pass 3: Checking directory connectivity
+	Unconnected directory inode 13 (...)
+	Connect to /lost+found<y>? yes
+	Pass 4: Checking reference counts
+	Inode 13 ref count is 3, should be 2.  Fix<y>? yes
+	Pass 5: Checking group summary information
 
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+	/dev/sda: ***** FILE SYSTEM WAS MODIFIED *****
+	/dev/sda: 12/131072 files (0.0% non-contiguous), 26157/524288 blocks
 
-Minor nits below
+ext4_rmdir
+	if (!ext4_empty_dir(inode))
+		goto end_rmdir;
+ext4_empty_dir
+	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
+	if (IS_ERR(bh))
+		return true;
+Now if read directory block failed, 'ext4_empty_dir' will return true, assume
+directory is empty. Obviously, it will lead to above issue.
+To solve this issue, if read directory block failed 'ext4_empty_dir' just assume
+directory isn't empty. To avoid making things worse when file system is already
+corrupted, 'ext4_empty_dir' also assume directory isn't empty.
+To distinguish the error type, return the exact error code to the caller.
 
-> ---
->   Documentation/virt/kvm/api.rst | 112 ++++++++++++++++++++++++++-------
->   include/uapi/linux/kvm.h       |   2 +-
->   2 files changed, 91 insertions(+), 23 deletions(-)
-> 
-> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-> index a4267104db50..2d131af44576 100644
-> --- a/Documentation/virt/kvm/api.rst
-> +++ b/Documentation/virt/kvm/api.rst
-> @@ -3683,15 +3683,17 @@ The fields in each entry are defined as follows:
->   4.89 KVM_S390_MEM_OP
->   --------------------
->   
-> -:Capability: KVM_CAP_S390_MEM_OP
-> +:Capability: KVM_CAP_S390_MEM_OP, KVM_CAP_S390_PROTECTED, KVM_CAP_S390_MEM_OP_EXTENSION
->   :Architectures: s390
-> -:Type: vcpu ioctl
-> +:Type: vm ioctl, vcpu ioctl
->   :Parameters: struct kvm_s390_mem_op (in)
->   :Returns: = 0 on success,
->             < 0 on generic error (e.g. -EFAULT or -ENOMEM),
->             > 0 if an exception occurred while walking the page tables
->   
-> -Read or write data from/to the logical (virtual) memory of a VCPU.
-> +Read or write data from/to the VM's memory.
-> +The KVM_CAP_S390_MEM_OP_EXTENSION capability specifies what functionality is
-> +supported.
->   
->   Parameters are specified via the following structure::
->   
-> @@ -3701,33 +3703,99 @@ Parameters are specified via the following structure::
->   	__u32 size;		/* amount of bytes */
->   	__u32 op;		/* type of operation */
->   	__u64 buf;		/* buffer in userspace */
-> -	__u8 ar;		/* the access register number */
-> -	__u8 reserved[31];	/* should be set to 0 */
-> +	union {
-> +		struct {
-> +			__u8 ar;	/* the access register number */
-> +			__u8 key;	/* access key, ignored if flag unset */
-> +		};
-> +		__u32 sida_offset; /* offset into the sida */
-> +		__u8 reserved[32]; /* ignored */
-> +	};
->     };
->   
-> -The type of operation is specified in the "op" field. It is either
-> -KVM_S390_MEMOP_LOGICAL_READ for reading from logical memory space or
-> -KVM_S390_MEMOP_LOGICAL_WRITE for writing to logical memory space. The
-> -KVM_S390_MEMOP_F_CHECK_ONLY flag can be set in the "flags" field to check
-> -whether the corresponding memory access would create an access exception
-> -(without touching the data in the memory at the destination). In case an
-> -access exception occurred while walking the MMU tables of the guest, the
-> -ioctl returns a positive error number to indicate the type of exception.
-> -This exception is also raised directly at the corresponding VCPU if the
-> -flag KVM_S390_MEMOP_F_INJECT_EXCEPTION is set in the "flags" field.
-> -
->   The start address of the memory region has to be specified in the "gaddr"
->   field, and the length of the region in the "size" field (which must not
->   be 0). The maximum value for "size" can be obtained by checking the
->   KVM_CAP_S390_MEM_OP capability. "buf" is the buffer supplied by the
->   userspace application where the read data should be written to for
-> -KVM_S390_MEMOP_LOGICAL_READ, or where the data that should be written is
-> -stored for a KVM_S390_MEMOP_LOGICAL_WRITE. When KVM_S390_MEMOP_F_CHECK_ONLY
-> -is specified, "buf" is unused and can be NULL. "ar" designates the access
-> -register number to be used; the valid range is 0..15.
-> +a read access, or where the data that should be written is stored for
-> +a write access.  The "reserved" field is meant for future extensions.
-> +Reserved and unused values are ignored. Future extension that add members must
-> +introduce new flags.
-> +
-> +The type of operation is specified in the "op" field. Flags modifying
-> +their behavior can be set in the "flags" field. Undefined flag bits must
-> +be set to 0.
-> +
-> +Possible operations are:
-> +  * ``KVM_S390_MEMOP_LOGICAL_READ``
-> +  * ``KVM_S390_MEMOP_LOGICAL_WRITE``
-> +  * ``KVM_S390_MEMOP_ABSOLUTE_READ``
-> +  * ``KVM_S390_MEMOP_ABSOLUTE_WRITE``
-> +  * ``KVM_S390_MEMOP_SIDA_READ``
-> +  * ``KVM_S390_MEMOP_SIDA_WRITE``
-> +
-> +Logical read/write:
-> +^^^^^^^^^^^^^^^^^^^
-> +
-> +Access logical memory, i.e. translate the given guest address to an absolute
-> +address given the state of the VCPU and use the absolute address as target of
-> +the access. "ar" designates the access register number to be used; the valid
-> +range is 0..15.
-> +Logical accesses are permitted for the VCPU ioctl only.
-> +Logical accesses are permitted for non secure guests only.
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+---
+ fs/crypto/policy.c      |  4 +---
+ fs/ext4/ext4.h          |  4 ++--
+ fs/ext4/inline.c        | 23 +++++++++++------------
+ fs/ext4/ioctl.c         |  5 ++---
+ fs/ext4/namei.c         | 27 +++++++++++++++------------
+ fs/f2fs/dir.c           |  8 ++++----
+ fs/f2fs/f2fs.h          |  2 +-
+ fs/f2fs/file.c          |  7 +++++--
+ fs/f2fs/namei.c         | 10 ++++------
+ fs/ubifs/crypto.c       |  4 ++--
+ include/linux/fscrypt.h |  2 +-
+ 11 files changed, 48 insertions(+), 48 deletions(-)
 
-s/secure/protected/
-
-> +
-> +Supported flags:
-> +  * ``KVM_S390_MEMOP_F_CHECK_ONLY``
-> +  * ``KVM_S390_MEMOP_F_INJECT_EXCEPTION``
-> +  * ``KVM_S390_MEMOP_F_SKEY_PROTECTION``
-> +
-> +The KVM_S390_MEMOP_F_CHECK_ONLY flag can be set to check whether the
-> +corresponding memory access would cause an access exception, without touching
-
-I think the comma needs to be removed.
-
-> +the data in memory at the destination.
-> +In this case, "buf" is unused and can be NULL.
-> +
-> +In case an access exception occurred during the access (or would occur
-> +in case of KVM_S390_MEMOP_F_CHECK_ONLY), the ioctl returns a positive
-> +error number indicating the type of exception. This exception is also
-> +raised directly at the corresponding VCPU if the flag
-> +KVM_S390_MEMOP_F_INJECT_EXCEPTION is set.
-> +
-> +If the KVM_S390_MEMOP_F_SKEY_PROTECTION flag is set, storage key
-> +protection is also in effect and may cause exceptions if accesses are
-> +prohibited given the access key passed in "key".
-> +KVM_S390_MEMOP_F_SKEY_PROTECTION is available if KVM_CAP_S390_MEM_OP_EXTENSION
-> +is > 0.
-> +
-> +Absolute read/write:
-> +^^^^^^^^^^^^^^^^^^^^
-> +
-> +Access absolute memory. This operation is intended to be used with the
-> +KVM_S390_MEMOP_F_SKEY_PROTECTION flag, to allow accessing memory and performing
-> +the checks required for storage key protection as one operation (as opposed to
-> +user space getting the storage keys, performing the checks, and accessing
-> +memory thereafter, which could lead to a delay between check and access).
-> +Absolute accesses are permitted for the VM ioctl if KVM_CAP_S390_MEM_OP_EXTENSION
-> +is > 0.
-> +Currently absolute accesses are not permitted for VCPU ioctls.
-> +Absolute accesses are permitted for non secure guests only.
-
-s/secure/protected/
-
-> +
-> +Supported flags:
-> +  * ``KVM_S390_MEMOP_F_CHECK_ONLY``
-> +  * ``KVM_S390_MEMOP_F_SKEY_PROTECTION``
-> +
-> +The semantics of the flags are as for logical accesses.
-> +
-> +SIDA read/write:
-> +^^^^^^^^^^^^^^^^
-> +
-> +Access the secure instruction data area which contains memory operands necessary
-> +for instruction emulation for secure guests.
-> +SIDA accesses are available if the KVM_CAP_S390_PROTECTED capability is available.
-> +SIDA accesses are permitted for the VCPU ioctl only.
-> +SIDA accesses are permitted for secure guests only.
-
-s/secure/protected/
-
->   
-> -The "reserved" field is meant for future extensions. It is not used by
-> -KVM with the currently defined set of flags.
-> +No flags are supported.
->   
->   4.90 KVM_S390_GET_SKEYS
->   -----------------------
-> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> index 26bff414f1a0..fd01fe04a183 100644
-> --- a/include/uapi/linux/kvm.h
-> +++ b/include/uapi/linux/kvm.h
-> @@ -567,7 +567,7 @@ struct kvm_s390_mem_op {
->   			__u8 key;	/* access key, ignored if flag unset */
->   		};
->   		__u32 sida_offset; /* offset into the sida */
-> -		__u8 reserved[32]; /* should be set to 0 */
-> +		__u8 reserved[32]; /* ignored */
->   	};
->   };
->   /* types for kvm_s390_mem_op->op */
+diff --git a/fs/crypto/policy.c b/fs/crypto/policy.c
+index ed3d623724cd..373945022bb6 100644
+--- a/fs/crypto/policy.c
++++ b/fs/crypto/policy.c
+@@ -480,9 +480,7 @@ int fscrypt_ioctl_set_policy(struct file *filp, const void __user *arg)
+ 			ret = -ENOTDIR;
+ 		else if (IS_DEADDIR(inode))
+ 			ret = -ENOENT;
+-		else if (!inode->i_sb->s_cop->empty_dir(inode))
+-			ret = -ENOTEMPTY;
+-		else
++		else if (!(ret = inode->i_sb->s_cop->empty_dir(inode)))
+ 			ret = set_encryption_policy(inode, &policy);
+ 	} else if (ret == -EINVAL ||
+ 		   (ret == 0 && !fscrypt_policies_equal(&policy,
+diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+index bcd3b9bf8069..e799cc269f7f 100644
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -3087,7 +3087,7 @@ extern int ext4_generic_delete_entry(struct inode *dir,
+ 				     void *entry_buf,
+ 				     int buf_size,
+ 				     int csum_size);
+-extern bool ext4_empty_dir(struct inode *inode);
++extern int ext4_empty_dir(struct inode *inode);
+ 
+ /* resize.c */
+ extern void ext4_kvfree_array_rcu(void *to_free);
+@@ -3623,7 +3623,7 @@ extern int ext4_delete_inline_entry(handle_t *handle,
+ 				    struct ext4_dir_entry_2 *de_del,
+ 				    struct buffer_head *bh,
+ 				    int *has_inline_data);
+-extern bool empty_inline_dir(struct inode *dir, int *has_inline_data);
++extern int empty_inline_dir(struct inode *dir, int *has_inline_data);
+ extern struct buffer_head *ext4_get_first_inline_block(struct inode *inode,
+ 					struct ext4_dir_entry_2 **parent_de,
+ 					int *retval);
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index e42941803605..c9b02127ff95 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1775,22 +1775,22 @@ ext4_get_inline_entry(struct inode *inode,
+ 	return (struct ext4_dir_entry_2 *)(inline_pos + offset);
+ }
+ 
+-bool empty_inline_dir(struct inode *dir, int *has_inline_data)
++int empty_inline_dir(struct inode *dir, int *has_inline_data)
+ {
+-	int err, inline_size;
++	int inline_size;
+ 	struct ext4_iloc iloc;
+ 	size_t inline_len;
+ 	void *inline_pos;
+ 	unsigned int offset;
+ 	struct ext4_dir_entry_2 *de;
+-	bool ret = true;
++	int ret = 0;
+ 
+-	err = ext4_get_inode_loc(dir, &iloc);
+-	if (err) {
+-		EXT4_ERROR_INODE_ERR(dir, -err,
++	ret = ext4_get_inode_loc(dir, &iloc);
++	if (ret) {
++		EXT4_ERROR_INODE_ERR(dir, -ret,
+ 				     "error %d getting inode %lu block",
+-				     err, dir->i_ino);
+-		return true;
++				     ret, dir->i_ino);
++		return ret;
+ 	}
+ 
+ 	down_read(&EXT4_I(dir)->xattr_sem);
+@@ -1804,7 +1804,7 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
+ 		ext4_warning(dir->i_sb,
+ 			     "bad inline directory (dir #%lu) - no `..'",
+ 			     dir->i_ino);
+-		ret = true;
++		ret = -EFSCORRUPTED;
+ 		goto out;
+ 	}
+ 
+@@ -1823,16 +1823,15 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
+ 				     dir->i_ino, le32_to_cpu(de->inode),
+ 				     le16_to_cpu(de->rec_len), de->name_len,
+ 				     inline_size);
+-			ret = true;
++			ret = -EFSCORRUPTED;
+ 			goto out;
+ 		}
+ 		if (le32_to_cpu(de->inode)) {
+-			ret = false;
++			ret = -ENOTEMPTY;
+ 			goto out;
+ 		}
+ 		offset += ext4_rec_len_from_disk(de->rec_len, inline_size);
+ 	}
+-
+ out:
+ 	up_read(&EXT4_I(dir)->xattr_sem);
+ 	brelse(iloc.bh);
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index a8022c2c6a58..3845fd554249 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -620,10 +620,9 @@ static int ext4_ioctl_setflags(struct inode *inode,
+ 			goto flags_out;
+ 		}
+ 
+-		if (!ext4_empty_dir(inode)) {
+-			err = -ENOTEMPTY;
++		err = ext4_empty_dir(inode);
++		if (err)
+ 			goto flags_out;
+-		}
+ 	}
+ 
+ 	/*
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index 8cf0a924a49b..2862deb374f7 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -2976,8 +2976,11 @@ static int ext4_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 
+ /*
+  * routine to check that the specified directory is empty (for rmdir)
++ * return value:
++ * 0: directory is empty
++ * <0: error code
+  */
+-bool ext4_empty_dir(struct inode *inode)
++int ext4_empty_dir(struct inode *inode)
+ {
+ 	unsigned int offset;
+ 	struct buffer_head *bh;
+@@ -2997,14 +3000,14 @@ bool ext4_empty_dir(struct inode *inode)
+ 	if (inode->i_size < ext4_dir_rec_len(1, NULL) +
+ 					ext4_dir_rec_len(2, NULL)) {
+ 		EXT4_ERROR_INODE(inode, "invalid size");
+-		return true;
++		return -EFSCORRUPTED;
+ 	}
+ 	/* The first directory block must not be a hole,
+ 	 * so treat it as DIRENT_HTREE
+ 	 */
+ 	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
+ 	if (IS_ERR(bh))
+-		return true;
++		return PTR_ERR(bh);
+ 
+ 	de = (struct ext4_dir_entry_2 *) bh->b_data;
+ 	if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data, bh->b_size,
+@@ -3012,7 +3015,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 	    le32_to_cpu(de->inode) != inode->i_ino || strcmp(".", de->name)) {
+ 		ext4_warning_inode(inode, "directory missing '.'");
+ 		brelse(bh);
+-		return true;
++		return -EFSCORRUPTED;
+ 	}
+ 	offset = ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
+ 	de = ext4_next_entry(de, sb->s_blocksize);
+@@ -3021,7 +3024,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 	    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
+ 		ext4_warning_inode(inode, "directory missing '..'");
+ 		brelse(bh);
+-		return true;
++		return -EFSCORRUPTED;
+ 	}
+ 	offset += ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
+ 	while (offset < inode->i_size) {
+@@ -3035,7 +3038,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 				continue;
+ 			}
+ 			if (IS_ERR(bh))
+-				return true;
++				return PTR_ERR(bh);
+ 		}
+ 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
+ 					(offset & (sb->s_blocksize - 1)));
+@@ -3046,12 +3049,12 @@ bool ext4_empty_dir(struct inode *inode)
+ 		}
+ 		if (le32_to_cpu(de->inode)) {
+ 			brelse(bh);
+-			return false;
++			return -ENOTEMPTY;
+ 		}
+ 		offset += ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
+ 	}
+ 	brelse(bh);
+-	return true;
++	return 0;
+ }
+ 
+ static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
+@@ -3087,8 +3090,8 @@ static int ext4_rmdir(struct inode *dir, struct dentry *dentry)
+ 	if (le32_to_cpu(de->inode) != inode->i_ino)
+ 		goto end_rmdir;
+ 
+-	retval = -ENOTEMPTY;
+-	if (!ext4_empty_dir(inode))
++	retval = ext4_empty_dir(inode);
++	if (retval)
+ 		goto end_rmdir;
+ 
+ 	handle = ext4_journal_start(dir, EXT4_HT_DIR,
+@@ -3787,8 +3790,8 @@ static int ext4_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 
+ 	if (S_ISDIR(old.inode->i_mode)) {
+ 		if (new.inode) {
+-			retval = -ENOTEMPTY;
+-			if (!ext4_empty_dir(new.inode))
++			retval = ext4_empty_dir(new.inode);
++			if (retval)
+ 				goto end_rename;
+ 		} else {
+ 			retval = -EMLINK;
+diff --git a/fs/f2fs/dir.c b/fs/f2fs/dir.c
+index a0e51937d92e..3de5a1343070 100644
+--- a/fs/f2fs/dir.c
++++ b/fs/f2fs/dir.c
+@@ -953,7 +953,7 @@ void f2fs_delete_entry(struct f2fs_dir_entry *dentry, struct page *page,
+ 		f2fs_drop_nlink(dir, inode);
+ }
+ 
+-bool f2fs_empty_dir(struct inode *dir)
++int f2fs_empty_dir(struct inode *dir)
+ {
+ 	unsigned long bidx;
+ 	struct page *dentry_page;
+@@ -970,7 +970,7 @@ bool f2fs_empty_dir(struct inode *dir)
+ 			if (PTR_ERR(dentry_page) == -ENOENT)
+ 				continue;
+ 			else
+-				return false;
++				return PTR_ERR(dentry_page);
+ 		}
+ 
+ 		dentry_blk = page_address(dentry_page);
+@@ -985,9 +985,9 @@ bool f2fs_empty_dir(struct inode *dir)
+ 		f2fs_put_page(dentry_page, 1);
+ 
+ 		if (bit_pos < NR_DENTRY_IN_BLOCK)
+-			return false;
++			return -ENOTEMPTY;
+ 	}
+-	return true;
++	return 0;
+ }
+ 
+ int f2fs_fill_dentries(struct dir_context *ctx, struct f2fs_dentry_ptr *d,
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 5c30a65467e2..09617d7b37fd 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -3465,7 +3465,7 @@ int f2fs_do_add_link(struct inode *dir, const struct qstr *name,
+ void f2fs_delete_entry(struct f2fs_dir_entry *dentry, struct page *page,
+ 			struct inode *dir, struct inode *inode);
+ int f2fs_do_tmpfile(struct inode *inode, struct inode *dir);
+-bool f2fs_empty_dir(struct inode *dir);
++int f2fs_empty_dir(struct inode *dir);
+ 
+ static inline int f2fs_add_link(struct dentry *dentry, struct inode *inode)
+ {
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index cfdc41f87f5d..a3b60d6a58f7 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -1846,10 +1846,13 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+ 		return -EPERM;
+ 
+ 	if ((iflags ^ masked_flags) & F2FS_CASEFOLD_FL) {
++		int ret;
++
+ 		if (!f2fs_sb_has_casefold(F2FS_I_SB(inode)))
+ 			return -EOPNOTSUPP;
+-		if (!f2fs_empty_dir(inode))
+-			return -ENOTEMPTY;
++		ret = f2fs_empty_dir(inode);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	if (iflags & (F2FS_COMPR_FL | F2FS_NOCOMP_FL)) {
+diff --git a/fs/f2fs/namei.c b/fs/f2fs/namei.c
+index 13a0ffc39fa4..e4d1821b707b 100644
+--- a/fs/f2fs/namei.c
++++ b/fs/f2fs/namei.c
+@@ -786,10 +786,10 @@ static int f2fs_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ static int f2fs_rmdir(struct inode *dir, struct dentry *dentry)
+ {
+ 	struct inode *inode = d_inode(dentry);
++	int ret;
+ 
+-	if (f2fs_empty_dir(inode))
+-		return f2fs_unlink(dir, dentry);
+-	return -ENOTEMPTY;
++	ret = f2fs_empty_dir(inode);
++	return ret ? : f2fs_unlink(dir, dentry);
+ }
+ 
+ static int f2fs_mknod(struct user_namespace *mnt_userns, struct inode *dir,
+@@ -1001,9 +1001,7 @@ static int f2fs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 	}
+ 
+ 	if (new_inode) {
+-
+-		err = -ENOTEMPTY;
+-		if (old_dir_entry && !f2fs_empty_dir(new_inode))
++		if (old_dir_entry && (err = f2fs_empty_dir(new_inode)))
+ 			goto out_dir;
+ 
+ 		err = -ENOENT;
+diff --git a/fs/ubifs/crypto.c b/fs/ubifs/crypto.c
+index c57b46a352d8..3ef2017c1444 100644
+--- a/fs/ubifs/crypto.c
++++ b/fs/ubifs/crypto.c
+@@ -19,9 +19,9 @@ static int ubifs_crypt_set_context(struct inode *inode, const void *ctx,
+ 			       ctx, len, 0, false);
+ }
+ 
+-static bool ubifs_crypt_empty_dir(struct inode *inode)
++static int ubifs_crypt_empty_dir(struct inode *inode)
+ {
+-	return ubifs_check_dir_empty(inode) == 0;
++	return ubifs_check_dir_empty(inode);
+ }
+ 
+ int ubifs_encrypt(const struct inode *inode, struct ubifs_data_node *dn,
+diff --git a/include/linux/fscrypt.h b/include/linux/fscrypt.h
+index 91ea9477e9bd..9d3b8df3f5ea 100644
+--- a/include/linux/fscrypt.h
++++ b/include/linux/fscrypt.h
+@@ -116,7 +116,7 @@ struct fscrypt_operations {
+ 	/*
+ 	 * Check whether a directory is empty.  i_rwsem will be held for write.
+ 	 */
+-	bool (*empty_dir)(struct inode *inode);
++	int (*empty_dir)(struct inode *inode);
+ 
+ 	/*
+ 	 * Check whether the filesystem's inode numbers and UUID are stable,
+-- 
+2.31.1
 
