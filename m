@@ -2,121 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 824F4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC90C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:21:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352626AbiBKSRN (ORCPT
+        id S1343636AbiBKSVr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 13:17:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58020 "EHLO
+        Fri, 11 Feb 2022 13:21:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352615AbiBKSRG (ORCPT
+        with ESMTP id S241157AbiBKSVq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 13:17:06 -0500
-Received: from st43p00im-ztfb10071701.me.com (st43p00im-ztfb10071701.me.com [17.58.63.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A361D52
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 10:17:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1644603420; bh=VPvPVP2edwflLmj1mzLh01mfMS7GUrPYSb2mNvVkt/Y=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=182pcnyKzQkKH8ROIeaHYbAVzzfjjeFw2Sj8dLR0exzSUsDTXAojvjS+qeMKIvu2Y
-         tYCoc4arduXfQO89FT+915Kohw+4UBYkwbYDqoMw4FgmRwJGEjKSO37aYumEOcRPgF
-         qvWPDK3HOZ2g264BwAdlHalfcfiIEJkwAUL3u0ZJPRw3tvWPIr1YJe3CWVQEfr4Jom
-         wh2vuKAA6HrDg3K0FchSrCxnD33EOAZL9TD27+LI0JWyPG8BoVQPY5lO9jCOgUKc8P
-         cHLZpoXoKkhHPOXQqM3IPTsqtETJ31d1YMiv0izcS/wpr3fCaNcGpSHUgjQgixEpPf
-         y5Urxdwn6mlZA==
-Received: from localhost (lfbn-lyo-1-306-208.w2-7.abo.wanadoo.fr [2.7.142.208])
-        by st43p00im-ztfb10071701.me.com (Postfix) with ESMTPSA id 1991BA0058;
-        Fri, 11 Feb 2022 18:16:59 +0000 (UTC)
-From:   Alain Volmat <avolmat@me.com>
-To:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, avolmat@me.com
-Subject: [PATCH v2 7/7] ARM: dts: sti: move usb picophy nodes out of soc in stih418.dtsi
-Date:   Fri, 11 Feb 2022 19:16:14 +0100
-Message-Id: <20220211181614.683497-8-avolmat@me.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220211181614.683497-1-avolmat@me.com>
-References: <20220211181614.683497-1-avolmat@me.com>
+        Fri, 11 Feb 2022 13:21:46 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71E7113A;
+        Fri, 11 Feb 2022 10:21:44 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B6911042;
+        Fri, 11 Feb 2022 10:21:44 -0800 (PST)
+Received: from lpieralisi (e121166-lin.cambridge.arm.com [10.1.196.255])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B72F33F70D;
+        Fri, 11 Feb 2022 10:21:42 -0800 (PST)
+Date:   Fri, 11 Feb 2022 18:21:37 +0000
+From:   Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     robh+dt@kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Marc Zyngier <maz@kernel.org>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 10/11] PCI: mvebu: Implement support for legacy INTx
+ interrupts
+Message-ID: <20220211182137.GA2492@lpieralisi>
+References: <20220105150239.9628-1-pali@kernel.org>
+ <20220112151814.24361-1-pali@kernel.org>
+ <20220112151814.24361-11-pali@kernel.org>
+ <20220211171917.GA740@lpieralisi>
+ <20220211175202.gku5pkwn5wmjo5al@pali>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
- =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.572,17.0.605.474.0000000_definitions?=
- =?UTF-8?Q?=3D2022-01-14=5F01:2022-01-14=5F01,2020-02-14=5F11,2020-01-23?=
- =?UTF-8?Q?=5F02_signatures=3D0?=
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxlogscore=766
- clxscore=1015 bulkscore=0 adultscore=0 spamscore=0 malwarescore=0
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2202110099
+In-Reply-To: <20220211175202.gku5pkwn5wmjo5al@pali>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the usb2_picophy1 and usb2_picophy2 nodes out of the soc section.
-Since they are controlled via syscfg, there is no reg property needed,
-which is required when having the node within the soc section.
+On Fri, Feb 11, 2022 at 06:52:02PM +0100, Pali Rohár wrote:
 
-Signed-off-by: Alain Volmat <avolmat@me.com>
----
- arch/arm/boot/dts/stih418.dtsi | 38 ++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 20 deletions(-)
+[...]
 
-diff --git a/arch/arm/boot/dts/stih418.dtsi b/arch/arm/boot/dts/stih418.dtsi
-index 97eda4392fbe..b35b9b7a7ccc 100644
---- a/arch/arm/boot/dts/stih418.dtsi
-+++ b/arch/arm/boot/dts/stih418.dtsi
-@@ -26,31 +26,29 @@ cpu@3 {
- 		};
- 	};
- 
-+	usb2_picophy1: phy2 {
-+		compatible = "st,stih407-usb2-phy";
-+		#phy-cells = <0>;
-+		st,syscfg = <&syscfg_core 0xf8 0xf4>;
-+		resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
-+			 <&picophyreset STIH407_PICOPHY0_RESET>;
-+		reset-names = "global", "port";
-+	};
-+
-+	usb2_picophy2: phy3 {
-+		compatible = "st,stih407-usb2-phy";
-+		#phy-cells = <0>;
-+		st,syscfg = <&syscfg_core 0xfc 0xf4>;
-+		resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
-+			 <&picophyreset STIH407_PICOPHY1_RESET>;
-+		reset-names = "global", "port";
-+	};
-+
- 	soc {
- 		rng11: rng@8a8a000 {
- 			status = "disabled";
- 		};
- 
--		usb2_picophy1: phy2@0 {
--			compatible = "st,stih407-usb2-phy";
--			reg = <0 0>;
--			#phy-cells = <0>;
--			st,syscfg = <&syscfg_core 0xf8 0xf4>;
--			resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
--				 <&picophyreset STIH407_PICOPHY0_RESET>;
--			reset-names = "global", "port";
--		};
--
--		usb2_picophy2: phy3@0 {
--			compatible = "st,stih407-usb2-phy";
--			reg = <0 0>;
--			#phy-cells = <0>;
--			st,syscfg = <&syscfg_core 0xfc 0xf4>;
--			resets = <&softreset STIH407_PICOPHY_SOFTRESET>,
--				 <&picophyreset STIH407_PICOPHY1_RESET>;
--			reset-names = "global", "port";
--		};
--
- 		ohci0: usb@9a03c00 {
- 			compatible = "st,st-ohci-300x";
- 			reg = <0x9a03c00 0x100>;
--- 
-2.25.1
+> > > @@ -1121,6 +1247,21 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
+> > >  		port->io_attr = -1;
+> > >  	}
+> > >  
+> > > +	/*
+> > > +	 * Old DT bindings do not contain "intx" interrupt
+> > > +	 * so do not fail probing driver when interrupt does not exist.
+> > > +	 */
+> > > +	port->intx_irq = of_irq_get_byname(child, "intx");
+> > > +	if (port->intx_irq == -EPROBE_DEFER) {
+> > > +		ret = port->intx_irq;
+> > > +		goto err;
+> > > +	}
+> > > +	if (port->intx_irq <= 0) {
+> > > +		dev_warn(dev, "%s: legacy INTx interrupts cannot be masked individually, "
+> > > +			      "%pOF does not contain intx interrupt\n",
+> > > +			 port->name, child);
+> > 
+> > Here you end up with a new warning on existing firmware. Is it
+> > legitimate ? I would remove the dev_warn().
+> 
+> I added this warning in v2 because Marc wanted it.
+> 
+> Should I (again) remove it in v3?
 
+No, I asked a question and gave an opinion, I appreciate Marc's concern
+so leave it (ie not everyone running a new kernel with new warnings on
+existing firmware would be happy - maybe it is a good way of forcing a
+firmware upgrade, you will tell me).
+
+Lorenzo
+
+> > Rob certainly has more insightful advice on this.
+> > 
+> > Thanks,
+> > Lorenzo
+> > 
+> > > +	}
+> > > +
+> > >  	reset_gpio = of_get_named_gpio_flags(child, "reset-gpios", 0, &flags);
+> > >  	if (reset_gpio == -EPROBE_DEFER) {
+> > >  		ret = reset_gpio;
+> > > @@ -1317,6 +1458,7 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+> > >  
+> > >  	for (i = 0; i < pcie->nports; i++) {
+> > >  		struct mvebu_pcie_port *port = &pcie->ports[i];
+> > > +		int irq = port->intx_irq;
+> > >  
+> > >  		child = port->dn;
+> > >  		if (!child)
+> > > @@ -1344,6 +1486,22 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+> > >  			continue;
+> > >  		}
+> > >  
+> > > +		if (irq > 0) {
+> > > +			ret = mvebu_pcie_init_irq_domain(port);
+> > > +			if (ret) {
+> > > +				dev_err(dev, "%s: cannot init irq domain\n",
+> > > +					port->name);
+> > > +				pci_bridge_emul_cleanup(&port->bridge);
+> > > +				devm_iounmap(dev, port->base);
+> > > +				port->base = NULL;
+> > > +				mvebu_pcie_powerdown(port);
+> > > +				continue;
+> > > +			}
+> > > +			irq_set_chained_handler_and_data(irq,
+> > > +							 mvebu_pcie_irq_handler,
+> > > +							 port);
+> > > +		}
+> > > +
+> > >  		/*
+> > >  		 * PCIe topology exported by mvebu hw is quite complicated. In
+> > >  		 * reality has something like N fully independent host bridges
+> > > @@ -1448,6 +1606,7 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+> > >  
+> > >  	for (i = 0; i < pcie->nports; i++) {
+> > >  		struct mvebu_pcie_port *port = &pcie->ports[i];
+> > > +		int irq = port->intx_irq;
+> > >  
+> > >  		if (!port->base)
+> > >  			continue;
+> > > @@ -1458,7 +1617,17 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
+> > >  		mvebu_writel(port, cmd, PCIE_CMD_OFF);
+> > >  
+> > >  		/* Mask all interrupt sources. */
+> > > -		mvebu_writel(port, 0, PCIE_MASK_OFF);
+> > > +		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
+> > > +
+> > > +		/* Clear all interrupt causes. */
+> > > +		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
+> > > +
+> > > +		if (irq > 0)
+> > > +			irq_set_chained_handler_and_data(irq, NULL, NULL);
+> > > +
+> > > +		/* Remove IRQ domains. */
+> > > +		if (port->intx_irq_domain)
+> > > +			irq_domain_remove(port->intx_irq_domain);
+> > >  
+> > >  		/* Free config space for emulated root bridge. */
+> > >  		pci_bridge_emul_cleanup(&port->bridge);
+> > > -- 
+> > > 2.20.1
+> > > 
