@@ -2,86 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A205C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:42:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244508AbiBKPmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 10:42:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53896 "EHLO
+        id S1344888AbiBKPmX (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 10:42:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242164AbiBKPmK (ORCPT
+        with ESMTP id S1343923AbiBKPmV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 10:42:10 -0500
-Received: from p3plsmtpa06-05.prod.phx3.secureserver.net (p3plsmtpa06-05.prod.phx3.secureserver.net [173.201.192.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69BECF0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 07:42:07 -0800 (PST)
-Received: from localhost ([82.17.115.212])
-        by :SMTPAUTH: with ESMTPA
-        id IY3hn6xiQB0VlIY3inf1ER; Fri, 11 Feb 2022 08:42:06 -0700
-X-CMAE-Analysis: v=2.4 cv=JvY0EO0C c=1 sm=1 tr=0 ts=620683ce
- a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
- a=IkcTkHD0fZMA:10 a=dVhMRCx2zczmgBi7b7cA:9 a=QEXdDO2ut3YA:10
-X-SECURESERVER-ACCT: atomlin@atomlin.com
-Date:   Fri, 11 Feb 2022 15:42:04 +0000
-From:   Aaron Tomlin <atomlin@atomlin.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     "20220209170358.3266629-1-atomlin@redhat.com" 
-        <20220209170358.3266629-1-atomlin@redhat.com>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        Aaron Tomlin <atomlin@redhat.com>,
-        "cl@linux.com" <cl@linux.com>,
-        "pmladek@suse.com" <pmladek@suse.com>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jeyu@kernel.org" <jeyu@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
-        "ghalat@redhat.com" <ghalat@redhat.com>,
-        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
-        "void@manifault.com" <void@manifault.com>,
-        "joe@perches.com" <joe@perches.com>,
-        "msuchanek@suse.de" <msuchanek@suse.de>,
-        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
-Subject: Re: [PATCH v5 08/13] module: Move kmemleak support to a separate file
-Message-ID: <20220211154204.2x66sauy3o7albbe@ava.usersys.com>
-References: <20220209170814.3268487-1-atomlin@redhat.com>
- <20220209170814.3268487-2-atomlin@redhat.com>
- <2bee9eb2-d59f-a5cd-d89a-b818d94b74af@csgroup.eu>
+        Fri, 11 Feb 2022 10:42:21 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E49ECF0;
+        Fri, 11 Feb 2022 07:42:20 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id A8AC4212B8;
+        Fri, 11 Feb 2022 15:42:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1644594138;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MOvt3nP6o555NwCZ0+/YXZ/7DPCmnppoG+QFn1Mcl/s=;
+        b=dIg+c6GG044XfCDI0EaMRO0Ucap381BvO//H1tMkb5BGDgYXgUGjjuCz7xQoLpWIroU4wK
+        Iu0Pg2sDRD86xIGNMbA5F7FIWWkjphDFjg5hHXpM098itV1hBqZvxyFp2Ij+1Koxim+cxl
+        AzLDFkuHNzPf2iMi6UBfqxJnRETwJbI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1644594138;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MOvt3nP6o555NwCZ0+/YXZ/7DPCmnppoG+QFn1Mcl/s=;
+        b=IjHGNhWEeiJa7RNTR9QWRv91zymNNRRHT/v+L5B7DQaAd2BHkttK31VUuIiouSWBiKrvqt
+        R0siUtNFvOo99tDg==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 9CBC5A3B8A;
+        Fri, 11 Feb 2022 15:42:18 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 59C37DA823; Fri, 11 Feb 2022 16:38:36 +0100 (CET)
+Date:   Fri, 11 Feb 2022 16:38:36 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Kees Cook <keescook@chromium.org>, David Sterba <dsterba@suse.com>,
+        Omar Sandoval <osandov@fb.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the btrfs tree (Was:
+ Re: linux-next: build failure after merge of the kspp tree)
+Message-ID: <20220211153835.GY12643@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Kees Cook <keescook@chromium.org>, David Sterba <dsterba@suse.com>,
+        Omar Sandoval <osandov@fb.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220125115757.20bc45e8@canb.auug.org.au>
+ <20220125140730.GO14046@suse.cz>
+ <20220211104238.5da77acd@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2bee9eb2-d59f-a5cd-d89a-b818d94b74af@csgroup.eu>
-X-CMAE-Envelope: MS4xfHu+JTidec1ZvQoeAPFxW0bRE+TKm6P15qJNOqu0xi7lnglPa8eV8LDpEdnhMS2WrErAGVyxe7OWbRXmSJBFi8fy112D4snAvV8CSygQdCmZcF8wyVOX
- H8R1o1eVc6jQ5WvOjsu5TD7In+mfA0F9ZP85yb2QZOk+Wwpdbu5MbWrOH4L0//oFX0pa1Ip42Sd7L+gcJ+Bh4ViCIAcCJeXMweblY6vSvliSwDSN+Qmfd7GN
- TX3+F3mpSbmee4kEuqEP+fb5v5k0qdX1Aaqs1+vJ7K/lTGcZbsaoSHvRDb4v0NRwT7jgYTf8R03tgOVa/3OBzzGGG9Fi95iXsyYMkgaKKxFDZvhUmdA4Y/a3
- 4jOOGdLuLSNMJPLONR5eHZCInoZUMDpV/HD/17EwdYWwMiyvSmwbxZ2TF+O6dNwoxm9VXrBSHikgSV7HTVko8icLVZtijuuZhC3FVAs7yDtYNNbnr3U8ZX6Y
- 7Eqa3WGVHlC3mqrVI0fKMF+33PEN+pqN6mgDIfiUDHcqTPWs9jCWZVzMBFk13VhNkd50LxYxtipxBhOEamdmg7xVyJesGqvlI2WSUziee+WpvwtBl27EbyI9
- XdamloG/ABKJwsk0V8yf8uMdPxr/S8qb+kXf1nnZqf2OT0pidFvJhWozsFHvosQaHGKQN7YKgGQ9YpYiu0+3Uc+LL3VIF63Y3QH9L2EIhEE8d3Kz1jFiatAK
- 9pIOIuZCwHF2bjxgkGIiut4LKhW3CwEKBnGiYjqGswNlWcXO/NOH6Q==
+In-Reply-To: <20220211104238.5da77acd@canb.auug.org.au>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-02-10 13:07 +0000, Christophe Leroy wrote:
-> CHECK: Alignment should match open parenthesis
-> #48: FILE: kernel/module/debug_kmemleak.c:13:
-> +void kmemleak_load_module(const struct module *mod,
-> +				 const struct load_info *info)
-
-Ok.
-
-> > +static inline void __maybe_unused kmemleak_load_module(const struct module *mod,
-> > +						       const struct load_info *info) { }
+On Fri, Feb 11, 2022 at 10:42:38AM +1100, Stephen Rothwell wrote:
+> > > --- a/fs/btrfs/ioctl.c
+> > > +++ b/fs/btrfs/ioctl.c
+> > > @@ -5079,9 +5079,14 @@ static int btrfs_ioctl_encoded_write(struct file *file, void __user *argp,
+> > >  		}
+> > >  		args.iov = compat_ptr(args32.iov);
+> > >  		args.iovcnt = args32.iovcnt;
+> > > -		memcpy(&args.offset, &args32.offset,
+> > > -		       sizeof(args) -
+> > > -		       offsetof(struct btrfs_ioctl_encoded_io_args, offset));
+> > > +		args.offset = args32.offset;
+> > > +		args.flags = args32.flags;
+> > > +		args.len = args32.len;
+> > > +		args.unencoded_len = args32.unencoded_len;
+> > > +		args.unencoded_offset = args32.unencoded_offset;
+> > > +		args.compression = args32.compression;
+> > > +		args.encryption = args32.encryption;
+> > > +		memcpy(args.reserved, args32.reserved, sizeof(args.reserved));
+> > >  #else
+> > >  		return -ENOTTY;
+> > >  #endif  
+> > 
+> > Thanks, the patchset is still in progress so I'll apply this a fixup
+> > until the patch gets updated.
 > 
-> Remove __maybe_unused, not needed for a 'static inline' in the .h
+> This has come back today ... presumably the hack was removed but the
+> original patch was not fixed.
 
-Agreed.
-
-Thanks for your feedback Christophe.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
+I've updated the patchset and thought the fixup has been applied but no.
+I'll fold it to the patch so it doesn't get lost again.
