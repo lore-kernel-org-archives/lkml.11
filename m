@@ -2,181 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB8A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C51C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348656AbiBKJeq convert rfc822-to-8bit (ORCPT
+        id S1348663AbiBKJfn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:34:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54634 "EHLO
+        Fri, 11 Feb 2022 04:35:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245382AbiBKJep (ORCPT
+        with ESMTP id S233679AbiBKJfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:34:45 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E86CF5B;
-        Fri, 11 Feb 2022 01:34:43 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nISK5-0006hE-Rr; Fri, 11 Feb 2022 10:34:37 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Atish Patra <atishp@atishpatra.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Wei Fu <wefu@redhat.com>,
-        liush <liush@allwinnertech.com>, Guo Ren <guoren@kernel.org>,
-        Anup Patel <anup@brainfault.org>,
-        Drew Fustini <drew@beagleboard.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Greg Favor <gfavor@ventanamicro.com>,
-        Andrea Mondelli <andrea.mondelli@huawei.com>,
-        Jonathan Behrens <behrensj@mit.edu>,
-        Xinhaoqu <xinhaoqu@huawei.com>,
-        Bill Huffman <huffman@cadence.com>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Allen Baum <allen.baum@esperantotech.com>,
-        Josh Scheid <jscheid@ventanamicro.com>,
-        Richard Trauben <rtrauben@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>
-Subject: Re: [PATCH v6 08/14] riscv: move boot alternatives to a slightly earlier position
-Date:   Fri, 11 Feb 2022 10:34:36 +0100
-Message-ID: <3955255.SSjG0rkiDu@diego>
-In-Reply-To: <CAOnJCUJJaPS_U3Hqg-YHT2gVMJ243L=070E7HRXEpt3uPga+cQ@mail.gmail.com>
-References: <20220209123800.269774-1-heiko@sntech.de> <2532021.2vfPgEiFAl@diego> <CAOnJCUJJaPS_U3Hqg-YHT2gVMJ243L=070E7HRXEpt3uPga+cQ@mail.gmail.com>
+        Fri, 11 Feb 2022 04:35:42 -0500
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4847F5B;
+        Fri, 11 Feb 2022 01:35:40 -0800 (PST)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1nISL0-0004RH-BA; Fri, 11 Feb 2022 20:35:35 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 11 Feb 2022 20:35:34 +1100
+Date:   Fri, 11 Feb 2022 20:35:34 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Wojciech Ziemba <wojciech.ziemba@intel.com>
+Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com
+Subject: Re: [PATCH 0/3] Introduce support for QAT Dynamic Power Management
+Message-ID: <YgYt5tFt+0CD/0V3@gondor.apana.org.au>
+References: <20220203135434.584967-1-wojciech.ziemba@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220203135434.584967-1-wojciech.ziemba@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, 11. Februar 2022, 02:57:19 CET schrieb Atish Patra:
-> On Thu, Feb 10, 2022 at 5:11 PM Heiko Stübner <heiko@sntech.de> wrote:
-> >
-> > Hi Atish,
-> >
-> > Am Donnerstag, 10. Februar 2022, 23:42:35 CET schrieb Atish Patra:
-> > > On Wed, Feb 9, 2022 at 4:39 AM Heiko Stuebner <heiko@sntech.de> wrote:
-> > > >
-> > > > Move the application of boot alternatives to soc_early_init().
-> > > > This allows to catch more generic cases of code needing patches
-> > > > than doing it in smp_prepare_boot_cpu() and also makes it actually
-> > > > work if CONFIG_SMP is disabled for whatever reason.
-> > > >
-> > > > The position is chosen mainly as it is before the actual soc early
-> > > > init runs but also already allows accessing the devicetree
-> > > > via fdt_* functions.
-> > > >
-> > > > Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-> > > > ---
-> > > >  arch/riscv/kernel/head.S    | 2 ++
-> > > >  arch/riscv/kernel/smpboot.c | 2 --
-> > > >  2 files changed, 2 insertions(+), 2 deletions(-)
-> > > >
-> > > > diff --git a/arch/riscv/kernel/head.S b/arch/riscv/kernel/head.S
-> > > > index 2363b43312fc..0e1bb97f9749 100644
-> > > > --- a/arch/riscv/kernel/head.S
-> > > > +++ b/arch/riscv/kernel/head.S
-> > > > @@ -10,6 +10,7 @@
-> > > >  #include <asm/thread_info.h>
-> > > >  #include <asm/page.h>
-> > > >  #include <asm/pgtable.h>
-> > > > +#include <asm/alternative.h>
-> > > >  #include <asm/csr.h>
-> > > >  #include <asm/cpu_ops_sbi.h>
-> > > >  #include <asm/hwcap.h>
-> > > > @@ -341,6 +342,7 @@ clear_bss_done:
-> > > >         call kasan_early_init
-> > > >  #endif
-> > > >         /* Start the kernel */
-> > > > +       call apply_boot_alternatives
-> > >
-> > > Do you really need this early ?
-> > > if non-smp configuration is the only option, Can you do it in
-> > > setup_arch() after riscv_fill_hwcap() is called ?
-> >
-> > The issue I see is, we we have the soc_early_init [0] running
-> > directly after this and the one user I see [1] already wants to
-> > ioremap io-memory at this stage.
-> >
+On Thu, Feb 03, 2022 at 01:54:31PM +0000, Wojciech Ziemba wrote:
+> This patch set consist of following updates:
+> 1. Add misc workqueue for general purpose usage.
+> 2. Move error source related CSRs from 4xxx to the wider GEN4 header
+> file.
+> 3. Add support for HW QAT Power Management (PM) feature.
+> 	This feature is enabled at init time (1) by sending an admin
+> message to
+> 	the firmware, targeting the admin AE, that sets the idle time
+> before
+> 	the device changes state and (2) by unmasking the PM source of
+> 	interrupt in ERRMSK2.
 > 
-> Kendryte is always a special case. IIRC, ioremap is done so early
-> so that it can use all 8MB of SRAM.
-> 
-> > So judging by the fact that more early-inits will get added
-> > in the future I do guess we should've set up the io-memory
-> > page-type by this point?
-> >
-> 
-> I hope there won't be :). For any normal mmu capable SoC, I don't
-> see why that would be required.
-
-ok, so we'll assume there won't be another special-special case SoC
-forthcoming and hope for the best - works for me :-D
-
-Thanks
-Heiko
-
-
-> > [0] https://elixir.bootlin.com/linux/latest/source/arch/riscv/kernel/soc.c#L14
-> > [1] https://elixir.bootlin.com/linux/latest/source/drivers/soc/canaan/k210-sysctl.c#L66
-> >
-> > > By doing that, we can unify the cpu feature probing and you don't need
-> > > a separate DT parsing just for svpbmt.
-> > >
-> > > >         call soc_early_init
-> > > >         tail start_kernel
-> > > >
-> > > > diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
-> > > > index a6d13dca1403..f1e4948a4b52 100644
-> > > > --- a/arch/riscv/kernel/smpboot.c
-> > > > +++ b/arch/riscv/kernel/smpboot.c
-> > > > @@ -32,7 +32,6 @@
-> > > >  #include <asm/sections.h>
-> > > >  #include <asm/sbi.h>
-> > > >  #include <asm/smp.h>
-> > > > -#include <asm/alternative.h>
-> > > >
-> > > >  #include "head.h"
-> > > >
-> > > > @@ -41,7 +40,6 @@ static DECLARE_COMPLETION(cpu_running);
-> > > >  void __init smp_prepare_boot_cpu(void)
-> > > >  {
-> > > >         init_cpu_topology();
-> > > > -       apply_boot_alternatives();
-> > > >  }
-> > > >
-> > > >  void __init smp_prepare_cpus(unsigned int max_cpus)
-> > > > --
-> > > > 2.30.2
-> > > >
-> > > >
-> > > > _______________________________________________
-> > > > linux-riscv mailing list
-> > > > linux-riscv@lists.infradead.org
-> > > > http://lists.infradead.org/mailman/listinfo/linux-riscv
-> > >
-> > >
-> > >
-> > >
-> >
-> >
-> >
-> >
+> 	The interrupt handler is extended to handle a PM interrupt which
+> 	is triggered by HW when a PM transition occurs. In this case,
+> the
+> 	driver responds acknowledging the transaction using the HOST_MSG
+> 	mailbox.
 > 
 > 
+> Wojciech Ziemba (3):
+>   crypto: qat - add misc workqueue
+>   crypto: qat - move and rename GEN4 error register definitions
+>   crypto: qat - enable power management for QAT GEN4
 > 
+>  .../crypto/qat/qat_4xxx/adf_4xxx_hw_data.c    |  21 +--
+>  .../crypto/qat/qat_4xxx/adf_4xxx_hw_data.h    |  24 ---
+>  drivers/crypto/qat/qat_common/Makefile        |   1 +
+>  .../crypto/qat/qat_common/adf_accel_devices.h |   2 +
+>  drivers/crypto/qat/qat_common/adf_admin.c     |  37 +++++
+>  .../crypto/qat/qat_common/adf_common_drv.h    |   4 +
+>  drivers/crypto/qat/qat_common/adf_ctl_drv.c   |   6 +
+>  .../crypto/qat/qat_common/adf_gen4_hw_data.h  |  14 ++
+>  drivers/crypto/qat/qat_common/adf_gen4_pm.c   | 137 ++++++++++++++++++
+>  drivers/crypto/qat/qat_common/adf_gen4_pm.h   |  44 ++++++
+>  drivers/crypto/qat/qat_common/adf_init.c      |   6 +
+>  drivers/crypto/qat/qat_common/adf_isr.c       |  42 ++++++
+>  .../qat/qat_common/icp_qat_fw_init_admin.h    |   1 +
+>  13 files changed, 306 insertions(+), 33 deletions(-)
+>  create mode 100644 drivers/crypto/qat/qat_common/adf_gen4_pm.c
+>  create mode 100644 drivers/crypto/qat/qat_common/adf_gen4_pm.h
 
-
-
-
+All applied.  Thanks.
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
