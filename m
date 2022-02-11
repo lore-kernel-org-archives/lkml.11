@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A31CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:50:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B9D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:51:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240079AbiBKDu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 22:50:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38450 "EHLO
+        id S240549AbiBKDvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 22:51:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237552AbiBKDu4 (ORCPT
+        with ESMTP id S240258AbiBKDvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 22:50:56 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF0455BE;
-        Thu, 10 Feb 2022 19:50:55 -0800 (PST)
-X-UUID: aa6a7922a3334273a9067773b13ad0d6-20220211
-X-UUID: aa6a7922a3334273a9067773b13ad0d6-20220211
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <dawei.chien@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 775901192; Fri, 11 Feb 2022 11:50:42 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 11 Feb 2022 11:50:41 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 11 Feb 2022 11:50:41 +0800
-Message-ID: <1e1262cdc9ee0f4ad1782a4ad29f1fd2c6234be7.camel@mediatek.com>
-Subject: Re: [V11,PATCH 05/19] soc: mediatek: add support for mt6873
-From:   Dawei Chien <dawei.chien@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Georgi Djakov <georgi.djakov@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Ryan Case <ryandcase@chromium.org>
-CC:     Mark Rutland <mark.rutland@arm.com>,
-        Nicolas Boichat <drinkcat@google.com>,
-        <devicetree@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Fan Chen <fan.chen@mediatek.com>,
-        Arvin Wang <arvin.wang@mediatek.com>,
-        James Liao <jamesjj.liao@mediatek.com>,
-        Henry Chen <henryc.chen@mediatek.com>
-Date:   Fri, 11 Feb 2022 11:50:41 +0800
-In-Reply-To: <586066f9-c201-ff37-3e77-28ab3eb1c733@collabora.com>
-References: <20210812085846.2628-1-dawei.chien@mediatek.com>
-         <20210812085846.2628-6-dawei.chien@mediatek.com>
-         <586066f9-c201-ff37-3e77-28ab3eb1c733@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 10 Feb 2022 22:51:09 -0500
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E1D5F75
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:51:09 -0800 (PST)
+Received: by mail-io1-f71.google.com with SMTP id k20-20020a5d91d4000000b0061299fad2fdso5453852ior.21
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:51:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=sFibFZ2c7JVpUsxAag24//5YclVikx9mwUhyNlC52lY=;
+        b=Eev7XeXLtTWOEes/litwsRj5xkxdxn+4ee8Lmq0VHyqTxTLDZom3MvxZXq5J+Yf96w
+         v40SH/SB16B33EPEzJ3YhHYi6fwbRpoUCbcf24mvN2QBLXCF2ww+3qxRpvKrg8TAvDyo
+         pfMDeYEASWjaPwQQjm9sEFj4DWNoRVnDSlLQwrP24h3nNjL6c+6M9aXdriuIQhBBvAVV
+         iEbMh8WsDXTV4zwNs0wwZTyVf+j76FsXtP+8jO2jmcPm37/ilWVSvRug6UzUbdHje51L
+         p+AlBxtzXUndw+U3JYeeZrA2ONvxU4qHDoSuKjb/O3RMrCHXvint9sRHyIVifZddKs9a
+         wIVg==
+X-Gm-Message-State: AOAM532wuQPCrER3XjOyXHTM+h4vZ3N3ARDqc0lJCCHJT3WnR5lplesx
+        ZTV5NA9dwP+zQK95s/lX0lzO76WovHqLOiIk+bGREjxrB8gh
+X-Google-Smtp-Source: ABdhPJwxguZj4xhw2cCfO1gXWXSzPnSR1JybjtsjtIDM6ox5o8VarmPoCrQWscPGGU0wYr9BA1bjL/AFgdY8vzL1308DYnV0CtN2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+X-Received: by 2002:a05:6638:2606:: with SMTP id m6mr5630684jat.93.1644551468636;
+ Thu, 10 Feb 2022 19:51:08 -0800 (PST)
+Date:   Thu, 10 Feb 2022 19:51:08 -0800
+In-Reply-To: <0000000000006e988105d72fbe3f@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001a5dc005d7b5fab1@google.com>
+Subject: Re: [syzbot] general protection fault in i2c_setup_smbus_alert
+From:   syzbot <syzbot+0591ccf54ee05344e4eb@syzkaller.appspotmail.com>
+To:     akhilrajeev@nvidia.com, andriy.shevchenko@linux.intel.com,
+        andy.shevchenko@gmail.com, djrscally@gmail.com,
+        gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
+        johan@kernel.org, linux-acpi@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, sakari.ailus@linux.intel.com,
+        syzkaller-bugs@googlegroups.com, wsa@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-03 at 16:13 +0100, AngeloGioacchino Del Regno wrote:
-> Il 12/08/21 10:58, Dawei Chien ha scritto:
-> > From: Henry Chen <henryc.chen@mediatek.com>
-> > 
-> > add support for mt6873
-> > 
-> > Signed-off-by: Henry Chen <henryc.chen@mediatek.com>
-> 
-> You forgot to add your Signed-off-by tag here. Even if this patch is
-> not yours, you're the sender, so you have to sign it.
-> 
-> Besides, can you please fix the title?
-> 
-> soc: mediatek: mtk-dvfsrc: Add support for MT6873
+syzbot has bisected this issue to:
 
-I would add signed-off tag and fix the title on next version, thank
-you.
+commit a263a84088f689bf0c1552a510b25d0bcc45fcae
+Author: Akhil R <akhilrajeev@nvidia.com>
+Date:   Fri Jan 28 11:44:27 2022 +0000
 
+    i2c: smbus: Use device_*() functions instead of of_*()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=156c8174700000
+start commit:   ef6b35306dd8 Add linux-next specific files for 20220204
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=176c8174700000
+console output: https://syzkaller.appspot.com/x/log.txt?x=136c8174700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0431e0b00810b4f
+dashboard link: https://syzkaller.appspot.com/bug?extid=0591ccf54ee05344e4eb
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1105f472700000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16492aa4700000
+
+Reported-by: syzbot+0591ccf54ee05344e4eb@syzkaller.appspotmail.com
+Fixes: a263a84088f6 ("i2c: smbus: Use device_*() functions instead of of_*()")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
