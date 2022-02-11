@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D48BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E38ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347062AbiBKBoj (ORCPT
+        id S1347094AbiBKBoo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 20:44:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48958 "EHLO
+        Thu, 10 Feb 2022 20:44:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346982AbiBKBoV (ORCPT
+        with ESMTP id S1346962AbiBKBoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 20:44:21 -0500
+        Thu, 10 Feb 2022 20:44:22 -0500
 Received: from APC01-HK2-obe.outbound.protection.outlook.com (mail-eopbgr1300100.outbound.protection.outlook.com [40.107.130.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5EA5F9D;
-        Thu, 10 Feb 2022 17:44:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E99215F99;
+        Thu, 10 Feb 2022 17:44:22 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nNJtwIe2JHpi79FQ5OG7cm8fkiwLuoY4Tsqs5bynw6CvlAYb0u2+8JQYAiM52PDGUPPxshcY8SjqCYFK6BM1UieACn7AVTyybdx0Ic7FV+sruXMQqMYVtJvsb6qGTMXkdTE45lljGl2jvkuslXjA9OqxGd23edsYr8KO1SGnFDjtRsJKM7d4o1eZmmw2EtZhe+o+QXTrlFJCldrlxcMfpQkFBpvirLHWPUSDTL3yQMfMdF0IlVhNICdcaZWJ2kT90ai29UqdIRgOhJzPFI+RcnWsdO3iaOUOcoWC5K3WzQkIoGwUu0nwk8q3NMK9wvJh7qgEZ39zvM2VT+hsIq/6pQ==
+ b=U/zkF4UDN8u1E8At+/jqwF+ZQm9FmfRYbMuE79Q6YvUHe4H05aF7ZcPARZ5obw/BomDNA/u5BOL8CKMtT30jhcUqphT8764IIl239PW+mLSlqEIyg/3Q+9t/0EeSxZFzuHHgBQL/HHFGrXD548JQmwuXUGx3crpZJog0MoKlGzAtt7B55sS8pTDjOGxKJJm2R2QQAi+bDuXJaVh/5PaPg0gBnYOKWF6sg5oA71BbGBgp8BU7vRV7lub7L7HYHbj3d5pYZVdZFElXXQ9EXZqmrqEVwGAk/ttD0fKZa5eufApb8UvtYrfdcm3Nmt0AVLh5SdBGs9VZs+b6EGLS6Pl7Zg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QRvFQ7lCwiX8nBe9hFQbKw9ddkl0U+5j90hDCU8eHCU=;
- b=HiOw3oS6XFRFOfhTLLEUR1Nx9XKqa22MZI2MWhXfyAzfl4XhlGUGiboD+xdv13GaqG3xDCp0NZd7I4g2MLz0sl7eEioH/lwoEohvsgsbAIewOvMEHc4xkMJ2wlWfrljHXpdTieL5tiip0tqtSEPuKjZWjc1kZEE+0mCFalxwDlQVQXD+OrnUjBY42K8TyIp9uqTW4rDLIbgaoNWY/SjJJ26Z6TwGfZoBV1b/8mr6PGuqrQ3aoZMqz5X04D+NRCIdunNYL3gg6OLoSbaTjtdt/iHkE9PSLnrzMjcPraRTFWIikv6Fem3/DkRiMXnhUgyn7jPuqvW3iuBv1D6KKDbtow==
+ bh=1U+qZMiEYQuuwUYthaqKiZ4rPo5rYgpYTpz5r6aqttg=;
+ b=WbNDRYqFcPzHasROy1h9KOED7TVBjMuG41asEfFTZd3QkQRLaSXz79jVnjCR7BGQyLRbsxjSMCH2w0sZ8uDDPfbyo5Ec2sGX/uyZPMBp0QiwXKuIsIjAwurKUbm9di2Ehn/4gX9BO/x9xB7gC+XLA4rpoDNjd8EgVsxqDwDEKvqvbdU62RnJ2JlfA6tKSa6bjVgKe6Mfe0O4UclSlYylKR77sU9uF4UJamzTgscXqdi7zflsbm+htJhmpBcYBZtiLerxI2ImijPXPG9lxyGQVoCmEJlkoYBIjQJ0RGazm/s6jp/uGVo3Hnn0or98dmxE7TIaC4qstC+ne3a6Xk2Y1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QRvFQ7lCwiX8nBe9hFQbKw9ddkl0U+5j90hDCU8eHCU=;
- b=1CLXHPVLbhKH67TFtOtMPf7sM2OJQjPMs/dfqZfVYQ7NNoflpXC7lWl3Y9fu1+P4CnVDCo6zoi4WetZmbRKUI6WfqeY0+CvOep3e6+5elGK3MvqxcXfEECFPjTba8HZpL1At6nhQmiYFjs+B1AtGEPopuVBYSpxVfNT37N/Gnh8=
+ bh=1U+qZMiEYQuuwUYthaqKiZ4rPo5rYgpYTpz5r6aqttg=;
+ b=GgXPEugeGX5aLEoZNL/KatVyQNEitHq4vZNJ8+kEkho9RKA1jhjhQzj1fyTj66pRbwbsfP7gFzEdo5gOJ78J9zlBKnyc9Wa1vmtuSVHbqpGFWLzVq22HaQN2ycsS1LBk/CLBGaFfYQptFGcMf9P7NMaUy5aTAnEOsdutlseiDrk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=quantatw.com;
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
  by SG2PR04MB3577.apcprd04.prod.outlook.com (2603:1096:4:9e::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.17; Fri, 11 Feb
- 2022 01:44:17 +0000
+ 2022 01:44:18 +0000
 Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::8160:1a0:97e1:9e53]) by HK0PR04MB3282.apcprd04.prod.outlook.com
  ([fe80::8160:1a0:97e1:9e53%3]) with mapi id 15.20.4951.019; Fri, 11 Feb 2022
- 01:44:16 +0000
+ 01:44:18 +0000
 From:   Potin Lai <potin.lai@quantatw.com>
 To:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
         Andrew Jeffery <andrew@aj.id.au>
@@ -48,9 +48,9 @@ Cc:     Patrick Williams <patrick@stwcx.xyz>, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
         Potin Lai <potin.lai@quantatw.com>
-Subject: [PATCH 06/10] arch: arm: dts: bletchley: add interrupt support for sled io expander
-Date:   Fri, 11 Feb 2022 09:43:43 +0800
-Message-Id: <20220211014347.24841-7-potin.lai@quantatw.com>
+Subject: [PATCH 08/10] arch: arm: dts: bletchley: add INA230 sensor on each sled
+Date:   Fri, 11 Feb 2022 09:43:45 +0800
+Message-Id: <20220211014347.24841-9-potin.lai@quantatw.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220211014347.24841-1-potin.lai@quantatw.com>
 References: <20220211014347.24841-1-potin.lai@quantatw.com>
@@ -60,139 +60,148 @@ X-ClientProxiedBy: HK2PR02CA0143.apcprd02.prod.outlook.com
  (2603:1096:203:89::17)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1ba8de40-460c-4dfc-a45a-08d9ed00030b
+X-MS-Office365-Filtering-Correlation-Id: 0dc5af48-f3fe-46ca-3850-08d9ed0003a4
 X-MS-TrafficTypeDiagnostic: SG2PR04MB3577:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR04MB35772F1EEB0E4EE5135C874B8E309@SG2PR04MB3577.apcprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-Microsoft-Antispam-PRVS: <SG2PR04MB3577DAF3F41623B433CDEBCD8E309@SG2PR04MB3577.apcprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:330;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m+l0PoCkOk1VBlxP6dDg7Ho4BljOywYhekUWsmQsn7tSlWHvP+qZp30ytQJK0HaPHsN+7hK2IyDhsOC5jynHtWBJCfB2U49akmwe0VoNuNqMQ0EultXHS5z1lA1Ug2pfuAqzcUApXqrfiIT2X3zMCttM1pUQRyMN7pBMioLrW00P/yDdKoZLzj0U15gfPLbZAtbg1J5VhV0rckMKdpx2wZozCwkLPruKnU/Ttdv1cd62X+7Hn7meBRRoqUvbW0CtWbHqLPpXyvwqpatEMOR/pTFh92PMfjsmQax3YW4sKQMgAc1xuek4rUQlG4+hq0pSP/Zh4aS1dCp6m/QqlBGPuashvU1e0ue+xbil4NJ75XcHr18pa46KjGOmQagPe/HSqTvg77/rjC9Pa5wOihen5UsHW+Vp6evWLQy3Sn8JHA+Qz7wI9FBhPSI1D0uQ3HQ1tXf7Gibvv4uuonmu9+yM+VsgyuCNJOKVFxXUZ4ztvg5roF6EY+hceVpigrA51KljUAtRsyiiscozLpW7k9XCsIw/QfFySLnfUbtBJrn5TDjmBO1uUXHGsJox66hgN6Gcjs4eHLrecBscHP5PXumILwf693400UZ8qvScSTB7s2Vx6m8AVMCZdR+BXbL8XL1P2eDbCZAF7IzgLtwTeKmRf4xTp7iT00xqlgJwFh5u5jZPIbFuu/J/Dzw+Tbvob1BHG3nVT9Yj3JfoW8Qqe36obQ==
+X-Microsoft-Antispam-Message-Info: rHgA20m6b0W7sJBKsFoHlVMf4V+TrPTZblEd9Ct4zAKIPcvFHrnDX2alUu2ovwPe1lQsjiS/e83Gj1ZLzw9ZMw2VuYmjvLdAmpR7KTaY26F20DG1lLXwpZYt1bwn4CLOnz9x4fNAF53dVvXvwYc1RBe07/XgTUMwaHQGzBgA/XpiwRL9zHg7u6O0hejnfaAuthbXGcfzGlEpwFK7jyfcdNezgqT92VDNv68v0IbFH/oXI4RbBBBL83UWE2zNJ6S2uXtSVIqrE5koucokTPbYxcRX1wXVz7uC0kF14bqBni+P2peZsw9X7Uvl4/my9lwzVLlQqQ//gbvtSxJT8XvhsdWeU6BjXRr6lljyJG6oeU8MYMfFPBQwySeCOV0nneIGstCVfk6B16vMYl/J3VFpLfk6Ekv5h/h4gV6zUcVCyDLfFsjT6xZ4C2j5j+fgMpfGCP43rATePPxn7n7DQJFAYcjaOKxLt1yRDkwNENpJA4twj95ZTYv1ZZl11GsctZQXTLwXh0E9sRCk/CTQEbr8bRx9rkUUr7ea05TMT6kAUlOd/BbAHRcfw+B19Soem3VKM9gxysRkBjuJpJFtzra0F77WPmLgiFMc6dyGMFhdbpMp7o2r8wBPY24UQVQBSqazHrfXFPO+YdeOuONLVbNVFKDnag0hQ4162tgZwx5QpEstfUnr6hb2MQiKODpxV9QjbpcDllEMQlFn7h8iIbE++Q==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(110136005)(107886003)(86362001)(54906003)(8936002)(8676002)(66476007)(66556008)(316002)(66946007)(186003)(38350700002)(2906002)(2616005)(1076003)(38100700002)(6486002)(508600001)(26005)(6506007)(6512007)(52116002)(44832011)(83380400001)(6666004)(36756003)(4326008);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AxIdwInohMXMZZwP+WX7eC+jcE7/3DIbslZRj9tFnQQ+FfvTdYC8O65WQg4D?=
- =?us-ascii?Q?aPaWZz80wNlkKbHKtY59T2M2TBp3qxUB35FDnD328NfDFHKxBSbTu6GO/W0C?=
- =?us-ascii?Q?yX9u9fOpgu81xG9tfRR+ZM0zbmH3eLB++ATLxWTnK0T25U2MFAM1TFG8O0Tq?=
- =?us-ascii?Q?oQe7NlMSi5i+P6Q04pE+7zwU3ZNCgFBoivOL/1Xb2+MtWQg4kLx620zJy3yQ?=
- =?us-ascii?Q?pQA1TcRw1z3dIqj0Det2WlqZjGkaWkRonfyl1mpekBlBghEN49XUzV/h1z3X?=
- =?us-ascii?Q?t9J+HxZyBk/6C08hBdXwtoJeBv0f0OCBYDYLTjQ1TeajFi67WV2gAXVwCcAd?=
- =?us-ascii?Q?l6vLiknQ/qTdNbSz4U5MfDRBx0uD0d9rESIcuDzvQZZ7oCwzuc6Y/fjw0rj/?=
- =?us-ascii?Q?r8pCtbsYyWwIj4pSdoHO7wdK3je9RE6Y7IgmsMWVtwet7jY3nxYy7eQ6nHnp?=
- =?us-ascii?Q?6h6g7SqDXbB208j0DRetS4wb/w18uMuhHuDO1poDsA49ZoREfor9VMoGGgkh?=
- =?us-ascii?Q?VGyc/tFPwAYIc0KEF3OKddMeaWnpBU7kRG8vEyrTOgwS+Yqbbryc5481qBsI?=
- =?us-ascii?Q?zrucvTuoQdFgzSinHHztvpaYTwgQ0OYBviYFbUQUSjqt48U3zaazdQ9Yq5wr?=
- =?us-ascii?Q?+I/XTFDU7sAZI0Rq22mBoj6r5Ldow7bxU6t/J0GN6VCU5gdxhxpPS63r/JX+?=
- =?us-ascii?Q?A6zBwKx8nd5mKAjLg9ehKIf4HZkW3t93XhUF8v0nuucpnUZ39bdrCnB7Kf99?=
- =?us-ascii?Q?nwBX8aYwmYcqLGJaNayyhSMaZPqP2G0L4SEotXzMBOPGZdYRLvNFrHpKVF58?=
- =?us-ascii?Q?EqydzDY6wZOGeuAg1IYQpCzBknfvHowZ6AvRy1enfaRAoLjOHS28jXpGLpdt?=
- =?us-ascii?Q?MsQ7ENOk1n1RKfnwid7CgQkxG29CSKLh4STfXkFsXtrrIqaVgSPHfB0HQ6kP?=
- =?us-ascii?Q?2tACYSyiUEB1fsZ3ljzyYs3bTglxfvRFJIS9D6oA3mFd6XLjzJ5Xbni0Nzcy?=
- =?us-ascii?Q?G7IJE5gDxZcBPZIJroC/hrUxGWERBbUR/2fkZ1YCK9q80UbI+AdpSBavGBc/?=
- =?us-ascii?Q?O9WGZ/jEMn3AN+vkc35dBiod9laYt5gDqPyFbwahMHhSBVHKmwyCuEpU1Gk3?=
- =?us-ascii?Q?+jJNZgMD7PSNDGiSQaGLJhT7fnYskalY+IM2OBVHhKqAc9xhMsI8xL0DIPG5?=
- =?us-ascii?Q?kmGWxExFEAyOR4bUx7xzjyj5ClzOe2T16FkSB3EPawAp4elqxExBL5CUQoTu?=
- =?us-ascii?Q?yaW/zUyaGg0HCVCzEze3wyoAddIXSk+Cs7xNl93h9v7mPIWi94DXW+XNv4gB?=
- =?us-ascii?Q?rlPfSc2NOZRKGUpN355hg8LkHEyqM+r4XuNDTe+pfp+LbzmyDzgfLsk0nIO6?=
- =?us-ascii?Q?PSL+9WiVteoN9fcbn8ye6++um0mDl7STzlu0OrUXL1aYt67bDeYjoyPcgtOq?=
- =?us-ascii?Q?flcbSV1uoBM4ano3OWcNH6lL8fT10cGWwYybamN3afxnTd27CawEf7jPlY2R?=
- =?us-ascii?Q?FsOzfWoScQjHeO6zK/kn5ajR/qZP3OhIcBrk92uq6/NDXBuMsH65/LhJKOA+?=
- =?us-ascii?Q?RvW2nYapmdm5EJ5RSo773ptXejCY91zB+2HHLf815oh7feajmXGwr4HIlgsS?=
- =?us-ascii?Q?14lH5cv0ZH/OEUOsr1gy7Po=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1qqZkFLxIjBYPLChcZ902hM1Fuurdl6X1JYjQjjQ74VnQE0sCTnYkePtPhuH?=
+ =?us-ascii?Q?+JamO+9kpP7yprF7jjh2DSswc7ec1V/FipEf8rsOerR63nibpkv1Gce9ogfR?=
+ =?us-ascii?Q?Cl4hCYyZU2F02q6qvpwg9mVr4saSyu2HsYmdaMtO2ovXpjPojipSvYMo34v7?=
+ =?us-ascii?Q?/rCypv+fh2Hiv2oScpmGwbPhiQcw9x77aibXlidDecWHCdCSPG1X9gYZ06h7?=
+ =?us-ascii?Q?/fWfRTAJSKwAjYx6AzLqI6FgZqJEPkc1iv6v6F1nMYOm3EvenvNleXD8sNZW?=
+ =?us-ascii?Q?3KjaVUDwR/VRwBRTxyPEDOSfJi0OaOGQGWQ5aO8CMcttLRFW4VhLHw+Ddw6d?=
+ =?us-ascii?Q?nhQeN4n4MrEq0OH39yP5Edu3PGwfjv/n+HLd5EsulKDVICmsuDmadG97fS/3?=
+ =?us-ascii?Q?1aeJBbR0DRIEP/Bw9kwm/paW2w84Q9sPICvaExwZBgZiY1FXE6L1Um/7G2DH?=
+ =?us-ascii?Q?SJDpXTDDZrMaIoEw1iqO5LHMXFZSkhaYdLv4OQ567QHH6RE4S8RIOkG0IulX?=
+ =?us-ascii?Q?dFh0d4WcrjtSVCl3uoJCdaXB1jrjOyjLnyXv5m526aFOuBv8ypJJBLIM965l?=
+ =?us-ascii?Q?M8clDO/jTpIOpHTdK45XRGMzd20Q7N3/9RRXiBfS8/2sZpv3VN+YfK7/HOpd?=
+ =?us-ascii?Q?dIGkXB5YHM6hOey7WbV33NrU+ePHFXJ/Iq0LpIVjEc/U4HPOa9BiQKP+jiBi?=
+ =?us-ascii?Q?pcDp05OkUmpFDnOwLp4t6Y5W3+Lc7/RJOZEB/Bq325P5BXs41zpYb92IDzWd?=
+ =?us-ascii?Q?hxk3PbmAc59HkCw0DoIY1GQMKYSTbWqSCXWOxy+2KaaALsaAHWMiwQPFPX8v?=
+ =?us-ascii?Q?/S6lyrDcRoK8NtWZNU+Nqh//53G0DNRe0ioKBD74mY8C4LL3//rXOoIHgW41?=
+ =?us-ascii?Q?+EsgV9IBteqK6kBiug/xCIk1JjaUyQbjismhwHtkDyi499fUmTEV4AvaPhjE?=
+ =?us-ascii?Q?NIeH5sRIs6Lsq4F6QIglPidoE18LUw1uE5G8n+IwIyvrmUzffVZypYZgXu1+?=
+ =?us-ascii?Q?cyEWlkHyHiTp99Q5/RjY6HKkeJ23w3rzcTWuLoccTEOy414FLyWbxDoEATfW?=
+ =?us-ascii?Q?Zj/dDaVpMirbygQNSX59B1dO7hSEF5f3Jtaime9KgoCOXzW6UOvjTGBzDFr9?=
+ =?us-ascii?Q?/E39mhxPVJY73gnL+KP63vPlRCnmKDYsQAAmVUQ5VApdAyt+sPeqbQXx3C3H?=
+ =?us-ascii?Q?fAyK2LfTCCDDMftJPdNOhCpAQ9c/gzKBA3R2rHNJeEBkAEK0ibxDokDJplkW?=
+ =?us-ascii?Q?FLHAq8Ewc7kXPo9qxl1+jN7H2f5HzArbYd6vq/RAgHO3yyaZBge1QAS9KFc2?=
+ =?us-ascii?Q?hWdlzAV+hJDA3Uljg9pFLBDAMwNX3x/tRoeyUo/wMiiRk3ODQeaZO1VbdyOX?=
+ =?us-ascii?Q?5PH+D2GT4FcmuOSwuD6UoG1qpc5b71DAwMGg9UwUkT/vmDaBIlc4vJc9XWFy?=
+ =?us-ascii?Q?gy3mHMbpudmmHvFNLO4wnhAHGJw18oOHedQoxZ8POkKjpdrI1p7O+/zoMtbb?=
+ =?us-ascii?Q?2UHUcu1Uis1KqwBA0GZ1kB5otKPVsMMdtFj60dVzTINgxgiNJvPXNlqA9ypV?=
+ =?us-ascii?Q?WSgyalNihUNfmvCF5op+0mvnzsmeuWm9DMhUKhHDPfH8rBmI9LZ041Is0Odf?=
+ =?us-ascii?Q?Ry0q1/H9b7Ee7jvjgfgglZo=3D?=
 X-OriginatorOrg: quantatw.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ba8de40-460c-4dfc-a45a-08d9ed00030b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0dc5af48-f3fe-46ca-3850-08d9ed0003a4
 X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 01:44:15.7450
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 01:44:16.7606
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CBRCSZazJlA6KUH/0Fv9zTqTJL0nIxCnT/c5OAdaCltmIEsaGYE40eyBhHBtHoUKMw4rIL751ZBnkt4xlKeOow==
+X-MS-Exchange-CrossTenant-UserPrincipalName: ntbwzX3+Vrxw2mf8q3HmLOSUfc7WVUh1zpNvJ5J4b/FH3PcAf38ow2zkrCAOU7FvZ4Nc+Hs4MBfxrtmXwqpt5w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR04MB3577
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable interrupt support for all sledx_ioexp, so userspace can monitor
-gpio from io expander by interrupt
+add INA230 node on each sled base on EVT HW
 
 Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 ---
- .../dts/aspeed-bmc-facebook-bletchley.dts     | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ .../dts/aspeed-bmc-facebook-bletchley.dts     | 36 +++++++++++++++----
+ 1 file changed, 30 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-index 3c54e4a892c9..8afaa8f52c38 100644
+index 76c086ea7b71..8c8fbfcbb257 100644
 --- a/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
 +++ b/arch/arm/boot/dts/aspeed-bmc-facebook-bletchley.dts
-@@ -6,6 +6,7 @@
- #include <dt-bindings/gpio/aspeed-gpio.h>
- #include <dt-bindings/usb/pd.h>
- #include <dt-bindings/leds/leds-pca955x.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
+@@ -249,7 +249,11 @@
  
- / {
- 	model = "Facebook Bletchley BMC";
-@@ -268,6 +269,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ &i2c0 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 0) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED1_MS_DETECT1","SLED1_VBUS_BMC_EN","SLED1_INA230_ALERT","SLED1_P12V_STBY_ALERT",
- 		"SLED1_SSD_ALERT","SLED1_MS_DETECT0","SLED1_RST_CCG5","SLED1_FUSB302_INT",
-@@ -331,6 +335,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
+@@ -315,7 +319,11 @@
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 1) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED2_MS_DETECT1","SLED2_VBUS_BMC_EN","SLED2_INA230_ALERT","SLED2_P12V_STBY_ALERT",
- 		"SLED2_SSD_ALERT","SLED2_MS_DETECT0","SLED2_RST_CCG5","SLED2_FUSB302_INT",
-@@ -398,6 +405,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ &i2c1 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 2) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED3_MS_DETECT1","SLED3_VBUS_BMC_EN","SLED3_INA230_ALERT","SLED3_P12V_STBY_ALERT",
- 		"SLED3_SSD_ALERT","SLED3_MS_DETECT0","SLED3_RST_CCG5","SLED3_FUSB302_INT",
-@@ -461,6 +471,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
+@@ -385,7 +393,11 @@
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 3) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED4_MS_DETECT1","SLED4_VBUS_BMC_EN","SLED4_INA230_ALERT","SLED4_P12V_STBY_ALERT",
- 		"SLED4_SSD_ALERT","SLED4_MS_DETECT0","SLED4_RST_CCG5","SLED4_FUSB302_INT",
-@@ -524,6 +537,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ &i2c2 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 4) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED5_MS_DETECT1","SLED5_VBUS_BMC_EN","SLED5_INA230_ALERT","SLED5_P12V_STBY_ALERT",
- 		"SLED5_SSD_ALERT","SLED5_MS_DETECT0","SLED5_RST_CCG5","SLED5_FUSB302_INT",
-@@ -587,6 +603,9 @@
- 		gpio-controller;
- 		#gpio-cells = <2>;
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
+@@ -451,7 +463,11 @@
  
-+		interrupt-parent = <&gpio0>;
-+		interrupts = <ASPEED_GPIO(M, 5) IRQ_TYPE_LEVEL_LOW>;
-+
- 		gpio-line-names =
- 		"SLED6_MS_DETECT1","SLED6_VBUS_BMC_EN","SLED6_INA230_ALERT","SLED6_P12V_STBY_ALERT",
- 		"SLED6_SSD_ALERT","SLED6_MS_DETECT0","SLED6_RST_CCG5","SLED6_FUSB302_INT",
+ &i2c3 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
+ 
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
+@@ -517,7 +533,11 @@
+ 
+ &i2c4 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
+ 
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
+@@ -583,7 +603,11 @@
+ 
+ &i2c5 {
+ 	status = "okay";
+-	/* TODO: Add ADC INA230 */
++	ina230@45 {
++		compatible = "ti,ina230";
++		reg = <0x45>;
++		shunt-resistor = <2000>;
++	};
+ 
+ 	mp5023@40 {
+ 		compatible = "mps,mp5023";
 -- 
 2.17.1
 
