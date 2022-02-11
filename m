@@ -2,114 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B67BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D7BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240026AbiBKTCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 14:02:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35760 "EHLO
+        id S241119AbiBKTIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 14:08:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231374AbiBKTCQ (ORCPT
+        with ESMTP id S234187AbiBKTIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 14:02:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A9C7CEC
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:02:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644606133;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uCPX5JhmQZBLLVR0kjaN03GHUoCUZZ0rX5OEZWbAEqs=;
-        b=UwGi6y/kPm03xk0TblimgSka6ShxOrpl3AqTRiBRnmPZBcvUlIvZVdAbQ0UU2tZP/W/D7X
-        Ky2adtTql1GvQdYkmb5NZmXslR4sqMNnIcjUGR1PaXNkzYvRgOIAesBR89hsWmRn6azanT
-        IFyvCfoPL4FeW2v30fpFlSq/Mu+DCn0=
-Received: from mail-yb1-f198.google.com (mail-yb1-f198.google.com
- [209.85.219.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-106-9OBYY8C-NZOsXMrNYGpsyA-1; Fri, 11 Feb 2022 14:02:12 -0500
-X-MC-Unique: 9OBYY8C-NZOsXMrNYGpsyA-1
-Received: by mail-yb1-f198.google.com with SMTP id q11-20020a252a0b000000b0061e240c8fb3so17079567ybq.22
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:02:12 -0800 (PST)
+        Fri, 11 Feb 2022 14:08:52 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECCBCC8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:08:51 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id w7so12607329ioj.5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:08:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6JLd28e+NLvwE6yBfdYj8gXKTpz4aPz6HX1YLob6zz0=;
+        b=jIFPSDD96puT+vw0LNhv65wJ7YEr8bY0vCv0LpBkiGlx1SUSYLO/sLfHDFyIHImAzG
+         /h9SSrDWWiozdtKRfir2pG3HSAc90J3C/9KERDnq9jG3lTGrtP7aVb3ziTBtGoHdfj/q
+         7LmJIVTzpgc5HNz+bMGjINrAQPe2fKiCjgFUFNXz7yw9a3jgFEbvUsnsRUu8cuh8bZ8K
+         rL2t2vQ3cizHS10jO8/dyGu1UC8D5FYveJq2yDA+rJDK+bfzVc9wryyGK9LlPvHBJyFM
+         6MdgIi1bXRDUPMpUcQjkmrAXjgqi5mhTK9Bk7CBw52FEu+qGUiO32Vq4extSiJGWreYY
+         4Dog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uCPX5JhmQZBLLVR0kjaN03GHUoCUZZ0rX5OEZWbAEqs=;
-        b=GJPfkZUnP/OsJ/7sNn02LjInOosy3Pv4QRYqGNygq/lfwpZEcpfIicUiz9vBQMm/iA
-         AqSRo6sGhHbh7pzwn7sLSSpHSNCFGELcpv3mXwh1ijm2gdyj6+VEs/kSEraeQk+kvWGI
-         hyI6EjWk+6FRlIAgHSOtNLcJe/j8wFOMle7sWXWZU10eBS8uV18TmYO40zTEEf28F3pM
-         4kBKG6HMs1gAMd4NlBb8o696BZsgz2nL7YHUGIuhMQVGyg6G+mIVtLjBtLMO3Udls57A
-         u6Cva3YZgaGgzAwldAXKP5fzDTHY7jkiW5YSJhQcrK0a7A/7t/3nA3F9pZ7h5XCZdIxZ
-         8a8g==
-X-Gm-Message-State: AOAM530BtTuYf9ZaXA2D8jBYRHzN9FldPf6bj6aK1xR/5BNAM0GLL8Ry
-        ne6dyglbM0U2kkmjIE6Vjm1oUWhvaI9n4rs+w2Mn+KhFkrTNFRpyd9tXf6NjlloV1/QDKZzADm/
-        Sd71c/DdL3aCIkMulfvmIT3aqtLsBrdpoyGop6dmO
-X-Received: by 2002:a25:b21c:: with SMTP id i28mr3146553ybj.340.1644606131724;
-        Fri, 11 Feb 2022 11:02:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYUFvjxz9AR6X+PhbjsVUwP5fVasLhZdlrYK99Hz6fiZn9cSScfFVxKFtghFHfle1TtJOhtINrfIwjeIImGcQ=
-X-Received: by 2002:a25:b21c:: with SMTP id i28mr3146511ybj.340.1644606131342;
- Fri, 11 Feb 2022 11:02:11 -0800 (PST)
+        bh=6JLd28e+NLvwE6yBfdYj8gXKTpz4aPz6HX1YLob6zz0=;
+        b=3aicVfjx/eqDan7MtC0I4vjguQWGUcFwz3huznXeoJBSBWrrdNqbxMkoZoIWis8r6m
+         CSKFZaWxXSFbalpEH+BsK4FQvH7DPvGsRaqE0K9IaQkum4/c/Ko1c9jcJ5+S5UbtslOS
+         ReZBvryK/H21eZ1ZGs6veS5Vk5ogH1d9ZzDPnGX+4PiVydAclqAg0yURbtYXlZ3cX6Wd
+         raRYmttPQGol8nnf4KnVbdvEDFxwoSHlLwewFqaIvdy96Gf2gcr+V/eDQpm5vfkJYcJn
+         K6aAzw6HDYQ4fwUUW/0WjgnLqSR/dYRvQIdt7pC/44uM3udn+67GEYXSlfiL8LPbd8KK
+         wjlA==
+X-Gm-Message-State: AOAM530AnW13qu/CMpV2Fl8FdYbu8CzU6NxSxmY8i8FUHZ6bPN3HPNMv
+        8UCGcSBwqRPnAV/XnkWSUNNje3zh9vX+b+j/q1KxQw==
+X-Google-Smtp-Source: ABdhPJwjPPoE2UoJiEd8CP47TnFE6isPn/wYwMgodNPtAkYB93NtYOfaYYWutD3xTmMDsmWURym++djWJJ9Mz1VKR0Y=
+X-Received: by 2002:a5e:a70e:: with SMTP id b14mr1625729iod.171.1644606530262;
+ Fri, 11 Feb 2022 11:08:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20220208094334.16379-1-mgorman@techsingularity.net>
- <20220208094334.16379-3-mgorman@techsingularity.net> <9ab0a2c2-7dee-40b0-edd0-56a5b1915745@amd.com>
- <20220209103358.GP3366@techsingularity.net>
-In-Reply-To: <20220209103358.GP3366@techsingularity.net>
-From:   Jirka Hladky <jhladky@redhat.com>
-Date:   Fri, 11 Feb 2022 20:02:00 +0100
-Message-ID: <CAE4VaGDZ1Tf5UuDz+nB5OhAD70395-sXZgMNa2G69BJs2fafEg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] sched/fair: Adjust the allowed NUMA imbalance when
- SD_NUMA spans multiple LLCs
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     K Prateek Nayak <kprateek.nayak@amd.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Mike Galbraith <efault@gmx.de>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Gautham Shenoy <gautham.shenoy@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220202014034.182008-1-mike.kravetz@oracle.com>
+ <20220202014034.182008-2-mike.kravetz@oracle.com> <YgSDcmXya7vTvvZE@xz-m1.local>
+ <bf1f7a47-5d57-492a-03dd-e42afe186d47@oracle.com> <YgXJ4VjYBJC9ZfbF@xz-m1.local>
+In-Reply-To: <YgXJ4VjYBJC9ZfbF@xz-m1.local>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Fri, 11 Feb 2022 11:08:14 -0800
+Message-ID: <CAJHvVcg1pFfFSggGjDCNKt6ZzS07HYNHHQMcmguZACECpBGf=Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
+To:     Peter Xu <peterx@redhat.com>
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        David Hildenbrand <david@redhat.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Michal Hocko <mhocko@suse.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mel,
-
-we have tested 5.17.0_rc2 + v6 of your patch series and the results
-are very good!
-
-We see performance gains up to 25% for the hackbench (32 processes).
-Even more importantly, we don't see any performance losses that we
-have experienced with the previous versions of the patch series for
-NAS and SPECjbb2005 workloads.
-
-Tested-by: Jirka Hladky <jhladky@redhat.com>
-
-Thanks a lot
-Jirka
-
-
-On Wed, Feb 9, 2022 at 12:08 PM Mel Gorman <mgorman@techsingularity.net> wrote:
+On Thu, Feb 10, 2022 at 6:29 PM Peter Xu <peterx@redhat.com> wrote:
 >
-> On Wed, Feb 09, 2022 at 10:40:15AM +0530, K Prateek Nayak wrote:
-> > There is a significant improvement throughout the board
-> > with v6 outperforming tip/sched/core in every case!
+> On Thu, Feb 10, 2022 at 01:36:57PM -0800, Mike Kravetz wrote:
+> > > Another use case of DONTNEED upon hugetlbfs could be uffd-minor, because afaiu
+> > > this is the only api that can force strip the hugetlb mapped pgtable without
+> > > losing pagecache data.
 > >
-> > Tested-by: K Prateek Nayak <kprateek.nayak@amd.com>
-> >
+> > Correct.  However, I do not know if uffd-minor users would ever want to
+> > do this.  Perhaps?
+
+I talked with some colleagues, and I didn't come up with any
+production *requirement* for it, but it may be a convenience in some
+cases (make certain code cleaner, e.g. not having to unmap-and-remap
+to tear down page tables as Peter mentioned). I think Peter's
+assessment below is right.
+
 >
-> Thanks very much Prateek and Gautham for reviewing and testing!
+> My understanding is before this patch uffd-minor upon hugetlbfs requires the
+> huge file to be mapped twice, one to populate the content, then we'll be able
+> to trap MINOR faults via the other mapping.  Or we could munmap() the range and
+> remap it again on the same file offset to drop the pgtables, I think. But that
+> sounds tricky.  MINOR faults only works with pgtables dropped.
+>
+> With DONTNEED upon hugetlbfs we can rely on one single mapping of the file,
+> because we can explicitly drop the pgtables of hugetlbfs files without any
+> other tricks.
+>
+> However I have no real use case of it.  Initially I thought it could be useful
+> for QEMU because QEMU migration routine is run with the same mm context with
+> the hypervisor, so by default is doesn't have two mappings of the same guest
+> memory.  If QEMU wants to leverage minor faults, DONTNEED could help.).
+>
+> However when I was measuring bitmap transfer (assuming that's what minor fault
+> could help with qemu's postcopy) there some months ago I found it's not as slow
+> as I thought at all..  Either I could have missed something, or we're facing
+> different problems with what it is when uffd minor is firstly proposed by Axel.
+
+Re: the bitmap, that matters most on machines with lots of RAM. For
+example, GCE offers some VMs with up to 12 *TB* of RAM
+(https://cloud.google.com/compute/docs/memory-optimized-machines), I
+think with this size of machine we see a significant benefit, as it
+may take some significant time for the bitmap to arrive over the
+network.
+
+But I think that's a bit of an edge case, most machines are not that
+big. :) I think the benefit is more often seen just in avoiding
+copies. E.g. if we find a page is already up-to-date after precopy, we
+just install PTEs, no copying or page allocation needed. And even when
+we have to go fetch a page over the network, one can imagine an RDMA
+setup where we can avoid any copies/allocations at all even in that
+case. I suppose this also has a bigger effect on larger machines, e.g.
+ones that are backed by 1G pages instead of 4k.
+
+>
+> This is probably too out of topic, though..  Let me go back..
+>
+> Said that, one thing I'm not sure about DONTNEED on hugetlb is whether this
+> could further abuse DONTNEED, as the original POSIX definition is as simple as:
+>
+>   The application expects that it will not access the specified address range
+>   in the near future.
+>
+> Linux did it by tearing down pgtable, which looks okay so far.  It could be a
+> bit more weird to apply it to hugetlbfs because from its definition it's a hint
+> to page reclaims, however hugetlbfs is not a target of page reclaim, neither is
+> it LRU-aware.  It goes further into some MADV_ZAP styled syscall.
+>
+> I think it could still be fine as posix doesn't define that behavior
+> specifically on hugetlb so it can be defined by Linux, but not sure whether
+> there can be other implications.
+>
+> Thanks,
 >
 > --
-> Mel Gorman
-> SUSE Labs
+> Peter Xu
 >
-
-
--- 
--Jirka
-
