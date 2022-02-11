@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1471FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 084BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352423AbiBKR7K (ORCPT
+        id S1352426AbiBKR7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:59:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47210 "EHLO
+        Fri, 11 Feb 2022 12:59:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345366AbiBKR7E (ORCPT
+        with ESMTP id S1349194AbiBKR7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:59:04 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D2ECFF
+        Fri, 11 Feb 2022 12:59:05 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF026CD3
         for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:59:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1644602343; x=1676138343;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=joe1Dny+qovsdKCZL11blzkpqCFavU1IFmPjdYzKK4I=;
-  b=kGGFLdZvP3NFT+ct8nyZAs8IGROmaZjUyh/7dcJ3MEMuaFEwZOkMU0DY
-   cZbecoc8errISsUcOeVTOo8G6+Fmvd5IcAdhxSHodhQ3cjtUB87JpBL/9
-   t7UruqZV/+YWoaC8GM3pG3VneTsBOTNyZFSSRKd7Gx4IcLbs9ndzy4SQi
-   AkvetjE5RTdtGlEcs64cklF7NzowHDt0lF5RsS+wEeZ7U2E9IblEwN0rC
-   OP7wEQU+aJ+oV/qOBr63DiBn44A7ut4GboalnXQKX+g+Wk6OjeKdE0Ixs
-   h91nW9yh1uBc5+ysXKf44o8k44AS5NinFAvh2Zq+2vt8xgWWucIcMjwuI
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="233330856"
+  bh=Ly4eWRKsJxj3FMJ3dAOIfDAsOe0OiL0UZ2cEYPo6R3E=;
+  b=lXCO6AEsr1ESwB65Cdiwiet06HSQkpjQl/6BLkPlSf6CbQOz+QdE6GD5
+   qa5JQlCKc9S+rLcZpqJQX1J/OjpIyqZsQPDOErxL1MX3TGmpPhmPAoFE7
+   33/gIhCF3Hb9rykzwJTdvm/ClWX1Iyz/ptePlEc1SFaCgCXVv3oQhY10o
+   3vwYxtzqwGAHJiHLLzmM5UjAQC5lju2CiRkqQ8IBhC5sMlrogbrj6DV3Y
+   Ud6qcgJtvDtdGfUXU3jf9FdHkkSMIaKdmEVEjAPTN9PZzXFLJIzBEG9VP
+   EfpwThJKUcrFvIfywwQ5Mpw4OMWGuIcbDP/xDHSLVPTw0Ghh4MJOTOnDM
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="247369746"
 X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="233330856"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 09:59:02 -0800
+   d="scan'208";a="247369746"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 09:59:03 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="537709758"
+   d="scan'208";a="542184957"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Feb 2022 09:59:01 -0800
+  by orsmga008.jf.intel.com with ESMTP; 11 Feb 2022 09:59:01 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nIaCC-0004u9-VL; Fri, 11 Feb 2022 17:59:00 +0000
-Date:   Sat, 12 Feb 2022 01:58:20 +0800
+        id 1nIaCD-0004uU-3x; Fri, 11 Feb 2022 17:59:01 +0000
+Date:   Sat, 12 Feb 2022 01:58:53 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 34/35]
- ia64-linux-ld: flush.c:undefined reference to `xa_store_range'
-Message-ID: <202202112214.EBzeF3dl-lkp@intel.com>
+To:     Sean Christopherson <sean.j.christopherson@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@intel.com>
+Subject: [intel-tdx:kvm-upstream-workaround 111/144]
+ arch/x86/kvm/vmx/tdx_stubs.c:14:6: warning: no previous prototype for
+ function 'tdx_vm_teardown'
+Message-ID: <202202112353.bT0JdIv7-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,31 +59,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
-head:   429e2bb6fb190f390ed23afc0d2308e877c43be5
-commit: e9340673baaf1ff587aed3391aa411cf554bc42e [34/35] netfs: Slice a writeback from a dirty region
-config: ia64-allyesconfig (https://download.01.org/0day-ci/archive/20220211/202202112214.EBzeF3dl-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
+tree:   https://github.com/intel/tdx.git kvm-upstream-workaround
+head:   8dfa492341b8e8ba1c9dc534dd55565adc1b0ac0
+commit: 1942310bc36276289fa54bb8d077c394078c4b15 [111/144] KVM: TDX: Add methods to ignore accesses to CPU state
+config: x86_64-randconfig-a014 (https://download.01.org/0day-ci/archive/20220211/202202112353.bT0JdIv7-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f6685f774697c85d6a352dcea013f46a99f9fe31)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e9340673baaf1ff587aed3391aa411cf554bc42e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
-        git checkout e9340673baaf1ff587aed3391aa411cf554bc42e
+        # https://github.com/intel/tdx/commit/1942310bc36276289fa54bb8d077c394078c4b15
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx kvm-upstream-workaround
+        git checkout 1942310bc36276289fa54bb8d077c394078c4b15
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kvm/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   ia64-linux-ld: fs/netfs/flush.o: in function `netfs_flush_get_pages':
-   flush.c:(.text.unlikely+0x2a2): undefined reference to `xa_store_range'
->> ia64-linux-ld: flush.c:(.text.unlikely+0x432): undefined reference to `xa_store_range'
-   `adc3xxx_i2c_remove' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
+>> arch/x86/kvm/vmx/tdx_stubs.c:14:6: warning: no previous prototype for function 'tdx_vm_teardown' [-Wmissing-prototypes]
+   void tdx_vm_teardown(struct kvm *kvm) {}
+        ^
+   arch/x86/kvm/vmx/tdx_stubs.c:14:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void tdx_vm_teardown(struct kvm *kvm) {}
+   ^
+   static 
+   arch/x86/kvm/vmx/tdx_stubs.c:38:5: warning: no previous prototype for function 'tdx_deliver_posted_interrupt' [-Wmissing-prototypes]
+   int tdx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector) { return 0; }
+       ^
+   arch/x86/kvm/vmx/tdx_stubs.c:38:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int tdx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector) { return 0; }
+   ^
+   static 
+   2 warnings generated.
+
+
+vim +/tdx_vm_teardown +14 arch/x86/kvm/vmx/tdx_stubs.c
+
+    12	
+    13	int tdx_vm_init(struct kvm *kvm) { return -EOPNOTSUPP; }
+  > 14	void tdx_vm_teardown(struct kvm *kvm) {}
+    15	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
