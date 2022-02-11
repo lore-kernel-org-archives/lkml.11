@@ -2,104 +2,334 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01640C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCC4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348021AbiBKI1Y (ORCPT
+        id S1348022AbiBKI1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:27:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56188 "EHLO
+        Fri, 11 Feb 2022 03:27:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235852AbiBKI1V (ORCPT
+        with ESMTP id S235852AbiBKI1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:27:21 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7A0E4B
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:27:20 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3F8C53F071
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:27:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644568039;
-        bh=H3OiQAYk2GIhfaHbvtSPO4n8VIyPVbMldM6/XVwV37Y=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=pPcKkrdA0yCcNPgZwsMF+LBdIDDicMBRbM3WwSHpcsH+xhCOtMcIK4Dq0Koka4ltv
-         jjKdzE6Zta445roMpbGK3/2z9D/2E84i06xF8zFZHpPTQ8h8kIGrZ1sfk34Pv9uA8R
-         DiffLmeALRYG4g/leq9l0LdT3OQi/HvJqUH64FM66GHlrsVqZPELXCPDUkWACG+c7o
-         z0OTeWuPcf5XvTLSNiEZY9Z5Qa4ASuFlBBeVyi/s09z/8yqz4er+ltkIj8lvFAGTjT
-         U2ohRAC4Rd7GbGff3y8+VJCmpy9JFKwzQcdmF/Mmgd/8HGe4ybZvBovsMQ5jzd5FrZ
-         I5e12D2T4k6Rw==
-Received: by mail-ed1-f71.google.com with SMTP id bq19-20020a056402215300b0040f276105a4so4929840edb.2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:27:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=H3OiQAYk2GIhfaHbvtSPO4n8VIyPVbMldM6/XVwV37Y=;
-        b=DGeM9KwA+y5vY3THKfBUNdn+10HaocYNyB2hteI4ZMvrZZ2cLt1XdZJ/qjNAuB69fj
-         soF1ZDA7omFGc1c4SYLtXfvl5zomlm+1gyLX2z8iwKvGsi26gDkdC1KpEmNuDJtG61iS
-         Qf2Vf1sMVquq1mc1zA1ANoCybilz//eWeRWThw8Epw/KGXoYo557P+oigLttYmOvuFQz
-         2qSOUXrtK7XLA3A/TfUif7LxHQXCNVbqhXEYbfH19Tl5GM+shl0hRJqwv6bsuitrnGH/
-         6hXkc4FofOy2s+0Bbr7AQWEnLTiL0TraW2ExMRxW/tHnD+FZZ71ZzLaTHHb5HLN5ANMh
-         m30w==
-X-Gm-Message-State: AOAM530u//t6jQKo3ItmxibL1D6co7j7GewatRnmXIMdCTnrE0r3JAw3
-        M4mddbbWIYe7wgy0hJr9aa0LiCZvEyPoRAVU1kmxj/ivZH8C4CYGSExX/BwIuXSeYcBBHknTY3i
-        Xx5P2F6tDlPyON6e8/oQwHWfRGzBJ/0SCmpHjbgztIw==
-X-Received: by 2002:a17:907:94d4:: with SMTP id dn20mr457902ejc.208.1644568038948;
-        Fri, 11 Feb 2022 00:27:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxvEor8aOhjExDHEnGKuwIJ3jicI6Tn55jfj3xzH5dAsZ43cnABRsxkYc6p1FL9b9zoGWISFw==
-X-Received: by 2002:a17:907:94d4:: with SMTP id dn20mr457888ejc.208.1644568038756;
-        Fri, 11 Feb 2022 00:27:18 -0800 (PST)
-Received: from [192.168.0.99] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id r2sm6926670ejo.65.2022.02.11.00.27.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 00:27:18 -0800 (PST)
-Message-ID: <b6bbaf8b-ecd9-c8e9-c62f-f9c36ea3b013@canonical.com>
-Date:   Fri, 11 Feb 2022 09:27:17 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PACTH v3 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
-Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        herbert@gondor.apana.org.au, robh+dt@kernel.org
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        alexandre.belloni@bootlin.com, linux-crypto@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kavyasree.kotagiri@microchip.com, devicetree@vger.kernel.org
-References: <20220211082114.452911-1-tudor.ambarus@microchip.com>
- <20220211082114.452911-3-tudor.ambarus@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220211082114.452911-3-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 11 Feb 2022 03:27:44 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D459E4B
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:27:42 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V48LtIF_1644568059;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V48LtIF_1644568059)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 11 Feb 2022 16:27:40 +0800
+Message-ID: <1644567849.6416595-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v4 14/14] virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
+Date:   Fri, 11 Feb 2022 16:24:09 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>
+References: <20220209122901.51790-1-xuanzhuo@linux.alibaba.com>
+ <20220209122901.51790-15-xuanzhuo@linux.alibaba.com>
+ <8b0b5f06-74eb-d6cb-07e2-38249e4cda92@redhat.com>
+ <1644564073.3777697-1-xuanzhuo@linux.alibaba.com>
+ <CACGkMEv4560JKv7UM6v6rADNMbhTv-86KJebAwYebFOkUndnPg@mail.gmail.com>
+In-Reply-To: <CACGkMEv4560JKv7UM6v6rADNMbhTv-86KJebAwYebFOkUndnPg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/02/2022 09:21, Tudor Ambarus wrote:
-> Convert Atmel TDES documentation to yaml format. With the conversion the
-> clock and clock-names properties are made mandatory. The driver returns
-> -EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
-> the clock and clock-names properties mandatory. Update the example to
-> better describe how one should define the dt node.
-> 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  .../crypto/atmel,at91sam9g46-tdes.yaml        | 64 +++++++++++++++++++
->  .../bindings/crypto/atmel-crypto.txt          | 23 -------
->  2 files changed, 64 insertions(+), 23 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-> 
+On Fri, 11 Feb 2022 15:45:46 +0800, Jason Wang <jasowang@redhat.com> wrote:
+> On Fri, Feb 11, 2022 at 3:24 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wr=
+ote:
+> >
+> > On Fri, 11 Feb 2022 15:05:40 +0800, Jason Wang <jasowang@redhat.com> wr=
+ote:
+> > >
+> > > =E5=9C=A8 2022/2/9 =E4=B8=8B=E5=8D=888:29, Xuan Zhuo =E5=86=99=E9=81=
+=93:
+> > > > This patch implements virtio pci support for QUEUE RESET.
+> > > >
+> > > > Performing reset on a queue is divided into these steps:
+> > > >
+> > > > 1. reset_vq: reset one vq
+> > > > 2. recycle the buffer from vq by virtqueue_detach_unused_buf()
+> > > > 3. release the ring of the vq by vring_release_virtqueue()
+> > > > 4. enable_reset_vq: re-enable the reset queue
+> > > >
+> > > > This patch implements reset_vq, enable_reset_vq in the pci scenario
+> > > >
+> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > ---
+> > > >   drivers/virtio/virtio_pci_common.c |  8 +--
+> > > >   drivers/virtio/virtio_pci_modern.c | 80 +++++++++++++++++++++++++=
++++--
+> > > >   drivers/virtio/virtio_ring.c       |  2 +
+> > > >   include/linux/virtio.h             |  1 +
+> > > >   4 files changed, 85 insertions(+), 6 deletions(-)
+> > > >
+> > > > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/vi=
+rtio_pci_common.c
+> > > > index cb01eb0cb2e4..303637ac4914 100644
+> > > > --- a/drivers/virtio/virtio_pci_common.c
+> > > > +++ b/drivers/virtio/virtio_pci_common.c
+> > > > @@ -255,9 +255,11 @@ static void vp_del_vq(struct virtqueue *vq)
+> > > >     struct virtio_pci_vq_info *info =3D vp_dev->vqs[vq->index];
+> > > >     unsigned long flags;
+> > > >
+> > > > -   spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > -   list_del(&info->node);
+> > > > -   spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > > +   if (!vq->reset) {
+> > > > +           spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > +           list_del(&info->node);
+> > > > +           spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > > > +   }
+> > > >
+> > > >     vp_dev->del_vq(info);
+> > > >     kfree(info);
+> > > > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/vi=
+rtio_pci_modern.c
+> > > > index d29d40bf0b45..cc45515eda50 100644
+> > > > --- a/drivers/virtio/virtio_pci_modern.c
+> > > > +++ b/drivers/virtio/virtio_pci_modern.c
+> > > > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virtio_d=
+evice *vdev, u64 features)
+> > > >     if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
+> > > >                     pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID=
+_SRIOV))
+> > > >             __virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
+> > > > +
+> > > > +   if (features & BIT_ULL(VIRTIO_F_RING_RESET))
+> > > > +           __virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
+> > > >   }
+> > > >
+> > > >   /* virtio config->finalize_features() implementation */
+> > > > @@ -176,6 +179,70 @@ static void vp_reset(struct virtio_device *vde=
+v)
+> > > >     vp_disable_cbs(vdev);
+> > > >   }
+> > > >
+> > > > +static int vp_modern_reset_vq(struct virtqueue *vq)
+> > > > +{
+> > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > > +   struct virtio_pci_vq_info *info;
+> > > > +   unsigned long flags;
+> > > > +   u16 msix_vec;
+> > > > +
+> > > > +   if (!virtio_has_feature(vq->vdev, VIRTIO_F_RING_RESET))
+> > > > +           return -ENOENT;
+> > > > +
+> > > > +   vp_modern_set_queue_reset(mdev, vq->index);
+> > > > +
+> > > > +   info =3D vp_dev->vqs[vq->index];
+> > > > +   msix_vec =3D info->msix_vector;
+> > > > +
+> > > > +   /* Disable VQ callback. */
+> > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_VECTO=
+R)
+> > > > +           disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
+> > >
+> > >
+> > > I think we need a comment to explain why per_vq_mode needs to be dealt
+> > > with differently.
+> >
+> > OK.
+> >
+> > >
+> > >
+> > > > +
+> > > > +   /* delete vq */
+> > > > +   spin_lock_irqsave(&vp_dev->lock, flags);
+> > > > +   list_del(&info->node);
+> > > > +   spin_unlock_irqrestore(&vp_dev->lock, flags);
+> > >
+> > >
+> > > So I don't see where vring is freed and vp_setup_vq() may try to
+> > > allocate new memory, won't it be a memory leak in this case?
+> >
+> > 1. reset_vq: reset one vq
+> > 2. recycle the buffer from vq by virtqueue_detach_unused_buf()
+> > 3. release the ring of the vq by vring_release_virtqueue()
+> > 4. enable_reset_vq: re-enable the reset queue
+> >
+> > vring_release_virtqueue() (#8 patch) will release the vring.
+> > That is called by the driver.
+> >
+> > I think I should add a check to vp_modern_enable_reset_vq() that
+> > vring_release_virtqueue() has already been called.
+>
+> I wonder if we can have a better API.
+>
+> Consider we know there's a requirement of vring re-allocation. I
+> wonder how about adding per vq config ops like:
+>
+> del_vq()
+> find_vq()
+>
+> We can limit them only after a virtqueue is reset before it is
+> enabled. We can have a full allocation on the resources e.g interrupt
+> (if some codes could be reused).
 
+Do you mean including interrupts, vq are all released?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Actually my first version did this, and Michael didn't like it, so I change=
+d to
+only release vring.
 
+Thanks.
 
-Best regards,
-Krzysztof
+>
+> Then a driver can do
+> reset_vq()
+> detach_unused_buf()
+> del_vq
+> find_vq() /* with new parameters like ring_num and others like find_vqs()=
+ */
+> enable_reset_vq()
+>
+> ?
+>
+> Thanks
+>
+> >
+> > Thanks
+> >
+> > >
+> > > Thanks
+> > >
+> > >
+> > > > +
+> > > > +   vq->reset =3D true;
+> > > > +
+> > > > +   INIT_LIST_HEAD(&info->node);
+> > > > +
+> > > > +   return 0;
+> > > > +}
+> > > > +
+> > > > +static int vp_modern_enable_reset_vq(struct virtqueue *vq, u16 rin=
+g_num)
+> > > > +{
+> > > > +   struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
+> > > > +   struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+> > > > +   struct virtio_pci_vq_info *info;
+> > > > +   struct virtqueue *_vq;
+> > > > +   u16 msix_vec;
+> > > > +
+> > > > +   if (!vq->reset)
+> > > > +           return -EPERM;
+> > > > +
+> > > > +   /* check queue reset status */
+> > > > +   if (vp_modern_get_queue_reset(mdev, vq->index) !=3D 1)
+> > > > +           return -EBUSY;
+> > > > +
+> > > > +   info =3D vp_dev->vqs[vq->index];
+> > > > +   _vq =3D vp_setup_vq(vq->vdev, vq->index, NULL, NULL, NULL,
+> > > > +                    info->msix_vector, ring_num);
+> > > > +   if (IS_ERR(_vq)) {
+> > > > +           vq->reset =3D true;
+> > > > +           return PTR_ERR(_vq);
+> > > > +   }
+> > > > +
+> > > > +   vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
+> > > > +
+> > > > +   msix_vec =3D vp_dev->vqs[vq->index]->msix_vector;
+> > > > +   if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_VECTO=
+R)
+> > > > +           enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
+> > > > +
+> > > > +   return 0;
+> > > > +}
+> > > > +
+> > > >   static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16=
+ vector)
+> > > >   {
+> > > >     return vp_modern_config_vector(&vp_dev->mdev, vector);
+> > > > @@ -231,10 +298,13 @@ static struct virtqueue *setup_vq(struct virt=
+io_pci_device *vp_dev,
+> > > >                             virtqueue_get_avail_addr(vq),
+> > > >                             virtqueue_get_used_addr(vq));
+> > > >
+> > > > -   vq->priv =3D (void __force *)vp_modern_map_vq_notify(mdev, inde=
+x, NULL);
+> > > >     if (!vq->priv) {
+> > > > -           err =3D -ENOMEM;
+> > > > -           goto err_map_notify;
+> > > > +           vq->priv =3D (void __force *)vp_modern_map_vq_notify(md=
+ev, index,
+> > > > +                                                              NULL=
+);
+> > > > +           if (!vq->priv) {
+> > > > +                   err =3D -ENOMEM;
+> > > > +                   goto err_map_notify;
+> > > > +           }
+> > >
+> > >
+> > > This seems unrelated or an artifact of previous patches?
+> > >
+> > > Thanks
+> > >
+> > >
+> > > >     }
+> > > >
+> > > >     if (msix_vec !=3D VIRTIO_MSI_NO_VECTOR) {
+> > > > @@ -402,6 +472,8 @@ static const struct virtio_config_ops virtio_pc=
+i_config_nodev_ops =3D {
+> > > >     .set_vq_affinity =3D vp_set_vq_affinity,
+> > > >     .get_vq_affinity =3D vp_get_vq_affinity,
+> > > >     .get_shm_region  =3D vp_get_shm_region,
+> > > > +   .reset_vq        =3D vp_modern_reset_vq,
+> > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
+> > > >   };
+> > > >
+> > > >   static const struct virtio_config_ops virtio_pci_config_ops =3D {
+> > > > @@ -420,6 +492,8 @@ static const struct virtio_config_ops virtio_pc=
+i_config_ops =3D {
+> > > >     .set_vq_affinity =3D vp_set_vq_affinity,
+> > > >     .get_vq_affinity =3D vp_get_vq_affinity,
+> > > >     .get_shm_region  =3D vp_get_shm_region,
+> > > > +   .reset_vq        =3D vp_modern_reset_vq,
+> > > > +   .enable_reset_vq =3D vp_modern_enable_reset_vq,
+> > > >   };
+> > > >
+> > > >   /* the PCI probing function */
+> > > > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_r=
+ing.c
+> > > > index b8747df8dc1f..4f6028e1e2d9 100644
+> > > > --- a/drivers/virtio/virtio_ring.c
+> > > > +++ b/drivers/virtio/virtio_ring.c
+> > > > @@ -1731,6 +1731,7 @@ static struct virtqueue *vring_create_virtque=
+ue_packed(
+> > > >     vq->vq.vdev =3D vdev;
+> > > >     vq->vq.num_free =3D num;
+> > > >     vq->vq.index =3D index;
+> > > > +   vq->vq.reset =3D false;
+> > > >     vq->we_own_ring =3D true;
+> > > >     vq->notify =3D notify;
+> > > >     vq->weak_barriers =3D weak_barriers;
+> > > > @@ -2220,6 +2221,7 @@ static int __vring_init_virtqueue(struct virt=
+queue *_vq,
+> > > >     vq->vq.vdev =3D vdev;
+> > > >     vq->vq.num_free =3D vring.num;
+> > > >     vq->vq.index =3D index;
+> > > > +   vq->vq.reset =3D false;
+> > > >     vq->we_own_ring =3D false;
+> > > >     vq->notify =3D notify;
+> > > >     vq->weak_barriers =3D weak_barriers;
+> > > > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+> > > > index dd1657c3a488..5d4817d79f3f 100644
+> > > > --- a/include/linux/virtio.h
+> > > > +++ b/include/linux/virtio.h
+> > > > @@ -32,6 +32,7 @@ struct virtqueue {
+> > > >     unsigned int index;
+> > > >     unsigned int num_free;
+> > > >     void *priv;
+> > > > +   bool reset;
+> > > >   };
+> > > >
+> > > >   int virtqueue_add_outbuf(struct virtqueue *vq,
+> > >
+> >
+>
