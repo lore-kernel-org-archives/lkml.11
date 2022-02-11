@@ -2,88 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F800C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321BBC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349786AbiBKL7l (ORCPT
+        id S1349811AbiBKMAS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:59:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47806 "EHLO
+        Fri, 11 Feb 2022 07:00:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234592AbiBKL7i (ORCPT
+        with ESMTP id S238581AbiBKMAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:59:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40D4F54;
-        Fri, 11 Feb 2022 03:59:36 -0800 (PST)
+        Fri, 11 Feb 2022 07:00:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7098F4E;
+        Fri, 11 Feb 2022 04:00:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83D8DB8294F;
-        Fri, 11 Feb 2022 11:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1541DC340EF;
-        Fri, 11 Feb 2022 11:59:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84A1261B89;
+        Fri, 11 Feb 2022 12:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E6B18C340F4;
+        Fri, 11 Feb 2022 12:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644580772;
-        bh=PiUJ14tYj47Er2g/nnFkWUDiTAM0HXvy8rHp6sWes4Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dVjjoDYjljaSNrrw28tEpXjxzCBjDiRorduusFsO+h0pDRy+ol6iJZjGRNysfKtmi
-         erIckeqPuzh4HCUGrp0eeYjW+7SU41PZy6krRpJNqfekJK1CFmrARXzrX+SGTjzDgI
-         0m5mrqmSCGh/MDUy4Ugxuks5ptufdHykeYSyVkBWY4NSILvIw5IcVFbpWjytq3lpkJ
-         Q09791mpgTDNE+nFaoIB9o7vsh8GrvhpXclHMw1x828OqYQ7lRgxjbqlcCl5NvqElu
-         5j3iWEh+UF6Ag1SCGDvrf6UgAUnyZs/DghbfnIXtX7+NH/IAX3Mj/xaMHUb2ueoIYg
-         p6AnKE/VLl3ig==
-Date:   Fri, 11 Feb 2022 11:59:26 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Chanwoo Choi <cw00.choi@samsung.com>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] regulator: dt-bindings: maxim,max77843: add
- MAX77843 bindings
-Message-ID: <YgZPnjbYq21BWNOT@sirena.org.uk>
-References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
- <20220111174805.223732-4-krzysztof.kozlowski@canonical.com>
+        s=k20201202; t=1644580814;
+        bh=0VdonfbRz7kDzpgZxBbaGA9mjhW3l7cDHUJh9KdKhO4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=a70mBf3lGD/zPthwhecOw7CbmL6jv4NiabJGYXbEuyZi5E42dJDmWCkj54+3eT1cJ
+         jFxxmrxD+Ci6hmlN9GkQBZaitoe2N7cAZFN/fG6noEdn3cw2HKL1wUNug6kZuYAr70
+         Xv11QRJAUl9GFxRsv/CIEzAncmvCknLfVWj937RZmw2pqyurgZxI+k1Mh16JYaObMA
+         XlPU5CuhhfY6Vs4YaxDe6A34ivynat9ez3kV1Fl8DltT7nagbhyiNhgvXm1QdMz63e
+         O3jR6xdX53WciH4iKX5hpFw4m1r1B7YyIvZXE84gHawSsn6YFjC7TqozFF8C6IPHUJ
+         hHiDO3ZOF8Xyw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C724DE6D4A1;
+        Fri, 11 Feb 2022 12:00:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ova0lu0FGhibrYcp"
-Content-Disposition: inline
-In-Reply-To: <20220111174805.223732-4-krzysztof.kozlowski@canonical.com>
-X-Cookie: do {
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] dt-bindings: net: dsa: realtek: convert to YAML schema,
+ add MDIO
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164458081381.17283.252539054046225452.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Feb 2022 12:00:13 +0000
+References: <20220209184116.18094-1-luizluca@gmail.com>
+In-Reply-To: <20220209184116.18094-1-luizluca@gmail.com>
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Cc:     devicetree@vger.kernel.org, arnd@arndb.de, olof@lixom.net,
+        arinc.unal@arinc9.com, f.fainelli@gmail.com, sfr@canb.auug.org.au,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello:
 
---ova0lu0FGhibrYcp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-On Tue, Jan 11, 2022 at 06:48:03PM +0100, Krzysztof Kozlowski wrote:
-> Document the bindings for MAX77843 regulator driver.  The bindings are
-> almost identical to MAX77693 bindings, except the actual names of
-> regulators.
+On Wed,  9 Feb 2022 15:41:16 -0300 you wrote:
+> Schema changes:
+> 
+> - support for mdio-connected switches (mdio driver), recognized by
+>   checking the presence of property "reg"
+> - new compatible strings for rtl8367s and rtl8367rb
+> - "interrupt-controller" was not added as a required property. It might
+>   still work polling the ports when missing.
+> 
+> [...]
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
+Here is the summary with links:
+  - [v2] dt-bindings: net: dsa: realtek: convert to YAML schema, add MDIO
+    https://git.kernel.org/netdev/net-next/c/429c83c78ab2
 
---ova0lu0FGhibrYcp
-Content-Type: application/pgp-signature; name="signature.asc"
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGT54ACgkQJNaLcl1U
-h9A77Af/SZ/OT9yzOh5MHwXqhEaftBX041jmWBTNrBn8l/t3s7vs4wdjxvKUAOMY
-aUcWsiHgTcleTHRClpBjo5y89ViTuCjDIerQXLv9G5EjY51zcmSpbsOnmyCAzUVR
-qAK9vEUvDrROJpeZCAR6Av8tRcmoXYuSpqObjIxmbeYWb98x7Q7RXOK4x3iUnzul
-Zphttov/KJxuYO032xRWRcQ00VR0G4jBP/alQzz/6m2OGkqxDoS+uLHwF87Feebo
-NEZCzAHioggTCaB0kCWZTFV+qBnza6ih3ZdeImBS5DalTE0PAZSWUtnzjXXeld0r
-0Kub2EdrdVsiHFzby3w33WohjQ6viA==
-=hIKA
------END PGP SIGNATURE-----
-
---ova0lu0FGhibrYcp--
