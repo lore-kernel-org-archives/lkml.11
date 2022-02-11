@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C195C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC28C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350385AbiBKNFM (ORCPT
+        id S1350396AbiBKNGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:05:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40324 "EHLO
+        Fri, 11 Feb 2022 08:06:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiBKNFK (ORCPT
+        with ESMTP id S240218AbiBKNGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:05:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0705F05;
-        Fri, 11 Feb 2022 05:05:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82A1AB829B2;
-        Fri, 11 Feb 2022 13:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 024E5C340E9;
-        Fri, 11 Feb 2022 13:05:05 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="pc7shhSf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644584704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d5bH4yRSErAHTyTogfKwRhDOjbKYisKUfbK7nzwFk70=;
-        b=pc7shhSf1vSYi2ObG6HYFmbWvku1fUqKiy6VfwoBb8DKvv4j65ZOEyp02XjPngB6FE839d
-        dX9OPH+SHAH6unqqo1NbVmIfhzdr/sj03Tdd9zTfR50c8nd6At1yBu9bOW2ck4vC9EoaCE
-        XBxa8G2Q5oDVWgKcuD0zRK8Jvm+7m2k=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 52f66d09 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 11 Feb 2022 13:05:04 +0000 (UTC)
-Received: by mail-yb1-f170.google.com with SMTP id j12so2460902ybh.8;
-        Fri, 11 Feb 2022 05:05:03 -0800 (PST)
-X-Gm-Message-State: AOAM533/hmaxvqBOTDopvvMqD6i6Ngsetk2nH6PG9krYVrGIfdPTnKo5
-        vwcNuLGpRISpZM5VMxbNVV9aXZHzeB0kAmHOJnU=
-X-Google-Smtp-Source: ABdhPJw/0yDlzuSloZQRIcNJwo12AyqZiLlUxiF6abeTLLWDVDDblgjaXi816jLxbsQ319rkA/XawfxMamguvdrWOuE=
-X-Received: by 2002:a25:c006:: with SMTP id c6mr1116118ybf.457.1644584703323;
- Fri, 11 Feb 2022 05:05:03 -0800 (PST)
+        Fri, 11 Feb 2022 08:06:11 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EA0F3E;
+        Fri, 11 Feb 2022 05:06:10 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id m18so16404065lfq.4;
+        Fri, 11 Feb 2022 05:06:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=P+bxWvATPkNOJhL/LdCmA0xomBxVYCMbyohvhLg0UcI=;
+        b=U31jAZBh+UkPdAsdfXxNqS06v5iv4Kmb619Q0qXa5b4daXQDdI6iKCr40v3fjPF1r1
+         L0+nZvCrzpR8LroM6/TPlloZH9EBRY58oHBMdHmNfPXJPBOMlTZr6M9Uw2jHlsucW0R+
+         CYwGyi06XQn+TXUWHqpiRlYgfAAe9y8CQ4rAgsm5NJLgq1C+JquOzdtk0WlFdahCwldN
+         f9UcuCvgiA91r6BTgN8spISIu7KNVPCJfD84WMxdpQUKmWfriSjrvHlx/t6NSJgIns9b
+         lqo/WnA709FXhudPc6C4aA0DZlueBaZSL3THgXasy/TRimaRAUXzM0kBvIuvyVYUYkFn
+         4q2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P+bxWvATPkNOJhL/LdCmA0xomBxVYCMbyohvhLg0UcI=;
+        b=IGd3e9uuzNjNl9QWG8+9wiKSXWT5e4BPGbD567sT96U4Bv+mrZF6GLYRb3m/HUbEYm
+         lUyAfjVqcCH2DGc/VriXeOQEre7bAuq6j+u5a7nChnOq0HzlDY7ZewQSe/xPL/tW5eiy
+         GHc7DiKt6WSoK9lwjHymfAoFiHE4uYadPgJ+b86XocMuxseT9pyUT5E62wmwYagdZqCv
+         seUMffEc5RKm3pSwXgQhDR3LxIkbDys00IJqnXwWgTfH/7Wk6V0jPjQNrOBFKrcx6CEh
+         JIqz0DIlzYaaLkWS1vzI27PP2kF6d7+ICikHcPBeR4gibu3N2Z5QjV4+itDlLWxmnCXR
+         SALA==
+X-Gm-Message-State: AOAM532dzuP9Q9p6801r7BGnCdH6jF5AnUejDuxf3cD18YFZS5SlxOsl
+        jHse9phq4vlmZ+xYtP7k2EQ=
+X-Google-Smtp-Source: ABdhPJyANwpxODf7FJd9LpX2QULdfogZP9CIp2POXVV9rIbBeWcAw6Pa79ERcCDcf6OALw6cAbfTmQ==
+X-Received: by 2002:a05:6512:3d0e:: with SMTP id d14mr1122587lfv.165.1644584768402;
+        Fri, 11 Feb 2022 05:06:08 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id b13sm3111094lfv.175.2022.02.11.05.06.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 05:06:07 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH V2 1/3] dt-bindings: nvmem: make "reg" property optional
+Date:   Fri, 11 Feb 2022 14:05:52 +0100
+Message-Id: <20220211130554.13062-2-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220211130554.13062-1-zajec5@gmail.com>
+References: <20220124160300.25131-1-zajec5@gmail.com>
+ <20220211130554.13062-1-zajec5@gmail.com>
 MIME-Version: 1.0
-References: <CAHmME9pGwyZKu=9yCben-V30hR+zEjb9iZGWr5_RAE-uXt_Ofw@mail.gmail.com>
- <20220211011446.392673-1-Jason@zx2c4.com> <YgYbRa+5cC0ivWrK@linutronix.de>
-In-Reply-To: <YgYbRa+5cC0ivWrK@linutronix.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 11 Feb 2022 14:04:52 +0100
-X-Gmail-Original-Message-ID: <CAHmME9pPF=1KE9-mhefvtnkMo_9JibVrzyitmQ7_RKBZgjH7sg@mail.gmail.com>
-Message-ID: <CAHmME9pPF=1KE9-mhefvtnkMo_9JibVrzyitmQ7_RKBZgjH7sg@mail.gmail.com>
-Subject: Re: [PATCH] random: ensure mix_interrupt_randomness() is consistent
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry, missed this in your last email:
+From: Rafał Miłecki <rafal@milecki.pl>
 
-On Fri, Feb 11, 2022 at 9:16 AM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
-> > +     do {
-> > +             count_snapshot = (unsigned int)atomic_read(&fast_pool->count);
-> > +             for (i = 0; i < ARRAY_SIZE(pool); ++i)
-> > +                     pool[i] = READ_ONCE(fast_pool->pool_long[i]);
->
-> Why do you avoid memcpy()? Since it is a small memcpy, I'm sure the
-> compile will inline the register moves.
+Most NVMEM providers have cells at hardcoded addresses however there are
+some exceptions. Some devices store cells layout in internal structs
+using custom formats.
 
-Because the compiler will otherwise reorder it to be after the two
-counter reads. I checked. And a barrier() is too heavy as it flushes
-the writes to the stack instead of keeping them read into registers.
-READ_ONCE() is the exact semantics we care about here.
+It's important to allow NVMEM consumers to still reference such NVMEM
+cells. Making "reg" optional allows defining NVMEM cells by their names
+only and using them with phandles.
 
-Jason
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/nvmem/nvmem.yaml | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/nvmem/nvmem.yaml b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+index 43ed7e32e5ac..3bb349c634cb 100644
+--- a/Documentation/devicetree/bindings/nvmem/nvmem.yaml
++++ b/Documentation/devicetree/bindings/nvmem/nvmem.yaml
+@@ -60,9 +60,6 @@ patternProperties:
+             description:
+               Size in bit within the address range specified by reg.
+ 
+-    required:
+-      - reg
+-
+ additionalProperties: true
+ 
+ examples:
+-- 
+2.34.1
+
