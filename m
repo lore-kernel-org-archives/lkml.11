@@ -2,80 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F90C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C798C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:36:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353736AbiBKVcu (ORCPT
+        id S1353752AbiBKVgM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 16:32:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49890 "EHLO
+        Fri, 11 Feb 2022 16:36:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353715AbiBKVct (ORCPT
+        with ESMTP id S1348044AbiBKVgK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 16:32:49 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC699C61
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:32:46 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id c6so28756278ybk.3
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nlMNdPedHPycBXQ85x4bFGxtLOLbRfBW7nz64ipbjBY=;
-        b=R7+8WmZ8z5W8QeBvnhcVZ9ocPoXPI4IfaWnDSFcyXbagwpzAg5QoJWGBcQQg4gg9fN
-         37CodB/qEUvKwV+uvKXESNth5g8mJ0DTtf5mxdzJeJcXuwJmbZ/axGotqDdWbrFB3UR+
-         S6nOx8DCf7bOcLL5M9iyQv/IqY0FCH3Ow15F0CVHiOvYKlSeAEXYYh1hvgGdmZsxdDK8
-         udCxlM79RY0G3/7HTCxNPYex8uJf18qSsKx+od7ygwGnPTymwfUW/1V7JM0R5u4FS3DV
-         c/XWdiOymV3d2+e7RWsbqDAm7omrwEeZo88/Nw/nRfTU0DO3vIBqwN0S282EFs5il9Ma
-         YFVQ==
+        Fri, 11 Feb 2022 16:36:10 -0500
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05EA1C63
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:36:09 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id k5-20020a926f05000000b002be190db91cso6776103ilc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:36:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nlMNdPedHPycBXQ85x4bFGxtLOLbRfBW7nz64ipbjBY=;
-        b=G1qsngiuRmDsX3z79A8wdXIa7IaB7Rz1AmQqD7KVdXXdz1LF353TyN9H82KZfPeJOJ
-         4nau5ya/3b0pc+3VIoAx5N8X0No8dBhpRO4GjDBRVvdYNcc1wuW7BwUAtx7z7pW3eFPb
-         jSSjTv4oCetMV+Tz5P5Nd2N/9FCS9le4/lGJe0SSATbCZyCBYcwhQPFWlDC1AOI4BYtW
-         R+qlraMm/POzWPUjtb719za9GfcshZoSY/0n2y+9FAKqCPG6n4UOe4OSPPFelI6qsqWa
-         KQxZRfyoxz0tJTbgVBjlALxthtoyFfpm9ADBW/DKeRtE5ra9i7rHwlf5z6tg4Xc4V22X
-         ZjDw==
-X-Gm-Message-State: AOAM531Z7OspoguIHmTkh0+f6UeRZf0VKd78YGecqiXcaftZGUhV1BRN
-        uWMmtFAgRzpZcPTRDEz3rAvvGCuPp8EBdmt+rcvNIw==
-X-Google-Smtp-Source: ABdhPJwxt/ccwzQXgeYQSdW1n8H1uNZN4bQTPzzBDg4pfrNxnshkiT6JI3ZaakqbnLo8Pph2JwGiM91mGnY6+KkRScA=
-X-Received: by 2002:a25:684a:: with SMTP id d71mr3340888ybc.284.1644615166048;
- Fri, 11 Feb 2022 13:32:46 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=uZFH8v5hdkuD13HWKXbwlKXOFU1tLj/1KgXaqFsCP+w=;
+        b=nEYOuK5dfdor+NMxD+jhAq0ePTbniTeXbr0jCNixdF+wWy39fWkcQ6kyeO2i9p2uaU
+         oCxmFsogoeCl28SrFJbshBJEZQ89Prn87/oKB3I4JMX/J3Hy7PBpDta5jpR2JhshTxfw
+         lXOd2PyxkTyDqMBiJrTpw5G4B2D6vufc45rWfln+kUiE2k/McvAasbWAt6PCky619Q8k
+         IehEKM/6RHq4Memq4G4dSSB8LRSb8Tuc0Qp0VGWKFLvzMjTgp1K6+2HEG7cA1VgcE4Hj
+         3T6yn+LxGAefxf6wRk3JsGz/KQH5h/c/zjCYavsZ5e9U1sDmFSMCcPhauF+iVCkt4L9y
+         Wsmg==
+X-Gm-Message-State: AOAM5335Rj8is5Hxy/3Pl5zwxIM+WN4h4WOQkYyI6dqj2Ew+PEcxOR8j
+        huxqUiO5oh3T/DyMayg3vXbbURuBMolkA0hqSytdnuz+60QE
+X-Google-Smtp-Source: ABdhPJxIMl3Dj6whKaFjTGnZrRnkr5JcDWjIWAL80oKZ7CA90a6/GGlca6MO6Yn7/LWch5SH1DLI8BFkEEZ5aN7OR35Og6xECnE3
 MIME-Version: 1.0
-References: <20220124131346.12571-1-linmq006@gmail.com> <20220211200404.ywlfdj2pybtnmezp@mercury.elektranox.org>
-In-Reply-To: <20220211200404.ywlfdj2pybtnmezp@mercury.elektranox.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 22:32:34 +0100
-Message-ID: <CACRpkdbOdVbsFPEJ3vScG83Uyd8cGYNcRU9o11WHbjkZ07neNg@mail.gmail.com>
-Subject: Re: [PATCH] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     Miaoqian Lin <linmq006@gmail.com>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-Received: by 2002:a05:6638:164f:: with SMTP id a15mr1964678jat.272.1644615368382;
+ Fri, 11 Feb 2022 13:36:08 -0800 (PST)
+Date:   Fri, 11 Feb 2022 13:36:08 -0800
+In-Reply-To: <YgbT4uqSIVY9ku10@rowland.harvard.edu>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d31cac05d7c4da7e@google.com>
+Subject: Re: [syzbot] memory leak in hub_event (3)
+From:   syzbot <syzbot+8caaaec4e7a55d75e243@syzkaller.appspotmail.com>
+To:     benjamin.tissoires@redhat.com, gregkh@linuxfoundation.org,
+        heikki.krogerus@linux.intel.com, jikos@kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, noralf@tronnes.org,
+        stern@rowland.harvard.edu, syzkaller-bugs@googlegroups.com,
+        tzimmermann@suse.de
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 9:04 PM Sebastian Reichel
-<sebastian.reichel@collabora.com> wrote:
+Hello,
 
-> > Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> > ---
->
-> Thanks, queued power-supply's for-next branch.
->
-> Linus, if I'm not mistaken the custom sysfs ABI (i.e. everything related
-> to ab8500_fg_sysfs_init() can just be removed since the same thing is
-> already exposed standardized via POWER_SUPPLY_PROP_CHARGE_FULL and
-> POWER_SUPPLY_PROP_CHARGE_NOW?
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-Yes, I delete other weird custom sysfs, so I'll cook a patch to
-get rid of this too.
+Reported-and-tested-by: syzbot+8caaaec4e7a55d75e243@syzkaller.appspotmail.com
 
-Yours,
-Linus Walleij
+Tested on:
+
+commit:         dfd42fac Linux 5.17-rc3
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/ v5.17-rc3
+kernel config:  https://syzkaller.appspot.com/x/.config?x=48b71604a367da6e
+dashboard link: https://syzkaller.appspot.com/bug?extid=8caaaec4e7a55d75e243
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=121f0f78700000
+
+Note: testing is done by a robot and is best-effort only.
