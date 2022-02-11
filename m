@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47BFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78050C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346130AbiBKDHP (ORCPT
+        id S1347545AbiBKDHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 22:07:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40210 "EHLO
+        Thu, 10 Feb 2022 22:07:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238176AbiBKDGz (ORCPT
+        with ESMTP id S244646AbiBKDG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 22:06:55 -0500
+        Thu, 10 Feb 2022 22:06:58 -0500
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B751E2647
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:06:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D642647
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:06:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644548813; x=1676084813;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CfAPPn4CPgGS2bE7xNJZrnMTTobRXydSSnt+IPub/Ow=;
-  b=CUTRlhn+C5mZ+o4tVdXbOQvB2wedPfUrvi75IfuIiIYXyT/H3S/8hk29
-   rWh5jjHGGibNNi7EjhwxvWVTOq/b9+5dlRFlRIEyA5Pcv3BipWror4bZn
-   ojkOi3jUFgzTDEOzBnKAU+AZGdpaMMlt0OD5PPUeg5Ern3gj1WZxxW8/J
-   ULzgiidXuiBI6JUkVzg1sOhvnPZJO3gpCNDvOzU8quhDZY+YHfiXj/Kj2
-   zYJvB91RsFW54pU1L4cbPbp3BKUrcz684gFl3vX5pHmebE5vWY/pBzgqk
-   JU6DN2SZbgRssKfXkQZcwQ/0IarEc7Mq79llwHoBUGCCyWL3kMCvnsCBP
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230289508"
+  t=1644548818; x=1676084818;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EkJfB7vhORyeNDzWL4R0G1atL9YTI01FB+mAIw3VUYg=;
+  b=DebwYDIOgdpy1g+PFBf2xUOKhnNqGo0ht7iuo5P5XxyYxY4BRGdmyuOD
+   7poi9vBbwOh41J+zA8nYHpZYK8v9nO5RYwEkhghYJuCWySOi5RJ4ntahs
+   NWMC6/XByVB4MQjdmWUePHahRhdwv8AdnBDpiRfshnv82diompu2tDbs6
+   jt78dhjSOUs212yZYBhlAq9Z4d9bFf/5nYSGbMt2myfL4MxXbPyDVUsAs
+   dF3O5RdNut0kuUIfTnLYcHislXCqcQ2wdiSHqGrXQ5hCq2ff2JRQrWj3t
+   n4aShkzjEQ1Fq9nvahKbumH8VjwWTet662tUoBn06WzRzLMUZYIDqXyYr
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230289523"
 X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="230289508"
+   d="scan'208";a="230289523"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 19:06:53 -0800
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 19:06:58 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="483062803"
+   d="scan'208";a="483062861"
 Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by orsmga003.jf.intel.com with ESMTP; 10 Feb 2022 19:06:50 -0800
+  by orsmga003.jf.intel.com with ESMTP; 10 Feb 2022 19:06:56 -0800
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     David Airlie <airlied@linux.ie>, Joerg Roedel <joro@8bytes.org>,
         Will Deacon <will@kernel.org>,
@@ -49,34 +49,63 @@ Cc:     Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
         Robin Murphy <robin.murphy@arm.com>,
         iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
         Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 0/2] Replace intel_iommu_gfx_mapped with device_iommu_mapped()
-Date:   Fri, 11 Feb 2022 11:05:29 +0800
-Message-Id: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 2/2] iommu/vt-d: Remove unnecessary exported symbol
+Date:   Fri, 11 Feb 2022 11:05:31 +0800
+Message-Id: <20220211030531.2398789-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
+References: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The exported symbol intel_iommu_gfx_mapped is not used anywhere in the
+tree. Remove it to avoid dead code.
 
-This follows commit cca084692394a ("drm/i915: Use per device iommu check")
-to convert intel_iommu_gfx_mapped use in agp/intel to device_iommu_mapped().
-With this changed, the export intel_iommu_gfx_mapped could be removed.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/intel-iommu.h | 1 -
+ drivers/iommu/intel/iommu.c | 6 ------
+ 2 files changed, 7 deletions(-)
 
-Best regards,
-baolu
-
-Lu Baolu (2):
-  agp/intel: Use per device iommu check
-  iommu/vt-d: Remove unnecessary exported symbol
-
- include/linux/intel-iommu.h  |  1 -
- drivers/char/agp/intel-gtt.c | 17 +++++++----------
- drivers/iommu/intel/iommu.c  |  6 ------
- 3 files changed, 7 insertions(+), 17 deletions(-)
-
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 2f8a4517c929..b8b8be58cb6b 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -789,7 +789,6 @@ extern int iommu_calculate_agaw(struct intel_iommu *iommu);
+ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+ extern int dmar_disabled;
+ extern int intel_iommu_enabled;
+-extern int intel_iommu_gfx_mapped;
+ #else
+ static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
+ {
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 4b06f2f365bd..88a53140c7f1 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -311,9 +311,6 @@ static int iommu_skip_te_disable;
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
+ 
+-int intel_iommu_gfx_mapped;
+-EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+-
+ static DEFINE_XARRAY_ALLOC(device_domain_array);
+ 
+ /* Convert device source ID into the index of device_domain_array. */
+@@ -4070,9 +4067,6 @@ int __init intel_iommu_init(void)
+ 	if (list_empty(&dmar_satc_units))
+ 		pr_info("No SATC found\n");
+ 
+-	if (dmar_map_gfx)
+-		intel_iommu_gfx_mapped = 1;
+-
+ 	init_no_remapping_devices();
+ 
+ 	ret = init_dmars();
 -- 
 2.25.1
 
