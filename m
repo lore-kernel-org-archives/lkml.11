@@ -2,151 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF78FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:33:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346905AbiBKBdN (ORCPT
+        id S1346823AbiBKBdl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 20:33:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43468 "EHLO
+        Thu, 10 Feb 2022 20:33:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346853AbiBKBdM (ORCPT
+        with ESMTP id S235662AbiBKBdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 20:33:12 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BE35582
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:33:12 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id j2so20832260ybu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:33:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9GxQrdaGBPDuxmmmn6awLxXmdKGbQSbctZ4L8eSniqE=;
-        b=XVBbuIogdAtT2RcD3LdyEwqn+DMMAVTKAlHtjcPSagoYO2bQpF5/3Pwt9jSh7iDEpq
-         CG3ZUDgCxDMTbYEn+Mx3k0qmo3HtAqy1U0BuzGA7qH5XGbiq6StWARdccws83om0fnqR
-         OVE9zuCt5OMNnNWm5czlswjzSkQgsPkbPCc7lVzDj/9hKoJ9axlyEy7HmkRhd+dsVK5I
-         Z3sCjcEsr91KtepWjHP2hGyEHJrQ6wWXJnC4UQGsm8ITDmgQaSz1BpnB1NC/3DXTw3lw
-         1mybzWR8ABWJ+mWbrBQz15V5H5U0rWlG+dyE42fXAerDaIUJ+8C5sXUkXGBlzHx72EMB
-         Iiug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9GxQrdaGBPDuxmmmn6awLxXmdKGbQSbctZ4L8eSniqE=;
-        b=0YIHhO7Ua/ySCW0xnpXGSX87kKlXB3vozustL48uDZ5LnyBj1nTRoc0SzYLnnW9lRu
-         gmZu512DVKsdgiAmsVRqyf3x5LM8nUmCq2azgBTPpSZ3jQf1c7CD1n+jsDgWeFTWyDbv
-         RkwdbZhShinoE9HzSCHsMCJbULyWGpg9JuifRUm0upNsYckAc56eG2UtGeSjCuilfeMQ
-         T7khHo+n0ZTUpdI3eKt0t+rO8ScQ7arXWGgD+hUWlYqYpfNeR/8pB3yFZc7SLWBqD9Ye
-         kNewQb6Pgp5sdmmaQdd1gPuKXdUX2tVROrjKMMn6kPgPXAMLZDZcHLEkytnNh4QXCLjV
-         Mvcw==
-X-Gm-Message-State: AOAM533sl4BI9OsrNyAveZn/qXvMD0x5Zb5Jd2QHOzLOP0O95u8cERAz
-        BmWEiDcI/Hvf1r/2wZYT9lxI1iVBmhdZK6GL0IOjFA==
-X-Google-Smtp-Source: ABdhPJwjq+GwW3DeD2qB1rO02A6XTTi8Mv9CAwCoEolQhjbTPfAnZ6ISJx8L8JI/dPtRihoxgfO9gb/FtAhfeKf0xcQ=
-X-Received: by 2002:a25:6a55:: with SMTP id f82mr9393142ybc.1.1644543191406;
- Thu, 10 Feb 2022 17:33:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20220210043215.42794-1-surenb@google.com> <YgUHzSqltDp2dr70@dhcp22.suse.cz>
- <CAJuCfpGkW7MoWW=E1tqEib24M3JjxDKF_zgmMnvWo8wJP6cy2g@mail.gmail.com>
- <YgUu0prRt3iu1Cpy@casper.infradead.org> <CAJuCfpHPZNbK2rd95pZAWr0d3vACGzHdiAFv=bM-G8nC+YdYwg@mail.gmail.com>
- <YgVo5HrAhoeoix7a@casper.infradead.org> <CAJuCfpHX22MaU8S0otoRiq8EdLGcdnYFNyxDmp4FZB_eM_+hdg@mail.gmail.com>
-In-Reply-To: <CAJuCfpHX22MaU8S0otoRiq8EdLGcdnYFNyxDmp4FZB_eM_+hdg@mail.gmail.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Thu, 10 Feb 2022 17:33:00 -0800
-Message-ID: <CAJuCfpHFMJR=X=HY-=go6W85jXgKzaL5+A+gQh_sDBxYJ7J69g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] mm: fix use-after-free when anon vma name is used
- after vma is freed
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Michal Hocko <mhocko@suse.com>,
+        Thu, 10 Feb 2022 20:33:40 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8C685582;
+        Thu, 10 Feb 2022 17:33:39 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jvx353l77z4xcl;
+        Fri, 11 Feb 2022 12:33:37 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644543218;
+        bh=KxLwMynRJ0UsoOel3fOo4xenJdot+JkG2dWXB0EDpxA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=inpSJ5qE80eJDCLj0eze36lR4GEmHaV13FzR2trUww1s8BR+/g5p3YqKiberout75
+         6E8b3N1cDHZdoBaJTt+dEtT2meG1qqFubvKvAKWzPn4zRmFw3bly5jWocKhkzZ5nVE
+         MRQLhKSs9cq1PnVBJd407u1hOqAkKtISWXyl8uWLbeJ0UNkRU21QrYavk10LL0fbA6
+         gL+x9tyNuQaXY0n/O9PKFpRBZwHViSdsJf9L1DLCEvyROYDyxGnwS/tpafUXb3mTO9
+         +SLGpdFMj/Pp0RNKJwO1tH1WaW5OyDGq4twEbii1Ajp9uh9Fw0lN7b6gViC6I0Vpao
+         153alyaWyGS2w==
+Date:   Fri, 11 Feb 2022 12:33:36 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Luis Chamberlain <mcgrof@kernel.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Tong Zhang <ztong0001@gmail.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Colin Cross <ccross@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>, brauner@kernel.org,
-        legion@kernel.org, ran.xiaokai@zte.com.cn, sashal@kernel.org,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Peter Collingbourne <pcc@google.com>, caoxiaofeng@yulong.com,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        syzbot+aa7b3d4b35f9dc46a366@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Domenico Andreoli <domenico.andreoli@linux.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: boottime warning from todays linux-next
+Message-ID: <20220211123336.54eff9de@canb.auug.org.au>
+In-Reply-To: <YgWdbYfWgHP2jBmI@bombadil.infradead.org>
+References: <20220210184340.7eba108a@canb.auug.org.au>
+        <20220210193302.686fa61a@canb.auug.org.au>
+        <20220210214125.2b248790@canb.auug.org.au>
+        <20220210222953.6e078d20@canb.auug.org.au>
+        <YgWdbYfWgHP2jBmI@bombadil.infradead.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/g2ImcQNIuZLdtj/=NtqDINk";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 11:52 AM Suren Baghdasaryan <surenb@google.com> wrote:
->
-> On Thu, Feb 10, 2022 at 11:35 AM Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Thu, Feb 10, 2022 at 08:00:15AM -0800, Suren Baghdasaryan wrote:
-> > > On Thu, Feb 10, 2022 at 7:27 AM Matthew Wilcox <willy@infradead.org> wrote:
-> > > >
-> > > > On Thu, Feb 10, 2022 at 07:18:24AM -0800, Suren Baghdasaryan wrote:
-> > > > > On Thu, Feb 10, 2022 at 4:40 AM 'Michal Hocko' via kernel-team
-> > > > > <kernel-team@android.com> wrote:
-> > > > > >
-> > > > > > On Wed 09-02-22 20:32:15, Suren Baghdasaryan wrote:
-> > > > > > > When adjacent vmas are being merged it can result in the vma that was
-> > > > > > > originally passed to madvise_update_vma being destroyed. In the current
-> > > > > > > implementation, the name parameter passed to madvise_update_vma points
-> > > > > > > directly to vma->anon_name->name and it is used after the call to
-> > > > > > > vma_merge. In the cases when vma_merge merges the original vma and
-> > > > > > > destroys it, this will result in use-after-free bug as shown below:
-> > > > > > >
-> > > > > > > madvise_vma_behavior << passes vma->anon_name->name as name param
-> > > > > > >   madvise_update_vma(name)
-> > > > > > >     vma_merge
-> > > > > > >       __vma_adjust
-> > > > > > >         vm_area_free <-- frees the vma
-> > > > > > >     replace_vma_anon_name(name) <-- UAF
-> > > > > > >
-> > > > > > > Fix this by raising the name refcount and stabilizing it. Introduce
-> > > > > > > vma_anon_name_{get/put} API for this purpose.
-> > > > > >
-> > > > > > What is the reason that madvise_update_vma uses the naked name rather
-> > > > > > than the encapsulated anon_vma_name? This really just begs for problems.
-> > > > >
-> > > > > The reason for that is the second place it's being used from the prctl syscall:
-> > > > >
-> > > > > prctl_set_vma
-> > > > >   madvise_set_anon_name
-> > > > >     madvise_vma_anon_name
-> > > > >       madvise_update_vma
-> > > > >
-> > > > > In that case the name parameter is not part of any anon_vma_name
-> > > > > struct and therefore is stable. I can add a comment to
-> > > > > madvise_update_vma indicating that the name parameter has to be stable
-> > > > > if that helps.
-> > > >
-> > > > Seems to me it'd simplify things if replace_vma_anon_name() and
-> > > > madvise_vma_anon_name() took a struct anon_vma_name instead of
-> > > > a bare char *.  You could construct it in madvise_set_anon_name().
-> > >
-> > > Ok, this can be done. However I don't think changing
-> > > replace_vma_anon_name() to accept a struct anon_vma_name would be a
-> > > good idea. Reader might think that the object being passed will become
-> > > the vma->anon_name of the vma, while in reality that's not the case.
-> >
-> > Why woud we not want that to be the case?  It's a refcounted name.
-> > I don't see why it shouldn't be shared between multiple VMAs that
-> > have the same name?
->
-> You are right. After I reworked the code it became apparent that
-> replace_vma_anon_name() should use anon_vma_name. I have made that
-> change and am testing it now. Hopefully no new surprises pop up.
+--Sig_/g2ImcQNIuZLdtj/=NtqDINk
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-v3 is posted at
-https://lore.kernel.org/all/20220211013032.623763-1-surenb@google.com/
+Hi Luis,
 
-> Thanks,
-> Suren.
->
-> >
+On Thu, 10 Feb 2022 15:19:09 -0800 Luis Chamberlain <mcgrof@kernel.org> wro=
+te:
+>=20
+> FWIW Linus merged a more newer version of the regression fix, and only
+> until today did we get that version on linux-next.
+>=20
+> > So it seems that the parent of "fs/binfmt_misc" is a permanently empty
+> > directory - the is_empty_dir() check in insert_header() succeeds. =20
+>=20
+> I am not seeing this issue on x86_64 KVM guest with:
+>=20
+> CONFIG_BINFMT_MISC=3Dm
+> or
+> CONFIG_BINFMT_MISC=3Dy
+>=20
+> I think the issue might be that linux-next has Andrew's earlier
+> version of the fix merged, and Linus now has the new version. So
+> linux-next has these extra things below. But I can't understand
+> why this is seen on ppc and not on x86_64.
+>=20
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index 241cfc6bc36f..788b9a34d5ab 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -2735,17 +2735,6 @@ static struct ctl_table vm_table[] =3D {
+>  	{ }
+>  };
+> =20
+> -static struct ctl_table fs_table[] =3D {
+> -#if defined(CONFIG_BINFMT_MISC) || defined(CONFIG_BINFMT_MISC_MODULE)
+> -	{
+> -		.procname	=3D "binfmt_misc",
+> -		.mode		=3D 0555,
+> -		.child		=3D sysctl_mount_point,
+> -	},
+> -#endif
+> -	{ }
+> -};
+> -
+>  static struct ctl_table debug_table[] =3D {
+>  #ifdef CONFIG_SYSCTL_EXCEPTION_TRACE
+>  	{
+> @@ -2765,7 +2754,6 @@ static struct ctl_table dev_table[] =3D {
+> =20
+>  DECLARE_SYSCTL_BASE(kernel, kern_table);
+>  DECLARE_SYSCTL_BASE(vm, vm_table);
+> -DECLARE_SYSCTL_BASE(fs, fs_table);
+>  DECLARE_SYSCTL_BASE(debug, debug_table);
+>  DECLARE_SYSCTL_BASE(dev, dev_table);
+> =20
+> @@ -2773,7 +2761,6 @@ int __init sysctl_init_bases(void)
+>  {
+>  	register_sysctl_base(kernel);
+>  	register_sysctl_base(vm);
+> -	register_sysctl_base(fs);
+>  	register_sysctl_base(debug);
+>  	register_sysctl_base(dev);
+> =20
+
+Thanks for noticing that.  I have removed the old version from my copy
+of mmotm today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/g2ImcQNIuZLdtj/=NtqDINk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIFvPAACgkQAVBC80lX
+0Gwijgf/TBdDbcMhAB0z9NguKoO3pYzk1BqQws7Iu79AMgDt00akkM2gceMKpFuh
+k8woqS8ESIDtrz4FjiU6sUh8pe4RVQg9Z0qLw0Ez6tRTNDmyLYqafrKLzuPytuM7
+a0XtSXO/Vid1EX5jR4oAN0CJMVXS5S7lUOSNVI0arWkjIyblpL1fcWd8klzb6D8m
+1dDI+NRnoFd78aNfEZt0rxJbUEs8zivqiLkxlfUpcWoPn2924UUIvWcNvvMZW8T3
+hOU6RYI7g3zm3pleVBzvFETS5qktFdCq3jwlFkJDLWWXrAY8DQWaHqF4oKVfwfkM
+zL0ZQYnAW/HZ3XzZQDqYX0e7ri7RZA==
+=Fgbg
+-----END PGP SIGNATURE-----
+
+--Sig_/g2ImcQNIuZLdtj/=NtqDINk--
