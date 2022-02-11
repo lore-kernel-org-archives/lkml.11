@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E190AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348525AbiBKJXG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:23:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37588 "EHLO
+        id S240342AbiBKJYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 04:24:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242601AbiBKJXE (ORCPT
+        with ESMTP id S229462AbiBKJYG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:23:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 15C22EBE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:23:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644571383;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qo5tt7qfqFuuHdwxRe62Yd9mxK2KKNk3oIAuQuMoJM4=;
-        b=C34PYzMbNnAlfRQ/lVP4jXhOVSdCEBID+yOybRmtRfbkU5iqgm6USifdFHf6yE2+iTeamk
-        nd0zNFNlbXkGKqt3oyg1x6hBoSYNmPERuItnB2tqGTdKMtGOAkhu0NQy+NBIZww6yQJn5f
-        Agf7Uw6khAdiuu/DF1jtDuz+d/vQkHg=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-495-CNqavvkvMLKVlDk0G_6Zwg-1; Fri, 11 Feb 2022 04:23:02 -0500
-X-MC-Unique: CNqavvkvMLKVlDk0G_6Zwg-1
-Received: by mail-wr1-f69.google.com with SMTP id c9-20020adfa709000000b001dde29c3202so3630856wrd.22
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:23:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Qo5tt7qfqFuuHdwxRe62Yd9mxK2KKNk3oIAuQuMoJM4=;
-        b=KNFcAonwrFgWcyG28zSuPMnv4ff9ijcejvobxOON+euY9mKQnuzRM7zKgr3hC14tSB
-         dcJgXgfJkQC1cOBYNiKHdI8QvW3pKLDbnCOp2f06sF+Owzh7L8MsoTHaBvrNVRaqR+zz
-         k/xiM1hoBd8zYNiUzP5hLxZOtrirPAOYNj0SB4e3+rqgagkt3uEZh5dTJvrxs5nvL4Mt
-         +LZlK0T2pLQnge1gY5UxN//cnAexXLnZ+Wp5dRDM9KNtpytrBmRHsGCKRN/JoEHnE6T3
-         6X0gM4PJwXawdz/9Z4zfdkABnzguEl1jATAxf/keGMUUZWd9qilHgfJGnGRbtQBgwP7v
-         EtZg==
-X-Gm-Message-State: AOAM532U9ftXkw8gBch1qOTcvWjoMTcyrlPtBD5aYcfHxcmAk+INBKkz
-        fduxS0//r2r+TlxRn5kVKsa/8DojreyG/eTDLrG7ZKS29pr/ziXBDaWCdNeQdY3Zndltu5b6+Dv
-        2L4KHVSz6mJVjCU3Su1BHuJX54rWCoHosXb2AbVj/nQMOBkrgjLSkBlfNXg2tYELMZyS60H8xYa
-        w=
-X-Received: by 2002:a5d:4910:: with SMTP id x16mr617234wrq.360.1644571381021;
-        Fri, 11 Feb 2022 01:23:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwQmkhSio3XmknDv+U+BFj72PJlq29Q9DPCbv2FXY27W3811LtmWuIDulWlfqEUKhTodynTLQ==
-X-Received: by 2002:a5d:4910:: with SMTP id x16mr617195wrq.360.1644571380540;
-        Fri, 11 Feb 2022 01:23:00 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id q76sm3795124wme.1.2022.02.11.01.22.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 01:23:00 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 6/6] dt-bindings: display: ssd1307fb: Add myself as binding co-maintainer
-Date:   Fri, 11 Feb 2022 10:22:53 +0100
-Message-Id: <20220211092253.2988843-1-javierm@redhat.com>
+        Fri, 11 Feb 2022 04:24:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C107B81;
+        Fri, 11 Feb 2022 01:24:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2ABD8B828BA;
+        Fri, 11 Feb 2022 09:24:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C215EC340E9;
+        Fri, 11 Feb 2022 09:24:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644571442;
+        bh=LTholiIYCR8EzJtQHKwYUx7qncEDYk0rJjJf2Lp4PXA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=c7ZSkS5S2CRJXW3RMICmKMprBymDhysSYVju2LFNAKRIMEwUHcBnPIA9W9MHX8ubM
+         TCToLWdahXpgvPC4Qp/3hQTOuHBiao1iBplkGY7fXKYAQtot+tPoCY9XhcoXLuKUfn
+         2g6fSIEKtrGtI2Jko2XXHcHhblG0t4nLtYGW6X9SxvMjKZbEypN9rsA7PsWVraB/V6
+         zyH1ENo6tNh/f9Cl4GZO8NCxEC7UAzccTYdYu2/JlBKVrYfBdjIAvPu9m7w3OyBVDu
+         70B+PkBB6FAG7VLCT/uN5PiXN7+feuvH9XBA1fR5DWhD9CBALKI/4WIN/Alqcs7G5v
+         6wma57cRCQjdA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nIS9o-0077l5-RS; Fri, 11 Feb 2022 09:24:00 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Cc:     kernel-team@android.com, Emil Renner Berthing <kernel@esmil.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH] pinctrl: starfive: Use a static name for the GPIO irq_chip
+Date:   Fri, 11 Feb 2022 09:23:45 +0000
+Message-Id: <20220211092345.1093332-1-maz@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220211091927.2988283-1-javierm@redhat.com>
-References: <20220211091927.2988283-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, kernel-team@android.com, kernel@esmil.dk, linus.walleij@linaro.org, brgl@bgdev.pl
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ssd130x DRM driver also makes use of this Device Tree binding to allow
-existing users of the fbdev driver to migrate without the need to change
-their Device Trees.
+Drop the device name used for the GPIO irq_chip and replace it
+with something static. The information is still available from
+debugfs and carried as part of the irqdomain.
 
-Add myself as another maintainer of the binding, to make sure that I will
-be on Cc when patches are proposed for it.
-
-Suggested-by: Sam Ravnborg <sam@ravnborg.org>
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Suggested-by: Emil Renner Berthing <kernel@esmil.dk>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <brgl@bgdev.pl>
 ---
+ drivers/pinctrl/pinctrl-starfive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v4:
-- Add Rob Herring Acked-by tag to patch adding as DT binding co-maintainer.
-
-Changes in v2:
-- Add myself as co-maintainer of the ssd1370fb DT binding (Sam Ravnborg).
-
- Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-index 2ed2a7d0ca2f..9baafd0c42dd 100644
---- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-@@ -8,6 +8,7 @@ title: Solomon SSD1307 OLED Controller Framebuffer
+diff --git a/drivers/pinctrl/pinctrl-starfive.c b/drivers/pinctrl/pinctrl-starfive.c
+index 0b912152a405..266da41a6162 100644
+--- a/drivers/pinctrl/pinctrl-starfive.c
++++ b/drivers/pinctrl/pinctrl-starfive.c
+@@ -1164,6 +1164,7 @@ static int starfive_irq_set_type(struct irq_data *d, unsigned int trigger)
+ }
  
- maintainers:
-   - Maxime Ripard <mripard@kernel.org>
-+  - Javier Martinez Canillas <javierm@redhat.com>
+ static struct irq_chip starfive_irq_chip = {
++	.name = "StarFive GPIO",
+ 	.irq_ack = starfive_irq_ack,
+ 	.irq_mask = starfive_irq_mask,
+ 	.irq_mask_ack = starfive_irq_mask_ack,
+@@ -1308,7 +1309,6 @@ static int starfive_probe(struct platform_device *pdev)
+ 	sfp->gc.ngpio = NR_GPIOS;
  
- properties:
-   compatible:
+ 	starfive_irq_chip.parent_device = dev;
+-	starfive_irq_chip.name = sfp->gc.label;
+ 
+ 	sfp->gc.irq.chip = &starfive_irq_chip;
+ 	sfp->gc.irq.parent_handler = starfive_gpio_irq_handler;
 -- 
 2.34.1
 
