@@ -2,275 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C60A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1029AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:25:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352858AbiBKSXG (ORCPT
+        id S1347914AbiBKSZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 13:23:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33094 "EHLO
+        Fri, 11 Feb 2022 13:25:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343586AbiBKSWa (ORCPT
+        with ESMTP id S231703AbiBKSZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 13:22:30 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16606196;
-        Fri, 11 Feb 2022 10:22:29 -0800 (PST)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21BGRJ7l004788;
-        Fri, 11 Feb 2022 18:22:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=pINOevvoQ/9f0NFUrCoqY0W/We+zzYj735erAO3/O9A=;
- b=m3QmE8x+h8DmOlNT3znGXT6ZvN09BdW09el5CwVA52QBzLs8qgoOrNgr7APS03HbjemD
- 6GZHUDnYh6UNiqf88k9tB+pDo0HZKFTW84V7G9Or0slEhyxJj7p+uA3Pd8NTrSBJT4/y
- mKi/uTWhME6PpPbups5lPmJ21bGc9zH+p0/vqrpVSuIfgkyw0EQfk23gkFsOlNdQfZoW
- SXpugymiSADtFEkRowc4AVwFcbome67F3tEteaoWl8oze0xkKc2ls4uC9Br0dVxU2KL/
- RgZezKkwBikC7IeMBXXj3s1GUyNI+fwSt+LvzM8Tpw4+7sAI8Dj6+K+TrPufg0wmmJL0 yQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5ub9aenn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 18:22:26 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21BI9pKe023922;
-        Fri, 11 Feb 2022 18:22:26 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e5ub9aem8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 18:22:26 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21BICYXH030099;
-        Fri, 11 Feb 2022 18:22:21 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03fra.de.ibm.com with ESMTP id 3e1gva9nk1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 18:22:20 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21BIMHOj46072072
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 11 Feb 2022 18:22:17 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7BC7C52051;
-        Fri, 11 Feb 2022 18:22:17 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 0F2B752052;
-        Fri, 11 Feb 2022 18:22:17 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH v4 00/10] KVM: s390: Do storage key checking
-Date:   Fri, 11 Feb 2022 19:22:05 +0100
-Message-Id: <20220211182215.2730017-1-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kWciM2TJOqsHy__HsM7xTKN8g_xunFjN
-X-Proofpoint-ORIG-GUID: 3elo-BIlQFIHQ7domBC1VyLRMKotQ9aG
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 11 Feb 2022 13:25:24 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D998BC;
+        Fri, 11 Feb 2022 10:25:22 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XXSHZvLjcqoEUHkNOwjTDo1OwQEClZ7edI5X7Luz7caUD5kg+5vcrd5ksZWf3e8QDa7rC2UBwMghbcvH4ni9LVQQKAy3ySxx6Fi6/V4IFCO2PMXdz0hftfegtC6w8R/YM7bN7OLQ6CtpVNcIx/CUF3i/kZvoIzF825dQYmMKZE9+5VKJRPNwnxoEIXLRkHQe9E268e1AS53ZTKyfXe8nzfmDeb/Qwnuk92XmQ/vGJiQuztxw6b4lvJwTkJ+McU7zdd3VP7G9+1FFVp+aOcSF+aE4hJQEl1d9ixwb6QL33rU7de3fVwBhm4Nk4DE6tAfvjAJE2VrR7QVliPebxaDJcw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qHNo0mu6WN3OKqEQRXX8g0byVWVKTBLxk0ZHQelbkxI=;
+ b=ieHZEPmPXRaLVSpTKIH+cqUcMz5kPw7eSEF3FH1LamUKCvY1rDJ/kwXiyog/jYb9pkOSXMKAaH84ccbNplp0XG4XAduhxW4iwHpT3UFZjShcGXk1a9aXqdaL9cW0Yx6PM2FNUfbmi01Yx18YDAAeIgfGnK0EGJDxPReyJ/GPHs5EePDV21F9gQkhHXGbLQmTmtiuylf/J+/hSsuAYQUtT8buDQ4i19oCYRcr5YAa9hrlAKrngzWdEDz+EODN8G/DsZh1tmfl93CeerzR6Yj0idpw9Hv1Hwu7m8KVn0kuoHhZMnFSM1Y8Abclcy0gEnp+6n1BrVbiMPvRGF71+vGeDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qHNo0mu6WN3OKqEQRXX8g0byVWVKTBLxk0ZHQelbkxI=;
+ b=4SCjWgvvgvYnSqIMYIl2wkXA6Q15pNPQRODsFo0jQCiIKRrJdQFaaJ4USUUtb+i7E83kpm7DQGM6LeqUBXRxl8LLnFyfseu/3Ae6gnaj6Ukpwv5HXnZLXKR4+zlg880dCBaK7k5QXy0DhNZEOt/rMXxHQyUFMskaEBb6dglSdiI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH0PR12MB5346.namprd12.prod.outlook.com (2603:10b6:610:d5::24)
+ by BN6PR12MB1652.namprd12.prod.outlook.com (2603:10b6:405:6::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Fri, 11 Feb
+ 2022 18:25:20 +0000
+Received: from CH0PR12MB5346.namprd12.prod.outlook.com
+ ([fe80::ad10:b9b4:d5cb:af1e]) by CH0PR12MB5346.namprd12.prod.outlook.com
+ ([fe80::ad10:b9b4:d5cb:af1e%5]) with mapi id 15.20.4975.011; Fri, 11 Feb 2022
+ 18:25:20 +0000
+Message-ID: <46f9dc71-9640-71cf-e8b6-d0e4133766f3@amd.com>
+Date:   Fri, 11 Feb 2022 12:25:15 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Reply-To: Terry.Bowman@amd.com
+Subject: Re: [PATCH v5 3/9] i2c: piix4: Move port I/O region request/release
+ code into functions
+Content-Language: en-US
+From:   Terry Bowman <Terry.Bowman@amd.com>
+To:     Wolfram Sang <wsa@kernel.org>, Jean Delvare <jdelvare@suse.de>,
+        linux@roeck-us.net, linux-watchdog@vger.kernel.org,
+        linux-i2c@vger.kernel.org, andy.shevchenko@gmail.com,
+        rafael.j.wysocki@intel.com, linux-kernel@vger.kernel.org,
+        wim@linux-watchdog.org, rrichter@amd.com, thomas.lendacky@amd.com,
+        sudheesh.mavila@amd.com, Nehal-bakulchandra.Shah@amd.com,
+        Basavaraj.Natikar@amd.com, Shyam-sundar.S-k@amd.com,
+        Mario.Limonciello@amd.com
+References: <20220209172717.178813-1-terry.bowman@amd.com>
+ <20220209172717.178813-4-terry.bowman@amd.com>
+ <20220211105322.180ad89d@endymion.delvare> <YgZ12hCMUlqtLKD3@kunai>
+ <c60c9fe4-cfb1-9df2-eb57-66b41149d7db@amd.com>
+In-Reply-To: <c60c9fe4-cfb1-9df2-eb57-66b41149d7db@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA9PR11CA0001.namprd11.prod.outlook.com
+ (2603:10b6:806:6e::6) To CH0PR12MB5346.namprd12.prod.outlook.com
+ (2603:10b6:610:d5::24)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-11_05,2022-02-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- malwarescore=0 lowpriorityscore=0 suspectscore=0 adultscore=0
- priorityscore=1501 spamscore=0 clxscore=1015 bulkscore=0 mlxlogscore=999
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202110098
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5c318a4a-c8f1-49a0-c469-08d9ed8bdc4e
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1652:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR12MB165228AD9635A530FE0F9A8983309@BN6PR12MB1652.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /hi7JdrH8yBKItSNgyYCPqg1nu1aOq58zJ/bXNcMKou+JPL6giaaM0nT4lBX/qbzgqBTNuZTJVhY76fUAhcBTeNL06/C9prKMCaWThTLdquuPkgE1kUak375urZlDaEdFbiJC9SDeb4p3OocAFze57SHfKfi/kLGVkWvxMeq0XwlBd3S9kc5TGS3Vgnl3HodtBDedH0DCJGKm7xOHHe7hMloIahU81iRA9xxhFWRMZGue0cXj3SLHlEnvpHktwUfjjLfkg0TZi+lVCb2c+/2rfwPaY2cojbSoevqJsRMF/TO6/Ga0xcjpi5J8gt9vekvJvxx5DuSHAudtabBK3pUdIsrGcOWN0wmonjK/NdU798+CgT7pLhvPF+DCGyjz6xqitW/M7JHc7kqodwDB4tgJzTQojbJldYfN0E0M9ctE7jVifu1sxPopoHXayZZ09InzgGshyItLg5CvYV4U8FZtmPAXpkQXx8DArKnbOSAmamNuzGD+FB+bWN7e077eRomX3+wnxaDkgxOqyWrQpcXFaPnuGdg5R/wTIKGWyXmpg+x/2NQ+gxwCtPtJIQOy8vUShD2+7RUJqx/P6Lbj/uGbI8uK+SqGL1gvn63WvfmmoQHBtHnKk6wyniOcW8K4zoSG1MLLiDJO7U0tHpg0dXz72wt4/Xmm3M9sO4TKLfNqBIaPYL+e/AA/RlQrCFTkzYgA5UMhJvTkyYSMU6obp1z6k4Dvss5YwPn948q/04iaH9bhd0R074LGTbMGYZTXmgb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5346.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(26005)(31696002)(186003)(38100700002)(8936002)(6666004)(6512007)(2616005)(6486002)(53546011)(508600001)(316002)(86362001)(6636002)(83380400001)(66556008)(66476007)(8676002)(3450700001)(921005)(31686004)(5660300002)(36756003)(6506007)(2906002)(110136005)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Q1FHakEyRnNMeWIzQUJXYWpmaDl1V2U2TmJHMGk3MWQ3WCtHSy81VHFPOUJ0?=
+ =?utf-8?B?QUFVOHR5dE9HRHZzRTRwQ1FzYjgxTXJ4VkpBQnhHemVNVGNxVmtPMVVWYlVX?=
+ =?utf-8?B?cnkwYlVFSWRTMkRJdmJFaWo4enowdldLNDY3UTVzUkVEZjRtdnRoL1kxM1Nh?=
+ =?utf-8?B?dlZlb0RSYVNmNEJHdDVtYnZnbHFEeE94OW1YRlNxNE4wT3hRbG9OVlVsWjFH?=
+ =?utf-8?B?VmFpOWFuLzlkWmQ2aDB5aXYyQXIrQXVOSjcwczYyMDZhampHMmdQdFdZQS9R?=
+ =?utf-8?B?d2d5RlZ6VnNNM3hzSWRYTzlQUGJUcDlsRUdFTStDT3p5STJGTHFpakZKUVMy?=
+ =?utf-8?B?YjZMenRUNFp5UGFGdVVJelFYSC9GY3pRVnhKWnI3OTE2TUlrQnVGaVplZjkv?=
+ =?utf-8?B?ZGlzSjNvWWpsZUdNWk5tU1kwQjhSdGFKZDRkanRKaHFqcUxjZnZ5THZ3aWRl?=
+ =?utf-8?B?ckRWcFFZV0VCbmQ1YlF1cnBQZ0pGd2UzUG5aK1F0ZVFQMzFBVFdxL3M3U0lB?=
+ =?utf-8?B?VjlLYjNkZlpxMHE3QTNjNWlCb2ZxRlJaV2ZPNDJHdzI2NDFGb1pYZUpsOHdF?=
+ =?utf-8?B?TmtqZWVaekRBSEY3ckRDcDJVUUUwdlczZDBFWTkzZGV3YjBUNndOZ1RtbWJh?=
+ =?utf-8?B?cGRhRVFULzFvVk1qWS9XdVF1V2xncWlEZXBHNDhqVEphajlURjdVME1TTUtX?=
+ =?utf-8?B?T1VjcVBhNW5DVGsveUtFcUxuSUgvdVZuYjFKOUwyczVSNTAvbkxPUWJFUFV1?=
+ =?utf-8?B?L1VtcE1YRlZHUjZPK3Jld0FNT1lJdHR0WnNTVTdram9KaGNqOG1IVW93THND?=
+ =?utf-8?B?QjYzZUplak9EWlhWNHU0THFDVG5JSmN1allISDkxdGx6RlprS3RXSGVNS1o4?=
+ =?utf-8?B?Q2hiVFVqcnBlbzNtUWlvUXFLbnErSU5HR3lJa0lMbGV1Tm1ucUxrNVVLS2Z6?=
+ =?utf-8?B?U1J4OUpWVDFvVnd5Yjd0bHpUOGZxSnNSVTdlbXYwNzV1bm1UbDZtVnh2eVdS?=
+ =?utf-8?B?ckQ2U1FCRCticVRvMEFTMXJlek5PSTNrZGJuVzhuWGN0Zkp2NjMvSm9FeG1r?=
+ =?utf-8?B?V0ROSUpWRkZmMjBadGpzc2ZFV3RwZmh1bDdIMVhhYzMvZ1MyMVFyTjNGRW1w?=
+ =?utf-8?B?VFVPYmZraHVoeHdnRW9FczZEUGQzcXpoSjdxbi96VUFsc0llUm9RWDJHeG5o?=
+ =?utf-8?B?aEFleUcvR1N0d2JYN3JmRHRTcmNoTE9HeFA0b0N0MXpxL3FiWEpjekpQTnNW?=
+ =?utf-8?B?ZThvbHY5Q0dzeEh6SGNycktEZFQ3dzRwdkxETHZrcEZMdGhXR1I1YXQ4bm1D?=
+ =?utf-8?B?aFBoalJsTDVoYkFPTDgwbHF6UGRXR3hyU3JIdThlZ3NRWUd2R0RhTlBHWitK?=
+ =?utf-8?B?Y3hLSWo4U1hlTE5KUk5pRnk4MVZSY2pEUE9wZ0JYVWVoMCtCa1BmbkNTTEU0?=
+ =?utf-8?B?b0ZoYkhFSytPTWFRSWlHWGozbUxDUFVJUTR4a3pDODI2Vk1ZWElRWjdYVG9J?=
+ =?utf-8?B?dDhiUVJFeUZ4YnpOYm43WnhhSDJyd3pNOUdtczFkQVU2TUJNZGdNMlRYa3FQ?=
+ =?utf-8?B?a3hFNURBakhwdHUvaFBNYUkzM3Vzc1VEN3FBQXVXZytoWTQwTnpyZlRRdklj?=
+ =?utf-8?B?dGZHc3RlZlBXeEhIZGRSRWs5Q055YkZxWEJFR2p3TC9XZUg0VWhkSHY3by9o?=
+ =?utf-8?B?WVBqYWdUYTd1UHRxbmJyR0tiNnVXTkhvR0liZ1RzekQzdGxhejh2N3c4cGUx?=
+ =?utf-8?B?UlJtUnZRT1crekN6OHdIVXVhckNsUHFVamt6enNvYTE0L2xIaTY3Nm5UWXFi?=
+ =?utf-8?B?TUpnS0N2Nzh5NzREbXZheUxYOXM2K2UzQnRITFRHYzFQVDZVUlFtTGFlODVj?=
+ =?utf-8?B?Tk1kTmx6K24yMGErdkM1d0lOdEtlSmhqQ0gyWVZYT2ZndnpwUzNiZzZLN1Zn?=
+ =?utf-8?B?a08yeFJpUFNTK1ZsUElxR093VDBTbDBMZkNMemFYaGJyNXp2TUc4VGg2TE1o?=
+ =?utf-8?B?MGpGNGZ4NmxEVzErRnNBVHl0TDFadHhvMTB1UkxvUVFsQk9xVm9TWkFWS2d3?=
+ =?utf-8?B?UXJWR1FyWEdQZ3pBeFlUT3VXWVYvUXN3WU42MTg0dUtpYm1pbDRRQkR6VGp6?=
+ =?utf-8?B?eTYyYXppQm5xYzUyd0laeUFrM2NXbXErVVUxM1lqQnlsQlBSNG04ZVhmNHZs?=
+ =?utf-8?Q?/U+v0DyjtuQcoWxA2JwqCMI=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c318a4a-c8f1-49a0-c469-08d9ed8bdc4e
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5346.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 18:25:20.3272
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jqzSEBvdfTvWizqApEAphSpPTZTc7baFjwpx/kswfwHkIjB0npH4AopPzmcJ+rVPFVyrnbgfhc0i7T7xqElecw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1652
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check keys when emulating instructions and let user space do key checked
-accesses.
-User space can do so via an extension of the MEMOP IOCTL:
-* allow optional key checking
-* allow MEMOP on vm fd, so key checked accesses on absolute memory
-  become possible
+Hi Wolfram an Jean,
 
-I haven't finished the memop selftest rewrite, but decided to send out a
-new version anyway, since the functional patches are (hopefully) final
-and the memop selftest patch works. I'll reply to it with the
-rewritten version.
+On 2/11/22 09:00, Terry Bowman wrote:
+> Hi Wolfram and Jean,
+> 
+> On 2/11/22 08:42, Wolfram Sang wrote:
+>>>> +		if (retval)
+>>>
+>>> Missing curly brace here, breaks the build.
+>>
+>> Bummer, need to check why this wasn't found by my build-testing.
+>>
+>> I fixed it up and also rebased patch 6 to my change. Terry, please have
+>> a look that I did everything correctly once I push out later today.
+>>
+>> Thanks everyone!
+>>
+> I need to look at how I sent that out. I will look for the fix in 
+> i2c/for-next. Thanks for the help and review. 
 
-v3: https://lore.kernel.org/kvm/20220209170422.1910690-1-scgl@linux.ibm.com/
-v2: https://lore.kernel.org/kvm/20220207165930.1608621-1-scgl@linux.ibm.com/
+I verified the fix looks good. From commit a3325d225b00 on i2c/for-next:
 
-v3 -> v4
- * rebase
- * ignore key in memop if skey flag not specified
- * fix nits in documentation
- * pick up tags
-
-v2 -> v3
- * get rid of reserved bytes check in vm,vcpu memop
- * minor documentation changes
- * moved memop selftest patches to end of series and squashed them,
-   currently working on making the test pretty
-
-v1 -> v2
- * rebase
- * storage key variants of _?copy_from/to_user instead of
-   __copy_from/to_user_key, with long key arg instead of char
- * refactor protection override checks
- * u8 instead of char for key argument in s390 KVM code
- * add comments
- * pass ar (access register) to trans_exec in access_guest_with_key
- * check reserved/unused fields (backwards compatible)
- * move key arg of MEMOP out of flags
- * rename new MEMOP capability to KVM_CAP_S390_MEM_OP_EXTENSION
- * minor changes
-
-Janis Schoetterl-Glausch (10):
-  s390/uaccess: Add copy_from/to_user_key functions
-  KVM: s390: Honor storage keys when accessing guest memory
-  KVM: s390: handle_tprot: Honor storage keys
-  KVM: s390: selftests: Test TEST PROTECTION emulation
-  KVM: s390: Add optional storage key checking to MEMOP IOCTL
-  KVM: s390: Add vm IOCTL for key checked guest absolute memory access
-  KVM: s390: Rename existing vcpu memop functions
-  KVM: s390: Add capability for storage key extension of MEM_OP IOCTL
-  KVM: s390: Update api documentation for memop ioctl
-  KVM: s390: selftests: Test memops with storage keys
-
- Documentation/virt/kvm/api.rst            | 112 ++++-
- arch/s390/include/asm/ctl_reg.h           |   2 +
- arch/s390/include/asm/page.h              |   2 +
- arch/s390/include/asm/uaccess.h           |  22 +
- arch/s390/kvm/gaccess.c                   | 250 +++++++++-
- arch/s390/kvm/gaccess.h                   |  84 +++-
- arch/s390/kvm/intercept.c                 |  12 +-
- arch/s390/kvm/kvm-s390.c                  | 132 ++++-
- arch/s390/kvm/priv.c                      |  66 +--
- arch/s390/lib/uaccess.c                   |  81 +++-
- include/uapi/linux/kvm.h                  |  11 +-
- tools/testing/selftests/kvm/.gitignore    |   1 +
- tools/testing/selftests/kvm/Makefile      |   1 +
- tools/testing/selftests/kvm/s390x/memop.c | 558 +++++++++++++++++++---
- tools/testing/selftests/kvm/s390x/tprot.c | 227 +++++++++
- 15 files changed, 1375 insertions(+), 186 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/s390x/tprot.c
-
-Range-diff against v3:
- 1:  0049c4412978 =  1:  313eb689b715 s390/uaccess: Add copy_from/to_user_key functions
- 2:  296096b9a7b9 =  2:  192fe30b1863 KVM: s390: Honor storage keys when accessing guest memory
- 3:  a5976cb3a147 =  3:  19bd017ae5a4 KVM: s390: handle_tprot: Honor storage keys
- 4:  5f5e056e66df =  4:  d20fad8d501b KVM: s390: selftests: Test TEST PROTECTION emulation
- 5:  64fa17a83b26 !  5:  bdee09b4a15e KVM: s390: Add optional storage key checking to MEMOP IOCTL
-    @@ Commit message
-         CPU would, or pass another key if necessary.
-     
-         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-    -    Acked-by: Janosch Frank <frankja@linux.ibm.com>
-         Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-    +    Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-    +    Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-     
-      ## arch/s390/kvm/kvm-s390.c ##
-    -@@
-    - #include <linux/sched/signal.h>
-    - #include <linux/string.h>
-    - #include <linux/pgtable.h>
-    -+#include <linux/bitfield.h>
-    - 
-    - #include <asm/asm-offsets.h>
-    - #include <asm/lowcore.h>
-     @@ arch/s390/kvm/kvm-s390.c: static int kvm_s390_handle_pv(struct kvm *kvm, struct kvm_pv_cmd *cmd)
-      	return r;
-      }
-    @@ arch/s390/kvm/kvm-s390.c: static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcp
-     +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
-     +		if (access_key_invalid(mop->key))
-     +			return -EINVAL;
-    ++	} else {
-    ++		mop->key = 0;
-     +	}
-      	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
-      		tmpbuf = vmalloc(mop->size);
- 6:  57e3ad332677 !  6:  e207a2f9af8a KVM: s390: Add vm IOCTL for key checked guest absolute memory access
-    @@ Commit message
-         accesses and so are not applied as they are when using the vcpu memop.
-     
-         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-    -    Acked-by: Janosch Frank <frankja@linux.ibm.com>
-    +    Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-     
-      ## arch/s390/kvm/gaccess.c ##
-     @@ arch/s390/kvm/gaccess.c: static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
-    @@ arch/s390/kvm/kvm-s390.c: static bool access_key_invalid(u8 access_key)
-     +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
-     +		if (access_key_invalid(mop->key))
-     +			return -EINVAL;
-    ++	} else {
-    ++		mop->key = 0;
-     +	}
-     +	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
-     +		tmpbuf = vmalloc(mop->size);
- 7:  1615f5ab6e30 =  7:  52adbceebe41 KVM: s390: Rename existing vcpu memop functions
- 8:  a8420e0f1b7f =  8:  43280a2db282 KVM: s390: Add capability for storage key extension of MEM_OP IOCTL
- 9:  c59952ee362b !  9:  9389cd2f4d23 KVM: s390: Update api documentation for memop ioctl
-    @@ Commit message
-         as well as the existing SIDA operations.
-     
-         Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-    +    Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
-     
-      ## Documentation/virt/kvm/api.rst ##
-     @@ Documentation/virt/kvm/api.rst: The fields in each entry are defined as follows:
-    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
-     +the access. "ar" designates the access register number to be used; the valid
-     +range is 0..15.
-     +Logical accesses are permitted for the VCPU ioctl only.
-    -+Logical accesses are permitted for non secure guests only.
-    ++Logical accesses are permitted for non-protected guests only.
-     +
-     +Supported flags:
-     +  * ``KVM_S390_MEMOP_F_CHECK_ONLY``
-    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
-     +  * ``KVM_S390_MEMOP_F_SKEY_PROTECTION``
-     +
-     +The KVM_S390_MEMOP_F_CHECK_ONLY flag can be set to check whether the
-    -+corresponding memory access would cause an access exception, without touching
-    -+the data in memory at the destination.
-    ++corresponding memory access would cause an access exception; however,
-    ++no actual access to the data in memory at the destination is performed.
-     +In this case, "buf" is unused and can be NULL.
-     +
-     +In case an access exception occurred during the access (or would occur
-    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
-     +Absolute accesses are permitted for the VM ioctl if KVM_CAP_S390_MEM_OP_EXTENSION
-     +is > 0.
-     +Currently absolute accesses are not permitted for VCPU ioctls.
-    -+Absolute accesses are permitted for non secure guests only.
-    ++Absolute accesses are permitted for non-protected guests only.
-     +
-     +Supported flags:
-     +  * ``KVM_S390_MEMOP_F_CHECK_ONLY``
-    @@ Documentation/virt/kvm/api.rst: Parameters are specified via the following struc
-     +^^^^^^^^^^^^^^^^
-     +
-     +Access the secure instruction data area which contains memory operands necessary
-    -+for instruction emulation for secure guests.
-    ++for instruction emulation for protected guests.
-     +SIDA accesses are available if the KVM_CAP_S390_PROTECTED capability is available.
-     +SIDA accesses are permitted for the VCPU ioctl only.
-    -+SIDA accesses are permitted for secure guests only.
-    ++SIDA accesses are permitted for protected guests only.
-      
-     -The "reserved" field is meant for future extensions. It is not used by
-     -KVM with the currently defined set of flags.
-10:  68752e1eca95 = 10:  af33593d63a4 KVM: s390: selftests: Test memops with storage keys
-
-base-commit: f1baf68e1383f6ed93eb9cff2866d46562607a43
--- 
-2.32.0
-
+@@ -373,11 +388,10 @@ static int piix4_setup_sb800(struct pci_dev *PIIX4_dev,
+ 			piix4_port_shift_sb800 = SB800_PIIX4_PORT_IDX_SHIFT;
+ 		}
+ 	} else {
+-		if (!request_muxed_region(SB800_PIIX4_SMB_IDX,
+-					  SB800_PIIX4_SMB_MAP_SIZE,
+-					  "sb800_piix4_smb")) {
++		retval = piix4_sb800_region_request(&PIIX4_dev->dev);
++		if (retval) {
+ 			release_region(piix4_smba, SMBIOSIZE);
+-			return -EBUSY;
++			return retval;
+ 		}
