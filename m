@@ -2,311 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:31:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B932C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348285AbiBKNbb (ORCPT
+        id S1350591AbiBKNfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:31:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54618 "EHLO
+        Fri, 11 Feb 2022 08:35:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350574AbiBKNbY (ORCPT
+        with ESMTP id S242462AbiBKNfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:31:24 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F8021A
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:31:23 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nIW0V-0005x1-Ie; Fri, 11 Feb 2022 14:30:39 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nIW0T-009jug-9l; Fri, 11 Feb 2022 14:30:37 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Mark Rutland <mark.rutland@arm.com>,
+        Fri, 11 Feb 2022 08:35:00 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196931DF
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:34:59 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id l123-20020a1c2581000000b0037b9d960079so7328371wml.0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:34:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=c5deOdUwH9zFHVJq1pi2VKNXJFMRgY+QuG1cj9vFjqQ=;
+        b=Rfj5VrN/yMm394gXaeO7hjRbBBeWfKjzMqjHXiaIKAisSdLwvcldHfcvdV7ERsHB72
+         FPoNWOGSf3oknBlmAzP6F5P+qcLQTCMzBlQ1CowdiRR3vqkh7YishnoPkT5LYy/MWFRE
+         EPQlX+T8SRRsyujB0z5nSyhcRHC0jaR9Su+yXHtVfgWRUVDBr2q/Lkq76//h0iSfyqZu
+         8HJTrz9cS91MNCBJFKqMlqHTM4okkWeBK1qQDuyzsS97eUDtFD241pDTZg2KE9dKCubj
+         PW+6ufOpcZAzilHI4OMjckUmLJSKtJXYNAjYi5GnzzOmop8j1pOJmCh8eURoOE7uYa9c
+         oRlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=c5deOdUwH9zFHVJq1pi2VKNXJFMRgY+QuG1cj9vFjqQ=;
+        b=Wxda98govaLm3vTdXsTd3ak9ESXc7PZippXuXFyb40C6kqRKIdU9oNVmPlHJnomf5z
+         jjQsWbrtO1lJ7auflMCKnt4bqD2gvHDj1SqrOHKgGLi8k6MRmKrCawYgCI6P1HKbbkvB
+         8muqzifldc4ysHd/i1ceLddheNxmQHx92eawRngJna7ed2xF4KbKXwnJMUq74ZSiOxjC
+         thsVUh7f+cMIzD2HIjDAZEj/pKrgfQILeezpPkH+Xfmkiw03eAW2t9TKlVSGHByfIkb4
+         d4b1w76CtZzg3ju/i3I8jUybAiYzrb+izsdaK7Bj9zJFk+WI2S6Ne99ud3fl+s4n9WST
+         ePDQ==
+X-Gm-Message-State: AOAM532JGdfKaldEf20zjfTnucnp5jJtrFyFMwTUl4yUD7ABr9biRI9x
+        1aK5wPpxQ1xhPjHGLatJ0FJ5qQ==
+X-Google-Smtp-Source: ABdhPJwoiWu6Gub9EjFxOlYmHUW4hTC3OOADG2ozsrv8m0wDwOFoJmprbJXpHvCheuveojhx8N5uAQ==
+X-Received: by 2002:a05:600c:378b:: with SMTP id o11mr329697wmr.176.1644586497566;
+        Fri, 11 Feb 2022 05:34:57 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id s187sm5030128wme.14.2022.02.11.05.34.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 05:34:57 -0800 (PST)
+Date:   Fri, 11 Feb 2022 13:34:55 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
+Cc:     Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 4/5] ARM: dts: imx6dl: plym2m, prtvt7, victgo: make use of new resistive-adc-touch driver
-Date:   Fri, 11 Feb 2022 14:30:34 +0100
-Message-Id: <20220211133035.2321330-5-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220211133035.2321330-1-o.rempel@pengutronix.de>
-References: <20220211133035.2321330-1-o.rempel@pengutronix.de>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Subject: Re: [PATCH V5 3/6] mfd: pm8008: Add mfd cell struct to register LDOs
+Message-ID: <YgZl/0fC8ruM0f7Y@google.com>
+References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1644331940-18986-4-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n52B4heY5fcbz71JPOqvMVvmqsXO94V+Z0qTTw_XXextJw@mail.gmail.com>
+ <bd5636b0-b975-1084-f285-87e458249b1a@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <bd5636b0-b975-1084-f285-87e458249b1a@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The tsc2046 is an ADC used as touchscreen controller. To share as mach
-code as possible, we should use it as actual ADC + virtual touchscreen
-controller.
-With this patch we make use of the new kernel IIO and HID infrastructure.
+On Fri, 11 Feb 2022, Satya Priya Kakitapalli (Temp) wrote:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- arch/arm/boot/dts/imx6dl-plym2m.dts | 59 +++++++++++++++++++++--------
- arch/arm/boot/dts/imx6dl-prtvt7.dts | 57 +++++++++++++++++++++-------
- arch/arm/boot/dts/imx6dl-victgo.dts | 59 ++++++++++++++++++++++-------
- 3 files changed, 132 insertions(+), 43 deletions(-)
+> 
+> On 2/10/2022 7:02 AM, Stephen Boyd wrote:
+> > Quoting Satya Priya (2022-02-08 06:52:17)
+> > > diff --git a/drivers/mfd/qcom-pm8008.c b/drivers/mfd/qcom-pm8008.c
+> > > index c472d7f..e8569cc 100644
+> > > --- a/drivers/mfd/qcom-pm8008.c
+> > > +++ b/drivers/mfd/qcom-pm8008.c
+> > > @@ -8,6 +8,7 @@
+> > >   #include <linux/interrupt.h>
+> > >   #include <linux/irq.h>
+> > >   #include <linux/irqdomain.h>
+> > > +#include <linux/mfd/core.h>
+> > >   #include <linux/module.h>
+> > >   #include <linux/of_device.h>
+> > >   #include <linux/of_platform.h>
+> > > @@ -27,6 +28,37 @@
+> > >   #define INT_EN_CLR_OFFSET              0x16
+> > >   #define INT_LATCHED_STS_OFFSET         0x18
+> > > 
+> > > +static const struct mfd_cell pm8008_regulator_devs[] = {
+> > Is there some way to not allocate this structure statically forever?
+> 
+> 
+> I think No.
+> 
+> I found that some of the drivers are just using one cell with .name to match
+> with regulator driver and then probing regulators using a loop. I'll do that
+> too.
+> 
+> static const struct mfd_cell pm8008_regulator_devs[] = {
+>         {
+>                 .name = "qcom,pm8008-regulators",
+>         },
+>  };
 
-diff --git a/arch/arm/boot/dts/imx6dl-plym2m.dts b/arch/arm/boot/dts/imx6dl-plym2m.dts
-index 60fe5f14666e..73c7622bfe0f 100644
---- a/arch/arm/boot/dts/imx6dl-plym2m.dts
-+++ b/arch/arm/boot/dts/imx6dl-plym2m.dts
-@@ -101,6 +101,18 @@ reg_12v0: regulator-12v0 {
- 		regulator-min-microvolt = <12000000>;
- 		regulator-max-microvolt = <12000000>;
- 	};
-+
-+	touchscreen {
-+		compatible = "resistive-adc-touch";
-+		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
-+                              <&adc_ts 5>;
-+		io-channel-names = "y", "z1", "z2", "x";
-+		touchscreen-min-pressure = <64687>;
-+		touchscreen-inverted-x;
-+		touchscreen-inverted-y;
-+		touchscreen-x-plate-ohms = <300>;
-+		touchscreen-y-plate-ohms = <800>;
-+	};
- };
- 
- &can1 {
-@@ -129,26 +141,41 @@ &ecspi2 {
- 	pinctrl-0 = <&pinctrl_ecspi2>;
- 	status = "okay";
- 
--	touchscreen@0 {
--		compatible = "ti,tsc2046";
-+	adc_ts: adc@0 {
-+		compatible = "ti,tsc2046e-adc";
- 		reg = <0>;
- 		pinctrl-0 = <&pinctrl_tsc2046>;
- 		pinctrl-names ="default";
--		spi-max-frequency = <100000>;
--		interrupts-extended = <&gpio3 20 IRQ_TYPE_EDGE_FALLING>;
--		pendown-gpio = <&gpio3 20 GPIO_ACTIVE_LOW>;
-+		spi-max-frequency = <1000000>;
-+		interrupts-extended = <&gpio3 20 IRQ_TYPE_LEVEL_LOW>;
-+		#io-channel-cells = <1>;
- 
--		touchscreen-inverted-x;
--		touchscreen-inverted-y;
--		touchscreen-max-pressure = <4095>;
--
--		ti,vref-delay-usecs = /bits/ 16 <100>;
--		ti,x-plate-ohms = /bits/ 16 <800>;
--		ti,y-plate-ohms = /bits/ 16 <300>;
--		ti,debounce-max = /bits/ 16 <3>;
--		ti,debounce-tol = /bits/ 16 <70>;
--		ti,debounce-rep = /bits/ 16 <3>;
--		wakeup-source;
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		channel@1 {
-+			reg = <1>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@3 {
-+			reg = <3>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@4 {
-+			reg = <4>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@5 {
-+			reg = <5>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-index baaa6ffc4df9..59e0674420a1 100644
---- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
-+++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-@@ -235,6 +235,18 @@ simple-audio-card,codec {
- 			frame-master;
- 		};
- 	};
-+
-+	touchscreen {
-+		compatible = "resistive-adc-touch";
-+		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
-+                              <&adc_ts 5>;
-+		io-channel-names = "y", "z1", "z2", "x";
-+		touchscreen-min-pressure = <64687>;
-+		touchscreen-inverted-x;
-+		touchscreen-inverted-y;
-+		touchscreen-x-plate-ohms = <300>;
-+		touchscreen-y-plate-ohms = <800>;
-+	};
- };
- 
- &audmux {
-@@ -277,22 +289,41 @@ &ecspi2 {
- 	pinctrl-0 = <&pinctrl_ecspi2>;
- 	status = "okay";
- 
--	touchscreen@0 {
--		compatible = "ti,tsc2046";
-+	adc_ts: adc@0 {
-+		compatible = "ti,tsc2046e-adc";
- 		reg = <0>;
- 		pinctrl-0 = <&pinctrl_tsc>;
- 		pinctrl-names ="default";
--		spi-max-frequency = <100000>;
--		interrupts-extended = <&gpio3 20 IRQ_TYPE_EDGE_FALLING>;
--		pendown-gpio = <&gpio3 20 GPIO_ACTIVE_LOW>;
--		touchscreen-max-pressure = <4095>;
--		ti,vref-delay-usecs = /bits/ 16 <100>;
--		ti,x-plate-ohms = /bits/ 16 <800>;
--		ti,y-plate-ohms = /bits/ 16 <300>;
--		ti,debounce-max = /bits/ 16 <3>;
--		ti,debounce-tol = /bits/ 16 <70>;
--		ti,debounce-rep = /bits/ 16 <3>;
--		wakeup-source;
-+		spi-max-frequency = <1000000>;
-+		interrupts-extended = <&gpio3 20 IRQ_TYPE_LEVEL_LOW>;
-+		#io-channel-cells = <1>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		channel@1 {
-+			reg = <1>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@3 {
-+			reg = <3>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@4 {
-+			reg = <4>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@5 {
-+			reg = <5>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
- 	};
- };
- 
-diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
-index d37ba4ed847d..52de091ea452 100644
---- a/arch/arm/boot/dts/imx6dl-victgo.dts
-+++ b/arch/arm/boot/dts/imx6dl-victgo.dts
-@@ -181,6 +181,18 @@ simple-audio-card,codec {
- 			frame-master;
- 		};
- 	};
-+
-+	touchscreen {
-+		compatible = "resistive-adc-touch";
-+		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
-+                              <&adc_ts 5>;
-+		io-channel-names = "y", "z1", "z2", "x";
-+		touchscreen-min-pressure = <64687>;
-+		touchscreen-inverted-x;
-+		touchscreen-inverted-y;
-+		touchscreen-x-plate-ohms = <300>;
-+		touchscreen-y-plate-ohms = <800>;
-+	};
- };
- 
- &audmux {
-@@ -244,22 +256,41 @@ &ecspi2 {
- 	pinctrl-0 = <&pinctrl_ecspi2>;
- 	status = "okay";
- 
--	touchscreen@0 {
--		compatible = "ti,tsc2046";
-+	adc_ts: adc@0 {
-+		compatible = "ti,tsc2046e-adc";
- 		reg = <0>;
--		pinctrl-names = "default";
- 		pinctrl-0 = <&pinctrl_touchscreen>;
--		spi-max-frequency = <200000>;
--		interrupts-extended = <&gpio5 8 IRQ_TYPE_EDGE_FALLING>;
--		pendown-gpio = <&gpio5 8 GPIO_ACTIVE_LOW>;
--		touchscreen-size-x = <800>;
--		touchscreen-size-y = <480>;
--		touchscreen-inverted-y;
--		touchscreen-max-pressure = <4095>;
--		ti,vref-delay-usecs = /bits/ 16 <100>;
--		ti,x-plate-ohms = /bits/ 16 <800>;
--		ti,y-plate-ohms = /bits/ 16 <300>;
--		wakeup-source;
-+		pinctrl-names ="default";
-+		spi-max-frequency = <1000000>;
-+		interrupts-extended = <&gpio5 8 IRQ_TYPE_LEVEL_LOW>;
-+		#io-channel-cells = <1>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		channel@1 {
-+			reg = <1>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@3 {
-+			reg = <3>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@4 {
-+			reg = <4>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
-+
-+		channel@5 {
-+			reg = <5>;
-+			settling-time-us = <700>;
-+			oversampling-ratio = <5>;
-+		};
- 	};
- };
- 
+Please use MFD_CELL_NAME() for these.
+
 -- 
-2.30.2
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
