@@ -2,73 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE52C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F56C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350688AbiBKOKn (ORCPT
+        id S1350697AbiBKOKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 09:10:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48552 "EHLO
+        Fri, 11 Feb 2022 09:10:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229661AbiBKOKl (ORCPT
+        with ESMTP id S229661AbiBKOKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 09:10:41 -0500
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBD9C47;
-        Fri, 11 Feb 2022 06:10:40 -0800 (PST)
-Received: by mail-ot1-f52.google.com with SMTP id l12-20020a0568302b0c00b005a4856ff4ceso6125883otv.13;
-        Fri, 11 Feb 2022 06:10:40 -0800 (PST)
+        Fri, 11 Feb 2022 09:10:49 -0500
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24EDBC75;
+        Fri, 11 Feb 2022 06:10:48 -0800 (PST)
+Received: by mail-oo1-f46.google.com with SMTP id q145-20020a4a3397000000b002e85c7234b1so10455781ooq.8;
+        Fri, 11 Feb 2022 06:10:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=+Uhr9cYX78qEIUsBkMhMqNMlXrRmPdKykvEXZjo7HdU=;
-        b=vjmRkSA6C8X5IHCqk1PZPqqd2lHLIyLHcKDDQvBmEgbSBonnwxeX56j1qEyaCXs35u
-         WDDPR7uO4fmkZ+Lj6Orvy3L705nB4U9H9H7vI2NjjIjwvxVgESsOQvifiaDNH0O72uka
-         ZT+Q0eJHkZwgLsSX8wR+QQiNTkcBC4DFcCero20DPL1MgfFS+VZBHFywnJ2KKkH3bzBI
-         lqcAIS/wMIDnwbdpLL7vWbiESNekaecWvqFuZzg3D4ufcvp9O7l3Q0kv07ijNkHf6mPH
-         8veLaygop5p8uNMJ2KzI8awMGe22fh49c7s5edjFzPIqCHnrykgIzzuuV4VtXswDVvB4
-         69ZA==
-X-Gm-Message-State: AOAM531lYzUCQTt/ZLGiYtPqPK3TKBE5S2gn3lW44VFaA1zPLqfIH1Qv
-        k7U4BUZVdacX4aMKnEmLxytKx2xgfQ==
-X-Google-Smtp-Source: ABdhPJwmHy8wVVTgC0lq727cl6IABGxMi9jl4aT/u77Oly3Y77xIIHl2c33ygoRFzepL98cEHqf42g==
-X-Received: by 2002:a9d:1ca5:: with SMTP id l37mr614305ota.221.1644588639300;
-        Fri, 11 Feb 2022 06:10:39 -0800 (PST)
+        bh=58jwa/G2ZvrUglihf5MvQ0lT7m6LgGsigiLYzVf/zVk=;
+        b=C9Jk9Eib884RwN/Yry8awtERJTt0zse3r2hjBvI/Eegl+8xQJXpN03sbMUfHIqHucH
+         2Knz4uJmehhZtcKxg1v4hc+3pR1RwUGIetRBAXJMtZiR2/bLMYJOv0CLRR4gfmGCIPTT
+         H1Wdq+TifDhD39pgvmDRzQucZy9TZT7nCg6Nja/yqq+iUFiRwM5qorCuiZFUdmFL/JDq
+         eAR1/cM5LIQDofdwNlFearSUdEu7llCK6qDjpE9cZAq0lF2cNmVi8N/x7xq6wedfFOjo
+         /d9XRB3WvEmCDI96pwkUe55K5QqEoIqtwvG7dp1agWzGesLg0gcRQjF2g/FRnBBlA5Nc
+         aNug==
+X-Gm-Message-State: AOAM5332si3OEiPYxX+porb01uMLqGyC5wjULR/JHDkOA/M3+ei9QpP2
+        egfJTBLOzqZx3FUSXFa9dQ==
+X-Google-Smtp-Source: ABdhPJyerPG2pTuUBQT23cuh3kh1thpIt3Q9tW0Hh8171jlMjXE2vC7gXL7FUM/JW+eU0MlsEgXmHw==
+X-Received: by 2002:a05:6870:1211:: with SMTP id 17mr184874oan.248.1644588647201;
+        Fri, 11 Feb 2022 06:10:47 -0800 (PST)
 Received: from robh.at.kernel.org ([2607:fb90:20d7:a802:e6b0:6d9c:32f7:4bd9])
-        by smtp.gmail.com with ESMTPSA id m26sm9465959ooa.36.2022.02.11.06.10.37
+        by smtp.gmail.com with ESMTPSA id p26sm8996990oth.14.2022.02.11.06.10.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 06:10:38 -0800 (PST)
-Received: (nullmailer pid 287630 invoked by uid 1000);
-        Fri, 11 Feb 2022 14:10:35 -0000
-Date:   Fri, 11 Feb 2022 08:10:35 -0600
+        Fri, 11 Feb 2022 06:10:46 -0800 (PST)
+Received: (nullmailer pid 287976 invoked by uid 1000);
+        Fri, 11 Feb 2022 14:10:44 -0000
+Date:   Fri, 11 Feb 2022 08:10:44 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        linux-sunxi@lists.linux.dev, Maxime Ripard <mripard@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Chen-Yu Tsai <wens@csie.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Tero Kristo <kristo@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: nvmem: SID: Add compatible for D1
-Message-ID: <YgZuW9Fcg8wsGDM0@robh.at.kernel.org>
-References: <20220203012502.10661-1-samuel@sholland.org>
+Subject: Re: [PATCH 1/3] dt-bindings: omap: Add clock-output-names and
+ #clock-cells
+Message-ID: <YgZuZIeTAIIrkhSi@robh.at.kernel.org>
+References: <20220203112337.19821-1-tony@atomide.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220203012502.10661-1-samuel@sholland.org>
+In-Reply-To: <20220203112337.19821-1-tony@atomide.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 02 Feb 2022 19:25:00 -0600, Samuel Holland wrote:
-> D1 has a SID like other Allwinner SoCs, but with a unique eFuse layout.
-> Add a new compatible string for it.
+On Thu, 03 Feb 2022 13:23:35 +0200, Tony Lindgren wrote:
+> This allows us to use clock-output-names for the clock manager instance
+> name instead of relying on non-standard node names.
 > 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Tero Kristo <kristo@kernel.org>
+> Signed-off-by: Tony Lindgren <tony@atomide.com>
 > ---
-> 
->  .../devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml       | 1 +
->  1 file changed, 1 insertion(+)
+>  Documentation/devicetree/bindings/arm/omap/prcm.txt | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
