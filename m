@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB80C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BFBC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350602AbiBKNfI (ORCPT
+        id S1350603AbiBKNfp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:35:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56304 "EHLO
+        Fri, 11 Feb 2022 08:35:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244799AbiBKNfC (ORCPT
+        with ESMTP id S1350596AbiBKNfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:35:02 -0500
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BE61E3;
-        Fri, 11 Feb 2022 05:34:59 -0800 (PST)
-Received: from [192.168.0.7] (ip5f5aebe1.dynamic.kabel-deutschland.de [95.90.235.225])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 3735261EA1927;
-        Fri, 11 Feb 2022 14:34:56 +0100 (CET)
-Message-ID: <74bc6234-1b95-7a0a-6ee7-b27fb80a12d4@molgen.mpg.de>
-Date:   Fri, 11 Feb 2022 14:34:55 +0100
+        Fri, 11 Feb 2022 08:35:37 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DACD91E3
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:35:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644586532; x=1676122532;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=dcNmaTIDG4XHn1AdLz19Xxg5AO1roEqTMpTVP6Z9qNQ=;
+  b=sN+AOyJXZ4ZrOS9IEoiIOwrhLfXmiJ9o5HU3wPPw6HcYgYsih4bJwEaN
+   5KDYLJ8SbhA0LhkW8fxbGcBEG7N5wCEUqXFj6mVCj/X5jd8QS8hRzP8gy
+   4NVhiBqutuKllNFeKOhxMGLcvbgUU/PsnUl4goHOikcCgzQmmGEqS68ij
+   m9Fglv85K2PnCiydO+SDMICazBpGXlinmGmzMmFlSBeCnopMYecqmKXqp
+   anwhv6R03iDf4gQMALPhjnicdATdcBZeCIyPkgBQrwUi3LGgorcZnBso1
+   h3JIZXPVfV+eX38ikZL1O+rhcltsYEvN7eXqoT6g5WuVNXUbE4rmm3WAW
+   A==;
+IronPort-SDR: uDw/z51m8ayvTGJca7U1d2SJnITPbBLWauSWy1vFwzlG8mCBOEPhkkZAoRU+HcdjzXz8u8ZKC7
+ R65h8v/jgiq0F6xEbpZ3DGlaq0RzdMjQNcZ9mK/NSfIocLNT9pwh4qSSD0poC91h13WL2aDhHH
+ VcfbjN71b2ZNWtoj0MWrIULNpoyEswvnBQrkKmYYlrNDxzlBf4FPVbltDtibCcmh4i6gBYI7aM
+ nKJbdYirDkoXilyyOJE44F0Fkr9mKiQyKgh3H3qNAU4PGqkff3ePafMX+t2GS6U8E6VjSp5KtM
+ zWmMwA5c9L4IpCp/O3tGenkq
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="153283188"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Feb 2022 06:35:31 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 11 Feb 2022 06:35:31 -0700
+Received: from ness.home (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 11 Feb 2022 06:35:29 -0700
+From:   <nicolas.ferre@microchip.com>
+To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        <arm@kernel.org>, <soc@kernel.org>
+CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Linux Kernel list <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [GIT PULL] ARM: at91: fixes for 5.17
+Date:   Fri, 11 Feb 2022 14:35:15 +0100
+Message-ID: <20220211133515.15314-1-nicolas.ferre@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH linux-next] video: fbdev: fbmem: fix pointer reference to
- null device field
-Content-Language: en-US
-To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
-References: <20220210065824.368355-1-zhouzhouyi@gmail.com>
-Cc:     daniel@ffwll.ch, deller@gmx.de, sam@ravnborg.org,
-        linux@roeck-us.net, willy@infradead.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, paulmck@kernel.org,
-        rcu@vger.kernel.org
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220210065824.368355-1-zhouzhouyi@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Organization: microchip
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Zhouyi,
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
 
+Arnd, Olof,
 
-Am 10.02.22 um 07:58 schrieb Zhouyi Zhou:
-> In function do_remove_conflicting_framebuffers, if device is NULL, there
-> will be null pointer reference. The patch add a check to the if expression.
-> 
-> Signed-off-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
-> ---
-> Dear Linux folks
-> 
-> I discover this bug in the PowerPC VM provided by
-> Open source lab of Oregon State University:
-> 
-> https://lkml.org/lkml/2022/2/8/1145
-> 
-> I found that the root cause of null device field is in offb_init_fb:
-> info = framebuffer_alloc(sizeof(u32) * 16, NULL);
-> 
-> I have tested the patch in the PowerPC VM. Hope my patch can be correct.
-> 
-> Many Thanks
-> Zhouyi
-> --
->   drivers/video/fbdev/core/fbmem.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
-> index 34d6bb1bf82e..422b1fc01722 100644
-> --- a/drivers/video/fbdev/core/fbmem.c
-> +++ b/drivers/video/fbdev/core/fbmem.c
-> @@ -1579,7 +1579,7 @@ static void do_remove_conflicting_framebuffers(struct apertures_struct *a,
->   			 * If it's not a platform device, at least print a warning. A
->   			 * fix would add code to remove the device from the system.
->   			 */
-> -			if (dev_is_platform(device)) {
-> +			if (device && dev_is_platform(device)) {
->   				registered_fb[i]->forced_out = true;
->   				platform_device_unregister(to_platform_device(device));
->   			} else {
+Here are 2 patches that just change the MAINTAIERS entry for at91. I think it's
+better to have it sooner than later so this is why I add it to a "fixes" RP.
 
-Looks reasonable.
+Thanks, best regards,
+  Nicolas
 
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
-Kind regards,
+are available in the Git repository at:
 
-Paul
+  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-fixes-5.17
 
+for you to fetch changes up to 26077968f8389a68fdb38af3f2c2289ddc95e8ca:
 
-PS: Please note, this should be unrelated to my problem though, as I 
-didn’t use linux-next. (Let’s continue in the other thread though.)
+  dt-bindings: ARM: at91: update maintainers entry (2022-02-09 11:30:01 +0100)
+
+----------------------------------------------------------------
+AT91 fixes #1 for 5.17:
+
+- MAINTAINERS file update.
+
+----------------------------------------------------------------
+Nicolas Ferre (2):
+      MAINTAINERS: replace a Microchip AT91 maintainer
+      dt-bindings: ARM: at91: update maintainers entry
+
+ CREDITS                                               | 6 ++++++
+ Documentation/devicetree/bindings/arm/atmel-at91.yaml | 3 ++-
+ MAINTAINERS                                           | 2 +-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
+
+-- 
+Nicolas Ferre
