@@ -2,80 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85338C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16ED8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349874AbiBKUkO (ORCPT
+        id S1353207AbiBKUkc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 15:40:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39178 "EHLO
+        Fri, 11 Feb 2022 15:40:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230481AbiBKUkL (ORCPT
+        with ESMTP id S230259AbiBKUka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 15:40:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8891DCF2;
-        Fri, 11 Feb 2022 12:40:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28B9C62023;
-        Fri, 11 Feb 2022 20:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DE96C340E9;
-        Fri, 11 Feb 2022 20:40:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644612007;
-        bh=9aqXxRdl3vqUo5edo6YqbhV9C3gHFRDD/8/RSNbjZtA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Z0wCmlUU+nVsUlIwGKvapnNMfsjmR+GPJU95OXDbzd22dsP+3VF9n6NWPf69XPStx
-         UkdNpaQ82k37DQrY/JCfmq+ZN2vPDDN/Ce+hytk/qn+zy2Gp8WHuk0Izn9J5y32jqr
-         zAaUGwJD+Lh6+yJAFc8CaMCaXE1iADSx0Cb7mOg+TYC4TdhwNEr25kiQuK+Dr+a0a5
-         I6snrRGnywOJ2ZWgmUuC3sE9S4FxY9a+8ZX8oKUgkqczlLOQX0aOVVFhqjUl/0ixXd
-         gfaxSTpmEdZ40ea3qWJ+HNM0eFEUIpyWI3ez5hv98v4C30BmyQWi4wHXGVXFfl34kw
-         h+G8Kq2C41V+Q==
-Date:   Fri, 11 Feb 2022 14:40:05 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Joey Corleone <joey.corleone@mail.ru>,
-        Sergiu Deitsch <sergiu.deitsch@gmail.com>,
-        David Spencer <dspencer577@gmail.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [GIT PULL] PCI fixes for v5.17
-Message-ID: <20220211204005.GA732009@bhelgaas>
+        Fri, 11 Feb 2022 15:40:30 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B686CF5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:40:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644612029; x=1676148029;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hMLogYdTPwvN7aEbRQDmMTbRpetFKlJo+PCjc3Htt4g=;
+  b=SXognhXi0CDvq8MU6uuX9RkYNbtNYpJafy92aDqEjK+lVEXFrr0Sev5/
+   41nW0Aw317JTl6ThxQkTtxfxCWRTNb9KQWsGYwFjJMFPP+LczuZxBihP8
+   yDu1z4ZUXJVfI4FwMOqNpp/NgoQoTgwO2xE2ANTpXV/3Zjh8LfJkwN0/O
+   GcxBSafkGxNmU0ByMbxvskPDE9sAgUk5T8FTw61enzPI+Ro3sqD9CWL05
+   ow+5ussW9LjG0CP7DyO10yJe0GK8QTrR9becHxSonSPqlSLWubaKcxFrK
+   j2J9FLGFWH9oMnPITUF1f/l7GzyQaTHTHIG1Oj49HL/scfg+1zggDvF1w
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="336228442"
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="336228442"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 12:40:28 -0800
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="488738173"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 12:40:28 -0800
+Date:   Fri, 11 Feb 2022 12:40:28 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "hpa@zytor.com" <hpa@zytor.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Yu, Fenghua" <fenghua.yu@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V8 18/44] x86/fault: Add a PKS test fault hook
+Message-ID: <20220211204027.GS785175@iweiny-DESK2.sc.intel.com>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-19-ira.weiny@intel.com>
+ <2a7b0a94ea52952927c29bfc32f0085cbdfe5747.camel@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <2a7b0a94ea52952927c29bfc32f0085cbdfe5747.camel@intel.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+On Mon, Jan 31, 2022 at 11:56:57AM -0800, Edgecombe, Rick P wrote:
+> On Thu, 2022-01-27 at 09:54 -0800, ira.weiny@intel.com wrote:
+> > +                * If a protection key exception occurs it could be
+> > because a PKS test
+> > +                * is running.  If so, pks_test_callback() will clear
+> > the protection
+> > +                * mechanism and return true to indicate the fault
+> > was handled.
+> > +                */
+> > +               if (pks_test_callback())
+> > +                       return;
+> 
+> Why do we need both this and pks_handle_key_fault()?
 
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+I debated this.  And I convinced myself that it was worth the extra code.
 
-are available in the Git repository at:
+For this series, when testing pks_handle_key_fault() this may get called if
+something goes wrong.  And when the test code is not configured it is a no-op.
+So I don't see any harm in keeping this as a general handler.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.17-fixes-4
+I mentioned this when adding pks_handle_key_fault().[1]  I could make a note of
+it in this patch if that would help.
 
-for you to fetch changes up to 075b7d363c675ef7fa03918881caeca3458e2a96:
+Ira
 
-  Revert "PCI/portdrv: Do not setup up IRQs if there are no users" (2022-02-11 14:16:11 -0600)
-
-N.B. This has been in linux-next for a couple days as b139e2632409
-("Revert "PCI/portdrv: Do not setup up IRQs if there are no users""),
-but I amended that commit to add more info to the commit log.
-
-----------------------------------------------------------------
-PCI fixes:
-
-  - Revert a commit that reduced the number of IRQs used but resulted in
-    interrupt storms (Bjorn Helgaas)
-
-----------------------------------------------------------------
-Bjorn Helgaas (1):
-      Revert "PCI/portdrv: Do not setup up IRQs if there are no users"
-
- drivers/pci/pcie/portdrv_core.c | 47 +++++++++++++++--------------------------
- 1 file changed, 17 insertions(+), 30 deletions(-)
+[1] https://lore.kernel.org/lkml/20220127175505.851391-30-ira.weiny@intel.com/
