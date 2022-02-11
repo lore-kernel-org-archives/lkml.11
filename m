@@ -2,162 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76063C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242828AbiBKDG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 22:06:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40156 "EHLO
+        id S1345073AbiBKDHN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 22:07:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232948AbiBKDGl (ORCPT
+        with ESMTP id S238634AbiBKDG4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 22:06:41 -0500
-Received: from 189.cn (ptr.189.cn [183.61.185.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A8622647;
-        Thu, 10 Feb 2022 19:06:40 -0800 (PST)
-HMM_SOURCE_IP: 10.64.8.31:49220.1910361997
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-123.150.8.42 (unknown [10.64.8.31])
-        by 189.cn (HERMES) with SMTP id 99CBF1002B4;
-        Fri, 11 Feb 2022 11:06:36 +0800 (CST)
-Received: from  ([123.150.8.42])
-        by gateway-153622-dep-749df8664c-cv9r2 with ESMTP id 4ae6a8bd32514b71bf2478f1bf333233 for u.kleine-koenig@pengutronix.de;
-        Fri, 11 Feb 2022 11:06:38 CST
-X-Transaction-ID: 4ae6a8bd32514b71bf2478f1bf333233
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 123.150.8.42
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-Message-ID: <6acc4f74-31a1-75b2-f7e8-610aac7b0ec8@189.cn>
-Date:   Fri, 11 Feb 2022 11:06:33 +0800
+        Thu, 10 Feb 2022 22:06:56 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAA455A2
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:06:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644548816; x=1676084816;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kCYuj8MB7ATRsjZRreWhkD0/omIZjIPw2cvKPR4Oy2o=;
+  b=A5q40ln5HxGHkRXUpcSpAZTOeY665L91Ax0PS4yh7NWPvG5QA908P+tb
+   mhO1ZStN6UXVMyPxQ2vIawgjJgFwhwMwEq7eVH6z2CkfudWuZaaZllXut
+   TNpHSgeGDaOPksgHHVFCWmw4ed4pzSH9HRHmDNMf12sDXnRSj+z5t98gF
+   6mziE44EAhSfgYRQtk6uFiaqA45eJ78xQ/7mRIcrLKs9B/8S9Rv2BPu5Z
+   w0Fe1VpvnUS7TPezbtid1PbdZSHgkDL7x4OVsllSSnhTV8mv8+QIKmT+G
+   gpPmVRWJxCYjAjCKZQmOMdZot+zDmRt2yAo4XgaY1FmHRa7UxS0cnEmAl
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230289516"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="230289516"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 19:06:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="483062833"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+  by orsmga003.jf.intel.com with ESMTP; 10 Feb 2022 19:06:53 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     David Airlie <airlied@linux.ie>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Nathan Myers <ncm@cantrip.org>
+Cc:     Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/2] agp/intel: Use per device iommu check
+Date:   Fri, 11 Feb 2022 11:05:30 +0800
+Message-Id: <20220211030531.2398789-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
+References: <20220211030531.2398789-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] staging: greybus: introduce pwm_ops::apply
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-        thierry.reding@gmail.com, lee.jones@linaro.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-References: <1644483902-9200-1-git-send-email-chensong_2000@189.cn>
- <20220210100342.q2t4ykgyymjzr3fj@pengutronix.de>
-From:   Song Chen <chensong_2000@189.cn>
-In-Reply-To: <20220210100342.q2t4ykgyymjzr3fj@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The IOMMU subsystem has already provided an interface to query whether
+the IOMMU hardware is enabled for a specific device. This changes the
+check from Intel specific intel_iommu_gfx_mapped (globally exported by
+the Intel IOMMU driver) to probing the presence of IOMMU on a specific
+device using the generic device_iommu_mapped().
 
+This follows commit cca084692394a ("drm/i915: Use per device iommu check")
+which converted drm/i915 driver to use device_iommu_mapped().
 
-在 2022/2/10 18:03, Uwe Kleine-König 写道:
-> On Thu, Feb 10, 2022 at 05:05:02PM +0800, Song Chen wrote:
->> Introduce apply in pwm_ops to replace legacy operations,
->> like enable, disable, config and set_polarity.
->>
->> Signed-off-by: Song Chen <chensong_2000@189.cn>
->> ---
->>   drivers/staging/greybus/pwm.c | 46 +++++++++++++++--------------------
->>   1 file changed, 19 insertions(+), 27 deletions(-)
->>
->> diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
->> index 891a6a672378..e1889cf979b2 100644
->> --- a/drivers/staging/greybus/pwm.c
->> +++ b/drivers/staging/greybus/pwm.c
->> @@ -204,43 +204,35 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
->>   	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
->>   }
->>   
->> -static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
->> -			 int duty_ns, int period_ns)
->> -{
->> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->> -
->> -	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
->> -};
->> -
->> -static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
->> -			       enum pwm_polarity polarity)
->> +static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
->> +			const struct pwm_state *state)
->>   {
->> +	int ret;
->>   	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->>   
->> -	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
->> -};
->> -
->> -static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
->> -{
->> -	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
->> +	/* set period and duty cycle*/
->> +	ret = gb_pwm_config_operation(pwmc, pwm->hwpwm, state->duty_cycle, state->period);
-> 
-> gb_pwm_config_operation's 3rd parameter is an u32, so you're loosing
-> bits here as state->duty_cycle is a u64. Ditto for period.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/char/agp/intel-gtt.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-originally, pwm_apply_state --> pwm_apply_legacy --> gb_pwm_config --> 
-gb_pwm_config_operation is also loosing bits, does it mean greybus can 
-live with that?
+diff --git a/drivers/char/agp/intel-gtt.c b/drivers/char/agp/intel-gtt.c
+index c53cc9868cd8..9631cbc7002e 100644
+--- a/drivers/char/agp/intel-gtt.c
++++ b/drivers/char/agp/intel-gtt.c
+@@ -20,7 +20,7 @@
+ #include <linux/kernel.h>
+ #include <linux/pagemap.h>
+ #include <linux/agp_backend.h>
+-#include <linux/intel-iommu.h>
++#include <linux/iommu.h>
+ #include <linux/delay.h>
+ #include <asm/smp.h>
+ #include "agp.h"
+@@ -573,18 +573,15 @@ static void intel_gtt_cleanup(void)
+  */
+ static inline int needs_ilk_vtd_wa(void)
+ {
+-#ifdef CONFIG_INTEL_IOMMU
+ 	const unsigned short gpu_devid = intel_private.pcidev->device;
+ 
+-	/* Query intel_iommu to see if we need the workaround. Presumably that
+-	 * was loaded first.
++	/*
++	 * Query iommu subsystem to see if we need the workaround. Presumably
++	 * that was loaded first.
+ 	 */
+-	if ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
+-	     gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
+-	     intel_iommu_gfx_mapped)
+-		return 1;
+-#endif
+-	return 0;
++	return ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
++		 gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
++		device_iommu_mapped(&intel_private.pcidev->dev));
+ }
+ 
+ static bool intel_gtt_can_wc(void)
+-- 
+2.25.1
 
-Or redefine gb_pwm_config_request, switch duty and period to __le64?
-
-> 
-> Also it would be nice if you go from
-> 
-> 	.duty_cycle = A, .period = B, .enabled = 1
-> 
-> to
-> 
-> 	.duty_cycle = C, .period = D, .enabled = 0
-> 
-> that C/D wasn't visible on the output pin. So please disable earlier
-> (but keep enable at the end).
-
-sorry, i don't quite understand this part, but is below code looking 
-good to you?
-
-static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-			const struct pwm_state *state)
-{
-	int err;
-	bool enabled = pwm->state.enabled;
-	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-
-	/* set polarity */
-	if (state->polarity != pwm->state.polarity) {
-		if (enabled) {
-			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-			enabled = false;
-		}
-		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
-		if (err)
-			return err;
-	}
-
-	if (!state->enabled) {
-		if (enabled)
-			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-		return 0;
-	}
-
-	/* set period and duty cycle*/
-	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, state->duty_cycle, 
-state->period);
-	if (err)
-		return err;
-
-	/* enable/disable */
-	if (!enabled)
-		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
-
-	return 0;
-}
-
-> 
-> Best regards
-> Uwe
-> 
