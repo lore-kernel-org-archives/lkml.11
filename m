@@ -2,120 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C41C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C30C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347593AbiBKLXm (ORCPT
+        id S1349401AbiBKLYh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:23:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44718 "EHLO
+        Fri, 11 Feb 2022 06:24:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiBKLXk (ORCPT
+        with ESMTP id S232169AbiBKLYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:23:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06950E76
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:23:39 -0800 (PST)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644578617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cJouc3QVVJgp9Loq33XddcMozbLzg+YfW/kufsdqZI0=;
-        b=mytSf6U43JAcwtPAgFiKRtJnZWHudGff1Aew3V7cNfL4s41Y83whscxKdQD52MhQrfA9BK
-        LSvzUxjAKVVLTAEZu6GwjDqbvWxCDFDrpBYqJrsTW3YgKgyYyRoD9gxzcOieCnVl9Lv4Dh
-        E3ZnRyOZDKrcY9yo/IeusvP880JQw6X8NYoDo1XZgi85e+7SZRQgp/UlIRkEzPOtItnGHQ
-        CpGbDsy7N6ojhVL8BOGwbLkf2aq30GV72TwKyMdoQGdqMIfqbdv61kKvzGs0lexcxJRRQZ
-        k/md7dqufPmn56s334JrJQ/Yzz4Eh7JpGw/DI/eS2lIV6GtAyU+BB1UwseBThw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644578617;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cJouc3QVVJgp9Loq33XddcMozbLzg+YfW/kufsdqZI0=;
-        b=s0dfgbJw22swlYUJdQo//bR6+cWJhp5EifVkE4igyRY/69hJx7ZKF0t0IUCmkASf9T7ve5
-        kV/3tnLpgZy/c3DA==
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH v3] printk: use atomic updates for klogd work
-In-Reply-To: <87leyhd4wc.fsf@jogness.linutronix.de>
-References: <20220203112915.1350753-1-john.ogness@linutronix.de>
- <YfzP50vDiJiaRVCr@google.com> <87bkzj3t77.fsf@jogness.linutronix.de>
- <YgUzm5POctivsjUg@alley> <87leyhd4wc.fsf@jogness.linutronix.de>
-Date:   Fri, 11 Feb 2022 12:29:37 +0106
-Message-ID: <87iltld4ue.fsf@jogness.linutronix.de>
+        Fri, 11 Feb 2022 06:24:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7978DE5D;
+        Fri, 11 Feb 2022 03:24:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E109616EF;
+        Fri, 11 Feb 2022 11:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 144C1C340E9;
+        Fri, 11 Feb 2022 11:24:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644578671;
+        bh=kgjamcWZJRnrpWcKV4c05OC6uDAyQHhZAjqdsl9DYiM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qDstbpDgj5EaBkwYW8RU14zD613j8a7qUPIXbUSYIGe3IFJTNkigkeTZpfE/VwakJ
+         avs2nhUSR+xULtnq08pOjLaaDkQOKPaCj/S6prT54TqSPVG6QKwzVPvMOr+QNIqRh4
+         lNtlUh94Jsz43zRr//3XjfBjAhQKr524MTjsbY4UYTJ4s3NDVnelgAwnOKzMgDIV8K
+         ucdVy+9AVXhaj7Yklz8mncqrJFMzntZeksj9UOak0Jlm1NTYzBBZAQBnlPCcQxVucn
+         3Dp2t0V51EL3I3m4SecrUM0/4FO5OdlOhDzuBzvMfVT8Q51nzIyJ8gbAEnSfiOSC2V
+         UxtZnAUTtmuyw==
+Date:   Fri, 11 Feb 2022 11:24:26 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Jon Lin <jon.lin@rock-chips.com>
+Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] spi: rockchip: Preset cs-high and clk polarity in
+ setup progress
+Message-ID: <YgZHalrdhhilxROt@sirena.org.uk>
+References: <20220211034344.4130-1-jon.lin@rock-chips.com>
+ <20220211034344.4130-2-jon.lin@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lAF4Pc7uRcV0XAJA"
+Content-Disposition: inline
+In-Reply-To: <20220211034344.4130-2-jon.lin@rock-chips.com>
+X-Cookie: do {
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The per-cpu @printk_pending variable can be updated from
-sleepable contexts, such as:
 
-  get_random_bytes()
-    warn_unseeded_randomness()
-      printk_deferred()
-        defer_console_output()
+--lAF4Pc7uRcV0XAJA
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-and can be updated from interrupt contexts, such as:
+On Fri, Feb 11, 2022 at 11:43:38AM +0800, Jon Lin wrote:
 
-  handle_irq_event_percpu()
-    __irq_wake_thread()
-      wake_up_process()
-        try_to_wake_up()
-          select_task_rq()
-            select_fallback_rq()
-              printk_deferred()
-                defer_console_output()
+> +static int rockchip_spi_setup(struct spi_device *spi)
+> +{
+> +	struct rockchip_spi *rs = spi_controller_get_devdata(spi->controller);
+> +	u32 cr0;
+> +
+> +	pm_runtime_get_sync(rs->dev);
+> +
+> +	cr0 = readl_relaxed(rs->regs + ROCKCHIP_SPI_CTRLR0);
+> +
+> +	cr0 |= ((spi->mode & 0x3) << CR0_SCPH_OFFSET);
+> +	if (spi->mode & SPI_CS_HIGH)
+> +		cr0 |= BIT(spi->chip_select) << CR0_SOI_OFFSET;
 
-and can be updated from NMI contexts, such as:
+What ensures that this read/modify/write doesn't race with a transfer
+running on another client device in the case where the controller has
+more than one device connected?  Similarly with the mode, though it's
+not great to have devices with different modes connected to a single
+controller.
 
-  vprintk()
-    if (in_nmi()) defer_console_output()
+--lAF4Pc7uRcV0XAJA
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Therefore the atomic variant of the updating functions must be used.
+-----BEGIN PGP SIGNATURE-----
 
-Replace __this_cpu_xchg() with this_cpu_xchg().
-Replace __this_cpu_or() with this_cpu_or().
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGR2kACgkQJNaLcl1U
+h9BfyQf/exE8+iCXNV1fW3KseTOTWzPwI1YKjOVKpLUK5KiyNUWaF/i9rC5TRKq6
+DYL//DLorpWKPt16bQTJUITGV4n0Me0ps0mgpCSFUBcWNknN6ZhGRoopU+YtYsqq
+JuUyZ4IXQqa+2FD8PTKZYNYYi1KwYpD/95NwyzhxtqjFYleINO64dcFpzz6kuOzG
+2eluAh49aSNJmPS8z8/o/CI8rjMWkB+JioGo5yTTHoG41pK5mXsxVwBcxihTISkV
+yK9eLoFZ/wTwC9sTQUnxMZvedvHQbIN1/ZUkeL3dRa7mkduqQwAHgOy+9FRu8Yu1
+UEDeO1CtCL19tCK5ONwNoA2vEMN8kA==
+=zClG
+-----END PGP SIGNATURE-----
 
-Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- Changes:
-
- v3: also fix __this_cpu_xchg() usage
-
- v2: fix commit message
-
- kernel/printk/printk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 82abfaf3c2aa..c7280b40de6c 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -3228,7 +3228,7 @@ static DEFINE_PER_CPU(int, printk_pending);
- 
- static void wake_up_klogd_work_func(struct irq_work *irq_work)
- {
--	int pending = __this_cpu_xchg(printk_pending, 0);
-+	int pending = this_cpu_xchg(printk_pending, 0);
- 
- 	if (pending & PRINTK_PENDING_OUTPUT) {
- 		/* If trylock fails, someone else is doing the printing */
-@@ -3262,7 +3262,7 @@ void defer_console_output(void)
- 		return;
- 
- 	preempt_disable();
--	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
-+	this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
- 	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
- 	preempt_enable();
- }
--- 
-2.30.2
+--lAF4Pc7uRcV0XAJA--
