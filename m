@@ -2,94 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D7CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 04:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 04:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242501AbiBKEKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 23:10:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46992 "EHLO
+        id S242777AbiBKEM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 23:12:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230111AbiBKEKN (ORCPT
+        with ESMTP id S230111AbiBKEM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 23:10:13 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EB495
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 20:10:13 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jw0Wc719Rz4xcl;
-        Fri, 11 Feb 2022 15:10:04 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1644552611;
-        bh=RFsFjuurNBFd2aL+0sg0sXo9uTFRidxaWUgwOIgeZgM=;
-        h=From:To:Subject:In-Reply-To:References:Date:From;
-        b=Pg/t2qDQ/ohBUbWL2BXoOJZ/DzTFgFXC/f+noNff+KFgsYyqr05TeFDx1QR2E/XXJ
-         ImF/OF6qjN3BRqpHCZ3C+Sm0Jt6zeVw8ISneyZbC4ElRqQofikI/4OoHggWpIMlkMi
-         fBPDFia3KAfChQdV0serdS6occ5yWuLLgIVMCgvsGy4foONOhZVDVEEb9tsGkcb96c
-         v0n8osmRE1S0YPTKo82ItglVuNZ+pQRUkWGmcZQg5JSlz/aaywfNXDpsV7Mlo9RB5k
-         fhp7zZQBf7p9Ynzvun2jUUMIX5GYlyohyIelLyAKoCfnKBiItuZ37ewWMfgfTg2OGu
-         ySFqR7lgMG+gw==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Parth Shah <parth@linux.ibm.com>,
-        =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Rob Herring <robh@kernel.org>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Xiongwei Song <sxwjean@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 38/49] arch/powerpc: replace cpumask_weight with
- cpumask_weight_{eq, ...} where appropriate
-In-Reply-To: <20220210224933.379149-39-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
- <20220210224933.379149-39-yury.norov@gmail.com>
-Date:   Fri, 11 Feb 2022 15:10:02 +1100
-Message-ID: <87tud6rqlh.fsf@mpe.ellerman.id.au>
+        Thu, 10 Feb 2022 23:12:27 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA325F97;
+        Thu, 10 Feb 2022 20:12:26 -0800 (PST)
+X-UUID: 79bd38c002254a2183f9557e5681a346-20220211
+X-UUID: 79bd38c002254a2183f9557e5681a346-20220211
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 327661395; Fri, 11 Feb 2022 12:12:21 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 11 Feb 2022 12:12:19 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 11 Feb 2022 12:12:18 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, <maze@google.com>,
+        <willemb@google.com>, <edumazet@google.com>,
+        <zhuoliang.zhang@mediatek.com>, <chao.song@mediatek.com>
+Subject: Re: [PATCH] net: fix wrong network header length
+Date:   Fri, 11 Feb 2022 12:06:29 +0800
+Message-ID: <20220211040629.23703-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
+References: <d5dd3f10c144f7150ec508fa8e6d7a78ceabfc10.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yury Norov <yury.norov@gmail.com> writes:
-> PowerPC code uses cpumask_weight() to compare the weight of cpumask with
-> a given number. We can do it more efficiently with cpumask_weight_{eq, ...}
-> because conditional cpumask_weight may stop traversing the cpumask earlier,
-> as soon as condition is (or can't be)  met.
+On Thu, 2022-02-10 at 17:02 +0100, Paolo Abeni wrote:
+
+> > @@ -3682,6 +3682,7 @@ struct sk_buff *skb_segment_list(struct
+> > sk_buff *skb,
+> >  	struct sk_buff *tail = NULL;
+> >  	struct sk_buff *nskb, *tmp;
+> >  	int err;
+> > +	unsigned int len_diff = 0;
+> 
+> Mintor nit: please respect the reverse x-mas tree order.
+> 
+
+Yes,v2 has change unsigned int to int
+
+> >  
+> >  	skb_push(skb, -skb_network_offset(skb) + offset);
+> > @@ -3721,9 +3722,11 @@ struct sk_buff *skb_segment_list(struct
+> > sk_buff *skb,
+> >  		skb_push(nskb, -skb_network_offset(nskb) + offset);
+> >  
+> >  		skb_release_head_state(nskb);
+> > +		len_diff = skb_network_header_len(nskb) -
+> > skb_network_header_len(skb);
+> >  		 __copy_skb_header(nskb, skb);
+> >  
+> >  		skb_headers_offset_update(nskb, skb_headroom(nskb) -
+> > skb_headroom(skb));
+> > +		nskb->transport_header += len_diff;
+> 
+> This does not look correct ?!? the network hdr position for nskb will
+> still be uncorrect?!? and even the mac hdr likely?!? possibly you
+> need
+> to change the offset in skb_headers_offset_update().
+> 
+
+Network hdr position and mac hdr are both right, because bpf processing & 
+skb_headers_offset_update have updated them to right position. After bpf
+loading, the first skb's network header&mac_header became 44, transport
+header still is 64. After skb_headers_offset_update, fraglist skb's mac
+header and network header are still 24, the same with original packet.
+Just fraglist skb's transport header became 44, as original is 64. 
+Only transport header cannot be easily updated the same offset, because 
+6to4 has different network header.
+
+Actually,at the beginning, I want to change skb_headers_offset_update, but 
+it has been called also in other place, maybe a new function should be 
+needed here.
+ 
+Skb_headers_offset_update has other wrong part in my scenary, 
+inner_transport_header\inner_network_header\inner_mac_header shouldnot be 
+changed, but they are been updated because of different headroom. They are
+not used later, so wrong value didnot affect anything.
+
+> Paolo
 >
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
->  arch/powerpc/kernel/smp.c      | 2 +-
->  arch/powerpc/kernel/watchdog.c | 2 +-
->  arch/powerpc/xmon/xmon.c       | 4 ++--
->  3 files changed, 4 insertions(+), 4 deletions(-)
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
-
-cheers
+Thanks! 
