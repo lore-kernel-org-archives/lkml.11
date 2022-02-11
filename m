@@ -2,138 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D43DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BA3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235711AbiBKVhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 16:37:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52120 "EHLO
+        id S1349997AbiBKVkh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 16:40:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229770AbiBKVhq (ORCPT
+        with ESMTP id S233490AbiBKVkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 16:37:46 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E40FC62
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:44 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id f23so19013063lfe.5
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XFzCG6U+gQcN35bNR5ygZp7My/pmsXpJOFlN4wA8faE=;
-        b=Op5mHfi4lkpgsAXFUIEvOb892Ki9UfRvx6Wny8c8GnjgwctkidFgQ18OXWJf376jCc
-         BL/WKzyG/HlMvQ5Fg9rMrnYrcCvA8WOcTMUhjWAiGuoPntTEWvfcefuEHsgqJwwQX7cW
-         NOiWSj++f2uRrGtaz3ZiLzt4iZqukzsD9VZjY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XFzCG6U+gQcN35bNR5ygZp7My/pmsXpJOFlN4wA8faE=;
-        b=hKOr4R8Yk5y1QkjIUqSicwms7oxVNoturZjneIcmK1yzWfuktPj3hWYsDi+jpXWf0R
-         AQPhcy3u31r6RZ2z+qgIYwChmenkgvG8fscYHp/Ou2qD8K0iQ+LDOJj+pBtlYz3viHRT
-         LhRizdZcJMvTe2NStkdr6eEJIleXqTPKSV0FSqF5+gAS4bXlfmTFs8+S6DCKgmSs0MNn
-         LcekEn0IF+IPZY2/7tsh4sLfHJyM2RBfSMcP02R1yKCM1QPKHPTlXQnCexM4FW8DAvOI
-         NFoCUr5Z9vHXHw4rNkX9bbOGv8hLb/dSYoEyYo4frHddwysDUUD2trOJkNgIJf2XUwJ6
-         gqSA==
-X-Gm-Message-State: AOAM533fI5StG2U+vGMTZFYWCE5miEJna/cv2RYjvgHBXFAwKNnk74k4
-        +JpFrkmGQUYALU4CYpIUZrTILcOiKOTpPm+l5L8=
-X-Google-Smtp-Source: ABdhPJyRp1XcQ87hqyIl5BKbcmYevo1/8dsUaJzueJr1eFXyI5UGT8d0DJW/s6LtEmf5dVRdHKT3Ow==
-X-Received: by 2002:a05:6512:2821:: with SMTP id cf33mr2500352lfb.37.1644615462562;
-        Fri, 11 Feb 2022 13:37:42 -0800 (PST)
-Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
-        by smtp.gmail.com with ESMTPSA id c28sm3254902lfv.211.2022.02.11.13.37.42
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 13:37:42 -0800 (PST)
-Received: by mail-lj1-f169.google.com with SMTP id t14so14201506ljh.8
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:42 -0800 (PST)
-X-Received: by 2002:a05:6000:1885:: with SMTP id a5mr2667962wri.193.1644614977325;
- Fri, 11 Feb 2022 13:29:37 -0800 (PST)
+        Fri, 11 Feb 2022 16:40:36 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6777C65;
+        Fri, 11 Feb 2022 13:40:33 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 0B53F1F47299
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644615632;
+        bh=x/eg+6w2Tr2joTOYtZyNlDgHawkmOfVfZKO5c0bZI88=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WJ48klO6UXAOJ763KOdmdua13QAzL7OYHlD+bxgtnQuoL7D3hgltRJ/oIs+Mnn4WY
+         2PIJyqYDBIUJYEWXiQe0d61dE5hevANlWLgtO5oVMFea0Uu5hpBh4tgBFLGWzI5tfs
+         b2trkrsThdubZoCiJ5rfhKq+SjdRU6ke9tzeuYWHvgqu2Kzq6R20dMgMOqYeMCWdl7
+         sOGHSW9p+RxQHD60ddYr9sJjM/2BOMeiW+YZ2ai9QgT98Fvt0SoW4W2PH8KGbL1Ysm
+         DOd8CsHsfNd0Lq0/j3b4auNnZk4YNzFT/bJZV9JNLZEyRV7aXVl/e7gH0KNLFT64yI
+         sw1loLoHBLVTg==
+Received: by mercury (Postfix, from userid 1000)
+        id 3BD2E1060908; Fri, 11 Feb 2022 22:40:29 +0100 (CET)
+Date:   Fri, 11 Feb 2022 22:40:29 +0100
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Qing Wang <wangqing@vivo.com>,
+        Support Opensource <support.opensource@diasemi.com>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] power: supply: da9150: use div64_u64() instead of
+ do_div()
+Message-ID: <20220211214029.syw76upbqthasgwb@mercury.elektranox.org>
+References: <1644395986-4349-1-git-send-email-wangqing@vivo.com>
+ <20220211205026.6jhtt66wco5ht6i6@mercury.elektranox.org>
+ <9b563415-f58a-15f1-b375-64ef4e98ca05@wanadoo.fr>
 MIME-Version: 1.0
-References: <20220211210757.612595-1-Jason@zx2c4.com>
-In-Reply-To: <20220211210757.612595-1-Jason@zx2c4.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Fri, 11 Feb 2022 13:29:21 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wh+2jokbr4tpHA=ExebWKr=qp9RJ_uFrG2gYG4ChAjitg@mail.gmail.com>
-Message-ID: <CAHk-=wh+2jokbr4tpHA=ExebWKr=qp9RJ_uFrG2gYG4ChAjitg@mail.gmail.com>
-Subject: Re: [PATCH RFC v0] random: block in /dev/urandom
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="md3jjtjbp2ssjuiz"
+Content-Disposition: inline
+In-Reply-To: <9b563415-f58a-15f1-b375-64ef4e98ca05@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 1:08 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> Maybe. And this is why this is a request for grumbles patch: the Linus
-> Jitter Dance relies on random_get_entropy() returning a cycle counter
-> value.
 
-Yeah.
+--md3jjtjbp2ssjuiz
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I think this patch is fine for architectures that do have that cycle
-counter value.
+Hi,
 
-Considering that the jitter thing has been there for 2.5 years by now,
-and nobody has really complained about it (*), I think we can call
-that thing a success. And on those architectures where
-try_to_generate_entropy() works, removing the code that then does that
-GRND_INSECURE makes sense. We just don't have any such case any more.
+On Fri, Feb 11, 2022 at 09:53:08PM +0100, Christophe JAILLET wrote:
+> Le 11/02/2022 =E0 21:50, Sebastian Reichel a =E9crit=A0:
+> > Hi,
+> >=20
+> > On Wed, Feb 09, 2022 at 12:39:46AM -0800, Qing Wang wrote:
+> > > From: Wang Qing <wangqing@vivo.com>
+> > >=20
+> > > do_div() does a 64-by-32 division.
+> > > When the divisor is u64, do_div() truncates it to 32 bits, this means=
+ it
+> > > can test non-zero and be truncated to zero for division.
+> > >=20
+> > > fix do_div.cocci warning:
+> > > do_div() does a 64-by-32 division, please consider using div64_u64 in=
+stead.
+> > >=20
+> > > Signed-off-by: Wang Qing <wangqing@vivo.com>
+> > > ---
+> >=20
+> > Thanks, queued.
+>=20
+> All these patches are broken and should be NACKed, fixed or reverted if
+> applied.
+>=20
+> See [1].
+>=20
+> CJ
+>=20
+> [1]: https://lore.kernel.org/linux-kernel/19b96972-cee7-937f-21ce-c78982e=
+d2048@linaro.org/
 
-BUT.
+Oops, thanks for the hint. Patch dropped. I actually missed the
+do_div(div, 1000000) during my review (probably should go sleeping),
+so div should be within safe range in the second do_div() anyways.
 
-When try_to_generate_entropy() doesn't work, I think you now removed
-the possible fallback for user space to say "yeah, just give me best
-effort". And you might re-introduce a deadlock as a result.
+-- Sebastian
 
-Those systems are arguably broken from a randomness standpoint - what
-the h*ll are you supposed to do if there's nothing generating entropy
-- but broken or not, I suspect they still exists. Those horrendous
-MIPS things were quite common in embedded networking (routers, access
-points - places that *should* care)
+>=20
+> >=20
+> > -- Sebastian
+> >=20
+> > >   drivers/power/supply/da9150-fg.c | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > >=20
+> > > diff --git a/drivers/power/supply/da9150-fg.c b/drivers/power/supply/=
+da9150-fg.c
+> > > index 6e36782..896491a
+> > > --- a/drivers/power/supply/da9150-fg.c
+> > > +++ b/drivers/power/supply/da9150-fg.c
+> > > @@ -250,7 +250,7 @@ static int da9150_fg_current_avg(struct da9150_fg=
+ *fg,
+> > >   	div =3D (u64) (sd_gain * shunt_val * 65536ULL);
+> > >   	do_div(div, 1000000);
+> > >   	res =3D (u64) (iavg * 1000000ULL);
+> > > -	do_div(res, div);
+> > > +	div64_u64(res, div);
+> > >   	val->intval =3D (int) res;
+> > > --=20
+> > > 2.7.4
+> > >=20
+>=20
 
-Do I have a constructive suggestion for those broken platforms? No, I
-don't. That arguably is the reason for GRND_INSECURE existing, and the
-reason to keep it around.
+--md3jjtjbp2ssjuiz
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Long story short: I like your patch, but I worry that it would cause
-problems on broken platforms.
+-----BEGIN PGP SIGNATURE-----
 
-And almost nobody tests those broken platforms: even people who build
-new kernels for those embedded networking things probably end up using
-said kernels with an existing user space setup - where people have
-some existing saved source of pseudo-entropy. So they might not ever
-even trigger the "first boot problem" that tends to be the worst case.
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmIG18EACgkQ2O7X88g7
++priAQ//bkVDODa2EvDnVHbSTMEiUYEmsB+fd1kCnq+4JxGyLR0Spa70VOO75FYz
+AI5N2/Q2wfWYhmUOyZTWr7GVx8fdT87vbusDtZWks5Ulk32WuNFTVWsEodxMIgTL
+dVR9FWrK8BMn1B1TB+GvGaY7SjX/9iwCeZLbUYLZ5d+fM+7JZIc2/wsZ/0PqN6tf
+kLUBmlaPYBrZr9pFKPBpd1TPLrQ5UfgA5ATzwIUHfDhK+41qE4OkkoAtbgQzt3SK
+2WgOAEkz4cIsPRQOQbp6YxuAkbuf/ojJwER71yViq23h+DsLLeJcLewg7OqJUckR
+Qfz1QW0ueDJ0cwPB1yfax0S85IdDCD7io12LHt+PwsZy7BzF4a4oTOaG1j9rrcWZ
+z6gVRXieckjMQrrlovDUyIC7B5/zY4P8i4Tt1hNYx34EfT/P25XAzcC6Ch1VJroR
+AsGU/B9TO/lU+aXWeZpFIGOrGcsLxTebO0dwOXEWj3LcbtRbilFjyfB6kTq0lw8v
+vypncxy8dZKnIiMcxsrU4VgSKuKs8mB2rE6tZO31AwD9RDWgp7lTG2DGBz4A+9Sy
+2BDb2ZFeJ67jdBMCZ36ldK+zdWbWdCHC4xQliSW9QccGu3ajRtWcVcHoAYQ4VRTH
+TQd5+R5cfbETdt0DhIFzeVictb1/YY/b7PgNP1yfKoMRanQI+sM=
+=Gyea
+-----END PGP SIGNATURE-----
 
-I'd be willing to apply such a thing anyway - at some point "worry
-about broken platforms" ends up being too weak an excuse not to just
-apply it - but I'd like to hear more of a reason for this
-simplification. If it's just "slight cleanup", maybe we should just
-keep the stupid stuff around as a "doesn't hurt good platforms, might
-help broken ones".
-
-               Linus
-
-(*) Honestly, I think all the complaints would have been from the
-theoretical posers that don't have any practical suggestions anyway
+--md3jjtjbp2ssjuiz--
