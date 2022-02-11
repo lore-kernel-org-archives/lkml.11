@@ -2,136 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF0BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348768AbiBKJzM (ORCPT
+        id S1348749AbiBKJ4C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:55:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37112 "EHLO
+        Fri, 11 Feb 2022 04:56:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239349AbiBKJzG (ORCPT
+        with ESMTP id S233752AbiBKJz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:55:06 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6FEEB;
-        Fri, 11 Feb 2022 01:55:04 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21B4KvOV021846;
-        Fri, 11 Feb 2022 04:54:57 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e4s82xfe0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 04:54:57 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21B9stMe051957
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Feb 2022 04:54:55 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 11 Feb 2022 04:54:54 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Fri, 11 Feb 2022 04:54:54 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 11 Feb 2022 04:54:54 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.166])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21B9sh6B002029;
-        Fri, 11 Feb 2022 04:54:50 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH 2/3] dt-bindings:iio:amplifiers: add ada4250 doc
-Date:   Fri, 11 Feb 2022 11:50:56 +0200
-Message-ID: <20220211095057.54979-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220211095057.54979-1-antoniu.miclaus@analog.com>
-References: <20220211095057.54979-1-antoniu.miclaus@analog.com>
+        Fri, 11 Feb 2022 04:55:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58A01EB;
+        Fri, 11 Feb 2022 01:55:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1418B828C2;
+        Fri, 11 Feb 2022 09:55:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE62CC340E9;
+        Fri, 11 Feb 2022 09:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644573355;
+        bh=o6Gp8EhHAHeYX43uaAhYhYFGD50YI1q9W7Iio+Gu3yU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iJzfDMhd3iXWSc4u/KRiFAooU/RT+Lv6F0LGu+39P4YvLFEOvDrEfRx6sqqief5d4
+         tIGFqfE0PoGopYaqczghkWyLuOJN+3WgWhvOuT5Mc7Hu8oCt9QE/ktJ2O1EEmX/zuK
+         +x3AbvF+wVunocaqT4DCelsxAXGh82Mp/4GGJiLc=
+Date:   Fri, 11 Feb 2022 10:55:52 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Husni Faiz <ahamedhusni73@gmail.com>
+Cc:     b-liu@ti.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] usb: Fix Trailing Whitespace Coding Style Error
+Message-ID: <YgYyqEfAcQ0zJhmM@kroah.com>
+References: <20220210130801.377918-1-ahamedhusni73@gmail.com>
+ <20220210191838.398373-1-ahamedhusni73@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: oCdw-7uGZaXsVk9YaxtQcjmyvQm0Quq-
-X-Proofpoint-ORIG-GUID: oCdw-7uGZaXsVk9YaxtQcjmyvQm0Quq-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-11_03,2022-02-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- mlxscore=0 suspectscore=0 mlxlogscore=915 phishscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 priorityscore=1501 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202110056
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210191838.398373-1-ahamedhusni73@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the ADA4250 driver.
+On Fri, Feb 11, 2022 at 12:48:38AM +0530, Husni Faiz wrote:
+> Removed Trailing whitespace.
+> 
+> Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
+> ---
+>  drivers/usb/musb/musb_host.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/musb/musb_host.c b/drivers/usb/musb/musb_host.c
+> index 9ff7d891b4b7..cf25a2b7e3bb 100644
+> --- a/drivers/usb/musb/musb_host.c
+> +++ b/drivers/usb/musb/musb_host.c
+> @@ -563,7 +563,7 @@ musb_rx_reinit(struct musb *musb, struct musb_qh *qh, u8 epnum)
+>  	ep->rx_reinit = 0;
+>  }
+>  
+> -static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep, 
+> +static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep,
+>  					struct musb_qh *qh,
+>  					u32 *length, u8 *mode)
+>  {
+> -- 
+> 2.25.1
+> 
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- .../bindings/iio/amplifiers/adi,ada4250.yaml  | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+Hi,
 
-diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-new file mode 100644
-index 000000000000..22283ab48903
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADA4250 Programmable Gain Instrumentation Amplifier
-+
-+maintainers:
-+  - Antoniu Miclaus <antoniu.miclaus@analog.com>
-+
-+description: |
-+  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ada4250
-+
-+  reg:
-+    maxItems: 1
-+
-+  avdd-supply: true
-+
-+  adi,refbuf-enable:
-+    description:
-+      Enable internal buffer to drive the reference pin.
-+    type: boolean
-+
-+required:
-+  - compatible
-+  - reg
-+  - avdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      ada4250@0{
-+        compatible = "adi,ada4250";
-+        reg = <0>;
-+        avdd-supply = <&avdd>;
-+      };
-+    };
-+...
--- 
-2.35.1
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
