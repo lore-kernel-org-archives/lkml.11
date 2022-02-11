@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3445DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 07:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F289C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 07:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347751AbiBKHmH (ORCPT
+        id S1347758AbiBKHmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 02:42:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50168 "EHLO
+        Fri, 11 Feb 2022 02:42:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245292AbiBKHmF (ORCPT
+        with ESMTP id S230037AbiBKHml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 02:42:05 -0500
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7500BF4
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:42:04 -0800 (PST)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4Jw5DB4kwQz9sSM;
-        Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id f3MfhsYRsmZC; Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jw5DB40jXz9sSL;
-        Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 7A7788B77D;
-        Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id tS9I9GRiyyjL; Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.91])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4ED958B764;
-        Fri, 11 Feb 2022 08:42:02 +0100 (CET)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21B7fqgC933807
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Fri, 11 Feb 2022 08:41:53 +0100
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21B7fo1l933805;
-        Fri, 11 Feb 2022 08:41:50 +0100
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH] Fixup for next-test 3a1a8f078670 ("powerpc/ftrace: Remove ftrace_32.S")
-Date:   Fri, 11 Feb 2022 08:41:34 +0100
-Message-Id: <ecc74ddaff69493aae92b8dc5455ec016d62fea8.1644565269.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <5e837fc190504c4ef834272e70d60ae33f175d49.1640017960.git.christophe.leroy@csgroup.eu>
-References: <5e837fc190504c4ef834272e70d60ae33f175d49.1640017960.git.christophe.leroy@csgroup.eu>
+        Fri, 11 Feb 2022 02:42:41 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B05281A2;
+        Thu, 10 Feb 2022 23:42:40 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jw5Dq1fb5z4xNn;
+        Fri, 11 Feb 2022 18:42:34 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644565355;
+        bh=kJgcvdOQYR22pgOelIt3jO+KPGAiG/PLiaN0JDZGXPA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=oNEaDk6PiV8aS+VtY54zO+Scwxo44Lt/s7e9XtyZsRs53wtlEwyViINih0eM8CE4C
+         rof3T/wNlXENapfS0eU4m3zdsvIIGm8aGLRoerbUHiQP1sNkp+AGhbQkWmG3KzAXNf
+         tEgGSpprTUslfDogr2pEO8Sekwk+4Je485ejszoqkqPZGYvqbDlf80M4TZg+k0H5jJ
+         5jONUBUuzhwHoJ+HxZ+vZpPp5eXnEczk0ZNhiKU8vjZVVOVBzqoJkHY/rADC7SE56c
+         VO/P/6Unza5YtK9yj4G0JHA2o0D42EXFqoooix/CjpmJ2nBr3XrQQoEExYH16RcJJY
+         Lr/9k1Xb90RUg==
+Date:   Fri, 11 Feb 2022 18:42:32 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     Gwendal Grignou <gwendal@chromium.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build warning after merge of the iio tree
+Message-ID: <20220211184232.7e22c214@canb.auug.org.au>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1644565282; l=826; s=20211009; h=from:subject:message-id; bh=+tIw/1ka4XAJFmZDM6ZPSXA0iz5N+w6+7JiLlIEY+AU=; b=QcZ2P0PTWRH49N/AeL7czpfnH9wGhjS5TF+/Z8k5syrswOhdWXF8lziOPAx4Kh5Ihg+VQvh2XIQz HbibCoWIB8Yvw+MqqAcwdsBppnj0KvmcodKb4BBIKGDnPGVv3Fhx
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_//_f98+_bcAWJyPmD.WuqIiH";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
----
- arch/powerpc/kernel/trace/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+--Sig_//_f98+_bcAWJyPmD.WuqIiH
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/arch/powerpc/kernel/trace/Makefile b/arch/powerpc/kernel/trace/Makefile
-index ac7d42a4e8d0..542aa7a8b2b4 100644
---- a/arch/powerpc/kernel/trace/Makefile
-+++ b/arch/powerpc/kernel/trace/Makefile
-@@ -14,8 +14,9 @@ obj64-$(CONFIG_FUNCTION_TRACER)		+= ftrace_mprofile.o
- else
- obj64-$(CONFIG_FUNCTION_TRACER)		+= ftrace_64_pg.o
- endif
-+obj-$(CONFIG_FUNCTION_TRACER)		+= ftrace_low.o
- obj-$(CONFIG_DYNAMIC_FTRACE)		+= ftrace.o
--obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o ftrace_low.o
-+obj-$(CONFIG_FUNCTION_GRAPH_TRACER)	+= ftrace.o
- obj-$(CONFIG_FTRACE_SYSCALLS)		+= ftrace.o
- obj-$(CONFIG_TRACING)			+= trace_clock.o
- 
--- 
-2.34.1
+Hi all,
 
+After merging the iio tree, today's linux-next build (htmldocs) produced
+this warning:
+
+Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: WARNING: Unexpected inden=
+tation.
+
+Introduced by commit
+
+  4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_//_f98+_bcAWJyPmD.WuqIiH
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIGE2gACgkQAVBC80lX
+0GyNqggAnbWioY5jhlnhr+n/htemm+3wCjcFjeF7G8R0M50ISuN/iiulztoH5bVE
+oBTVMBG9xHDeiA84+j5/arynKlY/ZGN5y7sbTiHceHRLYToD4G4WhImhzslsw0RC
+Ij0CaqojopzSZkwPcd0yiW85x3zncYBckQ0UhJVbZ3IKkc5dLnvpnu4gBcdfKsyw
+xcfPtse7U+bNbqocykp0rQ2Cwh8MsiXtFjBXNWLERCVIKAJDUT2SQ1o1TkPY28xL
+MOceBN1AjNWrtPzaPZEM/mKECI7ZLYaJwUSmZupv0BGrs17jrerd/zwUdqqufdPz
+28+yaDzgpvkRjg/rQuTYhXuN7R8Xqg==
+=q0nS
+-----END PGP SIGNATURE-----
+
+--Sig_//_f98+_bcAWJyPmD.WuqIiH--
