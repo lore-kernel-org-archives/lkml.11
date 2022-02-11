@@ -2,84 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE9EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:24:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCC0C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348869AbiBKKYJ (ORCPT
+        id S1348879AbiBKKYN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:24:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51280 "EHLO
+        Fri, 11 Feb 2022 05:24:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346916AbiBKKYH (ORCPT
+        with ESMTP id S1346916AbiBKKYJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:24:07 -0500
-X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 02:24:01 PST
-Received: from forward500j.mail.yandex.net (forward500j.mail.yandex.net [5.45.198.250])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C146D220
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:24:01 -0800 (PST)
-Received: from myt6-de4b83149afa.qloud-c.yandex.net (myt6-de4b83149afa.qloud-c.yandex.net [IPv6:2a02:6b8:c12:401e:0:640:de4b:8314])
-        by forward500j.mail.yandex.net (Yandex) with ESMTP id 7C1246CB6BA2;
-        Fri, 11 Feb 2022 13:18:41 +0300 (MSK)
-Received: from 2a02:6b8:c12:1723:0:640:c7c2:e344 (2a02:6b8:c12:1723:0:640:c7c2:e344 [2a02:6b8:c12:1723:0:640:c7c2:e344])
-        by myt6-de4b83149afa.qloud-c.yandex.net (mxback/Yandex) with HTTP id dIYhLv0cJCg1-Iec4T0gI;
-        Fri, 11 Feb 2022 13:18:40 +0300
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxt.ru; s=mail; t=1644574720;
-        bh=+QzWvPmQ9CrQg+9DVBPDGn2iMJvpYZnpZYUSGInu5DU=;
-        h=References:Date:Message-Id:Cc:Subject:In-Reply-To:To:From;
-        b=Awe4H7r7545QR/+EprGABpQbh5FZaCRNU9KDR/ioLqCYK/a1mLKNXi3jaQ3D5PN++
-         z3fjCMFCboRoZ2yuZwBWPC5eFqS0a2yXksD8j9h8nxFKpbMwuQR1rV8HuChBo+UYci
-         dSegY4N/LM9B7ol+wFKxSAllsbZM350uQp77JyPg=
-Authentication-Results: myt6-de4b83149afa.qloud-c.yandex.net; dkim=pass header.i=@nxt.ru
-Received: by myt5-c7c2e3441f25.qloud-c.yandex.net with HTTP;
-        Fri, 11 Feb 2022 13:18:40 +0300
-From:   Aleksandr Fedorov <sanekf@nxt.ru>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-In-Reply-To: <b090141f-0822-609f-429d-ea790d7fc828@arm.com>
-References: <5481021644415780@myt5-a5512e99e394.qloud-c.yandex.net> <b090141f-0822-609f-429d-ea790d7fc828@arm.com>
-Subject: Re: [PATCH] iommu: explicitly check for NULL in iommu_dma_get_resv_regions()
+        Fri, 11 Feb 2022 05:24:09 -0500
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55885220;
+        Fri, 11 Feb 2022 02:24:08 -0800 (PST)
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nIT5s-000AVF-Pf; Fri, 11 Feb 2022 11:24:00 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1nIT5s-000DIF-Dm; Fri, 11 Feb 2022 11:24:00 +0100
+Subject: Re: [PATCH bpf-next 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable in
+ Kconfig
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1644569851-20859-1-git-send-email-yangtiezhu@loongson.cn>
+ <1644569851-20859-3-git-send-email-yangtiezhu@loongson.cn>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <af2b415a-874d-0524-c5bb-b50c419a1559@iogearbox.net>
+Date:   Fri, 11 Feb 2022 11:23:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Mailer: Yamail [ http://yandex.ru ] 5.0
-Date:   Fri, 11 Feb 2022 13:18:40 +0300
-Message-Id: <10011281644574720@myt5-c7c2e3441f25.qloud-c.yandex.net>
+In-Reply-To: <1644569851-20859-3-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26450/Fri Feb 11 10:24:09 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On 2022-02-09 14:09, Aleksandr Fedorov wrote:
->> iommu_dma_get_resv_regions() assumes that iommu_fwspec field for
->> corresponding device is set which is not always true. Since
->> iommu_dma_get_resv_regions() seems to be a future-proof generic API
->> that can be used by any iommu driver, add an explicit check for NULL.
-> 
-> Except it's not a "generic" interface for drivers to call at random,
-> it's a helper for retrieving common firmware-based information
-> specifically for drivers already using the fwspec mechanism for common
-> firmware bindings. If any driver calls this with a device *without* a
-> valid fwnode, it deserves to crash because it's done something
-> fundamentally wrong.
-> 
-> I concur that it's not exactly obvious that "non-IOMMU-specific" means
-> "based on common firmware bindings, thus implying fwspec".
+On 2/11/22 9:57 AM, Tiezhu Yang wrote:
+> Currently, it is not possible to set bpf_jit_enable to 1 by default
+> and the users can change it to 0 or 2, it seems bad for some users,
+> make BPF_JIT_DEFAULT_ON selectable to give them a chance.
 
-Thanks for the explanations, yes, this was the misunderstanding on my
-part. Maybe add a comment?
+I'm not fully sure I follow the above, so you are saying that a kconfig of
+!BPF_JIT_ALWAYS_ON and ARCH_WANT_DEFAULT_BPF_JIT, enables BPF_JIT_DEFAULT_ON
+however in such setting you are not able to reset bpf_jit_enable back to 0 at
+runtime?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d85d54f2b549..ce5e7d4d054a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -379,6 +379,9 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
-  * for general non-IOMMU-specific reservations. Currently, this covers GICv3
-  * ITS region reservation on ACPI based ARM platforms that may require HW MSI
-  * reservation.
-+ *
-+ * Note that this helper is meant to be used only by drivers that are already
-+ * using the fwspec mechanism for common firmware bindings.
-  */
- void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- {
+Thanks,
+Daniel
