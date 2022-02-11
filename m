@@ -2,187 +2,435 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50102C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 05:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 05:15:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbiBKFO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 00:14:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50778 "EHLO
+        id S234058AbiBKFPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 00:15:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiBKFOy (ORCPT
+        with ESMTP id S234023AbiBKFO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 00:14:54 -0500
-X-Greylist: delayed 1628 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 21:14:53 PST
-Received: from mx0a-000eb902.pphosted.com (mx0a-000eb902.pphosted.com [205.220.165.212])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF38273A;
-        Thu, 10 Feb 2022 21:14:53 -0800 (PST)
-Received: from pps.filterd (m0220296.ppops.net [127.0.0.1])
-        by mx0a-000eb902.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21B4CVk4004147;
-        Thu, 10 Feb 2022 22:47:44 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com; h=message-id : date :
- mime-version : subject : to : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pps1;
- bh=zSet5FsN9a7rqQOjtKaTcm7URg9879iRjiEvcsEBZn0=;
- b=wPoIDj6ZMQEGUlj/QOhPZRZ9v3nF5Fg8jI+LB2i0MzgQO8xI1HO4ek0axWM0Uwb4Fkzq
- 2XaPWqGuzpFN8PXI8IEtAo85XGD+RAB+PArc6jkqeOQWYUhfTPKkL9+kcFLf9Ra2gDbf
- 9VyV1qImL28gVFFXdUqefy+tQzA+s5G08fMOq7l3dfhE+C1sXutJ/+CjO1nZFqJtE2NU
- FRxhJTWFUTCzZt3/0epNqY6iYDr4bylaKLLsWSMcZMk82HSbjXJ2iyGq8JxIzJia8Fvj
- hZHUNKRS0ApGcj+r7Dg4geZJcccXHftK//j5/phoYAL8HGVbL2LoGWG06UlJRgWQamJg /w== 
-Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2100.outbound.protection.outlook.com [104.47.70.100])
-        by mx0a-000eb902.pphosted.com (PPS) with ESMTPS id 3e4n2fanwf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 10 Feb 2022 22:47:43 -0600
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KnJqVP26x8pmQTntBadlmapK/p60zHUroPzgD+Jf67chJ4O3kAUnxV9YK/ZCFvR0HNKX7TXJkr3o9+G/b/h13U0yaKGXNXQFabNoVOMhM1jAGA7KsHofXaKoVjjr3LFvh0f3zKYi+AB4OjCJ2e1DnEsFHcBZGKuRb+HmEdFh/1OIxR+Dbpb9L8+dGstgtGUkeorsIOG1N4BY1kl6o/3EDzF8SFAyH2MSfD31yvAWUfBiwRjRI8ieXmaQpKB1s1nr8csiqyfShzl94Ovywm3w11qEX1UF/floTQnuB7NgzCdij5Q+KuG2ZUunn5vXzG9aYfCyf5nmdq+dqd/hC2kPmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zSet5FsN9a7rqQOjtKaTcm7URg9879iRjiEvcsEBZn0=;
- b=f6LYVEmy7UNbOcibZZ2tO1Gx+Q9gPC9uKw089H5UPPaMlRfKmZ7jRuADuvxwjLiYe3hmzypW/HNFP9L7U07SgwN5elA52cR6W+B739j+VYuD5XmEerjjM5NZEIxNFc4fnYmNdsl6BOg6hZqGzW/PmYaLyQwirXZ1j2QbB03IS75602tPwpll4tPwTuaYLv4xu+qNSzIR8l32yQVAjja9tjBXbk189utPPoRHjrC/wJHSG9JjRk6dYBCob4fywJnuOdL0XPYxl9klOZLB+YG56Tzm5T915iC7nWyOzzoVSQ9daIpDfYl+J1r2wIp96tasBDQO4D0l7VgFX+OuuqqbuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 204.77.163.244) smtp.rcpttodomain=gmail.com smtp.mailfrom=garmin.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=garmin.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=garmin.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zSet5FsN9a7rqQOjtKaTcm7URg9879iRjiEvcsEBZn0=;
- b=j+gckeOX+1CI8P9BLfDNW4ha+SjABeObtwditdyIp0wnGBzQB9LV0TX8jhQPPDKH9Gp+1nBnHZpv415D4/wIqSPf9HHqaNk8ZvDHfSAVi/VTNUeFQxj1pgyzNDZJPJa+RrrvUrBO+OTRMzhLPvw4dfLElaANA3yHaUFXgFSro7d8EUF7DFW/qPR9nCNNBhDwBSdmdF7CUyupy5yHl2V/PrQYK/0d46YPV0mTsN8bxR6tMEm3QHaJd/3MMoBl9VjbjIXqSnyXPywKDq6xZ8YHpY1CWz+9kc9DC9C/9+TX6S809e+5drWlaslxaSmIjABI/fNF3OWwYWm2w6sdsnConQ==
-Received: from DM5PR12CA0063.namprd12.prod.outlook.com (2603:10b6:3:103::25)
- by SJ0PR04MB7728.namprd04.prod.outlook.com (2603:10b6:a03:32d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11; Fri, 11 Feb
- 2022 04:47:42 +0000
-Received: from DM6NAM10FT031.eop-nam10.prod.protection.outlook.com
- (2603:10b6:3:103:cafe::3d) by DM5PR12CA0063.outlook.office365.com
- (2603:10b6:3:103::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.13 via Frontend
- Transport; Fri, 11 Feb 2022 04:47:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 204.77.163.244)
- smtp.mailfrom=garmin.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=garmin.com;
-Received-SPF: Pass (protection.outlook.com: domain of garmin.com designates
- 204.77.163.244 as permitted sender) receiver=protection.outlook.com;
- client-ip=204.77.163.244; helo=edgetransport.garmin.com;
-Received: from edgetransport.garmin.com (204.77.163.244) by
- DM6NAM10FT031.mail.protection.outlook.com (10.13.152.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4975.11 via Frontend Transport; Fri, 11 Feb 2022 04:47:41 +0000
-Received: from OLAWPA-EXMB12.ad.garmin.com (10.5.144.16) by
- olawpa-edge3.garmin.com (10.60.4.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Thu, 10 Feb 2022 22:47:39 -0600
-Received: from [10.30.196.25] (10.5.209.17) by OLAWPA-EXMB12.ad.garmin.com
- (10.5.144.16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 10 Feb
- 2022 22:47:41 -0600
-Message-ID: <d12b130d-4c79-25bd-36fc-3566bee37173@garmin.com>
-Date:   Thu, 10 Feb 2022 22:47:40 -0600
+        Fri, 11 Feb 2022 00:14:58 -0500
+Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B14C51020;
+        Thu, 10 Feb 2022 21:14:57 -0800 (PST)
+Received: from grover.. (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
+        by conuserg-12.nifty.com with ESMTP id 21B5EER6030337;
+        Fri, 11 Feb 2022 14:14:14 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 21B5EER6030337
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1644556455;
+        bh=HbF35Wknq57OwoQhXS101JjMM9nsn/5eMlRitlg1Tds=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Nem1cxnybX4FurBdafy5kkUn7pjYbFuGEaCzlebSP4PoUvUkfGun+GaOj+ttmikrt
+         nEqcN/oLpG6uD0X13SZFJYZvQA7iRjiZYAFrgLp4ZkmuO1NnX4cSIaTHDHd/6Ubz8z
+         JDZEJ1fGnLuxIjHROOhCTKM0ai1xcWkfvc2OPymL1X7vkyizTs1dhJb04r2d97PdFe
+         GToIumSTkTmlmriuhp8Hv3tuSHfhuCeGJ3q5os/8Ng7aJJ1kxCPGxP2Eg/plK1+ZRs
+         62cs3NbuJ1XjNw0gfD+cYBalNDRQOh6h7k3mqc+zW2Of+Czfb4NiVXbdCKxuKH3p30
+         K/jAA8/1eYDSw==
+X-Nifty-SrcIP: [133.32.232.101]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Nicolas Schier <nicolas@fjasle.eu>
+Subject: [PATCH v2] kbuild: replace $(if A,A,B) with $(or A,B)
+Date:   Fri, 11 Feb 2022 14:14:11 +0900
+Message-Id: <20220211051411.2141549-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2] input: Add Marine Navigation Keycodes
-Content-Language: en-US
-To:     <dmitry.torokhov@gmail.com>, <linux-input@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210622235708.8828-1-matthew.stephenson2@garmin.com>
- <20220126211224.28590-1-Shelby.Heffron@garmin.com>
-From:   Shelby Heffron <Shelby.Heffron@garmin.com>
-In-Reply-To: <20220126211224.28590-1-Shelby.Heffron@garmin.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: cv1wpa-exmb1.ad.garmin.com (10.5.144.71) To
- OLAWPA-EXMB12.ad.garmin.com (10.5.144.16)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 365e1abd-8639-4745-02e8-08d9ed19a33f
-X-MS-TrafficTypeDiagnostic: SJ0PR04MB7728:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR04MB77285057BBA2A7B3E4D6ED1BF2309@SJ0PR04MB7728.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vICiSK89bAqM1Cm0JY3+RuUtwQYfQ7MRma/1MikZmIJGAsxUham7ipGbVJ5DJ/jSu5+L2S+8b4rAtF/7TLI95eSDo9REYQzot+1KxLzMjTHjEu0X1DYY2QSeRGh3IuW4ESs+7Wv6ifzijKrV0P7aYn5rKiXTKkPFNVz1T8lNsZCq2Dr99ip5HkTq6y383VJPgN/hhhYYCUuXX4Ae/0ucIlgFWzQr/jzIeYPiKkGO4w7Cb9sFu1Xm5dSP7IyC+KwELoxH01gu/CUtoFVRsuzR1t3Hc6bn26/9O3GbLDW998l4L4rSqBLquGIL8hvJNzMOVAVtcBZ7w7dF9v/J6lyup3/vulzVM6B6rlFovUw9dFblKq0D6uCLaLvC6kbe8E8uxW5TkUQlT+JkyXNYag36aqfitA/TfB6GJ4m/Edx2bs/gsHh83c3ohBZOTUuGYHz1edLoO16PhslbVmzJ0wyeD7vtSu5cCLN1JKIdwlgQlNT9y+tsWnb/ZpFNO5pE9jra9r5cFx8AZxd0KOgDYsY/L7jc1thY7ulY/newERSewRIm0K2bRQyax5ZjbMwaLgcVXp/AbbZVAt9R3nYGycxBFssM1iEKljR3KAf61BGE51c48u8XakmhB+eZVejBuAuOk8UubfUJN/nmEgIoHEemZfwzoZQfauZg3v4XuI0r5EHDN7ZLknwYFH9ESqV4/be2/la4VesjnfqnroldgdbaIw==
-X-Forefront-Antispam-Report: CIP:204.77.163.244;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:edgetransport.garmin.com;PTR:extedge.garmin.com;CAT:NONE;SFS:(13230001)(40470700004)(46966006)(36840700001)(36860700001)(7636003)(36756003)(40460700003)(82310400004)(31696002)(86362001)(356005)(53546011)(8936002)(8676002)(508600001)(70206006)(70586007)(31686004)(336012)(47076005)(66574015)(16576012)(110136005)(426003)(2616005)(5660300002)(316002)(186003)(26005)(2906002)(43740500002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: garmin.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 04:47:41.7479
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 365e1abd-8639-4745-02e8-08d9ed19a33f
-X-MS-Exchange-CrossTenant-Id: 38d0d425-ba52-4c0a-a03e-2a65c8e82e2d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=38d0d425-ba52-4c0a-a03e-2a65c8e82e2d;Ip=[204.77.163.244];Helo=[edgetransport.garmin.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM10FT031.eop-nam10.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR04MB7728
-X-Proofpoint-GUID: 5GE86Ttilc0KpH3rAio-lzSbYlVaE_Cn
-X-Proofpoint-ORIG-GUID: 5GE86Ttilc0KpH3rAio-lzSbYlVaE_Cn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-11_01,2022-02-09_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=943
- clxscore=1015 adultscore=0 priorityscore=1501 lowpriorityscore=0
- suspectscore=0 impostorscore=0 bulkscore=0 mlxscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202110024
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello all,
+$(or ...) is available since GNU Make 3.81, and useful to shorten the
+code in some places.
 
-On 1/26/2022 3:12 PM, Shelby Heffron wrote:
-> Add keycodes that are used by marine navigation devices
-> 
-> Signed-off-by: Shelby Heffron <Shelby.Heffron@garmin.com>
-> ---
->   include/uapi/linux/input-event-codes.h | 28 ++++++++++++++++++++++++++
->   1 file changed, 28 insertions(+)
-> 
-> diff --git a/include/uapi/linux/input-event-codes.h b/include/uapi/linux/input-event-codes.h
-> index 225ec87d4f22..26b6a2f482ab 100644
-> --- a/include/uapi/linux/input-event-codes.h
-> +++ b/include/uapi/linux/input-event-codes.h
-> @@ -660,6 +660,34 @@
->   /* Select an area of screen to be copied */
->   #define KEY_SELECTIVE_SCREENSHOT	0x27a
->   
-> +/* Toggle the focus in or out */
-> +#define KEY_FOCUS_TOGGLE		0x27b
-> +
-> +/* Move between highlightable items */
-> +#define KEY_NEXT_HIGHLIGHT		0x27c
-> +#define KEY_PREVIOUS_HIGHLIGHT		0x27d
-> +
-> +/* Toggle Autopilot enagement */
-> +#define KEY_AUTOPILOT_ENGAGE_TOGGLE	0x27e
-> +
-> +/* Navigate Displays */
-> +#define KEY_NEXT_DISPLAY		0x27f
-> +#define KEY_PREVIOUS_DISPLAY		0x280
-> +
-> +/* Shortcut Keys */
-> +#define KEY_MARK_WAYPOINT		0x281
-> +#define KEY_SOS			0x282
-> +#define KEY_NAV_CHART			0x283
-> +#define KEY_FISHING_CHART		0x284
-> +#define KEY_SINGLE_RANGE_RADAR		0x285
-> +#define KEY_DUAL_RANGE_RADAR		0x286
-> +#define KEY_RADAR_OVERLAY		0x287
-> +#define KEY_TRADITIONAL_SONAR		0x288
-> +#define KEY_CLEARVU_SONAR		0x289
-> +#define KEY_SIDEVU_SONAR		0x28a
-> +#define KEY_NAV_INFO			0x28b
-> +#define KEY_BRIGHTNESS_MENU		0x28c
+Covert as follows:
 
-I am looking for some guidance on if this is the proper place for these 
-keys to be defined? If not, or if they are too specific, do I have any 
-other options?
+  $(if A,A,B)  -->  $(or A,B)
 
-Thanks.
-Shelby
+This patch also converts:
 
-> +
->   /*
->    * Some keyboards have keys which do not have a defined meaning, these keys
->    * are intended to be programmed / bound to macros by the user. For most
+  $(if A, A, B) --> $(or A, B)
+
+Strictly speaking, the latter is not an equivalent conversion because
+spaces after commas remain; if A is not empty, $(if A, A, B) expands
+to " A", while $(or A, B) expands to "A".
+
+Anyway, preceding spaces are not significant in the code hunks I touched.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+---
+
+Changes in v2:
+  - Fix misconversion in tools/lib/perf/Makefile
+  - Remove spaces before the stray backslash in tools/lib/bpf/Makefile
+  - Mention the presence of preceding spaces is not important this case
+
+ Makefile                                    | 8 ++++----
+ scripts/Makefile.build                      | 3 +--
+ scripts/Makefile.clean                      | 2 +-
+ scripts/Makefile.lib                        | 4 ++--
+ tools/bpf/bpftool/Makefile                  | 4 ++--
+ tools/build/Makefile                        | 2 +-
+ tools/counter/Makefile                      | 2 +-
+ tools/gpio/Makefile                         | 2 +-
+ tools/hv/Makefile                           | 2 +-
+ tools/iio/Makefile                          | 2 +-
+ tools/lib/api/Makefile                      | 2 +-
+ tools/lib/bpf/Makefile                      | 2 +-
+ tools/lib/perf/Makefile                     | 2 +-
+ tools/lib/subcmd/Makefile                   | 2 +-
+ tools/objtool/Makefile                      | 2 +-
+ tools/pci/Makefile                          | 2 +-
+ tools/perf/Makefile.perf                    | 4 ++--
+ tools/power/x86/intel-speed-select/Makefile | 2 +-
+ tools/scripts/utilities.mak                 | 2 +-
+ tools/spi/Makefile                          | 6 +++---
+ tools/tracing/rtla/Makefile                 | 2 +-
+ tools/usb/Makefile                          | 2 +-
+ 22 files changed, 30 insertions(+), 31 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 402121aca40a..a700edb54939 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1240,8 +1240,8 @@ define filechk_version.h
+ 	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
+ endef
+ 
+-$(version_h): PATCHLEVEL := $(if $(PATCHLEVEL), $(PATCHLEVEL), 0)
+-$(version_h): SUBLEVEL := $(if $(SUBLEVEL), $(SUBLEVEL), 0)
++$(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
++$(version_h): SUBLEVEL := $(or $(SUBLEVEL), 0)
+ $(version_h): FORCE
+ 	$(call filechk,version.h)
+ 
+@@ -1624,7 +1624,7 @@ help:
+ 	@$(MAKE) -f $(srctree)/Documentation/Makefile dochelp
+ 	@echo  ''
+ 	@echo  'Architecture specific targets ($(SRCARCH)):'
+-	@$(if $(archhelp),$(archhelp),\
++	@$(or $(archhelp),\
+ 		echo '  No architecture specific help defined for $(SRCARCH)')
+ 	@echo  ''
+ 	@$(if $(boards), \
+@@ -1841,7 +1841,7 @@ $(clean-dirs):
+ 
+ clean: $(clean-dirs)
+ 	$(call cmd,rmfiles)
+-	@find $(if $(KBUILD_EXTMOD), $(KBUILD_EXTMOD), .) $(RCS_FIND_IGNORE) \
++	@find $(or $(KBUILD_EXTMOD), .) $(RCS_FIND_IGNORE) \
+ 		\( -name '*.[aios]' -o -name '*.ko' -o -name '.*.cmd' \
+ 		-o -name '*.ko.*' \
+ 		-o -name '*.dtb' -o -name '*.dtbo' -o -name '*.dtb.S' -o -name '*.dt.yaml' \
+diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+index a4b89b757287..7e177d0ee02d 100644
+--- a/scripts/Makefile.build
++++ b/scripts/Makefile.build
+@@ -40,8 +40,7 @@ include $(srctree)/scripts/Makefile.compiler
+ 
+ # The filename Kbuild has precedence over Makefile
+ kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+-kbuild-file := $(if $(wildcard $(kbuild-dir)/Kbuild),$(kbuild-dir)/Kbuild,$(kbuild-dir)/Makefile)
+-include $(kbuild-file)
++include $(or $(wildcard $(kbuild-dir)/Kbuild),$(kbuild-dir)/Makefile)
+ 
+ include $(srctree)/scripts/Makefile.lib
+ 
+diff --git a/scripts/Makefile.clean b/scripts/Makefile.clean
+index fd6175322470..74cb1c5c3658 100644
+--- a/scripts/Makefile.clean
++++ b/scripts/Makefile.clean
+@@ -12,7 +12,7 @@ include $(srctree)/scripts/Kbuild.include
+ 
+ # The filename Kbuild has precedence over Makefile
+ kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+-include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/Makefile)
++include $(or $(wildcard $(kbuild-dir)/Kbuild),$(kbuild-dir)/Makefile)
+ 
+ # Figure out what we need to build from the various variables
+ # ==========================================================================
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 40735a3adb54..49377d2c2d20 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -111,7 +111,7 @@ subdir-ym	:= $(addprefix $(obj)/,$(subdir-ym))
+ modname-multi = $(sort $(foreach m,$(multi-obj-ym),\
+ 		$(if $(filter $*.o, $(call suffix-search, $m, .o, -objs -y -m)),$(m:.o=))))
+ 
+-__modname = $(if $(modname-multi),$(modname-multi),$(basetarget))
++__modname = $(or $(modname-multi),$(basetarget))
+ 
+ modname = $(subst $(space),:,$(__modname))
+ modfile = $(addprefix $(obj)/,$(__modname))
+@@ -434,7 +434,7 @@ MKIMAGE := $(srctree)/scripts/mkuboot.sh
+ # SRCARCH just happens to match slightly more than ARCH (on sparc), so reduces
+ # the number of overrides in arch makefiles
+ UIMAGE_ARCH ?= $(SRCARCH)
+-UIMAGE_COMPRESSION ?= $(if $(2),$(2),none)
++UIMAGE_COMPRESSION ?= $(or $(2),none)
+ UIMAGE_OPTS-y ?=
+ UIMAGE_TYPE ?= kernel
+ UIMAGE_LOADADDR ?= arch_must_set_this
+diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+index 83369f55df61..ebd21a609910 100644
+--- a/tools/bpf/bpftool/Makefile
++++ b/tools/bpf/bpftool/Makefile
+@@ -78,7 +78,7 @@ CFLAGS += -O2
+ CFLAGS += -W -Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers
+ CFLAGS += $(filter-out -Wswitch-enum -Wnested-externs,$(EXTRA_WARNINGS))
+ CFLAGS += -DPACKAGE='"bpftool"' -D__EXPORTED_HEADERS__ \
+-	-I$(if $(OUTPUT),$(OUTPUT),.) \
++	-I$(or $(OUTPUT),.) \
+ 	-I$(LIBBPF_INCLUDE) \
+ 	-I$(srctree)/kernel/bpf/ \
+ 	-I$(srctree)/tools/include \
+@@ -186,7 +186,7 @@ endif
+ 
+ $(OUTPUT)%.bpf.o: skeleton/%.bpf.c $(OUTPUT)vmlinux.h $(LIBBPF_BOOTSTRAP)
+ 	$(QUIET_CLANG)$(CLANG) \
+-		-I$(if $(OUTPUT),$(OUTPUT),.) \
++		-I$(or $(OUTPUT),.) \
+ 		-I$(srctree)/tools/include/uapi/ \
+ 		-I$(LIBBPF_BOOTSTRAP_INCLUDE) \
+ 		-g -O2 -Wall -target bpf -c $< -o $@
+diff --git a/tools/build/Makefile b/tools/build/Makefile
+index 6f11e6fc9ffe..17cdf01e29a0 100644
+--- a/tools/build/Makefile
++++ b/tools/build/Makefile
+@@ -36,7 +36,7 @@ TMP_O := $(if $(OUTPUT),$(OUTPUT)feature/,./)
+ 
+ clean:
+ 	$(call QUIET_CLEAN, fixdep)
+-	$(Q)find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
++	$(Q)find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
+ 	$(Q)rm -f $(OUTPUT)fixdep
+ 	$(call QUIET_CLEAN, feature-detect)
+ ifneq ($(wildcard $(TMP_O)),)
+diff --git a/tools/counter/Makefile b/tools/counter/Makefile
+index 5ebc195fd9c0..8843f0fa6119 100644
+--- a/tools/counter/Makefile
++++ b/tools/counter/Makefile
+@@ -40,7 +40,7 @@ $(OUTPUT)counter_example: $(COUNTER_EXAMPLE)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/linux/counter.h
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/gpio/Makefile b/tools/gpio/Makefile
+index 440434027557..d29c9c49e251 100644
+--- a/tools/gpio/Makefile
++++ b/tools/gpio/Makefile
+@@ -78,7 +78,7 @@ $(OUTPUT)gpio-watch: $(GPIO_WATCH_IN)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -f $(OUTPUT)include/linux/gpio.h
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/hv/Makefile b/tools/hv/Makefile
+index b57143d9459c..fe770e679ae8 100644
+--- a/tools/hv/Makefile
++++ b/tools/hv/Makefile
+@@ -47,7 +47,7 @@ $(OUTPUT)hv_fcopy_daemon: $(HV_FCOPY_DAEMON_IN)
+ 
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(sbindir); \
+diff --git a/tools/iio/Makefile b/tools/iio/Makefile
+index 5d12ac4e7f8f..fa720f062229 100644
+--- a/tools/iio/Makefile
++++ b/tools/iio/Makefile
+@@ -58,7 +58,7 @@ $(OUTPUT)iio_generic_buffer: $(IIO_GENERIC_BUFFER_IN)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/linux/iio
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/lib/api/Makefile b/tools/lib/api/Makefile
+index a13e9c7f1fc5..e21e1b40b525 100644
+--- a/tools/lib/api/Makefile
++++ b/tools/lib/api/Makefile
+@@ -60,7 +60,7 @@ $(LIBFILE): $(API_IN)
+ 
+ clean:
+ 	$(call QUIET_CLEAN, libapi) $(RM) $(LIBFILE); \
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
++	find $(or $(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
+ 
+ FORCE:
+ 
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index f947b61b2107..36b85aea0393 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -60,7 +60,7 @@ ifndef VERBOSE
+   VERBOSE = 0
+ endif
+ 
+-INCLUDES = -I$(if $(OUTPUT),$(OUTPUT),.)				\
++INCLUDES = -I$(or $(OUTPUT),.) \
+ 	   -I$(srctree)/tools/include -I$(srctree)/tools/include/uapi
+ 
+ export prefix libdir src obj
+diff --git a/tools/lib/perf/Makefile b/tools/lib/perf/Makefile
+index 08fe6e3c4089..21df023a2103 100644
+--- a/tools/lib/perf/Makefile
++++ b/tools/lib/perf/Makefile
+@@ -153,7 +153,7 @@ $(TESTS_STATIC): $(TESTS_IN) $(LIBPERF_A) $(LIBAPI)
+ 	$(QUIET_LINK)$(CC) -o $@ $^
+ 
+ $(TESTS_SHARED): $(TESTS_IN) $(LIBAPI)
+-	$(QUIET_LINK)$(CC) -o $@ -L$(if $(OUTPUT),$(OUTPUT),.) $^ -lperf
++	$(QUIET_LINK)$(CC) -o $@ -L$(or $(OUTPUT),.) $^ -lperf
+ 
+ make-tests: libs $(TESTS_SHARED) $(TESTS_STATIC)
+ 
+diff --git a/tools/lib/subcmd/Makefile b/tools/lib/subcmd/Makefile
+index 1c777a72bb39..8f1a09cdfd17 100644
+--- a/tools/lib/subcmd/Makefile
++++ b/tools/lib/subcmd/Makefile
+@@ -63,7 +63,7 @@ $(LIBFILE): $(SUBCMD_IN)
+ 
+ clean:
+ 	$(call QUIET_CLEAN, libsubcmd) $(RM) $(LIBFILE); \
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
++	find $(or $(OUTPUT),.) -name \*.o -or -name \*.o.cmd -or -name \*.o.d | xargs $(RM)
+ 
+ FORCE:
+ 
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index 92ce4fce7bc7..0dbd397f319d 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -13,7 +13,7 @@ srctree := $(patsubst %/,%,$(dir $(srctree)))
+ endif
+ 
+ SUBCMD_SRCDIR		= $(srctree)/tools/lib/subcmd/
+-LIBSUBCMD_OUTPUT	= $(if $(OUTPUT),$(OUTPUT),$(CURDIR)/)
++LIBSUBCMD_OUTPUT	= $(or $(OUTPUT),$(CURDIR)/)
+ LIBSUBCMD		= $(LIBSUBCMD_OUTPUT)libsubcmd.a
+ 
+ OBJTOOL    := $(OUTPUT)objtool
+diff --git a/tools/pci/Makefile b/tools/pci/Makefile
+index 4b95a5176355..57744778b518 100644
+--- a/tools/pci/Makefile
++++ b/tools/pci/Makefile
+@@ -42,7 +42,7 @@ $(OUTPUT)pcitest: $(PCITEST_IN)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/perf/Makefile.perf b/tools/perf/Makefile.perf
+index ac861e42c8f7..8583d18a3739 100644
+--- a/tools/perf/Makefile.perf
++++ b/tools/perf/Makefile.perf
+@@ -724,7 +724,7 @@ endif
+ # get relative building directory (to $(OUTPUT))
+ # and '.' if it's $(OUTPUT) itself
+ __build-dir = $(subst $(OUTPUT),,$(dir $@))
+-build-dir   = $(if $(__build-dir),$(__build-dir),.)
++build-dir   = $(or $(__build-dir),.)
+ 
+ prepare: $(OUTPUT)PERF-VERSION-FILE $(OUTPUT)common-cmds.h archheaders $(drm_ioctl_array) \
+ 	$(fadvise_advice_array) \
+@@ -1090,7 +1090,7 @@ bpf-skel-clean:
+ 
+ clean:: $(LIBTRACEEVENT)-clean $(LIBAPI)-clean $(LIBBPF)-clean $(LIBSUBCMD)-clean $(LIBPERF)-clean fixdep-clean python-clean bpf-skel-clean
+ 	$(call QUIET_CLEAN, core-objs)  $(RM) $(LIBPERF_A) $(OUTPUT)perf-archive $(OUTPUT)perf-with-kcore $(OUTPUT)perf-iostat $(LANG_BINDINGS)
+-	$(Q)find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
++	$(Q)find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.cmd' -delete -o -name '\.*.d' -delete
+ 	$(Q)$(RM) $(OUTPUT).config-detected
+ 	$(call QUIET_CLEAN, core-progs) $(RM) $(ALL_PROGRAMS) perf perf-read-vdso32 perf-read-vdsox32 $(OUTPUT)pmu-events/jevents $(OUTPUT)$(LIBJVMTI).so
+ 	$(call QUIET_CLEAN, core-gen)   $(RM)  *.spec *.pyc *.pyo */*.pyc */*.pyo $(OUTPUT)common-cmds.h TAGS tags cscope* $(OUTPUT)PERF-VERSION-FILE $(OUTPUT)FEATURE-DUMP $(OUTPUT)util/*-bison* $(OUTPUT)util/*-flex* \
+diff --git a/tools/power/x86/intel-speed-select/Makefile b/tools/power/x86/intel-speed-select/Makefile
+index 12c6939dca2a..7eaa517cd403 100644
+--- a/tools/power/x86/intel-speed-select/Makefile
++++ b/tools/power/x86/intel-speed-select/Makefile
+@@ -43,7 +43,7 @@ $(OUTPUT)intel-speed-select: $(ISST_IN)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/linux/isst_if.h
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/scripts/utilities.mak b/tools/scripts/utilities.mak
+index c16ce833079c..172e47273b5d 100644
+--- a/tools/scripts/utilities.mak
++++ b/tools/scripts/utilities.mak
+@@ -175,5 +175,5 @@ _ge-abspath = $(if $(is-executable),$(1))
+ define get-executable-or-default
+ $(if $($(1)),$(call _ge_attempt,$($(1)),$(1)),$(call _ge_attempt,$(2)))
+ endef
+-_ge_attempt = $(if $(get-executable),$(get-executable),$(call _gea_err,$(2)))
++_ge_attempt = $(or $(get-executable),$(call _gea_err,$(2)))
+ _gea_err  = $(if $(1),$(error Please set '$(1)' appropriately))
+diff --git a/tools/spi/Makefile b/tools/spi/Makefile
+index 0aa6dbd31fb8..7fccd245a535 100644
+--- a/tools/spi/Makefile
++++ b/tools/spi/Makefile
+@@ -53,9 +53,9 @@ $(OUTPUT)spidev_fdx: $(SPIDEV_FDX_IN)
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+ 	rm -rf $(OUTPUT)include/
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '\.*.o.d' -delete
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '\.*.o.cmd' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete
++	find $(or $(OUTPUT),.) -name '\.*.o.d' -delete
++	find $(or $(OUTPUT),.) -name '\.*.o.cmd' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 7c39728d08de..3097f132f096 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -45,7 +45,7 @@ DATADIR	:=	/usr/share
+ DOCDIR	:=	$(DATADIR)/doc
+ MANDIR	:=	$(DATADIR)/man
+ LICDIR	:=	$(DATADIR)/licenses
+-SRCTREE	:=	$(if $(BUILD_SRC),$(BUILD_SRC),$(CURDIR))
++SRCTREE	:=	$(or $(BUILD_SRC),$(CURDIR))
+ 
+ # If running from the tarball, man pages are stored in the Documentation
+ # dir. If running from the kernel source, man pages are stored in
+diff --git a/tools/usb/Makefile b/tools/usb/Makefile
+index 1b128e551b2e..c6235667dd46 100644
+--- a/tools/usb/Makefile
++++ b/tools/usb/Makefile
+@@ -38,7 +38,7 @@ $(OUTPUT)ffs-test: $(FFS_TEST_IN)
+ 
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+-	find $(if $(OUTPUT),$(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete -o -name '\.*.o.cmd' -delete
++	find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\.*.d' -delete -o -name '\.*.o.cmd' -delete
+ 
+ install: $(ALL_PROGRAMS)
+ 	install -d -m 755 $(DESTDIR)$(bindir);		\
+-- 
+2.32.0
 
