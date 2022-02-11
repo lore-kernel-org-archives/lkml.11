@@ -2,156 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 033C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 01:35:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346840AbiBKBeh (ORCPT
+        id S1346851AbiBKBfs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 20:34:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44340 "EHLO
+        Thu, 10 Feb 2022 20:35:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235662AbiBKBeg (ORCPT
+        with ESMTP id S1346823AbiBKBfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 20:34:36 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7625582
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:34:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644543276; x=1676079276;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+BVql9j+nSKuX06ape3W050amhEw94XEN/hSBH7FZEM=;
-  b=PSlsCtLDCT3aI+2ogqVTyfasyY6XYDFdoxmu1sJJeWUN9Uei1YquCJgG
-   VnOcvi2e5AvEUOJ0umbcPAKsPbNC6Eq+AeuSfFZsueOdg9PUeM53AjHIr
-   qcCrna2Q+wLRfl/b6VJjcdwsKsUoUQ0hnwPr+cXjjQwZhrG4V5TnmjkzL
-   HbeQCQ9EYYTQUnPYLy/7VrkVzgs7h5rnUKaGM2P9sFzF7FR5f1SZfBHSz
-   d8LD+UPFu8l+C14BkoURxaIy6GK1ntSR6s+RzQBbYTxFkAglrBBWF5Y98
-   sP++HbAMJIrjjfWnnXmnLvkV+1VHWB9m+cWjT9R9a/QLVGQvGvva7Nc9b
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="247223268"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="247223268"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 17:34:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="679360603"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 10 Feb 2022 17:34:34 -0800
-Message-ID: <532a9259-a1f4-dc1e-acfe-8ac2c6de71b9@linux.intel.com>
-Date:   Fri, 11 Feb 2022 09:33:20 +0800
+        Thu, 10 Feb 2022 20:35:46 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002525F71
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:35:46 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id i6so11593555pfc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 17:35:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m7OTZN6MMJaOtWh3GEnwnLzNFllEBgIohS86VWKpGKg=;
+        b=pwTr6XihNQSpOrHNa73cPDI9LUWGbCjQmOTkYSAUF4oHhAL6nnH1MPWpx0PWgO13zw
+         hZQ3dtKXaI+WL0N8yW65h4Gak8Xb9Ojg+TxwGAqzEaj6yB+13WtQRqRn8WKqjtRuAPWw
+         Cwamfr7Gn7rcKUiGHGtprSiAieYVaTRUaAy4wBTh70sYVlIgdwAMxw1u2s10X2KulZ8o
+         SQyabb3il4e7E/NrDxw5k7bFQ40uxVKLYLuPDxGZbjm2g8oxu6TLSeW77Ym1VOvHa5eD
+         v7gTEZ+uu2PNbaZiJ0Nbmg7xaiU8RWfiqgWcyWaYJW0srHhPxIwJDqFnyjKRgW/qPXqW
+         8TrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m7OTZN6MMJaOtWh3GEnwnLzNFllEBgIohS86VWKpGKg=;
+        b=kgLfELQD9Cs8bSL/HaOPwqBH03s7OMPFL/YMwUDMCJyfB493ulYq/j5wFfpiUk4i85
+         NFQWDsw8sn41cIBKO1QHLiF319ti5WRpyF1Z4vCc7N1HYXvcYHVnjExsZhi9wcRuKwmx
+         K4aM3qrux/+QaCtGdNlsUV1wZu/zkYho81eDIMMh5NoMxWlHCMAB+1e/cQ1pEU8NSsCP
+         WEj03iGQVS7lzVLba3zh7pSGGKswcW8JmSjMhiL2EgiuqUtFL/ADcuWWGGoCyB4WGUhO
+         pF7hCeUNPvSLb7GSMg33EvH6bUsKvPnqXm7MC+draIi6/6pawp4+MNmnXH0aD171Jfoi
+         jsAA==
+X-Gm-Message-State: AOAM531ZTc5vePCxrzpQ/tc0O6qezXxexS/IeudCxcSH2ED++tsPe5v7
+        WjsT5xo79apMbJ9s3kwg7ZogKA==
+X-Google-Smtp-Source: ABdhPJxdym9QXrbD8SY5hJ202JdMfDsCGHjo7Bl0bto7Qh08A17Zfp+LuzUE/d9K6rNIhhxMR+Hmjg==
+X-Received: by 2002:a05:6a00:c83:: with SMTP id a3mr10367017pfv.36.1644543346299;
+        Thu, 10 Feb 2022 17:35:46 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u25sm2905415pgf.42.2022.02.10.17.35.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 17:35:45 -0800 (PST)
+Date:   Fri, 11 Feb 2022 01:35:42 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+Subject: Re: [PATCH 08/12] KVM: MMU: do not consult levels when freeing roots
+Message-ID: <YgW9bqM1M/zJEzqy@google.com>
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-9-pbonzini@redhat.com>
+ <YgWwrG+EQgTwyt8v@google.com>
+ <YgWzyBbAZe89ljqO@google.com>
+ <ba9e1a56-f769-01c1-607f-3630a62a1b5d@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: Remove trivial ops->capable implementations
-Content-Language: en-US
-To:     Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org,
-        will@kernel.org
-References: <8413578c6f8a7cf75530b00cba8f10f5b88f8517.1644495614.git.robin.murphy@arm.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <8413578c6f8a7cf75530b00cba8f10f5b88f8517.1644495614.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ba9e1a56-f769-01c1-607f-3630a62a1b5d@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/10/22 8:29 PM, Robin Murphy wrote:
-> Implementing ops->capable to always return false is pointless since it's
-> the default behaviour anyway. Clean up the unnecessary implementations.
+On Fri, Feb 11, 2022, Paolo Bonzini wrote:
+> On 2/11/22 01:54, Sean Christopherson wrote:
+> > > 	free_active_root = (roots_to_free & KVM_MMU_ROOT_CURRENT) &&
+> > > 			   VALID_PAGE(mmu->root.hpa);
+> > > 
+> > > Isn't this a separate bug fix?  E.g. call kvm_mmu_unload() without a valid current
+> > > root, but with valid previous roots?  In which case we'd try to free garbage, no?
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> 
-> Spinning this out of my bus ops stuff (currently 30 patches and
-> counting...) since it would be better off alongside Baolu's cleanup
-> series to avoid conflicts, and I want to depend on those patches for
-> dev_iommu_ops() anyway.
-> 
->   drivers/iommu/msm_iommu.c  | 6 ------
->   drivers/iommu/tegra-gart.c | 6 ------
->   drivers/iommu/tegra-smmu.c | 6 ------
->   3 files changed, 18 deletions(-)
-> 
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index 06bde6b66732..22061ddbd5df 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -558,11 +558,6 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
->   	return ret;
->   }
->   
-> -static bool msm_iommu_capable(enum iommu_cap cap)
-> -{
-> -	return false;
-> -}
-> -
->   static void print_ctx_regs(void __iomem *base, int ctx)
->   {
->   	unsigned int fsr = GET_FSR(base, ctx);
-> @@ -672,7 +667,6 @@ irqreturn_t msm_iommu_fault_handler(int irq, void *dev_id)
->   }
->   
->   static struct iommu_ops msm_iommu_ops = {
-> -	.capable = msm_iommu_capable,
->   	.domain_alloc = msm_iommu_domain_alloc,
->   	.domain_free = msm_iommu_domain_free,
->   	.attach_dev = msm_iommu_attach_dev,
-> diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-> index 6a358f92c7e5..bbd287d19324 100644
-> --- a/drivers/iommu/tegra-gart.c
-> +++ b/drivers/iommu/tegra-gart.c
-> @@ -238,11 +238,6 @@ static phys_addr_t gart_iommu_iova_to_phys(struct iommu_domain *domain,
->   	return pte & GART_PAGE_MASK;
->   }
->   
-> -static bool gart_iommu_capable(enum iommu_cap cap)
-> -{
-> -	return false;
-> -}
-> -
->   static struct iommu_device *gart_iommu_probe_device(struct device *dev)
->   {
->   	if (!dev_iommu_fwspec_get(dev))
-> @@ -276,7 +271,6 @@ static void gart_iommu_sync(struct iommu_domain *domain,
->   }
->   
->   static const struct iommu_ops gart_iommu_ops = {
-> -	.capable	= gart_iommu_capable,
->   	.domain_alloc	= gart_iommu_domain_alloc,
->   	.domain_free	= gart_iommu_domain_free,
->   	.attach_dev	= gart_iommu_attach_dev,
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index e900e3c46903..43df44f918a1 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -272,11 +272,6 @@ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
->   	clear_bit(id, smmu->asids);
->   }
->   
-> -static bool tegra_smmu_capable(enum iommu_cap cap)
-> -{
-> -	return false;
-> -}
-> -
->   static struct iommu_domain *tegra_smmu_domain_alloc(unsigned type)
->   {
->   	struct tegra_smmu_as *as;
-> @@ -967,7 +962,6 @@ static int tegra_smmu_of_xlate(struct device *dev,
->   }
->   
->   static const struct iommu_ops tegra_smmu_ops = {
-> -	.capable = tegra_smmu_capable,
->   	.domain_alloc = tegra_smmu_domain_alloc,
->   	.domain_free = tegra_smmu_domain_free,
->   	.attach_dev = tegra_smmu_attach_dev,
+> mmu_free_root_page checks VALID_PAGE(*root_hpa).  If that's what you meant,
+> then it wouldn't be a preexisting bug (and I think it'd be a fairly common
+> case).
 
-Looks good to me.
+Ahh, yep.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > > > +
+> > > > +	if (!free_active_root) {
+> > > >   		for (i = 0; i < KVM_MMU_NUM_PREV_ROOTS; i++)
+> > > >   			if ((roots_to_free & KVM_MMU_ROOT_PREVIOUS(i)) &&
+> > > >   			    VALID_PAGE(mmu->prev_roots[i].hpa))
+> > > > @@ -3242,8 +3245,7 @@ void kvm_mmu_free_roots(struct kvm_vcpu *vcpu, struct kvm_mmu *mmu,
+> > > >   					   &invalid_list);
+> > > >   	if (free_active_root) {
+> > > > -		if (mmu->shadow_root_level >= PT64_ROOT_4LEVEL &&
+> > > > -		    (mmu->root_level >= PT64_ROOT_4LEVEL || mmu->direct_map)) {
+> > > > +		if (to_shadow_page(mmu->root.hpa)) {
+> > > >   			mmu_free_root_page(kvm, &mmu->root.hpa, &invalid_list);
+> > > >   		} else if (mmu->pae_root) {
+> > 
+> > Gah, this is technically wrong.  It shouldn't truly matter, but it's wrong.  root.hpa
+> > will not be backed by shadow page if the root is pml4_root or pml5_root, in which
+> > case freeing the PAE root is wrong.  They should obviously be invalid already, but
+> > it's a little confusing because KVM wanders down a path that may not be relevant
+> > to the current mode.
+> 
+> pml4_root and pml5_root are dummy, and the first "real" level of page tables
+> is stored in pae_root for that case too, so I think that should DTRT.
 
-Best regards,
-baolu
+Ugh, completely forgot that detail.  You're correct.  Probably worth a comment?
+
+> That's why I also disliked the shadow_root_level/root_level/direct check:
+> even though there's half a dozen of cases involved, they all boil down to
+> either 4 pae_roots or a single root with a backing kvm_mmu_page.
+> 
+> It's even more obscure to check shadow_root_level/root_level/direct in
+> fast_pgd_switch, where it's pretty obvious that you cannot cache 4 pae_roots
+> in a single (hpa, pgd) pair...
+
+Heh, apparently not obvious enough for me :-)
