@@ -2,222 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D132AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF09C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348994AbiBKKez (ORCPT
+        id S1348998AbiBKKe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:34:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60778 "EHLO
+        Fri, 11 Feb 2022 05:34:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239367AbiBKKef (ORCPT
+        with ESMTP id S1348970AbiBKKek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:34:35 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05528EA9;
-        Fri, 11 Feb 2022 02:34:34 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE83B106F;
-        Fri, 11 Feb 2022 02:34:33 -0800 (PST)
-Received: from [10.57.70.89] (unknown [10.57.70.89])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F18CB3F73B;
-        Fri, 11 Feb 2022 02:34:31 -0800 (PST)
-Message-ID: <3740c93e-9fde-f89f-9752-26ffff3ea274@arm.com>
-Date:   Fri, 11 Feb 2022 10:34:09 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v2] ACPI/IORT: Fix GCC 12 warning
-Content-Language: en-GB
-To:     Kees Cook <keescook@chromium.org>, Ard Biesheuvel <ardb@kernel.org>
-Cc:     Victor Erminpour <victor.erminpour@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        trivial@kernel.org
-References: <1644518851-16847-1-git-send-email-victor.erminpour@oracle.com>
- <CAMj1kXEbGWs74M2CZSm6TWpD11mReFsk8z-UUqJt6b6vDCvAEQ@mail.gmail.com>
- <202202101415.43750CEE@keescook>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <202202101415.43750CEE@keescook>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Fri, 11 Feb 2022 05:34:40 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80213EB5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:34:38 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id g205-20020a2552d6000000b0061e1843b8edso16800310ybb.18
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:34:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=C+DOP43E99Vgp1ROj45FPpHXIORfM/ghJ3TzgVy+YNU=;
+        b=NLJbtd5YhVa7x/yeTNEjfREFwLmEaOsF4D0AVDKgQdH59TXGtiioclRIC3xmPq2QpF
+         9474cJJlZEhnjplBaeCQd0En4hEPGeWJbYJh7nTS4soJbzzqXZumTfxSdtKkUVAcU2rj
+         2+h4glwZrPFB6YwF7f2/OgGlt93moxMoyRR/bfYmYT+CskCpuQpO6FZV6/19d7C5GZ3B
+         OoB7aNU8HueLULQew+tI26evSNTQuRaiKLauae3pYOdGaNZQtsANUXosbAllxa4FVAUR
+         Kwrrp+IBMrKbpSFawC/oyJRM+9IX4ue7MlbfleqIXXV65rDZLtG9WKXwJBy1A4Eh4v4W
+         nNSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=C+DOP43E99Vgp1ROj45FPpHXIORfM/ghJ3TzgVy+YNU=;
+        b=YAPwU4rLlNXnC8/VicWhOrhgC7duqdbItVvmrwxhsPA7Ta9ssgXxroWiktV3wd7WVR
+         UbsydAiNMSxjPdsfAaFE00aw4ih26wbKNH6aUO8h/Vskxfbu5dBYOdosy/WDCmIv7CPe
+         49Lf8Pn14lDvAnp3K2pwApk8mqFwKAJeRoTSUWV2nsa6vxNvDd9V4ghbA+I+ESBEZOGY
+         MtHTOK3g3Hecq2IvheGpjIdP7+Lx/fbtwuaKknnz01eVtagbfiUgg73UT+EMQfuqQ1FV
+         /wezMVRUHTE6glwzwztbqUtV60qOWy/2YswoBLUXIMr0QpXxpkxvmLh9rjawMVZKLR7y
+         1jdQ==
+X-Gm-Message-State: AOAM530oEXBvaE2kQPuP48p8sIJJIYsD6TEhxvsfsAerIZoEBfbIu+Ps
+        p1tqgxOHerUffehmDFQJCy2Pk+age5GY
+X-Google-Smtp-Source: ABdhPJx37ZV+DBqNto4kqpR7iMyd0RvvVxnoSEdbFJq8X88sRQjetmdRWiYHo8vRcCRMURbz07A1BGEshAli
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:2d98:3ad9:1d8a:fb9b])
+ (user=irogers job=sendgmr) by 2002:a25:2107:: with SMTP id
+ h7mr650095ybh.513.1644575677752; Fri, 11 Feb 2022 02:34:37 -0800 (PST)
+Date:   Fri, 11 Feb 2022 02:34:00 -0800
+In-Reply-To: <20220211103415.2737789-1-irogers@google.com>
+Message-Id: <20220211103415.2737789-8-irogers@google.com>
+Mime-Version: 1.0
+References: <20220211103415.2737789-1-irogers@google.com>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+Subject: [PATCH v3 07/22] perf maps: Reduce scope of init and exit
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@collabora.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Song Liu <song@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>, Hao Luo <haoluo@google.com>
+Cc:     eranian@google.com, Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
+Now purely accessed through new and delete, so reduce to file scope.
 
-On 2022-02-10 23:47, Kees Cook wrote:
-> On Thu, Feb 10, 2022 at 08:41:51PM +0100, Ard Biesheuvel wrote:
->> On Thu, 10 Feb 2022 at 19:48, Victor Erminpour
->> <victor.erminpour@oracle.com> wrote:
->>>
->>> When building with automatic stack variable initialization, GCC 12
->>> complains about variables defined outside of switch case statements.
->>> Move the variable into the case that uses it, which silences the warning:
->>>
->>> ./drivers/acpi/arm64/iort.c:1670:59: error: statement will never be executed [-Werror=switch-unreachable]
->>>    1670 |                         struct acpi_iort_named_component *ncomp;
->>>         |                                                           ^~~~~
->>>
->>> Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
->>
->> Please cc people that commented on your v1 when you send a v2.
->>
->> Still NAK, for the same reasons.
-> 
-> Let me see if I can talk you out of this. ;)
-> 
-> So, on the face of it, I agree with you: this is a compiler bug. However,
-> it's still worth fixing. Just because it's valid C isn't a good enough
-> reason to leave it as-is: we continue to minimize the subset of the
-> C language the kernel uses if it helps us get the most out of existing
-> compiler features. We've eliminated all kinds of other "valid C" from the
-> kernel because it improves robustness, security, etc. This is certainly
-> nothing like removing VLAs or implicit fallthrough, but given that this
-> is, I think, the only remaining case of it (I removed all the others a
-> while ago when I had the same issues with the GCC plugins), I'd like to
-> get it fixed.
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/util/map.c  | 4 ++--
+ tools/perf/util/maps.h | 2 --
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-It concerns me if minimising the subset of the C language that the 
-kernel uses is achieved by converting more of the kernel to a 
-not-quite-C language that is not formally specified anywhere, by 
-prematurely adopting newly-invented compiler options that clearly don't 
-work properly (the GCC warning message quoted above may as well be 
-"error: giraffes are not purple" for all the sense it makes.)
+diff --git a/tools/perf/util/map.c b/tools/perf/util/map.c
+index ae99b52502d5..4d1de363c19a 100644
+--- a/tools/perf/util/map.c
++++ b/tools/perf/util/map.c
+@@ -527,7 +527,7 @@ u64 map__objdump_2mem(struct map *map, u64 ip)
+ 	return ip + map->reloc;
+ }
+ 
+-void maps__init(struct maps *maps, struct machine *machine)
++static void maps__init(struct maps *maps, struct machine *machine)
+ {
+ 	maps->entries = RB_ROOT;
+ 	init_rwsem(&maps->lock);
+@@ -616,7 +616,7 @@ static void __maps__purge(struct maps *maps)
+ 	}
+ }
+ 
+-void maps__exit(struct maps *maps)
++static void maps__exit(struct maps *maps)
+ {
+ 	down_write(&maps->lock);
+ 	__maps__purge(maps);
+diff --git a/tools/perf/util/maps.h b/tools/perf/util/maps.h
+index 3dd000ddf925..7e729ff42749 100644
+--- a/tools/perf/util/maps.h
++++ b/tools/perf/util/maps.h
+@@ -60,8 +60,6 @@ static inline struct maps *maps__get(struct maps *maps)
+ }
+ 
+ void maps__put(struct maps *maps);
+-void maps__init(struct maps *maps, struct machine *machine);
+-void maps__exit(struct maps *maps);
+ int maps__clone(struct thread *thread, struct maps *parent);
+ size_t maps__fprintf(struct maps *maps, FILE *fp);
+ 
+-- 
+2.35.1.265.g69c8d7142f-goog
 
-> And I should point out that Clang suffers[1] from the same problem (the
-> variables will be missed for auto-initialization), but actually has a
-> worse behavior: it does not even warn about it.
-> 
-> And note that the problem isn't limited to -ftrivial-auto-var-init. This
-> code pattern seems to also hide the variables from similar instrumentation
-> like KASan, etc. (Which is similarly silent like above.)
-
- From your security standpoint (and believe me, I really do have faith 
-in your expertise here), which of these sounds better:
-
-1: Being able to audit code based on well-defined language semantics
-
-2: Playing whack-a-mole as issues are discovered empirically.
-
-3: Neither of the above, but a warm fuzzy feeling because hey someone 
-said "security" in a commit message.
-
-AFAICS you're effectively voting against #1, and the examples you've 
-given demonstrate that #2 is nowhere near reliable enough either, so 
-where does that leave us WRT actual secure and robust code in Linux?
-
-> In both compilers, it seems fixing this is not "easy", and given its
-> corner-case nature and ease of being worked around in the kernel source,
-> it isn't being highly prioritized. But since I both don't want these
-> blinds spots with Clang (and GCC) var-init, and I don't want these
-> warnings to suddenly appear once GCC 12 _does_ get released, so I'd like
-> to get this case fixed as well.
-> 
-> All that said, I think this patch could be improved.
-> 
-> I'd recommend, instead, just simply:
-> 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index f2f8f05662de..9e765d30da82 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -1671,13 +1671,14 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->   	end = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->header.length);
->   
->   	for (i = 0; i < iort->node_count; i++) {
-> +		struct acpi_iort_named_component *ncomp;
-> +		struct acpi_iort_root_complex *rc;
-> +		phys_addr_t local_limit;
-> +
->   		if (node >= end)
->   			break;
->   
->   		switch (node->type) {
-> -			struct acpi_iort_named_component *ncomp;
-> -			struct acpi_iort_root_complex *rc;
-> -			phys_addr_t local_limit;
->   
->   		case ACPI_IORT_NODE_NAMED_COMPONENT:
->   			ncomp = (struct acpi_iort_named_component *)node->node_data;
-> 
-> This results in no change in binary instruction output (when there is no
-> auto-init).
-
-In fairness I'd have no objection to that patch if it came with a 
-convincing justification, but that is so far very much lacking. My aim 
-here is not to be a change-averse Luddite, but to try to find a 
-compromise where I can actually have some confidence in such changes 
-being made. Let's not start pretending that 3 100ml bottles of shampoo 
-are somehow "safer" than a 300ml bottle of shampoo...
-
-Thanks,
-Robin.
-
-> 
-> -Kees
-> 
-> [1] https://github.com/llvm/llvm-project/issues/44261
-> 
->>
->>
->>> ---
->>>   drivers/acpi/arm64/iort.c | 12 ++++++------
->>>   1 file changed, 6 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
->>> index 3b23fb775ac4..65395f0decf9 100644
->>> --- a/drivers/acpi/arm64/iort.c
->>> +++ b/drivers/acpi/arm64/iort.c
->>> @@ -1645,7 +1645,7 @@ void __init acpi_iort_init(void)
->>>    */
->>>   phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->>>   {
->>> -       phys_addr_t limit = PHYS_ADDR_MAX;
->>> +       phys_addr_t local_limit, limit = PHYS_ADDR_MAX;
->>>          struct acpi_iort_node *node, *end;
->>>          struct acpi_table_iort *iort;
->>>          acpi_status status;
->>> @@ -1667,17 +1667,16 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->>>                          break;
->>>
->>>                  switch (node->type) {
->>> +               case ACPI_IORT_NODE_NAMED_COMPONENT: {
->>>                          struct acpi_iort_named_component *ncomp;
->>> -                       struct acpi_iort_root_complex *rc;
->>> -                       phys_addr_t local_limit;
->>> -
->>> -               case ACPI_IORT_NODE_NAMED_COMPONENT:
->>>                          ncomp = (struct acpi_iort_named_component *)node->node_data;
->>>                          local_limit = DMA_BIT_MASK(ncomp->memory_address_limit);
->>>                          limit = min_not_zero(limit, local_limit);
->>>                          break;
->>>
->>> -               case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
->>> +               }
->>> +               case ACPI_IORT_NODE_PCI_ROOT_COMPLEX: {
->>> +                       struct acpi_iort_root_complex *rc;
->>>                          if (node->revision < 1)
->>>                                  break;
->>>
->>> @@ -1686,6 +1685,7 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
->>>                          limit = min_not_zero(limit, local_limit);
->>>                          break;
->>>                  }
->>> +               }
->>>                  node = ACPI_ADD_PTR(struct acpi_iort_node, node, node->length);
->>>          }
->>>          acpi_put_table(&iort->header);
->>>
->>> _______________________________________________
->>> linux-arm-kernel mailing list
->>> linux-arm-kernel@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
