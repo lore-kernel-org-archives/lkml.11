@@ -2,147 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FF2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17592C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347912AbiBKPp6 (ORCPT
+        id S1348352AbiBKPqf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 10:45:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56836 "EHLO
+        Fri, 11 Feb 2022 10:46:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234142AbiBKPpy (ORCPT
+        with ESMTP id S234142AbiBKPqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 10:45:54 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE48D83;
-        Fri, 11 Feb 2022 07:45:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=D4ssCnbjOmNx384cUCrIrcB0A0RSUiH80NWH2bqiycM=; b=fWCZewgQBtczZ5rQ18W9dGavBq
-        WsPEEA/EumPa5pCR08AiIjkpkUkAZxC72NFzZ0YpEzqv1lSCm5DJzhLPql8GKpProhdkTIRMlEOJB
-        W9trXGDv0a1Pm877onXAxSun4yukfD0kQccuY09LBWaHZQT5gCvPVgSYDoYYtGb2QRUD+moxXuLtQ
-        SmYmYiEGsczGASUBctESrAVeejE2JiV9TkeR5OwkJf4dtG3XygJEZ/m4h+o8aldGWhTARDjLKtzwL
-        GLdQSC5qL6HKX1mtdEEFdTTadVDQvEPqb1HPyc93cPdaqB8L+iSMt7ZM+Hz8VGK9Anu+uvBhXZ6uX
-        fi8sFVJg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIY6u-0093nF-P9; Fri, 11 Feb 2022 15:45:24 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6075C98630A; Fri, 11 Feb 2022 16:45:24 +0100 (CET)
-Date:   Fri, 11 Feb 2022 16:45:24 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
-        Borislav Petkov <bp@alien8.de>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v10 05/15] x86: support asm function sections
-Message-ID: <20220211154524.GX23216@worktop.programming.kicks-ass.net>
-References: <20220209185752.1226407-1-alexandr.lobakin@intel.com>
- <20220209185752.1226407-6-alexandr.lobakin@intel.com>
+        Fri, 11 Feb 2022 10:46:31 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2168821F;
+        Fri, 11 Feb 2022 07:46:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644594390; x=1676130390;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+oJ6/3w5SLph8vgBKsnG5VB05lSV2gievuHwWZZDctw=;
+  b=HFlRaONArNCXKkxogpDM1F063hWyMaJtTle9l5io3W0pvCxZcbJ3eARU
+   e5DLC4G48gMbGjoi3sKWzNgjahF3C6eTn+3fITMAeY3bd5xLtF7yA0HSZ
+   mIkDJrYEvFhNWgrvVXNT9g+m1hj/V8eFC2lmVRjsesmvqMue20F3icgtP
+   hnB5EvjFZRAqgkjjxv+OmGOnuMJ7GjTJ/N2Nya6uPRjHQb3+0EajHEoiC
+   XkMZ1jtAr7+3vzAmyB2D76Ubh+E+bvPkV2iVxrX3qJqAaKx9ZsAz5qlPo
+   Xr3vQCeUpcAYxM6bkuXpVvnfeGqboDt6+hVlOG/wKjlwYvEfiKwClJ6JR
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="336175088"
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="336175088"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 07:46:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="542134128"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
+  by orsmga008.jf.intel.com with ESMTP; 11 Feb 2022 07:46:26 -0800
+Date:   Fri, 11 Feb 2022 23:38:01 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Lizhi Hou <lizhi.hou@xilinx.com>
+Cc:     devicetree@vger.kernel.org, robh@kernel.org,
+        linux-kernel@vger.kernel.org, maxz@xilinx.com,
+        sonal.santan@xilinx.com, yliu@xilinx.com, michal.simek@xilinx.com,
+        stefanos@xilinx.com, trix@redhat.com, mdf@kernel.org,
+        dwmw2@infradead.org, Max Zhen <max.zhen@xilinx.com>
+Subject: Re: [PATCH V1 Create empty OF root 1/1] of: create empty of root
+Message-ID: <20220211153801.GA1273192@yilunxu-OptiPlex-7050>
+References: <20220126054807.492651-1-lizhi.hou@xilinx.com>
+ <20220126054807.492651-2-lizhi.hou@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220209185752.1226407-6-alexandr.lobakin@intel.com>
+In-Reply-To: <20220126054807.492651-2-lizhi.hou@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 09, 2022 at 07:57:42PM +0100, Alexander Lobakin wrote:
-> Address places which need special care and enable
-> CONFIG_ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS.
+On Tue, Jan 25, 2022 at 09:48:07PM -0800, Lizhi Hou wrote:
+> Add OF_EMPTY_ROOT config. When it is selected and there is not a device
+> tree, create an empty device tree root node.
+
+Maybe add some description about why a empty device tree root node is
+needed. Note that the Patch #0 will not be present in the repo when the
+series will be merged, so add your description here please.
+
 > 
-> Notably:
->  - propagate `--sectname-subst` to KBUILD_AFLAGS in
->    x86/boot/Makefile and x86/boot/compressed/Makefile as both
->    override them;
->  - symbols starting with a dot (like ".Lrelocated") should be
->    handled manually with SYM_*_START_SECT(.Lrelocated, relocated)
->    as "two dots" is a special (and CPP doesn't want to concatenate
->    two dots in general);
->  - some symbols explicitly need to reside in one section (like
->    kexec control code, hibernation page etc.);
->  - macros creating aliases for functions (like __memcpy() for
->    memcpy() etc.) should go after the main declaration (as
->    aliases should be declared in the same section and they
->    don't have SYM_PUSH_SECTION() inside);
->  - things like ".org", ".align" should be manually pushed to
->    the same section the next symbol goes to;
->  - expand indirect_thunk wildcards in vmlinux.lds.S to catch
->    symbols back into the "main" section;
->  - inline ASM functions like __raw_callee*() should be pushed
->    manually as well.
-> 
-> With these changes and `-ffunction-sections` enabled, "plain"
-> ".text" section is empty which means that everything works
-> right as expected.
-> 
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Sonal Santan <sonal.santan@xilinx.com>
+> Signed-off-by: Max Zhen <max.zhen@xilinx.com>
+> Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
 > ---
->  arch/x86/Kconfig                              |  1 +
->  arch/x86/boot/Makefile                        |  1 +
->  arch/x86/boot/compressed/Makefile             |  1 +
->  arch/x86/boot/compressed/head_32.S            |  2 +-
->  arch/x86/boot/compressed/head_64.S            | 32 ++++++++++++-------
->  arch/x86/boot/pmjump.S                        |  2 +-
->  arch/x86/crypto/aesni-intel_asm.S             |  4 +--
->  arch/x86/crypto/poly1305-x86_64-cryptogams.pl |  4 +++
->  arch/x86/include/asm/paravirt.h               |  2 ++
->  arch/x86/include/asm/qspinlock_paravirt.h     |  2 ++
->  arch/x86/kernel/head_32.S                     |  4 +--
->  arch/x86/kernel/head_64.S                     |  4 +--
->  arch/x86/kernel/kprobes/core.c                |  2 ++
->  arch/x86/kernel/kvm.c                         |  2 ++
->  arch/x86/kernel/relocate_kernel_32.S          | 10 +++---
->  arch/x86/kernel/relocate_kernel_64.S          | 12 ++++---
->  arch/x86/kernel/vmlinux.lds.S                 |  2 +-
->  arch/x86/kvm/emulate.c                        |  7 +++-
->  arch/x86/lib/copy_user_64.S                   |  2 +-
->  arch/x86/lib/error-inject.c                   |  2 ++
->  arch/x86/lib/getuser.S                        |  5 ++-
->  arch/x86/lib/memcpy_64.S                      |  4 +--
->  arch/x86/lib/memmove_64.S                     |  5 ++-
->  arch/x86/lib/memset_64.S                      |  5 +--
->  arch/x86/lib/putuser.S                        |  2 +-
->  arch/x86/power/hibernate_asm_32.S             | 10 +++---
->  arch/x86/power/hibernate_asm_64.S             | 10 +++---
->  27 files changed, 89 insertions(+), 50 deletions(-)
+>  drivers/of/Kconfig         |  3 +++
+>  drivers/of/Makefile        |  1 +
+>  drivers/of/of_empty_root.c | 51 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 55 insertions(+)
+>  create mode 100644 drivers/of/of_empty_root.c
+> 
+> diff --git a/drivers/of/Kconfig b/drivers/of/Kconfig
+> index 80b5fd44ab1c..42afb126f91a 100644
+> --- a/drivers/of/Kconfig
+> +++ b/drivers/of/Kconfig
+> @@ -94,4 +94,7 @@ config OF_DMA_DEFAULT_COHERENT
+>  	# arches should select this if DMA is coherent by default for OF devices
+>  	bool
+>  
+> +config OF_EMPTY_ROOT
+> +	bool
 
-Urgh, how much of that can you avoid by (ab)using __DISABLE_EXPORTS
-like:
+Also some descriptions for better understanding?
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?h=x86/wip.ibt&id=ab74f54f2b1f6cfeaf2b3ba6999bde7cabada9ca
+Thanks,
+Yilun
 
+> +
+>  endif # OF
+> diff --git a/drivers/of/Makefile b/drivers/of/Makefile
+> index e0360a44306e..c65364f32935 100644
+> --- a/drivers/of/Makefile
+> +++ b/drivers/of/Makefile
+> @@ -12,6 +12,7 @@ obj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o
+>  obj-$(CONFIG_OF_RESOLVE)  += resolver.o
+>  obj-$(CONFIG_OF_OVERLAY) += overlay.o
+>  obj-$(CONFIG_OF_NUMA) += of_numa.o
+> +obj-$(CONFIG_OF_EMPTY_ROOT) += of_empty_root.o
+>  
+>  ifdef CONFIG_KEXEC_FILE
+>  ifdef CONFIG_OF_FLATTREE
+> diff --git a/drivers/of/of_empty_root.c b/drivers/of/of_empty_root.c
+> new file mode 100644
+> index 000000000000..5c429c7a27bd
+> --- /dev/null
+> +++ b/drivers/of/of_empty_root.c
+> @@ -0,0 +1,51 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2022 Xilinx, Inc.
+> + */
+> +
+> +#include <linux/of.h>
+> +#include <linux/slab.h>
+> +
+> +#include "of_private.h"
+> +
+> +static int __init of_root_init(void)
+> +{
+> +	struct property *prop = NULL;
+> +	struct device_node *node;
+> +	__be32 *val = NULL;
+> +
+> +	if (of_root)
+> +		return 0;
+> +
+> +	pr_info("Create empty OF root node\n");
+> +	node = kzalloc(sizeof(*node), GFP_KERNEL);
+> +	if (!node)
+> +		return -ENOMEM;
+> +	of_node_init(node);
+> +	node->full_name = "/";
+> +
+> +	prop = kcalloc(2, sizeof(*prop), GFP_KERNEL);
+> +	if (!prop)
+> +		return -ENOMEM;
+> +
+> +	val = kzalloc(sizeof(*val), GFP_KERNEL);
+> +	if (!val)
+> +		return -ENOMEM;
+> +	*val = cpu_to_be32(sizeof(void *) / sizeof(u32));
+> +
+> +	prop->name = "#address-cells";
+> +	prop->value = val;
+> +	prop->length = sizeof(u32);
+> +	of_add_property(node, prop);
+> +	prop++;
+> +	prop->name = "#size-cells";
+> +	prop->value = val;
+> +	prop->length = sizeof(u32);
+> +	of_add_property(node, prop);
+> +	of_root = node;
+> +	for_each_of_allnodes(node)
+> +		__of_attach_node_sysfs(node);
+> +
+> +	return 0;
+> +}
+> +pure_initcall(of_root_init);
+> -- 
+> 2.27.0
