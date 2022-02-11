@@ -2,76 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B22C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1384FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350553AbiBKNas (ORCPT
+        id S1350562AbiBKNa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:30:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53694 "EHLO
+        Fri, 11 Feb 2022 08:30:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344706AbiBKNar (ORCPT
+        with ESMTP id S1344706AbiBKNaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:30:47 -0500
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FE21BF;
-        Fri, 11 Feb 2022 05:30:46 -0800 (PST)
-Received: by mail-io1-f53.google.com with SMTP id m185so11304301iof.10;
-        Fri, 11 Feb 2022 05:30:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yXYDTPVyzNL3HdggD9t7igGwyc5OPXWVE0t2GHzk0/Y=;
-        b=mvChhF84A/muZ+yiXbQMw7yGhOxlZyzgKoX7/Wgh2LdHkTXVB3oCi6YKXd8KCq566N
-         UGmCqV7kAjZU8UCO00rRfoL/o4gT7Iy6ab/WtaQuAIrd8AOucGQOWu8sXmgzdEB59mct
-         GGv95inNK3HRg1Wyr7gCpnOn5SaXPwdw9v9aWvdjypHCG+cBEkuHE6Shl1wwUTcht9/X
-         6qS59rIe+7Ure/Ip+cd+HKaWafeh3KWVqRIOAMcRBFSW1Cd1NXLyz/zg3p5WwM7hAAb4
-         m1MVv9DouPwuIHxhnsWrGStgSy3AfTfhuBeBDxL8tF4a5iVtv/mB6XGeLy8w/t6FWK02
-         C/RA==
-X-Gm-Message-State: AOAM531s3Upmtbw9R6qqOn7wawF1piLpFixSTF05YUFbmMjF55dwPpqi
-        Y7plgrpXy3D2mOXhOmknVi1gj5IajA==
-X-Google-Smtp-Source: ABdhPJz0I90OIyzyeltUDleVrE7USdaTR5yvb//9XL91SKkbLY5srdLk2U1GTdfIJKY/EPJVn7xunQ==
-X-Received: by 2002:a05:6638:d0c:: with SMTP id q12mr835349jaj.310.1644586245902;
-        Fri, 11 Feb 2022 05:30:45 -0800 (PST)
-Received: from robh.at.kernel.org ([172.58.139.71])
-        by smtp.gmail.com with ESMTPSA id h3sm13445127ioe.19.2022.02.11.05.30.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 05:30:45 -0800 (PST)
-Received: (nullmailer pid 259753 invoked by uid 1000);
-        Fri, 11 Feb 2022 13:30:41 -0000
-Date:   Fri, 11 Feb 2022 07:30:41 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     quentin.schulz@theobroma-systems.com
-Cc:     thierry.reding@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, daniel@ffwll.ch, robh+dt@kernel.org,
-        sam@ravnborg.org, dri-devel@lists.freedesktop.org,
-        Quentin Schulz <foss+kernel@0leil.net>, airlied@linux.ie
-Subject: Re: [PATCH 3/3] dt-bindings: ltk050h3146w: add compatible for
- LTK050H3148W-CTA6 variant
-Message-ID: <YgZlASpL4uurqroZ@robh.at.kernel.org>
-References: <20220131164723.714836-1-quentin.schulz@theobroma-systems.com>
- <20220131164723.714836-3-quentin.schulz@theobroma-systems.com>
+        Fri, 11 Feb 2022 08:30:55 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BFF61DF
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:30:54 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nIW0V-0005x0-IV; Fri, 11 Feb 2022 14:30:39 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nIW0T-009juX-5m; Fri, 11 Feb 2022 14:30:37 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH v3 3/5] ARM: dts: imx6qdl-vicut1: add CAN termination support
+Date:   Fri, 11 Feb 2022 14:30:33 +0100
+Message-Id: <20220211133035.2321330-4-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220211133035.2321330-1-o.rempel@pengutronix.de>
+References: <20220211133035.2321330-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220131164723.714836-3-quentin.schulz@theobroma-systems.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 31 Jan 2022 17:47:23 +0100, quentin.schulz@theobroma-systems.com wrote:
-> From: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> 
-> The LTK050H3148W-CTA6 is a 5.0" 720x1280 DSI display, whose driving
-> controller is a Himax HX8394-F, slightly different from LTK050H3146W by
-> its init sequence, mode details and mode flags.
-> 
-> Cc: Quentin Schulz <foss+kernel@0leil.net>
-> Signed-off-by: Quentin Schulz <quentin.schulz@theobroma-systems.com>
-> ---
->  .../devicetree/bindings/display/panel/leadtek,ltk050h3146w.yaml  | 1 +
->  1 file changed, 1 insertion(+)
-> 
+The gpio1 0 pin is controlling CAN termination, not USB H1 VBUS. So,
+remove wrong regulator and assign this gpio to new DT CAN termnation
+property.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index b9e305774fed..1ac7e13249d2 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -126,15 +126,6 @@ reg_3v3: regulator-3v3 {
+ 		regulator-max-microvolt = <3300000>;
+ 	};
+ 
+-	reg_h1_vbus: regulator-h1-vbus {
+-		compatible = "regulator-fixed";
+-		regulator-name = "h1-vbus";
+-		regulator-min-microvolt = <5000000>;
+-		regulator-max-microvolt = <5000000>;
+-		gpio = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+-		enable-active-high;
+-	};
+-
+ 	reg_otg_vbus: regulator-otg-vbus {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "otg-vbus";
+@@ -212,6 +203,8 @@ IMX_AUDMUX_V2_PTCR_SYN		IMX_AUDMUX_V2_PDCR_RXDSEL(0)
+ &can1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_can1>;
++	termination-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
++	termination-ohms = <150>;
+ 	status = "okay";
+ };
+ 
+@@ -492,7 +485,6 @@ &uart5 {
+ };
+ 
+ &usbh1 {
+-	vbus-supply = <&reg_h1_vbus>;
+ 	pinctrl-names = "default";
+ 	phy_type = "utmi";
+ 	dr_mode = "host";
+-- 
+2.30.2
+
