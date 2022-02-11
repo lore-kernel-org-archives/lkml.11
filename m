@@ -2,95 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF73C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5EDC43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353081AbiBKUEw (ORCPT
+        id S1353169AbiBKUF1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 15:04:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49136 "EHLO
+        Fri, 11 Feb 2022 15:05:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiBKUEu (ORCPT
+        with ESMTP id S1353103AbiBKUFX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 15:04:50 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6391CCE4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:04:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644609888; x=1676145888;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2ZlVaDtKfVX9/LVBJ9h/jToT61g2FD0JlwafMGgpbqg=;
-  b=fNiM2WitKA+ZlJc2bhg02nzuLeggRFNNZb+ZGhK/jUSmgLJUASDtmV5Y
-   ESD/Nrwnx54golHrkzSrf8obyMhhKeuKW/cC6U/lKttjotIvyKhWvZKrX
-   FcvIqXyA34aWyt/rMqh/wKxVEBXXvHiu8Zp6+nvMyqPsRB9v/yvo9638P
-   rnXMKUmx/tC+cjm+qrkkcM0bie5RMFc6RNziOb2z7WbJFjDZnVd7R3A9c
-   wnpW7ZctMo2XJDJrGG6P7L+RjFE8vBkbBjkp4sonRFkkUR5U9drtv7BAb
-   Pc40CimyYKevzoI9mOz/3+w6NDr4p4Bu35yebZedg3en65jxgGRmTZlbX
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="310537804"
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="310537804"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 12:04:47 -0800
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="702223218"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 12:04:47 -0800
-Date:   Fri, 11 Feb 2022 12:04:41 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 00/11] Re-enable ENQCMD and PASID MSR
-Message-ID: <YgbBWcLzpddko1wR@otcwcpicx3.sc.intel.com>
-References: <20220207230254.3342514-1-fenghua.yu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207230254.3342514-1-fenghua.yu@intel.com>
+        Fri, 11 Feb 2022 15:05:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E79DCE6
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:05:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A01362000
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 20:05:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9CE16C340EE;
+        Fri, 11 Feb 2022 20:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644609920;
+        bh=X/+ravp8QiNJfs+JtdXQSoxZcUiZhVaI/TN5+FRJ6FA=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=RsNFth+QFR7rxFNptgysTLOEh2jxCr8CJKDGNkTOonoU4q2QekXY31EaWidyoDaky
+         mNr07GOzXSgJViRcSXbuW/JL8wFgjCvFoHmmFrCz0XTffA+EbNZUu6qgf76oQ/Nh+1
+         UWK1DQ6PeTZkH9IEULOS4CqQFCZMnC6yuO6SpNBSBEbckluURjG6eRRLw+lN5QslUK
+         drlnSWVDFSWCdK8AHuL/QkrByzapUZvOjMxupTu0ua7reM+NFm4vUBOPrdOXLyf3If
+         jQlpodrQASkcPTCQHA/+HYyMpxaAKoU1XDXWEcA+OxyiSlmk7o99h3gPHJ+eWG0oPS
+         MMo277tCjrHWg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8A5E9E5CF96;
+        Fri, 11 Feb 2022 20:05:20 +0000 (UTC)
+Subject: Re: [GIT PULL] tracing: Updates for v5.17-rc2
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220210193154.0bcd3700@rorschach.local.home>
+References: <20220210193154.0bcd3700@rorschach.local.home>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220210193154.0bcd3700@rorschach.local.home>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-v5.17-rc2
+X-PR-Tracked-Commit-Id: 3203ce39ac0b2a57a84382ec184c7d4a0bede175
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 32f6c5d037740835043f58f5c59b29841dbe39ff
+Message-Id: <164460992056.1412.6755748836991931666.pr-tracker-bot@kernel.org>
+Date:   Fri, 11 Feb 2022 20:05:20 +0000
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        JaeSang Yoo <js.yoo.5b@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Thomas,
+The pull request you sent on Thu, 10 Feb 2022 19:31:54 -0500:
 
-On Mon, Feb 07, 2022 at 03:02:43PM -0800, Fenghua Yu wrote:
-> Problems in the old code to manage SVM (Shared Virtual Memory) devices
-> and the PASID (Process Address Space ID) led to that code being
-> disabled.
-> 
-> Subsequent discussions resulted in a far simpler approach:
-> 
-> 1) PASID life cycle is from first allocation by a process until that
->    process exits.
-> 2) All tasks begin with PASID disabled
-> 3) The #GP fault handler tries to fix faulting ENQCMD instructions very
->    early (thus avoiding complexities of the XSAVE infrastructure)
-> 
-> Change Log:
-> v4:
-> - Update commit message in patch #4 (Thomas).
-> - Update commit message in patch #5 (Thomas).
-> - Add "Reviewed-by: Thomas Gleixner <tglx@linutronix.de>" in patch #1-#3
->   and patch #6-#9 (Thomas).
-> - Rebased to 5.17-rc3.
+> git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git trace-v5.17-rc2
 
-A friendly reminder. Any comment on this series? Will you pick up this
-series in tip?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/32f6c5d037740835043f58f5c59b29841dbe39ff
 
-Thank you very much!
+Thank you!
 
--Fenghua
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
