@@ -2,282 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED89C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 07:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FF8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 07:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347684AbiBKHYx (ORCPT
+        id S1347698AbiBKHgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 02:24:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42390 "EHLO
+        Fri, 11 Feb 2022 02:36:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235819AbiBKHYw (ORCPT
+        with ESMTP id S1347691AbiBKHgc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 02:24:52 -0500
-Received: from out199-10.us.a.mail.aliyun.com (out199-10.us.a.mail.aliyun.com [47.90.199.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559F6B3D
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:24:51 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R541e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V47qv8-_1644564287;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V47qv8-_1644564287)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 11 Feb 2022 15:24:47 +0800
-Message-ID: <1644564073.3777697-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v4 14/14] virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
-Date:   Fri, 11 Feb 2022 15:21:13 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
+        Fri, 11 Feb 2022 02:36:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA1A610A7
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:36:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644564990;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6ger/QR3OvBDgrfELo9ni0SFpEHXgnOyBAkmgj/wgKo=;
+        b=L+sv64hnZSTSpn/HRlX2IX50GMMDW+hzNToR4vRMLb+Cs1vJLIyLfcttRMG6OlYOU8s9LJ
+        1ruuEjsLveQ5LChm2qQpBpI0U3P9M74fnrZemAEudEM/gSUDIyNUGa1MuMss+OrjiUUGqk
+        Ru6FLRnP+n8GBVLTAmWESsWzcG0X3mo=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-391-EBLXkU41MTmYrJqZf025cA-1; Fri, 11 Feb 2022 02:36:29 -0500
+X-MC-Unique: EBLXkU41MTmYrJqZf025cA-1
+Received: by mail-lj1-f200.google.com with SMTP id a13-20020a2eb54d000000b0023f5f64ae4fso3740325ljn.4
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 23:36:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=6ger/QR3OvBDgrfELo9ni0SFpEHXgnOyBAkmgj/wgKo=;
+        b=z7ZCUX6vRhQ7sTOzteOQwttimtcqJZ8bMwhIKdS5ZaBU/Mc0acjhzCYz/tG9PDJEF6
+         PVB43SC7lKjcgJuuDvQfLBPWVY4mw9zcMLmqdZ+zXd7rvjDkHF1cp0bVE/fBduOW4oJX
+         YgfQ3oHCkc6ZLQg5hEl3QE3keGAvhdFsk0Px+V3Igv5EY0SA3zm4+V3J2OVh2bEy87Lr
+         OLAATT/xS2eXPX1dllMC0kPLlmbS/Wi23UP4jdQxyThZmmp36yb2bOIfHSh6mbwZsqaD
+         Uglh2/COsTQL2cQ3CKgca5o23PBQDTWf/n/PpggaqZsi5z1EY1pWPljJCmxJ2h/sKbES
+         wROg==
+X-Gm-Message-State: AOAM5339GBtf0GH6IfZ2O+WxPoKlTXJ3cWbbPqwut5YNL6eYaDooWYyD
+        7y8TenDREGt8NCSGXI2q0b9EpkQQ4HA/u7ztPcsCX4fJORtyeH2W57TFsChtlzob34MO9GiWzYz
+        4HE2AAnZDRcbvpt5z+z1o611HKDc7FKAy7/182/Hr
+X-Received: by 2002:ac2:4acf:: with SMTP id m15mr338618lfp.580.1644564987358;
+        Thu, 10 Feb 2022 23:36:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyiq9kyvD4be5Fn1+/1LZaALFoATMR+JCZu8sTxPrafwqB0tr3RnE1Gwd2fhsEfOdiNhiDbr7hKgEwzFgtzIYo=
+X-Received: by 2002:ac2:4acf:: with SMTP id m15mr338602lfp.580.1644564987072;
+ Thu, 10 Feb 2022 23:36:27 -0800 (PST)
+MIME-Version: 1.0
 References: <20220209122901.51790-1-xuanzhuo@linux.alibaba.com>
- <20220209122901.51790-15-xuanzhuo@linux.alibaba.com>
- <8b0b5f06-74eb-d6cb-07e2-38249e4cda92@redhat.com>
-In-Reply-To: <8b0b5f06-74eb-d6cb-07e2-38249e4cda92@redhat.com>
+ <20220209122901.51790-10-xuanzhuo@linux.alibaba.com> <140fc738-3391-5529-dd5a-c46b9e937355@redhat.com>
+ <1644563228.441517-2-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1644563228.441517-2-xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 11 Feb 2022 15:36:15 +0800
+Message-ID: <CACGkMEtzQFHZgMGe3-zg99bwdTB-X3-eo-AViDqXduoJb24d+w@mail.gmail.com>
+Subject: Re: [PATCH v4 09/14] virtio: queue_reset: struct virtio_config_ops
+ add callbacks for queue_reset
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 15:05:40 +0800, Jason Wang <jasowang@redhat.com> wrote:
+On Fri, Feb 11, 2022 at 3:13 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrot=
+e:
 >
-> =E5=9C=A8 2022/2/9 =E4=B8=8B=E5=8D=888:29, Xuan Zhuo =E5=86=99=E9=81=93:
-> > This patch implements virtio pci support for QUEUE RESET.
+> On Fri, 11 Feb 2022 14:49:03 +0800, Jason Wang <jasowang@redhat.com> wrot=
+e:
 > >
-> > Performing reset on a queue is divided into these steps:
+> > =E5=9C=A8 2022/2/9 =E4=B8=8B=E5=8D=888:28, Xuan Zhuo =E5=86=99=E9=81=93=
+:
+> > > Performing reset on a queue is divided into four steps:
+> > >
+> > > 1. reset_vq: reset one vq
+> > > 2. recycle the buffer from vq by virtqueue_detach_unused_buf()
+> > > 3. release the ring of the vq by vring_release_virtqueue()
+> > > 4. enable_reset_vq: re-enable the reset queue
+> > >
+> > > So add two callbacks reset_vq, enable_reset_vq to struct
+> > > virtio_config_ops.
+> > >
+> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > ---
+> > >   include/linux/virtio_config.h | 13 +++++++++++++
+> > >   1 file changed, 13 insertions(+)
+> > >
+> > > diff --git a/include/linux/virtio_config.h b/include/linux/virtio_con=
+fig.h
+> > > index 4d107ad31149..0d01a64f2576 100644
+> > > --- a/include/linux/virtio_config.h
+> > > +++ b/include/linux/virtio_config.h
+> > > @@ -74,6 +74,17 @@ struct virtio_shm_region {
+> > >    * @set_vq_affinity: set the affinity for a virtqueue (optional).
+> > >    * @get_vq_affinity: get the affinity for a virtqueue (optional).
+> > >    * @get_shm_region: get a shared memory region based on the index.
+> > > + * @reset_vq: reset a queue individually
 > >
-> > 1. reset_vq: reset one vq
-> > 2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-> > 3. release the ring of the vq by vring_release_virtqueue()
-> > 4. enable_reset_vq: re-enable the reset queue
 > >
-> > This patch implements reset_vq, enable_reset_vq in the pci scenario
+> > This needs to be marked as optional I think.
+>
+> OK.
+>
 > >
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > ---
-> >   drivers/virtio/virtio_pci_common.c |  8 +--
-> >   drivers/virtio/virtio_pci_modern.c | 80 ++++++++++++++++++++++++++++--
-> >   drivers/virtio/virtio_ring.c       |  2 +
-> >   include/linux/virtio.h             |  1 +
-> >   4 files changed, 85 insertions(+), 6 deletions(-)
 > >
-> > diff --git a/drivers/virtio/virtio_pci_common.c b/drivers/virtio/virtio=
-_pci_common.c
-> > index cb01eb0cb2e4..303637ac4914 100644
-> > --- a/drivers/virtio/virtio_pci_common.c
-> > +++ b/drivers/virtio/virtio_pci_common.c
-> > @@ -255,9 +255,11 @@ static void vp_del_vq(struct virtqueue *vq)
-> >   	struct virtio_pci_vq_info *info =3D vp_dev->vqs[vq->index];
-> >   	unsigned long flags;
+> > > + * vq: the virtqueue
+> > > + * Returns 0 on success or error status
 > >
-> > -	spin_lock_irqsave(&vp_dev->lock, flags);
-> > -	list_del(&info->node);
-> > -	spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > +	if (!vq->reset) {
-> > +		spin_lock_irqsave(&vp_dev->lock, flags);
-> > +		list_del(&info->node);
-> > +		spin_unlock_irqrestore(&vp_dev->lock, flags);
-> > +	}
 > >
-> >   	vp_dev->del_vq(info);
-> >   	kfree(info);
-> > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio=
-_pci_modern.c
-> > index d29d40bf0b45..cc45515eda50 100644
-> > --- a/drivers/virtio/virtio_pci_modern.c
-> > +++ b/drivers/virtio/virtio_pci_modern.c
-> > @@ -34,6 +34,9 @@ static void vp_transport_features(struct virtio_devic=
-e *vdev, u64 features)
-> >   	if ((features & BIT_ULL(VIRTIO_F_SR_IOV)) &&
-> >   			pci_find_ext_capability(pci_dev, PCI_EXT_CAP_ID_SRIOV))
-> >   		__virtio_set_bit(vdev, VIRTIO_F_SR_IOV);
-> > +
-> > +	if (features & BIT_ULL(VIRTIO_F_RING_RESET))
-> > +		__virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
-> >   }
+> > It looks to me the caller should also guarantee that the vring is not
+> > accsed by any functions e.g NAPI.
+>
+> OK.
+>
 > >
-> >   /* virtio config->finalize_features() implementation */
-> > @@ -176,6 +179,70 @@ static void vp_reset(struct virtio_device *vdev)
-> >   	vp_disable_cbs(vdev);
-> >   }
 > >
-> > +static int vp_modern_reset_vq(struct virtqueue *vq)
-> > +{
-> > +	struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
-> > +	struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > +	struct virtio_pci_vq_info *info;
-> > +	unsigned long flags;
-> > +	u16 msix_vec;
-> > +
-> > +	if (!virtio_has_feature(vq->vdev, VIRTIO_F_RING_RESET))
-> > +		return -ENOENT;
-> > +
-> > +	vp_modern_set_queue_reset(mdev, vq->index);
-> > +
-> > +	info =3D vp_dev->vqs[vq->index];
-> > +	msix_vec =3D info->msix_vector;
-> > +
-> > +	/* Disable VQ callback. */
-> > +	if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_VECTOR)
-> > +		disable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
+> > > + * After successfully calling this, be sure to call
+> > > + * virtqueue_detach_unused_buf() to recycle the buffer in the ring, =
+and
+> > > + * then call vring_release_virtqueue() to release the vq ring.
+> > > + * @enable_reset_vq: enable a reset queue
+> > > + * vq: the virtqueue
+> > > + * ring_num: specify ring num for the vq to be re-enabled. 0 means u=
+se the
+> > > + *           default value. MUST be a power of 2.
+> >
+> >
+> > Note that we don't have power of 2 requirement for packed virtqueue.
 >
 >
-> I think we need a comment to explain why per_vq_mode needs to be dealt
-> with differently.
+> So the following check here does not seem reasonable. (virtio_pci_modern.=
+c)
 
-OK.
+Rethink about this, looks like I was wrong.
+
+Though packed virtqueue doesn't mandate power of 2, the actual queue
+format should be invisible to a driver.
+
+So forcing power of 2 is correct (since it was required by split virtqueue)
 
 >
+> static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+>                                   struct virtio_pci_vq_info *info,
+>                                   unsigned index,
+>                                   void (*callback)(struct virtqueue *vq),
+>                                   const char *name,
+>                                   bool ctx,
+>                                   u16 msix_vec)
+> {
 >
-> > +
-> > +	/* delete vq */
-> > +	spin_lock_irqsave(&vp_dev->lock, flags);
-> > +	list_del(&info->node);
-> > +	spin_unlock_irqrestore(&vp_dev->lock, flags);
+>         struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
+>         struct virtqueue *vq;
+>         u16 num;
+>         int err;
 >
+>         if (index >=3D vp_modern_get_num_queues(mdev))
+>                 return ERR_PTR(-ENOENT);
 >
-> So I don't see where vring is freed and vp_setup_vq() may try to
-> allocate new memory, won't it be a memory leak in this case?
+>         /* Check if queue is either not available or already active. */
+>         num =3D vp_modern_get_queue_size(mdev, index);
+>         if (!num || vp_modern_get_queue_enable(mdev, index))
+>                 return ERR_PTR(-ENOENT);
+>
+>         if (num & (num - 1)) {
+>                 dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", num)=
+;
+>                 return ERR_PTR(-EINVAL);
+>         }
+>         ^^^^^^^^^^^^^^^^^^^^^^^
+>
+> >
+> > And I wonder if it's cleaner to have a find_vq() ops instead to dealing
+> > with the re-allocation and possible size change, or have a dedicated
+> > helper to set vring size so driver can do.
+> >
+> > reset_vq()
+> >
+> > virtqueue_set_vring_size()
+> >
+> > enable_reset_vq()
+>
+> I like to add a dedicated helper.
+>
+> >
+> >
+> > > + * Returns 0 on success or error status
+> > >    */
+> > >   typedef void vq_callback_t(struct virtqueue *);
+> > >   struct virtio_config_ops {
+> > > @@ -100,6 +111,8 @@ struct virtio_config_ops {
+> > >                     int index);
+> > >     bool (*get_shm_region)(struct virtio_device *vdev,
+> > >                            struct virtio_shm_region *region, u8 id);
+> > > +   int (*reset_vq)(struct virtqueue *vq);
+> > > +   int (*enable_reset_vq)(struct virtqueue *vq, u16 ring_num);
+> >
+> >
+> > Note that the current implement is best-effort, so it's not guarantee
+> > that we can have a vring with ring_num, we may get less under memory
+> > pressure or even fail. We probably need to have a pamater to mandate th=
+e
+> > ring_num otherwise user may surprise to see a decreased size of the rin=
+g
+> > when a increasing is actually requested.
+>
+> 1. We can add a helper to specify max ring num.
+> 2. Or after specifying ring num, in case of failure, return directly.
+>
+> I prefer #1
 
-1. reset_vq: reset one vq
-2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-3. release the ring of the vq by vring_release_virtqueue()
-4. enable_reset_vq: re-enable the reset queue
-
-vring_release_virtqueue() (#8 patch) will release the vring.
-That is called by the driver.
-
-I think I should add a check to vp_modern_enable_reset_vq() that
-vring_release_virtqueue() has already been called.
+That's fine.
 
 Thanks
 
 >
-> Thanks
+> Thanks.
 >
->
-> > +
-> > +	vq->reset =3D true;
-> > +
-> > +	INIT_LIST_HEAD(&info->node);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int vp_modern_enable_reset_vq(struct virtqueue *vq, u16 ring_nu=
-m)
-> > +{
-> > +	struct virtio_pci_device *vp_dev =3D to_vp_device(vq->vdev);
-> > +	struct virtio_pci_modern_device *mdev =3D &vp_dev->mdev;
-> > +	struct virtio_pci_vq_info *info;
-> > +	struct virtqueue *_vq;
-> > +	u16 msix_vec;
-> > +
-> > +	if (!vq->reset)
-> > +		return -EPERM;
-> > +
-> > +	/* check queue reset status */
-> > +	if (vp_modern_get_queue_reset(mdev, vq->index) !=3D 1)
-> > +		return -EBUSY;
-> > +
-> > +	info =3D vp_dev->vqs[vq->index];
-> > +	_vq =3D vp_setup_vq(vq->vdev, vq->index, NULL, NULL, NULL,
-> > +			 info->msix_vector, ring_num);
-> > +	if (IS_ERR(_vq)) {
-> > +		vq->reset =3D true;
-> > +		return PTR_ERR(_vq);
-> > +	}
-> > +
-> > +	vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
-> > +
-> > +	msix_vec =3D vp_dev->vqs[vq->index]->msix_vector;
-> > +	if (vp_dev->per_vq_vectors && msix_vec !=3D VIRTIO_MSI_NO_VECTOR)
-> > +		enable_irq(pci_irq_vector(vp_dev->pci_dev, msix_vec));
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >   static u16 vp_config_vector(struct virtio_pci_device *vp_dev, u16 vec=
-tor)
-> >   {
-> >   	return vp_modern_config_vector(&vp_dev->mdev, vector);
-> > @@ -231,10 +298,13 @@ static struct virtqueue *setup_vq(struct virtio_p=
-ci_device *vp_dev,
-> >   				virtqueue_get_avail_addr(vq),
-> >   				virtqueue_get_used_addr(vq));
 > >
-> > -	vq->priv =3D (void __force *)vp_modern_map_vq_notify(mdev, index, NUL=
-L);
-> >   	if (!vq->priv) {
-> > -		err =3D -ENOMEM;
-> > -		goto err_map_notify;
-> > +		vq->priv =3D (void __force *)vp_modern_map_vq_notify(mdev, index,
-> > +								   NULL);
-> > +		if (!vq->priv) {
-> > +			err =3D -ENOMEM;
-> > +			goto err_map_notify;
-> > +		}
->
->
-> This seems unrelated or an artifact of previous patches?
->
-> Thanks
->
->
-> >   	}
+> > Thanks
 > >
-> >   	if (msix_vec !=3D VIRTIO_MSI_NO_VECTOR) {
-> > @@ -402,6 +472,8 @@ static const struct virtio_config_ops virtio_pci_co=
-nfig_nodev_ops =3D {
-> >   	.set_vq_affinity =3D vp_set_vq_affinity,
-> >   	.get_vq_affinity =3D vp_get_vq_affinity,
-> >   	.get_shm_region  =3D vp_get_shm_region,
-> > +	.reset_vq	 =3D vp_modern_reset_vq,
-> > +	.enable_reset_vq =3D vp_modern_enable_reset_vq,
-> >   };
 > >
-> >   static const struct virtio_config_ops virtio_pci_config_ops =3D {
-> > @@ -420,6 +492,8 @@ static const struct virtio_config_ops virtio_pci_co=
-nfig_ops =3D {
-> >   	.set_vq_affinity =3D vp_set_vq_affinity,
-> >   	.get_vq_affinity =3D vp_get_vq_affinity,
-> >   	.get_shm_region  =3D vp_get_shm_region,
-> > +	.reset_vq	 =3D vp_modern_reset_vq,
-> > +	.enable_reset_vq =3D vp_modern_enable_reset_vq,
-> >   };
+> > >   };
+> > >
+> > >   /* If driver didn't advertise the feature, it will never appear. */
 > >
-> >   /* the PCI probing function */
-> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> > index b8747df8dc1f..4f6028e1e2d9 100644
-> > --- a/drivers/virtio/virtio_ring.c
-> > +++ b/drivers/virtio/virtio_ring.c
-> > @@ -1731,6 +1731,7 @@ static struct virtqueue *vring_create_virtqueue_p=
-acked(
-> >   	vq->vq.vdev =3D vdev;
-> >   	vq->vq.num_free =3D num;
-> >   	vq->vq.index =3D index;
-> > +	vq->vq.reset =3D false;
-> >   	vq->we_own_ring =3D true;
-> >   	vq->notify =3D notify;
-> >   	vq->weak_barriers =3D weak_barriers;
-> > @@ -2220,6 +2221,7 @@ static int __vring_init_virtqueue(struct virtqueu=
-e *_vq,
-> >   	vq->vq.vdev =3D vdev;
-> >   	vq->vq.num_free =3D vring.num;
-> >   	vq->vq.index =3D index;
-> > +	vq->vq.reset =3D false;
-> >   	vq->we_own_ring =3D false;
-> >   	vq->notify =3D notify;
-> >   	vq->weak_barriers =3D weak_barriers;
-> > diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-> > index dd1657c3a488..5d4817d79f3f 100644
-> > --- a/include/linux/virtio.h
-> > +++ b/include/linux/virtio.h
-> > @@ -32,6 +32,7 @@ struct virtqueue {
-> >   	unsigned int index;
-> >   	unsigned int num_free;
-> >   	void *priv;
-> > +	bool reset;
-> >   };
-> >
-> >   int virtqueue_add_outbuf(struct virtqueue *vq,
 >
+
