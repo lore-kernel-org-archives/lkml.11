@@ -2,142 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62649C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B149C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:17:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350721AbiBKOLb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 09:11:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50578 "EHLO
+        id S239068AbiBKORK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 09:17:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237634AbiBKOL1 (ORCPT
+        with ESMTP id S229781AbiBKORJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 09:11:27 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47696DF8;
-        Fri, 11 Feb 2022 06:11:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644588686; x=1676124686;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=YMJyD6AIL8XEcvGW+p5ssEnXts8VbG0Kpj/AKg6+SZg=;
-  b=aesf7ImYlmUmIaKGdtmty47n/xzUVdfbUm5eoMiIy6FBJ5zW0ynEuu8t
-   U94ihgNxf6GpqJLsO6n39/0os0I9X1SN8R56qUS4btZOKKzESkMFQASWv
-   xSPKiSjxpZdXdo9oG2RaS+z1FBV96aRUq9laTeDBY0/dwjUDA4k7E1FX4
-   UOJJCPFYUldY3hQgNpN3GBvDZDpenbcwIe5jEt3hjAI1QMCJfpp3KAII5
-   xLgpaXj8pF8mC3aDM9NuVqDSRbzpg2g4VNPi8AFDqFLkAKXXA80fTytdx
-   IB7LvjrWUwKTNjgbBPnDsdyHeXtuyQ8+C96OYyj1BRJm/Ir9V8+fyyUqp
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="313018446"
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="313018446"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 06:11:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="487835180"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga006.jf.intel.com with ESMTP; 11 Feb 2022 06:11:12 -0800
-Received: from [10.212.150.232] (akpowval-MOBL1.amr.corp.intel.com [10.212.150.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id CC9025808BE;
-        Fri, 11 Feb 2022 06:11:11 -0800 (PST)
-Message-ID: <6afcec02-fb44-7b72-e527-6517a94855d4@linux.intel.com>
-Date:   Fri, 11 Feb 2022 09:11:10 -0500
+        Fri, 11 Feb 2022 09:17:09 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCABA21F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 06:17:06 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JwG011dw5z9sRw;
+        Fri, 11 Feb 2022 15:17:05 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id HZT9oE91O7UG; Fri, 11 Feb 2022 15:17:05 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JwG006MCNz9sSB;
+        Fri, 11 Feb 2022 15:17:04 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id BF5198B77D;
+        Fri, 11 Feb 2022 15:17:04 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id bHkdPldf_hbx; Fri, 11 Feb 2022 15:17:04 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.91])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 834FB8B764;
+        Fri, 11 Feb 2022 15:17:04 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21BEGsgZ1222519
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 11 Feb 2022 15:16:54 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21BEGqk71222518;
+        Fri, 11 Feb 2022 15:16:52 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc/64: Force inlining of prevent_user_access() and set_kuap()
+Date:   Fri, 11 Feb 2022 15:16:51 +0100
+Message-Id: <eff9b2b211957fa2e8707e46f31674097fd563a3.1644588972.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-Content-Language: en-US
-To:     David Dunn <daviddunn@google.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Like Xu <like.xu.linux@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Stephane Eranian <eranian@google.com>
-References: <20220117085307.93030-1-likexu@tencent.com>
- <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net>
- <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
- <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com>
- <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
- <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com>
- <CALMp9eTOaWxQPfdwMSAn-OYAHKPLcuCyse7BpsSOM35vg5d0Jg@mail.gmail.com>
- <e06db1a5-1b67-28ac-ee4c-34ece5857b1f@linux.intel.com>
- <CALMp9eSjDro169JjTXyCZn=Rf3PT0uHhdNXEifiXGYQK-Zn8LA@mail.gmail.com>
- <d86ba87b-d98a-53a0-b2cd-5bf77b97b592@linux.intel.com>
- <CABOYuvZ9SZAWeRkrhhhpMM4XwzMzXv9A1WDpc6z8SUBquf0SFQ@mail.gmail.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <CABOYuvZ9SZAWeRkrhhhpMM4XwzMzXv9A1WDpc6z8SUBquf0SFQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644589010; l=4649; s=20211009; h=from:subject:message-id; bh=XrCDeAP4/Azx/7fNFKAhTR51cLiMLmTo9ZiA/wTB8ek=; b=/SDkwx2AgbWZDY0kFyXfMFNomKERjDG1jekOQl0RP7IWfyHQn5G0CjxuDem8kAJrlXgjmwXIArFI jakEEfTsAiRiJWDtcNoKl7AiYFOtlWED8wIESa9PnTjqjtRjiKgY
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+A ppc64_defconfig build exhibits about 10 copied of
+prevent_user_access(). It also have one copy of set_kuap().
 
+	c000000000017340 <.prevent_user_access.constprop.0>:
+	c00000000001a038:	4b ff d3 09 	bl      c000000000017340 <.prevent_user_access.constprop.0>
+	c00000000001aabc:	4b ff c8 85 	bl      c000000000017340 <.prevent_user_access.constprop.0>
+	c00000000001ab38:	4b ff c8 09 	bl      c000000000017340 <.prevent_user_access.constprop.0>
+	c00000000001ade0:	4b ff c5 61 	bl      c000000000017340 <.prevent_user_access.constprop.0>
+	c000000000039b90 <.prevent_user_access.constprop.0>:
+	c00000000003ac08:	4b ff ef 89 	bl      c000000000039b90 <.prevent_user_access.constprop.0>
+	c00000000003b9d0:	4b ff e1 c1 	bl      c000000000039b90 <.prevent_user_access.constprop.0>
+	c00000000003ba54:	4b ff e1 3d 	bl      c000000000039b90 <.prevent_user_access.constprop.0>
+	c00000000003bbfc:	4b ff df 95 	bl      c000000000039b90 <.prevent_user_access.constprop.0>
+	c00000000015dde0 <.prevent_user_access.constprop.0>:
+	c0000000001612c0:	4b ff cb 21 	bl      c00000000015dde0 <.prevent_user_access.constprop.0>
+	c000000000161b54:	4b ff c2 8d 	bl      c00000000015dde0 <.prevent_user_access.constprop.0>
+	c000000000188cf0 <.prevent_user_access.constprop.0>:
+	c00000000018d658:	4b ff b6 99 	bl      c000000000188cf0 <.prevent_user_access.constprop.0>
+	c00000000030fe20 <.prevent_user_access.constprop.0>:
+	c0000000003123d4:	4b ff da 4d 	bl      c00000000030fe20 <.prevent_user_access.constprop.0>
+	c000000000313970:	4b ff c4 b1 	bl      c00000000030fe20 <.prevent_user_access.constprop.0>
+	c0000000005e6bd0 <.prevent_user_access.constprop.0>:
+	c0000000005e7d8c:	4b ff ee 45 	bl      c0000000005e6bd0 <.prevent_user_access.constprop.0>
+	c0000000007bcae0 <.prevent_user_access.constprop.0>:
+	c0000000007bda10:	4b ff f0 d1 	bl      c0000000007bcae0 <.prevent_user_access.constprop.0>
+	c0000000007bda54:	4b ff f0 8d 	bl      c0000000007bcae0 <.prevent_user_access.constprop.0>
+	c0000000007bdd28:	4b ff ed b9 	bl      c0000000007bcae0 <.prevent_user_access.constprop.0>
+	c0000000007c0390:	4b ff c7 51 	bl      c0000000007bcae0 <.prevent_user_access.constprop.0>
+	c00000000094e4f0 <.prevent_user_access.constprop.0>:
+	c000000000950e40:	4b ff d6 b1 	bl      c00000000094e4f0 <.prevent_user_access.constprop.0>
+	c00000000097d2d0 <.prevent_user_access.constprop.0>:
+	c0000000009813fc:	4b ff be d5 	bl      c00000000097d2d0 <.prevent_user_access.constprop.0>
+	c000000000acd540 <.prevent_user_access.constprop.0>:
+	c000000000ad1d60:	4b ff b7 e1 	bl      c000000000acd540 <.prevent_user_access.constprop.0>
+	c000000000e5d680 <.prevent_user_access.constprop.0>:
+	c000000000e64b60:	4b ff 8b 21 	bl      c000000000e5d680 <.prevent_user_access.constprop.0>
+	c000000000e64b6c:	4b ff 8b 15 	bl      c000000000e5d680 <.prevent_user_access.constprop.0>
+	c000000000e64c38:	4b ff 8a 49 	bl      c000000000e5d680 <.prevent_user_access.constprop.0>
 
-On 2/10/2022 2:55 PM, David Dunn wrote:
-> Kan,
-> 
-> On Thu, Feb 10, 2022 at 11:46 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
-> 
->> No, we don't, at least for Linux. Because the host own everything. It
->> doesn't need the MSR to tell which one is in use. We track it in an SW way.
->>
->> For the new request from the guest to own a counter, I guess maybe it is
->> worth implementing it. But yes, the existing/legacy guest never check
->> the MSR.
-> 
-> This is the expectation of all software that uses the PMU in every
-> guest.  It isn't just the Linux perf system.
-> 
-> The KVM vPMU model we have today results in the PMU utilizing software
-> simply not working properly in a guest.  The only case that can
-> consistently "work" today is not giving the guest a PMU at all.
-> 
-> And that's why you are hearing requests to gift the entire PMU to the
-> guest while it is running. All existing PMU software knows about the
-> various constraints on exactly how each MSR must be used to get sane
-> data.  And by gifting the entire PMU it allows that software to work
-> properly.  But that has to be controlled by policy at host level such
-> that the owner of the host knows that they are not going to have PMU
-> visibility into guests that have control of PMU.
-> 
+When building signal_64.c with -Winline the following messages appear:
 
-I think here is how a guest event works today with KVM and perf subsystem.
-     - Guest create an event A
-     - The guest kernel assigns a guest counter M to event A, and config 
-the related MSRs of the guest counter M.
-     - KVM intercepts the MSR access and create a host event B. (The 
-host event B is based on the settings of the guest counter M. As I said, 
-at least for Linux, some SW config impacts the counter assignment. KVM 
-never knows it. Event B can only be a similar event to A.)
-     - Linux perf subsystem assigns a physical counter N to a host event 
-B according to event B's constraint. (N may not be the same as M, 
-because A and B may have different event constraints)
+	./arch/powerpc/include/asm/book3s/64/kup.h:331:20: error: inlining failed in call to 'set_kuap': call is unlikely and code size would grow [-Werror=inline]
+	./arch/powerpc/include/asm/book3s/64/kup.h:401:20: error: inlining failed in call to 'prevent_user_access.constprop': call is unlikely and code size would grow [-Werror=inline]
 
-As you can see, even the entire PMU is given to the guest, we still 
-cannot guarantee that the physical counter M can be assigned to the 
-guest event A.
+Those functions are used on hot pathes and have been
+expected to be inlined at all time.
 
-How to fix it? The only thing I can imagine is "passthrough". Let KVM 
-directly assign the counter M to guest. So, to me, this policy sounds 
-like let KVM replace the perf to control the whole PMU resources, and we 
-will handover them to our guest then. Is it what we want?
+Force them inline.
 
+This patch reduces the kernel text size by 700 bytes, confirming
+that not inlining those functions is not worth it.
 
-Thanks,
-Kan
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+ arch/powerpc/include/asm/book3s/64/kup.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/book3s/64/kup.h b/arch/powerpc/include/asm/book3s/64/kup.h
+index 69fcf63eec94..54cf46808157 100644
+--- a/arch/powerpc/include/asm/book3s/64/kup.h
++++ b/arch/powerpc/include/asm/book3s/64/kup.h
+@@ -328,7 +328,7 @@ static inline unsigned long get_kuap(void)
+ 	return mfspr(SPRN_AMR);
+ }
+ 
+-static inline void set_kuap(unsigned long value)
++static __always_inline void set_kuap(unsigned long value)
+ {
+ 	if (!mmu_has_feature(MMU_FTR_BOOK3S_KUAP))
+ 		return;
+@@ -398,7 +398,7 @@ static __always_inline void allow_user_access(void __user *to, const void __user
+ 
+ #endif /* !CONFIG_PPC_KUAP */
+ 
+-static inline void prevent_user_access(unsigned long dir)
++static __always_inline void prevent_user_access(unsigned long dir)
+ {
+ 	set_kuap(AMR_KUAP_BLOCKED);
+ 	if (static_branch_unlikely(&uaccess_flush_key))
+-- 
+2.34.1
+
