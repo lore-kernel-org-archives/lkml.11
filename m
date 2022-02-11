@@ -2,98 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6901C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAAF7C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346827AbiBKGuo (ORCPT
+        id S1347178AbiBKGus (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 01:50:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42392 "EHLO
+        Fri, 11 Feb 2022 01:50:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231983AbiBKGum (ORCPT
+        with ESMTP id S231983AbiBKGup (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 01:50:42 -0500
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B636C1120;
-        Thu, 10 Feb 2022 22:50:41 -0800 (PST)
-Received: by mail-vs1-xe2b.google.com with SMTP id v6so9132414vsp.11;
-        Thu, 10 Feb 2022 22:50:41 -0800 (PST)
+        Fri, 11 Feb 2022 01:50:45 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267951120;
+        Thu, 10 Feb 2022 22:50:45 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id d9-20020a17090a498900b001b8bb1d00e7so7941212pjh.3;
+        Thu, 10 Feb 2022 22:50:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OSROPkIHqOIfi3Mx6GPXtGKkcEJ0TQ6U5/02TvsWVjs=;
-        b=aI6iirQLDE79NFBohp4tGvHl9CuJHutPPj78yxbu89pb2Pwy6FzthqI52TCGsqnVsi
-         nPByOczGUEQLxLF7f1hvq3IXINsb2d9nh0ou1Wta6vGgRAtOfLEzuANmnWkMTOreMtzB
-         2c4wtjp2fBfGXIrnZXEJvVtxF8EVqhIj2sM5OgI0b8diZIHQQIyv3wtxvu8+DYJ+UuIK
-         r3nQlVWV1kLAAX9S28hNVCmp0jo6g0YdYBkL/Yu79JCSUKNVlGiCKQY1aLtSD9n+jgMo
-         mQYD1lmQXYKOeApQjSEv1ygK0HRmSDt6YnYU1IvD4AO0i4+wlymSHKeYyK9EtZ/XFvwZ
-         jH9A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QK+l7rHXU3PT/N2JWyDQzzRxR1HXLB6Sj1tRivvxqc=;
+        b=cbJkopy9cebFp9fOjClchpixRdtd7Uu7G5tx4TfOHWUElDf9ka6z1Xzwb3WhfvwLdr
+         Uo3EPeoeri05hFHFISa4yiDFKoiUXJ8PDNk1mIWsv0L5JDYLaLDNXVN8WlTdsSqf4yUv
+         ptxIXHNuedxnPk2g/+lZSAtNaSqY4br6Fld7cpk5CAm4RYIdf95+MH2Gjel22kUVE59k
+         huK/qAYxYIz/4BOQpJXO/BxOVFypExASzs5Kus74l6LrM3fzpa6HiygnUfvpwf7T76Uw
+         49DpdCXnJ8rMWvRJ5vlRO12viiWnpOJpj5B/2/F2W3OMX7uHnm9bwGJDVJ+GergYous5
+         mRVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OSROPkIHqOIfi3Mx6GPXtGKkcEJ0TQ6U5/02TvsWVjs=;
-        b=HRdyqYp98Tl3wVr9JmKHhxmWr7qUqL8BkRw2RlEVlPHNDp0LycOUmw17E8LoqQJQ8N
-         e3TapNegMYreMRLVm07NZgSbvFg7TD2gPot9hFyZ9p83hVNSUz9cvFqv844aGz4nQubf
-         eYHfPqLYODJcZlshxZny/0RZygza0WAcFW5t/LroGi+5cUafutPaO36eMkFsNw8kMGNB
-         hsRsHf+/zgB3q/DRboEkGWqwdwmRTG9uiMzSDh7aN0UabmvQC0IS/++Qn1tSdSZoixjN
-         TltnzEe/5f+yAd/qUZLfuw613yoFyBsq0mydHbOIJRB+abOolocSyOvhjidMQ5pWosf3
-         cP/Q==
-X-Gm-Message-State: AOAM530RLc1+13tXUgqElxby1sbkrvs4lQNJaPONDhm3Y0jkk7lh0Ey3
-        w1RKEpWFXu06bamRQ6mzn53h6ybypboLUAX9SUo=
-X-Google-Smtp-Source: ABdhPJzCPF1tTpcQ1FWpqWN/gHplGyCbU2hVnrJ2gUBllwLUgLp6iZnR43b4mmVnWetix67HkzQhNADYz8Oi3+nNfFE=
-X-Received: by 2002:a67:10c4:: with SMTP id 187mr85908vsq.1.1644562240863;
- Thu, 10 Feb 2022 22:50:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0QK+l7rHXU3PT/N2JWyDQzzRxR1HXLB6Sj1tRivvxqc=;
+        b=Ivp+iD5bRCyVXYT5h1AWIhpKBUFUJlklCNE4hAYESGPwKM6PxrMpFNUqacuFV168id
+         pg8mKp7BzraRUJIO7kM8Ns30nJ28sgiiTe3Shk17rsescTtdFx3rTrxEDhJqUjM2ez2j
+         wfSBkTQIogGbI1A3DYQx3gkEr3FRqI4Km4JDdfV/PLhS/ObDUkPFNF1dVU0mb2hiWuLs
+         CKoW3WRDm4CtuA5NIoypukP29XVw8mZEJ1IcnSLqLZrs4e3pWBku0fN72Q0DK9BOnhg9
+         aLBe1kOVmOGrmVOjaDAwHH9MZCH76fo9tg6gQ9Uec28RRgzFyA1fqgjwC0RmkTr6UqRV
+         ErmA==
+X-Gm-Message-State: AOAM5318evuWWuO5l7HDDDe2z0nTmRXjvOLQZLVYW/C5yTBGz0hmpPZK
+        FsW65DoveWVjRjUTe4lPMMs=
+X-Google-Smtp-Source: ABdhPJz97NFh99hzwYGctR2BCBnHvNL6oO5CtyLyDLlnc5SQkoYi59g8D4yhwcp4cyNW5lZ7TDVU8w==
+X-Received: by 2002:a17:90a:5a48:: with SMTP id m8mr1195425pji.97.1644562244190;
+        Thu, 10 Feb 2022 22:50:44 -0800 (PST)
+Received: from localhost.localdomain (61-231-111-88.dynamic-ip.hinet.net. [61.231.111.88])
+        by smtp.gmail.com with ESMTPSA id o1sm28171257pfu.88.2022.02.10.22.50.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Feb 2022 22:50:43 -0800 (PST)
+From:   Joseph CHAMG <josright123@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Joseph CHANG <josright123@gmail.com>,
+        joseph_chang@davicom.com.tw
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andy.shevchenko@gmail.com,
+        andrew@lunn.ch, leon@kernel.org
+Subject: [PATCH v19, 0/2] ADD DM9051 ETHERNET DRIVER
+Date:   Fri, 11 Feb 2022 14:50:02 +0800
+Message-Id: <20220211065004.25444-1-josright123@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20220211001345.3429572-1-gch981213@gmail.com>
-In-Reply-To: <20220211001345.3429572-1-gch981213@gmail.com>
-From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Fri, 11 Feb 2022 07:50:29 +0100
-Message-ID: <CAMhs-H9O=EagT-6296-CMQFBYFfekj2agrH9a8JpHzeC36EiUg@mail.gmail.com>
-Subject: Re: [PATCH] MIPS: ralink: mt7621: do memory detection on KSEG1
-To:     Chuanhong Guo <gch981213@gmail.com>
-Cc:     "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Rui Salvaterra <rsalvaterra@gmail.com>,
-        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-arm-kernel@lists.infradead.org,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guo,
+DM9051 is a spi interface chip,
+need cs/mosi/miso/clock with an interrupt gpio pin
 
-On Fri, Feb 11, 2022 at 4:56 AM Chuanhong Guo <gch981213@gmail.com> wrote:
->
-> It's reported that current memory detection code occasionally detects
-> larger memory under some bootloaders.
-> Current memory detection code tests whether address space wraps around
-> on KSEG0, which is unreliable because it's cached.
->
-> Rewrite memory size detection to perform the same test on KSEG1 instead.
-> While at it, this patch also does the following two things:
-> 1. use a fixed pattern instead of a random function pointer as the magic
->    value.
-> 2. add an additional memory write and a second comparison as part of the
->    test to prevent possible smaller memory detection result due to
->    leftover values in memory.
->
-> Fixes: 139c949f7f0a MIPS: ("ralink: mt7621: add memory detection support")
-> Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
-> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
-> ---
->  arch/mips/ralink/mt7621.c | 36 +++++++++++++++++++++++-------------
->  1 file changed, 23 insertions(+), 13 deletions(-)
+Joseph CHAMG (2):
+  dt-bindings: net: Add Davicom dm9051 SPI ethernet controller
+  net: Add dm9051 driver
 
-Thanks! Nothing seems to be broken after these changes, at least for
-my boards :)
+ .../bindings/net/davicom,dm9051.yaml          |   62 +
+ drivers/net/ethernet/davicom/Kconfig          |   31 +
+ drivers/net/ethernet/davicom/Makefile         |    1 +
+ drivers/net/ethernet/davicom/dm9051.c         | 1239 +++++++++++++++++
+ drivers/net/ethernet/davicom/dm9051.h         |  162 +++
+ 5 files changed, 1495 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/davicom,dm9051.yaml
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.c
+ create mode 100644 drivers/net/ethernet/davicom/dm9051.h
 
-Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
 
-Best regards,
-    Sergio Paracuellos
+base-commit: 9d922f5df53844228b9f7c62f2593f4f06c0b69b
+-- 
+2.20.1
+
