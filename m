@@ -2,61 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA563C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:49:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236291AbiBKDto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 22:49:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36490 "EHLO
+        id S237395AbiBKDtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 22:49:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235366AbiBKDtm (ORCPT
+        with ESMTP id S236363AbiBKDtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 22:49:42 -0500
-X-Greylist: delayed 354 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 19:49:41 PST
-Received: from mail-m17664.qiye.163.com (mail-m17664.qiye.163.com [59.111.176.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5853126DF;
+        Thu, 10 Feb 2022 22:49:46 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DABDF26E7;
         Thu, 10 Feb 2022 19:49:41 -0800 (PST)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m17664.qiye.163.com (Hmail) with ESMTPA id 7C90114019A;
-        Fri, 11 Feb 2022 11:49:39 +0800 (CST)
-From:   Jon Lin <jon.lin@rock-chips.com>
-To:     broonie@kernel.org
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jon Lin <jon.lin@rock-chips.com>
-Subject: [RFC PATCH v1 0/6] New support and problem adjustment of SPI rockchip
-Date:   Fri, 11 Feb 2022 11:49:32 +0800
-Message-Id: <20220211034938.25097-1-jon.lin@rock-chips.com>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWRlCT01WSBpPSElCH05JGE
-        0YVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6K1E6NAw4GD5CFh4XTUk*DkIN
-        LkwKCQ9VSlVKTU9PTk5KSExCQkhPVTMWGhIXVREUFVUXEhU7CRQYEFYYExILCFUYFBZFWVdZEgtZ
-        QVlOQ1VJSVVMVUpKT1lXWQgBWUFKT09MNwY+
-X-HM-Tid: 0a7ee6e69ad2da2fkuws7c90114019a
+X-UUID: d06ba2d611cb44b6af1db57bbff36032-20220211
+X-UUID: d06ba2d611cb44b6af1db57bbff36032-20220211
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <dawei.chien@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 431359559; Fri, 11 Feb 2022 11:49:36 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 11 Feb 2022 11:49:34 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 11 Feb 2022 11:49:34 +0800
+Message-ID: <fa9336d8fb2b24538f4ebcc2474a37bd8f7b8653.camel@mediatek.com>
+Subject: Re: [V11, PATCH 12/19] interconnect: mediatek: Add interconnect
+ provider driver
+From:   Dawei Chien <dawei.chien@mediatek.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Georgi Djakov <georgi.djakov@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Ryan Case <ryandcase@chromium.org>
+CC:     Mark Rutland <mark.rutland@arm.com>,
+        Nicolas Boichat <drinkcat@google.com>,
+        <devicetree@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Fan Chen <fan.chen@mediatek.com>,
+        Arvin Wang <arvin.wang@mediatek.com>,
+        "James Liao" <jamesjj.liao@mediatek.com>,
+        Henry Chen <henryc.chen@mediatek.com>
+Date:   Fri, 11 Feb 2022 11:49:34 +0800
+In-Reply-To: <abf785dd-c1d8-b433-f280-3c42043e4684@collabora.com>
+References: <20210812085846.2628-1-dawei.chien@mediatek.com>
+         <20210812085846.2628-13-dawei.chien@mediatek.com>
+         <abf785dd-c1d8-b433-f280-3c42043e4684@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 2022-02-03 at 16:19 +0100, AngeloGioacchino Del Regno wrote:
+> Il 12/08/21 10:58, Dawei Chien ha scritto:
+> > From: Henry Chen <henryc.chen@mediatek.com>
+> > 
+> > Introduce Mediatek MT6873/MT8183/MT8192 specific provider driver
+> > using the interconnect framework.
+> > 
+> >               ICC provider         ICC Nodes
+> >                                ----          ----
+> >               ---------       |CPU |   |--- |VPU |
+> >      -----   |         |-----  ----    |     ----
+> >     |DRAM |--|DRAM     |       ----    |     ----
+> >     |     |--|scheduler|----- |GPU |   |--- |DISP|
+> >     |     |--|(EMI)    |       ----    |     ----
+> >     |     |--|         |       -----   |     ----
+> >      -----   |         |----- |MMSYS|--|--- |VDEC|
+> >               ---------        -----   |     ----
+> >                 /|\                    |     ----
+> >                  |change DRAM freq     |--- |VENC|
+> >               ----------               |     ----
+> >              |  DVFSR   |              |
+> >              |          |              |     ----
+> >               ----------               |--- |IMG |
+> >                                        |     ----
+> >                                        |     ----
+> >                                        |--- |CAM |
+> >                                              ----
+> > Signed-off-by: Henry Chen <henryc.chen@mediatek.com>
+> > Reviewed-by: Georgi Djakov <georgi.djakov@linaro.org>
+> 
+> This patch deserves my Reviewed-by tag, but I cannot release that if
+> the
+> driver is not properly signed-off.
 
-
-
-Jon Lin (5):
-  spi: rockchip: Stop spi slave dma receiver when cs inactive
-  spi: rockchip: Preset cs-high and clk polarity in setup progress
-  spi: rockchip: Fix error in getting num-cs property
-  spi: rockchip: terminate dma transmission when slave abort
-  spi: rockchip: clear interrupt status in error handler
-
-shengfei Xu (1):
-  spi: rockchip: Suspend and resume the bus during NOIRQ_SYSTEM_SLEEP_PM
-    ops
-
- drivers/spi/spi-rockchip.c | 133 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 116 insertions(+), 17 deletions(-)
-
--- 
-2.17.1
+I would add singed-off tag on next version, thank you.
 
