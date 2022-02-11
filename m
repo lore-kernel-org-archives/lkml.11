@@ -2,179 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30298C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAC3C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:34:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350891AbiBKOcj (ORCPT
+        id S1350903AbiBKOeM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 09:32:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36014 "EHLO
+        Fri, 11 Feb 2022 09:34:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244152AbiBKOch (ORCPT
+        with ESMTP id S1350890AbiBKOeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 09:32:37 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A46B6E;
-        Fri, 11 Feb 2022 06:32:34 -0800 (PST)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JwGDy5nHCz682w5;
-        Fri, 11 Feb 2022 22:28:18 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Feb 2022 15:32:32 +0100
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Feb
- 2022 14:32:31 +0000
-Date:   Fri, 11 Feb 2022 14:32:29 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-CC:     <cosmin.tanislav@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 5/5] iio: accel: add ADXL367 driver
-Message-ID: <20220211143229.00000aad@Huawei.com>
-In-Reply-To: <20220206211307.1564647-6-cosmin.tanislav@analog.com>
-References: <20220206211307.1564647-1-cosmin.tanislav@analog.com>
-        <20220206211307.1564647-6-cosmin.tanislav@analog.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Fri, 11 Feb 2022 09:34:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74E2AB09
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 06:34:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644590048;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wFaIKzYZq5mwoMCRxFCEVoEkMIRZsF+ixkyzhcwnXVQ=;
+        b=jD103IZFSCCoX4Cm8PPE/jSLT1L4T7zyxIsJ+xYBEsxeai8vF4io/uM5MlYZGT73AIus31
+        hZ6Uslt/QTR+AYM1HXTYmUoMV9v7pBfUby+t3E9rP3Ygipt8Bir+nEO1V1CPoFPCTmX7Va
+        UJBwO3P8O3nmInjz2EgfproCImaSRTw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-209-yT7Ud3zkNemGAov8PParlg-1; Fri, 11 Feb 2022 09:34:07 -0500
+X-MC-Unique: yT7Ud3zkNemGAov8PParlg-1
+Received: by mail-wm1-f70.google.com with SMTP id a8-20020a7bc1c8000000b0037bc4c62e97so2611449wmj.0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 06:34:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wFaIKzYZq5mwoMCRxFCEVoEkMIRZsF+ixkyzhcwnXVQ=;
+        b=LJlPeGvMj+4EEbp6Op8Wl8vQ51ZVIp8VwCQYXPt3gfsbMI65xnNx0WU5TrqiNFWC30
+         uc2JV/6jjc+9GFpcWoAS+yYjh9U3eQnrxy46zYmTqNxlIgau45r4R3ks+O8eaVUOT0eH
+         roiWJg+FuMn6PF896V/GZOYNUOIAursSNIX5e5yntoJAbtVYnJXvREZK4WqWZ2qmHPXG
+         M35J2tP/PUjt3ZMYQQ9y8lvwCi0y90KGn8Bd5UCYZPOZnkBPldVwRsZL6ldQ64MaZOwH
+         YjTXKJg54S3IO7HNIhYRPIAUk7gWfzPC+m+3i+akEHweKPhWhDm940+NEdMv6vEilzx3
+         jYJQ==
+X-Gm-Message-State: AOAM530kaYP4+c48A7+wcg5RwObg5Vz7vHFgpzPMQ+BDMefjzh/+cRSv
+        CeMVxX9kEFcXNGZOYm/CRCO53qEfXCROBJr93lAaD0fRUqyZ18jzX4BnpMfG86RcyB5AtKdj7KI
+        puffSxnwcEcYPMteRAJqZPWEfx35SZy1/aofEXPcM89tMtyP63yocHFQfOp0FLno0Kom6AouQHG
+        Q=
+X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr498451wmg.111.1644590046259;
+        Fri, 11 Feb 2022 06:34:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyhPexpHfSetxE0S3/Tn4IvNqI07iQUkmyj562tzbxdGmYsFTdsPjtNvRQ7u4RPguUGeK9nwg==
+X-Received: by 2002:a05:600c:154f:: with SMTP id f15mr498413wmg.111.1644590045932;
+        Fri, 11 Feb 2022 06:34:05 -0800 (PST)
+Received: from minerva.redhat.com ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id o14sm24616012wry.104.2022.02.11.06.34.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 06:34:05 -0800 (PST)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        linux-fbdev@vger.kernel.org, Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        dri-devel@lists.freedesktop.org,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v5 1/6] drm/format-helper: Add drm_fb_xrgb8888_to_gray8_line()
+Date:   Fri, 11 Feb 2022 15:33:53 +0100
+Message-Id: <20220211143358.3112958-2-javierm@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220211143358.3112958-1-javierm@redhat.com>
+References: <20220211143358.3112958-1-javierm@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml727-chm.china.huawei.com (10.201.108.78) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun,  6 Feb 2022 23:13:07 +0200
-Cosmin Tanislav <demonsingur@gmail.com> wrote:
+Pull the per-line conversion logic into a separate helper function.
 
-> The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-> 
-> The ADXL367 does not alias input signals to achieve ultralow power
-> consumption, it samples the full bandwidth of the sensor at all
-> data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-> with a resolution of 0.25mg/LSB on the +-2 g range.
-> 
-> In addition to its ultralow power consumption, the ADXL367
-> has many features to enable true system level power reduction.
-> It includes a deep multimode output FIFO, a built-in micropower
-> temperature sensor, and an internal ADC for synchronous conversion
-> of an additional analog input.
-> 
-> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+This will allow to do line-by-line conversion in other helpers that
+convert to a gray8 format.
 
-I missed the issue below with the use of available_scan_masks
-in v3. Other than that and a few trivial things below, the series
-looks good to me.
+Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
 
-Thanks,
+Changes in v5:
+- Add Thomas Zimmermann's Reviewed-by to patch #1.
 
-Jonathan
+Changes in v3:
+- Add a drm_fb_xrgb8888_to_gray8_line() helper function (Thomas Zimmermann)
 
+ drivers/gpu/drm/drm_format_helper.c | 31 ++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-> ---
->  MAINTAINERS                     |    8 +
->  drivers/iio/accel/Kconfig       |   27 +
->  drivers/iio/accel/Makefile      |    3 +
->  drivers/iio/accel/adxl367.c     | 1585 +++++++++++++++++++++++++++++++
->  drivers/iio/accel/adxl367.h     |   23 +
->  drivers/iio/accel/adxl367_i2c.c |   90 ++
->  drivers/iio/accel/adxl367_spi.c |  164 ++++
->  7 files changed, 1900 insertions(+)
->  create mode 100644 drivers/iio/accel/adxl367.c
->  create mode 100644 drivers/iio/accel/adxl367.h
->  create mode 100644 drivers/iio/accel/adxl367_i2c.c
->  create mode 100644 drivers/iio/accel/adxl367_spi.c
-> 
+diff --git a/drivers/gpu/drm/drm_format_helper.c b/drivers/gpu/drm/drm_format_helper.c
+index 0f28dd2bdd72..b981712623d3 100644
+--- a/drivers/gpu/drm/drm_format_helper.c
++++ b/drivers/gpu/drm/drm_format_helper.c
+@@ -464,6 +464,21 @@ void drm_fb_xrgb8888_to_xrgb2101010_toio(void __iomem *dst,
+ }
+ EXPORT_SYMBOL(drm_fb_xrgb8888_to_xrgb2101010_toio);
+ 
++static void drm_fb_xrgb8888_to_gray8_line(u8 *dst, const u32 *src, unsigned int pixels)
++{
++	unsigned int x;
++
++	for (x = 0; x < pixels; x++) {
++		u8 r = (*src & 0x00ff0000) >> 16;
++		u8 g = (*src & 0x0000ff00) >> 8;
++		u8 b =  *src & 0x000000ff;
++
++		/* ITU BT.601: Y = 0.299 R + 0.587 G + 0.114 B */
++		*dst++ = (3 * r + 6 * g + b) / 10;
++		src++;
++	}
++}
++
+ /**
+  * drm_fb_xrgb8888_to_gray8 - Convert XRGB8888 to grayscale
+  * @dst: 8-bit grayscale destination buffer
+@@ -484,8 +499,9 @@ EXPORT_SYMBOL(drm_fb_xrgb8888_to_xrgb2101010_toio);
+ void drm_fb_xrgb8888_to_gray8(void *dst, unsigned int dst_pitch, const void *vaddr,
+ 			      const struct drm_framebuffer *fb, const struct drm_rect *clip)
+ {
+-	unsigned int len = (clip->x2 - clip->x1) * sizeof(u32);
+-	unsigned int x, y;
++	unsigned int linepixels = clip->x2 - clip->x1;
++	unsigned int len = linepixels * sizeof(u32);
++	unsigned int y;
+ 	void *buf;
+ 	u8 *dst8;
+ 	u32 *src32;
+@@ -508,16 +524,7 @@ void drm_fb_xrgb8888_to_gray8(void *dst, unsigned int dst_pitch, const void *vad
+ 	for (y = clip->y1; y < clip->y2; y++) {
+ 		dst8 = dst;
+ 		src32 = memcpy(buf, vaddr, len);
+-		for (x = clip->x1; x < clip->x2; x++) {
+-			u8 r = (*src32 & 0x00ff0000) >> 16;
+-			u8 g = (*src32 & 0x0000ff00) >> 8;
+-			u8 b =  *src32 & 0x000000ff;
+-
+-			/* ITU BT.601: Y = 0.299 R + 0.587 G + 0.114 B */
+-			*dst8++ = (3 * r + 6 * g + b) / 10;
+-			src32++;
+-		}
+-
++		drm_fb_xrgb8888_to_gray8_line(dst8, src32, linepixels);
+ 		vaddr += fb->pitches[0];
+ 		dst += dst_pitch;
+ 	}
+-- 
+2.34.1
 
-
-> new file mode 100644
-> index 000000000000..cac47db7d89c
-> --- /dev/null
-> +++ b/drivers/iio/accel/adxl367.c
-> @@ -0,0 +1,1585 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * Copyright (C) 2021 Analog Devices, Inc.
-> + * Author: Cosmin Tanislav <cosmin.tanislav@analog.com>
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/events.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/module.h>
-
-#include <linux/mod_devicetable.h>
-for the id tables.
-
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <asm/unaligned.h>
-> +
-> +#include "adxl367.h"
-> +
-
-
-
-
-> +static const unsigned long adxl367_channel_masks[] = {
-> +	[ADXL367_FIFO_FORMAT_XYZ]  = ADXL367_X_CHANNEL_MASK
-> +				     | ADXL367_Y_CHANNEL_MASK
-> +				     | ADXL367_Z_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_X]    = ADXL367_X_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_Y]    = ADXL367_Y_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_Z]    = ADXL367_Z_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_XYZT] = ADXL367_X_CHANNEL_MASK
-> +				     | ADXL367_Y_CHANNEL_MASK
-> +				     | ADXL367_Z_CHANNEL_MASK
-> +				     | ADXL367_TEMP_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_XT]   = ADXL367_X_CHANNEL_MASK
-> +				     | ADXL367_TEMP_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_YT]   = ADXL367_Y_CHANNEL_MASK
-> +				     | ADXL367_TEMP_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_ZT]   = ADXL367_Z_CHANNEL_MASK
-> +				     | ADXL367_TEMP_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_XYZA] = ADXL367_X_CHANNEL_MASK
-> +				     | ADXL367_Y_CHANNEL_MASK
-> +				     | ADXL367_Z_CHANNEL_MASK
-> +				     | ADXL367_EX_ADC_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_XA]   = ADXL367_X_CHANNEL_MASK
-> +				     | ADXL367_EX_ADC_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_YA]   = ADXL367_Y_CHANNEL_MASK
-> +				     | ADXL367_EX_ADC_CHANNEL_MASK,
-> +	[ADXL367_FIFO_FORMAT_ZA]   = ADXL367_Z_CHANNEL_MASK
-> +				     | ADXL367_EX_ADC_CHANNEL_MASK,
-> +	0,
-> +};
-
-The way available scan_masks works is to search for an entry
-for which the desired mask is a subset.
-
-That means to get the minimal mode IIRC you need to order them from
-smallest to largest. e.g.
-https://elixir.bootlin.com/linux/latest/source/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c#L1122
-
-> +
-
-> +EXPORT_SYMBOL_NS_GPL(adxl367_probe, ADXL367);
-
-Trivial but we decided to prefix IIO namespaces with IIO_ so this should
-be IIO_ADXL367.
-
-> +
-> +MODULE_AUTHOR("Cosmin Tanislav <cosmin.tanislav@analog.com>");
-> +MODULE_DESCRIPTION("Analog Devices ADXL367 3-axis accelerometer driver");
-> +MODULE_LICENSE("GPL");
