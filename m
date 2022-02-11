@@ -2,129 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:34:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACC5C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343604AbiBKGem (ORCPT
+        id S1343924AbiBKGgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 01:34:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35776 "EHLO
+        Fri, 11 Feb 2022 01:36:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbiBKGek (ORCPT
+        with ESMTP id S243174AbiBKGga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 01:34:40 -0500
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799D7E56
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:34:39 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V47kJqh_1644561276;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0V47kJqh_1644561276)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 11 Feb 2022 14:34:37 +0800
-Message-ID: <1644560833.8375504-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH v4 00/14] virtio pci support VIRTIO_F_RING_RESET
-Date:   Fri, 11 Feb 2022 14:27:13 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>
-References: <20220209122901.51790-1-xuanzhuo@linux.alibaba.com>
- <CACGkMEs7jR7Y5QKLeSfwJNqOooqe2Pgcm-GeTqb9rgAyawPSrQ@mail.gmail.com>
-In-Reply-To: <CACGkMEs7jR7Y5QKLeSfwJNqOooqe2Pgcm-GeTqb9rgAyawPSrQ@mail.gmail.com>
+        Fri, 11 Feb 2022 01:36:30 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 254EDE56;
+        Thu, 10 Feb 2022 22:36:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644561390; x=1676097390;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=vvaAaRgq6EsdB48AtN0e/kt285sXi+0TKs83/n1Uo5k=;
+  b=T7PMGyXyd0sYZM8uU6+DVhljhkr7Iw3YvmZBnttwFclSP8nZfVeXBnmb
+   sRH/ww251xUYUznfaXqz0Bcz3J6gpzi3ondK43B0f8jDJ9LD4gbJMYsyp
+   k78v8XJdZPW6sVtiI4ywtMEpKfRGIuM2P12FjhhVmodcp+3/tEjxhhrvI
+   eu61WsHa83IhyePYOBEm9sya41MX6I+R8qW8D0pxwfflfp2/lMq59HNKt
+   p/IQcF6PUpuzjQtUTgWTc96RktJp0D7Wer+Ij2DIo3SglRM6ipsvB3V3Y
+   iaOjGbYyf0t1FFK8ZJedjjxuBhgYbdz9FvBGnZSQ5mnCjoumzdTBy2pYQ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="312955617"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="312955617"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:36:29 -0800
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="486910936"
+Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.28.229]) ([10.255.28.229])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:36:24 -0800
+Subject: Re: [kbuild-all] Re: [PATCH] net: dsa: qca8k: fix noderef.cocci
+ warnings
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org
+Cc:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <202202100634.l8CtrpzE-lkp@intel.com>
+ <20220209221304.GA17529@d2214a582157>
+ <6c74b2f8-dd83-c4f2-cadd-07794a37dfac@gmail.com>
+ <20220210105956.336c9e6a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   "Chen, Rong A" <rong.a.chen@intel.com>
+Message-ID: <161e2399-222e-b675-36e1-ec39eb96da4e@intel.com>
+Date:   Fri, 11 Feb 2022 14:36:20 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <20220210105956.336c9e6a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 13:40:52 +0800, Jason Wang <jasowang@redhat.com> wrote:
-> On Wed, Feb 9, 2022 at 8:29 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
-> >
-> > The virtio spec already supports the virtio queue reset function. This patch set
-> > is to add this function to the kernel. The relevant virtio spec information is
-> > here:
-> >
-> >     https://github.com/oasis-tcs/virtio-spec/issues/124
-> >
-> > Also regarding MMIO support for queue reset, I plan to support it after this
-> > patch is passed.
->
-> So I had an idea, we can implement ethtool_set_ringparam() in this
-> series to get one real users.
-
-I agree, in fact my local test is using this feature.
-
->
-> But this came into another question: it looks to me current virito-net
-> just uses the maximum ring size, so it basically means we just can
-> decrease the number from startup, so I wonder how much value if we
-> don't limit the startup queue size to a dedicated value.
-
-I also have this consideration, so I want to add a virtio-net module parameter
-to specify an initial value.
-
-This initial value also has another meaning. In order to achieve high
-performance, the backend can provide a large ring size capability, but we also
-hope that the ring size can only be increased through ethtool -G when the user
-needs it.
-
-To implement this function, we need to add a new parameter to find_vqs().
-
-If there is no problem, I will bring this function in the next version.
-
-Thannks.
 
 
->
-> Thanks
->
-> >
-> > Please review. Thanks.
-> >
-> > v4:
-> >   1. just the code of virtio, without virtio-net
-> >   2. Performing reset on a queue is divided into these steps:
-> >     1. reset_vq: reset one vq
-> >     2. recycle the buffer from vq by virtqueue_detach_unused_buf()
-> >     3. release the ring of the vq by vring_release_virtqueue()
-> >     4. enable_reset_vq: re-enable the reset queue
-> >   3. Simplify the parameters of enable_reset_vq()
-> >   4. add container structures for virtio_pci_common_cfg
-> >
-> > v3:
-> >   1. keep vq, irq unreleased
-> >
-> > Xuan Zhuo (14):
-> >   virtio_pci: struct virtio_pci_common_cfg add queue_notify_data
-> >   virtio: queue_reset: add VIRTIO_F_RING_RESET
-> >   virtio_ring: queue_reset: add function vring_setup_virtqueue()
-> >   virtio_ring: queue_reset: split: add __vring_init_virtqueue()
-> >   virtio_ring: queue_reset: split: support enable reset queue
-> >   virtio_ring: queue_reset: packed: support enable reset queue
-> >   virtio_ring: queue_reset: extract the release function of the vq ring
-> >   virtio_ring: queue_reset: add vring_release_virtqueue()
-> >   virtio: queue_reset: struct virtio_config_ops add callbacks for
-> >     queue_reset
-> >   virtio_pci: queue_reset: update struct virtio_pci_common_cfg and
-> >     option functions
-> >   virtio_pci: queue_reset: release vq by vp_dev->vqs
-> >   virtio_pci: queue_reset: setup_vq() support vring_setup_virtqueue()
-> >   virtio_pci: queue_reset: vp_setup_vq() support ring_num
-> >   virtio_pci: queue_reset: support VIRTIO_F_RING_RESET
-> >
-> >  drivers/virtio/virtio_pci_common.c     |  65 +++++++---
-> >  drivers/virtio/virtio_pci_common.h     |  11 +-
-> >  drivers/virtio/virtio_pci_legacy.c     |   5 +-
-> >  drivers/virtio/virtio_pci_modern.c     |  99 ++++++++++++--
-> >  drivers/virtio/virtio_pci_modern_dev.c |  36 +++++
-> >  drivers/virtio/virtio_ring.c           | 173 ++++++++++++++++++-------
-> >  include/linux/virtio.h                 |   6 +
-> >  include/linux/virtio_config.h          |  13 ++
-> >  include/linux/virtio_pci_modern.h      |   2 +
-> >  include/linux/virtio_ring.h            |  37 ++++--
-> >  include/uapi/linux/virtio_config.h     |   7 +-
-> >  include/uapi/linux/virtio_pci.h        |  14 ++
-> >  12 files changed, 375 insertions(+), 93 deletions(-)
-> >
-> > --
-> > 2.31.0
-> >
->
+On 2/11/2022 2:59 AM, Jakub Kicinski wrote:
+> On Wed, 9 Feb 2022 19:30:48 -0800 Florian Fainelli wrote:
+>> On 2/9/2022 2:13 PM, kernel test robot wrote:
+>>> From: kernel test robot <lkp@intel.com>
+>>>
+>>> drivers/net/dsa/qca8k.c:422:37-43: ERROR: application of sizeof to pointer
+>>>
+>>>    sizeof when applied to a pointer typed expression gives the size of
+>>>    the pointer
+>>>
+>>> Generated by: scripts/coccinelle/misc/noderef.cocci
+>>>
+>>> Fixes: 90386223f44e ("net: dsa: qca8k: add support for larger read/write size with mgmt Ethernet")
+>>> CC: Ansuel Smith <ansuelsmth@gmail.com>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>> Signed-off-by: kernel test robot <lkp@intel.com>
+>>
+>>> qca8k.c |    2 +-
+>>> 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> kbuild folks, would it be easy to switch to including full path here?
+> It seems like our CI expects that and ignores this patch.
+
+Hi Jakub,
+
+Thanks for the advice, will change it.
+
+Best Regards,
+Rong Chen
+
+> 
+>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> 
+> Applied, thanks!
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+> 
