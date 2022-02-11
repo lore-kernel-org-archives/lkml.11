@@ -2,116 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C7BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15820C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353341AbiBKUg5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 15:36:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36778 "EHLO
+        id S232790AbiBKUkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 15:40:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240394AbiBKUgy (ORCPT
+        with ESMTP id S234402AbiBKUkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 15:36:54 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FC5D57
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:36:46 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id n24so11361630ljj.10
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:36:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CCAsjj+/2EPlyUQtiVo8WDkzcxXnQjrZ0PEqMW7wI0o=;
-        b=ppE7RooPi4WL00e0ZLJbFk100+IS02OV5QywrNLcKaCJbEtR4YxukPIudnLp8SeKMe
-         1NpTHSxW8chgPGf7JOY4Ea15KZrCmewdQuJqeHkqMC3F2oB8XRhcoJdjL6j9/F+7f8WJ
-         uUAPTnA1DepzO0Qt+pe0IQN9d9vuPEWAghF7tyEwP6gcUibW6u7V60dsZ2Om7MgSwh3u
-         hnqtLmgCUXP8KKVYUrxRFdwOov2m9joI3QdDjxk8pE/fUxhg1L3y/BZJCLku2CDajQza
-         5EbbCjrTyKK1IaSFwD9Kfjiz5aTiqTn7xQlm4sYnrDALmXTu3uE6ySHxWdrZ9XJkKkF2
-         1Hdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CCAsjj+/2EPlyUQtiVo8WDkzcxXnQjrZ0PEqMW7wI0o=;
-        b=6jDzjKnmklORNXu3p0AzAz4Ge88/Cc5FC2LeuSBKmZ8mOittddony+S9Mk/dV9u62Z
-         4b28BQweNOBL6I+cCXC76N8HXiFZZe5DeLMSgNA9Gw935hide8WRBnolSsOO4RbYjmz5
-         2v5+T/3svFv8jj3bGxRm6yD230Vja/UO5qJEATrUq8ovvk3mGPdkNG4U2Lg+ZyD3o4/9
-         iF0DGmREdvomqItcabmLPnBDUy94YoMvsx695efKdYIlRoj6K7Vvr4BjREvgzaZ84Uin
-         q1/WNBefeoOoWQXQFtYuSGcMHnzwe8+ElUHwsO9iJpKycBGNC0G1aMqRdDvumOSmN9zY
-         KFAA==
-X-Gm-Message-State: AOAM532qEBxCqpaB5R3mBCIvkdueV6zB1bDTLPy3WgwvH82qZiRUYLd4
-        8XMgWKACmbYT5iYPkgmW/j0A10tza5vhbtQffSxP0g==
-X-Google-Smtp-Source: ABdhPJwVEa48rkJ6G8rmFGKX6ejD7MgqMsPEy2hj6bqYfREd84v21zv7mlJcxID3H7rLs2teXuRiEvkPefLlwn+Djcc=
-X-Received: by 2002:a2e:b16e:: with SMTP id a14mr1959958ljm.35.1644611804994;
- Fri, 11 Feb 2022 12:36:44 -0800 (PST)
+        Fri, 11 Feb 2022 15:40:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB20CF5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 12:40:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5795862071
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 20:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57468C340ED;
+        Fri, 11 Feb 2022 20:40:07 +0000 (UTC)
+Date:   Fri, 11 Feb 2022 15:40:05 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH v2] tracing: uninline trace_trigger_soft_disabled()
+ partly
+Message-ID: <20220211154005.01fd3c24@gandalf.local.home>
+In-Reply-To: <69ce0986a52d026d381d612801d978aa4f977460.1644563295.git.christophe.leroy@csgroup.eu>
+References: <69ce0986a52d026d381d612801d978aa4f977460.1644563295.git.christophe.leroy@csgroup.eu>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220211064917.2028469-1-shakeelb@google.com> <20220211064917.2028469-5-shakeelb@google.com>
- <YgZS+YijLo0/WmEd@chrisdown.name>
-In-Reply-To: <YgZS+YijLo0/WmEd@chrisdown.name>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Fri, 11 Feb 2022 12:36:33 -0800
-Message-ID: <CALvZod6FwcSyi3B-3fkw4e+7BGrjFF2iRLEZVeurLp2+v-k-dg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] memcg: synchronously enforce memory.high for large overcharges
-To:     Chris Down <chris@chrisdown.name>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 4:13 AM Chris Down <chris@chrisdown.name> wrote:
->
-[...]
-> >To make high limit enforcement more robust, this patch makes the limit
-> >enforcement synchronous only if the accumulated overcharge becomes
-> >larger than MEMCG_CHARGE_BATCH. So, most of the allocations would still
-> >be throttled on the return-to-userspace path but only the extreme
-> >allocations which accumulates large amount of overcharge without
-> >returning to the userspace will be throttled synchronously. The value
-> >MEMCG_CHARGE_BATCH is a bit arbitrary but most of other places in the
-> >memcg codebase uses this constant therefore for now uses the same one.
->
-> Note that mem_cgroup_handle_over_high() has its own allocator throttling grace
-> period, where it bails out if the penalty to apply is less than 10ms. The
-> reclaim will still happen, though. So throttling might not happen even for
-> roughly MEMCG_CHARGE_BATCH-sized allocations, depending on the overall size of
-> the cgroup and its protection.
->
+On Fri, 11 Feb 2022 08:10:18 +0100
+Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
 
-Here by throttling, I meant both reclaim and
-schedule_timeout_killable(). I don't want to say low level details
-which might change in future.
+> diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+> index 70c069aef02c..dcea51fb60e2 100644
+> --- a/include/linux/trace_events.h
+> +++ b/include/linux/trace_events.h
+> @@ -699,6 +699,8 @@ event_triggers_post_call(struct trace_event_file *file,
+>  
+>  bool trace_event_ignore_this_pid(struct trace_event_file *trace_file);
+>  
+> +bool __trace_trigger_soft_disabled(struct trace_event_file *file);
+> +
+>  /**
+>   * trace_trigger_soft_disabled - do triggers and test if soft disabled
+>   * @file: The file pointer of the event to test
+> @@ -708,20 +710,20 @@ bool trace_event_ignore_this_pid(struct trace_event_file *trace_file);
+>   * triggers that require testing the fields, it will return true,
+>   * otherwise false.
+>   */
+> -static inline bool
+> +static __always_inline bool
+>  trace_trigger_soft_disabled(struct trace_event_file *file)
+>  {
+>  	unsigned long eflags = file->flags;
+>  
+> -	if (!(eflags & EVENT_FILE_FL_TRIGGER_COND)) {
+> -		if (eflags & EVENT_FILE_FL_TRIGGER_MODE)
+> -			event_triggers_call(file, NULL, NULL, NULL);
+> -		if (eflags & EVENT_FILE_FL_SOFT_DISABLED)
+> -			return true;
+> -		if (eflags & EVENT_FILE_FL_PID_FILTER)
+> -			return trace_event_ignore_this_pid(file);
+> -	}
+> -	return false;
+> +	if (likely(!(eflags & (EVENT_FILE_FL_TRIGGER_MODE |
+> +			       EVENT_FILE_FL_SOFT_DISABLED |
+> +			       EVENT_FILE_FL_PID_FILTER))))
+> +		return false;
+> +
+> +	if (likely(eflags & EVENT_FILE_FL_TRIGGER_COND))
+> +		return false;
+> +
+> +	return __trace_trigger_soft_disabled(file);
+>  }
+>  
+>  #ifdef CONFIG_BPF_EVENTS
+> diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
+> index d00fee705f9c..55de490e25ca 100644
+> --- a/kernel/trace/trace_events_trigger.c
+> +++ b/kernel/trace/trace_events_trigger.c
+> @@ -84,6 +84,20 @@ event_triggers_call(struct trace_event_file *file,
+>  }
+>  EXPORT_SYMBOL_GPL(event_triggers_call);
+>  
+> +bool __trace_trigger_soft_disabled(struct trace_event_file *file)
+> +{
+> +	unsigned long eflags = file->flags;
+> +
+> +	if (eflags & EVENT_FILE_FL_TRIGGER_MODE)
+> +		event_triggers_call(file, NULL, NULL, NULL);
+> +	if (eflags & EVENT_FILE_FL_SOFT_DISABLED)
+> +		return true;
+> +	if (eflags & EVENT_FILE_FL_PID_FILTER)
+> +		return trace_event_ignore_this_pid(file);
+> +	return false;
+> +}
+> +EXPORT_SYMBOL_GPL(__trace_trigger_soft_disabled);
+> +
+>  /**
+>   * event_triggers_post_call - Call 'post_triggers' for a trace event
+>   * @file: The trace_event_file associated with the event
+> -- 
 
-[...]
->
-> Thanks, I was going to comment on v1 that I prefer to keep the implementation
-> of mem_cgroup_handle_over_high if possible since we know that the mechanism has
-> been safe in production over the past few years.
->
-> One question I have is about throttling. It looks like this new
-> mem_cgroup_handle_over_high callsite may mean that throttling is invoked more
-> than once on a misbehaving workload that's failing to reclaim since the
-> throttling could be invoked both here and in return to userspace, right? That
-> might not be a problem, but we should think about the implications of that,
-> especially in relation to MEMCG_MAX_HIGH_DELAY_JIFFIES.
->
 
-Please note that mem_cgroup_handle_over_high() clears
-memcg_nr_pages_over_high and if on the return-to-userspace path
-mem_cgroup_handle_over_high() finds that memcg_nr_pages_over_high is
-non-zero, then it means the task has further accumulated the charges
-over high limit after a possibly synchronous
-memcg_nr_pages_over_high() call.
+This version looks fine to me. I'll pull it into my queue.
 
-> Maybe we should record if throttling happened previously and avoid doing it
-> again for this entry into kernelspace? Not certain that's the right answer, but
-> we should think about what the new semantics should be.
+Thanks!
 
-For now, I will keep this as is and will add a comment in the code and
-a mention in the commit message about it. I will wait for others to
-comment before sending the next version and thanks for taking a look.
+-- Steve
