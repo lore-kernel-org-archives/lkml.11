@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEE33C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350581AbiBKNbV (ORCPT
+        id S1348285AbiBKNbb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:31:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54278 "EHLO
+        Fri, 11 Feb 2022 08:31:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350574AbiBKNbO (ORCPT
+        with ESMTP id S1350574AbiBKNbY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:31:14 -0500
+        Fri, 11 Feb 2022 08:31:24 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A953B21A
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:31:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F8021A
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:31:23 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nIW0V-0005ww-IX; Fri, 11 Feb 2022 14:30:39 +0100
+        id 1nIW0V-0005x1-Ie; Fri, 11 Feb 2022 14:30:39 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nIW0S-009juF-Un; Fri, 11 Feb 2022 14:30:36 +0100
+        id 1nIW0T-009jug-9l; Fri, 11 Feb 2022 14:30:37 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -34,16 +34,16 @@ To:     Mark Rutland <mark.rutland@arm.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Robin van der Gracht <robin@protonic.nl>,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 1/5] ARM: dts: imx6dl-prtvt7: Add display and panel nodes
-Date:   Fri, 11 Feb 2022 14:30:31 +0100
-Message-Id: <20220211133035.2321330-2-o.rempel@pengutronix.de>
+Subject: [PATCH v3 4/5] ARM: dts: imx6dl: plym2m, prtvt7, victgo: make use of new resistive-adc-touch driver
+Date:   Fri, 11 Feb 2022 14:30:34 +0100
+Message-Id: <20220211133035.2321330-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220211133035.2321330-1-o.rempel@pengutronix.de>
 References: <20220211133035.2321330-1-o.rempel@pengutronix.de>
@@ -57,93 +57,256 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Innolux G070Y2-T02 panel to the Protonic VT7 board.
+The tsc2046 is an ADC used as touchscreen controller. To share as mach
+code as possible, we should use it as actual ADC + virtual touchscreen
+controller.
+With this patch we make use of the new kernel IIO and HID infrastructure.
 
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6dl-prtvt7.dts | 47 +++++++++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ arch/arm/boot/dts/imx6dl-plym2m.dts | 59 +++++++++++++++++++++--------
+ arch/arm/boot/dts/imx6dl-prtvt7.dts | 57 +++++++++++++++++++++-------
+ arch/arm/boot/dts/imx6dl-victgo.dts | 59 ++++++++++++++++++++++-------
+ 3 files changed, 132 insertions(+), 43 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-index 190d26642bc8..be7c4cb339e7 100644
---- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
-+++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-@@ -28,6 +28,30 @@ backlight_lcd: backlight-lcd {
- 		power-supply = <&reg_bl_12v0>;
+diff --git a/arch/arm/boot/dts/imx6dl-plym2m.dts b/arch/arm/boot/dts/imx6dl-plym2m.dts
+index 60fe5f14666e..73c7622bfe0f 100644
+--- a/arch/arm/boot/dts/imx6dl-plym2m.dts
++++ b/arch/arm/boot/dts/imx6dl-plym2m.dts
+@@ -101,6 +101,18 @@ reg_12v0: regulator-12v0 {
+ 		regulator-min-microvolt = <12000000>;
+ 		regulator-max-microvolt = <12000000>;
  	};
++
++	touchscreen {
++		compatible = "resistive-adc-touch";
++		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
++                              <&adc_ts 5>;
++		io-channel-names = "y", "z1", "z2", "x";
++		touchscreen-min-pressure = <64687>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++		touchscreen-x-plate-ohms = <300>;
++		touchscreen-y-plate-ohms = <800>;
++	};
+ };
  
-+	display {
-+		compatible = "fsl,imx-parallel-display";
-+		pinctrl-0 = <&pinctrl_ipu1_disp>;
-+		pinctrl-names = "default";
+ &can1 {
+@@ -129,26 +141,41 @@ &ecspi2 {
+ 	pinctrl-0 = <&pinctrl_ecspi2>;
+ 	status = "okay";
+ 
+-	touchscreen@0 {
+-		compatible = "ti,tsc2046";
++	adc_ts: adc@0 {
++		compatible = "ti,tsc2046e-adc";
+ 		reg = <0>;
+ 		pinctrl-0 = <&pinctrl_tsc2046>;
+ 		pinctrl-names ="default";
+-		spi-max-frequency = <100000>;
+-		interrupts-extended = <&gpio3 20 IRQ_TYPE_EDGE_FALLING>;
+-		pendown-gpio = <&gpio3 20 GPIO_ACTIVE_LOW>;
++		spi-max-frequency = <1000000>;
++		interrupts-extended = <&gpio3 20 IRQ_TYPE_LEVEL_LOW>;
++		#io-channel-cells = <1>;
+ 
+-		touchscreen-inverted-x;
+-		touchscreen-inverted-y;
+-		touchscreen-max-pressure = <4095>;
+-
+-		ti,vref-delay-usecs = /bits/ 16 <100>;
+-		ti,x-plate-ohms = /bits/ 16 <800>;
+-		ti,y-plate-ohms = /bits/ 16 <300>;
+-		ti,debounce-max = /bits/ 16 <3>;
+-		ti,debounce-tol = /bits/ 16 <70>;
+-		ti,debounce-rep = /bits/ 16 <3>;
+-		wakeup-source;
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		port@0 {
-+			reg = <0>;
-+
-+			display_in: endpoint {
-+				remote-endpoint = <&ipu1_di0_disp0>;
-+			};
-+		};
-+
-+		port@1 {
++		channel@1 {
 +			reg = <1>;
-+
-+			display_out: endpoint {
-+				remote-endpoint = <&panel_in>;
-+			};
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
 +		};
-+	};
 +
- 	keys {
- 		compatible = "gpio-keys";
- 		autorepeat;
-@@ -135,6 +159,18 @@ led-debug0 {
- 		};
- 	};
- 
-+	panel {
-+		compatible = "innolux,g070y2-t02";
-+		backlight = <&backlight_lcd>;
-+		power-supply = <&reg_3v3>;
-+
-+		port {
-+			panel_in: endpoint {
-+				remote-endpoint = <&display_out>;
-+			};
++		channel@3 {
++			reg = <3>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
 +		};
-+	};
 +
- 	reg_bl_12v0: regulator-bl-12v0 {
- 		compatible = "regulator-fixed";
- 		pinctrl-names = "default";
-@@ -146,6 +182,13 @@ reg_bl_12v0: regulator-bl-12v0 {
- 		enable-active-high;
++		channel@4 {
++			reg = <4>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@5 {
++			reg = <5>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
  	};
- 
-+	reg_3v3: regulator-3v3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "3v3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+	};
-+
- 	reg_1v8: regulator-1v8 {
- 		compatible = "regulator-fixed";
- 		regulator-name = "1v8";
-@@ -275,6 +318,10 @@ &ipu1 {
- 	status = "okay";
  };
  
-+&ipu1_di0_disp0 {
-+	remote-endpoint = <&display_in>;
-+};
+diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
+index baaa6ffc4df9..59e0674420a1 100644
+--- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
++++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
+@@ -235,6 +235,18 @@ simple-audio-card,codec {
+ 			frame-master;
+ 		};
+ 	};
 +
- &pwm1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_pwm1>;
++	touchscreen {
++		compatible = "resistive-adc-touch";
++		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
++                              <&adc_ts 5>;
++		io-channel-names = "y", "z1", "z2", "x";
++		touchscreen-min-pressure = <64687>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++		touchscreen-x-plate-ohms = <300>;
++		touchscreen-y-plate-ohms = <800>;
++	};
+ };
+ 
+ &audmux {
+@@ -277,22 +289,41 @@ &ecspi2 {
+ 	pinctrl-0 = <&pinctrl_ecspi2>;
+ 	status = "okay";
+ 
+-	touchscreen@0 {
+-		compatible = "ti,tsc2046";
++	adc_ts: adc@0 {
++		compatible = "ti,tsc2046e-adc";
+ 		reg = <0>;
+ 		pinctrl-0 = <&pinctrl_tsc>;
+ 		pinctrl-names ="default";
+-		spi-max-frequency = <100000>;
+-		interrupts-extended = <&gpio3 20 IRQ_TYPE_EDGE_FALLING>;
+-		pendown-gpio = <&gpio3 20 GPIO_ACTIVE_LOW>;
+-		touchscreen-max-pressure = <4095>;
+-		ti,vref-delay-usecs = /bits/ 16 <100>;
+-		ti,x-plate-ohms = /bits/ 16 <800>;
+-		ti,y-plate-ohms = /bits/ 16 <300>;
+-		ti,debounce-max = /bits/ 16 <3>;
+-		ti,debounce-tol = /bits/ 16 <70>;
+-		ti,debounce-rep = /bits/ 16 <3>;
+-		wakeup-source;
++		spi-max-frequency = <1000000>;
++		interrupts-extended = <&gpio3 20 IRQ_TYPE_LEVEL_LOW>;
++		#io-channel-cells = <1>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		channel@1 {
++			reg = <1>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@3 {
++			reg = <3>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@4 {
++			reg = <4>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@5 {
++			reg = <5>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+index d37ba4ed847d..52de091ea452 100644
+--- a/arch/arm/boot/dts/imx6dl-victgo.dts
++++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+@@ -181,6 +181,18 @@ simple-audio-card,codec {
+ 			frame-master;
+ 		};
+ 	};
++
++	touchscreen {
++		compatible = "resistive-adc-touch";
++		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
++                              <&adc_ts 5>;
++		io-channel-names = "y", "z1", "z2", "x";
++		touchscreen-min-pressure = <64687>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++		touchscreen-x-plate-ohms = <300>;
++		touchscreen-y-plate-ohms = <800>;
++	};
+ };
+ 
+ &audmux {
+@@ -244,22 +256,41 @@ &ecspi2 {
+ 	pinctrl-0 = <&pinctrl_ecspi2>;
+ 	status = "okay";
+ 
+-	touchscreen@0 {
+-		compatible = "ti,tsc2046";
++	adc_ts: adc@0 {
++		compatible = "ti,tsc2046e-adc";
+ 		reg = <0>;
+-		pinctrl-names = "default";
+ 		pinctrl-0 = <&pinctrl_touchscreen>;
+-		spi-max-frequency = <200000>;
+-		interrupts-extended = <&gpio5 8 IRQ_TYPE_EDGE_FALLING>;
+-		pendown-gpio = <&gpio5 8 GPIO_ACTIVE_LOW>;
+-		touchscreen-size-x = <800>;
+-		touchscreen-size-y = <480>;
+-		touchscreen-inverted-y;
+-		touchscreen-max-pressure = <4095>;
+-		ti,vref-delay-usecs = /bits/ 16 <100>;
+-		ti,x-plate-ohms = /bits/ 16 <800>;
+-		ti,y-plate-ohms = /bits/ 16 <300>;
+-		wakeup-source;
++		pinctrl-names ="default";
++		spi-max-frequency = <1000000>;
++		interrupts-extended = <&gpio5 8 IRQ_TYPE_LEVEL_LOW>;
++		#io-channel-cells = <1>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		channel@1 {
++			reg = <1>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@3 {
++			reg = <3>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@4 {
++			reg = <4>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@5 {
++			reg = <5>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
+ 	};
+ };
+ 
 -- 
 2.30.2
 
