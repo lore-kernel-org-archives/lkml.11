@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCEE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5867C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344888AbiBKPmX (ORCPT
+        id S1345195AbiBKPnw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 10:42:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54036 "EHLO
+        Fri, 11 Feb 2022 10:43:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343923AbiBKPmV (ORCPT
+        with ESMTP id S245198AbiBKPnu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 10:42:21 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E49ECF0;
-        Fri, 11 Feb 2022 07:42:20 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A8AC4212B8;
-        Fri, 11 Feb 2022 15:42:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644594138;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MOvt3nP6o555NwCZ0+/YXZ/7DPCmnppoG+QFn1Mcl/s=;
-        b=dIg+c6GG044XfCDI0EaMRO0Ucap381BvO//H1tMkb5BGDgYXgUGjjuCz7xQoLpWIroU4wK
-        Iu0Pg2sDRD86xIGNMbA5F7FIWWkjphDFjg5hHXpM098itV1hBqZvxyFp2Ij+1Koxim+cxl
-        AzLDFkuHNzPf2iMi6UBfqxJnRETwJbI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644594138;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MOvt3nP6o555NwCZ0+/YXZ/7DPCmnppoG+QFn1Mcl/s=;
-        b=IjHGNhWEeiJa7RNTR9QWRv91zymNNRRHT/v+L5B7DQaAd2BHkttK31VUuIiouSWBiKrvqt
-        R0siUtNFvOo99tDg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 9CBC5A3B8A;
-        Fri, 11 Feb 2022 15:42:18 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 59C37DA823; Fri, 11 Feb 2022 16:38:36 +0100 (CET)
-Date:   Fri, 11 Feb 2022 16:38:36 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Kees Cook <keescook@chromium.org>, David Sterba <dsterba@suse.com>,
-        Omar Sandoval <osandov@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build failure after merge of the btrfs tree (Was:
- Re: linux-next: build failure after merge of the kspp tree)
-Message-ID: <20220211153835.GY12643@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Kees Cook <keescook@chromium.org>, David Sterba <dsterba@suse.com>,
-        Omar Sandoval <osandov@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220125115757.20bc45e8@canb.auug.org.au>
- <20220125140730.GO14046@suse.cz>
- <20220211104238.5da77acd@canb.auug.org.au>
+        Fri, 11 Feb 2022 10:43:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24021B5;
+        Fri, 11 Feb 2022 07:43:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84F4262018;
+        Fri, 11 Feb 2022 15:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58CC4C340E9;
+        Fri, 11 Feb 2022 15:43:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644594226;
+        bh=tc9vPw1lHjzGW9lJiQO7bBzDxlY8TMaxbA9HQedzYlU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SyBGd7Zpz4rKxpWBjcze6Ekj6fkF9awCmwcE3VJtjLY0Tm2aRuEOHQ2Ut6pddPsNO
+         Sm3OBbvCfAgF7rxR62j+XDP1kBYeUgIFg+63EhfcWG89uDVAw0xzRrMAWee+TS11Q6
+         no9hYTHD9iktK6pnsPk9eMl4cGo1JYmnFtkTSYtC0EhlaNX4xgpvmecWpixz1Uh2ZV
+         dX1GTZ2B4GvD4Sud0z8uqYcJ7LUHqAVLBUd9PQPlmBN35UmcFneuA0uyjM086+RW+X
+         mGsbi+btOt/nUAu4U0CtBvY6iHCe9AelKuRcdHM1L/muQQ/dIxDDbOisYLalOlPl2K
+         n6I+rX6p5vTcA==
+Date:   Fri, 11 Feb 2022 16:43:44 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com, rostedt@goodmis.org,
+        David Woodhouse <dwmw@amazon.co.uk>
+Subject: Re: [PATCH rcu 3/9] rcu: Add mutex for rcu boost kthread spawning
+ and affinity setting
+Message-ID: <20220211154344.GD588079@lothringen>
+References: <20220204230751.GA4193671@paulmck-ThinkPad-P17-Gen-1>
+ <20220204230805.4193767-3-paulmck@kernel.org>
+ <20220211145757.GA587320@lothringen>
+ <20220211151148.GA588079@lothringen>
+ <20220211154203.GB4285@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211104238.5da77acd@canb.auug.org.au>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <20220211154203.GB4285@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 10:42:38AM +1100, Stephen Rothwell wrote:
-> > > --- a/fs/btrfs/ioctl.c
-> > > +++ b/fs/btrfs/ioctl.c
-> > > @@ -5079,9 +5079,14 @@ static int btrfs_ioctl_encoded_write(struct file *file, void __user *argp,
-> > >  		}
-> > >  		args.iov = compat_ptr(args32.iov);
-> > >  		args.iovcnt = args32.iovcnt;
-> > > -		memcpy(&args.offset, &args32.offset,
-> > > -		       sizeof(args) -
-> > > -		       offsetof(struct btrfs_ioctl_encoded_io_args, offset));
-> > > +		args.offset = args32.offset;
-> > > +		args.flags = args32.flags;
-> > > +		args.len = args32.len;
-> > > +		args.unencoded_len = args32.unencoded_len;
-> > > +		args.unencoded_offset = args32.unencoded_offset;
-> > > +		args.compression = args32.compression;
-> > > +		args.encryption = args32.encryption;
-> > > +		memcpy(args.reserved, args32.reserved, sizeof(args.reserved));
-> > >  #else
-> > >  		return -ENOTTY;
-> > >  #endif  
-> > 
-> > Thanks, the patchset is still in progress so I'll apply this a fixup
-> > until the patch gets updated.
+On Fri, Feb 11, 2022 at 07:42:03AM -0800, Paul E. McKenney wrote:
+> On Fri, Feb 11, 2022 at 04:11:48PM +0100, Frederic Weisbecker wrote:
+> > On Fri, Feb 11, 2022 at 03:57:57PM +0100, Frederic Weisbecker wrote:
+> > > On Fri, Feb 04, 2022 at 03:07:59PM -0800, Paul E. McKenney wrote:
+> > > > From: David Woodhouse <dwmw@amazon.co.uk>
+> > > > 
+> > > > As we handle parallel CPU bringup, we will need to take care to avoid
+> > > > spawning multiple boost threads, or race conditions when setting their
+> > > > affinity. Spotted by Paul McKenney.
+> > > > 
+> > > > Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
+> > > > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > > 
+> > > Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+> > > 
+> > > Speaking of, we have:
+> > > 
+> > > rcu_init()
+> > >    for_each_online_cpu(cpu) // should be boot CPU only at this stage ?
+> > >        rcutree_prepare_cpu(cpu)
+> > >            rcu_spawn_one_boost_kthread(cpu)
+> > > 
+> > > 
+> > > early_initcall()
+> > >     rcu_spawn_gp_kthread()
+> > >         rcu_spawn_boost_kthreads()
+> > > 	    rcu_for_each_leaf_node(rnp)
+> > > 	        rcu_rnp_online_cpus(rnp) // as above, only boot CPU at this stage.
+> > >                     rcu_spawn_one_boost_kthread(cpu)
+> > > 
+> > > cpu_up()
+> > >     rcutree_prepare_cpu(cpu)
+> > >         rcu_spawn_one_boost_kthread(cpu)
+> > > 
+> > > 
+> > > My guess is that we could remove rcu_spawn_boost_kthreads() and simplify
+> > > rcu_init(). Something like this (untested yet):
 > 
-> This has come back today ... presumably the hack was removed but the
-> original patch was not fixed.
+> If you also add a WARN_ON() for more than one CPU being online at
+> rcu_init() time, I am good with this approach.  The main danger that
+> the pre-rcu_init() portion of the boot time becomes the long straw in
+> the eternal quest to make systems boot faster, but it is not hard to
+> put it back.  Hence the WARN_ON() to make it clear that adjustment
+> is needed.  ;-)
+> 
+> 							Thanx, Paul
 
-I've updated the patchset and thought the fixup has been applied but no.
-I'll fold it to the patch so it doesn't get lost again.
+Make sense. On my TODO list then.
+
+Thanks!
