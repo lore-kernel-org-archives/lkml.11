@@ -2,167 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8789C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CFAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351083AbiBKOyu (ORCPT
+        id S1351109AbiBKOze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 09:54:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48782 "EHLO
+        Fri, 11 Feb 2022 09:55:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351092AbiBKOys (ORCPT
+        with ESMTP id S1349983AbiBKOz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 09:54:48 -0500
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD5E131;
-        Fri, 11 Feb 2022 06:54:45 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E459C1C000C;
-        Fri, 11 Feb 2022 14:54:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644591284;
+        Fri, 11 Feb 2022 09:55:29 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2721A131;
+        Fri, 11 Feb 2022 06:55:28 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1DF131EC03E3;
+        Fri, 11 Feb 2022 15:55:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644591322;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/snWoyO1kCOhCBySz55Uo3NXloeQ7id88PKB2/aReeA=;
-        b=dfg7TkK0I/3exJfTOxYHVvr+fl22x+mJh10e7NYDZQrLuonafe07F0MGv4zTJwjUywdwFo
-        jszufveg/kUZOQseo7aSWH+ZDBcvBvoeUGIXooGkG9zRt7vZ4ZXkQXuyUEiJKBa3hL5v5z
-        VLjimiAl3xTxrobw3fTaaSlsB2FmK0aWuxFNKiErLGib6APgR2wqIuxyqMlNBE/CVJSVao
-        m5j1qNLRBIw+OhjrBFwakpt30YI4+kdgQ3oA9WZihYjswXyBWQznS97QrkPcL1aCexMaiY
-        RWHtH3TXANId8vXSxjIngtuLKGcITBqu8JEMrJhbgvQdBGniWJi2Q16d1PRMZg==
-Date:   Fri, 11 Feb 2022 15:54:42 +0100
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH v10 2/6] dt-bindings: gpio: logicvc: Add a compatible
- with major version only
-Message-ID: <YgZ4sj1o4WzMPd0P@aptenodytes>
-References: <20220120150024.646714-1-paul.kocialkowski@bootlin.com>
- <20220120150024.646714-3-paul.kocialkowski@bootlin.com>
- <CACRpkdbnEKeDNmFCuUCLaySs6AtD9MPtxV+9JDxKuXvTs9iMVQ@mail.gmail.com>
- <6f0e58dc-4b81-d819-13e3-9e0f79ba279c@arm.com>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=cDkjTWDqKQNWnc/zCRpQ/YG8Cct/yEFoBc7JQrQMptw=;
+        b=JuSz00olsVVdWRlZ0j1y2KYv7/pjY9O+lx/jUcm2MLE2qjB8yQXePonn3SHNbDbdw+b92L
+        q8/zE+9levcBrHllOIfG1/b/etAeXOIKwIAZRBCVMm3S1h+8pWO4OEjcSOBWWsX7cIz4NS
+        tl3iyhz39QI5sYRgPGS35NyMFJC7+oI=
+Date:   Fri, 11 Feb 2022 15:55:23 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Brijesh Singh <brijesh.singh@amd.com>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v10 21/45] x86/mm: Add support to validate memory when
+ changing C-bit
+Message-ID: <YgZ427v95xcdOKSC@zn.tnic>
+References: <20220209181039.1262882-1-brijesh.singh@amd.com>
+ <20220209181039.1262882-22-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="fi4rh3UJ303yTdHr"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <6f0e58dc-4b81-d819-13e3-9e0f79ba279c@arm.com>
+In-Reply-To: <20220209181039.1262882-22-brijesh.singh@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
++ Kirill.
 
---fi4rh3UJ303yTdHr
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Wed, Feb 09, 2022 at 12:10:15PM -0600, Brijesh Singh wrote:
+> @@ -2012,8 +2013,22 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+>  	 */
+>  	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
+>  
+> +	/*
+> +	 * To maintain the security guarantees of SEV-SNP guests, make sure
+> +	 * to invalidate the memory before clearing the encryption attribute.
+> +	 */
+> +	if (!enc)
+> +		snp_set_memory_shared(addr, numpages);
+> +
+>  	ret = __change_page_attr_set_clr(&cpa, 1);
+>  
+> +	/*
+> +	 * Now that memory is mapped encrypted in the page table, validate it
+> +	 * so that it is consistent with the above page state.
+> +	 */
+> +	if (!ret && enc)
+> +		snp_set_memory_private(addr, numpages);
+> +
+>  	/*
+>  	 * After changing the encryption attribute, we need to flush TLBs again
+>  	 * in case any speculative TLB caching occurred (but no need to flush
+> -- 
 
-Hi,
+Right, as tglx rightfully points out here:
 
-On Wed 02 Feb 22, 14:26, Robin Murphy wrote:
-> On 2022-01-30 00:46, Linus Walleij wrote:
-> > On Thu, Jan 20, 2022 at 4:00 PM Paul Kocialkowski
-> > <paul.kocialkowski@bootlin.com> wrote:
-> >=20
-> > > There are lots of different versions of the logicvc block and it
-> > > makes little sense to list them all in compatibles since all versions
-> > > with the same major are found to be register-compatible.
-> >=20
-> > The reason we try to be precise is because sometime, long after the dri=
-ver
-> > has been merged and maintained for a few years, a bug is discovered
-> > in a specific version of the silicon.
-> >=20
-> > What happens is that a fix is applied on all silicon whether it is need=
-ed
-> > or not.
-> >=20
-> > If you have the precise silicon compatible, you can avoid this and targ=
-et
-> > only a specific version.
->=20
-> Indeed, the better approach would be something like:
->=20
->   compatible:
->     oneOf:
->       - items:
->           - enum:
->               - foo,bar-v1.0
->               - foo,bar,v1.1
->           - const: foo,bar-v1
->       - items:
->           - enum:
->               - foo,bar-v2.0
->           - const: foo,bar-v2
->=20
-> That way the DTs are future-proof, while drivers can still match on only =
-the
-> less-specific strings until a need arises. Plus it avoids the problem that
-> if an existing OS that only understands "foo,bar-v1.0" is given a new DT
-> with only "foo,bar-v1" for v1.0 hardware it won't be able to use the devi=
-ce,
-> even though it's *functionally* capable of doing so.
+https://lore.kernel.org/r/875ypyvz07.ffs@tglx
 
-Yes I understand that we need to keep compatibility with the already-defined
-compatible.
+this piece of code needs careful coordinated design so that it is clean
+for both SEV and TDX.
 
-> However, from skimming patch #5, it looks possible that none of these
-> changes are needed at all. If LOGICVC_IP_VERSION_REG tells you the exact
-> revision, and is always present (as the unconditional reading of it
-> implies), then the only reason for adding new compatibles would be if, sa=
-y,
-> v5 has more clocks from v4 and you want the binding to enforce that;
-> otherwise, newer versions are literally compatible with the
-> currently-defined binding and therefore should continue to bind against t=
-he
-> existing string(s) to maximise forward- and backward-compatibility. Sure,
-> it's not the prettiest thing for a "generic" compatible to be based on an
-> oddly-specific version number that doesn't necessarily match the actual
-> software-discoverable version, but what's done is done and that's the cost
-> of ABI.
+First, as we've said here:
 
-Indeed it's true that hardware quirks can be applied based on the precise
-version read from the register, so I don't think there is a need for overly
-precise compatibles.
+https://lore.kernel.org/r/1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com
 
-Since the device-tree binding is currently the same for all versions,
-I understand that it makes sense to keep a single compatible (the already
-defined one), so I guess I will make another iteration without introducing
-new compatibles. But I will probably update the binding document to reflect
-which versions are currently known to work with its current state.
+we'd need generic functions which turn a pgprot into an encrypted or
+decrypted pgprot on both SEV and TDX so we could do:
 
-> (also, nitpick for that part of patch #5 since I'm here: please include
-> linux/bitfield.h rather than reinventing FIELD_GET() locally)
+cc_pgprot_enc()
+cc_pgprot_dec()
 
-Ah good to know thanks, first time hearing about those.
+which does the required conversion on each guest type.
 
-Paul
+Also, I think adding required functions to x86_platform.guest. is a very
+nice way to solve the ugly if (guest_type) querying all over the place.
 
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
+Also, I was thinking of sme_me_mask and the corresponding
+tdx_shared_mask I threw into the mix here:
 
---fi4rh3UJ303yTdHr
-Content-Type: application/pgp-signature; name="signature.asc"
+https://lore.kernel.org/r/YgFIaJ8ijgQQ04Nv@zn.tnic
 
------BEGIN PGP SIGNATURE-----
+and we should simply add those without ifdeffery but unconditionally.
 
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIGeLIACgkQ3cLmz3+f
-v9Fovwf9FazGyUpB/nAwH7VeTeXwajEB0NHvM9mlYAMba4/aI1h1YN7YzzP6bCm6
-xHVZg35DyCEzdwgDdrqhskFL94mRN43XIsu4a6tZhdJ38uqXAu91O/bjQDaNu4zM
-h37R+IAlna1D/+O9iiwQ/46t0mdI1kRmsgNcrMwG1ERdMQs7o2tZAupPuhHHioZk
-dPwBHCMAJkljVgzf80BgtFuNXglYHp8sunbv05NtodkFLZ/mAANkyRqq9IztJR3D
-Myu/D9/AZjU/57KFg3vuveYoMs3PJrPV0No5pgZX2HP0SJwVL9zmLj43L5K2POdK
-2LJbjDIKaSkNQ0iJE55P1Qzmqmb7Tg==
-=9Gbl
------END PGP SIGNATURE-----
+Simply have them always present. They will have !0 values on the
+respective guest types and 0 otherwise. This should simplify a lot of
+code and another unconditionally present u64 won't be the end of the
+world.
 
---fi4rh3UJ303yTdHr--
+Any other aspect I'm missing?
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
