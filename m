@@ -2,149 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90CA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352299AbiBKRrV convert rfc822-to-8bit (ORCPT
+        id S1352330AbiBKRsC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:47:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40130 "EHLO
+        Fri, 11 Feb 2022 12:48:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232454AbiBKRrT (ORCPT
+        with ESMTP id S1352316AbiBKRsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:47:19 -0500
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E3838D;
-        Fri, 11 Feb 2022 09:47:18 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:59888)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nIa0r-002bKF-9q; Fri, 11 Feb 2022 10:47:17 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47708 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nIa0p-000awb-T4; Fri, 11 Feb 2022 10:47:16 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Robert =?utf-8?B?xZp3acSZY2tp?= <robert@swiecki.net>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20220210025321.787113-1-keescook@chromium.org>
-        <871r0a8u29.fsf@email.froward.int.ebiederm.org>
-        <202202101033.9C04563D9@keescook>
-        <87pmnu5z28.fsf@email.froward.int.ebiederm.org>
-        <202202101137.B48D02138@keescook>
-        <87k0e249tt.fsf@email.froward.int.ebiederm.org>
-        <202202101710.668EDCDC@keescook>
-        <875ypm41kb.fsf@email.froward.int.ebiederm.org>
-        <202202101827.4B16DF54@keescook>
-        <CAP145phAg3ZSPJw7x2kKVQe86puy-XyKatVoByVoM27RP4aw_g@mail.gmail.com>
-Date:   Fri, 11 Feb 2022 11:46:53 -0600
-In-Reply-To: <CAP145phAg3ZSPJw7x2kKVQe86puy-XyKatVoByVoM27RP4aw_g@mail.gmail.com>
-        ("Robert =?utf-8?B?xZp3acSZY2tpIidz?= message of "Fri, 11 Feb 2022 13:54:26
- +0100")
-Message-ID: <87a6ex1ek2.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 11 Feb 2022 12:48:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B663AE
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:47:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644601678;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+bGomXKmD4Labg1JIcePjP5kik7k3u2urR4t7NcrCQU=;
+        b=L9AYwlTF9HoLOmw2PsmXWKi44IvZAz9pxKVYf49yQHcIKtvraksYUki9OTPKo2yqQ3k15e
+        AfJ1MJGoKKeKTadoPLyXZSmB/kGtFcbtf1O0gbpjQFRYQucd2QdzdAxXORaD5ViSLrhI44
+        4KQZKPN/DaTo/Hdq+rmQp1BqpRPHaJU=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-534-kcPVuhWQNnm5Q6NEpDGgHA-1; Fri, 11 Feb 2022 12:47:56 -0500
+X-MC-Unique: kcPVuhWQNnm5Q6NEpDGgHA-1
+Received: by mail-ej1-f69.google.com with SMTP id d7-20020a1709061f4700b006bbf73a7becso4402987ejk.17
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:47:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+bGomXKmD4Labg1JIcePjP5kik7k3u2urR4t7NcrCQU=;
+        b=ZUF6xGvDe51bqvi7qMarhTa/eHdeb32NPA7ZwnZIRuKQqd48t3UAE1tq74b8ti69uh
+         b80dMQYyTZ/EVP2PNXzvcHncNGERSJ9+bh82njOAaYEEA3+5ep7ESbmNlBoQUFdWaOuZ
+         WOmEhL4oGVoFXmBbl5O9oor/GdlK5gWcvZb7NhiPsTLis9vJOAAg0denYlch5dOVKglX
+         ++EHfiFz1E+CzgTVMVUNu+RQX8JApy1cobJL/gNAyWDjANWSR3FdRJvbkkuJge5gEj7D
+         Q9lAVsvzVz46VN7xtf4XIpTbMcAVYjXlcvxno1p/WrYLzgEHMxnWQ0w4wa7F7z6gYXQd
+         jleg==
+X-Gm-Message-State: AOAM5331dvBQgcW9mzGlHi4eSDyA/vY2soCSgt+c9tosT0VO4FDfByKw
+        /wMwKuiv86nAaGWCI4YvrmM8FYVbj0uPcV+e0QuGTO4Dnvu2IyqK6fhTx008B2IPOZ767s47h3u
+        lyACIGp8wNv1XPnRVn+KtBCnc
+X-Received: by 2002:a17:907:94d5:: with SMTP id dn21mr2371718ejc.77.1644601675460;
+        Fri, 11 Feb 2022 09:47:55 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzStRg+xJ5e8CXnMfqaSrVBdK9BYOEdRdN7EdmM6bxli07TfRsiQv49YJrRTcTfXd+3MqlsKw==
+X-Received: by 2002:a17:907:94d5:: with SMTP id dn21mr2371707ejc.77.1644601675282;
+        Fri, 11 Feb 2022 09:47:55 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id gx17sm4290834ejb.28.2022.02.11.09.47.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Feb 2022 09:47:54 -0800 (PST)
+Message-ID: <56ee0380-3717-b150-c674-08f76b6e295b@redhat.com>
+Date:   Fri, 11 Feb 2022 18:47:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1nIa0p-000awb-T4;;;mid=<87a6ex1ek2.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19jyVwxhC+hd4WN4KzZaWrSUkzBjMUuQTQ=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 0/3] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 10/12] KVM: MMU: load new PGD after the shadow MMU is
+ initialized
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-11-pbonzini@redhat.com> <Ygagy355RARlppQ4@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Ygagy355RARlppQ4@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Robert Święcki <robert@swiecki.net> writes:
-
->> It's mainly about the exit stuff having never been run before on these
->> kinds of process states, so things don't make sense. For example, on the
->> SIGSYS death, the registers have been rewound for the coredump, so when
->> the exit trace runs on x86 it sees the syscall return value as equal to
->> the syscall number (since %rax is used for the syscall number on entry
->> and for the syscall result on exit). So when a tracer watches a seccomp
->> fatal SIGSYS, it sees the syscall exit before it sees the child exit
->> (and therefore the signal). For example, x86_64 write (syscall number
->> 1), will return as if it had written 1 byte. :P
+On 2/11/22 18:45, Sean Christopherson wrote:
+> On Wed, Feb 09, 2022, Paolo Bonzini wrote:
+>> Now that __kvm_mmu_new_pgd does not look at the MMU's root_level and
+>> shadow_root_level anymore, pull the PGD load after the initialization of
+>> the shadow MMUs.
 >>
->> So, it's not harmful, but it's confusing and weird. :)
+>> Besides being more intuitive, this enables future simplifications
+>> and optimizations because it's not necessary anymore to compute the
+>> role outside kvm_init_mmu.  In particular, kvm_mmu_reset_context was not
+>> attempting to use a cached PGD to avoid having to figure out the new role.
+>> It will soon be able to follow what nested_{vmx,svm}_load_cr3 are doing,
+>> and avoid unloading all the cached roots.
 >>
->> > I am trying to figure out if there is a case to be made that it was a
->> > bug that these events were missing.
->>
->> I don't think so -- the syscall did not finish, so there isn't a valid
->> return code. The process exited before it completed.
+>> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+>> ---
+> 
+> If you add a sanity check as described in the other thread[*],
+> 
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
 
-With the process state rewound for the coredump it makes sense
-why the syscall exit would be meaningless.  So at least for
-now I am convinced function that clears all syscall_work flags
-is the way to go.
+It's not as easy as I thought, but it becomes almost trivial with the 
+CPU/MMU role refactoring.  I'll get that posted as soon as I can push a 
+final-ish version of this one to kvm/queue.
 
-> A tangential point: please ignore for the purpose of fixing the
-> problem at hand. I'm mostly making it, in case it can be taken into
-> account in case some bigger changes to this code path are to be made -
-> given that it touches the problem of signal delivery.
->
-> When I noticed this problem, I was looking for a way to figure out
-> what syscall caused SIGSYS (via SECCOMP_RET_KILL_*), and there's no
-> easy way to do that programmatically from the perspective of a parent
-> process. There are three ways of doing this that come to mind.
+Paolo
 
-Unless I am misunderstanding what you are looking for
-this information is contained within the SIGSYS siginfo.
-The field si_syscall contains the system call number and
-the field si_errno contains return code from the seccomp filter.
-
-All of that can be read from the core dump of the process that exited.
-
-Looking quickly I don't see a good way to pull that signal information
-out of the kernel other than with a coredump.
-
-It might be possible to persuade PTRACE_EVENT_EXIT to give it to you,
-but I haven't looked at it enough to see if that would be a sensible
-strategy.
-
-
-> 1). Keep reference to /proc/<child>/syscall and read it upon process
-> exiting by SIGSYS (and reading it with wait/id(WNOWAIT) from parent).
-> This used to work a long time ago, but was racy (I reported this
-> problem many years ago), and currently only -1 0 0 is returned (as in,
-> no syscall in progress).
-
-That might be a bug worth fixing.  But it would definitely need a test
-that is run regularly to prevent future regressions.
-
-> 2). Use ptrace - it works but it changes the logic of the signal
-> delivery inside a traced process and requires non-trivial code to make
-> it work correctly: use of PT_INTERRUPT, understanding all signal
-> delivery events, registers and their mapping to syscall arguments per
-> CPU arch.
-
-I guess this works because you can see which syscall occurred before the
-SECCOMP_RET_KILL.  Except for the bugs we are discussing fixing there
-isn't a ptrace_stop after SECCOMP_RET_KILL.
-
-> 3). auditd will print details of failed syscall to kmsg, but the
-> string is not very structured, and auditd might not be always present
-> inside kernels. And reading that data via netlink requires root IIRC.
-
-I assume this is the same you can see which syscall occurred before
-the SECCOMP_RET_KILL.
-
->
-> I think it'd be good to have some way of doing it from the perspective
-> of a parent process - it'd simplify development of sandboxing managers
-> (eg nsjail, minijail, firejail), and creation of good seccomp
-> policies.
-
-By development do you mean debugging sandbox managers?  Or do you mean
-something that sandbox managers can use on a routine basis?
-
-Eric
