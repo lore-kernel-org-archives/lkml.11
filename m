@@ -2,118 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E36C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 23:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EABEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 23:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236430AbiBKXkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 18:40:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41664 "EHLO
+        id S1354268AbiBKXmm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 18:42:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238960AbiBKXkQ (ORCPT
+        with ESMTP id S235335AbiBKXmj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 18:40:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA6ECF9;
-        Fri, 11 Feb 2022 15:40:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 10433B82DD0;
-        Fri, 11 Feb 2022 23:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6B73C340E9;
-        Fri, 11 Feb 2022 23:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644622811;
-        bh=qjDhoyLBnjObhE+qaWk23jxLof4n/h4IluDmsF4S+Zc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=HxHkOQCy8wBjoXjL70TshCgTZJSE9ew2DxDnJ18jj/4/DZV2JSnnbrH8FYWN5XOpz
-         7Ti0r5fW2KunCYfy9nEiI8B7VECUh3JugBLGRtdOucxqELydi8URSwwK5ypcHOgllo
-         JURaNYZHo4Vvle1HwR+VFcqPtgpSAnhTW53ToVTE6/tophEv+r9/HuKCXdTKs+SzCs
-         XXl3/zxMMecQoDvxqQcHzdXmfIB4/8dL1CNJeB9yr2QyMFVgooY3uJs2SsYqA9Nr/i
-         6cmkPGk37vDLzgx5UttouMfTOmgXCX6jZbciQMJBcUR5bRSeqHpTIXNgrJGAVebGls
-         Ml6ubZ55tvGsw==
-Message-ID: <314affa4-fbcb-2cb9-deb7-f61a2ac99260@kernel.org>
-Date:   Fri, 11 Feb 2022 15:40:09 -0800
+        Fri, 11 Feb 2022 18:42:39 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A08FCCFE;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 50FECED1;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3C4B93F70D;
+        Fri, 11 Feb 2022 15:42:37 -0800 (PST)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     netdev@vger.kernel.org
+Cc:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
+        kuba@kernel.org, rmk+kernel@armlinux.org.uk,
+        linux-kernel@vger.kernel.org, Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH] net: mvpp2: Check for null pcs in mvpp2_acpi_start()
+Date:   Fri, 11 Feb 2022 17:42:35 -0600
+Message-Id: <20220211234235.3180025-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 04/12] mm/shmem: Support memfile_notifier
-Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        jun.nakajima@intel.com, dave.hansen@intel.com, ak@linux.intel.com,
-        david@redhat.com
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-5-chao.p.peng@linux.intel.com>
-From:   Andy Lutomirski <luto@kernel.org>
-In-Reply-To: <20220118132121.31388-5-chao.p.peng@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 05:21, Chao Peng wrote:
-> It maintains a memfile_notifier list in shmem_inode_info structure and
-> implements memfile_pfn_ops callbacks defined by memfile_notifier. It
-> then exposes them to memfile_notifier via
-> shmem_get_memfile_notifier_info.
-> 
-> We use SGP_NOALLOC in shmem_get_lock_pfn since the pages should be
-> allocated by userspace for private memory. If there is no pages
-> allocated at the offset then error should be returned so KVM knows that
-> the memory is not private memory.
-> 
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+Booting a MACCHIATObin with 5.17 the system OOPs with
+a null pointer deref when the network is started. This
+is caused by the pcs->ops structure being null on this
+particular platform/firmware.
 
->   static int memfile_get_notifier_info(struct inode *inode,
->   				     struct memfile_notifier_list **list,
->   				     struct memfile_pfn_ops **ops)
->   {
-> -	return -EOPNOTSUPP;
-> +	int ret = -EOPNOTSUPP;
-> +#ifdef CONFIG_SHMEM
-> +	ret = shmem_get_memfile_notifier_info(inode, list, ops);
-> +#endif
-> +	return ret;
->   }
+Simply adding a null ptr check, reverts to a functional
+system with networking.
 
-> +int shmem_get_memfile_notifier_info(struct inode *inode,
-> +				    struct memfile_notifier_list **list,
-> +				    struct memfile_pfn_ops **ops)
-> +{
-> +	struct shmem_inode_info *info;
-> +
-> +	if (!shmem_mapping(inode->i_mapping))
-> +		return -EINVAL;
-> +
-> +	info = SHMEM_I(inode);
-> +	*list = &info->memfile_notifiers;
-> +	if (ops)
-> +		*ops = &shmem_pfn_ops;
-> +
-> +	return 0;
+The OOPs looks like:
+[   18.687760] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000010
+[   18.698561] Mem abort info:
+[   18.698564]   ESR = 0x96000004
+[   18.698567]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   18.709821]   SET = 0, FnV = 0
+[   18.714292]   EA = 0, S1PTW = 0
+[   18.718833]   FSC = 0x04: level 0 translation fault
+[   18.725126] Data abort info:
+[   18.729408]   ISV = 0, ISS = 0x00000004
+[   18.734655]   CM = 0, WnR = 0
+[   18.738933] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000111bbf000
+[   18.745409] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+[   18.752235] Internal error: Oops: 96000004 [#1] SMP
+[   18.757134] Modules linked in: rfkill ip_set nf_tables nfnetlink qrtr sunrpc vfat fat omap_rng fuse zram xfs crct10dif_ce mvpp2 ghash_ce sbsa_gwdt phylink xhci_plat_hcd ahci_plam
+[   18.773481] CPU: 0 PID: 681 Comm: NetworkManager Not tainted 5.17.0-0.rc3.89.fc36.aarch64 #1
+[   18.781954] Hardware name: Marvell                         Armada 7k/8k Family Board      /Armada 7k/8k Family Board      , BIOS EDK II Jun  4 2019
+[   18.795222] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   18.802213] pc : mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+[   18.807208] lr : mvpp2_start_dev+0x298/0x300 [mvpp2]
+[   18.812197] sp : ffff80000b4732c0
+[   18.815522] x29: ffff80000b4732c0 x28: 0000000000000000 x27: ffffccab38ae57f8
+[   18.822689] x26: ffff6eeb03065a10 x25: ffff80000b473a30 x24: ffff80000b4735b8
+[   18.829855] x23: 0000000000000000 x22: 00000000000001e0 x21: ffff6eeb07b6ab68
+[   18.837021] x20: ffff6eeb07b6ab30 x19: ffff6eeb07b6a9c0 x18: 0000000000000014
+[   18.844187] x17: 00000000f6232bfe x16: ffffccab899b1dc0 x15: 000000006a30f9fa
+[   18.851353] x14: 000000003b77bd50 x13: 000006dc896f0e8e x12: 001bbbfccfd0d3a2
+[   18.858519] x11: 0000000000001528 x10: 0000000000001548 x9 : ffffccab38ad0fb0
+[   18.865685] x8 : ffff80000b473330 x7 : 0000000000000000 x6 : 0000000000000000
+[   18.872851] x5 : 0000000000000000 x4 : 0000000000000000 x3 : ffff80000b4732f8
+[   18.880017] x2 : 000000000000001a x1 : 0000000000000002 x0 : ffff6eeb07b6ab68
+[   18.887183] Call trace:
+[   18.889637]  mvpp2_start_dev+0x2b0/0x300 [mvpp2]
+[   18.894279]  mvpp2_open+0x134/0x2b4 [mvpp2]
+[   18.898483]  __dev_open+0x128/0x1e4
+[   18.901988]  __dev_change_flags+0x17c/0x1d0
+[   18.906187]  dev_change_flags+0x30/0x70
+[   18.910038]  do_setlink+0x278/0xa7c
+[   18.913540]  __rtnl_newlink+0x44c/0x7d0
+[   18.917391]  rtnl_newlink+0x5c/0x8c
+[   18.920892]  rtnetlink_rcv_msg+0x254/0x314
+[   18.925006]  netlink_rcv_skb+0x48/0x10c
+[   18.928858]  rtnetlink_rcv+0x24/0x30
+[   18.932449]  netlink_unicast+0x290/0x2f4
+[   18.936386]  netlink_sendmsg+0x1d0/0x41c
+[   18.940323]  sock_sendmsg+0x60/0x70
+[   18.943825]  ____sys_sendmsg+0x248/0x260
+[   18.947762]  ___sys_sendmsg+0x74/0xa0
+[   18.951438]  __sys_sendmsg+0x64/0xcc
+[   18.955027]  __arm64_sys_sendmsg+0x30/0x40
+[   18.959140]  invoke_syscall+0x50/0x120
+[   18.962906]  el0_svc_common.constprop.0+0x4c/0xf4
+[   18.967629]  do_el0_svc+0x30/0x9c
+[   18.970958]  el0_svc+0x28/0xb0
+[   18.974025]  el0t_64_sync_handler+0x10c/0x140
+[   18.978400]  el0t_64_sync+0x1a4/0x1a8
+[   18.982078] Code: 52800004 b9416262 aa1503e0 52800041 (f94008a5)
+[   18.988196] ---[ end trace 0000000000000000 ]---
 
-I can't wrap my head around exactly who is supposed to call these 
-functions and when, but there appears to be a missing check that the 
-inode is actually a shmem inode.
+Fixes: cff056322372 ("net: mvpp2: use .mac_select_pcs() interface")
+Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-What is this code trying to do?  It's very abstract.
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 7cdbf8b8bbf6..d53d7648625f 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -6631,8 +6631,9 @@ static void mvpp2_acpi_start(struct mvpp2_port *port)
+ 	mvpp2_mac_prepare(&port->phylink_config, MLO_AN_INBAND,
+ 			  port->phy_interface);
+ 	mvpp2_mac_config(&port->phylink_config, MLO_AN_INBAND, &state);
+-	pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
+-			     state.advertising, false);
++	if (pcs && pcs->ops)
++		pcs->ops->pcs_config(pcs, MLO_AN_INBAND, port->phy_interface,
++				     state.advertising, false);
+ 	mvpp2_mac_finish(&port->phylink_config, MLO_AN_INBAND,
+ 			 port->phy_interface);
+ 	mvpp2_mac_link_up(&port->phylink_config, NULL,
+-- 
+2.34.1
+
