@@ -2,73 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F86C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E541CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345116AbiBKJNK (ORCPT
+        id S1348287AbiBKJNN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:13:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55810 "EHLO
+        Fri, 11 Feb 2022 04:13:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238904AbiBKJNI (ORCPT
+        with ESMTP id S229462AbiBKJNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:13:08 -0500
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7E5F01
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:13:08 -0800 (PST)
-Received: by mail-il1-f198.google.com with SMTP id y3-20020a920903000000b002be462612d7so5651061ilg.10
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:13:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=DsxbeR1l3tRF+9DPLDGsjVsnknNa637pd3J+B6ACmng=;
-        b=TxjYgj8r42WklazyNHfJSEfJ9TzoyMcVnucstA+phx0ULcorkABoAnLYO4PYq541Dy
-         NBNiooF+x/cHQSvtlXrsfVSePzhi33PpeLz5zR+r0/LN4XdluaZpsC0QluWqBuiw6QNk
-         dMTs2NMHFkWSVjQxKKmStbfN5oOZYxqiZUaC+/B14bwz94nHGrpdsa4vZGMCVb6CK9pt
-         iEHL9Tl1jrxjtjp/sx5gU7wzi2PEZ/eT33uzZ0P+brF5K6sL2bNmuxTTNHFxxbAPzP0f
-         LBOxsYk3gU4JubdcNnpKSbjuAEyDq2cEjTQ/plN6jV2wp3l1lNbFFw6idnxv2GL2kNz1
-         gDFw==
-X-Gm-Message-State: AOAM5332gcRKnN142J+XkZtEH5DYjLjAGHVXGrv0+Wmom4sYw5tknhse
-        xWuSzwFX4rKF/KcRll9OY/aALbF9zcDeysVr/9pc2POAkB0p
-X-Google-Smtp-Source: ABdhPJyAlGmMp8F7U7k+cHSU2CYS73uf0jYpgEQvmOWeay1LyK2Krk2chHwJZC38Nk2WYShiX2szVfhC+S2lgXl8gW9XCHvJOoKT
+        Fri, 11 Feb 2022 04:13:09 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEB41026;
+        Fri, 11 Feb 2022 01:13:08 -0800 (PST)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jw79X5X6NzdZY0;
+        Fri, 11 Feb 2022 17:09:52 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 11 Feb 2022 17:13:06 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Feb
+ 2022 17:13:06 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
+Subject: [PATCH] crypto: hisilicon/sec - add the register configuration for HW V3
+Date:   Fri, 11 Feb 2022 17:07:58 +0800
+Message-ID: <20220211090758.55352-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1345:: with SMTP id i5mr346782iov.143.1644570787508;
- Fri, 11 Feb 2022 01:13:07 -0800 (PST)
-Date:   Fri, 11 Feb 2022 01:13:07 -0800
-In-Reply-To: <000000000000d5358b05bfe10354@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000098f75305d7ba7942@google.com>
-Subject: Re: [syzbot] possible deadlock in io_poll_double_wake (3)
-From:   syzbot <syzbot+e654d4e15e6b3b9deb53@syzkaller.appspotmail.com>
-To:     alaaemadhossney.ae@gmail.com, asml.silence@gmail.com,
-        axboe@kernel.dk, dvyukov@google.com, hdanton@sina.com,
-        io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Added the register configuration of the SVA mode for HW V3.
 
-commit aa43477b040251f451db0d844073ac00a8ab66ee
-Author: Pavel Begunkov <asml.silence@gmail.com>
-Date:   Wed Dec 15 22:08:48 2021 +0000
+Signed-off-by: Kai Ye <yekai13@huawei.com>
+---
+ drivers/crypto/hisilicon/sec2/sec_main.c | 51 +++++++++++++++++++-----
+ 1 file changed, 40 insertions(+), 11 deletions(-)
 
-    io_uring: poll rework
+diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+index 89d4cc767d36..0b9906ff69e3 100644
+--- a/drivers/crypto/hisilicon/sec2/sec_main.c
++++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+@@ -90,6 +90,10 @@
+ 					SEC_USER1_WB_DATA_SSV)
+ #define SEC_USER1_SMMU_SVA		(SEC_USER1_SMMU_NORMAL | SEC_USER1_SVA_SET)
+ #define SEC_USER1_SMMU_MASK		(~SEC_USER1_SVA_SET)
++#define SEC_INTERFACE_USER_CTRL0_REG_V3	0x302220
++#define SEC_INTERFACE_USER_CTRL1_REG_V3	0x302224
++#define SEC_USER1_SMMU_NORMAL_V3	(BIT(23) | BIT(17) | BIT(11) | BIT(5))
++#define SEC_USER1_SMMU_MASK_V3		0xFF79E79E
+ #define SEC_CORE_INT_STATUS_M_ECC	BIT(2)
+ 
+ #define SEC_PREFETCH_CFG		0x301130
+@@ -335,6 +339,41 @@ static void sec_set_endian(struct hisi_qm *qm)
+ 	writel_relaxed(reg, qm->io_base + SEC_CONTROL_REG);
+ }
+ 
++static void sec_engine_sva_config(struct hisi_qm *qm)
++{
++	u32 reg;
++
++	if (qm->ver > QM_HW_V2) {
++		reg = readl_relaxed(qm->io_base +
++				SEC_INTERFACE_USER_CTRL0_REG_V3);
++		reg |= SEC_USER0_SMMU_NORMAL;
++		writel_relaxed(reg, qm->io_base +
++				SEC_INTERFACE_USER_CTRL0_REG_V3);
++
++		reg = readl_relaxed(qm->io_base +
++				SEC_INTERFACE_USER_CTRL1_REG_V3);
++		reg &= SEC_USER1_SMMU_MASK_V3;
++		reg |= SEC_USER1_SMMU_NORMAL_V3;
++		writel_relaxed(reg, qm->io_base +
++				SEC_INTERFACE_USER_CTRL1_REG_V3);
++	} else {
++		reg = readl_relaxed(qm->io_base +
++				SEC_INTERFACE_USER_CTRL0_REG);
++		reg |= SEC_USER0_SMMU_NORMAL;
++		writel_relaxed(reg, qm->io_base +
++				SEC_INTERFACE_USER_CTRL0_REG);
++		reg = readl_relaxed(qm->io_base +
++				SEC_INTERFACE_USER_CTRL1_REG);
++		reg &= SEC_USER1_SMMU_MASK;
++		if (qm->use_sva)
++			reg |= SEC_USER1_SMMU_SVA;
++		else
++			reg |= SEC_USER1_SMMU_NORMAL;
++		writel_relaxed(reg, qm->io_base +
++				SEC_INTERFACE_USER_CTRL1_REG);
++	}
++}
++
+ static void sec_open_sva_prefetch(struct hisi_qm *qm)
+ {
+ 	u32 val;
+@@ -426,17 +465,7 @@ static int sec_engine_init(struct hisi_qm *qm)
+ 	reg |= (0x1 << SEC_TRNG_EN_SHIFT);
+ 	writel_relaxed(reg, qm->io_base + SEC_CONTROL_REG);
+ 
+-	reg = readl_relaxed(qm->io_base + SEC_INTERFACE_USER_CTRL0_REG);
+-	reg |= SEC_USER0_SMMU_NORMAL;
+-	writel_relaxed(reg, qm->io_base + SEC_INTERFACE_USER_CTRL0_REG);
+-
+-	reg = readl_relaxed(qm->io_base + SEC_INTERFACE_USER_CTRL1_REG);
+-	reg &= SEC_USER1_SMMU_MASK;
+-	if (qm->use_sva && qm->ver == QM_HW_V2)
+-		reg |= SEC_USER1_SMMU_SVA;
+-	else
+-		reg |= SEC_USER1_SMMU_NORMAL;
+-	writel_relaxed(reg, qm->io_base + SEC_INTERFACE_USER_CTRL1_REG);
++	sec_engine_sva_config(qm);
+ 
+ 	writel(SEC_SINGLE_PORT_MAX_TRANS,
+ 	       qm->io_base + AM_CFG_SINGLE_PORT_MAX_TRANS);
+-- 
+2.33.0
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=110d0baa700000
-start commit:   c9e6606c7fe9 Linux 5.16-rc8
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4772459294eb89cc
-dashboard link: https://syzkaller.appspot.com/bug?extid=e654d4e15e6b3b9deb53
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f87335b00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15ac8a73b00000
-
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: io_uring: poll rework
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
