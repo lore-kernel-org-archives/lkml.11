@@ -2,193 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E68C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB334C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238907AbiBKMDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 07:03:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47748 "EHLO
+        id S1349882AbiBKMDT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 07:03:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232442AbiBKL7e (ORCPT
+        with ESMTP id S234446AbiBKL7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:59:34 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF35F4E
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:59:33 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id j9-20020a05600c190900b0037bff8a24ebso2693232wmq.4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:59:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tx8ZFq8JdO/4oUXF/KhCH6Nf7XCVn/8UewteKqP8h1s=;
-        b=qFuJQjxgvlT2bAueQpdORWOfP43xD0e9K9dpxtvEuNkSBmi78JUWnzGS/JJ24WgnT+
-         xmsbEsQQ0PS/X6OwzA7TnNT9C6OfK/X7stRvoYNMAu99/yiDTcgwglSlcBW3kfdbBwyj
-         JVS3vcWbyRWXaFKBO6IwAoi2vUivUvSgdSKP8mrWFN4wD4N7VQ1p82JzooQtWS7GXNWb
-         nzkZ/F+GgntKUs4PqHPwVkdyKnNp5DqeR5rqJyJHhpRqny4w/I9ag2PCyokFPyJEV0Uo
-         azUOZmMvsleKSTM+DBPEiBBBNCcxN3n1iMRxd+cAGLtOyMtvr41E0CBkb14hUsEwA0qH
-         qSfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tx8ZFq8JdO/4oUXF/KhCH6Nf7XCVn/8UewteKqP8h1s=;
-        b=0z3IKcky1VUz03EMpG4vXmmaKP5yfD2W8Mnsk0VO7RqE5QG8She+b5EqMjhk/n+may
-         hHQkd8jpOCUgIRzszRR9zaMdUNPckqLuAKC2erRErPTulKUoHek4RUSTwYiqudrit0g5
-         3WPpV+navgh8Z2zScKshJG1AG5gKFVlDa0FRntVty7APw3KHBxc7g+uak/4ZP/RAMa2G
-         ztujpFyNqKprQJ+e5/4kBGBacSLsfpG9SuvVG4minfHVlUq4qvAd5MvwFnOs8+2IeaQB
-         SJiCx0DLPARrITQpKl/dyt7j1vt8/YuUEi5PFxMLG/c91ovO8jYOmWGyfH+5SvESpYXR
-         siYw==
-X-Gm-Message-State: AOAM5334dtDpx4oCWzw8/WRdpDGkSR0BWjETYVR4YCoeohJedk7qDgOE
-        1OJGXT31if01afZhoL7LhzFaXCnIbFhNJA==
-X-Google-Smtp-Source: ABdhPJwYjEPwR7ld+ZHbxRmJzqFRQ73mz77IVh4ygiFj10b1bK4/nIyP38c85s51FxEHBMDjEn43Bg==
-X-Received: by 2002:a05:600c:4611:: with SMTP id m17mr17712wmo.94.1644580771686;
-        Fri, 11 Feb 2022 03:59:31 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id s187sm4763212wme.14.2022.02.11.03.59.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 03:59:31 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     davem@davemloft.net, heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v3] dt-bindings: crypto: convert rockchip-crypto to yaml
-Date:   Fri, 11 Feb 2022 11:59:25 +0000
-Message-Id: <20220211115925.3382735-1-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 11 Feb 2022 06:59:33 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C7BE6D;
+        Fri, 11 Feb 2022 03:59:32 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 0F46721128;
+        Fri, 11 Feb 2022 11:59:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644580771; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=82bEkV738p0W29VbjyF60qz4BZYeSV7Ls+JNqujf5to=;
+        b=HQO77/as2ivaGhrIjJtbRQhL+buQ9hfTbBwcvt63szl7/XyZk/3BG5sJV+RWkdntkb/fh2
+        hbXWuiweS3V9dW28WsywJsTMnDtde4pQnHTxBHAHqPucgngcoHcxJOpiJPH3o2+bSLXxNw
+        k4Da9fhwIbAThUSim9l4/sEgui7IVAg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644580771;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=82bEkV738p0W29VbjyF60qz4BZYeSV7Ls+JNqujf5to=;
+        b=jixyRZmUOYK/DKJofMNj8E0blkoPOWiGj2XKnLnK4oav3NwRIgtOT0m62yB220HC8YRQlR
+        75jfaIvh/lLAgDAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B330913C29;
+        Fri, 11 Feb 2022 11:59:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id JzYbKqJPBmJ6XwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Fri, 11 Feb 2022 11:59:30 +0000
+Message-ID: <5cffc63b-c42a-df4c-7270-488735c9e014@suse.de>
+Date:   Fri, 11 Feb 2022 12:59:30 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 2/6] drm/format-helper: Add
+ drm_fb_xrgb8888_to_mono_reversed()
+Content-Language: en-US
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>
+References: <20220211091927.2988283-1-javierm@redhat.com>
+ <20220211091927.2988283-3-javierm@redhat.com>
+ <YgZEPo0ERFRloDyA@smile.fi.intel.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <YgZEPo0ERFRloDyA@smile.fi.intel.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------wbwTiEBTVkRaFTBgyEmt2ZN1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert rockchip-crypto to yaml
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------wbwTiEBTVkRaFTBgyEmt2ZN1
+Content-Type: multipart/mixed; boundary="------------xgrGKoD6EvNiq5zk7QMh2zal";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Javier Martinez Canillas <javierm@redhat.com>
+Cc: linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+ Geert Uytterhoeven <geert@linux-m68k.org>, Maxime Ripard
+ <maxime@cerno.tech>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>,
+ =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+ Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>
+Message-ID: <5cffc63b-c42a-df4c-7270-488735c9e014@suse.de>
+Subject: Re: [PATCH v4 2/6] drm/format-helper: Add
+ drm_fb_xrgb8888_to_mono_reversed()
+References: <20220211091927.2988283-1-javierm@redhat.com>
+ <20220211091927.2988283-3-javierm@redhat.com>
+ <YgZEPo0ERFRloDyA@smile.fi.intel.com>
+In-Reply-To: <YgZEPo0ERFRloDyA@smile.fi.intel.com>
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
-Changes since v1:
-- fixed example
-- renamed to a new name
-- fixed some maxItems
+--------------xgrGKoD6EvNiq5zk7QMh2zal
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Change since v2:
-- Fixed maintainers section
+SGkNCg0KQW0gMTEuMDIuMjIgdW0gMTI6MTAgc2NocmllYiBBbmR5IFNoZXZjaGVua286DQo+
+IE9uIEZyaSwgRmViIDExLCAyMDIyIGF0IDEwOjE5OjIzQU0gKzAxMDAsIEphdmllciBNYXJ0
+aW5leiBDYW5pbGxhcyB3cm90ZToNCj4+IEFkZCBzdXBwb3J0IHRvIGNvbnZlcnQgZnJvbSBY
+UjI0IHRvIHJldmVyc2VkIG1vbm9jaHJvbWUgZm9yIGRyaXZlcnMgdGhhdA0KPj4gY29udHJv
+bCBtb25vY2hyb21hdGljIGRpc3BsYXkgcGFuZWxzLCB0aGF0IG9ubHkgaGF2ZSAxIGJpdCBw
+ZXIgcGl4ZWwuDQo+Pg0KPj4gVGhlIGZ1bmN0aW9uIGRvZXMgYSBsaW5lLWJ5LWxpbmUgY29u
+dmVyc2lvbiBkb2luZyBhbiBpbnRlcm1lZGlhdGUgc3RlcA0KPj4gZmlyc3QgZnJvbSBYUjI0
+IHRvIDgtYml0IGdyYXlzY2FsZSBhbmQgdGhlbiB0byByZXZlcnNlZCBtb25vY2hyb21lLg0K
+Pj4NCj4+IFRoZSBkcm1fZmJfZ3JheThfdG9fbW9ub19yZXZlcnNlZF9saW5lKCkgaGVscGVy
+IHdhcyBiYXNlZCBvbiBjb2RlIGZyb20NCj4+IGRyaXZlcnMvZ3B1L2RybS90aW55L3JlcGFw
+ZXIuYyBkcml2ZXIuDQo+IA0KPiAuLi4NCj4gDQo+PiArc3RhdGljIHZvaWQgZHJtX2ZiX2dy
+YXk4X3RvX21vbm9fcmV2ZXJzZWRfbGluZSh1OCAqZHN0LCBjb25zdCB1OCAqc3JjLCB1bnNp
+Z25lZCBpbnQgcGl4ZWxzLA0KPj4gKwkJCQkJICAgICAgIHVuc2lnbmVkIGludCBzdGFydF9v
+ZmZzZXQsIHVuc2lnbmVkIGludCBlbmRfbGVuKQ0KPj4gK3sNCj4+ICsJdW5zaWduZWQgaW50
+IHhiLCBpOw0KPj4gKw0KPj4gKwlmb3IgKHhiID0gMDsgeGIgPCBwaXhlbHM7IHhiKyspIHsN
+Cj4+ICsJCXVuc2lnbmVkIGludCBzdGFydCA9IDAsIGVuZCA9IDg7DQo+PiArCQl1OCBieXRl
+ID0gMHgwMDsNCj4gDQo+PiArCQlpZiAoeGIgPT0gMCAmJiBzdGFydF9vZmZzZXQpDQo+PiAr
+CQkJc3RhcnQgPSBzdGFydF9vZmZzZXQ7DQo+IA0KPiBUaGlzIGlzIGludmFyaWFudCB0byB0
+aGUgbG9vcCwgY2FuIGJlIG1vdmVkIG91dC4NCj4gDQo+PiArCQlpZiAoeGIgPT0gcGl4ZWxz
+IC0gMSAmJiBlbmRfbGVuKQ0KPj4gKwkJCWVuZCA9IGVuZF9sZW47DQo+IA0KPiBEaXR0by4g
+SG93ZXZlciBpdCBtYXkgcmVxdWlyZSB0byBmYWN0b3Igb3V0IHRoZSBmb2xsb3dpbmcgbG9v
+cCB0byBhIGhlbHBlci4NCg0KU3BsaXR0aW5nIHRoZSBsb29wIGlzIG11Y2ggbmljZXIsIGJ1
+dCBsZWF2ZXMgY29ybmVyIGNhc2VzIHdoZXJlIHN0YXJ0IA0KYW5kIGVuZCBpcyBpbiB0aGUg
+c2FtZSBieXRlLiBEb2luZyB0aGlzIHNvdW5kcyBsaWtlIGEgcHJlbWF0dXJlIA0Kb3B0aW1p
+emF0aW9uIHRvIG1lLg0KDQpCZXN0IHJlZ2FyZHMNClRob21hcw0KDQo+IA0KPj4gKwkJZm9y
+IChpID0gc3RhcnQ7IGkgPCBlbmQ7IGkrKykgew0KPj4gKwkJCXVuc2lnbmVkIGludCB4ID0g
+eGIgKiA4ICsgaTsNCj4+ICsNCj4+ICsJCQlieXRlID4+PSAxOw0KPj4gKwkJCWlmIChzcmNb
+eF0gPj4gNykNCj4+ICsJCQkJYnl0ZSB8PSBCSVQoNyk7DQo+PiArCQl9DQo+PiArCQkqZHN0
+KysgPSBieXRlOw0KPj4gKwl9DQo+PiArfQ0KPiANCj4gLi4uDQo+IA0KPj4gKwkvKg0KPj4g
+KwkgKiBUaGUgcmV2ZXJzZWQgbW9ubyBkZXN0aW5hdGlvbiBidWZmZXIgY29udGFpbnMgMSBi
+aXQgcGVyIHBpeGVsDQo+PiArCSAqIGFuZCBkZXN0aW5hdGlvbiBzY2FubGluZXMgaGF2ZSB0
+byBiZSBpbiBtdWx0aXBsZSBvZiA4IHBpeGVscy4NCj4+ICsJICovDQo+PiArCWlmICghZHN0
+X3BpdGNoKQ0KPj4gKwkJZHN0X3BpdGNoID0gRElWX1JPVU5EX1VQKGxpbmVwaXhlbHMsIDgp
+Ow0KPiANCj4gcm91bmRfdXAoKSA/DQo+IA0KPj4gKwlXQVJOX09OQ0UoZHN0X3BpdGNoICUg
+OCAhPSAwLCAiZHN0X3BpdGNoIGlzIG5vdCBhIG11bHRpcGxlIG9mIDhcbiIpOw0KPiANCj4g
+DQo+IEkgd291bGQgbW92ZSB0aGlzIHRvIHRoZSBpZiBjb25kaXRpb25hbCwgaS5lLg0KPiAN
+Cj4gCWlmIChkc3RfcGl0Y2gpDQo+IAkJV0FSTl9PTkNFKGRzdF9waXRjaCAlIDggIT0gMCwg
+ImRzdF9waXRjaCBpcyBub3QgYSBtdWx0aXBsZSBvZiA4XG4iKTsNCj4gCWVsc2UNCj4gCQlk
+c3RfcGl0Y2ggPSByb3VuZF91cChsaW5lcGl4ZWxzLCA4KTsNCj4gDQo+PiArCS8qDQo+PiAr
+CSAqIFRoZSBjbWEgbWVtb3J5IGlzIHdyaXRlLWNvbWJpbmVkIHNvIHJlYWRzIGFyZSB1bmNh
+Y2hlZC4NCj4gDQo+IENNQQ0KPiANCj4+ICsJICogU3BlZWQgdXAgYnkgZmV0Y2hpbmcgb25l
+IGxpbmUgYXQgYSB0aW1lLg0KPj4gKwkgKg0KPj4gKwkgKiBBbHNvLCBmb3JtYXQgY29udmVy
+c2lvbiBmcm9tIFhSMjQgdG8gcmV2ZXJzZWQgbW9ub2Nocm9tZQ0KPj4gKwkgKiBhcmUgZG9u
+ZSBsaW5lLWJ5LWxpbmUgYnV0IGFyZSBjb252ZXJ0ZWQgdG8gOC1iaXQgZ3JheXNjYWxlDQo+
+PiArCSAqIGFzIGFuIGludGVybWVkaWF0ZSBzdGVwLg0KPj4gKwkgKg0KPj4gKwkgKiBBbGxv
+Y2F0ZSBhIGJ1ZmZlciB0byBiZSB1c2VkIGZvciBib3RoIGNvcHlpbmcgZnJvbSB0aGUgY21h
+DQo+PiArCSAqIG1lbW9yeSBhbmQgdG8gc3RvcmUgdGhlIGludGVybWVkaWF0ZSBncmF5c2Nh
+bGUgbGluZSBwaXhlbHMuDQo+PiArCSAqLw0KPj4gKwlzcmMzMiA9IGttYWxsb2MobGVuX3Ny
+YzMyICsgbGluZXBpeGVscywgR0ZQX0tFUk5FTCk7DQo+IA0KPiBzaXplX2FkZCgpID8NCj4g
+DQo+PiArCWlmICghc3JjMzIpDQo+PiArCQlyZXR1cm47DQo+IA0KPiAuLi4NCj4gDQo+PiAr
+CS8qDQo+PiArCSAqIEZvciBkYW1hZ2UgaGFuZGxpbmcsIGl0IGlzIHBvc3NpYmxlIHRoYXQg
+b25seSBwYXJ0cyBvZiB0aGUgc291cmNlDQo+PiArCSAqIGJ1ZmZlciBpcyBjb3BpZWQgYW5k
+IHRoaXMgY291bGQgbGVhZCB0byBzdGFydCBhbmQgZW5kIHBpeGVscyB0aGF0DQo+PiArCSAq
+IGFyZSBub3QgYWxpZ25lZCB0byBtdWx0aXBsZSBvZiA4Lg0KPj4gKwkgKg0KPj4gKwkgKiBD
+YWxjdWxhdGUgaWYgdGhlIHN0YXJ0IGFuZCBlbmQgcGl4ZWxzIGFyZSBub3QgYWxpZ25lZCBh
+bmQgc2V0IHRoZQ0KPj4gKwkgKiBvZmZzZXRzIGZvciB0aGUgcmV2ZXJzZWQgbW9ubyBsaW5l
+IGNvbnZlcnNpb24gZnVuY3Rpb24gdG8gYWRqdXN0Lg0KPj4gKwkgKi8NCj4+ICsJc3RhcnRf
+b2Zmc2V0ID0gY2xpcC0+eDEgJSA4Ow0KPj4gKwllbmRfbGVuID0gY2xpcC0+eDIgJSA4Ow0K
+PiANCj4gQUxJR04oKSA/DQo+IA0KDQotLSANClRob21hcyBaaW1tZXJtYW5uDQpHcmFwaGlj
+cyBEcml2ZXIgRGV2ZWxvcGVyDQpTVVNFIFNvZnR3YXJlIFNvbHV0aW9ucyBHZXJtYW55IEdt
+YkgNCk1heGZlbGRzdHIuIDUsIDkwNDA5IE7DvHJuYmVyZywgR2VybWFueQ0KKEhSQiAzNjgw
+OSwgQUcgTsO8cm5iZXJnKQ0KR2VzY2jDpGZ0c2bDvGhyZXI6IEl2byBUb3Rldg0K
 
- .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
- .../bindings/crypto/rockchip-crypto.txt       | 28 --------
- 2 files changed, 66 insertions(+), 28 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
- delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+--------------xgrGKoD6EvNiq5zk7QMh2zal--
 
-diff --git a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-new file mode 100644
-index 000000000000..2e1e9fa711c4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/rockchip,rk3288-crypto.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Rockchip Electronics And Security Accelerator
-+
-+maintainers:
-+  - Heiko Stuebner <heiko@sntech.de>
-+
-+properties:
-+  compatible:
-+    const: rockchip,rk3288-crypto
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: clock data
-+      - description: clock data
-+      - description: clock crypto accelerator
-+      - description: clock dma
-+
-+  clock-names:
-+    items:
-+      - const: aclk
-+      - const: hclk
-+      - const: sclk
-+      - const: apb_pclk
-+
-+  resets:
-+    maxItems: 1
-+
-+  reset-names:
-+    const: crypto-rst
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - resets
-+  - reset-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/rk3288-cru.h>
-+    crypto@ff8a0000 {
-+      compatible = "rockchip,rk3288-crypto";
-+      reg = <0xff8a0000 0x4000>;
-+      interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>,
-+               <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC1>;
-+      clock-names = "aclk", "hclk", "sclk", "apb_pclk";
-+      resets = <&cru SRST_CRYPTO>;
-+      reset-names = "crypto-rst";
-+    };
-diff --git a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt b/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-deleted file mode 100644
-index 5e2ba385b8c9..000000000000
---- a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
-+++ /dev/null
-@@ -1,28 +0,0 @@
--Rockchip Electronics And Security Accelerator
--
--Required properties:
--- compatible: Should be "rockchip,rk3288-crypto"
--- reg: Base physical address of the engine and length of memory mapped
--       region
--- interrupts: Interrupt number
--- clocks: Reference to the clocks about crypto
--- clock-names: "aclk" used to clock data
--	       "hclk" used to clock data
--	       "sclk" used to clock crypto accelerator
--	       "apb_pclk" used to clock dma
--- resets: Must contain an entry for each entry in reset-names.
--	  See ../reset/reset.txt for details.
--- reset-names: Must include the name "crypto-rst".
--
--Examples:
--
--	crypto: cypto-controller@ff8a0000 {
--		compatible = "rockchip,rk3288-crypto";
--		reg = <0xff8a0000 0x4000>;
--		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>,
--			 <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC1>;
--		clock-names = "aclk", "hclk", "sclk", "apb_pclk";
--		resets = <&cru SRST_CRYPTO>;
--		reset-names = "crypto-rst";
--	};
--- 
-2.34.1
+--------------wbwTiEBTVkRaFTBgyEmt2ZN1
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmIGT6IFAwAAAAAACgkQlh/E3EQov+Bh
+JxAAzw9ZS4lQkX6R1q0bqL7cId/VnhuQWrOOxTgWTiH6aKmpJxttqfouigR7W5Qll7luDvgUctHt
+BMCO7JcWSoQngWYB5SY3Z5Q31WYfPlk0IkblcQszuLEiBMLuoAqw3kLZO0y3iDbDwCY9ymyMuBor
+1eKtf1wB0dEsOowmjKWWivrWry6QqNi/X+PZQzKXlkzny5B1adBHXK1lazvDFY2YGFHZPi8Hxs7Z
+LoeprBg1KqCWby5bEVSC9nPUGThM0gPY7wvkHhLoHH+h43y3aqafipiA517bpawaKMjnymsQcdFS
+UdqgJvi87gX/P9NQBiUcUwVnuljrVLrA5VP4QH6CNE3+oolzKV3SYV4AbSPo0cAbJU9X7WP9vxt1
+qnT5GX566sdjWkFjBYR5l+iaGvn0CJgfBHC/wByG4KjT7XHDoWafZ/lKf4GJX+FV/elJT4xE/GKV
+4UALuQSSUv95IocQ3hI6pxUGkGZ3BZVaHDyg3PrRCfRYuTn2bA0Jrm00zq+nVExUho3LHiJRtQQ/
+v0w0yLxvf8eDbV6y340EPBTxL156ve5kerJrcGEEkMsgSKS3t9lmfpqyJpcaaUBw/35piet+7U/I
+m2R21zgayG67Shn0+n327g6G3jb+nmzYt+Uuvkuk5gO6ErWUv3q+4/QHKnUtlAgH1xWF3zUV5hMa
+4rU=
+=aP3o
+-----END PGP SIGNATURE-----
+
+--------------wbwTiEBTVkRaFTBgyEmt2ZN1--
