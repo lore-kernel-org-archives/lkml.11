@@ -2,109 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8886C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3409C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346050AbiBKAG5 (ORCPT
+        id S1346131AbiBKAHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:06:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36308 "EHLO
+        Thu, 10 Feb 2022 19:07:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235345AbiBKAGz (ORCPT
+        with ESMTP id S1346079AbiBKAHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:06:55 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DAE26DF;
-        Thu, 10 Feb 2022 16:06:55 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id bs32so6716113qkb.1;
-        Thu, 10 Feb 2022 16:06:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=kIxNsx5t66aCekxGiYnzItzLDmvgCurjGzLHlKM8kmo=;
-        b=kUPI1caTAiBqAVK3q8DnKRacUz2Uib6Hme9P7gr7i8kQ+e8TDEJqGlFb9zgPToD7X4
-         N+9XO0XYP2mYbZz74uZ8ryyWvq1dnX9hrT17tCXcrSr4PANCJ/G0mRpk/gSmP6hwaIA4
-         tSW8lv3cVv4eh0Fc3r/J6QFoUcItqKb2tIQyxE/nf7iYijX6DS2RQXFJKqGgFPMhUCS9
-         Dqf5xuMhdzQRvnaBkiEGdwqac4utkIFoMdIFFiXveNwGxaUBDmRdbQNyiyVPpzaVTcFz
-         igRbWOfbP9PGIw7H/TiCmFN2ibo8AOWyYEUvfZNJ2d6hoCz97qFC1FNpcapXfbvgCC0D
-         Dc2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kIxNsx5t66aCekxGiYnzItzLDmvgCurjGzLHlKM8kmo=;
-        b=dZFBvUyx6I6yu5x9KI7cykgRPP61BtCZRsR3c72lrQqqd+vAXXKoPSXWqH2eRXrwxF
-         bZZYjQQk1Fe1jxukTgyoWiPlBNvdVijIzhiCro4Wl5AHAbhxvaHsRYUv1ljd1w+DAJ4O
-         HgWCTyYLBp+AlQZkfUpA4pHSJI/XXHi9RGWeXqkkGsBKdP4GCgqw4wkowqqO+H3SSiii
-         kEqxsTKBnfR8MokBcSQaY5/Akp5xc80KFbhWmVcMiH/wF8v6ZRQ16pgVtgZGuC2YWdTq
-         MYXSLXND5qqDrrJKGKibQPD2qqOMweDCvDtMmBDJFZJW0EczRbjJRrhdM7xQHss8zjuj
-         T8Dg==
-X-Gm-Message-State: AOAM531HrHekkONxkoVwTEqPrMDcw05AbZB0UDkV+KncAouDGc/dWoWc
-        1yOxuJwSIH+Ypqd7fBB8DSY=
-X-Google-Smtp-Source: ABdhPJwXNB8AH9WzcydC3nOV4kHShzA6P4syYry2xqBz+Iro1F4pn0IXPMbEY20Ct9c0HLCgx/xhIg==
-X-Received: by 2002:a37:851:: with SMTP id 78mr5100598qki.617.1644538014344;
-        Thu, 10 Feb 2022 16:06:54 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id v5sm11133965qkp.70.2022.02.10.16.06.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 16:06:53 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Sowjanya Komatineni <skomatineni@nvidia.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH 34/49] media: tegra-video: replace bitmap_weight with bitmap_weight_le
-Date:   Thu, 10 Feb 2022 14:49:18 -0800
-Message-Id: <20220210224933.379149-35-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 10 Feb 2022 19:07:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAA3270A;
+        Thu, 10 Feb 2022 16:07:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B4C861E05;
+        Fri, 11 Feb 2022 00:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D227FC36AE2;
+        Fri, 11 Feb 2022 00:07:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644538033;
+        bh=eKeB13pEAHinbp3QQ5ICgOQPnbUHF5blvJ1jG/ljeYE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=MutYD8N5dFq4iA4VftcZxDu6uQ159e/jqBR+w6I9BR6lNNjwp95I1VfOGU0SWiTkI
+         kJVJ7J9s8dK7Ar4jtzEWFTlCz9rUYxQwhziyUzv+3pCrr/GpNEWTo2fsw3HuZT9Xqc
+         dWlVdFX5dFgVBf9FIUZ2ddzfLT4fzRgFn7pyW+7UY1h8sQeVHs+ennf7VU41/Q+2nT
+         72lt3SVjPtHI8ApmJYbiHSLamf+hp/u+m4LkImi9PcMn9EZxEMLX+hsxmv43WZNJOV
+         mkWvZmk4HrF6npNgBPHP9KP8UHch6+7f0mi4aYo2RadkTTA/eqCaZsq1odi50UOtOP
+         2KClcZlP8DMag==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BC85CE5D084;
+        Fri, 11 Feb 2022 00:07:13 +0000 (UTC)
+Subject: Re: [GIT PULL] Kselftest fixes update for Linux 5.17-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <30ab6598-a653-7c63-c8ee-728c780f47d3@linuxfoundation.org>
+References: <30ab6598-a653-7c63-c8ee-728c780f47d3@linuxfoundation.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <30ab6598-a653-7c63-c8ee-728c780f47d3@linuxfoundation.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc4
+X-PR-Tracked-Commit-Id: 183f80fd72db42c9cc483aa7a5e8e881355d0b03
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 16f7432c884bb7882f0534cb8b9c38cdbccc37bc
+Message-Id: <164453803376.1838.5140652693812951062.pr-tracker-bot@kernel.org>
+Date:   Fri, 11 Feb 2022 00:07:13 +0000
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tegra_channel_enum_format() calls bitmap_weight() to compare the weight
-of bitmap with a given number. We can do it more efficiently with
-bitmap_weight_le() because conditional bitmap_weight may stop traversing
-the bitmap earlier, as soon as condition is (or can't be) met.
+The pull request you sent on Thu, 10 Feb 2022 13:27:41 -0700:
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/staging/media/tegra-video/vi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest tags/linux-kselftest-fixes-5.17-rc4
 
-diff --git a/drivers/staging/media/tegra-video/vi.c b/drivers/staging/media/tegra-video/vi.c
-index d1f43f465c22..4e79a80e9307 100644
---- a/drivers/staging/media/tegra-video/vi.c
-+++ b/drivers/staging/media/tegra-video/vi.c
-@@ -436,7 +436,7 @@ static int tegra_channel_enum_format(struct file *file, void *fh,
- 	if (!IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG))
- 		fmts_bitmap = chan->fmts_bitmap;
- 
--	if (f->index >= bitmap_weight(fmts_bitmap, MAX_FORMAT_NUM))
-+	if (bitmap_weight_le(fmts_bitmap, MAX_FORMAT_NUM, f->index))
- 		return -EINVAL;
- 
- 	for (i = 0; i < f->index + 1; i++, index++)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/16f7432c884bb7882f0534cb8b9c38cdbccc37bc
+
+Thank you!
+
 -- 
-2.32.0
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
