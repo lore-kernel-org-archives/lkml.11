@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60169C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08713C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348274AbiBKIxU (ORCPT
+        id S1348229AbiBKIx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:53:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41708 "EHLO
+        Fri, 11 Feb 2022 03:53:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbiBKIxT (ORCPT
+        with ESMTP id S1348276AbiBKIxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:53:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4AE6E6C;
-        Fri, 11 Feb 2022 00:53:18 -0800 (PST)
+        Fri, 11 Feb 2022 03:53:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EB3E8A;
+        Fri, 11 Feb 2022 00:53:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FDB961E16;
-        Fri, 11 Feb 2022 08:53:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34217C340E9;
-        Fri, 11 Feb 2022 08:53:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5DE461E40;
+        Fri, 11 Feb 2022 08:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A504C340EE;
+        Fri, 11 Feb 2022 08:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644569597;
-        bh=W8P8u1CNThLpBy8CT07j/PmPM4RD+MEbiw89ugd3VGQ=;
+        s=korg; t=1644569601;
+        bh=gqsFhcBgEzN3vzVtJwIcCchz72fhqIPtNDrPLZ+ElIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDmhUsBVP2pkGu8VasetaAONZ5O3kGr/3SO4APWP0vjzUL6YWlv2XFit/lHRWqJud
-         YICbq5CP44T5vhZp3mj7q/ppyZJd0P5WPJ2KSXXQkewdsM4oGExb96YPKxmTjrhqXf
-         EHSUIf7Py/xEMfzuHwGnTpqoF9AfyxvyxLw04UrA=
+        b=WYeCvHYPrEA1gdIZCJoTMXQQxW/FMe3C1N/7cTGXJq1muiIx1hzRPLw6CCSscSNXX
+         d+YHamn9TjhuNRqExcWJa96Br1vBLMwD77SIDn0VJnGat0sA6WBQ/XWhYY+/HaCItq
+         ArCmGTJ5VtcaEuDuQZoNUvlk4hBQQp9pChW92g7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.14.266
-Date:   Fri, 11 Feb 2022 09:53:06 +0100
-Message-Id: <1644569586114196@kroah.com>
+Subject: Re: Linux 4.19.229
+Date:   Fri, 11 Feb 2022 09:53:11 +0100
+Message-Id: <164456959118554@kroah.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <164456958616076@kroah.com>
-References: <164456958616076@kroah.com>
+In-Reply-To: <164456959130183@kroah.com>
+References: <164456959130183@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,30 +48,17 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index bc98aa57a6fa..1fe02d57d6a7 100644
+index 1779149108cf..e8be2ea115da 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 14
--SUBLEVEL = 265
-+SUBLEVEL = 266
+ PATCHLEVEL = 19
+-SUBLEVEL = 228
++SUBLEVEL = 229
  EXTRAVERSION =
- NAME = Petit Gorille
- 
-diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/mce.c
-index 95c09db1bba2..d8399a689165 100644
---- a/arch/x86/kernel/cpu/mcheck/mce.c
-+++ b/arch/x86/kernel/cpu/mcheck/mce.c
-@@ -589,7 +589,7 @@ static int srao_decode_notifier(struct notifier_block *nb, unsigned long val,
- 
- 	if (mce_usable_address(mce) && (mce->severity == MCE_AO_SEVERITY)) {
- 		pfn = mce->addr >> PAGE_SHIFT;
--		if (memory_failure(pfn, MCE_VECTOR, 0))
-+		if (!memory_failure(pfn, MCE_VECTOR, 0))
- 			mce_unmap_kpfn(pfn);
- 	}
+ NAME = "People's Front"
  
 diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
 index 5553a5643f40..5c81dc7371db 100644
@@ -92,7 +79,7 @@ index 5553a5643f40..5c81dc7371db 100644
  	return 0;
  }
 diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c
-index 5602bd81caa9..105f5b2f5978 100644
+index 5456611874eb..ced2b3f3547c 100644
 --- a/kernel/cgroup/cgroup-v1.c
 +++ b/kernel/cgroup/cgroup-v1.c
 @@ -577,6 +577,14 @@ static ssize_t cgroup_release_agent_write(struct kernfs_open_file *of,
@@ -110,7 +97,7 @@ index 5602bd81caa9..105f5b2f5978 100644
  	cgrp = cgroup_kn_lock_live(of->kn, false);
  	if (!cgrp)
  		return -ENODEV;
-@@ -1060,6 +1068,7 @@ static int cgroup1_remount(struct kernfs_root *kf_root, int *flags, char *data)
+@@ -1048,6 +1056,7 @@ static int cgroup1_remount(struct kernfs_root *kf_root, int *flags, char *data)
  {
  	int ret = 0;
  	struct cgroup_root *root = cgroup_root_from_kf(kf_root);
@@ -118,7 +105,7 @@ index 5602bd81caa9..105f5b2f5978 100644
  	struct cgroup_sb_opts opts;
  	u16 added_mask, removed_mask;
  
-@@ -1073,6 +1082,12 @@ static int cgroup1_remount(struct kernfs_root *kf_root, int *flags, char *data)
+@@ -1061,6 +1070,12 @@ static int cgroup1_remount(struct kernfs_root *kf_root, int *flags, char *data)
  	if (opts.subsys_mask != root->subsys_mask || opts.release_agent)
  		pr_warn("option changes via remount are deprecated (pid=%d comm=%s)\n",
  			task_tgid_nr(current), current->comm);
@@ -131,7 +118,7 @@ index 5602bd81caa9..105f5b2f5978 100644
  
  	added_mask = opts.subsys_mask & ~root->subsys_mask;
  	removed_mask = root->subsys_mask & ~opts.subsys_mask;
-@@ -1236,6 +1251,15 @@ struct dentry *cgroup1_mount(struct file_system_type *fs_type, int flags,
+@@ -1224,6 +1239,15 @@ struct dentry *cgroup1_mount(struct file_system_type *fs_type, int flags,
  		ret = -EPERM;
  		goto out_unlock;
  	}
@@ -148,16 +135,17 @@ index 5602bd81caa9..105f5b2f5978 100644
  	root = kzalloc(sizeof(*root), GFP_KERNEL);
  	if (!root) {
 diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 0b44427e29ec..d3017811b67a 100644
+index bd28ac7f2195..0d2ee4eb131f 100644
 --- a/net/tipc/link.c
 +++ b/net/tipc/link.c
-@@ -1462,12 +1462,15 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
+@@ -1579,13 +1579,16 @@ static int tipc_link_proto_rcv(struct tipc_link *l, struct sk_buff *skb,
  	u16 peers_tol = msg_link_tolerance(hdr);
  	u16 peers_prio = msg_linkprio(hdr);
  	u16 rcv_nxt = l->rcv_nxt;
 -	u16 dlen = msg_data_sz(hdr);
 +	u32 dlen = msg_data_sz(hdr);
  	int mtyp = msg_type(hdr);
+ 	bool reply = msg_probe(hdr);
  	void *data;
  	char *if_name;
  	int rc = 0;
@@ -169,7 +157,7 @@ index 0b44427e29ec..d3017811b67a 100644
  		goto exit;
  
 diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
-index 254ddc2c3914..c6496da9392d 100644
+index 23706ee16607..7b6c1c5c30dc 100644
 --- a/net/tipc/monitor.c
 +++ b/net/tipc/monitor.c
 @@ -457,6 +457,8 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
