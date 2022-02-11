@@ -2,127 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0D6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:17:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18FFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349399AbiBKLRQ (ORCPT
+        id S1349402AbiBKLRW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:17:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40554 "EHLO
+        Fri, 11 Feb 2022 06:17:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349349AbiBKLRE (ORCPT
+        with ESMTP id S1349391AbiBKLRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:17:04 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DA8E5E;
-        Fri, 11 Feb 2022 03:17:03 -0800 (PST)
-Date:   Fri, 11 Feb 2022 11:17:01 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644578222;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rRgfufVdSUKCP2kKHyjfDkGXkNj1dZAV5GKsRie9cWw=;
-        b=M/WEd5p0pMBVpw3CVRdS4qmdCzqg2LmPnKawKMOmGo7zJ1avbJ8LmCNNpcixKxrIw5ssKR
-        NI90vN2Txb+O9e1HyNUo2wqKNz8GsW4NXdKi5IqVBRkTnRVRRoCnoytNbYG+W4PzaUXPyQ
-        46ukgT5/hVRUpzM08gG+ffrnz+rM0m75PNEbj5jSNE2/McuQcBixdgIXa2G6b2f2azEjOX
-        qN5r/oVmO+crUvt1ePlpNscm3PfMDAoISYwDs1GCleKiY/XcIRNyZBGuNIpFcyfqBVXGqK
-        eu//QssycG4FfOVNI5hcrMWHudAQBUKcBfjgRnk8CbTR6EhOLZuZUU3eOOkEWA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644578222;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rRgfufVdSUKCP2kKHyjfDkGXkNj1dZAV5GKsRie9cWw=;
-        b=TUkKY39eIN4hFuaG1yFNvCSa0cw6a3oGrVgHZaW3ZJnG73ckqm9i3XvZ8cX/A4TDu8HFc2
-        YbxMQv/jOzT1icDQ==
-From:   "tip-bot2 for Minchan Kim" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: locking/core] locking: Add missing __sched attributes
-Cc:     Minchan Kim <minchan@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220115231657.84828-1-minchan@kernel.org>
-References: <20220115231657.84828-1-minchan@kernel.org>
+        Fri, 11 Feb 2022 06:17:18 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77EC9E9F;
+        Fri, 11 Feb 2022 03:17:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644578235; x=1676114235;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UDg/cRMVNZq4VK4Lls+Vec/HeF2777w2e/hwmwIdGoE=;
+  b=BWAY8qlMwTWvNZhU8t3wR2WGJ9asxvVdshNHoeel49UmWZOttX3aPLhV
+   NrFlx5J/SI7ONm8nU7T27fLaklFIa73Md5UDoBOWEJyuxhK1evsK7dtAL
+   wv4XwFDj725tXB1xMDXnZI/0HapsTQvDPfOkawlPgepNWNdy4k4Dabtf/
+   1g7fwJthh5p5jnFcfp2W7sGJNTaemQyGvdYts531QNbP3S4nktLSJ1L9E
+   xwJeJ19NMIjNI0+Atd9BDefP6KHRwLzuJwNde8jvPizeSmgRnrf/vSHCs
+   VOaK7GjzPgcbWhN81lnJjQ15GQ4Xe1YCLrkFKMELt9ODWhS7aVQs5zbN9
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="230356638"
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="230356638"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:17:15 -0800
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="623193127"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 03:17:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nITuQ-003Q6H-Qr;
+        Fri, 11 Feb 2022 13:16:14 +0200
+Date:   Fri, 11 Feb 2022 13:16:14 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>
+Subject: Re: [PATCH v4 4/6] drm/solomon: Add SSD130x OLED displays I2C support
+Message-ID: <YgZFfljGSH9p979C@smile.fi.intel.com>
+References: <20220211091927.2988283-1-javierm@redhat.com>
+ <20220211091927.2988283-5-javierm@redhat.com>
 MIME-Version: 1.0
-Message-ID: <164457822108.16921.12490199519648748991.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211091927.2988283-5-javierm@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the locking/core branch of tip:
+On Fri, Feb 11, 2022 at 10:19:25AM +0100, Javier Martinez Canillas wrote:
+> The ssd130x driver only provides the core support for these devices but it
+> does not have any bus transport logic. Add a driver to interface over I2C.
 
-Commit-ID:     c441e934b604a3b5f350a9104124cf6a3ba07a34
-Gitweb:        https://git.kernel.org/tip/c441e934b604a3b5f350a9104124cf6a3ba07a34
-Author:        Minchan Kim <minchan@kernel.org>
-AuthorDate:    Sat, 15 Jan 2022 15:16:57 -08:00
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 11 Feb 2022 12:13:55 +01:00
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-locking: Add missing __sched attributes
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> ---
+> 
+> Changes in v4:
+> - Remove unnecessary casting (Geert Uytterhoeven)
+> - Remove redundant blank lines (Andy Shevchenko)
+> - Remove comma after of_device_id table terminator (Andy Shevchenko)
+> 
+> Changes in v3:
+> - Add a separate driver for SSD130X chips I2C support (Andy Shevchenko)
+> 
+>  drivers/gpu/drm/solomon/Kconfig       |   9 ++
+>  drivers/gpu/drm/solomon/Makefile      |   1 +
+>  drivers/gpu/drm/solomon/ssd130x-i2c.c | 116 ++++++++++++++++++++++++++
+>  3 files changed, 126 insertions(+)
+>  create mode 100644 drivers/gpu/drm/solomon/ssd130x-i2c.c
+> 
+> diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
+> index 7720a7039e8d..5861c3ab7c45 100644
+> --- a/drivers/gpu/drm/solomon/Kconfig
+> +++ b/drivers/gpu/drm/solomon/Kconfig
+> @@ -10,3 +10,12 @@ config DRM_SSD130X
+>  	  the appropriate bus transport in your chip also must be selected.
+>  
+>  	  If M is selected the module will be called ssd130x.
+> +
+> +config DRM_SSD130X_I2C
+> +	tristate "DRM support for Solomon SSD130x OLED displays (I2C bus)"
+> +	depends on DRM_SSD130X && I2C
+> +	select REGMAP_I2C
+> +	help
+> +	  Say Y here if the SSD130x OLED display is connected via I2C bus.
+> +
+> +	  If M is selected the module will be called ssd130x-i2c.
+> diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
+> index f685addb19fe..4bfc5acb0447 100644
+> --- a/drivers/gpu/drm/solomon/Makefile
+> +++ b/drivers/gpu/drm/solomon/Makefile
+> @@ -1 +1,2 @@
+>  obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
+> +obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
+> diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+> new file mode 100644
+> index 000000000000..3126aeda4ced
+> --- /dev/null
+> +++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
+> @@ -0,0 +1,116 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * DRM driver for Solomon SSD130x OLED displays (I2C bus)
+> + *
+> + * Copyright 2022 Red Hat Inc.
+> + * Author: Javier Martinez Canillas <javierm@redhat.com>
+> + *
+> + * Based on drivers/video/fbdev/ssd1307fb.c
+> + * Copyright 2012 Free Electrons
+> + */
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +
+> +#include "ssd130x.h"
+> +
+> +#define DRIVER_NAME	"ssd130x-i2c"
+> +#define DRIVER_DESC	"DRM driver for Solomon SSD130x OLED displays (I2C)"
+> +
+> +static const struct regmap_config ssd130x_i2c_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +};
+> +
+> +static int ssd130x_i2c_probe(struct i2c_client *client)
+> +{
+> +	struct ssd130x_device *ssd130x;
+> +	struct regmap *regmap;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &ssd130x_i2c_regmap_config);
+> +	if (IS_ERR(regmap))
+> +		return PTR_ERR(regmap);
+> +
+> +	ssd130x = ssd130x_probe(&client->dev, regmap);
+> +	if (IS_ERR(ssd130x))
+> +		return PTR_ERR(ssd130x);
+> +
+> +	i2c_set_clientdata(client, ssd130x);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ssd130x_i2c_remove(struct i2c_client *client)
+> +{
+> +	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
+> +
+> +	return ssd130x_remove(ssd130x);
+> +}
+> +
+> +static void ssd130x_i2c_shutdown(struct i2c_client *client)
+> +{
+> +	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
+> +
+> +	ssd130x_shutdown(ssd130x);
+> +}
+> +
+> +static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
+> +	.default_vcomh = 0x34,
+> +	.default_dclk_div = 1,
+> +	.default_dclk_frq = 7,
+> +};
+> +
+> +static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
+> +	.default_vcomh = 0x20,
+> +	.default_dclk_div = 1,
+> +	.default_dclk_frq = 8,
+> +	.need_chargepump = 1,
+> +};
+> +
+> +static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
+> +	.default_vcomh = 0x20,
+> +	.default_dclk_div = 2,
+> +	.default_dclk_frq = 12,
+> +	.need_pwm = 1,
+> +};
+> +
+> +static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
+> +	.default_vcomh = 0x34,
+> +	.default_dclk_div = 1,
+> +	.default_dclk_frq = 10,
+> +};
+> +
+> +static const struct of_device_id ssd130x_of_match[] = {
+> +	{
+> +		.compatible = "solomon,ssd1305fb-i2c",
+> +		.data = &ssd130x_ssd1305_deviceinfo,
+> +	},
+> +	{
+> +		.compatible = "solomon,ssd1306fb-i2c",
+> +		.data = &ssd130x_ssd1306_deviceinfo,
+> +	},
+> +	{
+> +		.compatible = "solomon,ssd1307fb-i2c",
+> +		.data = &ssd130x_ssd1307_deviceinfo,
+> +	},
+> +	{
+> +		.compatible = "solomon,ssd1309fb-i2c",
+> +		.data = &ssd130x_ssd1309_deviceinfo,
+> +	},
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, ssd130x_of_match);
+> +
+> +static struct i2c_driver ssd130x_i2c_driver = {
+> +	.driver = {
+> +		.name = DRIVER_NAME,
+> +		.of_match_table = ssd130x_of_match,
+> +	},
+> +	.probe_new = ssd130x_i2c_probe,
+> +	.remove = ssd130x_i2c_remove,
+> +	.shutdown = ssd130x_i2c_shutdown,
+> +};
+> +module_i2c_driver(ssd130x_i2c_driver);
+> +
+> +MODULE_DESCRIPTION(DRIVER_DESC);
+> +MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.34.1
+> 
 
-This patch adds __sched attributes to a few missing places
-to show blocked function rather than locking function
-in get_wchan.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Signed-off-by: Minchan Kim <minchan@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220115231657.84828-1-minchan@kernel.org
----
- kernel/locking/percpu-rwsem.c | 5 +++--
- kernel/locking/rwsem.c        | 2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/locking/percpu-rwsem.c b/kernel/locking/percpu-rwsem.c
-index 70a32a5..c9fdae9 100644
---- a/kernel/locking/percpu-rwsem.c
-+++ b/kernel/locking/percpu-rwsem.c
-@@ -7,6 +7,7 @@
- #include <linux/rcupdate.h>
- #include <linux/sched.h>
- #include <linux/sched/task.h>
-+#include <linux/sched/debug.h>
- #include <linux/errno.h>
- 
- int __percpu_init_rwsem(struct percpu_rw_semaphore *sem,
-@@ -162,7 +163,7 @@ static void percpu_rwsem_wait(struct percpu_rw_semaphore *sem, bool reader)
- 	__set_current_state(TASK_RUNNING);
- }
- 
--bool __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
-+bool __sched __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
- {
- 	if (__percpu_down_read_trylock(sem))
- 		return true;
-@@ -211,7 +212,7 @@ static bool readers_active_check(struct percpu_rw_semaphore *sem)
- 	return true;
- }
- 
--void percpu_down_write(struct percpu_rw_semaphore *sem)
-+void __sched percpu_down_write(struct percpu_rw_semaphore *sem)
- {
- 	might_sleep();
- 	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
-diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
-index 69aba4a..acde5d6 100644
---- a/kernel/locking/rwsem.c
-+++ b/kernel/locking/rwsem.c
-@@ -1048,7 +1048,7 @@ out_nolock:
- /*
-  * Wait until we successfully acquire the write lock
-  */
--static struct rw_semaphore *
-+static struct rw_semaphore __sched *
- rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
- {
- 	long count;
