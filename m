@@ -2,115 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 05:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B11C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237374AbiBKF57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 00:57:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40330 "EHLO
+        id S239665AbiBKGDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 01:03:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235310AbiBKF55 (ORCPT
+        with ESMTP id S237775AbiBKGDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 00:57:57 -0500
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2FBBB98;
-        Thu, 10 Feb 2022 21:57:56 -0800 (PST)
-Received: by mail-lf1-f50.google.com with SMTP id i34so14570177lfv.2;
-        Thu, 10 Feb 2022 21:57:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YHj2jwcJGwmoQOFICOnj7VYD0ZfKr1aHs76v7p1GNas=;
-        b=uwhFFmZaoJ0Cr/wimNIHZZ6x4a/+thc3/aS8+HS65kdqj1dm1UHjNKzHcxEQAuTk0z
-         phMs+5h3zEdSmiuDODWMVs2PIaEgINGUz1lsxLjf3qd56szk8QAUu9oMCTJD5yogmJhM
-         jF77iSL6eB+659tby+T2+CKs3EZ2iH1iTMQ0pAoaKUsdiKnG1WN6Z6CRaJwLE0LPKIAS
-         rEINvMt2KQAlNLorAaTv4JVBIAGjGksB+vZ3jk2yr3sHlujQjBm2f5sspgdjakqd4inv
-         AD+4pRRB1WvR6AKuT8QpapzOJZft6MiAF4ChmUR06WNHPtRei8coh5IGxO3aZgflOOgS
-         jbYQ==
-X-Gm-Message-State: AOAM531bK8J1RQZyOuJcdBKg5JKSd7LKo1TuF+K/FSjRIrI5UhabkRJh
-        esU+YmVcImVZVtk+mSQhqh7azqW7cd+tx9qx6IAZ8WSa
-X-Google-Smtp-Source: ABdhPJy2dlN3fWiUhcT5boKFhlYkHBnGFHgB3K+4K4i+akzobdalchyFHlfYniU0eYARcVvOesbduvyh2ZcH9Ept6BA=
-X-Received: by 2002:a05:6512:3186:: with SMTP id i6mr131920lfe.47.1644559074965;
- Thu, 10 Feb 2022 21:57:54 -0800 (PST)
+        Fri, 11 Feb 2022 01:03:33 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844BC1153
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:03:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644559413; x=1676095413;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NAMToAsLm//yAsepY6SmMPO7LdZpsT8WKhD6kwUCsoE=;
+  b=eFYkhj7SBlCO/PQtTDb+hyZPKp3DN/zYUjIP/cwmbupYRsLhEXsM/tQg
+   OY8LKJwkSDYpvuHDy5TSiE0Q2e1hFJW/UPlIWO4ib08xA8NQoD//NbhHy
+   dIREIHFYcE6DV6ziPRbADH5IKPdlqfTxDOO+w8/Vvk2GwOODOnP7bKgrR
+   LjiyT7eaYpzvmfOdwwfmM8GlzvA+hAAIvjoh9ja/iItvqfodEmJWJiXWX
+   t+SYlVBoTg+H3cxtyBoSNCCablg5/QibanXKtfLJ8ltIs0YPbUlVDOKkL
+   U16Rk5F1CD1FwGzPH8PUwbG1vcARVuULhHad27ba5vDcVey1FAKQQ+7+A
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249419497"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="249419497"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:03:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="537552506"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 10 Feb 2022 22:03:31 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nIP1n-0004C4-2B; Fri, 11 Feb 2022 06:03:31 +0000
+Date:   Fri, 11 Feb 2022 14:02:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 13/35] ld:
+ fs/cifs/file.o:undefined reference to `netfs_invalidatepage'
+Message-ID: <202202111320.3RVjwLgi-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220208184208.79303-1-namhyung@kernel.org> <20220209090908.GK23216@worktop.programming.kicks-ass.net>
- <CAM9d7cgq+jxu6FJuKhZkprn7dO4DiG5pDjmYZzneQYTfKOM85g@mail.gmail.com>
- <YgTXUQ9CBoo3+A+c@hirez.programming.kicks-ass.net> <20220210191404.GM4285@paulmck-ThinkPad-P17-Gen-1>
- <52de2e14-33d9-bdda-4b37-3e72ae9954c7@redhat.com> <20220210201058.GP4285@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220210201058.GP4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Thu, 10 Feb 2022 21:57:43 -0800
-Message-ID: <CAM9d7cj-PhX16jKu8DT=tfVf=OfH78xYYaMB8BVk-Hj_eoR4kQ@mail.gmail.com>
-Subject: Re: [RFC 00/12] locking: Separate lock tracepoints from
- lockdep/lock_stat (v1)
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Waiman Long <longman@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Byungchul Park <byungchul.park@lge.com>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Radoslaw Burny <rburny@google.com>, Tejun Heo <tj@kernel.org>,
-        rcu <rcu@vger.kernel.org>, cgroups <cgroups@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   429e2bb6fb190f390ed23afc0d2308e877c43be5
+commit: fc3202013b39db4b5188e871431e6650d819129d [13/35] netfs: Provide invalidatepage and releasepage calls
+config: x86_64-kexec (https://download.01.org/0day-ci/archive/20220211/202202111320.3RVjwLgi-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/fc3202013b39db4b5188e871431e6650d819129d
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout fc3202013b39db4b5188e871431e6650d819129d
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-On Thu, Feb 10, 2022 at 12:10 PM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Thu, Feb 10, 2022 at 02:27:11PM -0500, Waiman Long wrote:
-> > On 2/10/22 14:14, Paul E. McKenney wrote:
-> > > On Thu, Feb 10, 2022 at 10:13:53AM +0100, Peter Zijlstra wrote:
-> > > > On Wed, Feb 09, 2022 at 04:32:58PM -0800, Namhyung Kim wrote:
-> > > > > On Wed, Feb 9, 2022 at 1:09 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> > > > > > On Tue, Feb 08, 2022 at 10:41:56AM -0800, Namhyung Kim wrote:
-> > > > > >
-> > > > > > > Eventually I'm mostly interested in the contended locks only and I
-> > > > > > > want to reduce the overhead in the fast path.  By moving that, it'd be
-> > > > > > > easy to track contended locks with timing by using two tracepoints.
-> > > > > > So why not put in two new tracepoints and call it a day?
-> > > > > >
-> > > > > > Why muck about with all that lockdep stuff just to preserve the name
-> > > > > > (and in the process continue to blow up data structures etc..). This
-> > > > > > leaves distros in a bind, will they enable this config and provide
-> > > > > > tracepoints while bloating the data structures and destroying things
-> > > > > > like lockref (which relies on sizeof(spinlock_t)), or not provide this
-> > > > > > at all.
-> > > > > If it's only lockref, is it possible to change it to use arch_spinlock_t
-> > > > > so that it can remain in 4 bytes?  It'd be really nice if we can keep
-> > > > > spin lock size, but it'd be easier to carry the name with it for
-> > > > > analysis IMHO.
-> > > > It's just vile and disgusting to blow up the lock size for convenience
-> > > > like this.
-> > > >
-> > > > And no, there's more of that around. A lot of effort has been spend to
-> > > > make sure spinlocks are 32bit and we're not going to give that up for
-> > > > something as daft as this.
-> > > >
-> > > > Just think harder on the analysis side. Like said; I'm thinking the
-> > > > caller IP should be good enough most of the time.
-> > >
-> > > Another option is to keep any additional storage in a separate data
-> > > structure keyed off of lock address, lockdep class, or whatever.
-> > >
-> > > Whether or not this is a -good- option, well, who knows?  ;-)
-> >
-> > I have suggested that too. Unfortunately, I was replying to an email with
-> > your wrong email address. So you might not have received it.
->
-> Plus I was too lazy to go look at lore.  ;-)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Sorry for the noise about the email address in the first place.
-It has been so long since the last time I sent you a patch..
+All errors (new ones prefixed by >>):
 
-Thanks,
-Namhyung
+>> ld: fs/cifs/file.o:(.rodata+0x288): undefined reference to `netfs_invalidatepage'
+>> ld: fs/cifs/file.o:(.rodata+0x290): undefined reference to `netfs_releasepage'
+   ld: fs/cifs/file.o:(.rodata+0x348): undefined reference to `netfs_invalidatepage'
+   ld: fs/cifs/file.o:(.rodata+0x350): undefined reference to `netfs_releasepage'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
