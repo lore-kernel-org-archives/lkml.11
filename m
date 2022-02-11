@@ -2,77 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42922C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:24:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346318AbiBKJYp (ORCPT
+        id S1348607AbiBKJYz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:24:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39472 "EHLO
+        Fri, 11 Feb 2022 04:24:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348565AbiBKJYd (ORCPT
+        with ESMTP id S1348595AbiBKJYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:24:33 -0500
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2311083
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:24:33 -0800 (PST)
+        Fri, 11 Feb 2022 04:24:40 -0500
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03381109B;
+        Fri, 11 Feb 2022 01:24:37 -0800 (PST)
 Received: from localhost.localdomain ([81.221.85.15]) by mrelay.perfora.net
- (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MfnzW-1ndRU226ke-00N9dQ;
- Fri, 11 Feb 2022 10:24:14 +0100
+ (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M7ZR3-1oCV3C3YYh-00xJjX;
+ Fri, 11 Feb 2022 10:24:06 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Song Liu <songliubraving@fb.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Adam Ford <aford173@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
+        Adam Ford <aford173@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Enric Balletbo i Serra <enric.balletbo@collabora.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
         Olof Johansson <olof@lixom.net>,
         Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v6 09/12] arm64: defconfig: build r8169 as a module
-Date:   Fri, 11 Feb 2022 10:23:19 +0100
-Message-Id: <20220211092322.287487-10-marcel@ziswiler.com>
+        Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v6 06/12] arm64: defconfig: enable bpf/cgroup firewalling
+Date:   Fri, 11 Feb 2022 10:23:16 +0100
+Message-Id: <20220211092322.287487-7-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220211092322.287487-1-marcel@ziswiler.com>
 References: <20220211092322.287487-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:MFlx40zwNSODjArGcvqwJ9w1oR/n8nN6sCAacYEhspQ9MzbrDwm
- ECnOflmhgccbMNV7X8l+bZVfcmtjaa8HcuGeiZhleTbUtguiZbuNWTd29n4QhGa2UopRJKE
- gim/zFbO6xtttzXjc1NqwU4L8LtH9I/4o+SmvSt4g1G2k+O7QqGrpw+SQ44MqriolK22CJg
- pLAa85yhJEomBs5PLOMOA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JsbmGeVIUtE=:8uSn5ruLpG1WZF6DpBrCj1
- hj9uJUq8SQnmf1wjm1Fol1QKJEfUn6vQ+DnUWi8OeUTCDzuhxIhQ24LA7YYg5qvAKdAR4/nI8
- pETWFDbXBnwA4VEADFyrUYEWR5OKlHly1Cx+otyy8SDimeBjvH+bkphgkF9ERSabD3SsLmIj+
- KWUWU0+CvTRSFeckEBMawcj77fm4kTVNWr9cDlTwoy7F83zVm35zWNu18+7T0kMNAxSR9exBX
- fCO6xlWKCGG96HCtul6VUoj4bgQYItuU30mci1SUXMFCr1kq9AKcrz0scf+4NCZi99IDcOZJB
- rxpdiK+Pc1FJUsoQyv5mRIGpk/sH8pT7J9U3MKZzfyJFF0iN80TLmfg+Vp575CJu5E8yTknoz
- YKBDYHNZ/eptq3Jvlrj75lAvKoBVH5ujbE1YEpDkAnQ6RGQd5QUI3ZgfCybQ1jmH68R8JhphV
- r4bp0OBVCpJtRlN/X4/vkKWWcCUwM1QoaQWUWDBsi7zN3QsYWUTDzXm9puMDxYrDN1PL7rGjm
- LV64P65dZBwt4gBTkU/4Jj3a3Cqk+DRNobZtwhvNq1/RsrvHCQ9Ts8Gb2PsEIm9IdogGdbNbq
- Be41gRgUuOdMIMxv+zd828HYV0AeH9Ok6wB2gaJ9bCgAemGYHqxT+rQe/Rdm8pG6gWIfDv2xf
- Lur6Q2Eq14bCo7v+Zr6/GTh7sj1pf6pXwAbcqWYJNxVQ8CTwEPClfflxNZsZUxlvXxKlrpMyt
- nR/Xp46s1pp/rqI0
+X-Provags-ID: V03:K1:rf0hT0aeHyLIdu2loRx1Zy/Fdh/cjuPMmxMTcXBYZ2EmTPwGFfz
+ tyrlZLoxD7OYvX/ct1Z3LsVE0ZXI4eUav9jH7hq55G8ouOcefAA1FtpzYPlUBcrc6YsA0M+
+ P6BPQH5zz8UTVpXp6mvkuBI5temNeqzofaby8EXsoHM/lGWz5cN8C2C7pGfR9cBTeBdgJ/v
+ fc0nPXmlG9NosgKCSgp6w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:zrql6Y5KADM=:aTsM38AVLTMnEHGDXL5Kt7
+ ms9ORCvceNmgrjSAO41QoE3DQO6UnVu+tVC5HCDFQzominrpjUN+BLKhSCTAle78ikUpGIIsj
+ n95Tlm82pWsefN0QkMluYZKteSjAnPuixPFlHas1kPqGOTehncV3CYPxBLw+YOH0RvdBciQbT
+ ikVSNLlpdi0STQ6bMIpWeUtuGZC2G7RmWumovOOIhxYGcgFFkuo7goKqQCfZGhOnVunjk8qFS
+ WL6/2otNIz44uL43Som8sEWAcdED7Kj+SlR404rqAjQwi9MEWX2X6qZW1azerM4NUe9clT7xn
+ jRSs3c7P3Bb7X5Y3Mc6GKXJgK8xMNN8qxwwhxIOtKo1bUG0ezrbAv6Om5IBTDjhtisz6rCDUH
+ oTHatkSgMOAnCqndtXVcUN4T4g+7i3lwo/Q6K+ggNbi5qOvuVJtO+lz59fMqQKpbluvTD/chg
+ wkQ9+X0S5HAA9+uqOspO3rQEIun9SwB/qLhKRbk0biymF+3q7DiNIk6w+VROQEO2QpwfnPTfE
+ 0YdtemLYEdxY4vMxDkec3/NdIA8VPdTo86mzrmH5WI28/9CW4rLGfWt8yF9GcG/cDhv0kpcPK
+ t6JWVVQjejM3AprUD2EKhO9TPtmplqzOJME7+ll3cPg1D4fFoZCWJrebRbdfLqDUfTkaZHE6K
+ +lnwuQ5iFZdi0q6kWQ7JiI6Ug6iONb6rgl7k9mmjG4jOSmxYfyhXwYCzh8HX2VkRYIdPeJHx+
+ F4PoYmR+CJokuKFk
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Build Realtek Gigabit Ethernet driver as a module.
+This avoids the following systemd warning:
 
-Network cards based on chipsets this driver supports are ubiquitous both
-in regular PCIe as well as mini-PCIe and nowadays even various M.2
-formats. It is therefore a suitable card to be used for any kind of PCIe
-and/or Gigabit Ethernet testing. As it is not designed in, just enabling
-it as a module seems most suitable.
+[    2.618538] systemd[1]: system-getty.slice: unit configures an IP
+ firewall, but the local system does not support BPF/cgroup firewalling.
+[    2.630916] systemd[1]: (This warning is only shown for the first
+ unit using IP firewalling.)
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Acked-by: Song Liu <songliubraving@fb.com>
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
 ---
@@ -83,23 +92,31 @@ Changes in v3:
 - Add Krzysztof's reviewed-by tag.
 
 Changes in v2:
-- Explain why enabling it may be a good idea as requested by Krzysztof.
+- Add Song's acked-by tag.
 
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/configs/defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 27afe24a025a..76334cb698af 100644
+index 530ad076b5cb..444fec9ec73a 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -339,6 +339,7 @@ CONFIG_MLX5_CORE=m
- CONFIG_MLX5_CORE_EN=y
- CONFIG_QCOM_EMAC=m
- CONFIG_RMNET=m
-+CONFIG_R8169=m
- CONFIG_SH_ETH=y
- CONFIG_RAVB=y
- CONFIG_SMC91X=y
+@@ -3,6 +3,7 @@ CONFIG_POSIX_MQUEUE=y
+ CONFIG_AUDIT=y
+ CONFIG_NO_HZ_IDLE=y
+ CONFIG_HIGH_RES_TIMERS=y
++CONFIG_BPF_SYSCALL=y
+ CONFIG_BPF_JIT=y
+ CONFIG_PREEMPT=y
+ CONFIG_IRQ_TIME_ACCOUNTING=y
+@@ -22,6 +23,7 @@ CONFIG_CPUSETS=y
+ CONFIG_CGROUP_DEVICE=y
+ CONFIG_CGROUP_CPUACCT=y
+ CONFIG_CGROUP_PERF=y
++CONFIG_CGROUP_BPF=y
+ CONFIG_USER_NS=y
+ CONFIG_SCHED_AUTOGROUP=y
+ CONFIG_BLK_DEV_INITRD=y
 -- 
 2.33.1
 
