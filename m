@@ -2,93 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DF0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E504C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349919AbiBKMNI (ORCPT
+        id S1343862AbiBKMNw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 07:13:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55420 "EHLO
+        Fri, 11 Feb 2022 07:13:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349885AbiBKMNE (ORCPT
+        with ESMTP id S236946AbiBKMNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 07:13:04 -0500
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C6CDA8;
-        Fri, 11 Feb 2022 04:13:03 -0800 (PST)
-Received: by mail-oi1-f177.google.com with SMTP id 4so9266087oil.11;
-        Fri, 11 Feb 2022 04:13:03 -0800 (PST)
+        Fri, 11 Feb 2022 07:13:50 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DBAE1E9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 04:13:48 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id fj5so19598138ejc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 04:13:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chrisdown.name; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OZFYLN+S6IkbZKtWQGnLOGDHtfELHim7rgW7KJNl2oA=;
+        b=GgzQiLfzSmdOrEWpzLCjSq3QC0hcb9rDCloigLalwdcFW/g9GKJ3a3Z0+28hLH8wbK
+         xp8IGtFCVCVQSyA9ZhpEaqrHjiShC/ZCizU4JmHjIzZ1F66JmvkQELHdJPnjFBAkJI3Q
+         hXYU9/IjNZR9rTRX5wDuSaFBFFg905KXUmqWg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=cuBlIjJY4vaAWQT/4C6Ak9m1WRcqNbkYIsxGyvkT4rk=;
-        b=nQLpFNMd20cVCONufynpoBNgFjHFbPa3JPV77p1MS1bGGvppbYH43z4mjIIQ18m0VE
-         WzM+TkWySY7zj5X3aT3TBIt9DrM40CefCI+rlW/VNwrYFXXtSOCJ0tyCdX4ENLWlfWCs
-         uT/vp6SfhI67SSJgfkKZWKz9Twgp3WyAoJCcfmQ3yCzW1wx7cjyFJQk2vU+VnGhNGALy
-         kF0KYK5NBN9J92QkslaWX0Kj+QT5cXcwZNwnBhU4MuTX42eLsAkpjBxroPXoaADT3SNb
-         zxHoXVjzUg+T9r0/CANGsBsH+Jx+vrAxWIaIrhuAMSP4nA78X/1Qp7CHQus3/fdNXnWU
-         KBMw==
-X-Gm-Message-State: AOAM531/pt1H0zmcbIst6pe2sg4J5Slw6gkYGFJV6D/i0ktssalJWL90
-        KPwaRMJS5BjLgIZ5Yroegw==
-X-Google-Smtp-Source: ABdhPJwC68NbqlKCoT6iGNdOcPryVMllb8uhD4nbb/rVM94vLoxVJPFWGXcXeY9hjrenDtePrHtmxQ==
-X-Received: by 2002:a05:6808:2026:: with SMTP id q38mr16779oiw.243.1644581582414;
-        Fri, 11 Feb 2022 04:13:02 -0800 (PST)
-Received: from robh.at.kernel.org ([2607:fb90:20d4:10b7:69a2:33cd:1782:fb47])
-        by smtp.gmail.com with ESMTPSA id bx41sm6384628oib.7.2022.02.11.04.12.45
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OZFYLN+S6IkbZKtWQGnLOGDHtfELHim7rgW7KJNl2oA=;
+        b=XkP5eWwTuDzjLXUpe5Crx0ZyZoHUCYaMQ95waOiIhosINJRckptjYpCDZotWVv07yP
+         dLlEBwFDTB4/Q2UaeE8fohUINQdDGN5duInxlx4BBQmZgDOcn9/wYTaLsjkGJURzDaGQ
+         27hJlV3i6vaLzjVExArje9x3O8rXx9eJb089ffiVsKQOY2uruR6Jn1xncEvniRX/NQ4L
+         PvH+BXebwetKbBvOYqLCo8sC67XltJrs2Sq/AX79Fzl7Qxp9+1H9720Pq5PDyGSUPrYH
+         nRKFKl0YV2R5ZqcyXSLDOB5EsumqnRVZn3JlETPg/TUGFNCU7uMMZkhQF92QFJC71PjJ
+         ik4g==
+X-Gm-Message-State: AOAM531NoI3xf4ANMD0k9LL4LT3b7R+4cJ8QJYayYICmZcj7vyVLrN+M
+        rJKwww4uxkcqlrmT7pF/0cqdKQ==
+X-Google-Smtp-Source: ABdhPJyRtqUrUs+M3S+hu6tQUEiRGJ5QkqmMDrFjSkY5y8JkhDvsNhfxzQOQjlNJnDEFjbBJjNU4UA==
+X-Received: by 2002:a17:906:3b42:: with SMTP id h2mr1147665ejf.647.1644581626601;
+        Fri, 11 Feb 2022 04:13:46 -0800 (PST)
+Received: from localhost ([2620:10d:c093:400::5:bc0d])
+        by smtp.gmail.com with ESMTPSA id i22sm5828777ejx.128.2022.02.11.04.13.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 04:13:01 -0800 (PST)
-Received: (nullmailer pid 141879 invoked by uid 1000);
-        Fri, 11 Feb 2022 12:12:43 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     robh+dt@kernel.org, devicetree@vger.kernel.org,
-        alsa-devel@alsa-project.org, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, trevor.wu@mediatek.com, tzungbi@google.com,
-        linux-kernel@vger.kernel.org, lgirdwood@gmail.com,
-        linux-mediatek@lists.infradead.org, geert+renesas@glider.be,
-        linux-arm-kernel@lists.infradead.org, broonie@kernel.org,
-        zhangqilong3@huawei.com, perex@perex.cz, tiwai@suse.com
-In-Reply-To: <20220211103818.8266-12-jiaxin.yu@mediatek.com>
-References: <20220211103818.8266-1-jiaxin.yu@mediatek.com> <20220211103818.8266-12-jiaxin.yu@mediatek.com>
-Subject: Re: [PATCH 11/15] dt-bindings: mediatek: mt8186: add audio afe document
-Date:   Fri, 11 Feb 2022 06:12:43 -0600
-Message-Id: <1644581563.497957.141878.nullmailer@robh.at.kernel.org>
+        Fri, 11 Feb 2022 04:13:45 -0800 (PST)
+Date:   Fri, 11 Feb 2022 12:13:45 +0000
+From:   Chris Down <chris@chrisdown.name>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] memcg: synchronously enforce memory.high for
+ large overcharges
+Message-ID: <YgZS+YijLo0/WmEd@chrisdown.name>
+References: <20220211064917.2028469-1-shakeelb@google.com>
+ <20220211064917.2028469-5-shakeelb@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220211064917.2028469-5-shakeelb@google.com>
+User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 18:38:14 +0800, Jiaxin Yu wrote:
-> This patch adds mt8186 audio afe document.
-> 
-> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
-> ---
->  .../bindings/sound/mt8186-afe-pcm.yaml        | 175 ++++++++++++++++++
->  1 file changed, 175 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml
-> 
+Shakeel Butt writes:
+>The high limit is used to throttle the workload without invoking the
+>oom-killer. Recently we tried to use the high limit to right size our
+>internal workloads. More specifically dynamically adjusting the limits
+>of the workload without letting the workload get oom-killed. However due
+>to the limitation of the implementation of high limit enforcement, we
+>observed the mechanism fails for some real workloads.
+>
+>The high limit is enforced on return-to-userspace i.e. the kernel let
+>the usage goes over the limit and when the execution returns to
+>userspace, the high reclaim is triggered and the process can get
+>throttled as well. However this mechanism fails for workloads which do
+>large allocations in a single kernel entry e.g. applications that
+>mlock() a large chunk of memory in a single syscall. Such applications
+>bypass the high limit and can trigger the oom-killer.
+>
+>To make high limit enforcement more robust, this patch makes the limit
+>enforcement synchronous only if the accumulated overcharge becomes
+>larger than MEMCG_CHARGE_BATCH. So, most of the allocations would still
+>be throttled on the return-to-userspace path but only the extreme
+>allocations which accumulates large amount of overcharge without
+>returning to the userspace will be throttled synchronously. The value
+>MEMCG_CHARGE_BATCH is a bit arbitrary but most of other places in the
+>memcg codebase uses this constant therefore for now uses the same one.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Note that mem_cgroup_handle_over_high() has its own allocator throttling grace 
+period, where it bails out if the penalty to apply is less than 10ms. The 
+reclaim will still happen, though. So throttling might not happen even for 
+roughly MEMCG_CHARGE_BATCH-sized allocations, depending on the overall size of 
+the cgroup and its protection.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml:10:4: [warning] wrong indentation: expected 2 but found 3 (indentation)
-./Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml:14:7: [warning] wrong indentation: expected 4 but found 6 (indentation)
+>Signed-off-by: Shakeel Butt <shakeelb@google.com>
+>---
+>Changes since v1:
+>- Based on Roman's comment simply the sync enforcement and only target
+>  the extreme cases.
+>
+> mm/memcontrol.c | 5 +++++
+> 1 file changed, 5 insertions(+)
+>
+>diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+>index 292b0b99a2c7..0da4be4798e7 100644
+>--- a/mm/memcontrol.c
+>+++ b/mm/memcontrol.c
+>@@ -2703,6 +2703,11 @@ static int try_charge_memcg(struct mem_cgroup *memcg, gfp_t gfp_mask,
+> 		}
+> 	} while ((memcg = parent_mem_cgroup(memcg)));
+>
+>+	if (current->memcg_nr_pages_over_high > MEMCG_CHARGE_BATCH &&
+>+	    !(current->flags & PF_MEMALLOC) &&
+>+	    gfpflags_allow_blocking(gfp_mask)) {
+>+		mem_cgroup_handle_over_high();
 
-dtschema/dtc warnings/errors:
+Thanks, I was going to comment on v1 that I prefer to keep the implementation 
+of mem_cgroup_handle_over_high if possible since we know that the mechanism has 
+been safe in production over the past few years.
 
-doc reference errors (make refcheckdocs):
+One question I have is about throttling. It looks like this new 
+mem_cgroup_handle_over_high callsite may mean that throttling is invoked more 
+than once on a misbehaving workload that's failing to reclaim since the 
+throttling could be invoked both here and in return to userspace, right? That 
+might not be a problem, but we should think about the implications of that, 
+especially in relation to MEMCG_MAX_HIGH_DELAY_JIFFIES.
 
-See https://patchwork.ozlabs.org/patch/1591561
+Maybe we should record if throttling happened previously and avoid doing it 
+again for this entry into kernelspace? Not certain that's the right answer, but 
+we should think about what the new semantics should be.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+>+	}
+> 	return 0;
+> }
+>
+>-- 
+>2.35.1.265.g69c8d7142f-goog
+>
