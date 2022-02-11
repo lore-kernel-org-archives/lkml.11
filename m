@@ -2,182 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D025C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:11:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2666C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240679AbiBKGLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 01:11:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53562 "EHLO
+        id S245034AbiBKGMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 01:12:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233561AbiBKGLA (ORCPT
+        with ESMTP id S236027AbiBKGME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 01:11:00 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E06C318
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:10:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644559859; x=1676095859;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=njvurMrwL1Bv5tFfoFBQL7gBFyKcylkvil0xA66ogBM=;
-  b=I+RGZYYysmcyNRh+YaKwaPll3l4+bFtDPfWtvejjH71bKmzn2m4oAAdj
-   RYX8PkellOqqZOQtGpDce1KTPOnQ0470OhrmVj3jIVDtcFXFBukWO84vV
-   PbEHo0L/bcPGQZet1atBrftyo3eYbA3300SR9P9eHEmqrnGOs39Sx1pjI
-   umjHYcStZ+CGXjj8PEDrZr7XWkNP8rRE7Gm5HcDPjEOo3Nauiz5JH6G6L
-   3oZenZvOq6jwetqKl8ZQGFceiKZW2hK1dptPVEEJ6RL+CemDInfLsK1Fh
-   LnGQqIt0hOnX6r8JAPgbbON9Jz2ilp0z0IllTaTK8ETFWofo6pawi+B7b
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="312952650"
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="312952650"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:10:58 -0800
-X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
-   d="scan'208";a="541959412"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:10:58 -0800
-Date:   Thu, 10 Feb 2022 22:10:58 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Fri, 11 Feb 2022 01:12:04 -0500
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D66318;
+        Thu, 10 Feb 2022 22:12:01 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id EC7DE580151;
+        Fri, 11 Feb 2022 01:11:58 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Fri, 11 Feb 2022 01:11:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=7yA6z7PhVzwlb8
+        6kW7KqNxkoBU4Efuv/kUiMjX8q454=; b=vBEjPq7fjjLMri8jv2utP4sNqDs7nf
+        eaRr/AvBsDOAjyekxRtkEnnKd6XEOOSJzv5FAvA9Tp/CARHWcqiV85pFKDv350gT
+        VXArZpexoqezsvaAsCYf9TJfPilZ96UKs9T4cnYsp2wa1YElhIexnaCLbdWHgnyj
+        7wtuAEaHp4I92EaMb7pSZ/b5T5Q3durV4BnQpvEEiiMlgF6aBoBcNZsu9Wrd4opt
+        PRdY+bNxDwRB4TKZXCTitlBZSAb0AGTNIyp/gA3+0wcRURchcQl/ddHZE6nS0OXe
+        3jl0JGlJqIVR1LrRLJB/1TqEjilKMuXUwzpKVrdD60PbcxvdW5IRiisA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=7yA6z7PhVzwlb86kW
+        7KqNxkoBU4Efuv/kUiMjX8q454=; b=Ui8rq8S3uc19DQgkNua+nh5vsfDLqGANC
+        aBKdJXbQm8Rlh+wd1n9zcw9WBFOzAbvFX86oMv8duyDOHYxtHonDbV2OUL1d/WPu
+        8T/m6zuctgsgdxy1fzfyKJQ75qMDrTaqq4jy1HrDbwldODKSZ6xnwjocNSwQY4kz
+        7bGiGfv98lHLkxmRu6XOi6rVuQfTCHXYxzF5n67UwW3F8ECqIsi6y8CVjnChrXAS
+        KpdfFKNiC5tH1QvNY3rpHN5jzFqKHVnGZRPiqMhyim3YCAZM/tcknB2/y4A0oB+E
+        QuX/FcpAohzGI0rCtpW3q+k0vBYzJtOhz4PpGchsUERUQV394a0bg==
+X-ME-Sender: <xms:Lf4FYsnbPB5IYMt40e6XKiDTQCtSBIyAPDdWqOjcqyAI2J7dBM4-fQ>
+    <xme:Lf4FYr1GosAwk1hk6iFj_RnEq5CnovoIWYkD8OM1NqaLsX8yr5HhEDc-z02R6ERID
+    7LtmzM9o-wXYnR99Ag>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddriedvgdekjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhlrggu
+    vgcuhggrthhkihhnshdfuceoshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhmqe
+    enucggtffrrghtthgvrhhnpeeuieffteejieetgfevteelheevudehteeihffhteehtdet
+    leegtedtvdevvddugeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+X-ME-Proxy: <xmx:Lf4FYqpEQuQSIsikJ5-xFLjy8Amd-ci6eGAcyQoJ58NNtBKxdk_ysQ>
+    <xmx:Lf4FYolkg7fgxEg5RcodgrysWnkjafoWT_qEE8oG0J4HOvuMpgM9VA>
+    <xmx:Lf4FYq2o1Of5Bsz72a1EeTL_B4OjCH4k61ai77hbjyexwrbibnRXMQ>
+    <xmx:Lv4FYjvAGmVWeUuPLW8koYVLHq4tEGvt5D7IeStigxP6EvLmJGuOa63Nr-s>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id CD860F6007E; Fri, 11 Feb 2022 01:11:57 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <d7fe6305-4f05-4085-8a02-24d4fe46b79e@www.fastmail.com>
+In-Reply-To: <20220209191248.892853405@linuxfoundation.org>
+References: <20220209191248.892853405@linuxfoundation.org>
+Date:   Fri, 11 Feb 2022 01:11:55 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V8 15/44] x86/pkeys: Preserve the PKS MSR on context
- switch
-Message-ID: <20220211061058.GQ785175@iweiny-DESK2.sc.intel.com>
-References: <20220127175505.851391-1-ira.weiny@intel.com>
- <20220127175505.851391-16-ira.weiny@intel.com>
- <3b1ba2fe-5f69-ee2f-ea08-f0b5d145696d@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b1ba2fe-5f69-ee2f-ea08-f0b5d145696d@intel.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 5.10 0/3] 5.10.100-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 04:22:42PM -0800, Dave Hansen wrote:
-> On 1/27/22 09:54, ira.weiny@intel.com wrote:
-> > From: Ira Weiny <ira.weiny@intel.com>
-> > 
-> > The PKS MSR (PKRS) is defined as a per-logical-processor register.  This
-> 
-> s/defined as//
+On Wed, Feb 9, 2022, at 2:14 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.100 release.
+> There are 3 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 11 Feb 2022 19:12:41 +0000.
+> Anything received after that time might be too late.
 
-Done.
+Compiled and booted 5.10.100-rc1 on my x86_64 test system successfully without errors or regressions.
 
-> 
-> > isolates memory access by logical CPU.  
-> 
-> This second sentence is a bit confusing to me.  I *think* you're trying
-> to say that PKRS only affects accesses from one logical CPU.
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
-Yes.
-
-> But, it
-> just comes out strangely.  I think I'd just axe the sentence.
-
-Yea done.
-
-> 
-> > Unfortunately, the MSR is not
-> > managed by XSAVE.  Therefore, tasks must save/restore the MSR value on
-> > context switch.
-> > 
-> > Define pks_saved_pkrs in struct thread_struct.  Initialize all tasks,
-> > including the init_task, with the PKS_INIT_VALUE when created.  Restore
-> > the CPU's MSR to the saved task value on schedule in.
-> > 
-> > pks_write_current() is added to ensures non-supervisor pkey
-> 
-> 				  ^ ensure
-
-Done.
-
-> 
-> ...
-> > diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-> > index 2c5f12ae7d04..3530a0e50b4f 100644
-> > --- a/arch/x86/include/asm/processor.h
-> > +++ b/arch/x86/include/asm/processor.h
-> > @@ -2,6 +2,8 @@
-> >  #ifndef _ASM_X86_PROCESSOR_H
-> >  #define _ASM_X86_PROCESSOR_H
-> >  
-> > +#include <linux/pks-keys.h>
-> > +
-> >  #include <asm/processor-flags.h>
-> >  
-> >  /* Forward declaration, a strange C thing */
-> > @@ -502,6 +504,12 @@ struct thread_struct {
-> >  	unsigned long		cr2;
-> >  	unsigned long		trap_nr;
-> >  	unsigned long		error_code;
-> > +
-> > +#ifdef	CONFIG_ARCH_ENABLE_SUPERVISOR_PKEYS
-> > +	/* Saved Protection key register for supervisor mappings */
-> > +	u32			pks_saved_pkrs;
-> > +#endif
-> 
-> There are a bunch of other "saved" registers in thread_struct.  They all
-> just have their register name, including pkru.
-> 
-> Can you just stick this next to 'pkru' and call it plain old 'pkrs'?
-
-Sure.  I was trying to use the same 'pks_*' prefix everywhere.  But pkrs makes
-sense too.
-
-> That will probably even take up less space than this since the two
-> 32-bit values can be packed together.
-
-Yes done.
-
-[]
-
-> > diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-> > index 3402edec236c..81fc0b638308 100644
-> > --- a/arch/x86/kernel/process_64.c
-> > +++ b/arch/x86/kernel/process_64.c
-> > @@ -59,6 +59,7 @@
-> >  /* Not included via unistd.h */
-> >  #include <asm/unistd_32_ia32.h>
-> >  #endif
-> > +#include <asm/pks.h>
-> >  
-> >  #include "process.h"
-> >  
-> > @@ -657,6 +658,8 @@ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
-> >  	/* Load the Intel cache allocation PQR MSR. */
-> >  	resctrl_sched_in();
-> >  
-> > +	pks_write_current();
-> > +
-> >  	return prev_p;
-> >  }
-> 
-> At least for pkru and fsgsbase, these have the form:
-> 
-> 	x86_<register>_load();
-> 
-> Should this be
-> 
-> 	x86_pkrs_load();
-
-Ok done.
-
-> 
-> and be located next to:
-> 
-> 	x86_pkru_load()?
-
-This presents a problem.  As defined this can't happen until current is loaded.
-For now I've passed in the next thread_struct but I fear that is going to cause
-some bad header dependencies.  I'll see what 0day has to say about it and
-adjust as needed.
-
-Ira
+Thanks,
+Slade
