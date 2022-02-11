@@ -2,217 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8037C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 20:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353666AbiBKU5R (ORCPT
+        id S1349081AbiBKU6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 15:57:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49608 "EHLO
+        Fri, 11 Feb 2022 15:58:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353485AbiBKU4u (ORCPT
+        with ESMTP id S1353913AbiBKU6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 15:56:50 -0500
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67366D57;
-        Fri, 11 Feb 2022 12:56:34 -0800 (PST)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 44E5793;
-        Fri, 11 Feb 2022 21:56:32 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1644612992;
-        bh=Mbj/JEWHnhuJ4egVN/7JMgXgTiAVpvT6Yrbb2y5h5y8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FKhdR2CXuHPyjSKKxXMecloiTMPp9yecKPLJ9U0Ct2G2yW16zr4yRusJCEv3SKAba
-         MOZ1u608xioB0ReRpiLgcC3DrILH+EYESIv59Xy2ixgma8zgNmHOvBEn1obcn0hiJy
-         tQPjILlJ3SFwbKcsAC8OwZugqaiUeSUHu6MLK3zs=
-Date:   Fri, 11 Feb 2022 22:56:28 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
-        Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 07/66] dt-bindings: media: sun6i-a31-csi: Add MIPI
- CSI-2 input port
-Message-ID: <YgbNfKiNkPmvaT1k@pendragon.ideasonboard.com>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-8-paul.kocialkowski@bootlin.com>
- <YgFCuaf007wd8sJy@pendragon.ideasonboard.com>
- <YgaKXvP3rLOLR9VR@aptenodytes>
+        Fri, 11 Feb 2022 15:58:24 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A97DD86;
+        Fri, 11 Feb 2022 12:58:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 8F9D7CE2C05;
+        Fri, 11 Feb 2022 20:58:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9FB0C340F7;
+        Fri, 11 Feb 2022 20:58:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644613081;
+        bh=DhXPhCALScf4UQ/shTnyxSV9qJWuG4YeZkIXRRWBEVw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ajgwkdmnZO9Y7MRwNsIt1ZG9/Z6LGtc+CmxUJxPxIyF8iWukb3cmoHlHk9+e7iZcY
+         Gj8X8uV0uW2d4zO2mlY2nGDYRqsch9PLEDry8XYx33hz9eJ59u1V4dn9CpRYlNY24H
+         YpvYHDCgR2Vb9B9VYi0pQ0HBPtioYjV/TLpoz/88Cn/XfsPeOCmkLja9io9/XV9xC/
+         dGxOCeUo6tD0vH3ywGGbpEUXFYdCj8feF4MhVPoshpMFhs09YeOKHwWW2TZcitERvP
+         sW/xOJ+URxZvb0WcWzPLsfzQ5CPk41AQfSZBtVmTQSbULE0s1HuIzKk0iI6wHmKHWp
+         +iLESXEOHYYTw==
+Received: by mail-wm1-f46.google.com with SMTP id i19so4763054wmq.5;
+        Fri, 11 Feb 2022 12:58:01 -0800 (PST)
+X-Gm-Message-State: AOAM531z6xupWMzYO7pLqDe9aQo5Y9Y973smxWUGlGI683SJH4SAnOCz
+        f4g5Auo2qoFIRaPGlXZPpotvCGCEQNFBgrIr09k=
+X-Google-Smtp-Source: ABdhPJy8dwHEN6dzGsXIEK8NoROkcl3T9UWJmDsZybG8UOP6f/JMYU9iGRPTSF1X7kLYqinjFf3/ZAsoTd9ApDP8Ffw=
+X-Received: by 2002:a05:600c:1f06:: with SMTP id bd6mr1769956wmb.98.1644613079976;
+ Fri, 11 Feb 2022 12:57:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YgaKXvP3rLOLR9VR@aptenodytes>
+References: <CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com>
+ <20220117132757.1881981-1-arnd@kernel.org> <CAHTX3dKyAha8_nu=7e413pKr+SAaPBLp9=FTdQ=GZNdjQHW+zA@mail.gmail.com>
+ <CAK8P3a2Om2SYchx8q=ddkNeJ4o=1MVXD2MFSV2SGJ_vuTUcp0Q@mail.gmail.com>
+ <126ae5ee-342c-334c-9c07-c00213dd7b7e@xilinx.com> <CAK8P3a2zZfFa55nNeMicWHhia7fkT0cJBzYvUi0O+v0B13BOMA@mail.gmail.com>
+ <YgROuYDWfWYlTUKD@antec> <YgWrFnoOOn/B3X4k@antec> <CAK8P3a0eAv168eepvdZQbYDstTQHc-Hb2_PMS3bseV3caB4oAA@mail.gmail.com>
+ <CAHk-=wj7kOxDg+2Ym1EQsTZaZqU-p7aFHiNVOmtEhNS8jjapLQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wj7kOxDg+2Ym1EQsTZaZqU-p7aFHiNVOmtEhNS8jjapLQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Fri, 11 Feb 2022 21:57:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a22q+vTb3cEurhA0zXzw8-9+jKJRotC0oWMncS3sb-7zA@mail.gmail.com>
+Message-ID: <CAK8P3a22q+vTb3cEurhA0zXzw8-9+jKJRotC0oWMncS3sb-7zA@mail.gmail.com>
+Subject: Re: [PATCH] microblaze: remove CONFIG_SET_FS
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Stafford Horne <shorne@gmail.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 05:10:06PM +0100, Paul Kocialkowski wrote:
-> Hi Laurent,
-> 
-> Thanks for the review!
-> 
-> On Mon 07 Feb 22, 18:03, Laurent Pinchart wrote:
-> > Hi Paul,
-> > 
-> > Thank you for the patch.
-> > 
-> > On Sat, Feb 05, 2022 at 07:53:30PM +0100, Paul Kocialkowski wrote:
-> > > The A31 CSI controller supports two distinct input interfaces:
-> > > parallel and an external MIPI CSI-2 bridge. The parallel interface
-> > > is often connected to a set of hardware pins while the MIPI CSI-2
-> > > bridge is an internal FIFO-ish link. As a result, these two inputs
-> > > are distinguished as two different ports.
-> > > 
-> > > Note that only one of the two may be present on a controller instance.
-> > > For example, the V3s has one controller dedicated to MIPI-CSI2 and one
-> > > dedicated to parallel.
-> > 
-> > Is it that only one of the two is present, or only one of the two is
-> > connected ? In the latter case I'd make both ports required, but with
-> > only one of them connected.
-> 
-> There are situations where the actual pins for parallel (port@0) are missing
-> and the controller is dedicated to its mipi csi-2 bridge (port@1), cases where
-> the two are present and cases where the mipi csi-2 bridge doesn't exist.
-> So all in all it's really legit that only one port may be defined.
+On Fri, Feb 11, 2022 at 6:46 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+> On Fri, Feb 11, 2022 at 9:00 AM Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > I have now uploaded a cleanup series to
+> > https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=set_fs
+> >
+> > This uses the same access_ok() function across almost all
+> > architectures, with the exception of those that need something else,
+> > and I then I went further and killed off set_fs for everything other
+> > than ia64.
+>
+> Thanks, looks good to me.
+>
+> Can you say why you didn't convert ia64? I don't see any set_fs() use
+> there, except for the unaligned handler, which looks trivial to
+> remove. It looks like the only reason for it is kernel-mode unaligned
+> exceptions, which we should just turn fatal, I suspect (they already
+> get logged).
+>
+> And ia64 people could make the unaligned handling do the kernel mode
+> case in emulate_load/store_int() - it doesn't look *that* painful.
+>
+> But maybe you noticed something else?
+>
+> It would be really good to just be able to say that set_fs() no longer
+> exists at all.
 
-The port could still exist internally in the IP core though. Of course
-that's hard to tell.
+I had previously gotten stuck at ia64, but gave it another go now
+and uploaded an updated branch with ia64 taken care of and another
+patch to clean up bits afterwards.
 
-> > > Update the binding with an explicit ports node that holds two distinct
-> > > port nodes: one for parallel input and one for MIPI CSI-2.
-> > > 
-> > > This is backward-compatible with the single-port approach that was
-> > > previously taken for representing the parallel interface port, which
-> > > stays enumerated as fwnode port 0.
-> > > 
-> > > Note that additional ports may be added in the future, especially to
-> > > support feeding the CSI controller's output to the ISP.
-> > > 
-> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > Reviewed-by: Rob Herring <robh@kernel.org>
-> > > Acked-by: Maxime Ripard <mripard@kernel.org>
-> > > ---
-> > >  .../media/allwinner,sun6i-a31-csi.yaml        | 60 +++++++++++++++----
-> > >  1 file changed, 47 insertions(+), 13 deletions(-)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> > > index 8b568072a069..3cc61866ea89 100644
-> > > --- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
-> > > @@ -61,6 +61,34 @@ properties:
-> > >  
-> > >      additionalProperties: false
-> > >  
-> > > +  ports:
-> > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > +
-> > > +    properties:
-> > > +      port@0:
-> > > +        $ref: "#/properties/port"
-> > > +        unevaluatedProperties: false
-> > > +
-> > > +      port@1:
-> > > +        $ref: /schemas/graph.yaml#/$defs/port-base
-> > > +        description: MIPI CSI-2 bridge input port
-> > > +
-> > > +        properties:
-> > > +          reg:
-> > > +            const: 1
-> > > +
-> > > +          endpoint:
-> > > +            $ref: video-interfaces.yaml#
-> > > +            unevaluatedProperties: false
-> > > +
-> > > +        additionalProperties: false
-> > > +
-> > > +    anyOf:
-> > > +      - required:
-> > > +        - port@0
-> > > +      - required:
-> > > +        - port@1
-> > > +
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > 
-> > Shouldn't you specify that either port or ports is required, but not
-> > both ? I'd also add a comment in the port node to tell it's deprecated,
-> > and that ports should be used instead.
-> 
-> Yes I agree on both points. I guess that should be a:
-> 
-> oneOf:
->   - required:
->     - ports
->   - required:
->     - port
-> 
-> (but feel free to correct me).
-> 
-> > > @@ -89,19 +117,25 @@ examples:
-> > >                        "ram";
-> > >          resets = <&ccu RST_BUS_CSI>;
-> > >  
-> > > -        port {
-> > > -            /* Parallel bus endpoint */
-> > > -            csi1_ep: endpoint {
-> > > -                remote-endpoint = <&adv7611_ep>;
-> > > -                bus-width = <16>;
-> > > -
-> > > -                /*
-> > > -                 * If hsync-active/vsync-active are missing,
-> > > -                 * embedded BT.656 sync is used.
-> > > -                 */
-> > > -                 hsync-active = <0>; /* Active low */
-> > > -                 vsync-active = <0>; /* Active low */
-> > > -                 pclk-sample = <1>;  /* Rising */
-> > > +        ports {
-> > > +            #address-cells = <1>;
-> > > +            #size-cells = <0>;
-> > > +
-> > > +            port@0 {
-> > > +                reg = <0>;
-> > > +                /* Parallel bus endpoint */
-> > > +                csi1_ep: endpoint {
-> > > +                    remote-endpoint = <&adv7611_ep>;
-> > > +                    bus-width = <16>;
-> > > +
-> > > +                    /*
-> > > +                     * If hsync-active/vsync-active are missing,
-> > > +                     * embedded BT.656 sync is used.
-> > > +                     */
-> > > +                     hsync-active = <0>; /* Active low */
-> > > +                     vsync-active = <0>; /* Active low */
-> > > +                     pclk-sample = <1>;  /* Rising */
-> > 
-> > Wrong indentation.
-> 
-> The double-space before /* Rising */ or something with the heading indent?
+I only gave it light testing so far, mainly building the defconfig for every
+architecture. I'll post the series once the build bots are happy with the
+branch overall.
 
-The heading has one extra space for all three lines, they should be
-aligned to the / of /*, not to the *.
-
-> > > +                };
-> > >              };
-> > >          };
-> > >      };
-
--- 
-Regards,
-
-Laurent Pinchart
+         Arnd
