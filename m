@@ -2,145 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D43DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 21:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353774AbiBKVgh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 16:36:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51290 "EHLO
+        id S235711AbiBKVhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 16:37:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348044AbiBKVgf (ORCPT
+        with ESMTP id S229770AbiBKVhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 16:36:35 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B454C62
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:36:33 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id o24so14645749wro.3
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:36:33 -0800 (PST)
+        Fri, 11 Feb 2022 16:37:46 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E40FC62
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:44 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id f23so19013063lfe.5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=algolia.com; s=google;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=QoHkcZvCmcHF62oRV/Hm9AoyHlp+75nzlQs0pgmwqUI=;
-        b=s8v8rMvQoML6oAH/jNhMegfoUndT2JSIU3CERlBOF4Oi6fm+u54Ix6EuMuVg+cksOH
-         tKXO81zID1PUPvvqlxPXARkYJON2MJJRdri9oSaKO1Fw3+iVHcmmPwOyFrt8m9iALg7c
-         GiqaZrocgto3SuwzrfUiTNa0NWRi/hcxIAxPw=
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XFzCG6U+gQcN35bNR5ygZp7My/pmsXpJOFlN4wA8faE=;
+        b=Op5mHfi4lkpgsAXFUIEvOb892Ki9UfRvx6Wny8c8GnjgwctkidFgQ18OXWJf376jCc
+         BL/WKzyG/HlMvQ5Fg9rMrnYrcCvA8WOcTMUhjWAiGuoPntTEWvfcefuEHsgqJwwQX7cW
+         NOiWSj++f2uRrGtaz3ZiLzt4iZqukzsD9VZjY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=QoHkcZvCmcHF62oRV/Hm9AoyHlp+75nzlQs0pgmwqUI=;
-        b=WrGLJoRHh84yW2NIr6+JvJkfodE81aAk0M3zThq8aDZZgaH1Zi5NYRJi5ysOo1fYCW
-         NSlKovxHGZtOsBwX1dFslfRnZmOQgvOcO8dJjYrIeTY5r70gNRc3x+2SfeloeOvjzlkF
-         hh6I5GYXZwehmnqW9UZsQ+52NaSlxsJafBQWmC1tsf+mCYwSc4JHk6Dw7BYmim0V2bhC
-         bRIGzBVdGRv/jp7xf9PPCVQBmpLBmYvlOPoB9bsC7jmGcf1KqELdPMexlKBr6CH2Lu32
-         WdC2pSJJ0olBKM9TWatsRfk2VkHzbMWoXPZ6x1WbaC5OJrttS7QovnmdUKK5YZIIG8zG
-         TScA==
-X-Gm-Message-State: AOAM531XLcZJHeOq00Tw4yxVhoeHZf3lxgXspk5OduxVnmo7euwACQ8z
-        Vj2sZo983TwOY5PmgabjKMcuIaUEYvifeA==
-X-Google-Smtp-Source: ABdhPJwKq1doCFiVgUnyUmItCSHDL6e7xpBEp05K5zavzokjOh6gztQvmlDI3nsM1kotmCw6/9CABQ==
-X-Received: by 2002:a5d:64ad:: with SMTP id m13mr2785015wrp.671.1644615391604;
-        Fri, 11 Feb 2022 13:36:31 -0800 (PST)
-Received: from xavier-xps ([2a01:e0a:830:d971:752e:e19b:a691:2171])
-        by smtp.gmail.com with ESMTPSA id r2sm13133308wrt.65.2022.02.11.13.36.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 13:36:30 -0800 (PST)
-Date:   Fri, 11 Feb 2022 22:36:28 +0100
-From:   Xavier Roche <xavier.roche@algolia.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jean Delvare <jdelvare@suse.de>,
-        Xavier Roche <xavier.roche@algolia.com>, linux-mm@kvack.org
-Subject: [PATCH v2] tmpfs: support for file creation time
-Message-ID: <20220211213628.GA1919658@xavier-xps>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XFzCG6U+gQcN35bNR5ygZp7My/pmsXpJOFlN4wA8faE=;
+        b=hKOr4R8Yk5y1QkjIUqSicwms7oxVNoturZjneIcmK1yzWfuktPj3hWYsDi+jpXWf0R
+         AQPhcy3u31r6RZ2z+qgIYwChmenkgvG8fscYHp/Ou2qD8K0iQ+LDOJj+pBtlYz3viHRT
+         LhRizdZcJMvTe2NStkdr6eEJIleXqTPKSV0FSqF5+gAS4bXlfmTFs8+S6DCKgmSs0MNn
+         LcekEn0IF+IPZY2/7tsh4sLfHJyM2RBfSMcP02R1yKCM1QPKHPTlXQnCexM4FW8DAvOI
+         NFoCUr5Z9vHXHw4rNkX9bbOGv8hLb/dSYoEyYo4frHddwysDUUD2trOJkNgIJf2XUwJ6
+         gqSA==
+X-Gm-Message-State: AOAM533fI5StG2U+vGMTZFYWCE5miEJna/cv2RYjvgHBXFAwKNnk74k4
+        +JpFrkmGQUYALU4CYpIUZrTILcOiKOTpPm+l5L8=
+X-Google-Smtp-Source: ABdhPJyRp1XcQ87hqyIl5BKbcmYevo1/8dsUaJzueJr1eFXyI5UGT8d0DJW/s6LtEmf5dVRdHKT3Ow==
+X-Received: by 2002:a05:6512:2821:: with SMTP id cf33mr2500352lfb.37.1644615462562;
+        Fri, 11 Feb 2022 13:37:42 -0800 (PST)
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com. [209.85.208.169])
+        by smtp.gmail.com with ESMTPSA id c28sm3254902lfv.211.2022.02.11.13.37.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Feb 2022 13:37:42 -0800 (PST)
+Received: by mail-lj1-f169.google.com with SMTP id t14so14201506ljh.8
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 13:37:42 -0800 (PST)
+X-Received: by 2002:a05:6000:1885:: with SMTP id a5mr2667962wri.193.1644614977325;
+ Fri, 11 Feb 2022 13:29:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220211210757.612595-1-Jason@zx2c4.com>
+In-Reply-To: <20220211210757.612595-1-Jason@zx2c4.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 11 Feb 2022 13:29:21 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wh+2jokbr4tpHA=ExebWKr=qp9RJ_uFrG2gYG4ChAjitg@mail.gmail.com>
+Message-ID: <CAHk-=wh+2jokbr4tpHA=ExebWKr=qp9RJ_uFrG2gYG4ChAjitg@mail.gmail.com>
+Subject: Re: [PATCH RFC v0] random: block in /dev/urandom
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various filesystems (including ext4) now support file creation time.
-This patch adds such support for tmpfs-based filesystems.
+On Fri, Feb 11, 2022 at 1:08 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+>
+> Maybe. And this is why this is a request for grumbles patch: the Linus
+> Jitter Dance relies on random_get_entropy() returning a cycle counter
+> value.
 
-Signed-off-by: Xavier Roche <xavier.roche@algolia.com>
-Tested-by: Jean Delvare <jdelvare@suse.de>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
----
- include/linux/shmem_fs.h |  1 +
- mm/shmem.c               | 11 +++++++++++
- 2 files changed, 12 insertions(+)
+Yeah.
 
-diff --git a/include/linux/shmem_fs.h b/include/linux/shmem_fs.h
-index e65b80ed09e7..29787767c3b9 100644
---- a/include/linux/shmem_fs.h
-+++ b/include/linux/shmem_fs.h
-@@ -25,6 +25,7 @@ struct shmem_inode_info {
- 	struct simple_xattrs	xattrs;		/* list of xattrs */
- 	atomic_t		stop_eviction;	/* hold when working on inode */
- 	struct inode		vfs_inode;
-+	struct timespec64	i_crtime;	/* file creation time */
- };
- 
- struct shmem_sb_info {
-diff --git a/mm/shmem.c b/mm/shmem.c
-index a09b29ec2b45..5a3907712c4f 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -1061,6 +1061,12 @@ static int shmem_getattr(struct user_namespace *mnt_userns,
- 	if (shmem_is_huge(NULL, inode, 0))
- 		stat->blksize = HPAGE_PMD_SIZE;
- 
-+	if ((request_mask & STATX_BTIME)) {
-+		stat->result_mask |= STATX_BTIME;
-+		stat->btime.tv_sec = info->i_crtime.tv_sec;
-+		stat->btime.tv_nsec = info->i_crtime.tv_nsec;
-+	}
-+
- 	return 0;
- }
- 
-@@ -2265,6 +2271,7 @@ static struct inode *shmem_get_inode(struct super_block *sb, const struct inode
- 		atomic_set(&info->stop_eviction, 0);
- 		info->seals = F_SEAL_SEAL;
- 		info->flags = flags & VM_NORESERVE;
-+		info->i_crtime = inode->i_mtime;
- 		INIT_LIST_HEAD(&info->shrinklist);
- 		INIT_LIST_HEAD(&info->swaplist);
- 		simple_xattrs_init(&info->xattrs);
-@@ -3196,6 +3203,7 @@ static ssize_t shmem_listxattr(struct dentry *dentry, char *buffer, size_t size)
- #endif /* CONFIG_TMPFS_XATTR */
- 
- static const struct inode_operations shmem_short_symlink_operations = {
-+	.getattr	= shmem_getattr,
- 	.get_link	= simple_get_link,
- #ifdef CONFIG_TMPFS_XATTR
- 	.listxattr	= shmem_listxattr,
-@@ -3203,6 +3211,7 @@ static const struct inode_operations shmem_short_symlink_operations = {
- };
- 
- static const struct inode_operations shmem_symlink_inode_operations = {
-+	.getattr	= shmem_getattr,
- 	.get_link	= shmem_get_link,
- #ifdef CONFIG_TMPFS_XATTR
- 	.listxattr	= shmem_listxattr,
-@@ -3790,6 +3799,7 @@ static const struct inode_operations shmem_inode_operations = {
- 
- static const struct inode_operations shmem_dir_inode_operations = {
- #ifdef CONFIG_TMPFS
-+	.getattr	= shmem_getattr,
- 	.create		= shmem_create,
- 	.lookup		= simple_lookup,
- 	.link		= shmem_link,
-@@ -3811,6 +3821,7 @@ static const struct inode_operations shmem_dir_inode_operations = {
- };
- 
- static const struct inode_operations shmem_special_inode_operations = {
-+	.getattr	= shmem_getattr,
- #ifdef CONFIG_TMPFS_XATTR
- 	.listxattr	= shmem_listxattr,
- #endif
--- 
-2.25.1
+I think this patch is fine for architectures that do have that cycle
+counter value.
 
+Considering that the jitter thing has been there for 2.5 years by now,
+and nobody has really complained about it (*), I think we can call
+that thing a success. And on those architectures where
+try_to_generate_entropy() works, removing the code that then does that
+GRND_INSECURE makes sense. We just don't have any such case any more.
+
+BUT.
+
+When try_to_generate_entropy() doesn't work, I think you now removed
+the possible fallback for user space to say "yeah, just give me best
+effort". And you might re-introduce a deadlock as a result.
+
+Those systems are arguably broken from a randomness standpoint - what
+the h*ll are you supposed to do if there's nothing generating entropy
+- but broken or not, I suspect they still exists. Those horrendous
+MIPS things were quite common in embedded networking (routers, access
+points - places that *should* care)
+
+Do I have a constructive suggestion for those broken platforms? No, I
+don't. That arguably is the reason for GRND_INSECURE existing, and the
+reason to keep it around.
+
+Long story short: I like your patch, but I worry that it would cause
+problems on broken platforms.
+
+And almost nobody tests those broken platforms: even people who build
+new kernels for those embedded networking things probably end up using
+said kernels with an existing user space setup - where people have
+some existing saved source of pseudo-entropy. So they might not ever
+even trigger the "first boot problem" that tends to be the worst case.
+
+I'd be willing to apply such a thing anyway - at some point "worry
+about broken platforms" ends up being too weak an excuse not to just
+apply it - but I'd like to hear more of a reason for this
+simplification. If it's just "slight cleanup", maybe we should just
+keep the stupid stuff around as a "doesn't hurt good platforms, might
+help broken ones".
+
+               Linus
+
+(*) Honestly, I think all the complaints would have been from the
+theoretical posers that don't have any practical suggestions anyway
