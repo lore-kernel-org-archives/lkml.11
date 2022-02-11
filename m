@@ -2,54 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:22:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB6CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237933AbiBKGWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 01:22:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59710 "EHLO
+        id S240679AbiBKGZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 01:25:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbiBKGWs (ORCPT
+        with ESMTP id S229849AbiBKGZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 01:22:48 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF254BFD
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:22:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=mIhB8UNxdTZinwWJSzuc3lzOHI2eL3UpSdF4CpL6P00=; b=KSfIozQyCADDpWSEoxajTPFd8F
-        lkkwqvDZx6PjOiTogo1teGmEhDjgPh3v7843+DU4rMq+GtLJm/XOF2z72MIRS5hdikUSNKF8zJ97/
-        SjcOTH8Z0gpVQk6zOl60k4R/YJByKjglgmOiIkCOMvz9nRCnwMr+KNDRBoTTbOt2E3TevGnVNmhbK
-        LgkVfHT1WGnWZfq437Oof2j2eYtyx/wF6Gm5pjKtMPCXyO3FOMl3jHUDtbYPzszdfaeQpm6Y3QDEL
-        gCNyrRQHv+X9QDrVAVXBSVduI+4zFgZ/1IWSeRPPhqGkvFijiW9WszEaMwpx/kuqLdOrA4kKZXMUc
-        T2bdXzXQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nIPKN-005yhB-49; Fri, 11 Feb 2022 06:22:43 +0000
-Date:   Thu, 10 Feb 2022 22:22:43 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Nitin Rawat <quic_nitirawa@quicinc.com>
-Cc:     Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Subject: Re: [PATCH v3] nvme/pci: Add quick suspend quirk for Sc7280 Platform
-Message-ID: <YgYAs7R/1G2Y2kpz@infradead.org>
-References: <1644526408-10834-1-git-send-email-quic_nitirawa@quicinc.com>
+        Fri, 11 Feb 2022 01:25:34 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE32FE6
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:25:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644560734; x=1676096734;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=apOCdSx56OUiu3kduwnCNTPvU+GxrnSwBeFMzCEGc3E=;
+  b=Giavkk0+FlV4KxGPdApB2rJu5/jDCoU5nB9eHmtxaqgz++wDLeryDBZ1
+   ijrIU73uoPxeN/iy6Ono0WzHZWiwD41XDrJeLCjrd04EcelcqWAAd4oWq
+   zWDlxjWYJ0j+18HvcZPGKVgfdTTxLiTn1VrTPrggxHAprvdtu5Uhmg8qw
+   zVBhN4kHRGooLCSS3IfYi8Mk4s4yscXWBXhxGtkCRmUSvYDO4sTz1SKdu
+   SCHlvZMJKyt3FByekfluh1ZGKaPyvjUwhoU+jZ5nQ+G8HbWcbVwoHHAZc
+   9cLulOJh/OCFTKv8DOJkMgv2qqj2+tt7sITr9k5c3mbqsLi4VGtCxthWv
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249617607"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="249617607"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 22:25:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="774149087"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Feb 2022 22:25:32 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nIPN5-0004Dx-MX; Fri, 11 Feb 2022 06:25:31 +0000
+Date:   Fri, 11 Feb 2022 14:25:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: drivers/media/platform/marvell-ccic/mmp-driver.c:366:34: warning:
+ unused variable 'mmpcam_of_match'
+Message-ID: <202202111412.5iSkckar-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1644526408-10834-1-git-send-email-quic_nitirawa@quicinc.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 02:23:28AM +0530, Nitin Rawat wrote:
-> Enable quick suspend quirks for Sc7280 platform, where power
-> to nvme device is removed during suspend-resume process. This
-> is done to avoid the failure dring resume.
+Hi Arnd,
 
-You need to sort this out in the PCI and PM layers.  The broken platform
-will also affect all other PCIe drivers and not just nvme.
+First bad commit (maybe != root cause):
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   f1baf68e1383f6ed93eb9cff2866d46562607a43
+commit: b408b611eb951594691abfee8ca687b405d27757 mips: ar7: convert to CONFIG_COMMON_CLK
+date:   8 months ago
+config: mips-buildonly-randconfig-r001-20220211 (https://download.01.org/0day-ci/archive/20220211/202202111412.5iSkckar-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project f6685f774697c85d6a352dcea013f46a99f9fe31)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b408b611eb951594691abfee8ca687b405d27757
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout b408b611eb951594691abfee8ca687b405d27757
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/atmel/ drivers/media/platform/marvell-ccic/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/media/platform/marvell-ccic/mmp-driver.c:366:34: warning: unused variable 'mmpcam_of_match' [-Wunused-const-variable]
+   static const struct of_device_id mmpcam_of_match[] = {
+                                    ^
+   1 warning generated.
+
+
+vim +/mmpcam_of_match +366 drivers/media/platform/marvell-ccic/mmp-driver.c
+
+bb0a896e3d5083 drivers/media/video/marvell-ccic/mmp-driver.c    Jonathan Corbet 2011-12-30  365  
+83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28 @366  static const struct of_device_id mmpcam_of_match[] = {
+83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  367  	{ .compatible = "marvell,mmp2-ccic", },
+83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  368  	{},
+83c40e6611ec1e drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-05-28  369  };
+08aac0e32fe44b drivers/media/platform/marvell-ccic/mmp-driver.c Lubomir Rintel  2019-07-22  370  MODULE_DEVICE_TABLE(of, mmpcam_of_match);
+67a8dbbc4e04cd drivers/media/video/marvell-ccic/mmp-driver.c    Jonathan Corbet 2011-06-11  371  
+
+:::::: The code at line 366 was first introduced by commit
+:::::: 83c40e6611ec1e548ece34f6940f516333abc16a media: marvell-ccic/mmp: add devicetree support
+
+:::::: TO: Lubomir Rintel <lkundrak@v3.sk>
+:::::: CC: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
