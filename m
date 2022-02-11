@@ -2,128 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0367C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 22:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 22:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346513AbiBKWrj (ORCPT
+        id S1348124AbiBKWuP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 17:47:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40248 "EHLO
+        Fri, 11 Feb 2022 17:50:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234271AbiBKWri (ORCPT
+        with ESMTP id S234271AbiBKWuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 17:47:38 -0500
-X-Greylist: delayed 12258 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 14:47:35 PST
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7E2D54;
-        Fri, 11 Feb 2022 14:47:35 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        Fri, 11 Feb 2022 17:50:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823EEBF7;
+        Fri, 11 Feb 2022 14:50:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 40DD31EC0373;
-        Fri, 11 Feb 2022 23:47:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1644619650;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=2LCnjyoUFVPe/KzjUBCJiTmbTvN8cuqDLjqJCXV4ReQ=;
-        b=IxFzfRaDSnpa0XIsdWZwnQsOS1FLnRddCJ3scnDVyeT2ISmvJvhZVz6i7pxf2Qftqlvzps
-        zaZJ+UKNXLX/8b7M17TUgCNqtU1tfsM9uvJABVTKFtFWaQC3D+Ure7KZ1uuvoyzlGLGKrY
-        PQHawl9oV8uDr6CfcsvIxrESQebaOLk=
-Date:   Fri, 11 Feb 2022 23:47:31 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com
-Subject: Re: [PATCH v4 07/24] EDAC/amd64: Define function to dehash address
-Message-ID: <Ygbng0RZ0Pu1fOFj@zn.tnic>
-References: <20220127204115.384161-1-yazen.ghannam@amd.com>
- <20220127204115.384161-8-yazen.ghannam@amd.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24AC4618CF;
+        Fri, 11 Feb 2022 22:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7873DC340F0;
+        Fri, 11 Feb 2022 22:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644619809;
+        bh=zf35T+DPghs6wwbhma26ekUXPywsVqqFMKqLgQMfhrQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VyGOxsJT1Jt3Vavr8bJYvPXLrHBE8MPixJrqUb8jjFqE9630jhhR6ve/rXULCU4rV
+         HLzrsERtxCRrAJuFNbLjWqY5HLruaKOq9JuQh9xyDzxmo334THpUBbnfXw/gSUHH9I
+         UX0/u91KWqz9b0xHscyZh/s8tQOeFVbNLhwrKVlZp2kb0LYZwaGeG6+ObsKb+q7QwR
+         a81zdeCSfGhPbFew5wtGjfETywwpKktxsLhNChMim1S9DyrrEgWnafVcfJ3ErsAyZf
+         6S34hWhZgCMTZMFWgVnNkEUJjOCA6Phb0VxlqZjbzVWPAryzPGy0pBjXkN6M91IYRW
+         NMcTvC5a6ddVQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6208AE6D3DE;
+        Fri, 11 Feb 2022 22:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220127204115.384161-8-yazen.ghannam@amd.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net] atl1c: fix tx timeout after link flap on Mikrotik 10/25G
+ NIC
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164461980939.21006.13425507661552185890.git-patchwork-notify@kernel.org>
+Date:   Fri, 11 Feb 2022 22:50:09 +0000
+References: <20220211065123.4187615-1-gatis@mikrotik.com>
+In-Reply-To: <20220211065123.4187615-1-gatis@mikrotik.com>
+To:     Gatis Peisenieks <gatis@mikrotik.com>
+Cc:     chris.snook@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        hkallweit1@gmail.com, jesse.brandeburg@intel.com,
+        dchickles@marvell.com, tully@mikrotik.com, antons@mikrotik.com,
+        eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 27, 2022 at 08:40:58PM +0000, Yazen Ghannam wrote:
-> Move the dehashing code into a separate helper function. Define a
-> DF2-specific function for the current code. Specific helper functions
-> will be added for future DF versions.
+Hello:
+
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Fri, 11 Feb 2022 08:51:23 +0200 you wrote:
+> If NIC had packets in tx queue at the moment link down event
+> happened, it could result in tx timeout when link got back up.
 > 
-> The dehashing function used is based on the interleaving mode rather
-> than the Data Fabric version. So save the function pointer in the
-> context struct. The use of "df2" in the name of the current function is
-> only because the interleaving mode using it only appears on Data Fabric
-> 2 systems.
+> Since device has more than one tx queue we need to reset them
+> accordingly.
 > 
-> Signed-off-by: Yazen Ghannam <yazen.ghannam@amd.com>
-> ---
-> Link:
-> https://lore.kernel.org/r/20211028175728.121452-12-yazen.ghannam@amd.com
+> Fixes: 057f4af2b171 ("atl1c: add 4 RX/TX queue support for Mikrotik 10/25G NIC")
+> Signed-off-by: Gatis Peisenieks <gatis@mikrotik.com>
 > 
-> v3->v4:
-> * Include pr_debug() on failure.
-> 
-> v2->v3:
-> * Was patch 12 in v2.
-> 
-> v1->v2:
-> * Moved from arch/x86 to EDAC.
-> * Add new function pointer in ctx struct.
-> 
->  drivers/edac/amd64_edac.c | 36 +++++++++++++++++++++---------------
->  1 file changed, 21 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
-> index 350204eadb27..da2d0d9ce406 100644
-> --- a/drivers/edac/amd64_edac.c
-> +++ b/drivers/edac/amd64_edac.c
-> @@ -1077,7 +1077,7 @@ struct addr_ctx {
->  	u8 map_num;
->  	u8 intlv_addr_bit;
->  	u8 cs_id;
-> -	bool hash_enabled;
-> +	int (*dehash_addr)(struct addr_ctx *ctx);
+> [...]
 
-A function pointer in a context struct?!
+Here is the summary with links:
+  - [net] atl1c: fix tx timeout after link flap on Mikrotik 10/25G NIC
+    https://git.kernel.org/netdev/net/c/bf8e59fd315f
 
-> @@ -1357,18 +1372,9 @@ static int umc_normaddr_to_sysaddr(u64 norm_addr, u16 nid, u8 umc, u64 *sys_addr
->  		goto out_err;
->  	}
->  
-> -	if (ctx.hash_enabled) {
-> -		/* Save some parentheses and grab ls-bit at the end. */
-> -		hashed_bit =	(ctx.ret_addr >> 12) ^
-> -				(ctx.ret_addr >> 18) ^
-> -				(ctx.ret_addr >> 21) ^
-> -				(ctx.ret_addr >> 30) ^
-> -				ctx.cs_id;
-> -
-> -		hashed_bit &= BIT(0);
-> -
-> -		if (hashed_bit != ((ctx.ret_addr >> ctx.intlv_addr_bit) & BIT(0)))
-> -			ctx.ret_addr ^= BIT(ctx.intlv_addr_bit);
-> +	if (ctx.dehash_addr && ctx.dehash_addr(&ctx)) {
-
-So you can just as well do:
-
-	if (ctx->intlv_mode == 8)
-		dehash_addr();
-
-And dehash_addr() can inside determine whether df2 or df3.
-
-Btw, that 8 looks like magic. It should be a #define.
-
-What you have now looks a bit weird with those function pointers lumped
-together with those other members of addr_ctx. Dunno, maybe it'll make
-more sense when I read the rest first...
-
+You are awesome, thank you!
 -- 
-Regards/Gruss,
-    Boris.
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
