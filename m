@@ -2,136 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D006C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 11:25:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349429AbiBKLYq (ORCPT
+        id S1349434AbiBKLZx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 06:24:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45092 "EHLO
+        Fri, 11 Feb 2022 06:25:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232169AbiBKLYo (ORCPT
+        with ESMTP id S234051AbiBKLZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 06:24:44 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B88E5D
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:24:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644578684; x=1676114684;
-  h=from:to:cc:subject:date:message-id;
-  bh=pnboiIqagzkUgX7gMqnob/kf1E4vUX6Gf/GqNGQx2Cs=;
-  b=y9/yumHUjSjl3GpZCzMwrRfWguzsV7r4Q+WlrZIgc/MFjVH2PUWNfC+1
-   Iwh70aPND5aKV8d86B0CJLQcRieZSQCqDjsiQyAcAO1E6QMGnIaf9eOsj
-   13QAuSM3kHIKT38OTxhZYd2rrTmzSeKNVAa7FxTmGTZmMAnM/ZQpp0sac
-   A=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Feb 2022 03:24:44 -0800
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Feb 2022 03:24:42 -0800
-X-QCInternal: smtphost
-Received: from c-sbhanu-linux.qualcomm.com ([10.242.50.201])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 11 Feb 2022 16:54:24 +0530
-Received: by c-sbhanu-linux.qualcomm.com (Postfix, from userid 2344807)
-        id 2075E589A; Fri, 11 Feb 2022 16:54:23 +0530 (IST)
-From:   Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-To:     dianders@chromium.org, tudor.ambarus@microchip.com,
-        michael@walle.cc, p.yadav@ti.com, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     quic_stummala@quicinc.com, quic_vbadigan@quicinc.com,
-        quic_rampraka@quicinc.com, quic_pragalla@quicinc.com,
-        quic_sartgarg@quicinc.com,
-        Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Subject: [PATCH V7] mtd: spi-nor: winbond: add support for W25Q512NW-IM
-Date:   Fri, 11 Feb 2022 16:54:21 +0530
-Message-Id: <1644578661-21821-1-git-send-email-quic_c_sbhanu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Fri, 11 Feb 2022 06:25:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DB8E5D;
+        Fri, 11 Feb 2022 03:25:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1CF7618BC;
+        Fri, 11 Feb 2022 11:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9BBC340E9;
+        Fri, 11 Feb 2022 11:25:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644578750;
+        bh=ooE2AsnndLLEx4IulCajtBCoOFATRnSUIKVcqUODsfw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZVTDbyw3LUGxl1D//PLAAiRYqvaahdXQgc9XJv51V+RP3s3k7fRvuoSq46DWV7Cy4
+         FBKp/GWGXw/4DMwbZB2W2dA53fbdVizW64wfQl9yG6xtDLD+ExToVXX+Mj0C1jVUlO
+         CdTcYXUzaC6PfLmSwuOvUAN4mOWrcFyB6+g5r9RMR445u8DFUuPktsy+100pKVAXek
+         9974LFFHv7cy1+gl/GtWTEWQnPRYhaS8ag+k3nVoxF7N0CDjPoKyDEekY9IiHcappd
+         c9g8g+6gfDP0tUKrWjYHsK36u8LgSJUQD+EO/v8uHmtTtgfOCY6qPTO1DQMAStYJq0
+         adTis85IiCpUA==
+Date:   Fri, 11 Feb 2022 11:25:45 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Jon Lin <jon.lin@rock-chips.com>
+Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] spi: rockchip: Fix error in getting num-cs property
+Message-ID: <YgZHuSCZWvl7XC1t@sirena.org.uk>
+References: <20220211034344.4130-1-jon.lin@rock-chips.com>
+ <20220211034344.4130-3-jon.lin@rock-chips.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="+3G0Mf5QYROxU3Hp"
+Content-Disposition: inline
+In-Reply-To: <20220211034344.4130-3-jon.lin@rock-chips.com>
+X-Cookie: do {
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for winbond W25Q512NW-IM chip.
 
-Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
-Reviewed-by: Doug Anderson <dianders@chromium.org>
----
-localhost / # cat /sys/bus/platform/devices/soc\@0/88dc000.spi/spi_master/spi16/
-spi16.0/spi-nor/jedec_id
-ef8020
+--+3G0Mf5QYROxU3Hp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-localhost / # cat /sys/bus/platform/devices/soc\@0/88dc000.spi/spi_master/spi16/
-spi16.0/spi-nor/manufacturer
-winbond
+On Fri, Feb 11, 2022 at 11:43:39AM +0800, Jon Lin wrote:
+> Get num-cs u32 from dts of_node property rather than u16.
 
-localhost / # cat /sys/bus/platform/devices/soc\@0/88dc000.spi/spi_master/spi16/
-spi16.0/spi-nor/partname
-w25q512nwm
+Bug fixes should go at the start of a series so they can be sent as
+fixes without dependencies on anything else.
 
-localhost / # hexdump /sys/bus/platform/devices/soc\@0/88dc000.spi/spi_master/sp
-i16/spi16.0/spi-nor/sfdp
-0000000 4653 5044 0106 ff01 0600 1001 0080 ff00
-0000010 0084 0201 00d0 ff00 ffff ffff ffff ffff
-0000020 6800 6c65 6f6c 7720 726f 646c ffff ffff
-0000030 ffff ffff ffff ffff ffff ffff ffff ffff
-*
-0000080 20e5 fffb ffff 1fff eb44 6b08 3b08 bb42
-0000090 fffe ffff ffff 0000 ffff eb40 200c 520f
-00000a0 d810 0000 0233 00a6 e781 d914 63e9 3376
-00000b0 757a 757a bdf7 5cd5 f719 ff5d 70e9 a5f9
-00000c0 ffff ffff ffff ffff ffff ffff ffff ffff
-00000d0 0aff fff0 ff21 ffdc
-00000d8
+--+3G0Mf5QYROxU3Hp
+Content-Type: application/pgp-signature; name="signature.asc"
 
-localhost / # md5sum /sys/bus/platform/devices/soc\@0/88dc000.spi/spi_master/spi
-16/spi16.0/spi-nor/sfdp
-106d89d6c049110bc94c01517cb4ce24 /sys/bus/platform/devices/soc@0/88dc000.spi/
-spi_master/spi16/spi16.0/spi-nor/sfdp
+-----BEGIN PGP SIGNATURE-----
 
-Changes since V1:
-	- Added space before name of the flash part as suggested by Doug.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGR7kACgkQJNaLcl1U
+h9AF6wf+IsUGIpR8g7NGFO5SPH84Ca4yPmqUlnZbd6YyB6j9zQwVX+AO5vy8BILj
+wC4vTWKhaFTHmC8BVzFzLQk6J38QEYgFy94Y/Xi6g+8E193AVRqi3Zja3QPgoAJH
+uUB8kaq1NbLQigE5SqsIE0xOMpPLR4DnTuIr7MC/RhqXgM8lp2TNKHpZE9ZmOb5U
+0swruPV2Xj38yUSt+xJKj5a2RX8Dc0lGmU2t6XsxLf5IZCVJ4g0DTvxkPOM7Kcvc
+rhSHkDa07szRs1dtcimH0o96pnxaWI1wvSdwy17PfG81/a6j3Te77WaW99z04N56
+l/c8TMoVTf+bTlV53bljJT2p1frykg==
+=NXJy
+-----END PGP SIGNATURE-----
 
-Changes since V2:
-	- Updated chip name as w25q512nwm as suggested by Doug.
-
-Changes since V3:
-	- Updated flash_info flags passing according to below patch.
-
-Changes since V4:
-	- Added OTP support for SPI card as suggested by Michael Walle.
-	- Updated SFDP flags passing as suggested by Pratyush Yadav.
-
-Changes since V5:
-	- Reordered flags passing info for spi nor as suggested by
-	  Michael Walle.
-	- Added SFDP dump info in commit as suggested by Michael Walle.
-
-Changes since V6:
-	- Updated commit subject and added md5sum in commit as suggested
-	  by Michael Walle.
-	- Reordered flags passing info for spi nor which has missed in
-	  V5 patch as suggested by Michael Walle.
----
- drivers/mtd/spi-nor/winbond.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/mtd/spi-nor/winbond.c b/drivers/mtd/spi-nor/winbond.c
-index 675f32c..6fde2ac 100644
---- a/drivers/mtd/spi-nor/winbond.c
-+++ b/drivers/mtd/spi-nor/winbond.c
-@@ -124,6 +124,10 @@ static const struct flash_info winbond_parts[] = {
- 	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ |
- 			      SPI_NOR_DUAL_READ) },
-+	{ "w25q512nwm", INFO(0xef8020, 0, 64 * 1024, 1024)
-+		PARSE_SFDP
-+		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+		OTP_INFO(256, 3, 0x1000, 0x1000) },
- 	{ "w25q512jvq", INFO(0xef4020, 0, 64 * 1024, 1024)
- 		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
- 			      SPI_NOR_QUAD_READ) },
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
-of Code Aurora Forum, hosted by The Linux Foundation
-
+--+3G0Mf5QYROxU3Hp--
