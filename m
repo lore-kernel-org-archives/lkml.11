@@ -2,82 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF32C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347897AbiBKIEh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:04:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33020 "EHLO
+        id S243550AbiBKIEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 03:04:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347887AbiBKIEc (ORCPT
+        with ESMTP id S237830AbiBKIEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 11 Feb 2022 03:04:32 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F852BD2;
-        Fri, 11 Feb 2022 00:04:31 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 468C5201B51;
-        Fri, 11 Feb 2022 09:04:30 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 0D8B4201B4E;
-        Fri, 11 Feb 2022 09:04:30 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 861A9183AC99;
-        Fri, 11 Feb 2022 16:04:28 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v2 1/2] ARM: dts: imx6qp-sabresd: Enable PCIe support
-Date:   Fri, 11 Feb 2022 15:32:58 +0800
-Message-Id: <1644564779-8448-1-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-Greylist: delayed 805 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 00:04:30 PST
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391EBBF;
+        Fri, 11 Feb 2022 00:04:30 -0800 (PST)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21B7p1S7008305;
+        Fri, 11 Feb 2022 01:51:01 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644565861;
+        bh=4A175SrgYxfzFi5K8Bg8FdyWFPWIpErDDlIkfHdh2j0=;
+        h=From:To:CC:Subject:Date;
+        b=pcuQtIkgco/ZAYWEFu8TW8TLi5M0CP0GeGenPqiOHZ9a2Vjs2LxRulLvPnOvMgc5T
+         bI/sUQt2iELTTVA8CLne83rhxycDgvBA/xHfsbLoIrP5rFZrtzQ1vj4Xqvl6SX2NCk
+         rCoUaa+K21zPMkWCCj1JDE8Ek66ppfS4jf0za+yk=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21B7p17n092403
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 11 Feb 2022 01:51:01 -0600
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 11
+ Feb 2022 01:51:01 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 11 Feb 2022 01:51:01 -0600
+Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21B7ow0B042573;
+        Fri, 11 Feb 2022 01:50:58 -0600
+From:   Aswath Govindraju <a-govindraju@ti.com>
+CC:     Aswath Govindraju <a-govindraju@ti.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Faiz Abbas <faiz_abbas@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mmc: sdhci_am654: Fix the driver data of AM64 SoC
+Date:   Fri, 11 Feb 2022 13:20:55 +0530
+Message-ID: <20220211075056.26179-1-a-govindraju@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the i.MX6QP sabresd board(sch-28857) design, one external oscillator
-is used as the PCIe reference clock source by the endpoint device.
+The MMCSD IPs used in AM64 are the same as the ones used in J721E.
+Therefore, fix this by using the driver data from J721E for AM64 too, for
+both 8 and 4 bit instances.
 
-If RC uses this oscillator as reference clock too, PLL6(ENET PLL) would
-has to be in bypass mode, and ENET clocks would be messed up.
-
-To keep things simple, let RC use the internal PLL as reference clock
-and always enable the external oscillator for endpoint device on
-i.MX6QP sabresd board.
-
-NOTE: This reference clock setup is used to pass the GEN2 TX compliance
-tests, and isn't recommended as a setup in the end-user design.
-
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
+Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
 ---
- arch/arm/boot/dts/imx6qp-sabresd.dts | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
+ 1 file changed, 2 insertions(+), 22 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qp-sabresd.dts b/arch/arm/boot/dts/imx6qp-sabresd.dts
-index 480e73183f6b..083cf90bcab5 100644
---- a/arch/arm/boot/dts/imx6qp-sabresd.dts
-+++ b/arch/arm/boot/dts/imx6qp-sabresd.dts
-@@ -50,8 +50,14 @@ MX6QDL_PAD_SD3_DAT7__SD3_DATA7		0x17059
- 	};
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index f654afbe8e83..b4891bb26648 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
+ 	.flags = IOMUX_PRESENT,
  };
  
-+&vgen3_reg {
-+	regulator-min-microvolt = <1800000>;
-+	regulator-max-microvolt = <3300000>;
-+	regulator-always-on;
-+};
-+
- &pcie {
--	status = "disabled";
-+	status = "okay";
+-static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
+-	.ops = &sdhci_j721e_8bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
+-	.pdata = &sdhci_am64_8bit_pdata,
+-	.flags = DLL_PRESENT | DLL_CALIB,
+-};
+-
+-static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
+-	.ops = &sdhci_j721e_4bit_ops,
+-	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
+-};
+-
+-static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
+-	.pdata = &sdhci_am64_4bit_pdata,
+-	.flags = IOMUX_PRESENT,
+-};
+-
+ static const struct soc_device_attribute sdhci_am654_devices[] = {
+ 	{ .family = "AM65X",
+ 	  .revision = "SR1.0",
+@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-8bit",
+-		.data = &sdhci_am64_8bit_drvdata,
++		.data = &sdhci_j721e_8bit_drvdata,
+ 	},
+ 	{
+ 		.compatible = "ti,am64-sdhci-4bit",
+-		.data = &sdhci_am64_4bit_drvdata,
++		.data = &sdhci_j721e_4bit_drvdata,
+ 	},
+ 	{ /* sentinel */ }
  };
- 
- &sata {
 -- 
-2.25.1
+2.17.1
 
