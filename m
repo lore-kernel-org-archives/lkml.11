@@ -2,122 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 455A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343937AbiBKJpP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:45:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60354 "EHLO
+        id S245094AbiBKJp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 04:45:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237727AbiBKJpM (ORCPT
+        with ESMTP id S1343993AbiBKJp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:45:12 -0500
-X-Greylist: delayed 308 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 01:45:11 PST
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F17EFBAA
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:45:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644572710;
-        bh=NM1bKcmX/dl/5DPV1+dpYflnMkoZbUuMneJ+tJvHcEM=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Qu0TsK754zEm2zs6RXcbE7TZv2wkUJ8TSxF9qXjH9577evcsYavUbHttmrX/77ssU
-         sGKeYNAg1zLAzE7XAJwq+Eha7IWWS6DV6mjU4Y5gMquq5szuMclSbqhKwi9FRhQNuZ
-         FXjzyqS/Eka4mLuDmCXZwqHsvY8grQ+xvfjHGk3c=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.143.79]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MMGRA-1nYT5Z0T3O-00JM7j; Fri, 11
- Feb 2022 10:39:55 +0100
-Message-ID: <17f233db-9591-3093-5e63-29e1c8f4b237@gmx.de>
-Date:   Fri, 11 Feb 2022 10:39:49 +0100
+        Fri, 11 Feb 2022 04:45:27 -0500
+X-Greylist: delayed 499 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 01:45:25 PST
+Received: from mailout1.samsung.com (mailout1.samsung.com [203.254.224.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 258D91092
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:45:24 -0800 (PST)
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220211093659epoutp010b5619a2f59ea0e233a116c2df4dc1ea~Ssbh6nGfA1809918099epoutp01J
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:36:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220211093659epoutp010b5619a2f59ea0e233a116c2df4dc1ea~Ssbh6nGfA1809918099epoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1644572219;
+        bh=fFD6K75pV0FoAeiQKIrWAZBJ447zH2tIfbwBG9t0c0Q=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=tYueUmDAJr56I7Sqr2HdyYvxVAts3nT9VDRWQJUKGLckvgG7X8ABC8vAijcXfUTVF
+         Ztb1CPBFjrc0opR0TUG8S7Rt24WR802TAHFNKh4Z7pEp6XafgGoc/RIhX4+3Zy2KqU
+         Eawj4W6T/uPAc6ZLbp7jJEat4yPVDT6fy9sZl79A=
+Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220211093658epcas5p2e91920ad986e5a6b1e575f509e5ffa0b~SsbhFV3Ka1874218742epcas5p2M;
+        Fri, 11 Feb 2022 09:36:58 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        BA.AA.05590.A3E26026; Fri, 11 Feb 2022 18:36:58 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220211093501epcas5p236bca7c55627ef90c7518a34acf6e996~SsZzX9feb1760017600epcas5p24;
+        Fri, 11 Feb 2022 09:35:01 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220211093501epsmtrp223638b2014a9b01907bb0573daa04c6f~SsZzXQHna3227732277epsmtrp2Q;
+        Fri, 11 Feb 2022 09:35:01 +0000 (GMT)
+X-AuditID: b6c32a4b-723ff700000015d6-e5-62062e3a8c69
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        49.0D.29871.4CD26026; Fri, 11 Feb 2022 18:35:00 +0900 (KST)
+Received: from localhost.localdomain (unknown [107.109.224.44]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220211093459epsmtip1c03f8c05ca96a33e12e3731916a032b5~SsZyOR_141656616566epsmtip1K;
+        Fri, 11 Feb 2022 09:34:59 +0000 (GMT)
+From:   Onkarnath <onkarnath.1@samsung.com>
+To:     robh@kernel.org
+Cc:     linux-kernel@vger.kernel.org, maninder1.s@samsung.com,
+        v.narang@samsung.com, maennich@google.com,
+        Onkarnath <onkarnath.1@samsung.com>
+Subject: [PATCH 1/1] android-recommended.config: change
+ BACKLIGHT_LCD_SUPPORT to LCD_CLASS_DEVICE
+Date:   Fri, 11 Feb 2022 15:04:44 +0530
+Message-Id: <20220211093444.661285-1-onkarnath.1@samsung.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] video: s3c-fb: Use platform_get_irq() to get the
- interrupt
-Content-Language: en-US
-To:     zhaoxiao <zhaoxiao@uniontech.com>, jingoohan1@gmail.com
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220211032755.2271-1-zhaoxiao@uniontech.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220211032755.2271-1-zhaoxiao@uniontech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rCkG0fxvjucaruFew1umM13DmyIqZn1revwD1+1XenYM/N02t2F
- lP1ajjY6yqN/CSzhJKFr8CdPiqyL/yp6ZLVx2AItRmNLoN1+xWp5bmBC5r28l/4GtxqKtpm
- Rx2o1+lxCNXZ2duS5CoAQ0ZqmQWfedfiDuETfsBa49upWXy5rHEGaJVMdfgYx4MsaJr+xv2
- 5NUZDlIzBT/UUNHAqsILA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5gNyjIadc58=:5DOPWZ/AshOwzaGE3hQ1Rw
- I2Pmkd4wSZVWFYDmioKiGSNrV1mq+5rxkhSmyagBjpSUfwXweeqLrrYVVXhSG4xwHwKSA03We
- dTpLx8TBp1kp4iY4/NZRIVz0aeoRFZ+918u4PY+UxYKtd4AF6bm6BPaIac2fZrZZUC1GBzBTR
- 4cCoPwDpKe7T5V/7jOgz+ueQOoEe4DuVGmt8XdGWdUKnLC2+O5K7hmoVBe3oKOlMUfKuaA7nb
- u2IH6RAPE3Y2iX8f/4EhPQZdeeNiB4UxxgaQVv2lL7zsxe6LStdDAwOqT7WVHAokaeUWkRpye
- 36qSZMgcURbh026jJzPw19GzEnreau/QlGcfbcoPlflyQfFf+ItQXubnQAdUhVcBI5kvHSe8+
- ie2FRzczBQa8ACQCSRk/5rVnT7QgMKvLV6j1H9DS+n99PqQ2O/qoj02ni2SolmQitW8+JErlP
- 8ZCkYLuKYHtUh8W2/qRIZzkNz8VcJl5SzAqC29R+Ts+85hFrrLZYco1tW02q2BX1GV1h7Pr+S
- sN18+WTHwJdyQOJA7Wje5RmBafa4MMFPLX3aBHqwrYCEn3GgxR5CFYTmw+b7kXUN44M9gXPpB
- QwE4w983HXam+mmOnBIHTHdVypnqdYI1kTI+eqySFg2UMu3puUyX6RpADbjD7wrLw0QY/NTNL
- vsHed/EABmTAIsDdyYoaw9ZQdp0lZuJb0aqGfUoYiK0F0A8BwMnhBriYkA1wMGXXmGMCbb+QB
- 5X+hBi/3zK1jTAroEFAhF9ev3DgV43Iupkb5EWFS4q+3qubwZ3/v9wjRLKzX7oxEw0yv4wK2B
- aDNONr9rnEssBI8tW17Vi4sCNGyqiIn+VICztiV3s4C48Gyp2ZjiMHz2TF8FG4QBThICLNyD/
- IEJo2kV57NG4yZPlDxVO+cFNp4d2nKFdHyglmLbTsMxovXRJu1N40Pzts1AtVh4zC+F+4pSL+
- gHDxy32LFOqLBKFUYcOC/YWxpM0cozzTtq9wN0VvLCi7fJzUCsf1xy7Q6FjGRyulOEBurkAFw
- ndLhI4dhkbTd9Z6f2mQ8QrJaRHp22ZhFmXs/QMzv9RK2ZZ5UWPWK8goZwcotZMKvyA==
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLIsWRmVeSWpSXmKPExsWy7bCmhq6VHluSwZ4X6haXd81hs/i29w27
+        xeH5bSwWK3o+sFr837OD3eLQybmMDmweCzaVemxa1cnm0bdlFaPH501yASxRXDYpqTmZZalF
+        +nYJXBl/Tz5jLDjCUXHv2EXGBsZd7F2MnBwSAiYSL/+eArK5OIQEdjNKHPyxghHC+cQo8aZ3
+        GlTmG6PEs2MTmWBaZu0BsUESexklHu9bxAzhfGGU2PT6EwtIFZuApsSf5U/BlogICEsc+dYG
+        NpdZoJdRovnIAbCEsECyxM9nPWANLAKqEh82vgCaxMHBK2ArsWcDM8Q2eYmZl76DlfMKCEqc
+        nPkErJwZKN68dTZUzT52iX27TSBsF4kfu/qgLhWWeHV8C9SjUhKf3+1lg7CrJaZvvA12tIRA
+        C9CfO1dBFdlLPLm4kBXkBmagB9bv0ocIy0pMPbWOCWIvn0Tv7ydQ83kldsyDsVUlfk2ZygJh
+        S0vc/z0XapeHxKqTU8BGCgnESnQdYp/AKD8LyTezkHwzC2HxAkbmVYySqQXFuempxaYFxnmp
+        5XrFibnFpXnpesn5uZsYwSlEy3sH46MHH/QOMTJxMB5ilOBgVhLhXXGDNUmINyWxsiq1KD++
+        qDQntfgQozQHi5I476n0DYlCAumJJanZqakFqUUwWSYOTqkGJq4g+W0fTpl0Ky7f0ZmeyqZ2
+        zv/DN50DM87xv7kR3Vln80M5rD9aYNrE4MWx0xYV3Sj7xPyLxUkv+CbfhMYZN2NSlPYvdZho
+        fDlM/3l677kNNab7Yll8Vk/g7XNI5ZIK84yfV7VpR5vzuc+ZoadKs6Nfhi7XYnxeYrcs1PJV
+        7iNFvp+bzh3kOHv66/4XsRYfVlZKfTAJEuLw2O3Hur1K11JlTcRUuev6rPlJ06pny9Zm7G5N
+        aMhLdPmvNMVMyYpV5Uyn9b880fwX8h9lG5K+ugX+vZ/ReJB1xoVzs287FMdx3iqbOzF/w/yE
+        1OrDn3dvniI410z+Vt3qk4EPj92fpLB4c0CENR/bhvnuP3a0K7EUZyQaajEXFScCANc6lAmQ
+        AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrCLMWRmVeSWpSXmKPExsWy7bCSnO4RXbYkg0nHbSwu75rDZvFt7xt2
+        i8Pz21gsVvR8YLX4v2cHu8Whk3MZHdg8Fmwq9di0qpPNo2/LKkaPz5vkAliiuGxSUnMyy1KL
+        9O0SuDL+nnzGWHCEo+LesYuMDYy72LsYOTkkBEwkZu2ZyNTFyMUhJLCbUWJP03dmiIS0xKfL
+        c6CKhCVW/nvODlH0iVHi0vT1YAk2AU2JP8ufgtkiQEVHvrUxghQxC0xklNi0ci1YQlggUeLl
+        5l9sIDaLgKrEh40vgDZwcPAK2Ers2QC1TF5i5qXvYOW8AoISJ2c+YQGxmYHizVtnM09g5JuF
+        JDULSWoBI9MqRsnUguLc9NxiwwLDvNRyveLE3OLSvHS95PzcTYzggNTS3MG4fdUHvUOMTByM
+        hxglOJiVRHhX3GBNEuJNSaysSi3Kjy8qzUktPsQozcGiJM57oetkvJBAemJJanZqakFqEUyW
+        iYNTqoFpu0ysbEqkxDITya7sqm/u36b+ePCn4smZOybq1S/msfnOvbR/184L5efapqnWrHVz
+        /mvy6seRjWs6TkrMnLfkyNQOLZO9PVcvLPKKNFLcp/EzdFPko7Lwi5k1h3j/5oTIb5nu4phg
+        E+n9OLZZljth/+/sHVk3cg8v4knZ+8HPNLggx3DhN+G6skNiXfJ5KqFtv6R4Ig0uafCdnHTw
+        1hqpwHu8VbddI3Yw3jMJtGj9f/bHw3OtFW+X8q5uOrFa46ZCu+kt2eBmmTZtveBjnys0vDuj
+        bkcv4/X6uEtoprzku8M9TxYx6Sncn3jsSJn9WoXvJ0Scdneo3ufSc9KdnBrO/CewK7JR2n3K
+        ddPYhVVKLMUZiYZazEXFiQCesIl4twIAAA==
+X-CMS-MailID: 20220211093501epcas5p236bca7c55627ef90c7518a34acf6e996
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+X-CMS-RootMailID: 20220211093501epcas5p236bca7c55627ef90c7518a34acf6e996
+References: <CGME20220211093501epcas5p236bca7c55627ef90c7518a34acf6e996@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/11/22 04:27, zhaoxiao wrote:
-> platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
-> allocation of IRQ resources in DT core code, this causes an issue
-> when using hierarchical interrupt domains using "interrupts" property
-> in the node as this bypassed the hierarchical setup and messed up the
-> irq chaining.
->
-> In preparation for removal of static setup of IRQ resource from DT core
-> code use platform_get_irq().
->
-> Signed-off-by: zhaoxiao <zhaoxiao@uniontech.com>
+with commit '8c5dc8d9f19c ("video: backlight: Remove useless
+BACKLIGHT_LCD_SUPPORT kernel symbol")'code of BACKLIGHT_LCD_SUPPORT
+is removed from kernel, and control shifted to LCD_CLASS_DEVICE only
+thus updating android recommended config also.
 
-applied.
-Thanks!
-Helge
+Signed-off-by: Onkarnath <onkarnath.1@samsung.com>
+---
+ kernel/configs/android-recommended.config | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  drivers/video/fbdev/s3c-fb.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/video/fbdev/s3c-fb.c b/drivers/video/fbdev/s3c-fb.c
-> index 3b134e1bbc38..6ead7d3e2312 100644
-> --- a/drivers/video/fbdev/s3c-fb.c
-> +++ b/drivers/video/fbdev/s3c-fb.c
-> @@ -1360,7 +1360,6 @@ static int s3c_fb_probe(struct platform_device *pd=
-ev)
->  	struct device *dev =3D &pdev->dev;
->  	struct s3c_fb_platdata *pd;
->  	struct s3c_fb *sfb;
-> -	struct resource *res;
->  	int win;
->  	int ret =3D 0;
->  	u32 reg;
-> @@ -1418,13 +1417,13 @@ static int s3c_fb_probe(struct platform_device *=
-pdev)
->  		goto err_lcd_clk;
->  	}
->
-> -	res =3D platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> -	if (!res) {
-> +	sfb->irq_no =3D platform_get_irq(pdev, 0);
-> +	if (sfb->irq_no < 0) {
->  		dev_err(dev, "failed to acquire irq resource\n");
->  		ret =3D -ENOENT;
->  		goto err_lcd_clk;
->  	}
-> -	sfb->irq_no =3D res->start;
-> +
->  	ret =3D devm_request_irq(dev, sfb->irq_no, s3c_fb_irq,
->  			  0, "s3c_fb", sfb);
->  	if (ret) {
->
+diff --git a/kernel/configs/android-recommended.config b/kernel/configs/android-recommended.config
+index eb0029c9a6a6..0869095ff345 100644
+--- a/kernel/configs/android-recommended.config
++++ b/kernel/configs/android-recommended.config
+@@ -7,7 +7,6 @@
+ # CONFIG_PM_WAKELOCKS_GC is not set
+ # CONFIG_VT is not set
+ CONFIG_ARM64_SW_TTBR0_PAN=y
+-CONFIG_BACKLIGHT_LCD_SUPPORT=y
+ CONFIG_BLK_DEV_DM=y
+ CONFIG_BLK_DEV_LOOP=y
+ CONFIG_BLK_DEV_RAM=y
+@@ -86,6 +85,7 @@ CONFIG_JOYSTICK_XPAD_FF=y
+ CONFIG_JOYSTICK_XPAD_LEDS=y
+ CONFIG_KALLSYMS_ALL=y
+ CONFIG_KSM=y
++CONFIG_LCD_CLASS_DEVICE=y
+ CONFIG_LOGIG940_FF=y
+ CONFIG_LOGIRUMBLEPAD2_FF=y
+ CONFIG_LOGITECH_FF=y
+-- 
+2.17.1
 
