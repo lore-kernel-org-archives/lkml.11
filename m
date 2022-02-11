@@ -2,112 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F286C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352988AbiBKTsX (ORCPT
+        id S1353001AbiBKTth (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 14:48:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59134 "EHLO
+        Fri, 11 Feb 2022 14:49:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244171AbiBKTsT (ORCPT
+        with ESMTP id S240391AbiBKTtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 14:48:19 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AFD2A0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:48:16 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id k41so4945549wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:48:16 -0800 (PST)
+        Fri, 11 Feb 2022 14:49:36 -0500
+Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FABB2A1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:49:35 -0800 (PST)
+Received: by mail-qt1-x832.google.com with SMTP id s1so9996052qtw.9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:49:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=juTeh7Pj90KLSN4yGW9MUvSWd5K4ZGezg8meChmllJM=;
-        b=p2lbra2wVZWj/aHaZPHIqpQTjCq8ADCTKLacm7/mJcjw0XVpPj1tfMaXyKZq0OKBF9
-         G2+oiZlPgwYGQ7qDX37e2rY+Hx+zmVLE5yjEULvC3SRlO2gWL3a9Q/cVTW/BAintjBvr
-         xfpZOJ0KIRKc0l3Z/wqqpycd9cefOtaoM9nPvC3sLeZyABvxTo00k1ZVaS/65pgLX+ux
-         7gV7Zo/84KYowLY6RpwlduRc2VKPdU5T/OpsabIv2mHSID67mFJJJkfyf2DsudwQMtA1
-         QdbivyByiKN4KwBsg/IAYGEcn6MPBoQ5JbmXsVo1gR0i9kEMuE6cP+8nJ8TmZWvczbob
-         XqyQ==
+        bh=3K4p9cidMn/Tx0W9hJAw8Kq8LAoL7UjCy3S5gzxmolE=;
+        b=PvH+JCsjOQGyqhEmnNNNCc22Ki5ciMZNdyKZyQKikNJuYLPiYccjhmd5HhonZv9HNn
+         Hd7wGtPTw7piYrgeRxB3mNDdfdFZ6WDzEsmInYQaeljM9qV3EblHxhkfRCeJyQHE0FQw
+         C+sXieo5s6TnitSnyNHkVBIRGywkvVs90vNEUQYDT3j5y23fc5a1sufwdegkSemVkLrE
+         7uB78csEC0ko/vn+ZE4nXo17Kmq7tE+5cptWq2JC1wReE3gJ6NrXQJSg6Pajdv10jht3
+         5Fb8ePXc2gqTHAhJGUQnQg0MBWXEqxsg1mz5nB+SJkFAaY6TqgQLs6L3Xn3eO/7iyRwZ
+         mQ7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=juTeh7Pj90KLSN4yGW9MUvSWd5K4ZGezg8meChmllJM=;
-        b=vyrDCZkxpwnsTt/l6gzeKbgQ8YcJgLrcZ8HgpjaV6xkbQbck1ye4yKQSRWG9aN6SD5
-         kOmLGpBOcMmUPQSaUeBLSzXxVLT5sNq9L+kO2QpkzlIFhLn3jpSZVGZzQI3fRHUOeUIe
-         xB2LH8gdp0wdkZZ3Xyb8/mIGsOlyOadoZwIrrv6q+OZuPcmapz9WtsL+pxOVAxSf0WuF
-         TBruifxUapHFZGgWopTcAqpdB/40PFelUZxu6p/whaWQOGH/QCO0w+09o0tmxK4yh2Zb
-         9euaav37o0f/hUhAeVXUGzFfHD2AUQE4kvVQwpkSMks5pCAx2modqPTi45qRtUYMHcZx
-         HawQ==
-X-Gm-Message-State: AOAM531teKVRzfK/YvIbASJ0rcAG4Os2ejiw3Rm8jAIO2xGCcYxWIKGr
-        836yscfYW2h4Q1wBQFo2ag4mzQ==
-X-Google-Smtp-Source: ABdhPJwm4fSf5P60cAv4b4rom2weLwFPNsnAL5uORWpD8q0HuZ07dx4i7uD5lDxTuzkeJC2w/piyVQ==
-X-Received: by 2002:a7b:cdfa:: with SMTP id p26mr1552313wmj.109.1644608895139;
-        Fri, 11 Feb 2022 11:48:15 -0800 (PST)
-Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
-        by smtp.googlemail.com with ESMTPSA id j15sm104487wmq.6.2022.02.11.11.48.14
+        bh=3K4p9cidMn/Tx0W9hJAw8Kq8LAoL7UjCy3S5gzxmolE=;
+        b=L+02tjJIzsX3wTlqBPANBHwRVe6Vhn/9hSD90Ksso8pkUPEdtXE6RRAOkI+6VGYqvi
+         ikwdztC0o59+KBe3Ek48A5ydLcHdTMsys5bKmmbhogpn7uPB1h3QyoYqtZW7gAIXAFDX
+         iRk2EY96XQ9CSbYQ4qyba3vsin22oAp8NC8q0Smm52jNUyQ0IRK4btT5LH4+DD0/CAGT
+         i+9SQBUamlXLYSt4jZvkmvm5ps6tvZF0cRXez7LEtlRvqxiNnrbRUH7jQAJYwwJqvGJ/
+         MQaA122TrUBsTHRipj0XbC9CW/QhaToP/FN1jt3jb4O735mWG7zr3TLXqJWakKNldJ/3
+         Ufcw==
+X-Gm-Message-State: AOAM533CRnJL0JXMiXQKIayLax3A+NRqPb8ziMIbHdRSepmOebsNLzcd
+        LOFa3c1wV+437IkUeINRelY=
+X-Google-Smtp-Source: ABdhPJziBtRDpl6yACPTwvrPogi70gIB0RmsJdkVTACwFY44039RHw45fPR+zzzKuY/eitDM9E709A==
+X-Received: by 2002:a05:622a:15ce:: with SMTP id d14mr2322417qty.330.1644608974275;
+        Fri, 11 Feb 2022 11:49:34 -0800 (PST)
+Received: from localhost ([12.28.44.171])
+        by smtp.gmail.com with ESMTPSA id bj19sm8919070qkb.109.2022.02.11.11.49.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 11:48:14 -0800 (PST)
-Date:   Fri, 11 Feb 2022 20:48:07 +0100
-From:   LABBE Corentin <clabbe@baylibre.com>
-To:     Johan Jonker <jbx6244@gmail.com>
-Cc:     davem@davemloft.net, heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v3] dt-bindings: crypto: convert rockchip-crypto to yaml
-Message-ID: <Yga9d5C2f1ubOok8@Red>
-References: <20220211115925.3382735-1-clabbe@baylibre.com>
- <dba5684a-1e5f-a4d4-604b-651751636cf3@gmail.com>
+        Fri, 11 Feb 2022 11:49:33 -0800 (PST)
+Date:   Fri, 11 Feb 2022 11:47:22 -0800
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Larry Woodman <lwoodman@redhat.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 46/49] mm/mempolicy: replace nodes_weight with
+ nodes_weight_eq
+Message-ID: <Yga9SgUk07Fn7Upx@yury-laptop>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+ <20220210224933.379149-47-yury.norov@gmail.com>
+ <65ab6b3e-82b4-0a4e-bd6e-5869f735a8f7@wanadoo.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <dba5684a-1e5f-a4d4-604b-651751636cf3@gmail.com>
+In-Reply-To: <65ab6b3e-82b4-0a4e-bd6e-5869f735a8f7@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le Fri, Feb 11, 2022 at 02:13:00PM +0100, Johan Jonker a écrit :
-> 
-> 
-> On 2/11/22 12:59, Corentin Labbe wrote:
-> > Convert rockchip-crypto to yaml
+ + Larry Woodman <lwoodman@redhat.com>
+
+On Fri, Feb 11, 2022 at 06:44:39PM +0100, Christophe JAILLET wrote:
+> Le 10/02/2022 à 23:49, Yury Norov a écrit :
+> > do_migrate_pages() calls nodes_weight() to compare the weight
+> > of nodemask with a given number. We can do it more efficiently with
+> > nodes_weight_eq() because conditional nodes_weight() may stop
+> > traversing the nodemask earlier, as soon as condition is (or is not)
+> > met.
 > > 
-> > Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
 > > ---
-> > Changes since v1:
-> > - fixed example
-> > - renamed to a new name
-> > - fixed some maxItems
+> >   mm/mempolicy.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
 > > 
-> > Change since v2:
-> > - Fixed maintainers section
-> > 
-> >  .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
-> >  .../bindings/crypto/rockchip-crypto.txt       | 28 --------
-> >  2 files changed, 66 insertions(+), 28 deletions(-)
+> > diff --git a/mm/mempolicy.c b/mm/mempolicy.c
+> > index 7c852793d9e8..56efd00b1b6e 100644
+> > --- a/mm/mempolicy.c
+> > +++ b/mm/mempolicy.c
+> > @@ -1154,7 +1154,7 @@ int do_migrate_pages(struct mm_struct *mm, const nodemask_t *from,
+> >   			 *          [0-7] - > [3,4,5] moves only 0,1,2,6,7.
+> >   			 */
+> > -			if ((nodes_weight(*from) != nodes_weight(*to)) &&
+> > +			if (!nodes_weight_eq(*from, nodes_weight(*to)) &&
+> >   						(node_isset(s, *to)))
 > 
-> >  create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
-> >  delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+> Hi,
 > 
-> There's more possible to this document:
+> I've not looked in details, but would it make sense to hoist the
+> "(nodes_weight(*from) != nodes_weight(*to))" test out of the
+> for_each_node_mask() to compute it only once?
 > 
-> dt-bindings: crypto: rockchip: add support for px30
-> https://github.com/rockchip-linux/kernel/commit/3655df1bc6114bda2a6417f39772a3cb008084ea
-> 
-> crypto: rockchip - add px30 crypto aes/des support
-> https://github.com/rockchip-linux/kernel/commit/ee082ae4f609f3b48f768420b31d8600448bd35a
-> 
+> 'from' and 'to' look unmodified in the loop.
 
-Hello
+It seems that 'from' and 'to' are untouched in the outer while()
+loop as well, so we can compare weights of nodemaps only once at the
+beginning.
 
-The great advantage of out of tree code is that we can ignore it.
-Anyway, if one day this code goes upstream, I think the new compatible should be in a new driver/module, both v1 and v2 are too different for me to be shared in the same driver.
+Larry, can you please comment on that?
 
-But before upstreaming this code, the one in mainline should be fixed first, it fail self tests. (I have some patch partialy fixing it in progress)
-
-Regards
+Thanks,
+Yury
