@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF42FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:29:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A35C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348893AbiBKK3z (ORCPT
+        id S1348899AbiBKKbB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:29:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55412 "EHLO
+        Fri, 11 Feb 2022 05:31:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234595AbiBKK3y (ORCPT
+        with ESMTP id S234309AbiBKKaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:29:54 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4618E88
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:29:52 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 412C921128;
-        Fri, 11 Feb 2022 10:29:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644575391; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GW7hPp8S196ICKXiVx/9snE9bFc+0wtN2XNyXb5NVwk=;
-        b=x6FCekV0/pdOfIhIB0TMRFA1MHk138uXkTCmK6U2a5LW8ag27HpEf6GcKG9oF3sAL4k+Bv
-        7SNhcZg+t+G14dd8k/iHjB8tFa4ZgPBZFuvG5x+cEJyYen7PbKwAdYmBWU0ORp1Re9Q63U
-        t+hSL3u5UnV+CPHmBeZhz09WI4IJuxo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644575391;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GW7hPp8S196ICKXiVx/9snE9bFc+0wtN2XNyXb5NVwk=;
-        b=euZCpMrbeYkxcGwbG2R9UA4Z+LKEJIqMjR/Jic1ODwVeJCqhZWTWcoWMcvWCo1bTsLyqIa
-        GkswS8s6WLwZfLAQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 07F8D13BD9;
-        Fri, 11 Feb 2022 10:29:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id zBwjAZ86BmKHMQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 11 Feb 2022 10:29:51 +0000
-Message-ID: <fc8510c6-f39f-231b-d822-2c5ce4422a60@suse.cz>
-Date:   Fri, 11 Feb 2022 11:29:50 +0100
+        Fri, 11 Feb 2022 05:30:52 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4EB2E88
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:30:49 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A081D106F;
+        Fri, 11 Feb 2022 02:30:49 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.87.94])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D08C3F73B;
+        Fri, 11 Feb 2022 02:30:44 -0800 (PST)
+Date:   Fri, 11 Feb 2022 10:30:37 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Yury Norov <yury.norov@gmail.com>, Will Deacon <will@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 33/49] perf: replace bitmap_weight with bitmap_weight_eq
+ for ThunderX2
+Message-ID: <YgY6zb7FT/lifZfd@FVFF77S0Q05N>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+ <20220210224933.379149-34-yury.norov@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH 04/13] mm/munlock: rmap call mlock_vma_page()
- munlock_vma_page()
-Content-Language: en-US
-To:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
- <9f9ca113-ffb9-498e-4bd6-6bfeaaa10b7@google.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <9f9ca113-ffb9-498e-4bd6-6bfeaaa10b7@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210224933.379149-34-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/6/22 22:36, Hugh Dickins wrote:
-> Add vma argument to mlock_vma_page() and munlock_vma_page(), make them
-> inline functions which check (vma->vm_flags & VM_LOCKED) before calling
-> mlock_page() and munlock_page() in mm/mlock.c.
+On Thu, Feb 10, 2022 at 02:49:17PM -0800, Yury Norov wrote:
+> tx2_uncore_event_start() calls bitmap_weight() to compare the weight
+> of bitmap with a given number. We can do it more efficiently with
+> bitmap_weight_eq because conditional bitmap_weight may stop traversing
+> the bitmap earlier, as soon as condition is (or can't be) met.
 > 
-> Add bool compound to mlock_vma_page() and munlock_vma_page(): this is
-> because we have understandable difficulty in accounting pte maps of THPs,
-> and if passed a PageHead page, mlock_page() and munlock_page() cannot
-> tell whether it's a pmd map to be counted or a pte map to be ignored.
-> 
-> Add vma arg to page_add_file_rmap() and page_remove_rmap(), like the
-> others, and use that to call mlock_vma_page() at the end of the page
-> adds, and munlock_vma_page() at the end of page_remove_rmap() (end or
-> beginning? unimportant, but end was easier for assertions in testing).
-> 
-> No page lock is required (although almost all adds happen to hold it):
-> delete the "Serialize with page migration" BUG_ON(!PageLocked(page))s.
-> Certainly page lock did serialize with page migration, but I'm having
-> difficulty explaining why that was ever important.
-> 
-> Mlock accounting on THPs has been hard to define, differed between anon
-> and file, involved PageDoubleMap in some places and not others, required
-> clear_page_mlock() at some points.  Keep it simple now: just count the
-> pmds and ignore the ptes, there is no reason for ptes to undo pmd mlocks.
-> 
-> page_add_new_anon_rmap() callers unchanged: they have long been calling
-> lru_cache_add_inactive_or_unevictable(), which does its own VM_LOCKED
-> handling (it also checks for not VM_SPECIAL: I think that's overcautious,
-> and inconsistent with other checks, that mmap_region() already prevents
-> VM_LOCKED on VM_SPECIAL; but haven't quite convinced myself to change it).
-> 
-> Signed-off-by: Hugh Dickins <hughd@google.com>
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
 
-Yeah, much better when most of the sites are encapsulated in rmap operations
-like this.
+Given the max counters value is either 4 or 8 I doubt this should matter, but
+for consistenct this is fine, so:
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+
+I now see bitmap_weight_eq() is introduced within this series, so I assume you
+need to queue that and its users together, and will want to take the prior
+drivers/perf/ bit together with that.
+
+Thanks,
+Mark.
+
+> ---
+>  drivers/perf/thunderx2_pmu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/perf/thunderx2_pmu.c b/drivers/perf/thunderx2_pmu.c
+> index 1edb9c03704f..97d5b39778fa 100644
+> --- a/drivers/perf/thunderx2_pmu.c
+> +++ b/drivers/perf/thunderx2_pmu.c
+> @@ -623,8 +623,8 @@ static void tx2_uncore_event_start(struct perf_event *event, int flags)
+>  		return;
+>  
+>  	/* Start timer for first event */
+> -	if (bitmap_weight(tx2_pmu->active_counters,
+> -				tx2_pmu->max_counters) == 1) {
+> +	if (bitmap_weight_eq(tx2_pmu->active_counters,
+> +				tx2_pmu->max_counters, 1)) {
+>  		hrtimer_start(&tx2_pmu->hrtimer,
+>  			ns_to_ktime(tx2_pmu->hrtimer_interval),
+>  			HRTIMER_MODE_REL_PINNED);
+> -- 
+> 2.32.0
+> 
