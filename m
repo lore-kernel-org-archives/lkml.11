@@ -2,149 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4387BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD8FC4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 18:15:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344969AbiBKSJI (ORCPT
+        id S1352498AbiBKSPS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 13:09:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53394 "EHLO
+        Fri, 11 Feb 2022 13:15:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343603AbiBKSJF (ORCPT
+        with ESMTP id S243798AbiBKSPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 13:09:05 -0500
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C71D6CEC
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 10:09:03 -0800 (PST)
-Received: by mail-oo1-xc2e.google.com with SMTP id o128-20020a4a4486000000b003181707ed40so11194770ooa.11
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 10:09:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4ezZKO/sKq+udK33lTp4upgqqXdLXoYIeBL3uXEwM8c=;
-        b=jB6g23e56s6dlqAXLs7ZEmhT9fEgfh3KilZ2gYZFLE65prmgzUU8dBD29sSysYRq+D
-         GW6fDxC9rgaZjkWi2Y95CbiiK87nu+2uFUOTUfdJ+iPDVqUcpfqVyu+XZkM3rOM0MXUm
-         qBwUHSvY8zVLycV3H+FyQJ5vyyzGZLFy3V4sZGXfUPy4puPy7XYfRdBskcyXdu8wI4dg
-         TL4ScxcQDo9XV2BxdgzdEvWAMIfn1GEhHrv7v2qK2OcFS3f/VRHiwb/jtt7FtPxYpeqL
-         OQW9zCqltpG0LEX4pWnJpP45+guJuWrYnJcwTHgA/0cqvjkQqGSpwSXKWuqd7GQINsvO
-         9j8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ezZKO/sKq+udK33lTp4upgqqXdLXoYIeBL3uXEwM8c=;
-        b=jEJKchS0ay25XTeut/YyGLakVGzCSgdNsE+hmLiAQYkqkJzY7sjWJmtu/yvQzsC2zN
-         AwbeSRg6JEk2dEp70y6xcM8uJdN28yDYNFevuNGgI4JxGax1xkBWjP5ERhY/6nRI/BJd
-         JID3SSqghrSOUElegAUQQAhC317VnEsu/hAVcQg5h3sLOmEkknesKLEHPPejtbnQDgli
-         ylyaibHHhfJB8SlLmd9LIbzVg5MH9OW9jzFzBga8WHc9CDz8+I5zqnJ2UqVewawdPGHQ
-         2qVqxpWWqZjqnsHKjr5jLNRA1i4dIBIznjs5wEtyJt63u7wv9GTu563knAtqQbJPii3c
-         X7IA==
-X-Gm-Message-State: AOAM530Gs3+5NJsArQK8UTHxTX8vfyr3Gbpp+W4akP8tOifdVsNgkxg3
-        uy7qgjfwC0SZ1KHGx4152B6iLZWjtRrfZzSNmHjJHw==
-X-Google-Smtp-Source: ABdhPJzDrQu5cX510rTOl/VIAVY5rNtKtn3RwhoxPtItyUuUtGU7Po7ow1yWOe7wNOGNq6HZrcnnns2k184OCBimA2g=
-X-Received: by 2002:a05:6871:581:: with SMTP id u1mr529381oan.139.1644602942929;
- Fri, 11 Feb 2022 10:09:02 -0800 (PST)
+        Fri, 11 Feb 2022 13:15:17 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BBA6CEC;
+        Fri, 11 Feb 2022 10:15:15 -0800 (PST)
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1644603314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2Jch/i8uwHhLcWwzAXjXbpVM1d+fcbfplWSgVCHBbLA=;
+        b=4D/q+XgJSZYSQlhj03Sz02vFzH0GlhuNwlthKN6riQhMDD5++CNjRWRcUMnZgTF6IBP3g+
+        oVovZg1UiRbqNOfXL0Ug7sEEW4I3gnhSbXiXYVhaBj8SJYSe2JWU3L8TKTnBfBv8NavXia
+        PyE9hT1yki7U6ColR/pFgse4NAZ/XUCOOMQ9vWvtJ3Wf6CwrwuYA8smeI/TJiIi1F/bnNA
+        ICPcSYmM6pbexOSlIEOuzn25pRO4Bxmw6wAdc3bITdm6KueiS+ZXZavgXe1fqxcpMkZDPn
+        q8/SFFbpIkYrb4pOWN4iyRS8zM59QXHJ0V6VD/B2dZShpq1NX8pyPrf8htxzpQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1644603314;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2Jch/i8uwHhLcWwzAXjXbpVM1d+fcbfplWSgVCHBbLA=;
+        b=KXgaU3Wb016ElAJR2Uy5MlhgU1MfzTrdx0FxVToYcGImm6/t7L7V1ELxpOGiJMCXbJpX1K
+        HuuVJ5o6ZABaOlBA==
+To:     greybus-dev@lists.linaro.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alex Elder <elder@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
+        Woojung Huh <woojung.huh@microchip.com>
+Subject: [PATCH v4 0/7] Provide and use generic_handle_irq_safe() where appropriate.
+Date:   Fri, 11 Feb 2022 19:14:53 +0100
+Message-Id: <20220211181500.1856198-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-References: <20220117085307.93030-1-likexu@tencent.com> <20220117085307.93030-3-likexu@tencent.com>
- <20220202144308.GB20638@worktop.programming.kicks-ass.net>
- <CALMp9eRBOmwz=mspp0m5Q093K3rMUeAsF3vEL39MGV5Br9wEQQ@mail.gmail.com>
- <YgO/3usazae9rCEh@hirez.programming.kicks-ass.net> <69c0fc41-a5bd-fea9-43f6-4724368baf66@intel.com>
- <CALMp9eS=1U7T39L-vL_cTXTNN2Li8epjtAPoP_+Hwefe9d+teQ@mail.gmail.com>
- <67a731dd-53ba-0eb8-377f-9707e5c9be1b@intel.com> <CABOYuvbPL0DeEgV4gsC+v786xfBAo3T6+7XQr7cVVzbaoFoEAg@mail.gmail.com>
- <7b5012d8-6ae1-7cde-a381-e82685dfed4f@linux.intel.com> <CALMp9eTOaWxQPfdwMSAn-OYAHKPLcuCyse7BpsSOM35vg5d0Jg@mail.gmail.com>
- <e06db1a5-1b67-28ac-ee4c-34ece5857b1f@linux.intel.com> <CALMp9eSjDro169JjTXyCZn=Rf3PT0uHhdNXEifiXGYQK-Zn8LA@mail.gmail.com>
- <d86ba87b-d98a-53a0-b2cd-5bf77b97b592@linux.intel.com> <CABOYuvZ9SZAWeRkrhhhpMM4XwzMzXv9A1WDpc6z8SUBquf0SFQ@mail.gmail.com>
- <6afcec02-fb44-7b72-e527-6517a94855d4@linux.intel.com>
-In-Reply-To: <6afcec02-fb44-7b72-e527-6517a94855d4@linux.intel.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Fri, 11 Feb 2022 10:08:51 -0800
-Message-ID: <CALMp9eQ79Cnh1aqNGLR8n5MQuHTwuf=DMjJ2cTb9uXu94GGhEA@mail.gmail.com>
-Subject: Re: [PATCH kvm/queue v2 2/3] perf: x86/core: Add interface to query
- perfmon_event_map[] directly
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-Cc:     David Dunn <daviddunn@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Like Xu <like.xu.linux@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Like Xu <likexu@tencent.com>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 6:11 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
->
->
->
-> On 2/10/2022 2:55 PM, David Dunn wrote:
-> > Kan,
-> >
-> > On Thu, Feb 10, 2022 at 11:46 AM Liang, Kan <kan.liang@linux.intel.com> wrote:
-> >
-> >> No, we don't, at least for Linux. Because the host own everything. It
-> >> doesn't need the MSR to tell which one is in use. We track it in an SW way.
-> >>
-> >> For the new request from the guest to own a counter, I guess maybe it is
-> >> worth implementing it. But yes, the existing/legacy guest never check
-> >> the MSR.
-> >
-> > This is the expectation of all software that uses the PMU in every
-> > guest.  It isn't just the Linux perf system.
-> >
-> > The KVM vPMU model we have today results in the PMU utilizing software
-> > simply not working properly in a guest.  The only case that can
-> > consistently "work" today is not giving the guest a PMU at all.
-> >
-> > And that's why you are hearing requests to gift the entire PMU to the
-> > guest while it is running. All existing PMU software knows about the
-> > various constraints on exactly how each MSR must be used to get sane
-> > data.  And by gifting the entire PMU it allows that software to work
-> > properly.  But that has to be controlled by policy at host level such
-> > that the owner of the host knows that they are not going to have PMU
-> > visibility into guests that have control of PMU.
-> >
->
-> I think here is how a guest event works today with KVM and perf subsystem.
->      - Guest create an event A
->      - The guest kernel assigns a guest counter M to event A, and config
-> the related MSRs of the guest counter M.
->      - KVM intercepts the MSR access and create a host event B. (The
-> host event B is based on the settings of the guest counter M. As I said,
-> at least for Linux, some SW config impacts the counter assignment. KVM
-> never knows it. Event B can only be a similar event to A.)
->      - Linux perf subsystem assigns a physical counter N to a host event
-> B according to event B's constraint. (N may not be the same as M,
-> because A and B may have different event constraints)
->
-> As you can see, even the entire PMU is given to the guest, we still
-> cannot guarantee that the physical counter M can be assigned to the
-> guest event A.
+handler/ interrupt controller entry). It is low level code and the
+function expects that interrupts are disabled at entry point.
 
-All we know about the guest is that it has programmed virtual counter
-M. It seems obvious to me that we can satisfy that request by giving
-it physical counter M. If, for whatever reason, we give it physical
-counter N isntead, and M and N are not completely fungible, then we
-have failed.
+This isn't the case for invocations from tasklets, workqueues or the
+primary interrupt handler on PREEMPT_RT. Once this gets noticed a
+"local_irq_disable|safe()" is added. To avoid further confusion this
+series adds generic_handle_irq_safe() which can be used from any context
+and adds a few user.
 
-> How to fix it? The only thing I can imagine is "passthrough". Let KVM
-> directly assign the counter M to guest. So, to me, this policy sounds
-> like let KVM replace the perf to control the whole PMU resources, and we
-> will handover them to our guest then. Is it what we want?
+v2=E2=80=A6v4:
+  - Correct kernel doc for generic_handle_irq_safe() as per Wolfram Sang.
+  - Use "misc" instead of "mfd" for the hi6421-spmi-pmic driver.
 
-We want PMU virtualization to work. There are at least two ways of doing that:
-1) Cede the entire PMU to the guest while it's running.
-2) Introduce a new "ultimate" priority level in the host perf
-subsystem. Only KVM can request events at the ultimate priority, and
-these requests supersede any other requests.
+v2=E2=80=A6v1:
+ https://lore.kernel.org/all/20220131123404.175438-1-bigeasy@linutronix.de/
+ - Redo kernel-doc for generic_handle_irq_safe() in #1.
+ - Use generic_handle_irq_safe() instead of generic_handle_irq() in the
+   patch description where I accidently used the wrong one.
+v1:
+ https://lore.kernel.org/all/20220127113303.3012207-1-bigeasy@linutronix.de/
 
-Other solutions are welcome.
 
-> Thanks,
-> Kan
