@@ -2,231 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA30C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351480AbiBKQZh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:25:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53714 "EHLO
+        id S230167AbiBKQZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 11:25:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiBKQZf (ORCPT
+        with ESMTP id S1351473AbiBKQZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:25:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC283AD;
+        Fri, 11 Feb 2022 11:25:36 -0500
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09AD38C;
+        Fri, 11 Feb 2022 08:25:34 -0800 (PST)
+Received: by mail-oi1-f176.google.com with SMTP id 4so10049507oil.11;
+        Fri, 11 Feb 2022 08:25:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LyIkGH+i+hA9lPPeVfs99/FEP7xdwJEwC+hY7kMKZgw=;
+        b=P24+C37Xq0iumMpDIb3A0chDBh3cPgNCZM7xbLzBvpF1sTSfw00LGvv5fGz6BlDqhK
+         k/dA6W9yccLOmZwpQD/FatTKifjUw0CsLaWxuacW9cUX8QrnkSCZfN2sK+0uL5zw7qgy
+         7n7CWyfMtRt8WeF4mWCzyXCIj2GgBH4i/XZ5SbeQJhhtw08B2w9mH0U0UqgETTSk3p2I
+         cVJrx2bwqs1+qNcVwW0KtP+0WN/C862+Jp7QtDBdSL2CMYx/2hWF5WvU05BsuHP1tEa9
+         dARhmNo9FRy5/B84yb53LNc8X54bi14rMItm8dzudpxoeWF0UUiEsmhmhuOnSIc/Jtuv
+         odBg==
+X-Gm-Message-State: AOAM530ARwInzLOok/DguD+flkYVjH1CeEeUH1EqDvkLv+mofBgdB9T8
+        ofF435YIhTmv+3B7NwZyCg==
+X-Google-Smtp-Source: ABdhPJwIS3cLhs0Ugl2Q/THWn5KyvDyZbUsJAm3LnsCtXXjs1D0Hv+qcDll4B534DYp3YV2BwD8obg==
+X-Received: by 2002:a05:6808:bd3:: with SMTP id o19mr540564oik.331.1644596734020;
+        Fri, 11 Feb 2022 08:25:34 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:5fee:dfce:b6df:c3e1:b1e5:d6d8])
+        by smtp.gmail.com with ESMTPSA id h2sm9278124ots.51.2022.02.11.08.25.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 11 Feb 2022 08:25:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E6CDB82AA1;
-        Fri, 11 Feb 2022 16:25:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B8FC340E9;
-        Fri, 11 Feb 2022 16:25:29 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="GmxCwiDz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644596728;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7EXC8K8wOgW31q4Pw0Qifm1YesO2QCtqoy6VbXyzlM4=;
-        b=GmxCwiDzd0WShH4VhSmVNQBWyXTAbqkfz3pVytLPQZhFduG2PsX0qnQqWwP65gAzNCz4xs
-        /QMVxA/mjrWh1xwtkCql34lX9JuJYHeAijhn9vu4uJHzrFQyKvqr5WALTOCNf8/M1oPPF7
-        AqrrZPZ5UFmWbMj/BOY5wrhFtqCxwcY=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id efc9f969 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 11 Feb 2022 16:25:26 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v6] random: defer fast pool mixing to worker
-Date:   Fri, 11 Feb 2022 17:25:15 +0100
-Message-Id: <20220211162515.554867-1-Jason@zx2c4.com>
-In-Reply-To: <YgZ6IEbiDgz5X1ON@linutronix.de>
-References: <YgZ6IEbiDgz5X1ON@linutronix.de>
+Received: (nullmailer pid 466919 invoked by uid 1000);
+        Fri, 11 Feb 2022 16:25:31 -0000
+Date:   Fri, 11 Feb 2022 10:25:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Chester Lin <clin@suse.com>
+Cc:     Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
+        Matthias Brugger <mbrugger@suse.com>, s32@nxp.com,
+        Ghennadi Procopciuc <Ghennadi.Procopciuc@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Radu Nicolae Pirea <radu-nicolae.pirea@oss.nxp.com>,
+        "Ivan T . Ivanov" <iivanov@suse.de>, "Lee, Chun-Yi" <jlee@suse.com>
+Subject: Re: [RFC PATCH 1/3] dt-bindings: clock: Add s32g2 clock binding
+Message-ID: <YgaN+0KJTi0be++F@robh.at.kernel.org>
+References: <20220207132444.3653-1-clin@suse.com>
+ <20220207132444.3653-2-clin@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220207132444.3653-2-clin@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On PREEMPT_RT, it's problematic to take spinlocks from hard irq
-handlers. We can fix this by deferring to a workqueue the dumping of
-the fast pool into the input pool.
+On Mon, Feb 07, 2022 at 09:24:42PM +0800, Chester Lin wrote:
+> Add clock binding for S32G based on SCMI Clock Management Protocol (0x14)
+> 
+> Signed-off-by: Chester Lin <clin@suse.com>
+> ---
+>  include/dt-bindings/clock/s32g2-clock.h | 28 +++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 include/dt-bindings/clock/s32g2-clock.h
+> 
+> diff --git a/include/dt-bindings/clock/s32g2-clock.h b/include/dt-bindings/clock/s32g2-clock.h
+> new file mode 100644
+> index 000000000000..6d8606293865
+> --- /dev/null
+> +++ b/include/dt-bindings/clock/s32g2-clock.h
+> @@ -0,0 +1,28 @@
+> +/* SPDX-License-Identifier: BSD-3-Clause */
 
-We accomplish this with some careful rules on fast_pool->count:
+Dual license please.
 
-  - When it's incremented to >= 64, we schedule the work.
-  - If the top bit is set, we never schedule the work, even if >= 64.
-  - The worker is responsible for setting it back to 0 when it's done.
-
-There are two small issues around using workqueues for this purpose that
-we work around.
-
-The first issue is that mix_interrupt_randomness() might be migrated to
-another CPU during CPU hotplug. This issue is rectified by checking that
-it hasn't been migrated (after disabling migration). If it has been
-migrated, then we set the count to zero, so that when the CPU comes
-online again, it can requeue the work. As part of this, we switch to
-using an atomic_t, so that the increment in the irq handler doesn't wipe
-out the zeroing if the CPU comes back online while this worker is
-running.
-
-The second issue is that, though relatively minor in effect, we probably
-want to make sure we get a consistent view of the pool onto the stack,
-in case it's interrupted by an irq while reading. To do this, we simply
-read count before and after the memcpy and make sure they're the same.
-If they're not, we try again. This isn't a seqlock or anything heavy
-like that because we're guaranteed to be on the same core as the irq
-handler interrupting, which means that interruption either happens in
-full or doesn't at all. The likelihood of actually hitting this is very
-low, as we're talking about a 2 or 4 word mov.
-
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-Cc: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
-Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Sebastian - this now uses cmpxchg as you suggested, and has comments on
-its various atomic uses. I think we should be finally good to go! PTAL.
-Thanks again for looking at this hairy patch.
-
- drivers/char/random.c | 73 ++++++++++++++++++++++++++++++++++---------
- 1 file changed, 59 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index c42c07a7eb56..20b11a4b6559 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1162,9 +1162,10 @@ EXPORT_SYMBOL_GPL(add_bootloader_randomness);
- 
- struct fast_pool {
- 	unsigned long pool[16 / sizeof(long)];
-+	struct work_struct mix;
- 	unsigned long last;
-+	atomic_t count;
- 	u16 reg_idx;
--	u8 count;
- };
- 
- /*
-@@ -1214,12 +1215,59 @@ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
- 	return *ptr;
- }
- 
-+static void mix_interrupt_randomness(struct work_struct *work)
-+{
-+	struct fast_pool *fast_pool = container_of(work, struct fast_pool, mix);
-+	unsigned long pool[ARRAY_SIZE(fast_pool->pool)];
-+	int count;
-+
-+	/* Check to see if we're running on the wrong CPU due to hotplug. */
-+	migrate_disable();
-+	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
-+		migrate_enable();
-+		/*
-+		 * If we are unlucky enough to have been moved to another CPU,
-+		 * then we set our count to zero atomically so that when the
-+		 * CPU comes back online, it can enqueue work again. The
-+		 * _release here pairs with the atomic_inc_return_acquire in
-+		 * add_interrupt_randomness().
-+		 */
-+		atomic_set_release(&fast_pool->count, 0);
-+		return;
-+	}
-+
-+	/*
-+	 * Copy the pool to the stack so that the mixer always has a
-+	 * consistent view. It's extremely unlikely but possible that
-+	 * this 2 or 4 word read is interrupted by an irq, but in case
-+	 * it is, we double check that count stays the same.
-+	 *
-+	 * We set the count to 0 so that irqs can immediately begin to
-+	 * accumulate again after. Since any possible interruptions
-+	 * at this stage are guaranteed to be on the same CPU, we can
-+	 * use cmpxchg_relaxed.
-+	 */
-+	count = atomic_read(&fast_pool->count);
-+	do {
-+		memcpy(pool, fast_pool->pool, sizeof(pool));
-+	} while (atomic_try_cmpxchg_relaxed(&fast_pool->count, &count, 0));
-+
-+	fast_pool->last = jiffies;
-+	migrate_enable();
-+
-+	mix_pool_bytes(pool, sizeof(pool));
-+	credit_entropy_bits(1);
-+	memzero_explicit(pool, sizeof(pool));
-+}
-+
- void add_interrupt_randomness(int irq)
- {
-+	enum { MIX_INFLIGHT = 1U << 31 };
- 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
- 	struct pt_regs *regs = get_irq_regs();
- 	unsigned long now = jiffies;
- 	cycles_t cycles = random_get_entropy();
-+	unsigned int new_count;
- 
- 	if (cycles == 0)
- 		cycles = get_reg(fast_pool, regs);
-@@ -1235,12 +1283,13 @@ void add_interrupt_randomness(int irq)
- 	}
- 
- 	fast_mix((u32 *)fast_pool->pool);
--	++fast_pool->count;
-+	/* The _acquire here pairs with the atomic_set_release in mix_interrupt_randomness(). */
-+	new_count = (unsigned int)atomic_inc_return_acquire(&fast_pool->count);
- 
- 	if (unlikely(crng_init == 0)) {
--		if (fast_pool->count >= 64 &&
-+		if (new_count >= 64 &&
- 		    crng_fast_load(fast_pool->pool, sizeof(fast_pool->pool)) > 0) {
--			fast_pool->count = 0;
-+			atomic_set(&fast_pool->count, 0);
- 			fast_pool->last = now;
- 
- 			/*
-@@ -1254,20 +1303,16 @@ void add_interrupt_randomness(int irq)
- 		return;
- 	}
- 
--	if ((fast_pool->count < 64) && !time_after(now, fast_pool->last + HZ))
-+	if (new_count & MIX_INFLIGHT)
- 		return;
- 
--	if (!spin_trylock(&input_pool.lock))
-+	if (new_count < 64 && !time_after(now, fast_pool->last + HZ))
- 		return;
- 
--	fast_pool->last = now;
--	_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
--	spin_unlock(&input_pool.lock);
--
--	fast_pool->count = 0;
--
--	/* Award one bit for the contents of the fast pool. */
--	credit_entropy_bits(1);
-+	if (unlikely(!fast_pool->mix.func))
-+		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
-+	atomic_or(MIX_INFLIGHT, &fast_pool->count);
-+	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
- }
- EXPORT_SYMBOL_GPL(add_interrupt_randomness);
- 
--- 
-2.35.0
-
+> +/*
+> + * Copyright 2020-2022 NXP
+> + */
+> +#ifndef __DT_BINDINGS_SCMI_CLOCK_S32G2_H
+> +#define __DT_BINDINGS_SCMI_CLOCK_S32G2_H
+> +
+> +#define S32G2_SCMI_CLK_BASE_ID		0U
+> +#define S32G2_SCMI_CLK(N)		((N) + S32G2_SCMI_CLK_BASE_ID)
+> +
+> +/* GMAC0 - SGMII */
+> +#define S32G2_SCMI_CLK_GMAC0_RX_SGMII	S32G2_SCMI_CLK(16)
+> +#define S32G2_SCMI_CLK_GMAC0_TX_SGMII	S32G2_SCMI_CLK(17)
+> +/* GMAC0 - RGMII */
+> +#define S32G2_SCMI_CLK_GMAC0_RX_RGMII	S32G2_SCMI_CLK(19)
+> +#define S32G2_SCMI_CLK_GMAC0_TX_RGMII	S32G2_SCMI_CLK(20)
+> +/* GMAC0 - RMII */
+> +#define S32G2_SCMI_CLK_GMAC0_RX_RMII	S32G2_SCMI_CLK(22)
+> +#define S32G2_SCMI_CLK_GMAC0_TX_RMII	S32G2_SCMI_CLK(23)
+> +/* GMAC0 - MII */
+> +#define S32G2_SCMI_CLK_GMAC0_RX_MII	S32G2_SCMI_CLK(25)
+> +#define S32G2_SCMI_CLK_GMAC0_TX_MII	S32G2_SCMI_CLK(26)
+> +#define S32G2_SCMI_CLK_GMAC0_AXI	S32G2_SCMI_CLK(28)
+> +/* uSDHC */
+> +#define S32G2_SCMI_CLK_USDHC_AHB	S32G2_SCMI_CLK(35)
+> +#define S32G2_SCMI_CLK_USDHC_MODULE	S32G2_SCMI_CLK(36)
+> +#define S32G2_SCMI_CLK_USDHC_CORE	S32G2_SCMI_CLK(37)
+> +#endif
+> -- 
+> 2.33.1
+> 
+> 
