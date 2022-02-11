@@ -2,76 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E4EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C2B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348321AbiBKJNa (ORCPT
+        id S1348387AbiBKJOR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:13:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56186 "EHLO
+        Fri, 11 Feb 2022 04:14:17 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235169AbiBKJN2 (ORCPT
+        with ESMTP id S1344212AbiBKJOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:13:28 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A8331029;
-        Fri, 11 Feb 2022 01:13:28 -0800 (PST)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jw79w4jfXzdZbm;
-        Fri, 11 Feb 2022 17:10:12 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 11 Feb 2022 17:13:26 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 11 Feb
- 2022 17:13:26 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH] crypto: hisilicon/sec - not need to enable sm4 extra mode at HW V3
-Date:   Fri, 11 Feb 2022 17:08:18 +0800
-Message-ID: <20220211090818.55398-1-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        Fri, 11 Feb 2022 04:14:16 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB53F69
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:14:15 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id y18so4159794plb.11
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:14:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AnYtNhdLAufx/Wabg2w3ZU5XlCq9QWc6T4pL9mdKHRk=;
+        b=PNPe2khfRgmo+HiRLlAoG8nVNb0scB964DKEKSYoD7jVClmPhbuGxl65L227FrqsEV
+         4iVXQk8yjkMgI4Zhwnus0nHOI5kzk+FjeqIZLwu8gcgvdb5Ux6L6guI4TmJf1iJ2CCYb
+         NJPvElMNC+IdNHNEp8OCZhHSaZaJzH245SUwRA0tIVkUbZmm9jrIIdqcnhSioTl6xg74
+         kXPojEOuzOH6ySvsn4F29C2yeDxpHL02dfhn80v0ic8b7gnNaSLrqooTu0WH3UqgNRNs
+         /jpQ651JLr3m4/kZa5eZRasvXTwPv6nOg7gd2feWYA67K7391vlqj86x/yjM0XjqTeoe
+         8fjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AnYtNhdLAufx/Wabg2w3ZU5XlCq9QWc6T4pL9mdKHRk=;
+        b=m1kWJyJlpfBAcHSEcTbo74pNA3cGNgefLp2eGTAoJYTM1F0fauExSHfQ91lDHF2DoO
+         9b0qB70nsJRswWOYQXD/NmamEZO842KnE/nFQH94B3oIO/GD0pT2THCsQ9c31AQhVOxo
+         TS5U1XB762eZjfPzsiHeOTiJmd2Kgpw6Oti6/OXBvY0QjZR+wRJSNxJLb05or1zDT5vl
+         uMGsrGGOKyCU6L6oaXKroxIVUqZfAJclHSo++T4nEuOmTgsu6haw5GZtGO1T8SBcc0OW
+         w7dvsDHZ/jjpmyJHSdME6kAyUbJZCMMcLkoC3tjWToZ15KUCpDwnbiSeiIFIQsl7g5Ir
+         rxwQ==
+X-Gm-Message-State: AOAM533rTyNpPuuJYglK9KMgZYY4lwFabU8P65nQnFjk6cIVoAYBb+ch
+        PnQwUJIgyfbiSGayO27LfJ8A
+X-Google-Smtp-Source: ABdhPJwHRpEeOjwi5F77yVboQHbjWdwulWc/2KiRTMLMCZ9HfBIOxiShsb9dQk3Gt66vTmxNGYNhAA==
+X-Received: by 2002:a17:90b:3b8f:: with SMTP id pc15mr1606035pjb.165.1644570855042;
+        Fri, 11 Feb 2022 01:14:15 -0800 (PST)
+Received: from thinkpad ([27.111.75.38])
+        by smtp.gmail.com with ESMTPSA id h4sm26078995pfv.166.2022.02.11.01.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 01:14:14 -0800 (PST)
+Date:   Fri, 11 Feb 2022 14:44:09 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Prasad Malisetty <quic_pmaliset@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_vbadigan@quicinc.com, quic_ramkri@quicinc.com,
+        swboyd@chromium.org
+Subject: Re: [PATCH v2] PCI: qcom: Add system PM support
+Message-ID: <20220211091409.GB3223@thinkpad>
+References: <1643738876-18572-1-git-send-email-quic_pmaliset@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1643738876-18572-1-git-send-email-quic_pmaliset@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is not need to enable sm4 extra mode in at HW V3. Here is fix it.
+On top of Bjorn's review:
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
- drivers/crypto/hisilicon/sec2/sec_main.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+On Tue, Feb 01, 2022 at 11:37:56PM +0530, Prasad Malisetty wrote:
+> Add suspend_noirq and resume_noirq callbacks to handle
+> System suspend and resume in dwc pcie controller driver.
+> 
+> When system suspends, send PME turnoff message to enter
+> link into L2 state. Along with powerdown the PHY, disable
+> pipe clock, switch gcc_pcie_1_pipe_clk_src to XO if mux is
+> supported and disable the pcie clocks, regulators.
+> 
+> When system resumes, PCIe link will be re-established and
+> setup rc settings.
+> 
+> Signed-off-by: Prasad Malisetty <quic_pmaliset@quicinc.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> ---
+> Changes since v1:
+> 	- Removed unnecessary logs and modified log level suggested by Manivannan.
+> 	- Removed platform specific callbacks as PM support is generic.
 
-diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
-index 26d3ab1d308b..89d4cc767d36 100644
---- a/drivers/crypto/hisilicon/sec2/sec_main.c
-+++ b/drivers/crypto/hisilicon/sec2/sec_main.c
-@@ -443,9 +443,11 @@ static int sec_engine_init(struct hisi_qm *qm)
- 
- 	writel(SEC_SAA_ENABLE, qm->io_base + SEC_SAA_EN_REG);
- 
--	/* Enable sm4 extra mode, as ctr/ecb */
--	writel_relaxed(SEC_BD_ERR_CHK_EN0,
--		       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
-+	/* HW V2 enable sm4 extra mode, as ctr/ecb */
-+	if (qm->ver < QM_HW_V3)
-+		writel_relaxed(SEC_BD_ERR_CHK_EN0,
-+			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
-+
- 	/* Enable sm4 xts mode multiple iv */
- 	writel_relaxed(SEC_BD_ERR_CHK_EN1,
- 		       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
--- 
-2.33.0
+This is not still generic... Please see below.
 
+> ---
+>  drivers/pci/controller/dwc/pcie-qcom.c | 97 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 97 insertions(+)
+> 
+> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+> index c19cd506..d1dd6c7 100644
+> --- a/drivers/pci/controller/dwc/pcie-qcom.c
+> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
+> @@ -73,6 +73,8 @@
+>  
+>  #define PCIE20_PARF_Q2A_FLUSH			0x1AC
+>  
+> +#define PCIE20_PARF_PM_STTS                     0x24
+> +
+>  #define PCIE20_MISC_CONTROL_1_REG		0x8BC
+>  #define DBI_RO_WR_EN				1
+>  
+> @@ -1616,6 +1618,100 @@ static int qcom_pcie_probe(struct platform_device *pdev)
+>  	return ret;
+>  }
+>  
+> +static int qcom_pcie_send_pme_turnoff_msg(struct qcom_pcie *pcie)
+> +{
+> +	int ret = 0;
+> +	u32 val = 0, poll_val = 0;
+> +	u64 l23_rdy_poll_timeout = 100000;
+> +	struct dw_pcie *pci = pcie->pci;
+> +	struct device *dev = pci->dev;
+> +
+> +	val = readl(pcie->elbi + PCIE20_ELBI_SYS_CTRL);
+> +	val |= BIT(4);
+
+Define BIT(4)
+
+> +	writel(val, pcie->elbi + PCIE20_ELBI_SYS_CTRL);
+> +
+> +	ret = readl_poll_timeout((pcie->parf + PCIE20_PARF_PM_STTS), poll_val,
+> +			(poll_val & BIT(5)), 10000, l23_rdy_poll_timeout);
+
+Define BIT(5)
+
+> +	if (!ret)
+> +		dev_info(dev, "PM_Enter_L23 is received\n");
+
+Maybe print, "Device entered L23_Ready state"? Also this should be dev_dbg().
+
+> +	else
+> +		dev_err(dev, "PM_Enter_L23 is NOT received.PARF_PM_STTS 0x%x\n",
+
+Maybe print, "Device failed to enter L23_Ready state"?
+
+> +			readl_relaxed(pcie->parf + PCIE20_PARF_PM_STTS));
+> +
+> +	return ret;
+> +}
+> +
+> +static void qcom_pcie_host_disable(struct qcom_pcie *pcie)
+> +{
+> +	struct qcom_pcie_resources_2_7_0 *res = &pcie->res.v2_7_0;
+> +
+
+As Bjorn said this would only work for platforms supporting v2.7.0 ops. Please
+make it generic.
+
+> +	/* Assert the reset of endpoint */
+> +	qcom_ep_reset_assert(pcie);
+> +
+> +	/* Put PHY into POWER DOWN state */
+> +	phy_power_off(pcie->phy);
+> +
+> +	writel(1, pcie->parf + PCIE20_PARF_PHY_CTRL);
+
+Define "1".
+
+Thanks,
+Mani
