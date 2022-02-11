@@ -2,118 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CED5C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6901C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 06:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346926AbiBKGuB (ORCPT
+        id S1346827AbiBKGuo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 01:50:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42174 "EHLO
+        Fri, 11 Feb 2022 01:50:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346827AbiBKGt7 (ORCPT
+        with ESMTP id S231983AbiBKGum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 01:49:59 -0500
-Received: from mail-ot1-x34a.google.com (mail-ot1-x34a.google.com [IPv6:2607:f8b0:4864:20::34a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9D02188
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:49:59 -0800 (PST)
-Received: by mail-ot1-x34a.google.com with SMTP id h5-20020a9d5545000000b0059ecbfae94eso4812835oti.17
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 22:49:59 -0800 (PST)
+        Fri, 11 Feb 2022 01:50:42 -0500
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B636C1120;
+        Thu, 10 Feb 2022 22:50:41 -0800 (PST)
+Received: by mail-vs1-xe2b.google.com with SMTP id v6so9132414vsp.11;
+        Thu, 10 Feb 2022 22:50:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=+8rN+YKf6ok+x08l31cPg9Z1f+kTrw1cXJDsx6RQzpQ=;
-        b=BSR393aKc6QG8wWOZWMfrPQRJdGzUlEYw+Xm72Fj+l1HA0QTOlh+tjEKyBgFzMW5dh
-         yMc5fn9Y/A3FfgNSdOvbIJTLWXMoYdbIp/vvqzQXMLbWsG9nJxhfo+fKE3NGJifj+L55
-         3LoH8v37N4wzh6cZ6ZelxTm1tTnyY0hKMYUvTMKIKyIycqhn6OLw7MJT5WtKpDt36DPf
-         wCMwOA8QiMTaXEP2zn6vCRFegcEHws0MuunzFrr6o1UAxCnt9V9kQaR9FJs/brjoGool
-         gPl1ffvPeA1Ff7JE3BrPzFA4t8pldf9Fk2M0Op9O4qxcn/XyTm8w2rz+eUBX0/iLhkxa
-         f4vA==
+        bh=OSROPkIHqOIfi3Mx6GPXtGKkcEJ0TQ6U5/02TvsWVjs=;
+        b=aI6iirQLDE79NFBohp4tGvHl9CuJHutPPj78yxbu89pb2Pwy6FzthqI52TCGsqnVsi
+         nPByOczGUEQLxLF7f1hvq3IXINsb2d9nh0ou1Wta6vGgRAtOfLEzuANmnWkMTOreMtzB
+         2c4wtjp2fBfGXIrnZXEJvVtxF8EVqhIj2sM5OgI0b8diZIHQQIyv3wtxvu8+DYJ+UuIK
+         r3nQlVWV1kLAAX9S28hNVCmp0jo6g0YdYBkL/Yu79JCSUKNVlGiCKQY1aLtSD9n+jgMo
+         mQYD1lmQXYKOeApQjSEv1ygK0HRmSDt6YnYU1IvD4AO0i4+wlymSHKeYyK9EtZ/XFvwZ
+         jH9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=+8rN+YKf6ok+x08l31cPg9Z1f+kTrw1cXJDsx6RQzpQ=;
-        b=Tz3P6XYOBoBRgpbiULI0Uer2UAFnN2OG2D3no6wWncWo7tntY9lWWioChKFRvj+BJM
-         3hwLIPWTE7iEYQ6OicBwaRT+Mykyx85mBW0iCyVknIc1qi4rV5HSPgyxIgOxYw7HO252
-         lPQd9ifwAWxy8FLTt5PCbnD6iGMUMIQDV6yfdW0Jesld47SFeMmKmnhaZe7KEWCKWNLx
-         lwM28+hFXJeQM3IjhSIwm6saqPKzEqLAQEDvWOy6F9qBrZA+rWXEJShmUb9seO7IgSrF
-         KwZDocCypI4JCI+bbIT2HomqSKJixnvgbqen7YTINNZKyx558Z+JTtK2RvTpz04Xxkl7
-         Mh6A==
-X-Gm-Message-State: AOAM533ffr8YgM3Y04FYGmOwbOleIs1Kb4dLIg+HZ6fcaBu9AnnZGbZz
-        2XmDz+nbHTGHWRDq95etPB29tlhhR8v1Lw==
-X-Google-Smtp-Source: ABdhPJx+FPelF0U4y0S0ru7GypuLQN66L/vIwUT5nqHv0csa/+RSKZQiVXDUKNso1ijCAHAvOmABsg8qgMR59A==
-X-Received: from shakeelb.svl.corp.google.com ([2620:15c:2cd:202:9a07:ef1a:2fee:57f1])
- (user=shakeelb job=sendgmr) by 2002:a05:6870:8682:: with SMTP id
- p2mr257108oam.205.1644562198389; Thu, 10 Feb 2022 22:49:58 -0800 (PST)
-Date:   Thu, 10 Feb 2022 22:49:17 -0800
-In-Reply-To: <20220211064917.2028469-1-shakeelb@google.com>
-Message-Id: <20220211064917.2028469-5-shakeelb@google.com>
-Mime-Version: 1.0
-References: <20220211064917.2028469-1-shakeelb@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v2 4/4] memcg: synchronously enforce memory.high for large overcharges
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>
-Cc:     Chris Down <chris@chrisdown.name>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Shakeel Butt <shakeelb@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OSROPkIHqOIfi3Mx6GPXtGKkcEJ0TQ6U5/02TvsWVjs=;
+        b=HRdyqYp98Tl3wVr9JmKHhxmWr7qUqL8BkRw2RlEVlPHNDp0LycOUmw17E8LoqQJQ8N
+         e3TapNegMYreMRLVm07NZgSbvFg7TD2gPot9hFyZ9p83hVNSUz9cvFqv844aGz4nQubf
+         eYHfPqLYODJcZlshxZny/0RZygza0WAcFW5t/LroGi+5cUafutPaO36eMkFsNw8kMGNB
+         hsRsHf+/zgB3q/DRboEkGWqwdwmRTG9uiMzSDh7aN0UabmvQC0IS/++Qn1tSdSZoixjN
+         TltnzEe/5f+yAd/qUZLfuw613yoFyBsq0mydHbOIJRB+abOolocSyOvhjidMQ5pWosf3
+         cP/Q==
+X-Gm-Message-State: AOAM530RLc1+13tXUgqElxby1sbkrvs4lQNJaPONDhm3Y0jkk7lh0Ey3
+        w1RKEpWFXu06bamRQ6mzn53h6ybypboLUAX9SUo=
+X-Google-Smtp-Source: ABdhPJzCPF1tTpcQ1FWpqWN/gHplGyCbU2hVnrJ2gUBllwLUgLp6iZnR43b4mmVnWetix67HkzQhNADYz8Oi3+nNfFE=
+X-Received: by 2002:a67:10c4:: with SMTP id 187mr85908vsq.1.1644562240863;
+ Thu, 10 Feb 2022 22:50:40 -0800 (PST)
+MIME-Version: 1.0
+References: <20220211001345.3429572-1-gch981213@gmail.com>
+In-Reply-To: <20220211001345.3429572-1-gch981213@gmail.com>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Fri, 11 Feb 2022 07:50:29 +0100
+Message-ID: <CAMhs-H9O=EagT-6296-CMQFBYFfekj2agrH9a8JpHzeC36EiUg@mail.gmail.com>
+Subject: Re: [PATCH] MIPS: ralink: mt7621: do memory detection on KSEG1
+To:     Chuanhong Guo <gch981213@gmail.com>
+Cc:     "open list:MIPS" <linux-mips@vger.kernel.org>,
+        Rui Salvaterra <rsalvaterra@gmail.com>,
+        Ilya Lipnitskiy <ilya.lipnitskiy@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-arm-kernel@lists.infradead.org,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The high limit is used to throttle the workload without invoking the
-oom-killer. Recently we tried to use the high limit to right size our
-internal workloads. More specifically dynamically adjusting the limits
-of the workload without letting the workload get oom-killed. However due
-to the limitation of the implementation of high limit enforcement, we
-observed the mechanism fails for some real workloads.
+Hi Guo,
 
-The high limit is enforced on return-to-userspace i.e. the kernel let
-the usage goes over the limit and when the execution returns to
-userspace, the high reclaim is triggered and the process can get
-throttled as well. However this mechanism fails for workloads which do
-large allocations in a single kernel entry e.g. applications that
-mlock() a large chunk of memory in a single syscall. Such applications
-bypass the high limit and can trigger the oom-killer.
+On Fri, Feb 11, 2022 at 4:56 AM Chuanhong Guo <gch981213@gmail.com> wrote:
+>
+> It's reported that current memory detection code occasionally detects
+> larger memory under some bootloaders.
+> Current memory detection code tests whether address space wraps around
+> on KSEG0, which is unreliable because it's cached.
+>
+> Rewrite memory size detection to perform the same test on KSEG1 instead.
+> While at it, this patch also does the following two things:
+> 1. use a fixed pattern instead of a random function pointer as the magic
+>    value.
+> 2. add an additional memory write and a second comparison as part of the
+>    test to prevent possible smaller memory detection result due to
+>    leftover values in memory.
+>
+> Fixes: 139c949f7f0a MIPS: ("ralink: mt7621: add memory detection support")
+> Reported-by: Rui Salvaterra <rsalvaterra@gmail.com>
+> Signed-off-by: Chuanhong Guo <gch981213@gmail.com>
+> ---
+>  arch/mips/ralink/mt7621.c | 36 +++++++++++++++++++++++-------------
+>  1 file changed, 23 insertions(+), 13 deletions(-)
 
-To make high limit enforcement more robust, this patch makes the limit
-enforcement synchronous only if the accumulated overcharge becomes
-larger than MEMCG_CHARGE_BATCH. So, most of the allocations would still
-be throttled on the return-to-userspace path but only the extreme
-allocations which accumulates large amount of overcharge without
-returning to the userspace will be throttled synchronously. The value
-MEMCG_CHARGE_BATCH is a bit arbitrary but most of other places in the
-memcg codebase uses this constant therefore for now uses the same one.
+Thanks! Nothing seems to be broken after these changes, at least for
+my boards :)
 
-Signed-off-by: Shakeel Butt <shakeelb@google.com>
----
-Changes since v1:
-- Based on Roman's comment simply the sync enforcement and only target
-  the extreme cases.
+Tested-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
 
- mm/memcontrol.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 292b0b99a2c7..0da4be4798e7 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -2703,6 +2703,11 @@ static int try_charge_memcg(struct mem_cgroup *memcg, gfp_t gfp_mask,
- 		}
- 	} while ((memcg = parent_mem_cgroup(memcg)));
- 
-+	if (current->memcg_nr_pages_over_high > MEMCG_CHARGE_BATCH &&
-+	    !(current->flags & PF_MEMALLOC) &&
-+	    gfpflags_allow_blocking(gfp_mask)) {
-+		mem_cgroup_handle_over_high();
-+	}
- 	return 0;
- }
- 
--- 
-2.35.1.265.g69c8d7142f-goog
-
+Best regards,
+    Sergio Paracuellos
