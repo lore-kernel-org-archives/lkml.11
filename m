@@ -2,131 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F95FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234424AbiBKJHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:07:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51438 "EHLO
+        id S1348345AbiBKJIT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 04:08:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234132AbiBKJHS (ORCPT
+        with ESMTP id S239423AbiBKJIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:07:18 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D80AB33
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:07:18 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id q7-20020a6bf207000000b006129589cb60so5906959ioh.4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 01:07:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=sXJ4ILM25FIiiKAYARggO6qzhK/fdMnUo0mUqpZL4S8=;
-        b=8RKezOXkYHxJHr9CKTfMwaU67YLBxk4dkzfnzoxCG7i3uMFJ83aZI8+xz1bLGEIH83
-         jZ1NZwG+RPOo5Ft2dz+9BLkxBhpZ95PVV29G8WGn6mYPGvbEyjHUqEmInr9uIiA6Nd8N
-         WBjtpO0+c7vTb2uxQQMlKLvlrIKBBSxxsx3HAL2nL+tHpEPtObh7AR/Nal9vKOCyn5mQ
-         qy/7nuMWagA7z7rDY+Wa/zSXnLCJ38yOZd3n/0ZQk0uuKMA/kfgLhorXyWttmP/4Uxch
-         kdyGwAGlT9bz7vgJTnn70g0iVSycZgFcDscmYfYtDskSF3QpEK/xkoT64eIZLL6zzd5n
-         8fwg==
-X-Gm-Message-State: AOAM530XTuOTYeCzKThty9czI4FZbB+xzO/zvxYFg9t6SPbT8CahWTwe
-        Fwlbi0JtljKWIJyHsSEVbjiNcC9Ec8jgrFIZocKAPTquEgZ3
-X-Google-Smtp-Source: ABdhPJxdwF30D+sAc7HOspAj+AlL/RT/FxlOQm3wq3x3Wf1y+gDG+DisFyRMYQFQQZpc7NG8eppp12w1CCYunzi+KQNe6GZ6LkFG
+        Fri, 11 Feb 2022 04:08:16 -0500
+Received: from CHE01-ZR0-obe.outbound.protection.outlook.com (mail-zr0che01on2120.outbound.protection.outlook.com [40.107.24.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA41CB53;
+        Fri, 11 Feb 2022 01:08:14 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=et26xpEAEyC3fY3hw9yRjWbL/k8xs8c0dnNrbPbxs6gX2cnx6bwvXj72XJ3sFRO7AuakIlBlWnxwMBGrq33NkDdEJlM78tAju7vq+qzZYpygzGwB/NBoXpqrwhejhYJItx3a3oOpCA5JtaH9NJe+2FJQzN7Cfh7320UZYZAbf1ZErIsGL8p2u7kENXlGfpkT57+qsZ5Qxu/bTYCFHonPkNIFuk+y9uYy+uGlduQm5NK5whxO22J6BDsxiXisR8ubBjdlZ67ZqRhzKNCE5x05+JsgOu/v9HOY0hci/3grakKRxUhDeoJza/Im8HHGUsVAV/aOeXmuOLjBWHSkV+bSBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J+q2y6y+vZ6z4ZLssZAGsh//RJ4PKsIpusS5brBFHbs=;
+ b=UuOMAuTrCVmfgBF6xBN/CBFgJMadBVs3ufqPNlXY0hubSOOPF9KvuDuTCrEq9OLbIy2wzpXlNOeNDcai3IS+LZrzrdWEWydSnO9Tg6DC92Yfw62TBSN2y1k06rNu3Cq7N/x/67Fb69BI48kr1EVfQOEMTTlNR/MsQUbFEc4JC22sdU48A/kabej1L3SQktWvDhoJu4UxJb4PqbZshYDiyMRrKyT2CjK6NHodKt0LzU782WBzbrdV5Bkb3R+LIrKcE3+fZA6RvaZGW6cGnnFvY8znFo0MSCaxs6WqTwg/CUcPF28Y9mq+mmQ37Zm/whTK8oVMXU8PrgjTYBeKOfs61w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J+q2y6y+vZ6z4ZLssZAGsh//RJ4PKsIpusS5brBFHbs=;
+ b=js2nTa2gUXixuKKFRKrn8GgCALsXXUH83Js/uxbBOiscqRVnGWaJacOKxUp0WUiSq9UBvRfTYScLm6txgpd6zy8IXwPK4+pjTcmhOOVHZVO7byAf39ONghBeA+nHLBUHne6zby0Kl1ef3j2Or5hCI0p8yGyiReqKXzaqfBuIGhM=
+Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3b::9) by
+ ZRAP278MB0272.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2c::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4975.15; Fri, 11 Feb 2022 09:08:12 +0000
+Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::fd38:a4c:c1e:4fe6]) by ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::fd38:a4c:c1e:4fe6%7]) with mapi id 15.20.4975.015; Fri, 11 Feb 2022
+ 09:08:12 +0000
+From:   Marcel Ziswiler <marcel.ziswiler@toradex.com>
+To:     "shawnguo@kernel.org" <shawnguo@kernel.org>
+CC:     "linux-imx@nxp.com" <linux-imx@nxp.com>,
+        "aisheng.dong@nxp.com" <aisheng.dong@nxp.com>,
+        "jagan@amarulasolutions.com" <jagan@amarulasolutions.com>,
+        "frowand.list@gmail.com" <frowand.list@gmail.com>,
+        "clin@suse.com" <clin@suse.com>,
+        "ariel.dalessandro@collabora.com" <ariel.dalessandro@collabora.com>,
+        "alexander.stein@ew.tq-group.com" <alexander.stein@ew.tq-group.com>,
+        "olof@lixom.net" <olof@lixom.net>,
+        "tharvey@gateworks.com" <tharvey@gateworks.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "marek.vasut@gmail.com" <marek.vasut@gmail.com>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "krzysztof.kozlowski@canonical.com" 
+        <krzysztof.kozlowski@canonical.com>,
+        "alexandru.marginean@nxp.com" <alexandru.marginean@nxp.com>
+Subject: Re: [PATCH v3 12/12] arm64: dts: freescale: add initial support for
+ verdin imx8m mini
+Thread-Topic: [PATCH v3 12/12] arm64: dts: freescale: add initial support for
+ verdin imx8m mini
+Thread-Index: AQHYFGBuYPjChd0xT0qJ2iCOxFJ/g6yOHPgAgAAIEIA=
+Date:   Fri, 11 Feb 2022 09:08:12 +0000
+Message-ID: <47fa53abeda5f83e910d04b2ce5cacdac49b5ea2.camel@toradex.com>
+References: <20220128160100.1228537-1-marcel@ziswiler.com>
+         <20220128160100.1228537-13-marcel@ziswiler.com>
+         <20220211083916.GP4909@dragon>
+In-Reply-To: <20220211083916.GP4909@dragon>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toradex.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a49e42f8-1e73-49a0-317d-08d9ed3e07cb
+x-ms-traffictypediagnostic: ZRAP278MB0272:EE_
+x-microsoft-antispam-prvs: <ZRAP278MB0272E542BD015823AE99D13DFB309@ZRAP278MB0272.CHEP278.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: i+JkH9dv2iUlgHdqYA1KAkgC/GvYtRLdRaGNO45lTUUOo75llpaa2LXNQbEKgSVc7ycWZj28AGr98XmuEX2oh69vRqRcvtFjH7vAaB1HGoi1EqmgBXkxVxh+sKUFUKVE0tza/NcG7isEEmBEZ31JoxwRnoe9Fmknu/XhU23EyWiIPriIJnKl0WenHtStxgufScQHDQiVBME21JFm7yAOABROHFhg4IK0q6v9a8YEEliyK9tw7A4ZXqEZpxSZubRwPs6xaVveBv9RkRjMRotj5spEMf/YdZOGLAulh89zXuN62S1NpWhN2pXBuLa+LBgoViKpvGwxKBYrfz0Ac8duFB2TAcicmMD5wTPUFK/bl1EotvNEK3cOrZZYEDKIw0UOof54Gzu69+rzI39s7QYGXSRzr3+tS5d4dNmgNQiX29rh6GTIbwUNrUjJHuOOku/Dj2FQYBudHkK+yhaynhFhmTCnVVGiyl5dRuP5GPTd/lyzzFVMNqx7ASqqqj3OoCoQm2FTySpgvtuSTGHMIHsL9DXA/TJ8qIvs1vXJWQDIfPK+lzSThIAA9NCTSTAeP8pNU6XQ9kMzKRMlAXHxAor2U9KFk4hBByGYdkw7Ig0jAmAYfeV9dRVPxXUaz7b/LR3ByKkHmalRyxcE9tlkrAyLjj5gSwj0nCczYAm89yP+ESfXb1MVin+OQETeVxkTwHBsAY8Lsv2b8nPtwP/IMpyBBkJ2/iFUPHxs/eCLZglMXfM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(376002)(136003)(39850400004)(346002)(366004)(396003)(66556008)(64756008)(4326008)(66946007)(6512007)(8676002)(66476007)(66446008)(76116006)(508600001)(8936002)(2616005)(71200400001)(186003)(86362001)(2906002)(83380400001)(26005)(5660300002)(7416002)(6506007)(38070700005)(122000001)(38100700002)(4744005)(6486002)(316002)(36756003)(44832011)(54906003)(6916009)(32563001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RjF0V1kvYWhzc3IzS1Y0L1FxblNjcE1zSSswTDQ1TTVhcWhsaVUxQldKbnh0?=
+ =?utf-8?B?ZjY4dWYrK0NadmZETzA0UVkrU2JkYmhocERnak5sV1pqZ0hzcExSK29TejBW?=
+ =?utf-8?B?SlJYQnV1aDRMNlVoSUdsUTBtSWljUTNtNlI4NWUwdjRXYWM5MDlMZHhFL3hp?=
+ =?utf-8?B?di9BUzVHV3Ruczcxay9wdkVXZjg0UW16VHVNS1BWcVdOcVRBKy9sQkxsM3pZ?=
+ =?utf-8?B?Y2Q4UHdPN2lpZmQ3SlRheG9obkI2aXZkK0h4M0k1RVdTVSsyT3VTM3huNWMz?=
+ =?utf-8?B?dEttQjc4SzRlOGk3SmcwMEJvOWRiVENlWlJ5ZU5oQ3AyRlZ2Q2d6KzV4RTlW?=
+ =?utf-8?B?eEU3S25EY3VGTXo2MElBOWtIY0VZTEllUVdTL1FubU8yQmx5Q3E5elVSQTlt?=
+ =?utf-8?B?cjlJak1wNlArQXZmbGFTL3h5bFk1V1hJOFBJeXNZYnBVVjdibmtKL1VoUjNT?=
+ =?utf-8?B?aElkQTRnYkxMTHdDZThiU29hbHowRko0bTJxZjdnMnZ1bFZzazJ1K2hhamIr?=
+ =?utf-8?B?MnBCWVc5Ull5cmxOSlZTU09iUUNLWjltVmF6a0hxa0N0QVc0VmFWMktCYXNU?=
+ =?utf-8?B?aXRwcG5aT1dpL3Y5Rlk5ZlFna2ZnSHZkRGY2TUNVaVZjS05veXlZQ2lBdzVj?=
+ =?utf-8?B?TExmYU5DWXlaUVRaTUZaTTY5VFV3UWx0NXdSenNmQ2grajh4anBDUWQzUFZh?=
+ =?utf-8?B?WVlDMVdjeVRBWG9LREVGWndwM1FmVnEyU2VOYjdzenBaUVdSZmpVZ1ZyTGd5?=
+ =?utf-8?B?aHdkdHJRM2pkV1VGbDQzV0hLR0VibjhEbTBoQ0o4Y3VSM2NuSGlJekpRNGVP?=
+ =?utf-8?B?aXZnb1psUXR0MjZmY0JEbU5lZXdZbXprY3VlN1pSSVcrSzFOeU9Ddm9yYXda?=
+ =?utf-8?B?Zk8rc0FMMWtlYlRLN1Q3ZCtDVC9XRmRBbGNieTdFUS9zQVFYNXB6cXdlOXho?=
+ =?utf-8?B?dXlHb2NSalo4R3VaQ0d1UXdNK3VWbHk1K1Y2Nko5TVd0UzNPcXBhNkpCRDNh?=
+ =?utf-8?B?NGhvbTA3YzNESkhxem0ycTlwS2lLaWY5VVd4dEZxcTRxcXZPcXZzNUVIVjVD?=
+ =?utf-8?B?ZXl3TnRscTM3Zk1qRURRODcrRDdsZC9WYUhOclVpNCtiYlBqQW1vcXA5alA4?=
+ =?utf-8?B?OHh6aVNBMEdrMmQvUGl3YkZLZFUxdmtmSU5uTlV4dDVuUzFmdis3NHhJcys1?=
+ =?utf-8?B?eVlQTzBWUFh4dlpDcVdWTnJ4M2hIdWdYd25QbTBXUEhXRzVZNDFQNTFGVW1H?=
+ =?utf-8?B?c1Zkc0xwTjNkWkZ6UkJOb0UxNVNqT1FPQjd0ell4VmdNU0JnTnYrSm1lMUZw?=
+ =?utf-8?B?Rk1rUVZvM0FJSFVlN1llTHNxc1M3QitMZVpjQUpkaThMN1ROY25iUENlVHZU?=
+ =?utf-8?B?SXlIeW1EYlUrMk5VQkxrd0F1WEYrMnNWOGVQRFVkT3NTM3RBQnNPQjNhT2ds?=
+ =?utf-8?B?MFhaV2tzbkhRK1hKTTBVZWJ3QW9wMGhIVkJTbzRwZDArRUV2bnVMUjdwUm5G?=
+ =?utf-8?B?R25CTU9hbkJnL2VWc3pLT2xnbDhBbm96QTVwSVUzWXNCa3kzZmhUWXViQTR2?=
+ =?utf-8?B?UEpWM2g4UHVpRTZHMi9kdkJlcytRdkx0aWwveGpKaThoYVRObzVxMW1aamZN?=
+ =?utf-8?B?MnBBTlQ3aTRDcDNMQTdtcTFiUjVsM1BlaXJjaGhzWFJZekw3L1QyWnBGbFk3?=
+ =?utf-8?B?cGhsaTI4YXVxQ1lOTkkxTTZSaW5vY0JDRWlqUTE0ZlJKK05vUTAvMXFIcHBR?=
+ =?utf-8?B?VHpzYkF1bGZSRHAwSzd0WUxrYkxyNWk4eVo4QnBYQXB6SU9aejlyOXhGZzhE?=
+ =?utf-8?B?OWNHcGJpTkxCMmhIdFkyRjR6dWFEVVU3VEFjRGVnMHNJU3pDMytXZVdOQ2Fv?=
+ =?utf-8?B?eFRTSGFZeW4vVmthVmpUZDB6U09QOW9OdFhzMzNXMHFJN0VhKytYbzVJL2Vw?=
+ =?utf-8?B?OWxZTkhEQUt1T2wvZmtrUEE4RnZRcFdJQWQ1eVNkcDVhVWIxeXhMYXh3ZzFt?=
+ =?utf-8?B?NW5FWGxHUU4xUUdFbFFTSXEyZlkrNmZzRnBIa2E3UDdHWFI3NkZwMmIwNGk3?=
+ =?utf-8?B?c1ZPTTd2cjBmTXNQVzhhMkpxaHFQdERucTYyeFA0eC8rMDhCM1QrcVRmdlE1?=
+ =?utf-8?B?c1ZvaTgxTWNncjVYTlRmMzVUV0hQck9ZZ3UvRm03bGg4VC84WnZiNDkvSWMz?=
+ =?utf-8?B?M2xpOWpPWXFNb0swUENmaHZ4bUhFVUZ0WjdKb1czdFR0ZzZZdXZCWk9ZQXV3?=
+ =?utf-8?Q?ubUw+4W6DqvLJ6P9rjSvVeGIM2+Bpv554ZcxBAqIXU=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <0DD71DA886BAA240B182A70060DBFAC2@CHEP278.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:d15:: with SMTP id q21mr257277jaj.153.1644570437704;
- Fri, 11 Feb 2022 01:07:17 -0800 (PST)
-Date:   Fri, 11 Feb 2022 01:07:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bf60b605d7ba64b2@google.com>
-Subject: [syzbot] KMSAN: uninit-value in mpol_rebind_mm (2)
-From:   syzbot <syzbot+ad1b8c404f0959c4bfcc@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, glider@google.com,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a49e42f8-1e73-49a0-317d-08d9ed3e07cb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Feb 2022 09:08:12.3523
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nHoP0OdIHy0pj1yuDksD8HGFAve3lO2g2wRBvrUXvl2xExN2ngtwJDt79MpN6mO7gjpIbF9Nijz7OzdiV/KcB9VsasS4iAsla4qwxf51ntY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0272
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    85cfd6e539bd kmsan: core: delete kmsan_gup_pgd_range()
-git tree:       https://github.com/google/kmsan.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=17a505dc700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b9807dd5b044fd7a
-dashboard link: https://syzkaller.appspot.com/bug?extid=ad1b8c404f0959c4bfcc
-compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10bcfdb2700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124ca21c700000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+ad1b8c404f0959c4bfcc@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: uninit-value in mpol_rebind_policy mm/mempolicy.c:352 [inline]
-BUG: KMSAN: uninit-value in mpol_rebind_mm+0x35b/0x460 mm/mempolicy.c:383
- mpol_rebind_policy mm/mempolicy.c:352 [inline]
- mpol_rebind_mm+0x35b/0x460 mm/mempolicy.c:383
- cpuset_attach+0xe28/0x15e0 kernel/cgroup/cpuset.c:2291
- cgroup_migrate_execute+0x1023/0x1d20 kernel/cgroup/cgroup.c:2515
- cgroup_migrate kernel/cgroup/cgroup.c:2771 [inline]
- cgroup_attach_task+0x540/0x8b0 kernel/cgroup/cgroup.c:2804
- __cgroup1_procs_write+0x5cc/0x7a0 kernel/cgroup/cgroup-v1.c:520
- cgroup1_procs_write+0x97/0xb0 kernel/cgroup/cgroup-v1.c:533
- cgroup_file_write+0x4c2/0x9e0 kernel/cgroup/cgroup.c:3852
- kernfs_fop_write_iter+0x66a/0x9f0 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:2162 [inline]
- new_sync_write fs/read_write.c:503 [inline]
- vfs_write+0x1318/0x2030 fs/read_write.c:590
- ksys_write+0x28b/0x510 fs/read_write.c:643
- __do_sys_write fs/read_write.c:655 [inline]
- __se_sys_write fs/read_write.c:652 [inline]
- __x64_sys_write+0xdb/0x120 fs/read_write.c:652
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was stored to memory at:
- __mpol_dup+0x107/0x480 mm/mempolicy.c:2326
- mpol_dup include/linux/mempolicy.h:87 [inline]
- vma_replace_policy mm/mempolicy.c:762 [inline]
- mbind_range+0x13ee/0x1e40 mm/mempolicy.c:833
- do_mbind+0x13d2/0x1b30 mm/mempolicy.c:1323
- kernel_mbind mm/mempolicy.c:1477 [inline]
- __do_sys_mbind mm/mempolicy.c:1484 [inline]
- __se_sys_mbind+0x51c/0xc80 mm/mempolicy.c:1480
- __x64_sys_mbind+0x19d/0x200 mm/mempolicy.c:1480
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- slab_alloc mm/slub.c:3259 [inline]
- kmem_cache_alloc+0x902/0x11c0 mm/slub.c:3264
- mpol_new mm/mempolicy.c:293 [inline]
- do_mbind+0x8f5/0x1b30 mm/mempolicy.c:1279
- kernel_mbind mm/mempolicy.c:1477 [inline]
- __do_sys_mbind mm/mempolicy.c:1484 [inline]
- __se_sys_mbind+0x51c/0xc80 mm/mempolicy.c:1480
- __x64_sys_mbind+0x19d/0x200 mm/mempolicy.c:1480
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-CPU: 0 PID: 3474 Comm: syz-executor399 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-=====================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+SGkgU2hhd24KClRoYW5rIHlvdSB2ZXJ5IG11Y2ggZm9yIHlvdXIgcmV2aWV3LgoKT24gRnJpLCAy
+MDIyLTAyLTExIGF0IDE2OjM5ICswODAwLCBTaGF3biBHdW8gd3JvdGU6CgoKW3NuaXBdCgo+ID4g
+K8KgwqDCoMKgwqDCoMKgcmVzZXJ2ZWQtbWVtb3J5IHsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAjYWRkcmVzcy1jZWxscyA9IDwyPjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAjc2l6ZS1jZWxscyA9IDwyPjsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqByYW5nZXM7Cj4gPiArCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+LyogVXNlIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbiBzZXR0aW5ncyBpbnN0ZWFkICovCj4gPiAr
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgL2RlbGV0ZS1ub2RlLyBsaW51eCxjbWE7Cj4g
+PiArCj4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgcnBtc2dfcmVzZXJ2ZWQ6IHJw
+bXNnQGI4MDAwMDAwIHsKPiA+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgbm8tbWFwOwo+ID4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqByZWcgPSA8MCAweGI4MDAwMDAwIDAgMHg0MDAwMDA+Owo+ID4gK8KgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gCj4gTm90IHN1cmUgdGhpcyBpcyBhIGJvYXJkIGxl
+dmVsIGNvbmZpZ3VyYXRpb24uCgpZZXMsIHJlbWVtYmVyLCBGYWJpbyBtZW50aW9uZWQgdGhpcyBh
+bHJlYWR5IGFuZCBJIGZpeGVkIGl0IGluIGEgdjUgd2hpY2ggSSBhbHJlYWR5IHBvc3RlZCBXZWRu
+ZXNkYXkuCgpMZXQgbWUgaW5jb3Jwb3JhdGUgYWxsIG90aGVyIHZhbHVhYmxlIGZlZWRiYWNrIGFu
+ZCBwb3N0IGEgdjYgc2hvcnRseS4gVGhhbmtzIQoKW3NuaXBdCgpDaGVlcnMKCk1hcmNlbAo=
