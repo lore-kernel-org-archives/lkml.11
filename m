@@ -2,139 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:46:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243824AbiBKInx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:43:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36302 "EHLO
+        id S1348123AbiBKIqE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 03:46:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbiBKInw (ORCPT
+        with ESMTP id S243970AbiBKIqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:43:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95D7BE67
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:43:51 -0800 (PST)
+        Fri, 11 Feb 2022 03:46:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6C6CE67
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:45:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644569030;
+        s=mimecast20190719; t=1644569157;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T1tDnrHIbG9LXNEmLQIdCuYtaS1n3f83/zIK/VL9XPM=;
-        b=KyeSzzpUIMVYEmmyUW0obpvVqAeVc68miUOwjOgK/3tXRnQ3DMRtKHpLadAs0vpoM/8pSb
-        hOT8sTSmPrbshpAqj2R/qUJAbsiPlQpDEcn3dwlgiZlAkXOUa3AkDLVyaIU8/EIlLd5Exx
-        qDGC8G+Zbo1hJEbwap2DGEOrrWeFhUI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=yhiejNdZNc9V7Q57Z4FGfEE9W4EtgIkRByXMCdx4jhQ=;
+        b=jMniQzghdCSnuvlxHcu49FP/Obyx5NWFaPwcyzzfZdjxyooE8BajYvjCf1xUbnQO8F8ju5
+        pcksNg21DA5dsfClrrEk6z6jgEmqdInXVwNh66SXER1+m99CNDJ/6SfYrSzCW5EaaIe6L4
+        OpEEFD18jFoE4lIPWJk3cvN/ondEI+Q=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-596-UbgzzdC6PbauOz5RvPxZsw-1; Fri, 11 Feb 2022 03:43:49 -0500
-X-MC-Unique: UbgzzdC6PbauOz5RvPxZsw-1
-Received: by mail-wr1-f70.google.com with SMTP id k20-20020adfc714000000b001e305cd1597so3581740wrg.19
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:43:49 -0800 (PST)
+ us-mta-573-A-twu_aGMGmlRNfqQ4uQLQ-1; Fri, 11 Feb 2022 03:45:55 -0500
+X-MC-Unique: A-twu_aGMGmlRNfqQ4uQLQ-1
+Received: by mail-wm1-f69.google.com with SMTP id u14-20020a05600c210e00b0037bddd0562eso2250625wml.1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:45:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=T1tDnrHIbG9LXNEmLQIdCuYtaS1n3f83/zIK/VL9XPM=;
-        b=pQ57xVkgfVow77opvvcA4MNpSpcnJBjBj41qC8x1m6+Z43Ks2ca3c/4kvNHvQ7QpcT
-         ykjNe1Y38tg0r/X7MfI0zshun+kCpR4um0bG7ZChJtG+o362RWj9rkBaiz/FIcQGnt/f
-         1fqJ+C0zOUBPRY5+Or6MhV4VXpLrcZlyh0MexqumAY+CgZiwnx/YeUs3vU2+ibhbdIzX
-         SBOxUXHanpF+8eizMIi/9Iqr//ZtTd3B7F8EVv0WzDBGdFJ4L/qF3AGuNW/PKs1JLHvQ
-         ON0eCNCy8y8Bu0d4dRHXYLoWsgY3iF1f6TJMpRe/WawZZHOP81Ej5HZLdIo5ZI8MZWkx
-         nZNw==
-X-Gm-Message-State: AOAM53017exX7S91yQPalM2EWPaIGUOy7ittAka8c7Et7DhWr2nCrrEg
-        NWlTWluP5MN1/kAux6rKVEh+f/CRne0TvvMoagSA8WHf6028acyzvUA7J/NGAqAIBulmT+F9cN+
-        2WfPhX86QRRUn+wSYkG8VGzCf
-X-Received: by 2002:adf:fb0e:: with SMTP id c14mr483648wrr.586.1644569028310;
-        Fri, 11 Feb 2022 00:43:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwUBv5o6lrc5bIuyfHJC73FB/0g+al611mC6ZxwixSW6SrEZEOwJ3diZZy9JWwqLfEpAY3wKA==
-X-Received: by 2002:adf:fb0e:: with SMTP id c14mr483633wrr.586.1644569028116;
-        Fri, 11 Feb 2022 00:43:48 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70c:aa00:4cc6:d24a:90ae:8c1f? (p200300cbc70caa004cc6d24a90ae8c1f.dip0.t-ipconnect.de. [2003:cb:c70c:aa00:4cc6:d24a:90ae:8c1f])
-        by smtp.gmail.com with ESMTPSA id w3sm4872992wrl.113.2022.02.11.00.43.47
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=yhiejNdZNc9V7Q57Z4FGfEE9W4EtgIkRByXMCdx4jhQ=;
+        b=Eth+WDPVKG+eAoWqO5QDMQmlYHvq1obhtLsiWle8B3ZmCVvTLPc204p7tuAXZgrNev
+         PWhei6TnMs4VoKw4gbqphZntuRR99Ijzmbz+caOllOBWG8lylYS7c5Ew7d+tAujh/jfM
+         uupYOwim5aS0SwIJMFZ9qi/t027Afvf0xYxO2ZeFBlUfHzWevczp9cExaY4C7M/NScfh
+         JK7QzzDjbsEzaxCfbg1hdYNdRP+YqzLCzIIcnGgaKkGSLWKrj0gwna5Zjoe19gY5oa2A
+         MouI3WK7FrRmUIIhmcC2BcIYo8vxHmZ8qmiW7jNxjeORo1w4aEYLFzM1wCA6k+irthY3
+         mxmg==
+X-Gm-Message-State: AOAM533UeBn89s4HxTmWZ/yxs5LxIV/bR+HcJd5Y7HwRwMRsA8lV2+sT
+        TK9IWM0BvErN/wOZhpRKKAZmcutD7ZYbObZArGJ+RZuYhazhQomiSXYMH6LpPsj/vlf1vt0VzPH
+        oHPI5fV7Yf4wUvvvGqj1DZtg3
+X-Received: by 2002:adf:edc9:: with SMTP id v9mr470924wro.135.1644569154550;
+        Fri, 11 Feb 2022 00:45:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJydD7roXdtXZjQWp72Wo5fcJQ6eNKNYHlSPNx2dupK8zLBlB9eyylPxhSvKDBOJgfjPqx/X3w==
+X-Received: by 2002:adf:edc9:: with SMTP id v9mr470898wro.135.1644569154333;
+        Fri, 11 Feb 2022 00:45:54 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id az21sm3460772wmb.11.2022.02.11.00.45.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 00:43:47 -0800 (PST)
-Message-ID: <356a4b9a-1f56-ae06-b211-bd32fc93ecda@redhat.com>
-Date:   Fri, 11 Feb 2022 09:43:46 +0100
+        Fri, 11 Feb 2022 00:45:53 -0800 (PST)
+Message-ID: <9ee28446-2dda-7015-1a0a-44dc8385002e@redhat.com>
+Date:   Fri, 11 Feb 2022 09:45:52 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 0/7] drm: Add driver for Solomon SSD130X OLED displays
 Content-Language: en-US
-To:     Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220202014034.182008-1-mike.kravetz@oracle.com>
- <20220202014034.182008-2-mike.kravetz@oracle.com>
- <20571829-9d3d-0b48-817c-b6b15565f651@redhat.com>
- <7b174c48-d368-43ba-7eab-13719a0d15ef@oracle.com>
- <6a82ea68-6e1e-8f5a-ca89-6744fc896a0b@redhat.com>
- <d7e6ee46-8e0b-2ae3-c159-449a26c17ae9@oracle.com>
- <b7ebafed-7dc3-b08d-15d4-859c7bc0fe2e@redhat.com>
- <55b6e78f-9594-8d5b-6ce2-bb699b9549fd@oracle.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v2 1/3] mm: enable MADV_DONTNEED for hugetlb mappings
-In-Reply-To: <55b6e78f-9594-8d5b-6ce2-bb699b9549fd@oracle.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+References: <20220209090314.2511959-1-javierm@redhat.com>
+ <CAMuHMdVs750iE=kP1vabwgsGOb8sHc8aC5k=HwCU32CURnYktw@mail.gmail.com>
+ <58ebacd2-d44d-c7e9-e752-de7815dd4cc1@redhat.com>
+In-Reply-To: <58ebacd2-d44d-c7e9-e752-de7815dd4cc1@redhat.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>
->>> I am now rethinking the decision to proceed with b) as described above.
->>>
->>> With the exception of MADV_REMOVE (which we may be able to change for
->>> hugetlb),  madvise operations operate on huge page size pages for hugetlb
->>> mappings.  If start address is in the middle of a hugetlb page, we essentially
->>> align down to the beginning of the hugetlb page.  If length lands in the
->>> middle of a hugetlb page, we essentially round up.
->>
->> Which MADV calls would be affected?
+On 2/9/22 13:37, Javier Martinez Canillas wrote:
+
+[snip]
+
 > 
-> Not sure I understand the question.  I was saying that madvise calls which
-> operate on hugetlb mappings today only operate on huge pages.  So, this is
-> essentially align down starting address and align up end address.
+>> There is still an issue with the cursor, though.
+>> After doing "echo hello > /dev/tty0", the text appears, but the cursor
+>> is gone. "clear > /dev/tty0" brings it back.
+>>
+> 
+> Hmm, I was able to reproduce this too. Thanks for pointing it out,
+> I'll investigate what the problem is.
+>
 
-Let me clarify:
+I still didn't have time to dig on this for v4. But I think that the
+driver works well enough to be merged and we can then fix the issues
+that are still present in the fbdev emulation and fbcon interaction
+as a follow-up.
 
-If you accidentially
-MADV_NORMAL/MADV_RANDOM/MADV_SEQUENTIAL/MADV_WILLNEED a range that's
-slightly bigger/smaller than the requested one you don't actually care,
-because it will only slightly affect the performance of an application,
-if at all.  MADV_COLD/MADV_PAGEOUT should be similar. I assume these
-don't apply to hugetlb at all.
-
-The effects of
-MADV_MERGEABLE/MADV_UNMERGEABLE/MADV_HUGEPAGE/MADV_NOHUGEPAGE should in
-theory be similar, however, there can be some user-space visible effects
-when you get it wrong. I assume these don't apply to hugetlb at all.
-
-However, for
-MADV_DONTNEED/MADV_REMOVE/MADV_DONTFORK/MADV_DOFORK/MADV_FREE/MADV_WIPEONFORK/MADV_KEEPONFORK/MADV_DONTDUMP/MADV_DODUMP/....
-the application could easily detect the difference of the actual range
-handling.
-
-
-> For example consider the MADV_POPULATE calls you recently added.  They will
-> only fault in huge pages in a hugetlb vma.
-
-On a related note: I don't see my man page updates upstream yet. And the
-last update upstream seems to have happened 5 months ago ... not sure
-why the man project seems to have stalled.
-
-https://git.kernel.org/pub/scm/docs/man-pages/man-pages.git/
-
+Best regards,
 -- 
-Thanks,
-
-David / dhildenb
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
