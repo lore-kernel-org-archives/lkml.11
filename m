@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17494C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E68C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 12:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349833AbiBKMCR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 07:02:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49592 "EHLO
+        id S238907AbiBKMDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 07:03:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233806AbiBKMCI (ORCPT
+        with ESMTP id S232442AbiBKL7e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 07:02:08 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2F5F50
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 04:02:06 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id i14so14797171wrc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 04:02:06 -0800 (PST)
+        Fri, 11 Feb 2022 06:59:34 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DF35F4E
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:59:33 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id j9-20020a05600c190900b0037bff8a24ebso2693232wmq.4
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 03:59:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SKg5fgaSRnMfSUuR5qSVwQe2umofrKLlYtM6bnZW0nM=;
-        b=INTwi1N5tH0s4u9PMfQwQ3Yf+GzW5by2wfp+2ny8x/OOnJaeugXwYoCiXTcxHoSanf
-         wJ+BEzQv2Uzugz8U5r0b7ey/Yzd0kGrLIEiuozg5FIpD8YgXdVs+doS98xhJWo0Mba8Q
-         FYHVj/ZkjVAlt/wFto0stFJNRFIgwAw1MX69IQ36xuc4pFVXgzH31TlotcuwnNiXyYDe
-         onDRKXfOMFgNftjCDnj2764DPwCyFmAtig+DyPsAk0V4FoOPofQ6XXrKxDsv4TpIPxA+
-         CxT05NboeOk/3GZvh5nGKubPEzNayXlXoAIPWR3xn+2SuIlIrP7hiF73cfv91UQ/7guX
-         a3gg==
+        bh=tx8ZFq8JdO/4oUXF/KhCH6Nf7XCVn/8UewteKqP8h1s=;
+        b=qFuJQjxgvlT2bAueQpdORWOfP43xD0e9K9dpxtvEuNkSBmi78JUWnzGS/JJ24WgnT+
+         xmsbEsQQ0PS/X6OwzA7TnNT9C6OfK/X7stRvoYNMAu99/yiDTcgwglSlcBW3kfdbBwyj
+         JVS3vcWbyRWXaFKBO6IwAoi2vUivUvSgdSKP8mrWFN4wD4N7VQ1p82JzooQtWS7GXNWb
+         nzkZ/F+GgntKUs4PqHPwVkdyKnNp5DqeR5rqJyJHhpRqny4w/I9ag2PCyokFPyJEV0Uo
+         azUOZmMvsleKSTM+DBPEiBBBNCcxN3n1iMRxd+cAGLtOyMtvr41E0CBkb14hUsEwA0qH
+         qSfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=SKg5fgaSRnMfSUuR5qSVwQe2umofrKLlYtM6bnZW0nM=;
-        b=SXpSOeokdnWJCppjmxfHrUnEZuvRipQLSeEdd+/u5cx5fCwrCW0XF7F0AZvFckZGUK
-         nCLYnglDXUbJoY9MENgVBLvbLD+KFSZ2t5flfFFjPVI9EZ0wAeTKrKNahkPiFUTnzZeb
-         +9qXIQa7HUqb7T+ExsT23mlSdLtO2yUBGUn1/6o/bXotpihILqRIKNDFRpVkx+KMQi9W
-         4sMnC0il/N3p0w5l7jIh5qCJUmvNMnnW1sI+YUCwdwtqmM5B2jGNucgueZyPSaICJnmu
-         6NOJWIrdhyiJyBrObhk1znJfYfcpcYsk5ttggS6twfU2VBQctZi0Kija603i8yIt/ton
-         I8/A==
-X-Gm-Message-State: AOAM531jMmLtHdAr23rBatCkkv6vR26szsDCxC2usIR314Ytyp5xUfEG
-        8J+urHXHaBHJ3s+cKEmzAIqLEA==
-X-Google-Smtp-Source: ABdhPJxOk8Ft1kaaLr9QNpJwth1RnYfwy/lDSjmAiJXSSNiflQ9niPakqGD4UkyB8S4sPm/so3B1/Q==
-X-Received: by 2002:adf:bbc8:: with SMTP id z8mr1134991wrg.476.1644580924528;
-        Fri, 11 Feb 2022 04:02:04 -0800 (PST)
+        bh=tx8ZFq8JdO/4oUXF/KhCH6Nf7XCVn/8UewteKqP8h1s=;
+        b=0z3IKcky1VUz03EMpG4vXmmaKP5yfD2W8Mnsk0VO7RqE5QG8She+b5EqMjhk/n+may
+         hHQkd8jpOCUgIRzszRR9zaMdUNPckqLuAKC2erRErPTulKUoHek4RUSTwYiqudrit0g5
+         3WPpV+navgh8Z2zScKshJG1AG5gKFVlDa0FRntVty7APw3KHBxc7g+uak/4ZP/RAMa2G
+         ztujpFyNqKprQJ+e5/4kBGBacSLsfpG9SuvVG4minfHVlUq4qvAd5MvwFnOs8+2IeaQB
+         SJiCx0DLPARrITQpKl/dyt7j1vt8/YuUEi5PFxMLG/c91ovO8jYOmWGyfH+5SvESpYXR
+         siYw==
+X-Gm-Message-State: AOAM5334dtDpx4oCWzw8/WRdpDGkSR0BWjETYVR4YCoeohJedk7qDgOE
+        1OJGXT31if01afZhoL7LhzFaXCnIbFhNJA==
+X-Google-Smtp-Source: ABdhPJwYjEPwR7ld+ZHbxRmJzqFRQ73mz77IVh4ygiFj10b1bK4/nIyP38c85s51FxEHBMDjEn43Bg==
+X-Received: by 2002:a05:600c:4611:: with SMTP id m17mr17712wmo.94.1644580771686;
+        Fri, 11 Feb 2022 03:59:31 -0800 (PST)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id h10sm14695606wrt.57.2022.02.11.04.02.03
+        by smtp.googlemail.com with ESMTPSA id s187sm4763212wme.14.2022.02.11.03.59.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Feb 2022 04:02:04 -0800 (PST)
+        Fri, 11 Feb 2022 03:59:31 -0800 (PST)
 From:   Corentin Labbe <clabbe@baylibre.com>
-To:     damien.lemoal@opensource.wdc.com,
+To:     davem@davemloft.net, heiko@sntech.de, herbert@gondor.apana.org.au,
         krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v4] dt-bindings: convert ata/cortina,gemini-sata-bridge to yaml
-Date:   Fri, 11 Feb 2022 12:01:57 +0000
-Message-Id: <20220211120157.3385145-1-clabbe@baylibre.com>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v3] dt-bindings: crypto: convert rockchip-crypto to yaml
+Date:   Fri, 11 Feb 2022 11:59:25 +0000
+Message-Id: <20220211115925.3382735-1-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,204 +65,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch converts ata/cortina,gemini-sata-bridge binding to yaml
+Convert rockchip-crypto to yaml
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
-Change since v1:
-- fixed cosmetic nits reported by Damien Le Moal
-Changes since v2:
-- Added blank lines between properties
-- Removed useless quotes and label
-- Re-indented description
-Change since v3:
-- removed MaxItems from syscon
+Changes since v1:
+- fixed example
+- renamed to a new name
+- fixed some maxItems
 
- .../ata/cortina,gemini-sata-bridge.txt        |  55 ---------
- .../ata/cortina,gemini-sata-bridge.yaml       | 109 ++++++++++++++++++
- 2 files changed, 109 insertions(+), 55 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.txt
- create mode 100644 Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
+Change since v2:
+- Fixed maintainers section
 
-diff --git a/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.txt b/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.txt
-deleted file mode 100644
-index 1c3d3cc70051..000000000000
---- a/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.txt
-+++ /dev/null
-@@ -1,55 +0,0 @@
--* Cortina Systems Gemini SATA Bridge
--
--The Gemini SATA bridge in a SoC-internal PATA to SATA bridge that
--takes two Faraday Technology FTIDE010 PATA controllers and bridges
--them in different configurations to two SATA ports.
--
--Required properties:
--- compatible: should be
--  "cortina,gemini-sata-bridge"
--- reg: registers and size for the block
--- resets: phandles to the reset lines for both SATA bridges
--- reset-names: must be "sata0", "sata1"
--- clocks: phandles to the compulsory peripheral clocks
--- clock-names: must be "SATA0_PCLK", "SATA1_PCLK"
--- syscon: a phandle to the global Gemini system controller
--- cortina,gemini-ata-muxmode: tell the desired multiplexing mode for
--  the ATA controller and SATA bridges. Values 0..3:
--  Mode 0: ata0 master <-> sata0
--          ata1 master <-> sata1
--          ata0 slave interface brought out on IDE pads
--  Mode 1: ata0 master <-> sata0
--          ata1 master <-> sata1
--          ata1 slave interface brought out on IDE pads
--  Mode 2: ata1 master <-> sata1
--          ata1 slave  <-> sata0
--          ata0 master and slave interfaces brought out
--               on IDE pads
--  Mode 3: ata0 master <-> sata0
--          ata0 slave  <-> sata1
--          ata1 master and slave interfaces brought out
--               on IDE pads
--
--Optional boolean properties:
--- cortina,gemini-enable-ide-pins: enables the PATA to IDE connection.
--  The muxmode setting decides whether ATA0 or ATA1 is brought out,
--  and whether master, slave or both interfaces get brought out.
--- cortina,gemini-enable-sata-bridge: enables the PATA to SATA bridge
--  inside the Gemnini SoC. The Muxmode decides what PATA blocks will
--  be muxed out and how.
--
--Example:
--
--sata: sata@46000000 {
--	compatible = "cortina,gemini-sata-bridge";
--	reg = <0x46000000 0x100>;
--	resets = <&rcon 26>, <&rcon 27>;
--	reset-names = "sata0", "sata1";
--	clocks = <&gcc GEMINI_CLK_GATE_SATA0>,
--		 <&gcc GEMINI_CLK_GATE_SATA1>;
--	clock-names = "SATA0_PCLK", "SATA1_PCLK";
--	syscon = <&syscon>;
--	cortina,gemini-ata-muxmode = <3>;
--	cortina,gemini-enable-ide-pins;
--	cortina,gemini-enable-sata-bridge;
--};
-diff --git a/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml b/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
+ .../crypto/rockchip,rk3288-crypto.yaml        | 66 +++++++++++++++++++
+ .../bindings/crypto/rockchip-crypto.txt       | 28 --------
+ 2 files changed, 66 insertions(+), 28 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+ delete mode 100644 Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+
+diff --git a/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
 new file mode 100644
-index 000000000000..21a90975593b
+index 000000000000..2e1e9fa711c4
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
-@@ -0,0 +1,109 @@
++++ b/Documentation/devicetree/bindings/crypto/rockchip,rk3288-crypto.yaml
+@@ -0,0 +1,66 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/ata/cortina,gemini-sata-bridge.yaml#
++$id: http://devicetree.org/schemas/crypto/rockchip,rk3288-crypto.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Cortina Systems Gemini SATA Bridge
++title: Rockchip Electronics And Security Accelerator
 +
 +maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description: |
-+    The Gemini SATA bridge in a SoC-internal PATA to SATA bridge that
-+    takes two Faraday Technology FTIDE010 PATA controllers and bridges
-+    them in different configurations to two SATA ports.
++  - Heiko Stuebner <heiko@sntech.de>
 +
 +properties:
 +  compatible:
-+    const: cortina,gemini-sata-bridge
++    const: rockchip,rk3288-crypto
 +
 +  reg:
 +    maxItems: 1
 +
-+  resets:
-+    minItems: 2
-+    maxItems: 2
-+    description: phandles to the reset lines for both SATA bridges
-+
-+  reset-names:
-+    items:
-+      - const: sata0
-+      - const: sata1
++  interrupts:
++    maxItems: 1
 +
 +  clocks:
-+    minItems: 2
-+    maxItems: 2
-+    description: phandles to the compulsory peripheral clocks
++    items:
++      - description: clock data
++      - description: clock data
++      - description: clock crypto accelerator
++      - description: clock dma
 +
 +  clock-names:
 +    items:
-+      - const: SATA0_PCLK
-+      - const: SATA1_PCLK
++      - const: aclk
++      - const: hclk
++      - const: sclk
++      - const: apb_pclk
 +
-+  syscon:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: a phandle to the global Gemini system controller
++  resets:
++    maxItems: 1
 +
-+  cortina,gemini-ata-muxmode:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum:
-+      - 0
-+      - 1
-+      - 2
-+      - 3
-+    description: |
-+      Tell the desired multiplexing mode for the ATA controller and SATA
-+      bridges.
-+      Mode 0: ata0 master <-> sata0
-+              ata1 master <-> sata1
-+              ata0 slave interface brought out on IDE pads
-+      Mode 1: ata0 master <-> sata0
-+              ata1 master <-> sata1
-+              ata1 slave interface brought out on IDE pads
-+      Mode 2: ata1 master <-> sata1
-+              ata1 slave  <-> sata0
-+              ata0 master and slave interfaces brought out on IDE pads
-+      Mode 3: ata0 master <-> sata0
-+              ata0 slave  <-> sata1
-+              ata1 master and slave interfaces brought out on IDE pads
-+
-+  cortina,gemini-enable-ide-pins:
-+    type: boolean
-+    description: Enables the PATA to IDE connection.
-+      The muxmode setting decides whether ATA0 or ATA1 is brought out,
-+      and whether master, slave or both interfaces get brought out.
-+
-+  cortina,gemini-enable-sata-bridge:
-+    type: boolean
-+    description: Enables the PATA to SATA bridge inside the Gemnini SoC.
-+      The Muxmode decides what PATA blocks will be muxed out and how.
++  reset-names:
++    const: crypto-rst
 +
 +required:
-+  - clocks
-+  - clock-names
-+  - cortina,gemini-ata-muxmode
-+  - resets
-+  - reset-names
 +  - compatible
 +  - reg
-+  - syscon
++  - interrupts
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/cortina,gemini-clock.h>
-+    sata@46000000 {
-+      compatible = "cortina,gemini-sata-bridge";
-+      reg = <0x46000000 0x100>;
-+      resets = <&rcon 26>, <&rcon 27>;
-+      reset-names = "sata0", "sata1";
-+      clocks = <&gcc GEMINI_CLK_GATE_SATA0>,
-+               <&gcc GEMINI_CLK_GATE_SATA1>;
-+      clock-names = "SATA0_PCLK", "SATA1_PCLK";
-+      syscon = <&syscon>;
-+      cortina,gemini-ata-muxmode = <3>;
-+      cortina,gemini-enable-ide-pins;
-+      cortina,gemini-enable-sata-bridge;
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/rk3288-cru.h>
++    crypto@ff8a0000 {
++      compatible = "rockchip,rk3288-crypto";
++      reg = <0xff8a0000 0x4000>;
++      interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
++      clocks = <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>,
++               <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC1>;
++      clock-names = "aclk", "hclk", "sclk", "apb_pclk";
++      resets = <&cru SRST_CRYPTO>;
++      reset-names = "crypto-rst";
 +    };
+diff --git a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt b/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
+deleted file mode 100644
+index 5e2ba385b8c9..000000000000
+--- a/Documentation/devicetree/bindings/crypto/rockchip-crypto.txt
++++ /dev/null
+@@ -1,28 +0,0 @@
+-Rockchip Electronics And Security Accelerator
+-
+-Required properties:
+-- compatible: Should be "rockchip,rk3288-crypto"
+-- reg: Base physical address of the engine and length of memory mapped
+-       region
+-- interrupts: Interrupt number
+-- clocks: Reference to the clocks about crypto
+-- clock-names: "aclk" used to clock data
+-	       "hclk" used to clock data
+-	       "sclk" used to clock crypto accelerator
+-	       "apb_pclk" used to clock dma
+-- resets: Must contain an entry for each entry in reset-names.
+-	  See ../reset/reset.txt for details.
+-- reset-names: Must include the name "crypto-rst".
+-
+-Examples:
+-
+-	crypto: cypto-controller@ff8a0000 {
+-		compatible = "rockchip,rk3288-crypto";
+-		reg = <0xff8a0000 0x4000>;
+-		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
+-		clocks = <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>,
+-			 <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC1>;
+-		clock-names = "aclk", "hclk", "sclk", "apb_pclk";
+-		resets = <&cru SRST_CRYPTO>;
+-		reset-names = "crypto-rst";
+-	};
 -- 
 2.34.1
 
