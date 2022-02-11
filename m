@@ -2,189 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE26C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 09:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348723AbiBKJjr (ORCPT
+        id S1348708AbiBKJlx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 04:39:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57380 "EHLO
+        Fri, 11 Feb 2022 04:41:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348707AbiBKJjh (ORCPT
+        with ESMTP id S232618AbiBKJlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 04:39:37 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F58109C;
-        Fri, 11 Feb 2022 01:39:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1644572375; x=1676108375;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=OL6gLT7wev9O0q2qvKg+zBDZoeZnw93JsYQDAe9Nous=;
-  b=Na/SvJWZVdJonzXRFC5ED/4o3Itgvfp1r0rTXAo71gxbJopkvmEbjlxT
-   U08yGGGUThSXVHqvVXRv9CdMFt4igjZnxa7jkOY75SUG2nz2xtjoA0s6G
-   8YShFQLnuVZhfINm1CaAlR0tPrOByl5V19X66iSHR6BUUItHyNpG0ax/J
-   Y6U3guxSiX1zRm4YyjUQhBMp3PASV7TSdFSbKthff3T9Y7mfI18b68Val
-   q47jUh3wDa759tMMcHpaUm/+39eluNRA6CPCs2/BtkEGKxorzGwDUHljL
-   pA4r84jMI5E0ntde5r9fa+PLlF5PGzJKPtjAwhz1WjaAL58OUrbcLxhZi
-   Q==;
-IronPort-SDR: 7TcHMiKncXPs2xpOxyWAk8mAwo1Fa8oQyKybgl5KZLwrfWQXYNjU000HNFSjDr6r9gE7xYPlL7
- BtSR6Nhw7bDHzO/+ZyvrARP2H2HAze1yFHUXr2vAplvpDx/DlZwq9FDttvWJjta1ByRCBOdoh4
- kf+x0s6ggTX5rak71bn2L6KYRMgclIxRt0UexINNKQ9Dg3mvU0MTl9CL0DsKpmjhafrMmbzFsT
- Tz7p3TRVJjGSdlqXMgGCek3vqL+YH5aKWxYourb7tHc2W76b7kwTe6eQLNs/GC123KMXkEGcXi
- aNVD7Q1gqQeW4425Z2AIeljc
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="153263793"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Feb 2022 02:39:34 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 11 Feb 2022 02:39:34 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 11 Feb 2022 02:39:31 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <herbert@gondor.apana.org.au>, <krzysztof.kozlowski@canonical.com>,
-        <robh+dt@kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <linux-crypto@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <kavyasree.kotagiri@microchip.com>,
-        <devicetree@vger.kernel.org>,
-        "Tudor Ambarus" <tudor.ambarus@microchip.com>
-Subject: [PACTH v4 2/3] dt-bindings: crypto: Convert Atmel TDES to yaml
-Date:   Fri, 11 Feb 2022 11:39:21 +0200
-Message-ID: <20220211093922.456634-3-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220211093922.456634-1-tudor.ambarus@microchip.com>
-References: <20220211093922.456634-1-tudor.ambarus@microchip.com>
+        Fri, 11 Feb 2022 04:41:44 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B00010A3;
+        Fri, 11 Feb 2022 01:41:44 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id y5so15270628pfe.4;
+        Fri, 11 Feb 2022 01:41:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XrEai599YxaamrkRq48SWPy93iIT1IIuRy8NI79Zo+Y=;
+        b=LsTNIEuvqPTGl3ix7wTQCjwLYF5imHGU4tSEOIY7ZRR2H+doCaFKNKRM/CLry+jcqW
+         DWri0FV6vs0ac5BUohuHUBgR7/+MuMfk+eAixaj7hJVgLqDq0vuNYTgEqPAY0e6B4Zwe
+         akfex4GhCMrEnmjTFPBDcgCidOAkTsvNy90qJLFOsbksNcm6+uqtMN+Ni6TDuyU/nQeY
+         Z4urRPnNGgWtEzwU9zDzZV1IrU/53fGdlE3SU7yPa6LGQ35sJRJ5Kydi1dnPMBVu0ad0
+         +XucxUYq8/mdzHGr/SXSA1nxcth/yG28XwHtr0K7cud4HCX5vahAg2xt0zavht3iAu/v
+         VqhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XrEai599YxaamrkRq48SWPy93iIT1IIuRy8NI79Zo+Y=;
+        b=4Dg+RGfq/tdCxKnmqdIeMoMg/suWFvtQRz1IdiOSAUCs/ZdiU6yNDHOYsE8qyok5Lb
+         pcC4Dx1540QTH70jVKyj3tzOB0OD8mlm+WLiTUZUlMMus82G0aGG6wfmHL7Mb7bsuglB
+         Sm3kN3TVLRBYdMdw3g7o8fC7XEoeCj0GhOI/tYF/Gdd7VUPRclf16YQqXa35gQAN296z
+         cx3mVf1UioK9P/APijXD1mUezajK20M7rw/nlcUGZFR1tHdhupxUhP9ko4WnRQK+pGoA
+         gFrSo79siEpy8T7sdGwfO47yFGWIGwXSGNHOc+oeYP+G2L1j5fXGXvbqgeWgew2U1KKp
+         qFWg==
+X-Gm-Message-State: AOAM533zwwifGegElZR39KyIUpvzWaGpwHxvW575FMP99spap+1e7gB/
+        aG+0vypm7N4Itu7gzPUsLaw=
+X-Google-Smtp-Source: ABdhPJwk54lydLL2kA70IfDAxCRcJE/q6L2tNckyTDbGML9zeATouDwO/q0bIaXlLlZJ1b+kk7i/mw==
+X-Received: by 2002:a05:6a00:b50:: with SMTP id p16mr897170pfo.22.1644572503799;
+        Fri, 11 Feb 2022 01:41:43 -0800 (PST)
+Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
+        by smtp.gmail.com with ESMTPSA id t138sm7525193pfc.66.2022.02.11.01.41.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 01:41:43 -0800 (PST)
+Date:   Fri, 11 Feb 2022 18:41:37 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 0/2] counter: push event on every pulse
+Message-ID: <YgYvUdgkkWixDir4@shinobu>
+References: <20220203135727.2374052-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ospNvinesCUFwJ6X"
+Content-Disposition: inline
+In-Reply-To: <20220203135727.2374052-1-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert Atmel TDES documentation to yaml format. With the conversion the
-clock and clock-names properties are made mandatory. The driver returns
--EINVAL if "tdes_clk" is not found, reflect that in the bindings and make
-the clock and clock-names properties mandatory. Update the example to
-better describe how one should define the dt node.
 
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- .../crypto/atmel,at91sam9g46-tdes.yaml        | 64 +++++++++++++++++++
- .../bindings/crypto/atmel-crypto.txt          | 23 -------
- 2 files changed, 64 insertions(+), 23 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
+--ospNvinesCUFwJ6X
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-new file mode 100644
-index 000000000000..fcc5adf03cad
---- /dev/null
-+++ b/Documentation/devicetree/bindings/crypto/atmel,at91sam9g46-tdes.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/crypto/atmel,at91sam9g46-tdes.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Triple Data Encryption Standard (TDES) HW cryptographic accelerator
-+
-+maintainers:
-+  - Tudor Ambarus <tudor.ambarus@microchip.com>
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9g46-tdes
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: tdes_clk
-+
-+  dmas:
-+    items:
-+      - description: TX DMA Channel
-+      - description: RX DMA Channel
-+
-+  dma-names:
-+    items:
-+      - const: tx
-+      - const: rx
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/at91.h>
-+    #include <dt-bindings/dma/at91.h>
-+
-+    tdes: crypto@e2014000 {
-+      compatible = "atmel,at91sam9g46-tdes";
-+      reg = <0xe2014000 0x100>;
-+      interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
-+      clock-names = "tdes_clk";
-+      dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
-+             <&dma0 AT91_XDMAC_DT_PERID(53)>;
-+      dma-names = "tx", "rx";
-+    };
-diff --git a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-index 1353ebd0dcaa..5c6541cfcc4a 100644
---- a/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-+++ b/Documentation/devicetree/bindings/crypto/atmel-crypto.txt
-@@ -2,29 +2,6 @@
- 
- These are the HW cryptographic accelerators found on some Atmel products.
- 
--* Triple Data Encryption Standard (Triple DES)
--
--Required properties:
--- compatible : Should be "atmel,at91sam9g46-tdes".
--- reg: Should contain TDES registers location and length.
--- interrupts: Should contain the IRQ line for the TDES.
--
--Optional properties:
--- dmas: List of two DMA specifiers as described in
--        atmel-dma.txt and dma.txt files.
--- dma-names: Contains one identifier string for each DMA specifier
--             in the dmas property.
--
--Example:
--tdes@f803c000 {
--	compatible = "atmel,at91sam9g46-tdes";
--	reg = <0xf803c000 0x100>;
--	interrupts = <44 4 0>;
--	dmas = <&dma1 2 20>,
--	       <&dma1 2 21>;
--	dma-names = "tx", "rx";
--};
--
- * Secure Hash Algorithm (SHA)
- 
- Required properties:
--- 
-2.25.1
+On Thu, Feb 03, 2022 at 02:57:25PM +0100, Oleksij Rempel wrote:
+> changes v2
+> - rebase against latest kernel and fix some regressions
+> - add COUNTER_EVENT_CHANGE_OF_STATE event
+>=20
+> Add support of push even on every pulse.
+>=20
+> Oleksij Rempel (2):
+>   counter: add new COUNTER_EVENT_CHANGE_OF_STATE
+>   counter: interrupt-cnt: add counter_push_event()
+>=20
+>  drivers/counter/interrupt-cnt.c | 7 +++++--
+>  include/uapi/linux/counter.h    | 2 ++
+>  2 files changed, 7 insertions(+), 2 deletions(-)
+>=20
+> --=20
+> 2.30.2
 
+Thank you Oleksij, I'm picking this up now and I'll submit it with the
+rest of the Counter patches for this cycle.
+
+William Breathitt Gray
+
+--ospNvinesCUFwJ6X
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmIGL1EACgkQhvpINdm7
+VJLwOBAAsvgnVSxZWHuHqL8JXvacII6IVcSzvO5YEIsy8Gz2Qprj6Dyev6rqQWhe
+8UsJElw0hLI9NLt68S6NA4O+ZHFP4PTdU7Qx86jngwcMCqPrfVd7oq4EgNtTBW1Y
+CHdGZUN8yV9KkpmS7kCyRBo1rQJiOfuVkyw1w/8C1Sb94bmjaK35V4NOmXl59wMs
+Jj7PSZyBIdtOO2ar1IHT9tnhxyA5NuPaWCf0qyG9ztCiAGmSSWZR4jXPGWDHyYB6
+ps9N54AllrCpY6hEP3Y9KZdTFnCUB3L16zTCNBilwLSuhVy9utpAdjxj1HIVCd1N
+KoqDeIU+SqqY6DE4nrRXz1Rwk+HrcihzKUkRreLVfhuTWZJiNIBs1j2befx5h3QJ
+IaXtzmpI5B95KOIAHL0CwwFzAsydkNr8Bhc+ihsiFaBnoI5xY6TMtT03p7kKxxsv
+0eUjP3tBhRjh/3rlzDpIJ+PD2scKjCypIBfp18jxALzkkkA87yjn6BZZMA4zTBmc
++WDaTK1YFfzeF1JVPhxxkEtX2X2DVtdceh8OO+XlSmMGUF+BfG1mv2HxhXiArtIM
+ZP2490zZuv4I+sIV5WmIaZf7zutVP8WyRJpDQ6/JrujXhOSZuONtihP2Fe0W3ZDE
+1gCnChRZrqlCTinBud0Q3wFbTGWBEWb3AnJ8Xb/rXo2mk1h44JQ=
+=loYF
+-----END PGP SIGNATURE-----
+
+--ospNvinesCUFwJ6X--
