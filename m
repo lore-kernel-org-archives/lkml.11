@@ -2,125 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE29C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A355EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351822AbiBKQv0 (ORCPT
+        id S1351841AbiBKQvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:51:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50300 "EHLO
+        Fri, 11 Feb 2022 11:51:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351764AbiBKQvF (ORCPT
+        with ESMTP id S1351780AbiBKQvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:51:05 -0500
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624C6D75
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:51:02 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id AB9DA58037C;
-        Fri, 11 Feb 2022 11:41:50 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Fri, 11 Feb 2022 11:41:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=ns7zKpm4A9Xmsm
-        ZwroT9dHnb6rgarNlTVL3pcGHHu0o=; b=HhkSZgj0d6uRtnT7s5z1WUa0qj27bC
-        RPCjKEp+cbL/NNOORX1x08Je1Mb+zbU9hACFgx4vaehD0ZTg5j8N5A60hXkTStCy
-        Rv3h+mkhOAeW+uSlBJXL2tBu25fgGR1H036XJbizSq7S+1Jo/kOmWIFe9ke16Omh
-        vAU+Ys9UTqbD4kgtyX6RyUKSfEFijWPBxjbxZoDeOHAfCLwr8bNOqW7VSiUScaiP
-        UXWhGfveqUGCmzHskSNDQhIqL71z/XsmBtobnRUISr9WbV1hvE7vqWkBckPtwQVR
-        uoPFf1TYIIpWKFZQRzNfPhkJGXzXJ9VNr0/BjJVnIcPYaME1mwO8QF4w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=ns7zKpm4A9XmsmZwroT9dHnb6rgarNlTVL3pcGHHu0o=; b=b+HoxZQU
-        sEXEVT7xD5fjST3/BM4MLUWPtVa/KKDHkcI8gFADHiFTXKmt7DZXdHdx6ZwYbwoq
-        BklXre/vDPSfD0+Qw8Lx0GErCtY2BCkp24uBzza6Gus/TtT4yAVtGCX1SzS/UC2T
-        qcKZnMV7l1b0G64riBoSSPoS8aUFV0q+o5zYaC5ZMVpHrU/2P7YqZ4uSGCiaAimf
-        4+HJJ/OMddls4LrrNOvGOG90TS3HS1/VoAKDA39nyPDD0EdqJBFZkALEJ3wmGxyC
-        6J4gppe20SdY1bb8QZGNwb/Tmk996l331/q91v4f7LAecyWfYMBpua2+7rkiIDCu
-        633kilwZzAHD/g==
-X-ME-Sender: <xms:zpEGYt8YBMIg8CcaUo7OhFh16T-q410PSZmYmPZAgExWxInlYMMB7g>
-    <xme:zpEGYhsNoeGu3IfROXDOMCJCEILTPI5V9eTNzWyjubD6QCdzZbWrTfQxakq2vGPdh
-    AhBktCT1ZbLbaz1ug>
-X-ME-Received: <xmr:zpEGYrAunTmnZ4Lihw66gtLKSavy8pghJlRaXMkVOx0KAfFo_KSGaByNO17aWuyx_Xc0rHs8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrieefgdeklecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgjfhhrggfgsedtqhertdertddtnecuhfhrohhmpegkihcujggr
-    nhcuoeiiihdrhigrnhesshgvnhhtrdgtohhmqeenucggtffrrghtthgvrhhnpeeijeeuvd
-    euudeuhfeghfehieeuvdetvdeugfeigeevteeuieeuhedtgeduheefleenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpeiiihdrhigrnhesshgvnh
-    htrdgtohhm
-X-ME-Proxy: <xmx:zpEGYhdtAq80HV6uL94doGOQhiGCJT2kRZQklRM_ncx5859q-xVh0A>
-    <xmx:zpEGYiPhgnG7MOILjVrDdUXC1xtgAwIf_oRHvBXUCCQVvnx9y3RXqg>
-    <xmx:zpEGYjnqKVITtFlfbkrccG5Yo0EBjtUr5VJw2ePxbh93T4FsYNUNCQ>
-    <xmx:zpEGYpn3rhItMIS_FdKpzmOeT8IkC1ap9lgL03qU1_2AM5KWNIB4IA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 11 Feb 2022 11:41:49 -0500 (EST)
-From:   Zi Yan <zi.yan@sent.com>
-To:     David Hildenbrand <david@redhat.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>, Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v5 5/6] drivers: virtio_mem: use pageblock size as the minimum virtio_mem size.
-Date:   Fri, 11 Feb 2022 11:41:34 -0500
-Message-Id: <20220211164135.1803616-6-zi.yan@sent.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220211164135.1803616-1-zi.yan@sent.com>
-References: <20220211164135.1803616-1-zi.yan@sent.com>
-Reply-To: Zi Yan <ziy@nvidia.com>
+        Fri, 11 Feb 2022 11:51:15 -0500
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B5F3D7D;
+        Fri, 11 Feb 2022 08:51:14 -0800 (PST)
+Received: by mail-qk1-f180.google.com with SMTP id b22so8735298qkk.12;
+        Fri, 11 Feb 2022 08:51:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AYgiI7gkn9v+ZSarCY0jNpEEoK+dhB0sJ5++Eou/Ao4=;
+        b=e1hxhV/oUgk0O/+7kTFPdGI0hXq4NiLvHLgGscT35tw5H85nf8JNnU57LZjGKavbVb
+         QnLRTOTcHxrjSpJ/2c0hSLZYvmv5p6olWIwonbLKfsXKGi03s9y7cbajemtW3tcwsTng
+         zZq7UzU/HL3GOprqO6wMYZ9TKCcxKVoBvGVJdI2hsi80ob47xwXbCFOgQZN+G0pJVa4x
+         qKJ2P1ks8DcJQ1AH6OFCborSSocR2GrLLIIuLc8HsKZLjvhka8/WvgFyEe2Pn2BAgMYh
+         Yla8UwjrU6RZZmWl6utE2EPXUkxo7r9JKgxQ5QDyDv7QZziC3SDElEbskGhklAnUHF0B
+         XLlA==
+X-Gm-Message-State: AOAM532BcUrO/L3SO37696MfRtWkhN2v35riJKo2gkTfkzznqhNxEAkQ
+        C3iugSLxyYz+SUt0icuNsMdjfGcweA==
+X-Google-Smtp-Source: ABdhPJwiuw34Dp61RI8Kcr7Ko5xtI464qx96udW7XA4hfaR8FjIE/I4ihHBD6OWA9HOmFHeVvxFFww==
+X-Received: by 2002:a05:620a:4154:: with SMTP id k20mr1218053qko.293.1644598273159;
+        Fri, 11 Feb 2022 08:51:13 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:5fee:dfce:b6df:c3e1:b1e5:d6d8])
+        by smtp.gmail.com with ESMTPSA id i12sm11595792qko.105.2022.02.11.08.51.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 08:51:12 -0800 (PST)
+Received: (nullmailer pid 505758 invoked by uid 1000);
+        Fri, 11 Feb 2022 16:51:10 -0000
+Date:   Fri, 11 Feb 2022 10:51:10 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: add schema for ASIX
+ USB Ethernet controllers
+Message-ID: <YgaT/vgTflPBP99k@robh.at.kernel.org>
+References: <20220209081025.2178435-1-o.rempel@pengutronix.de>
+ <20220209081025.2178435-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220209081025.2178435-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zi Yan <ziy@nvidia.com>
+On Wed, Feb 09, 2022 at 09:10:24AM +0100, Oleksij Rempel wrote:
+> Create initial schema for ASIX USB Ethernet controllers and import all
+> currently supported USB IDs form drivers/net/usb/asix_devices.c
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  .../devicetree/bindings/net/asix,ax88178.yaml | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88178.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/asix,ax88178.yaml b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+> new file mode 100644
+> index 000000000000..2337a1a05bda
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/asix,ax88178.yaml
+> @@ -0,0 +1,68 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/asix,ax88178.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: The device tree bindings for the USB Ethernet controllers
+> +
+> +maintainers:
+> +  - Oleksij Rempel <o.rempel@pengutronix.de>
+> +
+> +description: |
+> +  Device tree properties for hard wired USB Ethernet devices.
+> +
+> +allOf:
+> +  - $ref: ethernet-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - usbb95,1720   # ASIX AX88172
+> +          - usbb95,172a   # ASIX AX88172A
+> +          - usbb95,1780   # ASIX AX88178
+> +          - usbb95,7720   # ASIX AX88772
+> +          - usbb95,772a   # ASIX AX88772A
+> +          - usbb95,772b   # ASIX AX88772B
+> +          - usbb95,7e2b   # ASIX AX88772B
+> +
+> +  reg: true
+> +  local-mac-address: true
+> +  mac-address: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    usb {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        ethernet@1 {
+> +            compatible = "usbdb0,a877";
 
-alloc_contig_range() now only needs to be aligned to pageblock_order,
-drop virtio_mem size requirement that it needs to be the max of
-pageblock_order and MAX_ORDER.
+This isn't one of the above compatibles.
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- drivers/virtio/virtio_mem.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
-index 38becd8d578c..2307e65d18c2 100644
---- a/drivers/virtio/virtio_mem.c
-+++ b/drivers/virtio/virtio_mem.c
-@@ -2476,13 +2476,12 @@ static int virtio_mem_init_hotplug(struct virtio_me=
-m *vm)
- 				      VIRTIO_MEM_DEFAULT_OFFLINE_THRESHOLD);
-=20
- 	/*
--	 * We want subblocks to span at least MAX_ORDER_NR_PAGES and
--	 * pageblock_nr_pages pages. This:
-+	 * We want subblocks to span at least pageblock_nr_pages pages.
-+	 * This:
- 	 * - Is required for now for alloc_contig_range() to work reliably -
- 	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
- 	 */
--	sb_size =3D max_t(uint64_t, MAX_ORDER_NR_PAGES,
--			pageblock_nr_pages) * PAGE_SIZE;
-+	sb_size =3D pageblock_nr_pages * PAGE_SIZE;
- 	sb_size =3D max_t(uint64_t, vm->device_block_size, sb_size);
-=20
- 	if (sb_size < memory_block_size_bytes() && !force_bbm) {
---=20
-2.34.1
-
+> +            reg = <1>;
+> +            local-mac-address = [00 00 00 00 00 00];
+> +        };
+> +    };
+> +  - |
+> +    usb {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        usb1@1 {
+> +            compatible = "usb1234,5678";
+> +            reg = <1>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            ethernet@1 {
+> +               compatible = "usbdb0,a877";
+> +               reg = <1>;
+> +            };
+> +        };
+> +    };
+> -- 
+> 2.30.2
+> 
+> 
