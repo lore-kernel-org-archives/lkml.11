@@ -2,198 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B12BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F07C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348908AbiBKKbT (ORCPT
+        id S1348917AbiBKKcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:31:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56044 "EHLO
+        Fri, 11 Feb 2022 05:32:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348914AbiBKKbR (ORCPT
+        with ESMTP id S1348902AbiBKKcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:31:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69BDCEB4
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:31:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644575474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iBor/4ctD9Su3Z9/rV8GOGhFf5h1VX6eZd38snr721I=;
-        b=QQHs2iJQkmD+McjJi9afJ46cH62BSn7bIj23Gm8Xv/mvzsXrbKx6Cte2b174sgUGsDaeiM
-        hQe8V4c4Sn3laN8Gt6CeKxMORrJgseSigTU3sczcWxChZX8KORfe6ebnj41PX7oO5TQYA8
-        HAzXvnBP4I3myy8cZcYGYm/7gFIdgpk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-VbLescsqPOa17IZbRMefJg-1; Fri, 11 Feb 2022 05:31:11 -0500
-X-MC-Unique: VbLescsqPOa17IZbRMefJg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D5C518982B7;
-        Fri, 11 Feb 2022 10:30:39 +0000 (UTC)
-Received: from localhost (ovpn-13-96.pek2.redhat.com [10.72.13.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AC3AD7D728;
-        Fri, 11 Feb 2022 10:30:37 +0000 (UTC)
-Date:   Fri, 11 Feb 2022 18:30:34 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v20 3/5] arm64: kdump: reimplement crashkernel=X
-Message-ID: <YgY6yvX7PEeZpdTr@MiWiFi-R3L-srv>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-4-thunder.leizhen@huawei.com>
+        Fri, 11 Feb 2022 05:32:01 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8673E9E
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:32:00 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4Jw90G6Njyz9sSM;
+        Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id lTQ38j_-tSqY; Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4Jw90G5179z9sSL;
+        Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 8E4FB8B77D;
+        Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id oftb9ZWUvqO7; Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.91])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 4E8188B764;
+        Fri, 11 Feb 2022 11:31:58 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21BAVmgK968992
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 11 Feb 2022 11:31:48 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21BAVlsg968991;
+        Fri, 11 Feb 2022 11:31:47 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH v3] mm: Uninline copy_overflow()
+Date:   Fri, 11 Feb 2022 11:31:43 +0100
+Message-Id: <ece7b29b480e8dca06544687d186a56ec67b72a7.1644575495.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124084708.683-4-thunder.leizhen@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644575502; l=2586; s=20211009; h=from:subject:message-id; bh=wy2C00NIDiudG1WhzNskg6ArZWIB5upyGUB55E6JYd0=; b=uQlcxStxJj+/nPdHXkytYQ1havARKl2BLkXo+nL3NBIzaaokTGVkk4N0gfrTotN4oxyX0KXl43x9 H2iSOeuIDnMlgxDNbIe+S+pjYDp6ptKbhQ/1lFOSpCrxOBLy/xQk
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/24/22 at 04:47pm, Zhen Lei wrote:
-> From: Chen Zhou <chenzhou10@huawei.com>
-......
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 6c653a2c7cff052..a5d43feac0d7d96 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -71,6 +71,30 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
->  #define CRASH_ADDR_LOW_MAX	arm64_dma_phys_limit
->  #define CRASH_ADDR_HIGH_MAX	MEMBLOCK_ALLOC_ACCESSIBLE
->  
-> +static int __init reserve_crashkernel_low(unsigned long long low_size)
-> +{
-> +	unsigned long long low_base;
-> +
-> +	/* passed with crashkernel=0,low ? */
-> +	if (!low_size)
-> +		return 0;
-> +
-> +	low_base = memblock_phys_alloc_range(low_size, CRASH_ALIGN, 0, CRASH_ADDR_LOW_MAX);
-> +	if (!low_base) {
-> +		pr_err("cannot allocate crashkernel low memory (size:0x%llx).\n", low_size);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	pr_info("crashkernel low memory reserved: 0x%llx - 0x%llx (%lld MB)\n",
-> +		low_base, low_base + low_size, low_size >> 20);
-> +
-> +	crashk_low_res.start = low_base;
-> +	crashk_low_res.end   = low_base + low_size - 1;
-> +	insert_resource(&iomem_resource, &crashk_low_res);
-> +
-> +	return 0;
-> +}
-> +
->  /*
->   * reserve_crashkernel() - reserves memory for crash kernel
->   *
-> @@ -81,29 +105,62 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
->  static void __init reserve_crashkernel(void)
->  {
->  	unsigned long long crash_base, crash_size;
-> +	unsigned long long crash_low_size = SZ_256M;
->  	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
->  	int ret;
-> +	bool fixed_base;
-> +	char *cmdline = boot_command_line;
->  
-> -	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
-> +	/* crashkernel=X[@offset] */
-> +	ret = parse_crashkernel(cmdline, memblock_phys_mem_size(),
->  				&crash_size, &crash_base);
-> -	/* no crashkernel= or invalid value specified */
-> -	if (ret || !crash_size)
-> -		return;
-> +	if (ret || !crash_size) {
-> +		unsigned long long low_size;
->  
-> +		/* crashkernel=X,high */
-> +		ret = parse_crashkernel_high(cmdline, 0, &crash_size, &crash_base);
-> +		if (ret || !crash_size)
-> +			return;
-> +
-> +		/* crashkernel=X,low */
-> +		ret = parse_crashkernel_low(cmdline, 0, &low_size, &crash_base);
-> +		if (!ret)
-> +			crash_low_size = low_size;
+While building a small config with CONFIG_CC_OPTIMISE_FOR_SIZE,
+I ended up with more than 50 times the following function in vmlinux
+because GCC doesn't honor the 'inline' keyword:
 
-Here, the error case is not checked and handled. But it still gets
-expeced result which is the default SZ_256M. Is this designed on
-purpose?
+	c00243bc <copy_overflow>:
+	c00243bc:	94 21 ff f0 	stwu    r1,-16(r1)
+	c00243c0:	7c 85 23 78 	mr      r5,r4
+	c00243c4:	7c 64 1b 78 	mr      r4,r3
+	c00243c8:	3c 60 c0 62 	lis     r3,-16286
+	c00243cc:	7c 08 02 a6 	mflr    r0
+	c00243d0:	38 63 5e e5 	addi    r3,r3,24293
+	c00243d4:	90 01 00 14 	stw     r0,20(r1)
+	c00243d8:	4b ff 82 45 	bl      c001c61c <__warn_printk>
+	c00243dc:	0f e0 00 00 	twui    r0,0
+	c00243e0:	80 01 00 14 	lwz     r0,20(r1)
+	c00243e4:	38 21 00 10 	addi    r1,r1,16
+	c00243e8:	7c 08 03 a6 	mtlr    r0
+	c00243ec:	4e 80 00 20 	blr
 
-> +
-> +		crash_max = CRASH_ADDR_HIGH_MAX;
-> +	}
-> +
-> +	fixed_base = !!crash_base;
->  	crash_size = PAGE_ALIGN(crash_size);
->  
->  	/* User specifies base address explicitly. */
->  	if (crash_base)
->  		crash_max = crash_base + crash_size;
->  
-> +retry:
->  	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
->  					       crash_base, crash_max);
->  	if (!crash_base) {
-> +		/*
-> +		 * Attempt to fully allocate low memory failed, fall back
-> +		 * to high memory, the minimum required low memory will be
-> +		 * reserved later.
-> +		 */
-> +		if (!fixed_base && (crash_max == CRASH_ADDR_LOW_MAX)) {
-> +			crash_max = CRASH_ADDR_HIGH_MAX;
-> +			goto retry;
-> +		}
-> +
->  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
->  			crash_size);
->  		return;
->  	}
->  
-> +	if (crash_base >= SZ_4G && reserve_crashkernel_low(crash_low_size)) {
-> +		memblock_phys_free(crash_base, crash_size);
-> +		return;
-> +	}
-> +
->  	pr_info("crashkernel reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
->  		crash_base, crash_base + crash_size, crash_size >> 20);
->  
-> @@ -112,6 +169,9 @@ static void __init reserve_crashkernel(void)
->  	 * map. Inform kmemleak so that it won't try to access it.
->  	 */
->  	kmemleak_ignore_phys(crash_base);
-> +	if (crashk_low_res.end)
-> +		kmemleak_ignore_phys(crashk_low_res.start);
-> +
->  	crashk_res.start = crash_base;
->  	crashk_res.end = crash_base + crash_size - 1;
->  	insert_resource(&iomem_resource, &crashk_res);
-> -- 
-> 2.25.1
-> 
+With -Winline, GCC tells:
+
+	/include/linux/thread_info.h:212:20: warning: inlining failed in call to 'copy_overflow': call is unlikely and code size would grow [-Winline]
+
+copy_overflow() is a non conditional warning called by
+check_copy_size() on an error path.
+
+check_copy_size() have to remain inlined in order to benefit
+from constant folding, but copy_overflow() is not worth inlining.
+
+Uninline it.
+
+This reduces the size of vmlinux by almost 4kbytes.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v3: Added missing ; after EXPORT_SYMBOL()
+
+v2: Added missing EXPORT_SYMBOL() and enhanced commit message
+---
+ include/linux/thread_info.h | 5 +----
+ mm/maccess.c                | 6 ++++++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
+index 73a6f34b3847..1087d1e2be5c 100644
+--- a/include/linux/thread_info.h
++++ b/include/linux/thread_info.h
+@@ -209,10 +209,7 @@ __bad_copy_from(void);
+ extern void __compiletime_error("copy destination size is too small")
+ __bad_copy_to(void);
+ 
+-static inline void copy_overflow(int size, unsigned long count)
+-{
+-	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
+-}
++void copy_overflow(int size, unsigned long count);
+ 
+ static __always_inline __must_check bool
+ check_copy_size(const void *addr, size_t bytes, bool is_source)
+diff --git a/mm/maccess.c b/mm/maccess.c
+index d3f1a1f0b1c1..de43f29c52f0 100644
+--- a/mm/maccess.c
++++ b/mm/maccess.c
+@@ -335,3 +335,9 @@ long strnlen_user_nofault(const void __user *unsafe_addr, long count)
+ 
+ 	return ret;
+ }
++
++void copy_overflow(int size, unsigned long count)
++{
++	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
++}
++EXPORT_SYMBOL_GPL(copy_overflow);
+-- 
+2.34.1
 
