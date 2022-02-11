@@ -2,79 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1737DC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347943AbiBKIEp (ORCPT
+        id S1347938AbiBKIFD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:04:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33038 "EHLO
+        Fri, 11 Feb 2022 03:05:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347888AbiBKIEd (ORCPT
+        with ESMTP id S232830AbiBKIE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:04:33 -0500
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF5BD3;
-        Fri, 11 Feb 2022 00:04:32 -0800 (PST)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 43D9B1A1AC5;
-        Fri, 11 Feb 2022 09:04:31 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0B8731A1AB8;
-        Fri, 11 Feb 2022 09:04:31 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 8A14A183AC89;
-        Fri, 11 Feb 2022 16:04:29 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v2 2/2] PCI: imx6: Enable i.MX6QP PCIe power management support
-Date:   Fri, 11 Feb 2022 15:32:59 +0800
-Message-Id: <1644564779-8448-2-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644564779-8448-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1644564779-8448-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Fri, 11 Feb 2022 03:04:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A269BD2;
+        Fri, 11 Feb 2022 00:04:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE1BB82460;
+        Fri, 11 Feb 2022 08:04:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6E5C340E9;
+        Fri, 11 Feb 2022 08:04:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644566696;
+        bh=EvZx0hPGNr7WhzzF6zfcEjl+rm+0wcT7PDP5rXEhoT0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=G668fAVy/mmFRiG3NNwK0RRvNbwbvLzzW7b3dKcOaYoiz/0vYGm+O0HkNI+Jfn1JK
+         SsY7JNbENx3Gb28wL/1R64G64QUiIcDvwD067oZ2fnn7mupZkUtAqXCGyZrr5ccBXA
+         1lbPqWQ//8wnRu+4qGJrQLrrU/OC8V8iJSpaWl/SZaYSuXsO4qEei8/dA40U5HjbAQ
+         4bjyixShCHvpdkrBmCHaY6LLzSJpImJmi7ctymB8o7RRQfOjEpoLxZAzU4gChIVUs9
+         jDpJQsmcMbLg7lkvciho7BRTMKyATFCroGVcdwXs3DXojexuijzFbcQ4K4WUqhIXV7
+         dnTHFfZzfxUvQ==
+Date:   Fri, 11 Feb 2022 10:04:38 +0200
+From:   Mike Rapoport <rppt@kernel.org>
+To:     "avagin@gmail.com" <avagin@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+        "gorcunov@gmail.com" <gorcunov@gmail.com>,
+        "bsingharora@gmail.com" <bsingharora@gmail.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "Syromiatnikov, Eugene" <esyr@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "0x7f454c46@gmail.com" <0x7f454c46@gmail.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "adrian@lisas.de" <adrian@lisas.de>,
+        "fweimer@redhat.com" <fweimer@redhat.com>,
+        "nadav.amit@gmail.com" <nadav.amit@gmail.com>,
+        "jannh@google.com" <jannh@google.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "kcc@google.com" <kcc@google.com>, "bp@alien8.de" <bp@alien8.de>,
+        "oleg@redhat.com" <oleg@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "pavel@ucw.cz" <pavel@ucw.cz>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mike.kravetz@oracle.com" <mike.kravetz@oracle.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Yang, Weijiang" <weijiang.yang@intel.com>,
+        "Dave.Martin@arm.com" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "Hansen, Dave" <dave.hansen@intel.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Message-ID: <YgYYllWRJ6znI4AU@kernel.org>
+References: <YgAWVSGQg8FPCeba@kernel.org>
+ <YgDIIpCm3UITk896@lisas.de>
+ <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+ <YgI1A0CtfmT7GMIp@kernel.org>
+ <YgI37n+3JfLSNQCQ@grain>
+ <357664de-b089-4617-99d1-de5098953c80@www.fastmail.com>
+ <YgKiKEcsNt7mpMHN@grain>
+ <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
+ <9d664c91-2116-42cc-ef8d-e6d236de43d0@kernel.org>
+ <YgYTHLfnOvkK5FUu@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgYTHLfnOvkK5FUu@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-i.MX6QP PCIe supports the reset logic, thus it can reset itself to the
-initialized state when exit from L2 or L3 states.
+On Thu, Feb 10, 2022 at 11:41:16PM -0800, avagin@gmail.com wrote:
+> On Wed, Feb 09, 2022 at 06:37:53PM -0800, Andy Lutomirski wrote:
+> >
+> > An alternative would be to add a bona fide ptrace call-a-function mechanism.
+> > I can think of two potentially usable variants:
+> > 
+> > 1. Straight call.  PTRACE_CALL_FUNCTION(addr) just emulates CALL addr,
+> > shadow stack push and all.
+> > 
+> > 2. Signal-style.  PTRACE_CALL_FUNCTION_SIGFRAME injects an actual signal
+> > frame just like a real signal is being delivered with the specified handler.
+> > There could be a variant to opt-in to also using a specified altstack and
+> > altshadowstack.
+> 
+> I think this would be ideal. In CRIU, the parasite code is executed in
+> the "daemon" mode and returns back via sigreturn.  Right now, CRIU needs
+> to generate a signal frame. If I understand your idea right, the signal
+> frame will be generated by the kernel.
+> 
+> > 
+> > 2 would be more expensive but would avoid the need for much in the way of
+> > asm magic.  The injected code could be plain C (or Rust or Zig or whatever).
+> > 
+> > All of this only really handles save, not restore.  I don't understand
+> > restore enough to fully understand the issue.
+> 
+> In a few words, it works like this: CRIU restores all required resources
+> and prepares a signal frame with a target process state, then it
+> switches to a small PIE blob, where it restores vma-s and calls
+> rt_sigreturn.
 
-Enable the i.MX6QP PCIe suspend/resume operations support.
+I think it's also important to note that the stack is restored as a part of
+the process memory, i.e. its contents is read from the images.
+ 
+> > 
+> > --Andy
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
----
- drivers/pci/controller/dwc/pci-imx6.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 784801f2f9e6..62262483470a 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -995,6 +995,7 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- 	/* Others poke directly at IOMUXC registers */
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX6SX:
-+	case IMX6QP:
- 		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF,
- 				IMX6SX_GPR12_PCIE_PM_TURN_OFF);
-@@ -1307,7 +1308,8 @@ static const struct imx6_pcie_drvdata drvdata[] = {
- 	[IMX6QP] = {
- 		.variant = IMX6QP,
- 		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
--			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE,
-+			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
-+			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
- 		.dbi_length = 0x200,
- 	},
- 	[IMX7D] = {
 -- 
-2.25.1
-
+Sincerely yours,
+Mike.
