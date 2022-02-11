@@ -2,138 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A533DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D47C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349123AbiBKKma (ORCPT
+        id S1348982AbiBKKnT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:42:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50608 "EHLO
+        Fri, 11 Feb 2022 05:43:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbiBKKm1 (ORCPT
+        with ESMTP id S1349279AbiBKKnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:42:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3653BD4B
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:42:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644576146;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=8ek0uj/LUTnOMOsFu8yGHGsh602NG0Sgtj4vJHccYII=;
-        b=DlhuXp9bw2I4nn3gFE2IFd4E45xCsPCUkMKOAOhoqaaA3h+S+5Y0wLGhkgpNFlmd+gLvdx
-        AQj6GhICEC/7Q9v/ZKogdYlbSuGO7mO5ngz2NuFC90CBQDAl7sYpoOJMGrPP2aaQcXxBeD
-        rBq/t9F5H4FUTmKtkVOEmj0b0HJKLfo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-302-Ov67G1aIMZW6XEOG22BK_Q-1; Fri, 11 Feb 2022 05:42:23 -0500
-X-MC-Unique: Ov67G1aIMZW6XEOG22BK_Q-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D1CF8D0689;
-        Fri, 11 Feb 2022 10:39:53 +0000 (UTC)
-Received: from localhost (ovpn-13-96.pek2.redhat.com [10.72.13.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D0B345452F;
-        Fri, 11 Feb 2022 10:39:51 +0000 (UTC)
-Date:   Fri, 11 Feb 2022 18:39:49 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Zhen Lei <thunder.leizhen@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>,
-        John Donnelly <John.p.donnelly@oracle.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>
-Subject: Re: [PATCH v20 2/5] arm64: kdump: introduce some macros for crash
- kernel reservation
-Message-ID: <YgY89RxkAl12n/dd@MiWiFi-R3L-srv>
-References: <20220124084708.683-1-thunder.leizhen@huawei.com>
- <20220124084708.683-3-thunder.leizhen@huawei.com>
+        Fri, 11 Feb 2022 05:43:01 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18043D51;
+        Fri, 11 Feb 2022 02:43:00 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id fj5so19077361ejc.4;
+        Fri, 11 Feb 2022 02:43:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NyCvwNNEqd9Koq/FvgmU4Dc9w7df+bVXHik2gZ5DpqE=;
+        b=bvOQxf3GCJRlgOtyJ+Pkqp/3PPoPKk8unOQ4IqCKiSqPUAHyyRh8eS3OLskYP+0lq1
+         70g2ehUsq0ppHciiP+e2g4wTppZEEypWQfqDiif2kp77QVedwf9tjkRS4g8aSPPztwUx
+         KR3fiH5+6BUixXToHBvNcPm6rGx9CLmioRbo1N9sDsLcj4ybUwB5E+MbCOs8tIvvAWg3
+         ug+ekQ76SWnBrdtdvYs3tp+EoGoHplSsbrbSSUAIb5yLDwTX8J/80KuRm+tMuTvmU7+m
+         68yhyC+RG8WjsB9ba0WL0GTlIDKxeTFfrrkMC/VcauMXbRhwWhFO3QIUzsf7QeB4U1Q2
+         7+9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NyCvwNNEqd9Koq/FvgmU4Dc9w7df+bVXHik2gZ5DpqE=;
+        b=scp0vopMc58J/9ndSKS8jDgPxpsJrSw7n1YjkagzKoP81lhkIwcUF62bLvmozmRzeU
+         1dynDRp2F3iAPTDCm7ze9pozLmSeMvDtEexIRiFTrfkkiCPo8xmmCC2B5lNuL6mEuqZq
+         1LHqy7/PNB+DfO9IISPgihIoGnnfyvFuIvq+qaiFybmNgB0gRwcGDL92kegjP+bNe1ND
+         vjgLJtn0g1tf6ZCr/I2JZKTtwx6UwCmJtnh6to8qTqY54e3V/8v+OGpycRh7a5mz3CgF
+         UHAc44wnR2/e3t1oOaVwZwgn4X8bFLWeCcNhKtfL15GioUmB0yPr99RiQBhzi0xkuV1T
+         f5Zw==
+X-Gm-Message-State: AOAM530/jMjr6/iLjaq61vO88BF/UlAIVwYbxvL8ZW2fJzSX4lbSk3s/
+        xE/KAvs3Z2JssxUdaqID1zPc2BWSqtrPFRwwhUn3Ch3x
+X-Google-Smtp-Source: ABdhPJwAMjWA9kgWb2WmRKT+VqTzWvc0Zv4GydQAYInH4eQ5DPFQtytRou/bKoWTy66pVn0CFl5CbJgNi9EKQDhgAOA=
+X-Received: by 2002:a17:906:ad8e:: with SMTP id la14mr853369ejb.492.1644576178517;
+ Fri, 11 Feb 2022 02:42:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124084708.683-3-thunder.leizhen@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <20220211092322.287487-1-marcel@ziswiler.com> <20220211092322.287487-13-marcel@ziswiler.com>
+In-Reply-To: <20220211092322.287487-13-marcel@ziswiler.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Fri, 11 Feb 2022 07:42:48 -0300
+Message-ID: <CAOMZO5CoP82hd==Au1GCB6y1Y+QeYMJ185ZuyD1tHGd3H5gZzQ@mail.gmail.com>
+Subject: Re: [PATCH v6 12/12] arm64: dts: freescale: add initial support for
+ verdin imx8m mini
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Arnd Bergmann <arnd@arndb.de>, Chester Lin <clin@suse.com>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Olof Johansson <olof@lixom.net>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tim Harvey <tharvey@gateworks.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/24/22 at 04:47pm, Zhen Lei wrote:
-> From: Chen Zhou <chenzhou10@huawei.com>
-> 
-> Introduce macro CRASH_ALIGN for alignment, macro CRASH_ADDR_LOW_MAX
-> for upper bound of low crash memory, macro CRASH_ADDR_HIGH_MAX for
-> upper bound of high crash memory, use macros instead.
-> 
-> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Tested-by: John Donnelly <John.p.donnelly@oracle.com>
-> Tested-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-> ---
->  arch/arm64/mm/init.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index 90f276d46b93bc6..6c653a2c7cff052 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -65,6 +65,12 @@ EXPORT_SYMBOL(memstart_addr);
->  phys_addr_t arm64_dma_phys_limit __ro_after_init;
->  
->  #ifdef CONFIG_KEXEC_CORE
-> +/* Current arm64 boot protocol requires 2MB alignment */
-> +#define CRASH_ALIGN		SZ_2M
-> +
-> +#define CRASH_ADDR_LOW_MAX	arm64_dma_phys_limit
-> +#define CRASH_ADDR_HIGH_MAX	MEMBLOCK_ALLOC_ACCESSIBLE
+Hi Marcel,
 
-MEMBLOCK_ALLOC_ACCESSIBLE is obvoiously a alloc flag for memblock
-allocator, I don't think it's appropriate to make HIGH_MAX get its value.
-You can make it as memblock.current_limit, or do not define it, but using
-MEMBLOCK_ALLOC_ACCESSIBLE direclty in memblock_phys_alloc_range() with
-a code comment. 
+On Fri, Feb 11, 2022 at 6:24 AM Marcel Ziswiler <marcel@ziswiler.com> wrote:
+>
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+>
+> This patch adds the device tree to support Toradex Verdin iMX8M Mini a
+> computer on module which can be used on different carrier boards.
+>
+> The module consists of an NXP i.MX 8M Mini family SoC (either i.MX 8M
+> Mini Quad or 8M Mini DualLite), a PCA9450A PMIC, a Gigabit Ethernet PHY,
+> 1 or 2 GB of LPDDR4 RAM, an eMMC, a TLA2024 ADC, an I2C EEPROM, an
+> RX8130 RTC, an optional SPI CAN controller plus an optional Bluetooth/
+> Wi-Fi module.
+>
+> Anything that is not self-contained on the module is disabled by
+> default.
+>
+> The device tree for the Dahlia includes the module's device tree and
+> enables the supported peripherals of the carrier board.
+>
+> The device tree for the Verdin Development Board includes the module's
+> device tree as well as the Dahlia one as it is a superset and supports
+> almost all peripherals available.
+>
+> So far there is no display functionality supported at all but basic
+> console UART, PCIe, USB host, eMMC and Ethernet and PCIe functionality
+> work fine.
+>
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-
-> +
->  /*
->   * reserve_crashkernel() - reserves memory for crash kernel
->   *
-> @@ -75,7 +81,7 @@ phys_addr_t arm64_dma_phys_limit __ro_after_init;
->  static void __init reserve_crashkernel(void)
->  {
->  	unsigned long long crash_base, crash_size;
-> -	unsigned long long crash_max = arm64_dma_phys_limit;
-> +	unsigned long long crash_max = CRASH_ADDR_LOW_MAX;
->  	int ret;
->  
->  	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
-> @@ -90,8 +96,7 @@ static void __init reserve_crashkernel(void)
->  	if (crash_base)
->  		crash_max = crash_base + crash_size;
->  
-> -	/* Current arm64 boot protocol requires 2MB alignment */
-> -	crash_base = memblock_phys_alloc_range(crash_size, SZ_2M,
-> +	crash_base = memblock_phys_alloc_range(crash_size, CRASH_ALIGN,
->  					       crash_base, crash_max);
->  	if (!crash_base) {
->  		pr_warn("cannot allocate crashkernel (size:0x%llx)\n",
-> -- 
-> 2.25.1
-> 
-
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
