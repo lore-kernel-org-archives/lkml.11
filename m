@@ -2,121 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F66C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0401C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346396AbiBKAfr (ORCPT
+        id S1346403AbiBKAg4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:35:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60756 "EHLO
+        Thu, 10 Feb 2022 19:36:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245125AbiBKAfn (ORCPT
+        with ESMTP id S245125AbiBKAgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:35:43 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D685F66
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:35:43 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id o3so7353855qtm.12
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:35:43 -0800 (PST)
+        Thu, 10 Feb 2022 19:36:55 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1445F6E;
+        Thu, 10 Feb 2022 16:36:55 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id e7so15144274ejn.13;
+        Thu, 10 Feb 2022 16:36:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=OWAdmxyB++0+PrjBMyb2j1q4M+ZTDvPBI87BwMKOTA4=;
-        b=px25tVfseTRg17nKrinckLpm5Os6T2EDwYc8LKgshVBbe8wsdoAH40zqblIKerCD/M
-         9FOLPx46bt7sHkinZB7cbxFBdikM66T7mIE2f+XeWCQEEWgZ6+Fj8c60iMtssJ2j4Ax5
-         ywQwibJ3q+gTnIvO+B0epbOGU2k7wcFwtAmB2Ekl9ZcADK2LwleSSxyJRs3DD/O5DZ2q
-         3TtJYkbVmKfY7d2ve4Ep5xreuUGke1oZrOtsnTBOvbkyt9qrnwapvEabYRk+An2u5fDB
-         srQ7MLPu2N9T8Fk0fsc3+eu95bT6srOmeEd1PY3YKp7ljCULaG+YIorAkRi025pE/HtS
-         At7Q==
+        bh=kv1dGBIwMVSJth+1nhxNVUaq58J6hWvLjV/FKpV6bvk=;
+        b=hKdQIt2Icq2rygEQgAcjwPGIcbFKLqUWrpVWZxyNuRgaaPyfPzC6hvDWrJxqSdsOcp
+         g3yBzhvdrb1bQGsL6aastzuiGIYSdhAvWksalNLMsXLwZ/pH+t9Kf+ZhWi37udgsSEyu
+         yQerh6SzoKALw/rOOIGB9efBWoOHM08towXDWmCLQd3z4yD3aMB1CLSQ1munvUqUVuJg
+         3GqRnmVDjO5Oa9uXaljqS2OZ7wZxfCgvGismqKldHpnLjpmVoKfdAqMG74SNePHsFbCS
+         DBlWkSG8eIxZyucowmiaK2Wch7MOQLJkQlrS7VeHQ5QmVLm+y9/yMciZPW3TVYh4zjJh
+         4KvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OWAdmxyB++0+PrjBMyb2j1q4M+ZTDvPBI87BwMKOTA4=;
-        b=Nqair/vDeS2BUuKINeYHkwBe78SI351hrXzh/AMoNbldp6hcS9CA8MWJ3vOOe0Tegp
-         rrUk0+sWHcPXBmCaWv1VrQnLaz1sE9Bqes5TT8gug6T4GGSnq0D3M4WakkHIEpIEDTmz
-         jawHYWnCQF0c+ZuqCBOwjxx1gSLa37Q7ZIOuWtI9daXZqD7GbBHgHHQuQFBSkUDaNKOV
-         zDWMwMXtcpxaOrd3qTaQWZChzEW2qtRfoqF9FooSqy9AuwxWkuQB6QDZ76HDVYOl/whZ
-         ZCJWOMe3no0XTQZGaNlnpAIcgLn0hXBFloQEAIt3z1Tsv4NOilhpg0pufYSmu7YaTmLL
-         mfNQ==
-X-Gm-Message-State: AOAM533zG5zuN1evAY5B2mKOsLNkeaT/1CfjbK4NV05k46qH7zAf1OUW
-        Blq0NAv1vKoz6myCjSVeko4=
-X-Google-Smtp-Source: ABdhPJwKE/7L+78ImyHSzKItwQ+7D0kCNRZ6HRgstwY/P0UGJdT1+mnItTy7cbAEdrMnsxIjkAmO9Q==
-X-Received: by 2002:ac8:5747:: with SMTP id 7mr6794649qtx.95.1644539742833;
-        Thu, 10 Feb 2022 16:35:42 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id k13sm11581386qko.45.2022.02.10.16.35.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kv1dGBIwMVSJth+1nhxNVUaq58J6hWvLjV/FKpV6bvk=;
+        b=bCL7lM5xoTnhAQH8A6Sl3UW+j0RtLQ17YRxYu/Oxmkzd3uQJHSzCYIOh0wFuxUQ+E+
+         y5eENTi/hfuj8K2cJp2bgOGdTH7wc+qCs+odJaFG8RHfi76mSDobrRiKGMFA2cp22tml
+         NkKGMpVniYcybzDS4FYkvXRo8/Qh5cG079ldWhDqsEnaBvgO6x2BSoAENMe4dvWpZkfx
+         nhQqHY5OgkZnkilehULpcV92e3EYY5CJiiQ8qQyriaFpYIWC4EhOigIWD7NE9KdzxpM6
+         GZhxcjYq03rR6QZ0TRU0VCbW+qFda5FUhmlsq39CrL7UJL/zzm5eIaFvydeuwOUXWWxB
+         s3jA==
+X-Gm-Message-State: AOAM530mALdqZTdRNzSkoMafxxmz4FR1PPzyl3d0DJIP3yhQZeLqN+Xu
+        kVqy26Q/9vZm7A0JstbR3dQ=
+X-Google-Smtp-Source: ABdhPJxM21xH/Q7n+t6LRSsdxbriX78/1XN92rY3TSvcB2vZPFGnsm6nRin0+jpifM5TlUVusYN8dw==
+X-Received: by 2002:a17:906:738f:: with SMTP id f15mr8174635ejl.121.1644539813679;
+        Thu, 10 Feb 2022 16:36:53 -0800 (PST)
+Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
+        by smtp.googlemail.com with ESMTPSA id s1sm10493527edt.49.2022.02.10.16.36.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 16:35:42 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH 47/49] nodemask: add num_node_state_eq()
-Date:   Thu, 10 Feb 2022 14:49:31 -0800
-Message-Id: <20220210224933.379149-48-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Thu, 10 Feb 2022 16:36:52 -0800 (PST)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Eugene Shalygin <eugene.shalygin@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (asus-ec-sensors) deduce sensor signess from its type
+Date:   Fri, 11 Feb 2022 01:36:39 +0100
+Message-Id: <20220211003641.73111-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Page allocator uses num_node_state() to compare number of nodes with a
-given number. The underlying code calls bitmap_weight(), and we can do
-it more efficiently with num_node_state_eq because conditional nodes_weight
-may stop traversing the nodemask earlier, as soon as condition is (or is
-not) met.
+Reading DSDT code for ASUS X470-based boards (the ones served by the
+asus_wmi_Sensors driver), where ASUS put hardware monitoring functions
+into the WMI code, reveals that fan and current sensors data is
+unsigned. For the current sensor that was cofirmed by a user who showed
+high enough current value for overflow.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Thus let's assume that the signess of the sensors is determined by its
+type and that only temperature ones provide signed numbers.
+
+Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 ---
- include/linux/nodemask.h | 5 +++++
- mm/page_alloc.c          | 2 +-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/hwmon/asus-ec-sensors.c | 38 +++++++++++++++++++++++++--------
+ 1 file changed, 29 insertions(+), 9 deletions(-)
 
-diff --git a/include/linux/nodemask.h b/include/linux/nodemask.h
-index 197598e075e9..c5014dbf3cce 100644
---- a/include/linux/nodemask.h
-+++ b/include/linux/nodemask.h
-@@ -466,6 +466,11 @@ static inline int num_node_state(enum node_states state)
- 	return nodes_weight(node_states[state]);
+diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+index bfac08a5dc57..a1b13fe149ac 100644
+--- a/drivers/hwmon/asus-ec-sensors.c
++++ b/drivers/hwmon/asus-ec-sensors.c
+@@ -266,6 +266,13 @@ static u8 register_index(u16 reg)
+ 	return reg & 0x00ff;
  }
  
-+static inline int num_node_state_eq(enum node_states state, int num)
++static bool is_sensor_data_signed(const struct ec_sensor_info *si)
 +{
-+	return nodes_weight_eq(node_states[state], num);
++	// guessed from WMI functions in DSDT code for boards
++	// of the X470 generation
++	return si->type == hwmon_temp;
 +}
 +
- #define for_each_node_state(__node, __state) \
- 	for_each_node_mask((__node), node_states[__state])
+ static const struct ec_sensor_info *
+ get_sensor_info(const struct ec_sensors_data *state, int index)
+ {
+@@ -420,15 +427,28 @@ static int asus_ec_block_read(const struct device *dev,
  
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index cface1d38093..897e64b66ca4 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8434,7 +8434,7 @@ void __init page_alloc_init(void)
- 	int ret;
- 
- #ifdef CONFIG_NUMA
--	if (num_node_state(N_MEMORY) == 1)
-+	if (num_node_state_eq(N_MEMORY, 1))
- 		hashdist = 0;
- #endif
+ static inline s32 get_sensor_value(const struct ec_sensor_info *si, u8 *data)
+ {
+-	switch (si->addr.components.size) {
+-	case 1:
+-		return (s8)*data;
+-	case 2:
+-		return (s16)get_unaligned_be16(data);
+-	case 4:
+-		return (s32)get_unaligned_be32(data);
+-	default:
+-		return 0;
++	if (is_sensor_data_signed(si)) {
++		switch (si->addr.components.size) {
++		case 1:
++			return (s8)*data;
++		case 2:
++			return (s16)get_unaligned_be16(data);
++		case 4:
++			return (s32)get_unaligned_be32(data);
++		default:
++			return 0;
++		}
++	} else {
++		switch (si->addr.components.size) {
++		case 1:
++			return *data;
++		case 2:
++			return get_unaligned_be16(data);
++		case 4:
++			return get_unaligned_be32(data);
++		default:
++			return 0;
++		}
+ 	}
+ }
  
 -- 
-2.32.0
+2.35.1
 
