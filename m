@@ -2,71 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 353E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81008C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352924AbiBKThi (ORCPT
+        id S1349235AbiBKTir (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 14:37:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52116 "EHLO
+        Fri, 11 Feb 2022 14:38:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352915AbiBKThd (ORCPT
+        with ESMTP id S240151AbiBKTiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 14:37:33 -0500
-Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40898CF8;
-        Fri, 11 Feb 2022 11:37:32 -0800 (PST)
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nIbDQ-00Ag11-EE; Fri, 11 Feb 2022 19:04:20 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH 1/2] dt-bindings: arm: imx: add imx8mm gw7903 support
-Date:   Fri, 11 Feb 2022 11:04:17 -0800
-Message-Id: <20220211190418.11870-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 11 Feb 2022 14:38:46 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F09BCF2
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:38:44 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id o9so9029828ljq.4
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:38:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iJqXyhceq7GUP1xyb1H5uP8ZCL2EIyPfZA6lTRew5yk=;
+        b=nK75MzXPk1Og5DF8TEwxL8A3Ihk5G3SoyK2htdoZv/JgpqRY/LE566YdPgOIQP1XHu
+         6qwjnzVEg05ATA9k0qergsadjwksDzPWM6nPgJ/6VElQd2wUHJDbuBZL44D5FOLEKnrY
+         eAuvuAW6vQWCJ3BF1zELGrr5c3caER4x4TN3es/pYmMAfbBKNnhIfoM7QCxtbKlnUdBk
+         IUxKFAdWhbfp4G11sXpNMLzwuKe8pX7W3tfy3aoyXPFe0Aqg0Q2j1qsCMvasJJ2v/J3F
+         ilrgmc6T44jsAU+1sV4wSeQ7+9B7BpIEBpWsm2TblSBacr1AaBO2urHJeRLCMSHEl0Dc
+         UNQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iJqXyhceq7GUP1xyb1H5uP8ZCL2EIyPfZA6lTRew5yk=;
+        b=qZYT/cdR2LBUmCHMTPKwhgSZqTYM2ct6EXLRMVmQ4eu2ksHJsgwkl14I6PnnrwgOJa
+         7+hSAmxevUvP54DGAjAHvlhvNJI8skbGZlQJoRIiIx1GjEiN3Q8SUmr6897bF5B8rLIa
+         rKut+Jz8jC1DV2fEUX2l64uAEOVD6dDvAFZXUUfL42mc533Splvns6F8jGOcpcFOlMuw
+         ciMs6nhPQS34l4gQ695wJLXVckmz9OVBbmB4LreA3L5j1s9a42uT1sma2k/b/4JZdvJY
+         38jFaGF26SxT/xvj4/xGHZWYMkLpAB2Co0vINrRDS78aD6KCF9qHrwQrNzpQG/aVfjg0
+         vZrw==
+X-Gm-Message-State: AOAM533iZyVMxIPYa0B5oUnxxEekMtfRQ17Jtt3mcJ8aMb1gjRDOzRpp
+        ehublLX6g1kcfJRwP0/y/8l11LVOF9P41u18XX1RGw==
+X-Google-Smtp-Source: ABdhPJxO8RGkJaN8by+e1FmoAk9vlcPrHmlkLMgaFhX8cGowxp0QRzcoDJ/NGqtGgKms3x1ch5xS/GoTZ+1LNMK4ZZg=
+X-Received: by 2002:a2e:a781:: with SMTP id c1mr1830386ljf.527.1644608322049;
+ Fri, 11 Feb 2022 11:38:42 -0800 (PST)
+MIME-Version: 1.0
+References: <20220111154048.2108264-1-pgonda@google.com> <YgGo/5GyJVfGH00T@google.com>
+In-Reply-To: <YgGo/5GyJVfGH00T@google.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Fri, 11 Feb 2022 12:38:30 -0700
+Message-ID: <CAMkAt6qh+8kw5w52wCq=foyxnPQy+=M4OF23UrA4tP1x3fN2Rg@mail.gmail.com>
+Subject: Re: [PATCH] KVM: SEV: Allow SEV intra-host migration of VM with mirrors
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm list <kvm@vger.kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Marc Orr <marcorr@google.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The GW7903 is based on the i.MX 8M Mini SoC featuring:
- - LPDDR4 DRAM
- - eMMC FLASH
- - microSD connector with UHS support
- - LIS2DE12 3-axis accelerometer
- - Gateworks System Controller
- - IMX8M FEC
- - software selectable RS232/RS485/RS422 serial transceiver
- - PMIC
- - 2x off-board bi-directional opto-isolated digital I/O
- - 1x M.2 A-E Key Socket and 1x MiniPCIe socket with USB2.0 and PCIe
- (resistor loading to route PCIe/USB2 between M.2 and MiniPCIe socket)
+On Mon, Feb 7, 2022 at 4:19 PM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Tue, Jan 11, 2022, Peter Gonda wrote:
+> > @@ -1623,22 +1624,41 @@ static void sev_unlock_vcpus_for_migration(struct kvm *kvm)
+> >       }
+> >  }
+> >
+> > -static void sev_migrate_from(struct kvm_sev_info *dst,
+> > -                           struct kvm_sev_info *src)
+> > +static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+> >  {
+> > +     struct kvm_sev_info *dst = &to_kvm_svm(dst_kvm)->sev_info;
+> > +     struct kvm_sev_info *src = &to_kvm_svm(src_kvm)->sev_info;
+> > +     struct kvm_sev_info *mirror, *tmp;
+> > +
+> >       dst->active = true;
+> >       dst->asid = src->asid;
+> >       dst->handle = src->handle;
+> >       dst->pages_locked = src->pages_locked;
+> >       dst->enc_context_owner = src->enc_context_owner;
+> > +     dst->num_mirrored_vms = src->num_mirrored_vms;
+> >
+> >       src->asid = 0;
+> >       src->active = false;
+> >       src->handle = 0;
+> >       src->pages_locked = 0;
+> >       src->enc_context_owner = NULL;
+> > +     src->num_mirrored_vms = 0;
+> >
+> >       list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+> > +     list_cut_before(&dst->mirror_vms, &src->mirror_vms, &src->mirror_vms);
+> > +
+> > +     /*
+> > +      * If this VM has mirrors we need to update the KVM refcounts from the
+> > +      * source to the destination.
+> > +      */
+>
+> It's worth calling out that a reference is being taken on behalf of the mirror,
+> that detail is easy to miss.  And maybe call out that the caller holds a reference
+> to @src_kvm?
+>
+>         /*
+>          * If this VM has mirrors, "transfer" each mirror's refcount of the
+>          * source to the destination (this KVM).  The caller holds a reference
+>          * to the source, so there's no danger of use-after-free.
+>          */
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
- Documentation/devicetree/bindings/arm/fsl.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Thanks took your comment.
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index 5075fd8c1b42..62fb83edc3d1 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -769,6 +769,7 @@ properties:
-               - gw,imx8mm-gw73xx-0x       # i.MX8MM Gateworks Development Kit
-               - gw,imx8mm-gw7901          # i.MX8MM Gateworks Board
-               - gw,imx8mm-gw7902          # i.MX8MM Gateworks Board
-+              - gw,imx8mm-gw7903          # i.MX8MM Gateworks Board
-               - kontron,imx8mm-n801x-som  # i.MX8MM Kontron SL (N801X) SOM
-               - variscite,var-som-mx8mm   # i.MX8MM Variscite VAR-SOM-MX8MM module
-               - prt,prt8mm                # i.MX8MM Protonic PRT8MM Board
--- 
-2.17.1
+>
+> > +     if (dst->num_mirrored_vms > 0) {
+> > +             list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms,
+> > +                                       mirror_entry) {
+> > +                     kvm_get_kvm(dst_kvm);
+> > +                     kvm_put_kvm(src_kvm);
+> > +                     mirror->enc_context_owner = dst_kvm;
+> > +             }
+> > +     }
+> >  }
+> >
+> >  static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
+>
+> ...
+>
+> > @@ -2050,10 +2062,17 @@ void sev_vm_destroy(struct kvm *kvm)
+> >       if (is_mirroring_enc_context(kvm)) {
+> >               struct kvm *owner_kvm = sev->enc_context_owner;
+> >               struct kvm_sev_info *owner_sev = &to_kvm_svm(owner_kvm)->sev_info;
+> > +             struct kvm_sev_info *mirror, *tmp;
+> >
+> >               mutex_lock(&owner_kvm->lock);
+> >               if (!WARN_ON(!owner_sev->num_mirrored_vms))
+> >                       owner_sev->num_mirrored_vms--;
+> > +
+> > +             list_for_each_entry_safe(mirror, tmp, &owner_sev->mirror_vms,
+> > +                                       mirror_entry)
+> > +                     if (mirror == sev)
+> > +                             list_del(&mirror->mirror_entry);
+> > +
+>
+> There's no need to walk the list just to find the entry you already have.  Maaaaybe
+> if you were sanity checking, but it's not like we can do anything helpful if the
+> sanity check fails, so eating a #GP due to consuming e.g. LIST_POISON1 is just as
+> good as anything else.
+>
+>         if (is_mirroring_enc_context(kvm)) {
+>                 struct kvm *owner_kvm = sev->enc_context_owner;
+>
+>                 mutex_lock(&owner_kvm->lock);
+>                 list_del(&->mirror_entry);
+>                 mutex_unlock(&owner_kvm->lock);
+>                 kvm_put_kvm(owner_kvm);
+>                 return;
+>         }
 
+Thats better thanks.
+
+>
+> >               mutex_unlock(&owner_kvm->lock);
+> >               kvm_put_kvm(owner_kvm);
+> >               return;
+> > diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> > index daa8ca84afcc..b9f5e33d5232 100644
+> > --- a/arch/x86/kvm/svm/svm.h
+> > +++ b/arch/x86/kvm/svm/svm.h
+> > @@ -81,6 +81,10 @@ struct kvm_sev_info {
+> >       u64 ap_jump_table;      /* SEV-ES AP Jump Table address */
+> >       struct kvm *enc_context_owner; /* Owner of copied encryption context */
+> >       unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
+> > +     union {
+> > +             struct list_head mirror_vms; /* List of VMs mirroring */
+> > +             struct list_head mirror_entry; /* Use as a list entry of mirrors */
+> > +     };
+>
+>
+> Whoops.  IIRC, I suggested a union for tracking mirrors vs mirrored.  After seeing
+> the code, that was a bad suggestion.  Memory isn't at a premimum for a per-VM
+> object, so storing an extra list_head is a non-issue.
+>
+> If we split the two, then num_mirrored_vms goes away, and more importantly we won't
+> have to deal with bugs where we inevitably forget to guard access to the union with
+> a check against num_mirrored_vms.
+>
+> E.g. (completely untested and probably incomplete)
+
+Done. Thats more readable I think now.
+
+>
+> ---
+>  arch/x86/kvm/svm/sev.c | 32 +++++++++-----------------------
+>  arch/x86/kvm/svm/svm.h |  7 ++-----
+>  2 files changed, 11 insertions(+), 28 deletions(-)
+>
+> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> index 369cf8c4da61..41f7e733c33e 100644
+> --- a/arch/x86/kvm/svm/sev.c
+> +++ b/arch/x86/kvm/svm/sev.c
+> @@ -1635,29 +1635,25 @@ static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
+>         dst->handle = src->handle;
+>         dst->pages_locked = src->pages_locked;
+>         dst->enc_context_owner = src->enc_context_owner;
+> -       dst->num_mirrored_vms = src->num_mirrored_vms;
+>
+>         src->asid = 0;
+>         src->active = false;
+>         src->handle = 0;
+>         src->pages_locked = 0;
+>         src->enc_context_owner = NULL;
+> -       src->num_mirrored_vms = 0;
+>
+>         list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
+>         list_cut_before(&dst->mirror_vms, &src->mirror_vms, &src->mirror_vms);
+>
+>         /*
+> -        * If this VM has mirrors we need to update the KVM refcounts from the
+> -        * source to the destination.
+> +        * If this VM has mirrors, "transfer" each mirror's refcount from the
+> +        * source to the destination (this KVM).  The caller holds a reference
+> +        * to the source, so there's no danger of use-after-free.
+>          */
+> -       if (dst->num_mirrored_vms > 0) {
+> -               list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms,
+> -                                         mirror_entry) {
+> -                       kvm_get_kvm(dst_kvm);
+> -                       kvm_put_kvm(src_kvm);
+> -                       mirror->enc_context_owner = dst_kvm;
+> -               }
+> +       list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms, mirror_entry) {
+> +               kvm_get_kvm(dst_kvm);
+> +               kvm_put_kvm(src_kvm);
+> +               mirror->enc_context_owner = dst_kvm;
+>         }
+>  }
+>
+> @@ -2019,7 +2015,6 @@ int sev_vm_copy_enc_context_from(struct kvm *kvm, unsigned int source_fd)
+>          */
+>         source_sev = &to_kvm_svm(source_kvm)->sev_info;
+>         kvm_get_kvm(source_kvm);
+> -       source_sev->num_mirrored_vms++;
+>         mirror_sev = &to_kvm_svm(kvm)->sev_info;
+>         list_add_tail(&mirror_sev->mirror_entry, &source_sev->mirror_vms);
+>
+> @@ -2053,7 +2048,7 @@ void sev_vm_destroy(struct kvm *kvm)
+>         struct list_head *head = &sev->regions_list;
+>         struct list_head *pos, *q;
+>
+> -       WARN_ON(sev->num_mirrored_vms);
+> +       WARN_ON(!list_empty(&sev->mirror_vms));
+>
+>         if (!sev_guest(kvm))
+>                 return;
+> @@ -2061,18 +2056,9 @@ void sev_vm_destroy(struct kvm *kvm)
+>         /* If this is a mirror_kvm release the enc_context_owner and skip sev cleanup */
+>         if (is_mirroring_enc_context(kvm)) {
+>                 struct kvm *owner_kvm = sev->enc_context_owner;
+> -               struct kvm_sev_info *owner_sev = &to_kvm_svm(owner_kvm)->sev_info;
+> -               struct kvm_sev_info *mirror, *tmp;
+>
+>                 mutex_lock(&owner_kvm->lock);
+> -               if (!WARN_ON(!owner_sev->num_mirrored_vms))
+> -                       owner_sev->num_mirrored_vms--;
+> -
+> -               list_for_each_entry_safe(mirror, tmp, &owner_sev->mirror_vms,
+> -                                         mirror_entry)
+> -                       if (mirror == sev)
+> -                               list_del(&mirror->mirror_entry);
+> -
+> +               list_del(&mirror->mirror_entry);
+>                 mutex_unlock(&owner_kvm->lock);
+>                 kvm_put_kvm(owner_kvm);
+>                 return;
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index 0876329f273d..79bf568c2558 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -79,11 +79,8 @@ struct kvm_sev_info {
+>         struct list_head regions_list;  /* List of registered regions */
+>         u64 ap_jump_table;      /* SEV-ES AP Jump Table address */
+>         struct kvm *enc_context_owner; /* Owner of copied encryption context */
+> -       unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
+> -       union {
+> -               struct list_head mirror_vms; /* List of VMs mirroring */
+> -               struct list_head mirror_entry; /* Use as a list entry of mirrors */
+> -       };
+> +       struct list_head mirror_vms; /* List of VMs mirroring */
+> +       struct list_head mirror_entry; /* Use as a list entry of mirrors */
+>         struct misc_cg *misc_cg; /* For misc cgroup accounting */
+>         atomic_t migration_in_progress;
+>  };
+>
+> base-commit: 618a9a6fda17f48d86a1ce9851bd8ceffdc57d75
+
+I added a base commit to my V2 patch.
+
+> --
+>
