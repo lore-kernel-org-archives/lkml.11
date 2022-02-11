@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AA9C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350580AbiBKNbD (ORCPT
+        id S1350604AbiBKNbN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:31:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53954 "EHLO
+        Fri, 11 Feb 2022 08:31:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350572AbiBKNbA (ORCPT
+        with ESMTP id S1350591AbiBKNbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:31:00 -0500
+        Fri, 11 Feb 2022 08:31:07 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E50F2BE
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:30:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B11D5F
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:31:05 -0800 (PST)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nIW0V-0005wy-IV; Fri, 11 Feb 2022 14:30:39 +0100
+        id 1nIW0V-0005x6-IW; Fri, 11 Feb 2022 14:30:39 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nIW0T-009juP-2v; Fri, 11 Feb 2022 14:30:37 +0100
+        id 1nIW0T-009jup-E1; Fri, 11 Feb 2022 14:30:37 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Mark Rutland <mark.rutland@arm.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -33,17 +33,17 @@ To:     Mark Rutland <mark.rutland@arm.com>,
         Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v3 2/5] ARM: dts: imx6dl-prtvt7: Add missing tvp5150 video decoder node
-Date:   Fri, 11 Feb 2022 14:30:32 +0100
-Message-Id: <20220211133035.2321330-3-o.rempel@pengutronix.de>
+Subject: [PATCH v3 5/5] ARM: dts: imx6dl: plym2m, prtvt7, victgo: add thermal zones and hwmon
+Date:   Fri, 11 Feb 2022 14:30:35 +0100
+Message-Id: <20220211133035.2321330-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220211133035.2321330-1-o.rempel@pengutronix.de>
 References: <20220211133035.2321330-1-o.rempel@pengutronix.de>
@@ -57,91 +57,328 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin van der Gracht <robin@protonic.nl>
+Add thermal zones and hwmon connected to the ADC-touchscreen controller.
 
-Add missing tvp5150 video decoder node to make composite video input
-work.
-
-Signed-off-by: Robin van der Gracht <robin@protonic.nl>
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- arch/arm/boot/dts/imx6dl-prtvt7.dts | 42 +++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ arch/arm/boot/dts/imx6dl-plym2m.dts | 74 ++++++++++++++++++++++++++++-
+ arch/arm/boot/dts/imx6dl-prtvt7.dts | 57 ++++++++++++++++++++++
+ arch/arm/boot/dts/imx6dl-victgo.dts | 62 +++++++++++++++++++++++-
+ 3 files changed, 191 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-index be7c4cb339e7..baaa6ffc4df9 100644
---- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
-+++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
-@@ -6,6 +6,7 @@
- /dts-v1/;
- #include "imx6dl.dtsi"
- #include "imx6qdl-prti6q.dtsi"
-+#include <dt-bindings/display/sdtv-standards.h>
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/leds/common.h>
- #include <dt-bindings/sound/fsl-imx-audmux.h>
-@@ -171,6 +172,18 @@ panel_in: endpoint {
+diff --git a/arch/arm/boot/dts/imx6dl-plym2m.dts b/arch/arm/boot/dts/imx6dl-plym2m.dts
+index 73c7622bfe0f..c4ce23d8ac9f 100644
+--- a/arch/arm/boot/dts/imx6dl-plym2m.dts
++++ b/arch/arm/boot/dts/imx6dl-plym2m.dts
+@@ -50,6 +50,11 @@ display_out: endpoint {
  		};
  	};
  
-+	connector {
-+		compatible = "composite-video-connector";
-+		label = "Composite0";
-+		sdtv-standards = <SDTV_STD_PAL_B>;
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&vdiv_vaccu>;
++	};
 +
-+		port {
-+			comp0_out: endpoint {
-+				remote-endpoint = <&tvp5150_comp0_in>;
-+			};
+ 	leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+@@ -102,6 +107,26 @@ reg_12v0: regulator-12v0 {
+ 		regulator-max-microvolt = <12000000>;
+ 	};
+ 
++	thermal-zones {
++		chassis-thermal {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&tsens0>;
++		};
++
++		touch-thermal0 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp0>;
++		};
++
++		touch-thermal1 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp1>;
 +		};
 +	};
 +
- 	reg_bl_12v0: regulator-bl-12v0 {
- 		compatible = "regulator-fixed";
- 		pinctrl-names = "default";
-@@ -295,6 +308,31 @@ sgtl5000: audio-codec@a {
- 		VDDIO-supply = <&reg_3v3>;
- 		VDDD-supply = <&reg_1v8>;
+ 	touchscreen {
+ 		compatible = "resistive-adc-touch";
+ 		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
+@@ -113,6 +138,32 @@ touchscreen {
+ 		touchscreen-x-plate-ohms = <300>;
+ 		touchscreen-y-plate-ohms = <800>;
  	};
 +
-+	video@5c {
-+		compatible = "ti,tvp5150";
-+		reg = <0x5c>;
++	touch_temp0: touch-temperature-sensor0 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 0>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 736
++						85000 474>;
++	};
 +
-+		#address-cells = <1>;
-+		#size-cells = <0>;
++	touch_temp1: touch-temperature-sensor1 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 7>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 826
++						85000 609>;
++	};
 +
-+		port@0 {
-+			reg = <0>;
-+
-+			tvp5150_comp0_in: endpoint {
-+				remote-endpoint = <&comp0_out>;
-+			};
-+		};
-+
-+		/* Output port 2 is video output pad */
-+		port@2 {
-+			reg = <2>;
-+
-+			tvp5151_to_ipu1_csi0_mux: endpoint {
-+				remote-endpoint = <&ipu1_csi0_mux_from_parallel_sensor>;
-+			};
-+		};
++	vdiv_vaccu: voltage-divider-vaccu {
++		compatible = "voltage-divider";
++		io-channels = <&adc_ts 2>;
++		output-ohms = <2500>;
++		full-ohms = <64000>;
++		#io-channel-cells = <0>;
 +	};
  };
  
- &i2c3 {
-@@ -322,6 +360,10 @@ &ipu1_di0_disp0 {
- 	remote-endpoint = <&display_in>;
+ &can1 {
+@@ -153,12 +204,24 @@ adc_ts: adc@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
++		channel@0 {
++			reg = <0>;
++			settling-time-us = <300>;
++			oversampling-ratio = <5>;
++		};
++
+ 		channel@1 {
+ 			reg = <1>;
+ 			settling-time-us = <700>;
+ 			oversampling-ratio = <5>;
+ 		};
+ 
++		channel@2 {
++			reg = <2>;
++			settling-time-us = <300>;
++			oversampling-ratio = <5>;
++		};
++
+ 		channel@3 {
+ 			reg = <3>;
+ 			settling-time-us = <700>;
+@@ -176,6 +239,14 @@ channel@5 {
+ 			settling-time-us = <700>;
+ 			oversampling-ratio = <5>;
+ 		};
++
++		/* channel 6 is not connected */
++
++		channel@7 {
++			reg = <7>;
++			settling-time-us = <300>;
++			oversampling-ratio = <5>;
++		};
+ 	};
  };
  
-+&ipu1_csi0_mux_from_parallel_sensor {
-+	remote-endpoint = <&tvp5151_to_ipu1_csi0_mux>;
-+};
+@@ -260,9 +331,10 @@ &i2c3 {
+ 	pinctrl-0 = <&pinctrl_i2c3>;
+ 	status = "okay";
+ 
+-	temperature-sensor@70 {
++	tsens0: temperature-sensor@70 {
+ 		compatible = "ti,tmp103";
+ 		reg = <0x70>;
++		#thermal-sensor-cells = <0>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/imx6dl-prtvt7.dts b/arch/arm/boot/dts/imx6dl-prtvt7.dts
+index 59e0674420a1..b86deebef7b7 100644
+--- a/arch/arm/boot/dts/imx6dl-prtvt7.dts
++++ b/arch/arm/boot/dts/imx6dl-prtvt7.dts
+@@ -53,6 +53,11 @@ display_out: endpoint {
+ 		};
+ 	};
+ 
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&vdiv_vaccu>;
++	};
 +
- &pwm1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_pwm1>;
+ 	keys {
+ 		compatible = "gpio-keys";
+ 		autorepeat;
+@@ -236,6 +241,26 @@ simple-audio-card,codec {
+ 		};
+ 	};
+ 
++	thermal-zones {
++		chassis-thermal {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&tsens0>;
++		};
++
++		touch-thermal0 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp0>;
++		};
++
++		touch-thermal1 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp1>;
++		};
++	};
++
+ 	touchscreen {
+ 		compatible = "resistive-adc-touch";
+ 		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
+@@ -247,6 +272,32 @@ touchscreen {
+ 		touchscreen-x-plate-ohms = <300>;
+ 		touchscreen-y-plate-ohms = <800>;
+ 	};
++
++	touch_temp0: touch-temperature-sensor0 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 0>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 736
++						85000 474>;
++	};
++
++	touch_temp1: touch-temperature-sensor1 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 7>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 826
++						85000 609>;
++	};
++
++	vdiv_vaccu: voltage-divider-vaccu {
++		compatible = "voltage-divider";
++		io-channels = <&adc_ts 2>;
++		output-ohms = <2500>;
++		full-ohms = <64000>;
++		#io-channel-cells = <0>;
++	};
+ };
+ 
+ &audmux {
+@@ -372,6 +423,12 @@ rtc@51 {
+ 		reg = <0x51>;
+ 	};
+ 
++	tsens0: temperature-sensor@70 {
++		compatible = "ti,tmp103";
++		reg = <0x70>;
++		#thermal-sensor-cells = <0>;
++	};
++
+ 	gpio_pca: gpio@74 {
+ 		compatible = "nxp,pca9539";
+ 		reg = <0x74>;
+diff --git a/arch/arm/boot/dts/imx6dl-victgo.dts b/arch/arm/boot/dts/imx6dl-victgo.dts
+index 52de091ea452..227c952543d4 100644
+--- a/arch/arm/boot/dts/imx6dl-victgo.dts
++++ b/arch/arm/boot/dts/imx6dl-victgo.dts
+@@ -66,6 +66,11 @@ enter {
+ 		};
+ 	};
+ 
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&vdiv_vaccu>, <&vdiv_hitch_pos>;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 		pinctrl-names = "default";
+@@ -182,6 +187,26 @@ simple-audio-card,codec {
+ 		};
+ 	};
+ 
++	thermal-zones {
++		chassis-thermal {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&tsens0>;
++		};
++
++		touch-thermal0 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp0>;
++		};
++
++		touch-thermal1 {
++			polling-delay = <20000>;
++			polling-delay-passive = <0>;
++			thermal-sensors = <&touch_temp1>;
++		};
++	};
++
+ 	touchscreen {
+ 		compatible = "resistive-adc-touch";
+ 		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>,
+@@ -193,6 +218,40 @@ touchscreen {
+ 		touchscreen-x-plate-ohms = <300>;
+ 		touchscreen-y-plate-ohms = <800>;
+ 	};
++
++	touch_temp0: touch-temperature-sensor0 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 0>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 736
++						85000 474>;
++	};
++
++	touch_temp1: touch-temperature-sensor1 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&adc_ts 7>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-40000) 826
++						85000 609>;
++	};
++
++	vdiv_vaccu: voltage-divider-vaccu {
++		compatible = "voltage-divider";
++		io-channels = <&adc_ts 2>;
++		output-ohms = <2500>;
++		full-ohms = <64000>;
++		#io-channel-cells = <0>;
++	};
++
++	vdiv_hitch_pos: voltage-divider-hitch-pos {
++		compatible = "voltage-divider";
++		io-channels = <&adc_ts 6>;
++		output-ohms = <3300>;
++		full-ohms = <13300>;
++		#io-channel-cells = <0>;
++	};
+ };
+ 
+ &audmux {
+@@ -477,9 +536,10 @@ rtc@51 {
+ 		reg = <0x51>;
+ 	};
+ 
+-	temperature-sensor@70 {
++	tsens0: temperature-sensor@70 {
+ 		compatible = "ti,tmp103";
+ 		reg = <0x70>;
++		#thermal-sensor-cells = <0>;
+ 	};
+ };
+ 
 -- 
 2.30.2
 
