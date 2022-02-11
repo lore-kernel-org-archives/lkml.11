@@ -2,120 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BF2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243550AbiBKIEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:04:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33016 "EHLO
+        id S1347943AbiBKIEp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 03:04:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237830AbiBKIEc (ORCPT
+        with ESMTP id S1347888AbiBKIEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:04:32 -0500
-X-Greylist: delayed 805 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 00:04:30 PST
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F391EBBF;
-        Fri, 11 Feb 2022 00:04:30 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21B7p1S7008305;
-        Fri, 11 Feb 2022 01:51:01 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644565861;
-        bh=4A175SrgYxfzFi5K8Bg8FdyWFPWIpErDDlIkfHdh2j0=;
-        h=From:To:CC:Subject:Date;
-        b=pcuQtIkgco/ZAYWEFu8TW8TLi5M0CP0GeGenPqiOHZ9a2Vjs2LxRulLvPnOvMgc5T
-         bI/sUQt2iELTTVA8CLne83rhxycDgvBA/xHfsbLoIrP5rFZrtzQ1vj4Xqvl6SX2NCk
-         rCoUaa+K21zPMkWCCj1JDE8Ek66ppfS4jf0za+yk=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21B7p17n092403
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 11 Feb 2022 01:51:01 -0600
-Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 11
- Feb 2022 01:51:01 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 11 Feb 2022 01:51:01 -0600
-Received: from gsaswath-HP-ProBook-640-G5.dal.design.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21B7ow0B042573;
-        Fri, 11 Feb 2022 01:50:58 -0600
-From:   Aswath Govindraju <a-govindraju@ti.com>
-CC:     Aswath Govindraju <a-govindraju@ti.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Faiz Abbas <faiz_abbas@ti.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        <linux-mmc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] mmc: sdhci_am654: Fix the driver data of AM64 SoC
-Date:   Fri, 11 Feb 2022 13:20:55 +0530
-Message-ID: <20220211075056.26179-1-a-govindraju@ti.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-To:     unlisted-recipients:; (no To-header on input)
+        Fri, 11 Feb 2022 03:04:33 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF5BD3;
+        Fri, 11 Feb 2022 00:04:32 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 43D9B1A1AC5;
+        Fri, 11 Feb 2022 09:04:31 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0B8731A1AB8;
+        Fri, 11 Feb 2022 09:04:31 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 8A14A183AC89;
+        Fri, 11 Feb 2022 16:04:29 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com,
+        lorenzo.pieralisi@arm.com, shawnguo@kernel.org
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v2 2/2] PCI: imx6: Enable i.MX6QP PCIe power management support
+Date:   Fri, 11 Feb 2022 15:32:59 +0800
+Message-Id: <1644564779-8448-2-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644564779-8448-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1644564779-8448-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The MMCSD IPs used in AM64 are the same as the ones used in J721E.
-Therefore, fix this by using the driver data from J721E for AM64 too, for
-both 8 and 4 bit instances.
+i.MX6QP PCIe supports the reset logic, thus it can reset itself to the
+initialized state when exit from L2 or L3 states.
 
-Fixes: 754b7f2f7d2a ("mmc: sdhci_am654: Add Support for TI's AM64 SoC")
-Signed-off-by: Aswath Govindraju <a-govindraju@ti.com>
+Enable the i.MX6QP PCIe suspend/resume operations support.
+
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
 ---
- drivers/mmc/host/sdhci_am654.c | 24 ++----------------------
- 1 file changed, 2 insertions(+), 22 deletions(-)
+ drivers/pci/controller/dwc/pci-imx6.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-index f654afbe8e83..b4891bb26648 100644
---- a/drivers/mmc/host/sdhci_am654.c
-+++ b/drivers/mmc/host/sdhci_am654.c
-@@ -514,26 +514,6 @@ static const struct sdhci_am654_driver_data sdhci_j721e_4bit_drvdata = {
- 	.flags = IOMUX_PRESENT,
- };
- 
--static const struct sdhci_pltfm_data sdhci_am64_8bit_pdata = {
--	.ops = &sdhci_j721e_8bit_ops,
--	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
--};
--
--static const struct sdhci_am654_driver_data sdhci_am64_8bit_drvdata = {
--	.pdata = &sdhci_am64_8bit_pdata,
--	.flags = DLL_PRESENT | DLL_CALIB,
--};
--
--static const struct sdhci_pltfm_data sdhci_am64_4bit_pdata = {
--	.ops = &sdhci_j721e_4bit_ops,
--	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN,
--};
--
--static const struct sdhci_am654_driver_data sdhci_am64_4bit_drvdata = {
--	.pdata = &sdhci_am64_4bit_pdata,
--	.flags = IOMUX_PRESENT,
--};
--
- static const struct soc_device_attribute sdhci_am654_devices[] = {
- 	{ .family = "AM65X",
- 	  .revision = "SR1.0",
-@@ -759,11 +739,11 @@ static const struct of_device_id sdhci_am654_of_match[] = {
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 784801f2f9e6..62262483470a 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -995,6 +995,7 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
+ 	/* Others poke directly at IOMUXC registers */
+ 	switch (imx6_pcie->drvdata->variant) {
+ 	case IMX6SX:
++	case IMX6QP:
+ 		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+ 				IMX6SX_GPR12_PCIE_PM_TURN_OFF,
+ 				IMX6SX_GPR12_PCIE_PM_TURN_OFF);
+@@ -1307,7 +1308,8 @@ static const struct imx6_pcie_drvdata drvdata[] = {
+ 	[IMX6QP] = {
+ 		.variant = IMX6QP,
+ 		.flags = IMX6_PCIE_FLAG_IMX6_PHY |
+-			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE,
++			 IMX6_PCIE_FLAG_IMX6_SPEED_CHANGE |
++			 IMX6_PCIE_FLAG_SUPPORTS_SUSPEND,
+ 		.dbi_length = 0x200,
  	},
- 	{
- 		.compatible = "ti,am64-sdhci-8bit",
--		.data = &sdhci_am64_8bit_drvdata,
-+		.data = &sdhci_j721e_8bit_drvdata,
- 	},
- 	{
- 		.compatible = "ti,am64-sdhci-4bit",
--		.data = &sdhci_am64_4bit_drvdata,
-+		.data = &sdhci_j721e_4bit_drvdata,
- 	},
- 	{ /* sentinel */ }
- };
+ 	[IMX7D] = {
 -- 
-2.17.1
+2.25.1
 
