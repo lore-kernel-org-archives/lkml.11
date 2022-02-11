@@ -2,83 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72440C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352019AbiBKRSV (ORCPT
+        id S1352074AbiBKRR7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:18:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39688 "EHLO
+        Fri, 11 Feb 2022 12:17:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347328AbiBKRSQ (ORCPT
+        with ESMTP id S1351983AbiBKRRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:18:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756532E8;
-        Fri, 11 Feb 2022 09:18:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 11 Feb 2022 12:17:53 -0500
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E50C095;
+        Fri, 11 Feb 2022 09:17:51 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 115BFB82B0C;
-        Fri, 11 Feb 2022 17:18:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80120C340F0;
-        Fri, 11 Feb 2022 17:18:12 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="NyZ4HM6k"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644599890;
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4JwL0Z4L8Pz9sWB;
+        Fri, 11 Feb 2022 18:17:50 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
+        t=1644599868;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SfYGvN9zxLfDorcByl2QkN876mXdSCG/iqqiHsime+4=;
-        b=NyZ4HM6kc0VT1Z0pePq62d2Fp1CRFOuxfcb8kdupm1OzZ1niCqmH2IowAsE7ZDU/I3Fhpl
-        +r6eRqM0zvks+50T7YFBlgw9AIp4442AJelwhT9I43gVGllMDeJ2CHg4X2UrgVjqNBjq9l
-        Tm+WDP2SBv6PY6a2a/uzA/sVG1ls1m8=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 01119a3a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 11 Feb 2022 17:18:10 +0000 (UTC)
-Received: by mail-yb1-f179.google.com with SMTP id j2so27068802ybu.0;
-        Fri, 11 Feb 2022 09:18:09 -0800 (PST)
-X-Gm-Message-State: AOAM533qKG63XEnyA3F9y9uPyTxpUj+lZzqYC6N9zoAie4G2fHJmRKNS
-        mS2IhhHMPF6h9rr+h6IDufWBrAY3b5fqFkXll84=
-X-Google-Smtp-Source: ABdhPJyFny8fOHQkFCX9/JxzGdjmEUL+mbbdca++Pmet/pPykT+Mb94KinsOgGgHaOXiHrYeUGBypcfon47wKg71TmI=
-X-Received: by 2002:a25:ba49:: with SMTP id z9mr2361602ybj.32.1644599888151;
- Fri, 11 Feb 2022 09:18:08 -0800 (PST)
+        bh=cYB9jsEmktbZ+WrieEs2dnr7GDeZou2sHGFwgq6lkRI=;
+        b=wkbn6c2sblqfuisyhLCWm+iVNBBVSnbg1SlLQQXiolFVSlUuUnn6EBlj1fy11K2PWEk5UF
+        HR+0gk9Mkbg4gFvYBX9lDaO4NGdXq1qM8Uo9CepkHLS4OnNTn7IOVuvU2CX+Gwme5/ftK+
+        8fJv858HCocr9ZNimV98BW8w0aFDD0SL8MkOvOsTSBPI5d+XfofItHDs1Om2D2YgzomyCx
+        KV6A0N6QR7fPHHXZy9RLd5TzRL/yFjMt5r1Qglu+AMxLro5rizQUvUQWar6Q95z+nvBVLt
+        n2KMDiGmTomYoEAyGI6YE+Fq6STtKHMalaXTVZg3yjmRNVW6vC+/wlbD+HAPKA==
+From:   Marcello Sylvester Bauer <sylv@sylv.io>
+To:     linux-hwmon@vger.kernel.org
+Cc:     Marcello Sylvester Bauer <sylv@sylv.io>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 4/4] pmbus (pli1209bc): Add regulator support
+Date:   Fri, 11 Feb 2022 18:17:13 +0100
+Message-Id: <0a657d200809dedc5fdd2095fae8c0f2fceecf1f.1644597670.git.sylv@sylv.io>
+In-Reply-To: <cover.1644597670.git.sylv@sylv.io>
+References: <cover.1644597670.git.sylv@sylv.io>
 MIME-Version: 1.0
-References: <YgZ6IEbiDgz5X1ON@linutronix.de> <20220211162515.554867-1-Jason@zx2c4.com>
- <YgaSYlVEBOxfJbSD@linutronix.de> <CAHmME9rC_q4LGq2JaAAeGbtRA2cibTe9bnvhMLng+QnzAy2DVg@mail.gmail.com>
- <YgaV0UZO1KfmtLLh@linutronix.de> <CAHmME9qR02XCX48D+AoT1rOFyNo_GXubyHPzoX01BYkJDX7p1A@mail.gmail.com>
- <YgaZuShru2HQiFXg@linutronix.de>
-In-Reply-To: <YgaZuShru2HQiFXg@linutronix.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 11 Feb 2022 18:17:57 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oZMFN80M98Mt6JysPSMTJoXfKTjHuxG6BQSsC=+0z5fg@mail.gmail.com>
-Message-ID: <CAHmME9oZMFN80M98Mt6JysPSMTJoXfKTjHuxG6BQSsC=+0z5fg@mail.gmail.com>
-Subject: Re: [PATCH v6] random: defer fast pool mixing to worker
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 6:15 PM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
-> A CPU hotplug notifier which removes unconditionally that bit when the
-> CPU goes down or sets it to 0.
-> We can keep it as it. Just an idea for later maybe ;)
+Add regulator support for PLI1209BC Digital Supervisor.
 
-I looked into it and it seemed like the plumbing was kind of miserable
-for that. If you want to take a stab, though, that might be an okay
-followup patch, and then we can assess atomics vs notifier. I think
-notifier will wind up being a lot clunkier, though.
+Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+---
+ drivers/hwmon/pmbus/Kconfig     |  8 ++++++++
+ drivers/hwmon/pmbus/pli1209bc.c | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-Sounds like we should be all set for the v7 I sent out?
+diff --git a/drivers/hwmon/pmbus/Kconfig b/drivers/hwmon/pmbus/Kconfig
+index 831db423bea0..e64e0f2d93c9 100644
+--- a/drivers/hwmon/pmbus/Kconfig
++++ b/drivers/hwmon/pmbus/Kconfig
+@@ -319,6 +319,14 @@ config SENSORS_PLI1209BC
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called pli1209bc.
+ 
++config SENSORS_PLI1209BC_REGULATOR
++	bool "Regulator support for PLI1209BC"
++	depends on SENSORS_PLI1209BC && REGULATOR
++	help
++	  If you say yes here you get regulator support for Vicor PLI1209BC
++	  Digital Supervisor.
++
++
+ config SENSORS_PM6764TR
+ 	tristate "ST PM6764TR"
+ 	help
+diff --git a/drivers/hwmon/pmbus/pli1209bc.c b/drivers/hwmon/pmbus/pli1209bc.c
+index da345eb105fd..ec479b22aa10 100644
+--- a/drivers/hwmon/pmbus/pli1209bc.c
++++ b/drivers/hwmon/pmbus/pli1209bc.c
+@@ -8,6 +8,7 @@
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+ #include <linux/pmbus.h>
++#include <linux/regulator/driver.h>
+ #include "pmbus.h"
+ 
+ /*
+@@ -32,11 +33,39 @@ static int pli1209bc_read_word_data(struct i2c_client *client, int page,
+ 		if (data < 0)
+ 			return data;
+ 		return div_s64(data + 5LL, 10L);
++#if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
++	/*
++	 * PMBUS_READ_VOUT and PMBUS_READ_TEMPERATURE_1 returns invalid data,
++	 * when the BCM is turned off. Since it is not possible to return
++	 * ENODATA error, return zero instead.
++	 */
++	case PMBUS_READ_VOUT:
++	case PMBUS_READ_TEMPERATURE_1:
++		data = pmbus_read_word_data(client, page, phase,
++					    PMBUS_STATUS_WORD);
++		if (data < 0)
++			return data;
++		if (data & PB_STATUS_POWER_GOOD_N)
++			return 0L;
++		return pmbus_read_word_data(client, page, phase, reg);
++#endif
+ 	default:
+ 		return -ENODATA;
+ 	}
+ }
+ 
++#if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
++static const struct regulator_desc pli1209bc_reg_desc = {
++	.name = "vout2",
++	.id = 1,
++	.of_match = of_match_ptr("vout2"),
++	.regulators_node = of_match_ptr("regulators"),
++	.ops = &pmbus_regulator_ops,
++	.type = REGULATOR_VOLTAGE,
++	.owner = THIS_MODULE,
++};
++#endif
++
+ static struct pmbus_driver_info pli1209bc_info = {
+ 	.pages = 2,
+ 	.format[PSC_VOLTAGE_IN] = direct,
+@@ -64,6 +93,10 @@ static struct pmbus_driver_info pli1209bc_info = {
+ 	    | PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP
+ 	    | PMBUS_HAVE_STATUS_IOUT | PMBUS_HAVE_STATUS_INPUT,
+ 	.read_word_data = pli1209bc_read_word_data,
++#if IS_ENABLED(CONFIG_SENSORS_PLI1209BC_REGULATOR)
++	.num_regulators = 1,
++	.reg_desc = &pli1209bc_reg_desc,
++#endif
+ };
+ 
+ static int pli1209bc_probe(struct i2c_client *client)
+-- 
+2.34.1
 
-Jason
