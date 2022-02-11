@@ -2,86 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:14:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA82C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237606AbiBKQO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:14:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43512 "EHLO
+        id S1350983AbiBKQOh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 11:14:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350775AbiBKQOT (ORCPT
+        with ESMTP id S1348479AbiBKQOf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:14:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FB2F21D;
-        Fri, 11 Feb 2022 08:14:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03BE9B82A77;
-        Fri, 11 Feb 2022 16:14:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE074C340E9;
-        Fri, 11 Feb 2022 16:14:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644596055;
-        bh=sNz2tFUsc7yL/pDTYZgBpCU9uV+JsVM0G9jqqLqvVS8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uwgNsAej4XLRiZXEwDL7bwZAM73hhCpGYFCmS8Y6u8dtAKyi+fmfSTv9AJWAE2NeI
-         KSzDwuVt9HFRbOvvpN1ayO7UN31FXA0Ceo6ao0md5ccyywTJcUwoi2C3JOV0sQrSGt
-         RZWXUqS2O9OMReelWJYHPAB7PXNi3OMmTa9QRQXXRJYF1XB3VyhQGb3qQ2Nfq+2NN2
-         KSVm73tUGepdEjLf02jl4IMwtYVaoUpB/Pp/TusIqrBCYPrpslzBOQOTE4Jsbz+4+V
-         y/7LQF9rNVOomWzPV/XJkGr3z8oe/friRlhBR40sQwaU4/hcZbxA8/Fs7Rjw8Z3r7k
-         B3GU6bwsnq+YQ==
-Date:   Fri, 11 Feb 2022 16:14:08 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
-        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
-        geert+renesas@glider.be, trevor.wu@mediatek.com,
-        tzungbi@google.com, zhangqilong3@huawei.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 00/15] ASoC: mediatek: Add support for MT8186 SoC
-Message-ID: <YgaLUNQXnGsZHuXQ@sirena.org.uk>
-References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
+        Fri, 11 Feb 2022 11:14:35 -0500
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA35D85;
+        Fri, 11 Feb 2022 08:14:34 -0800 (PST)
+Received: by mail-qt1-f177.google.com with SMTP id e16so9477371qtq.6;
+        Fri, 11 Feb 2022 08:14:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=S8xpmHV8qmgZo5KtADQn+41vGynS6Djxd0MCgfJYJrQ=;
+        b=GlBwSGExYlqMA3Dz6aNJO2wAcYYYdlGzXiQFuVC82wJ7h5HX9d5hWhinjxRg+fygr0
+         9GJjeKUqK2omckJilz34yRiAHk1F1wLAA1B2aoogNdW+VWRwyzdIB6h6QXfkp1H3L12O
+         sookpEW93dnUFmAkzSTebVjlQjBjxMmU+Ww7jENQqODmYNM1UrGKOEqh7mSSufQMQJ65
+         eekyuw6hzrDCvfShx24n9zdUKaa5WiA/0Bvp98RPWGK8W4yggMXnzL/75V2iEP18uTyP
+         8pACPSWe8rKC+LQhTE4tyLetcMGJ69YbfbmST8Pyf9wTh1H+BMxFhizuPrtZs+PwTfni
+         lNBw==
+X-Gm-Message-State: AOAM531wmi7297uQaBg+v/8yKYqUrOaz2+ZKo83/i9wWUM/usNbMrqAi
+        ova6P41K8FF465PZKT15VQ==
+X-Google-Smtp-Source: ABdhPJw7PmtZ0vR8j0t1v4dIdypSD5XvhTxwoO4r3Ep/YYX74YcRRmX53LbVFhJVgfCECa+VAteR/A==
+X-Received: by 2002:a05:622a:1ce:: with SMTP id t14mr1604389qtw.25.1644596073068;
+        Fri, 11 Feb 2022 08:14:33 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:5fee:dfce:b6df:c3e1:b1e5:d6d8])
+        by smtp.gmail.com with ESMTPSA id t18sm13012269qta.90.2022.02.11.08.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 08:14:32 -0800 (PST)
+Received: (nullmailer pid 451271 invoked by uid 1000);
+        Fri, 11 Feb 2022 16:14:28 -0000
+Date:   Fri, 11 Feb 2022 10:14:28 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tyrone Ting <warp5tw@gmail.com>
+Cc:     avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
+        venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        krzysztof.kozlowski@canonical.com, semen.protsenko@linaro.org,
+        yangyicong@hisilicon.com, wsa@kernel.org, jie.deng@intel.com,
+        sven@svenpeter.dev, bence98@sch.bme.hu, lukas.bulwahn@gmail.com,
+        arnd@arndb.de, olof@lixom.net, andriy.shevchenko@linux.intel.com,
+        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
+        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
+        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/6] dt-bindings: i2c: npcm: support NPCM845
+Message-ID: <YgaLZLuCwdpUgMea@robh.at.kernel.org>
+References: <20220207063338.6570-1-warp5tw@gmail.com>
+ <20220207063338.6570-2-warp5tw@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="xkn+amad5HrevOtl"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
-X-Cookie: do {
+In-Reply-To: <20220207063338.6570-2-warp5tw@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 07, 2022 at 02:33:33PM +0800, Tyrone Ting wrote:
+> From: Tyrone Ting <kfting@nuvoton.com>
+> 
+> This commit adds compatible and syscon description for NPCM845 i2c module.
+> 
+> Fixes: 56a1485b102e ("i2c: npcm7xx: Add Nuvoton NPCM I2C controller driver")
+> Signed-off-by: Tyrone Ting <kfting@nuvoton.com>
+> Signed-off-by: Tali Perry <tali.perry1@gmail.com>
+> ---
+>  .../bindings/i2c/nuvoton,npcm7xx-i2c.yaml     | 21 ++++++++++++++-----
+>  1 file changed, 16 insertions(+), 5 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> index 128444942aec..05e58f44b03a 100644
+> --- a/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/nuvoton,npcm7xx-i2c.yaml
+> @@ -7,17 +7,22 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  title: nuvoton NPCM7XX I2C Controller Device Tree Bindings
+>  
+>  description: |
+> -  The NPCM750x includes sixteen I2C bus controllers. All Controllers support
+> -  both master and slave mode. Each controller can switch between master and slave
+> -  at run time (i.e. IPMB mode). Each controller has two 16 byte HW FIFO for TX and
+> -  RX.
+> +  The NPCM7XX includes sixteen I2C bus controllers and the NPCM8XX includes
+> +  twenty-seven I2C bus controllers. NPCM8XX controllers 24-26 are connected on I2C
+> +  pins in parallel to controllers 8-10.
 
---xkn+amad5HrevOtl
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+How many instances is really outside the scope of this binding. And I 
+don't want to be updating this for every new SoC. So rework it to cover 
+both chips and the next one.
 
-On Fri, Feb 11, 2022 at 06:38:03PM +0800, Jiaxin Yu wrote:
-> This series of patches adds support for Mediatek AFE of MT8186 Soc.
-> Patches are based on broonie tree "for-next" branch.
+> +  All controllers support both master and slave mode.
+> +  Each controller can switch between master and slave at run time (i.e. IPMB mode).
+> +  NPCM7XX I2C controller has two 16 byte HW FIFO for TX and RX and NPCM8XX I2C
+> +  controller has two 32 byte HW FIFO for TX and RX.
+>  
+>  maintainers:
+>    - Tali Perry <tali.perry1@gmail.com>
+>  
+>  properties:
+>    compatible:
+> -    const: nuvoton,npcm750-i2c
+> +    enum:
+> +      - nuvoton,npcm750-i2c
+> +      - nuvoton,npcm845-i2c
+>  
+>    reg:
+>      maxItems: 1
+> @@ -36,11 +41,16 @@ properties:
+>      default: 100000
+>      enum: [100000, 400000, 1000000]
+>  
+> +  syscon:
 
-This all looks basically good, there are some issues which I've
-highlighted on the patches but like I kept on saying they're all fairly
-small and hopefully easy to address - there's no big structural problems
-or anything that I noticed.
+nuvoton,sys-mgr or similar.
 
---xkn+amad5HrevOtl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGi08ACgkQJNaLcl1U
-h9CKkwf/SLonnfl3fV+46O1AC+u/WFZePStG+cGxvOGhs2iKcs612qJNEAOgEy0T
-5lZRM+tTsja54tt7keZXc+AulVVpMOu2ROqTU4BJp3Zygt++snT8v2OTC3XSnjcI
-vJOrvxSUxA3zKxdquTHgcCG+MQOjQi2B1MfD5gU5ZrJLhO9u6CjOSkhTFGwCdhn5
-O38VRqcD17TbQXKnSqWKGOKJJWywGW84Gv2P7M7QlZqugFHkEzo21Fw+Y6m0SSQI
-I/LKyDgTu+Me3OIweHSNrFO9WDAE3Pv8Q9V8alHjd+iGpGLJWBoHk3SMXVnCZEe2
-xr5Jvd5fZyGKpL/T//Iyhxzqx84fDg==
-=7jLS
------END PGP SIGNATURE-----
-
---xkn+amad5HrevOtl--
+> +    $ref: "/schemas/types.yaml#/definitions/phandle"
+> +    description: The phandle of system manager register node.
+> +
+>  required:
+>    - compatible
+>    - reg
+>    - interrupts
+>    - clocks
+> +  - syscon
+>  
+>  allOf:
+>    - $ref: /schemas/i2c/i2c-controller.yaml#
+> @@ -57,6 +67,7 @@ examples:
+>          clock-frequency = <100000>;
+>          interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
+>          compatible = "nuvoton,npcm750-i2c";
+> +        syscon = <&gcr>;
+>      };
+>  
+>  ...
+> -- 
+> 2.17.1
+> 
+> 
