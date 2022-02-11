@@ -2,105 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA611C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB5AC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349102AbiBKKgG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:36:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32806 "EHLO
+        id S242987AbiBKKig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 05:38:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349053AbiBKKfW (ORCPT
+        with ESMTP id S230059AbiBKKid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:35:22 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714A6F1D;
-        Fri, 11 Feb 2022 02:35:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644575716; x=1676111716;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=VSQeArOnGdl7FcIKdua2NdAwZTNifoQ+KWawkwDJKbI=;
-  b=Ic9/BJZX6iXH/PYtts4WOYLxPs5OyF4rnJMJ8Jk+EJXOWNMaAyn8C2xF
-   uzWV6SiRVJ6+wR+YNX6LSiHCJdFLQ5BAfNDjv3BO4FqMfAeJ4i/rzFbo/
-   kjH+cZb2trPf6ZlRiXhV5toyFU0LqpvxJ4Zzk40o4A+BQKA604t1uOF+S
-   U=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 11 Feb 2022 02:35:16 -0800
-X-QCInternal: smtphost
-Received: from nalasex01a.na.qualcomm.com ([10.47.209.196])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 02:35:15 -0800
-Received: from [10.216.7.73] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Fri, 11 Feb
- 2022 02:35:10 -0800
-Subject: Re: [PATCH V5 4/6] regulator: Add a regulator driver for the PM8008
- PMIC
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Das Srinagesh" <gurus@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>
-References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
- <1644331940-18986-5-git-send-email-quic_c_skakit@quicinc.com>
- <YgW0ltMKjGZH4NrZ@builder.lan>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-Message-ID: <653bc533-8dca-cd9c-3ca0-d5628da37f4a@quicinc.com>
-Date:   Fri, 11 Feb 2022 16:05:07 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 11 Feb 2022 05:38:33 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0764DD41;
+        Fri, 11 Feb 2022 02:38:27 -0800 (PST)
+X-UUID: 132cd1ca924447b6a00f1e5d537fbd3d-20220211
+X-UUID: 132cd1ca924447b6a00f1e5d537fbd3d-20220211
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 133670868; Fri, 11 Feb 2022 18:38:24 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 11 Feb 2022 18:38:23 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 11 Feb 2022 18:38:23 +0800
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <tiwai@suse.com>,
+        <robh+dt@kernel.org>, <matthias.bgg@gmail.com>, <perex@perex.cz>,
+        <p.zabel@pengutronix.de>, <geert+renesas@glider.be>
+CC:     <trevor.wu@mediatek.com>, <tzungbi@google.com>,
+        <zhangqilong3@huawei.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Jiaxin Yu <jiaxin.yu@mediatek.corp-partner.google.com>,
+        Jiaxin Yu <jiaxin.yu@mediatek.com>
+Subject: [PATCH 01/15] ASoC: mediatek: mt6366: add codec driver
+Date:   Fri, 11 Feb 2022 18:38:04 +0800
+Message-ID: <20220211103818.8266-2-jiaxin.yu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
+References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <YgW0ltMKjGZH4NrZ@builder.lan>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jiaxin Yu <jiaxin.yu@mediatek.corp-partner.google.com>
 
-On 2/11/2022 6:27 AM, Bjorn Andersson wrote:
-> On Tue 08 Feb 08:52 CST 2022, Satya Priya wrote:
->> diff --git a/drivers/regulator/qcom-pm8008-regulator.c b/drivers/regulator/qcom-pm8008-regulator.c
-> [..]
->> +static int pm8008_regulator_probe(struct platform_device *pdev)
->> +{
->> +	struct device *dev = &pdev->dev;
->> +	int id = pdev->id % PM8008_NUM_LDOS;
-> Why does this driver look completely different from all the other
-> Qualcomm regulator drivers that we already have, and why do you register
-> one platform_device per regulator?
+Mt6366 is a new version of mt6358, and they are same about audio part.
+So we can reuse the driver of mt6358.
 
+Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+---
+ sound/soc/codecs/Kconfig  | 8 ++++++++
+ sound/soc/codecs/Makefile | 2 ++
+ 2 files changed, 10 insertions(+)
 
-Based on Mark's suggestions and the discussion happened here [1], I've 
-changed the design like this.
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 8fa24783ce01..6631094678f5 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -132,6 +132,7 @@ config SND_SOC_ALL_CODECS
+ 	imply SND_SOC_MT6351
+ 	imply SND_SOC_MT6358
+ 	imply SND_SOC_MT6359
++	imply SND_SOC_MT6366
+ 	imply SND_SOC_MT6660
+ 	imply SND_SOC_NAU8315
+ 	imply SND_SOC_NAU8540
+@@ -1888,6 +1889,13 @@ config SND_SOC_MT6359_ACCDET
+ 	  for ASoC codec soc-jack detection mechanism.
+ 	  Select N if you don't have jack on board.
+ 
++config SND_SOC_MT6366
++	tristate "MediaTek MT6366 Codec"
++	depends on MTK_PMIC_WRAP
++	help
++	  Enable support for the platform which uses MT6366 as
++	  external codec device.
++
+ config SND_SOC_MT6660
+ 	tristate "Mediatek MT6660 Speaker Amplifier"
+ 	depends on I2C
+diff --git a/sound/soc/codecs/Makefile b/sound/soc/codecs/Makefile
+index 42d00aa4ee46..df6518306cd4 100644
+--- a/sound/soc/codecs/Makefile
++++ b/sound/soc/codecs/Makefile
+@@ -137,6 +137,7 @@ snd-soc-mt6351-objs := mt6351.o
+ snd-soc-mt6358-objs := mt6358.o
+ snd-soc-mt6359-objs := mt6359.o
+ snd-soc-mt6359-accdet-objs := mt6359-accdet.o
++snd-soc-mt6366-objs := mt6358.o
+ snd-soc-mt6660-objs := mt6660.o
+ snd-soc-nau8315-objs := nau8315.o
+ snd-soc-nau8540-objs := nau8540.o
+@@ -465,6 +466,7 @@ obj-$(CONFIG_SND_SOC_MT6351)	+= snd-soc-mt6351.o
+ obj-$(CONFIG_SND_SOC_MT6358)	+= snd-soc-mt6358.o
+ obj-$(CONFIG_SND_SOC_MT6359)	+= snd-soc-mt6359.o
+ obj-$(CONFIG_SND_SOC_MT6359_ACCDET) += mt6359-accdet.o
++obj-$(CONFIG_SND_SOC_MT6366)	+= snd-soc-mt6366.o
+ obj-$(CONFIG_SND_SOC_MT6660)	+= snd-soc-mt6660.o
+ obj-$(CONFIG_SND_SOC_NAU8315)   += snd-soc-nau8315.o
+ obj-$(CONFIG_SND_SOC_NAU8540)   += snd-soc-nau8540.o
+-- 
+2.18.0
 
-[1] 
-https://patchwork.kernel.org/project/linux-arm-msm/patch/1637314953-4215-3-git-send-email-quic_c_skakit@quicinc.com/
-
-
-> The fundamental difference in design makes it hard to maintain and
-
-
-> you're wasting quite a bit of memory with the unnecessary
-> platfrom_device objects.
-
-
-I'm going to change this. I will add only one cell with .name to match 
-with the regulator driver and probe all the regulators using a single 
-loop. That way we don't waste lot of memory by registering multiple 
-regulator platform devices.
-
-
-> Regards,
-> Bjorn
