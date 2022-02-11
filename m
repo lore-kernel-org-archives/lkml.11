@@ -2,94 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F92C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8760FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:31:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352131AbiBKR32 (ORCPT
+        id S1352139AbiBKRbi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:29:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47722 "EHLO
+        Fri, 11 Feb 2022 12:31:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348138AbiBKR3Z (ORCPT
+        with ESMTP id S1343905AbiBKRbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:29:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAB5C2C3
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:29:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644600562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fJwoEUodOxqJxI6JQu9HVJf3q8mKU8ZP5xXQX7JvN34=;
-        b=KERomP3JuBY93UD9qPoExJf5iDzt9bBCoiGxPywHpDOgZVgrpKKW+y0svxICAQ72UJw9Uv
-        9O4WZghIVQKtjf24N0n2VpncaCkxQ1SKmAz9+WzDK13HtkTqsuoypY2Qrd9jmnHDVmZnX9
-        wMs8rKUWgG4EsYoVfRj9RISN8EDV7mo=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-78-INMAVaueOAqLpsL_hFPvsQ-1; Fri, 11 Feb 2022 12:29:21 -0500
-X-MC-Unique: INMAVaueOAqLpsL_hFPvsQ-1
-Received: by mail-wm1-f69.google.com with SMTP id be14-20020a05600c1e8e00b0037c2a7b3ab6so957630wmb.9
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:29:21 -0800 (PST)
+        Fri, 11 Feb 2022 12:31:37 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78C972C3
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:31:35 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id u1so2669641wrg.11
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6YxyRdWisDBs8NxFScSf04/qfSxkXfn1CQ7qZqMD+ew=;
+        b=WrZx4EMt8oIJy8yHa3LeHlivxcjPXtbT/XvLI4YC4C/IkS4KBQ5Tfgav2Z3+rGgofN
+         PfS3NX8pFlXVEbOYYgHNXhUTx6cy7Y1Hqh2KYPjRJW618ZKo7l0UX/iZC1f9QOwJX/ml
+         wCLhSxc01fjSbHWUgtqXOUSaAIs7blK7eeaAU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=fJwoEUodOxqJxI6JQu9HVJf3q8mKU8ZP5xXQX7JvN34=;
-        b=V0y0THNhT5fdv4eNsQvqdZP+vat5LUCuD18iGmHrUpY2DvPI7Vf/7EujtWXvCj1qww
-         Q/D8zIdhtQmKESfi07DOmTNy/8k70xX5MmkC6w6gnM2q04nnRlQTzhE47mHTfwBTnb9I
-         wwfkO+B5Dpgk0or/JoVycaUUeshTdsdIbLpQ0HklJcLxYyY8X96NVGx6SvV6nkxOfm6x
-         JFy5t4l9xS+dYlBDDPX6aPvcty0jrFyourG5HjfYj+i6S9v2o/3Of+MUPT+R/B6AxbZf
-         sxtNkq7YURgbEhCiwrIpGgjMCufOLUjd9lag++7YT4bb6yOgnitmdn7T0pBp0WUIwSEK
-         f+9Q==
-X-Gm-Message-State: AOAM530uKOW0SKPIvEHySuo3dq1rM+cvmTKkjxLlHAd8ip19NT+uVUcw
-        rI1j8qXP3pVSlCCMrWq/aK+l70FCubg2gx/C2X2XuhaLvw/a/wlCMHhDCgHFfYK2UjxSeLt0PLQ
-        /1Yn2EbkOYJ7PuTvmfSS+1Yfd
-X-Received: by 2002:adf:f9ca:: with SMTP id w10mr2228489wrr.190.1644600560229;
-        Fri, 11 Feb 2022 09:29:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw7p0FZpxIDDsgFffzaBDj6oFCNLkazIuT0L/L4KWvjnftItejXB/GIXaQlFVoH1z3tOSTE4g==
-X-Received: by 2002:adf:f9ca:: with SMTP id w10mr2228479wrr.190.1644600560059;
-        Fri, 11 Feb 2022 09:29:20 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
-        by smtp.googlemail.com with ESMTPSA id j30sm1936734wms.2.2022.02.11.09.29.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 09:29:19 -0800 (PST)
-Message-ID: <3f8e8e3d-8bd7-dfd4-f4a0-63520d817c10@redhat.com>
-Date:   Fri, 11 Feb 2022 18:28:34 +0100
+        bh=6YxyRdWisDBs8NxFScSf04/qfSxkXfn1CQ7qZqMD+ew=;
+        b=xr2sHtjpVkbDo7JDO6qwixkO62uCGlB5P6I9GlFhTaqjfIP8j3mBu1mTgZHbSFD+A2
+         VmaQCkbpSElVyGwrQijoZ9KTHwTvwM45Ou0VTe/T4EtGYfghjrRXmlqZu48KRDXMt+0Y
+         RkJtbM0uInU5UssXsA+FblRcWcGU/yw3st7WB2lBhCdzzXtaICb4kKHVQQYhe9xIgzPS
+         ChvAdBBGiVhVPsTvwAqHnVHXx8hz9A9MMEknZ/rs0ap1rKq4Vf+cKEut2pbvQoha8GQG
+         etCFLZXTlB6eDQyvZoylnRU6rtDdKH8S0YGiRdbqBj9JmoUX+4Wka7dFCL5NwRDfb6hR
+         EJWg==
+X-Gm-Message-State: AOAM531J1EqsWO1kU3YaLYO6IEWtNidqoz6ex7YEQHLxN4VTEL9YpaOQ
+        usoUawxikaPj/5RuzWV4UQiFKQ==
+X-Google-Smtp-Source: ABdhPJx8zSkNjiP54POzNzIvFdiix2js97+y60fvB+HNjrljHL0Kr6qt+BZpdXnOLOfb4wtv7akWnQ==
+X-Received: by 2002:adf:ab16:: with SMTP id q22mr2161408wrc.436.1644600693951;
+        Fri, 11 Feb 2022 09:31:33 -0800 (PST)
+Received: from localhost.localdomain ([198.41.152.153])
+        by smtp.gmail.com with ESMTPSA id 24sm4389498wmf.48.2022.02.11.09.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 09:31:33 -0800 (PST)
+From:   Ignat Korchagin <ignat@cloudflare.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, dpini@cloudflare.com,
+        Ignat Korchagin <ignat@cloudflare.com>
+Subject: [PATCH] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
+Date:   Fri, 11 Feb 2022 17:30:42 +0000
+Message-Id: <20220211173042.112852-1-ignat@cloudflare.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 3/3] KVM: SVM: fix race between interrupt delivery and
- AVIC inhibition
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        mlevitsk@redhat.com
-References: <20220211110117.2764381-1-pbonzini@redhat.com>
- <20220211110117.2764381-4-pbonzini@redhat.com> <YgaYyJGN0v07vfzc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YgaYyJGN0v07vfzc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/11/22 18:11, Sean Christopherson wrote:
->> +		/* Process the interrupt with a vmexit.  */
->
-> Double spaces at the end.  But I would prefer we omit the comment entirely,
-> there is no guarantee the vCPU is in the guest or even running.
+Some time ago 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
+switched ipv6_get_lladdr() to __ipv6_get_lladdr(), which is rcu-unsafe
+version. That was OK, because idev->lock was held for these codepaths.
 
-Sure, or perhaps "process the interrupt in inject_pending_event".
+In 88e2ca308094 ("mld: convert ifmcaddr6 to RCU") these external locks were
+removed, so we probably need to restore the original rcu-safe call.
 
-Regarding the two spaces, it used to a pretty strict rule in the US with 
-typewriters.  It helps readability of monospaced fonts 
-(https://www.cultofpedagogy.com/two-spaces-after-period/), and code is 
-mostly monospaced...  But well, the title of the article says it all.
+Otherwise, we occasionally get a machine crashed/stalled with the following
+in dmesg:
 
-Paolo
+[ 3405.966610][T230589] general protection fault, probably for non-canonical address 0xdead00000000008c: 0000 [#1] SMP NOPTI
+[ 3405.982083][T230589] CPU: 44 PID: 230589 Comm: kworker/44:3 Tainted: G           O      5.15.19-cloudflare-2022.2.1 #1
+[ 3405.998061][T230589] Hardware name: SUPA-COOL-SERV
+[ 3406.009552][T230589] Workqueue: mld mld_ifc_work
+[ 3406.017224][T230589] RIP: 0010:__ipv6_get_lladdr+0x34/0x60
+[ 3406.025780][T230589] Code: 57 10 48 83 c7 08 48 89 e5 48 39 d7 74 3e 48 8d 82 38 ff ff ff eb 13 48 8b 90 d0 00 00 00 48 8d 82 38 ff ff ff 48 39 d7 74 22 <66> 83 78 32 20 77 1b 75 e4 89 ca 23 50 2c 75 dd 48 8b 50 08 48 8b
+[ 3406.055748][T230589] RSP: 0018:ffff94e4b3fc3d10 EFLAGS: 00010202
+[ 3406.065617][T230589] RAX: dead00000000005a RBX: ffff94e4b3fc3d30 RCX: 0000000000000040
+[ 3406.077477][T230589] RDX: dead000000000122 RSI: ffff94e4b3fc3d30 RDI: ffff8c3a31431008
+[ 3406.089389][T230589] RBP: ffff94e4b3fc3d10 R08: 0000000000000000 R09: 0000000000000000
+[ 3406.101445][T230589] R10: ffff8c3a31430000 R11: 000000000000000b R12: ffff8c2c37887100
+[ 3406.113553][T230589] R13: ffff8c3a39537000 R14: 00000000000005dc R15: ffff8c3a31431000
+[ 3406.125730][T230589] FS:  0000000000000000(0000) GS:ffff8c3b9fc80000(0000) knlGS:0000000000000000
+[ 3406.138992][T230589] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 3406.149895][T230589] CR2: 00007f0dfea1db60 CR3: 000000387b5f2000 CR4: 0000000000350ee0
+[ 3406.162421][T230589] Call Trace:
+[ 3406.170235][T230589]  <TASK>
+[ 3406.177736][T230589]  mld_newpack+0xfe/0x1a0
+[ 3406.186686][T230589]  add_grhead+0x87/0xa0
+[ 3406.195498][T230589]  add_grec+0x485/0x4e0
+[ 3406.204310][T230589]  ? newidle_balance+0x126/0x3f0
+[ 3406.214024][T230589]  mld_ifc_work+0x15d/0x450
+[ 3406.223279][T230589]  process_one_work+0x1e6/0x380
+[ 3406.232982][T230589]  worker_thread+0x50/0x3a0
+[ 3406.242371][T230589]  ? rescuer_thread+0x360/0x360
+[ 3406.252175][T230589]  kthread+0x127/0x150
+[ 3406.261197][T230589]  ? set_kthread_struct+0x40/0x40
+[ 3406.271287][T230589]  ret_from_fork+0x22/0x30
+[ 3406.280812][T230589]  </TASK>
+[ 3406.288937][T230589] Modules linked in: ... [last unloaded: kheaders]
+[ 3406.476714][T230589] ---[ end trace 3525a7655f2f3b9e ]---
+
+Fixes: 88e2ca308094 ("mld: convert ifmcaddr6 to RCU")
+Reported-by: David Pinilla Caparros <dpini@cloudflare.com>
+Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
+---
+ include/net/addrconf.h | 2 --
+ net/ipv6/addrconf.c    | 4 ++--
+ net/ipv6/mcast.c       | 2 +-
+ 3 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index e7ce719838b5..59940e230b78 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -109,8 +109,6 @@ struct inet6_ifaddr *ipv6_get_ifaddr(struct net *net,
+ int ipv6_dev_get_saddr(struct net *net, const struct net_device *dev,
+ 		       const struct in6_addr *daddr, unsigned int srcprefs,
+ 		       struct in6_addr *saddr);
+-int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
+-		      u32 banned_flags);
+ int ipv6_get_lladdr(struct net_device *dev, struct in6_addr *addr,
+ 		    u32 banned_flags);
+ bool inet_rcv_saddr_equal(const struct sock *sk, const struct sock *sk2,
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index f927c199a93c..3f23da8c0b10 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -1839,8 +1839,8 @@ int ipv6_dev_get_saddr(struct net *net, const struct net_device *dst_dev,
+ }
+ EXPORT_SYMBOL(ipv6_dev_get_saddr);
+ 
+-int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
+-		      u32 banned_flags)
++static int __ipv6_get_lladdr(struct inet6_dev *idev, struct in6_addr *addr,
++			      u32 banned_flags)
+ {
+ 	struct inet6_ifaddr *ifp;
+ 	int err = -EADDRNOTAVAIL;
+diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
+index bed8155508c8..a8861db52c18 100644
+--- a/net/ipv6/mcast.c
++++ b/net/ipv6/mcast.c
+@@ -1759,7 +1759,7 @@ static struct sk_buff *mld_newpack(struct inet6_dev *idev, unsigned int mtu)
+ 	skb_reserve(skb, hlen);
+ 	skb_tailroom_reserve(skb, mtu, tlen);
+ 
+-	if (__ipv6_get_lladdr(idev, &addr_buf, IFA_F_TENTATIVE)) {
++	if (ipv6_get_lladdr(dev, &addr_buf, IFA_F_TENTATIVE)) {
+ 		/* <draft-ietf-magma-mld-source-05.txt>:
+ 		 * use unspecified address as the source address
+ 		 * when a valid link-local address is not available.
+-- 
+2.20.1
 
