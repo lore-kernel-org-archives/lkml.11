@@ -2,155 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D31C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE9EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348861AbiBKKYC (ORCPT
+        id S1348869AbiBKKYJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:24:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51192 "EHLO
+        Fri, 11 Feb 2022 05:24:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242036AbiBKKYA (ORCPT
+        with ESMTP id S1346916AbiBKKYH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:24:00 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70C41220;
-        Fri, 11 Feb 2022 02:23:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644575039; x=1676111039;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=UkTuOxm219Uf9vWVBlVQGbmmZ+csO/awHC70HwYJGsA=;
-  b=msNiC289Tb1TnnMiLChcYNYDV7a4ueneFyRZu5+erH1MdHQ4+3Huj8jf
-   aJvTYXWpPA2yt1OB6Wa3hwycROQ6NUglVTUktBgosnROhbD9E5uSyezrz
-   gJH5dpbOp70rHEDwd/uKc3agv5y6cGHOINBhmLWFpkNBdFFdwZk/Dq5ah
-   A=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 11 Feb 2022 02:23:59 -0800
-X-QCInternal: smtphost
-Received: from nalasex01a.na.qualcomm.com ([10.47.209.196])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 02:23:57 -0800
-Received: from [10.216.7.73] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Fri, 11 Feb
- 2022 02:23:52 -0800
-Subject: Re: [PATCH V5 1/6] dt-bindings: regulator: Add pm8008 regulator
- bindings
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Das Srinagesh" <gurus@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <swboyd@chromium.org>,
-        <quic_collinsd@quicinc.com>, <quic_subbaram@quicinc.com>,
-        <quic_jprakash@quicinc.com>
-References: <1644331940-18986-1-git-send-email-quic_c_skakit@quicinc.com>
- <1644331940-18986-2-git-send-email-quic_c_skakit@quicinc.com>
- <YgWxRDeo7vuTBeAo@builder.lan>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-Message-ID: <cb7858fe-4891-ead5-f1cf-fb64e8368927@quicinc.com>
-Date:   Fri, 11 Feb 2022 15:53:49 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 11 Feb 2022 05:24:07 -0500
+X-Greylist: delayed 315 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 02:24:01 PST
+Received: from forward500j.mail.yandex.net (forward500j.mail.yandex.net [5.45.198.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C146D220
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:24:01 -0800 (PST)
+Received: from myt6-de4b83149afa.qloud-c.yandex.net (myt6-de4b83149afa.qloud-c.yandex.net [IPv6:2a02:6b8:c12:401e:0:640:de4b:8314])
+        by forward500j.mail.yandex.net (Yandex) with ESMTP id 7C1246CB6BA2;
+        Fri, 11 Feb 2022 13:18:41 +0300 (MSK)
+Received: from 2a02:6b8:c12:1723:0:640:c7c2:e344 (2a02:6b8:c12:1723:0:640:c7c2:e344 [2a02:6b8:c12:1723:0:640:c7c2:e344])
+        by myt6-de4b83149afa.qloud-c.yandex.net (mxback/Yandex) with HTTP id dIYhLv0cJCg1-Iec4T0gI;
+        Fri, 11 Feb 2022 13:18:40 +0300
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxt.ru; s=mail; t=1644574720;
+        bh=+QzWvPmQ9CrQg+9DVBPDGn2iMJvpYZnpZYUSGInu5DU=;
+        h=References:Date:Message-Id:Cc:Subject:In-Reply-To:To:From;
+        b=Awe4H7r7545QR/+EprGABpQbh5FZaCRNU9KDR/ioLqCYK/a1mLKNXi3jaQ3D5PN++
+         z3fjCMFCboRoZ2yuZwBWPC5eFqS0a2yXksD8j9h8nxFKpbMwuQR1rV8HuChBo+UYci
+         dSegY4N/LM9B7ol+wFKxSAllsbZM350uQp77JyPg=
+Authentication-Results: myt6-de4b83149afa.qloud-c.yandex.net; dkim=pass header.i=@nxt.ru
+Received: by myt5-c7c2e3441f25.qloud-c.yandex.net with HTTP;
+        Fri, 11 Feb 2022 13:18:40 +0300
+From:   Aleksandr Fedorov <sanekf@nxt.ru>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+In-Reply-To: <b090141f-0822-609f-429d-ea790d7fc828@arm.com>
+References: <5481021644415780@myt5-a5512e99e394.qloud-c.yandex.net> <b090141f-0822-609f-429d-ea790d7fc828@arm.com>
+Subject: Re: [PATCH] iommu: explicitly check for NULL in iommu_dma_get_resv_regions()
 MIME-Version: 1.0
-In-Reply-To: <YgWxRDeo7vuTBeAo@builder.lan>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+X-Mailer: Yamail [ http://yandex.ru ] 5.0
+Date:   Fri, 11 Feb 2022 13:18:40 +0300
+Message-Id: <10011281644574720@myt5-c7c2e3441f25.qloud-c.yandex.net>
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> On 2022-02-09 14:09, Aleksandr Fedorov wrote:
+>> iommu_dma_get_resv_regions() assumes that iommu_fwspec field for
+>> corresponding device is set which is not always true. Since
+>> iommu_dma_get_resv_regions() seems to be a future-proof generic API
+>> that can be used by any iommu driver, add an explicit check for NULL.
+> 
+> Except it's not a "generic" interface for drivers to call at random,
+> it's a helper for retrieving common firmware-based information
+> specifically for drivers already using the fwspec mechanism for common
+> firmware bindings. If any driver calls this with a device *without* a
+> valid fwnode, it deserves to crash because it's done something
+> fundamentally wrong.
+> 
+> I concur that it's not exactly obvious that "non-IOMMU-specific" means
+> "based on common firmware bindings, thus implying fwspec".
 
-On 2/11/2022 6:13 AM, Bjorn Andersson wrote:
-> On Tue 08 Feb 08:52 CST 2022, Satya Priya wrote:
->
->> Add bindings for pm8008 pmic regulators.
->>
->> Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
->> ---
->> Changes in V2:
->>   - Moved this patch before "mfd: pm8008: Add pm8008 regulator node" to
->>     resolve dtschema errors. Removed regulator-min-microvolt and
->>     regulator-max-microvolt properties.
->>
->> Changes in V3:
->>   - As per Rob's comments added standard unit suffix for mindropout property,
->>     added blank lines where required and added description for reg property.
->>
->> Changes in V4:
->>   - Changed compatible string to "com,pm8008-regulators"
->>   - Moved "regulator-min-dropout-voltage-microvolt" to regulator.yaml as
->>     separate patch.
->>
->> Changes in V5:
->>   - Removed the separate compatible for pm8008 regulator driver.
->>   - Moved the supply nodes to chip level.
->>   - Removed min-dropout property.
->>
->>   .../bindings/regulator/qcom,pm8008-regulator.yaml  | 31 ++++++++++++++++++++++
->>   1 file changed, 31 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
->> new file mode 100644
->> index 0000000..0098845
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/regulator/qcom,pm8008-regulator.yaml
->> @@ -0,0 +1,31 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/regulator/qcom,pm8008-regulator.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Technologies, Inc. PM8008 Regulator bindings
->> +
->> +maintainers:
->> +  - Satya Priya <skakit@codeaurora.org>
->> +
->> +description:
->> +  Qualcomm Technologies, Inc. PM8008 is an I2C controlled PMIC
->> +  containing 7 LDO regulators.
->> +
->> +patternProperties:
->> +  "^LDO[1-7]$":
-> Please make this lower case, to match all other regulator bindings.
+Thanks for the explanations, yes, this was the misunderstanding on my
+part. Maybe add a comment?
 
-
-Okay.
-
-
->> +    type: object
->> +    $ref: "regulator.yaml#"
->> +    description: PM8008 regulator peripherals of PM8008 regulator device
->> +
->> +    properties:
->> +      regulator-name: true
->> +
->> +    required:
->> +      - regulator-name
-> Why is regulator-name a (and the only) required property?
-
-
-It is not a required property, I'll correct this.
-
-
-> Regards,
-> Bjorn
->
->> +
->> +    unevaluatedProperties: false
->> +
->> +additionalProperties: false
->> +...
->> -- 
->> 2.7.4
->>
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d85d54f2b549..ce5e7d4d054a 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -379,6 +379,9 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+  * for general non-IOMMU-specific reservations. Currently, this covers GICv3
+  * ITS region reservation on ACPI based ARM platforms that may require HW MSI
+  * reservation.
++ *
++ * Note that this helper is meant to be used only by drivers that are already
++ * using the fwspec mechanism for common firmware bindings.
+  */
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
+ {
