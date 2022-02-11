@@ -2,103 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74861C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 870C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:50:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348173AbiBKIt6 (ORCPT
+        id S1348187AbiBKIuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:49:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39538 "EHLO
+        Fri, 11 Feb 2022 03:50:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiBKItx (ORCPT
+        with ESMTP id S229462AbiBKIt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:49:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B13E88
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:49:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FCCC61E34
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:49:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB841C340E9;
-        Fri, 11 Feb 2022 08:49:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644569391;
-        bh=S2Y36/twRcpdy7KwX8ESbgBJ1NXAZ68hbpX+eK5lM7A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=syl6wOVp/4MjkURgOojQvtu3FIlGF9UzO2C9qGefrtuzAPP/YMepMTVI6dTg5tCt6
-         T4gBmwJsK0/HhuM75GyGmpoC2+lBmcYjtHv8ojJMToEDGykfDZSDNd7EakmUnUntUv
-         PPkiijYOoN4Uh/UowU61Fa3n9L4TCSMIDr3kBAtF56Eo+6KBXduEo9v5iMaSLAtoKo
-         qVetNeLRpObe+Prvsug5tAEr7qdQ3qDkN7tHxkhtvcf1ltmNtHjCePzkK/wAAeGvVO
-         tAq97bEb6BIjgg4NgcrkDeFhMOlYJIADWlCJFQLe6/XHleGNO4QUUJWfiklhFFbFEZ
-         Vtamsmnq7eIVQ==
-Date:   Fri, 11 Feb 2022 16:49:44 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Marcel Ziswiler <marcel@ziswiler.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Olof Johansson <olof@lixom.net>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 10/12] arm64: defconfig: enable verdin-imx8mm relevant
- drivers as modules
-Message-ID: <20220211084943.GQ4909@dragon>
-References: <20220128160100.1228537-1-marcel@ziswiler.com>
- <20220128160100.1228537-11-marcel@ziswiler.com>
+        Fri, 11 Feb 2022 03:49:58 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6687E8A;
+        Fri, 11 Feb 2022 00:49:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644569397; x=1676105397;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=852yCQeyi6TTe+G3DozY7ao5wBPlsQfmMMcR8YALnuw=;
+  b=JLT4c39Wv9SeFkvfPtKVeByq+Oh0c2jqPumnWvPG3HO6C6s0fcceB/F1
+   xJ+s6PTDnaxrcFetz4b0fduZO3msH0jNgS+weM7SNWxqSQsGEvkhmYCSP
+   Be4Fds4terCg7YWSzC1jSBHUg7k4F8JBBcOg5IkX0ahBajbLGSaUvzuvq
+   EtGJZOZZKoYRZtqs5NZkqM8aeg29MciSQ3Rd5QGliHMya7SUflC1xrV+X
+   O0lvM41z4SSgyP6fMrVAm7eUeJu4mN4p64nOzReupBK4yT6OeV77MQYlL
+   KPh2Wn3QqFM2U9PxpxKZD9wAc1BXMwZuRUEb30mjLAxKimyJY2wvc51T9
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="312974539"
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="312974539"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:49:57 -0800
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="630166731"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:49:52 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nIRbq-003NFF-R8;
+        Fri, 11 Feb 2022 10:48:54 +0200
+Date:   Fri, 11 Feb 2022 10:48:54 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 05/49] qed: rework qed_rdma_bmap_free()
+Message-ID: <YgYi9p7oeR1NAKzv@smile.fi.intel.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+ <20220210224933.379149-6-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220128160100.1228537-11-marcel@ziswiler.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220210224933.379149-6-yury.norov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 05:00:58PM +0100, Marcel Ziswiler wrote:
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+On Thu, Feb 10, 2022 at 02:48:49PM -0800, Yury Norov wrote:
+> qed_rdma_bmap_free() is mostly an opencoded version of printk("%*pb").
+> Using %*pb format simplifies the code, and helps to avoid inefficient
+> usage of bitmap_weight().
 > 
-> Enable various drivers which support peripherals as found on the
-> Verdin iMX8M Mini et al. computer/system on modules:
-> 
-> - CONFIG_CAN_MCP251XFD
-> At least one Microchip MCP2518FDT SPI CAN controller which this driver
-> also supports may be found on the Verdin iMX8M Mini computer/system on
-> module.
-> 
-> - CONFIG_BT_HCIUART_MRVL, CONFIG_BT_MRVL, CONFIG_BT_MRVL_SDIO and
->   CONFIG_MWIFIEX_SDIO
-> The AzureWave AW-CM276NF which these Bluetooth and Wi-Fi drivers also
-> support may be found on the Verdin iMX8M Mini (as well as the Apalis
-> iMX8, Colibri iMX8X and Verdin iMX8M Plus for that matter) computer/
-> system on module.
-> 
-> - CONFIG_SENSORS_LM75
-> The TI TMP75C temperature sensor which this driver also supports may be
-> found on the Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for
-> that matter) computer/system on module.
-> 
-> - CONFIG_SND_SOC_NAU8822
-> The Nuvoton Technology Corporation (NTC) NAU88C22YG which this driver
-> also supports may be found on the Verdin Development Board a carrier
-> board for the Verdin family of computer/system on module which the
-> Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
-> may be mated in.
-> 
-> - CONFIG_TI_ADS1015
-> The TLA2024 ADC which this driver also supports may be found on the
-> Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
-> computer/system on module.
-> 
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> While here, reorganize logic to avoid calculating bmap weight if check
+> is false.
 
-Applied #1 ~ #10, thanks!
+I like this kind of patches,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+> 
+> This is RFC because it changes lines printing format to bitmap %*pb. If
+> it hurts userspace, it's better to drop the patch.
+
+How? The only way is some strange script that parses dmesg, but dmesg almost
+never was an ABI, moreover, with printk() indexing feature (recently
+introduced) the one who parses such messages can actually find the (new)
+format as well.
+
+>  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 45 +++++++---------------
+>  1 file changed, 14 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+> index 23b668de4640..f4c04af9d4dd 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+> @@ -319,44 +319,27 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
+>  void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
+>  			struct qed_bmap *bmap, bool check)
+>  {
+> -	int weight = bitmap_weight(bmap->bitmap, bmap->max_count);
+> -	int last_line = bmap->max_count / (64 * 8);
+> -	int last_item = last_line * 8 +
+> -	    DIV_ROUND_UP(bmap->max_count % (64 * 8), 64);
+> -	u64 *pmap = (u64 *)bmap->bitmap;
+> -	int line, item, offset;
+> -	u8 str_last_line[200] = { 0 };
+> -
+> -	if (!weight || !check)
+> +	unsigned int bit, weight, nbits;
+> +	unsigned long *b;
+> +
+> +	if (!check)
+> +		goto end;
+> +
+> +	weight = bitmap_weight(bmap->bitmap, bmap->max_count);
+> +	if (!weight)
+>  		goto end;
+>  
+>  	DP_NOTICE(p_hwfn,
+>  		  "%s bitmap not free - size=%d, weight=%d, 512 bits per line\n",
+>  		  bmap->name, bmap->max_count, weight);
+>  
+> -	/* print aligned non-zero lines, if any */
+> -	for (item = 0, line = 0; line < last_line; line++, item += 8)
+> -		if (bitmap_weight((unsigned long *)&pmap[item], 64 * 8))
+> +	for (bit = 0; bit < bmap->max_count; bit += 512) {
+> +		b =  bmap->bitmap + BITS_TO_LONGS(bit);
+> +		nbits = min(bmap->max_count - bit, 512);
+> +
+> +		if (!bitmap_empty(b, nbits))
+>  			DP_NOTICE(p_hwfn,
+> -				  "line 0x%04x: 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
+> -				  line,
+> -				  pmap[item],
+> -				  pmap[item + 1],
+> -				  pmap[item + 2],
+> -				  pmap[item + 3],
+> -				  pmap[item + 4],
+> -				  pmap[item + 5],
+> -				  pmap[item + 6], pmap[item + 7]);
+> -
+> -	/* print last unaligned non-zero line, if any */
+> -	if ((bmap->max_count % (64 * 8)) &&
+> -	    (bitmap_weight((unsigned long *)&pmap[item],
+> -			   bmap->max_count - item * 64))) {
+> -		offset = sprintf(str_last_line, "line 0x%04x: ", line);
+> -		for (; item < last_item; item++)
+> -			offset += sprintf(str_last_line + offset,
+> -					  "0x%016llx ", pmap[item]);
+> -		DP_NOTICE(p_hwfn, "%s\n", str_last_line);
+> +				  "line 0x%04x: %*pb\n", bit / 512, nbits, b);
+>  	}
+>  
+>  end:
+> -- 
+> 2.32.0
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
