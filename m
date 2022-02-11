@@ -2,127 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACD7C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348083AbiBKImX (ORCPT
+        id S1348091AbiBKImk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:42:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34810 "EHLO
+        Fri, 11 Feb 2022 03:42:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231966AbiBKImU (ORCPT
+        with ESMTP id S240464AbiBKImi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:42:20 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39BCFE63;
-        Fri, 11 Feb 2022 00:42:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644568940; x=1676104940;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PpMJMXS6WkF9+j6bW6+PmKvBInYfF2QiYeNr5pog1pM=;
-  b=UHeDweiA8bMz7Zzzmy0DXXuU6pSoBEvH9uEElWpDX8VPrVCY3M3i3d6D
-   7+mNDL6X0vz/bqJWtC3UVqPw2RdZ2iFZFBPojoYDymv1DxxQjEydmkNO0
-   ti76qQUrD/2nk9xY5rRlNjqvsDYxhgKYrTp7zRz2pbV6MYYixq9kXnn46
-   uayXsCZgzcz+QG5Hmreg0up9GkCO+tnd1naL9fV3D8n6Qsy8ZLRVzo9gC
-   Nl/hweIO8RR1Qk4uUR9edvJrhViGacfAio0PL3zaNps7zO5LMAoHBLyDV
-   NopAOforcub7+5jU9aubO2JlWvr5Mo4dzPFv6NVlVJZutU+JKy8dNCBkP
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249636956"
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="249636956"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:42:19 -0800
-X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="500708938"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:42:18 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nIRUX-003N8F-Pg;
-        Fri, 11 Feb 2022 10:41:21 +0200
-Date:   Fri, 11 Feb 2022 10:41:21 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dan Williams <dan.j.williams@intel.co>
-Subject: Re: [PATCH] ACPI: scan: Use ida_alloc() instead of ida_simple_get()
-Message-ID: <YgYhMRS7cqal7/01@smile.fi.intel.com>
-References: <2645186.mvXUDI8C0e@kreacher>
+        Fri, 11 Feb 2022 03:42:38 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75581E5E
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:42:38 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id x15so12626054pfr.5
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:42:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HXaTm9zy9W/Fk6sBxh9XpKvs2j0diA8uf4CSWloZl88=;
+        b=ZtNN+pwUXhbiBI06+s9oYlR4i6za0OUa9R7GlHnn+4GqxABwPRVmaRF5ri+9lXYJPK
+         HLyHzYTxO7EHc2mOcMvsZ34WU71pUl7982FTqWh4jttvulqlX3xzyAZkgvO0uUDILprP
+         xAEntQJvx0jfHHaPZhafWF2DmrIW1fD8NUPWmYXf2OmkE4sLtEpIYXlMbe10kb7OoEwO
+         TfeMk3tjDlAzEl5DLz9lInToE36S5+UfjpkLoOYfcrZ/ehwM/HQtuFX/Bjhd6tcbMu0+
+         jKhheTqY6O9ApVLimMn///QayiwA08eEZOwVZ9BiryCZw8+abHDQIfbHW70ywoF2EKeC
+         a09A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HXaTm9zy9W/Fk6sBxh9XpKvs2j0diA8uf4CSWloZl88=;
+        b=XEYGTSLwz8s5tDIZhjwGmLQgnVz/3ygtOMILea3pSGy0m2W06H87KAcLLYfoUWYrAc
+         ET98/YC4kS1rxycJuosr5pEsY4CLhtwr3sXMKmrpo1CHpfMgdxFEyCpwKCKzZk8JoO92
+         5Ul7U7bUKQNztkafYYQLrA1v/A7CT9o2Ls0wJE1aw3hL7uEH87qksKVrl3qSWIq4lrym
+         rguO8O3DUuwfn27dkWJbRs8pLLFIJCAI4K+cx1Bk6bdjfrxCQDRlWGcOzzz8p1mxGUOo
+         nf8mZMkaNnweObIEGSzaJsCL0OwUueeJHquzmZ3TynCYTKyDA8TdskNFWIrOHwANiyVS
+         XjRg==
+X-Gm-Message-State: AOAM531wVCyDWyh+3xFDNHd+C+xjfJcEJbHOFwoAVGHkX6I9Meqc+Hbo
+        y5DeoIMM9KbnFqzGYMVO11cLUg==
+X-Google-Smtp-Source: ABdhPJzteqwv0pPYrb+FP+UMxU2H2Cxr4mmWBjR561lIMjdAoQSPgdgi2I6VDtwQVm5+Fr4/fkpeZg==
+X-Received: by 2002:a63:8543:: with SMTP id u64mr463644pgd.624.1644568957934;
+        Fri, 11 Feb 2022 00:42:37 -0800 (PST)
+Received: from libai.bytedance.net ([61.120.150.72])
+        by smtp.gmail.com with ESMTPSA id p21sm13368481pfo.97.2022.02.11.00.42.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 00:42:37 -0800 (PST)
+From:   zhenwei pi <pizhenwei@bytedance.com>
+To:     arei.gonglei@huawei.com, mst@redhat.com
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        helei.sig11@bytedance.com, herbert@gondor.apana.org.au,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: [PATCH v2 0/3] Introduce akcipher service for virtio-crypto
+Date:   Fri, 11 Feb 2022 16:41:05 +0800
+Message-Id: <20220211084108.1254218-1-pizhenwei@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2645186.mvXUDI8C0e@kreacher>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 09:05:33PM +0100, Rafael J. Wysocki wrote:
-> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> 
-> As recommended in include/linux/idr.h, use ida_alloc() instead of
-> ida_simple_get() for creating unique device object names and for
-> symmetry replace ida_simple_remove() with ida_free() (and fix up
-> the related overly long code line while at it).
-> 
-> Also drop the ACPI_MAX_DEVICE_INSTANCES limit that is not necessary
-> any more and may not be sufficient for future platforms.
+v1 -> v2:
+- Fix 1 compiling warning reported by kernel test robot <lkp@intel.com>
+- Put "__le32 akcipher_algo;" instead of "__le32 reserve;" field of
+   struct virtio_crypto_config directly without size change.
+- Add padding in struct virtio_crypto_ecdsa_session_para to keep
+   64-bit alignment.
+- Remove irrelevant change by code format alignment.
 
-Makes sense,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+- Also CC crypto gurus Herbert and linux-crypto@vger.kernel.org.
 
+- Test with QEMU(patched by the v2 version), works fine.
 
-> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> ---
->  drivers/acpi/internal.h |    2 --
->  drivers/acpi/scan.c     |    5 +++--
->  2 files changed, 3 insertions(+), 4 deletions(-)
-> 
-> Index: linux-pm/drivers/acpi/internal.h
-> ===================================================================
-> --- linux-pm.orig/drivers/acpi/internal.h
-> +++ linux-pm/drivers/acpi/internal.h
-> @@ -96,8 +96,6 @@ void acpi_scan_table_notify(void);
->  
->  extern struct list_head acpi_bus_id_list;
->  
-> -#define ACPI_MAX_DEVICE_INSTANCES	4096
-> -
->  struct acpi_device_bus_id {
->  	const char *bus_id;
->  	struct ida instance_ida;
-> Index: linux-pm/drivers/acpi/scan.c
-> ===================================================================
-> --- linux-pm.orig/drivers/acpi/scan.c
-> +++ linux-pm/drivers/acpi/scan.c
-> @@ -477,7 +477,8 @@ static void acpi_device_del(struct acpi_
->  	list_for_each_entry(acpi_device_bus_id, &acpi_bus_id_list, node)
->  		if (!strcmp(acpi_device_bus_id->bus_id,
->  			    acpi_device_hid(device))) {
-> -			ida_simple_remove(&acpi_device_bus_id->instance_ida, device->pnp.instance_no);
-> +			ida_free(&acpi_device_bus_id->instance_ida,
-> +				 device->pnp.instance_no);
->  			if (ida_is_empty(&acpi_device_bus_id->instance_ida)) {
->  				list_del(&acpi_device_bus_id->node);
->  				kfree_const(acpi_device_bus_id->bus_id);
-> @@ -642,7 +643,7 @@ static int acpi_device_set_name(struct a
->  	struct ida *instance_ida = &acpi_device_bus_id->instance_ida;
->  	int result;
->  
-> -	result = ida_simple_get(instance_ida, 0, ACPI_MAX_DEVICE_INSTANCES, GFP_KERNEL);
-> +	result = ida_alloc(instance_ida, GFP_KERNEL);
->  	if (result < 0)
->  		return result;
->  
-> 
-> 
-> 
+v1:
+- Introduce akcipher service, implement RSA algorithm, and a minor fix.
+
+zhenwei pi (3):
+  virtio_crypto: Introduce VIRTIO_CRYPTO_NOSPC
+  virtio-crypto: introduce akcipher service
+  virtio-crypto: implement RSA algorithm
+
+ drivers/crypto/virtio/Makefile                |   1 +
+ .../virtio/virtio_crypto_akcipher_algo.c      | 584 ++++++++++++++++++
+ drivers/crypto/virtio/virtio_crypto_common.h  |   3 +
+ drivers/crypto/virtio/virtio_crypto_core.c    |   6 +-
+ drivers/crypto/virtio/virtio_crypto_mgr.c     |  11 +
+ include/uapi/linux/virtio_crypto.h            |  82 ++-
+ 6 files changed, 685 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/crypto/virtio/virtio_crypto_akcipher_algo.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
