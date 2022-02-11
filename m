@@ -2,78 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD62AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F97C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345186AbiBKN0B (ORCPT
+        id S1350541AbiBKN31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:26:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50904 "EHLO
+        Fri, 11 Feb 2022 08:29:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240082AbiBKNZ6 (ORCPT
+        with ESMTP id S1350529AbiBKN3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:25:58 -0500
-X-Greylist: delayed 64 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 05:25:57 PST
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20795BBF;
-        Fri, 11 Feb 2022 05:25:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1644585957;
-  x=1676121957;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nrmbH9p3Clpi53bf1yANWZ2c4LoJLnrqCZrmomFDYVo=;
-  b=jazPqxmbjYkwE968ByNCZdEoqw/QBCalYubiQYZW2IcWs3fn9oU5Fmkm
-   LfVxOsYl8JNk4sWamucMTIXGgHr6yV6c9eB1mkVDrwaJl4UAUla6a0hzV
-   UMeNz4Of5kMfboij45a8q9mCmelS1aafyi8VZrDwSpuXjZAfeCzwzUMYL
-   J2MPkzR02VciqWL6jCqcypikXPaBuE/XFesGXB7bhLOaKSkKlqVYJ71ke
-   d/1QuKjMwumoUIWtUN4AkZt2q9RHeiReNx/nrU4Avoiv5MJnB5au/sbiE
-   q4Pj2onOflc4BcRZBRxepG43TEaI9icuf7TSo4uS35BJMNMqap3IogZFh
-   w==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <lgirdwood@gmail.com>, <broonie@kernel.org>
-CC:     <kernel@axis.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <robh+dt@kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH] regulator: tps62864: Fix bindings for SW property
-Date:   Fri, 11 Feb 2022 14:24:49 +0100
-Message-ID: <20220211132449.2899924-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 11 Feb 2022 08:29:23 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3AE1E3;
+        Fri, 11 Feb 2022 05:29:19 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 05B0022205;
+        Fri, 11 Feb 2022 14:29:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1644586157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B1DHqIx/PoUhbF5fk42oLmFGP6Vh8dVHYXp+pkQoscQ=;
+        b=gqFHQI0TPC8WodkMpqhzMovyZKmVi4yi2/Qofet6fkiVFf9IuegvES07re9HbDe9x7kEfI
+        BqZJhb7gs2n0oxaODw0en9N4mJxGNGyzps1DSajVyfmIMHDBjlyVmMo73BtMOpO/lF2mBi
+        ufRyary5yw9RhZf4RInocaf4tkOE7QI=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 11 Feb 2022 14:29:16 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Rob Herring <robh@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 2/3] dt-bindings: mfd: add "fsl,ls1028a-qds-qixis-i2c"
+ compatible to sl28cpld
+In-Reply-To: <20220211132410.3qldvlpznlrxsgzg@skbuf>
+References: <20220127172105.4085950-1-vladimir.oltean@nxp.com>
+ <20220127172105.4085950-3-vladimir.oltean@nxp.com>
+ <YgZeNqAbdisyeT+s@robh.at.kernel.org>
+ <20220211132410.3qldvlpznlrxsgzg@skbuf>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <7444c54c0214552f1a565a8bd0c48850@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The property is not a pattern, so it should use 'properties' instead of
-'patternProperties'.  Also, unevaluatedProperties should be set to false
-like in the other regulator bindings.
+Am 2022-02-11 14:24, schrieb Vladimir Oltean:
+> On Fri, Feb 11, 2022 at 07:01:42AM -0600, Rob Herring wrote:
+>> On Thu, Jan 27, 2022 at 07:21:04PM +0200, Vladimir Oltean wrote:
+>> > The LS1028A-QDS QIXIS FPGA has no problem working with the
+>> > simple-mfd-i2c.c driver, so extend the list of compatible strings to
+>> > include that part.
+>> >
+>> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>> > ---
+>> >  Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml | 4 +++-
+>> >  1 file changed, 3 insertions(+), 1 deletion(-)
+>> >
+>> > diff --git a/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+>> > index eb3b43547cb6..8c1216eb36ee 100644
+>> > --- a/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+>> > +++ b/Documentation/devicetree/bindings/mfd/kontron,sl28cpld.yaml
+>> > @@ -16,7 +16,9 @@ description: |
+>> >
+>> >  properties:
+>> >    compatible:
+>> > -    const: kontron,sl28cpld
+>> > +    enum:
+>> > +      - fsl,ls1028a-qds-qixis-i2c
+>> > +      - kontron,sl28cpld
+>> 
+>> Is there some relationship between these besides happening to use the
+>> same driver? Sharing a generic driver is not a reason to have the same
+>> binding doc.
 
-Reported-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- Documentation/devicetree/bindings/regulator/ti,tps62864.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Ahh didn't notice this. Yes that should probably go into an own binding.
 
-diff --git a/Documentation/devicetree/bindings/regulator/ti,tps62864.yaml b/Documentation/devicetree/bindings/regulator/ti,tps62864.yaml
-index e3d739a37ab0..0f29c75f42ea 100644
---- a/Documentation/devicetree/bindings/regulator/ti,tps62864.yaml
-+++ b/Documentation/devicetree/bindings/regulator/ti,tps62864.yaml
-@@ -23,10 +23,11 @@ properties:
-   regulators:
-     type: object
- 
--    patternProperties:
-+    properties:
-       "SW":
-         type: object
-         $ref: regulator.yaml#
-+        unevaluatedProperties: false
- 
-     additionalProperties: false
- 
--- 
-2.34.1
+>> Your DT has a mux-controller which is undocuemnted in this binding.
+>> 
+>> Rob
+> 
+> I'd guess they are both programmable FPGA's/CPLD's that are used for
+> board control. What I don't know is whether the sources for the Kontron
+> bit stream are derived in any way from the QIXIS.
 
+I can 100% guarantee that is not the case ;)
+
+> I can look into adding a separate binding doc for the QIXIS anyway.
+
+-michael
