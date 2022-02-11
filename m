@@ -2,311 +2,918 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5ABDC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 19:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352669AbiBKTgz (ORCPT
+        id S1352906AbiBKThe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 14:36:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51878 "EHLO
+        Fri, 11 Feb 2022 14:37:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235772AbiBKTgy (ORCPT
+        with ESMTP id S1349300AbiBKThc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 14:36:54 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDFB7CF2
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:36:52 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id r19-20020a170902be1300b0014edf03f82eso833820pls.20
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 11:36:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=zy8kaC+s0PszdMQxxh4E+7ubC1nD5KHx5j/eMOqBAow=;
-        b=JiCIxl5i3Ow+wOb4bP2eoyQ42zIMIRopdcAT4C7bWYkxWZEFZqp4ZDUyf2t9iW/Idf
-         xqvV6/j//1tjrAH8Sba1HTFqLbAz6iwaXPoDKgTqzc+zF9VVg4b8ssLmmyHYWJunFhHS
-         I1yeBR06BZifoC0AuTTcVjG7ITaNP/WQVrCbdbhGryCNsqLQMXh/qT1OiLio66A2zlRx
-         Xman4rinqMsFSqhrrRu8H8gipBRUB9IRjUvT3UZvFIWlmmcwduNtXnmoWCNbjzVkD7ir
-         WYyglKnisaBJxXc+vnLCc0DJqO/8tDY1ApEizlV24YHHvufEl4baobBWXGT6fwR2hofA
-         1XVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=zy8kaC+s0PszdMQxxh4E+7ubC1nD5KHx5j/eMOqBAow=;
-        b=AUQ4UO0fKpUl8W7nRbZo9Rei6DthdACMLnTlaUAD3hL7YAGrNb0mk9v+Bma3JsfnG9
-         OreSPIpDgnq/e8ozUUHDhB2CAnfMDtiUfjJsGCCnf8wtulgBp/O0Ycy+cJC+s/UXhIpk
-         A2LDjkfP9BcjbaVEQkv6+bTdAv7RzXTRu3WZlwbiPHw+JSM1Ns6emfKWHCCNxWh3IN2U
-         w0mNlvu8q8wbDbwcPL1sWjT057uNfZ9EmLnVuTfpSUcwf1af83CnNawqhlkp9dvy26OX
-         FulK2U27gPFZdZjCJcoQkSLj6wBwIxj1WNj4USPH9gvn76e8LcdXZlLZS6UbYkpmOq/W
-         pT6Q==
-X-Gm-Message-State: AOAM531S03/C1pQ2kJo+TVmgMwATuDFXfqJ+plDeLDYZViq43iEgnHl7
-        1FHZywmN3+en8XyAHxS6lHbj33wSjU8=
-X-Google-Smtp-Source: ABdhPJyAMbyL4iI7CoYtgGuNgzIoXiwUTHsNehN1OTYlUO3jvreKcpoidDHRhbggAqc+2qgSEksPGCgd+fY=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:ce5a:31e5:3a1e:6c1f])
- (user=pgonda job=sendgmr) by 2002:a17:902:b60f:: with SMTP id
- b15mr2982475pls.88.1644608212269; Fri, 11 Feb 2022 11:36:52 -0800 (PST)
-Date:   Fri, 11 Feb 2022 11:36:34 -0800
-Message-Id: <20220211193634.3183388-1-pgonda@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v2] KVM: SEV: Allow SEV intra-host migration of VM with mirrors
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Marc Orr <marcorr@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 11 Feb 2022 14:37:32 -0500
+X-Greylist: delayed 1979 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 11 Feb 2022 11:37:29 PST
+Received: from finn.localdomain (finn.gateworks.com [108.161.129.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E10CF2;
+        Fri, 11 Feb 2022 11:37:29 -0800 (PST)
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1nIbDT-00Ag11-GW; Fri, 11 Feb 2022 19:04:23 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH 2/2] arm64: dts: imx: Add i.mx8mm Gateworks gw7903 dts support
+Date:   Fri, 11 Feb 2022 11:04:18 -0800
+Message-Id: <20220211190418.11870-2-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220211190418.11870-1-tharvey@gateworks.com>
+References: <20220211190418.11870-1-tharvey@gateworks.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For SEV-ES VMs with mirrors to be intra-host migrated they need to be
-able to migrate with the mirror. This is due to that fact that all VMSAs
-need to be added into the VM with LAUNCH_UPDATE_VMSA before
-lAUNCH_FINISH. Allowing migration with mirrors allows users of SEV-ES to
-keep the mirror VMs VMSAs during migration.
+The GW7903 is based on the i.MX 8M Mini SoC featuring:
+ - LPDDR4 DRAM
+ - eMMC FLASH
+ - microSD connector with UHS support
+ - LIS2DE12 3-axis accelerometer
+ - Gateworks System Controller
+ - IMX8M FEC
+ - software selectable RS232/RS485/RS422 serial transceiver
+ - PMIC
+ - 2x off-board bi-directional opto-isolated digital I/O
+ - 1x M.2 A-E Key Socket and 1x MiniPCIe socket with USB2.0 and PCIe
+   (resistor loading to route PCIe/USB2 between M.2 and MiniPCIe socket)
 
-Adds a list of mirror VMs for the original VM iterate through during its
-migration. During the iteration the owner pointers can be updated from
-the source to the destination. This fixes the ASID leaking issue which
-caused the blocking of migration of VMs with mirrors.
-
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Marc Orr <marcorr@google.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: kvm@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
 ---
+ arch/arm64/boot/dts/freescale/Makefile        |   1 +
+ .../dts/freescale/imx8mm-venice-gw7903.dts    | 836 ++++++++++++++++++
+ 2 files changed, 837 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
 
-base commit: f6ae04ddb347 
-
-V2:
- * Remove union have different list head and list entry members. 
- * Simplify list deletion on destruction.
- * Added list updating when mirrors are intra-host migrated.
-
----
- arch/x86/kvm/svm/sev.c                        | 56 +++++++++++++------
- arch/x86/kvm/svm/svm.h                        |  3 +-
- .../selftests/kvm/x86_64/sev_migrate_tests.c  | 47 +++++++++++-----
- 3 files changed, 73 insertions(+), 33 deletions(-)
-
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index f4d88292f337..d7337d099ece 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -258,6 +258,7 @@ static int sev_guest_init(struct kvm *kvm, struct kvm_sev_cmd *argp)
- 		goto e_free;
- 
- 	INIT_LIST_HEAD(&sev->regions_list);
-+	INIT_LIST_HEAD(&sev->mirror_vms);
- 
- 	return 0;
- 
-@@ -1623,9 +1624,12 @@ static void sev_unlock_vcpus_for_migration(struct kvm *kvm)
- 	}
- }
- 
--static void sev_migrate_from(struct kvm_sev_info *dst,
--			      struct kvm_sev_info *src)
-+static void sev_migrate_from(struct kvm *dst_kvm, struct kvm *src_kvm)
- {
-+	struct kvm_sev_info *dst = &to_kvm_svm(dst_kvm)->sev_info;
-+	struct kvm_sev_info *src = &to_kvm_svm(src_kvm)->sev_info;
-+	struct kvm_sev_info *mirror, *tmp;
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index 6d8f0a532587..d6053e4496e4 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -63,6 +63,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7901.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7902.dtb
++dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7903.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mn-beacon-kit.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mn-bsh-smm-s2.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mn-bsh-smm-s2pro.dtb
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
+new file mode 100644
+index 000000000000..1deb2ea8fcc9
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw7903.dts
+@@ -0,0 +1,836 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2022 Gateworks Corporation
++ */
 +
- 	dst->active = true;
- 	dst->asid = src->asid;
- 	dst->handle = src->handle;
-@@ -1639,6 +1643,31 @@ static void sev_migrate_from(struct kvm_sev_info *dst,
- 	src->enc_context_owner = NULL;
- 
- 	list_cut_before(&dst->regions_list, &src->regions_list, &src->regions_list);
++/dts-v1/;
 +
-+	/*
-+	 * If this VM has mirrors, "transfer" each mirror's refcount of the
-+	 * source to the destination (this KVM).  The caller holds a reference
-+	 * to the source, so there's no danger of use-after-free.
-+	 */
-+	list_cut_before(&dst->mirror_vms, &src->mirror_vms, &src->mirror_vms);
-+	list_for_each_entry_safe(mirror, tmp, &dst->mirror_vms,
-+				 mirror_entry) {
-+		kvm_get_kvm(dst_kvm);
-+		kvm_put_kvm(src_kvm);
-+		mirror->enc_context_owner = dst_kvm;
-+	}
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/linux-event-codes.h>
++#include <dt-bindings/leds/common.h>
++#include <dt-bindings/phy/phy-imx8-pcie.h>
 +
-+	/*
-+	 * If this VM is a mirror, remove the old mirror from the owners list
-+	 * and add the new mirror to the list.
-+	 */
-+	if (is_mirroring_enc_context(dst_kvm)) {
-+		struct kvm_sev_info *owner_sev_info =
-+			&to_kvm_svm(dst->enc_context_owner)->sev_info;
++#include "imx8mm.dtsi"
 +
-+		list_del(&src->mirror_entry);
-+		list_add_tail(&dst->mirror_entry, &owner_sev_info->mirror_vms);
-+	}
- }
- 
- static int sev_es_migrate_from(struct kvm *dst, struct kvm *src)
-@@ -1708,15 +1737,6 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 
- 	src_sev = &to_kvm_svm(source_kvm)->sev_info;
- 
--	/*
--	 * VMs mirroring src's encryption context rely on it to keep the
--	 * ASID allocated, but below we are clearing src_sev->asid.
--	 */
--	if (src_sev->num_mirrored_vms) {
--		ret = -EBUSY;
--		goto out_unlock;
--	}
--
- 	dst_sev->misc_cg = get_current_misc_cg();
- 	cg_cleanup_sev = dst_sev;
- 	if (dst_sev->misc_cg != src_sev->misc_cg) {
-@@ -1738,7 +1758,8 @@ int sev_vm_move_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 		if (ret)
- 			goto out_source_vcpu;
- 	}
--	sev_migrate_from(dst_sev, src_sev);
++/ {
++	model = "Gateworks Venice GW7903 i.MX8MM board";
++	compatible = "gw,imx8mm-gw7903", "fsl,imx8mm";
 +
-+	sev_migrate_from(kvm, source_kvm);
- 	kvm_vm_dead(source_kvm);
- 	cg_cleanup_sev = src_sev;
- 	ret = 0;
-@@ -2008,10 +2029,10 @@ int sev_vm_copy_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 	 */
- 	source_sev = &to_kvm_svm(source_kvm)->sev_info;
- 	kvm_get_kvm(source_kvm);
--	source_sev->num_mirrored_vms++;
-+	mirror_sev = &to_kvm_svm(kvm)->sev_info;
-+	list_add_tail(&mirror_sev->mirror_entry, &source_sev->mirror_vms);
- 
- 	/* Set enc_context_owner and copy its encryption context over */
--	mirror_sev = &to_kvm_svm(kvm)->sev_info;
- 	mirror_sev->enc_context_owner = source_kvm;
- 	mirror_sev->active = true;
- 	mirror_sev->asid = source_sev->asid;
-@@ -2019,6 +2040,7 @@ int sev_vm_copy_enc_context_from(struct kvm *kvm, unsigned int source_fd)
- 	mirror_sev->es_active = source_sev->es_active;
- 	mirror_sev->handle = source_sev->handle;
- 	INIT_LIST_HEAD(&mirror_sev->regions_list);
-+	INIT_LIST_HEAD(&mirror_sev->mirror_vms);
- 	ret = 0;
- 
- 	/*
-@@ -2041,7 +2063,7 @@ void sev_vm_destroy(struct kvm *kvm)
- 	struct list_head *head = &sev->regions_list;
- 	struct list_head *pos, *q;
- 
--	WARN_ON(sev->num_mirrored_vms);
-+	WARN_ON(!list_empty(&sev->mirror_vms));
- 
- 	if (!sev_guest(kvm))
- 		return;
-@@ -2049,11 +2071,9 @@ void sev_vm_destroy(struct kvm *kvm)
- 	/* If this is a mirror_kvm release the enc_context_owner and skip sev cleanup */
- 	if (is_mirroring_enc_context(kvm)) {
- 		struct kvm *owner_kvm = sev->enc_context_owner;
--		struct kvm_sev_info *owner_sev = &to_kvm_svm(owner_kvm)->sev_info;
- 
- 		mutex_lock(&owner_kvm->lock);
--		if (!WARN_ON(!owner_sev->num_mirrored_vms))
--			owner_sev->num_mirrored_vms--;
-+		list_del(&sev->mirror_entry);
- 		mutex_unlock(&owner_kvm->lock);
- 		kvm_put_kvm(owner_kvm);
- 		return;
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 15920d2de2cc..e8db88e9825e 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -79,7 +79,8 @@ struct kvm_sev_info {
- 	struct list_head regions_list;  /* List of registered regions */
- 	u64 ap_jump_table;	/* SEV-ES AP Jump Table address */
- 	struct kvm *enc_context_owner; /* Owner of copied encryption context */
--	unsigned long num_mirrored_vms; /* Number of VMs sharing this ASID */
-+	struct list_head mirror_vms; /* List of VMs mirroring */
-+	struct list_head mirror_entry; /* Use as a list entry of mirrors */
- 	struct misc_cg *misc_cg; /* For misc cgroup accounting */
- 	atomic_t migration_in_progress;
- };
-diff --git a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-index 80056bbbb003..2e5a42cb470b 100644
---- a/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/sev_migrate_tests.c
-@@ -341,35 +341,54 @@ static void test_sev_mirror_parameters(void)
- 
- static void test_sev_move_copy(void)
- {
--	struct kvm_vm *dst_vm, *sev_vm, *mirror_vm, *dst_mirror_vm;
--	int ret;
-+	struct kvm_vm *dst_vm, *dst2_vm, *dst3_vm, *sev_vm, *mirror_vm,
-+		      *dst_mirror_vm, *dst2_mirror_vm, *dst3_mirror_vm;
- 
- 	sev_vm = sev_vm_create(/* es= */ false);
- 	dst_vm = aux_vm_create(true);
-+	dst2_vm = aux_vm_create(true);
-+	dst3_vm = aux_vm_create(true);
- 	mirror_vm = aux_vm_create(false);
- 	dst_mirror_vm = aux_vm_create(false);
-+	dst2_mirror_vm = aux_vm_create(false);
-+	dst3_mirror_vm = aux_vm_create(false);
- 
- 	sev_mirror_create(mirror_vm->fd, sev_vm->fd);
--	ret = __sev_migrate_from(dst_vm->fd, sev_vm->fd);
--	TEST_ASSERT(ret == -1 && errno == EBUSY,
--		    "Cannot migrate VM that has mirrors. ret %d, errno: %d\n", ret,
--		    errno);
- 
--	/* The mirror itself can be migrated.  */
- 	sev_migrate_from(dst_mirror_vm->fd, mirror_vm->fd);
--	ret = __sev_migrate_from(dst_vm->fd, sev_vm->fd);
--	TEST_ASSERT(ret == -1 && errno == EBUSY,
--		    "Cannot migrate VM that has mirrors. ret %d, errno: %d\n", ret,
--		    errno);
-+	sev_migrate_from(dst_vm->fd, sev_vm->fd);
++	aliases {
++		ethernet0 = &fec1;
++		usb0 = &usbotg1;
++	};
 +
-+	sev_migrate_from(dst2_vm->fd, dst_vm->fd);
-+	sev_migrate_from(dst2_mirror_vm->fd, dst_mirror_vm->fd);
++	chosen {
++		stdout-path = &uart2;
++	};
 +
-+	sev_migrate_from(dst3_mirror_vm->fd, dst2_mirror_vm->fd);
-+	sev_migrate_from(dst3_vm->fd, dst2_vm->fd);
++	memory@40000000 {
++		device_type = "memory";
++		reg = <0x0 0x40000000 0 0x80000000>;
++	};
 +
-+	kvm_vm_free(dst_vm);
-+	kvm_vm_free(sev_vm);
-+	kvm_vm_free(dst2_vm);
-+	kvm_vm_free(dst3_vm);
-+	kvm_vm_free(mirror_vm);
-+	kvm_vm_free(dst_mirror_vm);
-+	kvm_vm_free(dst2_mirror_vm);
-+	kvm_vm_free(dst3_mirror_vm);
- 
- 	/*
--	 * mirror_vm is not a mirror anymore, dst_mirror_vm is.  Thus,
--	 * the owner can be copied as soon as dst_mirror_vm is gone.
-+	 * Run similar test be destroy mirrors before mirrored VMs to ensure
-+	 * destruction is done safely.
- 	 */
--	kvm_vm_free(dst_mirror_vm);
-+	sev_vm = sev_vm_create(/* es= */ false);
-+	dst_vm = aux_vm_create(true);
-+	mirror_vm = aux_vm_create(false);
-+	dst_mirror_vm = aux_vm_create(false);
++	gpio-keys {
++		compatible = "gpio-keys";
 +
-+	sev_mirror_create(mirror_vm->fd, sev_vm->fd);
++		user-pb {
++			label = "user_pb";
++			gpios = <&gpio 2 GPIO_ACTIVE_LOW>;
++			linux,code = <BTN_0>;
++		};
 +
-+	sev_migrate_from(dst_mirror_vm->fd, mirror_vm->fd);
- 	sev_migrate_from(dst_vm->fd, sev_vm->fd);
- 
- 	kvm_vm_free(mirror_vm);
-+	kvm_vm_free(dst_mirror_vm);
- 	kvm_vm_free(dst_vm);
- 	kvm_vm_free(sev_vm);
- }
++		user-pb1x {
++			label = "user_pb1x";
++			linux,code = <BTN_1>;
++			interrupt-parent = <&gsc>;
++			interrupts = <0>;
++		};
++
++		key-erased {
++			label = "key_erased";
++			linux,code = <BTN_2>;
++			interrupt-parent = <&gsc>;
++			interrupts = <1>;
++		};
++
++		eeprom-wp {
++			label = "eeprom_wp";
++			linux,code = <BTN_3>;
++			interrupt-parent = <&gsc>;
++			interrupts = <2>;
++		};
++
++		switch-hold {
++			label = "switch_hold";
++			linux,code = <BTN_5>;
++			interrupt-parent = <&gsc>;
++			interrupts = <7>;
++		};
++	};
++
++	led-controller {
++		compatible = "gpio-leds";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_gpio_leds>;
++
++		led-0 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led01_red";
++			gpios = <&gpio5 5 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-1 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led01_grn";
++			gpios = <&gpio4 30 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-2 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led02_red";
++			gpios = <&gpio5 2 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-3 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led02_grn";
++			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-4 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led03_red";
++			gpios = <&gpio1 9 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-5 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led03_grn";
++			gpios = <&gpio5 3 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-6 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led04_red";
++			gpios = <&gpio4 29 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-7 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led04_grn";
++			gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-8 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led05_red";
++			gpios = <&gpio1 13 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-9 {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led05_grn";
++			gpios = <&gpio4 31 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-a {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_RED>;
++			label = "led06_red";
++			gpios = <&gpio5 4 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led-b {
++			function = LED_FUNCTION_STATUS;
++			color = <LED_COLOR_ID_GREEN>;
++			label = "led06_grn";
++			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++	};
++
++	pcie0_refclk: pcie0-refclk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <100000000>;
++	};
++
++	reg_3p3v: regulator-3p3v {
++		compatible = "regulator-fixed";
++		regulator-name = "3P3V";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
++};
++
++&A53_0 {
++	cpu-supply = <&buck2>;
++};
++
++&A53_1 {
++	cpu-supply = <&buck2>;
++};
++
++&A53_2 {
++	cpu-supply = <&buck2>;
++};
++
++&A53_3 {
++	cpu-supply = <&buck2>;
++};
++
++&ddrc {
++	operating-points-v2 = <&ddrc_opp_table>;
++
++	ddrc_opp_table: opp-table {
++		compatible = "operating-points-v2";
++
++		opp-25M {
++			opp-hz = /bits/ 64 <25000000>;
++		};
++
++		opp-100M {
++			opp-hz = /bits/ 64 <100000000>;
++		};
++
++		opp-750M {
++			opp-hz = /bits/ 64 <750000000>;
++		};
++	};
++};
++
++&fec1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_fec1>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&ethphy0>;
++	local-mac-address = [00 00 00 00 00 00];
++	status = "okay";
++
++	mdio {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		ethphy0: ethernet-phy@0 {
++			compatible = "ethernet-phy-ieee802.3-c22";
++			reg = <0>;
++			rx-internal-delay-ps = <2000>;
++			tx-internal-delay-ps = <2500>;
++		};
++	};
++};
++
++&gpio1 {
++	gpio-line-names = "", "", "", "", "", "", "", "",
++		"", "", "rs422_en#", "rs485_en#", "rs232_en#", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "";
++};
++
++&gpio2 {
++	gpio-line-names = "dig2_in", "dig2_out#", "", "", "", "", "", "",
++		"dig1_out#", "dig1_in", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "";
++};
++
++&gpio5 {
++	gpio-line-names = "", "", "", "", "", "", "", "sim1_det#",
++		"sim2_det#", "sim2_sel", "", "", "pci_wdis#", "", "", "",
++		"", "", "", "", "", "", "", "",
++		"", "", "", "", "", "", "", "";
++};
++
++&i2c1 {
++	clock-frequency = <100000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c1>;
++	status = "okay";
++
++	gsc: gsc@20 {
++		compatible = "gw,gsc";
++		reg = <0x20>;
++		pinctrl-0 = <&pinctrl_gsc>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <26 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-controller;
++		#interrupt-cells = <1>;
++
++		adc {
++			compatible = "gw,gsc-adc";
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			channel@6 {
++				gw,mode = <0>;
++				reg = <0x06>;
++				label = "temp";
++			};
++
++			channel@8 {
++				gw,mode = <1>;
++				reg = <0x08>;
++				label = "vdd_bat";
++			};
++
++			channel@82 {
++				gw,mode = <2>;
++				reg = <0x82>;
++				label = "vin";
++				gw,voltage-divider-ohms = <22100 1000>;
++				gw,voltage-offset-microvolt = <700000>;
++			};
++
++			channel@84 {
++				gw,mode = <2>;
++				reg = <0x84>;
++				label = "vdd_5p0";
++				gw,voltage-divider-ohms = <10000 10000>;
++			};
++
++			channel@86 {
++				gw,mode = <2>;
++				reg = <0x86>;
++				label = "vdd_3p3";
++				gw,voltage-divider-ohms = <10000 10000>;
++			};
++
++			channel@88 {
++				gw,mode = <2>;
++				reg = <0x88>;
++				label = "vdd_0p9";
++			};
++
++			channel@8c {
++				gw,mode = <2>;
++				reg = <0x8c>;
++				label = "vdd_soc";
++			};
++
++			channel@8e {
++				gw,mode = <2>;
++				reg = <0x8e>;
++				label = "vdd_arm";
++			};
++
++			channel@90 {
++				gw,mode = <2>;
++				reg = <0x90>;
++				label = "vdd_1p8";
++			};
++
++			channel@92 {
++				gw,mode = <2>;
++				reg = <0x92>;
++				label = "vdd_dram";
++			};
++
++			channel@a2 {
++				gw,mode = <2>;
++				reg = <0xa2>;
++				label = "vdd_gsc";
++				gw,voltage-divider-ohms = <10000 10000>;
++			};
++		};
++	};
++
++	gpio: gpio@23 {
++		compatible = "nxp,pca9555";
++		reg = <0x23>;
++		gpio-controller;
++		#gpio-cells = <2>;
++		interrupt-parent = <&gsc>;
++		interrupts = <4>;
++	};
++
++	eeprom@50 {
++		compatible = "atmel,24c02";
++		reg = <0x50>;
++		pagesize = <16>;
++	};
++
++	eeprom@51 {
++		compatible = "atmel,24c02";
++		reg = <0x51>;
++		pagesize = <16>;
++	};
++
++	eeprom@52 {
++		compatible = "atmel,24c02";
++		reg = <0x52>;
++		pagesize = <16>;
++	};
++
++	eeprom@53 {
++		compatible = "atmel,24c02";
++		reg = <0x53>;
++		pagesize = <16>;
++	};
++
++	rtc@68 {
++		compatible = "dallas,ds1672";
++		reg = <0x68>;
++	};
++};
++
++&i2c2 {
++	clock-frequency = <400000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	pmic@4b {
++		compatible = "rohm,bd71847";
++		reg = <0x4b>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_pmic>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <8 IRQ_TYPE_LEVEL_LOW>;
++		rohm,reset-snvs-powered;
++		#clock-cells = <0>;
++		clocks = <&osc_32k 0>;
++		clock-output-names = "clk-32k-out";
++
++		regulators {
++			/* vdd_soc: 0.805-0.900V (typ=0.8V) */
++			BUCK1 {
++				regulator-name = "buck1";
++				regulator-min-microvolt = <700000>;
++				regulator-max-microvolt = <1300000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <1250>;
++			};
++
++			/* vdd_arm: 0.805-1.0V (typ=0.9V) */
++			buck2: BUCK2 {
++				regulator-name = "buck2";
++				regulator-min-microvolt = <700000>;
++				regulator-max-microvolt = <1300000>;
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-ramp-delay = <1250>;
++				rohm,dvs-run-voltage = <1000000>;
++				rohm,dvs-idle-voltage = <900000>;
++			};
++
++			/* vdd_0p9: 0.805-1.0V (typ=0.9V) */
++			BUCK3 {
++				regulator-name = "buck3";
++				regulator-min-microvolt = <700000>;
++				regulator-max-microvolt = <1350000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* vdd_3p3 */
++			BUCK4 {
++				regulator-name = "buck4";
++				regulator-min-microvolt = <3000000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* vdd_1p8 */
++			BUCK5 {
++				regulator-name = "buck5";
++				regulator-min-microvolt = <1605000>;
++				regulator-max-microvolt = <1995000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* vdd_dram */
++			BUCK6 {
++				regulator-name = "buck6";
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1400000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* nvcc_snvs_1p8 */
++			LDO1 {
++				regulator-name = "ldo1";
++				regulator-min-microvolt = <1600000>;
++				regulator-max-microvolt = <1900000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* vdd_snvs_0p8 */
++			LDO2 {
++				regulator-name = "ldo2";
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <900000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			/* vdda_1p8 */
++			LDO3 {
++				regulator-name = "ldo3";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			LDO4 {
++				regulator-name = "ldo4";
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++
++			LDO6 {
++				regulator-name = "ldo6";
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-boot-on;
++				regulator-always-on;
++			};
++		};
++	};
++};
++
++&i2c3 {
++	clock-frequency = <400000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c3>;
++	status = "okay";
++
++	accelerometer@19 {
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_accel>;
++		compatible = "st,lis2de12";
++		reg = <0x19>;
++		st,drdy-int-pin = <1>;
++		interrupt-parent = <&gpio1>;
++		interrupts = <15 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-names = "INT1";
++	};
++};
++
++&pcie_phy {
++	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
++	fsl,clkreq-unsupported;
++	clocks = <&pcie0_refclk>;
++	status = "okay";
++};
++
++&pcie0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pcie0>;
++	reset-gpio = <&gpio5 11 GPIO_ACTIVE_LOW>;
++	clocks = <&clk IMX8MM_CLK_PCIE1_ROOT>, <&clk IMX8MM_CLK_PCIE1_AUX>,
++		 <&pcie0_refclk>;
++	clock-names = "pcie", "pcie_aux", "pcie_bus";
++	assigned-clocks = <&clk IMX8MM_CLK_PCIE1_AUX>,
++			  <&clk IMX8MM_CLK_PCIE1_CTRL>;
++	assigned-clock-rates = <10000000>, <250000000>;
++	assigned-clock-parents = <&clk IMX8MM_SYS_PLL2_50M>,
++				 <&clk IMX8MM_SYS_PLL2_250M>;
++	status = "okay";
++};
++
++&pgc_mipi {
++	status = "disabled";
++};
++
++/* off-board RS232/RS485/RS422 */
++&uart1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart1>;
++	cts-gpios = <&gpio1 3 GPIO_ACTIVE_LOW>;
++	rts-gpios = <&gpio1 5 GPIO_ACTIVE_LOW>;
++	dtr-gpios = <&gpio1 0 GPIO_ACTIVE_LOW>;
++	dsr-gpios = <&gpio1 1 GPIO_ACTIVE_LOW>;
++	dcd-gpios = <&gpio3 24 GPIO_ACTIVE_LOW>;
++	uart-has-rtscts;
++	status = "okay";
++};
++
++/* console */
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_uart2>;
++	status = "okay";
++};
++
++&usbotg1 {
++	dr_mode = "host";
++	disable-over-current;
++	status = "okay";
++};
++
++/* microSD */
++&usdhc2 {
++	pinctrl-names = "default", "state_100mhz", "state_200mhz";
++	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_usdhc2_gpio>;
++	pinctrl-1 = <&pinctrl_usdhc2_100mhz>, <&pinctrl_usdhc2_gpio>;
++	pinctrl-2 = <&pinctrl_usdhc2_200mhz>, <&pinctrl_usdhc2_gpio>;
++	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
++	bus-width = <4>;
++	vmmc-supply = <&reg_3p3v>;
++	status = "okay";
++};
++
++/* eMMC */
++&usdhc3 {
++	pinctrl-names = "default", "state_100mhz", "state_200mhz";
++	pinctrl-0 = <&pinctrl_usdhc3>;
++	pinctrl-1 = <&pinctrl_usdhc3_100mhz>;
++	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
++	bus-width = <8>;
++	non-removable;
++	status = "okay";
++};
++
++&wdog1 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_wdog>;
++	fsl,ext-reset-output;
++	status = "okay";
++};
++
++&iomuxc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_hog>;
++
++	pinctrl_hog: hoggrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_GPIO1_IO10_GPIO1_IO10	0x40000041 /* RS422# */
++			MX8MM_IOMUXC_GPIO1_IO11_GPIO1_IO11	0x40000041 /* RS485# */
++			MX8MM_IOMUXC_GPIO1_IO12_GPIO1_IO12	0x40000041 /* RS232# */
++			MX8MM_IOMUXC_SD1_DATA7_GPIO2_IO9	0x40000041 /* DIG1_IN */
++			MX8MM_IOMUXC_SD1_DATA6_GPIO2_IO8	0x40000041 /* DIG1_OUT */
++			MX8MM_IOMUXC_SD1_CLK_GPIO2_IO0		0x40000041 /* DIG2_IN */
++			MX8MM_IOMUXC_SD1_CMD_GPIO2_IO1		0x40000041 /* DIG2_OUT */
++			MX8MM_IOMUXC_ECSPI1_MOSI_GPIO5_IO7	0x40000041 /* SIM1DET# */
++			MX8MM_IOMUXC_ECSPI1_MISO_GPIO5_IO8	0x40000041 /* SIM2DET# */
++			MX8MM_IOMUXC_ECSPI1_SS0_GPIO5_IO9	0x40000041 /* SIM2SEL */
++			MX8MM_IOMUXC_ECSPI2_MISO_GPIO5_IO12	0x40000041 /* PCI_WDIS# */
++		>;
++	};
++
++	pinctrl_accel: accelgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_GPIO1_IO15_GPIO1_IO15	0x159
++		>;
++	};
++
++	pinctrl_fec1: fec1grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_ENET_MDC_ENET1_MDC			0x3
++			MX8MM_IOMUXC_ENET_MDIO_ENET1_MDIO		0x3
++			MX8MM_IOMUXC_ENET_TD3_ENET1_RGMII_TD3		0x1f
++			MX8MM_IOMUXC_ENET_TD2_ENET1_RGMII_TD2		0x1f
++			MX8MM_IOMUXC_ENET_TD1_ENET1_RGMII_TD1		0x1f
++			MX8MM_IOMUXC_ENET_TD0_ENET1_RGMII_TD0		0x1f
++			MX8MM_IOMUXC_ENET_RD3_ENET1_RGMII_RD3		0x91
++			MX8MM_IOMUXC_ENET_RD2_ENET1_RGMII_RD2		0x91
++			MX8MM_IOMUXC_ENET_RD1_ENET1_RGMII_RD1		0x91
++			MX8MM_IOMUXC_ENET_RD0_ENET1_RGMII_RD0		0x91
++			MX8MM_IOMUXC_ENET_TXC_ENET1_RGMII_TXC		0x1f
++			MX8MM_IOMUXC_ENET_RXC_ENET1_RGMII_RXC		0x91
++			MX8MM_IOMUXC_ENET_RX_CTL_ENET1_RGMII_RX_CTL	0x91
++			MX8MM_IOMUXC_ENET_TX_CTL_ENET1_RGMII_TX_CTL	0x1f
++			MX8MM_IOMUXC_SAI2_TXFS_GPIO4_IO24		0x19 /* IRQ# */
++			MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25		0x19 /* RST# */
++		>;
++	};
++
++	pinctrl_gsc: gscgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SAI2_TXD0_GPIO4_IO26	0x159
++		>;
++	};
++
++	pinctrl_i2c1: i2c1grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_I2C1_SCL_I2C1_SCL		0x400001c3
++			MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA		0x400001c3
++		>;
++	};
++
++	pinctrl_i2c2: i2c2grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_I2C2_SCL_I2C2_SCL		0x400001c3
++			MX8MM_IOMUXC_I2C2_SDA_I2C2_SDA		0x400001c3
++		>;
++	};
++
++	pinctrl_i2c3: i2c3grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL		0x400001c3
++			MX8MM_IOMUXC_I2C3_SDA_I2C3_SDA		0x400001c3
++		>;
++	};
++
++	pinctrl_gpio_leds: gpioledgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5	0x19
++			MX8MM_IOMUXC_SAI3_RXD_GPIO4_IO30	0x19
++			MX8MM_IOMUXC_SAI3_MCLK_GPIO5_IO2	0x19
++			MX8MM_IOMUXC_GPIO1_IO14_GPIO1_IO14	0x19
++			MX8MM_IOMUXC_GPIO1_IO09_GPIO1_IO9	0x19
++			MX8MM_IOMUXC_SPDIF_TX_GPIO5_IO3		0x19
++			MX8MM_IOMUXC_SAI3_RXC_GPIO4_IO29	0x19
++			MX8MM_IOMUXC_SAI3_RXFS_GPIO4_IO28	0x19
++			MX8MM_IOMUXC_GPIO1_IO13_GPIO1_IO13	0x19
++			MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31	0x19
++			MX8MM_IOMUXC_SPDIF_RX_GPIO5_IO4		0x19
++			MX8MM_IOMUXC_GPIO1_IO08_GPIO1_IO8	0x19
++		>;
++	};
++
++	pinctrl_pcie0: pciegrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_ECSPI2_MOSI_GPIO5_IO11	0x41
++		>;
++	};
++
++	pinctrl_pmic: pmicgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_NAND_DATA02_GPIO3_IO8	0x41
++		>;
++	};
++
++	pinctrl_uart1: uart1grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_UART1_RXD_UART1_DCE_RX	0x140
++			MX8MM_IOMUXC_UART1_TXD_UART1_DCE_TX	0x140
++			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0	0x140
++			MX8MM_IOMUXC_GPIO1_IO01_GPIO1_IO1	0x140
++			MX8MM_IOMUXC_GPIO1_IO03_GPIO1_IO3	0x140
++			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5	0x140
++			MX8MM_IOMUXC_SAI5_RXD3_GPIO3_IO24	0x140
++		>;
++	};
++
++	pinctrl_uart2: uart2grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX	0x140
++			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX	0x140
++		>;
++	};
++
++	pinctrl_usdhc2: usdhc2grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x190
++			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD		0x1d0
++			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0	0x1d0
++			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1	0x1d0
++			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2	0x1d0
++			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d0
++		>;
++	};
++
++	pinctrl_usdhc2_100mhz: usdhc2-100mhzgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x194
++			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD		0x1d4
++			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0	0x1d4
++			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1	0x1d4
++			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2	0x1d4
++			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d4
++		>;
++	};
++
++	pinctrl_usdhc2_200mhz: usdhc2-200mhzgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK		0x196
++			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD		0x1d6
++			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0	0x1d6
++			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1	0x1d6
++			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2	0x1d6
++			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3	0x1d6
++		>;
++	};
++
++	pinctrl_usdhc2_gpio: usdhc2-gpiogrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12	0x1c4
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT  0x1d0
++		>;
++	};
++
++	pinctrl_usdhc3: usdhc3grp {
++		fsl,pins = <
++			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x190
++			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD	0x1d0
++			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d0
++			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d0
++			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d0
++			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d0
++			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4	0x1d0
++			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d0
++			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d0
++			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7	0x1d0
++			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x190
++		>;
++	};
++
++	pinctrl_usdhc3_100mhz: usdhc3-100mhzgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x194
++			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD	0x1d4
++			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d4
++			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d4
++			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d4
++			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d4
++			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4	0x1d4
++			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d4
++			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d4
++			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7	0x1d4
++			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x194
++		>;
++	};
++
++	pinctrl_usdhc3_200mhz: usdhc3-200mhzgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK	0x196
++			MX8MM_IOMUXC_NAND_WP_B_USDHC3_CMD	0x1d6
++			MX8MM_IOMUXC_NAND_DATA04_USDHC3_DATA0	0x1d6
++			MX8MM_IOMUXC_NAND_DATA05_USDHC3_DATA1	0x1d6
++			MX8MM_IOMUXC_NAND_DATA06_USDHC3_DATA2	0x1d6
++			MX8MM_IOMUXC_NAND_DATA07_USDHC3_DATA3	0x1d6
++			MX8MM_IOMUXC_NAND_RE_B_USDHC3_DATA4	0x1d6
++			MX8MM_IOMUXC_NAND_CE2_B_USDHC3_DATA5	0x1d6
++			MX8MM_IOMUXC_NAND_CE3_B_USDHC3_DATA6	0x1d6
++			MX8MM_IOMUXC_NAND_CLE_USDHC3_DATA7	0x1d6
++			MX8MM_IOMUXC_NAND_CE1_B_USDHC3_STROBE	0x196
++		>;
++	};
++
++	pinctrl_wdog: wdoggrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	0xc6
++		>;
++	};
++};
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.17.1
+
