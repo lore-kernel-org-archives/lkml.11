@@ -2,66 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70AB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 22:05:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 22:06:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353928AbiBKWF3 (ORCPT
+        id S1353938AbiBKWGV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 17:05:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37970 "EHLO
+        Fri, 11 Feb 2022 17:06:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353942AbiBKWF1 (ORCPT
+        with ESMTP id S1345929AbiBKWGU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 17:05:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E905CD3
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 14:05:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBD02611D1
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 22:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A59DC340E9;
-        Fri, 11 Feb 2022 22:05:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1644617124;
-        bh=XZxFtq91HVzLBZH6xp0D5spzcV3vgAheiQj938eNV+w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fXTuwTxuEhcqJBoInAB0ySvn5O7z/o1wPMzUwmhn2osAMoQXdx7TZkyPc7YZCkIEI
-         Daw5yAroeUoZdshqxSh4j8N80tbhv/pj8owfET1Eq/VNHFaACVzXGJZZMY/MRUiu2K
-         HjPRmbKlf1s5qT3AAGpXI1gjCOp1JnzNg62AlZt0=
-Date:   Fri, 11 Feb 2022 14:05:23 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH] container_of.h: make container_of const-aware
-Message-Id: <20220211140523.738c14327b03647f535c4df8@linux-foundation.org>
-In-Reply-To: <20220210170434.3924169-1-dmitry.baryshkov@linaro.org>
-References: <20220210170434.3924169-1-dmitry.baryshkov@linaro.org>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Fri, 11 Feb 2022 17:06:20 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06699C79
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 14:06:19 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id l9so4127063plg.0
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 14:06:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3eRTsM/Q7+dUjZUJKDd4/vCIs2lGaytBhPl0HjcA0As=;
+        b=yVX55KcikQlRpjxWKgehbDpOXXxoWb5ZcVKU4qS2v0OUszp9Bnf7taF67mLQnhNle/
+         MJWfZM1wq8CWa82iSLV9uC9iO41ZeUJOFVi4VD54NrNOHNSoOTlgUcIV46g3z5I6VBk+
+         PMtT3yHOdG5KU9N5kySUHJ5KKDkGaLoy9KEEnrMhpf2boJ/icuLLBG6ggndGn+I3qJed
+         hnHh8M4NIx7x93FvgW7VNyT/4kP2V05m7LY0r6Vvz7nA3Y7mumUfpaT0yeGZAcYgBdr1
+         dWjHrMlJiab6UJ4qGo85VWSdhX2QSMbEF4AmvA60VhTOt5ilgiHzVQyN+ukviEscqXYj
+         jB5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3eRTsM/Q7+dUjZUJKDd4/vCIs2lGaytBhPl0HjcA0As=;
+        b=DE8QDYBFtYYfqGKAP709RQTDnOV0wns7cxunArp8lAlgP+vEOlDKJ1VouBiFxzopE7
+         tkKJS/Jj9vi5poQ9DtKOKxfx8JXSjjE3y9pvVz/m2BcdX90IPh6uQzILzm2jFkurQNsL
+         rp+nTCOaVe4CDNSEKCjEEvOUiHLeKlVXoFnG6ayBP0rI1m13DPv5Nn4YJs7hfbM31ReX
+         1C5DzPMc5Wfy4VoebFsKxJRr2igmuh3Ba9RJ7lObQucHhoOUvg+2neFP8j3S7pMhEhTX
+         Sq7ppzvGaGaz8h7/wy79SEsezXSOzHD0INPiNij7rChR956CZVdfXu0mPiav6gRMCM7T
+         Qb7A==
+X-Gm-Message-State: AOAM531SBYwTpjWukXTuVHsiU44R6SOYVWRsRMEZqmu1xD2bkSDEZW0E
+        GQ8etCjF8JgTmWn8atOjPFQamwybHqzUXw==
+X-Google-Smtp-Source: ABdhPJwY/LaFEKcAJrEEGk71Gv7H7gIxS8Avp1t2fbewESVPSX1udtzSrdbfbjiLfm++43a2GVGDpw==
+X-Received: by 2002:a17:90b:1b0e:: with SMTP id nu14mr2507972pjb.44.1644617178471;
+        Fri, 11 Feb 2022 14:06:18 -0800 (PST)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id q1sm5931642pjd.48.2022.02.11.14.06.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 11 Feb 2022 14:06:17 -0800 (PST)
+Message-ID: <d6e41491-44c9-33e2-13ae-ae2480b9477d@kernel.dk>
+Date:   Fri, 11 Feb 2022 15:06:16 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH] docs: block: biodoc.rst: Drop the obsolete and incorrect
+ content
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>,
+        Barry Song <21cnbao@gmail.com>
+Cc:     corbet@lwn.net, linux-doc@vger.kernel.org,
+        linux-block@vger.kernel.org, linuxarm@huawei.com,
+        linux-kernel@vger.kernel.org,
+        Barry Song <song.bao.hua@hisilicon.com>
+References: <20220207074931.20067-1-song.bao.hua@hisilicon.com>
+ <YgN8CKUoRG4TQaqt@infradead.org>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <YgN8CKUoRG4TQaqt@infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 20:04:34 +0300 Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+On 2/9/22 1:32 AM, Christoph Hellwig wrote:
+> I suspect it is timeto just drop that entire file.  It is so stale
+> that it is actively harmful.
 
-> container_of() macro has one major drawback. It does not check whether
-> the passed ptr has a const pointer, the result will always be a
-> non-const pointer. Use a _Generic() construct (supported since gcc 4.9
-> and Clang 3.0) to teach container_of that if converting a const pointer,
-> the returned pointer should also have the const modifier.
-> 
+I'll apply this one since it's obviously correct, but yes, we
+probably should just kill this file.
 
-Nice idea, but my x86_64 allnoconfig build explodes with zillions of
-warnings.
-
-In file included from ./include/linux/list.h:5,
-                 from ./include/linux/module.h:12,
-                 from init/do_mounts.c:2:
-./include/net/sock.h: In function 'sk_entry':
-./include/linux/container_of.h:17:42: warning: return discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+-- 
+Jens Axboe
 
