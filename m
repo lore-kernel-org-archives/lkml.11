@@ -2,417 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 131F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D132AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 10:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348988AbiBKKet (ORCPT
+        id S1348994AbiBKKez (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 05:34:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60774 "EHLO
+        Fri, 11 Feb 2022 05:34:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348962AbiBKKee (ORCPT
+        with ESMTP id S239367AbiBKKef (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 05:34:34 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9543BEA8
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:34:33 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so17964725ybg.8
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 02:34:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=YeWWX6eij4rjru09a4hqWnNdgpL4pnTfKpwjRF5ZzB0=;
-        b=Kir8UyzLNhSWUOuwK+KEUEu1VPyVi95JRLGpdnZtSylD1Ydjh0jg/e/lQuebj5Yz/Y
-         tjAVAHsNNHCUxyJWZYLC+SJxpY5338YNLYAX0xbS295xLmZ1/95ZYLBlxILWSJZFcnW9
-         vW3pFczfj8cRVQw8Zvxs88k845NzvZMcdvcdZ3tn3XG7IJjtJEOHi7Rso+1OrIv685Y5
-         p9c1d3t08pgDRJMVtP0XV45NT5R5FuojhMquFwtMryHmumnYdiWwMsyJPhXEn3wQhwEa
-         f7e5NXyHFjtuBYy4PCqw3v0wtMmb8ezyPKsgtiV52m+Jf8U7PdfoSAduAnaBy2rZdV5z
-         CLJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=YeWWX6eij4rjru09a4hqWnNdgpL4pnTfKpwjRF5ZzB0=;
-        b=ADAzfpP3+jOioszJjwll9eOUDeFVUwD17zXZ1jMrL7x0T6GpH77qa/k+SgJt3GSgIv
-         YtZhI7+taS6MBQiDqeVwQGQBnEx1cC0fXIpBOAPTw8CupsywBMzcdqizr26Jjaiq37f3
-         6JPwnMn5KQxS3spQ41JX6SMLnLT+CZcoZ2dGG9x80E7kxRdc5OWoI9D0A9So8bS7HjmG
-         OXqdjOOiLvsVcUJdU5aka/qq8A1AAZS88R7d+P+dYjTHKKWjGdWGeIbAb8sq9wx40j/W
-         bFKu+cSXM3qEr+ELJD4xq8H/4qIpXjr/VN1wH1qAEjUCE1liV/P7/V1w+33RwJ7+lwDG
-         TB0w==
-X-Gm-Message-State: AOAM531p4VQLHPA/ZxTDsxN892bYA8DrqXkRCUMlg1RrmNxyPBDhihqC
-        /msiBHzIVhsXgHRwLtOXeUrWbro46P5o
-X-Google-Smtp-Source: ABdhPJz5QAOt44oR5/+OEn5kY9Pi2rOdBXMyNYj9Q58PImiI86g+LzMZMfh1NJ7u55qLsmLdjLhwscuuOvYf
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:2d98:3ad9:1d8a:fb9b])
- (user=irogers job=sendgmr) by 2002:a5b:443:: with SMTP id s3mr675459ybp.117.1644575672806;
- Fri, 11 Feb 2022 02:34:32 -0800 (PST)
-Date:   Fri, 11 Feb 2022 02:33:58 -0800
-In-Reply-To: <20220211103415.2737789-1-irogers@google.com>
-Message-Id: <20220211103415.2737789-6-irogers@google.com>
-Mime-Version: 1.0
-References: <20220211103415.2737789-1-irogers@google.com>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v3 05/22] perf maps: Use a pointer for kmaps
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "=?UTF-8?q?Andr=C3=A9=20Almeida?=" <andrealmeid@collabora.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Song Liu <song@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>, Hao Luo <haoluo@google.com>
-Cc:     eranian@google.com, Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 11 Feb 2022 05:34:35 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05528EA9;
+        Fri, 11 Feb 2022 02:34:34 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE83B106F;
+        Fri, 11 Feb 2022 02:34:33 -0800 (PST)
+Received: from [10.57.70.89] (unknown [10.57.70.89])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F18CB3F73B;
+        Fri, 11 Feb 2022 02:34:31 -0800 (PST)
+Message-ID: <3740c93e-9fde-f89f-9752-26ffff3ea274@arm.com>
+Date:   Fri, 11 Feb 2022 10:34:09 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v2] ACPI/IORT: Fix GCC 12 warning
+Content-Language: en-GB
+To:     Kees Cook <keescook@chromium.org>, Ard Biesheuvel <ardb@kernel.org>
+Cc:     Victor Erminpour <victor.erminpour@oracle.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        trivial@kernel.org
+References: <1644518851-16847-1-git-send-email-victor.erminpour@oracle.com>
+ <CAMj1kXEbGWs74M2CZSm6TWpD11mReFsk8z-UUqJt6b6vDCvAEQ@mail.gmail.com>
+ <202202101415.43750CEE@keescook>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <202202101415.43750CEE@keescook>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-struct maps is reference counted, using a pointer is more idiomatic.
+Hi Kees,
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/arch/x86/util/event.c    |  2 +-
- tools/perf/tests/vmlinux-kallsyms.c |  4 +--
- tools/perf/util/bpf-event.c         |  2 +-
- tools/perf/util/callchain.c         |  2 +-
- tools/perf/util/event.c             |  6 ++---
- tools/perf/util/machine.c           | 38 ++++++++++++++++-------------
- tools/perf/util/machine.h           |  8 +++---
- tools/perf/util/probe-event.c       |  2 +-
- 8 files changed, 34 insertions(+), 30 deletions(-)
+On 2022-02-10 23:47, Kees Cook wrote:
+> On Thu, Feb 10, 2022 at 08:41:51PM +0100, Ard Biesheuvel wrote:
+>> On Thu, 10 Feb 2022 at 19:48, Victor Erminpour
+>> <victor.erminpour@oracle.com> wrote:
+>>>
+>>> When building with automatic stack variable initialization, GCC 12
+>>> complains about variables defined outside of switch case statements.
+>>> Move the variable into the case that uses it, which silences the warning:
+>>>
+>>> ./drivers/acpi/arm64/iort.c:1670:59: error: statement will never be executed [-Werror=switch-unreachable]
+>>>    1670 |                         struct acpi_iort_named_component *ncomp;
+>>>         |                                                           ^~~~~
+>>>
+>>> Signed-off-by: Victor Erminpour <victor.erminpour@oracle.com>
+>>
+>> Please cc people that commented on your v1 when you send a v2.
+>>
+>> Still NAK, for the same reasons.
+> 
+> Let me see if I can talk you out of this. ;)
+> 
+> So, on the face of it, I agree with you: this is a compiler bug. However,
+> it's still worth fixing. Just because it's valid C isn't a good enough
+> reason to leave it as-is: we continue to minimize the subset of the
+> C language the kernel uses if it helps us get the most out of existing
+> compiler features. We've eliminated all kinds of other "valid C" from the
+> kernel because it improves robustness, security, etc. This is certainly
+> nothing like removing VLAs or implicit fallthrough, but given that this
+> is, I think, the only remaining case of it (I removed all the others a
+> while ago when I had the same issues with the GCC plugins), I'd like to
+> get it fixed.
 
-diff --git a/tools/perf/arch/x86/util/event.c b/tools/perf/arch/x86/util/event.c
-index 9b31734ee968..e670f3547581 100644
---- a/tools/perf/arch/x86/util/event.c
-+++ b/tools/perf/arch/x86/util/event.c
-@@ -18,7 +18,7 @@ int perf_event__synthesize_extra_kmaps(struct perf_tool *tool,
- {
- 	int rc = 0;
- 	struct map *pos;
--	struct maps *kmaps = &machine->kmaps;
-+	struct maps *kmaps = machine__kernel_maps(machine);
- 	union perf_event *event = zalloc(sizeof(event->mmap) +
- 					 machine->id_hdr_size);
- 
-diff --git a/tools/perf/tests/vmlinux-kallsyms.c b/tools/perf/tests/vmlinux-kallsyms.c
-index e80df13c0420..84bf5f640065 100644
---- a/tools/perf/tests/vmlinux-kallsyms.c
-+++ b/tools/perf/tests/vmlinux-kallsyms.c
-@@ -293,7 +293,7 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
- 		 * so use the short name, less descriptive but the same ("[kernel]" in
- 		 * both cases.
- 		 */
--		pair = maps__find_by_name(&kallsyms.kmaps, (map->dso->kernel ?
-+		pair = maps__find_by_name(kallsyms.kmaps, (map->dso->kernel ?
- 								map->dso->short_name :
- 								map->dso->name));
- 		if (pair) {
-@@ -315,7 +315,7 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
- 		mem_start = vmlinux_map->unmap_ip(vmlinux_map, map->start);
- 		mem_end = vmlinux_map->unmap_ip(vmlinux_map, map->end);
- 
--		pair = maps__find(&kallsyms.kmaps, mem_start);
-+		pair = maps__find(kallsyms.kmaps, mem_start);
- 		if (pair == NULL || pair->priv)
- 			continue;
- 
-diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-index a517eaa51eb3..33257b594a71 100644
---- a/tools/perf/util/bpf-event.c
-+++ b/tools/perf/util/bpf-event.c
-@@ -92,7 +92,7 @@ static int machine__process_bpf_event_load(struct machine *machine,
- 	for (i = 0; i < info_linear->info.nr_jited_ksyms; i++) {
- 		u64 *addrs = (u64 *)(uintptr_t)(info_linear->info.jited_ksyms);
- 		u64 addr = addrs[i];
--		struct map *map = maps__find(&machine->kmaps, addr);
-+		struct map *map = maps__find(machine__kernel_maps(machine), addr);
- 
- 		if (map) {
- 			map->dso->binary_type = DSO_BINARY_TYPE__BPF_PROG_INFO;
-diff --git a/tools/perf/util/callchain.c b/tools/perf/util/callchain.c
-index 131207b91d15..5c27a4b2e7a7 100644
---- a/tools/perf/util/callchain.c
-+++ b/tools/perf/util/callchain.c
-@@ -1119,7 +1119,7 @@ int fill_callchain_info(struct addr_location *al, struct callchain_cursor_node *
- 			goto out;
- 	}
- 
--	if (al->maps == &al->maps->machine->kmaps) {
-+	if (al->maps == machine__kernel_maps(al->maps->machine)) {
- 		if (machine__is_host(al->maps->machine)) {
- 			al->cpumode = PERF_RECORD_MISC_KERNEL;
- 			al->level = 'k';
-diff --git a/tools/perf/util/event.c b/tools/perf/util/event.c
-index fe24801f8e9f..6439c888ae38 100644
---- a/tools/perf/util/event.c
-+++ b/tools/perf/util/event.c
-@@ -484,7 +484,7 @@ size_t perf_event__fprintf_text_poke(union perf_event *event, struct machine *ma
- 	if (machine) {
- 		struct addr_location al;
- 
--		al.map = maps__find(&machine->kmaps, tp->addr);
-+		al.map = maps__find(machine__kernel_maps(machine), tp->addr);
- 		if (al.map && map__load(al.map) >= 0) {
- 			al.addr = al.map->map_ip(al.map, tp->addr);
- 			al.sym = map__find_symbol(al.map, al.addr);
-@@ -587,13 +587,13 @@ struct map *thread__find_map(struct thread *thread, u8 cpumode, u64 addr,
- 
- 	if (cpumode == PERF_RECORD_MISC_KERNEL && perf_host) {
- 		al->level = 'k';
--		al->maps = maps = &machine->kmaps;
-+		al->maps = maps = machine__kernel_maps(machine);
- 		load_map = true;
- 	} else if (cpumode == PERF_RECORD_MISC_USER && perf_host) {
- 		al->level = '.';
- 	} else if (cpumode == PERF_RECORD_MISC_GUEST_KERNEL && perf_guest) {
- 		al->level = 'g';
--		al->maps = maps = &machine->kmaps;
-+		al->maps = maps = machine__kernel_maps(machine);
- 		load_map = true;
- 	} else if (cpumode == PERF_RECORD_MISC_GUEST_USER && perf_guest) {
- 		al->level = 'u';
-diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-index f70ba56912d4..57fbdba66425 100644
---- a/tools/perf/util/machine.c
-+++ b/tools/perf/util/machine.c
-@@ -89,7 +89,10 @@ int machine__init(struct machine *machine, const char *root_dir, pid_t pid)
- 	int err = -ENOMEM;
- 
- 	memset(machine, 0, sizeof(*machine));
--	maps__init(&machine->kmaps, machine);
-+	machine->kmaps = maps__new(machine);
-+	if (machine->kmaps == NULL)
-+		return -ENOMEM;
-+
- 	RB_CLEAR_NODE(&machine->rb_node);
- 	dsos__init(&machine->dsos);
- 
-@@ -108,7 +111,7 @@ int machine__init(struct machine *machine, const char *root_dir, pid_t pid)
- 
- 	machine->root_dir = strdup(root_dir);
- 	if (machine->root_dir == NULL)
--		return -ENOMEM;
-+		goto out;
- 
- 	if (machine__set_mmap_name(machine))
- 		goto out;
-@@ -131,6 +134,7 @@ int machine__init(struct machine *machine, const char *root_dir, pid_t pid)
- 
- out:
- 	if (err) {
-+		zfree(&machine->kmaps);
- 		zfree(&machine->root_dir);
- 		zfree(&machine->mmap_name);
- 	}
-@@ -220,7 +224,7 @@ void machine__exit(struct machine *machine)
- 		return;
- 
- 	machine__destroy_kernel_maps(machine);
--	maps__exit(&machine->kmaps);
-+	maps__delete(machine->kmaps);
- 	dsos__exit(&machine->dsos);
- 	machine__exit_vdso(machine);
- 	zfree(&machine->root_dir);
-@@ -778,7 +782,7 @@ static int machine__process_ksymbol_register(struct machine *machine,
- 					     struct perf_sample *sample __maybe_unused)
- {
- 	struct symbol *sym;
--	struct map *map = maps__find(&machine->kmaps, event->ksymbol.addr);
-+	struct map *map = maps__find(machine__kernel_maps(machine), event->ksymbol.addr);
- 
- 	if (!map) {
- 		struct dso *dso = dso__new(event->ksymbol.name);
-@@ -801,7 +805,7 @@ static int machine__process_ksymbol_register(struct machine *machine,
- 
- 		map->start = event->ksymbol.addr;
- 		map->end = map->start + event->ksymbol.len;
--		maps__insert(&machine->kmaps, map);
-+		maps__insert(machine__kernel_maps(machine), map);
- 		map__put(map);
- 		dso__set_loaded(dso);
- 
-@@ -827,12 +831,12 @@ static int machine__process_ksymbol_unregister(struct machine *machine,
- 	struct symbol *sym;
- 	struct map *map;
- 
--	map = maps__find(&machine->kmaps, event->ksymbol.addr);
-+	map = maps__find(machine__kernel_maps(machine), event->ksymbol.addr);
- 	if (!map)
- 		return 0;
- 
- 	if (map != machine->vmlinux_map)
--		maps__remove(&machine->kmaps, map);
-+		maps__remove(machine__kernel_maps(machine), map);
- 	else {
- 		sym = dso__find_symbol(map->dso, map->map_ip(map, map->start));
- 		if (sym)
-@@ -858,7 +862,7 @@ int machine__process_ksymbol(struct machine *machine __maybe_unused,
- int machine__process_text_poke(struct machine *machine, union perf_event *event,
- 			       struct perf_sample *sample __maybe_unused)
- {
--	struct map *map = maps__find(&machine->kmaps, event->text_poke.addr);
-+	struct map *map = maps__find(machine__kernel_maps(machine), event->text_poke.addr);
- 	u8 cpumode = event->header.misc & PERF_RECORD_MISC_CPUMODE_MASK;
- 
- 	if (dump_trace)
-@@ -914,7 +918,7 @@ static struct map *machine__addnew_module_map(struct machine *machine, u64 start
- 	if (map == NULL)
- 		goto out;
- 
--	maps__insert(&machine->kmaps, map);
-+	maps__insert(machine__kernel_maps(machine), map);
- 
- 	/* Put the map here because maps__insert already got it */
- 	map__put(map);
-@@ -1100,7 +1104,7 @@ int machine__create_extra_kernel_map(struct machine *machine,
- 
- 	strlcpy(kmap->name, xm->name, KMAP_NAME_LEN);
- 
--	maps__insert(&machine->kmaps, map);
-+	maps__insert(machine__kernel_maps(machine), map);
- 
- 	pr_debug2("Added extra kernel map %s %" PRIx64 "-%" PRIx64 "\n",
- 		  kmap->name, map->start, map->end);
-@@ -1145,7 +1149,7 @@ static u64 find_entry_trampoline(struct dso *dso)
- int machine__map_x86_64_entry_trampolines(struct machine *machine,
- 					  struct dso *kernel)
- {
--	struct maps *kmaps = &machine->kmaps;
-+	struct maps *kmaps = machine__kernel_maps(machine);
- 	int nr_cpus_avail, cpu;
- 	bool found = false;
- 	struct map *map;
-@@ -1215,7 +1219,7 @@ __machine__create_kernel_maps(struct machine *machine, struct dso *kernel)
- 		return -1;
- 
- 	machine->vmlinux_map->map_ip = machine->vmlinux_map->unmap_ip = identity__map_ip;
--	maps__insert(&machine->kmaps, machine->vmlinux_map);
-+	maps__insert(machine__kernel_maps(machine), machine->vmlinux_map);
- 	return 0;
- }
- 
-@@ -1228,7 +1232,7 @@ void machine__destroy_kernel_maps(struct machine *machine)
- 		return;
- 
- 	kmap = map__kmap(map);
--	maps__remove(&machine->kmaps, map);
-+	maps__remove(machine__kernel_maps(machine), map);
- 	if (kmap && kmap->ref_reloc_sym) {
- 		zfree((char **)&kmap->ref_reloc_sym->name);
- 		zfree(&kmap->ref_reloc_sym);
-@@ -1323,7 +1327,7 @@ int machine__load_kallsyms(struct machine *machine, const char *filename)
- 		 * kernel, with modules between them, fixup the end of all
- 		 * sections.
- 		 */
--		maps__fixup_end(&machine->kmaps);
-+		maps__fixup_end(machine__kernel_maps(machine));
- 	}
- 
- 	return ret;
-@@ -1471,7 +1475,7 @@ static int machine__set_modules_path(struct machine *machine)
- 		 machine->root_dir, version);
- 	free(version);
- 
--	return maps__set_modules_path_dir(&machine->kmaps, modules_path, 0);
-+	return maps__set_modules_path_dir(machine__kernel_maps(machine), modules_path, 0);
- }
- int __weak arch__fix_module_text_start(u64 *start __maybe_unused,
- 				u64 *size __maybe_unused,
-@@ -1544,11 +1548,11 @@ static void machine__update_kernel_mmap(struct machine *machine,
- 	struct map *map = machine__kernel_map(machine);
- 
- 	map__get(map);
--	maps__remove(&machine->kmaps, map);
-+	maps__remove(machine__kernel_maps(machine), map);
- 
- 	machine__set_kernel_mmap(machine, start, end);
- 
--	maps__insert(&machine->kmaps, map);
-+	maps__insert(machine__kernel_maps(machine), map);
- 	map__put(map);
- }
- 
-diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
-index c5a45dc8df4c..0023165422aa 100644
---- a/tools/perf/util/machine.h
-+++ b/tools/perf/util/machine.h
-@@ -51,7 +51,7 @@ struct machine {
- 	struct vdso_info  *vdso_info;
- 	struct perf_env   *env;
- 	struct dsos	  dsos;
--	struct maps	  kmaps;
-+	struct maps	  *kmaps;
- 	struct map	  *vmlinux_map;
- 	u64		  kernel_start;
- 	pid_t		  *current_tid;
-@@ -83,7 +83,7 @@ struct map *machine__kernel_map(struct machine *machine)
- static inline
- struct maps *machine__kernel_maps(struct machine *machine)
- {
--	return &machine->kmaps;
-+	return machine->kmaps;
- }
- 
- int machine__get_kernel_start(struct machine *machine);
-@@ -223,7 +223,7 @@ static inline
- struct symbol *machine__find_kernel_symbol(struct machine *machine, u64 addr,
- 					   struct map **mapp)
- {
--	return maps__find_symbol(&machine->kmaps, addr, mapp);
-+	return maps__find_symbol(machine->kmaps, addr, mapp);
- }
- 
- static inline
-@@ -231,7 +231,7 @@ struct symbol *machine__find_kernel_symbol_by_name(struct machine *machine,
- 						   const char *name,
- 						   struct map **mapp)
- {
--	return maps__find_symbol_by_name(&machine->kmaps, name, mapp);
-+	return maps__find_symbol_by_name(machine->kmaps, name, mapp);
- }
- 
- int arch__fix_module_text_start(u64 *start, u64 *size, const char *name);
-diff --git a/tools/perf/util/probe-event.c b/tools/perf/util/probe-event.c
-index 7444e689ece7..bc5ab782ace5 100644
---- a/tools/perf/util/probe-event.c
-+++ b/tools/perf/util/probe-event.c
-@@ -334,7 +334,7 @@ static int kernel_get_module_dso(const char *module, struct dso **pdso)
- 		char module_name[128];
- 
- 		snprintf(module_name, sizeof(module_name), "[%s]", module);
--		map = maps__find_by_name(&host_machine->kmaps, module_name);
-+		map = maps__find_by_name(machine__kernel_maps(host_machine), module_name);
- 		if (map) {
- 			dso = map->dso;
- 			goto found;
--- 
-2.35.1.265.g69c8d7142f-goog
+It concerns me if minimising the subset of the C language that the 
+kernel uses is achieved by converting more of the kernel to a 
+not-quite-C language that is not formally specified anywhere, by 
+prematurely adopting newly-invented compiler options that clearly don't 
+work properly (the GCC warning message quoted above may as well be 
+"error: giraffes are not purple" for all the sense it makes.)
 
+> And I should point out that Clang suffers[1] from the same problem (the
+> variables will be missed for auto-initialization), but actually has a
+> worse behavior: it does not even warn about it.
+> 
+> And note that the problem isn't limited to -ftrivial-auto-var-init. This
+> code pattern seems to also hide the variables from similar instrumentation
+> like KASan, etc. (Which is similarly silent like above.)
+
+ From your security standpoint (and believe me, I really do have faith 
+in your expertise here), which of these sounds better:
+
+1: Being able to audit code based on well-defined language semantics
+
+2: Playing whack-a-mole as issues are discovered empirically.
+
+3: Neither of the above, but a warm fuzzy feeling because hey someone 
+said "security" in a commit message.
+
+AFAICS you're effectively voting against #1, and the examples you've 
+given demonstrate that #2 is nowhere near reliable enough either, so 
+where does that leave us WRT actual secure and robust code in Linux?
+
+> In both compilers, it seems fixing this is not "easy", and given its
+> corner-case nature and ease of being worked around in the kernel source,
+> it isn't being highly prioritized. But since I both don't want these
+> blinds spots with Clang (and GCC) var-init, and I don't want these
+> warnings to suddenly appear once GCC 12 _does_ get released, so I'd like
+> to get this case fixed as well.
+> 
+> All that said, I think this patch could be improved.
+> 
+> I'd recommend, instead, just simply:
+> 
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index f2f8f05662de..9e765d30da82 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -1671,13 +1671,14 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>   	end = ACPI_ADD_PTR(struct acpi_iort_node, iort, iort->header.length);
+>   
+>   	for (i = 0; i < iort->node_count; i++) {
+> +		struct acpi_iort_named_component *ncomp;
+> +		struct acpi_iort_root_complex *rc;
+> +		phys_addr_t local_limit;
+> +
+>   		if (node >= end)
+>   			break;
+>   
+>   		switch (node->type) {
+> -			struct acpi_iort_named_component *ncomp;
+> -			struct acpi_iort_root_complex *rc;
+> -			phys_addr_t local_limit;
+>   
+>   		case ACPI_IORT_NODE_NAMED_COMPONENT:
+>   			ncomp = (struct acpi_iort_named_component *)node->node_data;
+> 
+> This results in no change in binary instruction output (when there is no
+> auto-init).
+
+In fairness I'd have no objection to that patch if it came with a 
+convincing justification, but that is so far very much lacking. My aim 
+here is not to be a change-averse Luddite, but to try to find a 
+compromise where I can actually have some confidence in such changes 
+being made. Let's not start pretending that 3 100ml bottles of shampoo 
+are somehow "safer" than a 300ml bottle of shampoo...
+
+Thanks,
+Robin.
+
+> 
+> -Kees
+> 
+> [1] https://github.com/llvm/llvm-project/issues/44261
+> 
+>>
+>>
+>>> ---
+>>>   drivers/acpi/arm64/iort.c | 12 ++++++------
+>>>   1 file changed, 6 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+>>> index 3b23fb775ac4..65395f0decf9 100644
+>>> --- a/drivers/acpi/arm64/iort.c
+>>> +++ b/drivers/acpi/arm64/iort.c
+>>> @@ -1645,7 +1645,7 @@ void __init acpi_iort_init(void)
+>>>    */
+>>>   phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>>>   {
+>>> -       phys_addr_t limit = PHYS_ADDR_MAX;
+>>> +       phys_addr_t local_limit, limit = PHYS_ADDR_MAX;
+>>>          struct acpi_iort_node *node, *end;
+>>>          struct acpi_table_iort *iort;
+>>>          acpi_status status;
+>>> @@ -1667,17 +1667,16 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>>>                          break;
+>>>
+>>>                  switch (node->type) {
+>>> +               case ACPI_IORT_NODE_NAMED_COMPONENT: {
+>>>                          struct acpi_iort_named_component *ncomp;
+>>> -                       struct acpi_iort_root_complex *rc;
+>>> -                       phys_addr_t local_limit;
+>>> -
+>>> -               case ACPI_IORT_NODE_NAMED_COMPONENT:
+>>>                          ncomp = (struct acpi_iort_named_component *)node->node_data;
+>>>                          local_limit = DMA_BIT_MASK(ncomp->memory_address_limit);
+>>>                          limit = min_not_zero(limit, local_limit);
+>>>                          break;
+>>>
+>>> -               case ACPI_IORT_NODE_PCI_ROOT_COMPLEX:
+>>> +               }
+>>> +               case ACPI_IORT_NODE_PCI_ROOT_COMPLEX: {
+>>> +                       struct acpi_iort_root_complex *rc;
+>>>                          if (node->revision < 1)
+>>>                                  break;
+>>>
+>>> @@ -1686,6 +1685,7 @@ phys_addr_t __init acpi_iort_dma_get_max_cpu_address(void)
+>>>                          limit = min_not_zero(limit, local_limit);
+>>>                          break;
+>>>                  }
+>>> +               }
+>>>                  node = ACPI_ADD_PTR(struct acpi_iort_node, node, node->length);
+>>>          }
+>>>          acpi_put_table(&iort->header);
+>>>
+>>> _______________________________________________
+>>> linux-arm-kernel mailing list
+>>> linux-arm-kernel@lists.infradead.org
+>>> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
