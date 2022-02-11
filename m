@@ -2,171 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 870C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 293C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 08:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348187AbiBKIuC (ORCPT
+        id S1348201AbiBKIvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 03:50:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39620 "EHLO
+        Fri, 11 Feb 2022 03:51:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiBKIt6 (ORCPT
+        with ESMTP id S231985AbiBKIvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 03:49:58 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6687E8A;
-        Fri, 11 Feb 2022 00:49:57 -0800 (PST)
+        Fri, 11 Feb 2022 03:51:38 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D670CE80
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:51:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644569397; x=1676105397;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=852yCQeyi6TTe+G3DozY7ao5wBPlsQfmMMcR8YALnuw=;
-  b=JLT4c39Wv9SeFkvfPtKVeByq+Oh0c2jqPumnWvPG3HO6C6s0fcceB/F1
-   xJ+s6PTDnaxrcFetz4b0fduZO3msH0jNgS+weM7SNWxqSQsGEvkhmYCSP
-   Be4Fds4terCg7YWSzC1jSBHUg7k4F8JBBcOg5IkX0ahBajbLGSaUvzuvq
-   EtGJZOZZKoYRZtqs5NZkqM8aeg29MciSQ3Rd5QGliHMya7SUflC1xrV+X
-   O0lvM41z4SSgyP6fMrVAm7eUeJu4mN4p64nOzReupBK4yT6OeV77MQYlL
-   KPh2Wn3QqFM2U9PxpxKZD9wAc1BXMwZuRUEb30mjLAxKimyJY2wvc51T9
+  t=1644569497; x=1676105497;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=bHJCV8MMzu80z8MF5GnsjtrinDXB2IirHq5wwEWBYgM=;
+  b=ja3iBmfNhiAZuGlNMXkytV6Vjm4kWzC+mt1943NqsYJYDyVXF3ZQkDez
+   n1qbDRtGNWf3GJ3JLiT1GDLGE7L/uDLcpQQR3MF/xvEcohXNelZIzeR3a
+   C5veFaYP08Qm4qTPPLNsfIHhskpapb7S2efcaR5JRquXUbfpb6W5azg3z
+   ppt5ckj5DsZqk5c7LciMXNny2oPna+/T7GnqxsK+12iBZuRImdXkdSs1f
+   rjk86ZXHSqrjcSGshs2LvoxAisMfyfkp5kH8wqnowLLWjokMcE+kTZWuN
+   RWZLiQPgiPRRL8LGyU4lgoT/YNlY9LbNCxT3PcpuVSViGRmOUky2q+OIn
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="312974539"
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="248523940"
 X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="312974539"
+   d="scan'208";a="248523940"
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:49:57 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:51:37 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
-   d="scan'208";a="630166731"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:49:52 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nIRbq-003NFF-R8;
-        Fri, 11 Feb 2022 10:48:54 +0200
-Date:   Fri, 11 Feb 2022 10:48:54 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 05/49] qed: rework qed_rdma_bmap_free()
-Message-ID: <YgYi9p7oeR1NAKzv@smile.fi.intel.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
- <20220210224933.379149-6-yury.norov@gmail.com>
+   d="scan'208";a="630167207"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 11 Feb 2022 00:51:36 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nIReR-0004MZ-NJ; Fri, 11 Feb 2022 08:51:35 +0000
+Date:   Fri, 11 Feb 2022 16:50:39 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ramji Jiyani <ramjiyani@google.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android-mainline
+ 17/21] kernel/gki_module.c:35:6: warning: no previous prototype for
+ 'gki_is_module_protected_symbol'
+Message-ID: <202202111611.znc1YtAj-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220210224933.379149-6-yury.norov@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 10, 2022 at 02:48:49PM -0800, Yury Norov wrote:
-> qed_rdma_bmap_free() is mostly an opencoded version of printk("%*pb").
-> Using %*pb format simplifies the code, and helps to avoid inefficient
-> usage of bitmap_weight().
-> 
-> While here, reorganize logic to avoid calculating bmap weight if check
-> is false.
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-mainline
+head:   368cd631746c9d700f41883314865ea3ab05cfb7
+commit: 5ffc4c2275478f8d4c17795dc5f1b552559fff26 [17/21] Revert "Revert "ANDROID: GKI: Add module load time protected symbol lookup""
+config: sparc-buildonly-randconfig-r006-20220211 (https://download.01.org/0day-ci/archive/20220211/202202111611.znc1YtAj-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/5ffc4c2275478f8d4c17795dc5f1b552559fff26
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-mainline
+        git checkout 5ffc4c2275478f8d4c17795dc5f1b552559fff26
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash
 
-I like this kind of patches,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> ---
-> 
-> This is RFC because it changes lines printing format to bitmap %*pb. If
-> it hurts userspace, it's better to drop the patch.
+All warnings (new ones prefixed by >>):
 
-How? The only way is some strange script that parses dmesg, but dmesg almost
-never was an ABI, moreover, with printk() indexing feature (recently
-introduced) the one who parses such messages can actually find the (new)
-format as well.
+>> kernel/gki_module.c:35:6: warning: no previous prototype for 'gki_is_module_protected_symbol' [-Wmissing-prototypes]
+      35 | bool gki_is_module_protected_symbol(const char *name)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/gki_module.c:46:6: warning: no previous prototype for 'gki_is_module_exported_symbol' [-Wmissing-prototypes]
+      46 | bool gki_is_module_exported_symbol(const char *name)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
->  drivers/net/ethernet/qlogic/qed/qed_rdma.c | 45 +++++++---------------
->  1 file changed, 14 insertions(+), 31 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-> index 23b668de4640..f4c04af9d4dd 100644
-> --- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-> +++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
-> @@ -319,44 +319,27 @@ static int qed_rdma_alloc(struct qed_hwfn *p_hwfn)
->  void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
->  			struct qed_bmap *bmap, bool check)
->  {
-> -	int weight = bitmap_weight(bmap->bitmap, bmap->max_count);
-> -	int last_line = bmap->max_count / (64 * 8);
-> -	int last_item = last_line * 8 +
-> -	    DIV_ROUND_UP(bmap->max_count % (64 * 8), 64);
-> -	u64 *pmap = (u64 *)bmap->bitmap;
-> -	int line, item, offset;
-> -	u8 str_last_line[200] = { 0 };
-> -
-> -	if (!weight || !check)
-> +	unsigned int bit, weight, nbits;
-> +	unsigned long *b;
-> +
-> +	if (!check)
-> +		goto end;
-> +
-> +	weight = bitmap_weight(bmap->bitmap, bmap->max_count);
-> +	if (!weight)
->  		goto end;
->  
->  	DP_NOTICE(p_hwfn,
->  		  "%s bitmap not free - size=%d, weight=%d, 512 bits per line\n",
->  		  bmap->name, bmap->max_count, weight);
->  
-> -	/* print aligned non-zero lines, if any */
-> -	for (item = 0, line = 0; line < last_line; line++, item += 8)
-> -		if (bitmap_weight((unsigned long *)&pmap[item], 64 * 8))
-> +	for (bit = 0; bit < bmap->max_count; bit += 512) {
-> +		b =  bmap->bitmap + BITS_TO_LONGS(bit);
-> +		nbits = min(bmap->max_count - bit, 512);
-> +
-> +		if (!bitmap_empty(b, nbits))
->  			DP_NOTICE(p_hwfn,
-> -				  "line 0x%04x: 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
-> -				  line,
-> -				  pmap[item],
-> -				  pmap[item + 1],
-> -				  pmap[item + 2],
-> -				  pmap[item + 3],
-> -				  pmap[item + 4],
-> -				  pmap[item + 5],
-> -				  pmap[item + 6], pmap[item + 7]);
-> -
-> -	/* print last unaligned non-zero line, if any */
-> -	if ((bmap->max_count % (64 * 8)) &&
-> -	    (bitmap_weight((unsigned long *)&pmap[item],
-> -			   bmap->max_count - item * 64))) {
-> -		offset = sprintf(str_last_line, "line 0x%04x: ", line);
-> -		for (; item < last_item; item++)
-> -			offset += sprintf(str_last_line + offset,
-> -					  "0x%016llx ", pmap[item]);
-> -		DP_NOTICE(p_hwfn, "%s\n", str_last_line);
-> +				  "line 0x%04x: %*pb\n", bit / 512, nbits, b);
->  	}
->  
->  end:
-> -- 
-> 2.32.0
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for NET_PTP_CLASSIFY
+   Depends on NET
+   Selected by
+   - GKI_HIDDEN_NET_CONFIGS
+   WARNING: unmet direct dependencies detected for HVC_DRIVER
+   Depends on TTY
+   Selected by
+   - GKI_HIDDEN_VIRTUAL_CONFIGS
+   WARNING: unmet direct dependencies detected for PAGE_POOL
+   Depends on NET
+   Selected by
+   - GKI_HIDDEN_NET_CONFIGS
 
 
+vim +/gki_is_module_protected_symbol +35 kernel/gki_module.c
+
+    29	
+    30	/**
+    31	 * gki_is_module_protected_symbol - Is a symbol protected from unsigned module?
+    32	 *
+    33	 * @name:	Symbol being checked against protection from unsigned module
+    34	 */
+  > 35	bool gki_is_module_protected_symbol(const char *name)
+    36	{
+    37		return bsearch(name, gki_protected_symbols, NO_OF_PROTECTED_SYMBOLS,
+    38			       MAX_PROTECTED_NAME_LEN, cmp_name) != NULL;
+    39	}
+    40	
+    41	/**
+    42	 * gki_is_module_exported_symbol - Is a symbol exported from a GKI module?
+    43	 *
+    44	 * @name:	Symbol being checked against exported symbols from GKI modules
+    45	 */
+  > 46	bool gki_is_module_exported_symbol(const char *name)
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
