@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58150C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 15:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238786AbiBKPit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 10:38:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52432 "EHLO
+        id S232587AbiBKPjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 10:39:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiBKPis (ORCPT
+        with ESMTP id S231338AbiBKPi7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 10:38:48 -0500
+        Fri, 11 Feb 2022 10:38:59 -0500
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA1C13A;
-        Fri, 11 Feb 2022 07:38:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0EC13A;
+        Fri, 11 Feb 2022 07:38:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
         ; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
         :From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date
         :Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
         References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=XaO2U/DxJmSHTkTEoZb8gTY8X7cg1YHSNA/LJ+mK5R8=; b=E
-        kcb1iOuz+34AeINzNrVbucvS4iZsk+cwGrWUjmudw8tYMIPfB1XWUKPYLc8rC3cKXuRh9aT+NR26z
-        9ic8EToRDEeniNwwadqL6jC2OxfqA4OAFMQQjJujpQiN757oEfKQoIxVnt66EIagSCI0siXa6gCcs
-        G4h45FHqz/4v3RJ8=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:55256 helo=pettiford.lan)
+        List-Owner:List-Archive; bh=1n07FGJBspLGZL5CXbur46zxCB6JOx/ZWd3JGbPczPE=; b=V
+        OrGM09Bk1nDxlN3lE8TOoakvExcTCFoI852CVxjr98QDbEccBfX4FDH6avcE0TkZ+k4O8tVuxTPfg
+        yiV13szUbthBnziQEodYmU70KVP7mJOJB630sOpHMgtEQid7obooR+1rP3ecRYK4U7NzTjn2rrj1G
+        t3ATznZQ5Kt/fLpI=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:55258 helo=pettiford.lan)
         by mail.hugovil.com with esmtpa (Exim 4.92)
         (envelope-from <hugo@hugovil.com>)
-        id 1nIY0J-0003yU-Tl; Fri, 11 Feb 2022 10:38:36 -0500
+        id 1nIY0Z-0003z0-8D; Fri, 11 Feb 2022 10:38:52 -0500
 From:   Hugo Villeneuve <hugo@hugovil.com>
 To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
@@ -37,14 +37,14 @@ To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
 Cc:     hugo@hugovil.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Fri, 11 Feb 2022 10:38:17 -0500
-Message-Id: <20220211153818.3721541-1-hugo@hugovil.com>
+Date:   Fri, 11 Feb 2022 10:38:43 -0500
+Message-Id: <20220211153843.3721618-1-hugo@hugovil.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
-Subject: [PATCH] arm64: dts: imx8mp-evk: add PCA6416 gpio line names
+Subject: [PATCH] arm64: dts: imx8mp-evk: add support for I2C5
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
@@ -53,43 +53,80 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Add gpio-line-names for the various GPIO's connected to the PCA6416
-I/O expander on the imx8mp EVK.
+Add support for i2c5, which is used to access the
+external I2C bus on connector J22 of the imx8mp-evk.
 
-This helps when using the new gpiod interface to find the GPIOs by name.
+Limit the speed to 100kHz since this is an external I2C bus.
+
+Disabled by default, since it is shared with the CAN1 bus.
+
+To enable i2c5, you need to disable the CAN1 function, enable the i2c5
+function and also configure the CAN1/I2C5_SEL GPIO to HIGH to
+select i2c5 instead of CAN1. This can be done by defining a gpio-hog
+inside the pca6416 node, in your board device tree, like in this example:
+
+&flexcan1 {
+	status = "disabled";
+};
+
+&i2c5 {
+	status = "okay";
+};
+
+&pca6416 {
+	can1-i2c5-sel-hog {
+		gpio-hog;
+		gpios = <2 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "can1-i2c5-sel";
+	};
+};
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 22 ++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 9055ce32aecc..a82c31dbdbf3 100644
+index a82c31dbdbf3..4c3ac4214a2c 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -300,6 +300,22 @@ pca6416: gpio@20 {
- 		pinctrl-0 = <&pinctrl_pca6416_int>;
- 		interrupt-parent = <&gpio1>;
- 		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-+		gpio-line-names = "EXT_PWREN1",
-+			"EXT_PWREN2",
-+			"CAN1/I2C5_SEL",
-+			"PDM/CAN2_SEL",
-+			"FAN_EN",
-+			"PWR_MEAS_IO1",
-+			"PWR_MEAS_IO2",
-+			"EXP_P0_7",
-+			"EXP_P1_0",
-+			"EXP_P1_1",
-+			"EXP_P1_2",
-+			"EXP_P1_3",
-+			"EXP_P1_4",
-+			"EXP_P1_5",
-+			"EXP_P1_6",
-+			"EXP_P1_7";
+@@ -319,6 +319,21 @@ pca6416: gpio@20 {
  	};
  };
  
++/* I2C on expansion connector J22. */
++&i2c5 {
++	clock-frequency = <100000>; /* Lower clock speed for external bus. */
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c5>;
++	status = "disabled"; /* can1 pins conflict with i2c5 */
++
++	/* GPIO 2 of PCA6416 is used to switch between CAN1 and I2C5 functions:
++	 *     LOW:  CAN1 (default, pull-down)
++	 *     HIGH: I2C5
++	 * You need to set it to high to enable I2C5 (for example, add gpio-hog
++	 * in pca6416 node).
++	 */
++};
++
+ &snvs_pwrkey {
+ 	status = "okay";
+ };
+@@ -464,6 +479,13 @@ MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c3
+ 		>;
+ 	};
+ 
++	pinctrl_i2c5: i2c5grp {
++		fsl,pins = <
++			MX8MP_IOMUXC_SPDIF_RX__I2C5_SDA         0x400001c3
++			MX8MP_IOMUXC_SPDIF_TX__I2C5_SCL         0x400001c3
++		>;
++	};
++
+ 	pinctrl_pmic: pmicgrp {
+ 		fsl,pins = <
+ 			MX8MP_IOMUXC_GPIO1_IO03__GPIO1_IO03	0x000001c0
 -- 
 2.30.2
 
