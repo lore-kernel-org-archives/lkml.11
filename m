@@ -2,97 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A289AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 633A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351020AbiBKQO7 (ORCPT
+        id S1351108AbiBKQQK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:14:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44182 "EHLO
+        Fri, 11 Feb 2022 11:16:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350520AbiBKQOx (ORCPT
+        with ESMTP id S238817AbiBKQQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:14:53 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED3021D;
-        Fri, 11 Feb 2022 08:14:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644596092; x=1676132092;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RWbStBYrWNvjoowojkTzcClFVyUrdMqAa6rUIGP5GYk=;
-  b=YfhjY0Itk7Qy8ZdLN7bomIuG5FfguhVSRHe+zAlXrokY9A3RvXuh4Ed4
-   Sdcpl+JXLqXo2RGquuRybrk+axhKfUFRaP1uha8uxTKnldSSVV8AI+Nxj
-   EddBGMo3P9LbKP1z+rmrB3AOBfYno3HqhPMdhuETS5CxpCKrDvoDk4Zju
-   n3CrxUn58He29OEIbIclz6cDVAxTQ2uNhXTKaidoLMJ5Eur2UVudJmrSu
-   lICAeAVghvJ3/4+uZ5kF0eeKxgq/ZeH5TAq3VA4mbn69+sWxXBy3cSVCq
-   6Cgy7BlsqiVflhe25B6uVRdHs/ToCqmgGYORzEsYm6YLcTcjIDCSq5L3+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="313039538"
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="313039538"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 08:14:51 -0800
-X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="542143938"
-Received: from chenyu-dev.sh.intel.com (HELO chenyu-dev) ([10.239.158.61])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 08:14:49 -0800
-Date:   Sat, 12 Feb 2022 00:14:23 +0800
-From:   Chen Yu <yu.c.chen@intel.com>
-To:     "Brown, Len" <len.brown@intel.com>
-Cc:     "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Artem Bityutskiy <artem.bityutskiy@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] tools/power turbostat: Support thermal throttle
- count print
-Message-ID: <20220211161423.GA55414@chenyu-dev>
-References: <20211112115159.725357-1-yu.c.chen@intel.com>
- <PH0PR11MB4887077D94A30A5F757F01B4E0309@PH0PR11MB4887.namprd11.prod.outlook.com>
+        Fri, 11 Feb 2022 11:16:08 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDE8B70
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:16:07 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id y9so8531660pjf.1
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:16:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tKrit6f1ZhoCBVqw3r076zw40XfZbFZ96sRHFdOuik8=;
+        b=FMITympTyB4cxAdAJLed/W53mGKN/3NHq1jFRdxfurhodPtGBFlft8BTrukwBpuCfu
+         KMkxE+xw4PnMbSEBJFU4w1dW2pxj7l6TJr1XAyxYC+2IfZjA6r3/SSJpGXmINmPPpBsN
+         LOT0ufqNBQgZuvDr4tp6QtaPiUCjPv//mv2zx3UFDXSv13C0WMlrqGbN5b1naRQlAPyS
+         TE8nij9lYk92KfPQeFAnibxrihgIAWHfNWQY5Oi8Iy+YggCZokb8WdcaxHzZseiqo2zo
+         md27CAHY1XV4WUGfesGoXAtwiB33MCylqYqZCuJsWoWz9nT+nP4H2gpy9I5TXpRFZcaY
+         uOAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tKrit6f1ZhoCBVqw3r076zw40XfZbFZ96sRHFdOuik8=;
+        b=d5MNaG5zf2XjYvgbxRcwJCn+VgEEGRvIld9+iWFrn/oC4KNt7cyjqonBiBZpK8wcw1
+         cNTT8+wTqqRWS5SP2Zjr1kXoTLL6+6cxkbI78ezBk3clC6dFjd2ei98mUL/OMelDszoP
+         cR30B3Zr2sgGxEIMUaOm3wcMdg2Am8KvPRGbG1DKnYdHV4CUoGURL5ieCOP4d98oGfxz
+         E4eRwBqT/epluBXB6DvcGur8eEf3eao9rK/HNbFKzL3uv1PhFG7msPPXrn1gUABl6gLN
+         RdimPJCm3mZZEOOemGY72V6zXYjFVFNY7RvtWIPu6LjkyrpNGdpXPZWIy70hX9XJLp+N
+         pMiw==
+X-Gm-Message-State: AOAM531mNYrt5F8qe7irF048v2zIGPsrAJ7VpsrtiHHR34UfjbFpcfaT
+        ecrQtmXi/F++CUejdPHVlvKuIkWt5vQnkQ==
+X-Google-Smtp-Source: ABdhPJyqGYLnBNu+H8/gpBo2EeOE7b86nFUYoNTSLZ+1Xo8/LqsVf93PHnoOnvHRWNRDEgg7nNvk5A==
+X-Received: by 2002:a17:90b:38c9:: with SMTP id nn9mr1130824pjb.47.1644596166187;
+        Fri, 11 Feb 2022 08:16:06 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id d15sm27969915pfu.72.2022.02.11.08.16.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Feb 2022 08:16:05 -0800 (PST)
+Date:   Fri, 11 Feb 2022 16:16:02 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        vkuznets@redhat.com, mlevitsk@redhat.com, dmatlack@google.com
+Subject: Re: [PATCH 06/12] KVM: MMU: rename kvm_mmu_reload
+Message-ID: <YgaLwvo2Gl565H3/@google.com>
+References: <20220209170020.1775368-1-pbonzini@redhat.com>
+ <20220209170020.1775368-7-pbonzini@redhat.com>
+ <YgWtdUotsoBOOtXz@google.com>
+ <4e05cfc5-55bb-1273-5309-46ed4fe52fed@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR11MB4887077D94A30A5F757F01B4E0309@PH0PR11MB4887.namprd11.prod.outlook.com>
+In-Reply-To: <4e05cfc5-55bb-1273-5309-46ed4fe52fed@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Len,
-On Fri, Feb 11, 2022 at 10:14:12AM +0800, Brown, Len wrote:
-> What is the scope of this counter -- per-core or per-CPU?
->
-The counter is read from
-/sys/devices/system/cpu/cpu0/thermal_throttle/core_throttle_count,
-which is calculated from MSR_IA32_THERM_STATUS (0x19c) in therm_throt.c.
-According to sdm, this MSR is of core scope.
+On Fri, Feb 11, 2022, Paolo Bonzini wrote:
+> On 2/11/22 01:27, Sean Christopherson wrote:
+> > On Wed, Feb 09, 2022, Paolo Bonzini wrote:
+> > > The name of kvm_mmu_reload is very confusing for two reasons:
+> > > first, KVM_REQ_MMU_RELOAD actually does not call it; second,
+> > > it only does anything if there is no valid root.
+> > > 
+> > > Rename it to kvm_mmu_ensure_valid_root, which matches the actual
+> > > behavior better.
+> > 
+> > 100% agree that kvm_mmu_reload() is a terrible name, but kvm_mmu_ensure_valid_root()
+> > isn't much better, e.g. it sounds like a sanity check and nothing more.
+> 
+> I would have thought that would be more of a check_valid_root().  There are
+> other functions in the kernel following the idea that "ensure" means
+> idempotency: skb_ensure_writable, perf_cgroup_ensure_storage,
+> btf_ensure_modifiable and libbpf_ensure_mem in libbpf.  I'm not a native
+> speaker but, at least in computing, "ensure" seems to mean not just "to make
+> certain that (something) will be true", but also taking steps if that's not
+> already the case.
 
-thanks,
-Chenyu
-> -----Original Message-----
-> From: Chen, Yu C <yu.c.chen@intel.com>
-> Sent: Friday, November 12, 2021 6:52 AM
-> To: linux-pm@vger.kernel.org; Len Brown <lenb@kernel.org>
-> Cc: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>; Rafael J. Wysocki <rafael@kernel.org>; Brown, Len <len.brown@intel.com>; linux-kernel@vger.kernel.org; Chen, Yu C <yu.c.chen@intel.com>
-> Subject: [PATCH 1/2] tools/power turbostat: Support thermal throttle count print
-> 
-> The turbostat data is collected by end user for power evaluationit. However it looks like we are missing enough thermal context there. Already a couple of time we found that power management developer asking something like this:
-> grep -r . /sys/devices/system/cpu/cpu*/thermal_throttle/*
-> 
-> Print the per core thermal throttle count so as to get suffificent thermal context.
-> 
-> turbostat -i 5 -s Core,CPU,CoreThr
-> Core    CPU     CoreThr
-> -       -       104
-> 0       0       61
-> 0       4
-> 1       1       0
-> 1       5
-> 2       2       104
-> 2       6
-> 3       3       7
-> 3       7
-> 
-> Suggested-by: Artem Bityutskiy <artem.bityutskiy@linux.intel.com>
-> Signed-off-by: Chen Yu <yu.c.chen@intel.com>
+There's no ambiguity on the "make certain that <x> will be true", it's the second
+part about taking steps that's ambiguous.  Specifically, it doesn't convey any
+information about _what_ steps will be taken, e.g. the below implementation is
+also a possibility since it ensures the root is valid by preventing forward
+progress if the root is invalid.
+
+  static inline int kvm_mmu_ensure_valid_root(struct kvm_vcpu *vcpu)
+  { 
+	if (unlikely(vcpu->arch.mmu->root.hpa != INVALID_PAGE))
+		return -EFAULT;
+	return 0;
+  }
+
+Existing example of that interpretation are input_dev_ensure_poller() and
+rtnl_ensure_unique_netns().
+
+The other nuance that I want to avoid is the implication that KVM is checking for
+a valid root because it doesn't trust what has happened before, i.e. that the call
+is there as a safeguard.  That's misleading for the most common path, vcpu_enter_guest(),
+because when the helper does do some work, it's usually because KVM deliberately
+invalidated the root.
+
+
+> I also thought of "establish_valid_root", but it has the opposite
+> problem---it does not convey well, if at all, that the root could be valid
+> already.
+
+Heh, I agree that "establish" would imply the root is always invalid, but amusingly
+"establish" is listed as a synonym for "ensure" on the few sites of checked. Yay English.  
+
+I was going to suggest we just open code it in vcpu_enter_guest, but async #PF
+uses it too :-/
+
+Can we put this on the backburner for now?  IMO, KVM_REQ_MMU_RELOAD is far more
+misleading than kvm_mmu_reload(), and I posted a series to remedy that (though I
+need to check if it's still viable since you vetoed adding the check for a pending
+request in the page fault handler).
+
+https://lore.kernel.org/all/20211209060552.2956723-1-seanjc@google.com
