@@ -2,189 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 14:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350915AbiBKO2g (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 09:28:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60138 "EHLO
+        id S245223AbiBKO3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 11 Feb 2022 09:29:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350803AbiBKO2P (ORCPT
+        with ESMTP id S236333AbiBKO3o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 09:28:15 -0500
-Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F4B21F;
-        Fri, 11 Feb 2022 06:28:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644589689; x=1676125689;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2YbGiltNp/YE4sAiVmdcESfjGWWvEMo8y3ASodgdy24=;
-  b=ASSIUh4/GBZc//5scbIVr5axhNENCuiYSoyZlMmjqT2GLi6Biw/r7YEl
-   1QJphKAPdXzIMtQPSMSDBBkDN2dKEctaO87NO3uz3dcSSeyF4N0XrOXh9
-   FUylGNeSrsPAAhJRFTYdrEMgidaiSt3rnueaTvFzBOgpEA6ExYOjyJcGZ
-   j3BfF9Vmhu5x76Gr0fk01h3e5ENE4+rytdkz739FVWdSW/TS+mJVAYAdl
-   d4zUn4U61dbaY9q4Q6ixiCdYuB+mo9Cl16IApZ12+ek26r3VHAWSCacK/
-   kwIHctHGosaarootPcGHlKPZZ22mur7l8tLRYFNLiNQeAaapuUN7vjrjB
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,361,1635199200"; 
-   d="scan'208";a="22042291"
-Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
-  by mx1-pgp.tq-group.com with ESMTP; 11 Feb 2022 15:28:02 +0100
-Received: from mx1.tq-group.com ([192.168.6.7])
-  by tq-pgp-pr1.tq-net.de (PGP Universal service);
-  Fri, 11 Feb 2022 15:28:02 +0100
-X-PGP-Universal: processed;
-        by tq-pgp-pr1.tq-net.de on Fri, 11 Feb 2022 15:28:02 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
-  t=1644589682; x=1676125682;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=2YbGiltNp/YE4sAiVmdcESfjGWWvEMo8y3ASodgdy24=;
-  b=RVnyBrXpP49Mnw3iSjq5n36YBxv+AjKKAhB8lryGc/V9ZSEJRMZ6uGr5
-   HgS9tw/9Ax7nz9aSy+8c4PqHcooukytnpx3xl8/kHEZBWCAXYadSgwCGZ
-   pv+i/SP1S2w5575egc6DFYxZbpgdVPZy1MuCDZcAOJFKI+rerBCtTy5nX
-   9p1BbMAc1s3DgMGOr3v9hJZC9HVHQriaPLWiaQMjpKuA3eHYZHEnoCFBV
-   mbRbnQ7+I7Xkx6NTf84c/SkFyb04QZTkdtt6rQ3etc1hwHraZO7oL5ekg
-   bnZzDkROzk/ZspBfXpmOBE0j1ymFhbLHTHKeGRLbtZOAKkciEl+W33SBE
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.88,361,1635199200"; 
-   d="scan'208";a="22042290"
-Received: from vtuxmail01.tq-net.de ([10.115.0.20])
-  by mx1.tq-group.com with ESMTP; 11 Feb 2022 15:28:02 +0100
-Received: from steina-w.tq-net.de (unknown [10.123.49.12])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 6C212280082;
-        Fri, 11 Feb 2022 15:28:02 +0100 (CET)
-From:   Alexander Stein <alexander.stein@ew.tq-group.com>
-To:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 7/9] media: imx: utils: Add more Bayer formats
-Date:   Fri, 11 Feb 2022 15:27:50 +0100
-Message-Id: <20220211142752.779952-8-alexander.stein@ew.tq-group.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220211142752.779952-1-alexander.stein@ew.tq-group.com>
-References: <20220211142752.779952-1-alexander.stein@ew.tq-group.com>
+        Fri, 11 Feb 2022 09:29:44 -0500
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6400DCF
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 06:29:43 -0800 (PST)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4JwGGY5x43z9sSB;
+        Fri, 11 Feb 2022 15:29:41 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id USX2o3PF4ShW; Fri, 11 Feb 2022 15:29:41 +0100 (CET)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4JwGGX3q5dz9sS1;
+        Fri, 11 Feb 2022 15:29:40 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 5E6DC8B77D;
+        Fri, 11 Feb 2022 15:29:40 +0100 (CET)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id F0JzPDXcZiPg; Fri, 11 Feb 2022 15:29:40 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.6.91])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2765F8B764;
+        Fri, 11 Feb 2022 15:29:40 +0100 (CET)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 21BETUUS1222886
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Fri, 11 Feb 2022 15:29:30 +0100
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 21BETNhO1222885;
+        Fri, 11 Feb 2022 15:29:23 +0100
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH] powerpc/64: Rewrite loading of AMR_KUAP_BLOCKED in assembly
+Date:   Fri, 11 Feb 2022 15:29:20 +0100
+Message-Id: <56f6eebc9c5c1196038d17c09a5ef1f245e1167c.1644588937.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1644589759; l=1751; s=20211009; h=from:subject:message-id; bh=z/4Ca8ZC2EDmkSpiIzEao9zLZfk88V1Qa0syyqnav7w=; b=uVWHavhvA87L5pq1TuD7hAlwiQFGToKKzz1orO49d0Yag2cfxu7oI0CmOTFdeReIZ1Hl7YUYrXr/ u9pcHNHADkfFwWulU9XhQqFRJFENm3n0wpyR34RALpa4ahpa4fiT
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Without this the ioctl VIDIOC_ENUM_FMT will not list the 10/12/14-Bit
-Bayer formats. This in return results in
-"v4l2-ctl --set-fmt-video pixelformat='RG10'" failing to set the
-pixelformat.
+Constant loading of AMR_KUAP_BLOCKED takes 5 instructions:
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+	c000000000016a40:       4c 00 01 2c     isync
+	c000000000016a44:       3d 20 fc ff     lis     r9,-769
+	c000000000016a48:       61 29 ff ff     ori     r9,r9,65535
+	c000000000016a4c:       79 29 07 c6     rldicr  r9,r9,32,31
+	c000000000016a50:       65 29 ff ff     oris    r9,r9,65535
+	c000000000016a54:       61 29 ff ff     ori     r9,r9,65535
+	c000000000016a58:       7d 3d 03 a6     mtamr   r9
+	c000000000016a5c:       4c 00 01 2c     isync
+
+Until GCC is fixed, implement it in assembly using 2 instructions:
+
+	c000000000016a50:       4c 00 01 2c     isync
+	c000000000016a54:       39 20 fc ff     li      r9,-769
+	c000000000016a58:       79 29 80 02     rotldi  r9,r9,48
+	c000000000016a5c:       7d 3d 03 a6     mtamr   r9
+	c000000000016a60:       4c 00 01 2c     isync
+
+With this change a ppc64_defconfig build is reduced by 15 kbytes.
+
+Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=94395
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
-Changes in v2:
-* Added Reviewed-by: Laurent Pinchart
+ arch/powerpc/include/asm/book3s/64/kup.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
- drivers/staging/media/imx/imx-media-utils.c | 72 +++++++++++++++++++++
- 1 file changed, 72 insertions(+)
-
-diff --git a/drivers/staging/media/imx/imx-media-utils.c b/drivers/staging/media/imx/imx-media-utils.c
-index e59aaa77172a..57eb1c5897c0 100644
---- a/drivers/staging/media/imx/imx-media-utils.c
-+++ b/drivers/staging/media/imx/imx-media-utils.c
-@@ -130,6 +130,78 @@ static const struct imx_media_pixfmt pixel_formats[] = {
- 		.cs     = IPUV3_COLORSPACE_RGB,
- 		.bpp    = 8,
- 		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SBGGR10,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR10_1X10),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 10,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGBRG10,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG10_1X10),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 10,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGRBG10,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG10_1X10),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 10,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SRGGB10,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB10_1X10),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 10,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SBGGR12,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR12_1X12),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 12,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGBRG12,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG12_1X12),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 12,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGRBG12,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG12_1X12),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 12,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SRGGB12,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB12_1X12),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 12,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SBGGR14,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SBGGR14_1X14),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 14,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGBRG14,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGBRG14_1X14),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 14,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SGRBG14,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SGRBG14_1X14),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 14,
-+		.bayer  = true,
-+	}, {
-+		.fourcc = V4L2_PIX_FMT_SRGGB14,
-+		.codes  = IMX_BUS_FMTS(MEDIA_BUS_FMT_SRGGB14_1X14),
-+		.cs     = IPUV3_COLORSPACE_RGB,
-+		.bpp    = 14,
-+		.bayer  = true,
- 	}, {
- 		.fourcc = V4L2_PIX_FMT_SBGGR16,
- 		.codes  = IMX_BUS_FMTS(
+diff --git a/arch/powerpc/include/asm/book3s/64/kup.h b/arch/powerpc/include/asm/book3s/64/kup.h
+index 54cf46808157..35c017ba29e1 100644
+--- a/arch/powerpc/include/asm/book3s/64/kup.h
++++ b/arch/powerpc/include/asm/book3s/64/kup.h
+@@ -338,6 +338,10 @@ static __always_inline void set_kuap(unsigned long value)
+ 	 * before and after the move to AMR. See table 6 on page 1134.
+ 	 */
+ 	isync();
++
++	if (__builtin_constant_p(value) && value == 0xfcffffffffffffff)
++		asm("li %0, %1 ; rotldi %0, %0, 48" : "=r"(value) : "i"(0xfffffffffffffcff));
++
+ 	mtspr(SPRN_AMR, value);
+ 	isync();
+ }
 -- 
-2.25.1
+2.34.1
 
