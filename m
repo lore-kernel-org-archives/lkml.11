@@ -2,76 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 018D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 514D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 13:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350515AbiBKNYU (ORCPT
+        id S1350518AbiBKNZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 08:24:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49806 "EHLO
+        Fri, 11 Feb 2022 08:25:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243011AbiBKNYT (ORCPT
+        with ESMTP id S239313AbiBKNZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 08:24:19 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE378BBF
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:24:18 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id w20so4661271plq.12
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:24:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=f0Fqv0bzjFszIvvUAYWw2+6kT8bby7TTzSPdzg4sLUk=;
-        b=Nc1J7qQsJ5lN0gl2mCSiyQbwLxaid+TjM4CKQxk6Cf5vjQ6gi9mrnWc6LNrSc7aWqO
-         AZSCN78OBiJa5L4N6lszjiBB+TZ+S1dlkQsQcMU6dpYy4yIiUF09ZrZH9oNotc1ekUlx
-         3iVYoiIAcrxfOrvi9ICK74/BPk3R3gJE864ANAv2SdLvyOZkoUlDrXFN3DlO6nKkx4DS
-         jP3aWbXY8gcefvSLNxVKFJslqMJ5KY4eDFk3q0yQT2Gr3y67Yf02Uq2oWTEa2w2y35gy
-         oyKEBdp4yD9CCmAzoamDdHaNBaRuK4XO2G+KGLiiwKA0bVThIv207BqyzRuR6Mm6YT/3
-         ez1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=f0Fqv0bzjFszIvvUAYWw2+6kT8bby7TTzSPdzg4sLUk=;
-        b=TOlWMtzC3STq4R6TrurdQprtbe49oXu4xwazDHEhsQ7hnVVrOp8wPHe6q5IcgJPmNz
-         PakibtVRIjHzR0AMObqwsxMjzkvEm3DuSrqsyxxWa8y5MOiJtnaUVpUZRThrgyZFDYtR
-         d2aNu/33vXOs9pnYH9FvQ0qW3YGD3zpypeBcaQ163FDxwDnAicf7EQ2RpuyPSP/M5/pi
-         ft4Q2lRtBAG6Wts+9//8NPdIOBK+zeI0UDiI7ccXH7i2AngzwZFxSQAheMrLtNjRfgR4
-         2g2gdOMgVcU2G6pl6AraDrExF13K1lXAJD1VJlOdaAtk70+4JVVzOn9+1cm8qt2r+wbX
-         9kkw==
-X-Gm-Message-State: AOAM531lFIb95e2RUPBzqF3nSya9x0HcJVz0CpwuRxY+rCmD0TGB26Xm
-        1fWga5at5cFd/fdFcbK3Fa9Z/w==
-X-Google-Smtp-Source: ABdhPJzK2XUVwYEzIxK7kyMOxfYcu9Ot/TBK7K2adSoNhKewYU5KYOdn5DxEl72sB6jd1gpTdGqm8Q==
-X-Received: by 2002:a17:902:bd03:: with SMTP id p3mr1610578pls.50.1644585858331;
-        Fri, 11 Feb 2022 05:24:18 -0800 (PST)
-Received: from [192.168.1.116] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id f30sm11884656pgf.7.2022.02.11.05.24.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 11 Feb 2022 05:24:17 -0800 (PST)
-Subject: Re: [syzbot] possible deadlock in io_poll_double_wake (3)
-To:     syzbot <syzbot+e654d4e15e6b3b9deb53@syzkaller.appspotmail.com>,
-        alaaemadhossney.ae@gmail.com, asml.silence@gmail.com,
-        dvyukov@google.com, hdanton@sina.com, io-uring@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-References: <00000000000098f75305d7ba7942@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <6c143b3f-c801-1906-27d1-be876272b1a0@kernel.dk>
-Date:   Fri, 11 Feb 2022 06:24:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Fri, 11 Feb 2022 08:25:04 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D46D5D54
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 05:25:02 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C42C1042;
+        Fri, 11 Feb 2022 05:25:02 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.87.94])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 11A773F718;
+        Fri, 11 Feb 2022 05:24:58 -0800 (PST)
+Date:   Fri, 11 Feb 2022 13:24:49 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>, acme@redhat.com,
+        ardb@kernel.org, bp@alien8.de, broonie@kernel.org,
+        catalin.marinas@arm.com, dave.hansen@linux.intel.com,
+        jpoimboe@redhat.com, jslaby@suse.cz,
+        linux-arm-kernel@lists.infradead.org, linux@armlinux.org.uk,
+        mingo@redhat.com, peterz@infradead.org, tglx@linutronix.de,
+        will@kernel.org, llvm@lists.linux.dev,
+        James Y Knight <jyknight@google.com>
+Subject: Re: [PATCH v2 2/7] linkage: add SYM_{ENTRY,START,END}_AT()
+Message-ID: <YgZjofwviaYFS88O@FVFF77S0Q05N>
+References: <20220125113200.3829108-1-mark.rutland@arm.com>
+ <20220125113200.3829108-3-mark.rutland@arm.com>
+ <YgUmvuJYfycnhODA@FVFF77S0Q05N>
+ <CAKwvOdmWV6AL2RM2SQNYQ7fu3kQwPf+W57LZ_szrfZm2eLtBcw@mail.gmail.com>
+ <YgZJS6mDoAgVqC4l@FVFF77S0Q05N>
 MIME-Version: 1.0
-In-Reply-To: <00000000000098f75305d7ba7942@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YgZJS6mDoAgVqC4l@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-#syz fix: io_uring: poll rework
+On Fri, Feb 11, 2022 at 11:32:27AM +0000, Mark Rutland wrote:
+> On Thu, Feb 10, 2022 at 05:20:10PM -0800, Nick Desaulniers wrote:
+> > On Thu, Feb 10, 2022 at 6:52 AM Mark Rutland <mark.rutland@arm.com> wrote:
+ > For the expression
+> > 
+> > > .if (qwerty_fiqin_end - qwerty_fiqin_start) > (0x200 - 0x1c)
+> > 
+> > can you use local labels (`.L` prefix) rather than symbolic
+> > references? or is there a risk of them not being unique per TU?
+>
+> For the problem in this patch I might be able to do something of that shape,
+> but I'll need to factor the SYM_*() helpers differently so that I can use
+> labels for the primary definition.
 
--- 
-Jens Axboe
+FWIW, that refactoring turned out to be easier than I expected, and I actually
+prefer the new structure.
 
+I've ended up dropping this patch, and in the next patch I leave
+SYM_FUNC_START() unchanged, but calculate the size in SYM_FUNC_END() and
+propagate that to all the aliases pre-calculated:
+
+diff --git a/include/linux/linkage.h b/include/linux/linkage.h
+index dbf8506decca..027ab1618bf8 100644
+--- a/include/linux/linkage.h
++++ b/include/linux/linkage.h
+@@ -165,7 +165,18 @@
+ #ifndef SYM_END
+ #define SYM_END(name, sym_type)                                \
+        .type name sym_type ASM_NL                      \
+-       .size name, .-name
++       .set .L__sym_size_##name, .-name ASM_NL         \
++       .size name, .L__sym_size_##name
++#endif
++
++/* SYM_ALIAS -- use only if you have to */
++#ifndef SYM_ALIAS
++#define SYM_ALIAS(alias, name, sym_type, linkage)                      \
++       linkage(alias) ASM_NL                                           \
++       .set alias, name                                                \
++       .type alias sym_type ASM_NL                                     \
++       .set .L__sym_size_##alias, .L__sym_size_##name ASM_NL           \
++       .size alias, .L__sym_size_##alias
+ #endif
+
+I still think that in future we *might* want to be able to use two non-label
+symbols (in the same section/fragment/etc) to generate an absolute expression,
+but that's not a blocker for this series, and for the common cases (e.g.
+checking size) we can probably work around that as above.
+
+Thanks for looknig at this!
+
+Mark.
