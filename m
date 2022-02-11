@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7BEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 03:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242719AbiBKDxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 22:53:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39952 "EHLO
+        id S239589AbiBKDzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 10 Feb 2022 22:55:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241365AbiBKDxe (ORCPT
+        with ESMTP id S233468AbiBKDzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 22:53:34 -0500
-Received: from mail-m17664.qiye.163.com (mail-m17664.qiye.163.com [59.111.176.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C740055BE;
-        Thu, 10 Feb 2022 19:53:34 -0800 (PST)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m17664.qiye.163.com (Hmail) with ESMTPA id 3B3D91401A7;
-        Fri, 11 Feb 2022 11:43:50 +0800 (CST)
-From:   Jon Lin <jon.lin@rock-chips.com>
-To:     broonie@kernel.org
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        shengfei Xu <xsf@rock-chips.com>,
-        Jon Lin <jon.lin@rock-chips.com>
-Subject: [PATCH 4/6] spi: rockchip: Suspend and resume the bus during NOIRQ_SYSTEM_SLEEP_PM ops
-Date:   Fri, 11 Feb 2022 11:43:40 +0800
-Message-Id: <20220211034344.4130-4-jon.lin@rock-chips.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220211034344.4130-1-jon.lin@rock-chips.com>
-References: <20220211034344.4130-1-jon.lin@rock-chips.com>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUJPTB1WT01CQ0wYSRpPHU
-        8aVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NzY6ATo4LD5CAh4dCA8cF08C
-        Sy0KCx9VSlVKTU9PTk5KS0hLTUNKVTMWGhIXVREUFVUXEhU7CRQYEFYYExILCFUYFBZFWVdZEgtZ
-        QVlOQ1VJSVVMVUpKT1lXWQgBWUFISk5MNwY+
-X-HM-Tid: 0a7ee6e1469dda2fkuws3b3d91401a7
+        Thu, 10 Feb 2022 22:55:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 16B1E1125
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 19:55:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644551751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=7T3Os6oDYB/2abU0AodlQMxDyRkNZMiJu4SBO/39vec=;
+        b=C3Tx5/vl+NWNbylQcQr5xMpLouTAOkDX013pmLj+lIDug6hLp34tK6ecECUYoDwdwbDE1w
+        FpLLu0WtOqHbvoTAXvT9Rac0rmVNxv2O1OL+i6KNR/Q+kw8Qq5FgMT2d9I02wmYFWl3ZtH
+        sGQkBHmMn3b/9kq/MJ8tsjRdLI2+yOc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-257-emkjnUV6PhSxWFGMnqckIQ-1; Thu, 10 Feb 2022 22:55:48 -0500
+X-MC-Unique: emkjnUV6PhSxWFGMnqckIQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06D351800D50;
+        Fri, 11 Feb 2022 03:55:47 +0000 (UTC)
+Received: from llong.com (unknown [10.22.19.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A6D84CEE0;
+        Fri, 11 Feb 2022 03:55:35 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Waiman Long <longman@redhat.com>
+Subject: [PATCH 1/2] locking/lockdep: Cleanup reinit_class()
+Date:   Thu, 10 Feb 2022 22:55:25 -0500
+Message-Id: <20220211035526.1329503-1-longman@redhat.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: shengfei Xu <xsf@rock-chips.com>
+Replace the duplicated WARN_ON_ONCE() tests in reinit_class() with
+BUILD_BUG_ON().
 
-the wakeup interrupt handler which is guaranteed not to run while
-@resume noirq() is being executed. the patch can help to avoid the
-wakeup source try to access spi when the spi is in suspend mode.
-
-Signed-off-by: shengfei Xu <xsf@rock-chips.com>
-Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Signed-off-by: Waiman Long <longman@redhat.com>
 ---
+ include/linux/lockdep_types.h | 4 ++++
+ kernel/locking/lockdep.c      | 6 +++---
+ 2 files changed, 7 insertions(+), 3 deletions(-)
 
- drivers/spi/spi-rockchip.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index 5f6a70664871..5457af616a44 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -959,14 +959,14 @@ static int rockchip_spi_suspend(struct device *dev)
- {
- 	int ret;
- 	struct spi_controller *ctlr = dev_get_drvdata(dev);
-+	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
+diff --git a/include/linux/lockdep_types.h b/include/linux/lockdep_types.h
+index d22430840b53..446d981ae3a2 100644
+--- a/include/linux/lockdep_types.h
++++ b/include/linux/lockdep_types.h
+@@ -108,6 +108,10 @@ struct lock_class {
+ 	 */
+ 	struct list_head		locks_after, locks_before;
  
- 	ret = spi_controller_suspend(ctlr);
- 	if (ret < 0)
- 		return ret;
++	/*
++	 * All the fields that require re-initialization after being zapped
++	 * must be put after "key".
++	 */
+ 	const struct lockdep_subclass_key *key;
+ 	unsigned int			subclass;
+ 	unsigned int			dep_gen_id;
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index d4252b5c9863..77bbe557d48b 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6015,10 +6015,10 @@ static void reinit_class(struct lock_class *class)
+ 	WARN_ON_ONCE(!class->lock_entry.next);
+ 	WARN_ON_ONCE(!list_empty(&class->locks_after));
+ 	WARN_ON_ONCE(!list_empty(&class->locks_before));
++	BUILD_BUG_ON(offsetof(struct lock_class, lock_entry) > offset);
++	BUILD_BUG_ON(offsetof(struct lock_class, locks_after) > offset);
++	BUILD_BUG_ON(offsetof(struct lock_class, locks_before) > offset);
+ 	memset(p + offset, 0, sizeof(*class) - offset);
+-	WARN_ON_ONCE(!class->lock_entry.next);
+-	WARN_ON_ONCE(!list_empty(&class->locks_after));
+-	WARN_ON_ONCE(!list_empty(&class->locks_before));
+ }
  
--	ret = pm_runtime_force_suspend(dev);
--	if (ret < 0)
--		return ret;
-+	clk_disable_unprepare(rs->spiclk);
-+	clk_disable_unprepare(rs->apb_pclk);
- 
- 	pinctrl_pm_select_sleep_state(dev);
- 
-@@ -981,10 +981,14 @@ static int rockchip_spi_resume(struct device *dev)
- 
- 	pinctrl_pm_select_default_state(dev);
- 
--	ret = pm_runtime_force_resume(dev);
-+	ret = clk_prepare_enable(rs->apb_pclk);
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = clk_prepare_enable(rs->spiclk);
-+	if (ret < 0)
-+		clk_disable_unprepare(rs->apb_pclk);
-+
- 	ret = spi_controller_resume(ctlr);
- 	if (ret < 0) {
- 		clk_disable_unprepare(rs->spiclk);
-@@ -1026,7 +1030,7 @@ static int rockchip_spi_runtime_resume(struct device *dev)
- #endif /* CONFIG_PM */
- 
- static const struct dev_pm_ops rockchip_spi_pm = {
--	SET_SYSTEM_SLEEP_PM_OPS(rockchip_spi_suspend, rockchip_spi_resume)
-+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(rockchip_spi_suspend, rockchip_spi_resume)
- 	SET_RUNTIME_PM_OPS(rockchip_spi_runtime_suspend,
- 			   rockchip_spi_runtime_resume, NULL)
- };
+ static inline int within(const void *addr, void *start, unsigned long size)
 -- 
-2.17.1
+2.27.0
 
