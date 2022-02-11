@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 920A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 17:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352382AbiBKR6I (ORCPT
+        id S1352367AbiBKR7H (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 12:58:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46518 "EHLO
+        Fri, 11 Feb 2022 12:59:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352375AbiBKR6E (ORCPT
+        with ESMTP id S1343674AbiBKR7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 12:58:04 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F4BCE9
-        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:58:02 -0800 (PST)
+        Fri, 11 Feb 2022 12:59:04 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB95BCE9
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 09:59:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644602282; x=1676138282;
+  t=1644602342; x=1676138342;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6FUVCvwln8ov+HCRQVOHB5cqwwLgdOgqqJHwvBe7IXE=;
-  b=DiNsU3ItFQhocvCZ6RsRUtYppN346zFydOLUabycQEFVvr4wF6kovAZC
-   Cm7uk1E89G6pJnTYTtqSDyI1xISG8IIwLxEAcjxRWpPe8xfevVme+WMX0
-   f2qRTDahtx0PI0KvyiJu+hEBndlVVunVBosqC89my+9Cs+ehzp3eYidbC
-   hYjrm2UccxrzKRI+6BCBwsecaS4wPqE7JI8B365Cmq/bIJhwA82xKTNz5
-   sEk+vQE27M0YZeucAN/cK0m96IZ4pLUxVGnYOVSWdUmKlTmdIp1EaiZwm
-   QO00r4GrsxHxYh4PbIdPiY05ZVFa5Upzal4lGalBHJ0FtKR/SvTqKSIOL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="313059259"
+  bh=TL++bZhhP8obKU8rV7DT17KbsEkZMjE8TOIN0Y4aU+Y=;
+  b=bdZHkq1g32hBsa1NjF86UPbnr1rsINU2j4/0yAm5vJSuoVJyrvAdHSI8
+   C9iJrBMap610snQ7hxAfr6EWW3V3qc5N9KRVPhlkaZSb3oy5HhLjPut9M
+   HO1icteymjLScUs4KEuMGBPu9RXew8J2OLtRt6rQRDoxibjO50/8jZNg4
+   YZ1w2B0WPL3AvW60PW9BN4d05tkYZQ6lz88ENNfahOP5G1rzMgYc0Wu/t
+   zrSMHZ+AO48fHBWdwjEl1TmW+4rx6hXJ5ZmMG/0Euz0RQ2Q4KRcWbnb/Z
+   s6PkyE7fC66HgofLcgubFXtcvUxw6ln+CWNGC6HcmSG0+vdxW5AKV9XDf
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="230419959"
 X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="313059259"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 09:58:02 -0800
+   d="scan'208";a="230419959"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 09:59:02 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
-   d="scan'208";a="702188199"
+   d="scan'208";a="586424423"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 11 Feb 2022 09:58:01 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 11 Feb 2022 09:59:01 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nIaBE-0004t3-Cm; Fri, 11 Feb 2022 17:58:00 +0000
-Date:   Sat, 12 Feb 2022 01:57:17 +0800
+        id 1nIaCD-0004uW-4Y; Fri, 11 Feb 2022 17:59:01 +0000
+Date:   Sat, 12 Feb 2022 01:58:09 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Koba Ko <koba.ko@canonical.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:11:
- error: dereferencing pointer to incomplete type 'struct cpuinfo_x86'
-Message-ID: <202202111942.s5hvtoIO-lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-maple 34/35]
+ nios2-linux-ld: flush.c:undefined reference to `xa_store_range'
+Message-ID: <202202112245.r3x89mqA-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -57,68 +58,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Koba,
-
-FYI, the error/warning still remains.
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   f1baf68e1383f6ed93eb9cff2866d46562607a43
-commit: b3dc549986eb7b38eba4a144e979dc93f386751f drm/amdgpu: Disable PCIE_DPM on Intel RKL Platform
-date:   6 months ago
-config: um-allmodconfig (https://download.01.org/0day-ci/archive/20220211/202202111942.s5hvtoIO-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-maple
+head:   429e2bb6fb190f390ed23afc0d2308e877c43be5
+commit: e9340673baaf1ff587aed3391aa411cf554bc42e [34/35] netfs: Slice a writeback from a dirty region
+config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220211/202202112245.r3x89mqA-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b3dc549986eb7b38eba4a144e979dc93f386751f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout b3dc549986eb7b38eba4a144e979dc93f386751f
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/e9340673baaf1ff587aed3391aa411cf554bc42e
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-maple
+        git checkout e9340673baaf1ff587aed3391aa411cf554bc42e
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=um SHELL=/bin/bash drivers/gpu/drm/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   In file included from arch/x86/um/asm/processor.h:41,
-                    from include/linux/spinlock_up.h:8,
-                    from include/linux/spinlock.h:92,
-                    from include/linux/mmzone.h:8,
-                    from include/linux/gfp.h:6,
-                    from include/linux/slab.h:15,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/inc/pp_debug.h:35,
-                    from drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:23:
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c: In function 'intel_core_rkl_chk':
-   arch/um/include/asm/processor-generic.h:104:19: error: called object is not a function or function pointer
-     104 | #define cpu_data (&boot_cpu_data)
-         |                  ~^~~~~~~~~~~~~~~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1742:27: note: in expansion of macro 'cpu_data'
-    1742 |  struct cpuinfo_x86 *c = &cpu_data(0);
-         |                           ^~~~~~~~
->> drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1744:11: error: dereferencing pointer to incomplete type 'struct cpuinfo_x86'
-    1744 |  return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-         |           ^~
-   drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c:1748:1: error: control reaches end of non-void function [-Werror=return-type]
-    1748 | }
-         | ^
-   cc1: some warnings being treated as errors
-
-
-vim +1744 drivers/gpu/drm/amd/amdgpu/../pm/powerplay/hwmgr/smu7_hwmgr.c
-
-  1738	
-  1739	static bool intel_core_rkl_chk(void)
-  1740	{
-  1741	#if IS_ENABLED(CONFIG_X86_64)
-  1742		struct cpuinfo_x86 *c = &cpu_data(0);
-  1743	
-> 1744		return (c->x86 == 6 && c->x86_model == INTEL_FAM6_ROCKETLAKE);
-  1745	#else
-  1746		return false;
-  1747	#endif
-  1748	}
-  1749	
+   nios2-linux-ld: fs/netfs/flush.o: in function `netfs_flush_get_pages':
+   flush.c:(.text.unlikely+0x244): undefined reference to `xa_store_range'
+   flush.c:(.text.unlikely+0x244): relocation truncated to fit: R_NIOS2_CALL26 against `xa_store_range'
+>> nios2-linux-ld: flush.c:(.text.unlikely+0x2fc): undefined reference to `xa_store_range'
+   flush.c:(.text.unlikely+0x2fc): relocation truncated to fit: R_NIOS2_CALL26 against `xa_store_range'
+   `adc3xxx_i2c_remove' referenced in section `.data' of sound/soc/codecs/tlv320adc3xxx.o: defined in discarded section `.exit.text' of sound/soc/codecs/tlv320adc3xxx.o
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
