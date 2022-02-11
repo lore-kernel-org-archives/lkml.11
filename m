@@ -2,111 +2,310 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16306C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE63C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 00:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346352AbiBKAbU (ORCPT
+        id S1346358AbiBKAcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 19:31:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58146 "EHLO
+        Thu, 10 Feb 2022 19:32:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245157AbiBKAbT (ORCPT
+        with ESMTP id S242533AbiBKAcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 19:31:19 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FE3A559A;
-        Thu, 10 Feb 2022 16:31:19 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id n17so9561351iod.4;
-        Thu, 10 Feb 2022 16:31:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=WY+F15RwKoXSBs81n7QT8FqeoZ2/vRqemIDQ19p9hAY=;
-        b=UhDGPTTGkCv7nd2i/RxSPH4PnVPZlxYLGSFCnJ4+jnU1zbj0n8l7wVAyCdZZNe4xg1
-         RVezAL9rFr1cDpujwWZ19coQQzwOQ8jqEuPUM3RTAzcJoTLbeUwPZxQnnTk2s9EjgDdM
-         bqVuyPRCfRizMtazcb6ZHcm0of8H+1Zpq3KZTY7y9b1Vd/FvIUupHM5PwEvYk6iZsPa0
-         a48amFL3lBebCekA448n7zpKvMPr2J4GBSKGH1TkLOozoIK4f04NbEsPJFzZsffvrz5n
-         jMJwjmBLyd8kN79M7JlB19hF4boCL26IuZBs/TGBiu1lOedGjl0eKRMxhP7Dz44nOEaU
-         hgVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WY+F15RwKoXSBs81n7QT8FqeoZ2/vRqemIDQ19p9hAY=;
-        b=7VjKq2vZENiURrW8qW0FOxjZavzg9aYsvFJg2Utla7K0OYpKwOb2HYpbM1XUbmGsSA
-         vZcDtBgeuL/d5SF/2PxrJ68rcXwUafmwPh9F+NJNtmH3hT79mw3PVqJtt8kEsACY1hvO
-         V3+tn4wswC+dRxXtxQdwIR8Wt2kZCEwHMTO9+qsigXnW724aZdcdSiuz5ShqEXkJBs0I
-         y1YU40zrG+wOK0wh1Jsn93LOb90hN8d5DWBLTqny+qAbRilUJsj0S4Qs4iEflHE+DWsi
-         lECQ+isgmgESsjeCi5oQCOILGtPkaLyHXyyNWhh3W5iKxvI8k3v5iSbWkM1trZYFe7uo
-         07RA==
-X-Gm-Message-State: AOAM533aB6ECqKOCq1/+rXkkjGRQqrG/raeFRKiKg8sqnxMDoKnXjfYS
-        t5Gr5DWTVicDwAaFjufSXbM=
-X-Google-Smtp-Source: ABdhPJyJf8DICiugARTyGxQTO41WkKOMQOz8THqG4YLlZKUdSd+jbMzkeB9uqKFDGytPzQQRKnntPQ==
-X-Received: by 2002:a05:6602:26ce:: with SMTP id g14mr5175279ioo.137.1644539478920;
-        Thu, 10 Feb 2022 16:31:18 -0800 (PST)
-Received: from localhost ([12.28.44.171])
-        by smtp.gmail.com with ESMTPSA id w19sm13031570iov.16.2022.02.10.16.31.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Feb 2022 16:31:18 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Thu, 10 Feb 2022 19:32:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784F7559A
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 16:31:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26C75B827CD
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 00:31:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B596FC004E1;
+        Fri, 11 Feb 2022 00:31:55 +0000 (UTC)
+Date:   Thu, 10 Feb 2022 19:31:54 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Alison Schofield <alison.schofield@intel.com>,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH 45/49] ACPI: replace nodes__weight with nodes_weight_ge for numa
-Date:   Thu, 10 Feb 2022 14:49:29 -0800
-Message-Id: <20220210224933.379149-46-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220210224933.379149-1-yury.norov@gmail.com>
-References: <20220210224933.379149-1-yury.norov@gmail.com>
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        JaeSang Yoo <js.yoo.5b@gmail.com>
+Subject: [GIT PULL] tracing: Updates for v5.17-rc2
+Message-ID: <20220210193154.0bcd3700@rorschach.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-acpi_map_pxm_to_node() calls nodes_weight() to compare the weight
-of nodemask with a given number. We can do it more efficiently with
-nodes_weight_eq() because conditional nodes_weight may stop
-traversing the nodemask earlier, as soon as condition is (or is not)
-met.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/acpi/numa/srat.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Linus,
 
-diff --git a/drivers/acpi/numa/srat.c b/drivers/acpi/numa/srat.c
-index 3b818ab186be..fe7a7996f553 100644
---- a/drivers/acpi/numa/srat.c
-+++ b/drivers/acpi/numa/srat.c
-@@ -67,7 +67,7 @@ int acpi_map_pxm_to_node(int pxm)
- 	node = pxm_to_node_map[pxm];
+Tracing fixes:
+
+ - Fixes to the RTLA tooling and adding to MAINTAINERS file.
+
+ - A fix to a tp_printk overriding tp_printk_stop_on_boot on command line.
+
+
+Please pull the latest trace-v5.17-rc2 tree, which can be found at:
+
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+trace-v5.17-rc2
+
+Tag SHA1: 164366d9d80f3791e063a02f79db39b49d14a74d
+Head SHA1: 3203ce39ac0b2a57a84382ec184c7d4a0bede175
+
+
+Daniel Bristot de Oliveira (5):
+      rtla: Follow kernel version
+      rtla/utils: Fix session duration parsing
+      rtla/trace: Error message fixup
+      rtla: Fix segmentation fault when failing to enable -t
+      MAINTAINERS: Add RTLA entry
+
+JaeSang Yoo (1):
+      tracing: Fix tp_printk option related with tp_printk_stop_on_boot
+
+----
+ MAINTAINERS                            | 8 ++++++++
+ kernel/trace/trace.c                   | 4 ++++
+ tools/tracing/rtla/Makefile            | 4 +++-
+ tools/tracing/rtla/src/osnoise.c       | 3 +++
+ tools/tracing/rtla/src/osnoise_hist.c  | 7 +++----
+ tools/tracing/rtla/src/osnoise_top.c   | 7 +++----
+ tools/tracing/rtla/src/timerlat_hist.c | 7 +++----
+ tools/tracing/rtla/src/timerlat_top.c  | 7 +++----
+ tools/tracing/rtla/src/trace.c         | 8 ++++----
+ tools/tracing/rtla/src/utils.c         | 4 ++--
+ 10 files changed, 36 insertions(+), 23 deletions(-)
+---------------------------
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ea3e6c914384..61d127e3314f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19576,6 +19576,14 @@ F:	Documentation/trace/timerlat-tracer.rst
+ F:	Documentation/trace/hwlat_detector.rst
+ F:	arch/*/kernel/trace.c
  
- 	if (node == NUMA_NO_NODE) {
--		if (nodes_weight(nodes_found_map) >= MAX_NUMNODES)
-+		if (nodes_weight_ge(nodes_found_map, MAX_NUMNODES))
- 			return NUMA_NO_NODE;
- 		node = first_unset_node(nodes_found_map);
- 		__acpi_map_pxm_to_node(pxm, node);
--- 
-2.32.0
-
++Real-time Linux Analysis (RTLA) tools
++M:	Daniel Bristot de Oliveira <bristot@kernel.org>
++M:	Steven Rostedt <rostedt@goodmis.org>
++L:	linux-trace-devel@vger.kernel.org
++S:	Maintained
++F:	Documentation/tools/rtla/
++F:	tools/tracing/rtla/
++
+ TRADITIONAL CHINESE DOCUMENTATION
+ M:	Hu Haowen <src.res@email.cn>
+ L:	linux-doc-tw-discuss@lists.sourceforge.net
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index c860f582b078..7c2578efde26 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -252,6 +252,10 @@ __setup("trace_clock=", set_trace_boot_clock);
+ 
+ static int __init set_tracepoint_printk(char *str)
+ {
++	/* Ignore the "tp_printk_stop_on_boot" param */
++	if (*str == '_')
++		return 0;
++
+ 	if ((strcmp(str, "=0") != 0 && strcmp(str, "=off") != 0))
+ 		tracepoint_printk = 1;
+ 	return 1;
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+index 7c39728d08de..5a1eda617992 100644
+--- a/tools/tracing/rtla/Makefile
++++ b/tools/tracing/rtla/Makefile
+@@ -1,5 +1,6 @@
+ NAME	:=	rtla
+-VERSION	:=	0.5
++# Follow the kernel version
++VERSION :=	$(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
+ 
+ # From libtracefs:
+ # Makefiles suck: This macro sets a default value of $(2) for the
+@@ -85,6 +86,7 @@ clean: doc_clean
+ 
+ tarball: clean
+ 	rm -rf $(NAME)-$(VERSION) && mkdir $(NAME)-$(VERSION)
++	echo $(VERSION) > $(NAME)-$(VERSION)/VERSION
+ 	cp -r $(DIRS) $(FILES) $(NAME)-$(VERSION)
+ 	mkdir $(NAME)-$(VERSION)/Documentation/
+ 	cp -rp $(SRCTREE)/../../../Documentation/tools/rtla/* $(NAME)-$(VERSION)/Documentation/
+diff --git a/tools/tracing/rtla/src/osnoise.c b/tools/tracing/rtla/src/osnoise.c
+index 7b73d1eccd0e..5648f9252e58 100644
+--- a/tools/tracing/rtla/src/osnoise.c
++++ b/tools/tracing/rtla/src/osnoise.c
+@@ -750,6 +750,9 @@ void osnoise_put_context(struct osnoise_context *context)
+  */
+ void osnoise_destroy_tool(struct osnoise_tool *top)
+ {
++	if (!top)
++		return;
++
+ 	trace_instance_destroy(&top->trace);
+ 
+ 	if (top->context)
+diff --git a/tools/tracing/rtla/src/osnoise_hist.c b/tools/tracing/rtla/src/osnoise_hist.c
+index 180fcbe423cd..1f0b7fce55cf 100644
+--- a/tools/tracing/rtla/src/osnoise_hist.c
++++ b/tools/tracing/rtla/src/osnoise_hist.c
+@@ -701,9 +701,9 @@ osnoise_hist_set_signals(struct osnoise_hist_params *params)
+ int osnoise_hist_main(int argc, char *argv[])
+ {
+ 	struct osnoise_hist_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -792,9 +792,8 @@ int osnoise_hist_main(int argc, char *argv[])
+ out_hist:
+ 	osnoise_free_histogram(tool->data);
+ out_destroy:
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
+index 332b2ac205fc..c67dc28ef716 100644
+--- a/tools/tracing/rtla/src/osnoise_top.c
++++ b/tools/tracing/rtla/src/osnoise_top.c
+@@ -483,9 +483,9 @@ static void osnoise_top_set_signals(struct osnoise_top_params *params)
+ int osnoise_top_main(int argc, char **argv)
+ {
+ 	struct osnoise_top_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -571,9 +571,8 @@ int osnoise_top_main(int argc, char **argv)
+ 
+ out_top:
+ 	osnoise_free_top(tool->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ out_exit:
+ 	exit(return_value);
+ }
+diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
+index 235f9620ef3d..436a799f9adf 100644
+--- a/tools/tracing/rtla/src/timerlat_hist.c
++++ b/tools/tracing/rtla/src/timerlat_hist.c
+@@ -729,9 +729,9 @@ timerlat_hist_set_signals(struct timerlat_hist_params *params)
+ int timerlat_hist_main(int argc, char *argv[])
+ {
+ 	struct timerlat_hist_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *tool = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *tool;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -813,9 +813,8 @@ int timerlat_hist_main(int argc, char *argv[])
+ 
+ out_hist:
+ 	timerlat_free_histogram(tool->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(tool);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+diff --git a/tools/tracing/rtla/src/timerlat_top.c b/tools/tracing/rtla/src/timerlat_top.c
+index 1ebd5291539c..d4187f6534ed 100644
+--- a/tools/tracing/rtla/src/timerlat_top.c
++++ b/tools/tracing/rtla/src/timerlat_top.c
+@@ -521,9 +521,9 @@ timerlat_top_set_signals(struct timerlat_top_params *params)
+ int timerlat_top_main(int argc, char *argv[])
+ {
+ 	struct timerlat_top_params *params;
++	struct osnoise_tool *record = NULL;
++	struct osnoise_tool *top = NULL;
+ 	struct trace_instance *trace;
+-	struct osnoise_tool *record;
+-	struct osnoise_tool *top;
+ 	int return_value = 1;
+ 	int retval;
+ 
+@@ -609,9 +609,8 @@ int timerlat_top_main(int argc, char *argv[])
+ 
+ out_top:
+ 	timerlat_free_top(top->data);
++	osnoise_destroy_tool(record);
+ 	osnoise_destroy_tool(top);
+-	if (params->trace_output)
+-		osnoise_destroy_tool(record);
+ 	free(params);
+ out_exit:
+ 	exit(return_value);
+diff --git a/tools/tracing/rtla/src/trace.c b/tools/tracing/rtla/src/trace.c
+index 107a0c6387f7..83de259abcc1 100644
+--- a/tools/tracing/rtla/src/trace.c
++++ b/tools/tracing/rtla/src/trace.c
+@@ -20,14 +20,14 @@ int enable_tracer_by_name(struct tracefs_instance *inst, const char *tracer_name
+ 
+ 	tracer = TRACEFS_TRACER_CUSTOM;
+ 
+-	debug_msg("enabling %s tracer\n", tracer_name);
++	debug_msg("Enabling %s tracer\n", tracer_name);
+ 
+ 	retval = tracefs_tracer_set(inst, tracer, tracer_name);
+ 	if (retval < 0) {
+ 		if (errno == ENODEV)
+-			err_msg("tracer %s not found!\n", tracer_name);
++			err_msg("Tracer %s not found!\n", tracer_name);
+ 
+-		err_msg("failed to enable the tracer %s\n", tracer_name);
++		err_msg("Failed to enable the %s tracer\n", tracer_name);
+ 		return -1;
+ 	}
+ 
+@@ -44,7 +44,7 @@ void disable_tracer(struct tracefs_instance *inst)
+ 
+ 	retval = tracefs_tracer_set(inst, t);
+ 	if (retval < 0)
+-		err_msg("oops, error disabling tracer\n");
++		err_msg("Oops, error disabling tracer\n");
+ }
+ 
+ /*
+diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
+index 1c9f0eea6166..ffaf8ec84001 100644
+--- a/tools/tracing/rtla/src/utils.c
++++ b/tools/tracing/rtla/src/utils.c
+@@ -77,11 +77,11 @@ void get_duration(time_t start_time, char *output, int output_size)
+ 	time_t duration;
+ 
+ 	duration = difftime(now, start_time);
+-	tm_info = localtime(&duration);
++	tm_info = gmtime(&duration);
+ 
+ 	snprintf(output, output_size, "%3d %02d:%02d:%02d",
+ 			tm_info->tm_yday,
+-			tm_info->tm_hour - 1,
++			tm_info->tm_hour,
+ 			tm_info->tm_min,
+ 			tm_info->tm_sec);
+ }
