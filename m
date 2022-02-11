@@ -2,347 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 02:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D24EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 02:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347328AbiBKCaO (ORCPT
+        id S1347335AbiBKCam (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 10 Feb 2022 21:30:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53530 "EHLO
+        Thu, 10 Feb 2022 21:30:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343815AbiBKCaM (ORCPT
+        with ESMTP id S1343815AbiBKCak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 10 Feb 2022 21:30:12 -0500
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A51167
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 18:30:11 -0800 (PST)
-Received: by mail-pl1-x64a.google.com with SMTP id v20-20020a1709028d9400b0014ca63d0f10so2597404plo.5
-        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 18:30:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=gpfpq9IyFVXyGaNhLILmSz1fSNzB9aAjbA/VJj5uFog=;
-        b=DIWMmG+pR0jMVrLQwTrdyYEQ7LiiwPfZjBBHEcrZeR1mDV+FVVP5rSeyCYsxHfBbB7
-         YSe1euFw2H52nGF7IPuRazjPyr8r05TzB+COZasqQfcDwJTlSZ/qUxb7V8kUHUOfkvFd
-         J3YuFykSAw6j/jVaI2ZM/9EX7RzGrlj2v/xy/4tu91oS3TXZvNh//oVbEIADHHQGX0r1
-         6lAocs0MB5W6KPIdLnonP3XVzs6SlWn9cAPu0pxLhi9LVQQO9jCaUtvo9jbrITw8b+9i
-         ObgkSRxOxn3RQMv1gQHOYWVxX7Six6P2mNoNuRsh3NNJltTJH0UOAQsNunZxKFI1WRu7
-         6+Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=gpfpq9IyFVXyGaNhLILmSz1fSNzB9aAjbA/VJj5uFog=;
-        b=05I0xAdkrq2+Q0AR/LWs/fH983WkEZGuEVGw79I7nUYu0p5uH9Q50HnizMGoiHoPLE
-         lcrpUaiyKU6obZYHhvWpsDUdg2jDlcPDJLiUBejjch5pB+3nPLriOGdTfcXpp++i3SBI
-         XK8ZLiJAVbMFt6LHLPEJVF7SnrA9N3Cwhm6qYwF/MtSB/go0A6OTSe22/1PvvBz2zkvu
-         NqivCI8SfboGzrFhHz6WoanZ4YfcKh5jMcVPrMH6DL+4lABISWogOHLvZEHMgqWI8J+h
-         EuP3ttFxI0vQUubejMJQnlzcRE0YTvvTTNUSusky7BV/RlM4uMnMlMEmS+1bWotQA6bv
-         K8IQ==
-X-Gm-Message-State: AOAM530LqH+tncdHvw3DBLm19DEPfUtckHxm66eln830BkSN0Qi8J16i
-        xCyEnLFaIaAUZPRQo33XYYkWjk6J8ZfSyQ==
-X-Google-Smtp-Source: ABdhPJyyXum2JTqlievkZ2AsU1lIIYKc+AhVDFpTqsJ+zRJQ8/XMfGzKS+Ac/Sg23ZlTtu9/JOEl9eSZxx+qeg==
-X-Received: from wonchungspecialist.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1440])
- (user=wonchung job=sendgmr) by 2002:a17:90b:4ac4:: with SMTP id
- mh4mr400797pjb.89.1644546611407; Thu, 10 Feb 2022 18:30:11 -0800 (PST)
-Date:   Fri, 11 Feb 2022 02:30:07 +0000
-Message-Id: <20220211023008.3197397-1-wonchung@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH v6] ACPI: device_sysfs: Add sysfs support for _PLD
-From:   Won Chung <wonchung@google.com>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Won Chung <wonchung@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Thu, 10 Feb 2022 21:30:40 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 895D555A1
+        for <linux-kernel@vger.kernel.org>; Thu, 10 Feb 2022 18:30:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644546640; x=1676082640;
+  h=subject:to:cc:references:from:message-id:date:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=JURO3h6kmu8QQpyD5dkDPa2tJTRXyx7lMlJDrPoT2/o=;
+  b=eWy3SIqCszRSCDdzNSrbHa8MMhIe4s5mRP0mYUBLjS4w+Q9h54Idjmtl
+   XJpzpT/pwazr+Q+4WKLoRIb5MY8dK0cp2Ez3QORfcPo8CB+C5OwvANzyN
+   BVos8rGPJ5Fq21e7pfsRjkTa1FBfsccuDM7gamIHLTyGD8S1IEASv8GbV
+   frKbqhqIWpddqRZNDXLafiJmIzrqefslx/TCPBDf06IgVyDIcnFZau2mn
+   Zj37QfeFkR4Z9zQO9+VXbDTGootVCluGvgwOLQSFfVg+8smcMHAYyIqO0
+   Vb12AEBbMiZgMUYSOmrjgybSp6CpJPlwxUn/JRZx0PsK19m4vLAxPCXup
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="229608307"
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="229608307"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 18:30:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,359,1635231600"; 
+   d="scan'208";a="701932045"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga005.jf.intel.com with ESMTP; 10 Feb 2022 18:30:39 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 10 Feb 2022 18:30:39 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 10 Feb 2022 18:30:38 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Thu, 10 Feb 2022 18:30:38 -0800
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.46) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Thu, 10 Feb 2022 18:30:38 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UOLg9XU2+hC2mMg+lYGw2zznyorisLerm4Amvm2oMvzddrcOMWmwMvFVGP5b0tmJ4ZjYu5HQ+PLjFtSh3SQqJMc7KnZj/PBmhCvGFxkiQFK7KlA6N2AHqzp85kTketXC91iupe6teaT/Wf6Uo5uX+139T/JPyLzKf3uzBDIWhocbLMrvM/tAYWhNi7fHO9cA7vAP72plkBXX/z5QE+JnBbrbeFl22pKcY+ech7zkPXMnQhsUaIDmT4117C5kDLFlxu6Wkln8l8euogCnQPFZlz8Mfw0YDh1JDXMjviF/h0Ldk7VZQOTXwBdd9GLZZpQ56FrcKwx7qlBrs0wzGg5MNg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Cb+5Rk/s+kk55QCGzBt5HX69sv07f0OsgSl03P8BpX0=;
+ b=hVTfLv9RXC5BZNmQUoJOLf8QaMO7n0QuglNK3KbHW6T+BeHGIj2YBth5GZoXx6qG8YgheTPd1DQ+ndb00U2dsdvrbHwYsGwBZdLWWpopPGf4cocmfvw0JqpatDhVp7OnwVo57HmnuwqJ94Ua7KNjBsp2q+C181+FQedkScodHbl8zKJWsoDmjsSB9dDzz6oxDx9DlpnZWq9QzQZHuV4k/l6100eUVVBE4BasMzQSPzXCpJIYf0/gw8H7efeHaUSv5gil5yaSq6QaqiEWQE5PC+FtgmxgDCOroseUUWZL236cVqM9p4v8A8sYMn5GL+Ut+IPXQFwlR/05Yh4aMKDViw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM5PR11MB1899.namprd11.prod.outlook.com (2603:10b6:3:10b::14)
+ by DM6PR11MB3435.namprd11.prod.outlook.com (2603:10b6:5:68::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.14; Fri, 11 Feb
+ 2022 02:30:35 +0000
+Received: from DM5PR11MB1899.namprd11.prod.outlook.com
+ ([fe80::5c89:e3da:dfd5:ec7e]) by DM5PR11MB1899.namprd11.prod.outlook.com
+ ([fe80::5c89:e3da:dfd5:ec7e%7]) with mapi id 15.20.4951.021; Fri, 11 Feb 2022
+ 02:30:35 +0000
+Subject: Re: [RFC PATCH 0/5] Extend FW framework for user FW uploads
+To:     Luis Chamberlain <mcgrof@kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <trix@redhat.com>,
+        <lgoncalv@redhat.com>, <yilun.xu@intel.com>, <hao.wu@intel.com>,
+        <matthew.gerlach@intel.com>, <basheer.ahmed.muddebihal@intel.com>,
+        <tianfei.zhang@intel.com>
+References: <20220203213053.360190-1-russell.h.weight@intel.com>
+ <Yfxem+AF9lroota0@bombadil.infradead.org>
+From:   Russ Weight <russell.h.weight@intel.com>
+Message-ID: <d0c18f9b-383f-ce36-94e8-e273cd26a2c9@intel.com>
+Date:   Thu, 10 Feb 2022 18:30:31 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
+In-Reply-To: <Yfxem+AF9lroota0@bombadil.infradead.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-ClientProxiedBy: MWHPR13CA0015.namprd13.prod.outlook.com
+ (2603:10b6:300:16::25) To DM5PR11MB1899.namprd11.prod.outlook.com
+ (2603:10b6:3:10b::14)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 694f160e-1a61-4963-62e2-08d9ed067b92
+X-MS-TrafficTypeDiagnostic: DM6PR11MB3435:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <DM6PR11MB3435AE0D64C4C1A7A709D0F2C5309@DM6PR11MB3435.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m/ZSL+QOdBjzXKc74iMAHviiIHWN6/EWCIVlx5lwf3uyfNw7CCWyOilpHdkWZ+zh7H8GaJ42ByvbzvxHBa2kF63PiWTFo39YCp0OwSf8D57iF0WIw3cGEn9OvBKqZoa1owNzEbvBUZEDW59WXDzHAcNcgwMlqQgqqGAryD4XYGFhsQZDW9ik6JRt7ws3FoHGkzcLWSpshhOBCPTXqVdBHpJciGixIZ/hEoJ+WPkkuZS/VeyRa1upmDpXHgIBzRv7G93ydL5Z9XdngQDjhF9bpsohK7Mle1+lUTbHgc1Gx3lpXqDMSjzK//aPUT0sgbsDNc1nWAu2yWJn7Xckle/WerilxEyVduhHC6bhBvaZhZ9VdpuOB0ztwmV/L79Vsh1+ApHkGEvget1XShUN+QBMERfKJbqQqFCRSYlIjlN4tv88QugMUsL67/RTu1ZdgiXcK7uXpiiefrvQT5d7d4X+ugSagxMq4uaUprbc2cOYiTvYkQ3+Tzhqy640AcKC53GQIQoRHiCLcXvNgFWikK+IF/NcklksIFPrj3ns2/lgqg+D55KN3LFpFzn3lEafzlpNDFbngRjIjkPFB5oLOIicuGKUKZTszT4PpBFYb6aHEgCGlE44q1QXTS9TqeirEiz/cDYb2cWKaoKlAKn7miRuu8/sTfYOtPyPRE6nXGuxveF25WgksHJSDnRktHUnzMf7LU6mJ2kg29wISqiuIQ+FKye/HUMy0Ih+y8JTR2YmCD+VAZGE3M+LzkuNFelFut9w
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR11MB1899.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66946007)(82960400001)(8676002)(8936002)(66556008)(2906002)(5660300002)(66476007)(53546011)(186003)(4326008)(6506007)(83380400001)(6486002)(26005)(2616005)(6666004)(31696002)(6512007)(107886003)(38100700002)(508600001)(6916009)(31686004)(316002)(36756003)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eHlZa3BwTmF3VlFzMHpsa3paZ1FJTGdlWWJycmZ0c2JXOE0wWWRwM0p2emRR?=
+ =?utf-8?B?ZFZ0Qkw3YnRrZVBhUTlpMVd3ZmdyVzdydXlaU3BGdWpMd05WSTgrV05FQzJu?=
+ =?utf-8?B?T2ZZejlSOFl5cllHa0k5NmdiZGpFZnZtd0xpWnFMblhQRzRHUXExeWtZSjRy?=
+ =?utf-8?B?TkJWK1RablFueExGNG9xL1dsYm11VVcxUkV2dlZBUVhTOWJjS0xBUG5wTFY4?=
+ =?utf-8?B?WjFLa25CQTBLRnFBYS9tU2ttb1BTNVpxT1NtQmhoUk1jV1NvOHZIMURXSzVs?=
+ =?utf-8?B?ZG1Ea3krTW9zLzhEalYxejIyR1ZKTnFHTGQ3ZUpkR3A5azFNUngvSitJcUhE?=
+ =?utf-8?B?R0RjWVRiRnh0ckZpcEpmazJhd3ZiSk5rMG5EV29QS3lyMUxtQ2NNRVBKV2xu?=
+ =?utf-8?B?YmR5SWpsbXh2VTBES1c4aVBuRFc4aGpVMm1vN2V1SHhkMVhiaUtwU0I2SlFi?=
+ =?utf-8?B?dnN3aThwRUoxUU1vTTBTajJnNXljZ3NKZU5wSFVjM0RrOGhnUk50TExNZGMy?=
+ =?utf-8?B?YmFSQ0dIRXZ4ZEpPT2xRTk9MdlVNVnFEWWxiQVdsSmRZcXV3U3VzTnNzaG1m?=
+ =?utf-8?B?ZitYcmJxRXprYi9RdlB6OUQ1Uk5IbDRjeDI5ZmhWZHdEMks0elZwWVcxa3JH?=
+ =?utf-8?B?ZFAyQUdacWFWVmNzVTJXNm1JNGttZ2dlWStUbEpVUU9waGJMN0Y4MzI5SVAx?=
+ =?utf-8?B?d1F3MmYwUFlFYTJsQWw4UG5qZkY2c3ZaZHNUWGdVOHR2clg0U3Avbk9OT2Ir?=
+ =?utf-8?B?VGpvZGxIQ3k1dzh6L3M1MjMzOUk4WGplai92L3V4alF4bFFaRmIrSEVjbC9u?=
+ =?utf-8?B?a1F2d2Z3UDRYVnduTTNSMmxrd1UzL2tJS2JlNmMyLzJHNUZ1VndIeEI4MjFT?=
+ =?utf-8?B?MHpwanAydGFsV2x1cmtFRFczaHdRYUg2QUhUTnhlNzd5anFPMmc2UFRBM21s?=
+ =?utf-8?B?MHBiNGdxQzZjK045cGJzeElhaitiUDNIcGNTZFQ0Y3N6Skx0dVVTcXJKbDI3?=
+ =?utf-8?B?QUViNU5uRklpVEZIckhkWEl5SVpGOXJzdU1mL1lzRDNja1ZZZitFcmNCS0JZ?=
+ =?utf-8?B?WFB1LzhrSzRxbzBvVzNRajVBTk1KN0RGNlZsOFNKMUZGeUY0RXBjV012dm9D?=
+ =?utf-8?B?M1lRSFgxVmlMNHFmcUc5aElGSklUOXRMRlUwNWJBTU1IZnlsandmTWNWTWc4?=
+ =?utf-8?B?R2IyN3J3ZDZURjZhekxncHF4ZC8rdTNBeDE4UVV3djlScmNqNXIzeG9SV2lC?=
+ =?utf-8?B?NWJPNERHRk1JclVBQlgyUTRkT3UwSEFXSTMzZThhRkRRRnRTOTYwcSt5R2Jv?=
+ =?utf-8?B?RndZYVNqT0FBWFlUVUZxOFBwbHhGWEFEZ2xGZHh6MVhna2tlek5XNzNZYm9O?=
+ =?utf-8?B?UGZEZzZlWjRpZW9odkI5OG5xQ0FNVWhHTERPWWptbW9zS0RZQWFrSHZlaWRZ?=
+ =?utf-8?B?bTFNM3VjUGF3cHA3M0R3Qk0yL1hTNHFXOEpMWWo0MHhzRjlIR212eVVGUXdj?=
+ =?utf-8?B?b2ZtMVFKVjJCVUs1cjJNaWt6dm1KWkhBeGVJRUVUeHV1QUdIN01VSEcrak94?=
+ =?utf-8?B?OUJBQkVWWmtucjRRVTdQOUFOaks3U0VqMkhzUEV2QzJsVGRFVUROSUlaTVZ5?=
+ =?utf-8?B?UTJzVGtuL1NVVUlqUkZJZitkT3dvcTFJQnlDbzF2S0pCZ25HZzg5QmIreThq?=
+ =?utf-8?B?R25OM3BWZGhXTEdOcUpNQUZwcC9neWU3am1pa3JXbkZCc3JpSHNuN3NScmlp?=
+ =?utf-8?B?YVVFd3dMRFZoTkpQM2gvRVMwc1lidVpxSlRUV2dGM0JBd1ZGTGZiaFp2ZVdF?=
+ =?utf-8?B?SmlSTXA5S05OcmI3a3k1YkJhbE9ZTmFrUHQ4eHBLa3JtWXQ1Y3UwaGZyaG1N?=
+ =?utf-8?B?Z2xCaGFZMWxjWjRsNVpkM29pOUh1cENTa0prM3o0TnhSd1B5c2t5ang2S29h?=
+ =?utf-8?B?dU9PVC9nTExSVzF5QWtLWlFBbkZiblVVQW5VOG0xQ3RIaitGMDhpay94YXFi?=
+ =?utf-8?B?TVlmUVlaVWtzNjJnTTVQZXl4b3VuYUttaXNVTm1hMjJMekY4ZXVZYzNYTUVj?=
+ =?utf-8?B?Q0ExOUNmcnY3ZlNDUTZzRnhlc3JoUXJYckIwSWVIeUtzZXp6RWlUVjhPNnNJ?=
+ =?utf-8?B?NkZra0FDRW9DUll0K21MQ0FCZDdTQVdKT2E1WjdJeFNuSEIyRFF4cWIwaHNK?=
+ =?utf-8?B?UWNEbldYODZ5M3B1VjVsN2c5MWsyR0FzWi8vYWhOUytCeU51YTc0S3ZPTHhp?=
+ =?utf-8?B?ZXRtdC9sV0M0UjhGL1JGbEtsbFVnPT0=?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 694f160e-1a61-4963-62e2-08d9ed067b92
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1899.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2022 02:30:34.9507
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: osZpTtW9kskXxmz+sxHC213OiPHi5GKw6GYs53yRaOtf8p7Nu08yctdy15kEkGzb+I9/xPuYsE9G02ACF8/RWShmZ7eHwpL61fwYVGk4vNk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3435
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When ACPI table includes _PLD fields for a device, create a new
-directory (pld) in sysfs to share _PLD fields.
 
-Currently without PLD information, when there are multiple of same
-devices, it is hard to distinguish which device corresponds to which
-physical device in which location. For example, when there are two Type
-C connectors, it is hard to find out which connector corresponds to the
-Type C port on the left panel versus the Type C port on the right panel.
-With PLD information provided, we can determine which specific device at
-which location is doing what.
 
-Since PLD information is to be used for finding where physical device is
-located in user's perspective, pld sysfs directory will only be created
-for ACPI_BUS_TYPE_DEVICE with user_visible field set as 1.
+On 2/3/22 3:00 PM, Luis Chamberlain wrote:
+> On Thu, Feb 03, 2022 at 02:30:47PM -0700, Russ Weight wrote:
+>> Extend the firmware loader subsystem to support a persistent sysfs
+>> interface that userspace may use to initiate a firmware update. For
+>> example, FPGA based PCIe cards automatically load firmware and FPGA images
+>> from local FLASH when the card boots. The images in FLASH may be updated
+>> with new images that are uploaded by the user.
+>>
+>> A device driver may call fw_upload_register() to expose persistent
+>> "loading" and "data" sysfs files at /sys/class/firmare/<NAME>/*. These
+>> files are used in the same way as the fallback sysfs "loading" and "data"
+>> files. However, when 0 is written to "loading" to complete the write of
+>> firmware data, the data is also transferred to the lower-level driver
+>> using pre-registered call-back functions. The data transfer is done in
+>> the context of a kernel worker thread.
+>>
+>> Additional sysfs nodes are added in the same location as "loading" and
+>> "data" to monitor the transfer of the image data to the device using
+>> callback functions provided by the lower-level device driver and to allow
+>> the data transfer to be cancelled.
+>>
+>> Example usage:
+>>
+>> $ pwd
+>> /sys/class/firmware/n3000bmc-sec-update.8
+>> $ ls
+>> cancel  device  loading  remaining_size  subsystem
+>> data    error   power    status          uevent
+>> $ echo 1 > loading
+>> $ cat /tmp/firmware.bin > data
+>> $ echo 0 > loading
+>> $ while :; do cat status; cat remaining_size ; sleep 3; done
+>> preparing
+>> 44590080
+>> <--snip-->
+>> transferring
+>> 44459008
+>> transferring
+>> 44311552
+>> <--snip-->
+>> <snip>
+>> transferring
+>> 173056
+>> <--snip-->
+>> programming
+>> 0
+>> <--snip-->
+>> idle
+>> 0
+>> ^C
+> Nice. Please extend lib/test_firmware.c while at it and try to break
+> and ensure your stuff is not regressed with future changes.
+Yes. I'm looking at the test_firmware module and I'll add to it
+for the next patch submission.
 
-Signed-off-by: Won Chung <wonchung@google.com>
----
-Changes in v6:
-- Add pld to acpi_device only if it is a user visible device.
-
-Changes in v5:
-- Store pld to acpi_device in acpi_store_pld_crc() and rename it as
-  acpi_store_pld().
-
-Changes in v4:
-- Create seperate files for each _PLD fields instead of having a single
-  file with all fields included.
-- Create a new directory pld that contains _PLD fields
-
- Documentation/ABI/testing/sysfs-bus-acpi | 107 +++++++++++++++++++++++
- drivers/acpi/device_sysfs.c              |  51 +++++++++++
- drivers/acpi/scan.c                      |  12 ++-
- include/acpi/acpi_bus.h                  |   1 +
- 4 files changed, 168 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-acpi b/Documentation/ABI/t=
-esting/sysfs-bus-acpi
-index 58abacf59b2a..b8b71c8f3cfd 100644
---- a/Documentation/ABI/testing/sysfs-bus-acpi
-+++ b/Documentation/ABI/testing/sysfs-bus-acpi
-@@ -96,3 +96,110 @@ Description:
- 		hardware, if the _HRV control method is present.  It is mostly
- 		useful for non-PCI devices because lspci can list the hardware
- 		version for PCI devices.
-+
-+What:		/sys/bus/acpi/devices/.../pld/
-+Date:		Feb, 2022
-+Contact:	Won Chung <wonchung@google.com>
-+Description:
-+		This directory contains the output of the device object's _PLD
-+		control method, if present. This information provides details
-+		on physical location of a device.
-+
-+What:		/sys/bus/acpi/devices/.../pld/revision
-+Date:		Feb, 2022
-+Contact:	Won Chung <wonchung@google.com>
-+Description:
-+		The current revision is 0x2.
-+
-+What:           /sys/bus/acpi/devices/.../pld/group_token
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Unique numerical value identifying a group.
-+
-+What:           /sys/bus/acpi/devices/.../pld/group_position
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Identifies this device connection point=E2=80=99s position in the group.
-+
-+What:           /sys/bus/acpi/devices/.../pld/user_visible
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Set if the device connection point can be seen by the user
-+		without disassembly.
-+
-+What:           /sys/bus/acpi/devices/.../pld/dock
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Set if the device connection point resides in a docking station
-+		or port replicator.
-+
-+What:           /sys/bus/acpi/devices/.../pld/bay
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Set if describing a device in a bay or if device connection
-+		point is a bay.
-+
-+What:           /sys/bus/acpi/devices/.../pld/lid
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Set if this device connection point resides on the lid of
-+		laptop system.
-+
-+What:           /sys/bus/acpi/devices/.../pld/panel
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Describes which panel surface of the system=E2=80=99s housing the
-+		device connection point resides on:
-+		0 - Top
-+		1 - Bottom
-+		2 - Left
-+		3 - Right
-+		4 - Front
-+		5 - Back
-+		6 - Unknown (Vertical Position and Horizontal Position will be
-+		ignored)
-+
-+What:           /sys/bus/acpi/devices/.../pld/vertical_position
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		0 - Upper
-+		1 - Center
-+		2 - Lower
-+
-+What:           /sys/bus/acpi/devices/.../pld/horizontal_position
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		ACPI specification does not define horizontal position field.
-+		Can be used as either
-+		0 - Left
-+		1 - Center
-+		2 - Right
-+		or
-+		0 - Leftmost
-+		and higher numbers going toward the right.
-+
-+What:           /sys/bus/acpi/devices/.../pld/shape
-+Date:           Feb, 2022
-+Contact:        Won Chung <wonchung@google.com>
-+Description:
-+		Describes the shape of the device connection point.
-+		0 - Round
-+		1 - Oval
-+		2 - Square
-+		3 - Vertical Rectangle
-+		4 - Horizontal Rectangle
-+		5 - Vertical Trapezoid
-+		6 - Horizontal Trapezoid
-+		7 - Unknown - Shape rendered as a Rectangle with dotted lines
-+		8 - Chamfered
-+		15:9 - Reserved
-+
-diff --git a/drivers/acpi/device_sysfs.c b/drivers/acpi/device_sysfs.c
-index d5d6403ba07b..2702f78a2503 100644
---- a/drivers/acpi/device_sysfs.c
-+++ b/drivers/acpi/device_sysfs.c
-@@ -509,6 +509,49 @@ static ssize_t status_show(struct device *dev, struct =
-device_attribute *attr,
- }
- static DEVICE_ATTR_RO(status);
-=20
-+#define DEV_ATTR_PLD_PROP(prop) \
-+	static ssize_t prop##_show(struct device *dev, struct device_attribute *a=
-ttr, \
-+		char *buf) \
-+{ \
-+	struct acpi_device *acpi_dev =3D to_acpi_device(dev); \
-+	if (acpi_dev->pld =3D=3D NULL) \
-+		return -EIO; \
-+	return sprintf(buf, "%u\n", acpi_dev->pld->prop); \
-+}; \
-+static DEVICE_ATTR_RO(prop)
-+
-+DEV_ATTR_PLD_PROP(revision);
-+DEV_ATTR_PLD_PROP(group_token);
-+DEV_ATTR_PLD_PROP(group_position);
-+DEV_ATTR_PLD_PROP(user_visible);
-+DEV_ATTR_PLD_PROP(dock);
-+DEV_ATTR_PLD_PROP(bay);
-+DEV_ATTR_PLD_PROP(lid);
-+DEV_ATTR_PLD_PROP(panel);
-+DEV_ATTR_PLD_PROP(vertical_position);
-+DEV_ATTR_PLD_PROP(horizontal_position);
-+DEV_ATTR_PLD_PROP(shape);
-+
-+static struct attribute *dev_attr_pld[] =3D {
-+	&dev_attr_revision.attr,
-+	&dev_attr_group_token.attr,
-+	&dev_attr_group_position.attr,
-+	&dev_attr_user_visible.attr,
-+	&dev_attr_dock.attr,
-+	&dev_attr_bay.attr,
-+	&dev_attr_lid.attr,
-+	&dev_attr_panel.attr,
-+	&dev_attr_vertical_position.attr,
-+	&dev_attr_horizontal_position.attr,
-+	&dev_attr_shape.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group dev_attr_pld_group =3D {
-+	.name =3D "pld",
-+	.attrs =3D dev_attr_pld,
-+};
-+
- /**
-  * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
-  * @dev: ACPI device object.
-@@ -595,6 +638,12 @@ int acpi_device_setup_files(struct acpi_device *dev)
- 						    &dev_attr_real_power_state);
- 	}
-=20
-+	if (acpi_has_method(dev->handle, "_PLD") && dev->pld !=3D NULL) {
-+		result =3D device_add_group(&dev->dev, &dev_attr_pld_group);
-+		if (result)
-+			goto end;
-+	}
-+
- 	acpi_expose_nondev_subnodes(&dev->dev.kobj, &dev->data);
-=20
- end:
-@@ -645,4 +694,6 @@ void acpi_device_remove_files(struct acpi_device *dev)
- 		device_remove_file(&dev->dev, &dev_attr_status);
- 	if (dev->handle)
- 		device_remove_file(&dev->dev, &dev_attr_path);
-+	if (acpi_has_method(dev->handle, "_PLD") && dev->pld !=3D NULL)
-+		device_remove_group(&dev->dev, &dev_attr_pld_group);
- }
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 1331756d4cfc..35ac7bcc05ed 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -668,7 +668,7 @@ static int acpi_tie_acpi_dev(struct acpi_device *adev)
- 	return 0;
- }
-=20
--static void acpi_store_pld_crc(struct acpi_device *adev)
-+static void acpi_store_pld(struct acpi_device *adev)
- {
- 	struct acpi_pld_info *pld;
- 	acpi_status status;
-@@ -678,7 +678,13 @@ static void acpi_store_pld_crc(struct acpi_device *ade=
-v)
- 		return;
-=20
- 	adev->pld_crc =3D crc32(~0, pld, sizeof(*pld));
--	ACPI_FREE(pld);
-+
-+	if (adev->device_type =3D=3D ACPI_BUS_TYPE_DEVICE && pld->user_visible) {
-+		adev->pld =3D pld;
-+	} else {
-+		adev->pld =3D NULL;
-+		ACPI_FREE(pld);
-+	}
- }
-=20
- static int __acpi_device_add(struct acpi_device *device,
-@@ -739,7 +745,7 @@ static int __acpi_device_add(struct acpi_device *device=
-,
- 	if (device->wakeup.flags.valid)
- 		list_add_tail(&device->wakeup_list, &acpi_wakeup_device_list);
-=20
--	acpi_store_pld_crc(device);
-+	acpi_store_pld(device);
-=20
- 	mutex_unlock(&acpi_device_lock);
-=20
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index ca88c4706f2b..929e726a666b 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -381,6 +381,7 @@ struct acpi_device {
- 	struct acpi_hotplug_context *hp;
- 	struct acpi_driver *driver;
- 	const struct acpi_gpio_mapping *driver_gpios;
-+	struct acpi_pld_info *pld;
- 	void *driver_data;
- 	struct device dev;
- 	unsigned int physical_node_count;
---=20
-2.35.1.265.g69c8d7142f-goog
+Thanks,
+- Russ
+>
+>   Luis
 
