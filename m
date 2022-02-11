@@ -2,100 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E12BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:12:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 11 Feb 2022 16:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349259AbiBKQMa (ORCPT
+        id S1350520AbiBKQNc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 11 Feb 2022 11:12:30 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42498 "EHLO
+        Fri, 11 Feb 2022 11:13:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241537AbiBKQM3 (ORCPT
+        with ESMTP id S236395AbiBKQNb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 11 Feb 2022 11:12:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA2E1D84;
-        Fri, 11 Feb 2022 08:12:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 600A7B82A9F;
-        Fri, 11 Feb 2022 16:12:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB90C340EB;
-        Fri, 11 Feb 2022 16:12:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644595945;
-        bh=rgSRG/wI/UvP1JIcRcANguOObOhXqt/uGPw7rZYmMLc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TH0MAjBSPqE4IvkEaG/RqqjT//6OxDhIaX4ubPKeBufLBVs+dhZOSFK76aUYUIrFu
-         qm3Q+9OuINork29yHWxhWekK77boma+MX+IjD6R9YfY+PtYB1WtxsvcQq3H0qzE8kj
-         fMEaAzT+nHQQNoA75Wd2N3/mqGMd4UAWe7pz/iO6v8MFKpcQFelNPDWbiXMKx2T8N2
-         hyCknDNwaFNyJff8KDVIr5Ndy2b12grxjQXCyMli2hTx9y4czC4fWzJLiLhwgw3iNh
-         c3RgLyGb5dSSXN9m5nZQ3qGxBkZsW6/C2qS0l8OzNN2wMfOS0SLqDusMgBWWe5+25A
-         e310hORe+8+Xg==
-Date:   Fri, 11 Feb 2022 16:12:18 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
-Cc:     lgirdwood@gmail.com, tiwai@suse.com, robh+dt@kernel.org,
-        matthias.bgg@gmail.com, perex@perex.cz, p.zabel@pengutronix.de,
-        geert+renesas@glider.be, trevor.wu@mediatek.com,
-        tzungbi@google.com, zhangqilong3@huawei.com,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/15] ASoC: mediatek: mt8186: add platform driver
-Message-ID: <YgaK4hiRjEJi9wQ4@sirena.org.uk>
-References: <20220211103818.8266-1-jiaxin.yu@mediatek.com>
- <20220211103818.8266-11-jiaxin.yu@mediatek.com>
+        Fri, 11 Feb 2022 11:13:31 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534DDB70
+        for <linux-kernel@vger.kernel.org>; Fri, 11 Feb 2022 08:13:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644596010; x=1676132010;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=VNewZQWxg7843LgS1I5+OZq1SFHHVX2AbG4mTSf5AaA=;
+  b=MZKgZso1C5/ktag4khg0dMiFURN3t5DfzYjhcfrHkBLthnOkUe0640jq
+   4/DBcOO+M4lEn6JaYOOPZaSeKeuaFLTmVIDeoY4hdwzvRpHg72y5sQQOw
+   hql1o1Ybs1Cgw5RsZfOdFI2nBo9MmocmZrnBQQY3pEgRWeXu+rkJe6F2V
+   28wpf2LYwEr5gOT44UBOiNBLf1fD0XBVqyfZf9kkfQ1FpjSsVUW+bTguL
+   S173t4TRhV5qoxSs7itA+5AFTpGDOfzusNB2udbpzX3qbYLynEyji1Ydg
+   ps+64IEyp9XyHIhNlQOlqhVFAZOmXtJhDIBa+YQ1ypM24uiEF1QLUbbQD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="229723376"
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="229723376"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 08:13:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,361,1635231600"; 
+   d="scan'208";a="483479421"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 11 Feb 2022 08:13:23 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id E1C1193; Fri, 11 Feb 2022 18:13:38 +0200 (EET)
+Date:   Fri, 11 Feb 2022 19:13:38 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     mingo@redhat.com, bp@alien8.de, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv2 18/29] x86/boot: Avoid #VE during boot for TDX platforms
+Message-ID: <20220211161338.uxjgib6psbpjw6t6@black.fi.intel.com>
+References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+ <20220124150215.36893-19-kirill.shutemov@linux.intel.com>
+ <87sft2w2ul.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gYCP5ior9YtfvDdG"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220211103818.8266-11-jiaxin.yu@mediatek.com>
-X-Cookie: do {
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87sft2w2ul.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Feb 02, 2022 at 01:04:34AM +0100, Thomas Gleixner wrote:
+> > +	orl	$X86_CR4_PAE, %eax
+> >  	testl	%edx, %edx
+> >  	jz	1f
+> >  	orl	$X86_CR4_LA57, %eax
+> > @@ -662,8 +675,12 @@ SYM_CODE_START(trampoline_32bit_src)
+> >  	pushl	$__KERNEL_CS
+> >  	pushl	%eax
+> >  
+> > -	/* Enable paging again */
+> > -	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
+> > +	/*
+> > +	 * Enable paging again.  Keep CR0.NE set, FERR# is no longer used
+> > +	 * to handle x87 FPU errors and clearing NE may fault in some
+> > +	 * environments.
+> 
+> FERR# is no longer used is really not informative here. The point is
+> that any x86 CPU which is supported by the kernel requires CR0_NE to be
+> set. This code was wrong from the very beginning because 64bit CPUs
+> never supported #FERR. The reason why it exists is Copy&Pasta without
+> brain applied and the sad fact that the hardware does not enforce it in
+> native mode for whatever reason. So this want's to be a seperate patch
+> with a coherent comment and changelong.
 
---gYCP5ior9YtfvDdG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+What about the patch below?
 
-On Fri, Feb 11, 2022 at 06:38:13PM +0800, Jiaxin Yu wrote:
+Instead of adding CR0.NE there I used CR0_STATE instead or keep existing
+value, only modifing required bit.
 
->  sound/soc/mediatek/Kconfig                    |   44 +
->  sound/soc/mediatek/Makefile                   |    1 +
->  sound/soc/mediatek/mt8186/Makefile            |   21 +
->  sound/soc/mediatek/mt8186/mt8186-afe-clk.c    |  719 ++++
->  sound/soc/mediatek/mt8186/mt8186-afe-clk.h    |  210 +
->  sound/soc/mediatek/mt8186/mt8186-afe-common.h |  245 ++
->  .../soc/mediatek/mt8186/mt8186-afe-control.c  |  262 ++
->  sound/soc/mediatek/mt8186/mt8186-afe-gpio.c   |  211 +
->  sound/soc/mediatek/mt8186/mt8186-afe-gpio.h   |   19 +
->  sound/soc/mediatek/mt8186/mt8186-afe-pcm.c    | 3030 +++++++++++++++
->  .../mediatek/mt8186/mt8186-interconnection.h  |   69 +
->  .../soc/mediatek/mt8186/mt8186-misc-control.c | 1729 +++++++++
->  sound/soc/mediatek/mt8186/mt8186-reg.h        | 3433 +++++++++++++++++
+I'm not familiar with float-point execption handling. I tried to read up
+on that in attempt to make coherent commit message. Please correct me if I
+wrote something wrong.
 
-I know it's already a long series but perhaps the clock and GPIO bits
-could be split out into separate patches?  This one patch is over 300K
-which is a bit much in one go, especially when it's not just all big
-tables.
+---------------------------------8<----------------------------------------
 
---gYCP5ior9YtfvDdG
-Content-Type: application/pgp-signature; name="signature.asc"
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Date: Fri, 11 Feb 2022 14:25:10 +0300
+Subject: [PATCH] x86/boot: Set CR0.NE early and keep it set during the boot
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
------BEGIN PGP SIGNATURE-----
+TDX guest requires CR0.NE to be set. Clearing the bit triggers #GP(0).
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIGiuEACgkQJNaLcl1U
-h9CJtQf7BDZBnFCixO3E3MMHZvLzF2Pnw7+W3qm+6WvLPzVSD0iOyTc1J3ZrilB9
-06VgI3G0b0T12wP+S0o0m4nWBfjBuFcSm0SlMQ8tNHm4VNZz13RJWL/HFKOWBmyL
-j3orzapgV2Q46cYWkZpRu1ghoNt8yHbXOtj9fM847nykba62lkcTCCMQkGZCxPuU
-wSQvZko3pHCRhRV24sQuIuLE2XhP+trDjSJzEG7EpcgPC2OLioAtCOZMaqbjLT1P
-7K2gfHPXcBfiCOAn4p/Ns4votdDgBcoPwnyKmcn1V+wuRKdGQT5E15QOAyRi6s3Q
-9pCv5S38o6lxca49gRWRCRt7T79E8g==
-=dsn2
------END PGP SIGNATURE-----
+If CR0.NE is 0, the MS-DOS compatibility mode for handling floating-point
+exceptions is selected. In this mode, the software exception handler for
+floating-point exceptions is invoked externally using the processor’s
+FERR#, INTR, and IGNNE# pins.
 
---gYCP5ior9YtfvDdG--
+Using FERR# and IGNNE# to handle floating-point exception is deprecated.
+CR0.NE=0 also limits newer processors to operate with one logical
+processor active.
+
+Kernel uses CR0_STATE constant to initialize CR0. It has NE bit set.
+But during early boot has more ad-hoc approach to setting bit in the
+register.
+
+Make CR0 initialization consistent, deriving the initial from CR0_STATE.
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/boot/compressed/head_64.S   | 7 ++++---
+ arch/x86/realmode/rm/trampoline_64.S | 8 ++++----
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index fd9441f40457..d0c3d33f3542 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -289,7 +289,7 @@ SYM_FUNC_START(startup_32)
+ 	pushl	%eax
+ 
+ 	/* Enter paged protected Mode, activating Long Mode */
+-	movl	$(X86_CR0_PG | X86_CR0_PE), %eax /* Enable Paging and Protected mode */
++	movl	$CR0_STATE, %eax
+ 	movl	%eax, %cr0
+ 
+ 	/* Jump from 32bit compatibility mode into 64bit mode. */
+@@ -662,8 +662,9 @@ SYM_CODE_START(trampoline_32bit_src)
+ 	pushl	$__KERNEL_CS
+ 	pushl	%eax
+ 
+-	/* Enable paging again */
+-	movl	$(X86_CR0_PG | X86_CR0_PE), %eax
++	/* Enable paging again. */
++	movl	%cr0, %eax
++	btsl	$X86_CR0_PG_BIT, %eax
+ 	movl	%eax, %cr0
+ 
+ 	lret
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index ae112a91592f..d380f2d1fd23 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -70,7 +70,7 @@ SYM_CODE_START(trampoline_start)
+ 	movw	$__KERNEL_DS, %dx	# Data segment descriptor
+ 
+ 	# Enable protected mode
+-	movl	$X86_CR0_PE, %eax	# protected mode (PE) bit
++	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
+ 	movl	%eax, %cr0		# into protected mode
+ 
+ 	# flush prefetch and jump to startup_32
+@@ -148,8 +148,8 @@ SYM_CODE_START(startup_32)
+ 	movl	$MSR_EFER, %ecx
+ 	wrmsr
+ 
+-	# Enable paging and in turn activate Long Mode
+-	movl	$(X86_CR0_PG | X86_CR0_WP | X86_CR0_PE), %eax
++	# Enable paging and in turn activate Long Mode.
++	movl	$CR0_STATE, %eax
+ 	movl	%eax, %cr0
+ 
+ 	/*
+@@ -169,7 +169,7 @@ SYM_CODE_START(pa_trampoline_compat)
+ 	movl	$rm_stack_end, %esp
+ 	movw	$__KERNEL_DS, %dx
+ 
+-	movl	$X86_CR0_PE, %eax
++	movl	$(CR0_STATE & ~X86_CR0_PG), %eax
+ 	movl	%eax, %cr0
+ 	ljmpl   $__KERNEL32_CS, $pa_startup_32
+ SYM_CODE_END(pa_trampoline_compat)
+-- 
+ Kirill A. Shutemov
