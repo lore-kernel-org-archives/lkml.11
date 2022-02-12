@@ -2,145 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C70AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C63CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235990AbiBLOUz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:20:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34124 "EHLO
+        id S236016AbiBLOcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:32:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236323AbiBLOUp (ORCPT
+        with ESMTP id S231486AbiBLOcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 09:20:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D4CC2613A
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 06:20:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54279B8069D
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 14:20:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6952C340E7;
-        Sat, 12 Feb 2022 14:20:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644675629;
-        bh=TwVjv6DO9koJT4L7GHGE18JP/jnf2PVbKTb65YI4Hfc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=mwVbT5Kao/Qa17cctx28ujIdQCuKm0o/P0yhq/GsWm4gm8Bwnd6POpr/36/W98o/L
-         A4qglr3kRgJ48UOLT7UqavPvsS/C/mJQJh/PLTwwA0oM/wzbs59nFQ3yN0nnpLUrN0
-         m4NtKAkyeiYIqf4+NZc6Okcqti8O8mqQKB00edjhTrhdxKEhz2Hf4wuTIqQiq+TJx3
-         h7vQk2LhEsAGpCcg9SmXpFF1DLT2YrjC8EGm0s8jMLOsuv8xuvX6BDBwmfxdK64kua
-         I4g855n4XdAnlKK2F7nEMwZTBHYEh7qAC3JVvlzlFvTZXTz5xMRNkj24mlmwmzgBKX
-         EoFfoYDBd5WqA==
-From:   Jaegeuk Kim <jaegeuk@kernel.org>
-To:     linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net
-Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 1/2] f2fs: fix missing free nid in f2fs_handle_failed_inode
-Date:   Sat, 12 Feb 2022 06:20:22 -0800
-Message-Id: <20220212142023.2508247-1-jaegeuk@kernel.org>
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+        Sat, 12 Feb 2022 09:32:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 339A1B0B
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 06:31:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644676316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2RrLAaTIm55Ngk8UdioYWo7osufPENpoKGdvpn3KCgg=;
+        b=af0Fa0twZEqW/6pK2JCsIEBmvHp+3JmNmph/0Go2qrq4OpfMfojGHdCZTFVjcOjL16J5XA
+        n7+rIR5mjQjGsmnboSlmVHMuQCwyh2SZuqa6P8I2UFL2LSDpCu0ZpY3weK/FHjS2PrKTzs
+        t40KjWTpuN1KYh7vTRjDnZm38c8UNDY=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-201-QO9GoHqJPimjoVEl1wB0_Q-1; Sat, 12 Feb 2022 09:31:55 -0500
+X-MC-Unique: QO9GoHqJPimjoVEl1wB0_Q-1
+Received: by mail-oo1-f72.google.com with SMTP id k16-20020a4aa5d0000000b002eaa82bf180so7622894oom.0
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 06:31:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2RrLAaTIm55Ngk8UdioYWo7osufPENpoKGdvpn3KCgg=;
+        b=aSOwA0KiYmuIWz014ogKUuT1j/ga6NH6k/QyeuMiuerNNuvV2wmNPrI9jAOANvtg+j
+         Ed9m0rBJ8z2VBrqR9eHP43mPvtrbvtcEhBPwdybrXc8El/Ru0ZF6k07XqWTlyGoe3jhc
+         3kuUJMq3KI0LpEy8ysoWT3d5miXfEM7ev5DjqUBEvw5s4X/KWdu4qxha5DN6IuJORWqX
+         EzPGkExqfnexO9CVntbTZ2UubdLGmZFykY9SLz3STRohp9iButiUFKjnUCe1UAF5DOsr
+         7tKA39Wgr03cInh2I3/LK1g7NfaI+4yZeXQGVX96DyITSTvcHOZH/5tFJLyYupdSW/N6
+         Yt3w==
+X-Gm-Message-State: AOAM531sGGBcl81+y8DVobnZDzm5D85V/4s0ThPR6jlkvwU1qWJcyG0E
+        SmRARmIWYg2UYOllC0teFc8IKvqnU9/FEBn8xIDYuNpNB1E/jy9HXmFi4z8D49/Fdwx6hy+c6I7
+        QH9EBzee9eFYDlqtK6RPfQx+c
+X-Received: by 2002:a05:6870:c20e:: with SMTP id z14mr89784oae.226.1644676314641;
+        Sat, 12 Feb 2022 06:31:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyewSCG+Wjgi3m3HNFwwEl/PZn24w1xKwlIP0KYeT8iviwBv0C2E7QojZ59pqN553AnOO1WwQ==
+X-Received: by 2002:a05:6870:c20e:: with SMTP id z14mr89779oae.226.1644676314420;
+        Sat, 12 Feb 2022 06:31:54 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id q11sm10520833oti.3.2022.02.12.06.31.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 06:31:54 -0800 (PST)
+From:   trix@redhat.com
+To:     broonie@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] regmap: irq: cleanup comments
+Date:   Sat, 12 Feb 2022 06:31:44 -0800
+Message-Id: <20220212143144.2648689-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch fixes xfstests/generic/475 failure.
+From: Tom Rix <trix@redhat.com>
 
-[  293.680694] F2FS-fs (dm-1): May loss orphan inode, run fsck to fix.
-[  293.685358] Buffer I/O error on dev dm-1, logical block 8388592, async page read
-[  293.691527] Buffer I/O error on dev dm-1, logical block 8388592, async page read
-[  293.691764] sh (7615): drop_caches: 3
-[  293.691819] sh (7616): drop_caches: 3
-[  293.694017] Buffer I/O error on dev dm-1, logical block 1, async page read
-[  293.695659] sh (7618): drop_caches: 3
-[  293.696979] sh (7617): drop_caches: 3
-[  293.700290] sh (7623): drop_caches: 3
-[  293.708621] sh (7626): drop_caches: 3
-[  293.711386] sh (7628): drop_caches: 3
-[  293.711825] sh (7627): drop_caches: 3
-[  293.716738] sh (7630): drop_caches: 3
-[  293.719613] sh (7632): drop_caches: 3
-[  293.720971] sh (7633): drop_caches: 3
-[  293.727741] sh (7634): drop_caches: 3
-[  293.730783] sh (7636): drop_caches: 3
-[  293.732681] sh (7635): drop_caches: 3
-[  293.732988] sh (7637): drop_caches: 3
-[  293.738836] sh (7639): drop_caches: 3
-[  293.740568] sh (7641): drop_caches: 3
-[  293.743053] sh (7640): drop_caches: 3
-[  293.821889] ------------[ cut here ]------------
-[  293.824654] kernel BUG at fs/f2fs/node.c:3334!
-[  293.826226] invalid opcode: 0000 [#1] PREEMPT SMP PTI
-[  293.828713] CPU: 0 PID: 7653 Comm: umount Tainted: G           OE     5.17.0-rc1-custom #1
-[  293.830946] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
-[  293.832526] RIP: 0010:f2fs_destroy_node_manager+0x33f/0x350 [f2fs]
-[  293.833905] Code: e8 d6 3d f9 f9 48 8b 45 d0 65 48 2b 04 25 28 00 00 00 75 1a 48 81 c4 28 03 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 0f 0b
-[  293.837783] RSP: 0018:ffffb04ec31e7a20 EFLAGS: 00010202
-[  293.839062] RAX: 0000000000000001 RBX: ffff9df947db2eb8 RCX: 0000000080aa0072
-[  293.840666] RDX: 0000000000000000 RSI: ffffe86c0432a140 RDI: ffffffffc0b72a21
-[  293.842261] RBP: ffffb04ec31e7d70 R08: ffff9df94ca85780 R09: 0000000080aa0072
-[  293.843909] R10: ffff9df94ca85700 R11: ffff9df94e1ccf58 R12: ffff9df947db2e00
-[  293.845594] R13: ffff9df947db2ed0 R14: ffff9df947db2eb8 R15: ffff9df947db2eb8
-[  293.847855] FS:  00007f5a97379800(0000) GS:ffff9dfa77c00000(0000) knlGS:0000000000000000
-[  293.850647] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  293.852940] CR2: 00007f5a97528730 CR3: 000000010bc76005 CR4: 0000000000370ef0
-[  293.854680] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  293.856423] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  293.858380] Call Trace:
-[  293.859302]  <TASK>
-[  293.860311]  ? ttwu_do_wakeup+0x1c/0x170
-[  293.861800]  ? ttwu_do_activate+0x6d/0xb0
-[  293.863057]  ? _raw_spin_unlock_irqrestore+0x29/0x40
-[  293.864411]  ? try_to_wake_up+0x9d/0x5e0
-[  293.865618]  ? debug_smp_processor_id+0x17/0x20
-[  293.866934]  ? debug_smp_processor_id+0x17/0x20
-[  293.868223]  ? free_unref_page+0xbf/0x120
-[  293.869470]  ? __free_slab+0xcb/0x1c0
-[  293.870614]  ? preempt_count_add+0x7a/0xc0
-[  293.871811]  ? __slab_free+0xa0/0x2d0
-[  293.872918]  ? __wake_up_common_lock+0x8a/0xc0
-[  293.874186]  ? __slab_free+0xa0/0x2d0
-[  293.875305]  ? free_inode_nonrcu+0x20/0x20
-[  293.876466]  ? free_inode_nonrcu+0x20/0x20
-[  293.877650]  ? debug_smp_processor_id+0x17/0x20
-[  293.878949]  ? call_rcu+0x11a/0x240
-[  293.880060]  ? f2fs_destroy_stats+0x59/0x60 [f2fs]
-[  293.881437]  ? kfree+0x1fe/0x230
-[  293.882674]  f2fs_put_super+0x160/0x390 [f2fs]
-[  293.883978]  generic_shutdown_super+0x7a/0x120
-[  293.885274]  kill_block_super+0x27/0x50
-[  293.886496]  kill_f2fs_super+0x7f/0x100 [f2fs]
-[  293.887806]  deactivate_locked_super+0x35/0xa0
-[  293.889271]  deactivate_super+0x40/0x50
-[  293.890513]  cleanup_mnt+0x139/0x190
-[  293.891689]  __cleanup_mnt+0x12/0x20
-[  293.892850]  task_work_run+0x64/0xa0
-[  293.894035]  exit_to_user_mode_prepare+0x1b7/0x1c0
-[  293.895409]  syscall_exit_to_user_mode+0x27/0x50
-[  293.896872]  do_syscall_64+0x48/0xc0
-[  293.898090]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  293.899517] RIP: 0033:0x7f5a975cd25b
+Replace the second 'which' with 'the'.
+Change 'acknowleding' to 'acknowledging'.
 
-Fixes: 7735730d39d7 ("f2fs: fix to propagate error from __get_meta_page()")
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- fs/f2fs/inode.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/base/regmap/regmap-irq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
-index 0ec8e32a00b4..ab8e0c06c78c 100644
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -885,6 +885,7 @@ void f2fs_handle_failed_inode(struct inode *inode)
- 	err = f2fs_get_node_info(sbi, inode->i_ino, &ni, false);
- 	if (err) {
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
-+		set_inode_flag(inode, FI_FREE_NID);
- 		f2fs_warn(sbi, "May loss orphan inode, run fsck to fix.");
- 		goto out;
- 	}
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index d5604f497296..81f6356f0589 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -537,7 +537,7 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
+ 
+ 	/*
+ 	 * Ignore masked IRQs and ack if we need to; we ack early so
+-	 * there is no race between handling and acknowleding the
++	 * there is no race between handling and acknowledging the
+ 	 * interrupt.  We assume that typically few of the interrupts
+ 	 * will fire simultaneously so don't worry about overhead from
+ 	 * doing a write per register.
+@@ -1082,7 +1082,7 @@ EXPORT_SYMBOL_GPL(devm_regmap_add_irq_chip);
+ /**
+  * devm_regmap_del_irq_chip() - Resource managed regmap_del_irq_chip()
+  *
+- * @dev: Device for which which resource was allocated.
++ * @dev: Device for which the resource was allocated.
+  * @irq: Primary IRQ for the device.
+  * @data: &regmap_irq_chip_data allocated by regmap_add_irq_chip().
+  *
 -- 
-2.35.1.265.g69c8d7142f-goog
+2.26.3
 
