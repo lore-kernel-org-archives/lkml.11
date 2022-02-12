@@ -2,79 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 142A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01225C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237823AbiBLQTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 11:19:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39816 "EHLO
+        id S237242AbiBLQSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 11:18:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237208AbiBLQTc (ORCPT
+        with ESMTP id S237047AbiBLQR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 11:19:32 -0500
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4387B181;
-        Sat, 12 Feb 2022 08:19:29 -0800 (PST)
-Received: from grover.. (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 21CGIeGG032289;
-        Sun, 13 Feb 2022 01:18:41 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 21CGIeGG032289
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1644682721;
-        bh=Jsb9UGtQqwRz1mO97LtkCwDjiroMA4vQBbLGqoWONso=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UsL0jAYTuz4cki8NtqU0+/cdwpzrBrhfKh0W7VxXAvXI64PuCSQuZfbzyMzMnJCEc
-         kZY6GnOQaRsF4dzmsCpMnys+5JfTVqtObTis6kSR7eS9DUnHY7K9qi0+q0nHiwiZLp
-         8rciGbY3zDINSRmuFmNu4IQ+5k3yAWQbHD4c7qZqPVnyosD76N97iopv6192UJUmPu
-         1pTKlkVyKzfRhFzDOXC32zYDXy79B2GAadtQ2+TYZTliZY+6fv7Cx9SkSQg7utRftp
-         gVN5HtfsPWxJLIx68BuIqrg1FDAxOu/gZuwXTrGp+5rGKTB8y2WepUUSorEXfA8Xe6
-         Vu2YKTBw/TT2w==
-X-Nifty-SrcIP: [133.32.232.101]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        David Laight <David.Laight@ACULAB.COM>
-Subject: [PATCH] kconfig: add fflush() before ferror() check
-Date:   Sun, 13 Feb 2022 01:18:37 +0900
-Message-Id: <20220212161837.2235261-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Sat, 12 Feb 2022 11:17:59 -0500
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1AF240A6
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 08:17:56 -0800 (PST)
+Received: from dslb-188-097-215-215.188.097.pools.vodafone-ip.de ([188.97.215.215] helo=martin-debian-2.paytec.ch)
+        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <martin@kaiser.cx>)
+        id 1nIv5s-0007YM-7b; Sat, 12 Feb 2022 17:17:52 +0100
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 09/10] staging: r8188eu: remove path parameter from phy_RFSerialRead
+Date:   Sat, 12 Feb 2022 17:17:36 +0100
+Message-Id: <20220212161737.381841-10-martin@kaiser.cx>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220212161737.381841-1-martin@kaiser.cx>
+References: <20220212161737.381841-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As David Laight pointed out, there is not much point in calling
-ferror() unless you call fflush() first.
+All callers of phy_RFSerialRead set the eRFPath parameter to
+RF_PATH_A. Remove the parameter and use RF_PATH_A directly.
 
-Reported-by: David Laight <David.Laight@ACULAB.COM>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
+ drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
- scripts/kconfig/confdata.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-index d3c3a61308ad..94dcec2cc803 100644
---- a/scripts/kconfig/confdata.c
-+++ b/scripts/kconfig/confdata.c
-@@ -979,6 +979,7 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
+index 2dcd1df58aaa..e2e4443b7414 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
+@@ -104,7 +104,6 @@ void rtl8188e_PHY_SetBBReg(struct adapter *Adapter, u32 RegAddr, u32 BitMask, u3
+ *
+ * Input:
+ *			struct adapter *Adapter,
+-*			enum rf_radio_path eRFPath,	Radio path of A/B/C/D
+ *			u32			Offset,		The target address to be read
+ *
+ * Output:	None
+@@ -119,13 +118,12 @@ void rtl8188e_PHY_SetBBReg(struct adapter *Adapter, u32 RegAddr, u32 BitMask, u3
+ static	u32
+ phy_RFSerialRead(
+ 		struct adapter *Adapter,
+-		enum rf_radio_path eRFPath,
+ 		u32 Offset
+ 	)
+ {
+ 	u32 retValue = 0;
+ 	struct hal_data_8188e *pHalData = &Adapter->haldata;
+-	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[eRFPath];
++	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[RF_PATH_A];
+ 	u32 NewOffset;
+ 	u32 tmplong, tmplong2;
+ 	u8 	RfPiEnable = 0;
+@@ -143,10 +141,7 @@ phy_RFSerialRead(
+ 	/*  For RF A/B write 0x824/82c(does not work in the future) */
+ 	/*  We must use 0x824 for RF A and B to execute read trigger */
+ 	tmplong = rtl8188e_PHY_QueryBBReg(Adapter, rFPGA0_XA_HSSIParameter2, bMaskDWord);
+-	if (eRFPath == RF_PATH_A)
+-		tmplong2 = tmplong;
+-	else
+-		tmplong2 = rtl8188e_PHY_QueryBBReg(Adapter, pPhyReg->rfHSSIPara2, bMaskDWord);
++	tmplong2 = tmplong;
  
- 	fprintf(out, "\n$(deps_config): ;\n");
+ 	tmplong2 = (tmplong2 & (~bLSSIReadAddress)) | (NewOffset << 23) | bLSSIReadEdge;	/* T65 RF */
  
-+	fflush(out);
- 	ret = ferror(out); /* error check for all fprintf() calls */
- 	fclose(out);
- 	if (ret)
-@@ -1097,6 +1098,7 @@ static int __conf_write_autoconf(const char *filename,
- 		if ((sym->flags & SYMBOL_WRITE) && sym->name)
- 			print_symbol(file, sym);
+@@ -158,10 +153,7 @@ phy_RFSerialRead(
  
-+	fflush(file);
- 	/* check possible errors in conf_write_heading() and print_symbol() */
- 	ret = ferror(file);
- 	fclose(file);
+ 	udelay(10);/* PlatformStallExecution(10); */
+ 
+-	if (eRFPath == RF_PATH_A)
+-		RfPiEnable = (u8)rtl8188e_PHY_QueryBBReg(Adapter, rFPGA0_XA_HSSIParameter1, BIT(8));
+-	else if (eRFPath == RF_PATH_B)
+-		RfPiEnable = (u8)rtl8188e_PHY_QueryBBReg(Adapter, rFPGA0_XB_HSSIParameter1, BIT(8));
++	RfPiEnable = (u8)rtl8188e_PHY_QueryBBReg(Adapter, rFPGA0_XA_HSSIParameter1, BIT(8));
+ 
+ 	if (RfPiEnable) {	/*  Read from BBreg8b8, 12 bits for 8190, 20bits for T65 RF */
+ 		retValue = rtl8188e_PHY_QueryBBReg(Adapter, pPhyReg->rfLSSIReadBackPi, bLSSIReadBackData);
+@@ -265,7 +257,7 @@ u32 rtl8188e_PHY_QueryRFReg(struct adapter *Adapter, u32 RegAddr, u32 BitMask)
+ {
+ 	u32 Original_Value, Readback_Value, BitShift;
+ 
+-	Original_Value = phy_RFSerialRead(Adapter, RF_PATH_A, RegAddr);
++	Original_Value = phy_RFSerialRead(Adapter, RegAddr);
+ 
+ 	BitShift =  phy_CalculateBitShift(BitMask);
+ 	Readback_Value = (Original_Value & BitMask) >> BitShift;
+@@ -301,7 +293,7 @@ rtl8188e_PHY_SetRFReg(
+ 
+ 	/*  RF data is 12 bits only */
+ 	if (BitMask != bRFRegOffsetMask) {
+-		Original_Value = phy_RFSerialRead(Adapter, RF_PATH_A, RegAddr);
++		Original_Value = phy_RFSerialRead(Adapter, RegAddr);
+ 		BitShift =  phy_CalculateBitShift(BitMask);
+ 		Data = ((Original_Value & (~BitMask)) | (Data << BitShift));
+ 	}
 -- 
-2.32.0
+2.30.2
 
