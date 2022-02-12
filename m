@@ -2,47 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D00DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CABA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:07:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbiBLNH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 08:07:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57130 "EHLO
+        id S235701AbiBLNHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 08:07:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235862AbiBLNHM (ORCPT
+        with ESMTP id S235845AbiBLNHK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 08:07:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26E92BB00;
-        Sat, 12 Feb 2022 05:06:38 -0800 (PST)
+        Sat, 12 Feb 2022 08:07:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44259275D2;
+        Sat, 12 Feb 2022 05:06:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51ABC60E9F;
-        Sat, 12 Feb 2022 13:06:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A9DC340E7;
-        Sat, 12 Feb 2022 13:06:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA0AA60ECD;
+        Sat, 12 Feb 2022 13:06:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEA1EC340E7;
+        Sat, 12 Feb 2022 13:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644671197;
-        bh=+BXa49lf8fnHrSIFDiatrQgLjweI5KFrfDJBYuvOIsk=;
+        s=k20201202; t=1644671192;
+        bh=em8Vg6aDaspe7cuRQUgEkOtugZHxK7rzOV+lPkIxgPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UQJz6ibOUZ+6Rn5iP3zivm2GsQyUHg9q/EeGa+IzVUqL7zMVYxm8TaCREhFT1EA7J
-         ZXLnxU+N4oFKcgDh1f2Kaz1sSc/RVTU9fTa0Q7KFupoEkgsw6rWpFsnWd0S22FrOkU
-         1c+L75xmF1ZBDZxAy/WhmR4Y5+sh5qG7tmwVxb3QoONxQ8bzFBecSUmwoaBWegAF54
-         l1zyMvpqBP9WORtkJ4RIQPr+VTk2taQpl2kAuX6vRcyYzST7Q3V3fBjMaoTm5QeXVq
-         4gdhUUMenaXUa2dpMllgfBBLbdMUO6QZcst3bUFkF1lcp6cZjjykMDOgnjdsjKZbb9
-         SNFTfsPkGbiNA==
+        b=oCie9laf9hlaju9DS8iweIHWzbOuEy4eGPgtIOmXIq2e4b9/vtim/QGRpS14tbfs0
+         5JTCw02GY6S3s6AFFx6RAyExzc90pDXDhf7BvGWBYZKG82yoDbVF/xCNdi1Sv0ro5Y
+         fepGYjBnh6bUanOn8NoroW3DDIsJbiWCcbeJViewP9uRNhE5FpORVL5GywZupP9DEu
+         ZA23gQRtjKxz6mKFtQrErMUqTkAX6yZNovZ3J2HHn2Vx6DDhuT0HqaPzCAnzsWWuW/
+         ro98MlzPdybF5yruCHGWu2hHh4qrXkD3gDitRifgteWikJV8HNMIWjFvHTOtGZ26YY
+         WtRCOBq/ip42w==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Miguel Ojeda <ojeda@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
         Wedson Almeida Filho <wedsonaf@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org
-Subject: [PATCH v4 19/20] [RFC] drivers: gpio: PrimeCell PL061 in Rust
-Date:   Sat, 12 Feb 2022 14:03:45 +0100
-Message-Id: <20220212130410.6901-20-ojeda@kernel.org>
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Ayaan Zaidi <zaidi.ayaan@gmail.com>,
+        Milan Landaverde <milan@mdaverde.com>
+Subject: [PATCH v4 17/20] samples: add Rust examples
+Date:   Sat, 12 Feb 2022 14:03:43 +0100
+Message-Id: <20220212130410.6901-18-ojeda@kernel.org>
 In-Reply-To: <20220212130410.6901-1-ojeda@kernel.org>
 References: <20220212130410.6901-1-ojeda@kernel.org>
 MIME-Version: 1.0
@@ -51,431 +56,1231 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wedson Almeida Filho <wedsonaf@google.com>
+A set of Rust modules that showcase how Rust modules look like
+and how to use the abstracted kernel features.
 
-A port to Rust of the PrimeCell PL061 GPIO driver.
+These samples also double as tests in the CI.
 
-This module is a work in progress and will be sent for review later
-on, as well as separately from the Rust support.
+The semaphore sample comes with a C version for comparison.
 
-However, it is included to show how an actual working module
-written in Rust may look like.
-
+Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
+Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
+Co-developed-by: Finn Behrens <me@kloenk.de>
+Signed-off-by: Finn Behrens <me@kloenk.de>
+Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
 Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
+Co-developed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Co-developed-by: Sven Van Asbroeck <thesven73@gmail.com>
+Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+Co-developed-by: Gary Guo <gary@garyguo.net>
+Signed-off-by: Gary Guo <gary@garyguo.net>
+Co-developed-by: Boris-Chengbiao Zhou <bobo1239@web.de>
+Signed-off-by: Boris-Chengbiao Zhou <bobo1239@web.de>
+Co-developed-by: Ayaan Zaidi <zaidi.ayaan@gmail.com>
+Signed-off-by: Ayaan Zaidi <zaidi.ayaan@gmail.com>
+Co-developed-by: Milan Landaverde <milan@mdaverde.com>
+Signed-off-by: Milan Landaverde <milan@mdaverde.com>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- drivers/gpio/Kconfig            |   8 +
- drivers/gpio/Makefile           |   1 +
- drivers/gpio/gpio_pl061_rust.rs | 370 ++++++++++++++++++++++++++++++++
- 3 files changed, 379 insertions(+)
- create mode 100644 drivers/gpio/gpio_pl061_rust.rs
+ samples/Kconfig                        |   2 +
+ samples/Makefile                       |   1 +
+ samples/rust/Kconfig                   | 123 ++++++++++++++
+ samples/rust/Makefile                  |  13 ++
+ samples/rust/rust_chrdev.rs            |  50 ++++++
+ samples/rust/rust_minimal.rs           |  35 ++++
+ samples/rust/rust_miscdev.rs           | 144 +++++++++++++++++
+ samples/rust/rust_module_parameters.rs |  69 ++++++++
+ samples/rust/rust_platform.rs          |  22 +++
+ samples/rust/rust_print.rs             |  54 +++++++
+ samples/rust/rust_random.rs            |  61 +++++++
+ samples/rust/rust_semaphore.rs         | 172 ++++++++++++++++++++
+ samples/rust/rust_semaphore_c.c        | 212 +++++++++++++++++++++++++
+ samples/rust/rust_stack_probing.rs     |  36 +++++
+ samples/rust/rust_sync.rs              |  78 +++++++++
+ 15 files changed, 1072 insertions(+)
+ create mode 100644 samples/rust/Kconfig
+ create mode 100644 samples/rust/Makefile
+ create mode 100644 samples/rust/rust_chrdev.rs
+ create mode 100644 samples/rust/rust_minimal.rs
+ create mode 100644 samples/rust/rust_miscdev.rs
+ create mode 100644 samples/rust/rust_module_parameters.rs
+ create mode 100644 samples/rust/rust_platform.rs
+ create mode 100644 samples/rust/rust_print.rs
+ create mode 100644 samples/rust/rust_random.rs
+ create mode 100644 samples/rust/rust_semaphore.rs
+ create mode 100644 samples/rust/rust_semaphore_c.c
+ create mode 100644 samples/rust/rust_stack_probing.rs
+ create mode 100644 samples/rust/rust_sync.rs
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 1c211b4c63be..172295770c3d 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -471,6 +471,14 @@ config GPIO_PL061
- 	help
- 	  Say yes here to support the PrimeCell PL061 GPIO device.
+diff --git a/samples/Kconfig b/samples/Kconfig
+index 22cc921ae291..9a82039aae49 100644
+--- a/samples/Kconfig
++++ b/samples/Kconfig
+@@ -250,6 +250,8 @@ config SAMPLE_CORESIGHT_SYSCFG
+ 	  This demonstrates how a user may create their own CoreSight
+ 	  configurations and easily load them into the system at runtime.
  
-+config GPIO_PL061_RUST
-+	tristate "PrimeCell PL061 GPIO support written in Rust"
-+	depends on ARM_AMBA && RUST
-+	select IRQ_DOMAIN
-+	select GPIOLIB_IRQCHIP
-+	help
-+	  Say yes here to support the PrimeCell PL061 GPIO device
++source "samples/rust/Kconfig"
 +
- config GPIO_PMIC_EIC_SPRD
- 	tristate "Spreadtrum PMIC EIC support"
- 	depends on MFD_SC27XX_PMIC || COMPILE_TEST
-diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-index edbaa3cb343c..7dc334df9c3f 100644
---- a/drivers/gpio/Makefile
-+++ b/drivers/gpio/Makefile
-@@ -117,6 +117,7 @@ obj-$(CONFIG_GPIO_PCIE_IDIO_24)		+= gpio-pcie-idio-24.o
- obj-$(CONFIG_GPIO_PCI_IDIO_16)		+= gpio-pci-idio-16.o
- obj-$(CONFIG_GPIO_PISOSR)		+= gpio-pisosr.o
- obj-$(CONFIG_GPIO_PL061)		+= gpio-pl061.o
-+obj-$(CONFIG_GPIO_PL061_RUST)		+= gpio_pl061_rust.o
- obj-$(CONFIG_GPIO_PMIC_EIC_SPRD)	+= gpio-pmic-eic-sprd.o
- obj-$(CONFIG_GPIO_PXA)			+= gpio-pxa.o
- obj-$(CONFIG_GPIO_RASPBERRYPI_EXP)	+= gpio-raspberrypi-exp.o
-diff --git a/drivers/gpio/gpio_pl061_rust.rs b/drivers/gpio/gpio_pl061_rust.rs
+ endif # SAMPLES
+ 
+ config HAVE_SAMPLE_FTRACE_DIRECT
+diff --git a/samples/Makefile b/samples/Makefile
+index 1ae4de99c983..fc5e9760ea32 100644
+--- a/samples/Makefile
++++ b/samples/Makefile
+@@ -33,3 +33,4 @@ subdir-$(CONFIG_SAMPLE_WATCHDOG)	+= watchdog
+ subdir-$(CONFIG_SAMPLE_WATCH_QUEUE)	+= watch_queue
+ obj-$(CONFIG_DEBUG_KMEMLEAK_TEST)	+= kmemleak/
+ obj-$(CONFIG_SAMPLE_CORESIGHT_SYSCFG)	+= coresight/
++obj-$(CONFIG_SAMPLES_RUST)		+= rust/
+diff --git a/samples/rust/Kconfig b/samples/rust/Kconfig
 new file mode 100644
-index 000000000000..fef046924dd5
+index 000000000000..e234be7c341c
 --- /dev/null
-+++ b/drivers/gpio/gpio_pl061_rust.rs
-@@ -0,0 +1,370 @@
++++ b/samples/rust/Kconfig
+@@ -0,0 +1,123 @@
++# SPDX-License-Identifier: GPL-2.0
++
++menuconfig SAMPLES_RUST
++	bool "Rust samples"
++	depends on RUST
++	help
++	  You can build sample Rust kernel code here.
++
++	  If unsure, say N.
++
++if SAMPLES_RUST
++
++config SAMPLE_RUST_MINIMAL
++	tristate "Minimal"
++	help
++	  This option builds the Rust minimal module sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_minimal.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_PRINT
++	tristate "Printing macros"
++	help
++	  This option builds the Rust printing macros sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_print.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_MODULE_PARAMETERS
++	tristate "Module parameters"
++	help
++	  This option builds the Rust module parameters sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_module_parameters.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_SYNC
++	tristate "Synchronisation primitives"
++	help
++	  This option builds the Rust synchronisation primitives sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_sync.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_CHRDEV
++	tristate "Character device"
++	help
++	  This option builds the Rust character device sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_chrdev.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_MISCDEV
++	tristate "Miscellaneous device"
++	help
++	  This option builds the Rust miscellaneous device sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_miscdev.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_STACK_PROBING
++	tristate "Stack probing"
++	help
++	  This option builds the Rust stack probing sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_stack_probing.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_SEMAPHORE
++	tristate "Semaphore"
++	help
++	  This option builds the Rust semaphore sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_semaphore.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_SEMAPHORE_C
++	tristate "Semaphore (in C, for comparison)"
++	help
++	  This option builds the Rust semaphore sample (in C, for comparison).
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_semaphore_c.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_RANDOM
++	tristate "Random"
++	help
++	  This option builds the Rust random sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_random.
++
++	  If unsure, say N.
++
++config SAMPLE_RUST_PLATFORM
++	tristate "Platform device driver"
++	help
++	  This option builds the Rust platform device driver sample.
++
++	  To compile this as a module, choose M here:
++	  the module will be called rust_platform.
++
++	  If unsure, say N.
++
++endif # SAMPLES_RUST
+diff --git a/samples/rust/Makefile b/samples/rust/Makefile
+new file mode 100644
+index 000000000000..96ffeb7d334a
+--- /dev/null
++++ b/samples/rust/Makefile
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0
++
++obj-$(CONFIG_SAMPLE_RUST_MINIMAL)		+= rust_minimal.o
++obj-$(CONFIG_SAMPLE_RUST_PRINT)			+= rust_print.o
++obj-$(CONFIG_SAMPLE_RUST_MODULE_PARAMETERS)	+= rust_module_parameters.o
++obj-$(CONFIG_SAMPLE_RUST_SYNC)			+= rust_sync.o
++obj-$(CONFIG_SAMPLE_RUST_CHRDEV)		+= rust_chrdev.o
++obj-$(CONFIG_SAMPLE_RUST_MISCDEV)		+= rust_miscdev.o
++obj-$(CONFIG_SAMPLE_RUST_STACK_PROBING)		+= rust_stack_probing.o
++obj-$(CONFIG_SAMPLE_RUST_SEMAPHORE)		+= rust_semaphore.o
++obj-$(CONFIG_SAMPLE_RUST_SEMAPHORE_C)		+= rust_semaphore_c.o
++obj-$(CONFIG_SAMPLE_RUST_RANDOM)		+= rust_random.o
++obj-$(CONFIG_SAMPLE_RUST_PLATFORM)		+= rust_platform.o
+diff --git a/samples/rust/rust_chrdev.rs b/samples/rust/rust_chrdev.rs
+new file mode 100644
+index 000000000000..343859f1afdd
+--- /dev/null
++++ b/samples/rust/rust_chrdev.rs
+@@ -0,0 +1,50 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
-+//! Driver for the ARM PrimeCell(tm) General Purpose Input/Output (PL061).
-+//!
-+//! Based on the C driver written by Baruch Siach <baruch@tkos.co.il>.
++//! Rust character device sample.
 +
-+use kernel::{
-+    amba, bit, bits_iter, define_amba_id_table, device, gpio,
-+    io_mem::IoMem,
-+    irq::{self, ExtraResult, IrqData, LockedIrqData},
-+    power,
-+    prelude::*,
-+    sync::{Ref, RefBorrow, SpinLock},
-+};
++use kernel::prelude::*;
++use kernel::{chrdev, file, file_operations::FileOperations};
 +
-+const GPIODIR: usize = 0x400;
-+const GPIOIS: usize = 0x404;
-+const GPIOIBE: usize = 0x408;
-+const GPIOIEV: usize = 0x40C;
-+const GPIOIE: usize = 0x410;
-+const GPIOMIS: usize = 0x418;
-+const GPIOIC: usize = 0x41C;
-+const GPIO_SIZE: usize = 0x1000;
-+
-+const PL061_GPIO_NR: u16 = 8;
-+
-+#[derive(Default)]
-+struct ContextSaveRegs {
-+    gpio_data: u8,
-+    gpio_dir: u8,
-+    gpio_is: u8,
-+    gpio_ibe: u8,
-+    gpio_iev: u8,
-+    gpio_ie: u8,
++module! {
++    type: RustChrdev,
++    name: b"rust_chrdev",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust character device sample",
++    license: b"GPL v2",
 +}
 +
-+#[derive(Default)]
-+struct PL061DataInner {
-+    csave_regs: ContextSaveRegs,
++struct RustFile;
++
++impl FileOperations for RustFile {
++    kernel::declare_file_operations!();
++
++    fn open(_shared: &(), _file: &file::File) -> Result {
++        Ok(())
++    }
 +}
 +
-+struct PL061Data {
-+    dev: device::Device,
-+    inner: SpinLock<PL061DataInner>,
++struct RustChrdev {
++    _dev: Pin<Box<chrdev::Registration<2>>>,
 +}
 +
-+struct PL061Resources {
-+    base: IoMem<GPIO_SIZE>,
-+    parent_irq: u32,
++impl KernelModule for RustChrdev {
++    fn init(name: &'static CStr, module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust character device sample (init)\n");
++
++        let mut chrdev_reg = chrdev::Registration::new_pinned(name, 0, module)?;
++
++        // Register the same kind of device twice, we're just demonstrating
++        // that you can use multiple minors. There are two minors in this case
++        // because its type is `chrdev::Registration<2>`
++        chrdev_reg.as_mut().register::<RustFile>()?;
++        chrdev_reg.as_mut().register::<RustFile>()?;
++
++        Ok(RustChrdev { _dev: chrdev_reg })
++    }
 +}
 +
-+type PL061Registrations = gpio::RegistrationWithIrqChip<PL061Device>;
++impl Drop for RustChrdev {
++    fn drop(&mut self) {
++        pr_info!("Rust character device sample (exit)\n");
++    }
++}
+diff --git a/samples/rust/rust_minimal.rs b/samples/rust/rust_minimal.rs
+new file mode 100644
+index 000000000000..f0488262bcc9
+--- /dev/null
++++ b/samples/rust/rust_minimal.rs
+@@ -0,0 +1,35 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+type DeviceData = device::Data<PL061Registrations, PL061Resources, PL061Data>;
++//! Rust minimal sample.
 +
-+struct PL061Device;
++use kernel::prelude::*;
 +
-+impl gpio::Chip for PL061Device {
-+    type Data = Ref<DeviceData>;
++module! {
++    type: RustMinimal,
++    name: b"rust_minimal",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust minimal sample",
++    license: b"GPL v2",
++}
 +
-+    kernel::declare_gpio_chip_operations!(
-+        get_direction,
-+        direction_input,
-+        direction_output,
-+        get,
-+        set
-+    );
++struct RustMinimal {
++    message: String,
++}
 +
-+    fn get_direction(data: RefBorrow<'_, DeviceData>, offset: u32) -> Result<gpio::LineDirection> {
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        Ok(if pl061.base.readb(GPIODIR) & bit(offset) != 0 {
-+            gpio::LineDirection::Out
-+        } else {
-+            gpio::LineDirection::In
++impl KernelModule for RustMinimal {
++    fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust minimal sample (init)\n");
++        pr_info!("Am I built-in? {}\n", !cfg!(MODULE));
++
++        Ok(RustMinimal {
++            message: "on the heap!".try_to_owned()?,
 +        })
 +    }
++}
 +
-+    fn direction_input(data: RefBorrow<'_, DeviceData>, offset: u32) -> Result {
-+        let _guard = data.inner.lock_irqdisable();
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        let mut gpiodir = pl061.base.readb(GPIODIR);
-+        gpiodir &= !bit(offset);
-+        pl061.base.writeb(gpiodir, GPIODIR);
-+        Ok(())
++impl Drop for RustMinimal {
++    fn drop(&mut self) {
++        pr_info!("My message is {}\n", self.message);
++        pr_info!("Rust minimal sample (exit)\n");
 +    }
++}
+diff --git a/samples/rust/rust_miscdev.rs b/samples/rust/rust_miscdev.rs
+new file mode 100644
+index 000000000000..9db0c3e53977
+--- /dev/null
++++ b/samples/rust/rust_miscdev.rs
+@@ -0,0 +1,144 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+    fn direction_output(data: RefBorrow<'_, DeviceData>, offset: u32, value: bool) -> Result {
-+        let woffset = bit(offset + 2).into();
-+        let _guard = data.inner.lock_irqdisable();
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        pl061.base.try_writeb((value as u8) << offset, woffset)?;
-+        let mut gpiodir = pl061.base.readb(GPIODIR);
-+        gpiodir |= bit(offset);
-+        pl061.base.writeb(gpiodir, GPIODIR);
++//! Rust miscellaneous device sample.
 +
-+        // gpio value is set again, because pl061 doesn't allow to set value of a gpio pin before
-+        // configuring it in OUT mode.
-+        pl061.base.try_writeb((value as u8) << offset, woffset)?;
-+        Ok(())
-+    }
++use kernel::prelude::*;
++use kernel::{
++    file::File,
++    file_operations::FileOperations,
++    io_buffer::{IoBufferReader, IoBufferWriter},
++    miscdev,
++    sync::{CondVar, Mutex, Ref, RefBorrow, UniqueRef},
++};
 +
-+    fn get(data: RefBorrow<'_, DeviceData>, offset: u32) -> Result<bool> {
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        Ok(pl061.base.try_readb(bit(offset + 2).into())? != 0)
-+    }
++module! {
++    type: RustMiscdev,
++    name: b"rust_miscdev",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust miscellaneous device sample",
++    license: b"GPL v2",
++}
 +
-+    fn set(data: RefBorrow<'_, DeviceData>, offset: u32, value: bool) {
-+        if let Some(pl061) = data.resources() {
-+            let woffset = bit(offset + 2).into();
-+            let _ = pl061.base.try_writeb((value as u8) << offset, woffset);
-+        }
++const MAX_TOKENS: usize = 3;
++
++struct SharedStateInner {
++    token_count: usize,
++}
++
++struct SharedState {
++    state_changed: CondVar,
++    inner: Mutex<SharedStateInner>,
++}
++
++impl SharedState {
++    fn try_new() -> Result<Ref<Self>> {
++        let mut state = Pin::from(UniqueRef::try_new(Self {
++            // SAFETY: `condvar_init!` is called below.
++            state_changed: unsafe { CondVar::new() },
++            // SAFETY: `mutex_init!` is called below.
++            inner: unsafe { Mutex::new(SharedStateInner { token_count: 0 }) },
++        })?);
++
++        // SAFETY: `state_changed` is pinned when `state` is.
++        let pinned = unsafe { state.as_mut().map_unchecked_mut(|s| &mut s.state_changed) };
++        kernel::condvar_init!(pinned, "SharedState::state_changed");
++
++        // SAFETY: `inner` is pinned when `state` is.
++        let pinned = unsafe { state.as_mut().map_unchecked_mut(|s| &mut s.inner) };
++        kernel::mutex_init!(pinned, "SharedState::inner");
++
++        Ok(state.into())
 +    }
 +}
 +
-+impl gpio::ChipWithIrqChip for PL061Device {
-+    fn handle_irq_flow(
-+        data: RefBorrow<'_, DeviceData>,
-+        desc: &irq::Descriptor,
-+        domain: &irq::Domain,
-+    ) {
-+        let chained = desc.enter_chained();
++struct Token;
++impl FileOperations for Token {
++    type Wrapper = Ref<SharedState>;
++    type OpenData = Ref<SharedState>;
 +
-+        if let Some(pl061) = data.resources() {
-+            let pending = pl061.base.readb(GPIOMIS);
-+            for offset in bits_iter(pending) {
-+                domain.generic_handle_chained(offset, &chained);
-+            }
-+        }
++    kernel::declare_file_operations!(read, write);
++
++    fn open(shared: &Ref<SharedState>, _file: &File) -> Result<Self::Wrapper> {
++        Ok(shared.clone())
 +    }
-+}
 +
-+impl irq::Chip for PL061Device {
-+    type Data = Ref<DeviceData>;
-+
-+    kernel::declare_irq_chip_operations!(set_type, set_wake);
-+
-+    fn set_type(
-+        data: RefBorrow<'_, DeviceData>,
-+        irq_data: &mut LockedIrqData,
-+        trigger: u32,
-+    ) -> Result<ExtraResult> {
-+        let offset = irq_data.hwirq();
-+        let bit = bit(offset);
-+
-+        if offset >= PL061_GPIO_NR.into() {
-+            return Err(Error::EINVAL);
++    fn read(
++        shared: RefBorrow<'_, SharedState>,
++        _: &File,
++        data: &mut impl IoBufferWriter,
++        offset: u64,
++    ) -> Result<usize> {
++        // Succeed if the caller doesn't provide a buffer or if not at the start.
++        if data.is_empty() || offset != 0 {
++            return Ok(0);
 +        }
 +
-+        if trigger & (irq::Type::LEVEL_HIGH | irq::Type::LEVEL_LOW) != 0
-+            && trigger & (irq::Type::EDGE_RISING | irq::Type::EDGE_FALLING) != 0
 +        {
-+            dev_err!(
-+                data.dev,
-+                "trying to configure line {} for both level and edge detection, choose one!\n",
-+                offset
-+            );
-+            return Err(Error::EINVAL);
-+        }
++            let mut inner = shared.inner.lock();
 +
-+        let _guard = data.inner.lock_irqdisable();
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+
-+        let mut gpioiev = pl061.base.readb(GPIOIEV);
-+        let mut gpiois = pl061.base.readb(GPIOIS);
-+        let mut gpioibe = pl061.base.readb(GPIOIBE);
-+
-+        if trigger & (irq::Type::LEVEL_HIGH | irq::Type::LEVEL_LOW) != 0 {
-+            let polarity = trigger & irq::Type::LEVEL_HIGH != 0;
-+
-+            // Disable edge detection.
-+            gpioibe &= !bit;
-+            // Enable level detection.
-+            gpiois |= bit;
-+            // Select polarity.
-+            if polarity {
-+                gpioiev |= bit;
-+            } else {
-+                gpioiev &= !bit;
-+            }
-+            irq_data.set_level_handler();
-+            dev_dbg!(
-+                data.dev,
-+                "line {}: IRQ on {} level\n",
-+                offset,
-+                if polarity { "HIGH" } else { "LOW" }
-+            );
-+        } else if (trigger & irq::Type::EDGE_BOTH) == irq::Type::EDGE_BOTH {
-+            // Disable level detection.
-+            gpiois &= !bit;
-+            // Select both edges, settings this makes GPIOEV be ignored.
-+            gpioibe |= bit;
-+            irq_data.set_edge_handler();
-+            dev_dbg!(data.dev, "line {}: IRQ on both edges\n", offset);
-+        } else if trigger & (irq::Type::EDGE_RISING | irq::Type::EDGE_FALLING) != 0 {
-+            let rising = trigger & irq::Type::EDGE_RISING != 0;
-+
-+            // Disable level detection.
-+            gpiois &= !bit;
-+            // Clear detection on both edges.
-+            gpioibe &= !bit;
-+            // Select edge.
-+            if rising {
-+                gpioiev |= bit;
-+            } else {
-+                gpioiev &= !bit;
-+            }
-+            irq_data.set_edge_handler();
-+            dev_dbg!(
-+                data.dev,
-+                "line {}: IRQ on {} edge\n",
-+                offset,
-+                if rising { "RISING" } else { "FALLING}" }
-+            );
-+        } else {
-+            // No trigger: disable everything.
-+            gpiois &= !bit;
-+            gpioibe &= !bit;
-+            gpioiev &= !bit;
-+            irq_data.set_bad_handler();
-+            dev_warn!(data.dev, "no trigger selected for line {}\n", offset);
-+        }
-+
-+        pl061.base.writeb(gpiois, GPIOIS);
-+        pl061.base.writeb(gpioibe, GPIOIBE);
-+        pl061.base.writeb(gpioiev, GPIOIEV);
-+
-+        Ok(ExtraResult::None)
-+    }
-+
-+    fn mask(data: RefBorrow<'_, DeviceData>, irq_data: &IrqData) {
-+        let mask = bit(irq_data.hwirq() % irq::HwNumber::from(PL061_GPIO_NR));
-+        let _guard = data.inner.lock();
-+        if let Some(pl061) = data.resources() {
-+            let gpioie = pl061.base.readb(GPIOIE) & !mask;
-+            pl061.base.writeb(gpioie, GPIOIE);
-+        }
-+    }
-+
-+    fn unmask(data: RefBorrow<'_, DeviceData>, irq_data: &IrqData) {
-+        let mask = bit(irq_data.hwirq() % irq::HwNumber::from(PL061_GPIO_NR));
-+        let _guard = data.inner.lock();
-+        if let Some(pl061) = data.resources() {
-+            let gpioie = pl061.base.readb(GPIOIE) | mask;
-+            pl061.base.writeb(gpioie, GPIOIE);
-+        }
-+    }
-+
-+    // This gets called from the edge IRQ handler to ACK the edge IRQ in the GPIOIC
-+    // (interrupt-clear) register. For level IRQs this is not needed: these go away when the level
-+    // signal goes away.
-+    fn ack(data: RefBorrow<'_, DeviceData>, irq_data: &IrqData) {
-+        let mask = bit(irq_data.hwirq() % irq::HwNumber::from(PL061_GPIO_NR));
-+        let _guard = data.inner.lock();
-+        if let Some(pl061) = data.resources() {
-+            pl061.base.writeb(mask.into(), GPIOIC);
-+        }
-+    }
-+
-+    fn set_wake(data: RefBorrow<'_, DeviceData>, _irq_data: &IrqData, on: bool) -> Result {
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        irq::set_wake(pl061.parent_irq, on)
-+    }
-+}
-+
-+impl amba::Driver for PL061Device {
-+    type Data = Ref<DeviceData>;
-+    type PowerOps = Self;
-+
-+    define_amba_id_table! {(), [
-+        ({id: 0x00041061, mask: 0x000fffff}, None),
-+    ]}
-+
-+    fn probe(dev: &mut amba::Device, _data: Option<&Self::IdInfo>) -> Result<Ref<DeviceData>> {
-+        let res = dev.take_resource().ok_or(Error::ENXIO)?;
-+        let irq = dev.irq(0).ok_or(Error::ENXIO)?;
-+
-+        let mut data = kernel::new_device_data!(
-+            gpio::RegistrationWithIrqChip::new(),
-+            PL061Resources {
-+                // SAFETY: This device doesn't support DMA.
-+                base: unsafe { IoMem::try_new(res)? },
-+                parent_irq: irq,
-+            },
-+            PL061Data {
-+                dev: device::Device::from_dev(dev),
-+                // SAFETY: We call `spinlock_init` below.
-+                inner: unsafe { SpinLock::new(PL061DataInner::default()) },
-+            },
-+            "PL061::Registrations"
-+        )?;
-+
-+        // SAFETY: General part of the data is pinned when `data` is.
-+        let gen_inner = unsafe { data.as_mut().map_unchecked_mut(|d| &mut (**d).inner) };
-+        kernel::spinlock_init!(gen_inner, "PL061Data::inner");
-+
-+        let data = Ref::<DeviceData>::from(data);
-+
-+        data.resources().ok_or(Error::ENXIO)?.base.writeb(0, GPIOIE); // disable irqs
-+
-+        data.registrations()
-+            .ok_or(Error::ENXIO)?
-+            .as_pinned_mut()
-+            .register::<Self>(PL061_GPIO_NR, None, dev, data.clone(), irq)?;
-+
-+        dev_info!(data.dev, "PL061 GPIO chip registered\n");
-+
-+        Ok(data)
-+    }
-+}
-+
-+impl power::Operations for PL061Device {
-+    type Data = Ref<DeviceData>;
-+
-+    fn suspend(data: RefBorrow<'_, DeviceData>) -> Result {
-+        let mut inner = data.inner.lock();
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
-+        inner.csave_regs.gpio_data = 0;
-+        inner.csave_regs.gpio_dir = pl061.base.readb(GPIODIR);
-+        inner.csave_regs.gpio_is = pl061.base.readb(GPIOIS);
-+        inner.csave_regs.gpio_ibe = pl061.base.readb(GPIOIBE);
-+        inner.csave_regs.gpio_iev = pl061.base.readb(GPIOIEV);
-+        inner.csave_regs.gpio_ie = pl061.base.readb(GPIOIE);
-+
-+        for offset in 0..PL061_GPIO_NR {
-+            if inner.csave_regs.gpio_dir & bit(offset) != 0 {
-+                if let Ok(v) = <Self as gpio::Chip>::get(data, offset.into()) {
-+                    inner.csave_regs.gpio_data |= (v as u8) << offset;
++            // Wait until we are allowed to decrement the token count or a signal arrives.
++            while inner.token_count == 0 {
++                if shared.state_changed.wait(&mut inner) {
++                    return Err(Error::EINTR);
 +                }
 +            }
++
++            // Consume a token.
++            inner.token_count -= 1;
 +        }
 +
-+        Ok(())
++        // Notify a possible writer waiting.
++        shared.state_changed.notify_all();
++
++        // Write a one-byte 1 to the reader.
++        data.write_slice(&[1u8; 1])?;
++        Ok(1)
 +    }
 +
-+    fn resume(data: RefBorrow<'_, DeviceData>) -> Result {
-+        let inner = data.inner.lock();
-+        let pl061 = data.resources().ok_or(Error::ENXIO)?;
++    fn write(
++        shared: RefBorrow<'_, SharedState>,
++        _: &File,
++        data: &mut impl IoBufferReader,
++        _offset: u64,
++    ) -> Result<usize> {
++        {
++            let mut inner = shared.inner.lock();
 +
-+        for offset in 0..PL061_GPIO_NR {
-+            if inner.csave_regs.gpio_dir & bit(offset) != 0 {
-+                let value = inner.csave_regs.gpio_data & bit(offset) != 0;
-+                let _ = <Self as gpio::Chip>::direction_output(data, offset.into(), value);
-+            } else {
-+                let _ = <Self as gpio::Chip>::direction_input(data, offset.into());
++            // Wait until we are allowed to increment the token count or a signal arrives.
++            while inner.token_count == MAX_TOKENS {
++                if shared.state_changed.wait(&mut inner) {
++                    return Err(Error::EINTR);
++                }
 +            }
++
++            // Increment the number of token so that a reader can be released.
++            inner.token_count += 1;
 +        }
 +
-+        pl061.base.writeb(inner.csave_regs.gpio_is, GPIOIS);
-+        pl061.base.writeb(inner.csave_regs.gpio_ibe, GPIOIBE);
-+        pl061.base.writeb(inner.csave_regs.gpio_iev, GPIOIEV);
-+        pl061.base.writeb(inner.csave_regs.gpio_ie, GPIOIE);
-+
-+        Ok(())
-+    }
-+
-+    fn freeze(data: RefBorrow<'_, DeviceData>) -> Result {
-+        Self::suspend(data)
-+    }
-+
-+    fn restore(data: RefBorrow<'_, DeviceData>) -> Result {
-+        Self::resume(data)
++        // Notify a possible reader waiting.
++        shared.state_changed.notify_all();
++        Ok(data.len())
 +    }
 +}
 +
-+module_amba_driver! {
-+    type: PL061Device,
-+    name: b"pl061_gpio",
-+    author: b"Wedson Almeida Filho",
++struct RustMiscdev {
++    _dev: Pin<Box<miscdev::Registration<Token>>>,
++}
++
++impl KernelModule for RustMiscdev {
++    fn init(name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust miscellaneous device sample (init)\n");
++
++        let state = SharedState::try_new()?;
++
++        Ok(RustMiscdev {
++            _dev: miscdev::Registration::new_pinned(name, state)?,
++        })
++    }
++}
++
++impl Drop for RustMiscdev {
++    fn drop(&mut self) {
++        pr_info!("Rust miscellaneous device sample (exit)\n");
++    }
++}
+diff --git a/samples/rust/rust_module_parameters.rs b/samples/rust/rust_module_parameters.rs
+new file mode 100644
+index 000000000000..22459beba831
+--- /dev/null
++++ b/samples/rust/rust_module_parameters.rs
+@@ -0,0 +1,69 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust module parameters sample.
++
++use kernel::prelude::*;
++
++module! {
++    type: RustModuleParameters,
++    name: b"rust_module_parameters",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust module parameters sample",
 +    license: b"GPL v2",
++    params: {
++        my_bool: bool {
++            default: true,
++            permissions: 0,
++            description: b"Example of bool",
++        },
++        my_i32: i32 {
++            default: 42,
++            permissions: 0o644,
++            description: b"Example of i32",
++        },
++        my_str: str {
++            default: b"default str val",
++            permissions: 0o644,
++            description: b"Example of a string param",
++        },
++        my_usize: usize {
++            default: 42,
++            permissions: 0o644,
++            description: b"Example of usize",
++        },
++        my_array: ArrayParam<i32, 3> {
++            default: [0, 1],
++            permissions: 0,
++            description: b"Example of array",
++        },
++    },
++}
++
++struct RustModuleParameters;
++
++impl KernelModule for RustModuleParameters {
++    fn init(_name: &'static CStr, module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust module parameters sample (init)\n");
++
++        {
++            let lock = module.kernel_param_lock();
++            pr_info!("Parameters:\n");
++            pr_info!("  my_bool:    {}\n", my_bool.read());
++            pr_info!("  my_i32:     {}\n", my_i32.read(&lock));
++            pr_info!(
++                "  my_str:     {}\n",
++                core::str::from_utf8(my_str.read(&lock))?
++            );
++            pr_info!("  my_usize:   {}\n", my_usize.read(&lock));
++            pr_info!("  my_array:   {:?}\n", my_array.read());
++        }
++
++        Ok(RustModuleParameters)
++    }
++}
++
++impl Drop for RustModuleParameters {
++    fn drop(&mut self) {
++        pr_info!("Rust module parameters sample (exit)\n");
++    }
++}
+diff --git a/samples/rust/rust_platform.rs b/samples/rust/rust_platform.rs
+new file mode 100644
+index 000000000000..c0b740094c59
+--- /dev/null
++++ b/samples/rust/rust_platform.rs
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust platform device driver sample.
++
++use kernel::{module_platform_driver, of, platform, prelude::*};
++
++module_platform_driver! {
++    type: Driver,
++    name: b"rust_platform",
++    license: b"GPL v2",
++}
++
++struct Driver;
++impl platform::Driver for Driver {
++    kernel::define_of_id_table! {(), [
++        (of::DeviceId::Compatible(b"rust,sample"), None),
++    ]}
++
++    fn probe(_dev: &mut platform::Device, _id_info: Option<&Self::IdInfo>) -> Result {
++        Ok(())
++    }
++}
+diff --git a/samples/rust/rust_print.rs b/samples/rust/rust_print.rs
+new file mode 100644
+index 000000000000..4a6b423af835
+--- /dev/null
++++ b/samples/rust/rust_print.rs
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust printing macros sample.
++
++use kernel::prelude::*;
++use kernel::{pr_cont, str::CStr, ThisModule};
++
++module! {
++    type: RustPrint,
++    name: b"rust_print",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust printing macros sample",
++    license: b"GPL v2",
++}
++
++struct RustPrint;
++
++impl KernelModule for RustPrint {
++    fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust printing macros sample (init)\n");
++
++        pr_emerg!("Emergency message (level 0) without args\n");
++        pr_alert!("Alert message (level 1) without args\n");
++        pr_crit!("Critical message (level 2) without args\n");
++        pr_err!("Error message (level 3) without args\n");
++        pr_warn!("Warning message (level 4) without args\n");
++        pr_notice!("Notice message (level 5) without args\n");
++        pr_info!("Info message (level 6) without args\n");
++
++        pr_info!("A line that");
++        pr_cont!(" is continued");
++        pr_cont!(" without args\n");
++
++        pr_emerg!("{} message (level {}) with args\n", "Emergency", 0);
++        pr_alert!("{} message (level {}) with args\n", "Alert", 1);
++        pr_crit!("{} message (level {}) with args\n", "Critical", 2);
++        pr_err!("{} message (level {}) with args\n", "Error", 3);
++        pr_warn!("{} message (level {}) with args\n", "Warning", 4);
++        pr_notice!("{} message (level {}) with args\n", "Notice", 5);
++        pr_info!("{} message (level {}) with args\n", "Info", 6);
++
++        pr_info!("A {} that", "line");
++        pr_cont!(" is {}", "continued");
++        pr_cont!(" with {}\n", "args");
++
++        Ok(RustPrint)
++    }
++}
++
++impl Drop for RustPrint {
++    fn drop(&mut self) {
++        pr_info!("Rust printing macros sample (exit)\n");
++    }
++}
+diff --git a/samples/rust/rust_random.rs b/samples/rust/rust_random.rs
+new file mode 100644
+index 000000000000..c1319513b170
+--- /dev/null
++++ b/samples/rust/rust_random.rs
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust random device.
++//!
++//! Adapted from Alex Gaynor's original available at
++//! <https://github.com/alex/just-use/blob/master/src/lib.rs>.
++
++use kernel::{
++    file::File,
++    file_operations::FileOperations,
++    io_buffer::{IoBufferReader, IoBufferWriter},
++    prelude::*,
++};
++
++struct RandomFile;
++
++impl FileOperations for RandomFile {
++    kernel::declare_file_operations!(read, write, read_iter, write_iter);
++
++    fn open(_data: &(), _file: &File) -> Result {
++        Ok(())
++    }
++
++    fn read(_this: (), file: &File, buf: &mut impl IoBufferWriter, _: u64) -> Result<usize> {
++        let total_len = buf.len();
++        let mut chunkbuf = [0; 256];
++
++        while !buf.is_empty() {
++            let len = chunkbuf.len().min(buf.len());
++            let chunk = &mut chunkbuf[0..len];
++
++            if file.is_blocking() {
++                kernel::random::getrandom(chunk)?;
++            } else {
++                kernel::random::getrandom_nonblock(chunk)?;
++            }
++            buf.write_slice(chunk)?;
++        }
++        Ok(total_len)
++    }
++
++    fn write(_this: (), _file: &File, buf: &mut impl IoBufferReader, _: u64) -> Result<usize> {
++        let total_len = buf.len();
++        let mut chunkbuf = [0; 256];
++        while !buf.is_empty() {
++            let len = chunkbuf.len().min(buf.len());
++            let chunk = &mut chunkbuf[0..len];
++            buf.read_slice(chunk)?;
++            kernel::random::add_randomness(chunk);
++        }
++        Ok(total_len)
++    }
++}
++
++module_misc_device! {
++    type: RandomFile,
++    name: b"rust_random",
++    author: b"Rust for Linux Contributors",
++    description: b"Just use /dev/urandom: Now with early-boot safety",
++    license: b"GPL v2",
++}
+diff --git a/samples/rust/rust_semaphore.rs b/samples/rust/rust_semaphore.rs
+new file mode 100644
+index 000000000000..de3fc3739de3
+--- /dev/null
++++ b/samples/rust/rust_semaphore.rs
+@@ -0,0 +1,172 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust semaphore sample.
++//!
++//! A counting semaphore that can be used by userspace.
++//!
++//! The count is incremented by writes to the device. A write of `n` bytes results in an increment
++//! of `n`. It is decremented by reads; each read results in the count being decremented by 1. If
++//! the count is already zero, a read will block until another write increments it.
++//!
++//! This can be used in user space from the shell for example  as follows (assuming a node called
++//! `semaphore`): `cat semaphore` decrements the count by 1 (waiting for it to become non-zero
++//! before decrementing); `echo -n 123 > semaphore` increments the semaphore by 3, potentially
++//! unblocking up to 3 blocked readers.
++
++use core::sync::atomic::{AtomicU64, Ordering};
++use kernel::{
++    condvar_init, declare_file_operations,
++    file::File,
++    file_operations::{FileOperations, IoctlCommand, IoctlHandler},
++    io_buffer::{IoBufferReader, IoBufferWriter},
++    miscdev::Registration,
++    mutex_init,
++    prelude::*,
++    sync::{CondVar, Mutex, Ref, UniqueRef},
++    user_ptr::{UserSlicePtrReader, UserSlicePtrWriter},
++};
++
++module! {
++    type: RustSemaphore,
++    name: b"rust_semaphore",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust semaphore sample",
++    license: b"GPL v2",
++}
++
++struct SemaphoreInner {
++    count: usize,
++    max_seen: usize,
++}
++
++struct Semaphore {
++    changed: CondVar,
++    inner: Mutex<SemaphoreInner>,
++}
++
++struct FileState {
++    read_count: AtomicU64,
++    shared: Ref<Semaphore>,
++}
++
++impl FileState {
++    fn consume(&self) -> Result {
++        let mut inner = self.shared.inner.lock();
++        while inner.count == 0 {
++            if self.shared.changed.wait(&mut inner) {
++                return Err(Error::EINTR);
++            }
++        }
++        inner.count -= 1;
++        Ok(())
++    }
++}
++
++impl FileOperations for FileState {
++    type Wrapper = Box<Self>;
++    type OpenData = Ref<Semaphore>;
++
++    declare_file_operations!(read, write, ioctl);
++
++    fn open(shared: &Ref<Semaphore>, _file: &File) -> Result<Box<Self>> {
++        Ok(Box::try_new(Self {
++            read_count: AtomicU64::new(0),
++            shared: shared.clone(),
++        })?)
++    }
++
++    fn read(this: &Self, _: &File, data: &mut impl IoBufferWriter, offset: u64) -> Result<usize> {
++        if data.is_empty() || offset > 0 {
++            return Ok(0);
++        }
++        this.consume()?;
++        data.write_slice(&[0u8; 1])?;
++        this.read_count.fetch_add(1, Ordering::Relaxed);
++        Ok(1)
++    }
++
++    fn write(this: &Self, _: &File, data: &mut impl IoBufferReader, _offs: u64) -> Result<usize> {
++        {
++            let mut inner = this.shared.inner.lock();
++            inner.count = inner.count.saturating_add(data.len());
++            if inner.count > inner.max_seen {
++                inner.max_seen = inner.count;
++            }
++        }
++
++        this.shared.changed.notify_all();
++        Ok(data.len())
++    }
++
++    fn ioctl(this: &Self, file: &File, cmd: &mut IoctlCommand) -> Result<i32> {
++        cmd.dispatch::<Self>(this, file)
++    }
++}
++
++struct RustSemaphore {
++    _dev: Pin<Box<Registration<FileState>>>,
++}
++
++impl KernelModule for RustSemaphore {
++    fn init(name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust semaphore sample (init)\n");
++
++        let mut sema = Pin::from(UniqueRef::try_new(Semaphore {
++            // SAFETY: `condvar_init!` is called below.
++            changed: unsafe { CondVar::new() },
++
++            // SAFETY: `mutex_init!` is called below.
++            inner: unsafe {
++                Mutex::new(SemaphoreInner {
++                    count: 0,
++                    max_seen: 0,
++                })
++            },
++        })?);
++
++        // SAFETY: `changed` is pinned when `sema` is.
++        let pinned = unsafe { sema.as_mut().map_unchecked_mut(|s| &mut s.changed) };
++        condvar_init!(pinned, "Semaphore::changed");
++
++        // SAFETY: `inner` is pinned when `sema` is.
++        let pinned = unsafe { sema.as_mut().map_unchecked_mut(|s| &mut s.inner) };
++        mutex_init!(pinned, "Semaphore::inner");
++
++        Ok(Self {
++            _dev: Registration::new_pinned(name, sema.into())?,
++        })
++    }
++}
++
++impl Drop for RustSemaphore {
++    fn drop(&mut self) {
++        pr_info!("Rust semaphore sample (exit)\n");
++    }
++}
++
++const IOCTL_GET_READ_COUNT: u32 = 0x80086301;
++const IOCTL_SET_READ_COUNT: u32 = 0x40086301;
++
++impl IoctlHandler for FileState {
++    type Target<'a> = &'a Self;
++
++    fn read(this: &Self, _: &File, cmd: u32, writer: &mut UserSlicePtrWriter) -> Result<i32> {
++        match cmd {
++            IOCTL_GET_READ_COUNT => {
++                writer.write(&this.read_count.load(Ordering::Relaxed))?;
++                Ok(0)
++            }
++            _ => Err(Error::EINVAL),
++        }
++    }
++
++    fn write(this: &Self, _: &File, cmd: u32, reader: &mut UserSlicePtrReader) -> Result<i32> {
++        match cmd {
++            IOCTL_SET_READ_COUNT => {
++                this.read_count.store(reader.read()?, Ordering::Relaxed);
++                Ok(0)
++            }
++            _ => Err(Error::EINVAL),
++        }
++    }
++}
+diff --git a/samples/rust/rust_semaphore_c.c b/samples/rust/rust_semaphore_c.c
+new file mode 100644
+index 000000000000..cdc121d4030d
+--- /dev/null
++++ b/samples/rust/rust_semaphore_c.c
+@@ -0,0 +1,212 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Rust semaphore sample (in C, for comparison)
++ *
++ * This is a C implementation of `rust_semaphore.rs`. Refer to the description
++ * in that file for details on the device.
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/miscdevice.h>
++#include <linux/module.h>
++#include <linux/fs.h>
++#include <linux/slab.h>
++#include <linux/refcount.h>
++#include <linux/wait.h>
++
++#define IOCTL_GET_READ_COUNT _IOR('c', 1, u64)
++#define IOCTL_SET_READ_COUNT _IOW('c', 1, u64)
++
++struct semaphore_state {
++	struct kref ref;
++	struct miscdevice miscdev;
++	wait_queue_head_t changed;
++	struct mutex mutex;
++	size_t count;
++	size_t max_seen;
++};
++
++struct file_state {
++	atomic64_t read_count;
++	struct semaphore_state *shared;
++};
++
++static int semaphore_consume(struct semaphore_state *state)
++{
++	DEFINE_WAIT(wait);
++
++	mutex_lock(&state->mutex);
++	while (state->count == 0) {
++		prepare_to_wait(&state->changed, &wait, TASK_INTERRUPTIBLE);
++		mutex_unlock(&state->mutex);
++		schedule();
++		finish_wait(&state->changed, &wait);
++		if (signal_pending(current))
++			return -EINTR;
++		mutex_lock(&state->mutex);
++	}
++
++	state->count--;
++	mutex_unlock(&state->mutex);
++
++	return 0;
++}
++
++static int semaphore_open(struct inode *nodp, struct file *filp)
++{
++	struct semaphore_state *shared =
++		container_of(filp->private_data, struct semaphore_state, miscdev);
++	struct file_state *state;
++
++	state = kzalloc(sizeof(*state), GFP_KERNEL);
++	if (!state)
++		return -ENOMEM;
++
++	kref_get(&shared->ref);
++	state->shared = shared;
++	atomic64_set(&state->read_count, 0);
++
++	filp->private_data = state;
++
++	return 0;
++}
++
++static ssize_t semaphore_write(struct file *filp, const char __user *buffer, size_t count,
++			       loff_t *ppos)
++{
++	struct file_state *state = filp->private_data;
++	struct semaphore_state *shared = state->shared;
++
++	mutex_lock(&shared->mutex);
++
++	shared->count += count;
++	if (shared->count < count)
++		shared->count = SIZE_MAX;
++
++	if (shared->count > shared->max_seen)
++		shared->max_seen = shared->count;
++
++	mutex_unlock(&shared->mutex);
++
++	wake_up_all(&shared->changed);
++
++	return count;
++}
++
++static ssize_t semaphore_read(struct file *filp, char __user *buffer,
++			      size_t count, loff_t *ppos)
++{
++	struct file_state *state = filp->private_data;
++	char c = 0;
++	int ret;
++
++	if (count == 0 || *ppos > 0)
++		return 0;
++
++	ret = semaphore_consume(state->shared);
++	if (ret)
++		return ret;
++
++	if (copy_to_user(buffer, &c, sizeof(c)))
++		return -EFAULT;
++
++	atomic64_add(1, &state->read_count);
++	*ppos += 1;
++	return 1;
++}
++
++static long semaphore_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
++{
++	struct file_state *state = filp->private_data;
++	void __user *buffer = (void __user *)arg;
++	u64 value;
++
++	switch (cmd) {
++	case IOCTL_GET_READ_COUNT:
++		value = atomic64_read(&state->read_count);
++		if (copy_to_user(buffer, &value, sizeof(value)))
++			return -EFAULT;
++		return 0;
++	case IOCTL_SET_READ_COUNT:
++		if (copy_from_user(&value, buffer, sizeof(value)))
++			return -EFAULT;
++		atomic64_set(&state->read_count, value);
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static void semaphore_free(struct kref *kref)
++{
++	struct semaphore_state *device;
++
++	device = container_of(kref, struct semaphore_state, ref);
++	kfree(device);
++}
++
++static int semaphore_release(struct inode *nodp, struct file *filp)
++{
++	struct file_state *state = filp->private_data;
++
++	kref_put(&state->shared->ref, semaphore_free);
++	kfree(state);
++	return 0;
++}
++
++static const struct file_operations semaphore_fops = {
++	.owner = THIS_MODULE,
++	.open = semaphore_open,
++	.read = semaphore_read,
++	.write = semaphore_write,
++	.compat_ioctl = semaphore_ioctl,
++	.release = semaphore_release,
++};
++
++static struct semaphore_state *device;
++
++static int __init semaphore_init(void)
++{
++	int ret;
++	struct semaphore_state *state;
++
++	pr_info("Rust semaphore sample (in C, for comparison) (init)\n");
++
++	state = kzalloc(sizeof(*state), GFP_KERNEL);
++	if (!state)
++		return -ENOMEM;
++
++	mutex_init(&state->mutex);
++	kref_init(&state->ref);
++	init_waitqueue_head(&state->changed);
++
++	state->miscdev.fops = &semaphore_fops;
++	state->miscdev.minor = MISC_DYNAMIC_MINOR;
++	state->miscdev.name = "semaphore";
++
++	ret = misc_register(&state->miscdev);
++	if (ret < 0) {
++		kfree(state);
++		return ret;
++	}
++
++	device = state;
++
++	return 0;
++}
++
++static void __exit semaphore_exit(void)
++{
++	pr_info("Rust semaphore sample (in C, for comparison) (exit)\n");
++
++	misc_deregister(&device->miscdev);
++	kref_put(&device->ref, semaphore_free);
++}
++
++module_init(semaphore_init);
++module_exit(semaphore_exit);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Rust for Linux Contributors");
++MODULE_DESCRIPTION("Rust semaphore sample (in C, for comparison)");
+diff --git a/samples/rust/rust_stack_probing.rs b/samples/rust/rust_stack_probing.rs
+new file mode 100644
+index 000000000000..214d4d1f6528
+--- /dev/null
++++ b/samples/rust/rust_stack_probing.rs
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust stack probing sample.
++
++use kernel::prelude::*;
++
++module! {
++    type: RustStackProbing,
++    name: b"rust_stack_probing",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust stack probing sample",
++    license: b"GPL v2",
++}
++
++struct RustStackProbing;
++
++impl KernelModule for RustStackProbing {
++    fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust stack probing sample (init)\n");
++
++        // Including this large variable on the stack will trigger
++        // stack probing on the supported archs.
++        // This will verify that stack probing does not lead to
++        // any errors if we need to link `__rust_probestack`.
++        let x: [u64; 514] = core::hint::black_box([5; 514]);
++        pr_info!("Large array has length: {}\n", x.len());
++
++        Ok(RustStackProbing)
++    }
++}
++
++impl Drop for RustStackProbing {
++    fn drop(&mut self) {
++        pr_info!("Rust stack probing sample (exit)\n");
++    }
++}
+diff --git a/samples/rust/rust_sync.rs b/samples/rust/rust_sync.rs
+new file mode 100644
+index 000000000000..e3b8860798d4
+--- /dev/null
++++ b/samples/rust/rust_sync.rs
+@@ -0,0 +1,78 @@
++// SPDX-License-Identifier: GPL-2.0
++
++//! Rust synchronisation primitives sample.
++
++use kernel::prelude::*;
++use kernel::{
++    condvar_init, mutex_init, spinlock_init,
++    sync::{CondVar, Mutex, SpinLock},
++};
++
++module! {
++    type: RustSync,
++    name: b"rust_sync",
++    author: b"Rust for Linux Contributors",
++    description: b"Rust synchronisation primitives sample",
++    license: b"GPL v2",
++}
++
++struct RustSync;
++
++impl KernelModule for RustSync {
++    fn init(_name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
++        pr_info!("Rust synchronisation primitives sample (init)\n");
++
++        // Test mutexes.
++        {
++            // SAFETY: `init` is called below.
++            let mut data = Pin::from(Box::try_new(unsafe { Mutex::new(0) })?);
++            mutex_init!(data.as_mut(), "RustSync::init::data1");
++            *data.lock() = 10;
++            pr_info!("Value: {}\n", *data.lock());
++
++            // SAFETY: `init` is called below.
++            let mut cv = Pin::from(Box::try_new(unsafe { CondVar::new() })?);
++            condvar_init!(cv.as_mut(), "RustSync::init::cv1");
++
++            {
++                let mut guard = data.lock();
++                while *guard != 10 {
++                    let _ = cv.wait(&mut guard);
++                }
++            }
++            cv.notify_one();
++            cv.notify_all();
++            cv.free_waiters();
++        }
++
++        // Test spinlocks.
++        {
++            // SAFETY: `init` is called below.
++            let mut data = Pin::from(Box::try_new(unsafe { SpinLock::new(0) })?);
++            spinlock_init!(data.as_mut(), "RustSync::init::data2");
++            *data.lock() = 10;
++            pr_info!("Value: {}\n", *data.lock());
++
++            // SAFETY: `init` is called below.
++            let mut cv = Pin::from(Box::try_new(unsafe { CondVar::new() })?);
++            condvar_init!(cv.as_mut(), "RustSync::init::cv2");
++            {
++                let mut guard = data.lock();
++                while *guard != 10 {
++                    let _ = cv.wait(&mut guard);
++                }
++            }
++            cv.notify_one();
++            cv.notify_all();
++            cv.free_waiters();
++        }
++
++        Ok(RustSync)
++    }
++}
++
++impl Drop for RustSync {
++    fn drop(&mut self) {
++        pr_info!("Rust synchronisation primitives sample (exit)\n");
++    }
 +}
 -- 
 2.35.1
