@@ -2,190 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C92C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229920AbiBLSYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 13:24:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48800 "EHLO
+        id S230236AbiBLSYY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 13:24:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbiBLSX4 (ORCPT
+        with ESMTP id S230339AbiBLSYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 13:23:56 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CA760070
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:42 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id w20so7234754plq.12
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:42 -0800 (PST)
+        Sat, 12 Feb 2022 13:24:00 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B2660077
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:44 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id q198-20020a1ca7cf000000b0037bb52545c6so9185547wme.1
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ghLLgeFSuBhLBbaF2D3N7y/Ag1lbiZHSv5o6U722W+E=;
-        b=tahHHV1myQ3F3+Wgz9DF+8m8aUh8rKmNw7/K9YIpt3LzMNmadOQeOgEkkDcaYAZABz
-         osaiwszIy/oRiTbE9jtLj4915dThnRSBBA03IY/5G8rIdXsR776HP1p68iYZSvNGT58V
-         9iZxZMB9U7S98bqctQFE1NqAk4tQO9UJLSZdQHxoEwFpcUryWaAGUN8amVZdn8vDYb7l
-         /axuHuNsDFYRrB6ow7NgAkGXNyYtIXDbEHZnZEHoxFE8DUX0rB90vm978DcjrrRPKk5i
-         1ra0o1jMj6eF/8SKRj0m9SRn/DBF0ULPLsPxDAj5ROxiSQDPLoE7De+xsnMWdLYBVYSY
-         5dHQ==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=9OHuOKJbgH8itw9N7Okbk0KMW/V0yB0rDcvgbCzUOV0=;
+        b=A7o0J6x2xfgsnZEqjw3jFbuYBBni4Tv+mlsISCbWTKTCGRdMPyC1txf4R148E4SF6h
+         /cSII785FMECRtktBQiY7VW2WDOqPI4O1l6QkyE8gDfKOVGsJV7uy0kgZOLmkzb6eu7k
+         NdOJBX68lVa5KpKEWGfK9ul/LuwblEI3mEKbUkqyysyt0xVUu1iLTp5b3j7WJ0B08Lv4
+         4Hg8hQbfuZsaPFZiy6nW3fUbeTeBPu3D7pEGFlfyDoBmMg1aZD4BUWeWOt3v5YjP2EwF
+         18l3LuMpXxpr2OaKU3lMyL1fNw47mI1Fb+wKyeMnuhkaO4s+9vIJTHFDXnMXNV7EcFMN
+         mqBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ghLLgeFSuBhLBbaF2D3N7y/Ag1lbiZHSv5o6U722W+E=;
-        b=kaN0mh7uxhQzLJ3vCXYrlsv/VGm3G/gxsZzAek5YdSobg8gt5taO/bJ3C/f9G5MqAB
-         E7iV3hrjdzXdno4GEHsgvy+GqK2topEkqaEf9e0LzPVk4W1kl4YSBGWVscX0X9mz3Jea
-         1ghUUpytOBDj+nhM07hRmIZe7SSQtyaTh2EL/aG9CzbjOVQLjafVOWcbf8E/pzYI6AfE
-         HV4eEQTjkxT8bekOote2iaCQM6i47LoxWNhcq++cW6rTc9rMUmYQUAFhagZ8E0olkkgx
-         Ufyfht1fHjmcySH0FXJpZe1sGzYi4IAj4zEySuP0bvI5NZbV3V1qQeaUqn8g6h5bdPz9
-         WsBA==
-X-Gm-Message-State: AOAM532exqATfRMbze7vXBznt9juUuf22oCJwUciBbZg5Dt5yhQc+woE
-        DSZvg8vcIi9ouEGBXeaXS/OY
-X-Google-Smtp-Source: ABdhPJwL8gTpbO4sB21qrNwsTxI/qy0bKJJ5PyPHhXLqGc00N+XZNqAutm1T8cig2zQj4ObL1yunmw==
-X-Received: by 2002:a17:90b:4b84:: with SMTP id lr4mr6224735pjb.231.1644690217960;
-        Sat, 12 Feb 2022 10:23:37 -0800 (PST)
-Received: from localhost.localdomain ([27.111.75.57])
-        by smtp.gmail.com with ESMTPSA id g12sm14961987pfj.148.2022.02.12.10.23.34
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=9OHuOKJbgH8itw9N7Okbk0KMW/V0yB0rDcvgbCzUOV0=;
+        b=HZuScwwjz4Id2SOLImXNGc0URuiHYi4K8UYtwUXxCDsEYrPz1gulIO7irqk+SoFAns
+         5Sdeil8Rd5rixS9ea7zdZfr3ViEXSTdRWKs2hdMVDD0uKA1e+FMkezVZw29/MqicK2SE
+         tFx3mkNH/82CDTIShvIvlPFG30prSnAlROfAJRrW+QemO1QyHVzrWn5qkk5YZKi1GmuW
+         70L/+PUtBZCWUL8fpdreRugmxP30H0jTgR3Wr8+ONWetWlKV1ej9Hb17Jvd9IqZe0jdE
+         k+dnL4PoOrr1ikZLYL76trI1JI34PGWW53Jn9i4mg8Yitb1lVUexlYRue2dcIuc0kSah
+         gOiw==
+X-Gm-Message-State: AOAM5315SJEQ1Kj0PcTaqMGvoepmH02pMBMpwrX6bsY1U68exRuubqXo
+        UVhDJVucJpTa8h7qKLWyvOYBQXxozwvTPA==
+X-Google-Smtp-Source: ABdhPJzxmTgOVXXFWsejdulN4FAuR4wJNcyd7X7eM/NZoFOfS9+zOBb6XM7tmDaofyQGvmR+rJEgQA==
+X-Received: by 2002:a05:600c:4e16:: with SMTP id b22mr4832663wmq.31.1644690220157;
+        Sat, 12 Feb 2022 10:23:40 -0800 (PST)
+Received: from eldamar (80-218-24-251.dclient.hispeed.ch. [80.218.24.251])
+        by smtp.gmail.com with ESMTPSA id c8sm8619122wmq.34.2022.02.12.10.23.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 10:23:37 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3 24/25] bus: mhi: ep: Add support for suspending and resuming channels
-Date:   Sat, 12 Feb 2022 23:51:16 +0530
-Message-Id: <20220212182117.49438-25-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
-References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
+        Sat, 12 Feb 2022 10:23:39 -0800 (PST)
+Sender: Salvatore Bonaccorso <salvatore.bonaccorso@gmail.com>
+Date:   Sat, 12 Feb 2022 19:23:38 +0100
+From:   Salvatore Bonaccorso <carnil@debian.org>
+To:     Alex Deucher <alexander.deucher@amd.com>
+Cc:     Dominique Dumont <dod@debian.org>, 1005005@bugs.debian.org,
+        Luben Tuikov <luben.tuikov@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Sasha Levin <sashal@kernel.org>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Regression from 3c196f056666 ("drm/amdgpu: always reset the asic in
+ suspend (v2)") on suspend?
+Message-ID: <Ygf7KuWyc0d4HIFu@eldamar.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for suspending and resuming the channels in MHI endpoint stack.
-The channels will be moved to the suspended state during M3 state
-transition and will be resumed during M0 transition.
+Hi Alex, hi all
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/internal.h |  2 ++
- drivers/bus/mhi/ep/main.c     | 58 +++++++++++++++++++++++++++++++++++
- drivers/bus/mhi/ep/sm.c       |  4 +++
- 3 files changed, 64 insertions(+)
+In Debian we got a regression report from Dominique Dumont, CC'ed in
+https://bugs.debian.org/1005005 that afer an update to 5.15.15 based
+kernel, his machine noe longer suspends correctly, after screen going
+black as usual it comes back. The Debian bug above contians a trace.
 
-diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
-index 8654af7caf40..e23d2fd04282 100644
---- a/drivers/bus/mhi/ep/internal.h
-+++ b/drivers/bus/mhi/ep/internal.h
-@@ -242,6 +242,8 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
- void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl);
- 
- /* MHI EP memory management functions */
- int mhi_ep_alloc_map(struct mhi_ep_cntrl *mhi_cntrl, u64 pci_addr, size_t size,
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index e4186b012257..315409705b91 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -1106,6 +1106,64 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl)
- }
- EXPORT_SYMBOL_GPL(mhi_ep_power_down);
- 
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently running */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_RUNNING) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Suspending channel\n");
-+		/* Set channel state to SUSPENDED */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_SUSPENDED);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently suspended */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_SUSPENDED) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Resuming channel\n");
-+		/* Set channel state to RUNNING */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
- static void mhi_ep_release_device(struct device *dev)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
-index 9a75ecfe1adf..e24ba2d85e13 100644
---- a/drivers/bus/mhi/ep/sm.c
-+++ b/drivers/bus/mhi/ep/sm.c
-@@ -88,8 +88,11 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	enum mhi_state old_state;
- 	int ret;
- 
-+	/* If MHI is in M3, resume suspended channels */
- 	spin_lock_bh(&mhi_cntrl->state_lock);
- 	old_state = mhi_cntrl->mhi_state;
-+	if (old_state == MHI_STATE_M3)
-+		mhi_ep_resume_channels(mhi_cntrl);
- 
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
- 	if (ret) {
-@@ -135,6 +138,7 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	}
- 
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
-+	mhi_ep_suspend_channels(mhi_cntrl);
- 
- 	/* Signal host that the device moved to M3 */
- 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
--- 
-2.25.1
+Dominique confirmed that this issue persisted after updating to 5.16.7
+furthermore he bisected the issue and found 
 
+	3c196f05666610912645c7c5d9107706003f67c3 is the first bad commit
+	commit 3c196f05666610912645c7c5d9107706003f67c3
+	Author: Alex Deucher <alexander.deucher@amd.com>
+	Date:   Fri Nov 12 11:25:30 2021 -0500
+
+	    drm/amdgpu: always reset the asic in suspend (v2)
+
+	    [ Upstream commit daf8de0874ab5b74b38a38726fdd3d07ef98a7ee ]
+
+	    If the platform suspend happens to fail and the power rail
+	    is not turned off, the GPU will be in an unknown state on
+	    resume, so reset the asic so that it will be in a known
+	    good state on resume even if the platform suspend failed.
+
+	    v2: handle s0ix
+
+	    Acked-by: Luben Tuikov <luben.tuikov@amd.com>
+	    Acked-by: Evan Quan <evan.quan@amd.com>
+	    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+	    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+	 drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 5 ++++-
+	 1 file changed, 4 insertions(+), 1 deletion(-)
+
+to be the first bad commit, see https://bugs.debian.org/1005005#34 .
+
+Does this ring any bell? Any idea on the problem?
+
+Regards,
+Salvatore
