@@ -2,152 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E23C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 21:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71578C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 21:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbiBLVB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 16:01:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34418 "EHLO
+        id S231997AbiBLVBf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 16:01:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiBLVBZ (ORCPT
+        with ESMTP id S231812AbiBLVBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 16:01:25 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F53213CDE
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 13:01:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644699680; x=1676235680;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ysFUFUMKVcCGR9XQnGkviRLBn/BiAIjQl9VTVvNnbRU=;
-  b=lVN6jUEMSkduEIurl1wHPpkQfBkeXbS7bsBFjXdHMIJ+YgczsSJtyY/r
-   gmMRbG/G1lYB4dUQl48a1H5DhwOcJmrhlx0x4OCKHUz9oVv5Kc3N3XIhR
-   XoXlIgyFXhsVOFb7NXjWBPqHHXszx4lm8n4jfQEwDgwbVn12j/a/JytXi
-   Y9FVxgu1ki4qA1Wy6NYm5CjVGXTmvUki+BMTErT9Bb/uzCdd7/1J+oNGN
-   jfih3VcRzMkrsj5varP10waU+Y7YqIFgQdvz9FUnsAdaa4WCw7H6NX0Yx
-   2t9tpnTC1pEdTve03VQSDoE3nY3HmkLdlmq7EsKOImVAhL/Bw30GwObpt
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10256"; a="247497436"
-X-IronPort-AV: E=Sophos;i="5.88,364,1635231600"; 
-   d="scan'208";a="247497436"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 13:01:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,364,1635231600"; 
-   d="scan'208";a="501122593"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 12 Feb 2022 13:01:18 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nIzW9-0006e8-V8; Sat, 12 Feb 2022 21:01:17 +0000
-Date:   Sun, 13 Feb 2022 05:00:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>
-Subject: arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse: sparse:
- incorrect type in initializer (different address spaces)
-Message-ID: <202202130432.4tPqXRgn-lkp@intel.com>
+        Sat, 12 Feb 2022 16:01:33 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12578606F4
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 13:01:29 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id i62so15626413ioa.1
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 13:01:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=pMbNysZicDjla5m+LqKnIivTQyASvMT8jxUwCbQWv1g=;
+        b=riVGorTeXgSv6f6PSqT26L43SORlysK2m4uRC/QszDsHk26fohbl3AcXeAU1z5WReD
+         NiLXebj+jUjwxHFaizCF5lM+/IPGT9AeDHCQP7Ki4Nq39KGTQ668UcwNvKBImkPaoHXk
+         KmbjeDZw7fppxgwkgRuh9xN/64WYlgfkC6a5u1qi/mrP2cuMCkW/R7DJwRORH6OWAt7P
+         ethnE+skfclWxvZ36JWfsq6I+25qukq2eaM6QuAD0d/SybO6tkaG8PsRMLAk7yUPMg6G
+         WyCg8Q53Rqg73T6F0bVKystdOEWJIJIs3XjVCZVbtZJJIgeFp3D7X2O9KlWWJvlNgBvj
+         KumA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=pMbNysZicDjla5m+LqKnIivTQyASvMT8jxUwCbQWv1g=;
+        b=tL70dJtQA5fD7aqT775s2xDc3aAGY3EoC91Z8sVV6hau3yk772hLxZHPeGdZztM20q
+         73OVLb3cMpe2j/aBIfNaLidAnB/JSOoQcozVMRtPnIpwbDjVALi0oKRm/+a3XdlyCf0U
+         bjbH7ZehGrdOSqVA9RhYKNzP9JwNMHaEHOj6wlD8iCG+7RNDZ9syYXkBDFtDlJyqSEd3
+         pSsm6B9pKFQl6BtgsG+t/xOywvEzpfTJdSfw4K7LsQacMlgMnR2WdmQjnNWbrNDtofCa
+         2kS5cCsmdMvLKA8/JrZ7dAx90ZN52YKG6mO3kWtg4qwnOBeVvRWo8QxPQUr/jNs2D5Td
+         +afA==
+X-Gm-Message-State: AOAM530yKktlsPBhs/2d7cAFQyOA7BtoPGpMxSvLVuVfS2NL56sI4539
+        YsyHNQj7JXrH1JL1QjESr5WtBA==
+X-Google-Smtp-Source: ABdhPJzPD41+d7IoHgG5Q9TFesNC7mfL4rvQpeFd/BtV8ZyYVWurBH52if7QSOBzPeihv02iT4Y7qQ==
+X-Received: by 2002:a05:6638:22c6:: with SMTP id j6mr3979977jat.216.1644699688189;
+        Sat, 12 Feb 2022 13:01:28 -0800 (PST)
+Received: from google.com ([2620:15c:183:200:7f5c:29f4:d1c2:e1f6])
+        by smtp.gmail.com with ESMTPSA id v8sm1703481iox.53.2022.02.12.13.01.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 13:01:27 -0800 (PST)
+Date:   Sat, 12 Feb 2022 14:01:23 -0700
+From:   Yu Zhao <yuzhao@google.com>
+To:     Alexey Avramov <hakavlad0@seznam.cz>
+Cc:     21cnbao@gmail.com, Michael@michaellarabel.com, ak@linux.intel.com,
+        akpm@linux-foundation.org, aneesh.kumar@linux.ibm.com,
+        axboe@kernel.dk, catalin.marinas@arm.com, corbet@lwn.net,
+        dave.hansen@linux.intel.com, hannes@cmpxchg.org, hdanton@sina.com,
+        jsbarnes@google.com, linux-arm-kernel@lists.infradead.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, mgorman@suse.de, mhocko@kernel.org,
+        page-reclaim@google.com, riel@surriel.com, rppt@kernel.org,
+        torvalds@linux-foundation.org, vbabka@suse.cz, will@kernel.org,
+        willy@infradead.org, x86@kernel.org, ying.huang@intel.com
+Subject: Re: [PATCH v7 00/12] Multigenerational LRU Framework
+Message-ID: <YgggI+vvtNvh3jBY@google.com>
+References: <20220208081902.3550911-1-yuzhao@google.com>
+ <20220212051219.183d1baf@PC>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220212051219.183d1baf@PC>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   83e396641110663d3c7bb25b9bc0c6a750359ecf
-commit: ddb002d6d6af12c45dd9d565cadf0f40b36b7c25 MIPS: uaccess: Reduce number of nested macros
-date:   10 months ago
-config: mips-randconfig-s032-20220213 (https://download.01.org/0day-ci/archive/20220213/202202130432.4tPqXRgn-lkp@intel.com/config)
-compiler: mips64el-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ddb002d6d6af12c45dd9d565cadf0f40b36b7c25
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout ddb002d6d6af12c45dd9d565cadf0f40b36b7c25
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/sibyte/common/
+On Sat, Feb 12, 2022 at 05:12:19AM +0900, Alexey Avramov wrote:
+> Aggressive swapping even with vm.swappiness=1 with MGLRU
+> ========================================================
+> 
+> Reading a large mmapped file leads to a super agressive swapping.
+> Reducing vm.swappiness even to 1 does not have effect.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Mind explaining why you think it's "super agressive"? I assume you
+expected a different behavior that would perform better. If so,
+please spell it out.
 
+> Demo: https://www.youtube.com/watch?v=J81kwJeuW58
+> 
+> Linux 5.17-rc3, Multigenerational LRU v7, 
+> vm.swappiness=1, MemTotal: 11.5 GiB.
+> 
+> $ cache-bench -r 35000 -m1 -b1 -p1 -f test20000
+> Reading mmapped file (file size: 20000 MiB)
+> cache-bench v0.2.0: https://github.com/hakavlad/cache-bench
 
-sparse warnings: (new ones prefixed by >>)
-   command-line: note: in included file:
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQUIRE redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_SEQ_CST redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_ACQ_REL redefined
-   builtin:0:0: sparse: this was the original definition
-   builtin:1:9: sparse: sparse: preprocessor token __ATOMIC_RELEASE redefined
-   builtin:0:0: sparse: this was the original definition
-   arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void const [noderef] __user *p @@     got char *buf @@
-   arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse:     expected void const [noderef] __user *p
-   arch/mips/sibyte/common/sb_tbprof.c:449:14: sparse:     got char *buf
-   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got char *dest @@
-   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse:     expected void [noderef] __user *to
-   arch/mips/sibyte/common/sb_tbprof.c:464:38: sparse:     got char *dest
->> arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected int [noderef] __user *__p @@     got int * @@
-   arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse:     expected int [noderef] __user *__p
-   arch/mips/sibyte/common/sb_tbprof.c:515:23: sparse:     got int *
-   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse: sparse: incorrect type in initializer (incompatible argument 2 (different address spaces)) @@     expected long ( *read )( ... ) @@     got long ( * )( ... ) @@
-   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse:     expected long ( *read )( ... )
-   arch/mips/sibyte/common/sb_tbprof.c:531:27: sparse:     got long ( * )( ... )
+Writing your own benchmark is a good exercise but fio is the standard
+benchmark in this case. Please use it with --ioengine=mmap.
 
-vim +515 arch/mips/sibyte/common/sb_tbprof.c
+> Swapping started with MemAvailable=71%.
+> At the end 33 GiB was swapped out when MemAvailable=60%.
+> 
+> Is it OK?
 
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  490  
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  491  static long sbprof_tb_ioctl(struct file *filp,
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  492  			    unsigned int command,
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  493  			    unsigned long arg)
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  494  {
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  495  	int err = 0;
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  496  
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  497  	switch (command) {
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  498  	case SBPROF_ZBSTART:
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  499  		mutex_lock(&sbp.lock);
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  500  		err = sbprof_zbprof_start(filp);
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  501  		mutex_unlock(&sbp.lock);
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  502  		break;
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  503  
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  504  	case SBPROF_ZBSTOP:
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  505  		mutex_lock(&sbp.lock);
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  506  		err = sbprof_zbprof_stop();
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  507  		mutex_unlock(&sbp.lock);
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  508  		break;
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  509  
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  510  	case SBPROF_ZBWAITFULL: {
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  511  		err = wait_event_interruptible(sbp.tb_read, TB_FULL);
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  512  		if (err)
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  513  			break;
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  514  
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29 @515  		err = put_user(TB_FULL, (int *) arg);
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  516  		break;
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  517  	}
-bb9b813bb665cdb arch/mips/sibyte/sb1250/bcm1250_tbprof.c Ralf Baechle   2007-03-09  518  
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  519  	default:
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  520  		err = -EINVAL;
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  521  		break;
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  522  	}
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  523  
-d619f38fdacb5ce arch/mips/sibyte/common/sb_tbprof.c      Mark Mason     2007-03-29  524  	return err;
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  525  }
-^1da177e4c3f415 arch/mips/sibyte/sb1250/bcm1250_tbprof.c Linus Torvalds 2005-04-16  526  
+MemAvailable is an estimate (free + page cache), and it doesn't imply
+any reclaim preferences. In the worst case scenario, e.g., out of swap
+space, MemAvailable *may* be reclaimed.
 
-:::::: The code at line 515 was first introduced by commit
-:::::: d619f38fdacb5cec0c841798bbadeaf903868852 [MIPS] Add bcm1480 ZBus trace support, fix wait related bugs
+Here is my benchmark result with file mmap + *high* swap usage. Ram
+disk was used to reduce the variance in the result (and SSD wear out
+if you care). More details on additional configurations here:
+https://lore.kernel.org/linux-mm/20220208081902.3550911-6-yuzhao@google.com/
 
-:::::: TO: Mark Mason <mmason@upwardaccess.com>
-:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+  Mixed workloads:
+    fio (buffered I/O): +13%
+                IOPS         BW
+      5.17-rc3: 275k         1075MiB/s
+            v7: 313k         1222MiB/s
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+    memcached (anon): +12%
+                Ops/sec      KB/sec
+      5.17-rc3: 511282.72    19861.04
+            v7: 572408.80    22235.49
+
+  cat mmap.sh
+  systemctl restart memcached
+  swapoff -a
+  umount /mnt
+  rmmod brd
+  
+  modprobe brd rd_nr=2 rd_size=56623104
+  
+  mkswap /dev/ram0
+  swapon /dev/ram0
+  
+  mkfs.ext4 /dev/ram1
+  mount -t ext4 /dev/ram1 /mnt
+  
+  memtier_benchmark -S /var/run/memcached/memcached.sock \
+  -P memcache_binary -n allkeys --key-minimum=1 \
+  --key-maximum=50000000 --key-pattern=P:P -c 1 \
+  -t 36 --ratio 1:0 --pipeline 8 -d 2000
+  
+  sysctl vm.overcommit_memory=1
+  
+  fio -name=mglru --numjobs=36 --directory=/mnt --size=1408m \
+  --buffered=1 --ioengine=mmap --iodepth=128 --iodepth_batch_submit=32 \
+  --iodepth_batch_complete=32 --rw=randread --random_distribution=random \
+  --norandommap --time_based --ramp_time=10m --runtime=990m \
+  --group_reporting &
+  pid=$!
+  
+  sleep 200
+  
+  memcached.sock -P memcache_binary -n allkeys --key-minimum=1 \
+  --key-maximum=50000000 --key-pattern=R:R -c 1 -t 36 --ratio 0:1 \
+  --pipeline 8 --randomize --distinct-client-seed
+  
+  kill -INT $pid
+  wait
