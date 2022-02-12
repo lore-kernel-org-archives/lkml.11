@@ -2,10516 +2,2070 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E01C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 894C6C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235640AbiBLNGb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 08:06:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:56168 "EHLO
+        id S235623AbiBLNGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 08:06:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235620AbiBLNGE (ORCPT
+        with ESMTP id S235643AbiBLNGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 08:06:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BFA2983A;
-        Sat, 12 Feb 2022 05:05:57 -0800 (PST)
+        Sat, 12 Feb 2022 08:06:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98BD27179;
+        Sat, 12 Feb 2022 05:06:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97589B8068E;
-        Sat, 12 Feb 2022 13:05:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4DDAC340E7;
-        Sat, 12 Feb 2022 13:05:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 560D560E86;
+        Sat, 12 Feb 2022 13:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B07BC340E7;
+        Sat, 12 Feb 2022 13:06:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644671154;
-        bh=ur3vtBVaFCFHSPjm+Xb9BwypP70z1+5UPLzeLL89/Jo=;
+        s=k20201202; t=1644671173;
+        bh=NxXU5WpmWzuann1vnp7pMocmumX07xIGq4EiRfppcMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ShyfFyf7w3lajbUuLEQ15V1qlb7R80ZVjx5bsLUMYak6Xu2272G12Tp1YsFI5ctdm
-         BB+TcCGH9ss32d9vg/hKXTjbLNG2O1vwIZZE2XO6Gd3/jvOpZvLdJE28BfdFpCXmv3
-         PSjs+6+SsXetnj1ctDRULj4lqv5a93orBLAaG/xWrJl1lYPgcDXqD2HjoJR/rVBG05
-         YXUfpHHE2MJgsa0hDB2EV+I6ykIDR2qhfPRDyw3OEbB7ZsWVgpTetGOANI1I60Xg/c
-         21CMIsEkMxnz9ExctOvvC60BJrk4/cSqj1odaP2ENYAU6EYrcDVU6ehFvjaFS8f/nF
-         l/7DM4sa7/pdw==
+        b=naNN/wX3bfQM3MjLYd3NBwjzK1LnToy821kpDlzcSPh3AVuFOHcXlgbq7Qq5mr3ht
+         I2Vd/vYkJsuruURFmPIDECz7ktK6BQGafDwHtAPUhWSidKBBdUnC60YpL5EM6z1ETG
+         G0nnwmtWend7QJXZUaQGWLW9b4iOncAuZnmShVhrRVoj/vM6OVE7jxukUTwMbneH3a
+         wHqQYkaJ4s+7UJYn1KsOEt/MLGhIT19vfFq6ejeAmL69kbzRNRXWFDR+VdDj64SRTY
+         6+/Nhp1xdjAOb8DN7Lny0AdqyiYx6aTbAof/XNjvVZwogJHOxADTNn6V8QKfWWAtIZ
+         KJqybWV0Nrdtw==
 From:   Miguel Ojeda <ojeda@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
         Miguel Ojeda <ojeda@kernel.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
         Alex Gaynor <alex.gaynor@gmail.com>,
-        Geoffrey Thomas <geofft@ldpreload.com>,
         Finn Behrens <me@kloenk.de>,
         Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Sumera Priyadarsini <sylphrenadin@gmail.com>,
         Sven Van Asbroeck <thesven73@gmail.com>,
-        Gary Guo <gary@garyguo.net>,
+        Wu XiangCheng <bobwxc@email.cn>, Gary Guo <gary@garyguo.net>,
         Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Fox Chen <foxhlchen@gmail.com>,
-        Dan Robertson <daniel.robertson@starlab.io>,
-        Viktor Garske <viktor@v-gar.de>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        =?UTF-8?q?L=C3=A9o=20Lanteri=20Thauvin?= 
-        <leseulartichaut@gmail.com>, Niklas Mohrin <dev@niklasmohrin.de>,
-        Gioh Kim <gurugio@gmail.com>, Daniel Xu <dxu@dxuuu.xyz>,
-        Milan Landaverde <milan@mdaverde.com>,
-        Morgan Bartlett <mjmouse9999@gmail.com>,
-        Maciej Falkowski <m.falkowski@samsung.com>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>
-Subject: [PATCH v4 10/20] rust: add `kernel` crate
-Date:   Sat, 12 Feb 2022 14:03:36 +0100
-Message-Id: <20220212130410.6901-11-ojeda@kernel.org>
+        Yuki Okushi <jtitor@2k36.org>, Wei Liu <wei.liu@kernel.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kbuild@vger.kernel.org
+Subject: [PATCH v4 15/20] docs: add Rust documentation
+Date:   Sat, 12 Feb 2022 14:03:41 +0100
+Message-Id: <20220212130410.6901-16-ojeda@kernel.org>
 In-Reply-To: <20220212130410.6901-1-ojeda@kernel.org>
 References: <20220212130410.6901-1-ojeda@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wedson Almeida Filho <wedsonaf@google.com>
+Most of the documentation for Rust is written within the source code
+itself, as it is idiomatic for Rust projects. This applies to both
+the shared infrastructure at `rust/` as well as any other Rust module
+(e.g. drivers) written across the kernel.
 
-The `kernel` crate currently includes all the abstractions that wrap
-kernel features written in C.
+However, these documents contain general information that does not
+fit particularly well in the source code, like the Quick Start guide.
 
-These abstractions call the C side of the kernel via the generated
-bindings with the `bindgen` tool. Modules developed in Rust should
-never call the bindings themselves.
-
-In the future, as the abstractions grow in number, we may need
-to split this crate into several, possibly following a similar
-subdivision in subsystems as the kernel itself and/or moving
-the code to the actual subsystems.
+It also contains an asset (SVG logo) used for the `rustdoc` target
+and a few other small changes elsewhere in the documentation folder.
 
 Co-developed-by: Alex Gaynor <alex.gaynor@gmail.com>
 Signed-off-by: Alex Gaynor <alex.gaynor@gmail.com>
-Co-developed-by: Geoffrey Thomas <geofft@ldpreload.com>
-Signed-off-by: Geoffrey Thomas <geofft@ldpreload.com>
 Co-developed-by: Finn Behrens <me@kloenk.de>
 Signed-off-by: Finn Behrens <me@kloenk.de>
 Co-developed-by: Adam Bratschi-Kaye <ark.email@gmail.com>
 Signed-off-by: Adam Bratschi-Kaye <ark.email@gmail.com>
+Co-developed-by: Wedson Almeida Filho <wedsonaf@google.com>
+Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
 Co-developed-by: Michael Ellerman <mpe@ellerman.id.au>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Co-developed-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
-Signed-off-by: Sumera Priyadarsini <sylphrenadin@gmail.com>
 Co-developed-by: Sven Van Asbroeck <thesven73@gmail.com>
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
+Co-developed-by: Wu XiangCheng <bobwxc@email.cn>
+Signed-off-by: Wu XiangCheng <bobwxc@email.cn>
 Co-developed-by: Gary Guo <gary@garyguo.net>
 Signed-off-by: Gary Guo <gary@garyguo.net>
 Co-developed-by: Boris-Chengbiao Zhou <bobo1239@web.de>
 Signed-off-by: Boris-Chengbiao Zhou <bobo1239@web.de>
-Co-developed-by: Boqun Feng <boqun.feng@gmail.com>
-Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-Co-developed-by: Fox Chen <foxhlchen@gmail.com>
-Signed-off-by: Fox Chen <foxhlchen@gmail.com>
-Co-developed-by: Dan Robertson <daniel.robertson@starlab.io>
-Signed-off-by: Dan Robertson <daniel.robertson@starlab.io>
-Co-developed-by: Viktor Garske <viktor@v-gar.de>
-Signed-off-by: Viktor Garske <viktor@v-gar.de>
-Co-developed-by: Dariusz Sosnowski <dsosnowski@dsosnowski.pl>
-Signed-off-by: Dariusz Sosnowski <dsosnowski@dsosnowski.pl>
-Co-developed-by: Léo Lanteri Thauvin <leseulartichaut@gmail.com>
-Signed-off-by: Léo Lanteri Thauvin <leseulartichaut@gmail.com>
-Co-developed-by: Niklas Mohrin <dev@niklasmohrin.de>
-Signed-off-by: Niklas Mohrin <dev@niklasmohrin.de>
-Co-developed-by: Gioh Kim <gurugio@gmail.com>
-Signed-off-by: Gioh Kim <gurugio@gmail.com>
+Co-developed-by: Yuki Okushi <jtitor@2k36.org>
+Signed-off-by: Yuki Okushi <jtitor@2k36.org>
+Co-developed-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
 Co-developed-by: Daniel Xu <dxu@dxuuu.xyz>
 Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-Co-developed-by: Milan Landaverde <milan@mdaverde.com>
-Signed-off-by: Milan Landaverde <milan@mdaverde.com>
-Co-developed-by: Morgan Bartlett <mjmouse9999@gmail.com>
-Signed-off-by: Morgan Bartlett <mjmouse9999@gmail.com>
-Co-developed-by: Maciej Falkowski <m.falkowski@samsung.com>
-Signed-off-by: Maciej Falkowski <m.falkowski@samsung.com>
-Co-developed-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Signed-off-by: Wedson Almeida Filho <wedsonaf@google.com>
-Co-developed-by: Miguel Ojeda <ojeda@kernel.org>
 Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
 ---
- kernel/printk/printk.c         |   5 +-
- rust/kernel/allocator.rs       |  65 +++
- rust/kernel/amba.rs            | 259 ++++++++++++
- rust/kernel/bindings.rs        |  47 +++
- rust/kernel/bindings_helper.h  |  30 ++
- rust/kernel/buffer.rs          |  52 +++
- rust/kernel/build_assert.rs    |  80 ++++
- rust/kernel/c_types.rs         | 119 ++++++
- rust/kernel/chrdev.rs          | 209 ++++++++++
- rust/kernel/clk.rs             |  75 ++++
- rust/kernel/cred.rs            |  73 ++++
- rust/kernel/device.rs          | 554 +++++++++++++++++++++++++
- rust/kernel/driver.rs          | 440 ++++++++++++++++++++
- rust/kernel/error.rs           | 542 ++++++++++++++++++++++++
- rust/kernel/file.rs            | 147 +++++++
- rust/kernel/file_operations.rs | 734 +++++++++++++++++++++++++++++++++
- rust/kernel/gpio.rs            | 477 +++++++++++++++++++++
- rust/kernel/io_buffer.rs       | 153 +++++++
- rust/kernel/io_mem.rs          | 227 ++++++++++
- rust/kernel/iov_iter.rs        |  81 ++++
- rust/kernel/irq.rs             | 409 ++++++++++++++++++
- rust/kernel/lib.rs             | 261 ++++++++++++
- rust/kernel/linked_list.rs     | 247 +++++++++++
- rust/kernel/miscdev.rs         | 281 +++++++++++++
- rust/kernel/mm.rs              | 149 +++++++
- rust/kernel/module_param.rs    | 497 ++++++++++++++++++++++
- rust/kernel/of.rs              |  63 +++
- rust/kernel/pages.rs           | 144 +++++++
- rust/kernel/platform.rs        | 224 ++++++++++
- rust/kernel/power.rs           | 118 ++++++
- rust/kernel/prelude.rs         |  36 ++
- rust/kernel/print.rs           | 417 +++++++++++++++++++
- rust/kernel/random.rs          |  50 +++
- rust/kernel/raw_list.rs        | 361 ++++++++++++++++
- rust/kernel/rbtree.rs          | 562 +++++++++++++++++++++++++
- rust/kernel/revocable.rs       | 163 ++++++++
- rust/kernel/security.rs        |  36 ++
- rust/kernel/static_assert.rs   |  39 ++
- rust/kernel/std_vendor.rs      | 150 +++++++
- rust/kernel/str.rs             | 401 ++++++++++++++++++
- rust/kernel/sysctl.rs          | 197 +++++++++
- rust/kernel/task.rs            | 182 ++++++++
- rust/kernel/types.rs           | 486 ++++++++++++++++++++++
- rust/kernel/user_ptr.rs        | 175 ++++++++
- 44 files changed, 10016 insertions(+), 1 deletion(-)
- create mode 100644 rust/kernel/allocator.rs
- create mode 100644 rust/kernel/amba.rs
- create mode 100644 rust/kernel/bindings.rs
- create mode 100644 rust/kernel/bindings_helper.h
- create mode 100644 rust/kernel/buffer.rs
- create mode 100644 rust/kernel/build_assert.rs
- create mode 100644 rust/kernel/c_types.rs
- create mode 100644 rust/kernel/chrdev.rs
- create mode 100644 rust/kernel/clk.rs
- create mode 100644 rust/kernel/cred.rs
- create mode 100644 rust/kernel/device.rs
- create mode 100644 rust/kernel/driver.rs
- create mode 100644 rust/kernel/error.rs
- create mode 100644 rust/kernel/file.rs
- create mode 100644 rust/kernel/file_operations.rs
- create mode 100644 rust/kernel/gpio.rs
- create mode 100644 rust/kernel/io_buffer.rs
- create mode 100644 rust/kernel/io_mem.rs
- create mode 100644 rust/kernel/iov_iter.rs
- create mode 100644 rust/kernel/irq.rs
- create mode 100644 rust/kernel/lib.rs
- create mode 100644 rust/kernel/linked_list.rs
- create mode 100644 rust/kernel/miscdev.rs
- create mode 100644 rust/kernel/mm.rs
- create mode 100644 rust/kernel/module_param.rs
- create mode 100644 rust/kernel/of.rs
- create mode 100644 rust/kernel/pages.rs
- create mode 100644 rust/kernel/platform.rs
- create mode 100644 rust/kernel/power.rs
- create mode 100644 rust/kernel/prelude.rs
- create mode 100644 rust/kernel/print.rs
- create mode 100644 rust/kernel/random.rs
- create mode 100644 rust/kernel/raw_list.rs
- create mode 100644 rust/kernel/rbtree.rs
- create mode 100644 rust/kernel/revocable.rs
- create mode 100644 rust/kernel/security.rs
- create mode 100644 rust/kernel/static_assert.rs
- create mode 100644 rust/kernel/std_vendor.rs
- create mode 100644 rust/kernel/str.rs
- create mode 100644 rust/kernel/sysctl.rs
- create mode 100644 rust/kernel/task.rs
- create mode 100644 rust/kernel/types.rs
- create mode 100644 rust/kernel/user_ptr.rs
+ Documentation/doc-guide/kernel-doc.rst     |   3 +
+ Documentation/index.rst                    |   1 +
+ Documentation/kbuild/kbuild.rst            |   4 +
+ Documentation/process/changes.rst          |  42 +++
+ Documentation/rust/arch-support.rst        |  35 ++
+ Documentation/rust/coding-guidelines.rst   | 153 +++++++++
+ Documentation/rust/general-information.rst |  80 +++++
+ Documentation/rust/index.rst               |  21 ++
+ Documentation/rust/logo.svg                | 357 +++++++++++++++++++++
+ Documentation/rust/quick-start.rst         | 231 +++++++++++++
+ 10 files changed, 927 insertions(+)
+ create mode 100644 Documentation/rust/arch-support.rst
+ create mode 100644 Documentation/rust/coding-guidelines.rst
+ create mode 100644 Documentation/rust/general-information.rst
+ create mode 100644 Documentation/rust/index.rst
+ create mode 100644 Documentation/rust/logo.svg
+ create mode 100644 Documentation/rust/quick-start.rst
 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 82abfaf3c2aa..c042386667f2 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -392,7 +392,10 @@ static struct latched_seq clear_seq = {
- /* the maximum size of a formatted record (i.e. with prefix added per line) */
- #define CONSOLE_LOG_MAX		1024
- 
--/* the maximum size allowed to be reserved for a record */
-+/*
-+ * The maximum size allowed to be reserved for a record.
-+ * Keep in sync with rust/kernel/print.rs.
-+ */
- #define LOG_LINE_MAX		(CONSOLE_LOG_MAX - PREFIX_MAX)
- 
- #define LOG_LEVEL(v)		((v) & 0x07)
-diff --git a/rust/kernel/allocator.rs b/rust/kernel/allocator.rs
+diff --git a/Documentation/doc-guide/kernel-doc.rst b/Documentation/doc-gui=
+de/kernel-doc.rst
+index 79aaa55d6bcf..724e2ffddff1 100644
+--- a/Documentation/doc-guide/kernel-doc.rst
++++ b/Documentation/doc-guide/kernel-doc.rst
+@@ -11,6 +11,9 @@ when it is embedded in source files.
+    reasons. The kernel source contains tens of thousands of kernel-doc
+    comments. Please stick to the style described here.
+=20
++.. note:: kernel-doc does not cover Rust code: please see
++   Documentation/rust/docs.rst instead.
++
+ The kernel-doc structure is extracted from the comments, and proper
+ `Sphinx C Domain`_ function and type descriptions with anchors are
+ generated from them. The descriptions are filtered for special kernel-doc
+diff --git a/Documentation/index.rst b/Documentation/index.rst
+index b58692d687f6..ca9ff1adbe0b 100644
+--- a/Documentation/index.rst
++++ b/Documentation/index.rst
+@@ -82,6 +82,7 @@ merged much easier.
+    maintainer/index
+    fault-injection/index
+    livepatch/index
++   rust/index
+=20
+=20
+ Kernel API documentation
+diff --git a/Documentation/kbuild/kbuild.rst b/Documentation/kbuild/kbuild.=
+rst
+index 2d1fc03d346e..468a0d216c29 100644
+--- a/Documentation/kbuild/kbuild.rst
++++ b/Documentation/kbuild/kbuild.rst
+@@ -57,6 +57,10 @@ CFLAGS_MODULE
+ -------------
+ Additional module specific options to use for $(CC).
+=20
++KRUSTFLAGS
++----------
++Additional options to the Rust compiler (for built-in and modules).
++
+ LDFLAGS_MODULE
+ --------------
+ Additional options used for $(LD) when linking modules.
+diff --git a/Documentation/process/changes.rst b/Documentation/process/chan=
+ges.rst
+index a337e8eabfe1..4ec918da321f 100644
+--- a/Documentation/process/changes.rst
++++ b/Documentation/process/changes.rst
+@@ -31,6 +31,8 @@ you probably needn't concern yourself with pcmciautils.
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+ GNU C                  5.1              gcc --version
+ Clang/LLVM (optional)  11.0.0           clang --version
++Rust (optional)        1.58.0           rustc --version
++bindgen (optional)     0.56.0           bindgen --version
+ GNU make               3.81             make --version
+ binutils               2.23             ld -v
+ flex                   2.5.35           flex --version
+@@ -78,6 +80,29 @@ kernels. Older releases aren't guaranteed to work, and w=
+e may drop workarounds
+ from the kernel that were used to support older versions. Please see addit=
+ional
+ docs on :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
+=20
++Rust (optional)
++---------------
++
++A particular version of the Rust toolchain is required. Newer versions may=
+ or
++may not work because the kernel depends on some unstable Rust features, for
++the moment.
++
++Each Rust toolchain comes with several "components", some of which are req=
+uired
++(like ``rustc``) and some that are optional. The ``rust-src`` component (w=
+hich
++is optional) needs to be installed to build the kernel. Other components a=
+re
++useful for developing.
++
++Please see :ref:`Documentation/rust/quick-start.rst <rust_quick_start>` for
++instructions on how to satify the build requirements of Rust support. In
++particular, the Makefile target 'rustavailable' is useful to check why the=
+ Rust
++toolchain may not be detected.
++
++bindgen (optional)
++------------------
++
++``bindgen`` is used to generate the Rust bindings to the C side of the ker=
+nel.
++It depends on ``libclang``.
++
+ Make
+ ----
+=20
+@@ -340,6 +365,13 @@ Sphinx
+ Please see :ref:`sphinx_install` in :ref:`Documentation/doc-guide/sphinx.r=
+st <sphinxdoc>`
+ for details about Sphinx requirements.
+=20
++rustdoc
++-------
++
++``rustdoc`` is used to generate the documentation for Rust code. Please see
++:ref:`Documentation/rust/general-information.rst <rust_general_information=
+>`
++for more information.
++
+ Getting updated software
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+@@ -356,6 +388,16 @@ Clang/LLVM
+=20
+ - :ref:`Getting LLVM <getting_llvm>`.
+=20
++Rust
++----
++
++- :ref:`Documentation/rust/quick-start.rst <rust_quick_start>`.
++
++bindgen
++-------
++
++- :ref:`Documentation/rust/quick-start.rst <rust_quick_start>`.
++
+ Make
+ ----
+=20
+diff --git a/Documentation/rust/arch-support.rst b/Documentation/rust/arch-=
+support.rst
 new file mode 100644
-index 000000000000..4c5d2fc6f206
+index 000000000000..fdcce6452623
 --- /dev/null
-+++ b/rust/kernel/allocator.rs
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/Documentation/rust/arch-support.rst
+@@ -0,0 +1,35 @@
++.. _rust_arch_support:
 +
-+//! Allocator support.
++Arch Support
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
-+use core::alloc::{GlobalAlloc, Layout};
-+use core::ptr;
++Currently, the Rust compiler (``rustc``) uses LLVM for code generation,
++which limits the supported architectures that can be targeted. In addition,
++support for building the kernel with LLVM/Clang varies (see :ref:`kbuild_l=
+lvm`).
++This support is needed for ``bindgen`` which uses ``libclang``.
 +
-+use crate::bindings;
-+use crate::c_types;
++Below is a general summary of architectures that currently work. Level of
++support corresponds to ``S`` values in the ``MAINTAINERS`` file.
 +
-+struct KernelAllocator;
++.. list-table::
++   :widths: 10 10 10
++   :header-rows: 1
 +
-+unsafe impl GlobalAlloc for KernelAllocator {
-+    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-+        // `krealloc()` is used instead of `kmalloc()` because the latter is
-+        // an inline function and cannot be bound to as a result.
-+        unsafe { bindings::krealloc(ptr::null(), layout.size(), bindings::GFP_KERNEL) as *mut u8 }
-+    }
-+
-+    unsafe fn dealloc(&self, ptr: *mut u8, _layout: Layout) {
-+        unsafe {
-+            bindings::kfree(ptr as *const c_types::c_void);
-+        }
-+    }
-+}
-+
-+#[global_allocator]
-+static ALLOCATOR: KernelAllocator = KernelAllocator;
-+
-+// `rustc` only generates these for some crate types. Even then, we would need
-+// to extract the object file that has them from the archive. For the moment,
-+// let's generate them ourselves instead.
-+//
-+// Note that `#[no_mangle]` implies exported too, nowadays.
-+#[no_mangle]
-+fn __rust_alloc(size: usize, _align: usize) -> *mut u8 {
-+    unsafe { bindings::krealloc(core::ptr::null(), size, bindings::GFP_KERNEL) as *mut u8 }
-+}
-+
-+#[no_mangle]
-+fn __rust_dealloc(ptr: *mut u8, _size: usize, _align: usize) {
-+    unsafe { bindings::kfree(ptr as *const c_types::c_void) };
-+}
-+
-+#[no_mangle]
-+fn __rust_realloc(ptr: *mut u8, _old_size: usize, _align: usize, new_size: usize) -> *mut u8 {
-+    unsafe {
-+        bindings::krealloc(
-+            ptr as *const c_types::c_void,
-+            new_size,
-+            bindings::GFP_KERNEL,
-+        ) as *mut u8
-+    }
-+}
-+
-+#[no_mangle]
-+fn __rust_alloc_zeroed(size: usize, _align: usize) -> *mut u8 {
-+    unsafe {
-+        bindings::krealloc(
-+            core::ptr::null(),
-+            size,
-+            bindings::GFP_KERNEL | bindings::__GFP_ZERO,
-+        ) as *mut u8
-+    }
-+}
-diff --git a/rust/kernel/amba.rs b/rust/kernel/amba.rs
++   * - Architecture
++     - Level of support
++     - Constraints
++   * - ``arm``
++     - Maintained
++     - ``armv6`` and compatible only, ``RUST_OPT_LEVEL >=3D 2``
++   * - ``arm64``
++     - Maintained
++     - None
++   * - ``powerpc``
++     - Maintained
++     - ``ppc64le`` only, ``RUST_OPT_LEVEL < 2`` requires ``CONFIG_THREAD_S=
+HIFT=3D15``
++   * - ``riscv``
++     - Maintained
++     - ``riscv64`` only
++   * - ``x86``
++     - Maintained
++     - ``x86_64`` only
+diff --git a/Documentation/rust/coding-guidelines.rst b/Documentation/rust/=
+coding-guidelines.rst
 new file mode 100644
-index 000000000000..1775eda7dce6
+index 000000000000..9181dcbc2140
 --- /dev/null
-+++ b/rust/kernel/amba.rs
-@@ -0,0 +1,259 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Amba devices and drivers.
-+//!
-+//! C header: [`include/linux/amba/bus.h`](../../../../include/linux/amba/bus.h)
-+
-+use crate::{
-+    bindings, c_types, device, driver, error::from_kernel_result, io_mem::Resource, power,
-+    str::CStr, to_result, types::PointerWrapper, Result, ThisModule,
-+};
-+
-+/// A registration of an amba driver.
-+pub type Registration<T> = driver::Registration<Adapter<T>>;
-+
-+/// Id of an Amba device.
-+#[derive(Clone, Copy)]
-+pub struct DeviceId {
-+    /// Device id.
-+    pub id: u32,
-+
-+    /// Mask that identifies which bits are valid in the device id.
-+    pub mask: u32,
-+}
-+
-+// SAFETY: `ZERO` is all zeroed-out and `to_rawid` stores `offset` in `amba_id::data`.
-+unsafe impl const driver::RawDeviceId for DeviceId {
-+    type RawType = bindings::amba_id;
-+    const ZERO: Self::RawType = bindings::amba_id {
-+        id: 0,
-+        mask: 0,
-+        data: core::ptr::null_mut(),
-+    };
-+
-+    fn to_rawid(&self, offset: isize) -> Self::RawType {
-+        bindings::amba_id {
-+            id: self.id,
-+            mask: self.mask,
-+            data: offset as _,
-+        }
-+    }
-+}
-+
-+/// An amba driver.
-+pub trait Driver {
-+    /// Data stored on device by driver.
-+    type Data: PointerWrapper + Send + Sync + driver::DeviceRemoval = ();
-+
-+    /// The type that implements the power-management operations.
-+    ///
-+    /// The default is a type that implements no power-management operations. Drivers that do
-+    /// implement them need to specify the type (commonly [`Self`]).
-+    type PowerOps: power::Operations<Data = Self::Data> = power::NoOperations<Self::Data>;
-+
-+    /// The type holding information about each device id supported by the driver.
-+    type IdInfo: 'static = ();
-+
-+    /// The table of device ids supported by the driver.
-+    const ID_TABLE: Option<driver::IdTable<'static, DeviceId, Self::IdInfo>> = None;
-+
-+    /// Probes for the device with the given id.
-+    fn probe(dev: &mut Device, id_info: Option<&Self::IdInfo>) -> Result<Self::Data>;
-+
-+    /// Cleans any resources up that are associated with the device.
-+    ///
-+    /// This is called when the driver is detached from the device.
-+    fn remove(_data: &Self::Data) {}
-+}
-+
-+/// An adapter for the registration of Amba drivers.
-+pub struct Adapter<T: Driver>(T);
-+
-+impl<T: Driver> driver::DriverOps for Adapter<T> {
-+    type RegType = bindings::amba_driver;
-+
-+    unsafe fn register(
-+        reg: *mut bindings::amba_driver,
-+        name: &'static CStr,
-+        module: &'static ThisModule,
-+    ) -> Result {
-+        // SAFETY: By the safety requirements of this function (defined in the trait defintion),
-+        // `reg` is non-null and valid.
-+        let amba = unsafe { &mut *reg };
-+        amba.drv.name = name.as_char_ptr();
-+        amba.drv.owner = module.0;
-+        amba.probe = Some(probe_callback::<T>);
-+        amba.remove = Some(remove_callback::<T>);
-+        if let Some(t) = T::ID_TABLE {
-+            amba.id_table = t.as_ref();
-+        }
-+        if cfg!(CONFIG_PM) {
-+            // SAFETY: `probe_callback` sets the driver data after calling `T::Data::into_pointer`,
-+            // and we guarantee that `T::Data` is the same as `T::PowerOps::Data` by a constraint
-+            // in the type declaration.
-+            amba.drv.pm = unsafe { power::OpsTable::<T::PowerOps>::build() };
-+        }
-+        // SAFETY: By the safety requirements of this function, `reg` is valid and fully
-+        // initialised.
-+        to_result(|| unsafe { bindings::amba_driver_register(reg) })
-+    }
-+
-+    unsafe fn unregister(reg: *mut bindings::amba_driver) {
-+        // SAFETY: By the safety requirements of this function (defined in the trait definition),
-+        // `reg` was passed (and updated) by a previous successful call to `amba_driver_register`.
-+        unsafe { bindings::amba_driver_unregister(reg) };
-+    }
-+}
-+
-+unsafe extern "C" fn probe_callback<T: Driver>(
-+    adev: *mut bindings::amba_device,
-+    aid: *const bindings::amba_id,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: `adev` is valid by the contract with the C code. `dev` is alive only for the
-+        // duration of this call, so it is guaranteed to remain alive for the lifetime of `dev`.
-+        let mut dev = unsafe { Device::from_ptr(adev) };
-+        // SAFETY: `aid` is valid by the requirements the contract with the C code.
-+        let offset = unsafe { (*aid).data };
-+        let info = if offset.is_null() {
-+            None
-+        } else {
-+            // SAFETY: The offset comes from a previous call to `offset_from` in `IdArray::new`,
-+            // which guarantees that the resulting pointer is within the table.
-+            let ptr = unsafe { aid.cast::<u8>().offset(offset as _).cast::<Option<T::IdInfo>>() };
-+            // SAFETY: The id table has a static lifetime, so `ptr` is guaranteed to be valid for
-+            // read.
-+            unsafe { (&*ptr).as_ref() }
-+        };
-+        let data = T::probe(&mut dev, info)?;
-+        let ptr = T::Data::into_pointer(data);
-+        // SAFETY: `adev` is valid for write by the contract with the C code.
-+        unsafe { bindings::amba_set_drvdata(adev, ptr as _) };
-+        Ok(0)
-+    }
-+}
-+
-+unsafe extern "C" fn remove_callback<T: Driver>(adev: *mut bindings::amba_device) {
-+    // SAFETY: `adev` is valid by the contract with the C code.
-+    let ptr = unsafe { bindings::amba_get_drvdata(adev) };
-+    // SAFETY: The value returned by `amba_get_drvdata` was stored by a previous call to
-+    // `amba_set_drvdata` in `probe_callback` above; the value comes from a call to
-+    // `T::Data::into_pointer`.
-+    let data = unsafe { T::Data::from_pointer(ptr) };
-+    T::remove(&data);
-+    <T::Data as driver::DeviceRemoval>::device_remove(&data);
-+}
-+
-+/// An Amba device.
-+///
-+/// # Invariants
-+///
-+/// The field `ptr` is non-null and valid for the lifetime of the object.
-+pub struct Device {
-+    ptr: *mut bindings::amba_device,
-+    res: Option<Resource>,
-+}
-+
-+impl Device {
-+    /// Creates a new device from the given pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `ptr` must be non-null and valid. It must remain valid for the lifetime of the returned
-+    /// instance.
-+    unsafe fn from_ptr(ptr: *mut bindings::amba_device) -> Self {
-+        // SAFETY: The safety requirements of the function ensure that `ptr` is valid.
-+        let dev = unsafe { &mut *ptr };
-+        // INVARIANT: The safety requirements of the function ensure the lifetime invariant.
-+        Self {
-+            ptr,
-+            res: Resource::new(dev.res.start, dev.res.end),
-+        }
-+    }
-+
-+    /// Returns the io mem resource associated with the device, if there is one.
-+    ///
-+    /// Ownership of the resource is transferred to the caller, so subsequent calls to this
-+    /// function will return [`None`].
-+    pub fn take_resource(&mut self) -> Option<Resource> {
-+        self.res.take()
-+    }
-+
-+    /// Returns the index-th irq associated with the device, if one exists.
-+    pub fn irq(&self, index: usize) -> Option<u32> {
-+        // SAFETY: By the type invariants, `self.ptr` is valid for read.
-+        let dev = unsafe { &*self.ptr };
-+        if index >= dev.irq.len() || dev.irq[index] == 0 {
-+            None
-+        } else {
-+            Some(dev.irq[index])
-+        }
-+    }
-+}
-+
-+// SAFETY: The device returned by `raw_device` is the raw Amba device.
-+unsafe impl device::RawDevice for Device {
-+    fn raw_device(&self) -> *mut bindings::device {
-+        // SAFETY: By the type invariants, we know that `self.ptr` is non-null and valid.
-+        unsafe { &mut (*self.ptr).dev }
-+    }
-+}
-+
-+/// Declares a kernel module that exposes a single amba driver.
-+///
-+/// # Examples
-+///
-+/// ```ignore
-+/// # use kernel::prelude::*;
-+/// # use kernel::{amba, define_amba_id_table, module_amba_driver};
-+/// #
-+/// struct MyDriver;
-+/// impl amba::Driver for MyDriver {
-+///     // [...]
-+/// #   fn probe(_dev: &mut amba::Device, _id: Option<&Self::IdInfo>) -> Result {
-+/// #       Ok(())
-+/// #   }
-+/// #   define_amba_id_table! {(), [
-+/// #       ({ id: 0x00041061, mask: 0x000fffff }, None),
-+/// #   ]}
-+/// }
-+///
-+/// module_amba_driver! {
-+///     type: MyDriver,
-+///     name: b"module_name",
-+///     author: b"Author name",
-+///     license: b"GPL v2",
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! module_amba_driver {
-+    ($($f:tt)*) => {
-+        $crate::module_driver!(<T>, $crate::amba::Adapter<T>, { $($f)* });
-+    };
-+}
-+
-+/// Defines the id table for amba devices.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::{amba, define_amba_id_table};
-+/// #
-+/// # struct Sample;
-+/// # impl kernel::amba::Driver for Sample {
-+/// #   fn probe(_dev: &mut amba::Device, _id: Option<&Self::IdInfo>) -> Result {
-+/// #       Ok(())
-+/// #   }
-+///     define_amba_id_table! {(), [
-+///         ({ id: 0x00041061, mask: 0x000fffff }, None),
-+///     ]}
-+/// # }
-+/// ```
-+#[macro_export]
-+macro_rules! define_amba_id_table {
-+    ($data_type:ty, $($t:tt)*) => {
-+        type IdInfo = $data_type;
-+        $crate::define_id_table!(ID_TABLE, $crate::amba::DeviceId, $data_type, $($t)*);
-+    };
-+}
-diff --git a/rust/kernel/bindings.rs b/rust/kernel/bindings.rs
-new file mode 100644
-index 000000000000..29a21030688e
---- /dev/null
-+++ b/rust/kernel/bindings.rs
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Bindings.
-+//!
-+//! Imports the generated bindings by `bindgen`.
-+
-+// See https://github.com/rust-lang/rust-bindgen/issues/1651.
-+#![cfg_attr(test, allow(deref_nullptr))]
-+#![cfg_attr(test, allow(unaligned_references))]
-+#![cfg_attr(test, allow(unsafe_op_in_unsafe_fn))]
-+#![allow(
-+    clippy::all,
-+    non_camel_case_types,
-+    non_upper_case_globals,
-+    non_snake_case,
-+    improper_ctypes,
-+    unreachable_pub,
-+    unsafe_op_in_unsafe_fn
-+)]
-+
-+mod bindings_raw {
-+    // Use glob import here to expose all helpers.
-+    // Symbols defined within the module will take precedence to the glob import.
-+    pub use super::bindings_helper::*;
-+    use crate::c_types;
-+    include!(concat!(env!("OBJTREE"), "/rust/bindings_generated.rs"));
-+}
-+
-+// When both a directly exposed symbol and a helper exists for the same function,
-+// the directly exposed symbol is preferred and the helper becomes dead code, so
-+// ignore the warning here.
-+#[allow(dead_code)]
-+mod bindings_helper {
-+    // Import the generated bindings for types.
-+    use super::bindings_raw::*;
-+    use crate::c_types;
-+    include!(concat!(
-+        env!("OBJTREE"),
-+        "/rust/bindings_helpers_generated.rs"
-+    ));
-+}
-+
-+pub use bindings_raw::*;
-+
-+pub const GFP_KERNEL: gfp_t = BINDINGS_GFP_KERNEL;
-+pub const __GFP_ZERO: gfp_t = BINDINGS___GFP_ZERO;
-+pub const __GFP_HIGHMEM: gfp_t = ___GFP_HIGHMEM;
-diff --git a/rust/kernel/bindings_helper.h b/rust/kernel/bindings_helper.h
-new file mode 100644
-index 000000000000..a79f3f398b93
---- /dev/null
-+++ b/rust/kernel/bindings_helper.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include <linux/cdev.h>
-+#include <linux/clk.h>
-+#include <linux/errname.h>
-+#include <linux/fs.h>
-+#include <linux/module.h>
-+#include <linux/random.h>
-+#include <linux/slab.h>
-+#include <linux/sysctl.h>
-+#include <linux/uaccess.h>
-+#include <linux/uio.h>
-+#include <linux/miscdevice.h>
-+#include <linux/poll.h>
-+#include <linux/mm.h>
-+#include <linux/file.h>
-+#include <uapi/linux/android/binder.h>
-+#include <linux/platform_device.h>
-+#include <linux/of_platform.h>
-+#include <linux/security.h>
-+#include <asm/io.h>
-+#include <linux/irq.h>
-+#include <linux/interrupt.h>
-+#include <linux/irqdomain.h>
-+#include <linux/amba/bus.h>
-+#include <linux/gpio/driver.h>
-+
-+// `bindgen` gets confused at certain things
-+const gfp_t BINDINGS_GFP_KERNEL = GFP_KERNEL;
-+const gfp_t BINDINGS___GFP_ZERO = __GFP_ZERO;
-diff --git a/rust/kernel/buffer.rs b/rust/kernel/buffer.rs
-new file mode 100644
-index 000000000000..48f429065323
---- /dev/null
-+++ b/rust/kernel/buffer.rs
-@@ -0,0 +1,52 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Struct for writing to a pre-allocated buffer with the [`write!`] macro.
-+
-+use core::fmt;
-+
-+/// A pre-allocated buffer that implements [`core::fmt::Write`].
-+///
-+/// Consecutive writes will append to what has already been written.
-+/// Writes that don't fit in the buffer will fail.
-+pub struct Buffer<'a> {
-+    slice: &'a mut [u8],
-+    pos: usize,
-+}
-+
-+impl<'a> Buffer<'a> {
-+    /// Creates a new buffer from an existing array.
-+    pub fn new(slice: &'a mut [u8]) -> Self {
-+        Buffer { slice, pos: 0 }
-+    }
-+
-+    /// Creates a new buffer from a raw pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `ptr` must be valid for read and writes, have at least `len` bytes in
-+    /// size, and remain valid and not be used by other threads for the lifetime
-+    /// of the returned instance.
-+    pub unsafe fn from_raw(ptr: *mut u8, len: usize) -> Self {
-+        // SAFETY: The safety requirements of the function satisfy those of
-+        // `from_raw_parts_mut`.
-+        Self::new(unsafe { core::slice::from_raw_parts_mut(ptr, len) })
-+    }
-+
-+    /// Number of bytes that have already been written to the buffer.
-+    /// This will always be less than the length of the original array.
-+    pub fn bytes_written(&self) -> usize {
-+        self.pos
-+    }
-+}
-+
-+impl fmt::Write for Buffer<'_> {
-+    fn write_str(&mut self, s: &str) -> fmt::Result {
-+        if s.len() > self.slice.len() - self.pos {
-+            Err(fmt::Error)
-+        } else {
-+            self.slice[self.pos..self.pos + s.len()].copy_from_slice(s.as_bytes());
-+            self.pos += s.len();
-+            Ok(())
-+        }
-+    }
-+}
-diff --git a/rust/kernel/build_assert.rs b/rust/kernel/build_assert.rs
-new file mode 100644
-index 000000000000..f726927185c0
---- /dev/null
-+++ b/rust/kernel/build_assert.rs
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Build-time assert.
-+
-+/// Fails the build if the code path calling `build_error!` can possibly be executed.
-+///
-+/// If the macro is executed in const context, `build_error!` will panic.
-+/// If the compiler or optimizer cannot guarantee that `build_error!` can never
-+/// be called, a build error will be triggered.
-+///
-+/// # Examples
-+/// ```
-+/// # use kernel::build_error;
-+/// #[inline]
-+/// fn foo(a: usize) -> usize {
-+///     a.checked_add(1).unwrap_or_else(|| build_error!("overflow"))
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! build_error {
-+    () => {{
-+        $crate::build_error("")
-+    }};
-+    ($msg:expr) => {{
-+        $crate::build_error($msg)
-+    }};
-+}
-+
-+/// Asserts that a boolean expression is `true` at compile time.
-+///
-+/// If the condition is evaluated to `false` in const context, `build_assert!`
-+/// will panic. If the compiler or optimizer cannot guarantee the condition will
-+/// be evaluated to `true`, a build error will be triggered.
-+///
-+/// [`static_assert!`] should be preferred to `build_assert!` whenever possible.
-+///
-+/// # Examples
-+///
-+/// These examples show that different types of [`assert!`] will trigger errors
-+/// at different stage of compilation. It is preferred to err as early as
-+/// possible, so [`static_assert!`] should be used whenever possible.
-+/// ```compile_fail
-+/// # use kernel::prelude::*;
-+/// fn foo() {
-+///     static_assert!(1 > 1); // Compile-time error
-+///     build_assert!(1 > 1); // Build-time error
-+///     assert!(1 > 1); // Run-time error
-+/// }
-+/// ```
-+///
-+/// When the condition refers to generic parameters or parameters of an inline function,
-+/// [`static_assert!`] cannot be used. Use `build_assert!` in this scenario.
-+/// ```no_run
-+/// # use kernel::prelude::*;
-+/// fn foo<const N: usize>() {
-+///     // `static_assert!(N > 1);` is not allowed
-+///     build_assert!(N > 1); // Build-time check
-+///     assert!(N > 1); // Run-time check
-+/// }
-+///
-+/// #[inline]
-+/// fn bar(n: usize) {
-+///     // `static_assert!(n > 1);` is not allowed
-+///     build_assert!(n > 1); // Build-time check
-+///     assert!(n > 1); // Run-time check
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! build_assert {
-+    ($cond:expr $(,)?) => {{
-+        if !$cond {
-+            $crate::build_error(concat!("assertion failed: ", stringify!($cond)));
-+        }
-+    }};
-+    ($cond:expr, $msg:expr) => {{
-+        if !$cond {
-+            $crate::build_error($msg);
-+        }
-+    }};
-+}
-diff --git a/rust/kernel/c_types.rs b/rust/kernel/c_types.rs
-new file mode 100644
-index 000000000000..07593a3ba8be
---- /dev/null
-+++ b/rust/kernel/c_types.rs
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! C types for the bindings.
-+//!
-+//! The bindings generated by `bindgen` use these types to map to the C ones.
-+//!
-+//! C's standard integer types may differ in width depending on
-+//! the architecture, thus we need to conditionally compile those.
-+
-+#![allow(non_camel_case_types)]
-+
-+#[cfg(any(target_arch = "arm", target_arch = "x86", target_arch = "riscv32",))]
-+mod c {
-+    /// C `void` type.
-+    pub type c_void = core::ffi::c_void;
-+
-+    /// C `char` type.
-+    pub type c_char = i8;
-+
-+    /// C `signed char` type.
-+    pub type c_schar = i8;
-+
-+    /// C `unsigned char` type.
-+    pub type c_uchar = u8;
-+
-+    /// C `short` type.
-+    pub type c_short = i16;
-+
-+    /// C `unsigned short` type.
-+    pub type c_ushort = u16;
-+
-+    /// C `int` type.
-+    pub type c_int = i32;
-+
-+    /// C `unsigned int` type.
-+    pub type c_uint = u32;
-+
-+    /// C `long` type.
-+    pub type c_long = i32;
-+
-+    /// C `unsigned long` type.
-+    pub type c_ulong = u32;
-+
-+    /// C `long long` type.
-+    pub type c_longlong = i64;
-+
-+    /// C `unsigned long long` type.
-+    pub type c_ulonglong = u64;
-+
-+    /// C `ssize_t` type (typically defined in `<sys/types.h>` by POSIX).
-+    ///
-+    /// For some 32-bit architectures like this one, the kernel defines it as
-+    /// `int`, i.e. it is an [`i32`].
-+    pub type c_ssize_t = isize;
-+
-+    /// C `size_t` type (typically defined in `<stddef.h>`).
-+    ///
-+    /// For some 32-bit architectures like this one, the kernel defines it as
-+    /// `unsigned int`, i.e. it is an [`u32`].
-+    pub type c_size_t = usize;
-+}
-+
-+#[cfg(any(
-+    target_arch = "aarch64",
-+    target_arch = "x86_64",
-+    target_arch = "powerpc64",
-+    target_arch = "riscv64",
-+))]
-+mod c {
-+    /// C `void` type.
-+    pub type c_void = core::ffi::c_void;
-+
-+    /// C `char` type.
-+    pub type c_char = i8;
-+
-+    /// C `signed char` type.
-+    pub type c_schar = i8;
-+
-+    /// C `unsigned char` type.
-+    pub type c_uchar = u8;
-+
-+    /// C `short` type.
-+    pub type c_short = i16;
-+
-+    /// C `unsigned short` type.
-+    pub type c_ushort = u16;
-+
-+    /// C `int` type.
-+    pub type c_int = i32;
-+
-+    /// C `unsigned int` type.
-+    pub type c_uint = u32;
-+
-+    /// C `long` type.
-+    pub type c_long = i64;
-+
-+    /// C `unsigned long` type.
-+    pub type c_ulong = u64;
-+
-+    /// C `long long` type.
-+    pub type c_longlong = i64;
-+
-+    /// C `unsigned long long` type.
-+    pub type c_ulonglong = u64;
-+
-+    /// C `ssize_t` type (typically defined in `<sys/types.h>` by POSIX).
-+    ///
-+    /// For 64-bit architectures like this one, the kernel defines it as
-+    /// `long`, i.e. it is an [`i64`].
-+    pub type c_ssize_t = isize;
-+
-+    /// C `size_t` type (typically defined in `<stddef.h>`).
-+    ///
-+    /// For 64-bit architectures like this one, the kernel defines it as
-+    /// `unsigned long`, i.e. it is an [`u64`].
-+    pub type c_size_t = usize;
-+}
-+
-+pub use c::*;
-diff --git a/rust/kernel/chrdev.rs b/rust/kernel/chrdev.rs
-new file mode 100644
-index 000000000000..9a15e113ebcf
---- /dev/null
-+++ b/rust/kernel/chrdev.rs
-@@ -0,0 +1,209 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Character devices.
-+//!
-+//! Also called "char devices", `chrdev`, `cdev`.
-+//!
-+//! C header: [`include/linux/cdev.h`](../../../../include/linux/cdev.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/html/latest/core-api/kernel-api.html#char-devices>
-+
-+use alloc::boxed::Box;
-+use core::convert::TryInto;
-+use core::marker::PhantomPinned;
-+use core::pin::Pin;
-+
-+use crate::bindings;
-+use crate::c_types;
-+use crate::error::{Error, Result};
-+use crate::file_operations;
-+use crate::str::CStr;
-+
-+/// Character device.
-+///
-+/// # Invariants
-+///
-+///   - [`self.0`] is valid and non-null.
-+///   - [`(*self.0).ops`] is valid, non-null and has static lifetime.
-+///   - [`(*self.0).owner`] is valid and, if non-null, has module lifetime.
-+struct Cdev(*mut bindings::cdev);
-+
-+impl Cdev {
-+    fn alloc(
-+        fops: &'static bindings::file_operations,
-+        module: &'static crate::ThisModule,
-+    ) -> Result<Self> {
-+        // SAFETY: FFI call.
-+        let cdev = unsafe { bindings::cdev_alloc() };
-+        if cdev.is_null() {
-+            return Err(Error::ENOMEM);
-+        }
-+        // SAFETY: `cdev` is valid and non-null since `cdev_alloc()`
-+        // returned a valid pointer which was null-checked.
-+        unsafe {
-+            (*cdev).ops = fops;
-+            (*cdev).owner = module.0;
-+        }
-+        // INVARIANTS:
-+        //   - [`self.0`] is valid and non-null.
-+        //   - [`(*self.0).ops`] is valid, non-null and has static lifetime,
-+        //     because it was coerced from a reference with static lifetime.
-+        //   - [`(*self.0).owner`] is valid and, if non-null, has module lifetime,
-+        //     guaranteed by the [`ThisModule`] invariant.
-+        Ok(Self(cdev))
-+    }
-+
-+    fn add(&mut self, dev: bindings::dev_t, count: c_types::c_uint) -> Result {
-+        // SAFETY: According to the type invariants:
-+        //   - [`self.0`] can be safely passed to [`bindings::cdev_add`].
-+        //   - [`(*self.0).ops`] will live at least as long as [`self.0`].
-+        //   - [`(*self.0).owner`] will live at least as long as the
-+        //     module, which is an implicit requirement.
-+        let rc = unsafe { bindings::cdev_add(self.0, dev, count) };
-+        if rc != 0 {
-+            return Err(Error::from_kernel_errno(rc));
-+        }
-+        Ok(())
-+    }
-+}
-+
-+impl Drop for Cdev {
-+    fn drop(&mut self) {
-+        // SAFETY: [`self.0`] is valid and non-null by the type invariants.
-+        unsafe {
-+            bindings::cdev_del(self.0);
-+        }
-+    }
-+}
-+
-+struct RegistrationInner<const N: usize> {
-+    dev: bindings::dev_t,
-+    used: usize,
-+    cdevs: [Option<Cdev>; N],
-+    _pin: PhantomPinned,
-+}
-+
-+/// Character device registration.
-+///
-+/// May contain up to a fixed number (`N`) of devices. Must be pinned.
-+pub struct Registration<const N: usize> {
-+    name: &'static CStr,
-+    minors_start: u16,
-+    this_module: &'static crate::ThisModule,
-+    inner: Option<RegistrationInner<N>>,
-+}
-+
-+impl<const N: usize> Registration<{ N }> {
-+    /// Creates a [`Registration`] object for a character device.
-+    ///
-+    /// This does *not* register the device: see [`Self::register()`].
-+    ///
-+    /// This associated function is intended to be used when you need to avoid
-+    /// a memory allocation, e.g. when the [`Registration`] is a member of
-+    /// a bigger structure inside your [`crate::KernelModule`] instance. If you
-+    /// are going to pin the registration right away, call
-+    /// [`Self::new_pinned()`] instead.
-+    pub fn new(
-+        name: &'static CStr,
-+        minors_start: u16,
-+        this_module: &'static crate::ThisModule,
-+    ) -> Self {
-+        Registration {
-+            name,
-+            minors_start,
-+            this_module,
-+            inner: None,
-+        }
-+    }
-+
-+    /// Creates a pinned [`Registration`] object for a character device.
-+    ///
-+    /// This does *not* register the device: see [`Self::register()`].
-+    pub fn new_pinned(
-+        name: &'static CStr,
-+        minors_start: u16,
-+        this_module: &'static crate::ThisModule,
-+    ) -> Result<Pin<Box<Self>>> {
-+        Ok(Pin::from(Box::try_new(Self::new(
-+            name,
-+            minors_start,
-+            this_module,
-+        ))?))
-+    }
-+
-+    /// Registers a character device.
-+    ///
-+    /// You may call this once per device type, up to `N` times.
-+    pub fn register<T: file_operations::FileOperations<OpenData = ()>>(
-+        self: Pin<&mut Self>,
-+    ) -> Result {
-+        // SAFETY: We must ensure that we never move out of `this`.
-+        let this = unsafe { self.get_unchecked_mut() };
-+        if this.inner.is_none() {
-+            let mut dev: bindings::dev_t = 0;
-+            // SAFETY: Calling unsafe function. `this.name` has `'static`
-+            // lifetime.
-+            let res = unsafe {
-+                bindings::alloc_chrdev_region(
-+                    &mut dev,
-+                    this.minors_start.into(),
-+                    N.try_into()?,
-+                    this.name.as_char_ptr(),
-+                )
-+            };
-+            if res != 0 {
-+                return Err(Error::from_kernel_errno(res));
-+            }
-+            const NONE: Option<Cdev> = None;
-+            this.inner = Some(RegistrationInner {
-+                dev,
-+                used: 0,
-+                cdevs: [NONE; N],
-+                _pin: PhantomPinned,
-+            });
-+        }
-+
-+        let mut inner = this.inner.as_mut().unwrap();
-+        if inner.used == N {
-+            return Err(Error::EINVAL);
-+        }
-+
-+        // SAFETY: The adapter doesn't retrieve any state yet, so it's compatible with any
-+        // registration.
-+        let fops = unsafe { file_operations::FileOperationsVtable::<Self, T>::build() };
-+        let mut cdev = Cdev::alloc(fops, this.this_module)?;
-+        cdev.add(inner.dev + inner.used as bindings::dev_t, 1)?;
-+        inner.cdevs[inner.used].replace(cdev);
-+        inner.used += 1;
-+        Ok(())
-+    }
-+}
-+
-+impl<const N: usize> file_operations::FileOpenAdapter<()> for Registration<{ N }> {
-+    unsafe fn convert(_inode: *mut bindings::inode, _file: *mut bindings::file) -> *const () {
-+        // TODO: Update the SAFETY comment on the call to `FileOperationsVTable::build` above once
-+        // this is updated to retrieve state.
-+        &()
-+    }
-+}
-+
-+// SAFETY: `Registration` does not expose any of its state across threads
-+// (it is fine for multiple threads to have a shared reference to it).
-+unsafe impl<const N: usize> Sync for Registration<{ N }> {}
-+
-+impl<const N: usize> Drop for Registration<{ N }> {
-+    fn drop(&mut self) {
-+        if let Some(inner) = self.inner.as_mut() {
-+            // Replicate kernel C behaviour: drop [`Cdev`]s before calling
-+            // [`bindings::unregister_chrdev_region`].
-+            for i in 0..inner.used {
-+                inner.cdevs[i].take();
-+            }
-+            // SAFETY: [`self.inner`] is Some, so [`inner.dev`] was previously
-+            // created using [`bindings::alloc_chrdev_region`].
-+            unsafe {
-+                bindings::unregister_chrdev_region(inner.dev, N.try_into().unwrap());
-+            }
-+        }
-+    }
-+}
-diff --git a/rust/kernel/clk.rs b/rust/kernel/clk.rs
-new file mode 100644
-index 000000000000..46d3b81f5688
---- /dev/null
-+++ b/rust/kernel/clk.rs
-@@ -0,0 +1,75 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Common clock framework.
-+//!
-+//! C header: [`include/linux/clk.h`](../../../../include/linux/clk.h)
-+
-+use crate::{bindings, error::Result, to_result};
-+use core::mem::ManuallyDrop;
-+
-+/// Represents `struct clk *`.
-+///
-+/// # Invariants
-+///
-+/// The pointer is valid.
-+pub struct Clk(*mut bindings::clk);
-+
-+impl Clk {
-+    /// Creates new clock structure from a raw pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer must be valid.
-+    pub unsafe fn new(clk: *mut bindings::clk) -> Self {
-+        Self(clk)
-+    }
-+
-+    /// Returns value of the rate field of `struct clk`.
-+    pub fn get_rate(&self) -> usize {
-+        // SAFETY: The pointer is valid by the type invariant.
-+        unsafe { bindings::clk_get_rate(self.0) as usize }
-+    }
-+
-+    /// Prepares and enables the underlying hardware clock.
-+    ///
-+    /// This function should not be called in atomic context.
-+    pub fn prepare_enable(self) -> Result<EnabledClk> {
-+        // SAFETY: The pointer is valid by the type invariant.
-+        to_result(|| unsafe { bindings::clk_prepare_enable(self.0) })?;
-+        Ok(EnabledClk(self))
-+    }
-+}
-+
-+impl Drop for Clk {
-+    fn drop(&mut self) {
-+        // SAFETY: The pointer is valid by the type invariant.
-+        unsafe { bindings::clk_put(self.0) };
-+    }
-+}
-+
-+/// A clock variant that is prepared and enabled.
-+pub struct EnabledClk(Clk);
-+
-+impl EnabledClk {
-+    /// Returns value of the rate field of `struct clk`.
-+    pub fn get_rate(&self) -> usize {
-+        self.0.get_rate()
-+    }
-+
-+    /// Disables and later unprepares the underlying hardware clock prematurely.
-+    ///
-+    /// This function should not be called in atomic context.
-+    pub fn disable_unprepare(self) -> Clk {
-+        let mut clk = ManuallyDrop::new(self);
-+        // SAFETY: The pointer is valid by the type invariant.
-+        unsafe { bindings::clk_disable_unprepare(clk.0 .0) };
-+        core::mem::replace(&mut clk.0, Clk(core::ptr::null_mut()))
-+    }
-+}
-+
-+impl Drop for EnabledClk {
-+    fn drop(&mut self) {
-+        // SAFETY: The pointer is valid by the type invariant.
-+        unsafe { bindings::clk_disable_unprepare(self.0 .0) };
-+    }
-+}
-diff --git a/rust/kernel/cred.rs b/rust/kernel/cred.rs
-new file mode 100644
-index 000000000000..1602aa6935ca
---- /dev/null
-+++ b/rust/kernel/cred.rs
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Credentials management.
-+//!
-+//! C header: [`include/linux/cred.h`](../../../../include/linux/cred.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/html/latest/security/credentials.html>
-+
-+use crate::bindings;
-+use core::{marker::PhantomData, mem::ManuallyDrop, ops::Deref};
-+
-+/// Wraps the kernel's `struct cred`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `Credential::ptr` is non-null and valid. Its reference count is also non-zero.
-+pub struct Credential {
-+    pub(crate) ptr: *const bindings::cred,
-+}
-+
-+impl Clone for Credential {
-+    fn clone(&self) -> Self {
-+        // SAFETY: The type invariants guarantee that `self.ptr` has a non-zero reference count.
-+        let ptr = unsafe { bindings::get_cred(self.ptr) };
-+
-+        // INVARIANT: We incremented the reference count to account for the new `Credential` being
-+        // created.
-+        Self { ptr }
-+    }
-+}
-+
-+impl Drop for Credential {
-+    fn drop(&mut self) {
-+        // SAFETY: The type invariants guarantee that `ptr` has a non-zero reference count.
-+        unsafe { bindings::put_cred(self.ptr) };
-+    }
-+}
-+
-+/// A wrapper for [`Credential`] that doesn't automatically decrement the refcount when dropped.
-+///
-+/// We need the wrapper because [`ManuallyDrop`] alone would allow callers to call
-+/// [`ManuallyDrop::into_inner`]. This would allow an unsafe sequence to be triggered without
-+/// `unsafe` blocks because it would trigger an unbalanced call to `put_cred`.
-+///
-+/// # Invariants
-+///
-+/// The wrapped [`Credential`] remains valid for the lifetime of the object.
-+pub struct CredentialRef<'a> {
-+    cred: ManuallyDrop<Credential>,
-+    _p: PhantomData<&'a ()>,
-+}
-+
-+impl CredentialRef<'_> {
-+    /// Constructs a new [`struct cred`] wrapper that doesn't change its reference count.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the object.
-+    pub(crate) unsafe fn from_ptr(ptr: *const bindings::cred) -> Self {
-+        Self {
-+            cred: ManuallyDrop::new(Credential { ptr }),
-+            _p: PhantomData,
-+        }
-+    }
-+}
-+
-+impl Deref for CredentialRef<'_> {
-+    type Target = Credential;
-+
-+    fn deref(&self) -> &Self::Target {
-+        self.cred.deref()
-+    }
-+}
-diff --git a/rust/kernel/device.rs b/rust/kernel/device.rs
-new file mode 100644
-index 000000000000..05a9484cbcd4
---- /dev/null
-+++ b/rust/kernel/device.rs
-@@ -0,0 +1,554 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Generic devices that are part of the kernel's driver model.
-+//!
-+//! C header: [`include/linux/device.h`](../../../../include/linux/device.h)
-+
-+#[cfg(CONFIG_COMMON_CLK)]
-+use crate::{clk::Clk, error::from_kernel_err_ptr};
-+
-+use crate::{
-+    bindings,
-+    revocable::{Revocable, RevocableGuard},
-+    str::CStr,
-+    sync::{NeedsLockClass, RevocableMutex, RevocableMutexGuard, UniqueRef},
-+    Result,
-+};
-+use core::{
-+    fmt,
-+    ops::{Deref, DerefMut},
-+    pin::Pin,
-+};
-+
-+#[cfg(CONFIG_PRINTK)]
-+use crate::{c_str, c_types};
-+
-+/// A raw device.
-+///
-+/// # Safety
-+///
-+/// Implementers must ensure that the `*mut device` returned by [`RawDevice::raw_device`] is
-+/// related to `self`, that is, actions on it will affect `self`. For example, if one calls
-+/// `get_device`, then the refcount on the device represented by `self` will be incremented.
-+///
-+/// Additionally, implementers must ensure that the device is never renamed. Commit a5462516aa994
-+/// has details on why `device_rename` should not be used.
-+pub unsafe trait RawDevice {
-+    /// Returns the raw `struct device` related to `self`.
-+    fn raw_device(&self) -> *mut bindings::device;
-+
-+    /// Returns the name of the device.
-+    fn name(&self) -> &CStr {
-+        let ptr = self.raw_device();
-+
-+        // SAFETY: `ptr` is valid because `self` keeps it alive.
-+        let name = unsafe { bindings::dev_name(ptr) };
-+
-+        // SAFETY: The name of the device remains valid while it is alive (because the device is
-+        // never renamed, per the safety requirement of this trait). This is guaranteed to be the
-+        // case because the reference to `self` outlives the one of the returned `CStr` (enforced
-+        // by the compiler because of their lifetimes).
-+        unsafe { CStr::from_char_ptr(name) }
-+    }
-+
-+    /// Lookups a clock producer consumed by this device.
-+    ///
-+    /// Returns a managed reference to the clock producer.
-+    #[cfg(CONFIG_COMMON_CLK)]
-+    fn clk_get(&self, id: Option<&CStr>) -> Result<Clk> {
-+        let id_ptr = match id {
-+            Some(cstr) => cstr.as_char_ptr(),
-+            None => core::ptr::null(),
-+        };
-+
-+        // SAFETY: `id_ptr` is optional and may be either a valid pointer
-+        // from the type invariant or NULL otherwise.
-+        let clk_ptr = unsafe { from_kernel_err_ptr(bindings::clk_get(self.raw_device(), id_ptr)) }?;
-+
-+        // SAFETY: Clock is initialized with valid pointer returned from `bindings::clk_get` call.
-+        unsafe { Ok(Clk::new(clk_ptr)) }
-+    }
-+
-+    /// Prints an emergency-level message (level 0) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_emerg`].
-+    fn pr_emerg(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_EMERG, args) };
-+    }
-+
-+    /// Prints an alert-level message (level 1) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_alert`].
-+    fn pr_alert(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_ALERT, args) };
-+    }
-+
-+    /// Prints a critical-level message (level 2) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_crit`].
-+    fn pr_crit(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_CRIT, args) };
-+    }
-+
-+    /// Prints an error-level message (level 3) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_err`].
-+    fn pr_err(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_ERR, args) };
-+    }
-+
-+    /// Prints a warning-level message (level 4) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_warn`].
-+    fn pr_warn(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_WARNING, args) };
-+    }
-+
-+    /// Prints a notice-level message (level 5) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_notice`].
-+    fn pr_notice(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_NOTICE, args) };
-+    }
-+
-+    /// Prints an info-level message (level 6) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_info`].
-+    fn pr_info(&self, args: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+        unsafe { self.printk(bindings::KERN_INFO, args) };
-+    }
-+
-+    /// Prints a debug-level message (level 7) prefixed with device information.
-+    ///
-+    /// More details are available from [`dev_dbg`].
-+    fn pr_dbg(&self, args: fmt::Arguments<'_>) {
-+        if cfg!(debug_assertions) {
-+            // SAFETY: `klevel` is null-terminated, uses one of the kernel constants.
-+            unsafe { self.printk(bindings::KERN_DEBUG, args) };
-+        }
-+    }
-+
-+    /// Prints the provided message to the console.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `klevel` is null-terminated; in particular, one of the
-+    /// `KERN_*`constants, for example, `KERN_CRIT`, `KERN_ALERT`, etc.
-+    #[cfg_attr(not(CONFIG_PRINTK), allow(unused_variables))]
-+    unsafe fn printk(&self, klevel: &[u8], msg: fmt::Arguments<'_>) {
-+        // SAFETY: `klevel` is null-terminated and one of the kernel constants. `self.raw_device`
-+        // is valid because `self` is valid. The "%pA" format string expects a pointer to
-+        // `fmt::Arguments`, which is what we're passing as the last argument.
-+        #[cfg(CONFIG_PRINTK)]
-+        unsafe {
-+            bindings::_dev_printk(
-+                klevel as *const _ as *const c_types::c_char,
-+                self.raw_device(),
-+                c_str!("%pA").as_char_ptr(),
-+                &msg as *const _ as *const c_types::c_void,
-+            )
-+        };
-+    }
-+}
-+
-+/// A ref-counted device.
-+///
-+/// # Invariants
-+///
-+/// `ptr` is valid, non-null, and has a non-zero reference count. One of the references is owned by
-+/// `self`, and will be decremented when `self` is dropped.
-+pub struct Device {
-+    pub(crate) ptr: *mut bindings::device,
-+}
-+
-+// SAFETY: `Device` only holds a pointer to a C device, which is safe to be used from any thread.
-+unsafe impl Send for Device {}
-+
-+// SAFETY: `Device` only holds a pointer to a C device, references to which are safe to be used
-+// from any thread.
-+unsafe impl Sync for Device {}
-+
-+impl Device {
-+    /// Creates a new device instance.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `ptr` is valid, non-null, and has a non-zero reference count.
-+    pub unsafe fn new(ptr: *mut bindings::device) -> Self {
-+        // SAFETY: By the safety requirements, ptr is valid and its refcounted will be incremented.
-+        unsafe { bindings::get_device(ptr) };
-+        // INVARIANT: The safety requirements satisfy all but one invariant, which is that `self`
-+        // owns a reference. This is satisfied by the call to `get_device` above.
-+        Self { ptr }
-+    }
-+
-+    /// Creates a new device instance from an existing [`RawDevice`] instance.
-+    pub fn from_dev(dev: &dyn RawDevice) -> Self {
-+        // SAFETY: The requirements are satisfied by the existence of `RawDevice` and its safety
-+        // requirements.
-+        unsafe { Self::new(dev.raw_device()) }
-+    }
-+}
-+
-+// SAFETY: The device returned by `raw_device` is the one for which we hold a reference.
-+unsafe impl RawDevice for Device {
-+    fn raw_device(&self) -> *mut bindings::device {
-+        self.ptr
-+    }
-+}
-+
-+impl Drop for Device {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariants, we know that `self` owns a reference, so it is safe to
-+        // relinquish it now.
-+        unsafe { bindings::put_device(self.ptr) };
-+    }
-+}
-+
-+/// Device data.
-+///
-+/// When a device is removed (for whatever reason, for example, because the device was unplugged or
-+/// because the user decided to unbind the driver), the driver is given a chance to clean its state
-+/// up, and all io resources should ideally not be used anymore.
-+///
-+/// However, the device data is reference-counted because other subsystems hold pointers to it. So
-+/// some device state must be freed and not used anymore, while others must remain accessible.
-+///
-+/// This struct separates the device data into three categories:
-+///   1. Registrations: are destroyed when the device is removed, but before the io resources
-+///      become inaccessible.
-+///   2. Io resources: are available until the device is removed.
-+///   3. General data: remain available as long as the ref count is nonzero.
-+///
-+/// This struct implements the `DeviceRemoval` trait so that it can clean resources up even if not
-+/// explicitly called by the device drivers.
-+pub struct Data<T, U, V> {
-+    registrations: RevocableMutex<T>,
-+    resources: Revocable<U>,
-+    general: V,
-+}
-+
-+/// Safely creates an new reference-counted instance of [`Data`].
-+#[doc(hidden)]
-+#[macro_export]
-+macro_rules! new_device_data {
-+    ($reg:expr, $res:expr, $gen:expr, $name:literal) => {{
-+        static mut CLASS1: core::mem::MaybeUninit<$crate::bindings::lock_class_key> =
-+            core::mem::MaybeUninit::uninit();
-+        static mut CLASS2: core::mem::MaybeUninit<$crate::bindings::lock_class_key> =
-+            core::mem::MaybeUninit::uninit();
-+        let regs = $reg;
-+        let res = $res;
-+        let gen = $gen;
-+        let name = $crate::c_str!($name);
-+        // SAFETY: `CLASS1` and `CLASS2` are never used by Rust code directly; the C portion of the
-+        // kernel may change it though.
-+        unsafe {
-+            $crate::device::Data::try_new(
-+                regs,
-+                res,
-+                gen,
-+                name,
-+                CLASS1.as_mut_ptr(),
-+                CLASS2.as_mut_ptr(),
-+            )
-+        }
-+    }};
-+}
-+
-+impl<T, U, V> Data<T, U, V> {
-+    /// Creates a new instance of `Data`.
-+    ///
-+    /// It is recommended that the [`new_device_data`] macro be used as it automatically creates
-+    /// the lock classes.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `key1` and `key2` must point to valid memory locations and remain valid until `self` is
-+    /// dropped.
-+    pub unsafe fn try_new(
-+        registrations: T,
-+        resources: U,
-+        general: V,
-+        name: &'static CStr,
-+        key1: *mut bindings::lock_class_key,
-+        key2: *mut bindings::lock_class_key,
-+    ) -> Result<Pin<UniqueRef<Self>>> {
-+        let mut ret = Pin::from(UniqueRef::try_new(Self {
-+            // SAFETY: We call `RevocableMutex::init` below.
-+            registrations: unsafe { RevocableMutex::new(registrations) },
-+            resources: Revocable::new(resources),
-+            general,
-+        })?);
-+
-+        // SAFETY: `Data::registrations` is pinned when `Data` is.
-+        let pinned = unsafe { ret.as_mut().map_unchecked_mut(|d| &mut d.registrations) };
-+
-+        // SAFETY: The safety requirements of this function satisfy those of `RevocableMutex::init`.
-+        unsafe { pinned.init(name, key1, key2) };
-+        Ok(ret)
-+    }
-+
-+    /// Returns the resources if they're still available.
-+    pub fn resources(&self) -> Option<RevocableGuard<'_, U>> {
-+        self.resources.try_access()
-+    }
-+
-+    /// Returns the locked registrations if they're still available.
-+    pub fn registrations(&self) -> Option<RevocableMutexGuard<'_, T>> {
-+        self.registrations.try_lock()
-+    }
-+}
-+
-+impl<T, U, V> crate::driver::DeviceRemoval for Data<T, U, V> {
-+    fn device_remove(&self) {
-+        // We revoke the registrations first so that resources are still available to them during
-+        // unregistration.
-+        self.registrations.revoke();
-+
-+        // Release resources now. General data remains available.
-+        self.resources.revoke();
-+    }
-+}
-+
-+impl<T, U, V> Deref for Data<T, U, V> {
-+    type Target = V;
-+
-+    fn deref(&self) -> &V {
-+        &self.general
-+    }
-+}
-+
-+impl<T, U, V> DerefMut for Data<T, U, V> {
-+    fn deref_mut(&mut self) -> &mut V {
-+        &mut self.general
-+    }
-+}
-+
-+#[doc(hidden)]
-+#[macro_export]
-+macro_rules! dev_printk {
-+    ($method:ident, $dev:expr, $($f:tt)*) => {
-+        {
-+            // We have an explicity `use` statement here so that callers of this macro are not
-+            // required to explicitly use the `RawDevice` trait to use its functions.
-+            use $crate::device::RawDevice;
-+            ($dev).$method(core::format_args!($($f)*));
-+        }
-+    }
-+}
-+
-+/// Prints an emergency-level message (level 0) prefixed with device information.
-+///
-+/// This level should be used if the system is unusable.
-+///
-+/// Equivalent to the kernel's `dev_emerg` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_emerg!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_emerg {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_emerg, $($f)*); }
-+}
-+
-+/// Prints an alert-level message (level 1) prefixed with device information.
-+///
-+/// This level should be used if action must be taken immediately.
-+///
-+/// Equivalent to the kernel's `dev_alert` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_alert!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_alert {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_alert, $($f)*); }
-+}
-+
-+/// Prints a critical-level message (level 2) prefixed with device information.
-+///
-+/// This level should be used in critical conditions.
-+///
-+/// Equivalent to the kernel's `dev_crit` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_crit!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_crit {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_crit, $($f)*); }
-+}
-+
-+/// Prints an error-level message (level 3) prefixed with device information.
-+///
-+/// This level should be used in error conditions.
-+///
-+/// Equivalent to the kernel's `dev_err` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_err!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_err {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_err, $($f)*); }
-+}
-+
-+/// Prints a warning-level message (level 4) prefixed with device information.
-+///
-+/// This level should be used in warning conditions.
-+///
-+/// Equivalent to the kernel's `dev_warn` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_warn!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_warn {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_warn, $($f)*); }
-+}
-+
-+/// Prints a notice-level message (level 5) prefixed with device information.
-+///
-+/// This level should be used in normal but significant conditions.
-+///
-+/// Equivalent to the kernel's `dev_notice` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_notice!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_notice {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_notice, $($f)*); }
-+}
-+
-+/// Prints an info-level message (level 6) prefixed with device information.
-+///
-+/// This level should be used for informational messages.
-+///
-+/// Equivalent to the kernel's `dev_info` macro.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_info!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_info {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_info, $($f)*); }
-+}
-+
-+/// Prints a debug-level message (level 7) prefixed with device information.
-+///
-+/// This level should be used for debug messages.
-+///
-+/// Equivalent to the kernel's `dev_dbg` macro, except that it doesn't support dynamic debug yet.
-+///
-+/// Mimics the interface of [`std::print!`]. More information about the syntax is available from
-+/// [`core::fmt`] and [`alloc::format!`].
-+///
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::device::Device;
-+///
-+/// fn example(dev: &Device) {
-+///     dev_dbg!(dev, "hello {}\n", "there");
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! dev_dbg {
-+    ($($f:tt)*) => { $crate::dev_printk!(pr_dbg, $($f)*); }
-+}
-diff --git a/rust/kernel/driver.rs b/rust/kernel/driver.rs
-new file mode 100644
-index 000000000000..c42e09f8d4f4
---- /dev/null
-+++ b/rust/kernel/driver.rs
-@@ -0,0 +1,440 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Generic support for drivers of different buses (e.g., PCI, Platform, Amba, etc.).
-+//!
-+//! Each bus/subsystem is expected to implement [`DriverOps`], which allows drivers to register
-+//! using the [`Registration`] class.
-+
-+use crate::{str::CStr, sync::Ref, Error, KernelModule, Result, ThisModule};
-+use alloc::boxed::Box;
-+use core::{cell::UnsafeCell, marker::PhantomData, ops::Deref, pin::Pin};
-+
-+/// A subsystem (e.g., PCI, Platform, Amba, etc.) that allows drivers to be written for it.
-+pub trait DriverOps {
-+    /// The type that holds information about the registration. This is typically a struct defined
-+    /// by the C portion of the kernel.
-+    type RegType: Default;
-+
-+    /// Registers a driver.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `reg` must point to valid, initialised, and writable memory. It may be modified by this
-+    /// function to hold registration state.
-+    ///
-+    /// On success, `reg` must remain pinned and valid until the matching call to
-+    /// [`DriverOps::unregister`].
-+    unsafe fn register(
-+        reg: *mut Self::RegType,
-+        name: &'static CStr,
-+        module: &'static ThisModule,
-+    ) -> Result;
-+
-+    /// Unregisters a driver previously registered with [`DriverOps::register`].
-+    ///
-+    /// # Safety
-+    ///
-+    /// `reg` must point to valid writable memory, initialised by a previous successful call to
-+    /// [`DriverOps::register`].
-+    unsafe fn unregister(reg: *mut Self::RegType);
-+}
-+
-+/// The registration of a driver.
-+pub struct Registration<T: DriverOps> {
-+    is_registered: bool,
-+    concrete_reg: UnsafeCell<T::RegType>,
-+}
-+
-+// SAFETY: `Registration` has no fields or methods accessible via `&Registration`, so it is safe to
-+// share references to it with multiple threads as nothing can be done.
-+unsafe impl<T: DriverOps> Sync for Registration<T> {}
-+
-+impl<T: DriverOps> Registration<T> {
-+    /// Creates a new instance of the registration object.
-+    pub fn new() -> Self {
-+        Self {
-+            is_registered: false,
-+            concrete_reg: UnsafeCell::new(T::RegType::default()),
-+        }
-+    }
-+
-+    /// Allocates a pinned registration object and registers it.
-+    ///
-+    /// Returns a pinned heap-allocated representation of the registration.
-+    pub fn new_pinned(name: &'static CStr, module: &'static ThisModule) -> Result<Pin<Box<Self>>> {
-+        let mut reg = Pin::from(Box::try_new(Self::new())?);
-+        reg.as_mut().register(name, module)?;
-+        Ok(reg)
-+    }
-+
-+    /// Registers a driver with its subsystem.
-+    ///
-+    /// It must be pinned because the memory block that represents the registration is potentially
-+    /// self-referential.
-+    pub fn register(
-+        self: Pin<&mut Self>,
-+        name: &'static CStr,
-+        module: &'static ThisModule,
-+    ) -> Result {
-+        // SAFETY: We never move out of `this`.
-+        let this = unsafe { self.get_unchecked_mut() };
-+        if this.is_registered {
-+            // Already registered.
-+            return Err(Error::EINVAL);
-+        }
-+
-+        // SAFETY: `concrete_reg` was initialised via its default constructor. It is only freed
-+        // after `Self::drop` is called, which first calls `T::unregister`.
-+        unsafe { T::register(this.concrete_reg.get(), name, module) }?;
-+
-+        this.is_registered = true;
-+        Ok(())
-+    }
-+}
-+
-+impl<T: DriverOps> Default for Registration<T> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+impl<T: DriverOps> Drop for Registration<T> {
-+    fn drop(&mut self) {
-+        if self.is_registered {
-+            // SAFETY: This path only runs if a previous call to `T::register` completed
-+            // successfully.
-+            unsafe { T::unregister(self.concrete_reg.get()) };
-+        }
-+    }
-+}
-+
-+/// Conversion from a device id to a raw device id.
-+///
-+/// This is meant to be implemented by buses/subsystems so that they can use [`IdTable`] to
-+/// guarantee (at compile-time) zero-termination of device id tables provided by drivers.
-+///
-+/// # Safety
-+///
-+/// Implementers must ensure that:
-+///   - [`RawDeviceId::ZERO`] is actually a zeroed-out version of the raw device id.
-+///   - [`RawDeviceId::to_rawid`] stores `offset` in the context/data field of the raw device id so
-+///     that buses can recover the pointer to the data.
-+pub unsafe trait RawDeviceId {
-+    /// The raw type that holds the device id.
-+    ///
-+    /// Id tables created from [`Self`] are going to hold this type in its zero-terminated array.
-+    type RawType: Copy;
-+
-+    /// A zeroed-out representation of the raw device id.
-+    ///
-+    /// Id tables created from [`Self`] use [`Self::ZERO`] as the sentinel to indicate the end of
-+    /// the table.
-+    const ZERO: Self::RawType;
-+
-+    /// Converts an id into a raw id.
-+    ///
-+    /// `offset` is the offset from the memory location where the raw device id is stored to the
-+    /// location where its associated context information is stored. Implementations must store
-+    /// this in the appropriate context/data field of the raw type.
-+    fn to_rawid(&self, offset: isize) -> Self::RawType;
-+}
-+
-+/// A zero-terminated device id array, followed by context data.
-+#[repr(C)]
-+pub struct IdArray<T: RawDeviceId, U, const N: usize> {
-+    ids: [T::RawType; N],
-+    sentinel: T::RawType,
-+    id_infos: [Option<U>; N],
-+}
-+
-+impl<T: RawDeviceId, U, const N: usize> IdArray<T, U, N> {
-+    /// Creates a new instance of the array.
-+    ///
-+    /// The contents are derived from the given identifiers and context information.
-+    pub const fn new(ids: [T; N], infos: [Option<U>; N]) -> Self
-+    where
-+        T: ~const RawDeviceId + Copy,
-+    {
-+        let mut array = Self {
-+            ids: [T::ZERO; N],
-+            sentinel: T::ZERO,
-+            id_infos: infos,
-+        };
-+        let mut i = 0usize;
-+        while i < N {
-+            // SAFETY: Both pointers are within `array` (or one byte beyond), consequently they are
-+            // derived from the same allocated object. We are using a `u8` pointer, whose size 1,
-+            // so the pointers are necessarily 1-byte aligned.
-+            let offset = unsafe {
-+                (&array.id_infos[i] as *const _ as *const u8)
-+                    .offset_from(&array.ids[i] as *const _ as _)
-+            };
-+            array.ids[i] = ids[i].to_rawid(offset);
-+            i += 1;
-+        }
-+        array
-+    }
-+
-+    /// Returns an `IdTable` backed by `self`.
-+    ///
-+    /// This is used to essentially erase the array size.
-+    pub const fn as_table(&self) -> IdTable<'_, T, U> {
-+        IdTable {
-+            first: &self.ids[0],
-+            _p: PhantomData,
-+        }
-+    }
-+}
-+
-+/// A device id table.
-+///
-+/// The table is guaranteed to be zero-terminated and to be followed by an array of context data of
-+/// type `Option<U>`.
-+pub struct IdTable<'a, T: RawDeviceId, U> {
-+    first: &'a T::RawType,
-+    _p: PhantomData<&'a U>,
-+}
-+
-+impl<T: RawDeviceId, U> const AsRef<T::RawType> for IdTable<'_, T, U> {
-+    fn as_ref(&self) -> &T::RawType {
-+        self.first
-+    }
-+}
-+
-+/// Counts the number of parenthesis-delimited, comma-separated items.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::count_paren_items;
-+///
-+/// assert_eq!(0, count_paren_items!());
-+/// assert_eq!(1, count_paren_items!((A)));
-+/// assert_eq!(1, count_paren_items!((A),));
-+/// assert_eq!(2, count_paren_items!((A), (B)));
-+/// assert_eq!(2, count_paren_items!((A), (B),));
-+/// assert_eq!(3, count_paren_items!((A), (B), (C)));
-+/// assert_eq!(3, count_paren_items!((A), (B), (C),));
-+/// ```
-+#[macro_export]
-+macro_rules! count_paren_items {
-+    (($($item:tt)*), $($remaining:tt)*) => { 1 + $crate::count_paren_items!($($remaining)*) };
-+    (($($item:tt)*)) => { 1 };
-+    () => { 0 };
-+}
-+
-+/// Converts a comma-separated list of pairs into an array with the first element. That is, it
-+/// discards the second element of the pair.
-+///
-+/// Additionally, it automatically introduces a type if the first element is warpped in curly
-+/// braces, for example, if it's `{v: 10}`, it becomes `X { v: 10 }`; this is to avoid repeating
-+/// the type.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::first_item;
-+///
-+/// #[derive(PartialEq, Debug)]
-+/// struct X {
-+///     v: u32,
-+/// }
-+///
-+/// assert_eq!([] as [X; 0], first_item!(X, ));
-+/// assert_eq!([X { v: 10 }], first_item!(X, ({ v: 10 }, Y)));
-+/// assert_eq!([X { v: 10 }], first_item!(X, ({ v: 10 }, Y),));
-+/// assert_eq!([X { v: 10 }], first_item!(X, (X { v: 10 }, Y)));
-+/// assert_eq!([X { v: 10 }], first_item!(X, (X { v: 10 }, Y),));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }], first_item!(X, ({ v: 10 }, Y), ({ v: 20 }, Y)));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }], first_item!(X, ({ v: 10 }, Y), ({ v: 20 }, Y),));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }], first_item!(X, (X { v: 10 }, Y), (X { v: 20 }, Y)));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }], first_item!(X, (X { v: 10 }, Y), (X { v: 20 }, Y),));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }, X { v: 30 }],
-+///            first_item!(X, ({ v: 10 }, Y), ({ v: 20 }, Y), ({v: 30}, Y)));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }, X { v: 30 }],
-+///            first_item!(X, ({ v: 10 }, Y), ({ v: 20 }, Y), ({v: 30}, Y),));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }, X { v: 30 }],
-+///            first_item!(X, (X { v: 10 }, Y), (X { v: 20 }, Y), (X {v: 30}, Y)));
-+/// assert_eq!([X { v: 10 }, X { v: 20 }, X { v: 30 }],
-+///            first_item!(X, (X { v: 10 }, Y), (X { v: 20 }, Y), (X {v: 30}, Y),));
-+/// ```
-+#[macro_export]
-+macro_rules! first_item {
-+    ($id_type:ty, $(({$($first:tt)*}, $second:expr)),* $(,)?) => {
-+        {
-+            type IdType = $id_type;
-+            [$(IdType{$($first)*},)*]
-+        }
-+    };
-+    ($id_type:ty, $(($first:expr, $second:expr)),* $(,)?) => { [$($first,)*] };
-+}
-+
-+/// Converts a comma-separated list of pairs into an array with the second element. That is, it
-+/// discards the first element of the pair.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::second_item;
-+///
-+/// assert_eq!([] as [u32; 0], second_item!());
-+/// assert_eq!([10u32], second_item!((X, 10u32)));
-+/// assert_eq!([10u32], second_item!((X, 10u32),));
-+/// assert_eq!([10u32], second_item!(({X}, 10u32)));
-+/// assert_eq!([10u32], second_item!(({X}, 10u32),));
-+/// assert_eq!([10u32, 20], second_item!((X, 10u32), (X, 20)));
-+/// assert_eq!([10u32, 20], second_item!((X, 10u32), (X, 20),));
-+/// assert_eq!([10u32, 20], second_item!(({X}, 10u32), ({X}, 20)));
-+/// assert_eq!([10u32, 20], second_item!(({X}, 10u32), ({X}, 20),));
-+/// assert_eq!([10u32, 20, 30], second_item!((X, 10u32), (X, 20), (X, 30)));
-+/// assert_eq!([10u32, 20, 30], second_item!((X, 10u32), (X, 20), (X, 30),));
-+/// assert_eq!([10u32, 20, 30], second_item!(({X}, 10u32), ({X}, 20), ({X}, 30)));
-+/// assert_eq!([10u32, 20, 30], second_item!(({X}, 10u32), ({X}, 20), ({X}, 30),));
-+/// ```
-+#[macro_export]
-+macro_rules! second_item {
-+    ($(({$($first:tt)*}, $second:expr)),* $(,)?) => { [$($second,)*] };
-+    ($(($first:expr, $second:expr)),* $(,)?) => { [$($second,)*] };
-+}
-+
-+/// Defines a new constant [`IdArray`] with a concise syntax.
-+///
-+/// It is meant to be used by buses and subsystems to create a similar macro with their device id
-+/// type already specified, i.e., with fewer parameters to the end user.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// #![feature(const_trait_impl)]
-+/// # use kernel::{define_id_array, driver::RawDeviceId};
-+///
-+/// #[derive(Copy, Clone)]
-+/// struct Id(u32);
-+///
-+/// // SAFETY: `ZERO` is all zeroes and `to_rawid` stores `offset` as the second element of the raw
-+/// // device id pair.
-+/// unsafe impl const RawDeviceId for Id {
-+///     type RawType = (u64, isize);
-+///     const ZERO: Self::RawType = (0, 0);
-+///     fn to_rawid(&self, offset: isize) -> Self::RawType {
-+///         (self.0 as u64 + 1, offset)
-+///     }
-+/// }
-+///
-+/// define_id_array!(A1, Id, (), []);
-+/// define_id_array!(A2, Id, &'static [u8], [(Id(10), None)]);
-+/// define_id_array!(A3, Id, &'static [u8], [(Id(10), Some(b"id1")), ]);
-+/// define_id_array!(A4, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), Some(b"id2"))]);
-+/// define_id_array!(A5, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), Some(b"id2")), ]);
-+/// define_id_array!(A6, Id, &'static [u8], [(Id(10), None), (Id(20), Some(b"id2")), ]);
-+/// define_id_array!(A7, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), None), ]);
-+/// define_id_array!(A8, Id, &'static [u8], [(Id(10), None), (Id(20), None), ]);
-+/// ```
-+#[macro_export]
-+macro_rules! define_id_array {
-+    ($table_name:ident, $id_type:ty, $data_type:ty, [ $($t:tt)* ]) => {
-+        const $table_name:
-+            $crate::driver::IdArray<$id_type, $data_type, { $crate::count_paren_items!($($t)*) }> =
-+                $crate::driver::IdArray::new(
-+                    $crate::first_item!($id_type, $($t)*), $crate::second_item!($($t)*));
-+    };
-+}
-+
-+/// Defines a new constant [`IdTable`] with a concise syntax.
-+///
-+/// It is meant to be used by buses and subsystems to create a similar macro with their device id
-+/// type already specified, i.e., with fewer parameters to the end user.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// #![feature(const_trait_impl)]
-+/// # use kernel::{define_id_table, driver::RawDeviceId};
-+///
-+/// #[derive(Copy, Clone)]
-+/// struct Id(u32);
-+///
-+/// // SAFETY: `ZERO` is all zeroes and `to_rawid` stores `offset` as the second element of the raw
-+/// // device id pair.
-+/// unsafe impl const RawDeviceId for Id {
-+///     type RawType = (u64, isize);
-+///     const ZERO: Self::RawType = (0, 0);
-+///     fn to_rawid(&self, offset: isize) -> Self::RawType {
-+///         (self.0 as u64 + 1, offset)
-+///     }
-+/// }
-+///
-+/// define_id_table!(T1, Id, &'static [u8], [(Id(10), None)]);
-+/// define_id_table!(T2, Id, &'static [u8], [(Id(10), Some(b"id1")), ]);
-+/// define_id_table!(T3, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), Some(b"id2"))]);
-+/// define_id_table!(T4, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), Some(b"id2")), ]);
-+/// define_id_table!(T5, Id, &'static [u8], [(Id(10), None), (Id(20), Some(b"id2")), ]);
-+/// define_id_table!(T6, Id, &'static [u8], [(Id(10), Some(b"id1")), (Id(20), None), ]);
-+/// define_id_table!(T7, Id, &'static [u8], [(Id(10), None), (Id(20), None), ]);
-+/// ```
-+#[macro_export]
-+macro_rules! define_id_table {
-+    ($table_name:ident, $id_type:ty, $data_type:ty, [ $($t:tt)* ]) => {
-+        const $table_name: Option<$crate::driver::IdTable<'static, $id_type, $data_type>> = {
-+            $crate::define_id_array!(ARRAY, $id_type, $data_type, [ $($t)* ]);
-+            Some(ARRAY.as_table())
-+        };
-+    };
-+}
-+
-+/// Custom code within device removal.
-+pub trait DeviceRemoval {
-+    /// Cleans resources up when the device is removed.
-+    ///
-+    /// This is called when a device is removed and offers implementers the chance to run some code
-+    /// that cleans state up.
-+    fn device_remove(&self);
-+}
-+
-+impl DeviceRemoval for () {
-+    fn device_remove(&self) {}
-+}
-+
-+impl<T: DeviceRemoval> DeviceRemoval for Ref<T> {
-+    fn device_remove(&self) {
-+        self.deref().device_remove();
-+    }
-+}
-+
-+impl<T: DeviceRemoval> DeviceRemoval for Box<T> {
-+    fn device_remove(&self) {
-+        self.deref().device_remove();
-+    }
-+}
-+
-+/// A kernel module that only registers the given driver on init.
-+///
-+/// This is a helper struct to make it easier to define single-functionality modules, in this case,
-+/// modules that offer a single driver.
-+pub struct Module<T: DriverOps> {
-+    _driver: Pin<Box<Registration<T>>>,
-+}
-+
-+impl<T: DriverOps> KernelModule for Module<T> {
-+    fn init(name: &'static CStr, module: &'static ThisModule) -> Result<Self> {
-+        Ok(Self {
-+            _driver: Registration::new_pinned(name, module)?,
-+        })
-+    }
-+}
-+
-+/// Declares a kernel module that exposes a single driver.
-+///
-+/// It is meant to be used as a helper by other subsystems so they can more easily expose their own
-+/// macros.
-+#[macro_export]
-+macro_rules! module_driver {
-+    (<$gen_type:ident>, $driver_ops:ty, { type: $type:ty, $($f:tt)* }) => {
-+        type Ops<$gen_type> = $driver_ops;
-+        type ModuleType = $crate::driver::Module<Ops<$type>>;
-+        $crate::prelude::module! {
-+            type: ModuleType,
-+            $($f)*
-+        }
-+    }
-+}
-diff --git a/rust/kernel/error.rs b/rust/kernel/error.rs
-new file mode 100644
-index 000000000000..803884a00225
---- /dev/null
-+++ b/rust/kernel/error.rs
-@@ -0,0 +1,542 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Kernel errors.
-+//!
-+//! C header: [`include/uapi/asm-generic/errno-base.h`](../../../include/uapi/asm-generic/errno-base.h)
-+
-+use crate::str::CStr;
-+use crate::{bindings, c_types};
-+use alloc::{
-+    alloc::{AllocError, LayoutError},
-+    collections::TryReserveError,
-+};
-+use core::convert::From;
-+use core::fmt;
-+use core::num::TryFromIntError;
-+use core::str::{self, Utf8Error};
-+
-+macro_rules! declare_err {
-+    ($err:tt) => {
-+        pub const $err: Self = Error(-(bindings::$err as i32));
-+    };
-+    ($err:tt, $($doc:expr),+) => {
-+        $(
-+        #[doc = $doc]
-+        )*
-+        pub const $err: Self = Error(-(bindings::$err as i32));
-+    };
-+}
-+
-+/// Generic integer kernel error.
-+///
-+/// The kernel defines a set of integer generic error codes based on C and
-+/// POSIX ones. These codes may have a more specific meaning in some contexts.
-+///
-+/// # Invariants
-+///
-+/// The value is a valid `errno` (i.e. `>= -MAX_ERRNO && < 0`).
-+#[derive(Clone, Copy, PartialEq, Eq)]
-+pub struct Error(c_types::c_int);
-+
-+impl Error {
-+    declare_err!(EPERM, "Operation not permitted.");
-+
-+    declare_err!(ENOENT, "No such file or directory.");
-+
-+    declare_err!(ESRCH, "No such process.");
-+
-+    declare_err!(EINTR, "Interrupted system call.");
-+
-+    declare_err!(EIO, "I/O error.");
-+
-+    declare_err!(ENXIO, "No such device or address.");
-+
-+    declare_err!(E2BIG, "Argument list too long.");
-+
-+    declare_err!(ENOEXEC, "Exec format error.");
-+
-+    declare_err!(EBADF, "Bad file number.");
-+
-+    declare_err!(ECHILD, "Exec format error.");
-+
-+    declare_err!(EAGAIN, "Try again.");
-+
-+    declare_err!(ENOMEM, "Out of memory.");
-+
-+    declare_err!(EACCES, "Permission denied.");
-+
-+    declare_err!(EFAULT, "Bad address.");
-+
-+    declare_err!(ENOTBLK, "Block device required.");
-+
-+    declare_err!(EBUSY, "Device or resource busy.");
-+
-+    declare_err!(EEXIST, "File exists.");
-+
-+    declare_err!(EXDEV, "Cross-device link.");
-+
-+    declare_err!(ENODEV, "No such device.");
-+
-+    declare_err!(ENOTDIR, "Not a directory.");
-+
-+    declare_err!(EISDIR, "Is a directory.");
-+
-+    declare_err!(EINVAL, "Invalid argument.");
-+
-+    declare_err!(ENFILE, "File table overflow.");
-+
-+    declare_err!(EMFILE, "Too many open files.");
-+
-+    declare_err!(ENOTTY, "Not a typewriter.");
-+
-+    declare_err!(ETXTBSY, "Text file busy.");
-+
-+    declare_err!(EFBIG, "File too large.");
-+
-+    declare_err!(ENOSPC, "No space left on device.");
-+
-+    declare_err!(ESPIPE, "Illegal seek.");
-+
-+    declare_err!(EROFS, "Read-only file system.");
-+
-+    declare_err!(EMLINK, "Too many links.");
-+
-+    declare_err!(EPIPE, "Broken pipe.");
-+
-+    declare_err!(EDOM, "Math argument out of domain of func.");
-+
-+    declare_err!(ERANGE, "Math result not representable.");
-+
-+    declare_err!(EDEADLK, "Resource deadlock would occur");
-+
-+    declare_err!(ENAMETOOLONG, "File name too long");
-+
-+    declare_err!(ENOLCK, "No record locks available");
-+
-+    declare_err!(
-+        ENOSYS,
-+        "Invalid system call number.",
-+        "",
-+        "This error code is special: arch syscall entry code will return",
-+        "[`Self::ENOSYS`] if users try to call a syscall that doesn't exist.",
-+        "To keep failures of syscalls that really do exist distinguishable from",
-+        "failures due to attempts to use a nonexistent syscall, syscall",
-+        "implementations should refrain from returning [`Self::ENOSYS`]."
-+    );
-+
-+    declare_err!(ENOTEMPTY, "Directory not empty.");
-+
-+    declare_err!(ELOOP, "Too many symbolic links encountered.");
-+
-+    declare_err!(EWOULDBLOCK, "Operation would block.");
-+
-+    declare_err!(ENOMSG, "No message of desired type.");
-+
-+    declare_err!(EIDRM, "Identifier removed.");
-+
-+    declare_err!(ECHRNG, "Channel number out of range.");
-+
-+    declare_err!(EL2NSYNC, "Level 2 not synchronized.");
-+
-+    declare_err!(EL3HLT, "Level 3 halted.");
-+
-+    declare_err!(EL3RST, "Level 3 reset.");
-+
-+    declare_err!(ELNRNG, "Link number out of range.");
-+
-+    declare_err!(EUNATCH, "Protocol driver not attached.");
-+
-+    declare_err!(ENOCSI, "No CSI structure available.");
-+
-+    declare_err!(EL2HLT, "Level 2 halted.");
-+
-+    declare_err!(EBADE, "Invalid exchange.");
-+
-+    declare_err!(EBADR, "Invalid request descriptor.");
-+
-+    declare_err!(EXFULL, "Exchange full.");
-+
-+    declare_err!(ENOANO, "No anode.");
-+
-+    declare_err!(EBADRQC, "Invalid request code.");
-+
-+    declare_err!(EBADSLT, "Invalid slot.");
-+
-+    declare_err!(EDEADLOCK, "Resource deadlock would occur.");
-+
-+    declare_err!(EBFONT, "Bad font file format.");
-+
-+    declare_err!(ENOSTR, "Device not a stream.");
-+
-+    declare_err!(ENODATA, "No data available.");
-+
-+    declare_err!(ETIME, "Timer expired.");
-+
-+    declare_err!(ENOSR, "Out of streams resources.");
-+
-+    declare_err!(ENONET, "Machine is not on the network.");
-+
-+    declare_err!(ENOPKG, "Package not installed.");
-+
-+    declare_err!(EREMOTE, "Object is remote.");
-+
-+    declare_err!(ENOLINK, "Link has been severed.");
-+
-+    declare_err!(EADV, "Advertise error.");
-+
-+    declare_err!(ESRMNT, "Srmount error.");
-+
-+    declare_err!(ECOMM, "Communication error on send.");
-+
-+    declare_err!(EPROTO, "Protocol error.");
-+
-+    declare_err!(EMULTIHOP, "Multihop attempted.");
-+
-+    declare_err!(EDOTDOT, "RFS specific error.");
-+
-+    declare_err!(EBADMSG, "Not a data message.");
-+
-+    declare_err!(EOVERFLOW, "Value too large for defined data type.");
-+
-+    declare_err!(ENOTUNIQ, "Name not unique on network.");
-+
-+    declare_err!(EBADFD, "File descriptor in bad state.");
-+
-+    declare_err!(EREMCHG, "Remote address changed.");
-+
-+    declare_err!(ELIBACC, "Can not access a needed shared library.");
-+
-+    declare_err!(ELIBBAD, "Accessing a corrupted shared library.");
-+
-+    declare_err!(ELIBSCN, ".lib section in a.out corrupted.");
-+
-+    declare_err!(ELIBMAX, "Attempting to link in too many shared libraries.");
-+
-+    declare_err!(ELIBEXEC, "Cannot exec a shared library directly.");
-+
-+    declare_err!(EILSEQ, "Illegal byte sequence.");
-+
-+    declare_err!(ERESTART, "Interrupted system call should be restarted.");
-+
-+    declare_err!(ESTRPIPE, "Streams pipe error.");
-+
-+    declare_err!(EUSERS, "Too many users.");
-+
-+    declare_err!(ENOTSOCK, "Socket operation on non-socket.");
-+
-+    declare_err!(EDESTADDRREQ, "Destination address required.");
-+
-+    declare_err!(EMSGSIZE, "Message too long.");
-+
-+    declare_err!(EPROTOTYPE, "Protocol wrong type for socket.");
-+
-+    declare_err!(ENOPROTOOPT, "Protocol not available.");
-+
-+    declare_err!(EPROTONOSUPPORT, "Protocol not supported.");
-+
-+    declare_err!(ESOCKTNOSUPPORT, "Socket type not supported.");
-+
-+    declare_err!(EOPNOTSUPP, "Operation not supported on transport endpoint.");
-+
-+    declare_err!(EPFNOSUPPORT, "Protocol family not supported.");
-+
-+    declare_err!(EAFNOSUPPORT, "Address family not supported by protocol.");
-+
-+    declare_err!(EADDRINUSE, "Address already in use.");
-+
-+    declare_err!(EADDRNOTAVAIL, "Cannot assign requested address.");
-+
-+    declare_err!(ENETDOWN, "Network is down.");
-+
-+    declare_err!(ENETUNREACH, "Network is unreachable.");
-+
-+    declare_err!(ENETRESET, "Network dropped connection because of reset.");
-+
-+    declare_err!(ECONNABORTED, "Software caused connection abort.");
-+
-+    declare_err!(ECONNRESET, "Connection reset by peer.");
-+
-+    declare_err!(ENOBUFS, "No buffer space available.");
-+
-+    declare_err!(EISCONN, "Transport endpoint is already connected.");
-+
-+    declare_err!(ENOTCONN, "Transport endpoint is not connected.");
-+
-+    declare_err!(ESHUTDOWN, "Cannot send after transport endpoint shutdown.");
-+
-+    declare_err!(ETOOMANYREFS, "Too many references: cannot splice.");
-+
-+    declare_err!(ETIMEDOUT, "Connection timed out.");
-+
-+    declare_err!(ECONNREFUSED, "Connection refused.");
-+
-+    declare_err!(EHOSTDOWN, "Host is down.");
-+
-+    declare_err!(EHOSTUNREACH, "No route to host.");
-+
-+    declare_err!(EALREADY, "Operation already in progress.");
-+
-+    declare_err!(EINPROGRESS, "Operation now in progress.");
-+
-+    declare_err!(ESTALE, "Stale file handle.");
-+
-+    declare_err!(EUCLEAN, "Structure needs cleaning.");
-+
-+    declare_err!(ENOTNAM, "Not a XENIX named type file.");
-+
-+    declare_err!(ENAVAIL, "No XENIX semaphores available.");
-+
-+    declare_err!(EISNAM, "Is a named type file.");
-+
-+    declare_err!(EREMOTEIO, "Remote I/O error.");
-+
-+    declare_err!(EDQUOT, "Quota exceeded.");
-+
-+    declare_err!(ENOMEDIUM, "No medium found.");
-+
-+    declare_err!(EMEDIUMTYPE, "Wrong medium type.");
-+
-+    declare_err!(ECANCELED, "Operation Canceled.");
-+
-+    declare_err!(ENOKEY, "Required key not available.");
-+
-+    declare_err!(EKEYEXPIRED, "Key has expired.");
-+
-+    declare_err!(EKEYREVOKED, "Key has been revoked.");
-+
-+    declare_err!(EKEYREJECTED, "Key was rejected by service.");
-+
-+    declare_err!(EOWNERDEAD, "Owner died.", "", "For robust mutexes.");
-+
-+    declare_err!(ENOTRECOVERABLE, "State not recoverable.");
-+
-+    declare_err!(ERFKILL, "Operation not possible due to RF-kill.");
-+
-+    declare_err!(EHWPOISON, "Memory page has hardware error.");
-+
-+    declare_err!(ERESTARTSYS, "Restart the system call.");
-+
-+    declare_err!(ENOTSUPP, "Operation is not supported.");
-+
-+    /// Creates an [`Error`] from a kernel error code.
-+    ///
-+    /// It is a bug to pass an out-of-range `errno`. `EINVAL` would
-+    /// be returned in such a case.
-+    pub(crate) fn from_kernel_errno(errno: c_types::c_int) -> Error {
-+        if errno < -(bindings::MAX_ERRNO as i32) || errno >= 0 {
-+            // TODO: Make it a `WARN_ONCE` once available.
-+            crate::pr_warn!(
-+                "attempted to create `Error` with out of range `errno`: {}",
-+                errno
-+            );
-+            return Error::EINVAL;
-+        }
-+
-+        // INVARIANT: The check above ensures the type invariant
-+        // will hold.
-+        Error(errno)
-+    }
-+
-+    /// Creates an [`Error`] from a kernel error code.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `errno` must be within error code range (i.e. `>= -MAX_ERRNO && < 0`).
-+    pub(crate) unsafe fn from_kernel_errno_unchecked(errno: c_types::c_int) -> Error {
-+        // INVARIANT: The contract ensures the type invariant
-+        // will hold.
-+        Error(errno)
-+    }
-+
-+    /// Returns the kernel error code.
-+    pub fn to_kernel_errno(self) -> c_types::c_int {
-+        self.0
-+    }
-+}
-+
-+impl fmt::Debug for Error {
-+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-+        // SAFETY: FFI call.
-+        let name = unsafe { bindings::errname(-self.0) };
-+
-+        if name.is_null() {
-+            // Print out number if no name can be found.
-+            return f.debug_tuple("Error").field(&-self.0).finish();
-+        }
-+
-+        // SAFETY: `'static` string from C, and is not NULL.
-+        let cstr = unsafe { CStr::from_char_ptr(name) };
-+        // SAFETY: These strings are ASCII-only.
-+        let str = unsafe { str::from_utf8_unchecked(cstr) };
-+        f.debug_tuple(str).finish()
-+    }
-+}
-+
-+impl From<TryFromIntError> for Error {
-+    fn from(_: TryFromIntError) -> Error {
-+        Error::EINVAL
-+    }
-+}
-+
-+impl From<Utf8Error> for Error {
-+    fn from(_: Utf8Error) -> Error {
-+        Error::EINVAL
-+    }
-+}
-+
-+impl From<TryReserveError> for Error {
-+    fn from(_: TryReserveError) -> Error {
-+        Error::ENOMEM
-+    }
-+}
-+
-+impl From<LayoutError> for Error {
-+    fn from(_: LayoutError) -> Error {
-+        Error::ENOMEM
-+    }
-+}
-+
-+impl From<core::fmt::Error> for Error {
-+    fn from(_: core::fmt::Error) -> Error {
-+        Error::EINVAL
-+    }
-+}
-+
-+/// A [`Result`] with an [`Error`] error type.
-+///
-+/// To be used as the return type for functions that may fail.
-+///
-+/// # Error codes in C and Rust
-+///
-+/// In C, it is common that functions indicate success or failure through
-+/// their return value; modifying or returning extra data through non-`const`
-+/// pointer parameters. In particular, in the kernel, functions that may fail
-+/// typically return an `int` that represents a generic error code. We model
-+/// those as [`Error`].
-+///
-+/// In Rust, it is idiomatic to model functions that may fail as returning
-+/// a [`Result`]. Since in the kernel many functions return an error code,
-+/// [`Result`] is a type alias for a [`core::result::Result`] that uses
-+/// [`Error`] as its error type.
-+///
-+/// Note that even if a function does not return anything when it succeeds,
-+/// it should still be modeled as returning a `Result` rather than
-+/// just an [`Error`].
-+pub type Result<T = ()> = core::result::Result<T, Error>;
-+
-+impl From<AllocError> for Error {
-+    fn from(_: AllocError) -> Error {
-+        Error::ENOMEM
-+    }
-+}
-+
-+// # Invariant: `-bindings::MAX_ERRNO` fits in an `i16`.
-+crate::static_assert!(bindings::MAX_ERRNO <= -(i16::MIN as i32) as u32);
-+
-+pub(crate) fn from_kernel_result_helper<T>(r: Result<T>) -> T
-+where
-+    T: From<i16>,
-+{
-+    match r {
-+        Ok(v) => v,
-+        // NO-OVERFLOW: negative `errno`s are no smaller than `-bindings::MAX_ERRNO`,
-+        // `-bindings::MAX_ERRNO` fits in an `i16` as per invariant above,
-+        // therefore a negative `errno` always fits in an `i16` and will not overflow.
-+        Err(e) => T::from(e.to_kernel_errno() as i16),
-+    }
-+}
-+
-+/// Transforms a [`crate::error::Result<T>`] to a kernel C integer result.
-+///
-+/// This is useful when calling Rust functions that return [`crate::error::Result<T>`]
-+/// from inside `extern "C"` functions that need to return an integer
-+/// error result.
-+///
-+/// `T` should be convertible to an `i16` via `From<i16>`.
-+///
-+/// # Examples
-+///
-+/// ```ignore
-+/// # use kernel::from_kernel_result;
-+/// # use kernel::c_types;
-+/// # use kernel::bindings;
-+/// unsafe extern "C" fn probe_callback(
-+///     pdev: *mut bindings::platform_device,
-+/// ) -> c_types::c_int {
-+///     from_kernel_result! {
-+///         let ptr = devm_alloc(pdev)?;
-+///         bindings::platform_set_drvdata(pdev, ptr);
-+///         Ok(0)
-+///     }
-+/// }
-+/// ```
-+macro_rules! from_kernel_result {
-+    ($($tt:tt)*) => {{
-+        $crate::error::from_kernel_result_helper((|| {
-+            $($tt)*
-+        })())
-+    }};
-+}
-+
-+pub(crate) use from_kernel_result;
-+
-+/// Transform a kernel "error pointer" to a normal pointer.
-+///
-+/// Some kernel C API functions return an "error pointer" which optionally
-+/// embeds an `errno`. Callers are supposed to check the returned pointer
-+/// for errors. This function performs the check and converts the "error pointer"
-+/// to a normal pointer in an idiomatic fashion.
-+///
-+/// # Examples
-+///
-+/// ```ignore
-+/// # use kernel::prelude::*;
-+/// # use kernel::from_kernel_err_ptr;
-+/// # use kernel::c_types;
-+/// # use kernel::bindings;
-+/// fn devm_platform_ioremap_resource(
-+///     pdev: &mut PlatformDevice,
-+///     index: u32,
-+/// ) -> Result<*mut c_types::c_void> {
-+///     // SAFETY: FFI call.
-+///     unsafe {
-+///         from_kernel_err_ptr(bindings::devm_platform_ioremap_resource(
-+///             pdev.to_ptr(),
-+///             index,
-+///         ))
-+///     }
-+/// }
-+/// ```
-+// TODO: Remove `dead_code` marker once an in-kernel client is available.
-+#[allow(dead_code)]
-+pub(crate) fn from_kernel_err_ptr<T>(ptr: *mut T) -> Result<*mut T> {
-+    // CAST: Casting a pointer to `*const c_types::c_void` is always valid.
-+    let const_ptr: *const c_types::c_void = ptr.cast();
-+    // SAFETY: The FFI function does not deref the pointer.
-+    if unsafe { bindings::IS_ERR(const_ptr) } {
-+        // SAFETY: The FFI function does not deref the pointer.
-+        let err = unsafe { bindings::PTR_ERR(const_ptr) };
-+        // CAST: If `IS_ERR()` returns `true`,
-+        // then `PTR_ERR()` is guaranteed to return a
-+        // negative value greater-or-equal to `-bindings::MAX_ERRNO`,
-+        // which always fits in an `i16`, as per the invariant above.
-+        // And an `i16` always fits in an `i32`. So casting `err` to
-+        // an `i32` can never overflow, and is always valid.
-+        //
-+        // SAFETY: `IS_ERR()` ensures `err` is a
-+        // negative value greater-or-equal to `-bindings::MAX_ERRNO`.
-+        return Err(unsafe { Error::from_kernel_errno_unchecked(err as i32) });
-+    }
-+    Ok(ptr)
-+}
-+
-+/// Calls a kernel function that returns an integer error code on failure and converts the result
-+/// to a [`Result`].
-+pub fn to_result(func: impl FnOnce() -> c_types::c_int) -> Result {
-+    let err = func();
-+    if err < 0 {
-+        Err(Error::from_kernel_errno(err))
-+    } else {
-+        Ok(())
-+    }
-+}
-diff --git a/rust/kernel/file.rs b/rust/kernel/file.rs
-new file mode 100644
-index 000000000000..648628837d82
---- /dev/null
-+++ b/rust/kernel/file.rs
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Files and file descriptors.
-+//!
-+//! C headers: [`include/linux/fs.h`](../../../../include/linux/fs.h) and
-+//! [`include/linux/file.h`](../../../../include/linux/file.h)
-+
-+use crate::{bindings, cred::CredentialRef, error::Error, Result};
-+use core::{mem::ManuallyDrop, ops::Deref};
-+
-+/// Wraps the kernel's `struct file`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `File::ptr` is non-null and valid. Its reference count is also non-zero.
-+pub struct File {
-+    pub(crate) ptr: *mut bindings::file,
-+}
-+
-+impl File {
-+    /// Constructs a new [`struct file`] wrapper from a file descriptor.
-+    ///
-+    /// The file descriptor belongs to the current process.
-+    pub fn from_fd(fd: u32) -> Result<Self> {
-+        // SAFETY: FFI call, there are no requirements on `fd`.
-+        let ptr = unsafe { bindings::fget(fd) };
-+        if ptr.is_null() {
-+            return Err(Error::EBADF);
-+        }
-+
-+        // INVARIANTS: We checked that `ptr` is non-null, so it is valid. `fget` increments the ref
-+        // count before returning.
-+        Ok(Self { ptr })
-+    }
-+
-+    /// Returns the current seek/cursor/pointer position (`struct file::f_pos`).
-+    pub fn pos(&self) -> u64 {
-+        // SAFETY: `File::ptr` is guaranteed to be valid by the type invariants.
-+        unsafe { (*self.ptr).f_pos as u64 }
-+    }
-+
-+    /// Returns whether the file is in blocking mode.
-+    pub fn is_blocking(&self) -> bool {
-+        // SAFETY: `File::ptr` is guaranteed to be valid by the type invariants.
-+        unsafe { (*self.ptr).f_flags & bindings::O_NONBLOCK == 0 }
-+    }
-+
-+    /// Returns the credentials of the task that originally opened the file.
-+    pub fn cred(&self) -> CredentialRef<'_> {
-+        // SAFETY: `File::ptr` is guaranteed to be valid by the type invariants.
-+        let ptr = unsafe { (*self.ptr).f_cred };
-+        // SAFETY: The lifetimes of `self` and `CredentialRef` are tied, so it is guaranteed that
-+        // the credential pointer remains valid (because the file is still alive, and it doesn't
-+        // change over the lifetime of a file).
-+        unsafe { CredentialRef::from_ptr(ptr) }
-+    }
-+
-+    /// Returns the flags associated with the file.
-+    pub fn flags(&self) -> u32 {
-+        // SAFETY: `File::ptr` is guaranteed to be valid by the type invariants.
-+        unsafe { (*self.ptr).f_flags }
-+    }
-+}
-+
-+impl Drop for File {
-+    fn drop(&mut self) {
-+        // SAFETY: The type invariants guarantee that `File::ptr` has a non-zero reference count.
-+        unsafe { bindings::fput(self.ptr) };
-+    }
-+}
-+
-+/// A wrapper for [`File`] that doesn't automatically decrement the refcount when dropped.
-+///
-+/// We need the wrapper because [`ManuallyDrop`] alone would allow callers to call
-+/// [`ManuallyDrop::into_inner`]. This would allow an unsafe sequence to be triggered without
-+/// `unsafe` blocks because it would trigger an unbalanced call to `fput`.
-+///
-+/// # Invariants
-+///
-+/// The wrapped [`File`] remains valid for the lifetime of the object.
-+pub(crate) struct FileRef(ManuallyDrop<File>);
-+
-+impl FileRef {
-+    /// Constructs a new [`struct file`] wrapper that doesn't change its reference count.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the object.
-+    pub(crate) unsafe fn from_ptr(ptr: *mut bindings::file) -> Self {
-+        Self(ManuallyDrop::new(File { ptr }))
-+    }
-+}
-+
-+impl Deref for FileRef {
-+    type Target = File;
-+
-+    fn deref(&self) -> &Self::Target {
-+        self.0.deref()
-+    }
-+}
-+
-+/// A file descriptor reservation.
-+///
-+/// This allows the creation of a file descriptor in two steps: first, we reserve a slot for it,
-+/// then we commit or drop the reservation. The first step may fail (e.g., the current process ran
-+/// out of available slots), but commit and drop never fail (and are mutually exclusive).
-+pub struct FileDescriptorReservation {
-+    fd: u32,
-+}
-+
-+impl FileDescriptorReservation {
-+    /// Creates a new file descriptor reservation.
-+    pub fn new(flags: u32) -> Result<Self> {
-+        // SAFETY: FFI call, there are no safety requirements on `flags`.
-+        let fd = unsafe { bindings::get_unused_fd_flags(flags) };
-+        if fd < 0 {
-+            return Err(Error::from_kernel_errno(fd));
-+        }
-+        Ok(Self { fd: fd as _ })
-+    }
-+
-+    /// Returns the file descriptor number that was reserved.
-+    pub fn reserved_fd(&self) -> u32 {
-+        self.fd
-+    }
-+
-+    /// Commits the reservation.
-+    ///
-+    /// The previously reserved file descriptor is bound to `file`.
-+    pub fn commit(self, file: File) {
-+        // SAFETY: `self.fd` was previously returned by `get_unused_fd_flags`, and `file.ptr` is
-+        // guaranteed to have an owned ref count by its type invariants.
-+        unsafe { bindings::fd_install(self.fd, file.ptr) };
-+
-+        // `fd_install` consumes both the file descriptor and the file reference, so we cannot run
-+        // the destructors.
-+        core::mem::forget(self);
-+        core::mem::forget(file);
-+    }
-+}
-+
-+impl Drop for FileDescriptorReservation {
-+    fn drop(&mut self) {
-+        // SAFETY: `self.fd` was returned by a previous call to `get_unused_fd_flags`.
-+        unsafe { bindings::put_unused_fd(self.fd) };
-+    }
-+}
-diff --git a/rust/kernel/file_operations.rs b/rust/kernel/file_operations.rs
-new file mode 100644
-index 000000000000..da252fb6eadf
---- /dev/null
-+++ b/rust/kernel/file_operations.rs
-@@ -0,0 +1,734 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! File operations.
-+//!
-+//! C header: [`include/linux/fs.h`](../../../../include/linux/fs.h)
-+
-+use crate::{
-+    bindings, c_types,
-+    error::{from_kernel_result, Error, Result},
-+    file::{File, FileRef},
-+    io_buffer::{IoBufferReader, IoBufferWriter},
-+    iov_iter::IovIter,
-+    mm,
-+    sync::CondVar,
-+    types::PointerWrapper,
-+    user_ptr::{UserSlicePtr, UserSlicePtrReader, UserSlicePtrWriter},
-+};
-+use core::convert::{TryFrom, TryInto};
-+use core::{marker, mem, ptr};
-+
-+/// Wraps the kernel's `struct poll_table_struct`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `PollTable::ptr` is null or valid.
-+pub struct PollTable {
-+    ptr: *mut bindings::poll_table_struct,
-+}
-+
-+impl PollTable {
-+    /// Constructors a new `struct poll_table_struct` wrapper.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be either null or a valid pointer for the lifetime of the object.
-+    unsafe fn from_ptr(ptr: *mut bindings::poll_table_struct) -> Self {
-+        Self { ptr }
-+    }
-+
-+    /// Associates the given file and condition variable to this poll table. It means notifying the
-+    /// condition variable will notify the poll table as well; additionally, the association
-+    /// between the condition variable and the file will automatically be undone by the kernel when
-+    /// the file is destructed. To unilaterally remove the association before then, one can call
-+    /// [`CondVar::free_waiters`].
-+    ///
-+    /// # Safety
-+    ///
-+    /// If the condition variable is destroyed before the file, then [`CondVar::free_waiters`] must
-+    /// be called to ensure that all waiters are flushed out.
-+    pub unsafe fn register_wait<'a>(&self, file: &'a File, cv: &'a CondVar) {
-+        if self.ptr.is_null() {
-+            return;
-+        }
-+
-+        // SAFETY: `PollTable::ptr` is guaranteed to be valid by the type invariants and the null
-+        // check above.
-+        let table = unsafe { &*self.ptr };
-+        if let Some(proc) = table._qproc {
-+            // SAFETY: All pointers are known to be valid.
-+            unsafe { proc(file.ptr as _, cv.wait_list.get(), self.ptr) }
-+        }
-+    }
-+}
-+
-+/// Equivalent to [`std::io::SeekFrom`].
-+///
-+/// [`std::io::SeekFrom`]: https://doc.rust-lang.org/std/io/enum.SeekFrom.html
-+pub enum SeekFrom {
-+    /// Equivalent to C's `SEEK_SET`.
-+    Start(u64),
-+
-+    /// Equivalent to C's `SEEK_END`.
-+    End(i64),
-+
-+    /// Equivalent to C's `SEEK_CUR`.
-+    Current(i64),
-+}
-+
-+pub(crate) struct FileOperationsVtable<A, T>(marker::PhantomData<A>, marker::PhantomData<T>);
-+
-+impl<A: FileOpenAdapter<T::OpenData>, T: FileOperations> FileOperationsVtable<A, T> {
-+    /// Called by the VFS when an inode should be opened.
-+    ///
-+    /// Calls `T::open` on the returned value of `A::convert`.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The returned value of `A::convert` must be a valid non-null pointer and
-+    /// `T:open` must return a valid non-null pointer on an `Ok` result.
-+    unsafe extern "C" fn open_callback(
-+        inode: *mut bindings::inode,
-+        file: *mut bindings::file,
-+    ) -> c_types::c_int {
-+        from_kernel_result! {
-+            // SAFETY: `A::convert` must return a valid non-null pointer that
-+            // should point to data in the inode or file that lives longer
-+            // than the following use of `T::open`.
-+            let arg = unsafe { A::convert(inode, file) };
-+            // SAFETY: The C contract guarantees that `file` is valid. Additionally,
-+            // `fileref` never outlives this function, so it is guaranteed to be
-+            // valid.
-+            let fileref = unsafe { FileRef::from_ptr(file) };
-+            // SAFETY: `arg` was previously returned by `A::convert` and must
-+            // be a valid non-null pointer.
-+            let ptr = T::open(unsafe { &*arg }, &fileref)?.into_pointer();
-+            // SAFETY: The C contract guarantees that `private_data` is available
-+            // for implementers of the file operations (no other C code accesses
-+            // it), so we know that there are no concurrent threads/CPUs accessing
-+            // it (it's not visible to any other Rust code).
-+            unsafe { (*file).private_data = ptr as *mut c_types::c_void };
-+            Ok(0)
-+        }
-+    }
-+
-+    unsafe extern "C" fn read_callback(
-+        file: *mut bindings::file,
-+        buf: *mut c_types::c_char,
-+        len: c_types::c_size_t,
-+        offset: *mut bindings::loff_t,
-+    ) -> c_types::c_ssize_t {
-+        from_kernel_result! {
-+            let mut data = unsafe { UserSlicePtr::new(buf as *mut c_types::c_void, len).writer() };
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            // No `FMODE_UNSIGNED_OFFSET` support, so `offset` must be in [0, 2^63).
-+            // See discussion in https://github.com/fishinabarrel/linux-kernel-module-rust/pull/113
-+            let read = T::read(
-+                f,
-+                unsafe { &FileRef::from_ptr(file) },
-+                &mut data,
-+                unsafe { *offset }.try_into()?,
-+            )?;
-+            unsafe { (*offset) += bindings::loff_t::try_from(read).unwrap() };
-+            Ok(read as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn read_iter_callback(
-+        iocb: *mut bindings::kiocb,
-+        raw_iter: *mut bindings::iov_iter,
-+    ) -> isize {
-+        from_kernel_result! {
-+            let mut iter = unsafe { IovIter::from_ptr(raw_iter) };
-+            let file = unsafe { (*iocb).ki_filp };
-+            let offset = unsafe { (*iocb).ki_pos };
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let read =
-+                T::read(f, unsafe { &FileRef::from_ptr(file) }, &mut iter, offset.try_into()?)?;
-+            unsafe { (*iocb).ki_pos += bindings::loff_t::try_from(read).unwrap() };
-+            Ok(read as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn write_callback(
-+        file: *mut bindings::file,
-+        buf: *const c_types::c_char,
-+        len: c_types::c_size_t,
-+        offset: *mut bindings::loff_t,
-+    ) -> c_types::c_ssize_t {
-+        from_kernel_result! {
-+            let mut data = unsafe { UserSlicePtr::new(buf as *mut c_types::c_void, len).reader() };
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            // No `FMODE_UNSIGNED_OFFSET` support, so `offset` must be in [0, 2^63).
-+            // See discussion in https://github.com/fishinabarrel/linux-kernel-module-rust/pull/113
-+            let written = T::write(
-+                f,
-+                unsafe { &FileRef::from_ptr(file) },
-+                &mut data,
-+                unsafe { *offset }.try_into()?
-+            )?;
-+            unsafe { (*offset) += bindings::loff_t::try_from(written).unwrap() };
-+            Ok(written as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn write_iter_callback(
-+        iocb: *mut bindings::kiocb,
-+        raw_iter: *mut bindings::iov_iter,
-+    ) -> isize {
-+        from_kernel_result! {
-+            let mut iter = unsafe { IovIter::from_ptr(raw_iter) };
-+            let file = unsafe { (*iocb).ki_filp };
-+            let offset = unsafe { (*iocb).ki_pos };
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let written =
-+                T::write(f, unsafe { &FileRef::from_ptr(file) }, &mut iter, offset.try_into()?)?;
-+            unsafe { (*iocb).ki_pos += bindings::loff_t::try_from(written).unwrap() };
-+            Ok(written as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn release_callback(
-+        _inode: *mut bindings::inode,
-+        file: *mut bindings::file,
-+    ) -> c_types::c_int {
-+        let ptr = mem::replace(unsafe { &mut (*file).private_data }, ptr::null_mut());
-+        T::release(unsafe { T::Wrapper::from_pointer(ptr as _) }, unsafe {
-+            &FileRef::from_ptr(file)
-+        });
-+        0
-+    }
-+
-+    unsafe extern "C" fn llseek_callback(
-+        file: *mut bindings::file,
-+        offset: bindings::loff_t,
-+        whence: c_types::c_int,
-+    ) -> bindings::loff_t {
-+        from_kernel_result! {
-+            let off = match whence as u32 {
-+                bindings::SEEK_SET => SeekFrom::Start(offset.try_into()?),
-+                bindings::SEEK_CUR => SeekFrom::Current(offset),
-+                bindings::SEEK_END => SeekFrom::End(offset),
-+                _ => return Err(Error::EINVAL),
-+            };
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let off = T::seek(f, unsafe { &FileRef::from_ptr(file) }, off)?;
-+            Ok(off as bindings::loff_t)
-+        }
-+    }
-+
-+    unsafe extern "C" fn unlocked_ioctl_callback(
-+        file: *mut bindings::file,
-+        cmd: c_types::c_uint,
-+        arg: c_types::c_ulong,
-+    ) -> c_types::c_long {
-+        from_kernel_result! {
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let mut cmd = IoctlCommand::new(cmd as _, arg as _);
-+            let ret = T::ioctl(f, unsafe { &FileRef::from_ptr(file) }, &mut cmd)?;
-+            Ok(ret as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn compat_ioctl_callback(
-+        file: *mut bindings::file,
-+        cmd: c_types::c_uint,
-+        arg: c_types::c_ulong,
-+    ) -> c_types::c_long {
-+        from_kernel_result! {
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let mut cmd = IoctlCommand::new(cmd as _, arg as _);
-+            let ret = T::compat_ioctl(f, unsafe { &FileRef::from_ptr(file) }, &mut cmd)?;
-+            Ok(ret as _)
-+        }
-+    }
-+
-+    unsafe extern "C" fn mmap_callback(
-+        file: *mut bindings::file,
-+        vma: *mut bindings::vm_area_struct,
-+    ) -> c_types::c_int {
-+        from_kernel_result! {
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+
-+            // SAFETY: The C API guarantees that `vma` is valid for the duration of this call.
-+            // `area` only lives within this call, so it is guaranteed to be valid.
-+            let mut area = unsafe { mm::virt::Area::from_ptr(vma) };
-+
-+            // SAFETY: The C API guarantees that `file` is valid for the duration of this call,
-+            // which is longer than the lifetime of the file reference.
-+            T::mmap(f, unsafe { &FileRef::from_ptr(file) }, &mut area)?;
-+            Ok(0)
-+        }
-+    }
-+
-+    unsafe extern "C" fn fsync_callback(
-+        file: *mut bindings::file,
-+        start: bindings::loff_t,
-+        end: bindings::loff_t,
-+        datasync: c_types::c_int,
-+    ) -> c_types::c_int {
-+        from_kernel_result! {
-+            let start = start.try_into()?;
-+            let end = end.try_into()?;
-+            let datasync = datasync != 0;
-+            // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+            // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the
-+            // `release` callback, which the C API guarantees that will be called only when all
-+            // references to `file` have been released, so we know it can't be called while this
-+            // function is running.
-+            let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+            let res = T::fsync(f, unsafe { &FileRef::from_ptr(file) }, start, end, datasync)?;
-+            Ok(res.try_into().unwrap())
-+        }
-+    }
-+
-+    unsafe extern "C" fn poll_callback(
-+        file: *mut bindings::file,
-+        wait: *mut bindings::poll_table_struct,
-+    ) -> bindings::__poll_t {
-+        // SAFETY: `private_data` was initialised by `open_callback` with a value returned by
-+        // `T::Wrapper::into_pointer`. `T::Wrapper::from_pointer` is only called by the `release`
-+        // callback, which the C API guarantees that will be called only when all references to
-+        // `file` have been released, so we know it can't be called while this function is running.
-+        let f = unsafe { T::Wrapper::borrow((*file).private_data) };
-+        match T::poll(f, unsafe { &FileRef::from_ptr(file) }, unsafe {
-+            &PollTable::from_ptr(wait)
-+        }) {
-+            Ok(v) => v,
-+            Err(_) => bindings::POLLERR,
-+        }
-+    }
-+
-+    const VTABLE: bindings::file_operations = bindings::file_operations {
-+        open: Some(Self::open_callback),
-+        release: Some(Self::release_callback),
-+        read: if T::TO_USE.read {
-+            Some(Self::read_callback)
-+        } else {
-+            None
-+        },
-+        write: if T::TO_USE.write {
-+            Some(Self::write_callback)
-+        } else {
-+            None
-+        },
-+        llseek: if T::TO_USE.seek {
-+            Some(Self::llseek_callback)
-+        } else {
-+            None
-+        },
-+
-+        check_flags: None,
-+        compat_ioctl: if T::TO_USE.compat_ioctl {
-+            Some(Self::compat_ioctl_callback)
-+        } else {
-+            None
-+        },
-+        copy_file_range: None,
-+        fallocate: None,
-+        fadvise: None,
-+        fasync: None,
-+        flock: None,
-+        flush: None,
-+        fsync: if T::TO_USE.fsync {
-+            Some(Self::fsync_callback)
-+        } else {
-+            None
-+        },
-+        get_unmapped_area: None,
-+        iterate: None,
-+        iterate_shared: None,
-+        iopoll: None,
-+        lock: None,
-+        mmap: if T::TO_USE.mmap {
-+            Some(Self::mmap_callback)
-+        } else {
-+            None
-+        },
-+        mmap_supported_flags: 0,
-+        owner: ptr::null_mut(),
-+        poll: if T::TO_USE.poll {
-+            Some(Self::poll_callback)
-+        } else {
-+            None
-+        },
-+        read_iter: if T::TO_USE.read_iter {
-+            Some(Self::read_iter_callback)
-+        } else {
-+            None
-+        },
-+        remap_file_range: None,
-+        sendpage: None,
-+        setlease: None,
-+        show_fdinfo: None,
-+        splice_read: None,
-+        splice_write: None,
-+        unlocked_ioctl: if T::TO_USE.ioctl {
-+            Some(Self::unlocked_ioctl_callback)
-+        } else {
-+            None
-+        },
-+        write_iter: if T::TO_USE.write_iter {
-+            Some(Self::write_iter_callback)
-+        } else {
-+            None
-+        },
-+    };
-+
-+    /// Builds an instance of [`struct file_operations`].
-+    ///
-+    /// # Safety
-+    ///
-+    /// The caller must ensure that the adapter is compatible with the way the device is registered.
-+    pub(crate) const unsafe fn build() -> &'static bindings::file_operations {
-+        &Self::VTABLE
-+    }
-+}
-+
-+/// Represents which fields of [`struct file_operations`] should be populated with pointers.
-+pub struct ToUse {
-+    /// The `read` field of [`struct file_operations`].
-+    pub read: bool,
-+
-+    /// The `read_iter` field of [`struct file_operations`].
-+    pub read_iter: bool,
-+
-+    /// The `write` field of [`struct file_operations`].
-+    pub write: bool,
-+
-+    /// The `write_iter` field of [`struct file_operations`].
-+    pub write_iter: bool,
-+
-+    /// The `llseek` field of [`struct file_operations`].
-+    pub seek: bool,
-+
-+    /// The `unlocked_ioctl` field of [`struct file_operations`].
-+    pub ioctl: bool,
-+
-+    /// The `compat_ioctl` field of [`struct file_operations`].
-+    pub compat_ioctl: bool,
-+
-+    /// The `fsync` field of [`struct file_operations`].
-+    pub fsync: bool,
-+
-+    /// The `mmap` field of [`struct file_operations`].
-+    pub mmap: bool,
-+
-+    /// The `poll` field of [`struct file_operations`].
-+    pub poll: bool,
-+}
-+
-+/// A constant version where all values are to set to `false`, that is, all supported fields will
-+/// be set to null pointers.
-+pub const USE_NONE: ToUse = ToUse {
-+    read: false,
-+    read_iter: false,
-+    write: false,
-+    write_iter: false,
-+    seek: false,
-+    ioctl: false,
-+    compat_ioctl: false,
-+    fsync: false,
-+    mmap: false,
-+    poll: false,
-+};
-+
-+/// Defines the [`FileOperations::TO_USE`] field based on a list of fields to be populated.
-+#[macro_export]
-+macro_rules! declare_file_operations {
-+    () => {
-+        const TO_USE: $crate::file_operations::ToUse = $crate::file_operations::USE_NONE;
-+    };
-+    ($($i:ident),+) => {
-+        const TO_USE: kernel::file_operations::ToUse =
-+            $crate::file_operations::ToUse {
-+                $($i: true),+ ,
-+                ..$crate::file_operations::USE_NONE
-+            };
-+    };
-+}
-+
-+/// Allows the handling of ioctls defined with the `_IO`, `_IOR`, `_IOW`, and `_IOWR` macros.
-+///
-+/// For each macro, there is a handler function that takes the appropriate types as arguments.
-+pub trait IoctlHandler: Sync {
-+    /// The type of the first argument to each associated function.
-+    type Target<'a>;
-+
-+    /// Handles ioctls defined with the `_IO` macro, that is, with no buffer as argument.
-+    fn pure(_this: Self::Target<'_>, _file: &File, _cmd: u32, _arg: usize) -> Result<i32> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Handles ioctls defined with the `_IOR` macro, that is, with an output buffer provided as
-+    /// argument.
-+    fn read(
-+        _this: Self::Target<'_>,
-+        _file: &File,
-+        _cmd: u32,
-+        _writer: &mut UserSlicePtrWriter,
-+    ) -> Result<i32> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Handles ioctls defined with the `_IOW` macro, that is, with an input buffer provided as
-+    /// argument.
-+    fn write(
-+        _this: Self::Target<'_>,
-+        _file: &File,
-+        _cmd: u32,
-+        _reader: &mut UserSlicePtrReader,
-+    ) -> Result<i32> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Handles ioctls defined with the `_IOWR` macro, that is, with a buffer for both input and
-+    /// output provided as argument.
-+    fn read_write(
-+        _this: Self::Target<'_>,
-+        _file: &File,
-+        _cmd: u32,
-+        _data: UserSlicePtr,
-+    ) -> Result<i32> {
-+        Err(Error::EINVAL)
-+    }
-+}
-+
-+/// Represents an ioctl command.
-+///
-+/// It can use the components of an ioctl command to dispatch ioctls using
-+/// [`IoctlCommand::dispatch`].
-+pub struct IoctlCommand {
-+    cmd: u32,
-+    arg: usize,
-+    user_slice: Option<UserSlicePtr>,
-+}
-+
-+impl IoctlCommand {
-+    /// Constructs a new [`IoctlCommand`].
-+    fn new(cmd: u32, arg: usize) -> Self {
-+        let size = (cmd >> bindings::_IOC_SIZESHIFT) & bindings::_IOC_SIZEMASK;
-+
-+        // SAFETY: We only create one instance of the user slice per ioctl call, so TOCTOU issues
-+        // are not possible.
-+        let user_slice = Some(unsafe { UserSlicePtr::new(arg as _, size as _) });
-+        Self {
-+            cmd,
-+            arg,
-+            user_slice,
-+        }
-+    }
-+
-+    /// Dispatches the given ioctl to the appropriate handler based on the value of the command. It
-+    /// also creates a [`UserSlicePtr`], [`UserSlicePtrReader`], or [`UserSlicePtrWriter`]
-+    /// depending on the direction of the buffer of the command.
-+    ///
-+    /// It is meant to be used in implementations of [`FileOperations::ioctl`] and
-+    /// [`FileOperations::compat_ioctl`].
-+    pub fn dispatch<T: IoctlHandler>(
-+        &mut self,
-+        handler: T::Target<'_>,
-+        file: &File,
-+    ) -> Result<i32> {
-+        let dir = (self.cmd >> bindings::_IOC_DIRSHIFT) & bindings::_IOC_DIRMASK;
-+        if dir == bindings::_IOC_NONE {
-+            return T::pure(handler, file, self.cmd, self.arg);
-+        }
-+
-+        let data = self.user_slice.take().ok_or(Error::EINVAL)?;
-+        const READ_WRITE: u32 = bindings::_IOC_READ | bindings::_IOC_WRITE;
-+        match dir {
-+            bindings::_IOC_WRITE => T::write(handler, file, self.cmd, &mut data.reader()),
-+            bindings::_IOC_READ => T::read(handler, file, self.cmd, &mut data.writer()),
-+            READ_WRITE => T::read_write(handler, file, self.cmd, data),
-+            _ => Err(Error::EINVAL),
-+        }
-+    }
-+
-+    /// Returns the raw 32-bit value of the command and the ptr-sized argument.
-+    pub fn raw(&self) -> (u32, usize) {
-+        (self.cmd, self.arg)
-+    }
-+}
-+
-+/// Trait for extracting file open arguments from kernel data structures.
-+///
-+/// This is meant to be implemented by registration managers.
-+pub trait FileOpenAdapter<T: Sync> {
-+    /// Converts untyped data stored in [`struct inode`] and [`struct file`] (when [`struct
-+    /// file_operations::open`] is called) into the given type. For example, for `miscdev`
-+    /// devices, a pointer to the registered [`struct miscdev`] is stored in [`struct
-+    /// file::private_data`].
-+    ///
-+    /// # Safety
-+    ///
-+    /// This function must be called only when [`struct file_operations::open`] is being called for
-+    /// a file that was registered by the implementer. The returned pointer must be valid and
-+    /// not-null.
-+    unsafe fn convert(_inode: *mut bindings::inode, _file: *mut bindings::file) -> *const T;
-+}
-+
-+/// Corresponds to the kernel's `struct file_operations`.
-+///
-+/// You implement this trait whenever you would create a `struct file_operations`.
-+///
-+/// File descriptors may be used from multiple threads/processes concurrently, so your type must be
-+/// [`Sync`]. It must also be [`Send`] because [`FileOperations::release`] will be called from the
-+/// thread that decrements that associated file's refcount to zero.
-+pub trait FileOperations {
-+    /// The methods to use to populate [`struct file_operations`].
-+    const TO_USE: ToUse;
-+
-+    /// The pointer type that will be used to hold ourselves.
-+    type Wrapper: PointerWrapper + Send + Sync = ();
-+
-+    /// The type of the context data passed to [`FileOperations::open`].
-+    type OpenData: Sync = ();
-+
-+    /// Creates a new instance of this file.
-+    ///
-+    /// Corresponds to the `open` function pointer in `struct file_operations`.
-+    fn open(context: &Self::OpenData, file: &File) -> Result<Self::Wrapper>;
-+
-+    /// Cleans up after the last reference to the file goes away.
-+    ///
-+    /// Note that the object is moved, so it will be freed automatically unless the implementation
-+    /// moves it elsewhere.
-+    ///
-+    /// Corresponds to the `release` function pointer in `struct file_operations`.
-+    fn release(_obj: Self::Wrapper, _file: &File) {}
-+
-+    /// Reads data from this file to the caller's buffer.
-+    ///
-+    /// Corresponds to the `read` and `read_iter` function pointers in `struct file_operations`.
-+    fn read(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _data: &mut impl IoBufferWriter,
-+        _offset: u64,
-+    ) -> Result<usize> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Writes data from the caller's buffer to this file.
-+    ///
-+    /// Corresponds to the `write` and `write_iter` function pointers in `struct file_operations`.
-+    fn write(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _data: &mut impl IoBufferReader,
-+        _offset: u64,
-+    ) -> Result<usize> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Changes the position of the file.
-+    ///
-+    /// Corresponds to the `llseek` function pointer in `struct file_operations`.
-+    fn seek(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _offset: SeekFrom,
-+    ) -> Result<u64> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Performs IO control operations that are specific to the file.
-+    ///
-+    /// Corresponds to the `unlocked_ioctl` function pointer in `struct file_operations`.
-+    fn ioctl(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _cmd: &mut IoctlCommand,
-+    ) -> Result<i32> {
-+        Err(Error::ENOTTY)
-+    }
-+
-+    /// Performs 32-bit IO control operations on that are specific to the file on 64-bit kernels.
-+    ///
-+    /// Corresponds to the `compat_ioctl` function pointer in `struct file_operations`.
-+    fn compat_ioctl(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _cmd: &mut IoctlCommand,
-+    ) -> Result<i32> {
-+        Err(Error::ENOTTY)
-+    }
-+
-+    /// Syncs pending changes to this file.
-+    ///
-+    /// Corresponds to the `fsync` function pointer in `struct file_operations`.
-+    fn fsync(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _start: u64,
-+        _end: u64,
-+        _datasync: bool,
-+    ) -> Result<u32> {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Maps areas of the caller's virtual memory with device/file memory.
-+    ///
-+    /// Corresponds to the `mmap` function pointer in `struct file_operations`.
-+    /// TODO: Wrap `vm_area_struct` so that we don't have to expose it.
-+    fn mmap(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _vma: &mut mm::virt::Area,
-+    ) -> Result {
-+        Err(Error::EINVAL)
-+    }
-+
-+    /// Checks the state of the file and optionally registers for notification when the state
-+    /// changes.
-+    ///
-+    /// Corresponds to the `poll` function pointer in `struct file_operations`.
-+    fn poll(
-+        _this: <Self::Wrapper as PointerWrapper>::Borrowed<'_>,
-+        _file: &File,
-+        _table: &PollTable,
-+    ) -> Result<u32> {
-+        Ok(bindings::POLLIN | bindings::POLLOUT | bindings::POLLRDNORM | bindings::POLLWRNORM)
-+    }
-+}
-diff --git a/rust/kernel/gpio.rs b/rust/kernel/gpio.rs
-new file mode 100644
-index 000000000000..d02524ded599
---- /dev/null
-+++ b/rust/kernel/gpio.rs
-@@ -0,0 +1,477 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Support for gpio device drivers.
-+//!
-+//! C header: [`include/linux/gpio/driver.h`](../../../../include/linux/gpio/driver.h)
-+
-+use crate::{
-+    bindings, c_types, device, error::from_kernel_result, types::PointerWrapper, Error, Result,
-+};
-+use core::{
-+    cell::UnsafeCell,
-+    marker::{PhantomData, PhantomPinned},
-+    pin::Pin,
-+};
-+
-+#[cfg(CONFIG_GPIOLIB_IRQCHIP)]
-+pub use irqchip::{ChipWithIrqChip, RegistrationWithIrqChip};
-+
-+/// The direction of a gpio line.
-+pub enum LineDirection {
-+    /// Direction is input.
-+    In = bindings::GPIO_LINE_DIRECTION_IN as _,
-+
-+    /// Direction is output.
-+    Out = bindings::GPIO_LINE_DIRECTION_OUT as _,
-+}
-+
-+/// A gpio chip.
-+pub trait Chip {
-+    /// Context data associated with the gpio chip.
-+    ///
-+    /// It determines the type of the context data passed to each of the methods of the trait.
-+    type Data: PointerWrapper + Sync + Send;
-+
-+    /// The methods to use to populate [`struct gpio_chip`]. This is typically populated with
-+    /// [`declare_gpio_chip_operations`].
-+    const TO_USE: ToUse;
-+
-+    /// Returns the direction of the given gpio line.
-+    fn get_direction(
-+        _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+        _offset: u32,
-+    ) -> Result<LineDirection> {
-+        Err(Error::ENOTSUPP)
-+    }
-+
-+    /// Configures the direction as input of the given gpio line.
-+    fn direction_input(
-+        _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+        _offset: u32,
-+    ) -> Result {
-+        Err(Error::EIO)
-+    }
-+
-+    /// Configures the direction as output of the given gpio line.
-+    ///
-+    /// The value that will be initially output is also specified.
-+    fn direction_output(
-+        _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+        _offset: u32,
-+        _value: bool,
-+    ) -> Result {
-+        Err(Error::ENOTSUPP)
-+    }
-+
-+    /// Returns the current value of the given gpio line.
-+    fn get(_data: <Self::Data as PointerWrapper>::Borrowed<'_>, _offset: u32) -> Result<bool> {
-+        Err(Error::EIO)
-+    }
-+
-+    /// Sets the value of the given gpio line.
-+    fn set(_data: <Self::Data as PointerWrapper>::Borrowed<'_>, _offset: u32, _value: bool) {}
-+}
-+
-+/// Represents which fields of [`struct gpio_chip`] should be populated with pointers.
-+///
-+/// This is typically populated with the [`declare_gpio_chip_operations`] macro.
-+pub struct ToUse {
-+    /// The `get_direction` field of [`struct gpio_chip`].
-+    pub get_direction: bool,
-+
-+    /// The `direction_input` field of [`struct gpio_chip`].
-+    pub direction_input: bool,
-+
-+    /// The `direction_output` field of [`struct gpio_chip`].
-+    pub direction_output: bool,
-+
-+    /// The `get` field of [`struct gpio_chip`].
-+    pub get: bool,
-+
-+    /// The `set` field of [`struct gpio_chip`].
-+    pub set: bool,
-+}
-+
-+/// A constant version where all values are set to `false`, that is, all supported fields will be
-+/// set to null pointers.
-+pub const USE_NONE: ToUse = ToUse {
-+    get_direction: false,
-+    direction_input: false,
-+    direction_output: false,
-+    get: false,
-+    set: false,
-+};
-+
-+/// Defines the [`Chip::TO_USE`] field based on a list of fields to be populated.
-+#[macro_export]
-+macro_rules! declare_gpio_chip_operations {
-+    () => {
-+        const TO_USE: $crate::gpio::ToUse = $crate::gpio::USE_NONE;
-+    };
-+    ($($i:ident),+) => {
-+        #[allow(clippy::needless_update)]
-+        const TO_USE: $crate::gpio::ToUse =
-+            $crate::gpio::ToUse {
-+                $($i: true),+ ,
-+                ..$crate::gpio::USE_NONE
-+            };
-+    };
-+}
-+
-+/// A registration of a gpio chip.
-+pub struct Registration<T: Chip> {
-+    gc: UnsafeCell<bindings::gpio_chip>,
-+    parent: Option<device::Device>,
-+    _p: PhantomData<T>,
-+    _pin: PhantomPinned,
-+}
-+
-+impl<T: Chip> Registration<T> {
-+    /// Creates a new [`Registration`] but does not register it yet.
-+    ///
-+    /// It is allowed to move.
-+    pub fn new() -> Self {
-+        Self {
-+            parent: None,
-+            gc: UnsafeCell::new(bindings::gpio_chip::default()),
-+            _pin: PhantomPinned,
-+            _p: PhantomData,
-+        }
-+    }
-+
-+    /// Registers a gpio chip with the rest of the kernel.
-+    pub fn register(
-+        self: Pin<&mut Self>,
-+        gpio_count: u16,
-+        base: Option<i32>,
-+        parent: &dyn device::RawDevice,
-+        data: T::Data,
-+    ) -> Result {
-+        if self.parent.is_some() {
-+            // Already registered.
-+            return Err(Error::EINVAL);
-+        }
-+
-+        // SAFETY: We never move out of `this`.
-+        let this = unsafe { self.get_unchecked_mut() };
-+        {
-+            let gc = this.gc.get_mut();
-+
-+            // Set up the callbacks.
-+            gc.request = Some(bindings::gpiochip_generic_request);
-+            gc.free = Some(bindings::gpiochip_generic_free);
-+            if T::TO_USE.get_direction {
-+                gc.get_direction = Some(get_direction_callback::<T>);
-+            }
-+            if T::TO_USE.direction_input {
-+                gc.direction_input = Some(direction_input_callback::<T>);
-+            }
-+            if T::TO_USE.direction_output {
-+                gc.direction_output = Some(direction_output_callback::<T>);
-+            }
-+            if T::TO_USE.get {
-+                gc.get = Some(get_callback::<T>);
-+            }
-+            if T::TO_USE.set {
-+                gc.set = Some(set_callback::<T>);
-+            }
-+
-+            // When a base is not explicitly given, use -1 for one to be picked.
-+            if let Some(b) = base {
-+                gc.base = b;
-+            } else {
-+                gc.base = -1;
-+            }
-+
-+            gc.ngpio = gpio_count;
-+            gc.parent = parent.raw_device();
-+            gc.label = parent.name().as_char_ptr();
-+
-+            // TODO: Define `gc.owner` as well.
-+        }
-+
-+        let data_pointer = <T::Data as PointerWrapper>::into_pointer(data);
-+        // SAFETY: `gc` was initilised above, so it is valid.
-+        let ret = unsafe {
-+            bindings::gpiochip_add_data_with_key(
-+                this.gc.get(),
-+                data_pointer as _,
-+                core::ptr::null_mut(),
-+                core::ptr::null_mut(),
-+            )
-+        };
-+        if ret < 0 {
-+            // SAFETY: `data_pointer` was returned by `into_pointer` above.
-+            unsafe { T::Data::from_pointer(data_pointer) };
-+            return Err(Error::from_kernel_errno(ret));
-+        }
-+
-+        this.parent = Some(device::Device::from_dev(parent));
-+        Ok(())
-+    }
-+}
-+
-+// SAFETY: `Registration` doesn't offer any methods or access to fields when shared between threads
-+// or CPUs, so it is safe to share it.
-+unsafe impl<T: Chip> Sync for Registration<T> {}
-+
-+// SAFETY: Registration with and unregistration from the gpio subsystem can happen from any thread.
-+// Additionally, `T::Data` (which is dropped during unregistration) is `Send`, so it is ok to move
-+// `Registration` to different threads.
-+#[allow(clippy::non_send_fields_in_send_ty)]
-+unsafe impl<T: Chip> Send for Registration<T> {}
-+
-+impl<T: Chip> Default for Registration<T> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+impl<T: Chip> Drop for Registration<T> {
-+    /// Removes the registration from the kernel if it has completed successfully before.
-+    fn drop(&mut self) {
-+        if self.parent.is_some() {
-+            // Get a pointer to the data stored in chip before destroying it.
-+            // SAFETY: `gc` was during registration, which is guaranteed to have succeeded (because
-+            // `parent` is `Some(_)`, so it remains valid.
-+            let data_pointer = unsafe { bindings::gpiochip_get_data(self.gc.get()) };
-+
-+            // SAFETY: By the same argument above, `gc` is still valid.
-+            unsafe { bindings::gpiochip_remove(self.gc.get()) };
-+
-+            // Free data as well.
-+            // SAFETY: `data_pointer` was returned by `into_pointer` during registration.
-+            unsafe { <T::Data as PointerWrapper>::from_pointer(data_pointer) };
-+        }
-+    }
-+}
-+
-+unsafe extern "C" fn get_direction_callback<T: Chip>(
-+    gc: *mut bindings::gpio_chip,
-+    offset: c_types::c_uint,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The value stored as chip data was returned by `into_pointer` during registration.
-+        let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+        Ok(T::get_direction(data, offset)? as i32)
-+    }
-+}
-+
-+unsafe extern "C" fn direction_input_callback<T: Chip>(
-+    gc: *mut bindings::gpio_chip,
-+    offset: c_types::c_uint,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The value stored as chip data was returned by `into_pointer` during registration.
-+        let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+        T::direction_input(data, offset)?;
-+        Ok(0)
-+    }
-+}
-+
-+unsafe extern "C" fn direction_output_callback<T: Chip>(
-+    gc: *mut bindings::gpio_chip,
-+    offset: c_types::c_uint,
-+    value: c_types::c_int,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The value stored as chip data was returned by `into_pointer` during registration.
-+        let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+        T::direction_output(data, offset, value != 0)?;
-+        Ok(0)
-+    }
-+}
-+
-+unsafe extern "C" fn get_callback<T: Chip>(
-+    gc: *mut bindings::gpio_chip,
-+    offset: c_types::c_uint,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The value stored as chip data was returned by `into_pointer` during registration.
-+        let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+        let v = T::get(data, offset)?;
-+        Ok(v as _)
-+    }
-+}
-+
-+unsafe extern "C" fn set_callback<T: Chip>(
-+    gc: *mut bindings::gpio_chip,
-+    offset: c_types::c_uint,
-+    value: c_types::c_int,
-+) {
-+    // SAFETY: The value stored as chip data was returned by `into_pointer` during registration.
-+    let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+    T::set(data, offset, value != 0);
-+}
-+
-+#[cfg(CONFIG_GPIOLIB_IRQCHIP)]
-+mod irqchip {
-+    use super::*;
-+    use crate::irq;
-+
-+    /// A gpio chip that includes an irq chip.
-+    pub trait ChipWithIrqChip: Chip {
-+        /// Implements the irq flow for the gpio chip.
-+        fn handle_irq_flow(
-+            _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+            _desc: &irq::Descriptor,
-+            _domain: &irq::Domain,
-+        );
-+    }
-+
-+    /// A registration of a gpio chip that includes an irq chip.
-+    pub struct RegistrationWithIrqChip<T: ChipWithIrqChip> {
-+        reg: Registration<T>,
-+        irq_chip: UnsafeCell<bindings::irq_chip>,
-+        parent_irq: u32,
-+    }
-+
-+    impl<T: ChipWithIrqChip> RegistrationWithIrqChip<T> {
-+        /// Creates a new [`RegistrationWithIrqChip`] but does not register it yet.
-+        ///
-+        /// It is allowed to move.
-+        pub fn new() -> Self {
-+            Self {
-+                reg: Registration::new(),
-+                irq_chip: UnsafeCell::new(bindings::irq_chip::default()),
-+                parent_irq: 0,
-+            }
-+        }
-+
-+        /// Registers a gpio chip and its irq chip with the rest of the kernel.
-+        pub fn register<U: irq::Chip<Data = T::Data>>(
-+            mut self: Pin<&mut Self>,
-+            gpio_count: u16,
-+            base: Option<i32>,
-+            parent: &dyn device::RawDevice,
-+            data: T::Data,
-+            parent_irq: u32,
-+        ) -> Result {
-+            if self.reg.parent.is_some() {
-+                // Already registered.
-+                return Err(Error::EINVAL);
-+            }
-+
-+            // SAFETY: We never move out of `this`.
-+            let this = unsafe { self.as_mut().get_unchecked_mut() };
-+
-+            // Initialise the irq_chip.
-+            {
-+                let irq_chip = this.irq_chip.get_mut();
-+                irq_chip.name = parent.name().as_char_ptr();
-+
-+                // SAFETY: The gpio subsystem configures a pointer to `gpio_chip` as the irq chip
-+                // data, so we use `IrqChipAdapter` to convert to the `T::Data`, which is the same
-+                // as `irq::Chip::Data` per the bound above.
-+                unsafe { irq::init_chip::<IrqChipAdapter<U>>(irq_chip) };
-+            }
-+
-+            // Initialise gc irq state.
-+            {
-+                let girq = &mut this.reg.gc.get_mut().irq;
-+                girq.chip = this.irq_chip.get();
-+                // SAFETY: By leaving `parent_handler_data` set to `null`, the gpio subsystem
-+                // initialises it to a pointer to the gpio chip, which is what `FlowHandler<T>`
-+                // expects.
-+                girq.parent_handler = unsafe { irq::new_flow_handler::<FlowHandler<T>>() };
-+                girq.num_parents = 1;
-+                girq.parents = &mut this.parent_irq;
-+                this.parent_irq = parent_irq;
-+                girq.default_type = bindings::IRQ_TYPE_NONE;
-+                girq.handler = Some(bindings::handle_bad_irq);
-+            }
-+
-+            // SAFETY: `reg` is pinned when `self` is.
-+            let pinned = unsafe { self.map_unchecked_mut(|r| &mut r.reg) };
-+            pinned.register(gpio_count, base, parent, data)
-+        }
-+    }
-+
-+    impl<T: ChipWithIrqChip> Default for RegistrationWithIrqChip<T> {
-+        fn default() -> Self {
-+            Self::new()
-+        }
-+    }
-+
-+    // SAFETY: `RegistrationWithIrqChip` doesn't offer any methods or access to fields when shared
-+    // between threads or CPUs, so it is safe to share it.
-+    unsafe impl<T: ChipWithIrqChip> Sync for RegistrationWithIrqChip<T> {}
-+
-+    // SAFETY: Registration with and unregistration from the gpio subsystem (including irq chips for
-+    // them) can happen from any thread. Additionally, `T::Data` (which is dropped during
-+    // unregistration) is `Send`, so it is ok to move `Registration` to different threads.
-+    #[allow(clippy::non_send_fields_in_send_ty)]
-+    unsafe impl<T: ChipWithIrqChip> Send for RegistrationWithIrqChip<T> where T::Data: Send {}
-+
-+    struct FlowHandler<T: ChipWithIrqChip>(PhantomData<T>);
-+
-+    impl<T: ChipWithIrqChip> irq::FlowHandler for FlowHandler<T> {
-+        type Data = *mut bindings::gpio_chip;
-+
-+        fn handle_irq_flow(gc: *mut bindings::gpio_chip, desc: &irq::Descriptor) {
-+            // SAFETY: `FlowHandler` is only used in gpio chips, and it is removed when the gpio is
-+            // unregistered, so we know that `gc` must still be valid. We also know that the value
-+            // stored as gpio data was returned by `T::Data::into_pointer` again because
-+            // `FlowHandler` is a private structure only used in this way.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc)) };
-+
-+            // SAFETY: `gc` is valid (see comment above), so we can dereference it.
-+            let domain = unsafe { irq::Domain::from_ptr((*gc).irq.domain) };
-+
-+            T::handle_irq_flow(data, desc, &domain);
-+        }
-+    }
-+
-+    /// Adapter from an irq chip with `gpio_chip` pointer as context to one where the gpio chip
-+    /// data is passed as context.
-+    struct IrqChipAdapter<T: irq::Chip>(PhantomData<T>);
-+
-+    impl<T: irq::Chip> irq::Chip for IrqChipAdapter<T> {
-+        type Data = *mut bindings::gpio_chip;
-+        const TO_USE: irq::ToUse = T::TO_USE;
-+
-+        fn ack(gc: *mut bindings::gpio_chip, irq_data: &irq::IrqData) {
-+            // SAFETY: `IrqChipAdapter` is a private struct, only used when the data stored in the
-+            // gpio chip is known to come from `T::Data`, and only valid while the gpio chip is
-+            // registered, so `gc` is valid.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc as _)) };
-+            T::ack(data, irq_data);
-+        }
-+
-+        fn mask(gc: *mut bindings::gpio_chip, irq_data: &irq::IrqData) {
-+            // SAFETY: `IrqChipAdapter` is a private struct, only used when the data stored in the
-+            // gpio chip is known to come from `T::Data`, and only valid while the gpio chip is
-+            // registered, so `gc` is valid.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc as _)) };
-+            T::mask(data, irq_data);
-+        }
-+
-+        fn unmask(gc: *mut bindings::gpio_chip, irq_data: &irq::IrqData) {
-+            // SAFETY: `IrqChipAdapter` is a private struct, only used when the data stored in the
-+            // gpio chip is known to come from `T::Data`, and only valid while the gpio chip is
-+            // registered, so `gc` is valid.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc as _)) };
-+            T::unmask(data, irq_data);
-+        }
-+
-+        fn set_type(
-+            gc: *mut bindings::gpio_chip,
-+            irq_data: &mut irq::LockedIrqData,
-+            flow_type: u32,
-+        ) -> Result<irq::ExtraResult> {
-+            // SAFETY: `IrqChipAdapter` is a private struct, only used when the data stored in the
-+            // gpio chip is known to come from `T::Data`, and only valid while the gpio chip is
-+            // registered, so `gc` is valid.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc as _)) };
-+            T::set_type(data, irq_data, flow_type)
-+        }
-+
-+        fn set_wake(gc: *mut bindings::gpio_chip, irq_data: &irq::IrqData, on: bool) -> Result {
-+            // SAFETY: `IrqChipAdapter` is a private struct, only used when the data stored in the
-+            // gpio chip is known to come from `T::Data`, and only valid while the gpio chip is
-+            // registered, so `gc` is valid.
-+            let data = unsafe { T::Data::borrow(bindings::gpiochip_get_data(gc as _)) };
-+            T::set_wake(data, irq_data, on)
-+        }
-+    }
-+}
-diff --git a/rust/kernel/io_buffer.rs b/rust/kernel/io_buffer.rs
-new file mode 100644
-index 000000000000..ccecc4763aca
---- /dev/null
-+++ b/rust/kernel/io_buffer.rs
++++ b/Documentation/rust/coding-guidelines.rst
 @@ -0,0 +1,153 @@
-+// SPDX-License-Identifier: GPL-2.0
++.. _rust_coding_guidelines:
 +
-+//! Buffers used in IO.
++Coding Guidelines
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
-+use crate::Result;
-+use alloc::vec::Vec;
-+use core::mem::{size_of, MaybeUninit};
++This document describes how to write Rust code in the kernel.
 +
-+/// Represents a buffer to be read from during IO.
-+pub trait IoBufferReader {
-+    /// Returns the number of bytes left to be read from the io buffer.
-+    ///
-+    /// Note that even reading less than this number of bytes may fail.
-+    fn len(&self) -> usize;
 +
-+    /// Returns `true` if no data is available in the io buffer.
-+    fn is_empty(&self) -> bool {
-+        self.len() == 0
-+    }
++Style & formatting
++------------------
 +
-+    /// Reads raw data from the io buffer into a raw kernel buffer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The output buffer must be valid.
-+    unsafe fn read_raw(&mut self, out: *mut u8, len: usize) -> Result;
++The code should be formatted using ``rustfmt``. In this way, a person
++contributing from time to time to the kernel does not need to learn and
++remember one more style guide. More importantly, reviewers and maintainers
++do not need to spend time pointing out style issues anymore, and thus
++less patch roundtrips may be needed to land a change.
 +
-+    /// Reads all data remaining in the io buffer.
-+    ///
-+    /// Returns `EFAULT` if the address does not currently point to mapped, readable memory.
-+    fn read_all(&mut self) -> Result<Vec<u8>> {
-+        let mut data = Vec::<u8>::new();
-+        data.try_resize(self.len(), 0)?;
++.. note:: Conventions on comments and documentation are not checked by
++  ``rustfmt``. Thus those are still needed to be taken care of.
 +
-+        // SAFETY: The output buffer is valid as we just allocated it.
-+        unsafe { self.read_raw(data.as_mut_ptr(), data.len())? };
-+        Ok(data)
-+    }
++The default settings of ``rustfmt`` are used. This means the idiomatic Rust
++style is followed. For instance, 4 spaces are used for indentation rather
++than tabs.
 +
-+    /// Reads a byte slice from the io buffer.
-+    ///
-+    /// Returns `EFAULT` if the byte slice is bigger than the remaining size of the user slice or
-+    /// if the address does not currently point to mapped, readable memory.
-+    fn read_slice(&mut self, data: &mut [u8]) -> Result {
-+        // SAFETY: The output buffer is valid as it's coming from a live reference.
-+        unsafe { self.read_raw(data.as_mut_ptr(), data.len()) }
-+    }
++It is convenient to instruct editors/IDEs to format while typing,
++when saving or at commit time. However, if for some reason reformatting
++the entire kernel Rust sources is needed at some point, the following can =
+be
++run::
 +
-+    /// Reads the contents of a plain old data (POD) type from the io buffer.
-+    fn read<T: ReadableFromBytes>(&mut self) -> Result<T> {
-+        let mut out = MaybeUninit::<T>::uninit();
-+        // SAFETY: The buffer is valid as it was just allocated.
-+        unsafe { self.read_raw(out.as_mut_ptr() as _, size_of::<T>()) }?;
-+        // SAFETY: We just initialised the data.
-+        Ok(unsafe { out.assume_init() })
-+    }
-+}
++	make LLVM=3D1 rustfmt
 +
-+/// Represents a buffer to be written to during IO.
-+pub trait IoBufferWriter {
-+    /// Returns the number of bytes left to be written into the io buffer.
-+    ///
-+    /// Note that even writing less than this number of bytes may fail.
-+    fn len(&self) -> usize;
++It is also possible to check if everything is formatted (printing a diff
++otherwise), for instance for a CI, with::
 +
-+    /// Returns `true` if the io buffer cannot hold any additional data.
-+    fn is_empty(&self) -> bool {
-+        self.len() == 0
-+    }
++	make LLVM=3D1 rustfmtcheck
 +
-+    /// Writes zeroes to the io buffer.
-+    ///
-+    /// Differently from the other write functions, `clear` will zero as much as it can and update
-+    /// the writer internal state to reflect this. It will, however, return an error if it cannot
-+    /// clear `len` bytes.
-+    ///
-+    /// For example, if a caller requests that 100 bytes be cleared but a segfault happens after
-+    /// 20 bytes, then EFAULT is returned and the writer is advanced by 20 bytes.
-+    fn clear(&mut self, len: usize) -> Result;
++Like ``clang-format`` for the rest of the kernel, ``rustfmt`` works on
++individual files, and does not require a kernel configuration. Sometimes i=
+t may
++even work with broken code.
 +
-+    /// Writes a byte slice into the io buffer.
-+    ///
-+    /// Returns `EFAULT` if the byte slice is bigger than the remaining size of the io buffer or if
-+    /// the address does not currently point to mapped, writable memory.
-+    fn write_slice(&mut self, data: &[u8]) -> Result {
-+        // SAFETY: The input buffer is valid as it's coming from a live reference.
-+        unsafe { self.write_raw(data.as_ptr(), data.len()) }
-+    }
 +
-+    /// Writes raw data to the io buffer from a raw kernel buffer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The input buffer must be valid.
-+    unsafe fn write_raw(&mut self, data: *const u8, len: usize) -> Result;
++Code documentation
++------------------
 +
-+    /// Writes the contents of the given data into the io buffer.
-+    fn write<T: WritableToBytes>(&mut self, data: &T) -> Result {
-+        // SAFETY: The input buffer is valid as it's coming from a live
-+        // reference to a type that implements `WritableToBytes`.
-+        unsafe { self.write_raw(data as *const T as _, size_of::<T>()) }
-+    }
-+}
++Rust kernel code is not documented like C kernel code (i.e. via kernel-doc=
+).
++Instead, the usual system for documenting Rust code is used: the ``rustdoc=
+``
++tool, which uses Markdown (a lightweight markup language).
 +
-+/// Specifies that a type is safely readable from byte slices.
-+///
-+/// Not all types can be safely read from byte slices; examples from
-+/// <https://doc.rust-lang.org/reference/behavior-considered-undefined.html> include `bool`
-+/// that must be either `0` or `1`, and `char` that cannot be a surrogate or above `char::MAX`.
-+///
-+/// # Safety
-+///
-+/// Implementers must ensure that the type is made up only of types that can be safely read from
-+/// arbitrary byte sequences (e.g., `u32`, `u64`, etc.).
-+pub unsafe trait ReadableFromBytes {}
++To learn Markdown, there are many guides available out there. For instance,
++the one at:
 +
-+// SAFETY: All bit patterns are acceptable values of the types below.
-+unsafe impl ReadableFromBytes for u8 {}
-+unsafe impl ReadableFromBytes for u16 {}
-+unsafe impl ReadableFromBytes for u32 {}
-+unsafe impl ReadableFromBytes for u64 {}
-+unsafe impl ReadableFromBytes for usize {}
-+unsafe impl ReadableFromBytes for i8 {}
-+unsafe impl ReadableFromBytes for i16 {}
-+unsafe impl ReadableFromBytes for i32 {}
-+unsafe impl ReadableFromBytes for i64 {}
-+unsafe impl ReadableFromBytes for isize {}
++	https://commonmark.org/help/
 +
-+/// Specifies that a type is safely writable to byte slices.
-+///
-+/// This means that we don't read undefined values (which leads to UB) in preparation for writing
-+/// to the byte slice. It also ensures that no potentially sensitive information is leaked into the
-+/// byte slices.
-+///
-+/// # Safety
-+///
-+/// A type must not include padding bytes and must be fully initialised to safely implement
-+/// [`WritableToBytes`] (i.e., it doesn't contain [`MaybeUninit`] fields). A composition of
-+/// writable types in a structure is not necessarily writable because it may result in padding
-+/// bytes.
-+pub unsafe trait WritableToBytes {}
++This is how a well-documented Rust function may look like:
 +
-+// SAFETY: Initialised instances of the following types have no uninitialised portions.
-+unsafe impl WritableToBytes for u8 {}
-+unsafe impl WritableToBytes for u16 {}
-+unsafe impl WritableToBytes for u32 {}
-+unsafe impl WritableToBytes for u64 {}
-+unsafe impl WritableToBytes for usize {}
-+unsafe impl WritableToBytes for i8 {}
-+unsafe impl WritableToBytes for i16 {}
-+unsafe impl WritableToBytes for i32 {}
-+unsafe impl WritableToBytes for i64 {}
-+unsafe impl WritableToBytes for isize {}
-diff --git a/rust/kernel/io_mem.rs b/rust/kernel/io_mem.rs
++.. code-block:: rust
++
++	/// Returns the contained [`Some`] value, consuming the `self` value,
++	/// without checking that the value is not [`None`].
++	///
++	/// # Safety
++	///
++	/// Calling this method on [`None`] is *[undefined behavior]*.
++	///
++	/// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-co=
+nsidered-undefined.html
++	///
++	/// # Examples
++	///
++	/// ```
++	/// let x =3D Some("air");
++	/// assert_eq!(unsafe { x.unwrap_unchecked() }, "air");
++	/// ```
++	pub unsafe fn unwrap_unchecked(self) -> T {
++		match self {
++			Some(val) =3D> val,
++
++			// SAFETY: The safety contract must be upheld by the caller.
++			None =3D> unsafe { hint::unreachable_unchecked() },
++		}
++	}
++
++This example showcases a few ``rustdoc`` features and some conventions fol=
+lowed
++in the kernel:
++
++  - The first paragraph must be a single sentence briefly describing what
++    the documented item does. Further explanations must go in extra paragr=
+aphs.
++
++  - Unsafe functions must document their safety preconditions under
++    a ``# Safety`` section.
++
++  - While not shown here, if a function may panic, the conditions under wh=
+ich
++    that happens must be described under a ``# Panics`` section.
++
++    Please note that panicking should be very rare and used only with a go=
+od
++    reason. In almost all cases, a fallible approach should be used, typic=
+ally
++    returning a ``Result``.
++
++  - If providing examples of usage would help readers, they must be writte=
+n in
++    a section called ``# Examples``.
++
++  - Rust items (functions, types, constants...) must be linked appropriate=
+ly
++    (``rustdoc`` will create a link automatically).
++
++  - Any ``unsafe`` block must be preceded by a ``// SAFETY:`` comment
++    describing why the code inside is sound.
++
++    While sometimes the reason might look trivial and therefore unneeded, =
+writing
++    these comments is not just a good way of documenting what has been tak=
+en into
++    account, but most importantly, it provides a way to know that there are
++    no *extra* implicit constraints.
++
++To learn more about how to write documentation for Rust and extra features,
++please take a look at the ``rustdoc`` `book`_.
++
++.. _book: https://doc.rust-lang.org/rustdoc/how-to-write-documentation.html
++
++
++Naming
++------
++
++Rust kernel code follows the usual Rust naming conventions:
++
++	https://rust-lang.github.io/api-guidelines/naming.html
++
++When existing C concepts (e.g. macros, functions, objects...) are wrapped =
+into
++a Rust abstraction, a name as close as reasonably possible to the C side s=
+hould
++be used in order to avoid confusion and to improve readability when switch=
+ing
++back and forth between the C and Rust sides. For instance, macros such as
++``pr_info`` from C are named the same in the Rust side.
++
++Having said that, casing should be adjusted to follow the Rust naming
++conventions, and namespacing introduced by modules and types should not be
++repeated in the item names. For instance, when wrapping constants like:
++
++.. code-block:: c
++
++	#define GPIO_LINE_DIRECTION_IN	0
++	#define GPIO_LINE_DIRECTION_OUT	1
++
++The equivalent in Rust may look like (ignoring documentation):
++
++.. code-block:: rust
++
++	pub mod gpio {
++	    pub enum LineDirection {
++	        In =3D bindings::GPIO_LINE_DIRECTION_IN as _,
++	        Out =3D bindings::GPIO_LINE_DIRECTION_OUT as _,
++	    }
++	}
++
++That is, the equivalent of ``GPIO_LINE_DIRECTION_IN`` would be referred to=
+ as
++``gpio::LineDirection::In``. In particular, it should not be named
++``gpio::gpio_line_direction::GPIO_LINE_DIRECTION_IN``.
+diff --git a/Documentation/rust/general-information.rst b/Documentation/rus=
+t/general-information.rst
 new file mode 100644
-index 000000000000..496c44f74c7b
+index 000000000000..9ee4c6994d08
 --- /dev/null
-+++ b/rust/kernel/io_mem.rs
-@@ -0,0 +1,227 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/Documentation/rust/general-information.rst
+@@ -0,0 +1,80 @@
++.. _rust_general_information:
 +
-+//! Memory-mapped IO.
-+//!
-+//! C header: [`include/asm-generic/io.h`](../../../../include/asm-generic/io.h)
++General Information
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 +
-+#![allow(dead_code)]
++This document contains useful information to know when working with
++the Rust support in the kernel.
 +
-+use crate::{bindings, Error, Result};
-+use core::convert::TryInto;
 +
-+/// Represents a memory resource.
-+pub struct Resource {
-+    offset: bindings::resource_size_t,
-+    size: bindings::resource_size_t,
-+}
++Code documentation
++------------------
 +
-+impl Resource {
-+    pub(crate) fn new(
-+        start: bindings::resource_size_t,
-+        end: bindings::resource_size_t,
-+    ) -> Option<Self> {
-+        if start == 0 {
-+            return None;
-+        }
-+        Some(Self {
-+            offset: start,
-+            size: end.checked_sub(start)?.checked_add(1)?,
-+        })
-+    }
-+}
++Rust kernel code is documented using ``rustdoc``, its built-in documentati=
+on
++generator.
 +
-+/// Represents a memory block of at least `SIZE` bytes.
-+///
-+/// # Invariants
-+///
-+/// `ptr` is a non-null and valid address of at least `SIZE` bytes and returned by an `ioremap`
-+/// variant. `ptr` is also 8-byte aligned.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::io_mem::{IoMem, Resource};
-+///
-+/// fn test(res: Resource) -> Result {
-+///     // Create an io mem block of at least 100 bytes.
-+///     // SAFETY: No DMA operations are initiated through `mem`.
-+///     let mem = unsafe { IoMem::<100>::try_new(res) }?;
-+///
-+///     // Read one byte from offset 10.
-+///     let v = mem.readb(10);
-+///
-+///     // Write value to offset 20.
-+///     mem.writeb(v, 20);
-+///
-+///     Ok(())
-+/// }
-+///
-+/// ```
-+pub struct IoMem<const SIZE: usize> {
-+    ptr: usize,
-+}
++The generated HTML docs include integrated search, linked items (e.g. type=
+s,
++functions, constants), source code, etc. They may be read at (TODO: link w=
+hen
++in mainline and generated alongside the rest of the documentation):
 +
-+macro_rules! define_read {
-+    ($(#[$attr:meta])* $name:ident, $try_name:ident, $type_name:ty) => {
-+        /// Reads IO data from the given offset known, at compile time.
-+        ///
-+        /// If the offset is not known at compile time, the build will fail.
-+        $(#[$attr])*
-+        pub fn $name(&self, offset: usize) -> $type_name {
-+            Self::check_offset::<$type_name>(offset);
-+            let ptr = self.ptr.wrapping_add(offset);
-+            // SAFETY: The type invariants guarantee that `ptr` is a valid pointer. The check above
-+            // guarantees that the code won't build if `offset` makes the read go out of bounds
-+            // (including the type size).
-+            unsafe { bindings::$name(ptr as _) }
-+        }
++	http://kernel.org/
 +
-+        /// Reads IO data from the given offset.
-+        ///
-+        /// It fails if/when the offset (plus the type size) is out of bounds.
-+        $(#[$attr])*
-+        pub fn $try_name(&self, offset: usize) -> Result<$type_name> {
-+            if !Self::offset_ok::<$type_name>(offset) {
-+                return Err(Error::EINVAL);
-+            }
-+            let ptr = self.ptr.wrapping_add(offset);
-+            // SAFETY: The type invariants guarantee that `ptr` is a valid pointer. The check above
-+            // returns an error if `offset` would make the read go out of bounds (including the
-+            // type size).
-+            Ok(unsafe { bindings::$name(ptr as _) })
-+        }
-+    };
-+}
++The docs can also be easily generated and read locally. This is quite fast
++(same order as compiling the code itself) and no special tools or environm=
+ent
++are needed. This has the added advantage that they will be tailored to
++the particular kernel configuration used. To generate them, use the ``rust=
+doc``
++target with the same invocation used for compilation, e.g.::
 +
-+macro_rules! define_write {
-+    ($(#[$attr:meta])* $name:ident, $try_name:ident, $type_name:ty) => {
-+        /// Writes IO data to the given offset, known at compile time.
-+        ///
-+        /// If the offset is not known at compile time, the build will fail.
-+        $(#[$attr])*
-+        pub fn $name(&self, value: $type_name, offset: usize) {
-+            Self::check_offset::<$type_name>(offset);
-+            let ptr = self.ptr.wrapping_add(offset);
-+            // SAFETY: The type invariants guarantee that `ptr` is a valid pointer. The check above
-+            // guarantees that the code won't link if `offset` makes the write go out of bounds
-+            // (including the type size).
-+            unsafe { bindings::$name(value, ptr as _) }
-+        }
++	make LLVM=3D1 rustdoc
 +
-+        /// Writes IO data to the given offset.
-+        ///
-+        /// It fails if/when the offset (plus the type size) is out of bounds.
-+        $(#[$attr])*
-+        pub fn $try_name(&self, value: $type_name, offset: usize) -> Result {
-+            if !Self::offset_ok::<$type_name>(offset) {
-+                return Err(Error::EINVAL);
-+            }
-+            let ptr = self.ptr.wrapping_add(offset);
-+            // SAFETY: The type invariants guarantee that `ptr` is a valid pointer. The check above
-+            // returns an error if `offset` would make the write go out of bounds (including the
-+            // type size).
-+            unsafe { bindings::$name(value, ptr as _) };
-+            Ok(())
-+        }
-+    };
-+}
++To read the docs locally in your web browser, run e.g.::
 +
-+impl<const SIZE: usize> IoMem<SIZE> {
-+    /// Tries to create a new instance of a memory block.
-+    ///
-+    /// The resource described by `res` is mapped into the CPU's address space so that it can be
-+    /// accessed directly. It is also consumed by this function so that it can't be mapped again
-+    /// to a different address.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that either (a) the resulting interface cannot be used to initiate DMA
-+    /// operations, or (b) that DMA operations initiated via the returned interface use DMA handles
-+    /// allocated through the `dma` module.
-+    pub unsafe fn try_new(res: Resource) -> Result<Self> {
-+        // Check that the resource has at least `SIZE` bytes in it.
-+        if res.size < SIZE.try_into()? {
-+            return Err(Error::EINVAL);
-+        }
++	xdg-open rust/doc/kernel/index.html
 +
-+        // To be able to check pointers at compile time based only on offsets, we need to guarantee
-+        // that the base pointer is minimally aligned. So we conservatively expect at least 8 bytes.
-+        if res.offset % 8 != 0 {
-+            crate::pr_err!("Physical address is not 64-bit aligned: {:x}", res.offset);
-+            return Err(Error::EDOM);
-+        }
++To learn about how to write the documentation, please see the coding guide=
+lines
++at :ref:`Documentation/rust/coding-guidelines.rst <rust_coding_guidelines>=
+`.
 +
-+        // Try to map the resource.
-+        // SAFETY: Just mapping the memory range.
-+        let addr = unsafe { bindings::ioremap(res.offset, res.size as _) };
-+        if addr.is_null() {
-+            Err(Error::ENOMEM)
-+        } else {
-+            // INVARIANT: `addr` is non-null and was returned by `ioremap`, so it is valid. It is
-+            // also 8-byte aligned because we checked it above.
-+            Ok(Self { ptr: addr as usize })
-+        }
-+    }
 +
-+    const fn offset_ok<T>(offset: usize) -> bool {
-+        let type_size = core::mem::size_of::<T>();
-+        if let Some(end) = offset.checked_add(type_size) {
-+            end <= SIZE && offset % type_size == 0
-+        } else {
-+            false
-+        }
-+    }
++Extra lints
++-----------
 +
-+    const fn check_offset<T>(offset: usize) {
-+        crate::build_assert!(Self::offset_ok::<T>(offset), "IoMem offset overflow");
-+    }
++While ``rustc`` is a very helpful compiler, some extra lints and analyses =
+are
++available via ``clippy``, a Rust linter. To enable it, pass ``CLIPPY=3D1``=
+ to
++the same invocation used for compilation, e.g.::
 +
-+    define_read!(readb, try_readb, u8);
-+    define_read!(readw, try_readw, u16);
-+    define_read!(readl, try_readl, u32);
-+    define_read!(
-+        #[cfg(CONFIG_64BIT)]
-+        readq,
-+        try_readq,
-+        u64
-+    );
++	make LLVM=3D1 CLIPPY=3D1
 +
-+    define_read!(readb_relaxed, try_readb_relaxed, u8);
-+    define_read!(readw_relaxed, try_readw_relaxed, u16);
-+    define_read!(readl_relaxed, try_readl_relaxed, u32);
-+    define_read!(
-+        #[cfg(CONFIG_64BIT)]
-+        readq_relaxed,
-+        try_readq_relaxed,
-+        u64
-+    );
++Please note that Clippy may change code generation, thus it should not be
++enabled while building a production kernel.
 +
-+    define_write!(writeb, try_writeb, u8);
-+    define_write!(writew, try_writew, u16);
-+    define_write!(writel, try_writel, u32);
-+    define_write!(
-+        #[cfg(CONFIG_64BIT)]
-+        writeq,
-+        try_writeq,
-+        u64
-+    );
 +
-+    define_write!(writeb_relaxed, try_writeb_relaxed, u8);
-+    define_write!(writew_relaxed, try_writew_relaxed, u16);
-+    define_write!(writel_relaxed, try_writel_relaxed, u32);
-+    define_write!(
-+        #[cfg(CONFIG_64BIT)]
-+        writeq_relaxed,
-+        try_writeq_relaxed,
-+        u64
-+    );
-+}
++Abstractions vs. bindings
++-------------------------
 +
-+impl<const SIZE: usize> Drop for IoMem<SIZE> {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariant, `self.ptr` is a value returned by a previous successful
-+        // call to `ioremap`.
-+        unsafe { bindings::iounmap(self.ptr as _) };
-+    }
-+}
-diff --git a/rust/kernel/iov_iter.rs b/rust/kernel/iov_iter.rs
++Abstractions are Rust code wrapping kernel functionality from the C side.
++
++In order to use functions and types from the C side, bindings are created.
++Bindings are the declarations for Rust of those functions and types from
++the C side.
++
++For instance, one may write a ``Mutex`` abstraction in Rust which wraps
++a ``struct mutex`` from the C side and calls its functions through the bin=
+dings.
++
++Abstractions are not available for all the kernel internal APIs and concep=
+ts,
++but it is intended that coverage is expanded as time goes on. "Leaf" modul=
+es
++(e.g. drivers) should not use the C bindings directly. Instead, subsystems
++should provide as-safe-as-possible abstractions as needed.
++
++
++Conditional compilation
++-----------------------
++
++Rust code has access to conditional compilation based on the kernel
++configuration:
++
++.. code-block:: rust
++
++	#[cfg(CONFIG_X)]       // Enabled               (`y` or `m`)
++	#[cfg(CONFIG_X=3D"y")]   // Enabled as a built-in (`y`)
++	#[cfg(CONFIG_X=3D"m")]   // Enabled as a module   (`m`)
++	#[cfg(not(CONFIG_X))]  // Disabled
+diff --git a/Documentation/rust/index.rst b/Documentation/rust/index.rst
 new file mode 100644
-index 000000000000..fe738c529b84
+index 000000000000..6e20af5b723a
 --- /dev/null
-+++ b/rust/kernel/iov_iter.rs
-@@ -0,0 +1,81 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/Documentation/rust/index.rst
+@@ -0,0 +1,21 @@
++Rust
++=3D=3D=3D=3D
 +
-+//! IO vector iterators.
-+//!
-+//! C header: [`include/linux/uio.h`](../../../../include/linux/uio.h)
++Documentation related to Rust within the kernel. To start using Rust
++in the kernel, please read the
++:ref:`Documentation/rust/quick-start.rst <rust_quick_start>` guide.
 +
-+use crate::{
-+    bindings,
-+    error::Error,
-+    io_buffer::{IoBufferReader, IoBufferWriter},
-+    Result,
-+};
++.. toctree::
++    :maxdepth: 1
 +
-+/// Wraps the kernel's `struct iov_iter`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `IovIter::ptr` is non-null and valid.
-+pub struct IovIter {
-+    ptr: *mut bindings::iov_iter,
-+}
++    quick-start
++    general-information
++    coding-guidelines
++    arch-support
 +
-+impl IovIter {
-+    fn common_len(&self) -> usize {
-+        // SAFETY: `IovIter::ptr` is guaranteed to be valid by the type invariants.
-+        unsafe { (*self.ptr).count }
-+    }
++.. only::  subproject and html
 +
-+    /// Constructs a new [`struct iov_iter`] wrapper.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the object.
-+    pub(crate) unsafe fn from_ptr(ptr: *mut bindings::iov_iter) -> Self {
-+        // INVARIANTS: the safety contract ensures the type invariant will hold.
-+        Self { ptr }
-+    }
-+}
++   Indices
++   =3D=3D=3D=3D=3D=3D=3D
 +
-+impl IoBufferWriter for IovIter {
-+    fn len(&self) -> usize {
-+        self.common_len()
-+    }
-+
-+    fn clear(&mut self, mut len: usize) -> Result {
-+        while len > 0 {
-+            // SAFETY: `IovIter::ptr` is guaranteed to be valid by the type invariants.
-+            let written = unsafe { bindings::iov_iter_zero(len, self.ptr) };
-+            if written == 0 {
-+                return Err(Error::EFAULT);
-+            }
-+
-+            len -= written;
-+        }
-+        Ok(())
-+    }
-+
-+    unsafe fn write_raw(&mut self, data: *const u8, len: usize) -> Result {
-+        let res = unsafe { bindings::copy_to_iter(data as _, len, self.ptr) };
-+        if res != len {
-+            Err(Error::EFAULT)
-+        } else {
-+            Ok(())
-+        }
-+    }
-+}
-+
-+impl IoBufferReader for IovIter {
-+    fn len(&self) -> usize {
-+        self.common_len()
-+    }
-+
-+    unsafe fn read_raw(&mut self, out: *mut u8, len: usize) -> Result {
-+        let res = unsafe { bindings::copy_from_iter(out as _, len, self.ptr) };
-+        if res != len {
-+            Err(Error::EFAULT)
-+        } else {
-+            Ok(())
-+        }
-+    }
-+}
-diff --git a/rust/kernel/irq.rs b/rust/kernel/irq.rs
++   * :ref:`genindex`
+diff --git a/Documentation/rust/logo.svg b/Documentation/rust/logo.svg
 new file mode 100644
-index 000000000000..ca62849a5dc0
+index 000000000000..65be792a5abe
 --- /dev/null
-+++ b/rust/kernel/irq.rs
-@@ -0,0 +1,409 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Interrupts and interrupt chips.
-+//!
-+//! See <https://www.kernel.org/doc/Documentation/core-api/genericirq.rst>.
-+//!
-+//! C headers: [`include/linux/irq.h`](../../../../include/linux/irq.h) and
-+//! [`include/linux/interrupt.h`](../../../../include/linux/interrupt.h).
-+
-+#![allow(dead_code)]
-+
-+use crate::{bindings, c_types, error::from_kernel_result, types::PointerWrapper, Error, Result};
-+use core::ops::Deref;
-+
-+/// The type of irq hardware numbers.
-+pub type HwNumber = bindings::irq_hw_number_t;
-+
-+/// Wraps the kernel's `struct irq_data`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `IrqData::ptr` is non-null and valid.
-+pub struct IrqData {
-+    ptr: *mut bindings::irq_data,
-+}
-+
-+impl IrqData {
-+    /// Creates a new `IrqData` instance from a raw pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `ptr` is non-null and valid when the function is called, and that
-+    /// it remains valid for the lifetime of the return [`IrqData`] instance.
-+    unsafe fn from_ptr(ptr: *mut bindings::irq_data) -> Self {
-+        // INVARIANTS: By the safety requirements, the instance we're creating satisfies the type
-+        // invariants.
-+        Self { ptr }
-+    }
-+
-+    /// Returns the hardware irq number.
-+    pub fn hwirq(&self) -> HwNumber {
-+        // SAFETY: By the type invariants, it's ok to dereference `ptr`.
-+        unsafe { (*self.ptr).hwirq }
-+    }
-+}
-+
-+/// Wraps the kernel's `struct irq_data` when it is locked.
-+///
-+/// Being locked allows additional operations to be performed on the data.
-+pub struct LockedIrqData(IrqData);
-+
-+impl LockedIrqData {
-+    /// Sets the high-level irq flow handler to the builtin one for level-triggered irqs.
-+    pub fn set_level_handler(&mut self) {
-+        // SAFETY: By the type invariants of `self.0`, we know `self.0.ptr` is valid.
-+        unsafe { bindings::irq_set_handler_locked(self.0.ptr, Some(bindings::handle_level_irq)) };
-+    }
-+
-+    /// Sets the high-level irq flow handler to the builtin one for edge-triggered irqs.
-+    pub fn set_edge_handler(&mut self) {
-+        // SAFETY: By the type invariants of `self.0`, we know `self.0.ptr` is valid.
-+        unsafe { bindings::irq_set_handler_locked(self.0.ptr, Some(bindings::handle_edge_irq)) };
-+    }
-+
-+    /// Sets the high-level irq flow handler to the builtin one for bad irqs.
-+    pub fn set_bad_handler(&mut self) {
-+        // SAFETY: By the type invariants of `self.0`, we know `self.0.ptr` is valid.
-+        unsafe { bindings::irq_set_handler_locked(self.0.ptr, Some(bindings::handle_bad_irq)) };
-+    }
-+}
-+
-+impl Deref for LockedIrqData {
-+    type Target = IrqData;
-+
-+    fn deref(&self) -> &Self::Target {
-+        &self.0
-+    }
-+}
-+
-+/// Extra information returned by some of the [`Chip`] methods on success.
-+pub enum ExtraResult {
-+    /// Indicates that the caller (irq core) will update the descriptor state.
-+    None = bindings::IRQ_SET_MASK_OK as _,
-+
-+    /// Indicates that the callee (irq chip implementation) already updated the descriptor state.
-+    NoCopy = bindings::IRQ_SET_MASK_OK_NOCOPY as _,
-+
-+    /// Same as [`ExtraResult::None`] in terms of updating descriptor state. It is used in stacked
-+    /// irq chips to indicate that descendant chips should be skipped.
-+    Done = bindings::IRQ_SET_MASK_OK_DONE as _,
-+}
-+
-+/// An irq chip.
-+///
-+/// It is a trait for the functions defined in [`struct irq_chip`].
-+///
-+/// [`struct irq_chip`]: ../../../include/linux/irq.h
-+pub trait Chip: Sized {
-+    /// The type of the context data stored in the irq chip and made available on each callback.
-+    type Data: PointerWrapper;
-+
-+    /// The methods to use to populate [`struct irq_chip`]. This is typically populated with
-+    /// [`declare_irq_chip_operations`].
-+    const TO_USE: ToUse;
-+
-+    /// Called at the start of a new interrupt.
-+    fn ack(data: <Self::Data as PointerWrapper>::Borrowed<'_>, irq_data: &IrqData);
-+
-+    /// Masks an interrupt source.
-+    fn mask(data: <Self::Data as PointerWrapper>::Borrowed<'_>, irq_data: &IrqData);
-+
-+    /// Unmasks an interrupt source.
-+    fn unmask(_data: <Self::Data as PointerWrapper>::Borrowed<'_>, irq_data: &IrqData);
-+
-+    /// Sets the flow type of an interrupt.
-+    ///
-+    /// The flow type is a combination of the constants in [`Type`].
-+    fn set_type(
-+        _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+        _irq_data: &mut LockedIrqData,
-+        _flow_type: u32,
-+    ) -> Result<ExtraResult> {
-+        Ok(ExtraResult::None)
-+    }
-+
-+    /// Enables or disables power-management wake-on of an interrupt.
-+    fn set_wake(
-+        _data: <Self::Data as PointerWrapper>::Borrowed<'_>,
-+        _irq_data: &IrqData,
-+        _on: bool,
-+    ) -> Result {
-+        Ok(())
-+    }
-+}
-+
-+/// Initialises `chip` with the callbacks defined in `T`.
-+///
-+/// # Safety
-+///
-+/// The caller must ensure that the value stored in the irq chip data is the result of calling
-+/// [`PointerWrapper::into_pointer] for the [`T::Data`] type.
-+pub(crate) unsafe fn init_chip<T: Chip>(chip: &mut bindings::irq_chip) {
-+    chip.irq_ack = Some(irq_ack_callback::<T>);
-+    chip.irq_mask = Some(irq_mask_callback::<T>);
-+    chip.irq_unmask = Some(irq_unmask_callback::<T>);
-+
-+    if T::TO_USE.set_type {
-+        chip.irq_set_type = Some(irq_set_type_callback::<T>);
-+    }
-+
-+    if T::TO_USE.set_wake {
-+        chip.irq_set_wake = Some(irq_set_wake_callback::<T>);
-+    }
-+}
-+
-+/// Represents which fields of [`struct irq_chip`] should be populated with pointers.
-+///
-+/// This is typically populated with the [`declare_irq_chip_operations`] macro.
-+pub struct ToUse {
-+    /// The `irq_set_type` field of [`struct irq_chip`].
-+    pub set_type: bool,
-+
-+    /// The `irq_set_wake` field of [`struct irq_chip`].
-+    pub set_wake: bool,
-+}
-+
-+/// A constant version where all values are to set to `false`, that is, all supported fields will
-+/// be set to null pointers.
-+pub const USE_NONE: ToUse = ToUse {
-+    set_type: false,
-+    set_wake: false,
-+};
-+
-+/// Defines the [`Chip::TO_USE`] field based on a list of fields to be populated.
-+#[macro_export]
-+macro_rules! declare_irq_chip_operations {
-+    () => {
-+        const TO_USE: $crate::irq::ToUse = $crate::irq::USE_NONE;
-+    };
-+    ($($i:ident),+) => {
-+        #[allow(clippy::needless_update)]
-+        const TO_USE: $crate::irq::ToUse =
-+            $crate::irq::ToUse {
-+                $($i: true),+ ,
-+                ..$crate::irq::USE_NONE
-+            };
-+    };
-+}
-+
-+/// Enables or disables power-management wake-on for the given irq number.
-+pub fn set_wake(irq: u32, on: bool) -> Result {
-+    // SAFETY: Just an FFI call, there are no extra requirements for safety.
-+    let ret = unsafe { bindings::irq_set_irq_wake(irq, on as _) };
-+    if ret < 0 {
-+        Err(Error::from_kernel_errno(ret))
-+    } else {
-+        Ok(())
-+    }
-+}
-+
-+unsafe extern "C" fn irq_ack_callback<T: Chip>(irq_data: *mut bindings::irq_data) {
-+    // SAFETY: The safety requirements of `init_chip`, which is the only place that uses this
-+    // callback, ensure that the value stored as irq chip data comes from a previous call to
-+    // `PointerWrapper::into_pointer`.
-+    let data = unsafe { T::Data::borrow(bindings::irq_data_get_irq_chip_data(irq_data)) };
-+
-+    // SAFETY: The value returned by `IrqData` is only valid until the end of this function, and
-+    // `irq_data` is guaranteed to be valid until then (by the contract with C code).
-+    T::ack(data, unsafe { &IrqData::from_ptr(irq_data) })
-+}
-+
-+unsafe extern "C" fn irq_mask_callback<T: Chip>(irq_data: *mut bindings::irq_data) {
-+    // SAFETY: The safety requirements of `init_chip`, which is the only place that uses this
-+    // callback, ensure that the value stored as irq chip data comes from a previous call to
-+    // `PointerWrapper::into_pointer`.
-+    let data = unsafe { T::Data::borrow(bindings::irq_data_get_irq_chip_data(irq_data)) };
-+
-+    // SAFETY: The value returned by `IrqData` is only valid until the end of this function, and
-+    // `irq_data` is guaranteed to be valid until then (by the contract with C code).
-+    T::mask(data, unsafe { &IrqData::from_ptr(irq_data) })
-+}
-+
-+unsafe extern "C" fn irq_unmask_callback<T: Chip>(irq_data: *mut bindings::irq_data) {
-+    // SAFETY: The safety requirements of `init_chip`, which is the only place that uses this
-+    // callback, ensure that the value stored as irq chip data comes from a previous call to
-+    // `PointerWrapper::into_pointer`.
-+    let data = unsafe { T::Data::borrow(bindings::irq_data_get_irq_chip_data(irq_data)) };
-+
-+    // SAFETY: The value returned by `IrqData` is only valid until the end of this function, and
-+    // `irq_data` is guaranteed to be valid until then (by the contract with C code).
-+    T::unmask(data, unsafe { &IrqData::from_ptr(irq_data) })
-+}
-+
-+unsafe extern "C" fn irq_set_type_callback<T: Chip>(
-+    irq_data: *mut bindings::irq_data,
-+    flow_type: c_types::c_uint,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The safety requirements of `init_chip`, which is the only place that uses this
-+        // callback, ensure that the value stored as irq chip data comes from a previous call to
-+        // `PointerWrapper::into_pointer`.
-+        let data = unsafe { T::Data::borrow(bindings::irq_data_get_irq_chip_data(irq_data)) };
-+
-+        // SAFETY: The value returned by `IrqData` is only valid until the end of this function, and
-+        // `irq_data` is guaranteed to be valid until then (by the contract with C code).
-+        let ret = T::set_type(data, &mut LockedIrqData(unsafe { IrqData::from_ptr(irq_data) }), flow_type)?;
-+        Ok(ret as _)
-+    }
-+}
-+
-+unsafe extern "C" fn irq_set_wake_callback<T: Chip>(
-+    irq_data: *mut bindings::irq_data,
-+    on: c_types::c_uint,
-+) -> c_types::c_int {
-+    from_kernel_result! {
-+        // SAFETY: The safety requirements of `init_chip`, which is the only place that uses this
-+        // callback, ensure that the value stored as irq chip data comes from a previous call to
-+        // `PointerWrapper::into_pointer`.
-+        let data = unsafe { T::Data::borrow(bindings::irq_data_get_irq_chip_data(irq_data)) };
-+
-+        // SAFETY: The value returned by `IrqData` is only valid until the end of this function, and
-+        // `irq_data` is guaranteed to be valid until then (by the contract with C code).
-+        T::set_wake(data, unsafe { &IrqData::from_ptr(irq_data) }, on != 0)?;
-+        Ok(0)
-+    }
-+}
-+
-+/// Contains constants that describes how an interrupt can be triggered.
-+///
-+/// It is tagged with `non_exhaustive` to prevent users from instantiating it.
-+#[non_exhaustive]
-+pub struct Type;
-+
-+impl Type {
-+    /// The interrupt cannot be triggered.
-+    pub const NONE: u32 = bindings::IRQ_TYPE_NONE;
-+
-+    /// The interrupt is triggered when the signal goes from low to high.
-+    pub const EDGE_RISING: u32 = bindings::IRQ_TYPE_EDGE_RISING;
-+
-+    /// The interrupt is triggered when the signal goes from high to low.
-+    pub const EDGE_FALLING: u32 = bindings::IRQ_TYPE_EDGE_FALLING;
-+
-+    /// The interrupt is triggered when the signal goes from low to high and when it goes to high
-+    /// to low.
-+    pub const EDGE_BOTH: u32 = bindings::IRQ_TYPE_EDGE_BOTH;
-+
-+    /// The interrupt is triggered while the signal is held high.
-+    pub const LEVEL_HIGH: u32 = bindings::IRQ_TYPE_LEVEL_HIGH;
-+
-+    /// The interrupt is triggered while the signal is held low.
-+    pub const LEVEL_LOW: u32 = bindings::IRQ_TYPE_LEVEL_LOW;
-+}
-+
-+/// Wraps the kernel's `struct irq_desc`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `Descriptor::ptr` is non-null and valid.
-+pub struct Descriptor {
-+    pub(crate) ptr: *mut bindings::irq_desc,
-+}
-+
-+impl Descriptor {
-+    /// Constructs a new `struct irq_desc` wrapper.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the returned object.
-+    unsafe fn from_ptr(ptr: *mut bindings::irq_desc) -> Self {
-+        // INVARIANT: The safety requirements ensure the invariant.
-+        Self { ptr }
-+    }
-+
-+    /// Calls `chained_irq_enter` and returns a guard that calls `chained_irq_exit` once dropped.
-+    ///
-+    /// It is meant to be used by chained irq handlers to dispatch irqs to the next handlers.
-+    pub fn enter_chained(&self) -> ChainedGuard<'_> {
-+        // SAFETY: By the type invariants, `ptr` is always non-null and valid.
-+        let irq_chip = unsafe { bindings::irq_desc_get_chip(self.ptr) };
-+
-+        // SAFETY: By the type invariants, `ptr` is always non-null and valid. `irq_chip` was just
-+        // returned from `ptr`, so it is still valid too.
-+        unsafe { bindings::chained_irq_enter(irq_chip, self.ptr) };
-+        ChainedGuard {
-+            desc: self,
-+            irq_chip,
-+        }
-+    }
-+}
-+
-+/// A guard to call `chained_irq_exit` after `chained_irq_enter` was called.
-+///
-+/// It is also used as evidence that a previous `chained_irq_enter` was called. So there are no
-+/// public constructors and it is only created after indeed calling `chained_irq_enter`.
-+pub struct ChainedGuard<'a> {
-+    desc: &'a Descriptor,
-+    irq_chip: *mut bindings::irq_chip,
-+}
-+
-+impl Drop for ChainedGuard<'_> {
-+    fn drop(&mut self) {
-+        // SAFETY: The lifetime of `ChainedGuard` guarantees that `self.desc` remains valid, so it
-+        // also guarantess `irq_chip` (which was returned from it) and `self.desc.ptr` (guaranteed
-+        // by the type invariants).
-+        unsafe { bindings::chained_irq_exit(self.irq_chip, self.desc.ptr) };
-+    }
-+}
-+
-+/// Wraps the kernel's `struct irq_domain`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `Domain::ptr` is non-null and valid.
-+pub struct Domain {
-+    ptr: *mut bindings::irq_domain,
-+}
-+
-+impl Domain {
-+    /// Constructs a new `struct irq_domain` wrapper.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the returned object.
-+    pub(crate) unsafe fn from_ptr(ptr: *mut bindings::irq_domain) -> Self {
-+        // INVARIANT: The safety requirements ensure the invariant.
-+        Self { ptr }
-+    }
-+
-+    /// Invokes the chained handler of the given hw irq of the given domain.
-+    ///
-+    /// It requires evidence that `chained_irq_enter` was called, which is done by passing a
-+    /// `ChainedGuard` instance.
-+    pub fn generic_handle_chained(&self, hwirq: u32, _guard: &ChainedGuard<'_>) {
-+        // SAFETY: `ptr` is valid by the type invariants.
-+        unsafe { bindings::generic_handle_domain_irq(self.ptr, hwirq) };
-+    }
-+}
-+
-+/// A high-level irq flow handler.
-+pub trait FlowHandler {
-+    /// The data associated with the handler.
-+    type Data: PointerWrapper;
-+
-+    /// Implements the irq flow for the given descriptor.
-+    fn handle_irq_flow(data: <Self::Data as PointerWrapper>::Borrowed<'_>, desc: &Descriptor);
-+}
-+
-+/// Returns the raw irq flow handler corresponding to the (high-level) one defined in `T`.
-+///
-+/// # Safety
-+///
-+/// The caller must ensure that the value stored in the irq handler data (as returned by
-+/// `irq_desc_get_handler_data`) is the result of calling [`PointerWrapper::into_pointer] for the
-+/// [`T::Data`] type.
-+pub(crate) unsafe fn new_flow_handler<T: FlowHandler>() -> bindings::irq_flow_handler_t {
-+    Some(irq_flow_handler::<T>)
-+}
-+
-+unsafe extern "C" fn irq_flow_handler<T: FlowHandler>(desc: *mut bindings::irq_desc) {
-+    // SAFETY: By the safety requirements of `new_flow_handler`, we know that the value returned by
-+    // `irq_desc_get_handler_data` comes from calling `T::Data::into_pointer`. `desc` is valid by
-+    // the C API contract.
-+    let data = unsafe { T::Data::borrow(bindings::irq_desc_get_handler_data(desc)) };
-+
-+    // SAFETY: The C API guarantees that `desc` is valid for the duration of this call, which
-+    // outlives the lifetime returned by `from_desc`.
-+    T::handle_irq_flow(data, &unsafe { Descriptor::from_ptr(desc) });
-+}
-diff --git a/rust/kernel/lib.rs b/rust/kernel/lib.rs
++++ b/Documentation/rust/logo.svg
+@@ -0,0 +1,357 @@
++<?xml version=3D"1.0" encoding=3D"UTF-8"?>
++<svg width=3D"104.5" height=3D"104.5" version=3D"1.1" xmlns=3D"http://www.=
+w3.org/2000/svg" xmlns:xlink=3D"http://www.w3.org/1999/xlink">
++ <defs>
++  <linearGradient id=3D"a">
++   <stop stop-color=3D"#fefefc" offset=3D"0"/>
++   <stop stop-color=3D"#fefefc" offset=3D".75734"/>
++   <stop stop-color=3D"#d4d4d4" offset=3D"1"/>
++  </linearGradient>
++  <linearGradient id=3D"j">
++   <stop stop-color=3D"#b98309" offset=3D"0"/>
++   <stop stop-color=3D"#382605" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bw" x=3D"-.10751" y=3D"-.1085" width=3D"1.215" height=3D"1=
+.217" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"3.9237191"/>
++  </filter>
++  <filter id=3D"bx" x=3D"-.075366" y=3D"-.069725" width=3D"1.1507" height=
+=3D"1.1394" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"2.4365744"/>
++  </filter>
++  <filter id=3D"bv" x=3D"-.033766" y=3D"-.018616" width=3D"1.0675" height=
+=3D"1.0372" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.3702557"/>
++  </filter>
++  <filter id=3D"bl" x=3D"-.10104" y=3D"-.04267" width=3D"1.2021" height=3D=
+"1.0853" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.1322032"/>
++  </filter>
++  <linearGradient id=3D"h">
++   <stop stop-color=3D"#7c7c7c" offset=3D"0"/>
++   <stop stop-color=3D"#7c7c7c" stop-opacity=3D".32941" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bp" x=3D"-.070456" y=3D"-.1506" width=3D"1.1409" height=3D=
+"1.3012" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.0252435"/>
++  </filter>
++  <filter id=3D"bq" x=3D"-.070456" y=3D"-.1506" width=3D"1.1409" height=3D=
+"1.3012" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.0252435"/>
++  </filter>
++  <linearGradient id=3D"i">
++   <stop stop-color=3D"#110800" offset=3D"0"/>
++   <stop stop-color=3D"#a65a00" stop-opacity=3D".8" offset=3D".59067"/>
++   <stop stop-color=3D"#ff921e" stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bo" x=3D"-.20051" y=3D"-.23409" width=3D"1.401" height=3D"=
+1.4682" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"2.8444356"/>
++  </filter>
++  <filter id=3D"bn" x=3D"-.091411" y=3D"-.10672" width=3D"1.1828" height=
+=3D"1.2134" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.2967831"/>
++  </filter>
++  <filter id=3D"be" x=3D"-.43231" y=3D"-.28957" width=3D"1.8646" height=3D=
+"1.5791" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.85991809"/>
++  </filter>
++  <filter id=3D"br" x=3D"-.5806" y=3D"-.48605" width=3D"2.1612" height=3D"=
+1.9721" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"2.6400036"/>
++  </filter>
++  <filter id=3D"bk" x=3D"-.076234" y=3D"-.068211" width=3D"1.1525" height=
+=3D"1.1364" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"2.2091576"/>
++  </filter>
++  <linearGradient id=3D"b">
++   <stop stop-color=3D"#3e2a06" offset=3D"0"/>
++   <stop stop-color=3D"#ad780a" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bu" x=3D"-.14502" y=3D"-.143" width=3D"1.29" height=3D"1.2=
+86" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"4.7787162"/>
++  </filter>
++  <filter id=3D"bt" x=3D"-.11529" y=3D"-.12495" width=3D"1.2306" height=3D=
+"1.2499" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"3.1725155"/>
++  </filter>
++  <filter id=3D"bd" x=3D"-.020912" y=3D"-.12927" width=3D"1.0418" height=
+=3D"1.2585" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.47946431"/>
++  </filter>
++  <filter id=3D"bf" x=3D"-.17755" y=3D"-.15943" width=3D"1.3551" height=3D=
+"1.3189" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.90083196"/>
++  </filter>
++  <filter id=3D"aq" x=3D"-.8166" y=3D"-.057824" width=3D"2.6332" height=3D=
+"1.1156" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.4463082"/>
++  </filter>
++  <linearGradient id=3D"c">
++   <stop offset=3D"0"/>
++   <stop stop-opacity=3D".24887" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"ar" x=3D"-.086908" y=3D"-.08128" width=3D"1.1738" height=
+=3D"1.1626" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.7854602"/>
++  </filter>
++  <filter id=3D"at" x=3D"-.050797" y=3D"-.073276" width=3D"1.1016" height=
+=3D"1.1466" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.1383167"/>
++  </filter>
++  <filter id=3D"as" x=3D"-.049921" y=3D"-.046222" width=3D"1.0998" height=
+=3D"1.0924" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.6434074"/>
++  </filter>
++  <filter id=3D"bs" x=3D"-.11753" y=3D"-.040046" width=3D"1.2351" height=
+=3D"1.0801" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.352085"/>
++  </filter>
++  <linearGradient id=3D"g">
++   <stop stop-color=3D"#d2940a" offset=3D"0"/>
++   <stop stop-color=3D"#d89c08" offset=3D".75144"/>
++   <stop stop-color=3D"#b67e07" offset=3D".86579"/>
++   <stop stop-color=3D"#946106" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bc" x=3D"-.15524" y=3D"-.22072" width=3D"1.3105" height=3D=
+"1.4414" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.89858666"/>
++  </filter>
++  <filter id=3D"bi" x=3D"-.0344" y=3D"-.079385" width=3D"1.0688" height=3D=
+"1.1588" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.75821369"/>
++  </filter>
++  <filter id=3D"bm" x=3D"-.16096" y=3D"-.13028" width=3D"1.3219" height=3D=
+"1.2606" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.84878819"/>
++  </filter>
++  <linearGradient id=3D"e">
++   <stop stop-color=3D"#3a2903" offset=3D"0"/>
++   <stop stop-color=3D"#735208" offset=3D".55473"/>
++   <stop stop-color=3D"#ac8c04" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"bg" x=3D"-.046765" y=3D"-.089099" width=3D"1.0935" height=
+=3D"1.1782" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.11039302"/>
++  </filter>
++  <filter id=3D"bh" x=3D"-.11645" y=3D"-.10573" width=3D"1.2329" height=3D=
+"1.2115" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.11039302"/>
++  </filter>
++  <filter id=3D"bb" x=3D"-.1215" y=3D"-.13611" width=3D"1.243" height=3D"1=
+.2722" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.2640625"/>
++  </filter>
++  <filter id=3D"aw" x=3D"-.23447" y=3D"-.14607" width=3D"1.4689" height=3D=
+"1.2921" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.51262416"/>
++  </filter>
++  <linearGradient id=3D"f">
++   <stop stop-color=3D"#646464" stop-opacity=3D"0" offset=3D"0"/>
++   <stop stop-color=3D"#646464" stop-opacity=3D".58252" offset=3D".30628"/>
++   <stop stop-color=3D"#646464" offset=3D".47"/>
++   <stop stop-color=3D"#646464" stop-opacity=3D".25728" offset=3D".72834"/>
++   <stop stop-color=3D"#646464" stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <filter id=3D"ax" x=3D"-.023088" y=3D"-.025667" width=3D"1.0462" height=
+=3D"1.0513" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.13475369"/>
++  </filter>
++  <filter id=3D"ay" x=3D"-.023071" y=3D"-.025007" width=3D"1.0461" height=
+=3D"1.05" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.1475"/>
++  </filter>
++  <filter id=3D"ba" x=3D"-.15795" y=3D"-.2092" width=3D"1.3159" height=3D"=
+1.4184" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.24891089"/>
++  </filter>
++  <filter id=3D"az" x=3D"-.17868" y=3D"-.18134" width=3D"1.3574" height=3D=
+"1.3627" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.51947927"/>
++  </filter>
++  <filter id=3D"bj" x=3D"-.29218" y=3D"-.30825" width=3D"1.5844" height=3D=
+"1.6165" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"1.7403319"/>
++  </filter>
++  <filter id=3D"av" x=3D"-.036517" y=3D"-.074028" width=3D"1.073" height=
+=3D"1.1481" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"0.93152507"/>
++  </filter>
++  <filter id=3D"au" x=3D"-.076378" y=3D"-.12919" width=3D"1.1528" height=
+=3D"1.2584" color-interpolation-filters=3D"sRGB">
++   <feGaussianBlur stdDeviation=3D"2.0355046"/>
++  </filter>
++  <radialGradient id=3D"z" cx=3D"223.2" cy=3D"137.66" r=3D"14.572" gradien=
+tTransform=3D"matrix(.81524 -.034312 .029611 1.248 -208.44 -35.543)" gradie=
+ntUnits=3D"userSpaceOnUse" xlink:href=3D"#a"/>
++  <radialGradient id=3D"y" cx=3D"223.2" cy=3D"137.66" r=3D"14.572" gradien=
+tTransform=3D"matrix(1.0858 -.034312 .039438 1.248 -233.54 -35.543)" gradie=
+ntUnits=3D"userSpaceOnUse" xlink:href=3D"#a"/>
++  <radialGradient id=3D"x" cx=3D"275.54" cy=3D"150.65" r=3D"15.382" gradie=
+ntTransform=3D"matrix(.69785 -.50717 .46034 .63341 -271.1 183.03)" gradient=
+Units=3D"userSpaceOnUse">
++   <stop stop-color=3D"#020204" offset=3D"0"/>
++   <stop stop-color=3D"#020204" offset=3D".73448"/>
++   <stop stop-color=3D"#5c5c5c" offset=3D"1"/>
++  </radialGradient>
++  <linearGradient id=3D"ap" x1=3D"213.02" x2=3D"219.73" y1=3D"132.77" y2=
+=3D"140.72" gradientTransform=3D"translate(-60 -58.362)" gradientUnits=3D"u=
+serSpaceOnUse">
++   <stop stop-color=3D"#949494" stop-opacity=3D".39216" offset=3D"0"/>
++   <stop stop-color=3D"#949494" offset=3D".5"/>
++   <stop stop-color=3D"#949494" stop-opacity=3D".39216" offset=3D"1"/>
++  </linearGradient>
++  <linearGradient id=3D"ao" x1=3D"337.25" x2=3D"358.62" y1=3D"119.99" y2=
+=3D"132.49" gradientTransform=3D"translate(-250)" gradientUnits=3D"userSpac=
+eOnUse">
++   <stop stop-color=3D"#747474" offset=3D"0"/>
++   <stop stop-color=3D"#8c8c8c" offset=3D".125"/>
++   <stop stop-color=3D"#a4a4a4" offset=3D".25"/>
++   <stop stop-color=3D"#d4d4d4" offset=3D".5"/>
++   <stop stop-color=3D"#d4d4d4" offset=3D".61919"/>
++   <stop stop-color=3D"#7c7c7c" offset=3D"1"/>
++  </linearGradient>
++  <linearGradient id=3D"an" x1=3D"294.51" x2=3D"308.74" y1=3D"114.56" y2=
+=3D"128" gradientTransform=3D"translate(-300 -1)" gradientUnits=3D"userSpac=
+eOnUse" xlink:href=3D"#f"/>
++  <linearGradient id=3D"am" x1=3D"253.23" x2=3D"266.63" y1=3D"115.67" y2=
+=3D"128.57" gradientTransform=3D"translate(-300 -1)" gradientUnits=3D"userS=
+paceOnUse" xlink:href=3D"#f"/>
++  <linearGradient id=3D"al" x1=3D"164.05" x2=3D"169.88" y1=3D"132.06" y2=
+=3D"142.49" gradientTransform=3D"translate(-50 -58.362)" gradientUnits=3D"u=
+serSpaceOnUse">
++   <stop stop-color=3D"#757574" stop-opacity=3D"0" offset=3D"0"/>
++   <stop stop-color=3D"#757574" offset=3D".26291"/>
++   <stop stop-color=3D"#757574" offset=3D".5"/>
++   <stop stop-color=3D"#757574" stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <radialGradient id=3D"w" cx=3D"294.48" cy=3D"193.1" r=3D"31.111" gradien=
+tTransform=3D"matrix(.93619 -.3864 .27133 .65739 -244.48 146.72)" gradientU=
+nits=3D"userSpaceOnUse" xlink:href=3D"#g"/>
++  <linearGradient id=3D"ak" x1=3D"256.86" x2=3D"313.34" y1=3D"158.31" y2=
+=3D"157.87" gradientTransform=3D"translate(-210)" gradientUnits=3D"userSpac=
+eOnUse">
++   <stop stop-color=3D"#ad780a" offset=3D"0"/>
++   <stop stop-color=3D"#d89e08" offset=3D".11973"/>
++   <stop stop-color=3D"#edb80b" offset=3D".25514"/>
++   <stop stop-color=3D"#ebc80d" offset=3D".39194"/>
++   <stop stop-color=3D"#f5d838" offset=3D".52741"/>
++   <stop stop-color=3D"#f6d811" offset=3D".76907"/>
++   <stop stop-color=3D"#f5cd31" offset=3D"1"/>
++  </linearGradient>
++  <radialGradient id=3D"v" cx=3D"77.672" cy=3D"147.09" r=3D"3.2301" gradie=
+ntTransform=3D"matrix(1 0 0 .58333 60 3.054)" gradientUnits=3D"userSpaceOnU=
+se" xlink:href=3D"#e"/>
++  <radialGradient id=3D"u" cx=3D"63.125" cy=3D"147.44" r=3D"1.535" gradien=
+tTransform=3D"matrix(1 0 0 1.0751 60 -69.456)" gradientUnits=3D"userSpaceOn=
+Use" xlink:href=3D"#e"/>
++  <linearGradient id=3D"aj" x1=3D"243.03" x2=3D"243.47" y1=3D"157.02" y2=
+=3D"159.77" gradientUnits=3D"userSpaceOnUse">
++   <stop stop-color=3D"#f5ce2d" offset=3D"0"/>
++   <stop stop-color=3D"#d79b08" offset=3D"1"/>
++  </linearGradient>
++  <radialGradient id=3D"t" cx=3D"268.07" cy=3D"126.53" r=3D"35.511" gradie=
+ntTransform=3D"matrix(.20141 -.033161 .03065 .18616 -3.1264 114.04)" gradie=
+ntUnits=3D"userSpaceOnUse">
++   <stop stop-color=3D"#c8c8c8" offset=3D"0"/>
++   <stop stop-color=3D"#797978" offset=3D"1"/>
++  </radialGradient>
++  <radialGradient id=3D"s" cx=3D"336.22" cy=3D"220.54" r=3D"27.391" gradie=
+ntTransform=3D"matrix(-.69844 0 0 .76336 166.31 50.22)" gradientUnits=3D"us=
+erSpaceOnUse" xlink:href=3D"#c"/>
++  <radialGradient id=3D"r" cx=3D"312.15" cy=3D"236.37" r=3D"27.391" gradie=
+ntTransform=3D"matrix(1 0 0 .76336 -150 -8.1422)" gradientUnits=3D"userSpac=
+eOnUse" xlink:href=3D"#c"/>
++  <radialGradient id=3D"q" cx=3D"275.55" cy=3D"225.13" r=3D"10.845" gradie=
+ntTransform=3D"matrix(1 0 0 1.0692 -150 -73.222)" gradientUnits=3D"userSpac=
+eOnUse" xlink:href=3D"#c"/>
++  <linearGradient id=3D"ai" x1=3D"338.29" x2=3D"341.98" y1=3D"323.9" y2=3D=
+"351.49" gradientTransform=3D"translate(-310)" gradientUnits=3D"userSpaceOn=
+Use">
++   <stop offset=3D"0"/>
++   <stop stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <linearGradient id=3D"ah" x1=3D"442.04" x2=3D"490.12" y1=3D"371.54" y2=
+=3D"293.59" gradientTransform=3D"translate(-250 -58.362)" gradientUnits=3D"=
+userSpaceOnUse" xlink:href=3D"#b"/>
++  <linearGradient id=3D"ag" x1=3D"355.16" x2=3D"353.75" y1=3D"289.59" y2=
+=3D"302.32" gradientTransform=3D"translate(-150 -60.362)" gradientUnits=3D"=
+userSpaceOnUse">
++   <stop stop-color=3D"#f3cd0c" offset=3D"0"/>
++   <stop stop-color=3D"#f3cd0c" stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <radialGradient id=3D"p" cx=3D"363.34" cy=3D"303.42" r=3D"16.846" gradie=
+ntTransform=3D"matrix(1.3082 .35053 -.36795 1.3732 -150.51 -298.71)" gradie=
+ntUnits=3D"userSpaceOnUse" xlink:href=3D"#i"/>
++  <radialGradient id=3D"o" cx=3D"363.34" cy=3D"303.42" r=3D"16.846" gradie=
+ntTransform=3D"matrix(1.3082 .35053 -.36795 1.3732 -310.51 -240.35)" gradie=
+ntUnits=3D"userSpaceOnUse" xlink:href=3D"#i"/>
++  <radialGradient id=3D"n" cx=3D"382.23" cy=3D"246.86" r=3D"20.538" gradie=
+ntTransform=3D"matrix(.36025 .1568 -.072468 .16649 260.62 181.94)" gradient=
+Units=3D"userSpaceOnUse" xlink:href=3D"#h"/>
++  <linearGradient id=3D"af" x1=3D"358.5" x2=3D"361.5" y1=3D"279.36" y2=3D"=
+279.24" gradientUnits=3D"userSpaceOnUse" xlink:href=3D"#h"/>
++  <linearGradient id=3D"ae" x1=3D"123.13" x2=3D"170.86" y1=3D"301.54" y2=
+=3D"381.62" gradientTransform=3D"translate(-80 -58.362)" gradientUnits=3D"u=
+serSpaceOnUse" xlink:href=3D"#j"/>
++  <linearGradient id=3D"ad" x1=3D"171.57" x2=3D"186.6" y1=3D"323.99" y2=3D=
+"352.28" gradientTransform=3D"translate(-80.53 -60.13)" gradientUnits=3D"us=
+erSpaceOnUse">
++   <stop stop-color=3D"#ebc40c" offset=3D"0"/>
++   <stop stop-color=3D"#ebc40c" stop-opacity=3D"0" offset=3D"1"/>
++  </linearGradient>
++  <clipPath id=3D"cl">
++   <path transform=3D"matrix(1 0 0 1.0183 0 -4.0313)" d=3D"m137.58 281.02c=
+1.5993-0.66295 3.3982-0.78361 5.1007-0.46963 1.7025 0.31398 3.3114 1.0495 4=
+.7434 2.0224 2.864 1.9458 4.9882 4.7777 7.0226 7.5795 4.6719 6.4341 9.1687 =
+13.002 13.245 19.829 3.3064 5.5377 6.3435 11.257 10.164 16.453 2.494 3.3919=
+ 5.3066 6.5395 7.813 9.9222 2.5064 3.3827 4.7279 7.0559 5.8393 11.117 1.444=
+1 5.2765 0.88463 11.093-1.6267 15.953-1.7666 3.419-4.4765 6.3523-7.7724 8.3=
+39-3.296 1.9867-7.1706 3.0144-11.016 2.8702-6.1141-0.2293-11.699-3.2852-17.=
+384-5.5491-11.581-4.6125-24.16-6.0594-36.097-9.6517-3.6686-1.104-7.2758-2.4=
+107-10.97-3.4263-1.6412-0.45122-3.3087-0.8482-4.8588-1.5514-1.5501-0.70325-=
+2.9995-1.7491-3.8617-3.2168-0.66639-1.1344-0.94839-2.47-0.93019-3.7855 0.01=
+82-1.3155 0.32589-2.6145 0.77382-3.8516 0.89585-2.4741 2.3433-4.7137 3.3202=
+-7.157 1.5951-3.9894 1.8817-8.3884 1.6666-12.679-0.21511-4.291-0.91078-8.54=
+48-1.2045-12.831-0.13118-1.9141-0.18066-3.8526 0.18479-5.736 0.36545-1.8834=
+ 1.1758-3.7246 2.5577-5.0554 1.2741-1.2269 2.9649-1.9553 4.6964-2.3165s3.51=
+53-0.37747 5.2837-0.33762c1.7683 0.0399 3.5407 0.13425 5.3035-0.0106 1.7628=
+-0.14488 3.5335-0.54055 5.0691-1.4183 1.46-0.83447 2.6543-2.0745 3.6437-3.4=
+342 0.9894-1.3597 1.7891-2.8457 2.6089-4.314 0.81983-1.4682 1.6683-2.9315 2=
+.7416-4.2261 1.0732-1.2946 2.3892-2.423 3.9427-3.067" fill=3D"url(#d)"/>
++  </clipPath>
++  <linearGradient id=3D"d" x1=3D"123.13" x2=3D"170.86" y1=3D"301.54" y2=3D=
+"381.62" gradientUnits=3D"userSpaceOnUse" xlink:href=3D"#j"/>
++  <clipPath id=3D"ck">
++   <path transform=3D"translate(-240 -1)" d=3D"m137.58 281.02c1.5993-0.662=
+95 3.3982-0.78361 5.1007-0.46963 1.7025 0.31398 3.3114 1.0495 4.7434 2.0224=
+ 2.864 1.9458 4.9882 4.7777 7.0226 7.5795 4.6719 6.4341 9.1687 13.002 13.24=
+5 19.829 3.3064 5.5377 6.3435 11.257 10.164 16.453 2.494 3.3919 5.3066 6.53=
+95 7.813 9.9222 2.5064 3.3827 4.7279 7.0559 5.8393 11.117 1.4441 5.2765 0.8=
+8463 11.093-1.6267 15.953-1.7666 3.419-4.4765 6.3523-7.7724 8.339-3.296 1.9=
+867-7.1706 3.0144-11.016 2.8702-6.1141-0.2293-11.699-3.2852-17.384-5.5491-1=
+1.581-4.6125-24.16-6.0594-36.097-9.6517-3.6686-1.104-7.2758-2.4107-10.97-3.=
+4263-1.6412-0.45122-3.3087-0.8482-4.8588-1.5514-1.5501-0.70325-2.9995-1.749=
+1-3.8617-3.2168-0.66639-1.1344-0.94839-2.47-0.93019-3.7855 0.0182-1.3155 0.=
+32589-2.6145 0.77382-3.8516 0.89585-2.4741 2.3433-4.7137 3.3202-7.157 1.595=
+1-3.9894 1.8817-8.3884 1.6666-12.679-0.21511-4.291-0.91078-8.5448-1.2045-12=
+.831-0.13118-1.9141-0.18066-3.8526 0.18479-5.736 0.36545-1.8834 1.1758-3.72=
+46 2.5577-5.0554 1.2741-1.2269 2.9649-1.9553 4.6964-2.3165s3.5153-0.37747 5=
+.2837-0.33762c1.7683 0.0399 3.5407 0.13425 5.3035-0.0106 1.7628-0.14488 3.5=
+335-0.54055 5.0691-1.4183 1.46-0.83447 2.6543-2.0745 3.6437-3.4342 0.9894-1=
+.3597 1.7891-2.8457 2.6089-4.314 0.81983-1.4682 1.6683-2.9315 2.7416-4.2261=
+ 1.0732-1.2946 2.3892-2.423 3.9427-3.067" fill=3D"url(#d)"/>
++  </clipPath>
++  <clipPath id=3D"cj">
++   <path d=3D"m513.19 336.61c-2.6238 3.1148-6.268 5.1704-9.8965 7.0198-6.1=
+886 3.1544-12.602 5.9218-18.42 9.7165-3.898 2.5425-7.4959 5.5267-10.86 8.74=
+24-2.8772 2.7501-5.6058 5.6874-8.8325 8.0177-3.2557 2.3512-7.0192 4.0543-10=
+.991 4.6502-4.8303 0.72481-9.8213-0.21289-14.299-2.1642-3.1375-1.3673-6.155=
+7-3.3229-7.963-6.2293-1.8142-2.9175-2.2281-6.4881-2.2327-9.9238-8e-3 -6.076=
+7 1.1182-12.09 2.1785-18.073 0.88097-4.9718 1.7195-9.9548 2.2601-14.975 0.9=
+8337-9.1312 0.9763-18.353 0.3199-27.513-0.10993-1.5342-0.23754-3.0832-8e-3 =
+-4.6041 0.22922-1.5209 0.85475-3.0367 2.0207-4.0399 1.077-0.9266 2.5209-1.3=
+36 3.9395-1.4145 1.4185-0.0785 2.834 0.14655 4.2398 0.35197 3.3125 0.48405 =
+6.6516 0.8649 9.8892 1.7166 2.0428 0.53738 4.0332 1.2592 6.0722 1.8108 3.40=
+26 0.92039 6.9664 1.3614 10.467 0.95192 3.7692-0.44089 7.4299-1.8568 11.224=
+-1.7647 1.5566 0.0378 3.1015 0.33171 4.5865 0.79985 1.5154 0.47772 3.0091 1=
+.1618 4.1228 2.2951 0.84639 0.8613 1.4358 1.9454 1.8787 3.0688 0.65982 1.67=
+35 1.0149 3.457 1.167 5.2494 0.13475 1.5879 0.11343 3.1944 0.41433 4.7593 0=
+.49503 2.5746 1.8475 4.923 3.5285 6.9349s3.6898 3.7205 5.6964 5.4078c1.9991=
+ 1.681 4.0106 3.3547 6.1671 4.8284 1.0121 0.69165 2.0564 1.3395 3.0174 2.10=
+06s1.8447 1.6468 2.4454 2.7154c0.81492 1.4494 1.0638 3.2077 0.53758 4.8766-=
+0.5262 1.6688-1.4816 3.2766-2.6706 4.6881z" fill=3D"url(#ac)"/>
++  </clipPath>
++  <linearGradient id=3D"ac" x1=3D"442.04" x2=3D"490.12" y1=3D"371.54" y2=
+=3D"293.59" gradientTransform=3D"translate(-250 -58.362)" gradientUnits=3D"=
+userSpaceOnUse" xlink:href=3D"#b"/>
++  <clipPath id=3D"ci">
++   <path d=3D"m509.36 335.74c-2.2956 2.5276-5.4839 4.1957-8.6585 5.6965-5.=
+4145 2.5597-11.025 4.8054-16.116 7.8848-3.4104 2.0632-6.5582 4.4849-9.5017 =
+7.0943-2.5173 2.2317-4.9046 4.6153-7.7276 6.5063-2.8484 1.908-6.1411 3.29-9=
+.6158 3.7736-4.2261 0.58818-8.5928-0.17275-12.51-1.7562-2.7451-1.1095-5.385=
+7-2.6965-6.9669-5.055-1.5873-2.3676-1.9494-5.265-1.9534-8.053-7e-3 -4.9311 =
+0.97837-9.8109 1.906-14.666 0.77077-4.0345 1.5044-8.0782 1.9774-12.152 0.86=
+036-7.4098 0.85417-14.893 0.27988-22.327-0.0962-1.245-0.20783-2.502-7e-3 -3=
+.7362 0.20055-1.2342 0.74783-2.4642 1.7679-3.2783 0.94224-0.75193 2.2056-1.=
+0841 3.4467-1.1478 1.2411-0.0637 2.4795 0.11892 3.7095 0.28562 2.8982 0.392=
+8 5.8196 0.70185 8.6522 1.393 1.7873 0.43608 3.5286 1.0219 5.3126 1.4694 2.=
+977 0.74689 6.095 1.1048 9.158 0.77247 3.2977-0.35777 6.5005-1.5068 9.8197-=
+1.4321 1.3619 0.0307 2.7135 0.26918 4.0128 0.64907 1.3258 0.38766 2.6327 0.=
+9428 3.6071 1.8625 0.74051 0.69893 1.2562 1.5787 1.6437 2.4903 0.57728 1.35=
+8 0.88797 2.8053 1.021 4.2599 0.11789 1.2885 0.0992 2.5922 0.3625 3.8621 0.=
+43311 2.0892 1.6164 3.995 3.0871 5.6276 1.4707 1.6326 3.2283 3.0191 4.9839 =
+4.3884 1.749 1.3641 3.5089 2.7223 5.3956 3.9182 0.8855 0.56126 1.7992 1.087=
+ 2.6399 1.7046 0.84074 0.61765 1.6139 1.3364 2.1395 2.2035 0.71298 1.1762 0=
+.93071 2.603 0.47034 3.9573-0.46038 1.3542-1.2963 2.6589-2.3365 3.8043z" fi=
+ll=3D"url(#ab)"/>
++  </clipPath>
++  <linearGradient id=3D"ab" x1=3D"442.04" x2=3D"490.12" y1=3D"371.54" y2=
+=3D"293.59" gradientTransform=3D"matrix(.87491 0 0 .81149 -158.36 15.227)" =
+gradientUnits=3D"userSpaceOnUse" xlink:href=3D"#b"/>
++  <clipPath id=3D"ch">
++   <path d=3D"m263.19 278.25c-2.6238 3.1148-6.268 5.1704-9.8965 7.0198-6.1=
+886 3.1544-12.602 5.9218-18.42 9.7165-3.898 2.5425-7.4959 5.5267-10.86 8.74=
+24-2.8772 2.7501-5.6058 5.6874-8.8325 8.0177-3.2557 2.3512-7.0192 4.0543-10=
+.991 4.6502-4.8303 0.72481-9.8213-0.21289-14.299-2.1642-3.1375-1.3673-6.155=
+7-3.3229-7.963-6.2293-1.8142-2.9175-2.2281-6.4881-2.2327-9.9238-8e-3 -6.076=
+7 1.1182-12.09 2.1785-18.073 0.88097-4.9718 1.7195-9.9548 2.2601-14.975 0.9=
+8337-9.1312 0.9763-18.353 0.3199-27.513-0.10993-1.5342-0.23754-3.0832-8e-3 =
+-4.6041 0.22922-1.5209 0.85475-3.0367 2.0207-4.0399 1.077-0.9266 2.5209-1.3=
+36 3.9395-1.4145 1.4185-0.0785 2.834 0.14655 4.2398 0.35197 3.3125 0.48405 =
+6.6516 0.8649 9.8892 1.7166 2.0428 0.53738 4.0332 1.2592 6.0722 1.8108 3.40=
+26 0.92039 6.9664 1.3614 10.467 0.95192 3.7692-0.44089 7.4299-1.8568 11.224=
+-1.7647 1.5566 0.0378 3.1015 0.33171 4.5865 0.79985 1.5154 0.47772 3.0091 1=
+.1618 4.1228 2.2951 0.84639 0.8613 1.4358 1.9454 1.8787 3.0688 0.65982 1.67=
+35 1.0149 3.457 1.167 5.2494 0.13475 1.5879 0.11343 3.1944 0.41433 4.7593 0=
+.49503 2.5746 1.8475 4.923 3.5285 6.9349s3.6898 3.7205 5.6964 5.4078c1.9991=
+ 1.681 4.0106 3.3547 6.1671 4.8284 1.0121 0.69165 2.0564 1.3395 3.0174 2.10=
+06s1.8447 1.6468 2.4454 2.7154c0.81492 1.4494 1.0638 3.2077 0.53758 4.8766-=
+0.5262 1.6688-1.4816 3.2766-2.6706 4.6881z" fill=3D"url(#aa)"/>
++  </clipPath>
++  <linearGradient id=3D"aa" x1=3D"442.04" x2=3D"490.12" y1=3D"371.54" y2=
+=3D"293.59" gradientTransform=3D"translate(-500 -116.72)" gradientUnits=3D"=
+userSpaceOnUse" xlink:href=3D"#b"/>
++  <clipPath id=3D"cg">
++   <path d=3D"m304.85 225.45c5.9768 4.8946 9.769 12.286 10.943 20.003 0.91=
+574 6.0186 0.32054 12.195-1.0124 18.132-1.3329 5.9373-3.3909 11.676-5.4335 =
+17.401-0.81452 2.2827-1.6327 4.5871-1.9563 6.9933-0.32365 2.4062-0.1187 4.9=
+543 1.0211 7.0878 1.3066 2.4458 3.7453 4.1302 6.3668 4.9229 2.5882 0.78263 =
+5.3837 0.76618 8.0035 0.10153 2.6198-0.66466 5.0658-1.9634 7.1983-3.6493 5.=
+4176-4.2831 8.6866-10.949 9.952-17.812 1.2654-6.8634 0.68401-13.95-0.49258-=
+20.83-1.6044-9.3814-4.3039-18.551-7.74-27.408-2.5275-6.5147-5.7653-12.742-9=
+.6175-18.52-3.7793-5.6684-9.1416-10.093-13.103-15.635-1.3764-1.9255-3.0319-=
+3.9316-4.3842-5.8784-2.9158-4.1977-2.2554-3.4145-4.0642-6.1316-1.3124-1.971=
+3-3.3845-2.6487-5.5649-3.511-2.1804-0.86226-4.629-1.1162-6.8806-0.47108-2.9=
+678 0.85034-5.3923 3.2311-6.6822 6.0821s-1.5154 6.1231-1.0136 9.2201c0.6473=
+9 3.9954 2.4422 7.7026 4.4657 11.189 2.2854 3.9372 4.9328 7.7271 8.3844 10.=
+654 3.602 3.0546 7.9577 5.0688 11.611 8.0602" fill=3D"#020204"/>
++  </clipPath>
++  <clipPath id=3D"cf">
++   <path d=3D"m240.47 195.04c-7.0731 8.0369-14.352 15.816-18.346 24.505-1.=
+9762 4.4133-2.9108 9.2072-4.265 13.849-1.5379 5.2718-3.6261 10.37-5.9707 15=
+.336-2.165 4.5853-4.5498 9.0629-6.9389 13.536-1.7382 3.2541-3.5051 6.581-4.=
+1078 10.221-0.47628 2.8763-0.1985 5.8442 0.53375 8.6663 0.73225 2.822 1.909=
+6 5.5106 3.2378 8.106 5.6672 11.075 14.17 20.622 24.242 27.925 4.5706 3.314=
+2 9.4667 6.1811 14.602 8.526 2.7825 1.2704 5.7136 2.4044 8.7719 2.4574 1.52=
+92 0.0265 3.0741-0.22544 4.4743-0.84055 1.4002-0.6151 2.6507-1.6037 3.4825-=
+2.8871 1.0228-1.5779 1.3699-3.5383 1.1646-5.4074-0.2053-1.8691-0.93484-3.65=
+29-1.9132-5.2587-2.39-3.9225-6.1652-6.7606-9.7964-9.5734-7.8406-6.0736-15.4=
+25-12.48-22.682-19.24-2.0491-1.9085-4.0984-3.8776-5.5302-6.2841-1.3943-2.34=
+35-2.1476-5.0138-2.6578-7.6925-1.3997-7.3487-1.0409-15.083 1.4596-22.133 0.=
+97822-2.7583 2.2712-5.392 3.5182-8.0396 2.1613-4.5891 4.2072-9.2656 7.0493-=
+13.467 3.538-5.2304 8.2675-9.6605 11.151-15.278 2.4342-4.7415 3.4199-10.072=
+ 4.3618-15.318 0.73693-4.1043 2.1504-8.1244 2.8692-12.232-1.4061 2.6657-5.9=
+38 7.0428-8.7107 10.525z" fill=3D"#020204"/>
++  </clipPath>
++  <clipPath id=3D"ce">
++   <path d=3D"m386.19 285.33c-0.40516-1.1037-1.1184-2.0816-1.9907-2.8699-0=
+.87226-0.78832-1.9005-1.3923-2.9828-1.8516-2.1646-0.91852-4.5205-1.2615-6.8=
+315-1.6956-2.1792-0.40931-4.3418-0.90631-6.5278-1.2773-2.2714-0.38551-4.617=
+9-0.63213-6.8653-0.1253-1.9658 0.44333-3.7845 1.4588-5.2717 2.8186-1.4872 1=
+.3598-2.6491 3.0564-3.485 4.8901-1.4722 3.2295-1.9345 6.865-1.6539 10.403 0=
+.20881 2.6332 0.87532 5.3459 2.6088 7.3391 1.4006 1.6105 3.3873 2.6153 5.43=
+4 3.2209 3.525 1.0432 7.3666 0.98822 10.86-0.1553 5.7669-1.9311 10.876-5.77=
+39 14.33-10.779 1.1386-1.6496 2.1122-3.4481 2.5532-5.4034 0.33597-1.4896 0.=
+34831-3.0811-0.1779-4.5146" fill=3D"#020204"/>
++  </clipPath>
++  <clipPath id=3D"cd">
++   <path d=3D"m386.19 285.33c-0.40516-1.1037-1.1184-2.0816-1.9907-2.8699-0=
+.87226-0.78832-1.9005-1.3923-2.9828-1.8516-2.1646-0.91852-4.5205-1.2615-6.8=
+315-1.6956-2.1792-0.40931-4.3418-0.90631-6.5278-1.2773-2.2714-0.38551-4.617=
+9-0.63213-6.8653-0.1253-1.9658 0.44333-3.7845 1.4588-5.2717 2.8186-1.4872 1=
+.3598-2.6491 3.0564-3.485 4.8901-1.4722 3.2295-1.9345 6.865-1.6539 10.403 0=
+.20881 2.6332 0.87532 5.3459 2.6088 7.3391 1.4006 1.6105 3.3873 2.6153 5.43=
+4 3.2209 3.525 1.0432 7.3666 0.98822 10.86-0.1553 5.7669-1.9311 10.876-5.77=
+39 14.33-10.779 1.1386-1.6496 2.1122-3.4481 2.5532-5.4034 0.33597-1.4896 0.=
+34831-3.0811-0.1779-4.5146" fill=3D"#020204"/>
++  </clipPath>
++  <clipPath id=3D"cc">
++   <path d=3D"m85.75 122.36c-2.7804 1.9102-5.1106 4.5749-6.25 7.75-1.436 4=
+.0016-0.88584 8.4807 0.5 12.5 1.4195 4.1169 3.7938 8.041 7.3793 10.512 1.79=
+28 1.2357 3.8681 2.083 6.0304 2.3386s4.4093-0.0949 6.3403-1.1009c2.3531-1.2=
+26 4.1478-3.3728 5.2622-5.7808 1.1144-2.408 1.5888-5.0701 1.7378-7.7192 0.1=
+8989-3.3755-0.14047-6.8065-1.25-10-1.2053-3.4691-3.39-6.6706-6.4728-8.6666-=
+1.5414-0.99803-3.292-1.6836-5.1109-1.9352-1.8189-0.25158-3.7048-0.0633-5.41=
+64 0.60175-0.97547 0.37901-1.8874 0.9074-2.75 1.5" fill=3D"url(#m)"/>
++  </clipPath>
++  <radialGradient id=3D"m" cx=3D"223.2" cy=3D"137.66" r=3D"14.572" gradien=
+tTransform=3D"matrix(1.0858 -.034312 .039438 1.248 -15.542 -75.905)" gradie=
+ntUnits=3D"userSpaceOnUse" xlink:href=3D"#a"/>
++  <clipPath id=3D"cb">
++   <path d=3D"m54.232 122.36c-1.781 0.097-3.4846 0.91899-4.7878 2.1367-1.3=
+032 1.2177-2.2214 2.8118-2.7862 4.5036-1.1296 3.3836-0.87548 7.0518-0.6187 =
+10.61 0.23251 3.2216 0.47041 6.5053 1.6768 9.5016 0.60319 1.4981 1.4502 2.9=
+102 2.5803 4.064 1.1301 1.1537 2.5517 2.0419 4.1183 2.4345 1.4688 0.36809 3=
+.0382 0.29183 4.4828-0.16209 1.4446-0.45392 2.7639-1.2789 3.8462-2.3379 1.5=
+79-1.5451 2.6433-3.5662 3.2534-5.6895 0.61019-2.1233 0.78416-4.3516 0.7524-=
+6.5605-0.0397-2.7644-0.40091-5.5385-1.2658-8.1644-0.86485-2.6259-2.2458-5.1=
+033-4.1728-7.0856-0.93331-0.96009-1.9978-1.8051-3.1986-2.3975-1.2008-0.5923=
+3-2.5434-0.92535-3.8804-0.85253" fill=3D"url(#l)"/>
++  </clipPath>
++  <radialGradient id=3D"l" cx=3D"223.2" cy=3D"137.66" r=3D"14.572" gradien=
+tTransform=3D"matrix(.81524 -.034312 .029611 1.248 9.5624 -75.905)" gradien=
+tUnits=3D"userSpaceOnUse" xlink:href=3D"#a"/>
++  <clipPath id=3D"ca">
++   <path d=3D"m214.64 148.04c-2.5103-0.0409-4.9914 0.28921-7.2715 0.88384-=
+4.0525 1.0569-7.5737 2.9393-10.085 5.3932-1.6281 0.85539-3.05 1.8992-4.2072=
+ 3.0864-0.66186 0.67901-1.2439 1.4169-1.5013 2.2476-0.20244 0.65333-0.19857=
+ 1.3447-0.28524 2.0199-0.0324 0.25293-0.0778 0.5073-0.0362 0.76548 0.0208 0=
+.12909 0.0631 0.25809 0.13756 0.38081 0.0221 0.0364 0.0528 0.0707 0.0806 0.=
+1055 0.0825 0.15031 0.18297 0.29681 0.31473 0.43099 0.28806 0.29334 0.68023=
+ 0.53107 1.0942 0.73203 0.41394 0.20097 0.85255 0.36757 1.2815 0.54936 2.28=
+01 0.96628 4.2277 2.3246 5.9925 3.7592 2.3677 1.9248 4.5294 4.061 7.5099 5.=
+46 2.1046 0.98794 4.5277 1.552 6.926 1.724 2.8164 0.20193 5.5852-0.12293 8.=
+1817-0.69344 2.4063-0.52873 4.6967-1.2713 6.752-2.254 3.907-1.868 6.987-4.6=
+063 11.424-5.8344 0.96876-0.2681 1.9904-0.45921 2.9132-0.78993s1.763-0.8265=
+ 2.1195-1.5271c0.34261-0.67347 0.2049-1.4503 0.23569-2.1897 0.0329-0.791 0.=
+26357-1.5559 0.33312-2.3428 0.0695-0.78687-0.0382-1.6289-0.62199-2.3518-0.1=
+2955-0.16043-0.28324-0.31001-0.45163-0.45157-0.0509-0.29235-0.22134-0.58029=
+-0.46622-0.83239-0.50487-0.51975-1.2933-0.87172-2.0952-1.1167-1.0982-0.3355=
+5-2.256-0.50211-3.3989-0.69601-3.5109-0.59565-6.9696-1.4754-10.295-2.6039-1=
+.653-0.56104-3.2707-1.1833-4.9042-1.7793-1.6793-0.61273-3.3867-1.201-5.1652=
+-1.5773-1.4911-0.31546-3.0064-0.47332-4.5126-0.49788z" fill=3D"url(#k)"/>
++  </clipPath>
++  <radialGradient id=3D"k" cx=3D"294.48" cy=3D"193.1" r=3D"31.111" gradien=
+tTransform=3D"matrix(.81495 -.25453 .31491 .43302 -75.371 150.74)" gradient=
+Units=3D"userSpaceOnUse" xlink:href=3D"#g"/>
++  <clipPath id=3D"bz">
++   <path d=3D"m-26.296 154.81c-1.0464 1.3114-1.7277 2.8873-2.1393 4.5137-0=
+.41153 1.6264-0.56228 3.308-0.62653 4.9845-0.12849 3.3529 0.0765 6.7702-0.8=
+1096 10.006-0.94874 3.4595-3.076 6.4565-5.1576 9.378-3.6048 5.0592-7.2485 1=
+0.25-9.0271 16.202-1.0771 3.6047-1.4356 7.4226-1.0484 11.165-4.0353 5.9262-=
+7.5289 12.221-10.423 18.781-4.3862 9.9416-7.3961 20.526-8.4546 31.341-1.296=
+1 13.242 0.39758 26.862 5.6275 39.097 3.7813 8.8459 9.4177 16.944 16.686 23=
+.247 3.6954 3.2047 7.7997 5.9394 12.189 8.0971 15.213 7.4771 34.013 7.491 4=
+8.973-0.48031 7.8184-4.1661 14.418-10.258 20.781-16.422 3.8318-3.7121 7.643=
+5-7.5125 10.567-11.976 5.6275-8.5924 7.5875-19.036 8.8054-29.234 2.1297-17.=
+833 2.1984-36.67-5.6214-52.838-2.6922-5.5664-6.279-10.699-10.581-15.141-1.1=
+455-7.7809-3.4064-15.397-6.6921-22.542-2.3704-5.155-5.2683-10.062-7.4708-15=
+.291-0.90422-2.1467-1.69-4.3449-2.6935-6.447-1.0035-2.1021-2.2414-4.125-3.9=
+245-5.7354-1.7234-1.6491-3.871-2.8182-6.1359-3.5663-2.265-0.74806-4.6492-1.=
+087-7.0315-1.2068-4.7646-0.23966-9.5387 0.38348-14.306 0.19423-3.7948-0.150=
+66-7.5778-0.81566-11.369-0.59186-1.8956 0.1119-3.7909 0.45058-5.5503 1.1649=
+-1.7594 0.71432-3.3817 1.8171-4.5661 3.3014" fill=3D"#fdfdfb"/>
++  </clipPath>
++  <clipPath id=3D"by">
++   <path d=3D"m-47.296 161.44c-1.0464 1.4237-1.7277 3.1346-2.1393 4.9003-0=
+.41153 1.7657-0.56228 3.5913-0.62653 5.4114-0.12849 3.6401 0.0765 7.35-0.81=
+096 10.863-0.94874 3.7558-3.076 7.0095-5.1576 10.181-3.6048 5.4925-7.2485 1=
+1.128-9.0271 17.59-1.0771 3.9134-1.4356 8.0583-1.0484 12.121-4.0353 6.4338-=
+7.5289 13.268-10.423 20.389-4.3862 10.793-7.3961 22.285-8.4546 34.025-1.296=
+1 14.377 0.39758 29.163 5.6275 42.445 3.7813 9.6036 9.4177 18.395 16.686 25=
+.238 3.6954 3.4792 7.7997 6.4482 12.189 8.7906 15.213 8.1176 34.013 8.1326 =
+48.973-0.52145 7.8184-4.5229 14.418-11.137 20.781-17.829 3.8318-4.03 7.6435=
+-8.156 10.567-13.001 5.6275-9.3283 7.5875-20.666 8.8054-31.738 2.1297-19.36=
+1 2.1984-39.811-5.6214-57.364-2.6922-6.0431-6.279-11.615-10.581-16.437-1.14=
+55-8.4473-3.4064-16.715-6.6921-24.473-2.3704-5.5966-5.2683-10.924-7.4708-16=
+.601-0.90422-2.3306-1.69-4.717-2.6935-6.9992-1.0035-2.2822-2.2414-4.4783-3.=
+9245-6.2266-1.7234-1.7904-3.871-3.0596-6.1359-3.8718-2.265-0.81213-4.6492-1=
+.1801-7.0315-1.3102-4.7646-0.26019-9.5387 0.41632-14.306 0.21086-3.7948-0.1=
+6356-7.5778-0.88552-11.369-0.64255-1.8956 0.12148-3.7909 0.48917-5.5503 1.2=
+647-1.7594 0.77551-3.3817 1.9728-4.5661 3.5842" fill=3D"#fdfdfb"/>
++  </clipPath>
++ </defs>
++ <g transform=3D"translate(-18.8 -18.7)">
++  <path d=3D"m71.05 23.68c-26.06 0-47.27 21.22-47.27 47.27s21.22 47.27 47.=
+27 47.27 47.27-21.22 47.27-47.27-21.22-47.27-47.27-47.27zm-0.07 4.2a3.1 3.1=
+1 0 0 1 3.02 3.11 3.11 3.11 0 0 1-6.22 0 3.11 3.11 0 0 1 3.2-3.11zm7.12 5.1=
+2a38.27 38.27 0 0 1 26.2 18.66l-3.67 8.28c-0.63 1.43 0.02 3.11 1.44 3.75l7.=
+06 3.13a38.27 38.27 0 0 1 0.08 6.64h-3.93c-0.39 0-0.55 0.26-0.55 0.64v1.8c0=
+ 4.24-2.39 5.17-4.49 5.4-2 0.23-4.21-0.84-4.49-2.06-1.18-6.63-3.14-8.04-6.2=
+4-10.49 3.85-2.44 7.85-6.05 7.85-10.87 0-5.21-3.57-8.49-6-10.1-3.42-2.25-7.=
+2-2.7-8.22-2.7h-40.6a38.27 38.27 0 0 1 21.41-12.08l4.79 5.02c1.08 1.13 2.87=
+ 1.18 4 0.09zm-44.2 23.02a3.11 3.11 0 0 1 3.02 3.11 3.11 3.11 0 0 1-6.22 0 =
+3.11 3.11 0 0 1 3.2-3.11zm74.15 0.14a3.11 3.11 0 0 1 3.02 3.11 3.11 3.11 0 =
+0 1-6.22 0 3.11 3.11 0 0 1 3.2-3.11zm-68.29 0.5h5.42v24.44h-10.94a38.27 38.=
+27 0 0 1-1.24-14.61l6.7-2.98c1.43-0.64 2.08-2.31 1.44-3.74zm22.62 0.26h12.9=
+1c0.67 0 4.71 0.77 4.71 3.8 0 2.51-3.1 3.41-5.65 3.41h-11.98zm0 17.56h9.89c=
+0.9 0 4.83 0.26 6.08 5.28 0.39 1.54 1.26 6.56 1.85 8.17 0.59 1.8 2.98 5.4 5=
+.53 5.4h16.14a38.27 38.27 0 0 1-3.54 4.1l-6.57-1.41c-1.53-0.33-3.04 0.65-3.=
+37 2.18l-1.56 7.28a38.27 38.27 0 0 1-31.91-0.15l-1.56-7.28c-0.33-1.53-1.83-=
+2.51-3.36-2.18l-6.43 1.38a38.27 38.27 0 0 1-3.32-3.92h31.27c0.35 0 0.59-0.0=
+6 0.59-0.39v-11.06c0-0.32-0.24-0.39-0.59-0.39h-9.15zm-14.43 25.33a3.11 3.11=
+ 0 0 1 3.02 3.11 3.11 3.11 0 0 1-6.22 0 3.11 3.11 0 0 1 3.2-3.11zm46.05 0.1=
+4a3.11 3.11 0 0 1 3.02 3.11 3.11 3.11 0 0 1-6.22 0 3.11 3.11 0 0 1 3.2-3.11=
+z"/>
++  <path d=3D"m115.68 70.95a44.63 44.63 0 0 1-44.63 44.63 44.63 44.63 0 0 1=
+-44.63-44.63 44.63 44.63 0 0 1 44.63-44.63 44.63 44.63 0 0 1 44.63 44.63zm-=
+0.84-4.31 6.96 4.31-6.96 4.31 5.98 5.59-7.66 2.87 4.78 6.65-8.09 1.32 3.4 7=
+.46-8.19-0.29 1.88 7.98-7.98-1.88 0.29 8.19-7.46-3.4-1.32 8.09-6.65-4.78-2.=
+87 7.66-5.59-5.98-4.31 6.96-4.31-6.96-5.59 5.98-2.87-7.66-6.65 4.78-1.32-8.=
+09-7.46 3.4 0.29-8.19-7.98 1.88 1.88-7.98-8.19 0.29 3.4-7.46-8.09-1.32 4.78=
+-6.65-7.66-2.87 5.98-5.59-6.96-4.31 6.96-4.31-5.98-5.59 7.66-2.87-4.78-6.65=
+ 8.09-1.32-3.4-7.46 8.19 0.29-1.88-7.98 7.98 1.88-0.29-8.19 7.46 3.4 1.32-8=
+.09 6.65 4.78 2.87-7.66 5.59 5.98 4.31-6.96 4.31 6.96 5.59-5.98 2.87 7.66 6=
+.65-4.78 1.32 8.09 7.46-3.4-0.29 8.19 7.98-1.88-1.88 7.98 8.19-0.29-3.4 7.4=
+6 8.09 1.32-4.78 6.65 7.66 2.87z" fill-rule=3D"evenodd" stroke=3D"#000" str=
+oke-linecap=3D"round" stroke-linejoin=3D"round" stroke-width=3D"3"/>
++ </g>
++ <g transform=3D"matrix(1.0769 0 0 1.0769 85.998 -19.139)">
++  <g transform=3D"matrix(.29571 0 0 .29571 -73.202 15.895)">
++   <g>
++    <path d=3D"m140.81 19.578c-7.168-0.07795-14.424 1.3746-20.734 4.7754-6=
+.7066 3.6143-12.201 9.3955-15.586 16.221-3.3835 6.822-4.7129 14.108-4.9141 =
+22.133-0.38216 15.247 0.34393 31.239 1.4941 45.73 0.3054 4.4126 0.85369 6.9=
+95 0.29297 11.523-1.8865 9.6299-10.313 16.112-14.805 24.57-4.9547 9.3309-7.=
+0434 19.881-10.783 29.762-3.4225 9.0424-8.2276 17.521-11.471 26.629-4.5349 =
+12.736-5.8905 26.731-2.8945 39.914 2.2839 10.05 7.0546 19.473 13.484 27.533=
+-0.9305 1.6769-1.8322 3.3716-2.793 5.0312-2.9795 5.1469-6.6196 10.027-8.316=
+4 15.727-0.84842 2.85-1.1824 5.8898-0.63476 8.8125 0.54765 2.9227 2.0265 5.=
+7186 4.3516 7.5723 1.522 1.2135 3.3574 1.9948 5.2539 2.4336 1.8965 0.43879 =
+3.8566 0.54531 5.8027 0.50391 7.3946-0.15718 14.559-2.4052 21.713-4.2832 4.=
+2395-1.1129 8.5104-2.101 12.803-2.9883 15.241-3.1221 32.25-1.8759 46.398 0.=
+17579 4.792 0.72368 9.5498 1.671 14.26 2.8125 7.3771 1.7879 14.729 4.067 22=
+.316 4.2832 1.9973 0.0569 4.0106-0.0306 5.9609-0.46484 1.9503-0.43429 3.842=
+1-1.2269 5.4043-2.4727 2.3292-1.8575 3.8083-4.6574 4.3555-7.5859 0.54713-2.=
+9285 0.20917-5.977-0.64843-8.8301-1.7152-5.7061-5.3887-10.575-8.4356-15.695=
+-1.2022-2.0203-2.3202-4.0926-3.5137-6.1172 9.1687-10.296 16.548-22.203 20.8=
+16-35.281 4.6587-14.275 5.5143-29.646 3.5527-44.533-1.9615-14.888-6.6821-29=
+.321-12.898-42.99-7.7977-17.138-14.353-23.331-19.104-38.381-5.1347-16.266-0=
+.8948-35.514-4.7109-50.268-1.3618-5.0173-3.5328-9.8068-6.3262-14.191-3.2731=
+-5.1375-7.4246-9.7424-12.357-13.316-7.8707-5.7025-17.615-8.6385-27.334-8.74=
+41z" fill=3D"#020204"/>
++    <path d=3D"m112.7 105.45c-1.0464 1.3114-1.7277 2.8873-2.1393 4.5137-0.=
+41153 1.6264-0.56228 3.308-0.62653 4.9845-0.12849 3.3529 0.0765 6.7702-0.81=
+096 10.006-0.94874 3.4595-3.076 6.4565-5.1576 9.378-3.6048 5.0592-7.2485 10=
+.25-9.0271 16.202-1.0771 3.6047-1.4356 7.4226-1.0484 11.165-4.0353 5.9262-7=
+.5289 12.221-10.423 18.781-4.3862 9.9416-7.3961 20.526-8.4546 31.341-1.2961=
+ 13.242 0.39758 26.862 5.6275 39.097 3.7813 8.8459 9.4177 16.944 16.686 23.=
+247 3.6954 3.2047 7.7997 5.9394 12.189 8.0971 15.213 7.4771 34.013 7.491 48=
+.973-0.48031 7.8184-4.1661 14.418-10.258 20.781-16.422 3.8318-3.7121 7.6435=
+-7.5125 10.567-11.976 5.6275-8.5924 7.5875-19.036 8.8054-29.234 2.1297-17.8=
+33 2.1984-36.67-5.6214-52.838-2.6922-5.5664-6.279-10.699-10.581-15.141-1.14=
+55-7.7809-3.4064-15.397-6.6921-22.542-2.3704-5.155-5.2683-10.062-7.4708-15.=
+291-0.90422-2.1467-1.69-4.3449-2.6935-6.447-1.0035-2.1021-2.2414-4.125-3.92=
+45-5.7354-1.7234-1.6491-3.871-2.8182-6.1359-3.5663-2.265-0.74806-4.6492-1.0=
+87-7.0315-1.2068-4.7646-0.23966-9.5387 0.38348-14.306 0.19423-3.7948-0.1506=
+6-7.5778-0.81566-11.369-0.59186-1.8956 0.1119-3.7909 0.45058-5.5503 1.1649-=
+1.7594 0.71432-3.3817 1.8171-4.5661 3.3014" fill=3D"#fdfdfb"/>
++   </g>
++   <g>
++    <g>
++     <path transform=3D"matrix(1.1543 0 0 1 166.33 -58.362)" d=3D"m-61.003=
+ 211.59c0.88005 1.5239-0.54737 6.7783 19.964 3.4153 0 0-3.602 0.4573-7.1528=
+ 1.4042-5.5213 2.1334-10.33 4.5171-14.04 7.6752-3.6755 3.1217-6.3671 7.1969=
+-9.7397 10.697 0 0 5.4617-11.519 6.8233-14.987 1.3616-3.4687-0.22795-3.31 0=
+.84893-8.4136 1.0769-5.1036 3.7135-10.007 3.7135-10.007s-2.1524 7.2109-0.41=
+678 10.216z" fill=3D"url(#s)" filter=3D"url(#as)" opacity=3D".25"/>
++     <path d=3D"m172.05 151.86c-4.8251 3.3614-7.6524 2.9634-13.507 3.6209s=
+-21.698 0.41943-21.698 0.41943 2.2937-0.0427 7.3776 0.90419c5.0839 0.94693 =
+15.453 1.8523 21.292 4.0747s7.9685 2.8566 11.517 5.1006c5.0511 3.1939 8.758=
+2 8.1969 13.587 11.697 0 0 0.23377-4.6437-1.7157-8.1124s-7.1904-8.935-8.732=
+2-14.039c-1.5418-5.1036-2.2743-15.132-2.2743-15.132s-1.0211 8.1048-5.8462 1=
+1.466z" fill=3D"url(#r)" filter=3D"url(#at)" opacity=3D".42"/>
++     <path d=3D"m126.67 144.68c-0.17937 1.4559-0.41189 2.9053-0.69695 4.34=
+43-0.14052 0.70936-0.2949 1.4199-0.55905 2.0931-0.26414 0.67317-0.64419 1.3=
+121-1.1812 1.7964-0.47071 0.42443-1.0444 0.71595-1.6207 0.97975-2.2483 1.02=
+92-4.6544 1.7126-7.108 2.019 0.97993 0.0719 1.9586 0.16127 2.9353 0.2682 0.=
+61534 0.0674 1.2321 0.14208 1.8317 0.29586 0.59961 0.15377 1.1847 0.38955 1=
+.6842 0.75518 0.54781 0.40099 0.97799 0.94833 1.2993 1.5464 0.64023 1.1916 =
+0.85435 2.5628 0.97272 3.9103 0.15139 1.7234 0.16244 3.459 0.033 5.1842 0.1=
+1585-1.1543 0.35775-2.2959 0.72-3.398 0.65284-1.9861 1.7042-3.8479 3.1197-5=
+.3864 0.56171-0.6105 1.1804-1.1704 1.8588-1.6479 2.0782-1.4629 4.718-2.1055=
+ 7.2361-1.7613-2.559 0.11302-5.149-0.69089-7.1942-2.233-1.0416-0.78539-1.94=
+88-1.7629-2.5798-2.9046-0.97579-1.7656-1.2501-3.9068-0.75097-5.8613" fill=
+=3D"url(#q)" filter=3D"url(#ar)" opacity=3D".2"/>
++     <path d=3D"m120.5 178.72c-1.2295 4.6793-2.0752 9.4595-2.5257 14.277-0=
+.63702 6.8122-0.48368 13.672-0.84934 20.505-0.31029 5.7975-0.99107 11.656 0=
+.0159 17.374 0.48017 2.7266 1.3427 5.3855 2.5546 7.8747 0.19249-0.95006 0.3=
+3356-1.9105 0.42239-2.8758 0.42661-4.636-0.3541-9.2869-0.61781-13.935-0.462=
+25-8.1474 0.66569-16.29 1.125-24.438 0.3526-6.2548 0.31082-12.532-0.125-18.=
+781h-4e-5" color=3D"#000000" filter=3D"url(#aq)" opacity=3D".11"/>
++    </g>
++    <g fill=3D"#7c7c7c">
++     <path transform=3D"matrix(-.069919 .95701 -.56451 -.11853 236.57 -180=
+.38)" d=3D"m351.96 200.86c-1.4516 0.38883-1.2301 3.9942-0.29604 5.4979 0.78=
+886 1.27 3.0724 2.2711 3.7585 1.005 1.1141-2.0556-1.4719-7.0361-3.4625-6.50=
+29z" filter=3D"url(#be)" opacity=3D".25"/>
++     <path transform=3D"matrix(-.095961 -.95701 -.77476 .11853 398.9 493.2=
+4)" d=3D"m361.75 209.34c2e-3 -1.5331-7.5647-10.056-9.7896-8.4864-2.2249 1.5=
+7-0.49172 3.7842-0.29604 5.4979 0.19568 1.7137-0.94537 6.6093 0.23849 7.259=
+3s3.3661-2.5198 5.3011-4.277c1.5582-1.4149 4.544 1.5393 4.546 6e-3z" filter=
+=3D"url(#br)" opacity=3D".75"/>
++     <path transform=3D"matrix(1.1522 0 0 1.1522 -163.03 -72.2)" d=3D"m277=
+.96 90.857c-2.2249 1.57-1.2529 3.5305-0.29604 5.4979s-2.1043 7.6397-2.1365 =
+7.8843c-0.0322 0.24465 6.0253-2.8754 7.6761-4.902 1.9496-2.3934 6.877 3.237=
+9 6.6085 2.3812 2e-3 -1.5331-9.6272-12.431-11.852-10.861z" filter=3D"url(#b=
+j)"/>
++    </g>
++    <path transform=3D"translate(160 -57.362)" d=3D"m16.687 165.86c-2.1622=
+ 1.9694 1.0136 4.9277 2.5197 8.4043 0.93626 2.1613 3.5268 5.2051 6.0324 4.7=
+175 1.8848-0.36677 3.0543-3.0794 2.8759-4.9912-0.34416-3.6885-3.4567-4.5526=
+-5.7172-5.8195-1.7914-1.004-4.1926-3.6939-5.7108-2.3111z" fill=3D"#838384" =
+filter=3D"url(#bf)"/>
++    <path transform=3D"translate(139 -49.362)" d=3D"m-28.632 172.6c1.7029 =
+4.9378 5.1304 9.152 9.1858 12.444 1.3487 1.0946 2.7822 2.1044 4.3662 2.817 =
+1.5841 0.71257 3.3316 1.1194 5.0624 0.97245 1.695-0.14396 3.3075-0.80936 4.=
+7887-1.6458 1.4813-0.8364 2.856-1.8469 4.293-2.7572 2.4626-1.5602 5.0998-2.=
+8214 7.6572-4.2209 3.0825-1.6869 6.0696-3.5901 8.6647-5.9593 1.1879-1.0845 =
+2.2957-2.268 3.6075-3.1989 1.3118-0.93094 2.883-1.6057 4.4878-1.4965 1.2039=
+ 0.0819 2.3329 0.59386 3.5125 0.84794 0.58979 0.12704 1.2008 0.18932 1.7972=
+ 0.0984 0.59643-0.0909 1.1797-0.34439 1.5979-0.77928 0.51237-0.53286 0.7364=
+1-1.2998 0.70961-2.0386-0.0268-0.73874-0.28445-1.453-0.62885-2.1071-0.68881=
+-1.3082-1.7345-2.4351-2.2002-3.8383-0.4144-1.2487-0.33045-2.5989-0.29393-3.=
+914 0.03652-1.3151 0.0075-2.689-0.5986-3.8567-0.46159-0.88922-1.2361-1.5952=
+-2.1216-2.0639-0.88551-0.46867-1.8786-0.71001-2.8761-0.80365-1.995-0.18727-=
+3.9939 0.19997-5.9945 0.31349-2.6558 0.1507-5.322-0.18176-7.9772-0.0221-3.3=
+113 0.1991-6.557 1.1605-9.8743 1.1664-3.786 7e-3 -7.5681-1.2319-11.308-0.63=
+996-1.6046 0.25401-3.1348 0.8376-4.6757 1.3522-1.5409 0.5146-3.1327 0.96724=
+-4.7571 0.94371-1.8442-0.0267-3.6293-0.66537-5.469-0.79666-0.91986-0.0656-1=
+.8625-1.8e-4 -2.7261 0.32326-0.86362 0.32344-1.6445 0.92357-2.0683 1.7426-0=
+.24287 0.46932-0.36319 0.99683-0.38586 1.5248-0.02266 0.52795 0.05026 1.057=
+ 0.17783 1.5698 0.25513 1.0256 0.72423 1.9828 1.1098 2.9669 1.3925 3.5537 1=
+.6924 7.4481 2.9368 11.056" clip-path=3D"url(#bz)" fill-opacity=3D".25882" =
+filter=3D"url(#au)"/>
++    <g>
++     <path transform=3D"matrix(1 0 0 .92111 160 -43.255)" d=3D"m-54.381 16=
+5.47c3.3085 2.2189 6.2767 4.9441 8.7695 8.0515 2.3132 2.8836 4.2811 6.1543 =
+7.2993 8.2889 2.1326 1.5082 4.6949 2.3578 7.2941 2.6161 3.0515 0.3032 6.139=
+8-0.18685 9.0817-1.052 2.7266-0.80188 5.3632-1.9293 7.7822-3.4214 4.5982-2.=
+8364 8.4392-6.9928 13.51-8.8571 1.107-0.407 2.2592-0.69817 3.3265-1.2002 1.=
+0673-0.50208 2.0714-1.254 2.5811-2.3177 0.48998-1.0224 0.47096-2.2025 0.630=
+53-3.325 0.17071-1.2008 0.55376-2.3618 0.76387-3.5564s0.23517-2.4723-0.2814=
+-3.5698c-0.42777-0.90876-1.2054-1.6278-2.0999-2.0847-0.89449-0.45686-1.9011=
+-0.6644-2.9043-0.71362-2.0064-0.0985-3.9875 0.41519-5.9881 0.59766-2.6496 0=
+.24167-5.3179-0.0991-7.9772-0.019-3.3083 0.0996-6.5682 0.84884-9.8743 1.005=
+-3.7717 0.17818-7.5341-0.41751-11.308-0.55139-1.6323-0.0579-3.2754-0.0286-4=
+.8843 0.25254-1.6089 0.28112-3.1882 0.82168-4.5485 1.7256-1.32 0.87714-2.39=
+67 2.0673-3.6066 3.091-0.60492 0.51187-1.2478 0.98508-1.9537 1.345s-1.4788 =
+0.60451-2.2703 0.64257c-0.40728 0.0196-0.81834-0.0152-1.2213 0.0472-0.67617=
+ 0.10463-1.3037 0.49355-1.6983 1.0525-0.39458 0.55899-0.5509 1.2805-0.42305=
+ 1.9527v1e-5" clip-path=3D"url(#by)" filter=3D"url(#av)" opacity=3D".3"/>
++     <path transform=3D"translate(160 -57.362)" d=3D"m45.101 224.45c6.0848=
+ 4.8946 9.9456 12.286 11.141 20.003 0.93229 6.0186 0.32634 12.195-1.0307 18=
+.132-1.357 5.9373-3.4522 11.676-5.5317 17.401-0.82924 2.2827-1.6622 4.5871-=
+1.9917 6.9933-0.3295 2.4062-0.12085 4.9543 1.0395 7.0878 1.3302 2.4458 3.81=
+3 4.1302 6.4818 4.9229 2.6349 0.78263 5.481 0.76618 8.1482 0.10153 2.6671-0=
+.66466 7.1574-1.5259 9.3284-3.2118 5.5156-4.2831 6.8247-11.719 8.1319-18.25=
+ 1.3632-6.8103 0.69637-13.95-0.50149-20.83-1.6334-9.3814-4.3817-18.551-7.87=
+99-27.408-2.5731-6.5147-5.8695-12.742-9.7914-18.52-3.8476-5.6684-9.3069-10.=
+093-13.34-15.635-1.4013-1.9255-3.0867-3.9316-4.4634-5.8784-2.9685-4.1977-2.=
+2962-3.4145-4.1377-6.1316-1.3361-1.9713-3.4457-2.6487-5.6655-3.511s-4.7127-=
+1.1162-7.005-0.47108c-3.0214 0.85034-5.4898 3.2311-6.8029 6.0821-1.3131 2.8=
+51-1.5428 6.1231-1.0319 9.2201 0.6591 3.9954 2.4863 7.7026 4.5464 11.189 2.=
+3267 3.9372 5.022 7.7271 8.536 10.654 3.6671 3.0546 8.1015 5.0688 11.82 8.0=
+602" fill=3D"#020204"/>
++     <path transform=3D"translate(160 -57.362)" d=3D"m-69.527 194.04c-7.07=
+31 8.0369-14.352 15.816-18.346 24.505-1.9762 4.4133-2.9108 9.2072-4.265 13.=
+849-1.5379 5.2718-3.6261 10.37-5.9707 15.336-2.165 4.5853-4.5498 9.0629-6.9=
+389 13.536-1.7382 3.2541-3.5051 6.581-4.1078 10.221-0.47628 2.8763-0.1985 5=
+.8442 0.53375 8.6663 0.73225 2.822 1.9096 5.5106 3.2378 8.106 5.6672 11.075=
+ 14.17 20.622 24.242 27.925 4.5706 3.3142 9.4667 6.1811 14.602 8.526 2.7825=
+ 1.2704 5.7136 2.4044 8.7719 2.4574 1.5292 0.0265 3.0741-0.22544 4.4743-0.8=
+4055 1.4002-0.6151 2.6507-1.6037 3.4825-2.8871 1.0228-1.5779 1.3699-3.5383 =
+1.1646-5.4074s-0.93484-3.6529-1.9132-5.2587c-2.39-3.9225-6.1652-6.7606-9.79=
+64-9.5734-7.8405-6.0736-15.425-12.48-22.682-19.24-2.0491-1.9085-4.0984-3.87=
+76-5.5302-6.2841-1.3943-2.3435-2.1476-5.0138-2.6578-7.6925-1.3997-7.3487-1.=
+0409-15.083 1.4596-22.133 0.97822-2.7583 2.2712-5.392 3.5182-8.0396 2.1613-=
+4.5891 4.2072-9.2656 7.0493-13.467 3.538-5.2304 8.2675-9.6605 11.151-15.278=
+ 2.4342-4.7415 3.4199-10.072 4.3618-15.318 0.73693-4.1043 2.1504-8.1244 2.8=
+692-12.232-1.4061 2.6657-5.938 7.0428-8.7107 10.525z" fill=3D"#020204"/>
++     <path transform=3D"matrix(1.0181 0 0 1 -105.26 -58.362)" d=3D"m290.78=
+ 216.02c0.48482 0.46774 0.98091 0.94261 1.5 1.375 3.6672 3.0546 5.6188 6.48=
+53 9.3376 9.4767 6.0848 4.8946 12.259 13.344 13.454 21.061 0.93229 6.0186-0=
+.30093 9.2895-1.8047 16.388-1.5037 7.0983-5.7694 17.148-8.0738 23.992-0.918=
+9 2.7291 1.8612 1.6031 1.4961 4.4798-0.17944 1.4138-0.19766 2.8424-0.0346 4=
+.2592 0.0227-0.27104 0.0388-0.5525 0.0693-0.82194 0.44281-3.9227 1.6233-7.6=
+948 2.9088-11.395 2.4742-7.1221 5.3143-14.101 7.272-21.408 1.9576-7.3068 1.=
+7403-12.564 0.71875-18.844-1.2846-7.8964-5.797-15.187-12.188-20-4.5185-3.40=
+31-9.8469-5.5846-14.656-8.5625z" clip-path=3D"url(#cg)" fill=3D"#838384" fi=
+lter=3D"url(#bs)"/>
++     <path transform=3D"translate(-150 -58.362)" d=3D"m232.33 224.27c-2.32=
+13 2.1375-4.3331 4.6105-5.9534 7.3182-2.668 4.4585-4.239 9.4684-6.1781 14.2=
+89-1.4436 3.5889-3.1252 7.1931-3.3266 11.056-0.10346 1.9842 0.19056 3.9659 =
+0.25671 5.9516 0.0662 1.9858-0.11756 4.0511-1.0897 5.7839-0.81338 1.4499-2.=
+1659 2.589-3.733 3.144 2.1155 0.70686 4.0045 2.0755 5.3353 3.8654 1.1145 1.=
+499 1.8276 3.2537 2.7961 4.8509 0.78716 1.2982 1.7534 2.5012 2.9428 3.4446s=
+2.6114 1.6197 4.1173 1.8129c2.0662 0.26508 4.2357-0.42815 5.7654-1.8422-1.9=
+254-18.036-0.16195-36.457 5.1501-53.8 0.33544-1.0952 0.68725-2.1983 0.77034=
+-3.3406 0.0831-1.1424-0.12896-2.3479-0.82414-3.2582-0.37014-0.48467-0.86838=
+-0.87059-1.4302-1.1078-0.56182-0.2372-1.1859-0.32512-1.7914-0.25236-0.60549=
+ 0.0727-1.191 0.306-1.6806 0.66954-0.48964 0.36355-0.88227 0.85651-1.1271 1=
+.4151h-2e-5" clip-path=3D"url(#cf)" fill=3D"#7c7c7c" filter=3D"url(#bl)" op=
+acity=3D".95"/>
++    </g>
++    <g>
++     <path transform=3D"matrix(1.0269 0 0 1 157.69 -58.362)" d=3D"m86.056 =
+328.13c-0.45671 1.5492-1.1522 3.0458-2.0496 4.4109-1.9805 3.0124-4.8545 5.2=
+794-7.7268 7.3702-4.8989 3.5659-10.003 6.8378-14.563 10.89-3.0555 2.7151-5.=
+8411 5.7594-8.4228 8.9649-2.2079 2.7415-4.2839 5.6193-6.8009 8.0573-2.5396 =
+2.4599-5.5305 4.4468-8.7519 5.5293-3.918 1.3167-8.058 1.2533-11.832 0.25938=
+-2.6448-0.69647-5.2236-1.907-6.8622-4.0969-1.6448-2.1983-2.1777-5.1522-2.36=
+8-8.0519-0.33651-5.1288 0.25967-10.37 0.8034-15.575 0.45167-4.3257 0.86825-=
+8.6548 1.0386-12.972 0.30984-7.852-0.19668-15.636-1.2319-23.273-0.17336-1.2=
+791-0.36202-2.5682-0.25656-3.8856 0.10519-1.3174 0.5354-2.6883 1.4362-3.705=
+3 0.83202-0.93937 1.9928-1.4957 3.1507-1.7689 1.1579-0.27325 2.3298-0.2898 =
+3.4927-0.3215 2.7402-0.0747 5.4965-0.24039 8.1952 6e-3 1.7028 0.15559 3.372=
+6 0.47459 5.0731 0.6427 2.8376 0.28052 5.7813 0.13286 8.6274-0.72369 3.064-=
+0.92215 5.9863-2.6516 9.0994-3.1274 1.2773-0.19521 2.559-0.17251 3.801 6e-3=
+ 1.2675 0.18218 2.5284 0.54175 3.5024 1.336 0.74019 0.60362 1.2819 1.4328 1=
+.7058 2.3166 0.63144 1.3165 1.0192 2.7703 1.2412 4.2613 0.19663 1.3208 0.26=
+639 2.6802 0.59789 3.9574 0.54536 2.1012 1.7809 3.8865 3.2674 5.3396 1.4865=
+ 1.4532 3.225 2.6024 4.9606 3.7341 1.7291 1.1274 3.4679 2.2468 5.3147 3.176=
+3 0.86675 0.43621 1.7575 0.83074 2.5861 1.3331 0.8286 0.50234 1.6007 1.1211=
+ 2.1509 1.9355 0.74634 1.1047 1.0457 2.5527 0.82168 3.9747l2e-5 -1e-5" fill=
+=3D"url(#ai)" filter=3D"url(#bk)" opacity=3D".2"/>
++     <path d=3D"m263.19 278.25c-2.6238 3.1148-6.268 5.1704-9.8965 7.0198-6=
+.1886 3.1544-12.602 5.9218-18.42 9.7165-3.898 2.5425-7.4959 5.5267-10.86 8.=
+7424-2.8772 2.7501-5.6058 5.6874-8.8325 8.0177-3.2557 2.3512-7.0192 4.0543-=
+10.991 4.6502-4.8303 0.72481-9.8213-0.21289-14.299-2.1642-3.1375-1.3673-6.1=
+557-3.3229-7.963-6.2293-1.8142-2.9175-2.2281-6.4881-2.2327-9.9238-8e-3 -6.0=
+767 1.1182-12.09 2.1785-18.073 0.88097-4.9718 1.7195-9.9548 2.2601-14.975 0=
+.98337-9.1312 0.9763-18.353 0.3199-27.513-0.10993-1.5342-0.23754-3.0832-8e-=
+3 -4.6041 0.22922-1.5209 0.85475-3.0367 2.0207-4.0399 1.077-0.9266 2.5209-1=
+.336 3.9395-1.4145 1.4185-0.0785 2.834 0.14655 4.2398 0.35197 3.3125 0.4840=
+5 6.6516 0.8649 9.8892 1.7166 2.0428 0.53738 4.0332 1.2592 6.0722 1.8108 3.=
+4026 0.92039 6.9664 1.3614 10.467 0.95192 3.7692-0.44089 7.4299-1.8568 11.2=
+24-1.7647 1.5566 0.0378 3.1015 0.33171 4.5865 0.79985 1.5154 0.47772 3.0091=
+ 1.1618 4.1228 2.2951 0.84639 0.8613 1.4358 1.9454 1.8787 3.0688 0.65982 1.=
+6735 1.0149 3.457 1.167 5.2494 0.13475 1.5879 0.11343 3.1944 0.41433 4.7593=
+ 0.49503 2.5746 1.8475 4.923 3.5285 6.9349s3.6898 3.7205 5.6964 5.4078c1.99=
+91 1.681 4.0106 3.3547 6.1671 4.8284 1.0121 0.69165 2.0564 1.3395 3.0174 2.=
+1006s1.8447 1.6468 2.4454 2.7154c0.81492 1.4494 1.0638 3.2077 0.53758 4.876=
+6-0.5262 1.6688-1.4816 3.2766-2.6706 4.6881z" fill=3D"url(#ah)"/>
++     <path transform=3D"translate(-250 -58.362)" d=3D"m512.89 328.72c-0.61=
+724 1.5474-1.4897 2.9928-2.5715 4.2598-2.4025 2.814-5.7292 4.6544-9.0377 6.=
+311-5.653 2.8304-11.503 5.3176-16.821 8.7354-3.5536 2.2836-6.8408 4.9656-9.=
+9178 7.8596-2.6292 2.4727-5.125 5.116-8.0661 7.2081-2.9809 2.1204-6.4179 3.=
+6468-10.037 4.1806-4.4093 0.65041-8.9602-0.19314-13.058-1.9456-2.8572-1.221=
+8-5.6173-2.97-7.272-5.6003-1.6463-2.6169-2.0313-5.83-2.0389-8.9217-0.0135-5=
+.4647 1.0183-10.871 1.9894-16.248 0.80703-4.4688 1.5753-8.9482 2.064-13.463=
+ 0.88853-8.2082 0.8481-16.498 0.29214-24.735-0.0931-1.3802-0.20023-2.7738 0=
+.0118-4.1408 0.21204-1.367 0.77803-2.7274 1.826-3.6304 0.9828-0.84687 2.303=
+-1.218 3.5986-1.2859 1.2956-0.068 2.5874 0.14181 3.871 0.3307 3.0232 0.4449=
+ 6.0724 0.77918 9.0311 1.5432 1.8654 0.48173 3.6837 1.1316 5.5453 1.628 3.1=
+095 0.82898 6.3623 1.2249 9.5591 0.8558 3.4413-0.39728 6.7866-1.6715 10.25-=
+1.5865 1.4206 0.0348 2.8305 0.30037 4.1885 0.71908 1.3818 0.42605 2.7491 1.=
+0345 3.7651 2.0634 0.76566 0.7754 1.2954 1.7535 1.7157 2.7589 0.62574 1.496=
+7 1.0326 3.0974 1.0658 4.7194 0.0347 1.6937-0.33552 3.3949-0.10594 5.0734 0=
+.18638 1.3626 0.7635 2.648 1.5006 3.8091 0.73713 1.1611 1.634 2.2109 2.5225=
+ 3.2607 1.7173 2.029 3.4393 4.0967 5.5931 5.6546 2.4522 1.7736 5.3619 2.811=
+4 7.8951 4.4673 0.75511 0.49359 1.486 1.0522 2.0181 1.7806 0.8972 1.2281 1.=
+1387 2.9079 0.62379 4.339h2e-5" clip-path=3D"url(#cj)" fill=3D"#cd8907" fil=
+ter=3D"url(#bu)"/>
++     <path transform=3D"matrix(1.143 0 0 1.2323 -319 -135.49)" d=3D"m508.7=
+9 327.93c-0.60151 1.2646-1.3822 2.4437-2.3113 3.4913-2.1534 2.4278-5.061 4.=
+0992-8.1235 5.1725-5.0417 1.767-10.546 2.0044-15.495 4.0162-3.0162 1.2261-5=
+.7306 3.0734-8.4791 4.8187-2.2217 1.4108-4.4925 2.7689-6.9321 3.7562-2.7555=
+ 1.1152-5.6857 1.7405-8.6258 2.1786-1.8708 0.27876-3.7626 0.48423-5.6516 0.=
+38704-1.889-0.0972-3.7842-0.50735-5.4513-1.4009-1.264-0.6775-2.4013-1.6529-=
+3.076-2.9184-0.74956-1.4059-0.87959-3.056-0.86243-4.6492 0.0457-4.2459 1.02=
+56-8.4458 0.99617-12.692-0.0256-3.6961-0.81525-7.345-1.0423-11.034-0.43665-=
+7.0946 1.2047-14.313-0.23989-21.273-0.23125-1.1141-0.54212-2.2269-0.52701-3=
+.3646 8e-3 -0.56889 0.0988-1.141 0.31541-1.6671 0.21661-0.52609 0.56289-1.0=
+051 1.0246-1.3375 0.38878-0.27992 0.85044-0.45024 1.3234-0.52677 0.47292-0.=
+0765 0.95748-0.0616 1.4317 7e-3 0.94836 0.13656 1.8519 0.48215 2.7755 0.737=
+18 2.6419 0.72952 5.4325 0.71432 8.1175 1.2648 1.6853 0.34555 3.3168 0.9114=
+9 4.9844 1.3343 2.8003 0.70996 5.7201 1.0133 8.5921 0.70142 3.0885-0.33539 =
+6.1071-1.3753 9.2129-1.3003 1.273 0.0307 2.5374 0.25005 3.7648 0.58936 1.22=
+77 0.3394 2.4554 0.81951 3.3842 1.6911 0.6693 0.62809 1.1514 1.4307 1.5421 =
+2.2612 0.5703 1.212 0.96726 2.5285 0.95796 3.868-5e-3 0.6968-0.11899 1.3876=
+-0.18672 2.0811-0.0677 0.69352-0.0878 1.4037 0.0914 2.077 0.18009 0.67656 0=
+.55415 1.2867 0.98269 1.8403 0.42854 0.55364 0.91471 1.06 1.3582 1.6018 1.2=
+42 1.5171 2.1296 3.2854 3.0972 4.9907 0.96764 1.7052 2.0523 3.3927 3.5804 4=
+.6212 2.0797 1.672 4.778 2.3402 7.0964 3.6614 0.67877 0.38682 1.3368 0.8408=
+2 1.814 1.4594 0.38231 0.49552 0.63762 1.0882 0.73509 1.7064 0.0975 0.61822=
+ 0.0369 1.2607-0.1744 1.8498h9e-5" clip-path=3D"url(#ci)" fill=3D"#f5c021" =
+filter=3D"url(#bt)"/>
++     <path d=3D"m187.31 230.29c3.2761-0.88704 6.0662 1.5972 8.4423 3.4723 =
+1.5353 1.3093 3.7535 0.97992 5.6366 1.0421 3.1207-0.11321 6.2254 0.52281 9.=
+3471 0.13577 6.1446-0.51932 12.168-2.0297 18.342-2.2898 2.9495-0.18579 6.25=
+99-0.35725 8.8081 1.3652 1.033 0.7155 2.547 3.7414 3.5665 2.6049-0.42031-3.=
+1782-2.7775-6.2559-5.9391-7.1022-2.4749-0.38942-4.9898 0.29134-7.4895 0.071=
+1-7.4229-0.17706-14.793-1.5554-22.234-1.1602-5.1764 0.0448-10.347-0.19501-1=
+5.515-0.39662-2.0306-0.41489-2.7467 1.389-3.8489 2.0808" clip-path=3D"url(#=
+ch)" fill=3D"url(#ag)" filter=3D"url(#bd)"/>
++    </g>
++    <g>
++     <path d=3D"m57.577 222.66c1.5993-0.66295 3.3982-0.78361 5.1007-0.4696=
+3 1.7025 0.31398 3.3114 1.0495 4.7434 2.0224 2.864 1.9458 4.9882 4.7777 7.0=
+226 7.5795 4.6719 6.4341 9.1687 13.002 13.245 19.829 3.3064 5.5377 6.3435 1=
+1.257 10.164 16.453 2.494 3.3919 5.3066 6.5395 7.813 9.9222 2.5064 3.3827 4=
+.7279 7.0559 5.8393 11.117 1.4441 5.2765 0.88463 11.093-1.6267 15.953-1.766=
+6 3.419-4.4765 6.3523-7.7724 8.339-3.296 1.9867-7.1706 3.0144-11.016 2.8702=
+-6.1141-0.2293-11.699-3.2852-17.384-5.5491-11.581-4.6125-24.16-6.0594-36.09=
+7-9.6517-3.6686-1.104-7.2758-2.4107-10.97-3.4263-1.6412-0.45122-3.3087-0.84=
+82-4.8588-1.5514-1.5501-0.70325-2.9995-1.7491-3.8617-3.2168-0.66639-1.1344-=
+0.94839-2.47-0.93019-3.7855 0.0182-1.3155 0.32589-2.6145 0.77382-3.8516 0.8=
+9585-2.4741 2.3433-4.7137 3.3202-7.157 1.5951-3.9894 1.8817-8.3884 1.6666-1=
+2.679-0.21511-4.291-0.91078-8.5448-1.2045-12.831-0.13118-1.9141-0.18066-3.8=
+526 0.18479-5.736 0.36545-1.8834 1.1758-3.7246 2.5577-5.0554 1.2741-1.2269 =
+2.9649-1.9553 4.6964-2.3165s3.5153-0.37747 5.2837-0.33762c1.7683 0.0399 3.5=
+407 0.13425 5.3035-0.0106 1.7628-0.14488 3.5335-0.54055 5.0691-1.4183 1.46-=
+0.83447 2.6543-2.0745 3.6437-3.4342 0.9894-1.3597 1.7891-2.8457 2.6089-4.31=
+4 0.81983-1.4682 1.6683-2.9315 2.7416-4.2261 1.0732-1.2946 2.3892-2.423 3.9=
+427-3.067" fill=3D"url(#ae)"/>
++     <path transform=3D"translate(160 -57.362)" d=3D"m-99.89 282.78c1.4552=
+-0.58619 3.0942-0.65064 4.6227-0.30406 1.5285 0.34657 2.9496 1.0902 4.1884 =
+2.047 2.4776 1.9137 4.1998 4.6138 5.8542 7.2686 3.9701 6.4331 7.8514 12.934=
+ 11.516 19.567 2.7769 4.9932 5.4247 10.093 8.8375 14.679 2.2638 3.0415 4.84=
+74 5.8314 7.1579 8.8368 2.3105 3.0054 4.3713 6.2821 5.3928 9.9335 1.3163 4.=
+7058 0.78265 9.91-1.4954 14.233-1.6376 3.1058-4.152 5.7464-7.1861 7.5126-3.=
+0341 1.7662-6.5792 2.6492-10.087 2.4879-5.5983-0.25772-10.711-3.0535-15.981=
+-4.9507-10.103-3.6657-21.053-4.1575-31.416-7.02-3.7148-1.0083-7.3366-2.3528=
+-11.07-3.294-1.6516-0.41658-3.333-0.75712-4.9022-1.4193-1.5691-0.66219-3.04=
+68-1.6887-3.8975-3.1647-0.63282-1.0972-0.88561-2.3884-0.84651-3.6542 0.0391=
+-1.2658 0.35915-2.5104 0.80992-3.6939 0.90155-2.367 2.3202-4.5103 3.2291-6.=
+8746 1.3787-3.5742 1.5499-7.5041 1.294-11.326s-0.9211-7.6095-1.1533-11.434c=
+-0.10374-1.709-0.11933-3.439 0.22634-5.1158 0.34564-1.6768 1.0761-3.3097 2.=
+2949-4.512 1.3209-1.309 3.1412-2.0241 4.9773-2.3043 1.8361-0.28013 3.706-0.=
+15808 5.5548 7e-3 1.8488 0.16495 3.705 0.37271 5.5611 0.26163 1.8561-0.1110=
+9 3.7357-0.56331 5.2689-1.6069 1.3974-0.94461 2.4458-2.3241 3.2444-3.7984 0=
+.79856-1.4744 1.3676-3.0554 1.9764-4.6166 0.60885-1.5611 1.2667-3.1219 2.22=
+18-4.5097 0.95509-1.3878 2.2361-2.6047 3.8057-3.2347" clip-path=3D"url(#ck)=
+" fill=3D"#d99a03" filter=3D"url(#bw)"/>
++     <path transform=3D"matrix(1 0 0 .98205 -80 -54.403)" d=3D"m138.75 281=
+.24c1.4091-0.7122 3.0706-0.85812 4.6164-0.53681 1.5458 0.3213 2.9782 1.0906=
+ 4.1957 2.0958 2.435 2.0104 3.9803 4.8747 5.4194 7.6854 3.3049 6.4547 6.383=
+4 13.05 10.338 19.128 2.8688 4.4095 6.1796 8.517 9.0816 12.905 3.9356 5.950=
+7 7.1358 12.496 8.4564 19.507 0.88822 4.7157 0.85899 9.8096-1.3724 14.058-1=
+.4687 2.7961-3.85 5.0899-6.6634 6.5252-2.8134 1.4353-6.0432 2.017-9.1889 1.=
+7344-4.9542-0.44507-9.4537-2.9251-14.117-4.6548-8.2747-3.0688-17.218-3.8032=
+-25.734-6.1187-3.592-0.9766-7.11-2.2352-10.751-3.0096-1.6062-0.34163-3.2436=
+-0.59125-4.7768-1.1794-1.5331-0.58818-2.9862-1.5658-3.7696-3.0089-0.55139-1=
+.0157-0.73656-2.2046-0.65433-3.3574 0.0822-1.1528 0.42084-2.2749 0.86462-3.=
+342 0.88755-2.1343 2.2009-4.0894 2.8904-6.2956 1.0132-3.2421 0.59672-6.7572=
+-0.1636-10.068-0.76031-3.3106-1.8567-6.5613-2.1945-9.9412-0.15046-1.5054-0.=
+14681-3.0399 0.19136-4.5146 0.33818-1.4746 1.0269-2.8918 2.1086-3.9496 1.39=
+32-1.3624 3.3437-2.04 5.2832-2.2292 1.9394-0.18927 3.8922 0.0689 5.8203 0.3=
+512 1.9281 0.28227 3.8682 0.59003 5.8148 0.49986 1.9466-0.0902 3.9285-0.610=
+81 5.4532-1.8243 1.5078-1.2001 2.4558-2.9871 2.9994-4.836 0.54362-1.8488 0.=
+71997-3.7819 0.94267-5.6961s0.50044-3.8462 1.2297-5.63c0.72928-1.7838 1.960=
+9-3.4281 3.6808-4.2974" clip-path=3D"url(#cl)" fill=3D"#f5bd0c" filter=3D"u=
+rl(#bx)"/>
++     <path d=3D"m76.407 237.61c2.6062 4.7134 4.1958 10.122 6.7812 14.875 2=
+.3781 4.3722 5.0845 8.8738 7.5 12.906 1.0754 1.7953 3.5833 4.5546 6.119 8.8=
+373 2.2977 3.8808 4.6183 9.2972 5.9166 11.116-0.74552-2.1288-2.2793-7.8466-=
+4.1088-11.923-1.7096-3.8088-3.6998-5.9822-4.9268-8.0306-2.4155-4.0325-5.016=
+9-7.6565-7.5-11.5-3.4252-5.3018-6.0356-11.235-9.7812-16.281z" fill=3D"url(#=
+ad)" filter=3D"url(#bv)"/>
++    </g>
++    <g>
++     <path d=3D"m231.48 237.28c-0.56258-1.102-1.5869-1.9258-2.7287-2.4025-=
+1.1418-0.47667-2.3969-0.6289-3.6342-0.61936-2.4745 0.0191-4.9346 0.66357-7.=
+4 0.45028-2.0826-0.18018-4.0588-0.96301-6.0898-1.4574-2.0973-0.51049-4.3219=
+-0.70969-6.4046-0.14297-2.226 0.60568-4.1894 2.0936-5.4192 4.0454-1.0843 1.=
+7209-1.5991 3.7527-1.7611 5.7803s0.013 4.0658 0.21815 6.0894c0.1484 1.4636 =
+0.31354 2.9308 0.66764 4.3587 0.35411 1.4279 0.90422 2.8228 1.7661 4.0151 1=
+.2407 1.7163 3.0834 2.9395 5.0694 3.675 3.2418 1.2005 6.9338 1.136 10.132-0=
+.17718 5.6588-2.457 10.449-6.8639 13.369-12.299 1.0454-1.946 1.8574-4.0193 =
+2.3819-6.1651 0.20845-0.85283 0.37215-1.7224 0.37977-2.6003 8e-3 -0.8779-0.=
+14655-1.7688-0.54573-2.5507" fill=3D"url(#p)" filter=3D"url(#bo)" opacity=
+=3D".35"/>
++     <path transform=3D"matrix(1 0 0 .72293 160 20.396)" d=3D"m71.484 295.=
+64c-0.56258-1.102-1.5869-1.9258-2.7287-2.4025-1.1418-0.47667-2.3969-0.6289-=
+3.6342-0.61936-2.4745 0.0191-4.9346 0.66357-7.4 0.45028-2.0826-0.18018-4.05=
+87-0.96301-6.0898-1.4574-2.0973-0.51049-4.3219-0.70969-6.4046-0.14297-2.226=
+ 0.60568-4.1894 2.0936-5.4192 4.0454-1.0843 1.7209-1.5991 3.7527-1.7611 5.7=
+803-0.16202 2.0275 0.01297 4.0658 0.21815 6.0894 0.1484 1.4636 0.31354 2.93=
+08 0.66764 4.3587 0.3541 1.4279 0.90422 2.8228 1.7661 4.0151 1.2407 1.7163 =
+3.0834 2.9395 5.0694 3.675 3.2418 1.2005 6.9338 1.136 10.132-0.17718 5.6589=
+-2.457 10.449-6.8639 13.369-12.299 1.0454-1.946 1.8574-4.0193 2.3819-6.1651=
+ 0.20845-0.85283 0.37215-1.7224 0.37978-2.6003 0.0076-0.8779-0.14656-1.7688=
+-0.54574-2.5507" fill=3D"url(#o)" filter=3D"url(#bn)" opacity=3D".35"/>
++     <path transform=3D"translate(160 -58.362)" d=3D"m76.188 285.33c-0.405=
+16-1.1037-1.1184-2.0816-1.9907-2.8699-0.87226-0.78832-1.9005-1.3923-2.9828-=
+1.8516-2.1646-0.91852-4.5205-1.2615-6.8315-1.6956-2.1792-0.40931-4.3418-0.9=
+0631-6.5278-1.2773-2.2714-0.38551-4.6179-0.63213-6.8653-0.1253-1.9658 0.443=
+33-3.7845 1.4588-5.2717 2.8186-1.4872 1.3598-2.6491 3.0564-3.485 4.8901-1.4=
+722 3.2295-1.9345 6.865-1.6539 10.403 0.20882 2.6332 0.87532 5.3459 2.6088 =
+7.3391 1.4007 1.6105 3.3873 2.6153 5.434 3.2209 3.525 1.0432 7.3666 0.98822=
+ 10.86-0.1553 5.7669-1.9311 10.876-5.7739 14.33-10.779 1.1386-1.6496 2.1122=
+-3.4481 2.5532-5.4034 0.33597-1.4896 0.34831-3.0811-0.1779-4.5146" fill=3D"=
+#020204"/>
++     <path transform=3D"translate(-150 -58.362)" d=3D"m362.22 276.46c-0.54=
+933 0.0306-1.0814 0.0909-1.625 0.1875-3.4695 0.61686-6.647 2.8086-8.4375 5.=
+8438-1.264 2.1427-1.8398 4.6763-1.6562 7.1562 0.0732-1.7416 0.52946-3.4468 =
+1.375-4.9688 1.4344-2.5818 4.0324-4.5298 6.9375-5.0625 1.7898-0.32819 3.631=
+8-0.13095 5.4375 0.0937 1.7326 0.2156 3.4812 0.44287 5.1875 0.8125 2.641 0.=
+57209 5.2543 1.4514 7.4688 3 0.51646 0.36118 0.99955 0.76857 1.4062 1.25 0.=
+40669 0.48143 0.72188 1.0379 0.84375 1.6562 0.17824 0.90428-0.0794 1.853-0.=
+53125 2.6562-0.45189 0.8033-1.0649 1.5066-1.7188 2.1562-0.52923 0.5258-1.09=
+48 1.0342-1.6562 1.5312 2.559-0.49571 5.152-1.1977 7.2812-2.6875 0.89975-0.=
+62955 1.7152-1.3846 2.25-2.3438 0.53477-0.95912 0.76245-2.1212 0.5-3.1875-0=
+.17714-0.71971-0.57137-1.3824-1.0625-1.9375-0.49114-0.55511-1.0805-1.0122-1=
+.6875-1.4375-2.6788-1.877-5.8149-3.0785-9.0625-3.4688-2.0815-0.38286-4.1812=
+-0.70597-6.2812-0.96875-1.6434-0.20564-3.3208-0.37313-4.9688-0.28125z" clip=
+-path=3D"url(#ce)" fill=3D"url(#n)" filter=3D"url(#bp)"/>
++     <path transform=3D"translate(-150 -58.362)" d=3D"m362.22 276.46c-0.54=
+933 0.0306-1.0814 0.0909-1.625 0.1875-3.4695 0.61686-6.647 2.8086-8.4375 5.=
+8438-1.264 2.1427-1.8398 4.6763-1.6562 7.1562 0.0732-1.7416 0.52946-3.4468 =
+1.375-4.9688 1.4344-2.5818 4.0324-4.5298 6.9375-5.0625 1.7898-0.32819 3.631=
+8-0.13095 5.4375 0.0937 1.7326 0.2156 3.4812 0.44287 5.1875 0.8125 2.641 0.=
+57209 5.2543 1.4514 7.4688 3 0.51646 0.36118 0.99955 0.76857 1.4062 1.25 0.=
+40669 0.48143 0.72188 1.0379 0.84375 1.6562 0.17824 0.90428-0.0794 1.853-0.=
+53125 2.6562-0.45189 0.8033-1.0649 1.5066-1.7188 2.1562-0.52923 0.5258-1.09=
+48 1.0342-1.6562 1.5312 2.559-0.49571 5.152-1.1977 7.2812-2.6875 0.89975-0.=
+62955 1.7152-1.3846 2.25-2.3438 0.53477-0.95912 0.76245-2.1212 0.5-3.1875-0=
+.17714-0.71971-0.57137-1.3824-1.0625-1.9375-0.49114-0.55511-1.0805-1.0122-1=
+.6875-1.4375-2.6788-1.877-5.8149-3.0785-9.0625-3.4688-2.0815-0.38286-4.1812=
+-0.70597-6.2812-0.96875-1.6434-0.20564-3.3208-0.37313-4.9688-0.28125z" clip=
+-path=3D"url(#cd)" fill=3D"url(#af)" filter=3D"url(#bq)"/>
++    </g>
++    <g>
++     <g>
++      <path transform=3D"translate(139 -49.362)" d=3D"m-24.768 113.36c-1.7=
+81 0.097-3.4846 0.91899-4.7879 2.1367-1.3032 1.2177-2.2214 2.8118-2.7862 4.=
+5036-1.1296 3.3836-0.87548 7.0518-0.6187 10.61 0.23251 3.2216 0.4704 6.5053=
+ 1.6768 9.5016 0.60319 1.4981 1.4502 2.9102 2.5803 4.064s2.5517 2.0419 4.11=
+83 2.4345c1.4688 0.36809 3.0382 0.29183 4.4828-0.16209 1.4446-0.45392 2.763=
+9-1.2789 3.8462-2.3379 1.579-1.5451 2.6433-3.5662 3.2534-5.6895 0.61019-2.1=
+233 0.78416-4.3516 0.7524-6.5605-0.03974-2.7644-0.40091-5.5385-1.2658-8.164=
+4s-2.2457-5.1033-4.1728-7.0856c-0.93331-0.96009-1.9978-1.8051-3.1986-2.3975=
+-1.2008-0.59233-2.5434-0.92535-3.8804-0.85253" fill=3D"url(#z)"/>
++      <g>
++       <path transform=3D"translate(-50 -58.362)" d=3D"m159.94 137.11c-0.3=
+7211 2.2457-0.38563 4.602 0.3864 6.7434 0.50979 1.414 1.3504 2.6969 2.3722 =
+3.7994 0.66903 0.72184 1.4282 1.3778 2.3158 1.8032s1.9158 0.60638 2.8704 0.=
+36671c0.88113-0.22123 1.6516-0.78859 2.2201-1.4972 0.56856-0.70857 0.9476-1=
+.553 1.2177-2.4203 0.7974-2.5608 0.66926-5.3616-0.12241-7.9242-0.5768-1.867=
+-1.5321-3.6679-3.0266-4.9268-0.71307-0.60061-1.5477-1.0712-2.4548-1.2866-0.=
+90707-0.2155-1.8887-0.16505-2.7375 0.22063-0.9423 0.42817-1.6716 1.243-2.14=
+91 2.1613-0.47749 0.91829-0.72288 1.9394-0.89207 2.9605" fill=3D"#020204"/>
++       <path d=3D"m114.69 77.125c0.24185 0.6337 1.0542 0.86381 1.5 1.375 0=
+.43302 0.49651 0.88735 1.0106 1.125 1.625 0.4549 1.1762-0.4488 2.9193 0.5 3=
+.75 0.29782 0.26075 0.89472 0.26639 1.1875 0 1.1454-1.0422 0.89094-3.1443 0=
+.4375-4.625-0.4115-1.3437-1.4275-2.6164-2.6792-3.2551-0.57882-0.29536-1.450=
+8-0.54089-1.9458-0.11988-0.31898 0.2713-0.27431 0.85878-0.125 1.25z" fill=
+=3D"url(#al)" filter=3D"url(#aw)"/>
++      </g>
++      <path transform=3D"translate(60 -58.362)" d=3D"m50.392 129.53c2.6854=
+-1.5993 5.9551-1.9703 9.0667-1.6756 3.1116 0.29468 6.1254 1.2085 9.1413 2.0=
+292 2.2116 0.60188 4.4516 1.1615 6.5253 2.1378 2.0737 0.97627 3.9999 2.4157=
+ 5.1419 4.403 0.18319 0.31877 0.34526 0.6497 0.53925 0.96201 0.194 0.31232 =
+0.42311 0.60867 0.71646 0.83031s0.65699 0.3643 1.0241 0.34424c0.18356-0.01 =
+0.36561-0.0609 0.52418-0.15388 0.15856-0.093 0.29294-0.22871 0.37799-0.3916=
+9 0.09778-0.18739 0.12808-0.40446 0.11714-0.61554s-0.06122-0.41805-0.11714-=
+0.62189c-0.7552-2.753-2.535-5.0883-3.8891-7.6014-0.8126-1.5081-1.477-3.0927=
+-2.2981-4.5962-2.8183-5.1602-7.4436-9.2156-12.701-11.847-5.2578-2.6317-11.1=
+27-3.8961-16.997-4.2393-6.8012-0.39768-13.62 0.40945-20.329 1.591-2.9086 0.=
+5122-5.8608 1.1151-8.4357 2.5616-1.2874 0.72322-2.4675 1.6566-3.3885 2.8109=
+s-1.5765 2.5352-1.7876 3.9967c-0.20352 1.4086 0.0088 2.8606 0.5013 4.1958 0=
+.49248 1.3352 1.2582 2.5585 2.1565 3.6624 1.7966 2.2077 4.1007 3.9336 6.222=
+4 5.8309 2.1213 1.8969 4.09 3.992 6.4629 5.5628 1.1865 0.78539 2.4727 1.435=
+ 3.8434 1.8167 1.3707 0.38166 2.8299 0.48917 4.2238 0.20358 1.445-0.29606 2=
+.7827-1.005 3.9536-1.902 1.1709-0.89697 2.1861-1.9801 3.1484-3.0979 1.9246-=
+2.2358 3.7225-4.6865 6.2571-6.196" clip-path=3D"url(#cb)" fill=3D"url(#t)"/>
++      <path transform=3D"translate(160 -57.362)" d=3D"m-38.438 119.38c2.50=
+37 2.3453 4.365 5.2397 5.625 8.3094-0.55066-3.3847-1.4234-6.1037-3.625-8.30=
+94-1.3513-1.2658-2.8864-2.3778-4.625-3.1587-1.5213-0.68334-3.2136-1.1079-4.=
+1808-1.1255-0.96723-0.0176-1.2022 4e-3 -1.4009 0.0134-0.19874 9e-3 -0.35739=
+ 0.0162 0.27185 0.0877s2.0337 0.45118 3.5411 1.1283c1.5074 0.6771 3.0425 1.=
+789 4.3938 3.0548z" fill=3D"url(#am)" filter=3D"url(#ax)"/>
++     </g>
++     <path transform=3D"translate(139 -49.362)" d=3D"m6.75 113.36c-2.7804 =
+1.9102-5.1106 4.5749-6.25 7.75-1.436 4.0016-0.88584 8.4807 0.5 12.5 1.4195 =
+4.1169 3.7938 8.041 7.3793 10.512 1.7928 1.2357 3.8681 2.083 6.0304 2.3386s=
+4.4093-0.0949 6.3403-1.1009c2.3531-1.226 4.1478-3.3728 5.2622-5.7808s1.5888=
+-5.0701 1.7378-7.7192c0.18989-3.3755-0.14047-6.8065-1.25-10-1.2053-3.4691-3=
+.3901-6.6706-6.4728-8.6666-1.5414-0.99803-3.2919-1.6836-5.1109-1.9352-1.818=
+9-0.25158-3.7048-0.0633-5.4164 0.60175-0.97547 0.37901-1.8874 0.9074-2.75 1=
+.5" fill=3D"url(#y)"/>
++     <g>
++      <path transform=3D"translate(-150 -58.362)" d=3D"m302.16 130.76c-1.0=
+455 0.0749-2.0644 0.4318-2.9514 0.99028-0.88699 0.55848-1.6433 1.3152-2.237=
+ 2.179-1.1875 1.7276-1.7089 3.8468-1.793 5.9414-0.0631 1.5723 0.11098 3.165=
+1 0.63245 4.6498s1.4009 2.8588 2.6128 3.8625c1.2401 1.0271 2.8165 1.6436 4.=
+4248 1.7209s3.2395-0.38665 4.561-1.3066c1.0529-0.73292 1.9021-1.7417 2.5067=
+-2.8732 0.60455-1.1315 0.96879-2.3835 1.1353-3.6555 0.29411-2.2468-0.0385-4=
+.593-1.0769-6.607-1.0384-2.014-2.8005-3.6727-4.9267-4.4561-0.92093-0.3393-1=
+.9091-0.51576-2.888-0.44563" fill=3D"#020204"/>
++      <path d=3D"m154.66 79.25c-0.86591 0.34162-2.2366 0.12677-2.6162 0.97=
+67-0.22493 0.50357 0.0927 1.3325 0.60343 1.5406 1.0324 0.42063 2.6319-0.341=
+11 3.0488-1.3751 0.18104-0.4491-0.0934-1.161-0.53974-1.3486-0.16515-0.0694-=
+0.32958 0.14069-0.49623 0.20644z" fill=3D"#141413" filter=3D"url(#ba)"/>
++      <path d=3D"m158.62 81.5c1.1611-1.1611-0.82613-4.2395-2.375-5.5-1.121=
+8-0.91296-4.3906-1.8685-4.25-0.875s1.6099 2.2665 2.5947 3.2374c1.2124 1.195=
+3 3.4789 3.689 4.0303 3.1376z" fill=3D"url(#ap)" filter=3D"url(#az)"/>
++     </g>
++     <path transform=3D"translate(60 -58.362)" d=3D"m75.25 132.49c2.3837-1=
+.9801 5.1609-3.4847 8.1215-4.4001 6.0856-1.8815 13-1.1371 18.378 2.2751 1.8=
+571 1.1781 3.5124 2.6419 5.2394 4.0037 1.7269 1.3618 3.5612 2.6412 5.6356 3=
+.3713 1.1209 0.39448 2.3182 0.62345 3.5 0.5 1.0677-0.11153 2.0993-0.5118 2.=
+9844-1.1192 0.88515-0.60736 1.6248-1.4185 2.1806-2.3369 1.1118-1.8367 1.47-=
+4.0646 1.2784-6.203-0.38324-4.2768-2.7956-8.0534-4.8185-11.841-0.63342-1.18=
+6-1.2364-2.3933-2-3.5-2.3433-3.3962-6.0731-5.6356-9.985-6.9479-3.9118-1.312=
+3-8.0463-1.7864-12.14-2.3021-1.8257-0.22998-3.673-0.46998-5.5-0.25-2.0998 0=
+.25283-4.076 1.101-6.125 1.625-0.97265 0.24874-1.9637 0.42478-2.928 0.70391=
+-0.96437 0.27912-1.913 0.669-2.697 1.2961-1.1448 0.91567-1.8651 2.2909-2.17=
+65 3.7234-0.31145 1.4325-0.24052 2.9244-0.01161 4.3724 0.45781 2.896 1.5409=
+ 5.7241 1.4381 8.6542-0.07058 2.0123-0.70229 3.988-0.625 6 0.02266 0.58987 =
+0.10659 1.1774 0.25 1.75" clip-path=3D"url(#cc)" fill=3D"url(#ao)"/>
++     <path transform=3D"translate(160 -57.362)" d=3D"m-4.5939 113.12c-0.47=
+695 0.59985-0.90798 1.2523-1.25 1.9688 2.1464 0.46247 4.1991 1.3458 6.0312 =
+2.5625 3.5451 2.3543 6.237 5.7965 8.125 9.625 0.44076-0.48807 0.84202-1.011=
+8 1.1875-1.5938-1.8975-3.9878-4.6438-7.5949-8.3125-10.031-1.7623-1.1704-3.7=
+246-2.0537-5.7812-2.5312z" fill=3D"url(#an)" filter=3D"url(#ay)"/>
++    </g>
++    <g>
++     <path transform=3D"translate(139 -49.362)" d=3D"m-16.399 136.86c1.767=
+4-1.9866 2.9762-4.4105 4.6741-6.4568 0.84898-1.0231 1.8284-1.9553 2.9817-2.=
+6168 1.1533-0.66147 2.492-1.0411 3.8165-0.9264 1.4745 0.12769 2.8545 0.8622=
+8 3.9341 1.8747 1.0795 1.0124 1.8798 2.2903 2.5186 3.6253 0.61174 1.2783 1.=
+0978 2.6403 1.9791 3.75 0.94033 1.184 2.2595 1.9922 3.4511 2.9229 0.59578 0=
+.46535 1.1675 0.96911 1.6384 1.5605 0.47092 0.59139 0.83961 1.276 0.99099 2=
+.0166 0.15372 0.75214 0.077153 1.5451-0.18518 2.2665-0.26233 0.72148-0.7067=
+ 1.3717-1.2596 1.9043-1.1059 1.0651-2.6136 1.6396-4.1338 1.8547-3.0405 0.43=
+016-6.1147-0.47583-9.1842-0.39142-3.1069 0.0854-6.1416 1.1837-9.2475 1.0701=
+-1.553-0.0568-3.1281-0.43624-4.4043-1.323-0.63809-0.44339-1.194-1.0106-1.59=
+58-1.6756-0.40182-0.66505-0.64669-1.4289-0.67286-2.2055-0.02497-0.74092 0.1=
+4804-1.4809 0.44408-2.1606 0.29603-0.67967 0.71268-1.3018 1.1821-1.8755 0.9=
+3888-1.1475 2.087-2.1062 3.0725-3.2139" fill=3D"url(#x)"/>
++     <g>
++      <path transform=3D"translate(60 -58.362)" d=3D"m45.752 165.03c0.0614=
+6 0.29539 0.17251 0.58039 0.32709 0.8395 0.26568 0.44533 0.65394 0.80631 1.=
+0733 1.1114s0.8728 0.55947 1.3118 0.83545c2.3336 1.467 4.2354 3.529 5.9247 =
+5.7071 2.2665 2.9222 4.2719 6.1649 7.2993 8.2889 2.1378 1.4998 4.6957 2.355=
+ 7.2941 2.6161 3.0513 0.30656 6.1399-0.18595 9.0817-1.052 2.7264-0.80267 5.=
+3631-1.9296 7.7822-3.4214 4.5985-2.8359 8.4392-6.9927 13.51-8.8571 1.107-0.=
+40702 2.2592-0.69819 3.3265-1.2003 1.0673-0.50207 2.0714-1.254 2.5811-2.317=
+7 0.48998-1.0224 0.47097-2.2025 0.63053-3.325 0.1707-1.2008 0.55374-2.3618 =
+0.76385-3.5564 0.2101-1.1946 0.23517-2.4723-0.28138-3.5698-0.42775-0.90878-=
+1.2054-1.6279-2.0998-2.0848-0.89448-0.4569-1.9011-0.66447-2.9043-0.71372-2.=
+0064-0.0985-3.9876 0.41519-5.9881 0.59785-2.6495 0.24193-5.3179-0.0982-7.97=
+72-0.019-3.3083 0.0986-6.5684 0.84468-9.8743 1.005-3.7715 0.18294-7.5347-0.=
+39851-11.308-0.55139-1.6341-0.0662-3.28-0.0512-4.8918 0.22531-1.6119 0.2765=
+4-3.1952 0.82363-4.541 1.7529-1.3114 0.90553-2.3559 2.1402-3.5602 3.184-0.6=
+0214 0.52192-1.2495 0.99929-1.9663 1.3474-0.71678 0.34812-1.5075 0.564-2.30=
+42 0.54708-0.4096-9e-3 -0.83086-0.0769-1.2213 0.0472-0.24392 0.0775-0.46048=
+ 0.22705-0.64353 0.40593s-0.33479 0.38705-0.4778 0.59931c-0.33254 0.49356-0=
+.62307 1.0154-0.86742 1.5581" fill=3D"url(#w)"/>
++      <path transform=3D"translate(60 -58.362)" d=3D"m60.557 169.1c-0.3864=
+6 1.596-0.15199 3.3341 0.64359 4.7707s2.1444 2.5575 3.7023 3.0768c1.9778 0.=
+65919 4.2066 0.33635 6.0548-0.62813 1.0714-0.55909 2.0512-1.3459 2.6694-2.3=
+842 0.3091-0.51918 0.52398-1.0971 0.60452-1.6959 0.08054-0.59884 0.02471-1.=
+2185-0.18489-1.7852-0.22972-0.62112-0.64026-1.1685-1.1461-1.596-0.50579-0.4=
+2748-1.1047-0.7378-1.7334-0.94568-1.2575-0.41575-2.6109-0.42405-3.9339-0.36=
+051-2.0052 0.0963-4.0029 0.34837-5.9692 0.75318" fill=3D"#d9b30d" filter=3D=
+"url(#bc)"/>
++      <path transform=3D"translate(60 -58.362)" d=3D"m54.066 156.68c-1.339=
+ 0.79147-2.6286 1.6637-3.8975 2.5632-0.6567 0.46551-1.3342 0.96895-1.6806 1=
+.6956-0.2455 0.51498-0.30177 1.099-0.30959 1.6695-0.0078 0.57045 0.02884 1.=
+144-0.04618 1.7095-0.05124 0.38625-0.15433 0.76619-0.17154 1.1554-0.0086 0.=
+19463 0.0047 0.39145 0.05602 0.57938 0.05134 0.18793 0.1419 0.36704 0.27548=
+ 0.50885 0.17256 0.18318 0.40793 0.29591 0.64865 0.36931s0.49064 0.1112 0.7=
+3562 0.16878c1.1747 0.27611 2.1969 0.99676 3.0941 1.8037s1.7029 1.7149 2.63=
+89 2.4764c2.5373 2.0645 5.8905 2.9187 9.1611 2.9725 3.2706 0.0538 6.5042-0.=
+63066 9.6953-1.3495 2.5063-0.56456 5.015-1.1547 7.4254-2.0436 3.7028-1.3654=
+ 7.1407-3.4317 10.118-6.0219 1.35-1.1744 2.6172-2.4636 4.1325-3.4152 1.3409=
+-0.84211 2.8426-1.398 4.2063-2.2026 0.12193-0.072 0.24321-0.14621 0.35213-0=
+.23665 0.10893-0.0905 0.20574-0.1981 0.26892-0.3248 0.10917-0.21894 0.10937=
+-0.48123 0.0389-0.71552-0.0704-0.23429-0.20633-0.44389-0.36-0.63425-0.16999=
+-0.21058-0.36336-0.40158-0.56895-0.57756-1.4244-1.2192-3.3568-1.6624-5.2258=
+-1.8107-1.8691-0.14822-3.7607-0.0434-5.61-0.35238-1.7386-0.29048-3.3933-0.9=
+3881-5.0718-1.4773-1.7619-0.56527-3.5628-1.0125-5.389-1.3104-4.2948-0.70063=
+-8.7173-0.56641-12.977 0.32063-4.0577 0.84488-7.9713 2.3706-11.539 4.4796" =
+fill=3D"#604405" filter=3D"url(#bi)"/>
++      <path transform=3D"translate(60 -58.362)" d=3D"m53.639 152.15c-1.929=
+4 1.2986-3.6661 2.8829-5.136 4.6852-0.8407 1.0308-1.6037 2.1508-2.0271 3.41=
+18-0.333 0.99185-0.44648 2.0415-0.65633 3.0665-0.07861 0.38398-0.17139 0.76=
+923-0.16974 1.1612 8.22e-4 0.19597 0.02568 0.39281 0.08646 0.57912 0.06079 =
+0.18631 0.15831 0.36204 0.29407 0.50337 0.22468 0.23391 0.54041 0.36101 0.8=
+581 0.42632 0.31769 0.0653 0.6438 0.0751 0.96606 0.11177 1.4546 0.16535 2.7=
+945 0.87199 4.0003 1.7022 1.2059 0.83017 2.3171 1.7954 3.5544 2.578 2.7339 =
+1.729 5.9946 2.4983 9.2269 2.6228 3.2323 0.12456 6.4574-0.36641 9.6295-0.99=
+977 2.5209-0.50334 5.0339-1.1007 7.4254-2.0436 3.6624-1.4439 6.9635-3.6669 =
+10.118-6.0219 1.433-1.0698 2.846-2.1732 4.1325-3.4152 0.43668-0.42159 0.859=
+16-0.85947 1.3276-1.2455 0.4684-0.38603 0.98816-0.72177 1.566-0.90766 0.880=
+77-0.28336 1.8356-0.20203 2.7482-0.0495 0.68732 0.11488 1.376 0.26902 2.072=
+3 0.24128 0.34815-0.0139 0.69661-0.0742 1.0201-0.2037 0.32345-0.12954 0.621=
+55-0.33028 0.8433-0.59903 0.29139-0.35317 0.43996-0.81445 0.4416-1.2723 2e-=
+3 -0.45786-0.1387-0.91095-0.37105-1.3055-0.4647-0.78905-1.2682-1.3231-2.105=
+-1.695-1.1461-0.50941-2.3863-0.76136-3.6055-1.0557-3.7453-0.90427-7.3848-2.=
+2406-10.836-3.9538-1.7156-0.85173-3.3836-1.7956-5.0718-2.7004-1.7356-0.9302=
+1-3.5046-1.8242-5.389-2.3954-4.2133-1.2771-8.8185-0.85829-12.977 0.58609-4.=
+6199 1.6045-8.7974 4.4631-11.966 8.1883v2e-5" fill=3D"url(#ak)"/>
++      <path transform=3D"translate(60 -58.362)" d=3D"m83.239 153.08c-0.226=
+5-0.28623-0.55114-0.48799-0.90129-0.59103s-0.72467-0.1104-1.0844-0.0488c-0.=
+71953 0.12322-1.3645 0.51049-1.9657 0.9245-1.7086 1.1765-3.2189 2.6282-4.53=
+73 4.2298-1.7452 2.12-3.185 4.5717-3.6676 7.2749-0.08131 0.45547-0.13511 0.=
+92132-0.07821 1.3805 0.0569 0.45916 0.23279 0.91479 0.55871 1.2432 0.28617 =
+0.28835 0.67573 0.46425 1.0778 0.52203 0.40212 0.0578 0.8159 2e-3 1.2008-0.=
+12836 0.76971-0.26019 1.409-0.79942 2.0144-1.3413 3.336-2.9855 6.3525-6.567=
+8 7.5596-10.879 0.12113-0.43261 0.22401-0.87566 0.22123-1.3249-0.0028-0.449=
+24-0.11924-0.90947-0.39801-1.2618" fill=3D"#f6da4a" filter=3D"url(#bm)"/>
++      <g>
++       <path d=3D"m135.25 88.528c0.23129 0.7424 1.4278 0.61935 2.1191 0.97=
+542 0.60659 0.31244 1.0945 0.99723 1.7765 1.0169 0.65093 0.0188 1.664-0.225=
+42 1.7487-0.87109 0.11187-0.85303-1.1338-1.3951-1.9354-1.7076-1.0315-0.4021=
+6-2.353-0.6062-3.3206-0.0682-0.22173 0.12328-0.46373 0.41238-0.38827 0.6545=
+8z" fill=3D"url(#v)" filter=3D"url(#bg)" opacity=3D".8"/>
++       <path d=3D"m123.83 88.108c-0.88816-0.28854-2.3575 1.2775-1.8781 2.0=
+789 0.13167 0.22009 0.53491 0.49916 0.80641 0.34992 0.40925-0.22497 0.74404=
+-1.0296 1.1875-1.345 0.29608-0.21058 0.22974-0.97156-0.11581-1.0838z" fill=
+=3D"url(#u)" filter=3D"url(#bh)" opacity=3D".8"/>
++      </g>
++      <path transform=3D"matrix(1.0956 0 -.17018 1.5181 -76.244 -140.48)" =
+d=3D"m245.9 158.28a2.6081 2.3281 0 0 1-2.6081 2.3281 2.6081 2.3281 0 0 1-2.=
+6081-2.3281 2.6081 2.3281 0 0 1 2.6081-2.3281 2.6081 2.3281 0 0 1 2.6081 2.=
+3281z" clip-path=3D"url(#ca)" color=3D"#000000" fill=3D"url(#aj)" filter=3D=
+"url(#bb)"/>
++     </g>
++    </g>
++   </g>
++  </g>
++ </g>
++</svg>
+diff --git a/Documentation/rust/quick-start.rst b/Documentation/rust/quick-=
+start.rst
 new file mode 100644
-index 000000000000..f22ad1ab522f
+index 000000000000..260393c48379
 --- /dev/null
-+++ b/rust/kernel/lib.rs
-@@ -0,0 +1,261 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! The `kernel` crate.
-+//!
-+//! This crate contains the kernel APIs that have been ported or wrapped for
-+//! usage by Rust code in the kernel and is shared by all of them.
-+//!
-+//! In other words, all the rest of the Rust code in the kernel (e.g. kernel
-+//! modules written in Rust) depends on [`core`], [`alloc`] and this crate.
-+//!
-+//! If you need a kernel C API that is not ported or wrapped yet here, then
-+//! do so first instead of bypassing this crate.
-+
-+#![no_std]
-+#![feature(allocator_api)]
-+#![feature(associated_type_defaults)]
-+#![feature(concat_idents)]
-+#![feature(const_fn_trait_bound)]
-+#![feature(const_mut_refs)]
-+#![feature(const_ptr_offset_from)]
-+#![feature(const_refs_to_cell)]
-+#![feature(const_trait_impl)]
-+#![feature(doc_cfg)]
-+#![feature(generic_associated_types)]
-+#![feature(maybe_uninit_extra)]
-+#![feature(ptr_metadata)]
-+#![feature(receiver_trait)]
-+#![feature(coerce_unsized)]
-+#![feature(dispatch_from_dyn)]
-+#![feature(unsize)]
-+
-+// Ensure conditional compilation based on the kernel configuration works;
-+// otherwise we may silently break things like initcall handling.
-+#[cfg(not(CONFIG_RUST))]
-+compile_error!("Missing kernel configuration for conditional compilation");
-+
-+#[cfg(not(test))]
-+#[cfg(not(testlib))]
-+mod allocator;
-+
-+#[doc(hidden)]
-+pub mod bindings;
-+
-+#[cfg(CONFIG_ARM_AMBA)]
-+pub mod amba;
-+pub mod buffer;
-+pub mod c_types;
-+pub mod chrdev;
-+#[cfg(CONFIG_COMMON_CLK)]
-+pub mod clk;
-+pub mod cred;
-+pub mod device;
-+pub mod driver;
-+mod error;
-+pub mod file;
-+pub mod file_operations;
-+pub mod gpio;
-+pub mod irq;
-+pub mod miscdev;
-+pub mod mm;
-+pub mod pages;
-+pub mod power;
-+pub mod revocable;
-+pub mod security;
-+pub mod str;
-+pub mod task;
-+
-+pub mod linked_list;
-+mod raw_list;
-+pub mod rbtree;
-+
-+#[doc(hidden)]
-+pub mod module_param;
-+
-+mod build_assert;
-+pub mod prelude;
-+pub mod print;
-+pub mod random;
-+mod static_assert;
-+#[doc(hidden)]
-+pub mod std_vendor;
-+pub mod sync;
-+
-+#[cfg(any(CONFIG_SYSCTL, doc))]
-+#[doc(cfg(CONFIG_SYSCTL))]
-+pub mod sysctl;
-+
-+pub mod io_buffer;
-+pub mod io_mem;
-+pub mod iov_iter;
-+pub mod of;
-+pub mod platform;
-+mod types;
-+pub mod user_ptr;
-+
-+#[doc(hidden)]
-+pub use build_error::build_error;
-+
-+pub use crate::error::{to_result, Error, Result};
-+pub use crate::types::{bit, bits_iter, Mode, Opaque, ScopeGuard};
-+
-+use core::marker::PhantomData;
-+
-+/// Page size defined in terms of the `PAGE_SHIFT` macro from C.
-+///
-+/// [`PAGE_SHIFT`]: ../../../include/asm-generic/page.h
-+pub const PAGE_SIZE: usize = 1 << bindings::PAGE_SHIFT;
-+
-+/// Prefix to appear before log messages printed from within the kernel crate.
-+const __LOG_PREFIX: &[u8] = b"rust_kernel\0";
-+
-+/// The top level entrypoint to implementing a kernel module.
-+///
-+/// For any teardown or cleanup operations, your type may implement [`Drop`].
-+pub trait KernelModule: Sized + Sync {
-+    /// Called at module initialization time.
-+    ///
-+    /// Use this method to perform whatever setup or registration your module
-+    /// should do.
-+    ///
-+    /// Equivalent to the `module_init` macro in the C API.
-+    fn init(name: &'static str::CStr, module: &'static ThisModule) -> Result<Self>;
-+}
-+
-+/// Equivalent to `THIS_MODULE` in the C API.
-+///
-+/// C header: `include/linux/export.h`
-+pub struct ThisModule(*mut bindings::module);
-+
-+// SAFETY: `THIS_MODULE` may be used from all threads within a module.
-+unsafe impl Sync for ThisModule {}
-+
-+impl ThisModule {
-+    /// Creates a [`ThisModule`] given the `THIS_MODULE` pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer must be equal to the right `THIS_MODULE`.
-+    pub const unsafe fn from_ptr(ptr: *mut bindings::module) -> ThisModule {
-+        ThisModule(ptr)
-+    }
-+
-+    /// Locks the module parameters to access them.
-+    ///
-+    /// Returns a [`KParamGuard`] that will release the lock when dropped.
-+    pub fn kernel_param_lock(&self) -> KParamGuard<'_> {
-+        // SAFETY: `kernel_param_lock` will check if the pointer is null and
-+        // use the built-in mutex in that case.
-+        #[cfg(CONFIG_SYSFS)]
-+        unsafe {
-+            bindings::kernel_param_lock(self.0)
-+        }
-+
-+        KParamGuard {
-+            #[cfg(CONFIG_SYSFS)]
-+            this_module: self,
-+            phantom: PhantomData,
-+        }
-+    }
-+}
-+
-+/// Scoped lock on the kernel parameters of [`ThisModule`].
-+///
-+/// Lock will be released when this struct is dropped.
-+pub struct KParamGuard<'a> {
-+    #[cfg(CONFIG_SYSFS)]
-+    this_module: &'a ThisModule,
-+    phantom: PhantomData<&'a ()>,
-+}
-+
-+#[cfg(CONFIG_SYSFS)]
-+impl<'a> Drop for KParamGuard<'a> {
-+    fn drop(&mut self) {
-+        // SAFETY: `kernel_param_lock` will check if the pointer is null and
-+        // use the built-in mutex in that case. The existance of `self`
-+        // guarantees that the lock is held.
-+        unsafe { bindings::kernel_param_unlock(self.this_module.0) }
-+    }
-+}
-+
-+/// Calculates the offset of a field from the beginning of the struct it belongs to.
-+///
-+/// # Example
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::offset_of;
-+/// struct Test {
-+///     a: u64,
-+///     b: u32,
-+/// }
-+///
-+/// fn test() {
-+///     // This prints `8`.
-+///     pr_info!("{}\n", offset_of!(Test, b));
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! offset_of {
-+    ($type:ty, $($f:tt)*) => {{
-+        let tmp = core::mem::MaybeUninit::<$type>::uninit();
-+        let outer = tmp.as_ptr();
-+        // To avoid warnings when nesting `unsafe` blocks.
-+        #[allow(unused_unsafe)]
-+        // SAFETY: The pointer is valid and aligned, just not initialised; `addr_of` ensures that
-+        // we don't actually read from `outer` (which would be UB) nor create an intermediate
-+        // reference.
-+        let inner = unsafe { core::ptr::addr_of!((*outer).$($f)*) } as *const u8;
-+        // To avoid warnings when nesting `unsafe` blocks.
-+        #[allow(unused_unsafe)]
-+        // SAFETY: The two pointers are within the same allocation block.
-+        unsafe { inner.offset_from(outer as *const u8) }
-+    }}
-+}
-+
-+/// Produces a pointer to an object from a pointer to one of its fields.
-+///
-+/// # Safety
-+///
-+/// Callers must ensure that the pointer to the field is in fact a pointer to the specified field,
-+/// as opposed to a pointer to another object of the same type. If this condition is not met,
-+/// any dereference of the resulting pointer is UB.
-+///
-+/// # Example
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::container_of;
-+/// struct Test {
-+///     a: u64,
-+///     b: u32,
-+/// }
-+///
-+/// fn test() {
-+///     let test = Test { a: 10, b: 20 };
-+///     let b_ptr = &test.b;
-+///     let test_alias = container_of!(b_ptr, Test, b);
-+///     // This prints `true`.
-+///     pr_info!("{}\n", core::ptr::eq(&test, test_alias));
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! container_of {
-+    ($ptr:expr, $type:ty, $($f:tt)*) => {{
-+        let ptr = $ptr as *const _ as *const u8;
-+        let offset = $crate::offset_of!($type, $($f)*);
-+        ptr.wrapping_offset(-offset) as *const $type
-+    }}
-+}
-+
-+#[cfg(not(any(testlib, test)))]
-+#[panic_handler]
-+fn panic(info: &core::panic::PanicInfo<'_>) -> ! {
-+    pr_emerg!("{}\n", info);
-+    // SAFETY: FFI call.
-+    unsafe { bindings::BUG() };
-+    // Bindgen currently does not recognize `__noreturn` so `BUG` returns `()`
-+    // instead of `!`.
-+    // https://github.com/rust-lang/rust-bindgen/issues/2094
-+    loop {}
-+}
-diff --git a/rust/kernel/linked_list.rs b/rust/kernel/linked_list.rs
-new file mode 100644
-index 000000000000..3330edcc7ca8
---- /dev/null
-+++ b/rust/kernel/linked_list.rs
-@@ -0,0 +1,247 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Linked lists.
-+//!
-+//! TODO: This module is a work in progress.
-+
-+use alloc::boxed::Box;
-+use core::ptr::NonNull;
-+
-+pub use crate::raw_list::{Cursor, GetLinks, Links};
-+use crate::{raw_list, raw_list::RawList, sync::Ref};
-+
-+// TODO: Use the one from `kernel::file_operations::PointerWrapper` instead.
-+/// Wraps an object to be inserted in a linked list.
-+pub trait Wrapper<T: ?Sized> {
-+    /// Converts the wrapped object into a pointer that represents it.
-+    fn into_pointer(self) -> NonNull<T>;
-+
-+    /// Converts the object back from the pointer representation.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The passed pointer must come from a previous call to [`Wrapper::into_pointer()`].
-+    unsafe fn from_pointer(ptr: NonNull<T>) -> Self;
-+
-+    /// Returns a reference to the wrapped object.
-+    fn as_ref(&self) -> &T;
-+}
-+
-+impl<T: ?Sized> Wrapper<T> for Box<T> {
-+    fn into_pointer(self) -> NonNull<T> {
-+        NonNull::new(Box::into_raw(self)).unwrap()
-+    }
-+
-+    unsafe fn from_pointer(ptr: NonNull<T>) -> Self {
-+        unsafe { Box::from_raw(ptr.as_ptr()) }
-+    }
-+
-+    fn as_ref(&self) -> &T {
-+        AsRef::as_ref(self)
-+    }
-+}
-+
-+impl<T: ?Sized> Wrapper<T> for Ref<T> {
-+    fn into_pointer(self) -> NonNull<T> {
-+        NonNull::new(Ref::into_raw(self) as _).unwrap()
-+    }
-+
-+    unsafe fn from_pointer(ptr: NonNull<T>) -> Self {
-+        // SAFETY: The safety requirements of `from_pointer` satisfy the ones from `Ref::from_raw`.
-+        unsafe { Ref::from_raw(ptr.as_ptr() as _) }
-+    }
-+
-+    fn as_ref(&self) -> &T {
-+        AsRef::as_ref(self)
-+    }
-+}
-+
-+impl<T: ?Sized> Wrapper<T> for &T {
-+    fn into_pointer(self) -> NonNull<T> {
-+        NonNull::from(self)
-+    }
-+
-+    unsafe fn from_pointer(ptr: NonNull<T>) -> Self {
-+        unsafe { &*ptr.as_ptr() }
-+    }
-+
-+    fn as_ref(&self) -> &T {
-+        self
-+    }
-+}
-+
-+/// A descriptor of wrapped list elements.
-+pub trait GetLinksWrapped: GetLinks {
-+    /// Specifies which wrapper (e.g., `Box` and `Arc`) wraps the list entries.
-+    type Wrapped: Wrapper<Self::EntryType>;
-+}
-+
-+impl<T: ?Sized> GetLinksWrapped for Box<T>
-+where
-+    Box<T>: GetLinks,
-+{
-+    type Wrapped = Box<<Box<T> as GetLinks>::EntryType>;
-+}
-+
-+impl<T: GetLinks + ?Sized> GetLinks for Box<T> {
-+    type EntryType = T::EntryType;
-+    fn get_links(data: &Self::EntryType) -> &Links<Self::EntryType> {
-+        <T as GetLinks>::get_links(data)
-+    }
-+}
-+
-+impl<T: ?Sized> GetLinksWrapped for Ref<T>
-+where
-+    Ref<T>: GetLinks,
-+{
-+    type Wrapped = Ref<<Ref<T> as GetLinks>::EntryType>;
-+}
-+
-+impl<T: GetLinks + ?Sized> GetLinks for Ref<T> {
-+    type EntryType = T::EntryType;
-+
-+    fn get_links(data: &Self::EntryType) -> &Links<Self::EntryType> {
-+        <T as GetLinks>::get_links(data)
-+    }
-+}
-+
-+/// A linked list.
-+///
-+/// Elements in the list are wrapped and ownership is transferred to the list while the element is
-+/// in the list.
-+pub struct List<G: GetLinksWrapped> {
-+    list: RawList<G>,
-+}
-+
-+impl<G: GetLinksWrapped> List<G> {
-+    /// Constructs a new empty linked list.
-+    pub fn new() -> Self {
-+        Self {
-+            list: RawList::new(),
-+        }
-+    }
-+
-+    /// Returns whether the list is empty.
-+    pub fn is_empty(&self) -> bool {
-+        self.list.is_empty()
-+    }
-+
-+    /// Adds the given object to the end (back) of the list.
-+    ///
-+    /// It is dropped if it's already on this (or another) list; this can happen for
-+    /// reference-counted objects, so dropping means decrementing the reference count.
-+    pub fn push_back(&mut self, data: G::Wrapped) {
-+        let ptr = data.into_pointer();
-+
-+        // SAFETY: We took ownership of the entry, so it is safe to insert it.
-+        if !unsafe { self.list.push_back(ptr.as_ref()) } {
-+            // If insertion failed, rebuild object so that it can be freed.
-+            // SAFETY: We just called `into_pointer` above.
-+            unsafe { G::Wrapped::from_pointer(ptr) };
-+        }
-+    }
-+
-+    /// Inserts the given object after `existing`.
-+    ///
-+    /// It is dropped if it's already on this (or another) list; this can happen for
-+    /// reference-counted objects, so dropping means decrementing the reference count.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `existing` points to a valid entry that is on the list.
-+    pub unsafe fn insert_after(&mut self, existing: NonNull<G::EntryType>, data: G::Wrapped) {
-+        let ptr = data.into_pointer();
-+        let entry = unsafe { &*existing.as_ptr() };
-+        if unsafe { !self.list.insert_after(entry, ptr.as_ref()) } {
-+            // If insertion failed, rebuild object so that it can be freed.
-+            unsafe { G::Wrapped::from_pointer(ptr) };
-+        }
-+    }
-+
-+    /// Removes the given entry.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `data` is either on this list or in no list. It being on another
-+    /// list leads to memory unsafety.
-+    pub unsafe fn remove(&mut self, data: &G::Wrapped) -> Option<G::Wrapped> {
-+        let entry_ref = Wrapper::as_ref(data);
-+        if unsafe { self.list.remove(entry_ref) } {
-+            Some(unsafe { G::Wrapped::from_pointer(NonNull::from(entry_ref)) })
-+        } else {
-+            None
-+        }
-+    }
-+
-+    /// Removes the element currently at the front of the list and returns it.
-+    ///
-+    /// Returns `None` if the list is empty.
-+    pub fn pop_front(&mut self) -> Option<G::Wrapped> {
-+        let front = self.list.pop_front()?;
-+        // SAFETY: Elements on the list were inserted after a call to `into_pointer `.
-+        Some(unsafe { G::Wrapped::from_pointer(front) })
-+    }
-+
-+    /// Returns a cursor starting on the first (front) element of the list.
-+    pub fn cursor_front(&self) -> Cursor<'_, G> {
-+        self.list.cursor_front()
-+    }
-+
-+    /// Returns a mutable cursor starting on the first (front) element of the list.
-+    pub fn cursor_front_mut(&mut self) -> CursorMut<'_, G> {
-+        CursorMut::new(self.list.cursor_front_mut())
-+    }
-+}
-+
-+impl<G: GetLinksWrapped> Default for List<G> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+impl<G: GetLinksWrapped> Drop for List<G> {
-+    fn drop(&mut self) {
-+        while self.pop_front().is_some() {}
-+    }
-+}
-+
-+/// A list cursor that allows traversing a linked list and inspecting & mutating elements.
-+pub struct CursorMut<'a, G: GetLinksWrapped> {
-+    cursor: raw_list::CursorMut<'a, G>,
-+}
-+
-+impl<'a, G: GetLinksWrapped> CursorMut<'a, G> {
-+    fn new(cursor: raw_list::CursorMut<'a, G>) -> Self {
-+        Self { cursor }
-+    }
-+
-+    /// Returns the element the cursor is currently positioned on.
-+    pub fn current(&mut self) -> Option<&mut G::EntryType> {
-+        self.cursor.current()
-+    }
-+
-+    /// Removes the element the cursor is currently positioned on.
-+    ///
-+    /// After removal, it advances the cursor to the next element.
-+    pub fn remove_current(&mut self) -> Option<G::Wrapped> {
-+        let ptr = self.cursor.remove_current()?;
-+
-+        // SAFETY: Elements on the list were inserted after a call to `into_pointer `.
-+        Some(unsafe { G::Wrapped::from_pointer(ptr) })
-+    }
-+
-+    /// Returns the element immediately after the one the cursor is positioned on.
-+    pub fn peek_next(&mut self) -> Option<&mut G::EntryType> {
-+        self.cursor.peek_next()
-+    }
-+
-+    /// Returns the element immediately before the one the cursor is positioned on.
-+    pub fn peek_prev(&mut self) -> Option<&mut G::EntryType> {
-+        self.cursor.peek_prev()
-+    }
-+
-+    /// Moves the cursor to the next element.
-+    pub fn move_next(&mut self) {
-+        self.cursor.move_next();
-+    }
-+}
-diff --git a/rust/kernel/miscdev.rs b/rust/kernel/miscdev.rs
-new file mode 100644
-index 000000000000..8ec30a18059e
---- /dev/null
-+++ b/rust/kernel/miscdev.rs
-@@ -0,0 +1,281 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Miscellaneous devices.
-+//!
-+//! C header: [`include/linux/miscdevice.h`](../../../../include/linux/miscdevice.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/html/latest/driver-api/misc_devices.html>
-+
-+use crate::bindings;
-+use crate::error::{Error, Result};
-+use crate::file_operations::{FileOpenAdapter, FileOperations, FileOperationsVtable};
-+use crate::{device, str::CStr, KernelModule, ThisModule};
-+use alloc::boxed::Box;
-+use core::marker::PhantomPinned;
-+use core::{mem::MaybeUninit, pin::Pin};
-+
-+/// Options which can be used to configure how a misc device is registered.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::{c_str, device::RawDevice, file_operations::FileOperations, miscdev, prelude::*};
-+/// pub fn example(
-+///     reg: Pin<&mut miscdev::Registration<impl FileOperations<OpenData = ()>>>,
-+///     parent: &dyn RawDevice,
-+/// ) -> Result {
-+///     miscdev::Options::new()
-+///         .mode(0o600)
-+///         .minor(10)
-+///         .parent(parent)
-+///         .register(reg, c_str!("sample"), ())
-+/// }
-+/// ```
-+#[derive(Default)]
-+pub struct Options<'a> {
-+    minor: Option<i32>,
-+    mode: Option<u16>,
-+    parent: Option<&'a dyn device::RawDevice>,
-+}
-+
-+impl<'a> Options<'a> {
-+    /// Creates new [`Options`] instance with the required fields.
-+    pub const fn new() -> Self {
-+        Self {
-+            minor: None,
-+            mode: None,
-+            parent: None,
-+        }
-+    }
-+
-+    /// Sets the minor device number.
-+    pub const fn minor(&mut self, v: i32) -> &mut Self {
-+        self.minor = Some(v);
-+        self
-+    }
-+
-+    /// Sets the device mode.
-+    ///
-+    /// This is usually an octal number and describes who can perform read/write/execute operations
-+    /// on the device.
-+    pub const fn mode(&mut self, m: u16) -> &mut Self {
-+        self.mode = Some(m);
-+        self
-+    }
-+
-+    /// Sets the device parent.
-+    pub const fn parent(&mut self, p: &'a dyn device::RawDevice) -> &mut Self {
-+        self.parent = Some(p);
-+        self
-+    }
-+
-+    /// Registers a misc device using the configured options.
-+    pub fn register<T: FileOperations>(
-+        &self,
-+        reg: Pin<&mut Registration<T>>,
-+        name: &'static CStr,
-+        open_data: T::OpenData,
-+    ) -> Result {
-+        reg.register_with_options(name, open_data, self)
-+    }
-+
-+    /// Allocates a new registration of a misc device and completes the registration with the
-+    /// configured options.
-+    pub fn register_new<T: FileOperations>(
-+        &self,
-+        name: &'static CStr,
-+        open_data: T::OpenData,
-+    ) -> Result<Pin<Box<Registration<T>>>> {
-+        let mut r = Pin::from(Box::try_new(Registration::new())?);
-+        self.register(r.as_mut(), name, open_data)?;
-+        Ok(r)
-+    }
-+}
-+
-+/// A registration of a miscellaneous device.
-+///
-+/// # Invariants
-+///
-+/// `Context` is always initialised when `registered` is `true`, and not initialised otherwise.
-+pub struct Registration<T: FileOperations> {
-+    registered: bool,
-+    mdev: bindings::miscdevice,
-+    _pin: PhantomPinned,
-+
-+    /// Context initialised on construction and made available to all file instances on
-+    /// [`FileOperations::open`].
-+    open_data: MaybeUninit<T::OpenData>,
-+}
-+
-+impl<T: FileOperations> Registration<T> {
-+    /// Creates a new [`Registration`] but does not register it yet.
-+    ///
-+    /// It is allowed to move.
-+    pub fn new() -> Self {
-+        // INVARIANT: `registered` is `false` and `open_data` is not initialised.
-+        Self {
-+            registered: false,
-+            mdev: bindings::miscdevice::default(),
-+            _pin: PhantomPinned,
-+            open_data: MaybeUninit::uninit(),
-+        }
-+    }
-+
-+    /// Registers a miscellaneous device.
-+    ///
-+    /// Returns a pinned heap-allocated representation of the registration.
-+    pub fn new_pinned(name: &'static CStr, open_data: T::OpenData) -> Result<Pin<Box<Self>>> {
-+        Options::new().register_new(name, open_data)
-+    }
-+
-+    /// Registers a miscellaneous device with the rest of the kernel.
-+    ///
-+    /// It must be pinned because the memory block that represents the registration is
-+    /// self-referential.
-+    pub fn register(self: Pin<&mut Self>, name: &'static CStr, open_data: T::OpenData) -> Result {
-+        Options::new().register(self, name, open_data)
-+    }
-+
-+    /// Registers a miscellaneous device with the rest of the kernel. Additional optional settings
-+    /// are provided via the `opts` parameter.
-+    ///
-+    /// It must be pinned because the memory block that represents the registration is
-+    /// self-referential.
-+    pub fn register_with_options(
-+        self: Pin<&mut Self>,
-+        name: &'static CStr,
-+        open_data: T::OpenData,
-+        opts: &Options<'_>,
-+    ) -> Result {
-+        // SAFETY: We must ensure that we never move out of `this`.
-+        let this = unsafe { self.get_unchecked_mut() };
-+        if this.registered {
-+            // Already registered.
-+            return Err(Error::EINVAL);
-+        }
-+
-+        // SAFETY: The adapter is compatible with `misc_register`.
-+        this.mdev.fops = unsafe { FileOperationsVtable::<Self, T>::build() };
-+        this.mdev.name = name.as_char_ptr();
-+        this.mdev.minor = opts.minor.unwrap_or(bindings::MISC_DYNAMIC_MINOR as i32);
-+        this.mdev.mode = opts.mode.unwrap_or(0);
-+        this.mdev.parent = opts
-+            .parent
-+            .map_or(core::ptr::null_mut(), |p| p.raw_device());
-+
-+        // We write to `open_data` here because as soon as `misc_register` succeeds, the file can be
-+        // opened, so we need `open_data` configured ahead of time.
-+        //
-+        // INVARIANT: `registered` is set to `true`, but `open_data` is also initialised.
-+        this.registered = true;
-+        this.open_data.write(open_data);
-+
-+        let ret = unsafe { bindings::misc_register(&mut this.mdev) };
-+        if ret < 0 {
-+            // INVARIANT: `registered` is set back to `false` and the `open_data` is destructued.
-+            this.registered = false;
-+            // SAFETY: `open_data` was initialised a few lines above.
-+            unsafe { this.open_data.assume_init_drop() };
-+            return Err(Error::from_kernel_errno(ret));
-+        }
-+
-+        Ok(())
-+    }
-+}
-+
-+impl<T: FileOperations> Default for Registration<T> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+impl<T: FileOperations> FileOpenAdapter<T::OpenData> for Registration<T> {
-+    unsafe fn convert(
-+        _inode: *mut bindings::inode,
-+        file: *mut bindings::file,
-+    ) -> *const T::OpenData {
-+        // SAFETY: The caller must guarantee that `file` is valid.
-+        let reg = crate::container_of!(unsafe { (*file).private_data }, Self, mdev);
-+
-+        // SAFETY: This function is only called while the misc device is still registered, so the
-+        // registration must be valid. Additionally, the type invariants guarantee that while the
-+        // miscdev is registered, `open_data` is initialised.
-+        unsafe { (*reg).open_data.as_ptr() }
-+    }
-+}
-+
-+// SAFETY: The only method is `register()`, which requires a (pinned) mutable `Registration`, so it
-+// is safe to pass `&Registration` to multiple threads because it offers no interior mutability.
-+unsafe impl<T: FileOperations> Sync for Registration<T> {}
-+
-+// SAFETY: All functions work from any thread. So as long as the `Registration::open_data` is
-+// `Send`, so is `Registration<T>`.
-+unsafe impl<T: FileOperations> Send for Registration<T> where T::OpenData: Send {}
-+
-+impl<T: FileOperations> Drop for Registration<T> {
-+    /// Removes the registration from the kernel if it has completed successfully before.
-+    fn drop(&mut self) {
-+        if self.registered {
-+            // SAFETY: `registered` being `true` indicates that a previous call to  `misc_register`
-+            // succeeded.
-+            unsafe { bindings::misc_deregister(&mut self.mdev) };
-+
-+            // SAFETY: The type invariant guarantees that `open_data` is initialised when
-+            // `registered` is `true`.
-+            unsafe { self.open_data.assume_init_drop() };
-+        }
-+    }
-+}
-+
-+/// Kernel module that exposes a single miscdev device implemented by `T`.
-+pub struct Module<T: FileOperations<OpenData = ()>> {
-+    _dev: Pin<Box<Registration<T>>>,
-+}
-+
-+impl<T: FileOperations<OpenData = ()>> KernelModule for Module<T> {
-+    fn init(name: &'static CStr, _module: &'static ThisModule) -> Result<Self> {
-+        Ok(Self {
-+            _dev: Registration::new_pinned(name, ())?,
-+        })
-+    }
-+}
-+
-+/// Declares a kernel module that exposes a single misc device.
-+///
-+/// The `type` argument should be a type which implements the [`FileOpener`] trait. Also accepts
-+/// various forms of kernel metadata.
-+///
-+/// C header: [`include/linux/moduleparam.h`](../../../include/linux/moduleparam.h)
-+///
-+/// [`FileOpener`]: ../kernel/file_operations/trait.FileOpener.html
-+///
-+/// # Examples
-+///
-+/// ```ignore
-+/// use kernel::prelude::*;
-+///
-+/// module_misc_device! {
-+///     type: MyFile,
-+///     name: b"my_miscdev_kernel_module",
-+///     author: b"Rust for Linux Contributors",
-+///     description: b"My very own misc device kernel module!",
-+///     license: b"GPL v2",
-+/// }
-+///
-+/// #[derive(Default)]
-+/// struct MyFile;
-+///
-+/// impl kernel::file_operations::FileOperations for MyFile {
-+///     kernel::declare_file_operations!();
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! module_misc_device {
-+    (type: $type:ty, $($f:tt)*) => {
-+        type ModuleType = kernel::miscdev::Module<$type>;
-+        module! {
-+            type: ModuleType,
-+            $($f)*
-+        }
-+    }
-+}
-diff --git a/rust/kernel/mm.rs b/rust/kernel/mm.rs
-new file mode 100644
-index 000000000000..322f94f501e0
---- /dev/null
-+++ b/rust/kernel/mm.rs
-@@ -0,0 +1,149 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Memory management.
-+//!
-+//! C header: [`include/linux/mm.h`](../../../../include/linux/mm.h)
-+
-+use crate::{bindings, pages, to_result, Result};
-+
-+/// Virtual memory.
-+pub mod virt {
-+    use super::*;
-+
-+    /// A wrapper for the kernel's `struct vm_area_struct`.
-+    ///
-+    /// It represents an area of virtual memory.
-+    ///
-+    /// # Invariants
-+    ///
-+    /// `vma` is always non-null and valid.
-+    pub struct Area {
-+        vma: *mut bindings::vm_area_struct,
-+    }
-+
-+    impl Area {
-+        /// Creates a new instance of a virtual memory area.
-+        ///
-+        /// # Safety
-+        ///
-+        /// Callers must ensure that `vma` is non-null and valid for the duration of the new area's
-+        /// lifetime.
-+        pub(crate) unsafe fn from_ptr(vma: *mut bindings::vm_area_struct) -> Self {
-+            // INVARIANTS: The safety requirements guarantee the invariants.
-+            Self { vma }
-+        }
-+
-+        /// Returns the flags associated with the virtual memory area.
-+        ///
-+        /// The possible flags are a combination of the constants in [`flags`].
-+        pub fn flags(&self) -> usize {
-+            // SAFETY: `self.vma` is valid by the type invariants.
-+            unsafe { (*self.vma).vm_flags as _ }
-+        }
-+
-+        /// Sets the flags associated with the virtual memory area.
-+        ///
-+        /// The possible flags are a combination of the constants in [`flags`].
-+        pub fn set_flags(&mut self, flags: usize) {
-+            // SAFETY: `self.vma` is valid by the type invariants.
-+            unsafe { (*self.vma).vm_flags = flags as _ };
-+        }
-+
-+        /// Returns the start address of the virtual memory area.
-+        pub fn start(&self) -> usize {
-+            // SAFETY: `self.vma` is valid by the type invariants.
-+            unsafe { (*self.vma).vm_start as _ }
-+        }
-+
-+        /// Returns the end address of the virtual memory area.
-+        pub fn end(&self) -> usize {
-+            // SAFETY: `self.vma` is valid by the type invariants.
-+            unsafe { (*self.vma).vm_end as _ }
-+        }
-+
-+        /// Maps a single page at the given address within the virtual memory area.
-+        pub fn insert_page(&mut self, address: usize, page: &pages::Pages<0>) -> Result {
-+            // SAFETY: The page is guaranteed to be order 0 by the type system. The range of
-+            // `address` is already checked by `vm_insert_page`. `self.vma` and `page.pages` are
-+            // guaranteed by their repective type invariants to be valid.
-+            to_result(|| unsafe { bindings::vm_insert_page(self.vma, address as _, page.pages) })
-+        }
-+    }
-+
-+    /// Container for [`Area`] flags.
-+    pub mod flags {
-+        use crate::bindings;
-+
-+        /// No flags are set.
-+        pub const NONE: usize = bindings::VM_NONE as _;
-+
-+        /// Mapping allows reads.
-+        pub const READ: usize = bindings::VM_READ as _;
-+
-+        /// Mapping allows writes.
-+        pub const WRITE: usize = bindings::VM_WRITE as _;
-+
-+        /// Mapping allows execution.
-+        pub const EXEC: usize = bindings::VM_EXEC as _;
-+
-+        /// Mapping is shared.
-+        pub const SHARED: usize = bindings::VM_SHARED as _;
-+
-+        /// Mapping may be updated to allow reads.
-+        pub const MAYREAD: usize = bindings::VM_MAYREAD as _;
-+
-+        /// Mapping may be updated to allow writes.
-+        pub const MAYWRITE: usize = bindings::VM_MAYWRITE as _;
-+
-+        /// Mapping may be updated to allow execution.
-+        pub const MAYEXEC: usize = bindings::VM_MAYEXEC as _;
-+
-+        /// Mapping may be updated to be shared.
-+        pub const MAYSHARE: usize = bindings::VM_MAYSHARE as _;
-+
-+        /// Do not copy this vma on fork.
-+        pub const DONTCOPY: usize = bindings::VM_DONTCOPY as _;
-+
-+        /// Cannot expand with mremap().
-+        pub const DONTEXPAND: usize = bindings::VM_DONTEXPAND as _;
-+
-+        /// Lock the pages covered when they are faulted in.
-+        pub const LOCKONFAULT: usize = bindings::VM_LOCKONFAULT as _;
-+
-+        /// Is a VM accounted object.
-+        pub const ACCOUNT: usize = bindings::VM_ACCOUNT as _;
-+
-+        /// should the VM suppress accounting.
-+        pub const NORESERVE: usize = bindings::VM_NORESERVE as _;
-+
-+        /// Huge TLB Page VM.
-+        pub const HUGETLB: usize = bindings::VM_HUGETLB as _;
-+
-+        /// Synchronous page faults.
-+        pub const SYNC: usize = bindings::VM_SYNC as _;
-+
-+        /// Architecture-specific flag.
-+        pub const ARCH_1: usize = bindings::VM_ARCH_1 as _;
-+
-+        /// Wipe VMA contents in child..
-+        pub const WIPEONFORK: usize = bindings::VM_WIPEONFORK as _;
-+
-+        /// Do not include in the core dump.
-+        pub const DONTDUMP: usize = bindings::VM_DONTDUMP as _;
-+
-+        /// Not soft dirty clean area.
-+        pub const SOFTDIRTY: usize = bindings::VM_SOFTDIRTY as _;
-+
-+        /// Can contain "struct page" and pure PFN pages.
-+        pub const MIXEDMAP: usize = bindings::VM_MIXEDMAP as _;
-+
-+        /// MADV_HUGEPAGE marked this vma.
-+        pub const HUGEPAGE: usize = bindings::VM_HUGEPAGE as _;
-+
-+        /// MADV_NOHUGEPAGE marked this vma.
-+        pub const NOHUGEPAGE: usize = bindings::VM_NOHUGEPAGE as _;
-+
-+        /// KSM may merge identical pages.
-+        pub const MERGEABLE: usize = bindings::VM_MERGEABLE as _;
-+    }
-+}
-diff --git a/rust/kernel/module_param.rs b/rust/kernel/module_param.rs
-new file mode 100644
-index 000000000000..a588449c41fa
---- /dev/null
-+++ b/rust/kernel/module_param.rs
-@@ -0,0 +1,497 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Types for module parameters.
-+//!
-+//! C header: [`include/linux/moduleparam.h`](../../../include/linux/moduleparam.h)
-+
-+use crate::str::CStr;
-+use core::fmt::Write;
-+
-+/// Types that can be used for module parameters.
-+///
-+/// Note that displaying the type in `sysfs` will fail if
-+/// [`alloc::string::ToString::to_string`] (as implemented through the
-+/// [`core::fmt::Display`] trait) writes more than [`PAGE_SIZE`]
-+/// bytes (including an additional null terminator).
-+///
-+/// [`PAGE_SIZE`]: `crate::PAGE_SIZE`
-+pub trait ModuleParam: core::fmt::Display + core::marker::Sized {
-+    /// The `ModuleParam` will be used by the kernel module through this type.
-+    ///
-+    /// This may differ from `Self` if, for example, `Self` needs to track
-+    /// ownership without exposing it or allocate extra space for other possible
-+    /// parameter values. See [`StringParam`] or [`ArrayParam`] for examples.
-+    type Value: ?Sized;
-+
-+    /// Whether the parameter is allowed to be set without an argument.
-+    ///
-+    /// Setting this to `true` allows the parameter to be passed without an
-+    /// argument (e.g. just `module.param` instead of `module.param=foo`).
-+    const NOARG_ALLOWED: bool;
-+
-+    /// Convert a parameter argument into the parameter value.
-+    ///
-+    /// `None` should be returned when parsing of the argument fails.
-+    /// `arg == None` indicates that the parameter was passed without an
-+    /// argument. If `NOARG_ALLOWED` is set to `false` then `arg` is guaranteed
-+    /// to always be `Some(_)`.
-+    ///
-+    /// Parameters passed at boot time will be set before [`kmalloc`] is
-+    /// available (even if the module is loaded at a later time). However, in
-+    /// this case, the argument buffer will be valid for the entire lifetime of
-+    /// the kernel. So implementations of this method which need to allocate
-+    /// should first check that the allocator is available (with
-+    /// [`crate::bindings::slab_is_available`]) and when it is not available
-+    /// provide an alternative implementation which doesn't allocate. In cases
-+    /// where the allocator is not available it is safe to save references to
-+    /// `arg` in `Self`, but in other cases a copy should be made.
-+    ///
-+    /// [`kmalloc`]: ../../../include/linux/slab.h
-+    fn try_from_param_arg(arg: Option<&'static [u8]>) -> Option<Self>;
-+
-+    /// Get the current value of the parameter for use in the kernel module.
-+    ///
-+    /// This function should not be used directly. Instead use the wrapper
-+    /// `read` which will be generated by [`macros::module`].
-+    fn value(&self) -> &Self::Value;
-+
-+    /// Set the module parameter from a string.
-+    ///
-+    /// Used to set the parameter value when loading the module or when set
-+    /// through `sysfs`.
-+    ///
-+    /// # Safety
-+    ///
-+    /// If `val` is non-null then it must point to a valid null-terminated
-+    /// string. The `arg` field of `param` must be an instance of `Self`.
-+    unsafe extern "C" fn set_param(
-+        val: *const crate::c_types::c_char,
-+        param: *const crate::bindings::kernel_param,
-+    ) -> crate::c_types::c_int {
-+        let arg = if val.is_null() {
-+            None
-+        } else {
-+            Some(unsafe { CStr::from_char_ptr(val).as_bytes() })
-+        };
-+        match Self::try_from_param_arg(arg) {
-+            Some(new_value) => {
-+                let old_value = unsafe { (*param).__bindgen_anon_1.arg as *mut Self };
-+                let _ = unsafe { core::ptr::replace(old_value, new_value) };
-+                0
-+            }
-+            None => crate::error::Error::EINVAL.to_kernel_errno(),
-+        }
-+    }
-+
-+    /// Write a string representation of the current parameter value to `buf`.
-+    ///
-+    /// Used for displaying the current parameter value in `sysfs`.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `buf` must be a buffer of length at least `kernel::PAGE_SIZE` that is
-+    /// writeable. The `arg` field of `param` must be an instance of `Self`.
-+    unsafe extern "C" fn get_param(
-+        buf: *mut crate::c_types::c_char,
-+        param: *const crate::bindings::kernel_param,
-+    ) -> crate::c_types::c_int {
-+        let slice = unsafe { core::slice::from_raw_parts_mut(buf as *mut u8, crate::PAGE_SIZE) };
-+        let mut buf = crate::buffer::Buffer::new(slice);
-+        match unsafe { write!(buf, "{}\0", *((*param).__bindgen_anon_1.arg as *mut Self)) } {
-+            Err(_) => crate::error::Error::EINVAL.to_kernel_errno(),
-+            Ok(()) => buf.bytes_written() as crate::c_types::c_int,
-+        }
-+    }
-+
-+    /// Drop the parameter.
-+    ///
-+    /// Called when unloading a module.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The `arg` field of `param` must be an instance of `Self`.
-+    unsafe extern "C" fn free(arg: *mut crate::c_types::c_void) {
-+        unsafe { core::ptr::drop_in_place(arg as *mut Self) };
-+    }
-+}
-+
-+/// Trait for parsing integers.
-+///
-+/// Strings begining with `0x`, `0o`, or `0b` are parsed as hex, octal, or
-+/// binary respectively. Strings beginning with `0` otherwise are parsed as
-+/// octal. Anything else is parsed as decimal. A leading `+` or `-` is also
-+/// permitted. Any string parsed by [`kstrtol()`] or [`kstrtoul()`] will be
-+/// successfully parsed.
-+///
-+/// [`kstrtol()`]: https://www.kernel.org/doc/html/latest/core-api/kernel-api.html#c.kstrtol
-+/// [`kstrtoul()`]: https://www.kernel.org/doc/html/latest/core-api/kernel-api.html#c.kstrtoul
-+trait ParseInt: Sized {
-+    fn from_str_radix(src: &str, radix: u32) -> Result<Self, core::num::ParseIntError>;
-+    fn checked_neg(self) -> Option<Self>;
-+
-+    fn from_str_unsigned(src: &str) -> Result<Self, core::num::ParseIntError> {
-+        let (radix, digits) = if let Some(n) = src.strip_prefix("0x") {
-+            (16, n)
-+        } else if let Some(n) = src.strip_prefix("0X") {
-+            (16, n)
-+        } else if let Some(n) = src.strip_prefix("0o") {
-+            (8, n)
-+        } else if let Some(n) = src.strip_prefix("0O") {
-+            (8, n)
-+        } else if let Some(n) = src.strip_prefix("0b") {
-+            (2, n)
-+        } else if let Some(n) = src.strip_prefix("0B") {
-+            (2, n)
-+        } else if src.starts_with('0') {
-+            (8, src)
-+        } else {
-+            (10, src)
-+        };
-+        Self::from_str_radix(digits, radix)
-+    }
-+
-+    fn from_str(src: &str) -> Option<Self> {
-+        match src.bytes().next() {
-+            None => None,
-+            Some(b'-') => Self::from_str_unsigned(&src[1..]).ok()?.checked_neg(),
-+            Some(b'+') => Some(Self::from_str_unsigned(&src[1..]).ok()?),
-+            Some(_) => Some(Self::from_str_unsigned(src).ok()?),
-+        }
-+    }
-+}
-+
-+macro_rules! impl_parse_int {
-+    ($ty:ident) => {
-+        impl ParseInt for $ty {
-+            fn from_str_radix(src: &str, radix: u32) -> Result<Self, core::num::ParseIntError> {
-+                $ty::from_str_radix(src, radix)
-+            }
-+
-+            fn checked_neg(self) -> Option<Self> {
-+                self.checked_neg()
-+            }
-+        }
-+    };
-+}
-+
-+impl_parse_int!(i8);
-+impl_parse_int!(u8);
-+impl_parse_int!(i16);
-+impl_parse_int!(u16);
-+impl_parse_int!(i32);
-+impl_parse_int!(u32);
-+impl_parse_int!(i64);
-+impl_parse_int!(u64);
-+impl_parse_int!(isize);
-+impl_parse_int!(usize);
-+
-+macro_rules! impl_module_param {
-+    ($ty:ident) => {
-+        impl ModuleParam for $ty {
-+            type Value = $ty;
-+
-+            const NOARG_ALLOWED: bool = false;
-+
-+            fn try_from_param_arg(arg: Option<&'static [u8]>) -> Option<Self> {
-+                let bytes = arg?;
-+                let utf8 = core::str::from_utf8(bytes).ok()?;
-+                <$ty as crate::module_param::ParseInt>::from_str(utf8)
-+            }
-+
-+            fn value(&self) -> &Self::Value {
-+                self
-+            }
-+        }
-+    };
-+}
-+
-+#[doc(hidden)]
-+#[macro_export]
-+/// Generate a static [`kernel_param_ops`](../../../include/linux/moduleparam.h) struct.
-+///
-+/// # Example
-+/// ```ignore
-+/// make_param_ops!(
-+///     /// Documentation for new param ops.
-+///     PARAM_OPS_MYTYPE, // Name for the static.
-+///     MyType // A type which implements [`ModuleParam`].
-+/// );
-+/// ```
-+macro_rules! make_param_ops {
-+    ($ops:ident, $ty:ty) => {
-+        $crate::make_param_ops!(
-+            #[doc=""]
-+            $ops,
-+            $ty
-+        );
-+    };
-+    ($(#[$meta:meta])* $ops:ident, $ty:ty) => {
-+        $(#[$meta])*
-+        ///
-+        /// Static [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+        /// struct generated by [`make_param_ops`].
-+        pub static $ops: $crate::bindings::kernel_param_ops = $crate::bindings::kernel_param_ops {
-+            flags: if <$ty as $crate::module_param::ModuleParam>::NOARG_ALLOWED {
-+                $crate::bindings::KERNEL_PARAM_OPS_FL_NOARG
-+            } else {
-+                0
-+            },
-+            set: Some(<$ty as $crate::module_param::ModuleParam>::set_param),
-+            get: Some(<$ty as $crate::module_param::ModuleParam>::get_param),
-+            free: Some(<$ty as $crate::module_param::ModuleParam>::free),
-+        };
-+    };
-+}
-+
-+impl_module_param!(i8);
-+impl_module_param!(u8);
-+impl_module_param!(i16);
-+impl_module_param!(u16);
-+impl_module_param!(i32);
-+impl_module_param!(u32);
-+impl_module_param!(i64);
-+impl_module_param!(u64);
-+impl_module_param!(isize);
-+impl_module_param!(usize);
-+
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`i8`].
-+    PARAM_OPS_I8,
-+    i8
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`u8`].
-+    PARAM_OPS_U8,
-+    u8
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`i16`].
-+    PARAM_OPS_I16,
-+    i16
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`u16`].
-+    PARAM_OPS_U16,
-+    u16
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`i32`].
-+    PARAM_OPS_I32,
-+    i32
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`u32`].
-+    PARAM_OPS_U32,
-+    u32
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`i64`].
-+    PARAM_OPS_I64,
-+    i64
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`u64`].
-+    PARAM_OPS_U64,
-+    u64
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`isize`].
-+    PARAM_OPS_ISIZE,
-+    isize
-+);
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`usize`].
-+    PARAM_OPS_USIZE,
-+    usize
-+);
-+
-+impl ModuleParam for bool {
-+    type Value = bool;
-+
-+    const NOARG_ALLOWED: bool = true;
-+
-+    fn try_from_param_arg(arg: Option<&'static [u8]>) -> Option<Self> {
-+        match arg {
-+            None => Some(true),
-+            Some(b"y") | Some(b"Y") | Some(b"1") | Some(b"true") => Some(true),
-+            Some(b"n") | Some(b"N") | Some(b"0") | Some(b"false") => Some(false),
-+            _ => None,
-+        }
-+    }
-+
-+    fn value(&self) -> &Self::Value {
-+        self
-+    }
-+}
-+
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`bool`].
-+    PARAM_OPS_BOOL,
-+    bool
-+);
-+
-+/// An array of at __most__ `N` values.
-+///
-+/// # Invariant
-+///
-+/// The first `self.used` elements of `self.values` are initialized.
-+pub struct ArrayParam<T, const N: usize> {
-+    values: [core::mem::MaybeUninit<T>; N],
-+    used: usize,
-+}
-+
-+impl<T, const N: usize> ArrayParam<T, { N }> {
-+    fn values(&self) -> &[T] {
-+        // SAFETY: The invariant maintained by `ArrayParam` allows us to cast
-+        // the first `self.used` elements to `T`.
-+        unsafe {
-+            &*(&self.values[0..self.used] as *const [core::mem::MaybeUninit<T>] as *const [T])
-+        }
-+    }
-+}
-+
-+impl<T: Copy, const N: usize> ArrayParam<T, { N }> {
-+    const fn new() -> Self {
-+        // INVARIANT: The first `self.used` elements of `self.values` are
-+        // initialized.
-+        ArrayParam {
-+            values: [core::mem::MaybeUninit::uninit(); N],
-+            used: 0,
-+        }
-+    }
-+
-+    const fn push(&mut self, val: T) {
-+        if self.used < N {
-+            // INVARIANT: The first `self.used` elements of `self.values` are
-+            // initialized.
-+            self.values[self.used] = core::mem::MaybeUninit::new(val);
-+            self.used += 1;
-+        }
-+    }
-+
-+    /// Create an instance of `ArrayParam` initialized with `vals`.
-+    ///
-+    /// This function is only meant to be used in the [`module::module`] macro.
-+    pub const fn create(vals: &[T]) -> Self {
-+        let mut result = ArrayParam::new();
-+        let mut i = 0;
-+        while i < vals.len() {
-+            result.push(vals[i]);
-+            i += 1;
-+        }
-+        result
-+    }
-+}
-+
-+impl<T: core::fmt::Display, const N: usize> core::fmt::Display for ArrayParam<T, { N }> {
-+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-+        for val in self.values() {
-+            write!(f, "{},", val)?;
-+        }
-+        Ok(())
-+    }
-+}
-+
-+impl<T: Copy + core::fmt::Display + ModuleParam, const N: usize> ModuleParam
-+    for ArrayParam<T, { N }>
-+{
-+    type Value = [T];
-+
-+    const NOARG_ALLOWED: bool = false;
-+
-+    fn try_from_param_arg(arg: Option<&'static [u8]>) -> Option<Self> {
-+        arg.and_then(|args| {
-+            let mut result = Self::new();
-+            for arg in args.split(|b| *b == b',') {
-+                result.push(T::try_from_param_arg(Some(arg))?);
-+            }
-+            Some(result)
-+        })
-+    }
-+
-+    fn value(&self) -> &Self::Value {
-+        self.values()
-+    }
-+}
-+
-+/// A C-style string parameter.
-+///
-+/// The Rust version of the [`charp`] parameter. This type is meant to be
-+/// used by the [`macros::module`] macro, not handled directly. Instead use the
-+/// `read` method generated by that macro.
-+///
-+/// [`charp`]: ../../../include/linux/moduleparam.h
-+pub enum StringParam {
-+    /// A borrowed parameter value.
-+    ///
-+    /// Either the default value (which is static in the module) or borrowed
-+    /// from the original argument buffer used to set the value.
-+    Ref(&'static [u8]),
-+
-+    /// A value that was allocated when the parameter was set.
-+    ///
-+    /// The value needs to be freed when the parameter is reset or the module is
-+    /// unloaded.
-+    Owned(alloc::vec::Vec<u8>),
-+}
-+
-+impl StringParam {
-+    fn bytes(&self) -> &[u8] {
-+        match self {
-+            StringParam::Ref(bytes) => *bytes,
-+            StringParam::Owned(vec) => &vec[..],
-+        }
-+    }
-+}
-+
-+impl core::fmt::Display for StringParam {
-+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-+        let bytes = self.bytes();
-+        match core::str::from_utf8(bytes) {
-+            Ok(utf8) => write!(f, "{}", utf8),
-+            Err(_) => write!(f, "{:?}", bytes),
-+        }
-+    }
-+}
-+
-+impl ModuleParam for StringParam {
-+    type Value = [u8];
-+
-+    const NOARG_ALLOWED: bool = false;
-+
-+    fn try_from_param_arg(arg: Option<&'static [u8]>) -> Option<Self> {
-+        // SAFETY: It is always safe to call [`slab_is_available`](../../../include/linux/slab.h).
-+        let slab_available = unsafe { crate::bindings::slab_is_available() };
-+        arg.and_then(|arg| {
-+            if slab_available {
-+                let mut vec = alloc::vec::Vec::new();
-+                vec.try_extend_from_slice(arg).ok()?;
-+                Some(StringParam::Owned(vec))
-+            } else {
-+                Some(StringParam::Ref(arg))
-+            }
-+        })
-+    }
-+
-+    fn value(&self) -> &Self::Value {
-+        self.bytes()
-+    }
-+}
-+
-+make_param_ops!(
-+    /// Rust implementation of [`kernel_param_ops`](../../../include/linux/moduleparam.h)
-+    /// for [`StringParam`].
-+    PARAM_OPS_STR,
-+    StringParam
-+);
-diff --git a/rust/kernel/of.rs b/rust/kernel/of.rs
-new file mode 100644
-index 000000000000..cdcd83244337
---- /dev/null
-+++ b/rust/kernel/of.rs
-@@ -0,0 +1,63 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Devicetree and Open Firmware abstractions.
-+//!
-+//! C header: [`include/linux/of_*.h`](../../../../include/linux/of_*.h)
-+
-+use crate::{bindings, driver, str::BStr};
-+
-+/// An open firmware device id.
-+#[derive(Clone, Copy)]
-+pub enum DeviceId {
-+    /// An open firmware device id where only a compatible string is specified.
-+    Compatible(&'static BStr),
-+}
-+
-+/// Defines a const open firmware device id table that also carries per-entry data/context/info.
-+///
-+/// The name of the const is `OF_DEVICE_ID_TABLE`, which is what buses are expected to name their
-+/// open firmware tables.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::define_of_id_table;
-+/// use kernel::of;
-+///
-+/// define_of_id_table! {u32, [
-+///     (of::DeviceId::Compatible(b"test-device1,test-device2"), Some(0xff)),
-+///     (of::DeviceId::Compatible(b"test-device3"), None),
-+/// ]};
-+/// ```
-+#[macro_export]
-+macro_rules! define_of_id_table {
-+    ($data_type:ty, $($t:tt)*) => {
-+        $crate::define_id_table!(OF_DEVICE_ID_TABLE, $crate::of::DeviceId, $data_type, $($t)*);
-+    };
-+}
-+
-+// SAFETY: `ZERO` is all zeroed-out and `to_rawid` stores `offset` in `of_device_id::data`.
-+unsafe impl const driver::RawDeviceId for DeviceId {
-+    type RawType = bindings::of_device_id;
-+    const ZERO: Self::RawType = bindings::of_device_id {
-+        name: [0; 32],
-+        type_: [0; 32],
-+        compatible: [0; 128],
-+        data: core::ptr::null(),
-+    };
-+
-+    fn to_rawid(&self, offset: isize) -> Self::RawType {
-+        let DeviceId::Compatible(compatible) = self;
-+        let mut id = Self::ZERO;
-+        let mut i = 0;
-+        while i < compatible.len() {
-+            // If `compatible` does not fit in `id.compatible`, an "index out of bounds" build time
-+            // error will be triggered.
-+            id.compatible[i] = compatible[i] as _;
-+            i += 1;
-+        }
-+        id.compatible[i] = b'\0' as _;
-+        id.data = offset as _;
-+        id
-+    }
-+}
-diff --git a/rust/kernel/pages.rs b/rust/kernel/pages.rs
-new file mode 100644
-index 000000000000..81a1b48e3823
---- /dev/null
-+++ b/rust/kernel/pages.rs
-@@ -0,0 +1,144 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Kernel page allocation and management.
-+//!
-+//! TODO: This module is a work in progress.
-+
-+use crate::{
-+    bindings, c_types, io_buffer::IoBufferReader, user_ptr::UserSlicePtrReader, Error, Result,
-+    PAGE_SIZE,
-+};
-+use core::{marker::PhantomData, ptr};
-+
-+/// A set of physical pages.
-+///
-+/// `Pages` holds a reference to a set of pages of order `ORDER`. Having the order as a generic
-+/// const allows the struct to have the same size as a pointer.
-+///
-+/// # Invariants
-+///
-+/// The pointer `Pages::pages` is valid and points to 2^ORDER pages.
-+pub struct Pages<const ORDER: u32> {
-+    pub(crate) pages: *mut bindings::page,
-+}
-+
-+impl<const ORDER: u32> Pages<ORDER> {
-+    /// Allocates a new set of contiguous pages.
-+    pub fn new() -> Result<Self> {
-+        // TODO: Consider whether we want to allow callers to specify flags.
-+        // SAFETY: This only allocates pages. We check that it succeeds in the next statement.
-+        let pages = unsafe {
-+            bindings::alloc_pages(
-+                bindings::GFP_KERNEL | bindings::__GFP_ZERO | bindings::__GFP_HIGHMEM,
-+                ORDER,
-+            )
-+        };
-+        if pages.is_null() {
-+            return Err(Error::ENOMEM);
-+        }
-+        // INVARIANTS: We checked that the allocation above succeeded>
-+        Ok(Self { pages })
-+    }
-+
-+    /// Copies data from the given [`UserSlicePtrReader`] into the pages.
-+    pub fn copy_into_page(
-+        &self,
-+        reader: &mut UserSlicePtrReader,
-+        offset: usize,
-+        len: usize,
-+    ) -> Result {
-+        // TODO: For now this only works on the first page.
-+        let end = offset.checked_add(len).ok_or(Error::EINVAL)?;
-+        if end > PAGE_SIZE {
-+            return Err(Error::EINVAL);
-+        }
-+
-+        let mapping = self.kmap(0).ok_or(Error::EINVAL)?;
-+
-+        // SAFETY: We ensured that the buffer was valid with the check above.
-+        unsafe { reader.read_raw((mapping.ptr as usize + offset) as _, len) }?;
-+        Ok(())
-+    }
-+
-+    /// Maps the pages and reads from them into the given buffer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that the destination buffer is valid for the given length.
-+    /// Additionally, if the raw buffer is intended to be recast, they must ensure that the data
-+    /// can be safely cast; [`crate::io_buffer::ReadableFromBytes`] has more details about it.
-+    pub unsafe fn read(&self, dest: *mut u8, offset: usize, len: usize) -> Result {
-+        // TODO: For now this only works on the first page.
-+        let end = offset.checked_add(len).ok_or(Error::EINVAL)?;
-+        if end > PAGE_SIZE {
-+            return Err(Error::EINVAL);
-+        }
-+
-+        let mapping = self.kmap(0).ok_or(Error::EINVAL)?;
-+        unsafe { ptr::copy((mapping.ptr as *mut u8).add(offset), dest, len) };
-+        Ok(())
-+    }
-+
-+    /// Maps the pages and writes into them from the given bufer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that the buffer is valid for the given length. Additionally, if the
-+    /// page is (or will be) mapped by userspace, they must ensure that no kernel data is leaked
-+    /// through padding if it was cast from another type; [`crate::io_buffer::WritableToBytes`] has
-+    /// more details about it.
-+    pub unsafe fn write(&self, src: *const u8, offset: usize, len: usize) -> Result {
-+        // TODO: For now this only works on the first page.
-+        let end = offset.checked_add(len).ok_or(Error::EINVAL)?;
-+        if end > PAGE_SIZE {
-+            return Err(Error::EINVAL);
-+        }
-+
-+        let mapping = self.kmap(0).ok_or(Error::EINVAL)?;
-+        unsafe { ptr::copy(src, (mapping.ptr as *mut u8).add(offset), len) };
-+        Ok(())
-+    }
-+
-+    /// Maps the page at index `index`.
-+    fn kmap(&self, index: usize) -> Option<PageMapping<'_>> {
-+        if index >= 1usize << ORDER {
-+            return None;
-+        }
-+
-+        // SAFETY: We checked above that `index` is within range.
-+        let page = unsafe { self.pages.add(index) };
-+
-+        // SAFETY: `page` is valid based on the checks above.
-+        let ptr = unsafe { bindings::kmap(page) };
-+        if ptr.is_null() {
-+            return None;
-+        }
-+
-+        Some(PageMapping {
-+            page,
-+            ptr,
-+            _phantom: PhantomData,
-+        })
-+    }
-+}
-+
-+impl<const ORDER: u32> Drop for Pages<ORDER> {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariants, we know the pages are allocated with the given order.
-+        unsafe { bindings::__free_pages(self.pages, ORDER) };
-+    }
-+}
-+
-+struct PageMapping<'a> {
-+    page: *mut bindings::page,
-+    ptr: *mut c_types::c_void,
-+    _phantom: PhantomData<&'a i32>,
-+}
-+
-+impl Drop for PageMapping<'_> {
-+    fn drop(&mut self) {
-+        // SAFETY: An instance of `PageMapping` is created only when `kmap` succeeded for the given
-+        // page, so it is safe to unmap it here.
-+        unsafe { bindings::kunmap(self.page) };
-+    }
-+}
-diff --git a/rust/kernel/platform.rs b/rust/kernel/platform.rs
-new file mode 100644
-index 000000000000..8b912c21068b
---- /dev/null
-+++ b/rust/kernel/platform.rs
-@@ -0,0 +1,224 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Platform devices and drivers.
-+//!
-+//! Also called `platdev`, `pdev`.
-+//!
-+//! C header: [`include/linux/platform_device.h`](../../../../include/linux/platform_device.h)
-+
-+use crate::{
-+    bindings, c_types,
-+    device::{self, RawDevice},
-+    driver,
-+    error::{from_kernel_result, Result},
-+    of,
-+    str::CStr,
-+    to_result,
-+    types::PointerWrapper,
-+    ThisModule,
-+};
-+
-+/// A registration of a platform driver.
-+pub type Registration<T> = driver::Registration<Adapter<T>>;
-+
-+/// An adapter for the registration of platform drivers.
-+pub struct Adapter<T: Driver>(T);
-+
-+impl<T: Driver> driver::DriverOps for Adapter<T> {
-+    type RegType = bindings::platform_driver;
-+
-+    unsafe fn register(
-+        reg: *mut bindings::platform_driver,
-+        name: &'static CStr,
-+        module: &'static ThisModule,
-+    ) -> Result {
-+        // SAFETY: By the safety requirements of this function (defined in the trait defintion),
-+        // `reg` is non-null and valid.
-+        let pdrv = unsafe { &mut *reg };
-+
-+        pdrv.driver.name = name.as_char_ptr();
-+        pdrv.probe = Some(Self::probe_callback);
-+        pdrv.remove = Some(Self::remove_callback);
-+        if let Some(t) = T::OF_DEVICE_ID_TABLE {
-+            pdrv.driver.of_match_table = t.as_ref();
-+        }
-+        // SAFETY:
-+        //   - `pdrv` lives at least until the call to `platform_driver_unregister()` returns.
-+        //   - `name` pointer has static lifetime.
-+        //   - `module.0` lives at least as long as the module.
-+        //   - `probe()` and `remove()` are static functions.
-+        //   - `of_match_table` is either a raw pointer with static lifetime,
-+        //      as guaranteed by the [`driver::IdTable`] type, or null.
-+        to_result(|| unsafe { bindings::__platform_driver_register(reg, module.0) })
-+    }
-+
-+    unsafe fn unregister(reg: *mut bindings::platform_driver) {
-+        // SAFETY: By the safety requirements of this function (defined in the trait definition),
-+        // `reg` was passed (and updated) by a previous successful call to
-+        // `platform_driver_register`.
-+        unsafe { bindings::platform_driver_unregister(reg) };
-+    }
-+}
-+
-+impl<T: Driver> Adapter<T> {
-+    fn get_id_info(dev: &Device) -> Option<&'static T::IdInfo> {
-+        let table = T::OF_DEVICE_ID_TABLE?;
-+
-+        // SAFETY: `table` has static lifetime, so it is valid for read. `dev` is guaranteed to be
-+        // valid while it's alive, so is the raw device returned by it.
-+        let id = unsafe { bindings::of_match_device(table.as_ref(), dev.raw_device()) };
-+        if id.is_null() {
-+            return None;
-+        }
-+
-+        // SAFETY: `id` is a pointer within the static table, so it's always valid.
-+        let offset = unsafe { (*id).data };
-+        if offset.is_null() {
-+            return None;
-+        }
-+
-+        // SAFETY: The offset comes from a previous call to `offset_from` in `IdArray::new`, which
-+        // guarantees that the resulting pointer is within the table.
-+        let ptr = unsafe {
-+            id.cast::<u8>()
-+                .offset(offset as _)
-+                .cast::<Option<T::IdInfo>>()
-+        };
-+
-+        // SAFETY: The id table has a static lifetime, so `ptr` is guaranteed to be valid for read.
-+        unsafe { (&*ptr).as_ref() }
-+    }
-+
-+    extern "C" fn probe_callback(pdev: *mut bindings::platform_device) -> c_types::c_int {
-+        from_kernel_result! {
-+            // SAFETY: `pdev` is valid by the contract with the C code. `dev` is alive only for the
-+            // duration of this call, so it is guaranteed to remain alive for the lifetime of
-+            // `pdev`.
-+            let mut dev = unsafe { Device::from_ptr(pdev) };
-+            let info = Self::get_id_info(&dev);
-+            let data = T::probe(&mut dev, info)?;
-+            // SAFETY: `pdev` is guaranteed to be a valid, non-null pointer.
-+            unsafe { bindings::platform_set_drvdata(pdev, data.into_pointer() as _) };
-+            Ok(0)
-+        }
-+    }
-+
-+    extern "C" fn remove_callback(pdev: *mut bindings::platform_device) -> c_types::c_int {
-+        from_kernel_result! {
-+            // SAFETY: `pdev` is guaranteed to be a valid, non-null pointer.
-+            let ptr = unsafe { bindings::platform_get_drvdata(pdev) };
-+            // SAFETY:
-+            //   - we allocated this pointer using `T::Data::into_pointer`,
-+            //     so it is safe to turn back into a `T::Data`.
-+            //   - the allocation happened in `probe`, no-one freed the memory,
-+            //     `remove` is the canonical kernel location to free driver data. so OK
-+            //     to convert the pointer back to a Rust structure here.
-+            let data = unsafe { T::Data::from_pointer(ptr) };
-+            let ret = T::remove(&data);
-+            <T::Data as driver::DeviceRemoval>::device_remove(&data);
-+            ret?;
-+            Ok(0)
-+        }
-+    }
-+}
-+
-+/// A platform driver.
-+pub trait Driver {
-+    /// Data stored on device by driver.
-+    ///
-+    /// Corresponds to the data set or retrieved via the kernel's
-+    /// `platform_{set,get}_drvdata()` functions.
-+    ///
-+    /// Require that `Data` implements `PointerWrapper`. We guarantee to
-+    /// never move the underlying wrapped data structure. This allows
-+    type Data: PointerWrapper + Send + Sync + driver::DeviceRemoval = ();
-+
-+    /// The type holding information about each device id supported by the driver.
-+    type IdInfo: 'static = ();
-+
-+    /// The table of device ids supported by the driver.
-+    const OF_DEVICE_ID_TABLE: Option<driver::IdTable<'static, of::DeviceId, Self::IdInfo>> = None;
-+
-+    /// Platform driver probe.
-+    ///
-+    /// Called when a new platform device is added or discovered.
-+    /// Implementers should attempt to initialize the device here.
-+    fn probe(dev: &mut Device, id_info: Option<&Self::IdInfo>) -> Result<Self::Data>;
-+
-+    /// Platform driver remove.
-+    ///
-+    /// Called when a platform device is removed.
-+    /// Implementers should prepare the device for complete removal here.
-+    fn remove(_data: &Self::Data) -> Result {
-+        Ok(())
-+    }
-+}
-+
-+/// A platform device.
-+///
-+/// # Invariants
-+///
-+/// The field `ptr` is non-null and valid for the lifetime of the object.
-+pub struct Device {
-+    ptr: *mut bindings::platform_device,
-+}
-+
-+impl Device {
-+    /// Creates a new device from the given pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `ptr` must be non-null and valid. It must remain valid for the lifetime of the returned
-+    /// instance.
-+    unsafe fn from_ptr(ptr: *mut bindings::platform_device) -> Self {
-+        // INVARIANT: The safety requirements of the function ensure the lifetime invariant.
-+        Self { ptr }
-+    }
-+
-+    /// Returns id of the platform device.
-+    pub fn id(&self) -> i32 {
-+        // SAFETY: By the type invariants, we know that `self.ptr` is non-null and valid.
-+        unsafe { (*self.ptr).id }
-+    }
-+}
-+
-+// SAFETY: The device returned by `raw_device` is the raw platform device.
-+unsafe impl device::RawDevice for Device {
-+    fn raw_device(&self) -> *mut bindings::device {
-+        // SAFETY: By the type invariants, we know that `self.ptr` is non-null and valid.
-+        unsafe { &mut (*self.ptr).dev }
-+    }
-+}
-+
-+/// Declares a kernel module that exposes a single platform driver.
-+///
-+/// # Examples
-+///
-+/// ```ignore
-+/// # use kernel::prelude::*;
-+/// # use kernel::{platform, define_of_id_table, module_platform_driver};
-+/// #
-+/// struct MyDriver;
-+/// impl platform::Driver for MyDriver {
-+///     // [...]
-+/// #   fn probe(_dev: &mut platform::Device, _id_info: Option<&Self::IdInfo>) -> Result {
-+/// #       Ok(())
-+/// #   }
-+/// #   define_of_id_table! {(), [
-+/// #       (of::DeviceId::Compatible(b"brcm,bcm2835-rng"), None),
-+/// #   ]}
-+/// }
-+///
-+/// module_platform_driver! {
-+///     type: MyDriver,
-+///     name: b"module_name",
-+///     author: b"Author name",
-+///     license: b"GPL v2",
-+/// }
-+/// ```
-+#[macro_export]
-+macro_rules! module_platform_driver {
-+    ($($f:tt)*) => {
-+        $crate::module_driver!(<T>, $crate::platform::Adapter<T>, { $($f)* });
-+    };
-+}
-diff --git a/rust/kernel/power.rs b/rust/kernel/power.rs
-new file mode 100644
-index 000000000000..e318b5d9f0c0
---- /dev/null
-+++ b/rust/kernel/power.rs
-@@ -0,0 +1,118 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Power management interfaces.
-+//!
-+//! C header: [`include/linux/pm.h`](../../../../include/linux/pm.h)
-+
-+#![allow(dead_code)]
-+
-+use crate::{bindings, c_types, error::from_kernel_result, types::PointerWrapper, Result};
-+use core::marker::PhantomData;
-+
-+/// Corresponds to the kernel's `struct dev_pm_ops`.
-+///
-+/// It is meant to be implemented by drivers that support power-management operations.
-+pub trait Operations {
-+    /// The type of the context data stored by the driver on each device.
-+    type Data: PointerWrapper + Sync + Send;
-+
-+    /// Called before the system goes into a sleep state.
-+    fn suspend(_data: <Self::Data as PointerWrapper>::Borrowed<'_>) -> Result {
-+        Ok(())
-+    }
-+
-+    /// Called after the system comes back from a sleep state.
-+    fn resume(_data: <Self::Data as PointerWrapper>::Borrowed<'_>) -> Result {
-+        Ok(())
-+    }
-+
-+    /// Called before creating a hibernation image.
-+    fn freeze(_data: <Self::Data as PointerWrapper>::Borrowed<'_>) -> Result {
-+        Ok(())
-+    }
-+
-+    /// Called after the system is restored from a hibernation image.
-+    fn restore(_data: <Self::Data as PointerWrapper>::Borrowed<'_>) -> Result {
-+        Ok(())
-+    }
-+}
-+
-+macro_rules! pm_callback {
-+    ($callback:ident, $method:ident) => {
-+        unsafe extern "C" fn $callback<T: Operations>(
-+            dev: *mut bindings::device,
-+        ) -> c_types::c_int {
-+            from_kernel_result! {
-+                // SAFETY: `dev` is valid as it was passed in by the C portion.
-+                let ptr = unsafe { bindings::dev_get_drvdata(dev) };
-+                // SAFETY: By the safety requirements of `OpsTable::build`, we know that `ptr` came
-+                // from a previous call to `T::Data::into_pointer`.
-+                let data = unsafe { T::Data::borrow(ptr) };
-+                T::$method(data)?;
-+                Ok(0)
-+            }
-+        }
-+    };
-+}
-+
-+pm_callback!(suspend_callback, suspend);
-+pm_callback!(resume_callback, resume);
-+pm_callback!(freeze_callback, freeze);
-+pm_callback!(restore_callback, restore);
-+
-+pub(crate) struct OpsTable<T: Operations>(PhantomData<*const T>);
-+
-+impl<T: Operations> OpsTable<T> {
-+    const VTABLE: bindings::dev_pm_ops = bindings::dev_pm_ops {
-+        prepare: None,
-+        complete: None,
-+        suspend: Some(suspend_callback::<T>),
-+        resume: Some(resume_callback::<T>),
-+        freeze: Some(freeze_callback::<T>),
-+        thaw: None,
-+        poweroff: None,
-+        restore: Some(restore_callback::<T>),
-+        suspend_late: None,
-+        resume_early: None,
-+        freeze_late: None,
-+        thaw_early: None,
-+        poweroff_late: None,
-+        restore_early: None,
-+        suspend_noirq: None,
-+        resume_noirq: None,
-+        freeze_noirq: None,
-+        thaw_noirq: None,
-+        poweroff_noirq: None,
-+        restore_noirq: None,
-+        runtime_suspend: None,
-+        runtime_resume: None,
-+        runtime_idle: None,
-+    };
-+
-+    /// Builds an instance of `struct dev_pm_ops`.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The caller must ensure that `dev_get_drvdata` will result in a value returned by
-+    /// [`T::Data::into_pointer`].
-+    pub(crate) const unsafe fn build() -> &'static bindings::dev_pm_ops {
-+        &Self::VTABLE
-+    }
-+}
-+
-+/// Implements the [`Operations`] trait as no-ops.
-+///
-+/// This is useful when one doesn't want to provide the implementation of any power-manager related
-+/// operation.
-+pub struct NoOperations<T: PointerWrapper>(PhantomData<T>);
-+
-+impl<T: PointerWrapper + Send + Sync> Operations for NoOperations<T> {
-+    type Data = T;
-+}
-+
-+// SAFETY: `NoOperation` provides no functionality, it is safe to send a reference to it to
-+// different threads.
-+unsafe impl<T: PointerWrapper> Sync for NoOperations<T> {}
-+
-+// SAFETY: `NoOperation` provides no functionality, it is safe to send it to different threads.
-+unsafe impl<T: PointerWrapper> Send for NoOperations<T> {}
-diff --git a/rust/kernel/prelude.rs b/rust/kernel/prelude.rs
-new file mode 100644
-index 000000000000..ad9e91307028
---- /dev/null
-+++ b/rust/kernel/prelude.rs
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! The `kernel` prelude.
-+//!
-+//! These are the most common items used by Rust code in the kernel,
-+//! intended to be imported by all Rust code, for convenience.
-+//!
-+//! # Examples
-+//!
-+//! ```
-+//! use kernel::prelude::*;
-+//! ```
-+
-+pub use core::pin::Pin;
-+
-+pub use alloc::{boxed::Box, string::String, vec::Vec};
-+
-+pub use macros::module;
-+
-+pub use super::build_assert;
-+
-+pub use super::{
-+    dbg, dev_alert, dev_crit, dev_dbg, dev_emerg, dev_err, dev_info, dev_notice, dev_warn,
-+    pr_alert, pr_crit, pr_debug, pr_emerg, pr_err, pr_info, pr_notice, pr_warn,
-+};
-+
-+pub use super::module_misc_device;
-+
-+#[cfg(CONFIG_ARM_AMBA)]
-+pub use super::module_amba_driver;
-+
-+pub use super::static_assert;
-+
-+pub use super::{Error, KernelModule, Result};
-+
-+pub use super::{str::CStr, ThisModule};
-diff --git a/rust/kernel/print.rs b/rust/kernel/print.rs
-new file mode 100644
-index 000000000000..dba4ef10c722
---- /dev/null
-+++ b/rust/kernel/print.rs
-@@ -0,0 +1,417 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Printing facilities.
-+//!
-+//! C header: [`include/linux/printk.h`](../../../../include/linux/printk.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/html/latest/core-api/printk-basics.html>
-+
-+use core::fmt;
-+
-+use crate::{
-+    c_types::{c_char, c_void},
-+    str::Formatter,
-+};
-+
-+#[cfg(CONFIG_PRINTK)]
-+use crate::bindings;
-+
-+// Called from `vsprintf` with format specifier `%pA`.
-+#[no_mangle]
-+unsafe fn rust_fmt_argument(buf: *mut c_char, end: *mut c_char, ptr: *const c_void) -> *mut c_char {
-+    use fmt::Write;
-+
-+    let mut w = Formatter {
-+        buf: buf as _,
-+        end: end as _,
-+    };
-+    let _ = w.write_fmt(unsafe { *(ptr as *const fmt::Arguments<'_>) });
-+    w.buf as _
-+}
-+
-+/// Format strings.
-+///
-+/// Public but hidden since it should only be used from public macros.
-+#[doc(hidden)]
-+pub mod format_strings {
-+    use crate::bindings;
-+
-+    /// The length we copy from the `KERN_*` kernel prefixes.
-+    const LENGTH_PREFIX: usize = 2;
-+
-+    /// The length of the fixed format strings.
-+    pub const LENGTH: usize = 10;
-+
-+    /// Generates a fixed format string for the kernel's [`_printk`].
-+    ///
-+    /// The format string is always the same for a given level, i.e. for a
-+    /// given `prefix`, which are the kernel's `KERN_*` constants.
-+    ///
-+    /// [`_printk`]: ../../../../include/linux/printk.h
-+    const fn generate(is_cont: bool, prefix: &[u8; 3]) -> [u8; LENGTH] {
-+        // Ensure the `KERN_*` macros are what we expect.
-+        assert!(prefix[0] == b'\x01');
-+        if is_cont {
-+            assert!(prefix[1] == b'c');
-+        } else {
-+            assert!(prefix[1] >= b'0' && prefix[1] <= b'7');
-+        }
-+        assert!(prefix[2] == b'\x00');
-+
-+        let suffix: &[u8; LENGTH - LENGTH_PREFIX] = if is_cont {
-+            b"%pA\0\0\0\0\0"
-+        } else {
-+            b"%s: %pA\0"
-+        };
-+
-+        [
-+            prefix[0], prefix[1], suffix[0], suffix[1], suffix[2], suffix[3], suffix[4], suffix[5],
-+            suffix[6], suffix[7],
-+        ]
-+    }
-+
-+    // Generate the format strings at compile-time.
-+    //
-+    // This avoids the compiler generating the contents on the fly in the stack.
-+    //
-+    // Furthermore, `static` instead of `const` is used to share the strings
-+    // for all the kernel.
-+    pub static EMERG: [u8; LENGTH] = generate(false, bindings::KERN_EMERG);
-+    pub static ALERT: [u8; LENGTH] = generate(false, bindings::KERN_ALERT);
-+    pub static CRIT: [u8; LENGTH] = generate(false, bindings::KERN_CRIT);
-+    pub static ERR: [u8; LENGTH] = generate(false, bindings::KERN_ERR);
-+    pub static WARNING: [u8; LENGTH] = generate(false, bindings::KERN_WARNING);
-+    pub static NOTICE: [u8; LENGTH] = generate(false, bindings::KERN_NOTICE);
-+    pub static INFO: [u8; LENGTH] = generate(false, bindings::KERN_INFO);
-+    pub static DEBUG: [u8; LENGTH] = generate(false, bindings::KERN_DEBUG);
-+    pub static CONT: [u8; LENGTH] = generate(true, bindings::KERN_CONT);
-+}
-+
-+/// Prints a message via the kernel's [`_printk`].
-+///
-+/// Public but hidden since it should only be used from public macros.
-+///
-+/// # Safety
-+///
-+/// The format string must be one of the ones in [`format_strings`], and
-+/// the module name must be null-terminated.
-+///
-+/// [`_printk`]: ../../../../include/linux/_printk.h
-+#[doc(hidden)]
-+#[cfg_attr(not(CONFIG_PRINTK), allow(unused_variables))]
-+pub unsafe fn call_printk(
-+    format_string: &[u8; format_strings::LENGTH],
-+    module_name: &[u8],
-+    args: fmt::Arguments<'_>,
-+) {
-+    // `_printk` does not seem to fail in any path.
-+    #[cfg(CONFIG_PRINTK)]
-+    unsafe {
-+        bindings::_printk(
-+            format_string.as_ptr() as _,
-+            module_name.as_ptr(),
-+            &args as *const _ as *const c_void,
-+        );
-+    }
-+}
-+
-+/// Prints a message via the kernel's [`_printk`] for the `CONT` level.
-+///
-+/// Public but hidden since it should only be used from public macros.
-+///
-+/// [`_printk`]: ../../../../include/linux/printk.h
-+#[doc(hidden)]
-+#[cfg_attr(not(CONFIG_PRINTK), allow(unused_variables))]
-+pub fn call_printk_cont(args: fmt::Arguments<'_>) {
-+    // `_printk` does not seem to fail in any path.
-+    //
-+    // SAFETY: The format string is fixed.
-+    #[cfg(CONFIG_PRINTK)]
-+    unsafe {
-+        bindings::_printk(
-+            format_strings::CONT.as_ptr() as _,
-+            &args as *const _ as *const c_void,
-+        );
-+    }
-+}
-+
-+/// Performs formatting and forwards the string to [`call_printk`].
-+///
-+/// Public but hidden since it should only be used from public macros.
-+#[doc(hidden)]
-+#[cfg(not(testlib))]
-+#[macro_export]
-+macro_rules! print_macro (
-+    // The non-continuation cases (most of them, e.g. `INFO`).
-+    ($format_string:path, false, $($arg:tt)+) => (
-+        // SAFETY: This hidden macro should only be called by the documented
-+        // printing macros which ensure the format string is one of the fixed
-+        // ones. All `__LOG_PREFIX`s are null-terminated as they are generated
-+        // by the `module!` proc macro or fixed values defined in a kernel
-+        // crate.
-+        unsafe {
-+            $crate::print::call_printk(
-+                &$format_string,
-+                crate::__LOG_PREFIX,
-+                format_args!($($arg)+),
-+            );
-+        }
-+    );
-+
-+    // The `CONT` case.
-+    ($format_string:path, true, $($arg:tt)+) => (
-+        $crate::print::call_printk_cont(
-+            format_args!($($arg)+),
-+        );
-+    );
-+);
-+
-+/// Stub for doctests
-+#[cfg(testlib)]
-+#[macro_export]
-+macro_rules! print_macro (
-+    ($format_string:path, $e:expr, $($arg:tt)+) => (
-+        ()
-+    );
-+);
-+
-+// We could use a macro to generate these macros. However, doing so ends
-+// up being a bit ugly: it requires the dollar token trick to escape `$` as
-+// well as playing with the `doc` attribute. Furthermore, they cannot be easily
-+// imported in the prelude due to [1]. So, for the moment, we just write them
-+// manually, like in the C side; while keeping most of the logic in another
-+// macro, i.e. [`print_macro`].
-+//
-+// [1]: https://github.com/rust-lang/rust/issues/52234
-+
-+/// Prints an emergency-level message (level 0).
-+///
-+/// Use this level if the system is unusable.
-+///
-+/// Equivalent to the kernel's [`pr_emerg`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_emerg`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_emerg
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_emerg!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_emerg (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::EMERG, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints an alert-level message (level 1).
-+///
-+/// Use this level if action must be taken immediately.
-+///
-+/// Equivalent to the kernel's [`pr_alert`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_alert`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_alert
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_alert!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_alert (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::ALERT, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints a critical-level message (level 2).
-+///
-+/// Use this level for critical conditions.
-+///
-+/// Equivalent to the kernel's [`pr_crit`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_crit`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_crit
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_crit!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_crit (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::CRIT, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints an error-level message (level 3).
-+///
-+/// Use this level for error conditions.
-+///
-+/// Equivalent to the kernel's [`pr_err`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_err`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_err
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_err!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_err (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::ERR, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints a warning-level message (level 4).
-+///
-+/// Use this level for warning conditions.
-+///
-+/// Equivalent to the kernel's [`pr_warn`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_warn`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_warn
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_warn!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_warn (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::WARNING, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints a notice-level message (level 5).
-+///
-+/// Use this level for normal but significant conditions.
-+///
-+/// Equivalent to the kernel's [`pr_notice`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_notice`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_notice
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_notice!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_notice (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::NOTICE, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints an info-level message (level 6).
-+///
-+/// Use this level for informational messages.
-+///
-+/// Equivalent to the kernel's [`pr_info`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_info`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_info
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_info!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+#[doc(alias = "print")]
-+macro_rules! pr_info (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::INFO, false, $($arg)*)
-+    )
-+);
-+
-+/// Prints a debug-level message (level 7).
-+///
-+/// Use this level for debug messages.
-+///
-+/// Equivalent to the kernel's [`pr_debug`] macro, except that it doesn't support dynamic debug
-+/// yet.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_debug`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_debug
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// pr_debug!("hello {}\n", "there");
-+/// ```
-+#[macro_export]
-+#[doc(alias = "print")]
-+macro_rules! pr_debug (
-+    ($($arg:tt)*) => (
-+        if cfg!(debug_assertions) {
-+            $crate::print_macro!($crate::print::format_strings::DEBUG, false, $($arg)*)
-+        }
-+    )
-+);
-+
-+/// Continues a previous log message in the same line.
-+///
-+/// Use only when continuing a previous `pr_*!` macro (e.g. [`pr_info!`]).
-+///
-+/// Equivalent to the kernel's [`pr_cont`] macro.
-+///
-+/// Mimics the interface of [`std::print!`]. See [`core::fmt`] and
-+/// [`alloc::format!`] for information about the formatting syntax.
-+///
-+/// [`pr_cont`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html#c.pr_cont
-+/// [`std::print!`]: https://doc.rust-lang.org/std/macro.print.html
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::pr_cont;
-+/// pr_info!("hello");
-+/// pr_cont!(" {}\n", "there");
-+/// ```
-+#[macro_export]
-+macro_rules! pr_cont (
-+    ($($arg:tt)*) => (
-+        $crate::print_macro!($crate::print::format_strings::CONT, true, $($arg)*)
-+    )
-+);
-diff --git a/rust/kernel/random.rs b/rust/kernel/random.rs
-new file mode 100644
-index 000000000000..723a89829f66
---- /dev/null
-+++ b/rust/kernel/random.rs
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Random numbers.
-+//!
-+//! C header: [`include/linux/random.h`](../../../../include/linux/random.h)
-+
-+use core::convert::TryInto;
-+
-+use crate::{bindings, c_types, error};
-+
-+/// Fills a byte slice with random bytes generated from the kernel's CSPRNG.
-+///
-+/// Ensures that the CSPRNG has been seeded before generating any random bytes,
-+/// and will block until it is ready.
-+pub fn getrandom(dest: &mut [u8]) -> error::Result {
-+    let res = unsafe { bindings::wait_for_random_bytes() };
-+    if res != 0 {
-+        return Err(error::Error::from_kernel_errno(res));
-+    }
-+
-+    unsafe {
-+        bindings::get_random_bytes(
-+            dest.as_mut_ptr() as *mut c_types::c_void,
-+            dest.len().try_into()?,
-+        );
-+    }
-+    Ok(())
-+}
-+
-+/// Fills a byte slice with random bytes generated from the kernel's CSPRNG.
-+///
-+/// If the CSPRNG is not yet seeded, returns an `Err(EAGAIN)` immediately.
-+pub fn getrandom_nonblock(dest: &mut [u8]) -> error::Result {
-+    if !unsafe { bindings::rng_is_initialized() } {
-+        return Err(error::Error::EAGAIN);
-+    }
-+    getrandom(dest)
-+}
-+
-+/// Contributes the contents of a byte slice to the kernel's entropy pool.
-+///
-+/// Does *not* credit the kernel entropy counter though.
-+pub fn add_randomness(data: &[u8]) {
-+    unsafe {
-+        bindings::add_device_randomness(
-+            data.as_ptr() as *const c_types::c_void,
-+            data.len().try_into().unwrap(),
-+        );
-+    }
-+}
-diff --git a/rust/kernel/raw_list.rs b/rust/kernel/raw_list.rs
-new file mode 100644
-index 000000000000..4bc4f4a24ad5
---- /dev/null
-+++ b/rust/kernel/raw_list.rs
-@@ -0,0 +1,361 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Raw lists.
-+//!
-+//! TODO: This module is a work in progress.
-+
-+use core::{
-+    cell::UnsafeCell,
-+    ptr,
-+    ptr::NonNull,
-+    sync::atomic::{AtomicBool, Ordering},
-+};
-+
-+/// A descriptor of list elements.
-+///
-+/// It describes the type of list elements and provides a function to determine how to get the
-+/// links to be used on a list.
-+///
-+/// A type that may be in multiple lists simultaneously neneds to implement one of these for each
-+/// simultaneous list.
-+pub trait GetLinks {
-+    /// The type of the entries in the list.
-+    type EntryType: ?Sized;
-+
-+    /// Returns the links to be used when linking an entry within a list.
-+    fn get_links(data: &Self::EntryType) -> &Links<Self::EntryType>;
-+}
-+
-+/// The links used to link an object on a linked list.
-+///
-+/// Instances of this type are usually embedded in structures and returned in calls to
-+/// [`GetLinks::get_links`].
-+pub struct Links<T: ?Sized> {
-+    inserted: AtomicBool,
-+    entry: UnsafeCell<ListEntry<T>>,
-+}
-+
-+impl<T: ?Sized> Links<T> {
-+    /// Constructs a new [`Links`] instance that isn't inserted on any lists yet.
-+    pub fn new() -> Self {
-+        Self {
-+            inserted: AtomicBool::new(false),
-+            entry: UnsafeCell::new(ListEntry::new()),
-+        }
-+    }
-+
-+    fn acquire_for_insertion(&self) -> bool {
-+        self.inserted
-+            .compare_exchange(false, true, Ordering::Acquire, Ordering::Relaxed)
-+            .is_ok()
-+    }
-+
-+    fn release_after_removal(&self) {
-+        self.inserted.store(false, Ordering::Release);
-+    }
-+}
-+
-+impl<T: ?Sized> Default for Links<T> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+struct ListEntry<T: ?Sized> {
-+    next: Option<NonNull<T>>,
-+    prev: Option<NonNull<T>>,
-+}
-+
-+impl<T: ?Sized> ListEntry<T> {
-+    fn new() -> Self {
-+        Self {
-+            next: None,
-+            prev: None,
-+        }
-+    }
-+}
-+
-+/// A linked list.
-+///
-+/// # Invariants
-+///
-+/// The links of objects added to a list are owned by the list.
-+pub(crate) struct RawList<G: GetLinks> {
-+    head: Option<NonNull<G::EntryType>>,
-+}
-+
-+impl<G: GetLinks> RawList<G> {
-+    pub(crate) fn new() -> Self {
-+        Self { head: None }
-+    }
-+
-+    pub(crate) fn is_empty(&self) -> bool {
-+        self.head.is_none()
-+    }
-+
-+    fn insert_after_priv(
-+        &mut self,
-+        existing: &G::EntryType,
-+        new_entry: &mut ListEntry<G::EntryType>,
-+        new_ptr: Option<NonNull<G::EntryType>>,
-+    ) {
-+        {
-+            // SAFETY: It's safe to get the previous entry of `existing` because the list cannot
-+            // change.
-+            let existing_links = unsafe { &mut *G::get_links(existing).entry.get() };
-+            new_entry.next = existing_links.next;
-+            existing_links.next = new_ptr;
-+        }
-+
-+        new_entry.prev = Some(NonNull::from(existing));
-+
-+        // SAFETY: It's safe to get the next entry of `existing` because the list cannot change.
-+        let next_links =
-+            unsafe { &mut *G::get_links(new_entry.next.unwrap().as_ref()).entry.get() };
-+        next_links.prev = new_ptr;
-+    }
-+
-+    /// Inserts the given object after `existing`.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `existing` points to a valid entry that is on the list.
-+    pub(crate) unsafe fn insert_after(
-+        &mut self,
-+        existing: &G::EntryType,
-+        new: &G::EntryType,
-+    ) -> bool {
-+        let links = G::get_links(new);
-+        if !links.acquire_for_insertion() {
-+            // Nothing to do if already inserted.
-+            return false;
-+        }
-+
-+        // SAFETY: The links are now owned by the list, so it is safe to get a mutable reference.
-+        let new_entry = unsafe { &mut *links.entry.get() };
-+        self.insert_after_priv(existing, new_entry, Some(NonNull::from(new)));
-+        true
-+    }
-+
-+    fn push_back_internal(&mut self, new: &G::EntryType) -> bool {
-+        let links = G::get_links(new);
-+        if !links.acquire_for_insertion() {
-+            // Nothing to do if already inserted.
-+            return false;
-+        }
-+
-+        // SAFETY: The links are now owned by the list, so it is safe to get a mutable reference.
-+        let new_entry = unsafe { &mut *links.entry.get() };
-+        let new_ptr = Some(NonNull::from(new));
-+        match self.back() {
-+            // SAFETY: `back` is valid as the list cannot change.
-+            Some(back) => self.insert_after_priv(unsafe { back.as_ref() }, new_entry, new_ptr),
-+            None => {
-+                self.head = new_ptr;
-+                new_entry.next = new_ptr;
-+                new_entry.prev = new_ptr;
-+            }
-+        }
-+        true
-+    }
-+
-+    pub(crate) unsafe fn push_back(&mut self, new: &G::EntryType) -> bool {
-+        self.push_back_internal(new)
-+    }
-+
-+    fn remove_internal(&mut self, data: &G::EntryType) -> bool {
-+        let links = G::get_links(data);
-+
-+        // SAFETY: The links are now owned by the list, so it is safe to get a mutable reference.
-+        let entry = unsafe { &mut *links.entry.get() };
-+        let next = if let Some(next) = entry.next {
-+            next
-+        } else {
-+            // Nothing to do if the entry is not on the list.
-+            return false;
-+        };
-+
-+        if ptr::eq(data, next.as_ptr()) {
-+            // We're removing the only element.
-+            self.head = None
-+        } else {
-+            // Update the head if we're removing it.
-+            if let Some(raw_head) = self.head {
-+                if ptr::eq(data, raw_head.as_ptr()) {
-+                    self.head = Some(next);
-+                }
-+            }
-+
-+            // SAFETY: It's safe to get the previous entry because the list cannot change.
-+            unsafe { &mut *G::get_links(entry.prev.unwrap().as_ref()).entry.get() }.next =
-+                entry.next;
-+
-+            // SAFETY: It's safe to get the next entry because the list cannot change.
-+            unsafe { &mut *G::get_links(next.as_ref()).entry.get() }.prev = entry.prev;
-+        }
-+
-+        // Reset the links of the element we're removing so that we know it's not on any list.
-+        entry.next = None;
-+        entry.prev = None;
-+        links.release_after_removal();
-+        true
-+    }
-+
-+    /// Removes the given entry.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must ensure that `data` is either on this list or in no list. It being on another
-+    /// list leads to memory unsafety.
-+    pub(crate) unsafe fn remove(&mut self, data: &G::EntryType) -> bool {
-+        self.remove_internal(data)
-+    }
-+
-+    fn pop_front_internal(&mut self) -> Option<NonNull<G::EntryType>> {
-+        let head = self.head?;
-+        // SAFETY: The head is on the list as we just got it from there and it cannot change.
-+        unsafe { self.remove(head.as_ref()) };
-+        Some(head)
-+    }
-+
-+    pub(crate) fn pop_front(&mut self) -> Option<NonNull<G::EntryType>> {
-+        self.pop_front_internal()
-+    }
-+
-+    pub(crate) fn front(&self) -> Option<NonNull<G::EntryType>> {
-+        self.head
-+    }
-+
-+    pub(crate) fn back(&self) -> Option<NonNull<G::EntryType>> {
-+        // SAFETY: The links of head are owned by the list, so it is safe to get a reference.
-+        unsafe { &*G::get_links(self.head?.as_ref()).entry.get() }.prev
-+    }
-+
-+    pub(crate) fn cursor_front(&self) -> Cursor<'_, G> {
-+        Cursor::new(self, self.front())
-+    }
-+
-+    pub(crate) fn cursor_front_mut(&mut self) -> CursorMut<'_, G> {
-+        CursorMut::new(self, self.front())
-+    }
-+}
-+
-+struct CommonCursor<G: GetLinks> {
-+    cur: Option<NonNull<G::EntryType>>,
-+}
-+
-+impl<G: GetLinks> CommonCursor<G> {
-+    fn new(cur: Option<NonNull<G::EntryType>>) -> Self {
-+        Self { cur }
-+    }
-+
-+    fn move_next(&mut self, list: &RawList<G>) {
-+        match self.cur.take() {
-+            None => self.cur = list.head,
-+            Some(cur) => {
-+                if let Some(head) = list.head {
-+                    // SAFETY: We have a shared ref to the linked list, so the links can't change.
-+                    let links = unsafe { &*G::get_links(cur.as_ref()).entry.get() };
-+                    if links.next.unwrap() != head {
-+                        self.cur = links.next;
-+                    }
-+                }
-+            }
-+        }
-+    }
-+
-+    fn move_prev(&mut self, list: &RawList<G>) {
-+        match list.head {
-+            None => self.cur = None,
-+            Some(head) => {
-+                let next = match self.cur.take() {
-+                    None => head,
-+                    Some(cur) => {
-+                        if cur == head {
-+                            return;
-+                        }
-+                        cur
-+                    }
-+                };
-+                // SAFETY: There's a shared ref to the list, so the links can't change.
-+                let links = unsafe { &*G::get_links(next.as_ref()).entry.get() };
-+                self.cur = links.prev;
-+            }
-+        }
-+    }
-+}
-+
-+/// A list cursor that allows traversing a linked list and inspecting elements.
-+pub struct Cursor<'a, G: GetLinks> {
-+    cursor: CommonCursor<G>,
-+    list: &'a RawList<G>,
-+}
-+
-+impl<'a, G: GetLinks> Cursor<'a, G> {
-+    fn new(list: &'a RawList<G>, cur: Option<NonNull<G::EntryType>>) -> Self {
-+        Self {
-+            list,
-+            cursor: CommonCursor::new(cur),
-+        }
-+    }
-+
-+    /// Returns the element the cursor is currently positioned on.
-+    pub fn current(&self) -> Option<&'a G::EntryType> {
-+        let cur = self.cursor.cur?;
-+        // SAFETY: Objects must be kept alive while on the list.
-+        Some(unsafe { &*cur.as_ptr() })
-+    }
-+
-+    /// Moves the cursor to the next element.
-+    pub fn move_next(&mut self) {
-+        self.cursor.move_next(self.list);
-+    }
-+}
-+
-+pub(crate) struct CursorMut<'a, G: GetLinks> {
-+    cursor: CommonCursor<G>,
-+    list: &'a mut RawList<G>,
-+}
-+
-+impl<'a, G: GetLinks> CursorMut<'a, G> {
-+    fn new(list: &'a mut RawList<G>, cur: Option<NonNull<G::EntryType>>) -> Self {
-+        Self {
-+            list,
-+            cursor: CommonCursor::new(cur),
-+        }
-+    }
-+
-+    pub(crate) fn current(&mut self) -> Option<&mut G::EntryType> {
-+        let cur = self.cursor.cur?;
-+        // SAFETY: Objects must be kept alive while on the list.
-+        Some(unsafe { &mut *cur.as_ptr() })
-+    }
-+
-+    /// Removes the entry the cursor is pointing to and advances the cursor to the next entry. It
-+    /// returns a raw pointer to the removed element (if one is removed).
-+    pub(crate) fn remove_current(&mut self) -> Option<NonNull<G::EntryType>> {
-+        let entry = self.cursor.cur?;
-+        self.cursor.move_next(self.list);
-+        // SAFETY: The entry is on the list as we just got it from there and it cannot change.
-+        unsafe { self.list.remove(entry.as_ref()) };
-+        Some(entry)
-+    }
-+
-+    pub(crate) fn peek_next(&mut self) -> Option<&mut G::EntryType> {
-+        let mut new = CommonCursor::new(self.cursor.cur);
-+        new.move_next(self.list);
-+        // SAFETY: Objects must be kept alive while on the list.
-+        Some(unsafe { &mut *new.cur?.as_ptr() })
-+    }
-+
-+    pub(crate) fn peek_prev(&mut self) -> Option<&mut G::EntryType> {
-+        let mut new = CommonCursor::new(self.cursor.cur);
-+        new.move_prev(self.list);
-+        // SAFETY: Objects must be kept alive while on the list.
-+        Some(unsafe { &mut *new.cur?.as_ptr() })
-+    }
-+
-+    pub(crate) fn move_next(&mut self) {
-+        self.cursor.move_next(self.list);
-+    }
-+}
-diff --git a/rust/kernel/rbtree.rs b/rust/kernel/rbtree.rs
-new file mode 100644
-index 000000000000..71112e306ec3
---- /dev/null
-+++ b/rust/kernel/rbtree.rs
-@@ -0,0 +1,562 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Red-black trees.
-+//!
-+//! C header: [`include/linux/rbtree.h`](../../../../include/linux/rbtree.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/html/latest/core-api/rbtree.html>
-+
-+use crate::{bindings, Result};
-+use alloc::boxed::Box;
-+use core::{
-+    cmp::{Ord, Ordering},
-+    iter::{IntoIterator, Iterator},
-+    marker::PhantomData,
-+    mem::MaybeUninit,
-+    ptr::{addr_of_mut, NonNull},
-+};
-+
-+struct Node<K, V> {
-+    links: bindings::rb_node,
-+    key: K,
-+    value: V,
-+}
-+
-+/// A red-black tree with owned nodes.
-+///
-+/// It is backed by the kernel C red-black trees.
-+///
-+/// # Invariants
-+///
-+/// Non-null parent/children pointers stored in instances of the `rb_node` C struct are always
-+/// valid, and pointing to a field of our internal representation of a node.
-+///
-+/// # Examples
-+///
-+/// In the example below we do several operations on a tree. We note that insertions may fail if
-+/// the system is out of memory.
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::rbtree::RBTree;
-+///
-+/// fn rbtest() -> Result {
-+///     // Create a new tree.
-+///     let mut tree = RBTree::new();
-+///
-+///     // Insert three elements.
-+///     tree.try_insert(20, 200)?;
-+///     tree.try_insert(10, 100)?;
-+///     tree.try_insert(30, 300)?;
-+///
-+///     // Check the nodes we just inserted.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &100));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert_eq!(iter.next().unwrap(), (&30, &300));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Print all elements.
-+///     for (key, value) in &tree {
-+///         pr_info!("{} = {}\n", key, value);
-+///     }
-+///
-+///     // Replace one of the elements.
-+///     tree.try_insert(10, 1000)?;
-+///
-+///     // Check that the tree reflects the replacement.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &1000));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert_eq!(iter.next().unwrap(), (&30, &300));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Change the value of one of the elements.
-+///     *tree.get_mut(&30).unwrap() = 3000;
-+///
-+///     // Check that the tree reflects the update.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &1000));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert_eq!(iter.next().unwrap(), (&30, &3000));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Remove an element.
-+///     tree.remove(&10);
-+///
-+///     // Check that the tree reflects the removal.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert_eq!(iter.next().unwrap(), (&30, &3000));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Update all values.
-+///     for value in tree.values_mut() {
-+///         *value *= 10;
-+///     }
-+///
-+///     // Check that the tree reflects the changes to values.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&20, &2000));
-+///         assert_eq!(iter.next().unwrap(), (&30, &30000));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     Ok(())
-+/// }
-+/// ```
-+///
-+/// In the example below, we first allocate a node, acquire a spinlock, then insert the node into
-+/// the tree. This is useful when the insertion context does not allow sleeping, for example, when
-+/// holding a spinlock.
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::{rbtree::RBTree, sync::SpinLock};
-+///
-+/// fn insert_test(tree: &SpinLock<RBTree<u32, u32>>) -> Result {
-+///     // Pre-allocate node. This may fail (as it allocates memory).
-+///     let node = RBTree::try_allocate_node(10, 100)?;
-+///
-+///     // Insert node while holding the lock. It is guaranteed to succeed with no allocation
-+///     // attempts.
-+///     let mut guard = tree.lock();
-+///     guard.insert(node);
-+///     Ok(())
-+/// }
-+/// ```
-+///
-+/// In the example below, we reuse an existing node allocation from an element we removed.
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::rbtree::RBTree;
-+///
-+/// fn reuse_test() -> Result {
-+///     // Create a new tree.
-+///     let mut tree = RBTree::new();
-+///
-+///     // Insert three elements.
-+///     tree.try_insert(20, 200)?;
-+///     tree.try_insert(10, 100)?;
-+///     tree.try_insert(30, 300)?;
-+///
-+///     // Check the nodes we just inserted.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &100));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert_eq!(iter.next().unwrap(), (&30, &300));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Remove a node, getting back ownership of it.
-+///     let existing = tree.remove_node(&30).unwrap();
-+///
-+///     // Check that the tree reflects the removal.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &100));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     // Turn the node into a reservation so that we can reuse it with a different key/value.
-+///     let reservation = existing.into_reservation();
-+///
-+///     // Insert a new node into the tree, reusing the previous allocation. This is guaranteed to
-+///     // succeed (no memory allocations).
-+///     tree.insert(reservation.into_node(15, 150));
-+///
-+///     // Check that the tree reflect the new insertion.
-+///     {
-+///         let mut iter = tree.iter();
-+///         assert_eq!(iter.next().unwrap(), (&10, &100));
-+///         assert_eq!(iter.next().unwrap(), (&15, &150));
-+///         assert_eq!(iter.next().unwrap(), (&20, &200));
-+///         assert!(iter.next().is_none());
-+///     }
-+///
-+///     Ok(())
-+/// }
-+/// ```
-+pub struct RBTree<K, V> {
-+    root: bindings::rb_root,
-+    _p: PhantomData<Node<K, V>>,
-+}
-+
-+impl<K, V> RBTree<K, V> {
-+    /// Creates a new and empty tree.
-+    pub fn new() -> Self {
-+        Self {
-+            // INVARIANT: There are no nodes in the tree, so the invariant holds vacuously.
-+            root: bindings::rb_root::default(),
-+            _p: PhantomData,
-+        }
-+    }
-+
-+    /// Tries to insert a new value into the tree.
-+    ///
-+    /// It overwrites a node if one already exists with the same key and returns it (containing the
-+    /// key/value pair). Returns [`None`] if a node with the same key didn't already exist.
-+    ///
-+    /// Returns an error if it cannot allocate memory for the new node.
-+    pub fn try_insert(&mut self, key: K, value: V) -> Result<Option<RBTreeNode<K, V>>>
-+    where
-+        K: Ord,
-+    {
-+        Ok(self.insert(Self::try_allocate_node(key, value)?))
-+    }
-+
-+    /// Allocates memory for a node to be eventually initialised and inserted into the tree via a
-+    /// call to [`RBTree::insert`].
-+    pub fn try_reserve_node() -> Result<RBTreeNodeReservation<K, V>> {
-+        Ok(RBTreeNodeReservation {
-+            node: Box::try_new(MaybeUninit::uninit())?,
-+        })
-+    }
-+
-+    /// Allocates and initialiases a node that can be inserted into the tree via
-+    /// [`RBTree::insert`].
-+    pub fn try_allocate_node(key: K, value: V) -> Result<RBTreeNode<K, V>> {
-+        Ok(Self::try_reserve_node()?.into_node(key, value))
-+    }
-+
-+    /// Inserts a new node into the tree.
-+    ///
-+    /// It overwrites a node if one already exists with the same key and returns it (containing the
-+    /// key/value pair). Returns [`None`] if a node with the same key didn't already exist.
-+    ///
-+    /// This function always succeeds.
-+    pub fn insert(&mut self, node: RBTreeNode<K, V>) -> Option<RBTreeNode<K, V>>
-+    where
-+        K: Ord,
-+    {
-+        let RBTreeNode { node } = node;
-+        let node = Box::into_raw(node);
-+        // SAFETY: `node` is valid at least until we call `Box::from_raw`, which only happens when
-+        // the node is removed or replaced.
-+        let node_links = unsafe { addr_of_mut!((*node).links) };
-+        let mut new_link: &mut *mut bindings::rb_node = &mut self.root.rb_node;
-+        let mut parent = core::ptr::null_mut();
-+        while !new_link.is_null() {
-+            let this = crate::container_of!(*new_link, Node<K, V>, links);
-+
-+            parent = *new_link;
-+
-+            // SAFETY: `this` is a non-null node so it is valid by the type invariants. `node` is
-+            // valid until the node is removed.
-+            match unsafe { (*node).key.cmp(&(*this).key) } {
-+                // SAFETY: `parent` is a non-null node so it is valid by the type invariants.
-+                Ordering::Less => new_link = unsafe { &mut (*parent).rb_left },
-+                // SAFETY: `parent` is a non-null node so it is valid by the type invariants.
-+                Ordering::Greater => new_link = unsafe { &mut (*parent).rb_right },
-+                Ordering::Equal => {
-+                    // INVARIANT: We are replacing an existing node with a new one, which is valid.
-+                    // It remains valid because we "forgot" it with `Box::into_raw`.
-+                    // SAFETY: All pointers are non-null and valid (parent, despite the name, really
-+                    // is the node we're replacing).
-+                    unsafe { bindings::rb_replace_node(parent, node_links, &mut self.root) };
-+
-+                    // INVARIANT: The node is being returned and the caller may free it, however,
-+                    // it was removed from the tree. So the invariants still hold.
-+                    return Some(RBTreeNode {
-+                        // SAFETY: `this` was a node in the tree, so it is valid.
-+                        node: unsafe { Box::from_raw(this as _) },
-+                    });
-+                }
-+            }
-+        }
-+
-+        // INVARIANT: We are linking in a new node, which is valid. It remains valid because we
-+        // "forgot" it with `Box::into_raw`.
-+        // SAFETY: All pointers are non-null and valid (`*new_link` is null, but `new_link` is a
-+        // mutable reference).
-+        unsafe { bindings::rb_link_node(node_links, parent, new_link) };
-+
-+        // SAFETY: All pointers are valid. `node` has just been inserted into the tree.
-+        unsafe { bindings::rb_insert_color(node_links, &mut self.root) };
-+        None
-+    }
-+
-+    /// Returns a node with the given key, if one exists.
-+    fn find(&self, key: &K) -> Option<NonNull<Node<K, V>>>
-+    where
-+        K: Ord,
-+    {
-+        let mut node = self.root.rb_node;
-+        while !node.is_null() {
-+            let this = crate::container_of!(node, Node<K, V>, links);
-+            // SAFETY: `this` is a non-null node so it is valid by the type invariants.
-+            node = match key.cmp(unsafe { &(*this).key }) {
-+                // SAFETY: `node` is a non-null node so it is valid by the type invariants.
-+                Ordering::Less => unsafe { (*node).rb_left },
-+                // SAFETY: `node` is a non-null node so it is valid by the type invariants.
-+                Ordering::Greater => unsafe { (*node).rb_right },
-+                Ordering::Equal => return NonNull::new(this as _),
-+            }
-+        }
-+        None
-+    }
-+
-+    /// Returns a reference to the value corresponding to the key.
-+    pub fn get(&self, key: &K) -> Option<&V>
-+    where
-+        K: Ord,
-+    {
-+        // SAFETY: The `find` return value is a node in the tree, so it is valid.
-+        self.find(key).map(|node| unsafe { &node.as_ref().value })
-+    }
-+
-+    /// Returns a mutable reference to the value corresponding to the key.
-+    pub fn get_mut(&mut self, key: &K) -> Option<&mut V>
-+    where
-+        K: Ord,
-+    {
-+        // SAFETY: The `find` return value is a node in the tree, so it is valid.
-+        self.find(key)
-+            .map(|mut node| unsafe { &mut node.as_mut().value })
-+    }
-+
-+    /// Removes the node with the given key from the tree.
-+    ///
-+    /// It returns the node that was removed if one exists, or [`None`] otherwise.
-+    pub fn remove_node(&mut self, key: &K) -> Option<RBTreeNode<K, V>>
-+    where
-+        K: Ord,
-+    {
-+        let mut node = self.find(key)?;
-+
-+        // SAFETY: The `find` return value is a node in the tree, so it is valid.
-+        unsafe { bindings::rb_erase(&mut node.as_mut().links, &mut self.root) };
-+
-+        // INVARIANT: The node is being returned and the caller may free it, however, it was
-+        // removed from the tree. So the invariants still hold.
-+        Some(RBTreeNode {
-+            // SAFETY: The `find` return value was a node in the tree, so it is valid.
-+            node: unsafe { Box::from_raw(node.as_ptr()) },
-+        })
-+    }
-+
-+    /// Removes the node with the given key from the tree.
-+    ///
-+    /// It returns the value that was removed if one exists, or [`None`] otherwise.
-+    pub fn remove(&mut self, key: &K) -> Option<V>
-+    where
-+        K: Ord,
-+    {
-+        let node = self.remove_node(key)?;
-+        let RBTreeNode { node } = node;
-+        let Node {
-+            links: _,
-+            key: _,
-+            value,
-+        } = *node;
-+        Some(value)
-+    }
-+
-+    /// Returns an iterator over the tree nodes, sorted by key.
-+    pub fn iter(&self) -> RBTreeIterator<'_, K, V> {
-+        RBTreeIterator {
-+            _tree: PhantomData,
-+            // SAFETY: `root` is valid as it's embedded in `self` and we have a valid `self`.
-+            next: unsafe { bindings::rb_first(&self.root) },
-+        }
-+    }
-+
-+    /// Returns a mutable iterator over the tree nodes, sorted by key.
-+    pub fn iter_mut(&mut self) -> RBTreeIteratorMut<'_, K, V> {
-+        RBTreeIteratorMut {
-+            _tree: PhantomData,
-+            // SAFETY: `root` is valid as it's embedded in `self` and we have a valid `self`.
-+            next: unsafe { bindings::rb_first(&self.root) },
-+        }
-+    }
-+
-+    /// Returns an iterator over the keys of the nodes in the tree, in sorted order.
-+    pub fn keys(&self) -> impl Iterator<Item = &'_ K> {
-+        self.iter().map(|(k, _)| k)
-+    }
-+
-+    /// Returns an iterator over the values of the nodes in the tree, sorted by key.
-+    pub fn values(&self) -> impl Iterator<Item = &'_ V> {
-+        self.iter().map(|(_, v)| v)
-+    }
-+
-+    /// Returns a mutable iterator over the values of the nodes in the tree, sorted by key.
-+    pub fn values_mut(&mut self) -> impl Iterator<Item = &'_ mut V> {
-+        self.iter_mut().map(|(_, v)| v)
-+    }
-+}
-+
-+impl<K, V> Default for RBTree<K, V> {
-+    fn default() -> Self {
-+        Self::new()
-+    }
-+}
-+
-+impl<K, V> Drop for RBTree<K, V> {
-+    fn drop(&mut self) {
-+        // SAFETY: `root` is valid as it's embedded in `self` and we have a valid `self`.
-+        let mut next = unsafe { bindings::rb_first_postorder(&self.root) };
-+
-+        // INVARIANT: The loop invariant is that all tree nodes from `next` in postorder are valid.
-+        while !next.is_null() {
-+            let this = crate::container_of!(next, Node<K, V>, links);
-+
-+            // Find out what the next node is before disposing of the current one.
-+            // SAFETY: `next` and all nodes in postorder are still valid.
-+            next = unsafe { bindings::rb_next_postorder(next) };
-+
-+            // INVARIANT: This is the destructor, so we break the type invariant during clean-up,
-+            // but it is not observable. The loop invariant is still maintained.
-+            // SAFETY: `this` is valid per the loop invariant.
-+            unsafe { Box::from_raw(this as *mut Node<K, V>) };
-+        }
-+    }
-+}
-+
-+impl<'a, K, V> IntoIterator for &'a RBTree<K, V> {
-+    type Item = (&'a K, &'a V);
-+    type IntoIter = RBTreeIterator<'a, K, V>;
-+
-+    fn into_iter(self) -> Self::IntoIter {
-+        self.iter()
-+    }
-+}
-+
-+/// An iterator over the nodes of a [`RBTree`].
-+///
-+/// Instances are created by calling [`RBTree::iter`].
-+pub struct RBTreeIterator<'a, K, V> {
-+    _tree: PhantomData<&'a RBTree<K, V>>,
-+    next: *mut bindings::rb_node,
-+}
-+
-+impl<'a, K, V> Iterator for RBTreeIterator<'a, K, V> {
-+    type Item = (&'a K, &'a V);
-+
-+    fn next(&mut self) -> Option<Self::Item> {
-+        if self.next.is_null() {
-+            return None;
-+        }
-+
-+        let cur = crate::container_of!(self.next, Node<K, V>, links);
-+
-+        // SAFETY: The reference to the tree used to create the iterator outlives the iterator, so
-+        // the tree cannot change. By the tree invariant, all nodes are valid.
-+        self.next = unsafe { bindings::rb_next(self.next) };
-+
-+        // SAFETY: By the same reasoning above, it is safe to dereference the node. Additionally,
-+        // it is ok to return a reference to members because the iterator must outlive it.
-+        Some(unsafe { (&(*cur).key, &(*cur).value) })
-+    }
-+}
-+
-+impl<'a, K, V> IntoIterator for &'a mut RBTree<K, V> {
-+    type Item = (&'a K, &'a mut V);
-+    type IntoIter = RBTreeIteratorMut<'a, K, V>;
-+
-+    fn into_iter(self) -> Self::IntoIter {
-+        self.iter_mut()
-+    }
-+}
-+
-+/// A mutable iterator over the nodes of a [`RBTree`].
-+///
-+/// Instances are created by calling [`RBTree::iter_mut`].
-+pub struct RBTreeIteratorMut<'a, K, V> {
-+    _tree: PhantomData<&'a RBTree<K, V>>,
-+    next: *mut bindings::rb_node,
-+}
-+
-+impl<'a, K, V> Iterator for RBTreeIteratorMut<'a, K, V> {
-+    type Item = (&'a K, &'a mut V);
-+
-+    fn next(&mut self) -> Option<Self::Item> {
-+        if self.next.is_null() {
-+            return None;
-+        }
-+
-+        let cur = crate::container_of!(self.next, Node<K, V>, links) as *mut Node<K, V>;
-+
-+        // SAFETY: The reference to the tree used to create the iterator outlives the iterator, so
-+        // the tree cannot change (except for the value of previous nodes, but those don't affect
-+        // the iteration process). By the tree invariant, all nodes are valid.
-+        self.next = unsafe { bindings::rb_next(self.next) };
-+
-+        // SAFETY: By the same reasoning above, it is safe to dereference the node. Additionally,
-+        // it is ok to return a reference to members because the iterator must outlive it.
-+        Some(unsafe { (&(*cur).key, &mut (*cur).value) })
-+    }
-+}
-+
-+/// A memory reservation for a red-black tree node.
-+///
-+/// It contains the memory needed to hold a node that can be inserted into a red-black tree. One
-+/// can be obtained by directly allocating it ([`RBTree::try_reserve_node`]) or by "uninitialising"
-+/// ([`RBTreeNode::into_reservation`]) an actual node (usually returned by some operation like
-+/// removal from a tree).
-+pub struct RBTreeNodeReservation<K, V> {
-+    node: Box<MaybeUninit<Node<K, V>>>,
-+}
-+
-+impl<K, V> RBTreeNodeReservation<K, V> {
-+    /// Initialises a node reservation.
-+    ///
-+    /// It then becomes an [`RBTreeNode`] that can be inserted into a tree.
-+    pub fn into_node(mut self, key: K, value: V) -> RBTreeNode<K, V> {
-+        let node_ptr = self.node.as_mut_ptr();
-+        // SAFETY: `node_ptr` is valid, and so are its fields.
-+        unsafe { addr_of_mut!((*node_ptr).links).write(bindings::rb_node::default()) };
-+        // SAFETY: `node_ptr` is valid, and so are its fields.
-+        unsafe { addr_of_mut!((*node_ptr).key).write(key) };
-+        // SAFETY: `node_ptr` is valid, and so are its fields.
-+        unsafe { addr_of_mut!((*node_ptr).value).write(value) };
-+        let raw = Box::into_raw(self.node);
-+        RBTreeNode {
-+            // SAFETY: The pointer came from a `MaybeUninit<Node>` whose fields have all been
-+            // initialised. Additionally, it has the same layout as `Node`.
-+            node: unsafe { Box::from_raw(raw as _) },
-+        }
-+    }
-+}
-+
-+/// A red-black tree node.
-+///
-+/// The node is fully initialised (with key and value) and can be inserted into a tree without any
-+/// extra allocations or failure paths.
-+pub struct RBTreeNode<K, V> {
-+    node: Box<Node<K, V>>,
-+}
-+
-+impl<K, V> RBTreeNode<K, V> {
-+    /// "Uninitialises" a node.
-+    ///
-+    /// It then becomes a reservation that can be re-initialised into a different node (i.e., with
-+    /// a different key and/or value).
-+    ///
-+    /// The existing key and value are dropped in-place as part of this operation, that is, memory
-+    /// may be freed (but only for the key/value; memory for the node itself is kept for reuse).
-+    pub fn into_reservation(self) -> RBTreeNodeReservation<K, V> {
-+        let raw = Box::into_raw(self.node);
-+        let mut ret = RBTreeNodeReservation {
-+            // SAFETY: The pointer came from a valid `Node`, which has the same layout as
-+            // `MaybeUninit<Node>`.
-+            node: unsafe { Box::from_raw(raw as _) },
-+        };
-+        // SAFETY: Although the type is `MaybeUninit<Node>`, we know it has been initialised
-+        // because it came from a `Node`. So it is safe to drop it.
-+        unsafe { core::ptr::drop_in_place(ret.node.as_mut_ptr()) };
-+        ret
-+    }
-+}
-diff --git a/rust/kernel/revocable.rs b/rust/kernel/revocable.rs
-new file mode 100644
-index 000000000000..9cc65ca3a1b6
---- /dev/null
-+++ b/rust/kernel/revocable.rs
-@@ -0,0 +1,163 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Revocable objects.
-+//!
-+//! The [`Revocable`] type wraps other types and allows access to them to be revoked. The existence
-+//! of a [`RevocableGuard`] ensures that objects remain valid.
-+
-+use crate::bindings;
-+use core::{
-+    cell::UnsafeCell,
-+    marker::PhantomData,
-+    mem::ManuallyDrop,
-+    ops::Deref,
-+    ptr::drop_in_place,
-+    sync::atomic::{AtomicBool, Ordering},
-+};
-+
-+/// An object that can become inaccessible at runtime.
-+///
-+/// Once access is revoked and all concurrent users complete (i.e., all existing instances of
-+/// [`RevocableGuard`] are dropped), the wrapped object is also dropped.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::revocable::Revocable;
-+///
-+/// struct Example {
-+///     a: u32,
-+///     b: u32,
-+/// }
-+///
-+/// fn add_two(v: &Revocable<Example>) -> Option<u32> {
-+///     let guard = v.try_access()?;
-+///     Some(guard.a + guard.b)
-+/// }
-+///
-+/// fn example() {
-+///     let v = Revocable::new(Example { a: 10, b: 20 });
-+///     assert_eq!(add_two(&v), Some(30));
-+///     v.revoke();
-+///     assert_eq!(add_two(&v), None);
-+/// }
-+/// ```
-+pub struct Revocable<T: ?Sized> {
-+    is_available: AtomicBool,
-+    data: ManuallyDrop<UnsafeCell<T>>,
-+}
-+
-+// SAFETY: `Revocable` is `Send` if the wrapped object is also `Send`. This is because while the
-+// functionality exposed by `Revocable` can be accessed from any thread/CPU, it is possible that
-+// this isn't supported by the wrapped object.
-+unsafe impl<T: ?Sized + Send> Send for Revocable<T> {}
-+
-+// SAFETY: `Revocable` is `Sync` if the wrapped object is both `Send` and `Sync`. We require `Send`
-+// from the wrapped object as well because  of `Revocable::revoke`, which can trigger the `Drop`
-+// implementation of the wrapped object from an arbitrary thread.
-+unsafe impl<T: ?Sized + Sync + Send> Sync for Revocable<T> {}
-+
-+impl<T> Revocable<T> {
-+    /// Creates a new revocable instance of the given data.
-+    pub fn new(data: T) -> Self {
-+        Self {
-+            is_available: AtomicBool::new(true),
-+            data: ManuallyDrop::new(UnsafeCell::new(data)),
-+        }
-+    }
-+}
-+
-+impl<T: ?Sized> Revocable<T> {
-+    /// Tries to access the \[revocable\] wrapped object.
-+    ///
-+    /// Returns `None` if the object has been revoked and is therefore no longer accessible.
-+    ///
-+    /// Returns a guard that gives access to the object otherwise; the object is guaranteed to
-+    /// remain accessible while the guard is alive. In such cases, callers are not allowed to sleep
-+    /// because another CPU may be waiting to complete the revocation of this object.
-+    pub fn try_access(&self) -> Option<RevocableGuard<'_, T>> {
-+        let guard = RevocableGuard::new(self.data.get());
-+        if self.is_available.load(Ordering::Relaxed) {
-+            Some(guard)
-+        } else {
-+            None
-+        }
-+    }
-+
-+    /// Revokes access to and drops the wrapped object.
-+    ///
-+    /// Access to the object is revoked immediately to new callers of [`Revocable::try_access`]. If
-+    /// there are concurrent users of the object (i.e., ones that called [`Revocable::try_access`]
-+    /// beforehand and still haven't dropped the returned guard), this function waits for the
-+    /// concurrent access to complete before dropping the wrapped object.
-+    pub fn revoke(&self) {
-+        if self
-+            .is_available
-+            .compare_exchange(true, false, Ordering::Relaxed, Ordering::Relaxed)
-+            .is_ok()
-+        {
-+            // SAFETY: Just an FFI call, there are no further requirements.
-+            unsafe { bindings::synchronize_rcu() };
-+
-+            // SAFETY: We know `self.data` is valid because only one CPU can succeed the
-+            // `compare_exchange` above that takes `is_available` from `true` to `false`.
-+            unsafe { drop_in_place(self.data.get()) };
-+        }
-+    }
-+}
-+
-+impl<T: ?Sized> Drop for Revocable<T> {
-+    fn drop(&mut self) {
-+        // Drop only if the data hasn't been revoked yet (in which case it has already been
-+        // dropped).
-+        if *self.is_available.get_mut() {
-+            // SAFETY: We know `self.data` is valid because no other CPU has changed
-+            // `is_available` to `false` yet, and no other CPU can do it anymore because this CPU
-+            // holds the only reference (mutable) to `self` now.
-+            unsafe { drop_in_place(self.data.get()) };
-+        }
-+    }
-+}
-+
-+/// A guard that allows access to a revocable object and keeps it alive.
-+///
-+/// CPUs may not sleep while holding on to [`RevocableGuard`] because it's in atomic context
-+/// holding the RCU read-side lock.
-+///
-+/// # Invariants
-+///
-+/// The RCU read-side lock is held while the guard is alive.
-+pub struct RevocableGuard<'a, T: ?Sized> {
-+    data_ref: *const T,
-+    _p: PhantomData<&'a ()>,
-+}
-+
-+impl<T: ?Sized> RevocableGuard<'_, T> {
-+    fn new(data_ref: *const T) -> Self {
-+        // SAFETY: Just an FFI call, there are no further requirements.
-+        unsafe { bindings::rcu_read_lock() };
-+
-+        // INVARIANTS: The RCU read-side lock was just acquired.
-+        Self {
-+            data_ref,
-+            _p: PhantomData,
-+        }
-+    }
-+}
-+
-+impl<T: ?Sized> Drop for RevocableGuard<'_, T> {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariants, we know that we hold the RCU read-side lock.
-+        unsafe { bindings::rcu_read_unlock() };
-+    }
-+}
-+
-+impl<T: ?Sized> Deref for RevocableGuard<'_, T> {
-+    type Target = T;
-+
-+    fn deref(&self) -> &Self::Target {
-+        // SAFETY: By the type invariants, we hold the rcu read-side lock, so the object is
-+        // guaranteed to remain valid.
-+        unsafe { &*self.data_ref }
-+    }
-+}
-diff --git a/rust/kernel/security.rs b/rust/kernel/security.rs
-new file mode 100644
-index 000000000000..2004d01233f4
---- /dev/null
-+++ b/rust/kernel/security.rs
-@@ -0,0 +1,36 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Linux Security Modules (LSM).
-+//!
-+//! C header: [`include/linux/security.h`](../../../../include/linux/security.h).
-+
-+use crate::{bindings, cred::Credential, file::File, to_result, Result};
-+
-+/// Calls the security modules to determine if the given task can become the manager of a binder
-+/// context.
-+pub fn binder_set_context_mgr(mgr: &Credential) -> Result {
-+    // SAFETY: By the `Credential` invariants, `mgr.ptr` is valid.
-+    to_result(|| unsafe { bindings::security_binder_set_context_mgr(mgr.ptr) })
-+}
-+
-+/// Calls the security modules to determine if binder transactions are allowed from task `from` to
-+/// task `to`.
-+pub fn binder_transaction(from: &Credential, to: &Credential) -> Result {
-+    // SAFETY: By the `Credential` invariants, `from.ptr` and `to.ptr` are valid.
-+    to_result(|| unsafe { bindings::security_binder_transaction(from.ptr, to.ptr) })
-+}
-+
-+/// Calls the security modules to determine if task `from` is allowed to send binder objects
-+/// (owned by itself or other processes) to task `to` through a binder transaction.
-+pub fn binder_transfer_binder(from: &Credential, to: &Credential) -> Result {
-+    // SAFETY: By the `Credential` invariants, `from.ptr` and `to.ptr` are valid.
-+    to_result(|| unsafe { bindings::security_binder_transfer_binder(from.ptr, to.ptr) })
-+}
-+
-+/// Calls the security modules to determine if task `from` is allowed to send the given file to
-+/// task `to` (which would get its own file descriptor) through a binder transaction.
-+pub fn binder_transfer_file(from: &Credential, to: &Credential, file: &File) -> Result {
-+    // SAFETY: By the `Credential` invariants, `from.ptr` and `to.ptr` are valid. Similarly, by the
-+    // `File` invariants, `file.ptr` is also valid.
-+    to_result(|| unsafe { bindings::security_binder_transfer_file(from.ptr, to.ptr, file.ptr) })
-+}
-diff --git a/rust/kernel/static_assert.rs b/rust/kernel/static_assert.rs
-new file mode 100644
-index 000000000000..a80d8ab57564
---- /dev/null
-+++ b/rust/kernel/static_assert.rs
-@@ -0,0 +1,39 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Static assert.
-+
-+/// Static assert (i.e. compile-time assert).
-+///
-+/// Similar to C11 [`_Static_assert`] and C++11 [`static_assert`].
-+///
-+/// The feature may be added to Rust in the future: see [RFC 2790].
-+///
-+/// [`_Static_assert`]: https://en.cppreference.com/w/c/language/_Static_assert
-+/// [`static_assert`]: https://en.cppreference.com/w/cpp/language/static_assert
-+/// [RFC 2790]: https://github.com/rust-lang/rfcs/issues/2790
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// static_assert!(42 > 24);
-+/// static_assert!(core::mem::size_of::<u8>() == 1);
-+///
-+/// const X: &[u8] = b"bar";
-+/// static_assert!(X[1] == 'a' as u8);
-+///
-+/// const fn f(x: i32) -> i32 {
-+///     x + 2
-+/// }
-+/// static_assert!(f(40) == 42);
-+/// ```
-+#[macro_export]
-+macro_rules! static_assert {
-+    ($condition:expr) => {
-+        // Based on the latest one in `rustc`'s one before it was [removed].
-+        //
-+        // [removed]: https://github.com/rust-lang/rust/commit/c2dad1c6b9f9636198d7c561b47a2974f5103f6d
-+        #[allow(dead_code)]
-+        const _: () = [()][!($condition) as usize];
-+    };
-+}
-diff --git a/rust/kernel/std_vendor.rs b/rust/kernel/std_vendor.rs
-new file mode 100644
-index 000000000000..492388d7ce10
---- /dev/null
-+++ b/rust/kernel/std_vendor.rs
-@@ -0,0 +1,150 @@
-+// SPDX-License-Identifier: Apache-2.0 OR MIT
-+
-+//! The contents of this file come from the Rust standard library, hosted in the
-+//! <https://github.com/rust-lang/rust> repository. For copyright details, see
-+//! <https://github.com/rust-lang/rust/blob/master/COPYRIGHT>.
-+
-+/// [`std::dbg`], but using [`pr_info`] instead of [`eprintln`].
-+///
-+/// Prints and returns the value of a given expression for quick and dirty
-+/// debugging.
-+///
-+/// An example:
-+///
-+/// ```rust
-+/// let a = 2;
-+/// let b = dbg!(a * 2) + 1;
-+/// //      ^-- prints: [src/main.rs:2] a * 2 = 4
-+/// assert_eq!(b, 5);
-+/// ```
-+///
-+/// The macro works by using the `Debug` implementation of the type of
-+/// the given expression to print the value with [`printk`] along with the
-+/// source location of the macro invocation as well as the source code
-+/// of the expression.
-+///
-+/// Invoking the macro on an expression moves and takes ownership of it
-+/// before returning the evaluated expression unchanged. If the type
-+/// of the expression does not implement `Copy` and you don't want
-+/// to give up ownership, you can instead borrow with `dbg!(&expr)`
-+/// for some expression `expr`.
-+///
-+/// The `dbg!` macro works exactly the same in release builds.
-+/// This is useful when debugging issues that only occur in release
-+/// builds or when debugging in release mode is significantly faster.
-+///
-+/// Note that the macro is intended as a debugging tool and therefore you
-+/// should avoid having uses of it in version control for long periods
-+/// (other than in tests and similar).
-+///
-+/// # Stability
-+///
-+/// The exact output printed by this macro should not be relied upon
-+/// and is subject to future changes.
-+///
-+/// # Further examples
-+///
-+/// With a method call:
-+///
-+/// ```rust
-+/// fn foo(n: usize) {
-+///     if let Some(_) = dbg!(n.checked_sub(4)) {
-+///         // ...
-+///     }
-+/// }
-+///
-+/// foo(3)
-+/// ```
-+///
-+/// This prints to the kernel log:
-+///
-+/// ```text,ignore
-+/// [src/main.rs:4] n.checked_sub(4) = None
-+/// ```
-+///
-+/// Naive factorial implementation:
-+///
-+/// ```rust
-+/// fn factorial(n: u32) -> u32 {
-+///     if dbg!(n <= 1) {
-+///         dbg!(1)
-+///     } else {
-+///         dbg!(n * factorial(n - 1))
-+///     }
-+/// }
-+///
-+/// dbg!(factorial(4));
-+/// ```
-+///
-+/// This prints to the kernel log:
-+///
-+/// ```text,ignore
-+/// [src/main.rs:3] n <= 1 = false
-+/// [src/main.rs:3] n <= 1 = false
-+/// [src/main.rs:3] n <= 1 = false
-+/// [src/main.rs:3] n <= 1 = true
-+/// [src/main.rs:4] 1 = 1
-+/// [src/main.rs:5] n * factorial(n - 1) = 2
-+/// [src/main.rs:5] n * factorial(n - 1) = 6
-+/// [src/main.rs:5] n * factorial(n - 1) = 24
-+/// [src/main.rs:11] factorial(4) = 24
-+/// ```
-+///
-+/// The `dbg!(..)` macro moves the input:
-+///
-+/// ```compile_fail
-+/// /// A wrapper around `usize` which importantly is not Copyable.
-+/// #[derive(Debug)]
-+/// struct NoCopy(usize);
-+///
-+/// let a = NoCopy(42);
-+/// let _ = dbg!(a); // <-- `a` is moved here.
-+/// let _ = dbg!(a); // <-- `a` is moved again; error!
-+/// ```
-+///
-+/// You can also use `dbg!()` without a value to just print the
-+/// file and line whenever it's reached.
-+///
-+/// Finally, if you want to `dbg!(..)` multiple values, it will treat them as
-+/// a tuple (and return it, too):
-+///
-+/// ```
-+/// assert_eq!(dbg!(1usize, 2u32), (1, 2));
-+/// ```
-+///
-+/// However, a single argument with a trailing comma will still not be treated
-+/// as a tuple, following the convention of ignoring trailing commas in macro
-+/// invocations. You can use a 1-tuple directly if you need one:
-+///
-+/// ```
-+/// assert_eq!(1, dbg!(1u32,)); // trailing comma ignored
-+/// assert_eq!((1,), dbg!((1u32,))); // 1-tuple
-+/// ```
-+///
-+/// [`std::dbg`]: https://doc.rust-lang.org/std/macro.dbg.html
-+/// [`eprintln`]: https://doc.rust-lang.org/std/macro.eprintln.html
-+/// [`printk`]: https://www.kernel.org/doc/html/latest/core-api/printk-basics.html
-+#[macro_export]
-+macro_rules! dbg {
-+    // NOTE: We cannot use `concat!` to make a static string as a format argument
-+    // of `pr_info!` because `file!` could contain a `{` or
-+    // `$val` expression could be a block (`{ .. }`), in which case the `pr_info!`
-+    // will be malformed.
-+    () => {
-+        $crate::pr_info!("[{}:{}]\n", ::core::file!(), ::core::line!())
-+    };
-+    ($val:expr $(,)?) => {
-+        // Use of `match` here is intentional because it affects the lifetimes
-+        // of temporaries - https://stackoverflow.com/a/48732525/1063961
-+        match $val {
-+            tmp => {
-+                $crate::pr_info!("[{}:{}] {} = {:#?}\n",
-+                    ::core::file!(), ::core::line!(), ::core::stringify!($val), &tmp);
-+                tmp
-+            }
-+        }
-+    };
-+    ($($val:expr),+ $(,)?) => {
-+        ($($crate::dbg!($val)),+,)
-+    };
-+}
-diff --git a/rust/kernel/str.rs b/rust/kernel/str.rs
-new file mode 100644
-index 000000000000..48960e44d205
---- /dev/null
-+++ b/rust/kernel/str.rs
-@@ -0,0 +1,401 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! String representations.
-+
-+use core::fmt::{self, Write};
-+use core::ops::{self, Deref, Index};
-+
-+use crate::bindings;
-+use crate::c_types;
-+
-+/// Byte string without UTF-8 validity guarantee.
-+///
-+/// `BStr` is simply an alias to `[u8]`, but has a more evident semantical meaning.
-+pub type BStr = [u8];
-+
-+/// Creates a new [`BStr`] from a string literal.
-+///
-+/// `b_str!` converts the supplied string literal to byte string, so non-ASCII
-+/// characters can be included.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::b_str;
-+/// # use kernel::str::BStr;
-+/// const MY_BSTR: &'static BStr = b_str!("My awesome BStr!");
-+/// ```
-+#[macro_export]
-+macro_rules! b_str {
-+    ($str:literal) => {{
-+        const S: &'static str = $str;
-+        const C: &'static $crate::str::BStr = S.as_bytes();
-+        C
-+    }};
-+}
-+
-+/// Possible errors when using conversion functions in [`CStr`].
-+#[derive(Debug, Clone, Copy)]
-+pub enum CStrConvertError {
-+    /// Supplied bytes contain an interior `NUL`.
-+    InteriorNul,
-+
-+    /// Supplied bytes are not terminated by `NUL`.
-+    NotNulTerminated,
-+}
-+
-+impl From<CStrConvertError> for crate::Error {
-+    #[inline]
-+    fn from(_: CStrConvertError) -> crate::Error {
-+        crate::Error::EINVAL
-+    }
-+}
-+
-+/// A string that is guaranteed to have exactly one `NUL` byte, which is at the
-+/// end.
-+///
-+/// Used for interoperability with kernel APIs that take C strings.
-+#[repr(transparent)]
-+pub struct CStr([u8]);
-+
-+impl CStr {
-+    /// Returns the length of this string excluding `NUL`.
-+    #[inline]
-+    pub const fn len(&self) -> usize {
-+        self.len_with_nul() - 1
-+    }
-+
-+    /// Returns the length of this string with `NUL`.
-+    #[inline]
-+    pub const fn len_with_nul(&self) -> usize {
-+        // SAFETY: This is one of the invariant of `CStr`.
-+        // We add a `unreachable_unchecked` here to hint the optimizer that
-+        // the value returned from this function is non-zero.
-+        if self.0.is_empty() {
-+            unsafe { core::hint::unreachable_unchecked() };
-+        }
-+        self.0.len()
-+    }
-+
-+    /// Returns `true` if the string only includes `NUL`.
-+    #[inline]
-+    pub const fn is_empty(&self) -> bool {
-+        self.len() == 0
-+    }
-+
-+    /// Wraps a raw C string pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `ptr` must be a valid pointer to a `NUL`-terminated C string, and it must
-+    /// last at least `'a`. When `CStr` is alive, the memory pointed by `ptr`
-+    /// must not be mutated.
-+    #[inline]
-+    pub unsafe fn from_char_ptr<'a>(ptr: *const c_types::c_char) -> &'a Self {
-+        // SAFETY: The safety precondition guarantees `ptr` is a valid pointer
-+        // to a `NUL`-terminated C string.
-+        let len = unsafe { bindings::strlen(ptr) } + 1;
-+        // SAFETY: Lifetime guaranteed by the safety precondition.
-+        let bytes = unsafe { core::slice::from_raw_parts(ptr as _, len as _) };
-+        // SAFETY: As `len` is returned by `strlen`, `bytes` does not contain interior `NUL`.
-+        // As we have added 1 to `len`, the last byte is known to be `NUL`.
-+        unsafe { Self::from_bytes_with_nul_unchecked(bytes) }
-+    }
-+
-+    /// Creates a [`CStr`] from a `[u8]`.
-+    ///
-+    /// The provided slice must be `NUL`-terminated, does not contain any
-+    /// interior `NUL` bytes.
-+    pub const fn from_bytes_with_nul(bytes: &[u8]) -> Result<&Self, CStrConvertError> {
-+        if bytes.is_empty() {
-+            return Err(CStrConvertError::NotNulTerminated);
-+        }
-+        if bytes[bytes.len() - 1] != 0 {
-+            return Err(CStrConvertError::NotNulTerminated);
-+        }
-+        let mut i = 0;
-+        // `i + 1 < bytes.len()` allows LLVM to optimize away bounds checking,
-+        // while it couldn't optimize away bounds checks for `i < bytes.len() - 1`.
-+        while i + 1 < bytes.len() {
-+            if bytes[i] == 0 {
-+                return Err(CStrConvertError::InteriorNul);
-+            }
-+            i += 1;
-+        }
-+        // SAFETY: We just checked that all properties hold.
-+        Ok(unsafe { Self::from_bytes_with_nul_unchecked(bytes) })
-+    }
-+
-+    /// Creates a [`CStr`] from a `[u8]`, panic if input is not valid.
-+    ///
-+    /// This function is only meant to be used by `c_str!` macro, so
-+    /// crates using `c_str!` macro don't have to enable `const_panic` feature.
-+    #[doc(hidden)]
-+    pub const fn from_bytes_with_nul_unwrap(bytes: &[u8]) -> &Self {
-+        match Self::from_bytes_with_nul(bytes) {
-+            Ok(v) => v,
-+            Err(_) => panic!("string contains interior NUL"),
-+        }
-+    }
-+
-+    /// Creates a [`CStr`] from a `[u8]` without performing any additional
-+    /// checks.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `bytes` *must* end with a `NUL` byte, and should only have a single
-+    /// `NUL` byte (or the string will be truncated).
-+    #[inline]
-+    pub const unsafe fn from_bytes_with_nul_unchecked(bytes: &[u8]) -> &CStr {
-+        // SAFETY: Properties of `bytes` guaranteed by the safety precondition.
-+        unsafe { core::mem::transmute(bytes) }
-+    }
-+
-+    /// Returns a C pointer to the string.
-+    #[inline]
-+    pub const fn as_char_ptr(&self) -> *const c_types::c_char {
-+        self.0.as_ptr() as _
-+    }
-+
-+    /// Convert the string to a byte slice without the trailing 0 byte.
-+    #[inline]
-+    pub fn as_bytes(&self) -> &[u8] {
-+        &self.0[..self.len()]
-+    }
-+
-+    /// Convert the string to a byte slice containing the trailing 0 byte.
-+    #[inline]
-+    pub const fn as_bytes_with_nul(&self) -> &[u8] {
-+        &self.0
-+    }
-+
-+    /// Yields a [`&str`] slice if the [`CStr`] contains valid UTF-8.
-+    ///
-+    /// If the contents of the [`CStr`] are valid UTF-8 data, this
-+    /// function will return the corresponding [`&str`] slice. Otherwise,
-+    /// it will return an error with details of where UTF-8 validation failed.
-+    ///
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// # use kernel::str::CStr;
-+    /// let cstr = CStr::from_bytes_with_nul(b"foo\0").unwrap();
-+    /// assert_eq!(cstr.to_str(), Ok("foo"));
-+    /// ```
-+    #[inline]
-+    pub fn to_str(&self) -> Result<&str, core::str::Utf8Error> {
-+        core::str::from_utf8(self.as_bytes())
-+    }
-+
-+    /// Unsafely convert this [`CStr`] into a [`&str`], without checking for
-+    /// valid UTF-8.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The contents must be valid UTF-8.
-+    ///
-+    /// # Examples
-+    ///
-+    /// ```
-+    /// # use kernel::c_str;
-+    /// # use kernel::str::CStr;
-+    /// // SAFETY: String literals are guaranteed to be valid UTF-8
-+    /// // by the Rust compiler.
-+    /// let bar = c_str!("ツ");
-+    /// assert_eq!(unsafe { bar.as_str_unchecked() }, "ツ");
-+    /// ```
-+    #[inline]
-+    pub unsafe fn as_str_unchecked(&self) -> &str {
-+        unsafe { core::str::from_utf8_unchecked(self.as_bytes()) }
-+    }
-+}
-+
-+impl fmt::Display for CStr {
-+    /// Formats printable ASCII characters, escaping the rest.
-+    ///
-+    /// ```
-+    /// # use kernel::c_str;
-+    /// # use kernel::str::CStr;
-+    /// let penguin = c_str!("🐧");
-+    /// assert_eq!(format!("{}", penguin), "\\xf0\\x9f\\x90\\xa7");
-+    ///
-+    /// let ascii = c_str!("so \"cool\"");
-+    /// assert_eq!(format!("{}", ascii), "so \"cool\"");
-+    /// ```
-+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-+        for &c in self.as_bytes() {
-+            if (0x20..0x7f).contains(&c) {
-+                // Printable character
-+                f.write_char(c as char)?;
-+            } else {
-+                write!(f, "\\x{:02x}", c)?;
-+            }
-+        }
-+        Ok(())
-+    }
-+}
-+
-+impl fmt::Debug for CStr {
-+    /// Formats printable ASCII characters with a double quote on either end, escaping the rest.
-+    ///
-+    /// ```
-+    /// # use kernel::c_str;
-+    /// # use kernel::str::CStr;
-+    /// let penguin = c_str!("🐧");
-+    /// assert_eq!(format!("{:?}", penguin), "\"\\xf0\\x9f\\x90\\xa7\"");
-+    ///
-+    /// // embedded double quotes are escaped
-+    /// let ascii = c_str!("so \"cool\"");
-+    /// assert_eq!(format!("{:?}", ascii), "\"so \\\"cool\\\"\"");
-+    /// ```
-+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-+        f.write_str("\"")?;
-+        for &c in self.as_bytes() {
-+            match c {
-+                // Printable characters
-+                b'\"' => f.write_str("\\\"")?,
-+                0x20..=0x7e => f.write_char(c as char)?,
-+                _ => write!(f, "\\x{:02x}", c)?,
-+            }
-+        }
-+        f.write_str("\"")
-+    }
-+}
-+
-+impl AsRef<BStr> for CStr {
-+    #[inline]
-+    fn as_ref(&self) -> &BStr {
-+        self.as_bytes()
-+    }
-+}
-+
-+impl Deref for CStr {
-+    type Target = BStr;
-+
-+    #[inline]
-+    fn deref(&self) -> &Self::Target {
-+        self.as_bytes()
-+    }
-+}
-+
-+impl Index<ops::RangeFrom<usize>> for CStr {
-+    type Output = CStr;
-+
-+    #[inline]
-+    fn index(&self, index: ops::RangeFrom<usize>) -> &Self::Output {
-+        // Delegate bounds checking to slice.
-+        // Assign to _ to mute clippy's unnecessary operation warning.
-+        let _ = &self.as_bytes()[index.start..];
-+        // SAFETY: We just checked the bounds.
-+        unsafe { Self::from_bytes_with_nul_unchecked(&self.0[index.start..]) }
-+    }
-+}
-+
-+impl Index<ops::RangeFull> for CStr {
-+    type Output = CStr;
-+
-+    #[inline]
-+    fn index(&self, _index: ops::RangeFull) -> &Self::Output {
-+        self
-+    }
-+}
-+
-+mod private {
-+    use core::ops;
-+
-+    // Marker trait for index types that can be forward to `BStr`.
-+    pub trait CStrIndex {}
-+
-+    impl CStrIndex for usize {}
-+    impl CStrIndex for ops::Range<usize> {}
-+    impl CStrIndex for ops::RangeInclusive<usize> {}
-+    impl CStrIndex for ops::RangeToInclusive<usize> {}
-+}
-+
-+impl<Idx> Index<Idx> for CStr
-+where
-+    Idx: private::CStrIndex,
-+    BStr: Index<Idx>,
-+{
-+    type Output = <BStr as Index<Idx>>::Output;
-+
-+    #[inline]
-+    fn index(&self, index: Idx) -> &Self::Output {
-+        &self.as_bytes()[index]
-+    }
-+}
-+
-+/// Creates a new [`CStr`] from a string literal.
-+///
-+/// The string literal should not contain any `NUL` bytes.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::c_str;
-+/// # use kernel::str::CStr;
-+/// const MY_CSTR: &'static CStr = c_str!("My awesome CStr!");
-+/// ```
-+#[macro_export]
-+macro_rules! c_str {
-+    ($str:expr) => {{
-+        const S: &str = concat!($str, "\0");
-+        const C: &$crate::str::CStr = $crate::str::CStr::from_bytes_with_nul_unwrap(S.as_bytes());
-+        C
-+    }};
-+}
-+
-+#[cfg(test)]
-+mod tests {
-+    use super::*;
-+
-+    #[test]
-+    fn test_cstr_to_str() {
-+        let good_bytes = b"\xf0\x9f\xa6\x80\0";
-+        let checked_cstr = CStr::from_bytes_with_nul(good_bytes).unwrap();
-+        let checked_str = checked_cstr.to_str().unwrap();
-+        assert_eq!(checked_str, "🦀");
-+    }
-+
-+    #[test]
-+    #[should_panic]
-+    fn test_cstr_to_str_panic() {
-+        let bad_bytes = b"\xc3\x28\0";
-+        let checked_cstr = CStr::from_bytes_with_nul(bad_bytes).unwrap();
-+        checked_cstr.to_str().unwrap();
-+    }
-+
-+    #[test]
-+    fn test_cstr_as_str_unchecked() {
-+        let good_bytes = b"\xf0\x9f\x90\xA7\0";
-+        let checked_cstr = CStr::from_bytes_with_nul(good_bytes).unwrap();
-+        let unchecked_str = unsafe { checked_cstr.as_str_unchecked() };
-+        assert_eq!(unchecked_str, "🐧");
-+    }
-+}
-+
-+// Use `usize` to use `saturating_*` functions.
-+pub(crate) struct Formatter {
-+    pub(crate) buf: usize,
-+    pub(crate) end: usize,
-+}
-+
-+impl fmt::Write for Formatter {
-+    fn write_str(&mut self, s: &str) -> fmt::Result {
-+        // `buf` value after writing `len` bytes. This does not have to be bounded by `end`, but we
-+        // don't want it to wrap around to 0.
-+        let buf_new = self.buf.saturating_add(s.len());
-+
-+        // Amount that we can copy. `saturating_sub` ensures we get 0 if `buf` goes past `end`.
-+        let len_to_copy = core::cmp::min(buf_new, self.end).saturating_sub(self.buf);
-+
-+        // SAFETY: In any case, `buf` is non-null and properly aligned.  If `len_to_copy` is
-+        // non-zero, then we know `buf` has not past `end` yet and so is valid.
-+        unsafe {
-+            core::ptr::copy_nonoverlapping(s.as_bytes().as_ptr(), self.buf as *mut u8, len_to_copy)
-+        };
-+
-+        self.buf = buf_new;
-+        Ok(())
-+    }
-+}
-diff --git a/rust/kernel/sysctl.rs b/rust/kernel/sysctl.rs
-new file mode 100644
-index 000000000000..0c74245cb204
---- /dev/null
-+++ b/rust/kernel/sysctl.rs
-@@ -0,0 +1,197 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! System control.
-+//!
-+//! C header: [`include/linux/sysctl.h`](../../../../include/linux/sysctl.h)
-+//!
-+//! Reference: <https://www.kernel.org/doc/Documentation/sysctl/README>
-+
-+use alloc::boxed::Box;
-+use alloc::vec::Vec;
-+use core::mem;
-+use core::ptr;
-+use core::sync::atomic;
-+
-+use crate::{
-+    bindings, c_types, error,
-+    io_buffer::IoBufferWriter,
-+    str::CStr,
-+    types,
-+    user_ptr::{UserSlicePtr, UserSlicePtrWriter},
-+};
-+
-+/// Sysctl storage.
-+pub trait SysctlStorage: Sync {
-+    /// Writes a byte slice.
-+    fn store_value(&self, data: &[u8]) -> (usize, error::Result);
-+
-+    /// Reads via a [`UserSlicePtrWriter`].
-+    fn read_value(&self, data: &mut UserSlicePtrWriter) -> (usize, error::Result);
-+}
-+
-+fn trim_whitespace(mut data: &[u8]) -> &[u8] {
-+    while !data.is_empty() && (data[0] == b' ' || data[0] == b'\t' || data[0] == b'\n') {
-+        data = &data[1..];
-+    }
-+    while !data.is_empty()
-+        && (data[data.len() - 1] == b' '
-+            || data[data.len() - 1] == b'\t'
-+            || data[data.len() - 1] == b'\n')
-+    {
-+        data = &data[..data.len() - 1];
-+    }
-+    data
-+}
-+
-+impl<T> SysctlStorage for &T
-+where
-+    T: SysctlStorage,
-+{
-+    fn store_value(&self, data: &[u8]) -> (usize, error::Result) {
-+        (*self).store_value(data)
-+    }
-+
-+    fn read_value(&self, data: &mut UserSlicePtrWriter) -> (usize, error::Result) {
-+        (*self).read_value(data)
-+    }
-+}
-+
-+impl SysctlStorage for atomic::AtomicBool {
-+    fn store_value(&self, data: &[u8]) -> (usize, error::Result) {
-+        let result = match trim_whitespace(data) {
-+            b"0" => {
-+                self.store(false, atomic::Ordering::Relaxed);
-+                Ok(())
-+            }
-+            b"1" => {
-+                self.store(true, atomic::Ordering::Relaxed);
-+                Ok(())
-+            }
-+            _ => Err(error::Error::EINVAL),
-+        };
-+        (data.len(), result)
-+    }
-+
-+    fn read_value(&self, data: &mut UserSlicePtrWriter) -> (usize, error::Result) {
-+        let value = if self.load(atomic::Ordering::Relaxed) {
-+            b"1\n"
-+        } else {
-+            b"0\n"
-+        };
-+        (value.len(), data.write_slice(value))
-+    }
-+}
-+
-+/// Holds a single `sysctl` entry (and its table).
-+pub struct Sysctl<T: SysctlStorage> {
-+    inner: Box<T>,
-+    // Responsible for keeping the `ctl_table` alive.
-+    _table: Box<[bindings::ctl_table]>,
-+    header: *mut bindings::ctl_table_header,
-+}
-+
-+// SAFETY: The only public method we have is `get()`, which returns `&T`, and
-+// `T: Sync`. Any new methods must adhere to this requirement.
-+unsafe impl<T: SysctlStorage> Sync for Sysctl<T> {}
-+
-+unsafe extern "C" fn proc_handler<T: SysctlStorage>(
-+    ctl: *mut bindings::ctl_table,
-+    write: c_types::c_int,
-+    buffer: *mut c_types::c_void,
-+    len: *mut usize,
-+    ppos: *mut bindings::loff_t,
-+) -> c_types::c_int {
-+    // If we are reading from some offset other than the beginning of the file,
-+    // return an empty read to signal EOF.
-+    if unsafe { *ppos } != 0 && write == 0 {
-+        unsafe { *len = 0 };
-+        return 0;
-+    }
-+
-+    let data = unsafe { UserSlicePtr::new(buffer, *len) };
-+    let storage = unsafe { &*((*ctl).data as *const T) };
-+    let (bytes_processed, result) = if write != 0 {
-+        let data = match data.read_all() {
-+            Ok(r) => r,
-+            Err(e) => return e.to_kernel_errno(),
-+        };
-+        storage.store_value(&data)
-+    } else {
-+        let mut writer = data.writer();
-+        storage.read_value(&mut writer)
-+    };
-+    unsafe { *len = bytes_processed };
-+    unsafe { *ppos += *len as bindings::loff_t };
-+    match result {
-+        Ok(()) => 0,
-+        Err(e) => e.to_kernel_errno(),
-+    }
-+}
-+
-+impl<T: SysctlStorage> Sysctl<T> {
-+    /// Registers a single entry in `sysctl`.
-+    pub fn register(
-+        path: &'static CStr,
-+        name: &'static CStr,
-+        storage: T,
-+        mode: types::Mode,
-+    ) -> error::Result<Sysctl<T>> {
-+        if name.contains(&b'/') {
-+            return Err(error::Error::EINVAL);
-+        }
-+
-+        let storage = Box::try_new(storage)?;
-+        let mut table = Vec::try_with_capacity(2)?;
-+        table.try_push(bindings::ctl_table {
-+            procname: name.as_char_ptr(),
-+            mode: mode.as_int(),
-+            data: &*storage as *const T as *mut c_types::c_void,
-+            proc_handler: Some(proc_handler::<T>),
-+
-+            maxlen: 0,
-+            child: ptr::null_mut(),
-+            poll: ptr::null_mut(),
-+            extra1: ptr::null_mut(),
-+            extra2: ptr::null_mut(),
-+        })?;
-+        table.try_push(unsafe { mem::zeroed() })?;
-+        let mut table = table.try_into_boxed_slice()?;
-+
-+        let result = unsafe { bindings::register_sysctl(path.as_char_ptr(), table.as_mut_ptr()) };
-+        if result.is_null() {
-+            return Err(error::Error::ENOMEM);
-+        }
-+
-+        Ok(Sysctl {
-+            inner: storage,
-+            _table: table,
-+            header: result,
-+        })
-+    }
-+
-+    /// Gets the storage.
-+    pub fn get(&self) -> &T {
-+        &self.inner
-+    }
-+}
-+
-+impl<T: SysctlStorage> Drop for Sysctl<T> {
-+    fn drop(&mut self) {
-+        unsafe {
-+            bindings::unregister_sysctl_table(self.header);
-+        }
-+        self.header = ptr::null_mut();
-+    }
-+}
-+
-+#[cfg(test)]
-+mod tests {
-+    use super::*;
-+
-+    #[test]
-+    fn test_trim_whitespace() {
-+        assert_eq!(trim_whitespace(b"foo    "), b"foo");
-+        assert_eq!(trim_whitespace(b"    foo"), b"foo");
-+        assert_eq!(trim_whitespace(b"  foo  "), b"foo");
-+    }
-+}
-diff --git a/rust/kernel/task.rs b/rust/kernel/task.rs
-new file mode 100644
-index 000000000000..7a2aff0e9219
---- /dev/null
-+++ b/rust/kernel/task.rs
-@@ -0,0 +1,182 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Tasks (threads and processes).
-+//!
-+//! C header: [`include/linux/sched.h`](../../../../include/linux/sched.h).
-+
-+use crate::bindings;
-+use core::{marker::PhantomData, mem::ManuallyDrop, ops::Deref};
-+
-+/// Wraps the kernel's `struct task_struct`.
-+///
-+/// # Invariants
-+///
-+/// The pointer `Task::ptr` is non-null and valid. Its reference count is also non-zero.
-+///
-+/// # Examples
-+///
-+/// The following is an example of getting the PID of the current thread with zero additional cost
-+/// when compared to the C version:
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::task::Task;
-+///
-+/// # fn test() {
-+/// Task::current().pid();
-+/// # }
-+/// ```
-+///
-+/// Getting the PID of the current process, also zero additional cost:
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::task::Task;
-+///
-+/// # fn test() {
-+/// Task::current().group_leader().pid();
-+/// # }
-+/// ```
-+///
-+/// Getting the current task and storing it in some struct. The reference count is automatically
-+/// incremented when creating `State` and decremented when it is dropped:
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::task::Task;
-+///
-+/// struct State {
-+///     creator: Task,
-+///     index: u32,
-+/// }
-+///
-+/// impl State {
-+///     fn new() -> Self {
-+///         Self {
-+///             creator: Task::current().clone(),
-+///             index: 0,
-+///         }
-+///     }
-+/// }
-+/// ```
-+pub struct Task {
-+    pub(crate) ptr: *mut bindings::task_struct,
-+}
-+
-+// SAFETY: Given that the task is referenced, it is OK to send it to another thread.
-+unsafe impl Send for Task {}
-+
-+// SAFETY: It's OK to access `Task` through references from other threads because we're either
-+// accessing properties that don't change (e.g., `pid`, `group_leader`) or that are properly
-+// synchronised by C code (e.g., `signal_pending`).
-+unsafe impl Sync for Task {}
-+
-+/// The type of process identifiers (PIDs).
-+type Pid = bindings::pid_t;
-+
-+impl Task {
-+    /// Returns a task reference for the currently executing task/thread.
-+    pub fn current<'a>() -> TaskRef<'a> {
-+        // SAFETY: Just an FFI call.
-+        let ptr = unsafe { bindings::get_current() };
-+
-+        // SAFETY: If the current thread is still running, the current task is valid. Given
-+        // that `TaskRef` is not `Send`, we know it cannot be transferred to another thread (where
-+        // it could potentially outlive the caller).
-+        unsafe { TaskRef::from_ptr(ptr) }
-+    }
-+
-+    /// Returns the group leader of the given task.
-+    pub fn group_leader(&self) -> TaskRef<'_> {
-+        // SAFETY: By the type invariant, we know that `self.ptr` is non-null and valid.
-+        let ptr = unsafe { (*self.ptr).group_leader };
-+
-+        // SAFETY: The lifetime of the returned task reference is tied to the lifetime of `self`,
-+        // and given that a task has a reference to its group leader, we know it must be valid for
-+        // the lifetime of the returned task reference.
-+        unsafe { TaskRef::from_ptr(ptr) }
-+    }
-+
-+    /// Returns the PID of the given task.
-+    pub fn pid(&self) -> Pid {
-+        // SAFETY: By the type invariant, we know that `self.ptr` is non-null and valid.
-+        unsafe { (*self.ptr).pid }
-+    }
-+
-+    /// Determines whether the given task has pending signals.
-+    pub fn signal_pending(&self) -> bool {
-+        // SAFETY: By the type invariant, we know that `self.ptr` is non-null and valid.
-+        unsafe { bindings::signal_pending(self.ptr) != 0 }
-+    }
-+}
-+
-+impl PartialEq for Task {
-+    fn eq(&self, other: &Self) -> bool {
-+        self.ptr == other.ptr
-+    }
-+}
-+
-+impl Eq for Task {}
-+
-+impl Clone for Task {
-+    fn clone(&self) -> Self {
-+        // SAFETY: The type invariants guarantee that `self.ptr` has a non-zero reference count.
-+        unsafe { bindings::get_task_struct(self.ptr) };
-+
-+        // INVARIANT: We incremented the reference count to account for the new `Task` being
-+        // created.
-+        Self { ptr: self.ptr }
-+    }
-+}
-+
-+impl Drop for Task {
-+    fn drop(&mut self) {
-+        // INVARIANT: We may decrement the refcount to zero, but the `Task` is being dropped, so
-+        // this is not observable.
-+        // SAFETY: The type invariants guarantee that `Task::ptr` has a non-zero reference count.
-+        unsafe { bindings::put_task_struct(self.ptr) };
-+    }
-+}
-+
-+/// A wrapper for [`Task`] that doesn't automatically decrement the refcount when dropped.
-+///
-+/// We need the wrapper because [`ManuallyDrop`] alone would allow callers to call
-+/// [`ManuallyDrop::into_inner`]. This would allow an unsafe sequence to be triggered without
-+/// `unsafe` blocks because it would trigger an unbalanced call to `put_task_struct`.
-+///
-+/// We make this explicitly not [`Send`] so that we can use it to represent the current thread
-+/// without having to increment/decrement its reference count.
-+///
-+/// # Invariants
-+///
-+/// The wrapped [`Task`] remains valid for the lifetime of the object.
-+pub struct TaskRef<'a> {
-+    task: ManuallyDrop<Task>,
-+    _not_send: PhantomData<(&'a (), *mut ())>,
-+}
-+
-+impl TaskRef<'_> {
-+    /// Constructs a new `struct task_struct` wrapper that doesn't change its reference count.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The pointer `ptr` must be non-null and valid for the lifetime of the object.
-+    pub(crate) unsafe fn from_ptr(ptr: *mut bindings::task_struct) -> Self {
-+        Self {
-+            task: ManuallyDrop::new(Task { ptr }),
-+            _not_send: PhantomData,
-+        }
-+    }
-+}
-+
-+// SAFETY: It is OK to share a reference to the current thread with another thread because we know
-+// the owner cannot go away while the shared reference exists (and `Task` itself is `Sync`).
-+unsafe impl Sync for TaskRef<'_> {}
-+
-+impl Deref for TaskRef<'_> {
-+    type Target = Task;
-+
-+    fn deref(&self) -> &Self::Target {
-+        self.task.deref()
-+    }
-+}
-diff --git a/rust/kernel/types.rs b/rust/kernel/types.rs
-new file mode 100644
-index 000000000000..61186fc89049
---- /dev/null
-+++ b/rust/kernel/types.rs
-@@ -0,0 +1,486 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! Kernel types.
-+//!
-+//! C header: [`include/linux/types.h`](../../../../include/linux/types.h)
-+
-+use crate::{
-+    bindings, c_types,
-+    sync::{Ref, RefBorrow},
-+};
-+use alloc::boxed::Box;
-+use core::{
-+    cell::UnsafeCell,
-+    mem::MaybeUninit,
-+    ops::{self, Deref, DerefMut},
-+    pin::Pin,
-+};
-+
-+/// Permissions.
-+///
-+/// C header: [`include/uapi/linux/stat.h`](../../../../include/uapi/linux/stat.h)
-+///
-+/// C header: [`include/linux/stat.h`](../../../../include/linux/stat.h)
-+pub struct Mode(bindings::umode_t);
-+
-+impl Mode {
-+    /// Creates a [`Mode`] from an integer.
-+    pub fn from_int(m: u16) -> Mode {
-+        Mode(m)
-+    }
-+
-+    /// Returns the mode as an integer.
-+    pub fn as_int(&self) -> u16 {
-+        self.0
-+    }
-+}
-+
-+/// Used to convert an object into a raw pointer that represents it.
-+///
-+/// It can eventually be converted back into the object. This is used to store objects as pointers
-+/// in kernel data structures, for example, an implementation of [`FileOperations`] in `struct
-+/// file::private_data`.
-+pub trait PointerWrapper {
-+    /// Type of values borrowed between calls to [`PointerWrapper::into_pointer`] and
-+    /// [`PointerWrapper::from_pointer`].
-+    type Borrowed<'a>;
-+
-+    /// Returns the raw pointer.
-+    fn into_pointer(self) -> *const c_types::c_void;
-+
-+    /// Returns a borrowed value.
-+    ///
-+    /// # Safety
-+    ///
-+    /// `ptr` must have been returned by a previous call to [`PointerWrapper::into_pointer`].
-+    /// Additionally, [`PointerWrapper::from_pointer`] can only be called after *all* values
-+    /// returned by [`PointerWrapper::borrow`] have been dropped.
-+    unsafe fn borrow<'a>(ptr: *const c_types::c_void) -> Self::Borrowed<'a>;
-+
-+    /// Returns the instance back from the raw pointer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The passed pointer must come from a previous call to [`PointerWrapper::into_pointer()`].
-+    unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self;
-+}
-+
-+impl<T: 'static> PointerWrapper for Box<T> {
-+    type Borrowed<'a> = &'a T;
-+
-+    fn into_pointer(self) -> *const c_types::c_void {
-+        Box::into_raw(self) as _
-+    }
-+
-+    unsafe fn borrow<'a>(ptr: *const c_types::c_void) -> &'a T {
-+        // SAFETY: The safety requirements for this function ensure that the object is still alive,
-+        // so it is safe to dereference the raw pointer.
-+        // The safety requirements also ensure that the object remains alive for the lifetime of
-+        // the returned value.
-+        unsafe { &*ptr.cast() }
-+    }
-+
-+    unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-+        // SAFETY: The passed pointer comes from a previous call to [`Self::into_pointer()`].
-+        unsafe { Box::from_raw(ptr as _) }
-+    }
-+}
-+
-+impl<T: 'static> PointerWrapper for Ref<T> {
-+    type Borrowed<'a> = RefBorrow<'a, T>;
-+
-+    fn into_pointer(self) -> *const c_types::c_void {
-+        Ref::into_usize(self) as _
-+    }
-+
-+    unsafe fn borrow<'a>(ptr: *const c_types::c_void) -> RefBorrow<'a, T> {
-+        // SAFETY: The safety requirements for this function ensure that the underlying object
-+        // remains valid for the lifetime of the returned value.
-+        unsafe { Ref::borrow_usize(ptr as _) }
-+    }
-+
-+    unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-+        // SAFETY: The passed pointer comes from a previous call to [`Self::into_pointer()`].
-+        unsafe { Ref::from_usize(ptr as _) }
-+    }
-+}
-+
-+impl<T: PointerWrapper + Deref> PointerWrapper for Pin<T> {
-+    type Borrowed<'a> = T::Borrowed<'a>;
-+
-+    fn into_pointer(self) -> *const c_types::c_void {
-+        // SAFETY: We continue to treat the pointer as pinned by returning just a pointer to it to
-+        // the caller.
-+        let inner = unsafe { Pin::into_inner_unchecked(self) };
-+        inner.into_pointer()
-+    }
-+
-+    unsafe fn borrow<'a>(ptr: *const c_types::c_void) -> Self::Borrowed<'a> {
-+        // SAFETY: The safety requirements for this function are the same as the ones for
-+        // `T::borrow`.
-+        unsafe { T::borrow(ptr) }
-+    }
-+
-+    unsafe fn from_pointer(p: *const c_types::c_void) -> Self {
-+        // SAFETY: The object was originally pinned.
-+        // The passed pointer comes from a previous call to `inner::into_pointer()`.
-+        unsafe { Pin::new_unchecked(T::from_pointer(p)) }
-+    }
-+}
-+
-+impl<T> PointerWrapper for *mut T {
-+    type Borrowed<'a> = *mut T;
-+
-+    fn into_pointer(self) -> *const c_types::c_void {
-+        self as _
-+    }
-+
-+    unsafe fn borrow<'a>(ptr: *const c_types::c_void) -> Self::Borrowed<'a> {
-+        ptr as _
-+    }
-+
-+    unsafe fn from_pointer(ptr: *const c_types::c_void) -> Self {
-+        ptr as _
-+    }
-+}
-+
-+impl PointerWrapper for () {
-+    type Borrowed<'a> = ();
-+
-+    fn into_pointer(self) -> *const c_types::c_void {
-+        // We use 1 to be different from a null pointer.
-+        1usize as _
-+    }
-+
-+    unsafe fn borrow<'a>(_: *const c_types::c_void) -> Self::Borrowed<'a> {}
-+
-+    unsafe fn from_pointer(_: *const c_types::c_void) -> Self {}
-+}
-+
-+/// Runs a cleanup function/closure when dropped.
-+///
-+/// The [`ScopeGuard::dismiss`] function prevents the cleanup function from running.
-+///
-+/// # Examples
-+///
-+/// In the example below, we have multiple exit paths and we want to log regardless of which one is
-+/// taken:
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::ScopeGuard;
-+/// fn example1(arg: bool) {
-+///     let _log = ScopeGuard::new(|| pr_info!("example1 completed\n"));
-+///
-+///     if arg {
-+///         return;
-+///     }
-+///
-+///     // Do something...
-+/// }
-+/// ```
-+///
-+/// In the example below, we want to log the same message on all early exits but a different one on
-+/// the main exit path:
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::ScopeGuard;
-+/// fn example2(arg: bool) {
-+///     let log = ScopeGuard::new(|| pr_info!("example2 returned early\n"));
-+///
-+///     if arg {
-+///         return;
-+///     }
-+///
-+///     // (Other early returns...)
-+///
-+///     log.dismiss();
-+///     pr_info!("example2 no early return\n");
-+/// }
-+/// ```
-+///
-+/// In the example below, we need a mutable object (the vector) to be accessible within the log
-+/// function, so we wrap it in the [`ScopeGuard`]:
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::ScopeGuard;
-+/// fn example3(arg: bool) -> Result {
-+///     let mut vec =
-+///         ScopeGuard::new_with_data(Vec::new(), |v| pr_info!("vec had {} elements\n", v.len()));
-+///
-+///     vec.try_push(10u8)?;
-+///     if arg {
-+///         return Ok(());
-+///     }
-+///     vec.try_push(20u8)?;
-+///     Ok(())
-+/// }
-+/// ```
-+///
-+/// # Invariants
-+///
-+/// The value stored in the struct is nearly always `Some(_)`, except between
-+/// [`ScopeGuard::dismiss`] and [`ScopeGuard::drop`]: in this case, it will be `None` as the value
-+/// will have been returned to the caller. Since  [`ScopeGuard::dismiss`] consumes the guard,
-+/// callers won't be able to use it anymore.
-+pub struct ScopeGuard<T, F: FnOnce(T)>(Option<(T, F)>);
-+
-+impl<T, F: FnOnce(T)> ScopeGuard<T, F> {
-+    /// Creates a new guarded object wrapping the given data and with the given cleanup function.
-+    pub fn new_with_data(data: T, cleanup_func: F) -> Self {
-+        // INVARIANT: The struct is being initialised with `Some(_)`.
-+        Self(Some((data, cleanup_func)))
-+    }
-+
-+    /// Prevents the cleanup function from running and returns the guarded data.
-+    pub fn dismiss(mut self) -> T {
-+        // INVARIANT: This is the exception case in the invariant; it is not visible to callers
-+        // because this function consumes `self`.
-+        self.0.take().unwrap().0
-+    }
-+}
-+
-+impl ScopeGuard<(), Box<dyn FnOnce(())>> {
-+    /// Creates a new guarded object with the given cleanup function.
-+    pub fn new(cleanup: impl FnOnce()) -> ScopeGuard<(), impl FnOnce(())> {
-+        ScopeGuard::new_with_data((), move |_| cleanup())
-+    }
-+}
-+
-+impl<T, F: FnOnce(T)> Deref for ScopeGuard<T, F> {
-+    type Target = T;
-+
-+    fn deref(&self) -> &T {
-+        // The type invariants guarantee that `unwrap` will succeed.
-+        &self.0.as_ref().unwrap().0
-+    }
-+}
-+
-+impl<T, F: FnOnce(T)> DerefMut for ScopeGuard<T, F> {
-+    fn deref_mut(&mut self) -> &mut T {
-+        // The type invariants guarantee that `unwrap` will succeed.
-+        &mut self.0.as_mut().unwrap().0
-+    }
-+}
-+
-+impl<T, F: FnOnce(T)> Drop for ScopeGuard<T, F> {
-+    fn drop(&mut self) {
-+        // Run the cleanup function if one is still present.
-+        if let Some((data, cleanup)) = self.0.take() {
-+            cleanup(data)
-+        }
-+    }
-+}
-+
-+/// Stores an opaque value.
-+///
-+/// This is meant to be used with FFI objects that are never interpreted by Rust code.
-+pub struct Opaque<T>(MaybeUninit<UnsafeCell<T>>);
-+
-+impl<T> Opaque<T> {
-+    /// Creates a new opaque value.
-+    pub fn new(value: T) -> Self {
-+        Self(MaybeUninit::new(UnsafeCell::new(value)))
-+    }
-+
-+    /// Creates an uninitialised value.
-+    pub const fn uninit() -> Self {
-+        Self(MaybeUninit::uninit())
-+    }
-+
-+    /// Returns a raw pointer to the opaque data.
-+    pub fn get(&self) -> *mut T {
-+        UnsafeCell::raw_get(self.0.as_ptr())
-+    }
-+}
-+
-+/// A bitmask.
-+///
-+/// It has a restriction that all bits must be the same, except one. For example, `0b1110111` and
-+/// `0b1000` are acceptable masks.
-+#[derive(Clone, Copy)]
-+pub struct Bit<T> {
-+    index: T,
-+    inverted: bool,
-+}
-+
-+/// Creates a bit mask with a single bit set.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// # use kernel::bit;
-+/// let mut x = 0xfeu32;
-+///
-+/// assert_eq!(x & bit(0), 0);
-+/// assert_eq!(x & bit(1), 2);
-+/// assert_eq!(x & bit(2), 4);
-+/// assert_eq!(x & bit(3), 8);
-+///
-+/// x |= bit(0);
-+/// assert_eq!(x, 0xff);
-+///
-+/// x &= !bit(1);
-+/// assert_eq!(x, 0xfd);
-+///
-+/// x &= !bit(7);
-+/// assert_eq!(x, 0x7d);
-+///
-+/// let y: u64 = bit(34).into();
-+/// assert_eq!(y, 0x400000000);
-+///
-+/// assert_eq!(y | bit(35), 0xc00000000);
-+/// ```
-+pub fn bit<T: Copy>(index: T) -> Bit<T> {
-+    Bit {
-+        index,
-+        inverted: false,
-+    }
-+}
-+
-+impl<T: Copy> ops::Not for Bit<T> {
-+    type Output = Self;
-+    fn not(self) -> Self {
-+        Self {
-+            index: self.index,
-+            inverted: !self.inverted,
-+        }
-+    }
-+}
-+
-+/// Implemented by integer types that allow counting the number of trailing zeroes.
-+pub trait TrailingZeros {
-+    /// Returns the number of trailing zeroes in the binary representation of `self`.
-+    fn trailing_zeros(&self) -> u32;
-+}
-+
-+macro_rules! define_unsigned_number_traits {
-+    ($type_name:ty) => {
-+        impl TrailingZeros for $type_name {
-+            fn trailing_zeros(&self) -> u32 {
-+                <$type_name>::trailing_zeros(*self)
-+            }
-+        }
-+
-+        impl<T: Copy> core::convert::From<Bit<T>> for $type_name
-+        where
-+            Self: ops::Shl<T, Output = Self> + core::convert::From<u8> + ops::Not<Output = Self>,
-+        {
-+            fn from(v: Bit<T>) -> Self {
-+                let c = Self::from(1u8) << v.index;
-+                if v.inverted {
-+                    !c
-+                } else {
-+                    c
-+                }
-+            }
-+        }
-+
-+        impl<T: Copy> ops::BitAnd<Bit<T>> for $type_name
-+        where
-+            Self: ops::Shl<T, Output = Self> + core::convert::From<u8>,
-+        {
-+            type Output = Self;
-+            fn bitand(self, rhs: Bit<T>) -> Self::Output {
-+                self & Self::from(rhs)
-+            }
-+        }
-+
-+        impl<T: Copy> ops::BitOr<Bit<T>> for $type_name
-+        where
-+            Self: ops::Shl<T, Output = Self> + core::convert::From<u8>,
-+        {
-+            type Output = Self;
-+            fn bitor(self, rhs: Bit<T>) -> Self::Output {
-+                self | Self::from(rhs)
-+            }
-+        }
-+
-+        impl<T: Copy> ops::BitAndAssign<Bit<T>> for $type_name
-+        where
-+            Self: ops::Shl<T, Output = Self> + core::convert::From<u8>,
-+        {
-+            fn bitand_assign(&mut self, rhs: Bit<T>) {
-+                *self &= Self::from(rhs)
-+            }
-+        }
-+
-+        impl<T: Copy> ops::BitOrAssign<Bit<T>> for $type_name
-+        where
-+            Self: ops::Shl<T, Output = Self> + core::convert::From<u8>,
-+        {
-+            fn bitor_assign(&mut self, rhs: Bit<T>) {
-+                *self |= Self::from(rhs)
-+            }
-+        }
-+    };
-+}
-+
-+define_unsigned_number_traits!(u8);
-+define_unsigned_number_traits!(u16);
-+define_unsigned_number_traits!(u32);
-+define_unsigned_number_traits!(u64);
-+define_unsigned_number_traits!(usize);
-+
-+/// Returns an iterator over the set bits of `value`.
-+///
-+/// # Examples
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::bits_iter;
-+///
-+/// let mut iter = bits_iter(5usize);
-+/// assert_eq!(iter.next().unwrap(), 0);
-+/// assert_eq!(iter.next().unwrap(), 2);
-+/// assert!(iter.next().is_none());
-+/// ```
-+///
-+/// ```
-+/// # use kernel::prelude::*;
-+/// use kernel::bits_iter;
-+///
-+/// fn print_bits(x: usize) {
-+///     for bit in bits_iter(x) {
-+///         println!("{}", bit);
-+///     }
-+/// }
-+/// ```
-+#[inline]
-+pub fn bits_iter<T>(value: T) -> impl Iterator<Item = u32>
-+where
-+    T: core::cmp::PartialEq
-+        + From<u8>
-+        + ops::Shl<u32, Output = T>
-+        + ops::Not<Output = T>
-+        + ops::BitAndAssign
-+        + TrailingZeros,
-+{
-+    struct BitIterator<U> {
-+        value: U,
-+    }
-+
-+    impl<U> Iterator for BitIterator<U>
-+    where
-+        U: core::cmp::PartialEq
-+            + From<u8>
-+            + ops::Shl<u32, Output = U>
-+            + ops::Not<Output = U>
-+            + ops::BitAndAssign
-+            + TrailingZeros,
-+    {
-+        type Item = u32;
-+
-+        #[inline]
-+        fn next(&mut self) -> Option<u32> {
-+            if self.value == U::from(0u8) {
-+                return None;
-+            }
-+            let ret = self.value.trailing_zeros();
-+            self.value &= !(U::from(1u8) << ret);
-+            Some(ret)
-+        }
-+    }
-+
-+    BitIterator { value }
-+}
-diff --git a/rust/kernel/user_ptr.rs b/rust/kernel/user_ptr.rs
-new file mode 100644
-index 000000000000..467ead639071
---- /dev/null
-+++ b/rust/kernel/user_ptr.rs
-@@ -0,0 +1,175 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! User pointers.
-+//!
-+//! C header: [`include/linux/uaccess.h`](../../../../include/linux/uaccess.h)
-+
-+use crate::{
-+    bindings, c_types,
-+    error::Error,
-+    io_buffer::{IoBufferReader, IoBufferWriter},
-+    Result,
-+};
-+use alloc::vec::Vec;
-+
-+/// A reference to an area in userspace memory, which can be either
-+/// read-only or read-write.
-+///
-+/// All methods on this struct are safe: invalid pointers return
-+/// `EFAULT`. Concurrent access, *including data races to/from userspace
-+/// memory*, is permitted, because fundamentally another userspace
-+/// thread/process could always be modifying memory at the same time
-+/// (in the same way that userspace Rust's [`std::io`] permits data races
-+/// with the contents of files on disk). In the presence of a race, the
-+/// exact byte values read/written are unspecified but the operation is
-+/// well-defined. Kernelspace code should validate its copy of data
-+/// after completing a read, and not expect that multiple reads of the
-+/// same address will return the same value.
-+///
-+/// All APIs enforce the invariant that a given byte of memory from userspace
-+/// may only be read once. By preventing double-fetches we avoid TOCTOU
-+/// vulnerabilities. This is accomplished by taking `self` by value to prevent
-+/// obtaining multiple readers on a given [`UserSlicePtr`], and the readers
-+/// only permitting forward reads.
-+///
-+/// Constructing a [`UserSlicePtr`] performs no checks on the provided
-+/// address and length, it can safely be constructed inside a kernel thread
-+/// with no current userspace process. Reads and writes wrap the kernel APIs
-+/// `copy_from_user` and `copy_to_user`, which check the memory map of the
-+/// current process and enforce that the address range is within the user
-+/// range (no additional calls to `access_ok` are needed).
-+///
-+/// [`std::io`]: https://doc.rust-lang.org/std/io/index.html
-+pub struct UserSlicePtr(*mut c_types::c_void, usize);
-+
-+impl UserSlicePtr {
-+    /// Constructs a user slice from a raw pointer and a length in bytes.
-+    ///
-+    /// # Safety
-+    ///
-+    /// Callers must be careful to avoid time-of-check-time-of-use
-+    /// (TOCTOU) issues. The simplest way is to create a single instance of
-+    /// [`UserSlicePtr`] per user memory block as it reads each byte at
-+    /// most once.
-+    pub unsafe fn new(ptr: *mut c_types::c_void, length: usize) -> Self {
-+        UserSlicePtr(ptr, length)
-+    }
-+
-+    /// Reads the entirety of the user slice.
-+    ///
-+    /// Returns `EFAULT` if the address does not currently point to
-+    /// mapped, readable memory.
-+    pub fn read_all(self) -> Result<Vec<u8>> {
-+        self.reader().read_all()
-+    }
-+
-+    /// Constructs a [`UserSlicePtrReader`].
-+    pub fn reader(self) -> UserSlicePtrReader {
-+        UserSlicePtrReader(self.0, self.1)
-+    }
-+
-+    /// Writes the provided slice into the user slice.
-+    ///
-+    /// Returns `EFAULT` if the address does not currently point to
-+    /// mapped, writable memory (in which case some data from before the
-+    /// fault may be written), or `data` is larger than the user slice
-+    /// (in which case no data is written).
-+    pub fn write_all(self, data: &[u8]) -> Result {
-+        self.writer().write_slice(data)
-+    }
-+
-+    /// Constructs a [`UserSlicePtrWriter`].
-+    pub fn writer(self) -> UserSlicePtrWriter {
-+        UserSlicePtrWriter(self.0, self.1)
-+    }
-+
-+    /// Constructs both a [`UserSlicePtrReader`] and a [`UserSlicePtrWriter`].
-+    pub fn reader_writer(self) -> (UserSlicePtrReader, UserSlicePtrWriter) {
-+        (
-+            UserSlicePtrReader(self.0, self.1),
-+            UserSlicePtrWriter(self.0, self.1),
-+        )
-+    }
-+}
-+
-+/// A reader for [`UserSlicePtr`].
-+///
-+/// Used to incrementally read from the user slice.
-+pub struct UserSlicePtrReader(*mut c_types::c_void, usize);
-+
-+impl IoBufferReader for UserSlicePtrReader {
-+    /// Returns the number of bytes left to be read from this.
-+    ///
-+    /// Note that even reading less than this number of bytes may fail.
-+    fn len(&self) -> usize {
-+        self.1
-+    }
-+
-+    /// Reads raw data from the user slice into a raw kernel buffer.
-+    ///
-+    /// # Safety
-+    ///
-+    /// The output buffer must be valid.
-+    unsafe fn read_raw(&mut self, out: *mut u8, len: usize) -> Result {
-+        if len > self.1 || len > u32::MAX as usize {
-+            return Err(Error::EFAULT);
-+        }
-+        let res = unsafe { bindings::copy_from_user(out as _, self.0, len as _) };
-+        if res != 0 {
-+            return Err(Error::EFAULT);
-+        }
-+        // Since this is not a pointer to a valid object in our program,
-+        // we cannot use `add`, which has C-style rules for defined
-+        // behavior.
-+        self.0 = self.0.wrapping_add(len);
-+        self.1 -= len;
-+        Ok(())
-+    }
-+}
-+
-+/// A writer for [`UserSlicePtr`].
-+///
-+/// Used to incrementally write into the user slice.
-+pub struct UserSlicePtrWriter(*mut c_types::c_void, usize);
-+
-+impl IoBufferWriter for UserSlicePtrWriter {
-+    fn len(&self) -> usize {
-+        self.1
-+    }
-+
-+    fn clear(&mut self, mut len: usize) -> Result {
-+        let mut ret = Ok(());
-+        if len > self.1 {
-+            ret = Err(Error::EFAULT);
-+            len = self.1;
-+        }
-+
-+        // SAFETY: The buffer will be validated by `clear_user`. We ensure that `len` is within
-+        // bounds in the check above.
-+        let left = unsafe { bindings::clear_user(self.0, len as _) } as usize;
-+        if left != 0 {
-+            ret = Err(Error::EFAULT);
-+            len -= left;
-+        }
-+
-+        self.0 = self.0.wrapping_add(len);
-+        self.1 -= len;
-+        ret
-+    }
-+
-+    unsafe fn write_raw(&mut self, data: *const u8, len: usize) -> Result {
-+        if len > self.1 || len > u32::MAX as usize {
-+            return Err(Error::EFAULT);
-+        }
-+        let res = unsafe { bindings::copy_to_user(self.0, data as _, len as _) };
-+        if res != 0 {
-+            return Err(Error::EFAULT);
-+        }
-+        // Since this is not a pointer to a valid object in our program,
-+        // we cannot use `add`, which has C-style rules for defined
-+        // behavior.
-+        self.0 = self.0.wrapping_add(len);
-+        self.1 -= len;
-+        Ok(())
-+    }
-+}
--- 
++++ b/Documentation/rust/quick-start.rst
+@@ -0,0 +1,231 @@
++.. _rust_quick_start:
++
++Quick Start
++=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++
++This document describes how to get started with kernel development in Rust.
++
++
++Requirements: Building
++----------------------
++
++This section explains how to fetch the tools needed for building.
++
++Some of these requirements might be available from Linux distributions
++under names like ``rustc``, ``rust-src``, ``rust-bindgen``, etc. However,
++at the time of writing, they are likely not to be recent enough unless
++the distribution tracks the latest releases.
++
++To easily check whether the requirements are met, the following target
++can be used::
++
++	make LLVM=3D1 rustavailable
++
++This triggers the same logic used by Kconfig to determine whether
++``RUST_IS_AVAILABLE`` should be enabled; but it also explains why not
++if that is the case.
++
++
++rustc
++*****
++
++A particular version of the Rust compiler is required. Newer versions may =
+or
++may not work because, for the moment, the kernel depends on some unstable
++Rust features.
++
++If ``rustup`` is being used, enter the checked out source code directory
++and run::
++
++	rustup override set $(scripts/min-tool-version.sh rustc)
++
++Otherwise, fetch a standalone installer or install ``rustup`` from:
++
++	https://www.rust-lang.org
++
++
++Rust standard library source
++****************************
++
++The Rust standard library source is required because the build system will
++cross-compile ``core`` and ``alloc``.
++
++If ``rustup`` is being used, run::
++
++	rustup component add rust-src
++
++The components are installed per toolchain, thus upgrading the Rust compil=
+er
++version later on requires re-adding the component.
++
++Otherwise, if a standalone installer is used, the Rust repository may be c=
+loned
++into the installation folder of the toolchain::
++
++	git clone --recurse-submodules \
++		--branch $(scripts/min-tool-version.sh rustc) \
++		https://github.com/rust-lang/rust \
++		$(rustc --print sysroot)/lib/rustlib/src/rust
++
++In this case, upgrading the Rust compiler version later on requires manual=
+ly
++updating this clone.
++
++
++libclang
++********
++
++``libclang`` (part of LLVM) is used by ``bindgen`` to understand the C code
++in the kernel, which means LLVM needs to be installed; like when the kernel
++is compiled with ``CC=3Dclang`` or ``LLVM=3D1``.
++
++Linux distributions are likely to have a suitable one available, so it is
++best to check that first.
++
++There are also some binaries for several systems and architectures uploade=
+d at:
++
++	https://releases.llvm.org/download.html
++
++Otherwise, building LLVM takes quite a while, but it is not a complex proc=
+ess:
++
++	https://llvm.org/docs/GettingStarted.html#getting-the-source-code-and-bui=
+lding-llvm
++
++See :ref:`Documentation/kbuild/llvm.rst <kbuild_llvm>` for more informatio=
+n and
++further ways to fetch pre-built releases and distribution packages.
++
++
++bindgen
++*******
++
++The bindings to the C side of the kernel are generated at build time using
++the ``bindgen`` tool. A particular version is required.
++
++Install it via (note that this will download and build the tool from sourc=
+e)::
++
++	cargo install --locked --version $(scripts/min-tool-version.sh bindgen) b=
+indgen
++
++
++Requirements: Developing
++------------------------
++
++This section explains how to fetch the tools needed for developing. That i=
+s,
++they are not needed when just building the kernel.
++
++
++rustfmt
++*******
++
++The ``rustfmt`` tool is used to automatically format all the Rust kernel c=
+ode,
++including the generated C bindings (for details, please see
++:ref:`Documentation/rust/coding-guidelines.rst <rust_coding_guidelines>`).
++
++If ``rustup`` is being used, its ``default`` profile already installs the =
+tool,
++thus nothing needs to be done. If another profile is being used, the compo=
+nent
++can be installed manually::
++
++	rustup component add rustfmt
++
++The standalone installers also come with ``rustfmt``.
++
++
++clippy
++******
++
++``clippy`` is a Rust linter. Running it provides extra warnings for Rust c=
+ode.
++It can be run by passing ``CLIPPY=3D1`` to ``make`` (for details, please s=
+ee
++:ref:`Documentation/rust/general-information.rst <rust_general_information=
+>`).
++
++If ``rustup`` is being used, its ``default`` profile already installs the =
+tool,
++thus nothing needs to be done. If another profile is being used, the compo=
+nent
++can be installed manually::
++
++	rustup component add clippy
++
++The standalone installers also come with ``clippy``.
++
++
++cargo
++*****
++
++``cargo`` is the Rust native build system. It is currently required to run
++the tests since it is used to build a custom standard library that contains
++the facilities provided by the custom ``alloc`` in the kernel. The tests c=
+an
++be run using the ``rusttest`` Make target.
++
++If ``rustup`` is being used, all the profiles already install the tool,
++thus nothing needs to be done.
++
++The standalone installers also come with ``cargo``.
++
++
++rustdoc
++*******
++
++``rustdoc`` is the documentation tool for Rust. It generates pretty HTML
++documentation for Rust code (for details, please see
++:ref:`Documentation/rust/general-information.rst <rust_general_information=
+>`).
++
++``rustdoc`` is also used to test the examples provided in documented Rust =
+code
++(called doctests or documentation tests). The ``rusttest`` Make target uses
++this feature.
++
++If ``rustup`` is being used, all the profiles already install the tool,
++thus nothing needs to be done.
++
++The standalone installers also come with ``rustdoc``.
++
++
++rust-analyzer
++*************
++
++The `rust-analyzer <https://rust-analyzer.github.io/>`_ language server can
++be used with many editors to enable syntax highlighting, completion, go to
++definition, and other features.
++
++``rust-analyzer`` needs a configuration file, ``rust-project.json``, which
++can be generated by the ``rust-analyzer`` Make target.
++
++
++Configuration
++-------------
++
++``Rust support`` (``CONFIG_RUST``) needs to be enabled in the ``General se=
+tup``
++menu. The option is only shown if a suitable Rust toolchain is found (see
++above). In turn, this will make visible the rest of options that depend on=
+ Rust.
++
++Afterwards, go to::
++
++	Kernel hacking
++	    -> Sample kernel code
++	        -> Rust samples
++
++And enable some sample modules either as built-in or as loadable.
++
++
++Building
++--------
++
++Building a kernel with a complete LLVM toolchain is the best supported set=
+up
++at the moment. That is::
++
++	make LLVM=3D1
++
++For architectures that do not support a full LLVM toolchain, use::
++
++	make CC=3Dclang
++
++Using GCC also works for some configurations, but it is very experimental =
+at
++the moment.
++
++
++Hacking
++-------
++
++To dive deeper, take a look at the source code of the samples
++at ``samples/rust/``, the Rust support code under ``rust/`` and
++the ``Rust hacking`` menu under ``Kernel hacking``.
++
++If GDB/Binutils is used and Rust symbols are not getting demangled, the re=
+ason
++is the toolchain does not support Rust's new v0 mangling scheme yet.
++There are a few ways out:
++
++  - Install a newer release (GDB >=3D 10.2, Binutils >=3D 2.36).
++
++  - Some versions of GDB (e.g. vanilla GDB 10.1) are able to use
++    the pre-demangled names embedded in the debug info (``CONFIG_DEBUG_INF=
+O``).
+--=20
 2.35.1
 
