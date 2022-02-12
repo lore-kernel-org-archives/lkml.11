@@ -2,127 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:57:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54608C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 19:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230384AbiBLS5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 13:57:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60258 "EHLO
+        id S230414AbiBLTGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 14:06:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbiBLS5T (ORCPT
+        with ESMTP id S229622AbiBLTGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 13:57:19 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F0F6007A;
-        Sat, 12 Feb 2022 10:57:15 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id y84so15462593iof.0;
-        Sat, 12 Feb 2022 10:57:15 -0800 (PST)
+        Sat, 12 Feb 2022 14:06:45 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED0EC6E;
+        Sat, 12 Feb 2022 11:06:41 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id s6-20020a0568301e0600b0059ea5472c98so8595163otr.11;
+        Sat, 12 Feb 2022 11:06:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PW5bHK7lbz8mAfQVLbpabS9JQmvxuuP5i13vS9JUmWQ=;
-        b=n5D8bwCKZRUGpl68+OwDfJK+AQroTXijhLf+Ev2Dbodadyb6WRz6/fX9TzoLv5JY44
-         vKXzGhsqvNG0b1NNUEa1R2yJntFRgZVvW8w2wrpRBfSWda7h6ZxvPtJrBrf7yYHVOrwG
-         vAfadKq2gwnHNR05HepbxldrYBHyblxQyutjIhO/hkKuz8jVpizo184RCyuaFwUdEEMB
-         gDMdiJYy6LOQ+V5N1zvv/KQitEvAl4D/B6TT8xoaot76ok9JaRjP2+PcQoyjgjVx3f6a
-         lXTyQk2kypAbwHMmpvW3hdXfwbXpl8GXVhdG++7HxqqIr3Iu7+Tp6uJUOhRFTYsDQXUJ
-         gPwg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w+wyT1oWuhI65Zad/t8RG6/bImnXZf7s8T2d26vS6GI=;
+        b=YGhM6zTvQvEFbtNdKs7nvs5JGr1cpR1nG8q4CJbylSlOk6dEW9W8r1NrySWlv8MC96
+         vt1xN3FnsjRgekTxNLufTWQ8I6TgnbKYdxgeJCOw8mHGh8PuXonS+Ficz3rE5lv95+gb
+         bseS8R/m//phWlDNOpDADaTW8IMfbnQO0yYwasvCKl1xMIkbdCutTiKPbh+PMzPGx1ZW
+         wEq607BT4LzTG4PaKAuATrxb9u/UGG/pZWRsTI1DfM0ilcEgjmgN5Niw94L87K2n+ZQO
+         wwyippn+IzDoK9mJUqT0sgpWGZ20s+2t+Nnzfk3jkNc2ZPx2an4Eq/Kmv+fiiIR5E0Kl
+         oZFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PW5bHK7lbz8mAfQVLbpabS9JQmvxuuP5i13vS9JUmWQ=;
-        b=ifwJDKTuDW61XfQ4Zj/fUYTgvSwgDFYp8LdRjp2HkMr3YKISmpmqUKnqnpTpMLuCez
-         tn/11jwSk/upfauLB53HtS3WH870IeH8KVRk5yu67uOhcS8zjUDKOQcfWGJhdzNH0MU2
-         cdT+x5HT4NGKxfS1s+TxhzYd44CLBKgouq7dzAfpRRUCwPo7JKtb7KcA5xB1yU7kd2nd
-         XUnrvSHQTkELu3eNtR6WOgcYL12l0lOH8QcIMqcG00kgIc/xiJoJI8ubavwcHAskPZnr
-         uIvyo2tPxl2OLASHokVSkunCpn5kYKBmGV3mEa9ZU4eonY5SoYS1S2Or4binrNCkmLQe
-         uz9g==
-X-Gm-Message-State: AOAM531monzUkjtiQqsqJkSuJyqkLrXAuPqQ10lUtj5riqQXkBiUBOEv
-        ro0b/Bntkhj+jrPh8G9xM0yDOkBYIB5p/jhsb0g=
-X-Google-Smtp-Source: ABdhPJzk7Y0eW6BAf4q+QY2CyD1I+LhA8kHRLDkHhRJc6kXcI3wPehj/4lCy3W2LRh5ctFx5JYUIvMk52bxjHJ2CH2Q=
-X-Received: by 2002:a5d:941a:: with SMTP id v26mr3564701ion.64.1644692234068;
- Sat, 12 Feb 2022 10:57:14 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w+wyT1oWuhI65Zad/t8RG6/bImnXZf7s8T2d26vS6GI=;
+        b=nj00SMKzvnlGmWbHMGO50MPG4YOuAbNR+aVhp5C0ojpAue+Ir7rGniguGzLShArnDe
+         M2WQEDlVkQjvHS2VYvsEWL3BgCDnnPXatZuCMKrZ6VZDELAg5ac6bleE20ybGwjSJ/rF
+         lNodp5WQMyRBpYcC4oyl/9/O7++4T5MDyfHomBpXcrQyzJkzBjCInS/DKnKe+tcipfCo
+         vLQmY1ET1SQ6rgMKqPZYZfLq+OIBUus0u2QlpwD0H7KWb1v5ryxgJsJdHdLewIw+Mymi
+         stskdpM5y5FdtiW62zQ+Hm8cK74C1Pes/PVeGEvMsrp2JwQwPAN14XzyMNvI7IsgYeaF
+         pcWQ==
+X-Gm-Message-State: AOAM530t2qZHtuhveq1F2FqwITwSq8ymjN2uJAcQ38UCUppMxwYt69/H
+        MwM5mhzr+9d6WeIIL1tCxD2ix4Bo9BY=
+X-Google-Smtp-Source: ABdhPJym+e3mOG9254+eY2pRWBxCgvdFZKVFYQEpNWTE9t9l4N7IPeG7BEedLpyUfVQXR8Gi2avw8g==
+X-Received: by 2002:a9d:1b62:: with SMTP id l89mr2450448otl.368.1644692801119;
+        Sat, 12 Feb 2022 11:06:41 -0800 (PST)
+Received: from localhost.localdomain ([2804:d51:4934:ba00:3201:7b94:7a78:8d5a])
+        by smtp.gmail.com with ESMTPSA id bh7sm7654217oib.6.2022.02.12.11.06.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 11:06:40 -0800 (PST)
+From:   Marcos Alano <marcoshalano@gmail.com>
+To:     dmitry.torokhov@gmail.com, linux-kernel@vger.kernel.org,
+        linux-input@vger.kernel.org
+Cc:     Marcos Alano <marcoshalano@gmail.com>
+Subject: [RESEND PATCH] Correct the name for Xbox Series S|X controller
+Date:   Sat, 12 Feb 2022 16:05:21 -0300
+Message-Id: <20220212190520.1752354-1-marcoshalano@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220212130410.6901-17-ojeda@kernel.org> <0396e38b-f681-a035-b6ea-21127fdf5615@physik.fu-berlin.de>
-In-Reply-To: <0396e38b-f681-a035-b6ea-21127fdf5615@physik.fu-berlin.de>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Sat, 12 Feb 2022 19:57:02 +0100
-Message-ID: <CANiq72=U3A-5LfbOThPoex9PfFg+UsHuMY33nbtLH=aK=odh0Q@mail.gmail.com>
-Subject: Re: [PATCH v4 16/20] Kbuild: add Rust support
-To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Douglas Su <d0u9.su@outlook.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Daniel Xu <dxu@dxuuu.xyz>, Gary Guo <gary@garyguo.net>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        =?UTF-8?B?TWlndWVsIENhw7Fv?= <macanroj@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Finn Behrens <me@kloenk.de>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Paul Mackerras <paulus@samba.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Will Deacon <will@kernel.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi John Paul,
+Change the name of controller to a more meaningful one.
 
-On Sat, Feb 12, 2022 at 7:27 PM John Paul Adrian Glaubitz
-<glaubitz@physik.fu-berlin.de> wrote:
->
-> Is there any particular reason why this list excludes MIPS*, i386, big-endian
-> PowerPC and SPARC targets which are already supported by the Rust programming
-> language?
+Signed-off-by: Marcos Alano <marcoshalano@gmail.com>
+---
+ drivers/input/joystick/xpad.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The variations we have so far were intended to showcase the Rust
-support in several major architectures, rather than cover everything.
-But as long as LLVM (& the kernel, i.e. ClangBuiltLinux) supports the
-target (and as long there are no compiler/toolchain issues), you
-should be able to try it.
+diff --git a/drivers/input/joystick/xpad.c b/drivers/input/joystick/xpad.c
+index 4c914f75a902..18190b529bca 100644
+--- a/drivers/input/joystick/xpad.c
++++ b/drivers/input/joystick/xpad.c
+@@ -131,7 +131,7 @@ static const struct xpad_device {
+ 	{ 0x045e, 0x02e3, "Microsoft X-Box One Elite pad", 0, XTYPE_XBOXONE },
+ 	{ 0x045e, 0x02ea, "Microsoft X-Box One S pad", 0, XTYPE_XBOXONE },
+ 	{ 0x045e, 0x0719, "Xbox 360 Wireless Receiver", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360W },
+-	{ 0x045e, 0x0b12, "Microsoft Xbox One X pad", MAP_SELECT_BUTTON, XTYPE_XBOXONE },
++	{ 0x045e, 0x0b12, "Microsoft Xbox Series S|X Controller", MAP_SELECT_BUTTON, XTYPE_XBOXONE },
+ 	{ 0x046d, 0xc21d, "Logitech Gamepad F310", 0, XTYPE_XBOX360 },
+ 	{ 0x046d, 0xc21e, "Logitech Gamepad F510", 0, XTYPE_XBOX360 },
+ 	{ 0x046d, 0xc21f, "Logitech Gamepad F710", 0, XTYPE_XBOX360 },
+-- 
+2.35.1
 
-> Are the arch/$ARCH/rust/target.json files everything that's needed for supporting
-> the other targets?
-
-Mostly -- there is also `rust/kernel/c_types.rs` and you may need to
-tweak `rust/compiler_builtins.rs`, but not much more.
-
-Note that for the target spec files, the short-term plan is to
-generate dynamically the target spec file according to what the
-architecture requests, instead of using these static files. Longer
-term, we need a Rust-stable way to setup custom targets from upstream
-`rustc` (though it is not clear yet how it will look, e.g. it could be
-via command-line flags).
-
-Cheers,
-Miguel
