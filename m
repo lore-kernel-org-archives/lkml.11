@@ -2,147 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B37C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0672BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230039AbiBLSXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 13:23:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47814 "EHLO
+        id S230310AbiBLSX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 13:23:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229881AbiBLSXq (ORCPT
+        with ESMTP id S229951AbiBLSXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 13:23:46 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3330E60043
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:30 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id p10so1309433pfo.12
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ysuje3nEy8KvAdAcfcWxVoVzsgbCmUXoBnVe5XL9ZLI=;
-        b=wPHLfGKLHFKi9xnbSoXzfIWPBKlHLJGYnt7UAa0QUROMkK6gLeTd3BcGYde9yoYHyv
-         Sc83DVfbwgvKvQ2wZbPnqJMCFY0tHaV+FOgwuQ+kZkK8rStPD+5oibLMQd+pl1l3IG3r
-         nhTNeaIhPWKuNvwUvEzHF6yPiWOoRvwTf3MvzDDjqcO3m94cIdD/ykI7i7zh6rrTzBVa
-         UbyQHnI96fpSKQZ2fwlakFoZUouYXSHuto5U+fkoFWa1EYWVAiPcWyVq1T5zTRpAxsf0
-         XK1OlRStUcpb9ZfjYXLzU4YFECQBOUyngMWv81FRosViehYyrUebh3WzBEl1zBW21bZ/
-         mKpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ysuje3nEy8KvAdAcfcWxVoVzsgbCmUXoBnVe5XL9ZLI=;
-        b=NifeVg4v9uA43DkyXl4j2hTUL3rLhZOJHk4ZZ95eFzeB+bOIDZQenMjVZzKdjRBip7
-         WMOYqGbzBXMa23WuM8j1K3+BokiTsxqMImDIyaph36LBObyl34D+9MKRTXFlmtbcadDI
-         50knRM8klWE0Oxh11sylRLm/H5NEGelcB65Y6JwIfic7ZI9DarT5gtQc/UB+KO4VIFc6
-         Lb8nTovS/pisdFQ8peUee0v9mW0xZtQL7AWtue++JjIUUub8v5M3bupHDZq27DQyoiXH
-         VV+b4zO2PCYWtnYAMZb17n9XxqfXDNNZNRLRDh9SUf8PEpLNGGfwmg4OavyAF8vOZV2D
-         xqHw==
-X-Gm-Message-State: AOAM5318KQLkfg/uEgIDYfg+6txcHlp/TWj6LWCWr20niFQeMHFYarkD
-        hJh9UsYeBm+cNEVwYQqx4Qik
-X-Google-Smtp-Source: ABdhPJyZVCadrz2t/5hSZ935KMcv1E7SSSKtfPFkJ6xTWe0nbGfrM39zANDUveiLFxgDoKAFavC7yA==
-X-Received: by 2002:a05:6a00:2490:: with SMTP id c16mr7060175pfv.67.1644690209534;
-        Sat, 12 Feb 2022 10:23:29 -0800 (PST)
-Received: from localhost.localdomain ([27.111.75.57])
-        by smtp.gmail.com with ESMTPSA id g12sm14961987pfj.148.2022.02.12.10.23.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 10:23:29 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3 22/25] bus: mhi: ep: Add support for processing transfer ring
-Date:   Sat, 12 Feb 2022 23:51:14 +0530
-Message-Id: <20220212182117.49438-23-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
-References: <20220212182117.49438-1-manivannan.sadhasivam@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 12 Feb 2022 13:23:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32E07606F3
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:23:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA1EB80814
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 18:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CB86BC340EE;
+        Sat, 12 Feb 2022 18:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644690195;
+        bh=aclq4BigH/5SnTkWtvIFs9ppgvX17gruplULvi9rNuU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=cGYwzKf6BHl0KYgAEKw8RCKqI0VUOpXdlUNOep+EExpp2NwxyXXczz3pAJsj0kPJq
+         8wVRAYqA8KmGMS37523wRPA8y5nEtw8ddz2Rm/B3gYNGD3fNiT18XfMY2Zv7IuIbuO
+         0G6pTFt4Dq6Z/yy5kmg8pCiPGyCWFiv0sO1I5Yvyq51aI0FYKmxfQ1phDVb9LjVP5c
+         Kwq/ynSKcBMw2beGCh62gYVkWD7WO09VidmgdjoJvZqKjPkCET1gTxWDl40RTWyGvf
+         7wPzQP3IE79A88ffND8mtDmSEjE5BjGFKXyXqfCfW2ULoT07L9KEXmo87+cJo7c0lu
+         L09BYMFDB/Fzg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B96EFE5CF96;
+        Sat, 12 Feb 2022 18:23:15 +0000 (UTC)
+Subject: Re: [GIT PULL] Staging driver changes for 5.17-rc4
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YgeMgTqMg82ZC7hA@kroah.com>
+References: <YgeMgTqMg82ZC7hA@kroah.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YgeMgTqMg82ZC7hA@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.17-rc4
+X-PR-Tracked-Commit-Id: 426aca16e903b387a0b0001d62207a745c67cfd3
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dcd72f54665717f9d610ea101336d42b7a80704b
+Message-Id: <164469019575.16091.1381341887522721401.pr-tracker-bot@kernel.org>
+Date:   Sat, 12 Feb 2022 18:23:15 +0000
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for processing the transfer ring from host. For the transfer
-ring associated with DL channel, the xfer callback will simply invoked.
-For the case of UL channel, the ring elements will be read in a buffer
-till the write pointer and later passed to the client driver using the
-xfer callback.
+The pull request you sent on Sat, 12 Feb 2022 11:31:29 +0100:
 
-The client drivers should provide the callbacks for both UL and DL
-channels during registration.
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git tags/staging-5.17-rc4
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/main.c | 49 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dcd72f54665717f9d610ea101336d42b7a80704b
 
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index b937c6cda9ba..baf383a4857b 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -439,6 +439,55 @@ static int mhi_ep_read_channel(struct mhi_ep_cntrl *mhi_cntrl,
- 	return 0;
- }
- 
-+int mhi_ep_process_tre_ring(struct mhi_ep_ring *ring, struct mhi_ep_ring_element *el)
-+{
-+	struct mhi_ep_cntrl *mhi_cntrl = ring->mhi_cntrl;
-+	struct mhi_result result = {};
-+	u32 len = MHI_EP_DEFAULT_MTU;
-+	struct mhi_ep_chan *mhi_chan;
-+	int ret;
-+
-+	mhi_chan = &mhi_cntrl->mhi_chan[ring->ch_id];
-+
-+	/*
-+	 * Bail out if transfer callback is not registered for the channel.
-+	 * This is most likely due to the client driver not loaded at this point.
-+	 */
-+	if (!mhi_chan->xfer_cb) {
-+		dev_err(&mhi_chan->mhi_dev->dev, "Client driver not available\n");
-+		return -ENODEV;
-+	}
-+
-+	if (ring->ch_id % 2) {
-+		/* DL channel */
-+		result.dir = mhi_chan->dir;
-+		mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
-+	} else {
-+		/* UL channel */
-+		do {
-+			result.buf_addr = kzalloc(len, GFP_KERNEL);
-+			if (!result.buf_addr)
-+				return -ENOMEM;
-+
-+			ret = mhi_ep_read_channel(mhi_cntrl, ring, &result, len);
-+			if (ret < 0) {
-+				dev_err(&mhi_chan->mhi_dev->dev, "Failed to read channel\n");
-+				kfree(result.buf_addr);
-+				return ret;
-+			}
-+
-+			result.dir = mhi_chan->dir;
-+			mhi_chan->xfer_cb(mhi_chan->mhi_dev, &result);
-+			kfree(result.buf_addr);
-+			result.bytes_xferd = 0;
-+
-+			/* Read until the ring becomes empty */
-+		} while (!mhi_ep_queue_is_empty(mhi_chan->mhi_dev, DMA_TO_DEVICE));
-+	}
-+
-+	return 0;
-+}
-+
- static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
- {
- 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
