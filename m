@@ -2,83 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A757C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 12:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15121C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235157AbiBLM7V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 07:59:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53372 "EHLO
+        id S235184AbiBLNFA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 08:05:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiBLM7T (ORCPT
+        with ESMTP id S235157AbiBLNE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 07:59:19 -0500
-Received: from mx-out.tlen.pl (mx-out.tlen.pl [193.222.135.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05E526543
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 04:59:16 -0800 (PST)
-Received: (wp-smtpd smtp.tlen.pl 37559 invoked from network); 12 Feb 2022 13:59:13 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=o2.pl; s=1024a;
-          t=1644670754; bh=7mkWCxLrplVkkoBQ+yjw/ZRC+lyh2802qNoYkYFx/w0=;
-          h=From:To:Cc:Subject;
-          b=L3nLAq3y/T3Yqh32CU4ZQ/Hv8f9xGmTdD1tkzgn7uigvjuCAW+tzw97iiyGiC4Vl0
-           D07FZ2BQ0LIB+xuwEUzmfVl+DoxalcPhsaoPX55IeR/4nmXnEQ0p2oxFQ5ipLxtZfU
-           syMUmWJrwTb6M+kLGWzxa4/5VJQXs3be02Ez6bHY=
-Received: from aaem217.neoplus.adsl.tpnet.pl (HELO localhost.localdomain) (mat.jonczyk@o2.pl@[83.4.116.217])
-          (envelope-sender <mat.jonczyk@o2.pl>)
-          by smtp.tlen.pl (WP-SMTPD) with SMTP
-          for <linux-kernel@vger.kernel.org>; 12 Feb 2022 13:59:13 +0100
-From:   =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
-To:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Cc:     =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-Subject: [PATCH] platform/dcdbas: move EXPORT_SYMBOL after function
-Date:   Sat, 12 Feb 2022 13:59:08 +0100
-Message-Id: <20220212125908.357588-1-mat.jonczyk@o2.pl>
+        Sat, 12 Feb 2022 08:04:58 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4B926543;
+        Sat, 12 Feb 2022 05:04:53 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id y7so6823539plp.2;
+        Sat, 12 Feb 2022 05:04:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Htr9RxdeLjFIZPTJ97Vma8YsNeZOTaEf0nGAdLmzKEw=;
+        b=W+jHBfgysMFj725GDWlUkGdkV3URmuShiEPFeTQbRPYgrnqewta1eqjml4p8lhUPL4
+         s4nOqTeKNlYRK/J78WwEEh8p2/3j9fMw4y1riBK8lHcoFkevS1CWDwBEHP/GPXhShm57
+         Pcwl33LxHq0jBAhsQR/4DGOfBVuuwCZSy1jRla73BDZoeCg/ntCS5zANNfzlTcqQnVy/
+         o63CoE4srgTZHzAdYplS8KpAUSZc2ufiRbF25DNy+WUMv9nA8ioYyPqGr78/dD+9ccqr
+         U8YhyAsW5jll8krGl1n4On61g53dwh9Aehv/vKBxXI96AfUmTA9wTE8dYzYU1wU2TncT
+         kKkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Htr9RxdeLjFIZPTJ97Vma8YsNeZOTaEf0nGAdLmzKEw=;
+        b=1fLmVvugmCC96GrzGF6+JmCJoouTzSqq68rUtOTh5E0enEuSc4+VjZTU/++cZuj8TL
+         HYBz+Lx+7MAuyqjCnfFSeCHfXbfJvGQYWnWfhNbAGUaAOvW46oQM06sDmJ0Nh1RN/zhK
+         QkIGqxq4iSzuZhPuAVJ5Qb0LPffYceHvqQiRkVRQM+DQA/K6DdOvt3m5pr12HAVicUNG
+         D9eDiFc6IQdI7lEiVZH3mulNd2MIJ2oZ5QUvcPEgyflbP/rltGZW7sKP/qebELG+ln0C
+         MlhyimZDNUIR9YfkPHZzeiVAgc8DkUYhAFL+K7ukKx5j+c1iDIi8iHADAa37gHisUCoS
+         hShg==
+X-Gm-Message-State: AOAM531sLcFmP8vJuou9u+XJ/PYg+tRFL+fbc4qy2TOtP3igqNXybAFQ
+        e7qKZnf1LUbhcSm8LEmRWBs=
+X-Google-Smtp-Source: ABdhPJyDib6YwgUQVwXX2lSBrfldvstQ60Nk6SZeBTDTIhe0B1qTUW/BbE7Gu4/XhdZRFdw6l/1DrQ==
+X-Received: by 2002:a17:902:8205:: with SMTP id x5mr5830233pln.40.1644671092630;
+        Sat, 12 Feb 2022 05:04:52 -0800 (PST)
+Received: from localhost.localdomain ([2402:4000:2380:2a17:a7f8:71f:713f:850b])
+        by smtp.gmail.com with ESMTPSA id me18sm5584106pjb.39.2022.02.12.05.04.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 05:04:52 -0800 (PST)
+From:   Husni Faiz <ahamedhusni73@gmail.com>
+To:     b-liu@ti.com, gregkh@linuxfoundation.org
+Cc:     Husni Faiz <ahamedhusni73@gmail.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] usb: Fix Trailing Whitespace Coding Style Error
+Date:   Sat, 12 Feb 2022 18:34:45 +0530
+Message-Id: <20220212130445.503294-1-ahamedhusni73@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-WP-MailID: 301aa98afc16f94db36962caeb208f5b
-X-WP-AV: skaner antywirusowy Poczty o2
-X-WP-SPAM: NO 0000000 [MeOk]                               
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The declaration
-        EXPORT_SYMBOL(dcdbas_smi_request);
-was placed after smi_request_store(), which made a false impression that
-dcdbas_smi_request() was not exported.
+Removed Trailing whitespace.
 
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
-Cc: Hans de Goede <hdegoede@redhat.com>
-Cc: Mark Gross <markgross@kernel.org>
+Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
 ---
- drivers/platform/x86/dell/dcdbas.c | 2 +-
+V2 -> V3: describe what has changed between the V1 and V2 patch.
+V1 -> V2: Added descriptive commit message.
+
+ drivers/usb/musb/musb_host.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/dell/dcdbas.c b/drivers/platform/x86/dell/dcdbas.c
-index 5e63d6225048..db3633fafbd5 100644
---- a/drivers/platform/x86/dell/dcdbas.c
-+++ b/drivers/platform/x86/dell/dcdbas.c
-@@ -284,6 +284,7 @@ int dcdbas_smi_request(struct smi_cmd *smi_cmd)
- 
- 	return ret;
+diff --git a/drivers/usb/musb/musb_host.c b/drivers/usb/musb/musb_host.c
+index 9ff7d891b4b7..cf25a2b7e3bb 100644
+--- a/drivers/usb/musb/musb_host.c
++++ b/drivers/usb/musb/musb_host.c
+@@ -563,7 +563,7 @@ musb_rx_reinit(struct musb *musb, struct musb_qh *qh, u8 epnum)
+ 	ep->rx_reinit = 0;
  }
-+EXPORT_SYMBOL(dcdbas_smi_request);
  
- /**
-  * smi_request_store:
-@@ -351,7 +352,6 @@ static ssize_t smi_request_store(struct device *dev,
- 	mutex_unlock(&smi_data_lock);
- 	return ret;
- }
--EXPORT_SYMBOL(dcdbas_smi_request);
- 
- /**
-  * host_control_smi: generate host control SMI
+-static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep, 
++static void musb_tx_dma_set_mode_mentor(struct musb_hw_ep *hw_ep,
+ 					struct musb_qh *qh,
+ 					u32 *length, u8 *mode)
+ {
 -- 
 2.25.1
 
