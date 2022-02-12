@@ -2,124 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B41BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 10:41:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 10:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233603AbiBLKjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 05:39:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40892 "EHLO
+        id S233654AbiBLKoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 05:44:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiBLKjq (ORCPT
+        with ESMTP id S231926AbiBLKoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 05:39:46 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399D426548
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 02:39:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644662383; x=1676198383;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=dyrVGvm6aHy6JUcrneabP4PT1dWr5KSKwYtqdojd098=;
-  b=R2PDU5u9CzjEDYfcWTlkeQ+jY0GRKsSby0pMbvCnv4MY2Y3ft4Vpe1Gs
-   9IE7TDvRULW9lQyzhHWhHRy0sFoyzr6u1ECdkRzEpzSqL4iNmxQioRWTv
-   UwSfuO/mWa1jd4Uqj4BZPHJP8RsEzAOriK9NB43cLSjuI3/t2bNj+hS2f
-   Q+Rx6H1gAkR22n2h3gf/sHqBRv+jjmLeap07H+NpubBycbO2hWqoIDWTd
-   0swBku5N0AZ1Z6Ra6RQEFJ9Pzjtl4Mo5iw5G/CVrJ9dQHT0hYsrmU3uLo
-   4XfFKf4tdGg/9jU/bZcYQqWKOpfxOqGhFPw1/O6/iFzvAFFCv+OmWAHxq
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="274433749"
-X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="274433749"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 02:39:43 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="537874368"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 12 Feb 2022 02:39:41 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nIpob-00061T-2e; Sat, 12 Feb 2022 10:39:41 +0000
-Date:   Sat, 12 Feb 2022 18:39:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mkp:5.18/discovery2 64/67] drivers/scsi/sd.c:1096:4: warning: add
- explicit braces to avoid dangling else
-Message-ID: <202202121642.NBfsbeBr-lkp@intel.com>
+        Sat, 12 Feb 2022 05:44:03 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DE62655A;
+        Sat, 12 Feb 2022 02:43:56 -0800 (PST)
+X-UUID: 04a4d05820d143dd84f27c268d9e18df-20220212
+X-UUID: 04a4d05820d143dd84f27c268d9e18df-20220212
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1820887181; Sat, 12 Feb 2022 18:43:53 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 12 Feb 2022 18:43:51 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 12 Feb 2022 18:43:51 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>, <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Julien Thierry <jthierry@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Wang Qing <wangqing@vivo.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Xiaoming Ni <nixiaoming@huawei.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-perf-users@vger.kernel.org>, <sparclinux@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <sumit.garg@linaro.org>,
+        <kernelfans@gmail.com>, <lecopzer.chen@mediatek.com>,
+        <yj.chiang@mediatek.com>
+Subject: [PATCH 1/5] kernel/watchdog: remove WATCHDOG_DEFAULT
+Date:   Sat, 12 Feb 2022 18:43:45 +0800
+Message-ID: <20220212104349.14266-2-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220212104349.14266-1-lecopzer.chen@mediatek.com>
+References: <20220212104349.14266-1-lecopzer.chen@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/linux.git 5.18/discovery2
-head:   7c371ec158614870d9c9c5d1a9e0f0c35f9198d7
-commit: 56db0eb9f48930efde746c3cb9af11524102dc76 [64/67] scsi: sd: Implement support for NDOB flag in WRITE SAME(16)
-config: riscv-randconfig-r021-20220211 (https://download.01.org/0day-ci/archive/20220212/202202121642.NBfsbeBr-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project c7eb84634519e6497be42f5fe323f9a04ed67127)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mkp/linux.git/commit/?id=56db0eb9f48930efde746c3cb9af11524102dc76
-        git remote add mkp https://git.kernel.org/pub/scm/linux/kernel/git/mkp/linux.git
-        git fetch --no-tags mkp 5.18/discovery2
-        git checkout 56db0eb9f48930efde746c3cb9af11524102dc76
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/scsi/
+No reference to WATCHDOG_DEFAULT, remove it.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+this commit reworks from [1].
 
-All warnings (new ones prefixed by >>):
-
->> drivers/scsi/sd.c:1096:4: warning: add explicit braces to avoid dangling else [-Wdangling-else]
-                           else
-                           ^
-   1 warning generated.
-
-
-vim +1096 drivers/scsi/sd.c
-
-  1076	
-  1077	static void sd_config_write_zeroes(struct scsi_disk *sdkp,
-  1078					   enum sd_zeroing_mode mode)
-  1079	{
-  1080		struct request_queue *q = sdkp->disk->queue;
-  1081		unsigned int logical_block_size = sdkp->device->sector_size;
-  1082	
-  1083		if (mode == SD_ZERO_DEFAULT && !sdkp->zeroing_override) {
-  1084			mode = SD_ZERO_WRITE;
-  1085	
-  1086			if (sdkp->lbprz && sdkp->lbpws)
-  1087				if (sdkp->ndob)
-  1088					mode = SD_ZERO_WS16_NDOB;
-  1089				else
-  1090					mode = SD_ZERO_WS16_UNMAP;
-  1091			else if (sdkp->lbprz && sdkp->lbpws10)
-  1092				mode = SD_ZERO_WS10_UNMAP;
-  1093			else if (sdkp->max_ws_blocks)
-  1094				if (sdkp->ndob)
-  1095					mode = SD_ZERO_WS16_NDOB;
-> 1096				else
-  1097					mode = SD_ZERO_WS;
-  1098		}
-  1099	
-  1100		if (mode == SD_ZERO_DISABLE)
-  1101			sdkp->zeroing_override = true;
-  1102	
-  1103		sdkp->zeroing_mode = mode;
-  1104		blk_queue_max_write_zeroes_sectors(q, sdkp->max_ws_blocks *
-  1105						   (logical_block_size >> 9));
-  1106	}
-  1107	
-
+[1] https://lore.kernel.org/lkml/20211014024155.15253-2-kernelfans@gmail.com/
+Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+Signed-off-by: Lecopzer Chen <lecopzer.chen@mediatek.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ kernel/watchdog.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 99afb88d2e85..db451e943a04 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -30,10 +30,8 @@
+ static DEFINE_MUTEX(watchdog_mutex);
+ 
+ #if defined(CONFIG_HARDLOCKUP_DETECTOR) || defined(CONFIG_HAVE_NMI_WATCHDOG)
+-# define WATCHDOG_DEFAULT	(SOFT_WATCHDOG_ENABLED | NMI_WATCHDOG_ENABLED)
+ # define NMI_WATCHDOG_DEFAULT	1
+ #else
+-# define WATCHDOG_DEFAULT	(SOFT_WATCHDOG_ENABLED)
+ # define NMI_WATCHDOG_DEFAULT	0
+ #endif
+ 
+-- 
+2.25.1
+
