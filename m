@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0CA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E75FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236040AbiBLOUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:20:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33350 "EHLO
+        id S236233AbiBLOU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:20:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235914AbiBLOTv (ORCPT
+        with ESMTP id S235918AbiBLOTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 12 Feb 2022 09:19:51 -0500
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [85.215.255.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13283245BD;
-        Sat, 12 Feb 2022 06:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675573;
+Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA534245B0;
+        Sat, 12 Feb 2022 06:19:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675574;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=kj93pV+O/Ut7gMVXVeqqXeECB+NG0uC4DImxZwcSglI=;
-    b=lSnv5wrFpNMKPlve8+bj0y/LSIvm7dJvYeHtQw8l4uzxs/HbNw4aLxHSaWdixLLgQz
-    7dvTnP2tvhBUqJs54VeEtKWHrfmKfL5hSfJH+czBoHAKXzLn65roscScQj1osQeVaOxW
-    fx4fXqlIUMzADAzrjLjp58aXzQNSE4gEptoKYczrbVrTNZkXwRFcNhXfiVfvY+FJfv14
-    kFqJ2OOa/PpYcZVPVc+udSyvYEKTKjJMqwfAgos7W/gC2eCqpgtbKKk9FEXVVVoJ6lUX
-    jtBwEAWdPmZrd/grc6OblsCw3MS8FhGfZP8K5hE+BO7XzyAPzl0G2TfWzXeUhBW10lsf
-    1odw==
+    bh=SB7WF+uS6P5/t2dwpOjYUkPlGzh1hZqHZTK2na9w/fI=;
+    b=Lb+TuSpZYO1PLSWzcuEbHUZRcGOa93/efypmUqd4ut5rBM+figlsPjkQElNKOI1MUC
+    VD9FMosidELX1+SLaOhJ6Op4InWt5P3CE0XtekWFqkVw/iyRWega7fOAdp/AXv0UeGcD
+    aHUpyR5J6f/ZjkYtS5Cm0unG+KmSjqgDBCldFvqOqnL9tvBi44yDOgagerRUdk5tVen1
+    QbbXMdWLdrgqaZ1BwNeeeccxHPaKlqYkZUGiCqA+8X7yS7nqagAongzVywjYIA2I1lih
+    Xwq6SXmJUGaUzwhPX6fP2yzXRd0ACDX5VdqWWiQYdmwwHxsTEbUoCmKMGntJPcMX3srl
+    82LQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVblcdY="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y1CEJWsqX
+    with ESMTPSA id L29417y1CEJXsqZ
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Sat, 12 Feb 2022 15:19:32 +0100 (CET)
+    Sat, 12 Feb 2022 15:19:33 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v14 6/9] drm/bridge: dw-hdmi: introduce dw_hdmi_enable_poll()
-Date:   Sat, 12 Feb 2022 15:19:24 +0100
-Message-Id: <ba89671808ff5cf464bb923440a1630e50a0f7bb.1644675567.git.hns@goldelico.com>
+Subject: [PATCH v14 8/9] [already applied to mips-fixes] MIPS: DTS: CI20: fix how ddc power is enabled
+Date:   Sat, 12 Feb 2022 15:19:26 +0100
+Message-Id: <6722afd4a89d2bf0d95e49e6738ff50bf9f26245.1644675567.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1644675566.git.hns@goldelico.com>
 References: <cover.1644675566.git.hns@goldelico.com>
@@ -77,45 +77,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-so that specialization drivers like ingenic-dw-hdmi can enable polling.
+Originally we proposed a new hdmi-5v-supply regulator reference
+for CI20 device tree but that was superseded by a better idea to use
+the already defined "ddc-en-gpios" property of the "hdmi-connector".
 
+Since "MIPS: DTS: CI20: Add DT nodes for HDMI setup" has already
+been applied to v5.17-rc1, we add this on top.
+
+Fixes: ae1b8d2c2de9 ("MIPS: DTS: CI20: Add DT nodes for HDMI setup")
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 9 +++++++++
- include/drm/bridge/dw_hdmi.h              | 1 +
- 2 files changed, 10 insertions(+)
+ arch/mips/boot/dts/ingenic/ci20.dts | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 826a055a7a273..fc2d5422c8a19 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -3216,6 +3216,15 @@ static int dw_hdmi_parse_dt(struct dw_hdmi *hdmi)
- 	return 0;
- }
+diff --git a/arch/mips/boot/dts/ingenic/ci20.dts b/arch/mips/boot/dts/ingenic/ci20.dts
+index 3e336b3dbb109..ab6e3dc0bc1d0 100644
+--- a/arch/mips/boot/dts/ingenic/ci20.dts
++++ b/arch/mips/boot/dts/ingenic/ci20.dts
+@@ -83,6 +83,8 @@ hdmi_out: connector {
+ 		label = "HDMI OUT";
+ 		type = "a";
  
-+void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable)
-+{
-+	if (hdmi->bridge.dev)
-+		hdmi->bridge.dev->mode_config.poll_enabled = enable;
-+	else
-+		dev_warn(hdmi->dev, "no hdmi->bridge.dev");
-+}
-+EXPORT_SYMBOL_GPL(dw_hdmi_enable_poll);
++		ddc-en-gpios = <&gpa 25 GPIO_ACTIVE_HIGH>;
 +
- struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
- 			      const struct dw_hdmi_plat_data *plat_data)
- {
-diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
-index 2a1f85f9a8a3f..963960794b40e 100644
---- a/include/drm/bridge/dw_hdmi.h
-+++ b/include/drm/bridge/dw_hdmi.h
-@@ -196,5 +196,6 @@ enum drm_connector_status dw_hdmi_phy_read_hpd(struct dw_hdmi *hdmi,
- void dw_hdmi_phy_update_hpd(struct dw_hdmi *hdmi, void *data,
- 			    bool force, bool disabled, bool rxsense);
- void dw_hdmi_phy_setup_hpd(struct dw_hdmi *hdmi, void *data);
-+void dw_hdmi_enable_poll(struct dw_hdmi *hdmi, bool enable);
+ 		port {
+ 			hdmi_con: endpoint {
+ 				remote-endpoint = <&dw_hdmi_out>;
+@@ -114,17 +116,6 @@ otg_power: fixedregulator@2 {
+ 		gpio = <&gpf 14 GPIO_ACTIVE_LOW>;
+ 		enable-active-high;
+ 	};
+-
+-	hdmi_power: fixedregulator@3 {
+-		compatible = "regulator-fixed";
+-
+-		regulator-name = "hdmi_power";
+-		regulator-min-microvolt = <5000000>;
+-		regulator-max-microvolt = <5000000>;
+-
+-		gpio = <&gpa 25 0>;
+-		enable-active-high;
+-	};
+ };
  
- #endif /* __IMX_HDMI_H__ */
+ &ext {
+@@ -576,8 +567,6 @@ &hdmi {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pins_hdmi_ddc>;
+ 
+-	hdmi-5v-supply = <&hdmi_power>;
+-
+ 	ports {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
 -- 
 2.33.0
 
