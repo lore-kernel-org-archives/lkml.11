@@ -2,200 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 164F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93431C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237674AbiBLQSW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 11:18:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38216 "EHLO
+        id S237197AbiBLQUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 11:20:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237145AbiBLQSH (ORCPT
+        with ESMTP id S232502AbiBLQUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 11:18:07 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609BB240A6
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 08:17:57 -0800 (PST)
-Received: from dslb-188-097-215-215.188.097.pools.vodafone-ip.de ([188.97.215.215] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nIv5t-0007YM-7U; Sat, 12 Feb 2022 17:17:53 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 10/10] staging: r8188eu: we only need one struct bb_reg_def for path a
-Date:   Sat, 12 Feb 2022 17:17:37 +0100
-Message-Id: <20220212161737.381841-11-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220212161737.381841-1-martin@kaiser.cx>
-References: <20220212161737.381841-1-martin@kaiser.cx>
+        Sat, 12 Feb 2022 11:20:51 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CA5C181;
+        Sat, 12 Feb 2022 08:20:47 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id o9so11612354ljq.4;
+        Sat, 12 Feb 2022 08:20:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:references:in-reply-to:content-transfer-encoding;
+        bh=ihArlHjS/Wfm+9ieK7AzTeyUT4KunV6n7Q59sXAdDMU=;
+        b=f+i8gncsi2xlxtI+VVw8FQCZvWruHA3H/AyGu3DtBn1eqR1FzczGri9XYXB8tItxaL
+         dAiq71kqKY/HOngidbGqfSAIKv6FOUq5hAJlh1XhG38X3fsnTHT/K4v0j7N0T7REnjEi
+         1QmDl+f2HHoSzNzCAY/dRFX+yPYRUae23F8NXWOhEcXK6Te+OA0auONMzM7/NfgtBgrG
+         LZy3jcRic3oy3FR+NCNPMjZQHHf72+NW3RB6VP/LmH1rCYN1AuRMehKIu5mf6KEcQFbG
+         IRBHmni+iuJzw/d/6W+aJOyYQ+zmMhc089Poj2xMpibKsVtX3Xnl0L2at75kGOfT4JKt
+         shHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:references:in-reply-to
+         :content-transfer-encoding;
+        bh=ihArlHjS/Wfm+9ieK7AzTeyUT4KunV6n7Q59sXAdDMU=;
+        b=CSOECOgnV5Yr/to0nPBrNTow/55zz0WADJArEuLRKvxYD8G8g5QJdbxFlisKV62tAx
+         LiqjiCTGs9x25uNP+P77oOrjqCWtylE1PWwWbV41PHFCG5IjqI0NpQztXWEX0pnvT1CN
+         TurMWrniMUCp/OarZhLDm3IMdTmpe3u8F0uwyE+/VzIOS9Ug2UI0zayeLGUbMls19O9L
+         hH2g+d+oa6JXsVZUIWVBumPY1Fhsa5sP5ZlU6/35MB7GQP0th1ADPztXuL7MSGIOJgVf
+         Uf2M5HKmp3vVYI1blYnWGwRTynmxelCBcKQxK9YyIeoYGNt3LITpbvP9Y+tk4fky5L9X
+         lRsQ==
+X-Gm-Message-State: AOAM532/VXaoM+MWW5JplQfvmLHimozGqI7q99y/rBdUsYLlYYGmHcfU
+        EaRrY6jzoZ6vOUxVm4R8VTg=
+X-Google-Smtp-Source: ABdhPJy5WVHJa4sRKXC+KEKVeXnaHpzuzeB36CGy4FcY6HfRuITMF5Rn4wreJeCxG+Ut/vdaY6tawA==
+X-Received: by 2002:a2e:530c:: with SMTP id h12mr4039182ljb.521.1644682845747;
+        Sat, 12 Feb 2022 08:20:45 -0800 (PST)
+Received: from [192.168.2.145] (109-252-138-165.dynamic.spd-mgts.ru. [109.252.138.165])
+        by smtp.googlemail.com with ESMTPSA id f9sm1474643lfk.265.2022.02.12.08.20.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Feb 2022 08:20:45 -0800 (PST)
+Message-ID: <ff83adba-7919-fa48-4637-a4cb9b94a8e1@gmail.com>
+Date:   Sat, 12 Feb 2022 19:20:44 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH RESEND] i2c: tegra: Add SMBus block read function
+Content-Language: en-US
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Akhil R <akhilrajeev@nvidia.com>,
+        "christian.koenig@amd.com" <christian.koenig@amd.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "sumit.semwal@linaro.org" <sumit.semwal@linaro.org>,
+        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+        Svyatoslav Ryhel <clamor95@gmail.com>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+References: <20220210153603.61894-1-akhilrajeev@nvidia.com>
+ <ae6d300f-962d-9731-bb78-3594b4c31aea@gmail.com>
+ <DM5PR12MB18502CF86E602F7071A1EA58C0309@DM5PR12MB1850.namprd12.prod.outlook.com>
+ <94fc8b11-6149-56ca-a028-cf7f39930992@gmail.com>
+In-Reply-To: <94fc8b11-6149-56ca-a028-cf7f39930992@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The r8188eu driver does no longer access rf path b registers via
-PHYRegDef.
+12.02.2022 19:15, Dmitry Osipenko пишет:
+> 11.02.2022 12:11, Akhil R пишет:
+>>> 10.02.2022 18:36, Akhil R пишет:
+>>>> Emulate SMBus block read using ContinueXfer to read the length byte
+>>>>
+>>>> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+>>>> ---
+>>>>  drivers/i2c/busses/i2c-tegra.c | 18 ++++++++++++++++--
+>>>>  1 file changed, 16 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/i2c/busses/i2c-tegra.c b/drivers/i2c/busses/i2c-tegra.c
+>>>> index 03cea102ab76..2941e42aa6a0 100644
+>>>> --- a/drivers/i2c/busses/i2c-tegra.c
+>>>> +++ b/drivers/i2c/busses/i2c-tegra.c
+>>>> @@ -1233,6 +1233,11 @@ static int tegra_i2c_xfer_msg(struct tegra_i2c_dev
+>>> *i2c_dev,
+>>>>               return err;
+>>>>
+>>>>       i2c_dev->msg_buf = msg->buf;
+>>>> +
+>>>> +     /* The condition true implies smbus block read and len is already read */
+>>>> +     if (msg->flags & I2C_M_RECV_LEN && end_state !=
+>>> MSG_END_CONTINUE)
+>>>> +             i2c_dev->msg_buf = msg->buf + 1;
+>>>> +
+>>>>       i2c_dev->msg_buf_remaining = msg->len;
+>>>>       i2c_dev->msg_err = I2C_ERR_NONE;
+>>>>       i2c_dev->msg_read = !!(msg->flags & I2C_M_RD);
+>>>> @@ -1389,6 +1394,15 @@ static int tegra_i2c_xfer(struct i2c_adapter *adap,
+>>> struct i2c_msg msgs[],
+>>>>                       else
+>>>>                               end_type = MSG_END_REPEAT_START;
+>>>>               }
+>>>> +             /* If M_RECV_LEN use ContinueXfer to read the first byte */
+>>>> +             if (msgs[i].flags & I2C_M_RECV_LEN) {
+>>>> +                     ret = tegra_i2c_xfer_msg(i2c_dev, &msgs[i],
+>>> MSG_END_CONTINUE);
+>>>> +                     if (ret)
+>>>> +                             break;
+>>>> +                     /* Set the read byte as msg len */
+>>>> +                     msgs[i].len = msgs[i].buf[0];
+>>>> +                     dev_dbg(i2c_dev->dev, "reading %d bytes\n", msgs[i].len);
+>>>> +             }
+>>>>               ret = tegra_i2c_xfer_msg(i2c_dev, &msgs[i], end_type);
+>>>>               if (ret)
+>>>>                       break;
+>>>> @@ -1416,10 +1430,10 @@ static u32 tegra_i2c_func(struct i2c_adapter
+>>> *adap)
+>>>>  {
+>>>>       struct tegra_i2c_dev *i2c_dev = i2c_get_adapdata(adap);
+>>>>       u32 ret = I2C_FUNC_I2C | (I2C_FUNC_SMBUS_EMUL &
+>>> ~I2C_FUNC_SMBUS_QUICK) |
+>>>> -               I2C_FUNC_10BIT_ADDR | I2C_FUNC_PROTOCOL_MANGLING;
+>>>> +               I2C_FUNC_10BIT_ADDR | I2C_FUNC_PROTOCOL_MANGLING;
+>>>>
+>>>>       if (i2c_dev->hw->has_continue_xfer_support)
+>>>> -             ret |= I2C_FUNC_NOSTART;
+>>>> +             ret |= I2C_FUNC_NOSTART | I2C_FUNC_SMBUS_READ_BLOCK_DATA;
+>>>>
+>>>>       return ret;
+>>>>  }
+>>>
+>>> Please describe how this was tested.
+>> This is tested using an I2C EEPROM to emulate SMBus block read in which
+>> we read the first byte as the length of bytes to read. This is an expected
+>> feature for NVIDIA Grace chipset where there will be an actual SMBus device.
+> 
+> We have several Tegra30+ tablets that have EC on SMBus. Svyatoslav tried
+> your I2C patch + [1] on Asus TF201 and reported that it breaks EC. Any
+> idea why it doesn't work?
+> 
+> [1]
+> https://github.com/grate-driver/linux/commit/aa8d71f5a960ef40503e5448c622d62d1c53a2c0
 
-Change the PHYRegDef array in struct hal_data_8188e to a single
-variable that holds the register addresses for rf path a. Remove
-the initialisation of path b register addresses.
-
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 58 +++++++------------
- drivers/staging/r8188eu/hal/rtl8188e_rf6052.c |  2 +-
- .../staging/r8188eu/include/rtl8188e_hal.h    |  2 +-
- 3 files changed, 22 insertions(+), 40 deletions(-)
-
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index e2e4443b7414..b0e5b9f6a005 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -123,7 +123,7 @@ phy_RFSerialRead(
- {
- 	u32 retValue = 0;
- 	struct hal_data_8188e *pHalData = &Adapter->haldata;
--	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[RF_PATH_A];
-+	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef;
- 	u32 NewOffset;
- 	u32 tmplong, tmplong2;
- 	u8 	RfPiEnable = 0;
-@@ -215,7 +215,7 @@ phy_RFSerialWrite(
- {
- 	u32 DataAndAddr = 0;
- 	struct hal_data_8188e *pHalData = &Adapter->haldata;
--	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[RF_PATH_A];
-+	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef;
- 	u32 NewOffset;
- 
- 	/*  2009/06/17 MH We can not execute IO for power save or other accident mode. */
-@@ -358,76 +358,58 @@ phy_InitBBRFRegisterDefinition(
- 	struct hal_data_8188e *pHalData = &Adapter->haldata;
- 
- 	/*  RF Interface Sowrtware Control */
--	pHalData->PHYRegDef[RF_PATH_A].rfintfs = rFPGA0_XAB_RFInterfaceSW; /*  16 LSBs if read 32-bit from 0x870 */
--	pHalData->PHYRegDef[RF_PATH_B].rfintfs = rFPGA0_XAB_RFInterfaceSW; /*  16 MSBs if read 32-bit from 0x870 (16-bit for 0x872) */
-+	pHalData->PHYRegDef.rfintfs = rFPGA0_XAB_RFInterfaceSW; /*  16 LSBs if read 32-bit from 0x870 */
- 
- 	/*  RF Interface Readback Value */
--	pHalData->PHYRegDef[RF_PATH_A].rfintfi = rFPGA0_XAB_RFInterfaceRB; /*  16 LSBs if read 32-bit from 0x8E0 */
--	pHalData->PHYRegDef[RF_PATH_B].rfintfi = rFPGA0_XAB_RFInterfaceRB;/*  16 MSBs if read 32-bit from 0x8E0 (16-bit for 0x8E2) */
-+	pHalData->PHYRegDef.rfintfi = rFPGA0_XAB_RFInterfaceRB; /*  16 LSBs if read 32-bit from 0x8E0 */
- 
- 	/*  RF Interface Output (and Enable) */
--	pHalData->PHYRegDef[RF_PATH_A].rfintfo = rFPGA0_XA_RFInterfaceOE; /*  16 LSBs if read 32-bit from 0x860 */
--	pHalData->PHYRegDef[RF_PATH_B].rfintfo = rFPGA0_XB_RFInterfaceOE; /*  16 LSBs if read 32-bit from 0x864 */
-+	pHalData->PHYRegDef.rfintfo = rFPGA0_XA_RFInterfaceOE; /*  16 LSBs if read 32-bit from 0x860 */
- 
- 	/*  RF Interface (Output and)  Enable */
--	pHalData->PHYRegDef[RF_PATH_A].rfintfe = rFPGA0_XA_RFInterfaceOE; /*  16 MSBs if read 32-bit from 0x860 (16-bit for 0x862) */
--	pHalData->PHYRegDef[RF_PATH_B].rfintfe = rFPGA0_XB_RFInterfaceOE; /*  16 MSBs if read 32-bit from 0x864 (16-bit for 0x866) */
-+	pHalData->PHYRegDef.rfintfe = rFPGA0_XA_RFInterfaceOE; /*  16 MSBs if read 32-bit from 0x860 (16-bit for 0x862) */
- 
- 	/* Addr of LSSI. Wirte RF register by driver */
--	pHalData->PHYRegDef[RF_PATH_A].rf3wireOffset = rFPGA0_XA_LSSIParameter; /* LSSI Parameter */
--	pHalData->PHYRegDef[RF_PATH_B].rf3wireOffset = rFPGA0_XB_LSSIParameter;
-+	pHalData->PHYRegDef.rf3wireOffset = rFPGA0_XA_LSSIParameter; /* LSSI Parameter */
- 
- 	/*  RF parameter */
--	pHalData->PHYRegDef[RF_PATH_A].rfLSSI_Select = rFPGA0_XAB_RFParameter;  /* BB Band Select */
--	pHalData->PHYRegDef[RF_PATH_B].rfLSSI_Select = rFPGA0_XAB_RFParameter;
-+	pHalData->PHYRegDef.rfLSSI_Select = rFPGA0_XAB_RFParameter;  /* BB Band Select */
- 
- 	/*  Tx AGC Gain Stage (same for all path. Should we remove this?) */
--	pHalData->PHYRegDef[RF_PATH_A].rfTxGainStage = rFPGA0_TxGainStage; /* Tx gain stage */
--	pHalData->PHYRegDef[RF_PATH_B].rfTxGainStage = rFPGA0_TxGainStage; /* Tx gain stage */
-+	pHalData->PHYRegDef.rfTxGainStage = rFPGA0_TxGainStage; /* Tx gain stage */
- 
- 	/*  Tranceiver A~D HSSI Parameter-1 */
--	pHalData->PHYRegDef[RF_PATH_A].rfHSSIPara1 = rFPGA0_XA_HSSIParameter1;  /* wire control parameter1 */
--	pHalData->PHYRegDef[RF_PATH_B].rfHSSIPara1 = rFPGA0_XB_HSSIParameter1;  /* wire control parameter1 */
-+	pHalData->PHYRegDef.rfHSSIPara1 = rFPGA0_XA_HSSIParameter1;  /* wire control parameter1 */
- 
- 	/*  Tranceiver A~D HSSI Parameter-2 */
--	pHalData->PHYRegDef[RF_PATH_A].rfHSSIPara2 = rFPGA0_XA_HSSIParameter2;  /* wire control parameter2 */
--	pHalData->PHYRegDef[RF_PATH_B].rfHSSIPara2 = rFPGA0_XB_HSSIParameter2;  /* wire control parameter2 */
-+	pHalData->PHYRegDef.rfHSSIPara2 = rFPGA0_XA_HSSIParameter2;  /* wire control parameter2 */
- 
- 	/*  RF switch Control */
--	pHalData->PHYRegDef[RF_PATH_A].rfSwitchControl = rFPGA0_XAB_SwitchControl; /* TR/Ant switch control */
--	pHalData->PHYRegDef[RF_PATH_B].rfSwitchControl = rFPGA0_XAB_SwitchControl;
-+	pHalData->PHYRegDef.rfSwitchControl = rFPGA0_XAB_SwitchControl; /* TR/Ant switch control */
- 
- 	/*  AGC control 1 */
--	pHalData->PHYRegDef[RF_PATH_A].rfAGCControl1 = rOFDM0_XAAGCCore1;
--	pHalData->PHYRegDef[RF_PATH_B].rfAGCControl1 = rOFDM0_XBAGCCore1;
-+	pHalData->PHYRegDef.rfAGCControl1 = rOFDM0_XAAGCCore1;
- 
- 	/*  AGC control 2 */
--	pHalData->PHYRegDef[RF_PATH_A].rfAGCControl2 = rOFDM0_XAAGCCore2;
--	pHalData->PHYRegDef[RF_PATH_B].rfAGCControl2 = rOFDM0_XBAGCCore2;
-+	pHalData->PHYRegDef.rfAGCControl2 = rOFDM0_XAAGCCore2;
- 
- 	/*  RX AFE control 1 */
--	pHalData->PHYRegDef[RF_PATH_A].rfRxIQImbalance = rOFDM0_XARxIQImbalance;
--	pHalData->PHYRegDef[RF_PATH_B].rfRxIQImbalance = rOFDM0_XBRxIQImbalance;
-+	pHalData->PHYRegDef.rfRxIQImbalance = rOFDM0_XARxIQImbalance;
- 
- 	/*  RX AFE control 1 */
--	pHalData->PHYRegDef[RF_PATH_A].rfRxAFE = rOFDM0_XARxAFE;
--	pHalData->PHYRegDef[RF_PATH_B].rfRxAFE = rOFDM0_XBRxAFE;
-+	pHalData->PHYRegDef.rfRxAFE = rOFDM0_XARxAFE;
- 
- 	/*  Tx AFE control 1 */
--	pHalData->PHYRegDef[RF_PATH_A].rfTxIQImbalance = rOFDM0_XATxIQImbalance;
--	pHalData->PHYRegDef[RF_PATH_B].rfTxIQImbalance = rOFDM0_XBTxIQImbalance;
-+	pHalData->PHYRegDef.rfTxIQImbalance = rOFDM0_XATxIQImbalance;
- 
- 	/*  Tx AFE control 2 */
--	pHalData->PHYRegDef[RF_PATH_A].rfTxAFE = rOFDM0_XATxAFE;
--	pHalData->PHYRegDef[RF_PATH_B].rfTxAFE = rOFDM0_XBTxAFE;
-+	pHalData->PHYRegDef.rfTxAFE = rOFDM0_XATxAFE;
- 
- 	/*  Tranceiver LSSI Readback SI mode */
--	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBack = rFPGA0_XA_LSSIReadBack;
--	pHalData->PHYRegDef[RF_PATH_B].rfLSSIReadBack = rFPGA0_XB_LSSIReadBack;
-+	pHalData->PHYRegDef.rfLSSIReadBack = rFPGA0_XA_LSSIReadBack;
- 
- 	/*  Tranceiver LSSI Readback PI mode */
--	pHalData->PHYRegDef[RF_PATH_A].rfLSSIReadBackPi = TransceiverA_HSPI_Readback;
--	pHalData->PHYRegDef[RF_PATH_B].rfLSSIReadBackPi = TransceiverB_HSPI_Readback;
-+	pHalData->PHYRegDef.rfLSSIReadBackPi = TransceiverA_HSPI_Readback;
- }
- 
- void storePwrIndexDiffRateOffset(struct adapter *Adapter, u32 RegAddr, u32 BitMask, u32 Data)
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-index 4a7a877e4017..d043b7bc4142 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_rf6052.c
-@@ -375,7 +375,7 @@ static int phy_RF6052_Config_ParaFile(struct adapter *Adapter)
- 
- 	/* Initialize RF */
- 
--	pPhyReg = &pHalData->PHYRegDef[0];
-+	pPhyReg = &pHalData->PHYRegDef;
- 
- 	/*----Store original RFENV control type----*/
- 	u4RegValue = rtl8188e_PHY_QueryBBReg(Adapter, pPhyReg->rfintfs, bRFSI_RFENV);
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-index 5b27bae97e91..44321a53a345 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-@@ -141,7 +141,7 @@ struct hal_data_8188e {
- 
- 	u32	AcParam_BE; /* Original parameter for BE, use for EDCA turbo. */
- 
--	struct bb_reg_def PHYRegDef[2];	/* Radio A/B */
-+	struct bb_reg_def PHYRegDef;
- 
- 	u32	RfRegChnlVal;
- 
--- 
-2.30.2
-
+Ah, I see now that I2C_FUNC_SMBUS_WRITE_BLOCK_DATA not supported, we
+should check again without the write then.
