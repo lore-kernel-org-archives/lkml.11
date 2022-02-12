@@ -2,172 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EE8C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE50C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 18:19:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229529AbiBLSST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 13:18:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42172 "EHLO
+        id S229540AbiBLSTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 13:19:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiBLSSQ (ORCPT
+        with ESMTP id S229537AbiBLSTD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 13:18:16 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355B85E767
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:18:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644689893; x=1676225893;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FVcgXrZ+Du2fSN7o3UgBvON225zfZCAjiMSNYgbiPfE=;
-  b=EmhTf8qrEQ14WPF0PqcXdHJEbpVHDgutOsWi7tQnYFp3q8Xey/T34Rp6
-   Zc+8jdTZnuJam7ZLy3r/tI3iPUMmdMkAisM1JZ4fLa/Uv81gFGMKe0hiH
-   QPc3xp+n9mQgELmRYR/S+IMlH2IjKlqPf56f5LfhuDHOxFnWtFpUnaUzZ
-   jOe2l4fiXZwVmN6SQgm99B7laMIgqOE3BEf4fN8gFb9NLnD3noHFgvWYS
-   KDZTNok4/2f9E8IsjhvMqx27k7ZH4UQuqdGBOGpVmhkgYSVZhDUA2r8PP
-   +r5HoAWbe2UMmzUiIpies30btkxIWyt0Y9ETHHk1443/gDv9jTD3mlZQL
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10256"; a="233448219"
-X-IronPort-AV: E=Sophos;i="5.88,364,1635231600"; 
-   d="scan'208";a="233448219"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 10:18:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,364,1635231600"; 
-   d="scan'208";a="491319262"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 12 Feb 2022 10:18:10 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nIwyH-0006UH-TS; Sat, 12 Feb 2022 18:18:09 +0000
-Date:   Sun, 13 Feb 2022 02:17:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, kernel-team@fb.com, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH] mm: clean up hwpoison page cache page in fault path
-Message-ID: <202202122306.S9ByO64R-lkp@intel.com>
-References: <20220211170557.7964a301@imladris.surriel.com>
+        Sat, 12 Feb 2022 13:19:03 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68F955EDEA
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:18:59 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id m22so2724204pfk.6
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 10:18:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=074Jgk/bKG11mgzAiyskWNwWnB7OSYIgIxmzC09AYrA=;
+        b=SKkU0xpA6/hFKvE15Jtyofh9sHojC6fmBeG1/hdWEVnTbKPp/YkNff4aqQmB9CEl7b
+         U2BR4tmremMIB0YE28mYqJeLv0NcLFYR32Y9Qw8jD7seZ/MliYcFhe8UowRylPrrg+zX
+         YigLeB2E7mKvv4ILmn8b6w2ncgOG14gWEUGHU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=074Jgk/bKG11mgzAiyskWNwWnB7OSYIgIxmzC09AYrA=;
+        b=MQMsFOq1dRbLH7KdFRRT3XyM0idLaQRc1gRN8ngz6tiESmaKxB2/n/NzNWhJtI5k0i
+         aLEFNKN2/kAVKhJSRwb+vmDNIY6UQSArSXksTc0kAeha3bFRs0xk7nGVMp2RYecX4nyD
+         PzknVbgHn0KLeNVItrMM/zN8Q81i+rZLY3PI1+IQ/yPWr0cBcpVKO16pO55rKJN6UeUa
+         PRA+QDMsxPia7F0JFNwFoTf6f9DCo7PyPgE88CMEygsl6OyPFLC+lt4n64Ic1lLsC4Bw
+         JYnmokIWKdal+vf1pEGYz+WwdkRC/oU8liL0/yX648gMOaYwZvaX4Yb+R9vsWFtg7UPh
+         Reiw==
+X-Gm-Message-State: AOAM531cMoCtryLaeEToDGWWrQpChDRgn3S4E78kWgebs+J4M9AnXElt
+        ZsxOi/W+ZLVgZI9dfqRjIExLoA==
+X-Google-Smtp-Source: ABdhPJyt+7/qchjIpVDBgclGTRZtxX+oV4D/IZTFmm+cG0WJ54GFGhjU0IXzvTLVy/kDZixMBlT3tA==
+X-Received: by 2002:a63:6982:: with SMTP id e124mr5785094pgc.528.1644689938250;
+        Sat, 12 Feb 2022 10:18:58 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id be3sm1732780pfb.8.2022.02.12.10.18.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 10:18:58 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Justin Forbes <jmforbes@linuxtx.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH] tools: Fix use-after-free for realloc(..., 0)
+Date:   Sat, 12 Feb 2022 10:18:55 -0800
+Message-Id: <20220212181855.3460176-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211170557.7964a301@imladris.surriel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2421; h=from:subject; bh=gfLUG5BRezAorsaD9PFyU6JfAQleA4jtrlj/yPG8KgQ=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiB/oOw13KMvgwrXOUcUWhx2qwZdic+XCBaPRZuNle 3v/q4gSJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYgf6DgAKCRCJcvTf3G3AJliGEA CPJbWUnU77KPt05mNov2PU2yIbEjoGAHbScRRD5xZ+aoGVqtFIJacn/bUUZFzUAJTn6mbac8y+MhOq 6jt0x2XUG+HU8qy2i/a8467JRqDJjf/SyB3CYdfGJQyZazgn9mhtu0Tt2S3TltzW6Ao2E9sS7dkd9q WHilTZ3qSheur+AjOVxl5rOU5n8YNOS6JgpZH6T82O+slddCVv+jD3jI0N9BX/FJXHffzWcI/qPOvF u7STCgaOVAx9IkyvMPFpwlXDjjY/z5KpzaafXlqKs0KMmAYhZET52VuPpcfosRukuGCM+GHqhxzXnY HzHcJoymblFkmp3bb8kQmtDnSZ9kEGWHYd7copV/IIS1mHEDQqIpvIaQvFrRcIPI3t4hVI/4wZX6h1 mmU2G2Yu/zEwvBYUQJXXLAQTaIMzrgoIFJsrNXyewZDY3Y9efhCpz7DTyFz1DYLN48QAdQhWN0JCgV dKKUIshraUI+QUcIHmcuCpkrExp2Q5grLN6jCewxn5HLrKKBuRohja+xxTA0bWJALCD8OV5Ev0yEWi Z5Ov+fLvQfKihSF6iryN7B2zhDVfvFb5yd9FVAsIQDKWix8dlVQGZLjTos3/m/S37QUbiPEQ1jSFRx K/6vMobG68d0w7/oUiJMmTItat0HREhbgzimr2DLRfzHsGQ6e736LQoHY6PQ==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rik,
+GCC 12 was correctly reporting a potential use-after-free condition in
+the xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
+when size == 0:
 
-Thank you for the patch! Perhaps something to improve:
+In file included from help.c:12:
+In function 'xrealloc',
+    inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   56 |                 ret = realloc(ptr, size);
+      |                       ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
+subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
+   58 |                         ret = realloc(ptr, 1);
+      |                               ^~~~~~~~~~~~~~~
+subcmd-util.h:52:21: note: call to 'realloc' here
+   52 |         void *ret = realloc(ptr, size);
+      |                     ^~~~~~~~~~~~~~~~~~
 
-[auto build test WARNING on hnaz-mm/master]
-
-url:    https://github.com/0day-ci/linux/commits/Rik-van-Riel/mm-clean-up-hwpoison-page-cache-page-in-fault-path/20220212-060643
-base:   https://github.com/hnaz/linux-mm master
-config: sparc-randconfig-s031-20220211 (https://download.01.org/0day-ci/archive/20220212/202202122306.S9ByO64R-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/0day-ci/linux/commit/abd960cdbc9487dbf0a0dc3b2395825a38f8fa44
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Rik-van-Riel/mm-clean-up-hwpoison-page-cache-page-in-fault-path/20220212-060643
-        git checkout abd960cdbc9487dbf0a0dc3b2395825a38f8fa44
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sparc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> mm/memory.c:3913:33: sparse: sparse: incorrect type in initializer (different base types) @@     expected int poisonret @@     got restricted vm_fault_t @@
-   mm/memory.c:3913:33: sparse:     expected int poisonret
-   mm/memory.c:3913:33: sparse:     got restricted vm_fault_t
->> mm/memory.c:3922:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected restricted vm_fault_t @@     got int [assigned] poisonret @@
-   mm/memory.c:3922:24: sparse:     expected restricted vm_fault_t
-   mm/memory.c:3922:24: sparse:     got int [assigned] poisonret
-   mm/memory.c:1024:17: sparse: sparse: context imbalance in 'copy_pte_range' - different lock contexts for basic block
-   mm/memory.c:1740:16: sparse: sparse: context imbalance in '__get_locked_pte' - different lock contexts for basic block
-   mm/memory.c:1788:9: sparse: sparse: context imbalance in 'insert_page' - different lock contexts for basic block
-   mm/memory.c:2290:17: sparse: sparse: context imbalance in 'remap_pte_range' - different lock contexts for basic block
-   mm/memory.c:2546:17: sparse: sparse: context imbalance in 'apply_to_pte_range' - unexpected unlock
-   mm/memory.c:2834:17: sparse: sparse: context imbalance in 'wp_page_copy' - unexpected unlock
-   mm/memory.c:3173:17: sparse: sparse: context imbalance in 'wp_pfn_shared' - unexpected unlock
-   mm/memory.c:3236:19: sparse: sparse: context imbalance in 'do_wp_page' - different lock contexts for basic block
-   mm/memory.c:4939:5: sparse: sparse: context imbalance in 'follow_invalidate_pte' - different lock contexts for basic block
-   mm/memory.c: note: in included file (through arch/sparc/include/asm/pgtable.h, include/linux/pgtable.h, include/linux/mm.h):
-   arch/sparc/include/asm/pgtable_32.h:275:29: sparse: sparse: context imbalance in 'follow_pfn' - unexpected unlock
-
-vim +3913 mm/memory.c
-
-  3875	
-  3876	/*
-  3877	 * The mmap_lock must have been held on entry, and may have been
-  3878	 * released depending on flags and vma->vm_ops->fault() return value.
-  3879	 * See filemap_fault() and __lock_page_retry().
-  3880	 */
-  3881	static vm_fault_t __do_fault(struct vm_fault *vmf)
-  3882	{
-  3883		struct vm_area_struct *vma = vmf->vma;
-  3884		vm_fault_t ret;
-  3885	
-  3886		/*
-  3887		 * Preallocate pte before we take page_lock because this might lead to
-  3888		 * deadlocks for memcg reclaim which waits for pages under writeback:
-  3889		 *				lock_page(A)
-  3890		 *				SetPageWriteback(A)
-  3891		 *				unlock_page(A)
-  3892		 * lock_page(B)
-  3893		 *				lock_page(B)
-  3894		 * pte_alloc_one
-  3895		 *   shrink_page_list
-  3896		 *     wait_on_page_writeback(A)
-  3897		 *				SetPageWriteback(B)
-  3898		 *				unlock_page(B)
-  3899		 *				# flush A, B to clear the writeback
-  3900		 */
-  3901		if (pmd_none(*vmf->pmd) && !vmf->prealloc_pte) {
-  3902			vmf->prealloc_pte = pte_alloc_one(vma->vm_mm);
-  3903			if (!vmf->prealloc_pte)
-  3904				return VM_FAULT_OOM;
-  3905		}
-  3906	
-  3907		ret = vma->vm_ops->fault(vmf);
-  3908		if (unlikely(ret & (VM_FAULT_ERROR | VM_FAULT_NOPAGE | VM_FAULT_RETRY |
-  3909				    VM_FAULT_DONE_COW)))
-  3910			return ret;
-  3911	
-  3912		if (unlikely(PageHWPoison(vmf->page))) {
-> 3913			int poisonret = VM_FAULT_HWPOISON;
-  3914			if (ret & VM_FAULT_LOCKED) {
-  3915				/* Retry if a clean page was removed from the cache. */
-  3916				if (invalidate_inode_page(vmf->page))
-  3917					poisonret = 0;
-  3918				unlock_page(vmf->page);
-  3919			}
-  3920			put_page(vmf->page);
-  3921			vmf->page = NULL;
-> 3922			return poisonret;
-  3923		}
-  3924	
-  3925		if (unlikely(!(ret & VM_FAULT_LOCKED)))
-  3926			lock_page(vmf->page);
-  3927		else
-  3928			VM_BUG_ON_PAGE(!PageLocked(vmf->page), vmf->page);
-  3929	
-  3930		return ret;
-  3931	}
-  3932	
-
+Reported-by: "Valdis Klētnieks" <valdis.kletnieks@vt.edu>
+Fixes: 2f4ce5ec1d44 ("perf tools: Finalize subcmd independence")
+Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ tools/lib/subcmd/subcmd-util.h | 25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/tools/lib/subcmd/subcmd-util.h b/tools/lib/subcmd/subcmd-util.h
+index 794a375dad36..de392fc5fd3a 100644
+--- a/tools/lib/subcmd/subcmd-util.h
++++ b/tools/lib/subcmd/subcmd-util.h
+@@ -49,15 +49,24 @@ static NORETURN inline void die(const char *err, ...)
+ 
+ static inline void *xrealloc(void *ptr, size_t size)
+ {
+-	void *ret = realloc(ptr, size);
+-	if (!ret && !size)
+-		ret = realloc(ptr, 1);
++	void *ret;
++
++	/*
++	 * Convert a zero-sized allocation into 1 byte, since
++	 * realloc(ptr, 0) means free(ptr), but we don't want
++	 * to release the memory. For a new allocation (when
++	 * ptr == NULL), avoid triggering NULL-checking error
++	 * conditions for zero-sized allocations.
++	 */
++	if (!size)
++		size = 1;
++	ret = realloc(ptr, size);
+ 	if (!ret) {
+-		ret = realloc(ptr, size);
+-		if (!ret && !size)
+-			ret = realloc(ptr, 1);
+-		if (!ret)
+-			die("Out of memory, realloc failed");
++		/*
++		 * If realloc() fails, the original block is left untouched;
++		 * it is not freed or moved.
++		 */
++		die("Out of memory, realloc failed");
+ 	}
+ 	return ret;
+ }
+-- 
+2.30.2
+
