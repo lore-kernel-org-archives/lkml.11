@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23335C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA16C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236084AbiBLOUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:20:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33344 "EHLO
+        id S236046AbiBLOUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:20:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235881AbiBLOTu (ORCPT
+        with ESMTP id S235820AbiBLOTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 09:19:50 -0500
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03051245AF;
-        Sat, 12 Feb 2022 06:19:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675575;
+        Sat, 12 Feb 2022 09:19:48 -0500
+Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.176])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A73A1245B6;
+        Sat, 12 Feb 2022 06:19:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675572;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=zCXgJblTF+rQHVFbLwGtG0urpFfPwR+Q4AYo+sbdsy4=;
-    b=eOVtUGo2XPi/xKQ+TbTsqu7u3QWX1kgIzSR34+K/EWDhkes7pm1NAxx6CZ0FQiSlYN
-    BS7GxcjyQEQpfyrw90MHU5T/HHQavZCrbo3NF7JWTLLxFbtLq7uhNXNh1HyJXbCYYs5c
-    V9EvV8c3jT/wZVPsJw9aVwAwjQTgn6LcEidGTL1z9xFuvncUsr57DXLls+VxcOAo8gRJ
-    C2hR87Zm/auXe4DCP15DvNQArCvcY3DIw8f2pH0z9yLjLl3VOOVXsnCfHQWTHg92yM5B
-    i8FwlVB4ranmzt+/WJiPh9rPIdRdxhbbdufXxsz40FjsbUZLHuTnLDzGarxLFJ3lhilp
-    l9Wg==
+    bh=76+TPRGf0MB6hHRwPaUxmX8Eixo5outKfV374UIYYws=;
+    b=aWk329+8WtFTSQFW0tU4F4FsNyw+Wkka7OQy5wrqZB5FszkqVeZz+DsRD4HtFLn61G
+    JIkU5vbSNE2HAGQZ1kxZe8pzFGN4pxAmdUBOUD8UXfMkKQrBDncboNcj5/ZY6YvdUVry
+    entTLZAURbz8+usjomfqZjltgbMKaqCZr+FqK+PyVVd+szjq7yF4Dak5UgrQeitTu7kY
+    eWhZdIrMaleqVCG+VzKpoDWV41jFXcq1KUHCSrdtRHXOXXVTJ+g6Ky3DWMx7djdmiRJJ
+    LD1k9ugwTz0YP78q6B53eIfmy0O4bZsnpTQ34fOsNdvDuHU+c//3xDN/hRFrqJDQ8rSR
+    QUOg==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVblcdY="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y1CEJYsqa
+    with ESMTPSA id L29417y1CEJVsqW
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Sat, 12 Feb 2022 15:19:34 +0100 (CET)
+    Sat, 12 Feb 2022 15:19:31 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -65,9 +65,9 @@ Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
         dri-devel@lists.freedesktop.org
-Subject: [PATCH v14 9/9] [RFC] drm/ingenic: add some more features specific to jz4780
-Date:   Sat, 12 Feb 2022 15:19:27 +0100
-Message-Id: <8c204fa75a8e9aea5e7ed2428e7b4dead2b5110b.1644675567.git.hns@goldelico.com>
+Subject: [PATCH v14 5/9] drm/bridge: dw-hdmi: repair interworking with hdmi-connector for jz4780
+Date:   Sat, 12 Feb 2022 15:19:23 +0100
+Message-Id: <8703a3e48574c09e8756b79e8f69be7d84926fe9.1644675566.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1644675566.git.hns@goldelico.com>
 References: <cover.1644675566.git.hns@goldelico.com>
@@ -77,104 +77,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Boddie <paul@boddie.org.uk>
+Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus fmts callbacks")
 
-The jz4780 has some more features which should be initialized
-according to the vendor kernel.
+introduced a new mechanism to negotiate bus formats between hdmi connector
+and the synopsys hdmi driver inside the jz4780.
 
-Signed-off-by: Paul Boddie <paul@boddie.org.uk>
+By this, the dw-hdmi is no longer the only bridge and sets up a list
+of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
+
+This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 but only
+produces a black screen.
+
+This fix is based on the observation that max_bpc = 0 when running this
+function while info->bpc = 8. Since the formats checks before this always test
+for max_bpc >= info->pbc indirectly my assumption is that we must check it
+here as well.
+
+Adding the proposed patch makes the CI20/jz4780 panel work again in
+MEDIA_BUS_FMT_RGB888_1X24 mode.
+
+Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus fmts callbacks")
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/gpu/drm/ingenic/ingenic-drm-drv.c | 34 +++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-index dcf44cb00821f..fb2cdb188b993 100644
---- a/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-+++ b/drivers/gpu/drm/ingenic/ingenic-drm-drv.c
-@@ -66,6 +66,9 @@ struct jz_soc_info {
- 	bool needs_dev_clk;
- 	bool has_osd;
- 	bool has_alpha;
-+	bool has_pcfg;
-+	bool has_recover;
-+	bool has_rgbc;
- 	bool map_noncoherent;
- 	bool use_extended_hwdesc;
- 	bool plane_f0_not_working;
-@@ -732,6 +735,9 @@ static void ingenic_drm_encoder_atomic_mode_set(struct drm_encoder *encoder,
- 		    | JZ_LCD_CFG_SPL_DISABLE | JZ_LCD_CFG_REV_DISABLE;
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index b0d8110dd412c..826a055a7a273 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -2620,10 +2620,10 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+ 		output_fmts[i++] = MEDIA_BUS_FMT_RGB101010_1X30;
  	}
  
-+	if (priv->soc_info->has_recover)
-+		cfg |= JZ_LCD_CFG_RECOVER_FIFO_UNDERRUN;
-+
- 	if (priv->soc_info->use_extended_hwdesc)
- 		cfg |= JZ_LCD_CFG_DESCRIPTOR_8;
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
++	if (max_bpc >= info->bpc && info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_UYVY8_1X16;
  
-@@ -1320,6 +1326,22 @@ static int ingenic_drm_bind(struct device *dev, bool has_components)
- 		osdc |= JZ_LCD_OSDC_ALPHAEN;
- 	regmap_write(priv->map, JZ_REG_LCD_OSDC, osdc);
+-	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
++	if (max_bpc >= info->bpc && info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+ 		output_fmts[i++] = MEDIA_BUS_FMT_YUV8_1X24;
  
-+	/* Magic values from the vendor kernel for the priority thresholds. */
-+	if (soc_info->has_pcfg)
-+		regmap_write(priv->map, JZ_REG_LCD_PCFG,
-+			     JZ_LCD_PCFG_PRI_MODE |
-+			     JZ_LCD_PCFG_HP_BST_16 |
-+			     (511 << JZ_LCD_PCFG_THRESHOLD2_OFFSET) |
-+			     (400 << JZ_LCD_PCFG_THRESHOLD1_OFFSET) |
-+			     (256 << JZ_LCD_PCFG_THRESHOLD0_OFFSET));
-+
-+	/* RGB output control may be superfluous. */
-+	if (soc_info->has_rgbc)
-+		regmap_write(priv->map, JZ_REG_LCD_RGBC,
-+			     JZ_LCD_RGBC_RGB_FORMAT_ENABLE |
-+			     JZ_LCD_RGBC_ODD_RGB |
-+			     JZ_LCD_RGBC_EVEN_RGB);
-+
- 	mutex_init(&priv->clk_mutex);
- 	priv->clock_nb.notifier_call = ingenic_drm_update_pixclk;
- 
-@@ -1483,6 +1505,9 @@ static const struct jz_soc_info jz4740_soc_info = {
- 	.needs_dev_clk = true,
- 	.has_osd = false,
- 	.map_noncoherent = false,
-+	.has_pcfg = false,
-+	.has_recover = false,
-+	.has_rgbc = false,
- 	.max_width = 800,
- 	.max_height = 600,
- 	.formats_f1 = jz4740_formats,
-@@ -1494,6 +1519,9 @@ static const struct jz_soc_info jz4725b_soc_info = {
- 	.needs_dev_clk = false,
- 	.has_osd = true,
- 	.map_noncoherent = false,
-+	.has_pcfg = false,
-+	.has_recover = true,
-+	.has_rgbc = true,
- 	.max_width = 800,
- 	.max_height = 600,
- 	.formats_f1 = jz4725b_formats_f1,
-@@ -1506,6 +1534,9 @@ static const struct jz_soc_info jz4770_soc_info = {
- 	.needs_dev_clk = false,
- 	.has_osd = true,
- 	.map_noncoherent = true,
-+	.has_pcfg = false,
-+	.has_recover = true,
-+	.has_rgbc = true,
- 	.max_width = 1280,
- 	.max_height = 720,
- 	.formats_f1 = jz4770_formats_f1,
-@@ -1518,6 +1549,9 @@ static const struct jz_soc_info jz4780_soc_info = {
- 	.needs_dev_clk = true,
- 	.has_osd = true,
- 	.has_alpha = true,
-+	.has_pcfg = true,
-+	.has_recover = true,
-+	.has_rgbc = true,
- 	.use_extended_hwdesc = true,
- 	.plane_f0_not_working = true,	/* REVISIT */
- 	.max_width = 4096,
+ 	/* Default 8bit RGB fallback */
 -- 
 2.33.0
 
