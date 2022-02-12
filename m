@@ -2,67 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D45ADC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 19:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 19:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiBLTQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 14:16:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48964 "EHLO
+        id S231131AbiBLTSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 14:18:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiBLTQv (ORCPT
+        with ESMTP id S230072AbiBLTSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 14:16:51 -0500
-Received: from smtprelay02.ispgateway.de (smtprelay02.ispgateway.de [80.67.18.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A493B03E;
-        Sat, 12 Feb 2022 11:16:46 -0800 (PST)
-Received: from [92.206.166.137] (helo=note-book.lan)
-        by smtprelay02.ispgateway.de with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <git@apitzsch.eu>)
-        id 1nIwqg-0000Mn-3w; Sat, 12 Feb 2022 19:10:18 +0100
-From:   =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-leds@vger.kernel.org, Pavel Machek <pavel@ucw.cz>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?UTF-8?q?Andr=C3=A9=20Apitzsch?= <git@apitzsch.eu>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/3] dt-bindings: vendor-prefixes: Add ocs prefix
-Date:   Sat, 12 Feb 2022 19:09:40 +0100
-Message-Id: <20220212180942.8241-1-git@apitzsch.eu>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20211117091405.7412-1-git@apitzsch.eu>
-References: <20211117091405.7412-1-git@apitzsch.eu>
+        Sat, 12 Feb 2022 14:18:05 -0500
+X-Greylist: delayed 429 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Feb 2022 11:18:01 PST
+Received: from box.fidei.email (box.fidei.email [IPv6:2605:2700:0:2:a800:ff:feba:dc44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783F7606C4;
+        Sat, 12 Feb 2022 11:18:01 -0800 (PST)
+Received: from authenticated-user (box.fidei.email [71.19.144.250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by box.fidei.email (Postfix) with ESMTPSA id E8C5280382;
+        Sat, 12 Feb 2022 14:10:51 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
+        t=1644693052; bh=txZS8eXu8kt+0fauTv33PdZYC897WdlzL1mtCypvBWI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LtNiPXqy/7xFiJe4+PEeaVZL1S1V2Alsu9Q4eheH57UWChPSvxGqEmTr8EA3hhwe4
+         uAHOAKv9Iq0v7ZF9T/qYq4tBIJ6qKakL2yEZmGCuMgdKNgcsUwq328ZeY23NljbqO8
+         B2/ha+6sflm0AP5TKDS+cY0wi+/TDaDOdr9n2UKscQaNmz1jaXFj1zHgK4Ng/BasEz
+         ZBjgMJwZMlvORiT3qhN2ZcZLjUczKpIY/45cDqZS1uJBLl3iYQb7BXHx1gbpQrnAmG
+         qmEXe9a4fYKv6SUE/TGfOZwfy2hA7I9tdtraYdKMcBcIpTh31ohkvk6HIT5o/xHdjN
+         Lq6U7yEcKpsAg==
+From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+To:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Subject: [PATCH] btrfs: add fs state details to error messages.
+Date:   Sat, 12 Feb 2022 14:10:42 -0500
+Message-Id: <20220212191042.94954-1-sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Df-Sender: YW5kcmVAYXBpdHpzY2guZXU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the prefix for Orient Chip Technology.
+When a filesystem goes read-only due to an error, multiple errors tend
+to be reported, some of which are knock-on failures. Logging some
+fs_states, if any, in btrfs_handle_fs_error() and btrfs_printk()
+helps distinguish the first error from subsequent messages which may
+only exist due to an error state.
 
-Signed-off-by: André Apitzsch <git@apitzsch.eu>
-Acked-by: Rob Herring <robh@kernel.org>
+Under the new format, most initial errors will look like:
+`BTRFS: error (device loop0) in ...`
+while subsequent errors will begin with:
+`error (device loop0: state E) in ...`
+
+An initial transaction abort error will look like
+`error (device loop0: state X) in ...`
+and subsequent messages will contain
+`(device loop0: state EX) in ...`
+
+Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/btrfs/super.c | 49 +++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 40 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 294093d45a23..9ffffa9773ca 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -854,6 +854,8 @@ patternProperties:
-     description: NXP Semiconductors
-   "^oceanic,.*":
-     description: Oceanic Systems (UK) Ltd.
-+  "^ocs,.*":
-+    description: Orient Chip Technology Co., Ltd.
-   "^oct,.*":
-     description: Octavo Systems LLC
-   "^okaya,.*":
+diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
+index 33cfc9e27451..d0e81eb48eac 100644
+--- a/fs/btrfs/super.c
++++ b/fs/btrfs/super.c
+@@ -66,6 +66,31 @@ static struct file_system_type btrfs_root_fs_type;
+ 
+ static int btrfs_remount(struct super_block *sb, int *flags, char *data);
+ 
++#define STATE_STRING_PREFACE ": state "
++#define MAX_STATE_CHARS 2
++
++static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
++{
++	unsigned long state = info->fs_state;
++	char *curr = buf;
++
++	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
++	curr += sizeof(STATE_STRING_PREFACE) - 1;
++
++	/* If more states are reported, update MAX_STATE_CHARS also */
++	if (test_and_clear_bit(BTRFS_FS_STATE_ERROR, &state))
++		*curr++ = 'E';
++
++	if (test_and_clear_bit(BTRFS_FS_STATE_TRANS_ABORTED, &state))
++		*curr++ = 'X';
++
++	/* If no states were printed, reset the buffer */
++	if (state == info->fs_state)
++		curr = buf;
++
++	*curr++ = '\0';
++}
++
+ /*
+  * Generally the error codes correspond to their respective errors, but there
+  * are a few special cases.
+@@ -128,6 +153,7 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+ {
+ 	struct super_block *sb = fs_info->sb;
+ #ifdef CONFIG_PRINTK
++	char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
+ 	const char *errstr;
+ #endif
+ 
+@@ -136,10 +162,11 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+ 	 * under SB_RDONLY, then it is safe here.
+ 	 */
+ 	if (errno == -EROFS && sb_rdonly(sb))
+-  		return;
++		return;
+ 
+ #ifdef CONFIG_PRINTK
+ 	errstr = btrfs_decode_error(errno);
++	btrfs_state_to_string(fs_info, statestr);
+ 	if (fmt) {
+ 		struct va_format vaf;
+ 		va_list args;
+@@ -148,12 +175,12 @@ void __btrfs_handle_fs_error(struct btrfs_fs_info *fs_info, const char *function
+ 		vaf.fmt = fmt;
+ 		vaf.va = &args;
+ 
+-		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s (%pV)\n",
+-			sb->s_id, function, line, errno, errstr, &vaf);
++		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s (%pV)\n",
++			sb->s_id, statestr, function, line, errno, errstr, &vaf);
+ 		va_end(args);
+ 	} else {
+-		pr_crit("BTRFS: error (device %s) in %s:%d: errno=%d %s\n",
+-			sb->s_id, function, line, errno, errstr);
++		pr_crit("BTRFS: error (device %s%s) in %s:%d: errno=%d %s\n",
++			sb->s_id, statestr, function, line, errno, errstr);
+ 	}
+ #endif
+ 
+@@ -240,11 +267,15 @@ void __cold btrfs_printk(const struct btrfs_fs_info *fs_info, const char *fmt, .
+ 	vaf.va = &args;
+ 
+ 	if (__ratelimit(ratelimit)) {
+-		if (fs_info)
+-			printk("%sBTRFS %s (device %s): %pV\n", lvl, type,
+-				fs_info->sb->s_id, &vaf);
+-		else
++		if (fs_info) {
++			char statestr[sizeof(STATE_STRING_PREFACE) + MAX_STATE_CHARS];
++
++			btrfs_state_to_string(fs_info, statestr);
++			printk("%sBTRFS %s (device %s%s): %pV\n", lvl, type,
++				fs_info->sb->s_id, statestr, &vaf);
++		} else {
+ 			printk("%sBTRFS %s: %pV\n", lvl, type, &vaf);
++		}
+ 	}
+ 
+ 	va_end(args);
 -- 
-2.35.1
+2.30.2
 
