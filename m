@@ -2,134 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 20:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E04C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 20:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbiBLUo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 15:44:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57132 "EHLO
+        id S231810AbiBLUtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 15:49:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiBLUo6 (ORCPT
+        with ESMTP id S231600AbiBLUs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 15:44:58 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B63B606E4
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 12:44:54 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id l19so16518593pfu.2
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 12:44:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sy0ZCHc2ekTg7J4mCAJUHs13eVlwEBNAuh2W+MRX+f0=;
-        b=Y5FU0EdlOayRH8UXvufBg86dju0hloKQb0Omdn6PwVGQy0zpi8fW8/qJ7XpuS0X0pQ
-         X84hwyspgzYj/n6GiRamz2G9oA3Kr3SZ1DyeI4LCK4XaeMWheewnZLrINwgJE6ZIV9JW
-         V/Kc+v0o3WQY1en7rzUr9F2BtJmdFFlRPSI21vPJZeBrnlu0rFs1tr5KqSaahCicOllg
-         NSHXImtsiiJG9nF9qsGGPGChbORWYlAu10vBjY91dMd5kkIqa7pvWXD1H8kvlki7jtAw
-         ewo1JzNntXnnJ4iWAOLUkm10i7AEVAh2NYsN1jcnMNq1wv0zvEsSDPOk3RmEXiyPUes2
-         LPCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sy0ZCHc2ekTg7J4mCAJUHs13eVlwEBNAuh2W+MRX+f0=;
-        b=VYFio0t4IgrSwo+Kn06NdmtUFzYe0tL8ivqXL4VIMnOLduD3QnDvphODRQhu5M/YNT
-         GqZvVk+Qs97KZ85y3uXxDuY6D7fxi8PlWJwlGkVM5LusetoXDVomm8BVZT1zeh2bXqlB
-         oZuzYd7YGMOrCgGCecZd+krdVt6cahhKyBQqukYlJjeKq/2Dgpc5MXobnUT6VuW88NLb
-         JvAUf6/3pQglaFJxdBSNIiNBv3OHgz1vTqB3IWUSd7U5cWBB2awq0xH+i00CadH1jtKz
-         2NhwrpgTikNCpJgfRUHNzKe2gxxV9d2Vq7eRRC9SMJmADb8tfBJiM4Ffco8EvxjoBH89
-         Vgqg==
-X-Gm-Message-State: AOAM531l8VcdQ0ys8ahjqJygnEhMvH8opoXSB2bLM4cHryqP8v2aPpaK
-        Ys9xMXoN24DfLgix8aM/Uvq2VHOmDGCkwQ==
-X-Google-Smtp-Source: ABdhPJzS17CwYQnvu22TQrNycGW5hH3eSCz0g3fmjyNImrHpMBBpYOq/gWoNJ31xTrqal9o07dXNVw==
-X-Received: by 2002:a63:4656:: with SMTP id v22mr5874251pgk.604.1644698693976;
-        Sat, 12 Feb 2022 12:44:53 -0800 (PST)
-Received: from archlinux.localdomain ([140.121.198.213])
-        by smtp.gmail.com with ESMTPSA id s6sm22881999pgk.44.2022.02.12.12.44.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 12:44:53 -0800 (PST)
-From:   Huichun Feng <foxhoundsk.tw@gmail.com>
-To:     henrybear327@gmail.com
-Cc:     bristot@redhat.com, bsegall@google.com, christian@brauner.io,
-        dietmar.eggemann@arm.com, juri.lelli@redhat.com,
-        linux-kernel@vger.kernel.org, mgorman@suse.de, mingo@redhat.com,
-        peterz@infradead.org, rostedt@goodmis.org,
-        vincent.guittot@linaro.org
-Subject: Re: [PATCH v2] sched: Simplify __sched_init runtime checks
-Date:   Sun, 13 Feb 2022 04:45:48 +0800
-Message-Id: <20220212204548.1342701-1-foxhoundsk.tw@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124085332.41552-1-henrybear327@gmail.com>
-References: <20220124085332.41552-1-henrybear327@gmail.com>
+        Sat, 12 Feb 2022 15:48:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E24606E5
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 12:48:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA9E860DFD
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 20:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE1DEC340E7;
+        Sat, 12 Feb 2022 20:48:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644698934;
+        bh=VCwf/lTuTaKLroj3xGvCG7JEn5+S4JWuF4kVF8dbm0g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gDySsM7ArnhwpS/eHcz6JE3BXsiDv29llXtKgQO1juR8sp67w2cpaScpSDi2egtrX
+         OLZi7zRhGuB88NO+XRRhYjxBegsGTy25jJopsMKDMy5CLfsEZqRk15EurGdKjoyeaK
+         VJZwF2FKvCDlBnjnNeMV49gGL1XySbAFywcoj8c5OvBx3H16Dp/3SoJgqwTXz8No8F
+         RIawQnlpBEfwGrJmWMN/uV7DnN0JOwqnpUthDUL25BOgvZy+sloztqUgTDICRG7Tsy
+         emMh9R1HsQjqvC+X4yaiBVsTy7EtNKDIwVR8YT/T+qtHI9LjdFCYQUjDatP4qOjNKc
+         7lJ4op9cUNZbw==
+Date:   Sat, 12 Feb 2022 12:48:51 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Matthew Waltz <matthewwaltzis@gmail.com>
+Cc:     Jens Axboe <axboe@fb.com>, Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] nvme-pci: fix prp list allocation
+Message-ID: <20220212204851.GA1660889@dhcp-10-100-145-180.wdc.com>
+References: <20220212200649.541061-1-matthewwaltzis@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220212200649.541061-1-matthewwaltzis@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Chun-Hung Tseng <henrybear327@gmail.com> writes:
+On Sat, Feb 12, 2022 at 01:06:49PM -0700, Matthew Waltz wrote:
+> Fixes kernel block errors originating from the hard-coded 256-byte
+> alignment of dma_pool_create(). The NVMe specification requires a PRP
+> List PBAO offset field of 0h, i.e. a PRP List must be aligned to the
+> configured 4096-byte memory page size.
+ 
+That is not correct. The spec (2.0a section 4.1.1) says:
 
->
-> Improve runtime checks in __sched_init(void) by replacing if conditional
-> checks with preprocessor directives.
->
-> Signed-off-by: Chun-Hung Tseng <henrybear327@gmail.com>
-
-Sorry, I didn't reply properly.
-
-Signed-off-by: Huichun Feng <foxhoundsk.tw@gmail.com>
-
-> ---
->  kernel/sched/core.c | 29 +++++++++++++++--------------
->  1 file changed, 15 insertions(+), 14 deletions(-)
->
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 848eaa0efe0e..1b27ca7f485a 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -9308,28 +9308,29 @@ void __init sched_init(void)
->  #ifdef CONFIG_RT_GROUP_SCHED
->         ptr += 2 * nr_cpu_ids * sizeof(void **);
->  #endif
-> -       if (ptr) {
-> -               ptr = (unsigned long)kzalloc(ptr, GFP_NOWAIT);
-> +
-> +#if defined(CONFIG_FAIR_GROUP_SCHED) || defined(CONFIG_RT_GROUP_SCHED)
-> +       ptr = (unsigned long)kzalloc(ptr, GFP_NOWAIT);
->
->  #ifdef CONFIG_FAIR_GROUP_SCHED
-> -               root_task_group.se = (struct sched_entity **)ptr;
-> -               ptr += nr_cpu_ids * sizeof(void **);
-> +       root_task_group.se = (struct sched_entity **)ptr;
-> +       ptr += nr_cpu_ids * sizeof(void **);
->
-> -               root_task_group.cfs_rq = (struct cfs_rq **)ptr;
-> -               ptr += nr_cpu_ids * sizeof(void **);
-> +       root_task_group.cfs_rq = (struct cfs_rq **)ptr;
-> +       ptr += nr_cpu_ids * sizeof(void **);
->
-> -               root_task_group.shares = ROOT_TASK_GROUP_LOAD;
-> -               init_cfs_bandwidth(&root_task_group.cfs_bandwidth);
-> +       root_task_group.shares = ROOT_TASK_GROUP_LOAD;
-> +       init_cfs_bandwidth(&root_task_group.cfs_bandwidth);
->  #endif /* CONFIG_FAIR_GROUP_SCHED */
->  #ifdef CONFIG_RT_GROUP_SCHED
-> -               root_task_group.rt_se = (struct sched_rt_entity **)ptr;
-> -               ptr += nr_cpu_ids * sizeof(void **);
-> -
-> -               root_task_group.rt_rq = (struct rt_rq **)ptr;
-> -               ptr += nr_cpu_ids * sizeof(void **);
-> +       root_task_group.rt_se = (struct sched_rt_entity **)ptr;
-> +       ptr += nr_cpu_ids * sizeof(void **);
->
-> +       root_task_group.rt_rq = (struct rt_rq **)ptr;
-> +       ptr += nr_cpu_ids * sizeof(void **);
->  #endif /* CONFIG_RT_GROUP_SCHED */
-> -       }
-> +#endif /* CONFIG_FAIR_GROUP_SCHED || CONFIG_RT_GROUP_SCHED */
-> +
->  #ifdef CONFIG_CPUMASK_OFFSTACK
->         for_each_possible_cpu(i) {
->                 per_cpu(load_balance_mask, i) = (cpumask_var_t)kzalloc_node(
-> --
-> 2.34.1
+   The first PRP List entry [...] shall be qword aligned and may also
+   have a non-zero offset within the memory page.
