@@ -2,249 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A50C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 11:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 11:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234330AbiBLLZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 06:25:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39196 "EHLO
+        id S234344AbiBLLZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 06:25:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234215AbiBLLZl (ORCPT
+        with ESMTP id S231990AbiBLLZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 06:25:41 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DC82655A;
-        Sat, 12 Feb 2022 03:25:38 -0800 (PST)
+        Sat, 12 Feb 2022 06:25:40 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14D3126AD6;
+        Sat, 12 Feb 2022 03:25:37 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id p15so27757398ejc.7;
+        Sat, 12 Feb 2022 03:25:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644665138; x=1676201138;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=FFkY61nZpsiSvjL5f/R7EFLkcN0P29ZxCH0NiD7iQfk=;
-  b=x0Pf4jJEfR2Ja4wWKLfAefbJIPaeKYLd/p28rDeAOR3gqxDDIlVS4b4Y
-   yTS7WXdv/tiRvxM9xNF9oKcNLNHEZupbXJypWujwSMPwy9N2D8+pZISvx
-   xPtes/mihyglDUMaXnfmZMxzA2+CT37nznCRzMUFPa6Pm42+3M6PjUH9d
-   g=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 12 Feb 2022 03:25:38 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 03:25:37 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Sat, 12 Feb 2022 03:25:37 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sat, 12 Feb 2022 03:25:32 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v11 04/10] ASoC: qcom: Add helper function to get dma control and lpaif handle
-Date:   Sat, 12 Feb 2022 16:54:47 +0530
-Message-ID: <1644665093-4695-5-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644665093-4695-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1644665093-4695-1-git-send-email-quic_srivasam@quicinc.com>
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7SIhUeX2yt0idUDRJKKmAw5gfuLEHOZUKxZ0CAvnkKQ=;
+        b=qzXx3csd9RNDf0yA1DYYLijDmM6LWSt/oPmlFdym5v/OM3V1zPhchWwPa4FyV6QfXZ
+         tFGPnBmObMu62ZBqHpaOCv+h2oia9kLoD/3sBusLQJCueZ79z/JcOCxuwitF6EMjqInY
+         CEgZ2LzNfRsUy9PG2EFccy3NbMcPQ91SxZcheGi+BqXjbho2X651GeAvEaIJjFthHiMJ
+         4xGhc2fg3IcpDPICRzRBUaIZvLlOT2QodI6qSpRNi2Z8qEVy+GweK0PAVYUokpBkLkHA
+         N9zhB5hwVJV9b7G6vNdQgAnn2riQqiWjEjGknz/ya1x98y5XXKTylVzuOUPGBuaf1Jco
+         h8Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=7SIhUeX2yt0idUDRJKKmAw5gfuLEHOZUKxZ0CAvnkKQ=;
+        b=5GX3FYDj4yT6ET9ZeytBNMmfrq366HHu61XzKjkEkBY9qg7HgB8UqzFjUEcxU6nHNt
+         8j4DD2rk8Z8xPvFyUkZenFUNtNZIsWX6L43YkJxNjEvTc05QUz0yciwQTvyTVZZBUH98
+         cxlnPhwwS6YctKmnPhTOu5YrgpeflpVYBM0DiBfc2DavQCYZUV7mXpSetYSVbafJu4N4
+         h85WUl02IopHahNmHzL+BY30ORTwc4KBiAJ7KlFkWKxYQFDak++cGfBYpNzar0ZEMYea
+         +igIfGFR0xR5BCMoHkZ5kdhedoVMr3Xtfe9eOCIgJ2J77IFtAXtPBJYBysCxOC6ETgUN
+         bexg==
+X-Gm-Message-State: AOAM530lYpgCBnl/iYoW5GXOROT8uor9UiCz4DUE2AVzdiC2f/dJSEkl
+        czvdTOdecmowtmJm85brL0s=
+X-Google-Smtp-Source: ABdhPJzWitD0hfjXJ8eX/JHLhmT7VkMjcrS0EcKXiLjXUzIVCfyLkx6hDe7qD20rW2rzZQuz4QDvDg==
+X-Received: by 2002:a17:907:970d:: with SMTP id jg13mr4424600ejc.418.1644665135450;
+        Sat, 12 Feb 2022 03:25:35 -0800 (PST)
+Received: from [192.168.178.40] (ipbcc1fa42.dynamic.kabel-deutschland.de. [188.193.250.66])
+        by smtp.gmail.com with ESMTPSA id b15sm500132edd.60.2022.02.12.03.25.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 12 Feb 2022 03:25:34 -0800 (PST)
+Message-ID: <0428d955-e9c7-b632-cb19-102e49cef387@gmail.com>
+Date:   Sat, 12 Feb 2022 12:25:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] scsi: target: tcmu: Make cmd_ring_size changeable via
+ configfs.
+Content-Language: en-US
+To:     Guixin Liu <kanie@linux.alibaba.com>, martin.petersen@oracle.com
+Cc:     xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1644291974-73531-1-git-send-email-kanie@linux.alibaba.com>
+From:   Bodo Stroesser <bostroesser@gmail.com>
+In-Reply-To: <1644291974-73531-1-git-send-email-kanie@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support function to get dma control and lpaif handle to avoid
-repeated code in platform driver
+On 08.02.22 04:46, Guixin Liu wrote:
+> Make cmd_ring_size changeable similar to the way it is done for
+> max_data_area_mb, the reason is that our tcmu client will create
+> thousands of tcmu instances, and this will consume lots of mem with
+> default 8Mb cmd ring size for every backstore.
+> 
+> One can change the value by typing:
+>      echo "cmd_ring_size_mb=N" > control
+> The "N" is a integer between 1 to 8, if set 1, the cmd ring can hold
+> about 6k cmds(tcmu_cmd_entry about 176 byte) at least.
+> 
+> The value is printed when doing:
+>      cat info
+> In addition, a new readonly attribute 'cmd_ring_size_mb' returns the
+> value in read.
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
----
- sound/soc/qcom/lpass-platform.c | 113 +++++++++++++++++++++++-----------------
- 1 file changed, 66 insertions(+), 47 deletions(-)
+Thank you for the patch. This was on my todo list also.
 
-diff --git a/sound/soc/qcom/lpass-platform.c b/sound/soc/qcom/lpass-platform.c
-index a44162c..5d77240 100644
---- a/sound/soc/qcom/lpass-platform.c
-+++ b/sound/soc/qcom/lpass-platform.c
-@@ -177,6 +177,49 @@ static int lpass_platform_pcmops_close(struct snd_soc_component *component,
- 	return 0;
- }
- 
-+static void __lpass_get_lpaif_handle(struct snd_pcm_substream *substream,
-+				     struct snd_soc_component *component,
-+				     struct lpaif_dmactl **dmactl, int *id, struct regmap **map)
-+{
-+	struct snd_soc_pcm_runtime *soc_runtime = asoc_substream_to_rtd(substream);
-+	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(soc_runtime, 0);
-+	struct lpass_data *drvdata = snd_soc_component_get_drvdata(component);
-+	struct snd_pcm_runtime *rt = substream->runtime;
-+	struct lpass_pcm_data *pcm_data = rt->private_data;
-+	struct lpass_variant *v = drvdata->variant;
-+	int dir = substream->stream;
-+	unsigned int dai_id = cpu_dai->driver->id;
-+	struct lpaif_dmactl *l_dmactl = NULL;
-+	struct regmap *l_map = NULL;
-+	int l_id = 0;
-+
-+	switch (dai_id) {
-+	case MI2S_PRIMARY ... MI2S_QUINARY:
-+		if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
-+			l_id = pcm_data->dma_ch;
-+			l_dmactl = drvdata->rd_dmactl;
-+		} else {
-+			l_dmactl = drvdata->wr_dmactl;
-+			l_id = pcm_data->dma_ch - v->wrdma_channel_start;
-+		}
-+		l_map = drvdata->lpaif_map;
-+		break;
-+	case LPASS_DP_RX:
-+		l_id = pcm_data->dma_ch;
-+		l_dmactl = drvdata->hdmi_rd_dmactl;
-+		l_map = drvdata->hdmiif_map;
-+		break;
-+	default:
-+		break;
-+	}
-+	if (dmactl)
-+		*dmactl = l_dmactl;
-+	if (id)
-+		*id = l_id;
-+	if (map)
-+		*map = l_map;
-+}
-+
- static int lpass_platform_pcmops_hw_params(struct snd_soc_component *component,
- 					   struct snd_pcm_substream *substream,
- 					   struct snd_pcm_hw_params *params)
-@@ -191,21 +234,15 @@ static int lpass_platform_pcmops_hw_params(struct snd_soc_component *component,
- 	unsigned int channels = params_channels(params);
- 	unsigned int regval;
- 	struct lpaif_dmactl *dmactl;
--	int id, dir = substream->stream;
-+	int id;
- 	int bitwidth;
- 	int ret, dma_port = pcm_data->i2s_port + v->dmactl_audif_start;
- 	unsigned int dai_id = cpu_dai->driver->id;
- 
--	if (dir ==  SNDRV_PCM_STREAM_PLAYBACK) {
--		id = pcm_data->dma_ch;
--		if (dai_id == LPASS_DP_RX)
--			dmactl = drvdata->hdmi_rd_dmactl;
--		else
--			dmactl = drvdata->rd_dmactl;
--
--	} else {
--		dmactl = drvdata->wr_dmactl;
--		id = pcm_data->dma_ch - v->wrdma_channel_start;
-+	__lpass_get_lpaif_handle(substream, component, &dmactl, &id, NULL);
-+	if (!dmactl) {
-+		dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
-+		return -EINVAL;
- 	}
- 
- 	bitwidth = snd_pcm_format_width(format);
-@@ -350,10 +387,11 @@ static int lpass_platform_pcmops_hw_free(struct snd_soc_component *component,
- 	struct regmap *map;
- 	unsigned int dai_id = cpu_dai->driver->id;
- 
--	if (dai_id == LPASS_DP_RX)
--		map = drvdata->hdmiif_map;
--	else
--		map = drvdata->lpaif_map;
-+	__lpass_get_lpaif_handle(substream, component, NULL, NULL, &map);
-+	if (!map) {
-+		dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
-+		return -EINVAL;
-+	}
- 
- 	reg = LPAIF_DMACTL_REG(v, pcm_data->dma_ch, substream->stream, dai_id);
- 	ret = regmap_write(map, reg, 0);
-@@ -379,22 +417,12 @@ static int lpass_platform_pcmops_prepare(struct snd_soc_component *component,
- 	int ret, id, ch, dir = substream->stream;
- 	unsigned int dai_id = cpu_dai->driver->id;
- 
--
- 	ch = pcm_data->dma_ch;
--	if (dir ==  SNDRV_PCM_STREAM_PLAYBACK) {
--		if (dai_id == LPASS_DP_RX) {
--			dmactl = drvdata->hdmi_rd_dmactl;
--			map = drvdata->hdmiif_map;
--		} else {
--			dmactl = drvdata->rd_dmactl;
--			map = drvdata->lpaif_map;
--		}
- 
--		id = pcm_data->dma_ch;
--	} else {
--		dmactl = drvdata->wr_dmactl;
--		id = pcm_data->dma_ch - v->wrdma_channel_start;
--		map = drvdata->lpaif_map;
-+	__lpass_get_lpaif_handle(substream, component, &dmactl, &id, &map);
-+	if (!dmactl) {
-+		dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
-+		return -EINVAL;
- 	}
- 
- 	ret = regmap_write(map, LPAIF_DMABASE_REG(v, ch, dir, dai_id),
-@@ -444,25 +472,15 @@ static int lpass_platform_pcmops_trigger(struct snd_soc_component *component,
- 	struct lpaif_dmactl *dmactl;
- 	struct regmap *map;
- 	int ret, ch, id;
--	int dir = substream->stream;
- 	unsigned int reg_irqclr = 0, val_irqclr = 0;
- 	unsigned int  reg_irqen = 0, val_irqen = 0, val_mask = 0;
- 	unsigned int dai_id = cpu_dai->driver->id;
- 
- 	ch = pcm_data->dma_ch;
--	if (dir ==  SNDRV_PCM_STREAM_PLAYBACK) {
--		id = pcm_data->dma_ch;
--		if (dai_id == LPASS_DP_RX) {
--			dmactl = drvdata->hdmi_rd_dmactl;
--			map = drvdata->hdmiif_map;
--		} else {
--			dmactl = drvdata->rd_dmactl;
--			map = drvdata->lpaif_map;
--		}
--	} else {
--		dmactl = drvdata->wr_dmactl;
--		id = pcm_data->dma_ch - v->wrdma_channel_start;
--		map = drvdata->lpaif_map;
-+	__lpass_get_lpaif_handle(substream, component, &dmactl, &id, &map);
-+	if (!dmactl) {
-+		dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
-+		return -EINVAL;
- 	}
- 
- 	switch (cmd) {
-@@ -597,10 +615,11 @@ static snd_pcm_uframes_t lpass_platform_pcmops_pointer(
- 	struct regmap *map;
- 	unsigned int dai_id = cpu_dai->driver->id;
- 
--	if (dai_id == LPASS_DP_RX)
--		map = drvdata->hdmiif_map;
--	else
--		map = drvdata->lpaif_map;
-+	__lpass_get_lpaif_handle(substream, component, NULL, NULL, &map);
-+	if (!map) {
-+		dev_err(soc_runtime->dev, "failed to get dmactl handle\n");
-+		return -EINVAL;
-+	}
- 
- 	ch = pcm_data->dma_ch;
- 
--- 
-2.7.4
+> 
+> Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
+> ---
+>   drivers/target/target_core_user.c | 64 ++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 59 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+> index 7b2a89a..826c1c0 100644
+> --- a/drivers/target/target_core_user.c
+> +++ b/drivers/target/target_core_user.c
+> @@ -64,7 +64,6 @@
+>   #define MB_CMDR_SIZE (8 * 1024 * 1024)
 
+I'd like to change this to MB_CMDR_SIZE_DEF, since it no longer is
+the fixed size of mailbox plus cmd ring, but the default only.
+
+>   /* Offset of cmd ring is size of mailbox */
+>   #define CMDR_OFF sizeof(struct tcmu_mailbox)
+> -#define CMDR_SIZE (MB_CMDR_SIZE - CMDR_OFF)
+
+Similarly this could become CMDR_SIZE_DEF
+
+>   
+>   /*
+>    * For data area, the default block size is PAGE_SIZE and
+> @@ -133,6 +132,7 @@ struct tcmu_dev {
+>   	struct tcmu_mailbox *mb_addr;
+>   	void *cmdr;
+>   	u32 cmdr_size;
+> +	u32 total_cmdr_size_byte;
+
+Do we really need a new field in tcmu_dev? I think we should avoid it
+since the field cmdr_size holds the same value, just lowered by CMDR_OFF.
+
+>   	u32 cmdr_last_cleaned;
+>   	/* Offset of data area from start of mb */
+>   	/* Must add data_off and mb_addr to get the address */
+> @@ -1617,6 +1617,7 @@ static struct se_device *tcmu_alloc_device(struct se_hba *hba, const char *name)
+>   
+>   	udev->data_pages_per_blk = DATA_PAGES_PER_BLK_DEF;
+>   	udev->max_blocks = DATA_AREA_PAGES_DEF / udev->data_pages_per_blk;
+> +	udev->total_cmdr_size_byte = MB_CMDR_SIZE;
+
+We could do
+         udev->cmdr_size = CMDR_SIZE_DEF;
+
+>   	udev->data_area_mb = TCMU_PAGES_TO_MBS(DATA_AREA_PAGES_DEF);
+>   
+>   	mutex_init(&udev->cmdr_lock);
+> @@ -2189,7 +2190,7 @@ static int tcmu_configure_device(struct se_device *dev)
+>   		goto err_bitmap_alloc;
+>   	}
+>   
+> -	mb = vzalloc(MB_CMDR_SIZE);
+> +	mb = vzalloc(udev->total_cmdr_size_byte);
+>   	if (!mb) {
+>   		ret = -ENOMEM;
+>   		goto err_vzalloc;
+> @@ -2198,8 +2199,8 @@ static int tcmu_configure_device(struct se_device *dev)
+>   	/* mailbox fits in first part of CMDR space */
+>   	udev->mb_addr = mb;
+>   	udev->cmdr = (void *)mb + CMDR_OFF;
+> -	udev->cmdr_size = CMDR_SIZE;
+> -	udev->data_off = MB_CMDR_SIZE;
+> +	udev->cmdr_size = udev->total_cmdr_size_byte - CMDR_OFF;
+> +	udev->data_off = udev->total_cmdr_size_byte;
+
+CMDR_SIZE would be already set here, so we only would need:
+         udev->data_off = udev->cmdr_size + CMDR_OFF;
+
+>   	data_size = TCMU_MBS_TO_PAGES(udev->data_area_mb) << PAGE_SHIFT;
+>   	udev->mmap_pages = (data_size + MB_CMDR_SIZE) >> PAGE_SHIFT;
+
+I think we have to replace MB_CMDR_SIZE with udev->cmdr_size + CMDR_OFF here.
+Just a few lines below your patch also does not change the line
+         info->mem[0].size = data_size + MB_CMDR_SIZE;
+where the same replacement is needed.
+
+>   	udev->data_blk_size = udev->data_pages_per_blk * PAGE_SIZE;
+> @@ -2401,7 +2402,7 @@ static void tcmu_reset_ring(struct tcmu_dev *udev, u8 err_level)
+>   enum {
+>   	Opt_dev_config, Opt_dev_size, Opt_hw_block_size, Opt_hw_max_sectors,
+>   	Opt_nl_reply_supported, Opt_max_data_area_mb, Opt_data_pages_per_blk,
+> -	Opt_err,
+> +	Opt_cmd_ring_size_mb, Opt_err,
+>   };
+>   
+>   static match_table_t tokens = {
+> @@ -2412,6 +2413,7 @@ enum {
+>   	{Opt_nl_reply_supported, "nl_reply_supported=%d"},
+>   	{Opt_max_data_area_mb, "max_data_area_mb=%d"},
+>   	{Opt_data_pages_per_blk, "data_pages_per_blk=%d"},
+> +	{Opt_cmd_ring_size_mb, "cmd_ring_size_mb=%d"},
+>   	{Opt_err, NULL}
+>   };
+>   
+> @@ -2509,6 +2511,41 @@ static int tcmu_set_data_pages_per_blk(struct tcmu_dev *udev, substring_t *arg)
+>   	return ret;
+>   }
+>   
+> +static int tcmu_set_cmd_ring_size_param(struct tcmu_dev *udev, substring_t *arg)
+
+Please remove the "_param" suffix from function name, as the
+other similar set functions don't have it also.
+
+> +{
+> +	int val, ret;
+> +
+> +	ret = match_int(arg, &val);
+> +	if (ret < 0) {
+> +		pr_err("match_int() failed for cmd_ring_size_mb=. Error %d.\n",
+> +		       ret);
+> +		return ret;
+> +	}
+> +
+> +	if (val <= 0) {
+> +		pr_err("Invalid cmd_ring_size_mb %d.\n", val);
+> +		return -EINVAL;
+> +	}
+> +
+> +	mutex_lock(&udev->cmdr_lock);
+> +	if (udev->data_bitmap) {
+> +		pr_err("Cannot set cmd_ring_size_mb after it has been enabled.\n");
+> +		ret = -EINVAL;
+> +		goto unlock;
+> +	}
+> +
+> +	udev->total_cmdr_size_byte = (val << 20);
+> +	if (udev->total_cmdr_size_byte > MB_CMDR_SIZE) {
+
+Would be
+         udev->cmdr_size = (val << 20) - CMDR_OFF;
+         if (val > (MB_CMDR_SIZE_DEF >> 20)) {
+
+Please note: the check you coded is definitely wrong.
+E.g. if someone entered the value 4096, which is 0x1000,
+we would have ended up with udev->total_cmdr_size_byte
+set to 0 ...
+
+> +		pr_err("%d is too large. Adjusting cmd_ring_size_mb to global limit of %u\n",
+> +		       val, (MB_CMDR_SIZE >> 20));
+> +		udev->total_cmdr_size_byte = MB_CMDR_SIZE;
+
+                 udev->cmdr_size = CMDR_SIZE_DEF;
+> +	}
+> +
+> +unlock:
+> +	mutex_unlock(&udev->cmdr_lock);
+> +	return ret;
+> +}
+> +
+>   static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
+>   		const char *page, ssize_t count)
+>   {
+> @@ -2563,6 +2600,9 @@ static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
+>   		case Opt_data_pages_per_blk:
+>   			ret = tcmu_set_data_pages_per_blk(udev, &args[0]);
+>   			break;
+> +		case Opt_cmd_ring_size_mb:
+> +			ret = tcmu_set_cmd_ring_size_param(udev, &args[0]);
+> +			break;
+>   		default:
+>   			break;
+>   		}
+> @@ -2585,6 +2625,8 @@ static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
+>   	bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
+>   	bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
+>   	bl += sprintf(b + bl, "DataPagesPerBlk: %u\n", udev->data_pages_per_blk);
+
+I think we should print all the config values on one line.
+So I'd like to remove the '\n' after DataPagesPerBlk.
+
+> +	bl += sprintf(b + bl, "CmdRingSizeMB: %u\n",
+> +		      (udev->total_cmdr_size_byte >> 20));
+>   
+>   	return bl;
+>   }
+> @@ -3059,6 +3101,17 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
+>   }
+>   CONFIGFS_ATTR_WO(tcmu_, free_kept_buf);
+>   
+> +static ssize_t tcmu_cmd_ring_size_mb_show(struct config_item *item, char *page)
+> +{
+> +	struct se_dev_attrib *da = container_of(to_config_group(item),
+> +						struct se_dev_attrib, da_group);
+> +	struct tcmu_dev *udev = TCMU_DEV(da->da_dev);
+> +
+> +	return snprintf(page, PAGE_SIZE, "%u\n",
+> +			(udev->total_cmdr_size_byte >> 20));
+
+			(udev->cmdr_size + CMDR_OFF) >> 20);
+> +}
+> +CONFIGFS_ATTR_RO(tcmu_, cmd_ring_size_mb);
+> +
+
+The attributes block_dev, reset_ring and free_kept_buf belong
+to the separate action attribute group.
+So shouldn't we shift this new attribute up in the code, e.q.
+behind the line "CONFIGFS_ATTR_RO(tcmu_, data_pages_per_blk);"?
+
+
+>   static struct configfs_attribute *tcmu_attrib_attrs[] = {
+>   	&tcmu_attr_cmd_time_out,
+>   	&tcmu_attr_qfull_time_out,
+> @@ -3069,6 +3122,7 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
+>   	&tcmu_attr_emulate_write_cache,
+>   	&tcmu_attr_tmr_notification,
+>   	&tcmu_attr_nl_reply_supported,
+> +	&tcmu_attr_cmd_ring_size_mb,
+>   	NULL,
+>   };
+>   
