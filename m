@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 413DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 850D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbiBLQSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 11:18:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37820 "EHLO
+        id S237144AbiBLQSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 11:18:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237039AbiBLQR5 (ORCPT
+        with ESMTP id S237005AbiBLQRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 11:17:57 -0500
+        Sat, 12 Feb 2022 11:17:55 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC52240A6
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 08:17:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122BE197
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 08:17:51 -0800 (PST)
 Received: from dslb-188-097-215-215.188.097.pools.vodafone-ip.de ([188.97.215.215] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1nIv5q-0007YM-J3; Sat, 12 Feb 2022 17:17:50 +0100
+        id 1nIv5o-0007YM-5i; Sat, 12 Feb 2022 17:17:48 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 07/10] staging: r8188eu: limit rtw_dbg_port to path a
-Date:   Sat, 12 Feb 2022 17:17:34 +0100
-Message-Id: <20220212161737.381841-8-martin@kaiser.cx>
+Subject: [PATCH 04/10] staging: r8188eu: remove path parameter from phy_RFSerialWrite
+Date:   Sat, 12 Feb 2022 17:17:31 +0100
+Message-Id: <20220212161737.381841-5-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220212161737.381841-1-martin@kaiser.cx>
 References: <20220212161737.381841-1-martin@kaiser.cx>
@@ -39,32 +39,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rf registers can be read by rtw_wx_read_rf or via the private ioctl 0x0B.
-The latter calls rtw_dbg_port. Limit rf register reads to path a in
-rtw_debug_port.
+The only caller of phy_RFSerialWrite sets the eRFPath parameter
+to RF_PATH_A. Remove the parameter and use RF_PATH_A directly.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/os_dep/ioctl_linux.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index 30fdc8afcffe..4b3134aef917 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -3621,7 +3621,11 @@ static int rtw_dbg_port(struct net_device *dev,
- 		DBG_88E("write_bbreg(0x%x) = 0x%x\n", arg, rtl8188e_PHY_QueryBBReg(padapter, arg, 0xffffffff));
- 		break;
- 	case 0x74:/* read_rf */
--		DBG_88E("read RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", minor_cmd, arg, rtl8188e_PHY_QueryRFReg(padapter, minor_cmd, arg, 0xffffffff));
-+		if (minor_cmd != RF_PATH_A) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		DBG_88E("read RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", RF_PATH_A, arg, rtl8188e_PHY_QueryRFReg(padapter, RF_PATH_A, arg, 0xffffffff));
- 		break;
- 	case 0x75:/* write_rf */
- 		if (minor_cmd != RF_PATH_A) {
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
+index 628cec40db5f..9e02855c47b2 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
+@@ -217,14 +217,13 @@ phy_RFSerialRead(
+ static	void
+ phy_RFSerialWrite(
+ 		struct adapter *Adapter,
+-		enum rf_radio_path eRFPath,
+ 		u32 Offset,
+ 		u32 Data
+ 	)
+ {
+ 	u32 DataAndAddr = 0;
+ 	struct hal_data_8188e *pHalData = &Adapter->haldata;
+-	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[eRFPath];
++	struct bb_reg_def *pPhyReg = &pHalData->PHYRegDef[RF_PATH_A];
+ 	u32 NewOffset;
+ 
+ 	/*  2009/06/17 MH We can not execute IO for power save or other accident mode. */
+@@ -309,7 +308,7 @@ rtl8188e_PHY_SetRFReg(
+ 		Data = ((Original_Value & (~BitMask)) | (Data << BitShift));
+ 	}
+ 
+-	phy_RFSerialWrite(Adapter, RF_PATH_A, RegAddr, Data);
++	phy_RFSerialWrite(Adapter, RegAddr, Data);
+ }
+ 
+ /*  */
 -- 
 2.30.2
 
