@@ -2,180 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 080AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 16:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237130AbiBLQSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 11:18:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37820 "EHLO
+        id S237153AbiBLQTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 11:19:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiBLQR7 (ORCPT
+        with ESMTP id S231345AbiBLQTU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 11:17:59 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEECC20E
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 08:17:55 -0800 (PST)
-Received: from dslb-188-097-215-215.188.097.pools.vodafone-ip.de ([188.97.215.215] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1nIv5r-0007YM-CF; Sat, 12 Feb 2022 17:17:51 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 08/10] staging: r8188eu: remove path parameter from rtl8188e_PHY_QueryRFReg
-Date:   Sat, 12 Feb 2022 17:17:35 +0100
-Message-Id: <20220212161737.381841-9-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220212161737.381841-1-martin@kaiser.cx>
-References: <20220212161737.381841-1-martin@kaiser.cx>
+        Sat, 12 Feb 2022 11:19:20 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0E4197;
+        Sat, 12 Feb 2022 08:19:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=5ps4Dpti6anPMML5DYvmxj3DVlK84HL9lrfnW5s1I7I=; b=diiOuL6v4zmcZFLQ7gZZaN9BB3
+        oDxx5cZ30Fmaus1PFKW31N94BRa5pvI/DafyMb9VxVulw7aS/gMckVjYHQ7s7OAlMPCE4bju0hX9h
+        +0QSM40rREXJOCDBrR7c09iOuvhD8ZQuCjYGZVhY8cH6Ura2HLhIE6F8e5vYXv7gflZ0F13Fpzxzb
+        XVLT87dmvRb0/gKrvbW0sWa4oAK4TQwDrClnIfQFTSAWOlw5TzdIEduy8X+sHLA8uJ5gcpcID/FpB
+        Ic0xkLP47aZfK0t7aYD9o2WLBAsMaBfxnD1ZljA3Xj9iHMxzFRDbqcc/oEEuW0b8IVnn61sBFAZwD
+        fN6oGatg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57218)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nIv75-0008Hc-BQ; Sat, 12 Feb 2022 16:19:07 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nIv6x-0004fN-8O; Sat, 12 Feb 2022 16:18:59 +0000
+Date:   Sat, 12 Feb 2022 16:18:59 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH v4 16/20] Kbuild: add Rust support
+Message-ID: <Ygfd82QN/wmSmlHa@shell.armlinux.org.uk>
+References: <20220212130410.6901-1-ojeda@kernel.org>
+ <20220212130410.6901-17-ojeda@kernel.org>
+ <YgfBUhYdLXA46kOX@shell.armlinux.org.uk>
+ <CANiq72nMhUH1s0HMeLb+hfp5=u3h20ryC4uqAgB1Znuq52e=Pw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANiq72nMhUH1s0HMeLb+hfp5=u3h20ryC4uqAgB1Znuq52e=Pw@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All callers of rtl8188e_PHY_QueryRFReg set the eRFPath parameter
-to RF_PATH_A. Remove the parameter and use RF_PATH_A directly.
+On Sat, Feb 12, 2022 at 04:47:33PM +0100, Miguel Ojeda wrote:
+> Hi Russell,
+> 
+> On Sat, Feb 12, 2022 at 3:17 PM Russell King (Oracle)
+> <linux@armlinux.org.uk> wrote:
+> >
+> > Please don't use CPU_32v6* here.
+> >
+> > It probably makes more sense to add a symbol "HAVE_RUST" and have the
+> > appropriate architecture Kconfig files select HAVE_RUST.
+> 
+> We can do it whatever way arch maintainers prefer, of course. Why
+> would you prefer one over the other?
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/hal/HalPhyRf_8188e.c     | 6 +++---
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c    | 6 ++----
- drivers/staging/r8188eu/hal/usb_halinit.c        | 2 +-
- drivers/staging/r8188eu/include/Hal8188EPhyCfg.h | 3 +--
- drivers/staging/r8188eu/os_dep/ioctl_linux.c     | 8 ++++----
- 5 files changed, 11 insertions(+), 14 deletions(-)
+It would be cleaner, rather than the "depends" line getting longer
+and longer over time - and if different architecture maintainers
+change it, it will lead to conflicts.
 
-diff --git a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-index c7aed5ed5fa5..0fcf094ae594 100644
---- a/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-+++ b/drivers/staging/r8188eu/hal/HalPhyRf_8188e.c
-@@ -132,7 +132,7 @@ odm_TXPowerTrackingCallback_ThermalMeter_8188E(
- 	/*  <Kordan> RFCalibrateInfo.RegA24 will be initialized when ODM HW configuring, but MP configures with para files. */
- 	dm_odm->RFCalibrateInfo.RegA24 = 0x090e1317;
- 
--	ThermalValue = (u8)rtl8188e_PHY_QueryRFReg(Adapter, RF_PATH_A, RF_T_METER_88E, 0xfc00); /* 0x42: RF Reg[15:10] 88E */
-+	ThermalValue = (u8)rtl8188e_PHY_QueryRFReg(Adapter, RF_T_METER_88E, 0xfc00); /* 0x42: RF Reg[15:10] 88E */
- 
- 	if (ThermalValue) {
- 		/* Query OFDM path A default setting */
-@@ -759,7 +759,7 @@ static void phy_LCCalibrate_8188E(struct adapter *adapt)
- 	if ((tmpreg & 0x70) != 0) {
- 		/* 1. Read original RF mode */
- 		/* Path-A */
--		RF_Amode = rtl8188e_PHY_QueryRFReg(adapt, RF_PATH_A, RF_AC, bMask12Bits);
-+		RF_Amode = rtl8188e_PHY_QueryRFReg(adapt, RF_AC, bMask12Bits);
- 
- 		/* 2. Set RF mode = standby mode */
- 		/* Path-A */
-@@ -767,7 +767,7 @@ static void phy_LCCalibrate_8188E(struct adapter *adapt)
- 	}
- 
- 	/* 3. Read RF reg18 */
--	LC_Cal = rtl8188e_PHY_QueryRFReg(adapt, RF_PATH_A, RF_CHNLBW, bMask12Bits);
-+	LC_Cal = rtl8188e_PHY_QueryRFReg(adapt, RF_CHNLBW, bMask12Bits);
- 
- 	/* 4. Set LC calibration begin	bit15 */
- 	rtl8188e_PHY_SetRFReg(adapt, RF_CHNLBW, bMask12Bits, LC_Cal | 0x08000);
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index 9e02855c47b2..2dcd1df58aaa 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -253,7 +253,6 @@ phy_RFSerialWrite(
- *
- * Input:
- *			struct adapter *Adapter,
--*			enum rf_radio_path eRFPath,	Radio path of A/B/C/D
- *			u32			RegAddr,	The target address to be read
- *			u32			BitMask		The target bit position in the target address
- *									to be read
-@@ -262,12 +261,11 @@ phy_RFSerialWrite(
- * Return:		u32			Readback value
- * Note:		This function is equal to "GetRFRegSetting" in PHY programming guide
- */
--u32 rtl8188e_PHY_QueryRFReg(struct adapter *Adapter, enum rf_radio_path eRFPath,
--			    u32 RegAddr, u32 BitMask)
-+u32 rtl8188e_PHY_QueryRFReg(struct adapter *Adapter, u32 RegAddr, u32 BitMask)
- {
- 	u32 Original_Value, Readback_Value, BitShift;
- 
--	Original_Value = phy_RFSerialRead(Adapter, eRFPath, RegAddr);
-+	Original_Value = phy_RFSerialRead(Adapter, RF_PATH_A, RegAddr);
- 
- 	BitShift =  phy_CalculateBitShift(BitMask);
- 	Readback_Value = (Original_Value & BitMask) >> BitShift;
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 1f2c736c3bc4..63e6337c2344 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -662,7 +662,7 @@ u32 rtl8188eu_hal_init(struct adapter *Adapter)
- 	rtw_write16(Adapter, REG_PKT_BE_BK_LIFE_TIME, 0x0400);	/*  unit: 256us. 256ms */
- 
- 	/* Keep RfRegChnlVal for later use. */
--	haldata->RfRegChnlVal = rtl8188e_PHY_QueryRFReg(Adapter, RF_PATH_A, RF_CHNLBW, bRFRegOffsetMask);
-+	haldata->RfRegChnlVal = rtl8188e_PHY_QueryRFReg(Adapter, RF_CHNLBW, bRFRegOffsetMask);
- 
- 	_BBTurnOnBlock(Adapter);
- 
-diff --git a/drivers/staging/r8188eu/include/Hal8188EPhyCfg.h b/drivers/staging/r8188eu/include/Hal8188EPhyCfg.h
-index e0dff772534d..9e6f2361b090 100644
---- a/drivers/staging/r8188eu/include/Hal8188EPhyCfg.h
-+++ b/drivers/staging/r8188eu/include/Hal8188EPhyCfg.h
-@@ -73,8 +73,7 @@ struct bb_reg_def {
- u32 rtl8188e_PHY_QueryBBReg(struct adapter *adapter, u32 regaddr, u32 mask);
- void rtl8188e_PHY_SetBBReg(struct adapter *Adapter, u32 RegAddr,
- 			   u32 mask, u32 data);
--u32 rtl8188e_PHY_QueryRFReg(struct adapter *adapter, enum rf_radio_path rfpath,
--			    u32 regaddr, u32 mask);
-+u32 rtl8188e_PHY_QueryRFReg(struct adapter *adapter, u32 regaddr, u32 mask);
- void rtl8188e_PHY_SetRFReg(struct adapter *adapter, u32 regaddr, u32 mask, u32 data);
- 
- /*  Initialization related function */
-diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-index 4b3134aef917..f6a683cda614 100644
---- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
-@@ -2067,7 +2067,7 @@ static int rtw_wx_read_rf(struct net_device *dev,
- 		return -EINVAL;
- 
- 	addr = *((u32 *)extra + 1);
--	data32 = rtl8188e_PHY_QueryRFReg(padapter, RF_PATH_A, addr, 0xFFFFF);
-+	data32 = rtl8188e_PHY_QueryRFReg(padapter, addr, 0xFFFFF);
- 	/*
- 	 * IMPORTANT!!
- 	 * Only when wireless private ioctl is at odd order,
-@@ -3547,7 +3547,7 @@ static void rf_reg_dump(struct adapter *padapter)
- 	pr_info("\n ======= RF REG =======\n");
- 	pr_info("\nRF_Path(%x)\n", RF_PATH_A);
- 	for (i = 0; i < 0x100; i++) {
--		value = rtl8188e_PHY_QueryRFReg(padapter, RF_PATH_A, i, 0xffffffff);
-+		value = rtl8188e_PHY_QueryRFReg(padapter, i, 0xffffffff);
- 		if (j % 4 == 1)
- 			pr_info("0x%02x ", i);
- 		pr_info(" 0x%08x ", value);
-@@ -3625,7 +3625,7 @@ static int rtw_dbg_port(struct net_device *dev,
- 			ret = -EINVAL;
- 			break;
- 		}
--		DBG_88E("read RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", RF_PATH_A, arg, rtl8188e_PHY_QueryRFReg(padapter, RF_PATH_A, arg, 0xffffffff));
-+		DBG_88E("read RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", RF_PATH_A, arg, rtl8188e_PHY_QueryRFReg(padapter, arg, 0xffffffff));
- 		break;
- 	case 0x75:/* write_rf */
- 		if (minor_cmd != RF_PATH_A) {
-@@ -3633,7 +3633,7 @@ static int rtw_dbg_port(struct net_device *dev,
- 			break;
- 		}
- 		rtl8188e_PHY_SetRFReg(padapter, arg, 0xffffffff, extra_arg);
--		DBG_88E("write RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", RF_PATH_A, arg, rtl8188e_PHY_QueryRFReg(padapter, RF_PATH_A, arg, 0xffffffff));
-+		DBG_88E("write RF_reg path(0x%02x), offset(0x%x), value(0x%08x)\n", RF_PATH_A, arg, rtl8188e_PHY_QueryRFReg(padapter, arg, 0xffffffff));
- 		break;
- 
- 	case 0x76:
+> > Does Rust support Thumb on ARMv6 and ARMv7 architectures?
+> 
+> Yes, the main backend is LLVM. Some built-in targets and their support
+> level are listed here, if you want to take a look:
+
+Right, so why made it dependent on CPU_32v6 || CPU_32v6K if ARMv7 is
+supported? What about CPU_32v7? What about CPU_32v7M?
+
+I think it would be saner to use the CPU_V6, CPU_V6K, CPU_V7 and maybe
+CPU_V7M here - even bettern to select "HAVE_RUST" from these symbols,
+since I'm sure you'd start to see the issue behind my "HAVE_RUST"
+suggestion as it means having four symbols just for 32-bit ARM on your
+dependency line.
+
+>     https://doc.rust-lang.org/nightly/rustc/platform-support.html
+
+Interestingly, it does not list arm-unknown-linux-gnueabihf, which
+is the "tuple" commonly used to build 32-bit ARM kernels. 
+
+> > Please remove every utterance of "default n" from your patch; n is the
+> > default default which default defaults to, so you don't need to specify
+> > default n to make the option default to n. It will default to n purely
+> > because n is the default when no default is specified.
+> 
+> Certainly. I am curious, though: is there a reason for most of the
+> other 500+ instances in the kernel tree?
+
+Probably because people incorrectly think it's required or some other
+minor reason. As I say:
+
+config FOO
+	bool/tristate ...
+
+always defaults to 'n' without needing "default n" to be specified.
+
+Let's do some proper research on this. There are 19148 "config"
+statements in the kernel tree, 521 "default n" and 4818 that
+specify any kind of "default". That means there are about 14330
+config statements that do not specify any kind of default.
+
+So, there are about 27 times more config statements that specify no
+default than those that specify "default n", so using the argument
+that there are "500+ instances" and therefore should be seen as
+correct is completely misguided.
+
+> > As Rust doesn't support all the architectures that the kernel supports,
+> > Rust must not be used for core infrastructure.
+> 
+> Yeah, although I am not sure I understand what you are getting at here.
+
+I mean, if we end up with, e.g. a filesystem coded in Rust, that
+filesystem will not be available on architectures that the kernel
+supports until either (a) Rust gains support for that architecture
+or (b) someone re-codes the filesystem in C - at which point, what
+is the point of having Rust in the kernel?
+
 -- 
-2.30.2
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
