@@ -2,97 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 15:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14607C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 15:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236401AbiBLPJ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 10:09:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60748 "EHLO
+        id S236359AbiBLPrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 10:47:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236359AbiBLPJz (ORCPT
+        with ESMTP id S229531AbiBLPrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 10:09:55 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75440B0B;
-        Sat, 12 Feb 2022 07:09:51 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id h6so19844163wrb.9;
-        Sat, 12 Feb 2022 07:09:51 -0800 (PST)
+        Sat, 12 Feb 2022 10:47:48 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F35C212;
+        Sat, 12 Feb 2022 07:47:45 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id p63so14902031iod.11;
+        Sat, 12 Feb 2022 07:47:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=y6rK33RVsJ8ict1sPgpfIjdEeAWbWsXMVJ0khfSr/MA=;
-        b=GKradZqxOgToue9ytU42MEBx+sFCTatmIhU/hgAN0i8fRncz8bb8ao0jjbXEdh/wg0
-         xhklPOL8vYJnud/PIzw63QX9CaxFDb01Pd3PxQFSxJX7Fs2DuV8sgEKlwuW8WA99krIP
-         FQ03hGJYQqIvhqiE3vxurHjWL1YJISlxEMH/1juBXIkkMOBDT18zOXPkG2BUsknd9gw7
-         SJut4z7b0naFdbUDyKMBpSqIKfYH9nCOIhiUKXSmQJyCAsoDoyaF6NLnhxqKVTtw6gax
-         D1Vo20ntQOxzIJJRnXVegOdhg59vqFnQeHIhtE0H5PJ2Z+zQyA326UESfl9CeVrrsE6R
-         vpcA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NgeFCi+7UEK+nuh5x7QmJDaX6DxRBY5bpSpry5mSd78=;
+        b=Y88Bnv1NDKvFo/zSY71RycxR2B/ACxpaW4T8kK3tqHqqQbpUAV2I1OqHKgzbSdhrDb
+         QawjU0J+cVvOy4E4YoIvfXhs2SIP+8Wjor7UFfj9vJs/WzufHZgiGsGzq6HHh/Ihr3im
+         3Q1+qditD4ehYRA0/AO80uTEFs6air76y7OZR7ruaDev3sQ47gRVfyCjN6xPjWtWX9gj
+         rlTdZE9Q1bvJnL7TULLZH5Q2e/XqaeGAUzpl5Ym7KRemoqCta6NysmF5neqHTJWlPRAS
+         KE5tVCBrM5IjxzNOqNkAwn4DNyaUgL5Vx2/ERkqh5aHXiGOirP9g4jhrBxji8VuhuUbZ
+         63BQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=y6rK33RVsJ8ict1sPgpfIjdEeAWbWsXMVJ0khfSr/MA=;
-        b=Z/yzNDN955ZT9dPgkAZfMm/3xBrjr0Rsz5tTRLknfZYh8rM813tjA+TXvDo1qb6N9/
-         ggELDjvmOods54ZsJXdz7P7jWLSWb0Ju7meByv1MwKb11xEvyz4b3D50xDfM9h+9UQ/3
-         P/4FUu5v9Kxsm2TXKsYIdbUg7yRyQsiPf7wnW/lhHoXCuLymMCLKj6D2jw3gSKJLziv7
-         5PE3hCY5DGgNlXi0fmAOM5jSgX1ouOH1kv0beJBTxlWqpI88iDIMm2UgERfutHh1AXyt
-         Sw7X5DB7Y6NU4l6pquynGXqIewew42t6Ca0SYx1okpQ8tqeghdOQ1OMus15jxCi1NDh0
-         +9Lg==
-X-Gm-Message-State: AOAM533ccAxv+KR+7EwQ/6BSjkbumSP3NAVN3sub3MGfNZYJYMoTH5x3
-        M0XfNg2ywA0ulVsCYqD9jz4=
-X-Google-Smtp-Source: ABdhPJz/oimDtL1dKb7oi5BhaasQds+dZlobT7RnNlFaApC1121mN3wXqZz0qp7njb1K3LLqge55tg==
-X-Received: by 2002:a5d:598a:: with SMTP id n10mr2765332wri.364.1644678590051;
-        Sat, 12 Feb 2022 07:09:50 -0800 (PST)
-Received: from localhost (92.40.203.136.threembb.co.uk. [92.40.203.136])
-        by smtp.gmail.com with ESMTPSA id o4sm4582459wms.9.2022.02.12.07.09.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 07:09:49 -0800 (PST)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     paul@crapouillou.net, robh+dt@kernel.org, mturquette@baylibre.com,
-        sboyd@kernel.org
-Cc:     linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] clk: ingenic-tcu: Fix missing TCU clock for X1000 SoC
-Date:   Sat, 12 Feb 2022 15:09:28 +0000
-Message-Id: <20220212150927.39513-2-aidanmacdonald.0x0@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
-References: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NgeFCi+7UEK+nuh5x7QmJDaX6DxRBY5bpSpry5mSd78=;
+        b=B6KCr+L1lJFuw4fqUDLA4e67D2cVpo+LS006cUQlfkljieAqUhf3IOoTJTrAvu5fKN
+         LwnIN7L7d+M2toA1oEMfVt0osG1MMpeJRpEtwESRp3Qp4Wsmbgqfgghw1D43U807U5uq
+         WlrQRsbgYN/Xau6HH61+DjPe3U13zNk1cATobPblpE1+b/DzrAN3/Qys02+IFYDSfAap
+         ih6tyBiqrKJseQoAr8d1tGt9Ak+Ewf5kQcWC34NukmiAnJPwWsu2OjFjKUJpVSNWI2oF
+         CibHuO6CU7xAtc1cF7JFnnztYfM0HNB36qR5UttUQ5uHvH8l8PpMh4KOk9OvbwER4AcX
+         dwKg==
+X-Gm-Message-State: AOAM532tHtromcBYAZW5IJ3x4P21XVVN3v+v8ZV0XQVSe5vC7KDiCKik
+        eabE9rOP4zBCNrT38oIGtpnK2ZaH4UuPCofjgMc=
+X-Google-Smtp-Source: ABdhPJzH9YyzNLTg9POFjsMYEBvv50IYOenD6jjVc2LJHnBnXQzNscn5cyEPVT4EBKpUx2wAjYDcVqVZhEvJ8smZXfs=
+X-Received: by 2002:a05:6638:4105:: with SMTP id ay5mr3853138jab.186.1644680864074;
+ Sat, 12 Feb 2022 07:47:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220212130410.6901-1-ojeda@kernel.org> <20220212130410.6901-17-ojeda@kernel.org>
+ <YgfBUhYdLXA46kOX@shell.armlinux.org.uk>
+In-Reply-To: <YgfBUhYdLXA46kOX@shell.armlinux.org.uk>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sat, 12 Feb 2022 16:47:33 +0100
+Message-ID: <CANiq72nMhUH1s0HMeLb+hfp5=u3h20ryC4uqAgB1Znuq52e=Pw@mail.gmail.com>
+Subject: Re: [PATCH v4 16/20] Kbuild: add Rust support
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Finn Behrens <me@kloenk.de>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Gary Guo <gary@garyguo.net>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Douglas Su <d0u9.su@outlook.com>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The X1000 does have a TCU clock gate, so pass it to the driver.
-Without this the TCU can be gated automatically, which prevents
-timers from running.
+Hi Russell,
 
-Fixes: dc6a81c3382f74fe ("clk: Ingenic: Add support for TCU of X1000.")
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
-I've just realized, maybe this is an ABI break. Now that the TCU clock is
-required, the driver probe will fail if given an old device tree which is
-missing that clock. Is it necessary to add a hack of some sort to support
-the old device tree?
+On Sat, Feb 12, 2022 at 3:17 PM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> Please don't use CPU_32v6* here.
+>
+> It probably makes more sense to add a symbol "HAVE_RUST" and have the
+> appropriate architecture Kconfig files select HAVE_RUST.
 
- drivers/clk/ingenic/tcu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We can do it whatever way arch maintainers prefer, of course. Why
+would you prefer one over the other?
 
-diff --git a/drivers/clk/ingenic/tcu.c b/drivers/clk/ingenic/tcu.c
-index 77acfbeb4830..9c86043f673a 100644
---- a/drivers/clk/ingenic/tcu.c
-+++ b/drivers/clk/ingenic/tcu.c
-@@ -320,7 +320,7 @@ static const struct ingenic_soc_info jz4770_soc_info = {
- static const struct ingenic_soc_info x1000_soc_info = {
- 	.num_channels = 8,
- 	.has_ost = false, /* X1000 has OST, but it not belong TCU */
--	.has_tcu_clk = false,
-+	.has_tcu_clk = true,
- };
- 
- static const struct of_device_id __maybe_unused ingenic_tcu_of_match[] __initconst = {
--- 
-2.34.1
+> Does Rust support Thumb on ARMv6 and ARMv7 architectures?
 
+Yes, the main backend is LLVM. Some built-in targets and their support
+level are listed here, if you want to take a look:
+
+    https://doc.rust-lang.org/nightly/rustc/platform-support.html
+
+There is also a GCC backend in `rustc` [1], which is making good
+progress and may eventually give us access to architectures supported
+by GCC. Furthermore, a from-scratch Rust frontend for GCC [2] is being
+worked on, though this effort will likely take more time to reach a
+point where it may be used for the kernel.
+
+[1] https://github.com/rust-lang/rust/tree/master/compiler/rustc_codegen_gcc
+[2] https://github.com/Rust-GCC/gccrs
+
+> Please remove every utterance of "default n" from your patch; n is the
+> default default which default defaults to, so you don't need to specify
+> default n to make the option default to n. It will default to n purely
+> because n is the default when no default is specified.
+
+Certainly. I am curious, though: is there a reason for most of the
+other 500+ instances in the kernel tree?
+
+> As Rust doesn't support all the architectures that the kernel supports,
+> Rust must not be used for core infrastructure.
+
+Yeah, although I am not sure I understand what you are getting at here.
+
+Cheers,
+Miguel
