@@ -2,107 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED34C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07DECC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:20:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236264AbiBLOUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:20:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33380 "EHLO
+        id S236108AbiBLOUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:20:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235939AbiBLOTw (ORCPT
+        with ESMTP id S236313AbiBLOUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 09:19:52 -0500
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [81.169.146.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03205245AF;
-        Sat, 12 Feb 2022 06:19:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675573;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=OnmHjCLh5RkKuftzeE4ShHYwcqkWiFyT0Gj+xcgUmbQ=;
-    b=ZneUeoUJLCidnPlGjTclbmIt2OHWSplmBp1Vzg4yov1z3FEpZu7bKJ07c++cvu05KS
-    x6IaHU3UOB6gV26fM//7vwBd5uRUgbp1sXJVs3r88Q8OM01xKySmlOiyAywlxu9qy4j6
-    j1Px+ZaNKU0IKyNBvKoQaba7cwHkQCYRCOVRYWpsPWfbA1t0fjkLe12uuSOMkzB59sfG
-    BEGFu+ikupkyl6VuRo/5fxZGYAv9eDCQI3CyvOWh31F+R7O5F+ddYfWC7ah4o+RQgc09
-    bbvIc+FSuTg2MmCuiFl3Zapzjff3BvLC9NBhp3ObeB/zCSWgKwfIi98IP1SPg+3gXqWT
-    Dmag==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVblcdY="
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-    by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y1CEJXsqY
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sat, 12 Feb 2022 15:19:33 +0100 (CET)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Paul Cercueil <paul@crapouillou.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Kees Cook <keescook@chromium.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Paul Boddie <paul@boddie.org.uk>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v14 7/9] drm/ingenic: dw-hdmi: make hot plug detection work for CI20
-Date:   Sat, 12 Feb 2022 15:19:25 +0100
-Message-Id: <e5d3a51e394ffbff2675b5389095d7015097bdab.1644675567.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <cover.1644675566.git.hns@goldelico.com>
-References: <cover.1644675566.git.hns@goldelico.com>
+        Sat, 12 Feb 2022 09:20:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5512B194
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 06:20:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB8CC60F13
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 14:20:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16247C340E7;
+        Sat, 12 Feb 2022 14:20:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644675632;
+        bh=1dgPwNRkPyDoXtU9nbHyYh+ij4besNeVgyKowSaip78=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LCpjccFTT+CBJzH1APLb+wQzYkHrAgBB7wLSdmsJrEbBqTwh5YDnurH+Ld1zfUIMD
+         Qw5+x6OVyyxyuPo3j0PdCS8+Xuux8QD/uMpyEBRUjZ8XIISON1nvfnwDg16raKgFq1
+         d1FECOPbknmQMbb6GQHxZVEJn2Mey/99tGV7o1p1Yqnd5rrizmSn+c3nyvlj/NzVnW
+         ywEptEeAZnudFleG+Me8BaY9lbcGPAfpaq6nD6ghBfXiclbHDot5PxDwCWofL6SeN6
+         J5MlOiexCLHb/kIDDTefbpCC8dVU4uG+Cmo2BJQYbFpeaHWhPkxJANugiReRCT3841
+         78iiylRzvtA8Q==
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net
+Cc:     Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 2/2] f2fs: avoid an infinite loop in f2fs_sync_dirty_inodes
+Date:   Sat, 12 Feb 2022 06:20:23 -0800
+Message-Id: <20220212142023.2508247-2-jaegeuk@kernel.org>
+X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
+In-Reply-To: <20220212142023.2508247-1-jaegeuk@kernel.org>
+References: <20220212142023.2508247-1-jaegeuk@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no hpd-gpio installed on the CI20 board HDMI connector.
-Hence there is no hpd detection by the connector driver and we
-have to enable polling by the dw-hdmi driver.
+If one read IO is always failing, we can fall into an infinite loop in
+f2fs_sync_dirty_inodes. This happens during xfstests/generic/457.
 
-We need to set .poll_enabled but that struct component
-can only be accessed in the core code. Hence we use the public
-setter function drm_kms_helper_hotplug_event().
+[  142.803335] Buffer I/O error on dev dm-1, logical block 8388592, async page read
+...
+[  382.887210]  submit_bio_noacct+0xdd/0x2a0
+[  382.887213]  submit_bio+0x80/0x110
+[  382.887223]  __submit_bio+0x4d/0x300 [f2fs]
+[  382.887282]  f2fs_submit_page_bio+0x125/0x200 [f2fs]
+[  382.887299]  __get_meta_page+0xc9/0x280 [f2fs]
+[  382.887315]  f2fs_get_meta_page+0x13/0x20 [f2fs]
+[  382.887331]  f2fs_get_node_info+0x317/0x3c0 [f2fs]
+[  382.887350]  f2fs_do_write_data_page+0x327/0x6f0 [f2fs]
+[  382.887367]  f2fs_write_single_data_page+0x5b7/0x960 [f2fs]
+[  382.887386]  f2fs_write_cache_pages+0x302/0x890 [f2fs]
+[  382.887405]  ? preempt_count_add+0x7a/0xc0
+[  382.887408]  f2fs_write_data_pages+0xfd/0x320 [f2fs]
+[  382.887425]  ? _raw_spin_unlock+0x1a/0x30
+[  382.887428]  do_writepages+0xd3/0x1d0
+[  382.887432]  filemap_fdatawrite_wbc+0x69/0x90
+[  382.887434]  filemap_fdatawrite+0x50/0x70
+[  382.887437]  f2fs_sync_dirty_inodes+0xa4/0x270 [f2fs]
+[  382.887453]  f2fs_write_checkpoint+0x189/0x1640 [f2fs]
+[  382.887469]  ? schedule_timeout+0x114/0x150
+[  382.887471]  ? ttwu_do_activate+0x6d/0xb0
+[  382.887473]  ? preempt_count_add+0x7a/0xc0
+[  382.887476]  kill_f2fs_super+0xca/0x100 [f2fs]
+[  382.887491]  deactivate_locked_super+0x35/0xa0
+[  382.887494]  deactivate_super+0x40/0x50
+[  382.887497]  cleanup_mnt+0x139/0x190
+[  382.887499]  __cleanup_mnt+0x12/0x20
+[  382.887501]  task_work_run+0x64/0xa0
+[  382.887505]  exit_to_user_mode_prepare+0x1b7/0x1c0
+[  382.887508]  syscall_exit_to_user_mode+0x27/0x50
+[  382.887510]  do_syscall_64+0x48/0xc0
+[  382.887513]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 ---
- drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/f2fs/checkpoint.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-index 34e986dd606cf..90547a28dc5c7 100644
---- a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-+++ b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
-@@ -55,6 +55,8 @@ ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
- 	if (mode->clock > 216000)
- 		return MODE_CLOCK_HIGH;
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index 203a1577942d..756abfdf3628 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -1059,13 +1059,13 @@ int f2fs_sync_dirty_inodes(struct f2fs_sb_info *sbi, enum inode_type type)
+ 	struct inode *inode;
+ 	struct f2fs_inode_info *fi;
+ 	bool is_dir = (type == DIR_INODE);
+-	unsigned long ino = 0;
++	unsigned long ino = 0, retry_count = DEFAULT_RETRY_IO_COUNT;
  
-+	dw_hdmi_enable_poll(hdmi, true);
-+
- 	return MODE_OK;
- }
+ 	trace_f2fs_sync_dirty_inodes_enter(sbi->sb, is_dir,
+ 				get_pages(sbi, is_dir ?
+ 				F2FS_DIRTY_DENTS : F2FS_DIRTY_DATA));
+ retry:
+-	if (unlikely(f2fs_cp_error(sbi))) {
++	if (unlikely(f2fs_cp_error(sbi) || !retry_count)) {
+ 		trace_f2fs_sync_dirty_inodes_exit(sbi->sb, is_dir,
+ 				get_pages(sbi, is_dir ?
+ 				F2FS_DIRTY_DENTS : F2FS_DIRTY_DATA));
+@@ -1096,10 +1096,12 @@ int f2fs_sync_dirty_inodes(struct f2fs_sb_info *sbi, enum inode_type type)
  
+ 		iput(inode);
+ 		/* We need to give cpu to another writers. */
+-		if (ino == cur_ino)
++		if (ino == cur_ino) {
++			retry_count--;
+ 			cond_resched();
+-		else
++		} else {
+ 			ino = cur_ino;
++		}
+ 	} else {
+ 		/*
+ 		 * We should submit bio, since it exists several
 -- 
-2.33.0
+2.35.1.265.g69c8d7142f-goog
 
