@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01724C46467
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435E5C43217
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235930AbiBLOTw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:19:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33324 "EHLO
+        id S236016AbiBLOTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:19:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233422AbiBLOTt (ORCPT
+        with ESMTP id S235827AbiBLOTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 09:19:49 -0500
-Received: from mo4-p04-ob.smtp.rzone.de (mo4-p04-ob.smtp.rzone.de [85.215.255.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6318245B7;
+        Sat, 12 Feb 2022 09:19:48 -0500
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1950245B0;
         Sat, 12 Feb 2022 06:19:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675571;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675570;
     s=strato-dkim-0002; d=goldelico.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=i8pTmnLmwlb11chyD0dSM2jAOpH2BALjlZjdfMA39JQ=;
-    b=sdNF5R0RHznzGkb4VKZfZFXv5z7vsqqPhAqbLy5AIvpot0X+b+5+ktWPLUaqRr5CM5
-    /wxas83cZ1ti/RoqOPsco9Y7ZYrxQ3AzgP8m1ddOfqwsNyW2iUVxwbpGtT56LfZMpNID
-    4uat+zFIZXcFUyE9HMPIN6fSQLeaWbno5vchm9lNL1pnwPszPo3UbptdBvlYvTnG38hD
-    gT8D5T89fxGsGZzKMNEtWqx6ih6G1h4lMVgOkD5o8zj/pDyqZr1Alsb/fBttdgERQR4u
-    g5jXKoCreGB/QaxV7/5RLgUiTiagRlLHR2B6TUWlCCVpHGhI2P+qRw/SFvNkauLHUROv
-    wkdA==
+    bh=EIP45SXhh3w3v5mNhr2JpsX76t9YKejm6z/VSDDKZlU=;
+    b=PQWF9Y9T3jluyvNeYcMeLodGQZjHkv+ydSyWdmfy3eKa5/R8GlgqQgyEChXAbEgJ44
+    YMWm3V6+tc96zbUrRS95XfKO6usRJOOsHniPA/uZSxIAg9rxaHlm816/m57/iBlJLdZU
+    2YYM0rENOz0iWDGwxKy8xjx7ZG0xaq8yurKK1lUjEliaob7vJ6AZaafYx7l9JBPWFv8c
+    llqjiGIXgthnR0jiUOgMVLe0VRDWI6uPfLr4V8aTPUX7JSmCbZd63MgwGHLSG4nD+Y9y
+    iaBXkG/5vs08ILdh3wRkq9/Nzyy5MCRMVu6hxryAAExauhHTGlXSHFYK7xU74Z3Xvomd
+    tRYw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVblcdY="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
-    with ESMTPSA id L29417y1CEJVsqV
+    with ESMTPSA id L29417y1CEJTsqT
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Sat, 12 Feb 2022 15:19:31 +0100 (CET)
+    Sat, 12 Feb 2022 15:19:29 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Paul Cercueil <paul@crapouillou.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -64,10 +64,10 @@ To:     Paul Cercueil <paul@crapouillou.net>,
 Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         Jonas Karlman <jonas@kwiboo.se>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH v14 4/9] drm/bridge: display-connector: add ddc-en gpio support
-Date:   Sat, 12 Feb 2022 15:19:22 +0100
-Message-Id: <27ebb5cf149444b2461f7cff687441815632cb8a.1644675566.git.hns@goldelico.com>
+        dri-devel@lists.freedesktop.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v14 2/9] dt-bindings: display: Add ingenic,jz4780-dw-hdmi DT Schema
+Date:   Sat, 12 Feb 2022 15:19:20 +0100
+Message-Id: <c806c6007f7bb090bf96ff6bd827f03e88bf4712.1644675566.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <cover.1644675566.git.hns@goldelico.com>
 References: <cover.1644675566.git.hns@goldelico.com>
@@ -77,65 +77,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"hdmi-connector.yaml" bindings defines an optional property
-"ddc-en-gpios" for a single gpio to enable DDC operation.
+From: Sam Ravnborg <sam@ravnborg.org>
 
-Usually this controls +5V power on the HDMI connector.
-This +5V may also be needed for HPD.
+Add DT bindings for the hdmi driver for the Ingenic JZ4780 SoC.
+Based on .txt binding from Zubair Lutfullah Kakakhel
 
-This was not reflected in code.
-
-Now, the driver activates the ddc gpio after probe and
-deactivates after remove so it is "almost on".
-
-But only if this driver is loaded (and not e.g. blacklisted
-as module).
-
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Cc: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/gpu/drm/bridge/display-connector.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ .../display/bridge/ingenic,jz4780-hdmi.yaml   | 82 +++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
 
-diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
-index d24f5b90feabf..e4d52a7e31b71 100644
---- a/drivers/gpu/drm/bridge/display-connector.c
-+++ b/drivers/gpu/drm/bridge/display-connector.c
-@@ -24,6 +24,7 @@ struct display_connector {
- 	int			hpd_irq;
- 
- 	struct regulator	*dp_pwr;
-+	struct gpio_desc	*ddc_en;
- };
- 
- static inline struct display_connector *
-@@ -345,6 +346,17 @@ static int display_connector_probe(struct platform_device *pdev)
- 		}
- 	}
- 
-+	/* enable DDC */
-+	if (type == DRM_MODE_CONNECTOR_HDMIA) {
-+		conn->ddc_en = devm_gpiod_get_optional(&pdev->dev, "ddc-en",
-+						       GPIOD_OUT_HIGH);
+diff --git a/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
+new file mode 100644
+index 0000000000000..b8219eab4475a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/bridge/ingenic,jz4780-hdmi.yaml
+@@ -0,0 +1,82 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/bridge/ingenic,jz4780-hdmi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		if (IS_ERR(conn->ddc_en)) {
-+			dev_err(&pdev->dev, "Couldn't get ddc-en gpio\n");
-+			return PTR_ERR(conn->ddc_en);
-+		}
-+	}
++title: Bindings for Ingenic JZ4780 HDMI Transmitter
 +
- 	conn->bridge.funcs = &display_connector_bridge_funcs;
- 	conn->bridge.of_node = pdev->dev.of_node;
- 
-@@ -373,6 +385,9 @@ static int display_connector_remove(struct platform_device *pdev)
- {
- 	struct display_connector *conn = platform_get_drvdata(pdev);
- 
-+	if (conn->ddc_en)
-+		gpiod_set_value(conn->ddc_en, 0);
++maintainers:
++  - H. Nikolaus Schaller <hns@goldelico.com>
 +
- 	if (conn->dp_pwr)
- 		regulator_disable(conn->dp_pwr);
- 
++description: |
++  The HDMI Transmitter in the Ingenic JZ4780 is a Synopsys DesignWare HDMI 1.4
++  TX controller IP with accompanying PHY IP.
++
++allOf:
++  - $ref: synopsys,dw-hdmi.yaml#
++
++properties:
++  compatible:
++    const: ingenic,jz4780-dw-hdmi
++
++  reg-io-width:
++    const: 4
++
++  clocks:
++    maxItems: 2
++
++  ports:
++    $ref: /schemas/graph.yaml#/properties/ports
++
++    properties:
++      port@0:
++        $ref: /schemas/graph.yaml#/properties/port
++        description: Input from LCD controller output.
++
++      port@1:
++        $ref: /schemas/graph.yaml#/properties/port
++        description: Link to the HDMI connector.
++
++required:
++  - compatible
++  - clocks
++  - clock-names
++  - ports
++  - reg-io-width
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/ingenic,jz4780-cgu.h>
++
++    hdmi: hdmi@10180000 {
++        compatible = "ingenic,jz4780-dw-hdmi";
++        reg = <0x10180000 0x8000>;
++        reg-io-width = <4>;
++        ddc-i2c-bus = <&i2c4>;
++        interrupt-parent = <&intc>;
++        interrupts = <3>;
++        clocks = <&cgu JZ4780_CLK_AHB0>, <&cgu JZ4780_CLK_HDMI>;
++        clock-names = "iahb", "isfr";
++
++        ports {
++            #address-cells = <1>;
++            #size-cells = <0>;
++            hdmi_in: port@0 {
++                reg = <0>;
++                dw_hdmi_in: endpoint {
++                    remote-endpoint = <&jz4780_lcd_out>;
++                };
++            };
++            hdmi_out: port@1 {
++                reg = <1>;
++                dw_hdmi_out: endpoint {
++                    remote-endpoint = <&hdmi_con>;
++                };
++            };
++        };
++    };
++
++...
 -- 
 2.33.0
 
