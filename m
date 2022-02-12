@@ -2,94 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 174ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 11:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D29C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 11:24:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234044AbiBLLSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 06:18:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36502 "EHLO
+        id S234056AbiBLLYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 06:24:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232554AbiBLLSF (ORCPT
+        with ESMTP id S233922AbiBLLYK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 06:18:05 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15C12613F;
-        Sat, 12 Feb 2022 03:18:02 -0800 (PST)
-Date:   Sat, 12 Feb 2022 11:17:58 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644664679;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0R2QHDQmiYduE/sh3uq1H1h87TD/Q/RH6gPXiG/2yhY=;
-        b=JS9hbHDPIhjtC7yCWnUO3MwqyywzfwRT0RgR3V7lMJ5Yonc/Q/kwdPWpboYBLcmcbskZ67
-        Q9howqPDCy56gFXJe9Npj54p1Ua2/JyvqCMVBYZNTu4l46DFMcOoKvCbWyP+f1hLnwq1wc
-        8TugfJiqBQW51DKYdO9mW3vG9w3/PQTXItwafCr79nFjROWw7GEfzGl5xXROBW8JuiJWR0
-        f+apu2bq371C2PfeNaQ7K1amldvatPBwqaiKdX3JGuBhAItt0urwNJaexK5vVYow0yur8C
-        S2sGtltLKgQwPXVbMq15xnHmgVKrq6V01PLZGgyBVstmGJ7SGJbSfqXXFSkTZg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644664679;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0R2QHDQmiYduE/sh3uq1H1h87TD/Q/RH6gPXiG/2yhY=;
-        b=swAAlZtu3uga2c4zSC2X1Xnvlvpm65f/V1IsqEQF35v5veFo3E7Qq/WMIJj/alWkx2ctS9
-        qlyx6mUz7fDaJwAQ==
-From:   "tip-bot2 for Marco Bonelli" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/sev] x86/head64: Add missing __head annotation to
- sme_postprocess_startup()
-Cc:     Marco Bonelli <marco@mebeim.net>, Borislav Petkov <bp@suse.de>,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220211162350.11780-1-marco@mebeim.net>
-References: <20220211162350.11780-1-marco@mebeim.net>
+        Sat, 12 Feb 2022 06:24:10 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E554B26130
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 03:24:06 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id 4so12359912oil.11
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 03:24:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=swiecki.net; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gxid+VMOks+Z278B3ciU0dNskRK6ktKfaLZmB1Olmd4=;
+        b=Qb939wlv4CKlAJ6xVeF8t1o3QQMoZ897DgNU2HRBmPOLq3lYk4thq8Mo0xjNEWQ5Rl
+         xYE0rfcoBeo4i1vKD6mlDF9NhgT9O2ZladUn8mf7uRzEGWKCecJ5Hm6YgEZCl+MtMOXx
+         5AlWl0A/TKfY6dlLWgFGqNbbc3q5gZm26MNm8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gxid+VMOks+Z278B3ciU0dNskRK6ktKfaLZmB1Olmd4=;
+        b=cvCOFTgACFajy81sKcOow/2ouo2F/3EqlDwTMB08TV9sy3Nn37Vz6YHiZetdhgBTMD
+         0sAL+7ugsPlyIxIm4NIxQ0Khcg0jn2ypJ8eZ8Nr6rSjvg6YvBhQWxloqqdP0fHsWae5y
+         fXvAjpuVjXDzaQuq6u7qXNHkSgoOtmdcraeEgRYsLWXZAGgOX+ml9gQwmspwAeBL0sMX
+         xKOAtlc7rzsWv5wZ0k6tiCw/VmNyYXJqBbi2Xai7Msp9tNFwr/jmOpNmMHR83I7jE0Jn
+         AxTayrmevsl05dIsH7BaBpv0/+rlcKVXrefjotNoe3/ZXCbO2g7q2mEN2rM0wIbTJAje
+         yFVw==
+X-Gm-Message-State: AOAM530G/F0R0k/OlCDs9ITHlDEklxWXdbdaC1hq3c1EtWAaMviDzgD3
+        HirVVLSYH5RV4NJc2WOMRIB7FYOsoxSJJ8VZZ3Dx/g==
+X-Google-Smtp-Source: ABdhPJzGrnzJadnmXKM7XSlQ5XNFMUGbUZMnE1w9kzaG+mj8orByLRg8I4TFVFeTU5GnD9nwXyi5zQ8pinUTzLRQXmk=
+X-Received: by 2002:a05:6808:19a5:: with SMTP id bj37mr2189889oib.243.1644665046278;
+ Sat, 12 Feb 2022 03:24:06 -0800 (PST)
 MIME-Version: 1.0
-Message-ID: <164466467861.16921.14773525480598389536.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <20220212042843.2993537-1-keescook@chromium.org>
+In-Reply-To: <20220212042843.2993537-1-keescook@chromium.org>
+From:   =?UTF-8?B?Um9iZXJ0IMWad2nEmWNraQ==?= <robert@swiecki.net>
+Date:   Sat, 12 Feb 2022 12:23:55 +0100
+Message-ID: <CAP145phC6S6Zda-ZWLH1s4ZfDPh79rtf_7vzs-yvt1vykUCP4A@mail.gmail.com>
+Subject: Re: [RFC] Get siginfo from unreaped task
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jann Horn <jannh@google.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, linux-api@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/sev branch of tip:
+sob., 12 lut 2022 o 05:28 Kees Cook <keescook@chromium.org> napisa=C5=82(a)=
+:
+>
+> Make siginfo available through PTRACE_GETSIGINFO after process death,
+> without needing to have already used PTRACE_ATTACH. Uses 48 more bytes
+> in task_struct, though I bet there might be somewhere else we could
+> stash a copy of it?
 
-Commit-ID:     5f117033243488a0080f837540c27999aa31870e
-Gitweb:        https://git.kernel.org/tip/5f117033243488a0080f837540c27999aa31870e
-Author:        Marco Bonelli <marco@mebeim.net>
-AuthorDate:    Fri, 11 Feb 2022 17:23:50 +01:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Sat, 12 Feb 2022 11:37:09 +01:00
+An alternative way of accessing this info could be abusing the
+waitid() interface, with some additional, custom to Linux, flag
 
-x86/head64: Add missing __head annotation to sme_postprocess_startup()
+waitid(P_ALL, 0, &si, __WCHILDSIGINFO);
 
-This function was previously part of __startup_64() which is marked
-__head, and is currently only called from there. Mark it __head too.
+which would change what is put into si.
 
-Signed-off-by: Marco Bonelli <marco@mebeim.net>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220211162350.11780-1-marco@mebeim.net
----
- arch/x86/kernel/head64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+But maybe ptrace() is better, because it's mostly incompatible with
+other OSes anyway on the behavior/flag level, while waitd() seems to
+be POSIX/BSD standard, even if Linux specifies some additional flags.
 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index de563db..4f5ecbb 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -126,7 +126,7 @@ static bool __head check_la57_support(unsigned long physaddr)
- }
- #endif
- 
--static unsigned long sme_postprocess_startup(struct boot_params *bp, pmdval_t *pmd)
-+static unsigned long __head sme_postprocess_startup(struct boot_params *bp, pmdval_t *pmd)
- {
- 	unsigned long vaddr, vaddr_end;
- 	int i;
+--=20
+Robert =C5=9Awi=C4=99cki
