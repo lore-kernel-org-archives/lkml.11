@@ -2,152 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC95C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B210AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 13:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235645AbiBLN2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 08:28:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47386 "EHLO
+        id S235678AbiBLN2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 08:28:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231276AbiBLN2A (ORCPT
+        with ESMTP id S231276AbiBLN2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 08:28:00 -0500
-Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6BC22B15
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 05:27:55 -0800 (PST)
-Received: from localhost.localdomain ([124.33.176.97])
-        by smtp.orange.fr with ESMTPA
-        id IsR7niVP1u3WEIsRKn94XY; Sat, 12 Feb 2022 14:27:53 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Sat, 12 Feb 2022 14:27:53 +0100
-X-ME-IP: 124.33.176.97
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-can@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH iproute2] iplink_can: print_usage: typo fix, add missing spaces
-Date:   Sat, 12 Feb 2022 22:27:27 +0900
-Message-Id: <20220212132727.3710-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 12 Feb 2022 08:28:01 -0500
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57034245AF
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 05:27:56 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V4DccNi_1644672462;
+Received: from VM20190228-102.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0V4DccNi_1644672462)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 12 Feb 2022 21:27:52 +0800
+From:   Guanghui Feng <guanghuifeng@linux.alibaba.com>
+To:     pmladek@suse.com, senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, keescook@chromium.org, anton@enomsg.org,
+        ccross@android.com, tony.luck@intel.com,
+        linux-kernel@vger.kernel.org
+Cc:     baolin.wang@linux.alibaba.com, yaohongbo@linux.alibaba.com,
+        zhangliguang@linux.alibaba.com, zhuo.song@linux.alibaba.com
+Subject: [PATCH] printk: fix softlockup/rcu stall warning without setting CONFIG_PREEMPTION
+Date:   Sat, 12 Feb 2022 21:27:42 +0800
+Message-Id: <1644672462-20793-1-git-send-email-guanghuifeng@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The can help menu misses three spaces for the TDCV, TDCO and TDCF
-parameters, making the closing curly bracket unaligned.
+If without setting CONFIG_PREEMPTION, and there are too many messages
+only in one cpu which will set console_may_schedule to 0 without cond_resched,
+we will find softlockup/rcu stall warning. Although the timer interrupt
+can be raised in the routine of console_unlock, the irq interrupt return
+to user/kernel will't schedule other tasks(without setting CONFIG_PREEMPTION).
+So I add need_resched() for cond_schedule to avoid it.
 
-For reference, before this patch:
+Call trace:
+    console_unlock+0x220/0x420
+    vprintk_emit+0x17c/0x1ac
+    vprintk_default+0x3c/0x44
+    vprintk+0x38/0x70
+    printk+0x64/0x88
+    dump_task.part.0+0xc4/0xe0
+    dump_task+0x70/0x74
+    dump_tasks+0x78/0x90
+    dump_global_header+0xcc/0xe8
+    oom_kill_process+0x258/0x274
+    out_of_memory.part.0+0xb0/0x33c
+    out_of_memory+0x4c/0xa0
+    __alloc_pages_may_oom+0x11c/0x1a0
+    __alloc_pages_slowpath.constprop.0+0x4c0/0x75c
+    __alloc_pages_nodemask+0x2b4/0x310
+    alloc_pages_current+0x8c/0x140
+    get_zeroed_page+0x20/0x50
+    __pud_alloc+0x40/0x190
+    copy_pud_range+0x264/0x280
+    copy_page_range+0xe8/0x204
+    dup_mmap+0x334/0x434
+    dup_mm+0x64/0x11c
+    copy_process+0x5e0/0x11a0
+    kernel_clone+0x94/0x364
+    __do_sys_clone+0x54/0x80
+    __arm64_sys_clone+0x24/0x30
+    el0_svc_common.constprop.0+0x7c/0x210
+    do_el0_svc+0x74/0x90
+    el0_svc+0x24/0x60
+    el0_sync_handler+0xa8/0xb0
+    el0_sync+0x140/0x180
 
-| $ ip link help can
-| Usage: ip link set DEVICE type can
-| 	[ bitrate BITRATE [ sample-point SAMPLE-POINT] ] |
-| 	[ tq TQ prop-seg PROP_SEG phase-seg1 PHASE-SEG1
-|  	  phase-seg2 PHASE-SEG2 [ sjw SJW ] ]
-|
-| 	[ dbitrate BITRATE [ dsample-point SAMPLE-POINT] ] |
-| 	[ dtq TQ dprop-seg PROP_SEG dphase-seg1 PHASE-SEG1
-|  	  dphase-seg2 PHASE-SEG2 [ dsjw SJW ] ]
-| 	[ tdcv TDCV tdco TDCO tdcf TDCF ]
-|
-| 	[ loopback { on | off } ]
-| 	[ listen-only { on | off } ]
-| 	[ triple-sampling { on | off } ]
-| 	[ one-shot { on | off } ]
-| 	[ berr-reporting { on | off } ]
-| 	[ fd { on | off } ]
-| 	[ fd-non-iso { on | off } ]
-| 	[ presume-ack { on | off } ]
-| 	[ cc-len8-dlc { on | off } ]
-| 	[ tdc-mode { auto | manual | off } ]
-|
-| 	[ restart-ms TIME-MS ]
-| 	[ restart ]
-|
-| 	[ termination { 0..65535 } ]
-|
-| 	Where: BITRATE	:= { NUMBER in bps }
-| 		  SAMPLE-POINT	:= { 0.000..0.999 }
-| 		  TQ		:= { NUMBER in ns }
-| 		  PROP-SEG	:= { NUMBER in tq }
-| 		  PHASE-SEG1	:= { NUMBER in tq }
-| 		  PHASE-SEG2	:= { NUMBER in tq }
-| 		  SJW		:= { NUMBER in tq }
-| 		  TDCV		:= { NUMBER in tc}
-| 		  TDCO		:= { NUMBER in tc}
-| 		  TDCF		:= { NUMBER in tc}
-| 		  RESTART-MS	:= { 0 | NUMBER in ms }
-
-... and after this patch:
-
-| $ ip link help can
-| Usage: ip link set DEVICE type can
-| 	[ bitrate BITRATE [ sample-point SAMPLE-POINT] ] |
-| 	[ tq TQ prop-seg PROP_SEG phase-seg1 PHASE-SEG1
-|  	  phase-seg2 PHASE-SEG2 [ sjw SJW ] ]
-|
-| 	[ dbitrate BITRATE [ dsample-point SAMPLE-POINT] ] |
-| 	[ dtq TQ dprop-seg PROP_SEG dphase-seg1 PHASE-SEG1
-|  	  dphase-seg2 PHASE-SEG2 [ dsjw SJW ] ]
-| 	[ tdcv TDCV tdco TDCO tdcf TDCF ]
-|
-| 	[ loopback { on | off } ]
-| 	[ listen-only { on | off } ]
-| 	[ triple-sampling { on | off } ]
-| 	[ one-shot { on | off } ]
-| 	[ berr-reporting { on | off } ]
-| 	[ fd { on | off } ]
-| 	[ fd-non-iso { on | off } ]
-| 	[ presume-ack { on | off } ]
-| 	[ cc-len8-dlc { on | off } ]
-| 	[ tdc-mode { auto | manual | off } ]
-|
-| 	[ restart-ms TIME-MS ]
-| 	[ restart ]
-|
-| 	[ termination { 0..65535 } ]
-|
-| 	Where: BITRATE	:= { NUMBER in bps }
-| 		  SAMPLE-POINT	:= { 0.000..0.999 }
-| 		  TQ		:= { NUMBER in ns }
-| 		  PROP-SEG	:= { NUMBER in tq }
-| 		  PHASE-SEG1	:= { NUMBER in tq }
-| 		  PHASE-SEG2	:= { NUMBER in tq }
-| 		  SJW		:= { NUMBER in tq }
-| 		  TDCV		:= { NUMBER in tc }
-| 		  TDCO		:= { NUMBER in tc }
-| 		  TDCF		:= { NUMBER in tc }
-| 		  RESTART-MS	:= { 0 | NUMBER in ms }
-
-Fixes: 0c263d7c36ff ("iplink_can: add new CAN FD bittiming parameters:
-Transmitter Delay Compensat ion (TDC)")
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 ---
- ip/iplink_can.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/printk/printk.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index 6ea02a2a..0e670a6c 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -53,9 +53,9 @@ static void print_usage(FILE *f)
- 		"\t	  PHASE-SEG1	:= { NUMBER in tq }\n"
- 		"\t	  PHASE-SEG2	:= { NUMBER in tq }\n"
- 		"\t	  SJW		:= { NUMBER in tq }\n"
--		"\t	  TDCV		:= { NUMBER in tc}\n"
--		"\t	  TDCO		:= { NUMBER in tc}\n"
--		"\t	  TDCF		:= { NUMBER in tc}\n"
-+		"\t	  TDCV		:= { NUMBER in tc }\n"
-+		"\t	  TDCO		:= { NUMBER in tc }\n"
-+		"\t	  TDCF		:= { NUMBER in tc }\n"
- 		"\t	  RESTART-MS	:= { 0 | NUMBER in ms }\n"
- 		);
- }
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 82abfaf..54b6cf2 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -2716,7 +2716,11 @@ void console_unlock(void)
+ 		if (handover)
+ 			return;
+ 
++#ifndef CONFIG_PREEMPTION
++		if (do_cond_resched || need_resched())
++#else
+ 		if (do_cond_resched)
++#endif
+ 			cond_resched();
+ 	}
+ 
 -- 
-2.34.1
+1.8.3.1
 
