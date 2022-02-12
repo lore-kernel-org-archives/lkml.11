@@ -2,119 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD66C43219
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 14:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235817AbiBLORW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 09:17:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60726 "EHLO
+        id S235865AbiBLOTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 09:19:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230193AbiBLORT (ORCPT
+        with ESMTP id S230193AbiBLOTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 09:17:19 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBCCB245AF;
-        Sat, 12 Feb 2022 06:17:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=7QnIJw6JxaPkGqXMTz2fgzVx+1VOgBcJilFzsMI0nk0=; b=D//rq9qQ1yPFmlYSJjfJ++UitW
-        R94LxHUfU/lsbdZfaToI/2ib1NTyBPeNKo1yFNy2Y1f7kcAqCrAQVaOGZb0nsKkGU9sqUA1+SfsBs
-        KyU/D3XEyfxKVQ7mapp2Oe/TT5cgDUaRPhWNav+Be8ZDacTeFQkP1XztQpdM9itfvkHhb5mEmPWO0
-        556GGN7mb9mocAJcfJgB8OKFKolIjqv3dMwdMuqanrr1V7ikWk3aYXNZ2jTIgHtC2KwTWoL3vd51B
-        TJrrw6fdLn1YJ+hl4nrIVIJ8Z5p/vaFek2FShZlHl1yeexKsqOYealYzAWVuHigBVTsLLwcOjBssJ
-        IRhawmdQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57216)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nItCy-0008Cj-25; Sat, 12 Feb 2022 14:17:04 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nItCk-0004bI-1s; Sat, 12 Feb 2022 14:16:50 +0000
-Date:   Sat, 12 Feb 2022 14:16:50 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Miguel Ojeda <ojeda@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Finn Behrens <me@kloenk.de>,
-        Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Gary Guo <gary@garyguo.net>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Douglas Su <d0u9.su@outlook.com>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Daniel Xu <dxu@dxuuu.xyz>, Miguel Cano <macanroj@gmail.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kbuild@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v4 16/20] Kbuild: add Rust support
-Message-ID: <YgfBUhYdLXA46kOX@shell.armlinux.org.uk>
-References: <20220212130410.6901-1-ojeda@kernel.org>
- <20220212130410.6901-17-ojeda@kernel.org>
+        Sat, 12 Feb 2022 09:19:47 -0500
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [81.169.146.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB84245AF;
+        Sat, 12 Feb 2022 06:19:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1644675571;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=hnokX48fBvNQPVfYvZ409iSDr2wm/0KoCC25lnJ/fQA=;
+    b=Mn7/VRkUTTlsX4CtHxCDrdO2MAWjZ+xz91LPVklLQncSpp9kb+325/deYY0Tt+EDJ6
+    LjXjScmHZIxJm36g/+zc2D4TDBuWBbhZDhNNv8N1nSUc61J+fKAEvSJdcSAahBsa+K8u
+    xNLlWDSwpYYT4ghndj5RRq7QXR/j6zvR8GK6rPqbLbBhBSkpIOZ/uC62RS5W9sMYSr/2
+    RFBcRXocaWiMahK2BWovfgZh8J6QC2fT58yKdYeZ0sCEwstERmpKkwvdkVcvKjLRlNcx
+    XS0A+ZCWGznKJBXk4lNzLrv+X1NuHCoYqjwWA8FPHZIQCA1OlE57X05lQbjvd5Giui2n
+    RsSQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVblcdY="
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+    by smtp.strato.de (RZmta 47.39.0 DYNA|AUTH)
+    with ESMTPSA id L29417y1CEJUsqU
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sat, 12 Feb 2022 15:19:30 +0100 (CET)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     Paul Cercueil <paul@crapouillou.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Kees Cook <keescook@chromium.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     devicetree@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        Jonas Karlman <jonas@kwiboo.se>,
+        dri-devel@lists.freedesktop.org,
+        Ezequiel Garcia <ezequiel@collabora.com>
+Subject: [PATCH v14 3/9] drm/ingenic: Add dw-hdmi driver specialization for jz4780
+Date:   Sat, 12 Feb 2022 15:19:21 +0100
+Message-Id: <d26de4e5e24a7739c6d0d91159a3aafe53bff890.1644675566.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <cover.1644675566.git.hns@goldelico.com>
+References: <cover.1644675566.git.hns@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220212130410.6901-17-ojeda@kernel.org>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 12, 2022 at 02:03:42PM +0100, Miguel Ojeda wrote:
-> +config RUST
-> +	bool "Rust support"
-> +	depends on RUST_IS_AVAILABLE
-> +	depends on ARM64 || CPU_32v6 || CPU_32v6K || (PPC64 && CPU_LITTLE_ENDIAN) || X86_64 || RISCV
+From: Paul Boddie <paul@boddie.org.uk>
 
-Please don't use CPU_32v6* here.
+A specialisation of the generic Synopsys HDMI driver is employed for
+JZ4780 HDMI support. This requires a new driver, plus device tree and
+configuration modifications.
 
-It probably makes more sense to add a symbol "HAVE_RUST" and have the
-appropriate architecture Kconfig files select HAVE_RUST.
+Here we add Kconfig DRM_INGENIC_DW_HDMI, Makefile and driver code.
 
-Does Rust support Thumb on ARMv6 and ARMv7 architectures?
+Signed-off-by: Paul Boddie <paul@boddie.org.uk>
+Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/gpu/drm/ingenic/Kconfig           |   9 ++
+ drivers/gpu/drm/ingenic/Makefile          |   1 +
+ drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c | 104 ++++++++++++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
 
-> +	depends on !MODVERSIONS
-> +	depends on !GCC_PLUGIN_RANDSTRUCT
-> +	select CONSTRUCTORS
-> +	default n
-
-Please remove every utterance of "default n" from your patch; n is the
-default default which default defaults to, so you don't need to specify
-default n to make the option default to n. It will default to n purely
-because n is the default when no default is specified.
-
-> +	help
-> +	  Enables Rust support in the kernel.
-> +
-> +	  This allows other Rust-related options, like drivers written in Rust,
-> +	  to be selected.
-
-As Rust doesn't support all the architectures that the kernel supports,
-Rust must not be used for core infrastructure.
-
+diff --git a/drivers/gpu/drm/ingenic/Kconfig b/drivers/gpu/drm/ingenic/Kconfig
+index 001f59fb06d56..090830bcbde7f 100644
+--- a/drivers/gpu/drm/ingenic/Kconfig
++++ b/drivers/gpu/drm/ingenic/Kconfig
+@@ -24,4 +24,13 @@ config DRM_INGENIC_IPU
+ 
+ 	  The Image Processing Unit (IPU) will appear as a second primary plane.
+ 
++config DRM_INGENIC_DW_HDMI
++	tristate "Ingenic specific support for Synopsys DW HDMI"
++	depends on MACH_JZ4780
++	select DRM_DW_HDMI
++	help
++	  Choose this option to enable Synopsys DesignWare HDMI based driver.
++	  If you want to enable HDMI on Ingenic JZ4780 based SoC, you should
++	  select this option.
++
+ endif
+diff --git a/drivers/gpu/drm/ingenic/Makefile b/drivers/gpu/drm/ingenic/Makefile
+index d313326bdddbb..f10cc1c5a5f22 100644
+--- a/drivers/gpu/drm/ingenic/Makefile
++++ b/drivers/gpu/drm/ingenic/Makefile
+@@ -1,3 +1,4 @@
+ obj-$(CONFIG_DRM_INGENIC) += ingenic-drm.o
+ ingenic-drm-y = ingenic-drm-drv.o
+ ingenic-drm-$(CONFIG_DRM_INGENIC_IPU) += ingenic-ipu.o
++obj-$(CONFIG_DRM_INGENIC_DW_HDMI) += ingenic-dw-hdmi.o
+diff --git a/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+new file mode 100644
+index 0000000000000..34e986dd606cf
+--- /dev/null
++++ b/drivers/gpu/drm/ingenic/ingenic-dw-hdmi.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (C) 2011-2013 Freescale Semiconductor, Inc.
++ * Copyright (C) 2019, 2020 Paul Boddie <paul@boddie.org.uk>
++ *
++ * Derived from dw_hdmi-imx.c with i.MX portions removed.
++ * Probe and remove operations derived from rcar_dw_hdmi.c.
++ */
++
++#include <linux/module.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++
++#include <drm/bridge/dw_hdmi.h>
++#include <drm/drm_of.h>
++#include <drm/drm_print.h>
++
++static const struct dw_hdmi_mpll_config ingenic_mpll_cfg[] = {
++	{ 45250000,  { { 0x01e0, 0x0000 }, { 0x21e1, 0x0000 }, { 0x41e2, 0x0000 } } },
++	{ 92500000,  { { 0x0140, 0x0005 }, { 0x2141, 0x0005 }, { 0x4142, 0x0005 } } },
++	{ 148500000, { { 0x00a0, 0x000a }, { 0x20a1, 0x000a }, { 0x40a2, 0x000a } } },
++	{ 216000000, { { 0x00a0, 0x000a }, { 0x2001, 0x000f }, { 0x4002, 0x000f } } },
++	{ ~0UL,      { { 0x0000, 0x0000 }, { 0x0000, 0x0000 }, { 0x0000, 0x0000 } } }
++};
++
++static const struct dw_hdmi_curr_ctrl ingenic_cur_ctr[] = {
++	/*pixelclk     bpp8    bpp10   bpp12 */
++	{ 54000000,  { 0x091c, 0x091c, 0x06dc } },
++	{ 58400000,  { 0x091c, 0x06dc, 0x06dc } },
++	{ 72000000,  { 0x06dc, 0x06dc, 0x091c } },
++	{ 74250000,  { 0x06dc, 0x0b5c, 0x091c } },
++	{ 118800000, { 0x091c, 0x091c, 0x06dc } },
++	{ 216000000, { 0x06dc, 0x0b5c, 0x091c } },
++	{ ~0UL,      { 0x0000, 0x0000, 0x0000 } },
++};
++
++/*
++ * Resistance term 133Ohm Cfg
++ * PREEMP config 0.00
++ * TX/CK level 10
++ */
++static const struct dw_hdmi_phy_config ingenic_phy_config[] = {
++	/*pixelclk   symbol   term   vlev */
++	{ 216000000, 0x800d, 0x0005, 0x01ad},
++	{ ~0UL,      0x0000, 0x0000, 0x0000}
++};
++
++static enum drm_mode_status
++ingenic_dw_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
++			   const struct drm_display_info *info,
++			   const struct drm_display_mode *mode)
++{
++	if (mode->clock < 13500)
++		return MODE_CLOCK_LOW;
++	/* FIXME: Hardware is capable of 270MHz, but setup data is missing. */
++	if (mode->clock > 216000)
++		return MODE_CLOCK_HIGH;
++
++	return MODE_OK;
++}
++
++static struct dw_hdmi_plat_data ingenic_dw_hdmi_plat_data = {
++	.mpll_cfg   = ingenic_mpll_cfg,
++	.cur_ctr    = ingenic_cur_ctr,
++	.phy_config = ingenic_phy_config,
++	.mode_valid = ingenic_dw_hdmi_mode_valid,
++	.output_port	= 1,
++};
++
++static const struct of_device_id ingenic_dw_hdmi_dt_ids[] = {
++	{ .compatible = "ingenic,jz4780-dw-hdmi" },
++	{ /* Sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, ingenic_dw_hdmi_dt_ids);
++
++static void ingenic_dw_hdmi_cleanup(void *data)
++{
++	struct dw_hdmi *hdmi = (struct dw_hdmi *)data;
++
++	dw_hdmi_remove(hdmi);
++}
++
++static int ingenic_dw_hdmi_probe(struct platform_device *pdev)
++{
++	struct dw_hdmi *hdmi;
++
++	hdmi = dw_hdmi_probe(pdev, &ingenic_dw_hdmi_plat_data);
++	if (IS_ERR(hdmi))
++		return PTR_ERR(hdmi);
++
++	return devm_add_action_or_reset(&pdev->dev, ingenic_dw_hdmi_cleanup, hdmi);
++}
++
++static struct platform_driver ingenic_dw_hdmi_driver = {
++	.probe  = ingenic_dw_hdmi_probe,
++	.driver = {
++		.name = "dw-hdmi-ingenic",
++		.of_match_table = ingenic_dw_hdmi_dt_ids,
++	},
++};
++module_platform_driver(ingenic_dw_hdmi_driver);
++
++MODULE_DESCRIPTION("JZ4780 Specific DW-HDMI Driver Extension");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:dwhdmi-ingenic");
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.33.0
+
