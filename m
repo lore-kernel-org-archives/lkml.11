@@ -2,266 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0CABC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 10:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8802EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 12 Feb 2022 10:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233729AbiBLKkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 05:40:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40900 "EHLO
+        id S233731AbiBLKkI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 05:40:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233570AbiBLKjr (ORCPT
+        with ESMTP id S233577AbiBLKjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 12 Feb 2022 05:39:47 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEEF626562
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 02:39:43 -0800 (PST)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D308026544;
+        Sat, 12 Feb 2022 02:39:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644662383; x=1676198383;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Dep73Zvpf0f6P/tgt1cFcQLwk/s8R94CSwH/YGNtGAE=;
-  b=FtI+Xh/VfPh0FLr/AbDlBl9Vsqjp/B2IcJr30/j5ZLSgt1YW7clyigmU
-   TjXADFvApgRwpaZh2roth8Qce+XrJzCjFZO93IS/WNJMTEe4rSWYFaxB8
-   bBfDgEkBoUkdKhfZ294Go5wb3b7qzZMs2GyApDaxShDYuD8o+A1hS/ath
-   A3J5TUO8gfqP4yMm2EVBCOj7npWtes7ZZzE9rbkeihL01HdtBZmVwzfk/
-   zU3xYKOxRDpGYxAba1Fzr4FDDKMaMpO4hTpxXJeQHK0AVAlVRlaFjUfB3
-   dowa4du/YHARrImZu8VvTV+v34SmofVsfGz8xnxGzhtVaMkTuHWXaXohX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="336295186"
+  t=1644662384; x=1676198384;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=i2kFxobRZrFp47lN9RhnaWjJfWwlZNp7bRVEfKX/jtc=;
+  b=PS4K/jQwCHvEqVr5CpG0IF0yxBkIk9S6Y+cP4vClYcK/8dNpB58ZSvBB
+   K+HypB7nFCF7YLXTndJRCmR+Oyuz6lZNzGDUReQC3da0Ye4eiMbq8C7eq
+   0I/Jrm+umoXksFUbHG2ceueaMjKNVsDwaj1csP67vdq9hx+rRwH7WH8VD
+   9AYwcDzP6ibw+y1lFkL+SLG8/IOXje+irBquo4GnfpTW59C542zIQjrN3
+   jgr5d7IOGBH3c6e5hY+ucluDE240qu6rGSpmhxsGqxww/B76tjzrt0Geq
+   a3SiUK8qbNaRDPIDPI+OEkKEGQieLXscUtZkMNgXeZ94Nih7kqHlY0v8/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10255"; a="230511977"
 X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="336295186"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 02:39:43 -0800
+   d="scan'208";a="230511977"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2022 02:39:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,363,1635231600"; 
-   d="scan'208";a="542432135"
+   d="scan'208";a="623458386"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 12 Feb 2022 02:39:41 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Feb 2022 02:39:41 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nIpob-00061h-7B; Sat, 12 Feb 2022 10:39:41 +0000
-Date:   Sat, 12 Feb 2022 18:38:58 +0800
+        id 1nIpob-00061O-1i; Sat, 12 Feb 2022 10:39:41 +0000
+Date:   Sat, 12 Feb 2022 18:39:36 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [nbd168-wireless:mtk-flow-offload 9/9]
- drivers/net/wireless/mediatek/mt76/dma.c:154:42: error: 'struct
- mtk_wed_device' has no member named 'tx_ring'
-Message-ID: <202202121510.24R6oTBV-lkp@intel.com>
+To:     "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Cc:     kbuild-all@lists.01.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] serial: 8250: Report which option to enable for
+ blacklisted PCI devices
+Message-ID: <202202121734.Zc1GlUwC-lkp@intel.com>
+References: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2202062133570.34636@angie.orcam.me.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/nbd168/wireless mtk-flow-offload
-head:   1ba2137278dd5c4747b6e43be7aae4e94fb9c76e
-commit: 1ba2137278dd5c4747b6e43be7aae4e94fb9c76e [9/9] mt76: mt7915: add Wireless Ethernet Dispatch support
-config: mips-allmodconfig (https://download.01.org/0day-ci/archive/20220212/202202121510.24R6oTBV-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
+Hi "Maciej,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing v5.17-rc3 next-20220211]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220212/202202121734.Zc1GlUwC-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/nbd168/wireless/commit/1ba2137278dd5c4747b6e43be7aae4e94fb9c76e
-        git remote add nbd168-wireless https://github.com/nbd168/wireless
-        git fetch --no-tags nbd168-wireless mtk-flow-offload
-        git checkout 1ba2137278dd5c4747b6e43be7aae4e94fb9c76e
+        # https://github.com/0day-ci/linux/commit/aa68e36c332457acb464b083c920d10f0e5a9865
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Maciej-W-Rozycki/serial-8250-Correct-basic-issues-with-the-PCI-blacklist/20220212-164230
+        git checkout aa68e36c332457acb464b083c920d10f0e5a9865
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/wireless/mediatek/mt76/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=riscv SHELL=/bin/bash drivers/tty/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All error/warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_sync_idx':
-   drivers/net/wireless/mediatek/mt76/dma.c:24:13: warning: unused variable '_offset' [-Wunused-variable]
-      24 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:111:9: note: in expansion of macro 'Q_WRITE'
-     111 |         Q_WRITE(dev, q, desc_base, q->desc_dma);
-         |         ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:24:13: warning: unused variable '_offset' [-Wunused-variable]
-      24 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:112:9: note: in expansion of macro 'Q_WRITE'
-     112 |         Q_WRITE(dev, q, ring_size, q->ndesc);
-         |         ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:11:13: warning: unused variable '_offset' [-Wunused-variable]
-      11 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:113:19: note: in expansion of macro 'Q_READ'
-     113 |         q->head = Q_READ(dev, q, dma_idx);
-         |                   ^~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_queue_reset':
-   drivers/net/wireless/mediatek/mt76/dma.c:24:13: warning: unused variable '_offset' [-Wunused-variable]
-      24 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:129:9: note: in expansion of macro 'Q_WRITE'
-     129 |         Q_WRITE(dev, q, cpu_idx, 0);
-         |         ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:24:13: warning: unused variable '_offset' [-Wunused-variable]
-      24 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:130:9: note: in expansion of macro 'Q_WRITE'
-     130 |         Q_WRITE(dev, q, dma_idx, 0);
-         |         ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_wed_setup':
->> drivers/net/wireless/mediatek/mt76/dma.c:154:42: error: 'struct mtk_wed_device' has no member named 'tx_ring'
-     154 |                         q->wed_regs = wed->tx_ring[ring].reg_base;
-         |                                          ^~
->> drivers/net/wireless/mediatek/mt76/dma.c:163:68: error: macro "mtk_wed_device_txfree_ring_setup" requires 3 arguments, but only 2 given
-     163 |                 ret = mtk_wed_device_txfree_ring_setup(wed, q->regs);
-         |                                                                    ^
-   In file included from drivers/net/wireless/mediatek/mt76/mt76.h:16,
-                    from drivers/net/wireless/mediatek/mt76/dma.c:7:
-   include/linux/soc/mediatek/mtk_wed.h:122: note: macro "mtk_wed_device_txfree_ring_setup" defined here
-     122 | #define mtk_wed_device_txfree_ring_setup(_dev, _ring, _regs) -ENODEV
-         | 
->> drivers/net/wireless/mediatek/mt76/dma.c:163:23: error: 'mtk_wed_device_txfree_ring_setup' undeclared (first use in this function)
-     163 |                 ret = mtk_wed_device_txfree_ring_setup(wed, q->regs);
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:163:23: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/net/wireless/mediatek/mt76/dma.c:165:42: error: 'struct mtk_wed_device' has no member named 'txfree_ring'
-     165 |                         q->wed_regs = wed->txfree_ring.reg_base;
-         |                                          ^~
->> drivers/net/wireless/mediatek/mt76/dma.c:138:24: warning: variable 'ring' set but not used [-Wunused-but-set-variable]
-     138 |         int ret, type, ring;
-         |                        ^~~~
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_kick_queue':
-   drivers/net/wireless/mediatek/mt76/dma.c:24:13: warning: unused variable '_offset' [-Wunused-variable]
-      24 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:298:9: note: in expansion of macro 'Q_WRITE'
-     298 |         Q_WRITE(dev, q, cpu_idx, q->head);
-         |         ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_tx_cleanup':
-   drivers/net/wireless/mediatek/mt76/dma.c:11:13: warning: unused variable '_offset' [-Wunused-variable]
-      11 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:314:24: note: in expansion of macro 'Q_READ'
-     314 |                 last = Q_READ(dev, q, dma_idx);
-         |                        ^~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:11:13: warning: unused variable '_offset' [-Wunused-variable]
-      11 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:326:32: note: in expansion of macro 'Q_READ'
-     326 |                         last = Q_READ(dev, q, dma_idx);
-         |                                ^~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c: In function 'mt76_dma_rx_process':
-   drivers/net/wireless/mediatek/mt76/dma.c:11:13: warning: unused variable '_offset' [-Wunused-variable]
-      11 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:644:27: note: in expansion of macro 'Q_READ'
-     644 |                 dma_idx = Q_READ(dev, q, dma_idx);
-         |                           ^~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:11:13: warning: unused variable '_offset' [-Wunused-variable]
-      11 |         u32 _offset = offsetof(struct mt76_queue_regs, _field);         \
-         |             ^~~~~~~
-   drivers/net/wireless/mediatek/mt76/dma.c:653:43: note: in expansion of macro 'Q_READ'
-     653 |                                 dma_idx = Q_READ(dev, q, dma_idx);
-         |                                           ^~~~~~
---
-   drivers/net/wireless/mediatek/mt76/tx.c: In function 'mt76_token_consume':
->> drivers/net/wireless/mediatek/mt76/tx.c:730:25: error: 'struct mtk_wed_device' has no member named 'wlan'
-     730 |             token >= wed->wlan.token_start)
-         |                         ^~
-   drivers/net/wireless/mediatek/mt76/tx.c: In function 'mt76_token_release':
-   drivers/net/wireless/mediatek/mt76/tx.c:755:33: error: 'struct mtk_wed_device' has no member named 'wlan'
-     755 |                     token >= wed->wlan.token_start &&
-         |                                 ^~
---
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c: In function 'mt7915_wed_offload_enable':
->> drivers/net/wireless/mediatek/mt76/mt7915/pci.c:106:35: error: 'struct mtk_wed_device' has no member named 'wlan'
-     106 |         dev->mt76.token_size = wed->wlan.token_start;
-         |                                   ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c: In function 'mt7915_pci_probe':
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:164:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     164 |         wed->wlan.pci_dev = pdev;
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:165:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     165 |         wed->wlan.wpdma_phys = pci_resource_start(pdev, 0) +
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:167:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     167 |         wed->wlan.nbuf = 4096;
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:168:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     168 |         wed->wlan.token_start = MT7915_TOKEN_SIZE - wed->wlan.nbuf;
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:168:56: error: 'struct mtk_wed_device' has no member named 'wlan'
-     168 |         wed->wlan.token_start = MT7915_TOKEN_SIZE - wed->wlan.nbuf;
-         |                                                        ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:169:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     169 |         wed->wlan.init_buf = mt7915_wed_init_buf;
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:170:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     170 |         wed->wlan.offload_enable = mt7915_wed_offload_enable;
-         |            ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:171:12: error: 'struct mtk_wed_device' has no member named 'wlan'
-     171 |         wed->wlan.offload_disable = mt7915_wed_offload_disable;
-         |            ^~
->> drivers/net/wireless/mediatek/mt76/mt7915/pci.c:174:26: error: 'struct mtk_wed_device' has no member named 'irq'
-     174 |                 irq = wed->irq;
-         |                          ^~
->> drivers/net/wireless/mediatek/mt76/mt7915/pci.c:175:40: error: 'struct mtk_wed_device' has no member named 'dev'
-     175 |                 dev->mt76.dma_dev = wed->dev;
-         |                                        ^~
-   drivers/net/wireless/mediatek/mt76/mt7915/pci.c:177:39: error: 'struct mtk_wed_device' has no member named 'dev'
-     177 |                 ret = dma_set_mask(wed->dev, DMA_BIT_MASK(32));
-         |                                       ^~
---
-   drivers/net/wireless/mediatek/mt76/mt7915/main.c: In function 'mt7915_net_fill_forward_path':
->> drivers/net/wireless/mediatek/mt76/mt7915/main.c:1408:38: error: 'struct mtk_wed_device' has no member named 'wdma_idx'
-    1408 |         path->mtk_wdma.wdma_idx = wed->wdma_idx;
-         |                                      ^~
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3535:39: note: in expansion of macro 'REPORT_CONFIG'
+    3535 |         { PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[3].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3535:39: note: in expansion of macro 'REPORT_CONFIG'
+    3535 |         { PCI_DEVICE(0x4348, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3537:39: note: in expansion of macro 'REPORT_CONFIG'
+    3537 |         { PCI_DEVICE(0x4348, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[4].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3537:39: note: in expansion of macro 'REPORT_CONFIG'
+    3537 |         { PCI_DEVICE(0x4348, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+>> drivers/tty/serial/8250/8250_pci.c:3522:9: error: initializer element is not computable at load time
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3539:39: note: in expansion of macro 'REPORT_CONFIG'
+    3539 |         { PCI_DEVICE(0x1c00, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
+   drivers/tty/serial/8250/8250_pci.c:3522:9: note: (near initialization for 'blacklist[5].class')
+    3522 |         (IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+         |         ^
+   drivers/tty/serial/8250/8250_pci.c:3539:39: note: in expansion of macro 'REPORT_CONFIG'
+    3539 |         { PCI_DEVICE(0x1c00, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
+         |                                       ^~~~~~~~~~~~~
 
 
-vim +154 drivers/net/wireless/mediatek/mt76/dma.c
+vim +3522 drivers/tty/serial/8250/8250_pci.c
 
-   133	
-   134	static int
-   135	mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q)
-   136	{
-   137		struct mtk_wed_device *wed = &dev->mmio.wed;
- > 138		int ret, type, ring;
-   139		u8 flags = q->flags;
-   140	
-   141		if (!mtk_wed_device_active(wed))
-   142			q->flags &= ~MT_QFLAG_WED;
-   143	
-   144		if (!(q->flags & MT_QFLAG_WED))
-   145			return 0;
-   146	
-   147		type = FIELD_GET(MT_QFLAG_WED_TYPE, q->flags);
-   148		ring = FIELD_GET(MT_QFLAG_WED_RING, q->flags);
-   149	
-   150		switch (type) {
-   151		case MT76_WED_Q_TX:
-   152			ret = mtk_wed_device_tx_ring_setup(wed, ring, q->regs);
-   153			if (!ret)
- > 154				q->wed_regs = wed->tx_ring[ring].reg_base;
-   155			break;
-   156		case MT76_WED_Q_TXFREE:
-   157			/* WED txfree queue needs ring to be initialized before setup */
-   158			q->flags = 0;
-   159			mt76_dma_queue_reset(dev, q);
-   160			mt76_dma_rx_fill(dev, q);
-   161			q->flags = flags;
-   162	
- > 163			ret = mtk_wed_device_txfree_ring_setup(wed, q->regs);
-   164			if (!ret)
- > 165				q->wed_regs = wed->txfree_ring.reg_base;
-   166			break;
-   167		default:
-   168			ret = -EINVAL;
-   169		}
-   170	
-   171		return ret;
-   172	}
-   173	
+  3520	
+  3521	#define REPORT_CONFIG(option) \
+> 3522		(IS_ENABLED(CONFIG_##option) ? 0 : (kernel_ulong_t)&#option)
+  3523	#define REPORT_8250_CONFIG(option) \
+  3524		(IS_ENABLED(CONFIG_SERIAL_8250_##option) ? \
+  3525		 0 : (kernel_ulong_t)&"SERIAL_8250_"#option)
+  3526	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
