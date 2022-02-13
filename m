@@ -2,130 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D46C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 23:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 588F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 23:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238759AbiBMXO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 18:14:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36456 "EHLO
+        id S238742AbiBMXNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 18:13:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiBMXOZ (ORCPT
+        with ESMTP id S229453AbiBMXNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 18:14:25 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E41454BE3
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 15:14:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644794059; x=1676330059;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2rcEb11zx0b/B2xTB+zloZNRSWRJNMpG+SxxToSQBT4=;
-  b=d9E6KAD6E2Xfrv6b9PbMLl3Dw9wIFrsXvb91Y6xaitHNfD5M4KJ3A76V
-   S+DiNVPZtL5Oym9Gpy1nFLnvGc2TxK9tdFVkAzhF2vlJbT7PePxaZAMTM
-   W64XyfQnLD6iOZIwoxr1zuugx56ZcfqlnSMouvdktfjBhiFi6+Sig7meI
-   Qg874YnVkBTpZvrry5U4dWQaXpCsvjcVEQiuA94OT8lcmQwX/Z/anEcyc
-   vTMKEl60eWa9Tq5OniH1QHvMxOTSG7CCkJfBRG5X6e7HwWkWWK/cBiRTw
-   TL7jvOERHowADDy1bN0C5tkJSAXDHXy7DqtEHrq9Of9RZ3a2uTcFumKuC
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249928409"
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="249928409"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 15:14:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="631782740"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 13 Feb 2022 15:14:16 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJO4N-0007yS-W2; Sun, 13 Feb 2022 23:14:15 +0000
-Date:   Mon, 14 Feb 2022 07:13:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Usama Arif <usama.arif@bytedance.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-Subject: [ammarfaizi2-block:axboe/linux-block/for-next 2/27]
- fs/io_uring.c:9406:9: error: variable 'ret' is uninitialized when used here
-Message-ID: <202202140741.cSdNc5dQ-lkp@intel.com>
+        Sun, 13 Feb 2022 18:13:06 -0500
+Received: from relay.hostedemail.com (relay.a.hostedemail.com [64.99.140.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2084554BE1
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 15:12:59 -0800 (PST)
+Received: from omf04.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 36BD822BF6;
+        Sun, 13 Feb 2022 23:12:56 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf04.hostedemail.com (Postfix) with ESMTPA id CAC7320024;
+        Sun, 13 Feb 2022 23:12:49 +0000 (UTC)
+Message-ID: <3141331e10cdbc7a3859887d5e8038eff777e3ad.camel@perches.com>
+Subject: Re: [PATCH v7 7/7] MAINTAINERS: add maintainers for DRM LSDC driver
+From:   Joe Perches <joe@perches.com>
+To:     Sui Jingfeng <15330273260@189.cn>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, Li Yi <liyi@loongson.cn>,
+        suijingfeng <suijingfeng@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
+Date:   Sun, 13 Feb 2022 15:12:48 -0800
+In-Reply-To: <20220213141649.1115987-8-15330273260@189.cn>
+References: <20220213141649.1115987-1-15330273260@189.cn>
+         <20220213141649.1115987-8-15330273260@189.cn>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: CAC7320024
+X-Stat-Signature: chsen43n4o61gbue1shux6emhu6imiza
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+3MfhZMV+dCCy7Z4SG+v/Vjs/O+3cQmPk=
+X-HE-Tag: 1644793969-740389
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/for-next
-head:   9c63ffcf47865ad2d20e09d6d6531c4611674cf1
-commit: 1a75fac9a0f920a13418c88e4deaa9aa005381f5 [2/27] io_uring: avoid ring quiesce while registering/unregistering eventfd
-config: arm-randconfig-c002-20220213 (https://download.01.org/0day-ci/archive/20220214/202202140741.cSdNc5dQ-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/ammarfaizi2/linux-block/commit/1a75fac9a0f920a13418c88e4deaa9aa005381f5
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/for-next
-        git checkout 1a75fac9a0f920a13418c88e4deaa9aa005381f5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+On Sun, 2022-02-13 at 22:16 +0800, Sui Jingfeng wrote:
+> From: suijingfeng <suijingfeng@loongson.cn>
+[]
+> diff --git a/MAINTAINERS b/MAINTAINERS
+[]
+> @@ -6453,6 +6453,15 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
+>  F:	drivers/gpu/drm/lima/
+>  F:	include/uapi/drm/lima_drm.h
+>  
+> +DRM DRIVERS FOR LOONGSON
+> +M:	Sui Jingfeng <suijingfeng@loongson.cn>
+> +L:	dri-devel@lists.freedesktop.org
+> +R:	Li Yi <liyi@loongson.cn>
+> +S:	Maintained
+> +W:	https://www.loongson.cn/
+> +T:	git git://anongit.freedesktop.org/drm/drm-misc
+> +F:	drivers/gpu/drm/lsdc/
+> +
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+M then R then L please
 
-Note: the ammarfaizi2-block/axboe/linux-block/for-next HEAD 9c63ffcf47865ad2d20e09d6d6531c4611674cf1 builds fine.
-      It only hurts bisectability.
-
-All errors (new ones prefixed by >>):
-
->> fs/io_uring.c:9406:9: error: variable 'ret' is uninitialized when used here [-Werror,-Wuninitialized]
-           return ret;
-                  ^~~
-   fs/io_uring.c:9384:13: note: initialize the variable 'ret' to silence this warning
-           int fd, ret;
-                      ^
-                       = 0
-   1 error generated.
+DRM DRIVERS FOR LOONGSON
+M:	Sui Jingfeng <suijingfeng@loongson.cn>
+R:	Li Yi <liyi@loongson.cn>
+L:	dri-devel@lists.freedesktop.org
 
 
-vim +/ret +9406 fs/io_uring.c
-
-  9379	
-  9380	static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg)
-  9381	{
-  9382		struct io_ev_fd *ev_fd;
-  9383		__s32 __user *fds = arg;
-  9384		int fd, ret;
-  9385	
-  9386		ev_fd = rcu_dereference_protected(ctx->io_ev_fd,
-  9387						lockdep_is_held(&ctx->uring_lock));
-  9388		if (ev_fd)
-  9389			return -EBUSY;
-  9390	
-  9391		if (copy_from_user(&fd, fds, sizeof(*fds)))
-  9392			return -EFAULT;
-  9393	
-  9394		ev_fd = kmalloc(sizeof(*ev_fd), GFP_KERNEL);
-  9395		if (!ev_fd)
-  9396			return -ENOMEM;
-  9397	
-  9398		ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
-  9399		if (IS_ERR(ev_fd->cq_ev_fd)) {
-  9400			ret = PTR_ERR(ev_fd->cq_ev_fd);
-  9401			kfree(ev_fd);
-  9402			return ret;
-  9403		}
-  9404	
-  9405		rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
-> 9406		return ret;
-  9407	}
-  9408	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
