@@ -2,113 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FF4C43217
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 16:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DDE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 16:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237040AbiBMQQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 11:16:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38440 "EHLO
+        id S237055AbiBMQV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 11:21:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236992AbiBMQQT (ORCPT
+        with ESMTP id S233353AbiBMQVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 11:16:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD4A5A0AF;
-        Sun, 13 Feb 2022 08:16:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A01EB80B32;
-        Sun, 13 Feb 2022 16:16:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D6FDC004E1;
-        Sun, 13 Feb 2022 16:16:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644768969;
-        bh=SjGHF8jSyh7ZBRwmmpVF3guCVazx1Er4nKQs+Ocu9nQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NFivLYLbG1XLP3hYWVsOS3yZzA2+BHrUTF3K8OSieq6/bk2EyoubQ99pa9prLEjvw
-         i5EtCs80TK7R/qoZatNkr4OVwCt2QXmtgbcwBPBho7KBX6KXXlChp1kyeYF3h8IUgT
-         jJS8ZsGrkpxz3NhID8phWmvHEBE0/WYaQCcv8HClbH8AmVDhU6eB4zt4bzFXAjiNhf
-         trRgYlAHj0zfYvILzv1tyHwTjd/pDEyA/IvlVLkWHP0DmMFWjtG1xBUre5x0hkP5/R
-         wzHez7OETHF0fqBjAArQkv83SP8b7yG27J0LlLf+ZG7M16PXQXpM1RImwEoHrf+7Yj
-         ZFGZEKCHWDUEQ==
-Date:   Sun, 13 Feb 2022 16:22:45 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jishnu Prakash <quic_jprakash@quicinc.com>
-Cc:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <devicetree@vger.kernel.org>, <mka@chromium.org>,
-        <dmitry.baryshkov@linaro.org>, <robh+dt@kernel.org>,
-        <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <manivannan.sadhasivam@linaro.org>, <linus.walleij@linaro.org>,
-        <quic_kgunda@quicinc.com>, <quic_aghayal@quicinc.com>,
-        <daniel.lezcano@linaro.org>, <rui.zhang@intel.com>,
-        <quic_subbaram@quicinc.com>, <amitk@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm-owner@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH V5 0/4] thermal: qcom: Add support for PMIC5 Gen2 ADC_TM
-Message-ID: <20220213162245.009d4e41@jic23-huawei>
-In-Reply-To: <1644741191-12039-1-git-send-email-quic_jprakash@quicinc.com>
-References: <1644741191-12039-1-git-send-email-quic_jprakash@quicinc.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 13 Feb 2022 11:21:25 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0844E391
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 08:21:17 -0800 (PST)
+X-UUID: a550d979978e4613b85bd0d28b026b98-20220214
+X-UUID: a550d979978e4613b85bd0d28b026b98-20220214
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <phil.chang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 744166561; Mon, 14 Feb 2022 00:21:14 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 14 Feb 2022 00:21:12 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 14 Feb 2022 00:21:12 +0800
+From:   Phil Chang <phil.chang@mediatek.com>
+To:     <phil.chang@mediatek.com>
+CC:     <jens.wiklander@linaro.org>, <matthias.bgg@gmail.com>,
+        <op-tee@lists.trustedfirmware.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH] tee: make tee_shm_register_kernel_buf vmalloc supported
+Date:   Mon, 14 Feb 2022 00:21:10 +0800
+Message-ID: <20220213162110.27210-1-phil.chang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 13 Feb 2022 14:03:07 +0530
-Jishnu Prakash <quic_jprakash@quicinc.com> wrote:
+In some low-memory devices, it's hard to aquire large-orders pages,
+this patch allowed user using scatter pages to register shm.
 
-Hi Jishnu,
+Signed-off-by: Phil Chang <phil.chang@mediatek.com>
+---
+ drivers/tee/optee/call.c |  2 +-
+ drivers/tee/tee_shm.c    | 40 ++++++++++++++++++++++++++++------------
+ 2 files changed, 29 insertions(+), 13 deletions(-)
 
-My assumption is this will go through the thermal tree, but if
-that turns out not to be the case and we need to do something
-different then let me know.  From IIO side of things I'm marking
-it handled elsewhere in patchwork.
-
-Thanks,
-
-Jonathan
-
-
-> Changes in v5:
-> Fixed some compilation errors in patch 4.
-> 
-> Changes in v4:
-> Addressed comments given by Jonathan (for using put_unaligned_le16)
-> and by Dmitry (for using separate init function and correcting args_count)
-> for qcom-spmi-adc-tm5.c in patch 4.
-> Added init function in patch 3.
-> 
-> Changes in v3:
-> Addressed comments given by Jonathan for qcom-spmi-adc-tm5.yaml.
-> Addressed comments given by Dmitry and Jonathan for qcom-spmi-adc-tm5.c.
-> Split patch for qcom-spmi-adc-tm5.c into two parts, one to refactor
-> code to support multiple device generations and the second to add
-> actual Gen2 ADC_TM changes.
-> 
-> Changes in v2:
-> Split IIO file changes into separate patch.
-> Addressed comments given by Dmitry for qcom-spmi-adc-tm5.c.
-> 
-> Changes in v1:
-> PMIC5 Gen2 ADC_TM is supported on PMIC7 chips and is a close
-> counterpart of PMIC7 ADC. It has the same functionality as
-> PMIC5 ADC_TM, to support generating interrupts on ADC value
-> crossing upper or lower thresholds for monitored channels.
-> 
-> Jishnu Prakash (4):
->   dt-bindings: thermal: qcom: add PMIC5 Gen2 ADC_TM bindings
->   iio: adc: qcom-vadc-common: add reverse scaling for PMIC5 Gen2 ADC_TM
->   thermal: qcom: Add support for multiple generations of devices
->   thermal: qcom: add support for PMIC5 Gen2 ADCTM
-> 
->  .../bindings/thermal/qcom-spmi-adc-tm5.yaml        | 110 ++++-
->  drivers/iio/adc/qcom-vadc-common.c                 |  11 +
->  drivers/thermal/qcom/qcom-spmi-adc-tm5.c           | 486 +++++++++++++++++++--
->  include/linux/iio/adc/qcom-vadc-common.h           |   2 +
->  4 files changed, 569 insertions(+), 40 deletions(-)
-> 
-
+diff --git a/drivers/tee/optee/call.c b/drivers/tee/optee/call.c
+index bd49ec934060..2082e632adff 100644
+--- a/drivers/tee/optee/call.c
++++ b/drivers/tee/optee/call.c
+@@ -362,7 +362,7 @@ int optee_check_mem_type(unsigned long start, size_t num_pages)
+ 	 * Allow kernel address to register with OP-TEE as kernel
+ 	 * pages are configured as normal memory only.
+ 	 */
+-	if (virt_addr_valid(start))
++	if (virt_addr_valid(start) || is_vmalloc_addr((void *)start))
+ 		return 0;
+ 
+ 	mmap_read_lock(mm);
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index f31e29e8f1ca..861403588485 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -23,22 +23,38 @@ static void shm_put_kernel_pages(struct page **pages, size_t page_count)
+ static int shm_get_kernel_pages(unsigned long start, size_t page_count,
+ 				struct page **pages)
+ {
+-	struct kvec *kiov;
+-	size_t n;
+ 	int rc;
+ 
+-	kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
+-	if (!kiov)
+-		return -ENOMEM;
+-
+-	for (n = 0; n < page_count; n++) {
+-		kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
+-		kiov[n].iov_len = PAGE_SIZE;
++	if (is_vmalloc_addr((void *)start)) {
++		struct page *page;
++		int i;
++
++		for (i = 0; i < page_count; i++) {
++			page = vmalloc_to_page((void *)(start + PAGE_SIZE * i));
++			if (!page)
++				return -ENOMEM;
++
++			get_page(page);
++			pages[i] = page;
++		}
++		rc = page_count;
++	} else {
++		struct kvec *kiov;
++		size_t n;
++
++		kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
++		if (!kiov)
++			return -ENOMEM;
++
++		for (n = 0; n < page_count; n++) {
++			kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
++			kiov[n].iov_len = PAGE_SIZE;
++		}
++
++		rc = get_kernel_pages(kiov, page_count, 0, pages);
++		kfree(kiov);
+ 	}
+ 
+-	rc = get_kernel_pages(kiov, page_count, 0, pages);
+-	kfree(kiov);
+-
+ 	return rc;
+ }
+ 
+-- 
+2.25.1
