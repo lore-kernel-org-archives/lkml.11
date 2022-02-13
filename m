@@ -2,106 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 532E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 20:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 20:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238234AbiBMUb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 15:31:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50578 "EHLO
+        id S238243AbiBMUdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 15:33:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232770AbiBMUb4 (ORCPT
+        with ESMTP id S230399AbiBMUdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 15:31:56 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8191E532FB
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 12:31:50 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id n17so17692406iod.4
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 12:31:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3rdhrGsB6cka+Ef4Pbq9BbguW4PKC4/Ny/Dc/UgVg9I=;
-        b=MgetSyyfZYVU8EdQAtQ9EEk5/SnlzABkFcm79j3fvcLWmIlv4dELeia897T/vXhsuy
-         ccM8qTg8WfTtmB8XlH6L+d4cZyj3NBXABqGP2pPpY6EeyJ9pkE2lYGhydWx4R91HKbk9
-         83f2H+AsDDamhGiZ/LipYRXzSRHLOXxfq+T0I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3rdhrGsB6cka+Ef4Pbq9BbguW4PKC4/Ny/Dc/UgVg9I=;
-        b=PgLeNZOViyjRCCPw5ODPFV9p5hWOO2tb9iUrpCpJNRB4IzlmhZ7wTn5NmpKnMQZw0D
-         7xl8H/G0Es5GFVJ3te/BwNtqwoxQUMg9VnwHK886GJsf7mLp0RSCKTKOlJgIbe11cbwR
-         7G86ZkspdYnyJ8zYvzXvqmGLDtuL3OMh3THv1xnHKgFdsFnbqVp/Q/pkOSGgKy8s/n7P
-         MP5yF5VeMWoLuKAvakK12p3ENoIkVS3aHeq3/zALYbyka1GE+qS7/SdQzEz2mFtVMpsJ
-         B7feLaA3B5vuw8vDG3gCyDf0MjKElDQarqTtB56tUfkkjG8Qzjeb+H/fpK50S096RxXj
-         Icbg==
-X-Gm-Message-State: AOAM533/XM5rYuPIXapPpR2wiNnZF5XZadYyAql3+rBtlmkr3vLFr9Qu
-        R4wQDwcYEySiOIDOApi+NBQ3gJcbt4Zs6HH7T3Cjyw==
-X-Google-Smtp-Source: ABdhPJzMUZurqwHSvnaBe+vDkWCw9aovyzgqIxE11CVXZHJufQuj6eebPymwiXB10YP2WUGRyaazQqk/hjpog64xJTw=
-X-Received: by 2002:a02:824e:: with SMTP id q14mr6457263jag.0.1644784309865;
- Sun, 13 Feb 2022 12:31:49 -0800 (PST)
+        Sun, 13 Feb 2022 15:33:01 -0500
+X-Greylist: delayed 1196 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 12:32:55 PST
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BE953700;
+        Sun, 13 Feb 2022 12:32:55 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21DKCnMN106250;
+        Sun, 13 Feb 2022 14:12:49 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1644783169;
+        bh=VlsO5Co1YhSU4oiDDo1I0Cx/Bw8CNI0Q8dDUb0hAK2I=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=NawsxXxR6eIs7TMKija8kqcc++qcaNWEq8iHOncWMtPphMzxSPm00wLL5k5HwAkJZ
+         x6V/xlwE0pACnm8G2773C+3nVWmr7lV5f65AgRpaj9t00bpjBkgdvMmSC+6QRExXFI
+         zB/3uV49CYeEdTPY5k9NSqZf/mTZevmelqps/94s=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21DKCnPd065490
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 13 Feb 2022 14:12:49 -0600
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sun, 13
+ Feb 2022 14:12:49 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Sun, 13 Feb 2022 14:12:49 -0600
+Received: from lelv0854.itg.ti.com (lelv0854.itg.ti.com [10.181.64.140])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21DKCnsU020622;
+        Sun, 13 Feb 2022 14:12:49 -0600
+Received: from localhost ([10.249.37.221])
+        by lelv0854.itg.ti.com (8.14.7/8.14.7) with ESMTP id 21DKCnFd002415;
+        Sun, 13 Feb 2022 14:12:49 -0600
+From:   Suman Anna <s-anna@ti.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     Hari Nagalla <hnagalla@ti.com>, Praneeth Bajjuri <praneeth@ti.com>,
+        <linux-remoteproc@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Suman Anna <s-anna@ti.com>
+Subject: [PATCH v3 2/5] remoteproc: k3-r5: Refactor mbox request code in start
+Date:   Sun, 13 Feb 2022 14:12:43 -0600
+Message-ID: <20220213201246.25952-3-s-anna@ti.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220213201246.25952-1-s-anna@ti.com>
+References: <20220213201246.25952-1-s-anna@ti.com>
 MIME-Version: 1.0
-References: <20220211173042.112852-1-ignat@cloudflare.com> <717c68c0-f139-b6e5-aff1-3a4264344eeb@gmail.com>
-In-Reply-To: <717c68c0-f139-b6e5-aff1-3a4264344eeb@gmail.com>
-From:   Ignat Korchagin <ignat@cloudflare.com>
-Date:   Sun, 13 Feb 2022 20:31:39 +0000
-Message-ID: <CALrw=nFLGyGsZ_DmaJ_Cwk0o2QqwokSD+WrEHY3o9TGfiC48MQ@mail.gmail.com>
-Subject: Re: [PATCH] ipv6: mcast: use rcu-safe version of ipv6_get_lladdr()
-To:     David Ahern <dsahern@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        David Pinilla Caparros <dpini@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stupid me - forgot to reply to all and a discussion between me and
-David happend off list. Below, is the transcript for posterity:
+Refactor out the mailbox request and associated ping logic code
+from k3_r5_rproc_start() function into its own separate function
+so that it can be re-used in the soon to be added .attach() ops
+callback.
 
-On Sun, Feb 13, 2022 at 5:53 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 2/13/22 8:43 AM, Ignat Korchagin wrote:
-> > On Sun, Feb 13, 2022 at 4:17 PM David Ahern <dsahern@gmail.com> wrote:
-> >>
-> >> On 2/12/22 1:46 PM, Ignat Korchagin wrote:
-> >>> In 8965779d2c0e ("ipv6,mcast: always hold idev->lock before mca_lock")
-> >>> mld_newpack() was actually migrated from "dev" to "idev' just for this
-> >>> use case. It seems the most reasonable approach would be to revert
-> >>> mld_newpack() back to dev and use the original code.
-> >>
-> >>
-> >> pmc already has the reference on idev and idev->dev is the source of dev
-> >> passed to mld_newpack. There is no reason to go back to the idev -> dev
-> >> -> idev dance.
-> >
-> > I don't know. Three things which make it more reasonable in my opinion:
-> >   * we're already using idev->dev in mld_newpack() - that is we're not
-> > adding an extra variable here in mld_newpack() - we need it anyway, so
-> > can use in multiple places
-> >   * it makes the code more consistent with the same code for the same
-> > reason in igmp6_send() in the same file, which uses "dev" and
-> > ipv6_get_lladdr()
-> >   * we're making __ipv6_get_lladdr() static again and everything in
-> > the kernel is now using the public version of ipv6_get_lladdr() - I
-> > think the extra indirection of idev->dev-idev is a reasonable price to
-> > pay to avoid customized locking code in the caller, which may backfire
-> > later again in the same way it backfired this time
->
-> which is why I later said move the locking to __ipv6_get_lladdr.
-> ipv6_get_lladdr takes a net_dev, looks up the idev and calls
-> __ipv6_get_lladdr. __ipv6_get_lladdr handles the idev locking needs.
->
-> Users of the get_lladdr API that already have the idev reference use
-> __ipv6_get_lladdr. That is a common paradigm in the stack.
+Signed-off-by: Suman Anna <s-anna@ti.com>
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+---
+v3: Updated license years, no code changes
+v2: https://patchwork.kernel.org/project/linux-remoteproc/patch/20210723220248.6554-3-s-anna@ti.com/
+v1: https://patchwork.kernel.org/project/linux-remoteproc/patch/20210522000309.26134-4-s-anna@ti.com/
 
-Ah. I see now. This does make sense as well to me.
+ drivers/remoteproc/ti_k3_r5_remoteproc.c | 68 ++++++++++++++----------
+ 1 file changed, 41 insertions(+), 27 deletions(-)
 
-> igmp6 code can use some modernization - but that is a net-next change.
-> This is a -net change.
+diff --git a/drivers/remoteproc/ti_k3_r5_remoteproc.c b/drivers/remoteproc/ti_k3_r5_remoteproc.c
+index 969531c05b13..ff4e1fac1c7f 100644
+--- a/drivers/remoteproc/ti_k3_r5_remoteproc.c
++++ b/drivers/remoteproc/ti_k3_r5_remoteproc.c
+@@ -2,7 +2,7 @@
+ /*
+  * TI K3 R5F (MCU) Remote Processor driver
+  *
+- * Copyright (C) 2017-2020 Texas Instruments Incorporated - https://www.ti.com/
++ * Copyright (C) 2017-2022 Texas Instruments Incorporated - https://www.ti.com/
+  *	Suman Anna <s-anna@ti.com>
+  */
+ 
+@@ -376,6 +376,44 @@ static inline int k3_r5_core_run(struct k3_r5_core *core)
+ 				       0, PROC_BOOT_CTRL_FLAG_R5_CORE_HALT);
+ }
+ 
++static int k3_r5_rproc_request_mbox(struct rproc *rproc)
++{
++	struct k3_r5_rproc *kproc = rproc->priv;
++	struct mbox_client *client = &kproc->client;
++	struct device *dev = kproc->dev;
++	int ret;
++
++	client->dev = dev;
++	client->tx_done = NULL;
++	client->rx_callback = k3_r5_rproc_mbox_callback;
++	client->tx_block = false;
++	client->knows_txdone = false;
++
++	kproc->mbox = mbox_request_channel(client, 0);
++	if (IS_ERR(kproc->mbox)) {
++		ret = -EBUSY;
++		dev_err(dev, "mbox_request_channel failed: %ld\n",
++			PTR_ERR(kproc->mbox));
++		return ret;
++	}
++
++	/*
++	 * Ping the remote processor, this is only for sanity-sake for now;
++	 * there is no functional effect whatsoever.
++	 *
++	 * Note that the reply will _not_ arrive immediately: this message
++	 * will wait in the mailbox fifo until the remote processor is booted.
++	 */
++	ret = mbox_send_message(kproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
++	if (ret < 0) {
++		dev_err(dev, "mbox_send_message failed: %d\n", ret);
++		mbox_free_channel(kproc->mbox);
++		return ret;
++	}
++
++	return 0;
++}
++
+ /*
+  * The R5F cores have controls for both a reset and a halt/run. The code
+  * execution from DDR requires the initial boot-strapping code to be run
+@@ -495,38 +533,14 @@ static int k3_r5_rproc_start(struct rproc *rproc)
+ {
+ 	struct k3_r5_rproc *kproc = rproc->priv;
+ 	struct k3_r5_cluster *cluster = kproc->cluster;
+-	struct mbox_client *client = &kproc->client;
+ 	struct device *dev = kproc->dev;
+ 	struct k3_r5_core *core;
+ 	u32 boot_addr;
+ 	int ret;
+ 
+-	client->dev = dev;
+-	client->tx_done = NULL;
+-	client->rx_callback = k3_r5_rproc_mbox_callback;
+-	client->tx_block = false;
+-	client->knows_txdone = false;
+-
+-	kproc->mbox = mbox_request_channel(client, 0);
+-	if (IS_ERR(kproc->mbox)) {
+-		ret = -EBUSY;
+-		dev_err(dev, "mbox_request_channel failed: %ld\n",
+-			PTR_ERR(kproc->mbox));
++	ret = k3_r5_rproc_request_mbox(rproc);
++	if (ret)
+ 		return ret;
+-	}
+-
+-	/*
+-	 * Ping the remote processor, this is only for sanity-sake for now;
+-	 * there is no functional effect whatsoever.
+-	 *
+-	 * Note that the reply will _not_ arrive immediately: this message
+-	 * will wait in the mailbox fifo until the remote processor is booted.
+-	 */
+-	ret = mbox_send_message(kproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
+-	if (ret < 0) {
+-		dev_err(dev, "mbox_send_message failed: %d\n", ret);
+-		goto put_mbox;
+-	}
+ 
+ 	boot_addr = rproc->bootaddr;
+ 	/* TODO: add boot_addr sanity checking */
+-- 
+2.32.0
+
