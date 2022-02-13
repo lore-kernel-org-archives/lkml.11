@@ -2,183 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 20:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C095C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 20:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238243AbiBMUdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 15:33:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51066 "EHLO
+        id S238261AbiBMUfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 15:35:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiBMUdB (ORCPT
+        with ESMTP id S238251AbiBMUfv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 15:33:01 -0500
-X-Greylist: delayed 1196 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 12:32:55 PST
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38BE953700;
-        Sun, 13 Feb 2022 12:32:55 -0800 (PST)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21DKCnMN106250;
-        Sun, 13 Feb 2022 14:12:49 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1644783169;
-        bh=VlsO5Co1YhSU4oiDDo1I0Cx/Bw8CNI0Q8dDUb0hAK2I=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=NawsxXxR6eIs7TMKija8kqcc++qcaNWEq8iHOncWMtPphMzxSPm00wLL5k5HwAkJZ
-         x6V/xlwE0pACnm8G2773C+3nVWmr7lV5f65AgRpaj9t00bpjBkgdvMmSC+6QRExXFI
-         zB/3uV49CYeEdTPY5k9NSqZf/mTZevmelqps/94s=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21DKCnPd065490
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sun, 13 Feb 2022 14:12:49 -0600
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Sun, 13
- Feb 2022 14:12:49 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Sun, 13 Feb 2022 14:12:49 -0600
-Received: from lelv0854.itg.ti.com (lelv0854.itg.ti.com [10.181.64.140])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21DKCnsU020622;
-        Sun, 13 Feb 2022 14:12:49 -0600
-Received: from localhost ([10.249.37.221])
-        by lelv0854.itg.ti.com (8.14.7/8.14.7) with ESMTP id 21DKCnFd002415;
-        Sun, 13 Feb 2022 14:12:49 -0600
-From:   Suman Anna <s-anna@ti.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     Hari Nagalla <hnagalla@ti.com>, Praneeth Bajjuri <praneeth@ti.com>,
-        <linux-remoteproc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Suman Anna <s-anna@ti.com>
-Subject: [PATCH v3 2/5] remoteproc: k3-r5: Refactor mbox request code in start
-Date:   Sun, 13 Feb 2022 14:12:43 -0600
-Message-ID: <20220213201246.25952-3-s-anna@ti.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220213201246.25952-1-s-anna@ti.com>
-References: <20220213201246.25952-1-s-anna@ti.com>
+        Sun, 13 Feb 2022 15:35:51 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B291653706;
+        Sun, 13 Feb 2022 12:35:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644784523;
+        bh=Cpfn90elRMfLDzVx1L0uUsc/bngOYlVfTxhI1KBAubs=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=QXbayB3CLJvUIrtr2HCtBtBb/9Kg/W9P6C/x8te4PK/cgiwOmNIohBi39+8xjCwuQ
+         PSAzLp2K00mFT/7+Pjak2e5OV16l4E8xZCTfJiQPIPEDEgtAkWYxQFNJ+ya2YCMhkf
+         T8gyrjPOdoFGGL3zd18Wzbdtgmh+obv9Xx87LBDI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.190.238]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N0oG5-1oFSQQ1Wp3-00wnYQ; Sun, 13
+ Feb 2022 21:35:23 +0100
+Message-ID: <0baabcbc-196e-08fa-e2db-b7e925993cc1@gmx.de>
+Date:   Sun, 13 Feb 2022 21:35:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] serial: parisc: GSC: fix build when PCI_LBA is not set
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        linux-parisc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+References: <20220213193903.8815-1-rdunlap@infradead.org>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <20220213193903.8815-1-rdunlap@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:VtVfDMh6PpTirPXZK3QeaRFqqIwIHU/pf/eKlHf4xg8mCtFgPqM
+ 0un+1BVwxQPBWoD2z9yHZZlDQAqqUZKUXLQUM4+bWHqW493Xbq2ARTFm+YnIeZCWUeA9Npy
+ vhHQlWhtBg2ZidCPPkC/pOpMLmcLpy43PKBZyQZqXK/2sljyhd0yyX7zVv39db+Ye+dDYBS
+ wo1ZElku24Y2XB23QpP0g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VluQsaZyw/Y=:5jh84tWLI+vZjJ7skyNgVj
+ UU1YMjeJbJmx5zdnLLl8VzaE97CN7qjXX2+j4sQIqJAn4d+G/XE+rpOrdQgTP9NMkPdLDiy22
+ ILBMayVofTwKbJMTcJ/XTRKSlUMyJ6CTuL6QarwvUk7XFHhZCpAxvNe/yfWy28Pi/WKqQl+oB
+ wVnrrNLiF+a/vcWMOY9TjMMkgp7rttocA98xnFBdjt84Gc9VydlU+JYFR2iuD0xNLt+IbgRv5
+ 4zhsPt9O0w0yyUSlQ9qOa/WOyhRH/jxJ5/A2ShPDFze9ea88vlPDmG7BHdpZR6Y5uQ2U9rxoR
+ BvpPUEltnRLVFJghijGBMWcTOZPCQ+Cgl6a/KpwPS5GdS2y2SvXYC+4QpFyJZ2UPnIxuy6xWo
+ +lJKvoOAgxIOTOrwB+/vd0680GWxnMJw5ihx9+jpXQXnC7I2RFc1/zoBWN/w/DN+Zd8gfWEMp
+ smz/lnVIzPKfmKmBk234+a34Vsu1KbTRu1aQ0B9IJIMJNZx777Qw0Md0cjb/X0fVsG+MM/W2+
+ iJy4fll8z/j8ustxQLYDECcWshriZUfOV3oCTBXXzPO9HSv9kZBqdo2sbn5mrLo7eDhQfp0iL
+ a1eO8NM4JEFUOfvRw+1k8wU2oWQnGLyGVGJf8GF0vUOi8A7vvjXVmYzF89qyK81R8/Rd4ALIR
+ ebYV/bSsedDe8hY9Um17iHvYg4lWICqrL1iNBWRoQZgdy7a/yJHMonF/w3atLNqkY/oRhlwrG
+ gbMSeAug8INydJkuMGuy/BekMiZJzs+cyf8EGvLQ2YrbQFZcEvhuuywzrI51mqo3fVqaLxx25
+ NzkA4Iy/JWNRDwqS4bqELQgwIBMuFI2QBQTgxMIbCXbL05NDAqaCjiQusPuUW77GPQLVR2Kok
+ cFj1QNZFLURv46UNo6gl4rrq6NfWP5D+JtkTdawGbFhZAskzpDkq2u5W4n2heMS2CxlPg5CYm
+ ZFQI+5b89PQWNiua7TM++LCvqNLCtdIRHTRCQ/Cakv1nFf+3Mbw+1/Frst2e2bHE60y5wa6iO
+ yhGT/XjDDbARyIvjh/UYbegGF47RnJ6zBfq16xn1FaWEOM9aPFE5kDVTb4CjGntg+0sodGpKA
+ hbX0P233+uB/Ic=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor out the mailbox request and associated ping logic code
-from k3_r5_rproc_start() function into its own separate function
-so that it can be re-used in the soon to be added .attach() ops
-callback.
+Hi Randy,
 
-Signed-off-by: Suman Anna <s-anna@ti.com>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
----
-v3: Updated license years, no code changes
-v2: https://patchwork.kernel.org/project/linux-remoteproc/patch/20210723220248.6554-3-s-anna@ti.com/
-v1: https://patchwork.kernel.org/project/linux-remoteproc/patch/20210522000309.26134-4-s-anna@ti.com/
+On 2/13/22 20:39, Randy Dunlap wrote:
+> There is a build error when using a kernel .config file from
+> 'kernel test robot' for a different build problem:
+>
+> hppa64-linux-ld: drivers/tty/serial/8250/8250_gsc.o: in function `.LC3':
+> (.data.rel.ro+0x18): undefined reference to `iosapic_serial_irq'
+>
+> when:
+>   CONFIG_GSC=3Dy
+>   CONFIG_SERIO_GSCPS2=3Dy
+>   CONFIG_SERIAL_8250_GSC=3Dy
+>   CONFIG_PCI is not set
+>     and hence PCI_LBA is not set.
+>   IOSAPIC depends on PCI_LBA, so IOSAPIC is not set/enabled.
+>
+> Making SERIAL_8250_GSC depend on PCI_LBA prevents the build error.
 
- drivers/remoteproc/ti_k3_r5_remoteproc.c | 68 ++++++++++++++----------
- 1 file changed, 41 insertions(+), 27 deletions(-)
+It maybe makes the build error go away, but ...
 
-diff --git a/drivers/remoteproc/ti_k3_r5_remoteproc.c b/drivers/remoteproc/ti_k3_r5_remoteproc.c
-index 969531c05b13..ff4e1fac1c7f 100644
---- a/drivers/remoteproc/ti_k3_r5_remoteproc.c
-+++ b/drivers/remoteproc/ti_k3_r5_remoteproc.c
-@@ -2,7 +2,7 @@
- /*
-  * TI K3 R5F (MCU) Remote Processor driver
-  *
-- * Copyright (C) 2017-2020 Texas Instruments Incorporated - https://www.ti.com/
-+ * Copyright (C) 2017-2022 Texas Instruments Incorporated - https://www.ti.com/
-  *	Suman Anna <s-anna@ti.com>
-  */
- 
-@@ -376,6 +376,44 @@ static inline int k3_r5_core_run(struct k3_r5_core *core)
- 				       0, PROC_BOOT_CTRL_FLAG_R5_CORE_HALT);
- }
- 
-+static int k3_r5_rproc_request_mbox(struct rproc *rproc)
-+{
-+	struct k3_r5_rproc *kproc = rproc->priv;
-+	struct mbox_client *client = &kproc->client;
-+	struct device *dev = kproc->dev;
-+	int ret;
-+
-+	client->dev = dev;
-+	client->tx_done = NULL;
-+	client->rx_callback = k3_r5_rproc_mbox_callback;
-+	client->tx_block = false;
-+	client->knows_txdone = false;
-+
-+	kproc->mbox = mbox_request_channel(client, 0);
-+	if (IS_ERR(kproc->mbox)) {
-+		ret = -EBUSY;
-+		dev_err(dev, "mbox_request_channel failed: %ld\n",
-+			PTR_ERR(kproc->mbox));
-+		return ret;
-+	}
-+
-+	/*
-+	 * Ping the remote processor, this is only for sanity-sake for now;
-+	 * there is no functional effect whatsoever.
-+	 *
-+	 * Note that the reply will _not_ arrive immediately: this message
-+	 * will wait in the mailbox fifo until the remote processor is booted.
-+	 */
-+	ret = mbox_send_message(kproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
-+	if (ret < 0) {
-+		dev_err(dev, "mbox_send_message failed: %d\n", ret);
-+		mbox_free_channel(kproc->mbox);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * The R5F cores have controls for both a reset and a halt/run. The code
-  * execution from DDR requires the initial boot-strapping code to be run
-@@ -495,38 +533,14 @@ static int k3_r5_rproc_start(struct rproc *rproc)
- {
- 	struct k3_r5_rproc *kproc = rproc->priv;
- 	struct k3_r5_cluster *cluster = kproc->cluster;
--	struct mbox_client *client = &kproc->client;
- 	struct device *dev = kproc->dev;
- 	struct k3_r5_core *core;
- 	u32 boot_addr;
- 	int ret;
- 
--	client->dev = dev;
--	client->tx_done = NULL;
--	client->rx_callback = k3_r5_rproc_mbox_callback;
--	client->tx_block = false;
--	client->knows_txdone = false;
--
--	kproc->mbox = mbox_request_channel(client, 0);
--	if (IS_ERR(kproc->mbox)) {
--		ret = -EBUSY;
--		dev_err(dev, "mbox_request_channel failed: %ld\n",
--			PTR_ERR(kproc->mbox));
-+	ret = k3_r5_rproc_request_mbox(rproc);
-+	if (ret)
- 		return ret;
--	}
--
--	/*
--	 * Ping the remote processor, this is only for sanity-sake for now;
--	 * there is no functional effect whatsoever.
--	 *
--	 * Note that the reply will _not_ arrive immediately: this message
--	 * will wait in the mailbox fifo until the remote processor is booted.
--	 */
--	ret = mbox_send_message(kproc->mbox, (void *)RP_MBOX_ECHO_REQUEST);
--	if (ret < 0) {
--		dev_err(dev, "mbox_send_message failed: %d\n", ret);
--		goto put_mbox;
--	}
- 
- 	boot_addr = rproc->bootaddr;
- 	/* TODO: add boot_addr sanity checking */
--- 
-2.32.0
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Cc: "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>
+> Cc: Helge Deller <deller@gmx.de>
+> Cc: linux-parisc@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-serial@vger.kernel.org
+> Cc: Jiri Slaby <jirislaby@kernel.org>
+> Cc: Johan Hovold <johan@kernel.org>
+> ---
+>  drivers/tty/serial/8250/Kconfig |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> --- linux-next-20220211.orig/drivers/tty/serial/8250/Kconfig
+> +++ linux-next-20220211/drivers/tty/serial/8250/Kconfig
+> @@ -118,7 +118,7 @@ config SERIAL_8250_CONSOLE
+>
+>  config SERIAL_8250_GSC
+>  	tristate
+> -	depends on SERIAL_8250 && GSC
+> +	depends on SERIAL_8250 && GSC && PCI_LBA
+>  	default SERIAL_8250
 
+The serial device is on the GSC bus, so if you make it
+dependend on the PCI bus it will not be useable on machines
+which only have a GSC bus...
+
+We need another patch.
+Do you have a link to the build error?
+
+Helge
