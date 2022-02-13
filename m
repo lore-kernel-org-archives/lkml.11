@@ -2,136 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE0D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 00:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86336C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 01:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232711AbiBMAib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 19:38:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45358 "EHLO
+        id S232745AbiBMBDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 20:03:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232696AbiBMAi2 (ORCPT
+        with ESMTP id S232686AbiBMBDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 19:38:28 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2827360054
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 16:38:24 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id q7so21059919wrc.13
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 16:38:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=bT2Te+Kg9SQlga08Bc5dZ+XNGd8nQG47I/LjRlS+lTA=;
-        b=izpzK2aptidswgj+IrD8bsq0MTZ2eEsoQQF6NZBWOjfHyo+7uJl0c17wn6Y3LgvVLJ
-         P1upGmuHjQ5GC28vYiOQDDvNz1BLKZqI4nAQFMFijNr2jd6L1Zs7d2sBu8RqFy2EPPwE
-         kTIPDtZjqDCypTGpf0xXxo1LRVxVhhGp6W3rFP8lOmOrXM+beXE2OYRTwFmtZJ/P+Esf
-         xVRFB8C+lZ950y6MuLNSWKUSmz3HrBNIELZ9QP6e9KWCtPaV+AqsycFEZEkDqGbiJtjD
-         3gQLDIr3BE8LtfOHc8ycvM2xoe7hOqHKrbam6NEsM6sCt3h1nF4peM78dlXHGCPRimmO
-         Q82g==
+        Sat, 12 Feb 2022 20:03:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8345060056
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 17:03:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644714184;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ins8sGNc9bHOmwljx/s1vxHKOLJy2EKsmlSrZVMjDnI=;
+        b=KB/ayYPJwJXU9XV1XmcHWc4DXjLAo8ZmrHyNnwKJn6HlDhXVJzojxDqKWufIfIto+hvyAz
+        y5qjgE+kKcM/uUp2VOGXQ2YQ5i7TuPVeEhOV1w1/wnkdGwhgbesvi4modnGUgC4iruA1D0
+        DAESHYDlhvwBcEugmuWUZynSV8+KAkM=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-511-EWumyYTQNR6GhN4usc6kbg-1; Sat, 12 Feb 2022 20:03:02 -0500
+X-MC-Unique: EWumyYTQNR6GhN4usc6kbg-1
+Received: by mail-ot1-f72.google.com with SMTP id r16-20020a9d7510000000b0059ea94f86eeso7829475otk.8
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 17:03:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=bT2Te+Kg9SQlga08Bc5dZ+XNGd8nQG47I/LjRlS+lTA=;
-        b=M6eULHjfi0xuFFjzgMuN8uHjKIJwiyEjl2Odj/supF9Xw12+QsykOWxiZ8lmQuMrUj
-         fcJ94pCTzsQoXS9/xZvn+pF21pLWFBsVGQHFxLI9Nxhsp+Uq5gjbKovYKYnVZhc/ywKK
-         lrQXaBdHRuIYYffKtQhAlJUQ76yt+s6QX4TAUZTR5q71tD5oOa1bM2w1ADQL8Batc9B8
-         9vVYMX45ceNvZin51aGklBQPJ7ydU+czRwwAtMzDlaQPa+KQ4AMCviBMXRi3U2vIm5ew
-         TpUItp19QkgT1ACVHCVfN5n+bgA7jCGO+0I9NKpJ0Z2tDDL2LEDYhZVQFfgaqtzO0Q0S
-         yQoQ==
-X-Gm-Message-State: AOAM532hZDAtXOsl/nq6nkgSe8n63P2OpiBUvX5nWEX7r/4LzabcP/8r
-        633oeVYFIoMNeLXEXUqHXx643Q==
-X-Google-Smtp-Source: ABdhPJwvun1U+g/rmYkWGOIuPnc/4//mZOAHrhni/PE25GNEMCqB4AeM286Hqez96qRO44bfGOIGpg==
-X-Received: by 2002:adf:908f:: with SMTP id i15mr6531238wri.256.1644712701925;
-        Sat, 12 Feb 2022 16:38:21 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id s7sm8676472wrw.71.2022.02.12.16.38.19
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ins8sGNc9bHOmwljx/s1vxHKOLJy2EKsmlSrZVMjDnI=;
+        b=Q19x45m1PenefxM8vOSBRRY+hbXrNzshxm5t2RvXUoF/rhyQgqdBZHQDiUs/jtFIN8
+         iuaDZIQ3ysR26DV6BNcmlm9mLgfW204b3QrFWvgCPiALvzWhOrlNIv3szYdn7Q82gV1u
+         EEY6td8ENWqCfQjVTCkk5JIMQ1ujrNUeMNmUl0ASKOTlmKbBNcjZ6o84oa+e8Bqfa8vL
+         Igb2xYEr2s/MPxtBurcfb33XRseTSLt6PBXWDqtMHxzkZr6AjfLh2JgYxZ2ApQtXiIWS
+         9ILPITq258cse2og6ECJ3gOO4GpaEo4yeNqc+H5+yi5JxXFQTEzNay/0HxjovBJfdLfb
+         cGfw==
+X-Gm-Message-State: AOAM533MA0tk9hu/KX4yotSiebBZrGbRWvmr38gX2xSTkV+bBmK5s3mp
+        rfxiLm6Dm5mbkX0ljVIj795YOL35ROPti7EOKFv0cKbV62u9BeEDsAehOxKZ7XNOvf1wR9QdU5h
+        ffX+oV2Gpcw53TEXGseTW1cXD
+X-Received: by 2002:a05:6830:92:: with SMTP id a18mr2878499oto.373.1644714182192;
+        Sat, 12 Feb 2022 17:03:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyLlMZslbwgMVP9zAD5/X+Q5Yz8w5PDh7Q9JtMTWNAPu+5FtKAISWKRrI4EwXxFCANNDNkE1w==
+X-Received: by 2002:a05:6830:92:: with SMTP id a18mr2878490oto.373.1644714181909;
+        Sat, 12 Feb 2022 17:03:01 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::35])
+        by smtp.gmail.com with ESMTPSA id u5sm11273818ooo.46.2022.02.12.17.02.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 16:38:21 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: mv88e6xxx: Fix validation of built-in PHYs on 6095/6097
-Date:   Sun, 13 Feb 2022 01:37:01 +0100
-Message-Id: <20220213003702.2440875-1-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 12 Feb 2022 17:03:01 -0800 (PST)
+Date:   Sat, 12 Feb 2022 17:02:57 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Valdis =?utf-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Justin Forbes <jmforbes@linuxtx.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] tools: Fix use-after-free for realloc(..., 0)
+Message-ID: <20220213010257.yllouthdbjzawil2@treble>
+References: <20220212181855.3460176-1-keescook@chromium.org>
 MIME-Version: 1.0
-Organization: Westermo
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220212181855.3460176-1-keescook@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These chips have 8 built-in FE PHYs and 3 SERDES interfaces that can
-run at 1G. With the blamed commit, the built-in PHYs could no longer
-be connected to, using an MII PHY interface mode.
+On Sat, Feb 12, 2022 at 10:18:55AM -0800, Kees Cook wrote:
+>  static inline void *xrealloc(void *ptr, size_t size)
+>  {
+> -	void *ret = realloc(ptr, size);
+> -	if (!ret && !size)
+> -		ret = realloc(ptr, 1);
+> +	void *ret;
+> +
+> +	/*
+> +	 * Convert a zero-sized allocation into 1 byte, since
+> +	 * realloc(ptr, 0) means free(ptr), but we don't want
+> +	 * to release the memory. For a new allocation (when
+> +	 * ptr == NULL), avoid triggering NULL-checking error
+> +	 * conditions for zero-sized allocations.
+> +	 */
+> +	if (!size)
+> +		size = 1;
+> +	ret = realloc(ptr, size);
+>  	if (!ret) {
+> -		ret = realloc(ptr, size);
+> -		if (!ret && !size)
+> -			ret = realloc(ptr, 1);
+> -		if (!ret)
+> -			die("Out of memory, realloc failed");
+> +		/*
+> +		 * If realloc() fails, the original block is left untouched;
+> +		 * it is not freed or moved.
+> +		 */
+> +		die("Out of memory, realloc failed");
 
-Create a separate .phylink_get_caps callback for these chips, which
-takes the FE/GE split into consideration.
+xrealloc() only has two uses -- both via ALLOC_GROW() -- and they don't
+rely on the 'size == 0' freeing anyway.  How about simplifying this
+further to just:
 
-Fixes: 2ee84cfefb1e ("net: dsa: mv88e6xxx: convert to phylink_generic_validate()")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
+ 	ret = realloc(ptr, size);
+  	if (!ret)
+		die("Out of memory, realloc failed");
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 85527fe4fcc8..622b3b4ed513 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -580,6 +580,27 @@ static const u8 mv88e6185_phy_interface_modes[] = {
- 	[MV88E6185_PORT_STS_CMODE_PHY]		 = PHY_INTERFACE_MODE_SGMII,
- };
- 
-+static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
-+				       struct phylink_config *config)
-+{
-+	u8 cmode = chip->ports[port].cmode;
-+
-+	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
-+
-+	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
-+		if (cmode == MV88E6185_PORT_STS_CMODE_PHY)
-+			__set_bit(PHY_INTERFACE_MODE_MII,
-+				  config->supported_interfaces);
-+	} else {
-+		if (cmode < ARRAY_SIZE(mv88e6185_phy_interface_modes) &&
-+		    mv88e6185_phy_interface_modes[cmode])
-+			__set_bit(mv88e6185_phy_interface_modes[cmode],
-+				  config->supported_interfaces);
-+
-+		config->mac_capabilities |= MAC_1000FD;
-+	}
-+}
-+
- static void mv88e6185_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
- 				       struct phylink_config *config)
- {
-@@ -3803,7 +3824,7 @@ static const struct mv88e6xxx_ops mv88e6095_ops = {
- 	.reset = mv88e6185_g1_reset,
- 	.vtu_getnext = mv88e6185_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6185_g1_vtu_loadpurge,
--	.phylink_get_caps = mv88e6185_phylink_get_caps,
-+	.phylink_get_caps = mv88e6095_phylink_get_caps,
- 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
- };
- 
-@@ -3850,7 +3871,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
--	.phylink_get_caps = mv88e6185_phylink_get_caps,
-+	.phylink_get_caps = mv88e6095_phylink_get_caps,
- 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
- };
- 
+Much easier to grok, and as a bonus, we don't need the long comments :-)
+
 -- 
-2.25.1
+Josh
 
