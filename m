@@ -2,88 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D41B2C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 16:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD69C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 16:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237075AbiBMQWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 11:22:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40178 "EHLO
+        id S237090AbiBMQW3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 11:22:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233353AbiBMQWE (ORCPT
+        with ESMTP id S233353AbiBMQW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 11:22:04 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8AC5A0B8;
-        Sun, 13 Feb 2022 08:21:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=4YsJZ4gtzV4ZFiKdZ3rVxaf1qsqpFia1yffSaxKOPR4=; b=A1ah05IWZ4M0r3HGz6UVV0H+rK
-        AkET0r1x6xzfXFsx0hl/06ps1l4VmgpBniZAq1rRD69nvafCQCZcatEl0Y0hE5fRnbFivI1R93v17
-        XsEZ39UzsBkW21LH9oo/oKHnrux+lvVQDViohxV8fR21NfLSr7cQhE/yXabRafZoHavrLBCWgpR/o
-        w+3GibPL9jKveNdbb7FzV+/vPr17Tvf/tjX0QuqW6Iv3GuLtIjz0UGXkWTlVbhBf/MgkxGT4wKsEk
-        CdEMyR9hHFVLstMGFWNvFMWv+qevCb+nWePR2dew7s67jWIBp6KW0VqhGaSy12WPfOJVqUyGE1LFS
-        FDx+IoeA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57232)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nJHdI-0000WQ-F6; Sun, 13 Feb 2022 16:21:52 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nJHdG-0005hw-5f; Sun, 13 Feb 2022 16:21:50 +0000
-Date:   Sun, 13 Feb 2022 16:21:50 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: Fix validation of built-in
- PHYs on 6095/6097
-Message-ID: <YgkwHqjMq5DtoMd1@shell.armlinux.org.uk>
-References: <20220213003702.2440875-1-tobias@waldekranz.com>
- <YgkAfy3fQ1hq7nlf@shell.armlinux.org.uk>
- <87tud2aijg.fsf@waldekranz.com>
+        Sun, 13 Feb 2022 11:22:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941585A584;
+        Sun, 13 Feb 2022 08:22:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4228EB80B33;
+        Sun, 13 Feb 2022 16:22:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6FF7C340F0;
+        Sun, 13 Feb 2022 16:22:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644769339;
+        bh=czxEEr/GBsTWRl7yYnSsYAZb/4+oUEgjhNhdXN4Iiio=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GfCp0kr4KenvGejya3Gs83lT4nlL53uGu0IiIJC88tM5xZzkGjxT3hZRZ7kjiE2Rd
+         NCdZz/L0DUrnSFhN6e2748W3yNhFOmCmc/eJUqk1Z/9jxfUa84AiaDW9urYdYRXzQb
+         dcTPMhJD8hFrQTqiceV+fj82UYRmveAlERcXu3Zc+tK8ij9tb04t8yuVQwtY5Tu9vs
+         HYhJQMDFLyK5jofVj1GlwGnYorbI4m3SfVie9XI6kUlQPS8tC+Jnaq96k6G1IPZE+l
+         CvfQ0KQ2NY3Q0ZTAc/r0wNsqyn8lI4kDO98aBx49OlbkhuZO3eFjCdabfUAe0V201k
+         0yibIHcWHWhrw==
+Date:   Sun, 13 Feb 2022 16:28:59 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Julia Lawall <julia.lawall@inria.fr>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
+        Michal Simek <monstr@monstr.eu>,
+        Dragan Cvetic <dragan.cvetic@xilinx.com>, git@xilinx.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: versal-sysmon: fix for_each_child.cocci warnings
+Message-ID: <20220213162859.3d968256@jic23-huawei>
+In-Reply-To: <alpine.DEB.2.22.394.2202122337090.3095@hadrien>
+References: <alpine.DEB.2.22.394.2202122337090.3095@hadrien>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tud2aijg.fsf@waldekranz.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 04:32:51PM +0100, Tobias Waldekranz wrote:
-> On Sun, Feb 13, 2022 at 12:58, "Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
-> > I'm wondering what the point of checking the cmode here is - if the port
-> > is internal, won't this switch always have cmode == PHY?
+On Sat, 12 Feb 2022 23:39:33 +0100 (CET)
+Julia Lawall <julia.lawall@inria.fr> wrote:
+
+> From: kernel test robot <lkp@intel.com>
 > 
-> For all intents and purposes: I think so. It is just that the functional
-> spec. also lists cmode == 4 == disabled (PHYDetect == 0) for the
-> internal ports. So I figured that there might be some way of strapping
-> ports as disabled that I had never come across.
+> For_each_child_of_node" should have of_node_put() before return.
+> 
+> Generated by: scripts/coccinelle/iterators/for_each_child.cocci
+> 
+> CC: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
+> 
+> ---
+> 
+> tree:   https://github.com/Xilinx/linux-xlnx xlnx_rebase_v5.15
+> head:   966124532656bc95d781abf57531e4cd4f962237
+> commit: 1459646ab280aa68c3c4fa1d9552ea21f15d7a2d [543/923] iio: versal-sysmon: add driver for Versal Sysmon
+> :::::: branch date: 3 days ago
+> :::::: commit date: 12 days ago
+> 
+> Please take the patch only if it's a positive warning. Thanks!
 
-I don't think there is a way to pinstrap the internal ports. As far as
-I can see, the only way would be for software to program PHY Detect to
-zero.
+Patch is obviously correct, but this driver isn't upstream so from point of view
+of the IIO tree I'm ignoring this.
 
-If we wanted a port to be disabled, then describing it in firmware as
-being enabled would be a bug. If it isn't described in firmware, the
-DSA code won't even consider looking at the port.
+Thanks,
 
-> Do you think we should drop it?
+Jonathan
 
-I think so.
+> 
+>  versal-sysmon.c |    8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> --- a/drivers/iio/adc/versal-sysmon.c
+> +++ b/drivers/iio/adc/versal-sysmon.c
+> @@ -875,12 +875,16 @@ static int sysmon_parse_dt(struct iio_de
+> 
+>  	for_each_child_of_node(np, child_node) {
+>  		ret = of_property_read_u32(child_node, "reg", &reg);
+> -		if (ret < 0)
+> +		if (ret < 0) {
+> +			of_node_put(child_node);
+>  			return ret;
+> +		}
+> 
+>  		ret = of_property_read_string(child_node, "xlnx,name", &name);
+> -		if (ret < 0)
+> +		if (ret < 0) {
+> +			of_node_put(child_node);
+>  			return ret;
+> +		}
+> 
+>  		sysmon_channels[i].type = IIO_VOLTAGE;
+>  		sysmon_channels[i].indexed = 1;
 
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
