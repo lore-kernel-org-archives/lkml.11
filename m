@@ -2,109 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D31CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 22:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5993C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 22:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238625AbiBMWdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 17:33:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51824 "EHLO
+        id S238654AbiBMWd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 17:33:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238608AbiBMWdT (ORCPT
+        with ESMTP id S238626AbiBMWd4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 17:33:19 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26625468F
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 14:33:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644791593; x=1676327593;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=971JhnVBoFb6X05hqx76zRjjoZWkClyuYbSZUvxRits=;
-  b=eTNa1b5fmMQRhr/EdE4JkgPIuCEQMpap0MuXjNakfUclbSx/kcZddV9u
-   DeuslmASVv3SwjmiAD5UPCwZC+eytK6U3KSBVWH+Fe44QNPeGvYd2EZBP
-   gLm0zsX+0EEOmLFc1zTuI3hGgq7VHxgLDj6fVo64sPH37IO/H+F7C8/dx
-   cBxgNkIuFu2To2D7DBb+ZagqCOrjyYDTyaWusHkLPkMFqiFSzdHypdevU
-   8teYUiKCUbY4B6jDEBfNzGdbodXePxheyIX6UDYCGXBJwASPH2oir58F7
-   +WD2G6ZMMSa4kCOv22vOb+FSLHrfSmd41hY1/uFvA+ZYOjQEmKnaGoe8+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249925016"
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="249925016"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 14:33:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
-   d="scan'208";a="569714200"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 13 Feb 2022 14:33:11 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJNQc-0007vG-La; Sun, 13 Feb 2022 22:33:10 +0000
-Date:   Mon, 14 Feb 2022 06:32:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: mm/memcontrol.c:2774:20: error: unused function 'cancel_charge'
-Message-ID: <202202140629.MxlIbXOG-lkp@intel.com>
+        Sun, 13 Feb 2022 17:33:56 -0500
+X-Greylist: delayed 321 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 14:33:49 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72435546B7;
+        Sun, 13 Feb 2022 14:33:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644791627;
+        bh=WBgs4UsljChJvlnfHo4GVoBnICbWqNN2tqDkgEeXK8E=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=WMuLJzGGO3yM8k0byJUE/Y4U9umpFMUhF2vCCmGtZly1/kZ1UrysFXw7Jwu6+aZ6F
+         4ijarPi/P5ceUTTC6qhztVzbQprKaUq9dogIB4+khpe7NivjmedMnFQPoqeQSpvQg5
+         xFN3bwPtruvQzaDsGb+9FDk87xf5Snr8GlUwI/q4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MGQj7-1nVFpu35HZ-00GonE; Sun, 13
+ Feb 2022 23:28:11 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [PATCH 9/9] serial: atmel: remove redundant assignment in rs485_config
+Date:   Sun, 13 Feb 2022 23:27:37 +0100
+Message-Id: <20220213222737.15709-10-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:Q3ZlTb7isrIm8pDj4u1NbzVTiR5ZqKFpbyFVf3Sdoi4eXu3Ta8z
+ oYr8DGswb8CiESXcXRkinbjAqcyDZxNc8JafBdlTupttlUD+Z9NxWNASfbGJhOPYqeE5I6g
+ ZvCF/t1Zd866PwCgY+foXoupJw53+0IHnS3uR1IJZwozNfOaUy2VzvCWMZzPGb7rd1/maoM
+ 10tuzyU9LtKQuXKqUFAjQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:PQKhTy0t+Yw=:jIQ7ZPJuT3e6i5/yCgdlfv
+ kak3Wk/fSqMToJpkujRgrRNNHtpqrZOGR2S/YOVgOMvJpiYPpWLV1TKezM8n+G+jp4un21xVn
+ x/B2ClqizVQ84jXAiFDr8FgUtTXLenUodV2LoVgVM/N8bsA1HwSjJ0P8+tydo1QHQ02dKKEa1
+ FTJ78U0Txk0XO45vJdOELNQG41SNUOZzrHutBNQ6SNJ1xpI+ldsUeNP3VChfCFblQ1PNf8Tj7
+ Jbn0c7MvQ8+GOIyg8+RKnU/ZtozL0GH7gF8DCOUl64xUA1LTMqpKuwPasOnOORDOYWIqwlJcc
+ K9rTQrXX0liC8CQ0+oElDYbxgONLW51ZaJ79wvAa6RwxUAlkzzfW6BS9obmranRp32PGN2uFh
+ nlTI/JgeVbKrtN/Yd9F51gml6IjsHtfARF1Ina/8EUqr2ahjWfFb3cAcLQsuTGa1le7CEcq7E
+ S5DOHQE9wkf946JuPy1fQH3X6DaVnVLanNKPBy4dKe0OEfK5g9ERm8pvDVrYIuSmzMPvlYH79
+ cJVwR+0yfkVsF0pZkRtrJqxwEbt1oDkpB9ALB35IKAqqxR3RFK49W8DYGfeeVtbBUpT5sIOQy
+ mjbb7Mr7PIJfu6H5jpQ/XOF1cIAnrnBVoZR49vls33Yhe0rrS4EpbpZsF28uizkMIstkG2q+S
+ z0M/lnGYdpvlnBsaZ2TLXngHQZlR7kSKUZROePTRaHh5BsYxax23menZQKC9oZOXt9TfpxU8V
+ 09Q9IRVRdGKz2uk8OTsfLqlDnh5iuCNoC8S/IuJDFaNxAnWdgpRt/VH+Nk+gFKhE0uO+YDCxw
+ PdbIzvM6yqIKDvgThAw4yVqrd2n5HdsbyqMIel0eCQxdtQO68zXDxe9pQzEZkyvGa9bQ/L1vA
+ JDbjOQgaNJjYn+lzDDX8Nh3nQRTB9L4fQ0oHfsLzEfc8s7XbhDmbvwqqK+iNCKxEgjT+3uFL1
+ e+9ikDgYuii1VctIbizbk1QItjpeU5D2cNvi2r1IhEUX68QH3ReWUTYURLTfdh01xHCwB8Kb2
+ LSA/hAc9Q2vHQwzP19mpx/SdU2SjlLq1cAcyuhFLQ/+BDZpMIH/cnbGaimyTwSEfakCPL4GxN
+ OWNYKOraCl6+os=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   754e0b0e35608ed5206d6a67a791563c631cec07
-commit: 58056f77502f3567b760c9a8fc8d2e9081515b2d memcg, kmem: further deprecate kmem.limit_in_bytes
-date:   3 months ago
-config: arm-randconfig-r005-20220213 (https://download.01.org/0day-ci/archive/20220214/202202140629.MxlIbXOG-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=58056f77502f3567b760c9a8fc8d2e9081515b2d
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 58056f77502f3567b760c9a8fc8d2e9081515b2d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> mm/memcontrol.c:2774:20: error: unused function 'cancel_charge' [-Werror,-Wunused-function]
-   static inline void cancel_charge(struct mem_cgroup *memcg, unsigned int nr_pages)
-                      ^
-   mm/memcontrol.c:3339:19: error: unused function 'mem_cgroup_move_swap_account' [-Werror,-Wunused-function]
-   static inline int mem_cgroup_move_swap_account(swp_entry_t entry,
-                     ^
-   2 errors generated.
-
-
-vim +/cancel_charge +2774 mm/memcontrol.c
-
-  2773	
-> 2774	static inline void cancel_charge(struct mem_cgroup *memcg, unsigned int nr_pages)
-  2775	{
-  2776		if (mem_cgroup_is_root(memcg))
-  2777			return;
-  2778	
-  2779		page_counter_uncharge(&memcg->memory, nr_pages);
-  2780		if (do_memsw_account())
-  2781			page_counter_uncharge(&memcg->memsw, nr_pages);
-  2782	}
-  2783	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+V2hlbiBSUzQ4NSBpcyBjb25maWd1cmVkIGJ5IHVzZXJzcGFjZSB0aGUgc2VyaWFsIGNvcmUgYWxy
+ZWFkeSBhc3NpZ25zIHRoZQpwYXNzZWQgY29uZmlndXJhdGlvbiB0byB0aGUgdWFydCBwb3J0LiBT
+byByZW1vdmUgdGhlIGFzc2lnbm1lbnQgZnJvbSB0aGUKZHJpdmVycyByczQ4NV9jb25maWcgZnVu
+Y3Rpb24gdG8gYXZvaWQgcmVkdW5kYW5jeS4KClNpZ25lZC1vZmYtYnk6IExpbm8gU2FuZmlsaXBw
+byA8TGlub1NhbmZpbGlwcG9AZ214LmRlPgotLS0KIGRyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9z
+ZXJpYWwuYyB8IDQgKy0tLQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAzIGRlbGV0
+aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYyBi
+L2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwppbmRleCAyZDA5YTg5OTc0YTIuLjJh
+YjU4OWEzZDg2YyAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL2F0bWVsX3NlcmlhbC5j
+CisrKyBiL2RyaXZlcnMvdHR5L3NlcmlhbC9hdG1lbF9zZXJpYWwuYwpAQCAtMjk5LDExICsyOTks
+OSBAQCBzdGF0aWMgaW50IGF0bWVsX2NvbmZpZ19yczQ4NShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0
+LAogCS8qIFJlc2V0dGluZyBzZXJpYWwgbW9kZSB0byBSUzIzMiAoMHgwKSAqLwogCW1vZGUgJj0g
+fkFUTUVMX1VTX1VTTU9ERTsKIAotCXBvcnQtPnJzNDg1ID0gKnJzNDg1Y29uZjsKLQogCWlmIChy
+czQ4NWNvbmYtPmZsYWdzICYgU0VSX1JTNDg1X0VOQUJMRUQpIHsKIAkJZGV2X2RiZyhwb3J0LT5k
+ZXYsICJTZXR0aW5nIFVBUlQgdG8gUlM0ODVcbiIpOwotCQlpZiAocG9ydC0+cnM0ODUuZmxhZ3Mg
+JiBTRVJfUlM0ODVfUlhfRFVSSU5HX1RYKQorCQlpZiAocnM0ODVjb25mLT5mbGFncyAmIFNFUl9S
+UzQ4NV9SWF9EVVJJTkdfVFgpCiAJCQlhdG1lbF9wb3J0LT50eF9kb25lX21hc2sgPSBBVE1FTF9V
+U19UWFJEWTsKIAkJZWxzZQogCQkJYXRtZWxfcG9ydC0+dHhfZG9uZV9tYXNrID0gQVRNRUxfVVNf
+VFhFTVBUWTsKLS0gCjIuMzQuMQoK
