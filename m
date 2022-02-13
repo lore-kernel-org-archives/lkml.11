@@ -2,131 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA46C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 02:59:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A146C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 03:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiBMC6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 21:58:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46668 "EHLO
+        id S233174AbiBMDBf convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 22:01:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233095AbiBMC6C (ORCPT
+        with ESMTP id S231134AbiBMDBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 21:58:02 -0500
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9497606C2;
-        Sat, 12 Feb 2022 18:57:50 -0800 (PST)
-Received: by mail-qk1-x72e.google.com with SMTP id m25so11620520qka.9;
-        Sat, 12 Feb 2022 18:57:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BCRNBtw2ZVQIHStbST26aXf3YexYOa7wLDw0BGaj3EY=;
-        b=pXTgaFQnFPlL08FDRNs7mlVjO2aJtX8rVPmkGxqgufEQAsAf3JAvqC7PcxIvQft5x3
-         7q+Y5KP8mvoaSU5WrVZGIGf8eODL8T2JFEMmR7Hz8FSGBuTA7MxI/iemo/OfyHuUtChu
-         3iXa8fMqiZChiUMjLdL6AJrDUHAd9Wd91CunBR98mmjwQLVUhGjhw0q5VdZrb3Xo+A3n
-         bQ/5+J3fnJpQosk5N3R/xtlYvG5aAEtByIQIjqN32PUg0ybmHTC5V2FsKHdnqnBv1nl/
-         HQj7EDwCpez+AA1BbQq0mJdJFlxG9LL/wlyh/CfZNKjDlXgUpRwS/PbVgGtVloZ1i/KW
-         IBtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BCRNBtw2ZVQIHStbST26aXf3YexYOa7wLDw0BGaj3EY=;
-        b=x+1FIkUac7hpJaquBPyv88KwhwnvgPPlqvJ3ZFNredD3z+IqvWyXF1EDhLcQz2ylPZ
-         Aton8+YX6EbgE1sy3o2x1YobEe6pFiJyUCypfYLY8Xoa4+4CiiTldrBNlw/UZnZuujU/
-         anX7pJdxbXwjM2uwUYfPYgqRUe+3cPi1rCvl8UzkCCa4pBehz9I3XwBm/NJZAeuzZZ/c
-         UG+3lBrePdbLQ9T+naN17p/Kae8xr1nKE98/cNeHo6ruZ4GUX3yDu1Umi13j4R0cXXkF
-         i5lBbED3S/sPd6nucGS9/7K91ZxJRYd+18+JiFKfK+na3ujYpdjAVslJwt/MLfq+JzR2
-         iNXg==
-X-Gm-Message-State: AOAM53329ctkkOgNuOwNmC1bMbOPRR1HpTV4twN6axCf6U7tiG8aAO4H
-        kur0cjBtoRMQGA7Of0VeB6w=
-X-Google-Smtp-Source: ABdhPJyOrjexsHQk4uxeYEqg1fFNC7SWuRdj5h+Bl12Jdl3ViCPB+NDEgMbqBV86dA9oSqX6re8MxQ==
-X-Received: by 2002:a05:620a:2481:: with SMTP id i1mr4163940qkn.159.1644721069819;
-        Sat, 12 Feb 2022 18:57:49 -0800 (PST)
-Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id y15sm14551106qkp.22.2022.02.12.18.57.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 18:57:49 -0800 (PST)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        andy.shevchenko@gmail.com, lars@metafoo.de
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v15 05/10] iio: afe: rescale: reduce risk of integer overflow
-Date:   Sat, 12 Feb 2022 21:57:34 -0500
-Message-Id: <20220213025739.2561834-6-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
-In-Reply-To: <20220213025739.2561834-1-liambeguin@gmail.com>
-References: <20220213025739.2561834-1-liambeguin@gmail.com>
+        Sat, 12 Feb 2022 22:01:33 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5E5C288
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 19:01:28 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-230-aZDGCbkKMKmOLXdRHLKgCw-1; Sun, 13 Feb 2022 03:01:25 +0000
+X-MC-Unique: aZDGCbkKMKmOLXdRHLKgCw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 03:01:24 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Sun, 13 Feb 2022 03:01:24 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "Michael Ellerman" <mpe@ellerman.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Topic: [PATCH 2/2] powerpc/32: Implement csum_sub
+Thread-Index: AQHYHzGljVa6S8GqcUW0lv81TntuEayQyZKA
+Date:   Sun, 13 Feb 2022 03:01:24 +0000
+Message-ID: <a87eb9e5bb6d483f8352ccb4b7374286@AcuMS.aculab.com>
+References: <0c8eaab8f0685d2a70d125cf876238c70afd4fb6.1644574987.git.christophe.leroy@csgroup.eu>
+ <c2a3f87d97f0903fdef3bbcb84661f75619301bf.1644574987.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <c2a3f87d97f0903fdef3bbcb84661f75619301bf.1644574987.git.christophe.leroy@csgroup.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reduce the risk of integer overflow by doing the scale calculation on
-a 64-bit integer. Since the rescaling is only performed on *val, reuse
-the IIO_VAL_FRACTIONAL_LOG2 case.
+From: Christophe Leroy
+> Sent: 11 February 2022 10:25
+> 
+> When building kernel with CONFIG_CC_OPTIMISE_FOR_SIZE, several
+> copies of csum_sub() are generated, with the following code:
+> 
+> 	00000170 <csum_sub>:
+> 	     170:	7c 84 20 f8 	not     r4,r4
+> 	     174:	7c 63 20 14 	addc    r3,r3,r4
+> 	     178:	7c 63 01 94 	addze   r3,r3
+> 	     17c:	4e 80 00 20 	blr
+> 
+> Let's define a PPC32 version with subc/addme, and for it's inlining.
+> 
+> It will return 0 instead of 0xffffffff when subtracting 0x80000000 to itself,
+> this is not an issue as 0 and ~0 are equivalent, refer to RFC 1624.
 
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/afe/iio-rescale.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+They are not always equivalent.
+In particular in the UDP checksum field one of them is (0?) 'checksum not calculated'.
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 5d78f0cf47d2..46947c68d3a9 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -24,21 +24,31 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2)
- {
- 	s64 tmp;
-+	int _val, _val2;
- 	s32 rem, rem2;
- 	u32 mult;
- 	u32 neg;
- 
- 	switch (scale_type) {
--	case IIO_VAL_FRACTIONAL:
--		*val *= rescale->numerator;
--		*val2 *= rescale->denominator;
--		return scale_type;
- 	case IIO_VAL_INT:
- 		*val *= rescale->numerator;
- 		if (rescale->denominator == 1)
- 			return scale_type;
- 		*val2 = rescale->denominator;
- 		return IIO_VAL_FRACTIONAL;
-+	case IIO_VAL_FRACTIONAL:
-+		/*
-+		 * When the product of both scales doesn't overflow, avoid
-+		 * potential accuracy loss (for in kernel consumers) by
-+		 * keeping a fractional representation.
-+		 */
-+		if (!check_mul_overflow(*val, rescale->numerator, &_val) &&
-+		    !check_mul_overflow(*val2, rescale->denominator, &_val2)) {
-+			*val = _val;
-+			*val2 = _val2;
-+			return IIO_VAL_FRACTIONAL;
-+		}
-+		fallthrough;
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = (s64)*val * 1000000000LL;
- 		tmp = div_s64(tmp, rescale->denominator);
-@@ -50,7 +60,10 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 		if (!rem)
- 			return scale_type;
- 
--		tmp = 1 << *val2;
-+		if (scale_type == IIO_VAL_FRACTIONAL)
-+			tmp = *val2;
-+		else
-+			tmp = ULL(1) << *val2;
- 
- 		rem2 = *val % (int)tmp;
- 		*val = *val / (int)tmp;
--- 
-2.35.1.4.g5d01301f2b86
+I think all the Linux functions have to return a non-zero value (for non-zero input).
+
+If the csum is going to be converted to 16 bit, inverted, and put into a packet
+the code usually has to have a check that changes 0 to 0xffff.
+However if the csum functions guarantee never to return zero they can feed
+an extra 1 into the first csum_partial() then just invert and add 1 at the end.
+Because (~csum_partion(buffer, 1) + 1) is the same as ~csum_partial(buffer, 0)
+except when the buffer's csum is 0xffffffff.
+
+I did do some experiments and the 64bit value can be reduced directly to
+16bits using '% 0xffff'.
+This is different because it returns 0 not 0xffff.
+However gcc 'randomly' picks between the fast 'multiply by reciprocal'
+and slow divide instruction paths.
+The former is (probably) faster than reducing using shifts and adc.
+The latter definitely slower.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
