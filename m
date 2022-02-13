@@ -2,44 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 123FFC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28974C433EF
 	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 21:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238522AbiBMV4r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 16:56:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57806 "EHLO
+        id S238508AbiBMV4o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 16:56:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238480AbiBMV4l (ORCPT
+        with ESMTP id S238448AbiBMV4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 16:56:41 -0500
+        Sun, 13 Feb 2022 16:56:40 -0500
 Received: from zeus.flokli.de (mail.zeus.flokli.de [88.198.15.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877E35419B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D5F454196;
         Sun, 13 Feb 2022 13:56:31 -0800 (PST)
 Received: from localhost (ip-178-200-100-055.um45.pools.vodafone-ip.de [178.200.100.55])
         (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: flokli@flokli.de)
-        by zeus.flokli.de (Postfix) with ESMTPSA id A8E9F1299FB8;
-        Sun, 13 Feb 2022 21:49:48 +0000 (UTC)
+        by zeus.flokli.de (Postfix) with ESMTPSA id 984D61299FBD;
+        Sun, 13 Feb 2022 21:49:58 +0000 (UTC)
 From:   Florian Klink <flokli@flokli.de>
 To:     Jiri Kosina <jikos@kernel.org>,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 0/3] HID: lenovo: Add support for ThinkPad TrackPoint
-Date:   Sun, 13 Feb 2022 22:49:21 +0100
-Message-Id: <20220213214924.32407-1-flokli@flokli.de>
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ValdikSS <iam@valdikss.org.ru>, Florian Klink <flokli@flokli.de>
+Subject: [PATCH v4 2/3] HID: lenovo: Sync Fn-lock state on button press for Compact and TrackPoint II keyboards
+Date:   Sun, 13 Feb 2022 22:49:23 +0100
+Message-Id: <20220213214924.32407-3-flokli@flokli.de>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220213214924.32407-1-flokli@flokli.de>
+References: <20220213214924.32407-1-flokli@flokli.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a re-roll of v3, fixing the block comment alignment warning
-checkpatch.pl is complaining about.
+From: ValdikSS <iam@valdikss.org.ru>
 
-It's still complaining about line length of the comment next to the
-magic numbers, but as those comments appear the same in hid-bigbenff.c,
-I assume that's fine.
+When Fn-Esc is pressed on the keyboard, it emits the scancode which could
+be used to sync the fn_lock sysfs state.
 
+Previously fn_lock only allowed to set new Fn-lock state and did not
+keep the value in sync upon Fn-Esc press, which is now fixed.
+
+Signed-off-by: Florian Klink <flokli@flokli.de>
+---
+ drivers/hid/hid-lenovo.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/hid/hid-lenovo.c b/drivers/hid/hid-lenovo.c
+index a612ae7dfbfc..e9466ae8a9cb 100644
+--- a/drivers/hid/hid-lenovo.c
++++ b/drivers/hid/hid-lenovo.c
+@@ -690,6 +690,15 @@ static int lenovo_event_cptkbd(struct hid_device *hdev,
+ 		return 1;
+ 	}
+ 
++	if (usage->type == EV_KEY && usage->code == KEY_FN_ESC && value == 1) {
++		/*
++		 * The user has toggled the Fn-lock state. Toggle our own
++		 * cached value of it and sync our value to the keyboard to
++		 * ensure things are in sync (the syncing should be a no-op).
++		 */
++		cptkbd_data->fn_lock = !cptkbd_data->fn_lock;
++	}
++
+ 	return 0;
+ }
+ 
+-- 
+2.35.1
 
