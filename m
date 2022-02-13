@@ -2,86 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF594C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 22:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D47C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 22:34:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238755AbiBMWeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 17:34:20 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52514 "EHLO
+        id S236673AbiBMWev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 17:34:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238693AbiBMWeJ (ORCPT
+        with ESMTP id S238806AbiBMWen (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 17:34:09 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D54A54BE0;
-        Sun, 13 Feb 2022 14:33:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1644791634;
-        bh=qLYG3ShC2H3ubPzsSwJCdlMrSsl/GQcb1NMteyXFxUQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=A4tA82OppBmIjt8/B6k4xEFGXfP9PH82xsLuWBrRi0yxA6c+IDNGtwsu/oymvy2kb
-         eggeK0lbLBZRmRCLJL1+fLAxmogiNEtbNQ3M011n4zwE/rkIoMmjynjvqFW4WmGLI1
-         SafSW2vu3AdeTvYCNwCXfG+mCRMZ5cy5FM9CdKgU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MHGCu-1nWcsj2aye-00DExV; Sun, 13
- Feb 2022 23:28:09 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH 6/9] serial: max310: remove redundant code in rs485_config
-Date:   Sun, 13 Feb 2022 23:27:34 +0100
-Message-Id: <20220213222737.15709-7-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
-References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+        Sun, 13 Feb 2022 17:34:43 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D424C54BEA;
+        Sun, 13 Feb 2022 14:34:35 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jxhx54h6wz4xPv;
+        Mon, 14 Feb 2022 09:34:33 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644791674;
+        bh=Fzp0Snyfy1af5RISLbgpyuTezJCiVACgsz03n49CR78=;
+        h=Date:From:To:Cc:Subject:From;
+        b=WXeGoFeTDBFH2p5I0yapHetgbyPmYCf/ItKC1f8NUCd0GqvPh43wDxgsVca/0F14m
+         jnCSMJgYAGn3bHQJrMk6ql4R+cJ9XCY2Mu/ZJAKosInWXWB7E4WibfZBAl4u1Y5vSV
+         8h1AOjwtjNLuvolg/tCDYVmLkjl0W5D3uROA1c1Ta32qaxackIL24nk0aQg4kSUham
+         FblyGpUnZJ0ka+thmCLC3dzyRwykWjZ3Bvg0OxrFQuNY+6NqWzmpWcb9IWcNVXBekN
+         bWfl9KlwySxFdlL1PJRqShSLWVBlwpLZTBOKWHhKcHmqe+/0v0fK8ohiNX6SUhTDU6
+         T8cVfU/7ZWhVQ==
+Date:   Mon, 14 Feb 2022 09:34:32 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andy Gross <agross@kernel.org>, Shawn Guo <shawnguo@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Subject: linux-next: manual merge of the qcom tree with the imx-mxs tree
+Message-ID: <20220214093432.31152d57@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:pNx+oEQyE87SI8SUhuYE/49GQx6eFVSP9sCHmwT/ditRcv0ylZN
- rkC/z0D7Q2MUrIrRUkpVmA71yNbDTddrfPtrt8KCP/4yOZ2GPb61Nh3ULguiKqL0WQstrUN
- QGKtvqxZref4S6azX7N1AacR+IVk1yMV8IHdwiZZEUXR+W4Bo/HkFSxPoooN5TYo9XQpjMZ
- K15CBILg6Irsn1kmnCbgg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:KFVBimZyooQ=:g3yHkv5cYs/FUFqcfKZs9z
- Y2pq5lZjKOPHeUVnvVOrp7UzHqauIgGU7WkACWjIK4T8qR56umvUiZlccERTv1k2vNeSLxdX/
- TwA3p9aA/vIOBYe5ThqRFsQfYRLvhgnjSVQzS6u/RkKlrps4E2pSejrk10GdfADWqGeK10H7t
- +K4lkkGJX++AyPaL4/QQasQFUUJi+ZbYBOIoVDtmIyjhjGiQ93TK8P34L/BQDA12umb3YK1fM
- nqbMwgeTmxb9MNObQ9miQjCXbr/8svARONA17eiK8Lbht+8R05lzzUKMdJub0/8QnKhw7qDfu
- CYwx2vW9kg3UFs+TPcQ34Nx5m0Wwe5ck+T3YwdIH/GvooJ5wNW2+coeCNAvvpbYHCz8AYPBNR
- offq2ubqRZ/ZMvJxOxbRbnf9nM5sn50HYj16dbQvwu696yGaM2r2hHUXjlEODdk9xQYVvZIZY
- cmTeTU/dg7/h+8JwVlZa/3bSMJl67gcjK5i70kqxO4tiphTEz7tXLDM2s48P1WATNJaJjkDNs
- 8N6Taq0UhJC6w2BieAft9CuEwvlJGu6lDbiprc8c1mAmZ6Df4nNlF+M6LAcAUjmeBdkgcpHwi
- /QRBdMrnk3l+PPlzonwSpZI4hLtVgcEIPJcsFHVHpJ9DgI12d/TLqVd96zd6jG5La721fnpv7
- DMWMobnWqVOmjKpOgGA6EEzadU4IKD8cOr6TD770H15C5ZIyXeO3N+nLZKrQMjxeHhnF5n47e
- FhpJI5rXqr+C2QtPbLVTTNIHYiqyj8IO5XE340lw+5RoKBrhPKuAMbgD+Am9SCmB8nY5KnMYA
- umV4MCeNhrHXyqIZGj6zg5ygckJyL/N/QTNkZTIjK9tnu4o7eLa7MmftSpvp3xlZL77Wnltnd
- zuD4rIOZunWSPHJtYWpzw+JoLDAzXMwaT9tRdAr/p76ZS1xg9myQzVRXtE6goJJgvbyBcsxr4
- /1jj/uw+hlDZXXoglf87akB8Lzo9KdNIKPWa5MBVUz44DwqXT86iAnJoUpccAU2JmgXg+UTUK
- oBr1iBcqofPTLF3NDQilGRN7hBcWLyeFUgNfxY9iP0xfN37jM8OFXf5oJcSiUMfu7xOddXAVW
- UnK0ShGsRhg6VU=
+Content-Type: multipart/signed; boundary="Sig_/Shyzc86i.7CwIowhtJ1D0+N";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-V2hlbiBSUzQ4NSBpcyBjb25maWd1cmVkIGJ5IHVzZXJzcGFjZSB0aGUgc2VyaWFsIGNvcmUgYWxy
-ZWFkeSBudWxsaWZpZXMgdGhlCnBhZGRpbmcgZmllbGQgb2YgdGhlIHJldHVybmVkIGNvbmZpZ3Vy
-YXRpb24gc3RydWN0LiBEb2luZyB0aGUgc2FtZSBpbiB0aGUKZHJpdmVycyByczQ4NV9jb25maWcg
-ZnVuY3Rpb24gaXMgcmVkdW5kYW50LCBzbyByZW1vdmUgdGhlIGNvbmNlcm5pbmcKY29kZSBpbiB0
-aGlzIGZ1bmN0aW9uLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmls
-aXBwb0BnbXguZGU+Ci0tLQogZHJpdmVycy90dHkvc2VyaWFsL21heDMxMHguYyB8IDEgLQogMSBm
-aWxlIGNoYW5nZWQsIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJp
-YWwvbWF4MzEweC5jIGIvZHJpdmVycy90dHkvc2VyaWFsL21heDMxMHguYwppbmRleCBkZGUwODI0
-YjJmYTUuLjJlY2M1ZjY2ZGVhZiAxMDA2NDQKLS0tIGEvZHJpdmVycy90dHkvc2VyaWFsL21heDMx
-MHguYworKysgYi9kcml2ZXJzL3R0eS9zZXJpYWwvbWF4MzEweC5jCkBAIC0xMDM3LDcgKzEwMzcs
-NiBAQCBzdGF0aWMgaW50IG1heDMxMHhfcnM0ODVfY29uZmlnKHN0cnVjdCB1YXJ0X3BvcnQgKnBv
-cnQsCiAKIAlyczQ4NS0+ZmxhZ3MgJj0gU0VSX1JTNDg1X1JUU19PTl9TRU5EIHwgU0VSX1JTNDg1
-X1JYX0RVUklOR19UWCB8CiAJCQlTRVJfUlM0ODVfRU5BQkxFRDsKLQltZW1zZXQocnM0ODUtPnBh
-ZGRpbmcsIDAsIHNpemVvZihyczQ4NS0+cGFkZGluZykpOwogCXBvcnQtPnJzNDg1ID0gKnJzNDg1
-OwogCiAJc2NoZWR1bGVfd29yaygmb25lLT5yc193b3JrKTsKLS0gCjIuMzQuMQoK
+--Sig_/Shyzc86i.7CwIowhtJ1D0+N
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+Today's linux-next merge of the qcom tree got a conflict in:
+
+  arch/arm64/configs/defconfig
+
+between commits:
+
+  6e3807935e18 ("arm64: defconfig: re-order default configuration")
+  dde8cd786e37 ("arm64: defconfig: rebuild default configuration")
+
+from the imx-mxs tree and commits:
+
+  cd7ce3e18afa ("arm64: defconfig: Enable SM8250 video clock controller")
+  17ef0b4b441f ("arm64: defconfig: enable mcp251xfd driver")
+
+from the qcom tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc arch/arm64/configs/defconfig
+index 2bb7765e5d82,bbe40f0fd620..000000000000
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@@ -383,9 -383,11 +385,12 @@@ CONFIG_ATH10K=3D
+  CONFIG_ATH10K_PCI=3Dm
+  CONFIG_ATH10K_SNOC=3Dm
+  CONFIG_WCN36XX=3Dm
++ CONFIG_ATH11K=3Dm
++ CONFIG_ATH11K_AHB=3Dm
++ CONFIG_ATH11K_PCI=3Dm
+  CONFIG_BRCMFMAC=3Dm
+  CONFIG_MWIFIEX=3Dm
+ +CONFIG_MWIFIEX_SDIO=3Dm
+  CONFIG_MWIFIEX_PCIE=3Dm
+  CONFIG_WL18XX=3Dm
+  CONFIG_WLCORE_SDIO=3Dm
+@@@ -602,9 -607,9 +608,10 @@@ CONFIG_IMX_SC_WDT=3D
+  CONFIG_QCOM_WDT=3Dm
+  CONFIG_MESON_GXBB_WATCHDOG=3Dm
+  CONFIG_MESON_WATCHDOG=3Dm
+ +CONFIG_ARM_SMC_WATCHDOG=3Dy
+  CONFIG_RENESAS_WDT=3Dy
+  CONFIG_UNIPHIER_WATCHDOG=3Dy
++ CONFIG_PM8916_WATCHDOG=3Dm
+  CONFIG_BCM2835_WDT=3Dy
+  CONFIG_MFD_ALTERA_SYSMGR=3Dy
+  CONFIG_MFD_BD9571MWV=3Dy
+@@@ -1009,6 -1021,10 +1016,7 @@@ CONFIG_SDM_DISPCC_845=3D
+  CONFIG_SM_GCC_8350=3Dy
+  CONFIG_SM_GPUCC_8150=3Dy
+  CONFIG_SM_GPUCC_8250=3Dy
+ -CONFIG_SM_DISPCC_8250=3Dy
++ CONFIG_SM_VIDEOCC_8250=3Dy
+  CONFIG_QCOM_HFPLL=3Dy
+  CONFIG_CLK_GFM_LPASS_SM8250=3Dm
+  CONFIG_CLK_RCAR_USB2_CLOCK_SEL=3Dy
+@@@ -1042,11 -1058,10 +1050,12 @@@ CONFIG_RASPBERRYPI_POWER=3D
+  CONFIG_FSL_DPAA=3Dy
+  CONFIG_FSL_MC_DPIO=3Dy
+  CONFIG_FSL_RCPM=3Dy
+ +CONFIG_MTK_DEVAPC=3Dm
+  CONFIG_MTK_PMIC_WRAP=3Dy
++ CONFIG_MAILBOX=3Dy
+  CONFIG_QCOM_AOSS_QMP=3Dy
+  CONFIG_QCOM_COMMAND_DB=3Dy
+ +CONFIG_QCOM_CPR=3Dy
+  CONFIG_QCOM_GENI_SE=3Dy
+  CONFIG_QCOM_RMTFS_MEM=3Dm
+  CONFIG_QCOM_RPMH=3Dy
+
+--Sig_/Shyzc86i.7CwIowhtJ1D0+N
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIJh3gACgkQAVBC80lX
+0Gz8wAf/evIEps2mKlyoMmqIidj+kR3rgR8pW5JfTB6jxxWrq6EVlcOCeooIaymX
+yz8TID/uJFyFVwCUTsEyBD4kd0rgNdzw0RkKN6Yhk4utUUiXIeAbHrnVHLSr4gtj
+zmteHtRZz8fFAe2RreR3mc3QnSGPv4tFvcm0To3+hXl3XgVEQkYkDo1X30byu8sA
+HUzdQBaQZS/DRoWJq741mtNY83vE2BH+9qLYdW3FGT1i2K5f3zIpDul2gZMj7IiT
+XI3WbvHISQDuODr2oxo1eE4sMESfj0utauGLn6UZSGKVf3Z5osIT/7FP+6eg3otw
+A8nLSz2j7EZ2MaHHHvzN4N27yE+wnw==
+=+U69
+-----END PGP SIGNATURE-----
+
+--Sig_/Shyzc86i.7CwIowhtJ1D0+N--
