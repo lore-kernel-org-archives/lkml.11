@@ -2,223 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC37C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 12:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 12:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235852AbiBMMEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 07:04:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33028 "EHLO
+        id S235877AbiBMMND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 07:13:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiBMMD7 (ORCPT
+        with ESMTP id S229973AbiBMMNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 07:03:59 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A19BA5BD05
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 04:03:54 -0800 (PST)
+        Sun, 13 Feb 2022 07:13:01 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590AE5BD1F
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 04:12:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644753834; x=1676289834;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0DoLI6P4LZ/kGKKztnMBubAEYiWKLSlhqzqDiNxGuQw=;
-  b=jpf1Qmk2CswAxhcgm7ID7qudaVbO0S8ToOthlMpuq8+zSjb2+rj0kUDs
-   VL0/K8LAyjfIpjRPxi/VCPIIe/ejDy9Ga5x1qm3CN1dXpvW/bna/2PRVH
-   f/AUzEURFxljDERAgmn4p7ExbCScqZdTngsd6josxlK62lnu7wwVMqIWg
-   /lqjH7kIhejCudk84/wjitK8JdzhsIrTn1Wgpdyxsu1PgLBCnKtOQr1gG
-   muDougcEHOVlfyc97Ephu+uQ2Tk8ReSvnkGKr2mq7bc4SkYICJzTmTX2K
-   MX7msVoGmAn95Mwncng+sLkX3xvFgGvGszzKPIXgb4xoJRweMU1FPFW9a
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10256"; a="248774626"
+  t=1644754375; x=1676290375;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+1nyQhInHKiE5L1NPY2vkzjd24HvWdP2YuP0xFGH5lA=;
+  b=nogyjQ3Bv/nU610nzoPlrDBz11nqfPYO+BDXioc0APh8Nl0seEqFlNfb
+   lxNkzV/5hkkNfwYWRakmm2J8nEwvDo1jcpTaNsXdhnvOU2rqoENpV2Wga
+   noqfoXsrwQC6hPxBUaLOPdFyvpYUCsgbgqU1C+bas7DmaReMGh22OwYte
+   s9pbc+Hbg7pC1FX6z0HNtHdnn/cTK+2sonS2S2Mlh3LFpNu8+HeEW3tHk
+   JUG1FpSsHrsyS8PS030KL5jRmUtPs20EO9nh3sRBltT+fw1Sgjo0CzkKd
+   jCsuKwhQOlSTCvxJ24kbeO7Cl/qW0t5w8nTItZ2+yE4GGIJvDtZ2hJNAr
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10256"; a="336368965"
 X-IronPort-AV: E=Sophos;i="5.88,365,1635231600"; 
-   d="scan'208";a="248774626"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 04:03:54 -0800
+   d="scan'208";a="336368965"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 04:12:55 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,365,1635231600"; 
-   d="scan'208";a="679925886"
+   d="scan'208";a="484757246"
 Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 13 Feb 2022 04:03:53 -0800
+  by orsmga003.jf.intel.com with ESMTP; 13 Feb 2022 04:12:53 -0800
 Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nJDbc-0007Sx-BM; Sun, 13 Feb 2022 12:03:52 +0000
-Date:   Sun, 13 Feb 2022 20:03:13 +0800
+        id 1nJDkK-0007Ti-MN; Sun, 13 Feb 2022 12:12:52 +0000
+Date:   Sun, 13 Feb 2022 20:12:26 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
- 7a935b7ac61b20dd8b56edab2a4f978be64e1e82
-Message-ID: <6208f381.+5wEV0lm0mhER7ZY%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+To:     Rob Clark <robdclark@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Dave Airlie <airlied@redhat.com>
+Subject: drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:1148:33: error: variable
+ 'priv' set but not used
+Message-ID: <202202132058.hSfn3UlB-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
-branch HEAD: 7a935b7ac61b20dd8b56edab2a4f978be64e1e82  tools/nolibc/stdlib: implement abort()
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b81b1829e7e39f6cebdf6e4d5484eacbceda8554
+commit: de99e6479885dfa3f64a9511a6477c2b7899e53f Merge tag 'drm-msm-next-2021-10-26' of https://gitlab.freedesktop.org/drm/msm into drm-next
+date:   4 months ago
+config: parisc-randconfig-r015-20220213 (https://download.01.org/0day-ci/archive/20220213/202202132058.hSfn3UlB-lkp@intel.com/config)
+compiler: hppa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=de99e6479885dfa3f64a9511a6477c2b7899e53f
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout de99e6479885dfa3f64a9511a6477c2b7899e53f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash drivers/gpu/drm/msm/ drivers/misc/cardreader/ drivers/net/ethernet/broadcom/bnxt/ drivers/staging/vc04_services/ mm/
 
-elapsed time: 722m
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-configs tested: 147
-configs skipped: 4
+All errors (new ones prefixed by >>):
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+   In file included from drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:17:
+   drivers/gpu/drm/msm/msm_drv.h:531: error: "COND" redefined [-Werror]
+     531 | #define COND(bool, val) ((bool) ? (val) : 0)
+         | 
+   In file included from arch/parisc/include/asm/jump_label.h:8,
+                    from include/linux/jump_label.h:117,
+                    from include/linux/static_key.h:1,
+                    from include/linux/kasan.h:7,
+                    from include/linux/slab.h:136,
+                    from include/linux/resource_ext.h:11,
+                    from include/linux/acpi.h:14,
+                    from include/linux/i2c.h:13,
+                    from include/drm/drm_crtc.h:28,
+                    from drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:13:
+   arch/parisc/include/asm/assembly.h:37: note: this is the location of the previous definition
+      37 | #define COND(x) x
+         | 
+   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c: In function 'dpu_encoder_virt_enable':
+>> drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:1148:33: error: variable 'priv' set but not used [-Werror=unused-but-set-variable]
+    1148 |         struct msm_drm_private *priv;
+         |                                 ^~~~
+   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c: In function 'dpu_encoder_virt_disable':
+   drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c:1197:33: error: variable 'priv' set but not used [-Werror=unused-but-set-variable]
+    1197 |         struct msm_drm_private *priv;
+         |                                 ^~~~
+   cc1: all warnings being treated as errors
 
-gcc tested configs:
-arm                                 defconfig
-arm64                            allyesconfig
-arm64                               defconfig
-arm                              allyesconfig
-arm                              allmodconfig
-i386                          randconfig-c001
-arm                            qcom_defconfig
-xtensa                  audio_kc705_defconfig
-m68k                            q40_defconfig
-sh                             sh03_defconfig
-sparc                       sparc64_defconfig
-sh                             espt_defconfig
-arm                           u8500_defconfig
-arm                      footbridge_defconfig
-sh                             shx3_defconfig
-sh                              ul2_defconfig
-arm                          lpd270_defconfig
-powerpc                      tqm8xx_defconfig
-h8300                       h8s-sim_defconfig
-powerpc                     redwood_defconfig
-riscv                               defconfig
-sparc                            allyesconfig
-arc                            hsdk_defconfig
-mips                 decstation_r4k_defconfig
-arc                     haps_hs_smp_defconfig
-m68k                         apollo_defconfig
-powerpc                  storcenter_defconfig
-arm                         assabet_defconfig
-sh                          polaris_defconfig
-arm                           h3600_defconfig
-m68k                        stmark2_defconfig
-m68k                          hp300_defconfig
-arm                       omap2plus_defconfig
-x86_64                           alldefconfig
-powerpc                     tqm8555_defconfig
-mips                       bmips_be_defconfig
-xtensa                          iss_defconfig
-ia64                             allyesconfig
-arm                            mps2_defconfig
-mips                        vocore2_defconfig
-powerpc                     tqm8541_defconfig
-alpha                            alldefconfig
-powerpc                    adder875_defconfig
-mips                      fuloong2e_defconfig
-xtensa                              defconfig
-arm                            zeus_defconfig
-sh                        edosk7760_defconfig
-powerpc                       holly_defconfig
-mips                           ci20_defconfig
-arm                  randconfig-c002-20220213
-ia64                             allmodconfig
-ia64                                defconfig
-m68k                             allmodconfig
-m68k                                defconfig
-m68k                             allyesconfig
-nds32                             allnoconfig
-nios2                               defconfig
-arc                              allyesconfig
-csky                                defconfig
-alpha                               defconfig
-nds32                               defconfig
-alpha                            allyesconfig
-nios2                            allyesconfig
-xtensa                           allyesconfig
-h8300                            allyesconfig
-arc                                 defconfig
-sh                               allmodconfig
-parisc                              defconfig
-s390                             allyesconfig
-s390                             allmodconfig
-parisc                           allyesconfig
-s390                                defconfig
-i386                             allyesconfig
-sparc                               defconfig
-i386                                defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-mips                             allyesconfig
-mips                             allmodconfig
-powerpc                          allyesconfig
-powerpc                          allmodconfig
-powerpc                           allnoconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a003
-i386                          randconfig-a001
-i386                          randconfig-a005
-x86_64                        randconfig-a011
-x86_64                        randconfig-a013
-x86_64                        randconfig-a015
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-arc                  randconfig-r043-20220213
-riscv                    nommu_k210_defconfig
-riscv                    nommu_virt_defconfig
-riscv                             allnoconfig
-riscv                          rv32_defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-x86_64                    rhel-8.3-kselftests
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                           allyesconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                                  kexec
 
-clang tested configs:
-riscv                randconfig-c006-20220213
-x86_64                        randconfig-c007
-powerpc              randconfig-c003-20220213
-i386                          randconfig-c001
-mips                 randconfig-c004-20220213
-arm                  randconfig-c002-20220213
-arm                         s5pv210_defconfig
-powerpc                     mpc512x_defconfig
-arm                         shannon_defconfig
-powerpc                     tqm5200_defconfig
-arm                         bcm2835_defconfig
-mips                        qi_lb60_defconfig
-arm                        neponset_defconfig
-riscv                            alldefconfig
-powerpc                      ppc64e_defconfig
-arm                     am200epdkit_defconfig
-powerpc                     ksi8560_defconfig
-powerpc                       ebony_defconfig
-powerpc                     kmeter1_defconfig
-arm                          pcm027_defconfig
-arm                           spitz_defconfig
-mips                           ip27_defconfig
-mips                          ath79_defconfig
-arm                              alldefconfig
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a013
-i386                          randconfig-a015
-i386                          randconfig-a011
-hexagon              randconfig-r045-20220213
-hexagon              randconfig-r041-20220213
-riscv                randconfig-r042-20220213
-s390                 randconfig-r044-20220213
+vim +/priv +1148 drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1143  
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1144  static void dpu_encoder_virt_enable(struct drm_encoder *drm_enc)
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1145  {
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1146  	struct dpu_encoder_virt *dpu_enc = NULL;
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1147  	int ret = 0;
+c943b4948b5848 Chandan Uddaraju  2020-08-27 @1148  	struct msm_drm_private *priv;
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1149  	struct drm_display_mode *cur_mode = NULL;
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1150  
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1151  	if (!drm_enc) {
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1152  		DPU_ERROR("invalid encoder\n");
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1153  		return;
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1154  	}
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1155  	dpu_enc = to_dpu_encoder_virt(drm_enc);
+fba7427eb59496 Sean Paul         2018-11-16  1156  
+fba7427eb59496 Sean Paul         2018-11-16  1157  	mutex_lock(&dpu_enc->enc_lock);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1158  	cur_mode = &dpu_enc->base.crtc->state->adjusted_mode;
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1159  	priv = drm_enc->dev->dev_private;
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1160  
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1161  	trace_dpu_enc_enable(DRMID(drm_enc), cur_mode->hdisplay,
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1162  			     cur_mode->vdisplay);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1163  
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1164  	/* always enable slave encoder before master */
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1165  	if (dpu_enc->cur_slave && dpu_enc->cur_slave->ops.enable)
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1166  		dpu_enc->cur_slave->ops.enable(dpu_enc->cur_slave);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1167  
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1168  	if (dpu_enc->cur_master && dpu_enc->cur_master->ops.enable)
+86b89080368b46 Jeykumar Sankaran 2018-09-05  1169  		dpu_enc->cur_master->ops.enable(dpu_enc->cur_master);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1170  
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1171  	ret = dpu_encoder_resource_control(drm_enc, DPU_ENC_RC_EVENT_KICKOFF);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1172  	if (ret) {
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1173  		DPU_ERROR_ENC(dpu_enc, "dpu resource control failed: %d\n",
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1174  				ret);
+fba7427eb59496 Sean Paul         2018-11-16  1175  		goto out;
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1176  	}
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1177  
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1178  	_dpu_encoder_virt_enable_helper(drm_enc);
+fba7427eb59496 Sean Paul         2018-11-16  1179  
+167dac97eb46c7 Bjorn Andersson   2021-10-16  1180  	if (drm_enc->encoder_type == DRM_MODE_ENCODER_TMDS) {
+167dac97eb46c7 Bjorn Andersson   2021-10-16  1181  		ret = msm_dp_display_enable(dpu_enc->dp, drm_enc);
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1182  		if (ret) {
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1183  			DPU_ERROR_ENC(dpu_enc, "dp display enable failed: %d\n",
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1184  				ret);
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1185  			goto out;
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1186  		}
+c943b4948b5848 Chandan Uddaraju  2020-08-27  1187  	}
+fba7427eb59496 Sean Paul         2018-11-16  1188  	dpu_enc->enabled = true;
+fba7427eb59496 Sean Paul         2018-11-16  1189  
+fba7427eb59496 Sean Paul         2018-11-16  1190  out:
+fba7427eb59496 Sean Paul         2018-11-16  1191  	mutex_unlock(&dpu_enc->enc_lock);
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1192  }
+25fdd5933e4c0f Jeykumar Sankaran 2018-06-27  1193  
+
+:::::: The code at line 1148 was first introduced by commit
+:::::: c943b4948b5848fc0e07f875edbd35a973879e22 drm/msm/dp: add displayPort driver support
+
+:::::: TO: Chandan Uddaraju <chandanu@codeaurora.org>
+:::::: CC: Rob Clark <robdclark@chromium.org>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
