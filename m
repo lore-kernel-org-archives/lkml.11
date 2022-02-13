@@ -2,139 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A54EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 19:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3882C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 19:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237983AbiBMTNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 14:13:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59988 "EHLO
+        id S238005AbiBMTZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 14:25:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237969AbiBMTNn (ORCPT
+        with ESMTP id S229840AbiBMTZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 14:13:43 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ACEF5F8DA;
-        Sun, 13 Feb 2022 11:13:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=eUPuZhGrIC+7mQR6M8wT4w7vMWwnwvrJ/Ap6Tdqeifw=; b=WrOvp7aBK+9C7NfEzGSeNlAOyv
-        EtbqagYvn5vG40EmwdyXknjAo6UeyS/tHpcFDmBGAX1IzMGr/C89bZ0CGYhGOQD9ohbUqVqbQn8to
-        72EPupBvgj9rtS2UgkUkrUmAqlO+ugWfu5z+uoRcR/vnQ9FjbmgWKVC8H1JYjMX88mHdnzR6pm13V
-        qBXugwTLCCI15fcKAIUur3Lrb155D+XHW8YMdMMfMdZiLVwcV14QDicOfA3D7FZo/FsuRnKiYnKLG
-        lzbYvolWfjBh7GYnG+uQ6+fhuUe7mAVbk6XTpnA/zd7OHXqcL52NIwtv9xx5SYs3WJZ6G3V22TSrI
-        y4tk/dsA==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJKJP-00CDc1-9e; Sun, 13 Feb 2022 19:13:31 +0000
-Message-ID: <41a2b113-116c-f181-29a4-32735d5809b0@infradead.org>
-Date:   Sun, 13 Feb 2022 11:13:27 -0800
+        Sun, 13 Feb 2022 14:25:32 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE92318
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 11:25:24 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id h6so23619701wrb.9
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 11:25:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=OvEjorEIx0jCUuaXWTFX/cePSI9jzuIRof4/xyfP0s4=;
+        b=EAPuqH8zQJrbxv+QFwFiLJg7vwh30Wc1GeXsNdV0ScW62r1OiWnGeVAUa57xwm9Jbd
+         AXWR0euOSH42sLuN7SIyhYokQ2JfxvCB5mgj3ifpjdn6YLnqDk4wFELlfjyqb1FddfNV
+         TrwLUxrEx2BTN+37vzMgVHm6s7lHxLPxt43ujWRXZn7Q0rvsKGL3Rp5UhUsAwS/2maja
+         qghmEJHEA6hBaCgPOFfoY/ScWgRlQ0gEsYEB5F/p5EjsLwj2kYWV9rkWJVrtetGBXuGv
+         goQfhjNw4KlzAkhEa7gpwYt46GStexItJLvfCwXF+gm9MVqpI/TtoBsFEgBFDJ0AHAsG
+         VJLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=OvEjorEIx0jCUuaXWTFX/cePSI9jzuIRof4/xyfP0s4=;
+        b=MbVsOmwGNrBEP3AwkmqLNZMAeaAL+I7ji+n+XVhUUp1MSa9CjupJ4nngNJnOzcx3AY
+         9J3EhAa7Ij9VmcRIp9p0/fpBJgIBq6n306vkUxuGhK5rmCcU2kypHk2cusA3Il1Jy5Vw
+         6a3m6Siwzk9jTaOwBEG3XLl+1YuScZHeZ+CxwvYwSccxvIFYNxraimfZV58NMRueu6+F
+         eQ5n6Iv7eqqEiRysocfH1jOrenl4RFi6rBhB8uT0JtNDSEBc/rxwIls1HTmIByUbXp9b
+         GKzMCnoWsCAtIhY22GZiwX9kv2PevKBnIuYYLA+djGxjJVxTsb05kqW5Lpv35kZEQ8Uj
+         DhTQ==
+X-Gm-Message-State: AOAM533KZ7Dz7hg4+LABjX0anb72IZ/NS8B3/25QXKTubLHB1WkmYeg+
+        MFfMIuTn8OpjUABnV10YtXcoUMBxXw==
+X-Google-Smtp-Source: ABdhPJzHnhgxvQWlSWYjeRtuwkDUSbPdSuHPILs2eVRl70hTck56iRIa5rjNuXGz9eMyY6WPVhX0tQ==
+X-Received: by 2002:adf:cd08:: with SMTP id w8mr8461534wrm.426.1644780323055;
+        Sun, 13 Feb 2022 11:25:23 -0800 (PST)
+Received: from localhost.localdomain ([46.53.250.146])
+        by smtp.gmail.com with ESMTPSA id 20sm8038513wmk.26.2022.02.13.11.25.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 11:25:22 -0800 (PST)
+Date:   Sun, 13 Feb 2022 22:25:20 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] binfmt: move more stuff undef CONFIG_COREDUMP
+Message-ID: <YglbIFyN+OtwVyjW@localhost.localdomain>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] bcma: cleanup comments
-Content-Language: en-US
-To:     trix@redhat.com, zajec5@gmail.com
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220213172023.2786642-1-trix@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220213172023.2786642-1-trix@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+struct linux_binfmt::core_dump and struct min_coredump::min_coredump
+are used under CONFIG_COREDUMP only. Shrink those embedded configs
+a bit.
 
-On 2/13/22 09:20, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Remove the second 'info'.
-ack
+Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+---
 
-> Replacements
-> 'adventages' with 'advantages'
-ack
+ fs/binfmt_elf.c         |    2 ++
+ fs/binfmt_elf_fdpic.c   |    2 +-
+ fs/binfmt_flat.c        |    2 ++
+ include/linux/binfmts.h |    2 ++
+ 4 files changed, 7 insertions(+), 1 deletion(-)
 
-> 'strenth' with 'strength'
-ack
-
-> 'atleast' with 'at least'
-ack
-
-> 'thr'u'' with 'through'
-ack, or even "thru" is acceptable.
-
-> 'capabilty' with 'capability'
-ack
-
-> 'controll' with 'control'
-ack
-
-> 'ourself' with 'our self'
-I don't think so.
-
-> 'noone' with 'no one'
-ack
-
-More below:
-
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/bcma/driver_chipcommon.c     | 2 +-
->  drivers/bcma/driver_chipcommon_pmu.c | 6 +++---
->  drivers/bcma/driver_pci_host.c       | 6 +++---
->  drivers/bcma/main.c                  | 4 ++--
->  drivers/bcma/sprom.c                 | 4 ++--
->  5 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/bcma/driver_chipcommon.c b/drivers/bcma/driver_chipcommon.c
-> index 62f5bfa5065d..fd91a39f02c7 100644
-> --- a/drivers/bcma/driver_chipcommon.c
-> +++ b/drivers/bcma/driver_chipcommon.c
-
-
-
-> diff --git a/drivers/bcma/main.c b/drivers/bcma/main.c
-> index 8e7ca3e4c8c4..bf6efe3caf68 100644
-> --- a/drivers/bcma/main.c
-> +++ b/drivers/bcma/main.c
-> @@ -293,7 +293,7 @@ static int bcma_register_devices(struct bcma_bus *bus)
->  	int err;
->  
->  	list_for_each_entry(core, &bus->cores, list) {
-> -		/* We support that cores ourself */
-> +		/* We support that cores our self */
-
-I would s/cores/core/.
-
-From my $search_engine doodling, it looks like "ourself"
-or "ourselves" would be OK.
-
->  		switch (core->id.id) {
->  		case BCMA_CORE_4706_CHIPCOMMON:
->  		case BCMA_CORE_CHIPCOMMON:
-
-> diff --git a/drivers/bcma/sprom.c b/drivers/bcma/sprom.c
-> index bd2c923a6586..fb2789827e83 100644
-> --- a/drivers/bcma/sprom.c
-> +++ b/drivers/bcma/sprom.c
-
-> @@ -281,7 +281,7 @@ static void bcma_sprom_extract_r8(struct bcma_bus *bus, const u16 *sprom)
->  	SPEX(alpha2[0], SSB_SPROM8_CCODE, 0xff00, 8);
->  	SPEX(alpha2[1], SSB_SPROM8_CCODE, 0x00ff, 0);
->  
-> -	/* Extract cores power info info */
-> +	/* Extract cores power info */
-
-or	           each core's power info */
-
->  	for (i = 0; i < ARRAY_SIZE(pwr_info_offset); i++) {
->  		o = pwr_info_offset[i];
->  		SPEX(core_pwr_info[i].itssi_2g, o + SSB_SROM8_2G_MAXP_ITSSI,
-
--- 
-~Randy
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -101,8 +101,10 @@ static struct linux_binfmt elf_format = {
+ 	.module		= THIS_MODULE,
+ 	.load_binary	= load_elf_binary,
+ 	.load_shlib	= load_elf_library,
++#ifdef CONFIG_COREDUMP
+ 	.core_dump	= elf_core_dump,
+ 	.min_coredump	= ELF_EXEC_PAGESIZE,
++#endif
+ };
+ 
+ #define BAD_ADDR(x) (unlikely((unsigned long)(x) >= TASK_SIZE))
+--- a/fs/binfmt_elf_fdpic.c
++++ b/fs/binfmt_elf_fdpic.c
+@@ -83,8 +83,8 @@ static struct linux_binfmt elf_fdpic_format = {
+ 	.load_binary	= load_elf_fdpic_binary,
+ #ifdef CONFIG_ELF_CORE
+ 	.core_dump	= elf_fdpic_core_dump,
+-#endif
+ 	.min_coredump	= ELF_EXEC_PAGESIZE,
++#endif
+ };
+ 
+ static int __init init_elf_fdpic_binfmt(void)
+--- a/fs/binfmt_flat.c
++++ b/fs/binfmt_flat.c
+@@ -102,8 +102,10 @@ static int flat_core_dump(struct coredump_params *cprm);
+ static struct linux_binfmt flat_format = {
+ 	.module		= THIS_MODULE,
+ 	.load_binary	= load_flat_binary,
++#ifdef CONFIG_COREDUMP
+ 	.core_dump	= flat_core_dump,
+ 	.min_coredump	= PAGE_SIZE
++#endif
+ };
+ 
+ /****************************************************************************/
+--- a/include/linux/binfmts.h
++++ b/include/linux/binfmts.h
+@@ -98,8 +98,10 @@ struct linux_binfmt {
+ 	struct module *module;
+ 	int (*load_binary)(struct linux_binprm *);
+ 	int (*load_shlib)(struct file *);
++#ifdef CONFIG_COREDUMP
+ 	int (*core_dump)(struct coredump_params *cprm);
+ 	unsigned long min_coredump;	/* minimal dump size */
++#endif
+ } __randomize_layout;
+ 
+ extern void __register_binfmt(struct linux_binfmt *fmt, int insert);
