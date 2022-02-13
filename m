@@ -2,139 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDD2C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B03FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237899AbiBMSyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 13:54:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54114 "EHLO
+        id S237912AbiBMS6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 13:58:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237882AbiBMSyJ (ORCPT
+        with ESMTP id S235146AbiBMS6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 13:54:09 -0500
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CD4F580D9
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:54:03 -0800 (PST)
-Received: from [192.168.1.18] ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id JK0Xndg0HuvBOJK0XnOPod; Sun, 13 Feb 2022 19:54:02 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 13 Feb 2022 19:54:02 +0100
-X-ME-IP: 90.126.236.122
-Message-ID: <29e74800-1c3f-e043-97e6-d83f7a53fafb@wanadoo.fr>
-Date:   Sun, 13 Feb 2022 19:54:01 +0100
+        Sun, 13 Feb 2022 13:58:51 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6D7658388;
+        Sun, 13 Feb 2022 10:58:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IFdGaNlKE8lE7EacFhEg2jRX1+ugoc5r9KbK+Pal+TE=; b=aU/PanSVBLQHmYSisf+/Wgo8MK
+        MqSnlCKO/9/CHMv0zJz94JTbLoC2jJqsDtTU/IPz/tbDpZyA9hOycmALvBxVW94pJa808ImHMM6m1
+        37mlU4YN4WA9100IB39iSXLwulyv3Rgn9FX6Ff4za43xHbkoca67pyEKpl6KE6BEmpkml7Nfe9eg3
+        zKpvljqYyxBkv/84Zrbj32dHxQSomHL1mBlKRxjDJz2oIesix6nhk8hg+vy2KN3BJ+1Sibks1cr0m
+        286Xm9QIw5LKXNYRkvfsLjQ01t7rr5rg9ovAcH5toN5tT0aMOQ+03azxOEXXA1bJM5kGYYLzKgQ5L
+        JFEerYXQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57234)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nJK53-0000ac-AZ; Sun, 13 Feb 2022 18:58:41 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nJK51-0005n0-7r; Sun, 13 Feb 2022 18:58:39 +0000
+Date:   Sun, 13 Feb 2022 18:58:39 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net-next] net: dsa: mv88e6xxx: Fix validation of
+ built-in PHYs on 6095/6097
+Message-ID: <YglU36CAyMoJbxEX@shell.armlinux.org.uk>
+References: <20220213185154.3262207-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] iio: use div64_u64() instead of do_div()
-Content-Language: fr
-To:     Jonathan Cameron <jic23@kernel.org>, Qing Wang <wangqing@vivo.com>
-Cc:     Jyoti Bhayana <jbhayana@google.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1644395873-3937-1-git-send-email-wangqing@vivo.com>
- <20220213175940.1066f5a8@jic23-huawei>
- <9e5ed543-cd45-85db-50b5-52c2afd54c55@wanadoo.fr>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <9e5ed543-cd45-85db-50b5-52c2afd54c55@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220213185154.3262207-1-tobias@waldekranz.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 13/02/2022 à 19:50, Christophe JAILLET a écrit :
-> Le 13/02/2022 à 18:59, Jonathan Cameron a écrit :
->> On Wed,  9 Feb 2022 00:37:53 -0800
->> Qing Wang <wangqing-DGpbCiVdSXo@public.gmane.org> wrote:
->>
->>> From: Wang Qing <wangqing-DGpbCiVdSXo@public.gmane.org>
->>>
->>> do_div() does a 64-by-32 division.
->>> When the divisor is u64, do_div() truncates it to 32 bits, this means it
->>> can test non-zero and be truncated to zero for division.
->>>
->>> fix do_div.cocci warning:
->>> do_div() does a 64-by-32 division, please consider using div64_u64 
->>> instead.
->>>
->>> Signed-off-by: Wang Qing <wangqing-DGpbCiVdSXo@public.gmane.org>
->> These look correct to me.  Jyoti, please could give these a sanity check?
->>
+On Sun, Feb 13, 2022 at 07:51:54PM +0100, Tobias Waldekranz wrote:
+> These chips have 8 built-in FE PHYs and 3 SERDES interfaces that can
+> run at 1G. With the blamed commit, the built-in PHYs could no longer
+> be connected to, using an MII PHY interface mode.
 > 
-> This is wrong.
+> Create a separate .phylink_get_caps callback for these chips, which
+> takes the FE/GE split into consideration.
 > 
-> See [1].
-> 
-> CJ
-> 
-> [1]: 
-> https://lore.kernel.org/linux-kernel/20211117112559.jix3hmx7uwqmuryg-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org/ 
+> Fixes: 2ee84cfefb1e ("net: dsa: mv88e6xxx: convert to phylink_generic_validate()")
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 
-Broken link, sorry:
+Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[1] 
-https://lore.kernel.org/linux-kernel/20211117112559.jix3hmx7uwqmuryg@pengutronix.de/
+Thanks!
 
-> 
-> 
->> Thanks,
->>
->> Jonathan
->>
->>> ---
->>>   drivers/iio/common/scmi_sensors/scmi_iio.c | 10 +++++-----
->>>   1 file changed, 5 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c 
->>> b/drivers/iio/common/scmi_sensors/scmi_iio.c
->>> index d538bf3..d6df5da
->>> --- a/drivers/iio/common/scmi_sensors/scmi_iio.c
->>> +++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
->>> @@ -160,7 +160,7 @@ static int scmi_iio_set_odr_val(struct iio_dev 
->>> *iio_dev, int val, int val2)
->>>       mult = scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
->>>       sec = int_pow(10, mult) * UHZ_PER_HZ;
->>> -    do_div(sec, uHz);
->>> +    div64_u64(sec, uHz);
->>>       if (sec == 0) {
->>>           dev_err(&iio_dev->dev,
->>>               "Trying to set invalid sensor update value for sensor %s",
->>> @@ -237,10 +237,10 @@ static void convert_ns_to_freq(u64 interval_ns, 
->>> u64 *hz, u64 *uhz)
->>>       u64 rem, freq;
->>>       freq = NSEC_PER_SEC;
->>> -    rem = do_div(freq, interval_ns);
->>> +    rem = div64_u64(freq, interval_ns);
->>>       *hz = freq;
->>>       *uhz = rem * 1000000UL;
->>> -    do_div(*uhz, interval_ns);
->>> +    div64_u64(*uhz, interval_ns);
->>>   }
->>>   static int scmi_iio_get_odr_val(struct iio_dev *iio_dev, int *val, 
->>> int *val2)
->>> @@ -266,7 +266,7 @@ static int scmi_iio_get_odr_val(struct iio_dev 
->>> *iio_dev, int *val, int *val2)
->>>       mult = SCMI_SENS_CFG_GET_UPDATE_EXP(sensor_config);
->>>       if (mult < 0) {
->>>           sensor_interval_mult = int_pow(10, abs(mult));
->>> -        do_div(sensor_update_interval, sensor_interval_mult);
->>> +        div64_u64(sensor_update_interval, sensor_interval_mult);
->>>       } else {
->>>           sensor_interval_mult = int_pow(10, mult);
->>>           sensor_update_interval =
->>> @@ -500,7 +500,7 @@ static u64 scmi_iio_convert_interval_to_ns(u32 val)
->>>       mult = SCMI_SENS_INTVL_GET_EXP(val);
->>>       if (mult < 0) {
->>>           sensor_interval_mult = int_pow(10, abs(mult));
->>> -        do_div(sensor_update_interval, sensor_interval_mult);
->>> +        div64_u64(sensor_update_interval, sensor_interval_mult);
->>>       } else {
->>>           sensor_interval_mult = int_pow(10, mult);
->>>           sensor_update_interval =
->>
->>
-> 
-> 
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
