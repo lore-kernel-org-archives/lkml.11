@@ -2,91 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D42C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 090C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237869AbiBMSvM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 13:51:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52738 "EHLO
+        id S237876AbiBMSwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 13:52:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233785AbiBMSvK (ORCPT
+        with ESMTP id S234294AbiBMSwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 13:51:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C802157B36;
-        Sun, 13 Feb 2022 10:51:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79133B80B54;
-        Sun, 13 Feb 2022 18:51:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B95C004E1;
-        Sun, 13 Feb 2022 18:50:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644778262;
-        bh=ajZGYvyhJa3wD0M5n+Jzb3hdgWrFy+cw5hwyaeUdVcg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Mo5Qq7v0KbYG7JASp6Ui4ZOYm01H43aZtdgy/gGmYOwP76CbNOGbVRD36yY5i8NOt
-         QbKyBBg0o9XSsC6foLRZHnM9LSn+99rqQqJg5GiQIT+Ynu+LkwtNTmNJt/emVj3YxK
-         6wo7hm0s+6N8m9up9Q/WrUoc8mHS93FTMuRELe5jzpifEalrZ7aHt416jWu0LCsmkD
-         A+6FwVo2l3GxbEXD1JmRpzJy1nNymNMx74DnXnDcbaJgZggVN8Wf6y8dK8e9iiysbU
-         nfG/YcNdFAxshgCK0BMSpgP54ju2d0Pvog9IcAgeANrsb2KEa1Rc3VdfnqXrhmkj3q
-         eAGba/MMB+s/g==
-Date:   Sun, 13 Feb 2022 18:57:40 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 01/12] iio: buffer-dma: Get rid of outgoing queue
-Message-ID: <20220213185740.0322a83d@jic23-huawei>
-In-Reply-To: <20220207125933.81634-2-paul@crapouillou.net>
-References: <20220207125933.81634-1-paul@crapouillou.net>
-        <20220207125933.81634-2-paul@crapouillou.net>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 13 Feb 2022 13:52:11 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BEC457B3C
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:52:05 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id h6so23543379wrb.9
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:52:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version:organization
+         :content-transfer-encoding;
+        bh=5b6T59mtoBLg2aHTqbBo/r+mo6q1zaT8htW2r31opOo=;
+        b=jkcJuibzzNnKOpzhPiGpqn62fKaL16PjFsJa9ECq+C+9uKDFnGlijB7gW+8kO7w+HY
+         JTcmBFp3EXWo8QZxjaYvYNZmWqtKY53glpL8tsHmTXry7U0lPDGb0TWpinKA5mPeGL14
+         kDUW1Ri44IFGs5CQt4gY1kJHP3LLzsCHOzrL4MFDt2iS0ahGKDxBtEqHdiKsXO6wREoz
+         zgKTBZX068Vk/n8xLuTiT/ydSusfeWg8P2AgGIYZU0B2/wTqzDMOkjsHC4EWiT+Fnw3Y
+         BU9gqnjg5KAlnM2NRS4uDHlhXeU27TTzmSObP9PDmVxnVVIQYWMX27BEh5GwhM+snTIy
+         GYOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :organization:content-transfer-encoding;
+        bh=5b6T59mtoBLg2aHTqbBo/r+mo6q1zaT8htW2r31opOo=;
+        b=cNauonTJ1qmp+jXzuwBo5YNvvAZ2WiAOLTpwLzp62/S/EJuAvAoJfVR/lcBHO2R5Vj
+         e8b5YuWYBPaS/fLlTr7unnoDn0ytkhA0kJ923r9Y2BBlmTyUdyWlk85GkAH6/887GnT3
+         EA7ZYm2PdUXa57pyRp4TbBG7FGnRLeGmL18Z3CNF0Y7miESGCtjFwHDDwSOfh0iWig4b
+         LfdiZ++YSvI/M1hVHUg5gSHQ/+Q5YsV2rNzrM9A38W/3i02983g4hLOKPBh3cizpLBar
+         Vm1CkfhvVLFHylz5Rwc6Bcku/+lUqL/IgKVq+yMbqEu4sAA5RcONJJ23Yag2SzidQbpr
+         L15Q==
+X-Gm-Message-State: AOAM5321iWcMMoEVN0+iBy9uhksryeTi1NL79JGYpYWPuL8A67N1U2RA
+        rhdLde3NccEmDYIWGwtfW6uziw==
+X-Google-Smtp-Source: ABdhPJwjXJQ+chY2+2rwARmjalWZYGCDghqclK/Ut0wkfk6IbBp15ag9Ju/I1wD+LzfC15WFaL6/2A==
+X-Received: by 2002:a05:6000:81:: with SMTP id m1mr8479062wrx.94.1644778324070;
+        Sun, 13 Feb 2022 10:52:04 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id j5sm25659049wrq.31.2022.02.13.10.52.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 10:52:03 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net-next] net: dsa: mv88e6xxx: Fix validation of built-in PHYs on 6095/6097
+Date:   Sun, 13 Feb 2022 19:51:54 +0100
+Message-Id: <20220213185154.3262207-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Organization: Westermo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Feb 2022 12:59:22 +0000
-Paul Cercueil <paul@crapouillou.net> wrote:
+These chips have 8 built-in FE PHYs and 3 SERDES interfaces that can
+run at 1G. With the blamed commit, the built-in PHYs could no longer
+be connected to, using an MII PHY interface mode.
 
-> The buffer-dma code was using two queues, incoming and outgoing, to
-> manage the state of the blocks in use.
-> 
-> While this totally works, it adds some complexity to the code,
-> especially since the code only manages 2 blocks. It is much easier to
-> just check each block's state manually, and keep a counter for the next
-> block to dequeue.
-> 
-> Since the new DMABUF based API wouldn't use the outgoing queue anyway,
-> getting rid of it now makes the upcoming changes simpler.
-> 
-> With this change, the IIO_BLOCK_STATE_DEQUEUED is now useless, and can
-> be removed.
-> 
-> v2: - Only remove the outgoing queue, and keep the incoming queue, as we
->       want the buffer to start streaming data as soon as it is enabled.
->     - Remove IIO_BLOCK_STATE_DEQUEUED, since it is now functionally the
->       same as IIO_BLOCK_STATE_DONE.
-> 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
+Create a separate .phylink_get_caps callback for these chips, which
+takes the FE/GE split into consideration.
 
-Trivial process thing but change log should be here, not above as we don't
-want it to end up in the main git log.
+Fixes: 2ee84cfefb1e ("net: dsa: mv88e6xxx: convert to phylink_generic_validate()")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 85527fe4fcc8..34036c555977 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -580,6 +580,25 @@ static const u8 mv88e6185_phy_interface_modes[] = {
+ 	[MV88E6185_PORT_STS_CMODE_PHY]		 = PHY_INTERFACE_MODE_SGMII,
+ };
+ 
++static void mv88e6095_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
++				       struct phylink_config *config)
++{
++	u8 cmode = chip->ports[port].cmode;
++
++	config->mac_capabilities = MAC_SYM_PAUSE | MAC_10 | MAC_100;
++
++	if (mv88e6xxx_phy_is_internal(chip->ds, port)) {
++		__set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
++	} else {
++		if (cmode < ARRAY_SIZE(mv88e6185_phy_interface_modes) &&
++		    mv88e6185_phy_interface_modes[cmode])
++			__set_bit(mv88e6185_phy_interface_modes[cmode],
++				  config->supported_interfaces);
++
++		config->mac_capabilities |= MAC_1000FD;
++	}
++}
++
+ static void mv88e6185_phylink_get_caps(struct mv88e6xxx_chip *chip, int port,
+ 				       struct phylink_config *config)
+ {
+@@ -3803,7 +3822,7 @@ static const struct mv88e6xxx_ops mv88e6095_ops = {
+ 	.reset = mv88e6185_g1_reset,
+ 	.vtu_getnext = mv88e6185_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6185_g1_vtu_loadpurge,
+-	.phylink_get_caps = mv88e6185_phylink_get_caps,
++	.phylink_get_caps = mv88e6095_phylink_get_caps,
+ 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
+ };
+ 
+@@ -3850,7 +3869,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
+ 	.rmu_disable = mv88e6085_g1_rmu_disable,
+ 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+-	.phylink_get_caps = mv88e6185_phylink_get_caps,
++	.phylink_get_caps = mv88e6095_phylink_get_caps,
+ 	.set_max_frame_size = mv88e6185_g1_set_max_frame_size,
+ };
+ 
+-- 
+2.25.1
 
->  drivers/iio/buffer/industrialio-buffer-dma.c | 44 ++++++++++----------
->  include/linux/iio/buffer-dma.h               |  7 ++--
->  2 files changed, 26 insertions(+), 25 deletions(-)
-> 
