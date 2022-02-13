@@ -2,95 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:42:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233979AbiBMGmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 01:42:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36978 "EHLO
+        id S234069AbiBMG5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 01:57:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233949AbiBMGmI (ORCPT
+        with ESMTP id S233998AbiBMG5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 01:42:08 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D045DE45
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:42:03 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id l19so17924343pfu.2
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:42:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GLtGzCbeMg/qgbKDDCf7XWab2gZD78AfYQXR9n7ELa8=;
-        b=HNwlDyGl0139uKx7mMf20bh413PTnzikv89/CepT7QqbUy9gBYJQwlpteBkcgGTE1e
-         fwDsW+Zy2ANnzxo9ZeZjzCaDQQqInlDUVEz/0FOHv7ZaTlfFy83nWhMKftDQgOoqLZsL
-         M4U2JhjPzlrMJmI/AuksJo9e33QLtf3eXB47yV5KU0s+L+mabXrjg6v2/clVQJQOnwUP
-         lYJprnQfrzVJWcXh2c63Xa2cTqNu4jKWumDHYbXIDzcMPvukBVQNxv1YM+sBt+IXXnec
-         mHX9fbp2MOhAfni2gjxb2eud1XsejhTDzrP+Px7sx+W3uTfSzzkkp2IVzFNyV46r7hd4
-         oDwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GLtGzCbeMg/qgbKDDCf7XWab2gZD78AfYQXR9n7ELa8=;
-        b=2Goiuq7My5rTjfUFsMdnZi2M3avnzzrabpA7hSXQAbr/gAqvpAEHcgNGxhqBoR24FN
-         Pq9MnloJILUfzXgwhgUTynqRN1/yrXOPcuIB+2RQSuXzNu0OFkauxP+wPDnUXSb8VfOg
-         ifvGmMCBJ4qggOm+wIWTOK0n+4Dw2TGwMqpGk8LPmynv2r8A8GNrxfE0HoUD95Zu6l5X
-         QrSd9hFmKSOxTqA86ucanABIPDbwngBheKoB67w7mOhBghuJdjB8/w3OKKBE/sONK578
-         gkCGknJYWutKAGnUjSzkB5BPdgdEKxmu0vhofH2eaDXK5OGASHoIe6IiCXU2Rkpp2RME
-         SmWg==
-X-Gm-Message-State: AOAM533OjXznG5rS1gZepNiyEzJtDyBeGD3zSf4jPW5TcO8zBtVhgpre
-        Vql4RxbMcVgEaGsjCBIGvRw=
-X-Google-Smtp-Source: ABdhPJyJXzBMzoMunUfpRtqtr+uHskJSD4+WqQuAMDp4sG32t2Ubv0IbDnqIexPDX3typstIYzyBsQ==
-X-Received: by 2002:a05:6a00:15d0:: with SMTP id o16mr8802460pfu.19.1644734523050;
-        Sat, 12 Feb 2022 22:42:03 -0800 (PST)
-Received: from localhost.localdomain ([240b:12:500:6500:d566:8d88:e4de:7a25])
-        by smtp.gmail.com with ESMTPSA id h4sm32117786pfv.166.2022.02.12.22.42.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 22:42:02 -0800 (PST)
-From:   INAGAKI Hiroshi <musashino.open@gmail.com>
-To:     miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com
-Cc:     rafal@milecki.pl, baruch@tkos.co.il, hauke@hauke-m.de,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        INAGAKI Hiroshi <musashino.open@gmail.com>
-Subject: [PATCH] mtd: parsers: trx: allow to use on MediaTek MIPS SoCs
-Date:   Sun, 13 Feb 2022 15:40:44 +0900
-Message-Id: <20220213064045.1781-1-musashino.open@gmail.com>
-X-Mailer: git-send-email 2.34.1.windows.1
+        Sun, 13 Feb 2022 01:57:07 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5058E5DE66
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:57:02 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id C55A92013E1;
+        Sun, 13 Feb 2022 06:56:59 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 358F880E7C; Sun, 13 Feb 2022 07:55:24 +0100 (CET)
+Date:   Sun, 13 Feb 2022 07:55:24 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH 2/3] random: check for crng_init == 0, not crng_ready()
+ in add_device_randomness()
+Message-ID: <YgirXH6dh4ENIXDb@owl.dominikbrodowski.net>
+References: <20220212231022.679926-1-Jason@zx2c4.com>
+ <20220212231022.679926-3-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220212231022.679926-3-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Buffalo sells some router devices which have trx-formatted firmware,
-based on MediaTek MIPS SoCs. To use parser_trx on those devices, add
-"RALINK" to dependency and allow to compile for MediaTek MIPS SoCs.
+Am Sun, Feb 13, 2022 at 12:10:21AM +0100 schrieb Jason A. Donenfeld:
+> This has no real functional change, as crng_pre_init_inject() (and
+> before that, crng_slow_init()) always checks for == 0, not >= 2. So
+> correct the outer unlocked change to reflect that.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-examples:
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
-- WCR-1166DS  (MT7628)
-- WSR-1166DHP (MT7621)
-- WSR-2533DHP (MT7621)
-
-Signed-off-by: INAGAKI Hiroshi <musashino.open@gmail.com>
----
- drivers/mtd/parsers/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/mtd/parsers/Kconfig b/drivers/mtd/parsers/Kconfig
-index 337ea8b9a4c3..23763d16e4f9 100644
---- a/drivers/mtd/parsers/Kconfig
-+++ b/drivers/mtd/parsers/Kconfig
-@@ -115,7 +115,7 @@ config MTD_AFS_PARTS
- 
- config MTD_PARSER_TRX
- 	tristate "Parser for TRX format partitions"
--	depends on MTD && (BCM47XX || ARCH_BCM_5301X || ARCH_MEDIATEK || COMPILE_TEST)
-+	depends on MTD && (BCM47XX || ARCH_BCM_5301X || ARCH_MEDIATEK || RALINK || COMPILE_TEST)
- 	help
- 	  TRX is a firmware format used by Broadcom on their devices. It
- 	  may contain up to 3/4 partitions (depending on the version).
--- 
-2.25.1
-
+Thanks,
+	Dominik
