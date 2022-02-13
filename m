@@ -2,161 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55356C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 13:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 516E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 13:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236294AbiBMNc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 08:32:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43696 "EHLO
+        id S236311AbiBMNcb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 08:32:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbiBMNc0 (ORCPT
+        with ESMTP id S230046AbiBMNc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 08:32:26 -0500
-Received: from forward100p.mail.yandex.net (forward100p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0055EDED
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:32:19 -0800 (PST)
-Received: from forward101q.mail.yandex.net (forward101q.mail.yandex.net [IPv6:2a02:6b8:c0e:4b:0:640:4012:bb98])
-        by forward100p.mail.yandex.net (Yandex) with ESMTP id 480ED4F08177;
-        Sun, 13 Feb 2022 16:32:13 +0300 (MSK)
-Received: from vla1-25221a47e1d2.qloud-c.yandex.net (vla1-25221a47e1d2.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:3c06:0:640:2522:1a47])
-        by forward101q.mail.yandex.net (Yandex) with ESMTP id 4305513E80002;
-        Sun, 13 Feb 2022 16:32:13 +0300 (MSK)
-Received: from vla5-047c0c0d12a6.qloud-c.yandex.net (vla5-047c0c0d12a6.qloud-c.yandex.net [2a02:6b8:c18:3484:0:640:47c:c0d])
-        by vla1-25221a47e1d2.qloud-c.yandex.net (mxback/Yandex) with ESMTP id iarXuVZ1oX-WCd0hlAt;
-        Sun, 13 Feb 2022 16:32:13 +0300
-X-Yandex-Fwd: 2
-Authentication-Results: vla1-25221a47e1d2.qloud-c.yandex.net; dkim=pass
-Received: by vla5-047c0c0d12a6.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id lKwSmfPfvd-WAIGJwTH;
-        Sun, 13 Feb 2022 16:32:11 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Yaroslav Bolyukin <iam@lach.pw>
-To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Yaroslav Bolyukin <iam@lach.pw>
-Subject: [PATCH 1/2] edid: parse DRM VESA dsc bpp target
-Date:   Sun, 13 Feb 2022 16:31:27 +0300
-Message-Id: <20220213133128.5833-1-iam@lach.pw>
-X-Mailer: git-send-email 2.35.1
+        Sun, 13 Feb 2022 08:32:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3665EDF2
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:32:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644759141;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uOYbuLgoQrIJu9nKfMdzzauQRx2lRskPgBFfceJrL3s=;
+        b=fu7YqESrPM3fhjsu3ou6FdqQeReou+eT1IVouA+eFBUxuar6lJpWZSWpLKNTOPAdn0zFPv
+        l1BcSID+cQ0FSWaay8PbwDmyvhQ+fTsNfwjt/PZZGsuxSuiRQPrxjR0YgTdA/e2uvupx1u
+        GOTwj9Kg3n72qyFMnah4EewgzwzXBrU=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-281-SkjtbCdXNTmkvcyqZekI_Q-1; Sun, 13 Feb 2022 08:32:20 -0500
+X-MC-Unique: SkjtbCdXNTmkvcyqZekI_Q-1
+Received: by mail-lf1-f69.google.com with SMTP id 27-20020ac25f1b000000b0043edb7bf7e7so4334446lfq.20
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:32:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uOYbuLgoQrIJu9nKfMdzzauQRx2lRskPgBFfceJrL3s=;
+        b=ZH8Fjop2gjbWWXprKoyejG843BJfJ/+QhSPRVYJutanIUz4nGdbXwmBDO17O+ZXrRg
+         4BLDzV9nXAeDJ6w8R32883U38V/vGYDZLDhS+OBISgdXT+RjCxcU49kZ5mhkKmXQQlHx
+         gT183HWWHeFA+v4/dvtw3JEwPv6zfaANpl3yGMVnUZaASVae+nAqnNHFcwmzt2YDwQg5
+         0ZNLqDoS+hyBmy2glQSNkzcHuy9EQvZDmWPX8KlnguJWUbxj3cW5+srgZj9iQa+Mm17N
+         NnT1E7DHj3VdrLsOF/rrgSpnJXJPg+nY8qrtG5cWGRE6q3czwPs+HFfcEHsCYgy1RQ5H
+         tofA==
+X-Gm-Message-State: AOAM531Jm7dSSX41ocAEmKRUgGuwISv3kT3drSE0NMfYBmUmQGbArRj3
+        RlBBF9zS2ZddpC5RGpWmgOU7GoLDIOypmhYAzHalNtK5p7t3Km1SDHxwBusl44pPnd2fPI1E/zE
+        7EbUVEGc5SCKqNUJq3pVR9KMgas/vulHRWhlBmzk=
+X-Received: by 2002:a05:6512:3b91:: with SMTP id g17mr7860199lfv.79.1644759139006;
+        Sun, 13 Feb 2022 05:32:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw6QOJ9OCsgrJpykyWrVf7n930ImpTeONtk7WaCfpRLimBjJcl5tAk9Gz17gF2GFtFKp8pZMQwJ6onRNh1AcA4=
+X-Received: by 2002:a05:6512:3b91:: with SMTP id g17mr7860177lfv.79.1644759138845;
+ Sun, 13 Feb 2022 05:32:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220209171118.3269581-1-atomlin@redhat.com> <6d6cbfe4-ee1a-ec5f-4249-c25ab6142668@csgroup.eu>
+In-Reply-To: <6d6cbfe4-ee1a-ec5f-4249-c25ab6142668@csgroup.eu>
+From:   Aaron Tomlin <atomlin@redhat.com>
+Date:   Sun, 13 Feb 2022 13:32:07 +0000
+Message-ID: <CANfR36hWpznfhryHtjOR8Juv_rHqF4HOg-163r_OdwY8Sfri+A@mail.gmail.com>
+Subject: Re: [PATCH v5 11/13] module: Move sysfs support into a separate file
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "cl@linux.com" <cl@linux.com>,
+        "pmladek@suse.com" <pmladek@suse.com>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "jeyu@kernel.org" <jeyu@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
+        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>,
+        "atomlin@atomlin.com" <atomlin@atomlin.com>,
+        "ghalat@redhat.com" <ghalat@redhat.com>,
+        "allen.lkml@gmail.com" <allen.lkml@gmail.com>,
+        "void@manifault.com" <void@manifault.com>,
+        "joe@perches.com" <joe@perches.com>,
+        "msuchanek@suse.de" <msuchanek@suse.de>,
+        "oleksandr@natalenko.name" <oleksandr@natalenko.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As per DisplayID v2.0 Errata E9 spec
+On Thu 2022-02-10 14:00 +0000, Christophe Leroy wrote:
+> Checkpatch:
+>
+>     total: 0 errors, 2 warnings, 10 checks, 946 lines checked
 
-Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
----
- drivers/gpu/drm/drm_edid.c  | 31 ++++++++++++++++++++-----------
- include/drm/drm_connector.h |  6 ++++++
- include/drm/drm_displayid.h |  4 ++++
- 3 files changed, 30 insertions(+), 11 deletions(-)
+Ok.
 
-diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
-index a7663f9a1..83ee685c8 100644
---- a/drivers/gpu/drm/drm_edid.c
-+++ b/drivers/gpu/drm/drm_edid.c
-@@ -5270,7 +5270,7 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
- 	if (oui(vesa->oui[0], vesa->oui[1], vesa->oui[2]) != VESA_IEEE_OUI)
- 		return;
- 
--	if (sizeof(*vesa) != sizeof(*block) + block->num_bytes) {
-+	if (block->num_bytes < 5) {
- 		drm_dbg_kms(connector->dev, "Unexpected VESA vendor block size\n");
- 		return;
- 	}
-@@ -5290,20 +5290,29 @@ static void drm_parse_vesa_mso_data(struct drm_connector *connector,
- 		break;
- 	}
- 
--	if (!info->mso_stream_count) {
--		info->mso_pixel_overlap = 0;
--		return;
-+	info->mso_pixel_overlap = 0;
-+
-+	if (info->mso_stream_count) {
-+		info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
-+		if (info->mso_pixel_overlap > 8) {
-+			drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
-+				info->mso_pixel_overlap);
-+			info->mso_pixel_overlap = 8;
-+		}
-+
-+		drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
-+			info->mso_stream_count, info->mso_pixel_overlap);
- 	}
- 
--	info->mso_pixel_overlap = FIELD_GET(DISPLAYID_VESA_MSO_OVERLAP, vesa->mso);
--	if (info->mso_pixel_overlap > 8) {
--		drm_dbg_kms(connector->dev, "Reserved MSO pixel overlap value %u\n",
--			    info->mso_pixel_overlap);
--		info->mso_pixel_overlap = 8;
-+	if (block->num_bytes < 7) {
-+		/* DSC bpp is optional */
-+		return;
- 	}
- 
--	drm_dbg_kms(connector->dev, "MSO stream count %u, pixel overlap %u\n",
--		    info->mso_stream_count, info->mso_pixel_overlap);
-+	info->dp_dsc_bpp = FIELD_GET(DISPLAYID_VESA_DSC_BPP_INT, vesa->dsc_bpp_int) * 16 +
-+		FIELD_GET(DISPLAYID_VESA_DSC_BPP_FRACT, vesa->dsc_bpp_fract);
-+
-+	drm_dbg_kms(connector->dev, "DSC bits per pixel %u\n", info->dp_dsc_bpp);
- }
- 
- static void drm_update_mso(struct drm_connector *connector, const struct edid *edid)
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index 5e36eb3df..04ef0e995 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -634,6 +634,12 @@ struct drm_display_info {
- 	 * @mso_pixel_overlap: eDP MSO segment pixel overlap, 0-8 pixels.
- 	 */
- 	u8 mso_pixel_overlap;
-+
-+	/**
-+	 * @dp_dsc_bpp: DP Display-Stream-Compression (DSC) timing's target
-+	 * DST bits per pixel in 6.4 fixed point format. 0 means undefined
-+	 */
-+	u16 dp_dsc_bpp;
- };
- 
- int drm_display_info_set_bus_formats(struct drm_display_info *info,
-diff --git a/include/drm/drm_displayid.h b/include/drm/drm_displayid.h
-index 7ffbd9f7b..1be6deddc 100644
---- a/include/drm/drm_displayid.h
-+++ b/include/drm/drm_displayid.h
-@@ -131,12 +131,16 @@ struct displayid_detailed_timing_block {
- 
- #define DISPLAYID_VESA_MSO_OVERLAP	GENMASK(3, 0)
- #define DISPLAYID_VESA_MSO_MODE		GENMASK(6, 5)
-+#define DISPLAYID_VESA_DSC_BPP_INT	GENMASK(5, 0)
-+#define DISPLAYID_VESA_DSC_BPP_FRACT GENMASK(3, 0)
- 
- struct displayid_vesa_vendor_specific_block {
- 	struct displayid_block base;
- 	u8 oui[3];
- 	u8 data_structure_type;
- 	u8 mso;
-+	u8 dsc_bpp_int;
-+	u8 dsc_bpp_fract;
- } __packed;
- 
- /* DisplayID iteration */
+> > diff --git a/kernel/module/internal.h b/kernel/module/internal.h
+> > index b67ce836746a..52d30bf6d6b0 100644
+> > --- a/kernel/module/internal.h
+> > +++ b/kernel/module/internal.h
+> > @@ -35,6 +35,9 @@
+> >   extern struct mutex module_mutex;
+> >   extern struct list_head modules;
+> >
+> > +extern struct module_attribute *modinfo_attrs[];
+> > +extern size_t modinfo_attrs_count;
+>
+> Can't this come in sysfs.c as well ?
 
-base-commit: 1528038385c0a706aac9ac165eeb24044fef6825
+No.
+
+> > +#ifdef CONFIG_SYSFS
+> > +int mod_sysfs_setup(struct module *mod, const struct load_info *info,
+> > +               struct kernel_param *kparam, unsigned int num_params);
+> > +void mod_sysfs_fini(struct module *mod);
+> > +void module_remove_modinfo_attrs(struct module *mod, int end);
+> > +void del_usage_links(struct module *mod);
+> > +void init_param_lock(struct module *mod);
+>
+> Why don't we move mod_sysfs_teardown() here as well ?
+
+Agreed.
+
+
+Kind regards,
+
 -- 
-2.35.1
+Aaron Tomlin
 
