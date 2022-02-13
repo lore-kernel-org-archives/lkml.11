@@ -2,77 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 155A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 23:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D46C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 23:14:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238708AbiBMXGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 18:06:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34322 "EHLO
+        id S238759AbiBMXO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 18:14:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiBMXGs (ORCPT
+        with ESMTP id S229453AbiBMXOZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 18:06:48 -0500
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F362254BE0;
-        Sun, 13 Feb 2022 15:06:41 -0800 (PST)
-Received: by mail-pl1-f180.google.com with SMTP id w20so9160587plq.12;
-        Sun, 13 Feb 2022 15:06:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qhMPRWNoyLemtcbWE/X7+rJB/VYvBTkzYdCumzI+F0g=;
-        b=qlOkEyJnkxRMgJsNIhzSpSkFw2dWDgIiZPhIT0BY1zYY3OPLj7KGI9g5pSKtERrfg+
-         sVLaAyqyPHMa3wrJ9T7LQXXE3UtnRASNXFj/ZLzBAvvxrSXC8vzyqASu7lX6KLkFKGYe
-         uv3RzKL8lV1+tjPkd2UknEGcyuvlCpp3swfG4WFONwary+PEUIP/zbg8EN9jCIDLiR7+
-         UzlTsTbblLMqIBIZQbPOnzXTy0CrkNA6vMWoJk+T1buEqelzPPneJVEiBiOvZ5Pxxi/y
-         2Lyj8rr5JKn45swV4r0Kszi0yuvYPFsBKwayleb/Q9UDYp6jFZnBUy4R+JwtmQKL8KR5
-         oAkQ==
-X-Gm-Message-State: AOAM532nG3k1fY2efrr4pj7sDqwHgQMQIiizehQjeoKQEWx+4IxcPnhO
-        ki33zzxrn88TAYGEAysZBko=
-X-Google-Smtp-Source: ABdhPJynANFxwSs8kCyrzlxuncqnPsAFbwcV+rBe/poFe3AWsvnWVRzINRrykxGM/Y/VwLm6tp648g==
-X-Received: by 2002:a17:902:d505:: with SMTP id b5mr11660635plg.113.1644793601272;
-        Sun, 13 Feb 2022 15:06:41 -0800 (PST)
-Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
-        by smtp.gmail.com with ESMTPSA id 10sm33350391pfm.56.2022.02.13.15.06.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 13 Feb 2022 15:06:40 -0800 (PST)
-Message-ID: <aa2bf24e-981a-a811-c5d8-a75f0b8f693a@acm.org>
-Date:   Sun, 13 Feb 2022 15:06:39 -0800
+        Sun, 13 Feb 2022 18:14:25 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E41454BE3
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 15:14:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644794059; x=1676330059;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2rcEb11zx0b/B2xTB+zloZNRSWRJNMpG+SxxToSQBT4=;
+  b=d9E6KAD6E2Xfrv6b9PbMLl3Dw9wIFrsXvb91Y6xaitHNfD5M4KJ3A76V
+   S+DiNVPZtL5Oym9Gpy1nFLnvGc2TxK9tdFVkAzhF2vlJbT7PePxaZAMTM
+   W64XyfQnLD6iOZIwoxr1zuugx56ZcfqlnSMouvdktfjBhiFi6+Sig7meI
+   Qg874YnVkBTpZvrry5U4dWQaXpCsvjcVEQiuA94OT8lcmQwX/Z/anEcyc
+   vTMKEl60eWa9Tq5OniH1QHvMxOTSG7CCkJfBRG5X6e7HwWkWWK/cBiRTw
+   TL7jvOERHowADDy1bN0C5tkJSAXDHXy7DqtEHrq9Of9RZ3a2uTcFumKuC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="249928409"
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
+   d="scan'208";a="249928409"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 15:14:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
+   d="scan'208";a="631782740"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 13 Feb 2022 15:14:16 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJO4N-0007yS-W2; Sun, 13 Feb 2022 23:14:15 +0000
+Date:   Mon, 14 Feb 2022 07:13:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Usama Arif <usama.arif@bytedance.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+Subject: [ammarfaizi2-block:axboe/linux-block/for-next 2/27]
+ fs/io_uring.c:9406:9: error: variable 'ret' is uninitialized when used here
+Message-ID: <202202140741.cSdNc5dQ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [syzbot] possible deadlock in worker_thread
-Content-Language: en-US
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+831661966588c802aae9@syzkaller.appspotmail.com>,
-        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-References: <0000000000005975a605d7aef05e@google.com>
- <8ea57ddf-a09c-43f2-4285-4dfb908ad967@acm.org>
- <ccd04d8a-154b-543e-e1c3-84bc655508d1@I-love.SAKURA.ne.jp>
- <71d6f14e-46af-cc5a-bc70-af1cdc6de8d5@acm.org>
- <309c86b7-2a4c-1332-585f-7bcd59cfd762@I-love.SAKURA.ne.jp>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <309c86b7-2a4c-1332-585f-7bcd59cfd762@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/12/22 09:14, Tetsuo Handa wrote:
-> How can reviewing all flush_workqueue(system_long_wq) calls help?
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/for-next
+head:   9c63ffcf47865ad2d20e09d6d6531c4611674cf1
+commit: 1a75fac9a0f920a13418c88e4deaa9aa005381f5 [2/27] io_uring: avoid ring quiesce while registering/unregistering eventfd
+config: arm-randconfig-c002-20220213 (https://download.01.org/0day-ci/archive/20220214/202202140741.cSdNc5dQ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/ammarfaizi2/linux-block/commit/1a75fac9a0f920a13418c88e4deaa9aa005381f5
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/for-next
+        git checkout 1a75fac9a0f920a13418c88e4deaa9aa005381f5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-It is allowed to queue blocking actions on system_long_wq. 
-flush_workqueue(system_long_wq) can make a lower layer (e.g. ib_srp) 
-wait on a blocking action from a higher layer (e.g. the loop driver) and 
-thereby cause a deadlock. Hence my proposal to review all 
-flush_workqueue(system_long_wq) calls.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
+Note: the ammarfaizi2-block/axboe/linux-block/for-next HEAD 9c63ffcf47865ad2d20e09d6d6531c4611674cf1 builds fine.
+      It only hurts bisectability.
 
-Bart.
+All errors (new ones prefixed by >>):
+
+>> fs/io_uring.c:9406:9: error: variable 'ret' is uninitialized when used here [-Werror,-Wuninitialized]
+           return ret;
+                  ^~~
+   fs/io_uring.c:9384:13: note: initialize the variable 'ret' to silence this warning
+           int fd, ret;
+                      ^
+                       = 0
+   1 error generated.
+
+
+vim +/ret +9406 fs/io_uring.c
+
+  9379	
+  9380	static int io_eventfd_register(struct io_ring_ctx *ctx, void __user *arg)
+  9381	{
+  9382		struct io_ev_fd *ev_fd;
+  9383		__s32 __user *fds = arg;
+  9384		int fd, ret;
+  9385	
+  9386		ev_fd = rcu_dereference_protected(ctx->io_ev_fd,
+  9387						lockdep_is_held(&ctx->uring_lock));
+  9388		if (ev_fd)
+  9389			return -EBUSY;
+  9390	
+  9391		if (copy_from_user(&fd, fds, sizeof(*fds)))
+  9392			return -EFAULT;
+  9393	
+  9394		ev_fd = kmalloc(sizeof(*ev_fd), GFP_KERNEL);
+  9395		if (!ev_fd)
+  9396			return -ENOMEM;
+  9397	
+  9398		ev_fd->cq_ev_fd = eventfd_ctx_fdget(fd);
+  9399		if (IS_ERR(ev_fd->cq_ev_fd)) {
+  9400			ret = PTR_ERR(ev_fd->cq_ev_fd);
+  9401			kfree(ev_fd);
+  9402			return ret;
+  9403		}
+  9404	
+  9405		rcu_assign_pointer(ctx->io_ev_fd, ev_fd);
+> 9406		return ret;
+  9407	}
+  9408	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
