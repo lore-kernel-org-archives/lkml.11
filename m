@@ -2,348 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 21:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A533C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 22:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238529AbiBMV4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 16:56:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57804 "EHLO
+        id S238468AbiBMWCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 17:02:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:59976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238476AbiBMV4k (ORCPT
+        with ESMTP id S234083AbiBMWCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 16:56:40 -0500
-Received: from zeus.flokli.de (mail.zeus.flokli.de [88.198.15.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D96454199;
-        Sun, 13 Feb 2022 13:56:31 -0800 (PST)
-Received: from localhost (ip-178-200-100-055.um45.pools.vodafone-ip.de [178.200.100.55])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: flokli@flokli.de)
-        by zeus.flokli.de (Postfix) with ESMTPSA id 21CC01299FBA;
-        Sun, 13 Feb 2022 21:49:57 +0000 (UTC)
-From:   Florian Klink <flokli@flokli.de>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ValdikSS <iam@valdikss.org.ru>, Florian Klink <flokli@flokli.de>
-Subject: [PATCH v4 1/3] HID: lenovo: Add support for ThinkPad TrackPoint Keyboard II
-Date:   Sun, 13 Feb 2022 22:49:22 +0100
-Message-Id: <20220213214924.32407-2-flokli@flokli.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220213214924.32407-1-flokli@flokli.de>
-References: <20220213214924.32407-1-flokli@flokli.de>
+        Sun, 13 Feb 2022 17:02:18 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47585419C
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 14:02:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644789731; x=1676325731;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=E/WDvs2/SHwOkJ7U0n3lu62XoYrzHXpTAEn/7+c4wl4=;
+  b=kpJquAfmBI0kpqwCJSuOmRZJkMkftbGx6qGfUfoasiNxX9HHJot7MlZM
+   IwYp12baNWeJlgGB9C8ojv+UN3wCe79jmg0Iz9N9HIPJTojCwZvzHcP2W
+   XFgkezjWA8yxbIaN4GNpTTIfhaBBPYTjKw6gZXu5P4FHg/9Xi2rldMYeM
+   CvVVMHYwEs1KAg8J1/iYpbviJdqVcktWHs5F3DAdzZ13HOSnbiBliHsHF
+   FL3pX0hqSuSrIF2acMeXyzbfx2W22ZVX2hSFBph6V+cU812erpy9lnyhu
+   8npf2x30GOJ2mSY3onV+wVVNc4yWqiWHTKJIEf0mUDhx7zZQBlaqdDQv7
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="237387155"
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
+   d="scan'208";a="237387155"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 14:02:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,366,1635231600"; 
+   d="scan'208";a="527710736"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 13 Feb 2022 14:02:10 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJMwb-0007t6-Pw; Sun, 13 Feb 2022 22:02:09 +0000
+Date:   Mon, 14 Feb 2022 06:02:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [toke:xdp-queueing-02 5/11] kernel/bpf/pifomap.c:197:6: warning: no
+ previous prototype for 'pifo_set_bit'
+Message-ID: <202202140539.izxJMSE3-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ValdikSS <iam@valdikss.org.ru>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git xdp-queueing-02
+head:   26dde94b299bc277f7a99a99ba64b4363964e833
+commit: 34cc5abfbae0dfcb6967c54cb80f7595bc9c5c37 [5/11] Add a PIFO map type for queueing packets
+config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220214/202202140539.izxJMSE3-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git/commit/?id=34cc5abfbae0dfcb6967c54cb80f7595bc9c5c37
+        git remote add toke https://git.kernel.org/pub/scm/linux/kernel/git/toke/linux.git
+        git fetch --no-tags toke xdp-queueing-02
+        git checkout 34cc5abfbae0dfcb6967c54cb80f7595bc9c5c37
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-This keyboard has two modes: regular HID and a native mode, which is used
-in Windows driver. Native mode disables (poor) middle mouse button
-scrolling emulation and reports middle button and scrolling events with a
-custom report ID, which could be better handled in the driver.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This commit adds functional button mapping and native scrolling support.
+All warnings (new ones prefixed by >>):
 
-HID collection in Bluetooth mode for custom report ID=5 is broken and
-is patched upon connection. The collection initially contains incorrect
-Usage Minimum/Usage Maximum numbers and, more importantly, marks Input
-as Variable, not Array, while reporting values as in Array.
+>> kernel/bpf/pifomap.c:197:6: warning: no previous prototype for 'pifo_set_bit' [-Wmissing-prototypes]
+     197 | void pifo_set_bit(struct bpf_pifo_queue *queue, u32 rank)
+         |      ^~~~~~~~~~~~
+>> kernel/bpf/pifomap.c:208:6: warning: no previous prototype for 'pifo_clear_bit' [-Wmissing-prototypes]
+     208 | void pifo_clear_bit(struct bpf_pifo_queue *queue, u32 rank)
+         |      ^~~~~~~~~~~~~~
 
-The keyboard is very similar to Compact USB/Bluetooth Keyboard with
-TrackPoint, that's why this patch reuses all of cptkbd functions, except
-for input mapping.
 
-Signed-off-by: Florian Klink <flokli@flokli.de>
+vim +/pifo_set_bit +197 kernel/bpf/pifomap.c
+
+   196	
+ > 197	void pifo_set_bit(struct bpf_pifo_queue *queue, u32 rank)
+   198	{
+   199		u32 i;
+   200	
+   201		for (i = queue->levels; i > 0; i--) {
+   202			unsigned long *bitmap = queue->lvl_bitmap[i-1];
+   203			set_bit(rank, bitmap);
+   204			rank /= BITS_PER_TYPE(long);
+   205		}
+   206	}
+   207	
+ > 208	void pifo_clear_bit(struct bpf_pifo_queue *queue, u32 rank)
+   209	{
+   210		u32 i;
+   211	
+   212		for (i = queue->levels; i > 0; i--) {
+   213			unsigned long *bitmap = queue->lvl_bitmap[i-1];
+   214			clear_bit(rank, bitmap);
+   215			rank /= BITS_PER_TYPE(long);
+   216	
+   217			// another bit is set in this word, don't clear bit in higher
+   218			// level
+   219			if (*(bitmap + rank))
+   220				break;
+   221		}
+   222	}
+   223	
+
 ---
- drivers/hid/hid-ids.h    |   2 +
- drivers/hid/hid-lenovo.c | 160 +++++++++++++++++++++++++++++++++++++--
- 2 files changed, 156 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 26cee452ec44..16c171d3e116 100644
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -752,7 +752,9 @@
- #define USB_VENDOR_ID_LENOVO		0x17ef
- #define USB_DEVICE_ID_LENOVO_TPKBD	0x6009
- #define USB_DEVICE_ID_LENOVO_CUSBKBD	0x6047
-+#define USB_DEVICE_ID_LENOVO_TPIIUSBKBD	0x60ee
- #define USB_DEVICE_ID_LENOVO_CBTKBD	0x6048
-+#define USB_DEVICE_ID_LENOVO_TPIIBTKBD	0x60e1
- #define USB_DEVICE_ID_LENOVO_SCROLLPOINT_OPTICAL	0x6049
- #define USB_DEVICE_ID_LENOVO_TP10UBKBD	0x6062
- #define USB_DEVICE_ID_LENOVO_TPPRODOCK	0x6067
-diff --git a/drivers/hid/hid-lenovo.c b/drivers/hid/hid-lenovo.c
-index 93b1f935e526..a612ae7dfbfc 100644
---- a/drivers/hid/hid-lenovo.c
-+++ b/drivers/hid/hid-lenovo.c
-@@ -4,6 +4,7 @@
-  *  - ThinkPad USB Keyboard with TrackPoint (tpkbd)
-  *  - ThinkPad Compact Bluetooth Keyboard with TrackPoint (cptkbd)
-  *  - ThinkPad Compact USB Keyboard with TrackPoint (cptkbd)
-+ *  - ThinkPad TrackPoint Keyboard II USB/Bluetooth (cptkbd/tpIIkbd)
-  *
-  *  Copyright (c) 2012 Bernhard Seibold
-  *  Copyright (c) 2014 Jamie Lentin <jm@lentin.co.uk>
-@@ -110,6 +111,23 @@ static const __u8 lenovo_pro_dock_need_fixup_collection[] = {
- 	0x2a, 0xff, 0xff,	/*  Usage Maximum (65535)		*/
- };
- 
-+/* Broken ThinkPad TrackPoint II collection (Bluetooth mode) */
-+static const __u8 lenovo_tpIIbtkbd_need_fixup_collection[] = {
-+	0x06, 0x00, 0xFF,	/* Usage Page (Vendor Defined 0xFF00) */
-+	0x09, 0x01,		/* Usage (0x01) */
-+	0xA1, 0x01,		/* Collection (Application) */
-+	0x85, 0x05,		/*   Report ID (5) */
-+	0x1A, 0xF1, 0x00,	/*   Usage Minimum (0xF1) */
-+	0x2A, 0xFC, 0x00,	/*   Usage Maximum (0xFC) */
-+	0x15, 0x00,		/*   Logical Minimum (0) */
-+	0x25, 0x01,		/*   Logical Maximum (1) */
-+	0x75, 0x01,		/*   Report Size (1) */
-+	0x95, 0x0D,		/*   Report Count (13) */
-+	0x81, 0x02,		/*   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-+	0x95, 0x03,		/*   Report Count (3) */
-+	0x81, 0x01,		/*   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position) */
-+};
-+
- static __u8 *lenovo_report_fixup(struct hid_device *hdev, __u8 *rdesc,
- 		unsigned int *rsize)
- {
-@@ -126,6 +144,19 @@ static __u8 *lenovo_report_fixup(struct hid_device *hdev, __u8 *rdesc,
- 			rdesc[152] = 0x00;
- 		}
- 		break;
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
-+		if (*rsize >= 263 &&
-+		    memcmp(&rdesc[234], lenovo_tpIIbtkbd_need_fixup_collection,
-+			  sizeof(lenovo_tpIIbtkbd_need_fixup_collection)) == 0) {
-+			rdesc[244] = 0x00; /* usage minimum = 0x00 */
-+			rdesc[247] = 0xff; /* usage maximum = 0xff */
-+			rdesc[252] = 0xff; /* logical maximum = 0xff */
-+			rdesc[254] = 0x08; /* report size = 0x08 */
-+			rdesc[256] = 0x01; /* report count = 0x01 */
-+			rdesc[258] = 0x00; /* input = 0x00 */
-+			rdesc[260] = 0x01; /* report count (2) = 0x01 */
-+		}
-+		break;
- 	}
- 	return rdesc;
- }
-@@ -217,6 +248,101 @@ static int lenovo_input_mapping_cptkbd(struct hid_device *hdev,
- 	return 0;
- }
- 
-+static int lenovo_input_mapping_tpIIkbd(struct hid_device *hdev,
-+		struct hid_input *hi, struct hid_field *field,
-+		struct hid_usage *usage, unsigned long **bit, int *max)
-+{
-+	/*
-+	 * 0xff0a0000 = USB, HID_UP_MSVENDOR = BT.
-+	 *
-+	 * In BT mode, there are two HID_UP_MSVENDOR pages.
-+	 * Use only the page that contains report ID == 5.
-+	 */
-+	if (((usage->hid & HID_USAGE_PAGE) == 0xff0a0000 ||
-+	    (usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR) &&
-+	    field->report->id == 5) {
-+		switch (usage->hid & HID_USAGE) {
-+		case 0x00bb: /* Fn-F4: Mic mute */
-+			map_key_clear(LENOVO_KEY_MICMUTE);
-+			return 1;
-+		case 0x00c3: /* Fn-F5: Brightness down */
-+			map_key_clear(KEY_BRIGHTNESSDOWN);
-+			return 1;
-+		case 0x00c4: /* Fn-F6: Brightness up */
-+			map_key_clear(KEY_BRIGHTNESSUP);
-+			return 1;
-+		case 0x00c1: /* Fn-F8: Notification center */
-+			map_key_clear(KEY_NOTIFICATION_CENTER);
-+			return 1;
-+		case 0x00bc: /* Fn-F9: Control panel */
-+			map_key_clear(KEY_CONFIG);
-+			return 1;
-+		case 0x00b6: /* Fn-F10: Bluetooth */
-+			map_key_clear(KEY_BLUETOOTH);
-+			return 1;
-+		case 0x00b7: /* Fn-F11: Keyboard config */
-+			map_key_clear(KEY_KEYBOARD);
-+			return 1;
-+		case 0x00b8: /* Fn-F12: User function */
-+			map_key_clear(KEY_PROG1);
-+			return 1;
-+		case 0x00b9: /* Fn-PrtSc: Snipping tool */
-+			map_key_clear(KEY_SELECTIVE_SCREENSHOT);
-+			return 1;
-+		case 0x00b5: /* Fn-Esc: Fn-lock toggle */
-+			map_key_clear(KEY_FN_ESC);
-+			return 1;
-+		}
-+	}
-+
-+	if ((usage->hid & HID_USAGE_PAGE) == 0xffa00000) {
-+		switch (usage->hid & HID_USAGE) {
-+		case 0x00fb: /* Middle mouse (in native USB mode) */
-+			map_key_clear(BTN_MIDDLE);
-+			return 1;
-+		}
-+	}
-+
-+	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_MSVENDOR &&
-+	    field->report->id == 21) {
-+		switch (usage->hid & HID_USAGE) {
-+		case 0x0004: /* Middle mouse (in native Bluetooth mode) */
-+			map_key_clear(BTN_MIDDLE);
-+			return 1;
-+		}
-+	}
-+
-+	/* Compatibility middle/wheel mappings should be ignored */
-+	if (usage->hid == HID_GD_WHEEL)
-+		return -1;
-+	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_BUTTON &&
-+			(usage->hid & HID_USAGE) == 0x003)
-+		return -1;
-+	if ((usage->hid & HID_USAGE_PAGE) == HID_UP_CONSUMER &&
-+			(usage->hid & HID_USAGE) == 0x238)
-+		return -1;
-+
-+	/* Map wheel emulation reports: 0xff10 */
-+	if ((usage->hid & HID_USAGE_PAGE) == 0xff100000) {
-+		field->flags |= HID_MAIN_ITEM_RELATIVE | HID_MAIN_ITEM_VARIABLE;
-+		field->logical_minimum = -127;
-+		field->logical_maximum = 127;
-+
-+		switch (usage->hid & HID_USAGE) {
-+		case 0x0000:
-+			hid_map_usage(hi, usage, bit, max, EV_REL, REL_HWHEEL);
-+			return 1;
-+		case 0x0001:
-+			hid_map_usage(hi, usage, bit, max, EV_REL, REL_WHEEL);
-+			return 1;
-+		default:
-+			return -1;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int lenovo_input_mapping_scrollpoint(struct hid_device *hdev,
- 		struct hid_input *hi, struct hid_field *field,
- 		struct hid_usage *usage, unsigned long **bit, int *max)
-@@ -326,6 +452,10 @@ static int lenovo_input_mapping(struct hid_device *hdev,
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
- 		return lenovo_input_mapping_cptkbd(hdev, hi, field,
- 							usage, bit, max);
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
-+		return lenovo_input_mapping_tpIIkbd(hdev, hi, field,
-+							usage, bit, max);
- 	case USB_DEVICE_ID_IBM_SCROLLPOINT_III:
- 	case USB_DEVICE_ID_IBM_SCROLLPOINT_PRO:
- 	case USB_DEVICE_ID_IBM_SCROLLPOINT_OPTICAL:
-@@ -363,10 +493,12 @@ static int lenovo_send_cmd_cptkbd(struct hid_device *hdev,
- 
- 	switch (hdev->product) {
- 	case USB_DEVICE_ID_LENOVO_CUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
- 		ret = hid_hw_raw_request(hdev, 0x13, buf, 3,
- 					HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
- 		break;
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 		ret = hid_hw_output_report(hdev, buf, 3);
- 		break;
- 	default:
-@@ -422,6 +554,8 @@ static ssize_t attr_fn_lock_store(struct device *dev,
- 	switch (hdev->product) {
- 	case USB_DEVICE_ID_LENOVO_CUSBKBD:
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 		lenovo_features_set_cptkbd(hdev);
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
-@@ -568,6 +702,8 @@ static int lenovo_event(struct hid_device *hdev, struct hid_field *field,
- 	switch (hdev->product) {
- 	case USB_DEVICE_ID_LENOVO_CUSBKBD:
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 		return lenovo_event_cptkbd(hdev, field, usage, value);
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-@@ -960,8 +1096,9 @@ static int lenovo_probe_cptkbd(struct hid_device *hdev)
- 	struct lenovo_drvdata *cptkbd_data;
- 
- 	/* All the custom action happens on the USBMOUSE device for USB */
--	if (hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD
--			&& hdev->type != HID_TYPE_USBMOUSE) {
-+	if (((hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD) ||
-+	    (hdev->product == USB_DEVICE_ID_LENOVO_TPIIUSBKBD)) &&
-+	    hdev->type != HID_TYPE_USBMOUSE) {
- 		hid_dbg(hdev, "Ignoring keyboard half of device\n");
- 		return 0;
- 	}
-@@ -977,11 +1114,14 @@ static int lenovo_probe_cptkbd(struct hid_device *hdev)
- 
- 	/*
- 	 * Tell the keyboard a driver understands it, and turn F7, F9, F11 into
--	 * regular keys
-+	 * regular keys (Compact only)
- 	 */
--	ret = lenovo_send_cmd_cptkbd(hdev, 0x01, 0x03);
--	if (ret)
--		hid_warn(hdev, "Failed to switch F7/9/11 mode: %d\n", ret);
-+	if (hdev->product == USB_DEVICE_ID_LENOVO_CUSBKBD ||
-+	    hdev->product == USB_DEVICE_ID_LENOVO_CBTKBD) {
-+		ret = lenovo_send_cmd_cptkbd(hdev, 0x01, 0x03);
-+		if (ret)
-+			hid_warn(hdev, "Failed to switch F7/9/11 mode: %d\n", ret);
-+	}
- 
- 	/* Switch middle button to native mode */
- 	ret = lenovo_send_cmd_cptkbd(hdev, 0x09, 0x01);
-@@ -1088,6 +1228,8 @@ static int lenovo_probe(struct hid_device *hdev,
- 		break;
- 	case USB_DEVICE_ID_LENOVO_CUSBKBD:
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 		ret = lenovo_probe_cptkbd(hdev);
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
-@@ -1154,6 +1296,8 @@ static void lenovo_remove(struct hid_device *hdev)
- 		break;
- 	case USB_DEVICE_ID_LENOVO_CUSBKBD:
- 	case USB_DEVICE_ID_LENOVO_CBTKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+	case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 		lenovo_remove_cptkbd(hdev);
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
-@@ -1172,6 +1316,8 @@ static int lenovo_input_configured(struct hid_device *hdev,
- 		case USB_DEVICE_ID_LENOVO_TPKBD:
- 		case USB_DEVICE_ID_LENOVO_CUSBKBD:
- 		case USB_DEVICE_ID_LENOVO_CBTKBD:
-+		case USB_DEVICE_ID_LENOVO_TPIIUSBKBD:
-+		case USB_DEVICE_ID_LENOVO_TPIIBTKBD:
- 			if (test_bit(EV_REL, hi->input->evbit)) {
- 				/* set only for trackpoint device */
- 				__set_bit(INPUT_PROP_POINTER, hi->input->propbit);
-@@ -1188,7 +1334,9 @@ static int lenovo_input_configured(struct hid_device *hdev,
- static const struct hid_device_id lenovo_devices[] = {
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_TPKBD) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_CUSBKBD) },
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_TPIIUSBKBD) },
- 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_CBTKBD) },
-+	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_TPIIBTKBD) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_TPPRODOCK) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_IBM, USB_DEVICE_ID_IBM_SCROLLPOINT_III) },
- 	{ HID_USB_DEVICE(USB_VENDOR_ID_IBM, USB_DEVICE_ID_IBM_SCROLLPOINT_PRO) },
--- 
-2.35.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
