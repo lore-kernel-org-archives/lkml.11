@@ -2,105 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B55FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 03:34:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BBEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 04:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233324AbiBMDd5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 12 Feb 2022 22:33:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41516 "EHLO
+        id S233363AbiBMEKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 12 Feb 2022 23:10:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233067AbiBMDd4 (ORCPT
+        with ESMTP id S232021AbiBMEKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 12 Feb 2022 22:33:56 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CDF35F26F
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 19:33:50 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-59-m5e4icDAO8m0cbi-5HV2aQ-1; Sun, 13 Feb 2022 03:33:46 +0000
-X-MC-Unique: m5e4icDAO8m0cbi-5HV2aQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 03:33:44 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Sun, 13 Feb 2022 03:33:44 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kees Cook' <keescook@chromium.org>,
-        Robin Murphy <robin.murphy@arm.com>
-CC:     Ard Biesheuvel <ardb@kernel.org>,
-        Victor Erminpour <victor.erminpour@oracle.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "ACPI Devel Maling List" <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "trivial@kernel.org" <trivial@kernel.org>
-Subject: RE: [PATCH v2] ACPI/IORT: Fix GCC 12 warning
-Thread-Topic: [PATCH v2] ACPI/IORT: Fix GCC 12 warning
-Thread-Index: AQHYH6jGUiwsSGsVWkybqVzsUhE0OqyQ00mw
-Date:   Sun, 13 Feb 2022 03:33:44 +0000
-Message-ID: <f11f91706c704a72b593a183f33ff456@AcuMS.aculab.com>
-References: <1644518851-16847-1-git-send-email-victor.erminpour@oracle.com>
- <CAMj1kXEbGWs74M2CZSm6TWpD11mReFsk8z-UUqJt6b6vDCvAEQ@mail.gmail.com>
- <202202101415.43750CEE@keescook>
- <3740c93e-9fde-f89f-9752-26ffff3ea274@arm.com>
- <202202111623.A7881CC@keescook>
-In-Reply-To: <202202111623.A7881CC@keescook>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Sat, 12 Feb 2022 23:10:13 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018705F27D;
+        Sat, 12 Feb 2022 20:10:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=h9lgENlLH+E/IJinaeOP1R7M6s/XOyGy5yYBeg0uvqY=; b=uPISaPZ7NAppRwSbiaADv/BNro
+        v+g5aXjZoUIzbeS68b6zBoMjLRFFI9GYaUH290Pscue04bqDB8K9ppiB2pIqclLYq/IIX2LZNaCYT
+        6718HT1Cv0ujzzrEhL2Jz4/YV/wdaER713UmY4KGY7KzG7ecUnK0qOXa4NA5ycSiiYtbyW4F/KKsD
+        3fcu3zxxxvmqUBrx9MMqt1q3Mb2NS0w4+3aXK9C3l8eZr9Fpw4wE9zA4w694SkUFvenPGag3z6jis
+        jHYpVc2Eo54+xnMlgVzCtVaZCqJiJnNxE2eynAN1VY2hgWRHkBi6dpEhlIphmLIkAughbtTIQhMZC
+        bbzEka5Q==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJ6CW-00Blhs-Gg; Sun, 13 Feb 2022 04:09:28 +0000
+Date:   Sun, 13 Feb 2022 04:09:28 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Zhouyi Zhou <zhouzhouyi@gmail.com>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, Linux-MM <linux-mm@kvack.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jason Baron <jbaron@akamai.com>, rcu <rcu@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: Re: BUG: sleeping function called from invalid context at
+ include/linux/sched/mm.h:256
+Message-ID: <YgiEeHzz4JZFszJD@casper.infradead.org>
+References: <244218af-df6a-236e-0a52-268247dd8271@molgen.mpg.de>
+ <CAABZP2ycCjiZ0CySc2Lgr_DnUfuDf1iagEKnWwNEkVkR9-gADA@mail.gmail.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAABZP2ycCjiZ0CySc2Lgr_DnUfuDf1iagEKnWwNEkVkR9-gADA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook
-> Sent: 12 February 2022 00:38
-....
-> 
-> Sure. I think I am trying to take a pragmatic approach here, which is
-> that gaining auto-var-init is a big deal (killing entire classes of
-> vulnerabilities), but it comes with an annoying compiler bug (that we do
-> get a warning about) for an uncommon code pattern that is easy to fix.
+On Sun, Feb 13, 2022 at 11:19:09AM +0800, Zhouyi Zhou wrote:
+> I think the key to the problem lies in your attached console.log
+> (pasted below), at times 0.014987 and 0.015995, I see there are two
+> locks (cpu_hotplug_lock and jump_label_mutex)  holded while
+> kmem_cache_alloc calls __might_resched (0.023356).
 
-My worry about the compiler setting variables to zero is that people
-will get lazy and assume it happens.
-Then some code will get compiled without that enabled (possibly because
-it slows things down too much) and then really horrid bugs start to appear.
-
-If the intent is to detect code that is failing to initialise locals
-then setting to a non-zero value (that is likely to cause grief)
-is much better than setting to zero.
-
-I'm particularly worried if the compiler starts to zero on-stack arrays.
-There is plenty of userspace code that will use char buff[MAX_PATH]
-to build a filename or char errmsg[1024] for an error message.
-At the moment the size only needs to be 'big enough' but if the compiler
-zeros it then there are performance issues and oversize buffers make
-a difference.
-At which point you start making the arrays 'just big enough' and then
-fall foul of truncations and overruns because the calculation was wrong.
-
-Definitely double edged.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Those are both sleeping locks (a percpu_rwsem and mutex, respectively).
+There is no problem with sleeping while holding a mutex or rwsem.
