@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 14:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7724C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 14:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236551AbiBMOR3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 09:17:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37936 "EHLO
+        id S236566AbiBMORa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 09:17:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236436AbiBMORH (ORCPT
+        with ESMTP id S236449AbiBMORK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 09:17:07 -0500
+        Sun, 13 Feb 2022 09:17:10 -0500
 Received: from 189.cn (ptr.189.cn [183.61.185.101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 48CE15F273;
-        Sun, 13 Feb 2022 06:17:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6514F5F8C4;
+        Sun, 13 Feb 2022 06:17:04 -0800 (PST)
 HMM_SOURCE_IP: 10.64.8.41:34274.536114013
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
 Received: from clientip-114.242.206.180 (unknown [10.64.8.41])
-        by 189.cn (HERMES) with SMTP id B794C1002A9;
-        Sun, 13 Feb 2022 22:16:59 +0800 (CST)
+        by 189.cn (HERMES) with SMTP id B6FA21002B3;
+        Sun, 13 Feb 2022 22:17:02 +0800 (CST)
 Received: from  ([114.242.206.180])
-        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id 67c89f58c17742bd885dfd916ed98549 for mripard@kernel.org;
-        Sun, 13 Feb 2022 22:17:00 CST
-X-Transaction-ID: 67c89f58c17742bd885dfd916ed98549
+        by gateway-151646-dep-b7fbf7d79-9vctg with ESMTP id be66858997da4a03ade58a24083bc740 for mripard@kernel.org;
+        Sun, 13 Feb 2022 22:17:03 CST
+X-Transaction-ID: be66858997da4a03ade58a24083bc740
 X-Real-From: 15330273260@189.cn
 X-Receive-IP: 114.242.206.180
 X-MEDUSA-Status: 0
@@ -52,9 +52,9 @@ To:     Maxime Ripard <mripard@kernel.org>,
         suijingfeng <suijingfeng@loongson.cn>
 Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH v7 4/7] MIPS: Loongson: introduce dts for lemote A1901 3a4000 motherboard
-Date:   Sun, 13 Feb 2022 22:16:46 +0800
-Message-Id: <20220213141649.1115987-5-15330273260@189.cn>
+Subject: [PATCH v7 6/7] MIPS: Loongson: Add dts for ls2k1000 pai evaluation board
+Date:   Sun, 13 Feb 2022 22:16:48 +0800
+Message-Id: <20220213141649.1115987-7-15330273260@189.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220213141649.1115987-1-15330273260@189.cn>
 References: <20220213141649.1115987-1-15330273260@189.cn>
@@ -66,82 +66,60 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: suijingfeng <suijingfeng@loongson.cn>
 
-This board has only one VGA output which is connected to DVO1 of
-the display controller. More details about this motherboard can be
-read from [1].
+   ___________________                           ____________________
+  |            -------|                         |                    |
+  |  CRTC0 --> | DVO0 ------------------------> | 1024x600 DPI Panel |
+  |  _   _     -------|                         |____________________|
+  | | | | |           |  i2c0 is not get used
+  | |_| |_|           |     +------+
+  |                   <---->| i2c0 |
+  |          LSDC     |     +------+
+  |  _   _            |     +------+
+  | | | | |           <---->| i2c1 |-----------+
+  | |_| |_|           |     +------+           |
+  |                   |        |               |               _________
+  |            -------|    +---------+         |              |         |
+  |  CRTC1 --> | DVO1 ---> | sii9022 | --> hdmi connector --> | Monitor |
+  |            -------|    +---------+                        |_________|
+  |___________________|
 
-    +------+            +-----------------------------------+
-    | DDR4 |            |  +-------------------+            |
-    +------+            |  | PCIe Root complex |   LS7A1000 |
-       || MC0           |  +--++---------++----+            |
-  +----------+  HT 3.0  |     ||         ||                 |
-  | LS3A4000 |<-------->| +---++---+  +--++--+    +---------+   +------+
-  |   CPU    |<-------->| | GC1000 |  | LSDC |<-->| DDR3 MC |<->| VRAM |
-  +----------+          | +--------+  +-+--+-+    +---------+   +------+
-       || MC1           +---------------|--|----------------+
-    +------+                            |  |
-    | DDR4 |       DVO0 is not get used |  |  DVO1   +-------+
-    +------+       <--------------------+  +-------->|ADV7125|---> VGA
-                                                     +-------+
+The sii9022 tranmnitter working in tramsparent mode, that is the edid
+is read from the monitor directly, not through sil9022's ddc channel.
+The PMON firmware is responsible for consigure the sii9022 at boot time.
 
-Note, LEMOTE corporation is one of the downstream board manufacturer of
-LOONGSON. The model property can be used to tell the kernel board specific
-information.
-
-[1] https://wiki.godson.ac.cn/device:lemote_a1901
+[1] https://wiki.debian.org/InstallingDebianOn/Lemote/Loongson2K1000
 
 Signed-off-by: suijingfeng <suijingfeng@loongson.cn>
 Signed-off-by: Sui Jingfeng <15330273260@189.cn>
 ---
- arch/mips/boot/dts/loongson/lemote_a1901.dts | 59 ++++++++++++++++++++
- 1 file changed, 59 insertions(+)
- create mode 100644 arch/mips/boot/dts/loongson/lemote_a1901.dts
+ arch/mips/boot/dts/loongson/ls2k1000_pai.dts | 69 ++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
+ create mode 100644 arch/mips/boot/dts/loongson/ls2k1000_pai.dts
 
-diff --git a/arch/mips/boot/dts/loongson/lemote_a1901.dts b/arch/mips/boot/dts/loongson/lemote_a1901.dts
+diff --git a/arch/mips/boot/dts/loongson/ls2k1000_pai.dts b/arch/mips/boot/dts/loongson/ls2k1000_pai.dts
 new file mode 100644
-index 000000000000..ca57c27ad845
+index 000000000000..6c18280d2129
 --- /dev/null
-+++ b/arch/mips/boot/dts/loongson/lemote_a1901.dts
-@@ -0,0 +1,59 @@
++++ b/arch/mips/boot/dts/loongson/ls2k1000_pai.dts
+@@ -0,0 +1,69 @@
 +// SPDX-License-Identifier: GPL-2.0
 +
 +/dts-v1/;
 +
-+#include "loongson64g-package.dtsi"
-+#include "ls7a-pch.dtsi"
++#include "loongson64-2k1000.dtsi"
 +
 +/ {
-+	model = "LX-6901";
-+};
++	model = "LS2K1000_PAI_UDB_V1.5";
 +
-+&package0 {
-+	htvec: interrupt-controller@efdfb000080 {
-+		compatible = "loongson,htvec-1.0";
-+		reg = <0xefd 0xfb000080 0x40>;
-+		interrupt-controller;
-+		#interrupt-cells = <1>;
-+
-+		interrupt-parent = <&liointc>;
-+		interrupts = <24 IRQ_TYPE_LEVEL_HIGH>,
-+			     <25 IRQ_TYPE_LEVEL_HIGH>,
-+			     <26 IRQ_TYPE_LEVEL_HIGH>,
-+			     <27 IRQ_TYPE_LEVEL_HIGH>,
-+			     <28 IRQ_TYPE_LEVEL_HIGH>,
-+			     <29 IRQ_TYPE_LEVEL_HIGH>,
-+			     <30 IRQ_TYPE_LEVEL_HIGH>,
-+			     <31 IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+};
-+
-+&pch {
-+	msi: msi-controller@2ff00000 {
-+		compatible = "loongson,pch-msi-1.0";
-+		reg = <0 0x2ff00000 0 0x8>;
-+		interrupt-controller;
-+		msi-controller;
-+		loongson,msi-base-vec = <64>;
-+		loongson,msi-num-vecs = <192>;
-+		interrupt-parent = <&htvec>;
++	memory@200000 {
++		compatible = "memory";
++		device_type = "memory";
++		// 238 MB at 2 MB
++		// 2GB - 512 MB at 2GB + 512 MB
++		// total 2 GB
++		reg = <0x00000000 0x00200000 0x00000000 0x0EE00000
++		       0x00000000 0xA0000000 0x00000000 0x60000000
++		       0x00000001 0x10000000 0x00000000 0x10000000>;
 +	};
 +};
 +
@@ -152,14 +130,45 @@ index 000000000000..ca57c27ad845
 +	#size-cells = <0>;
 +
 +	dvo0: dvo@0 {
++		/* 0 for connector 0 (DVO0) */
 +		reg = <0>;
-+		status = "disabled";
++		connector = "dpi-connector";
++		status = "ok";
++
++		display-timings {
++			native-mode = <&mode_0_1024x600_60>;
++
++			mode_0_1024x600_60: panel-timing@0 {
++				clock-frequency = <51200000>;
++				hactive = <1024>;
++				vactive = <600>;
++				hsync-len = <4>;
++				hfront-porch = <160>;
++				hback-porch = <156>;
++				vfront-porch = <11>;
++				vback-porch = <23>;
++				vsync-len = <1>;
++			};
++
++			mode_1_800x480_60: panel-timing@1 {
++				clock-frequency = <30066000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <50>;
++				hback-porch = <70>;
++				hsync-len = <50>;
++				vback-porch = <0>;
++				vfront-porch = <0>;
++				vsync-len = <50>;
++			};
++		};
 +	};
 +
 +	dvo1: dvo@1 {
++		/* 1 for connector 1 (DVO1) */
 +		reg = <1>;
-+		connector = "vga-connector";
-+		status = "okay";
++		connector = "virtual-connector";
++		status = "ok";
 +	};
 +};
 -- 
