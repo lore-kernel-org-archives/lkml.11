@@ -2,87 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F69C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 12:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD182C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 12:37:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235988AbiBMMaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 07:30:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52428 "EHLO
+        id S236002AbiBMMhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 07:37:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235962AbiBMMaU (ORCPT
+        with ESMTP id S235962AbiBMMhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 07:30:20 -0500
-Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFB85AEF2
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 04:30:14 -0800 (PST)
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id JE16nPuMsHZHJJE16nOrpB; Sun, 13 Feb 2022 13:30:12 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 13 Feb 2022 13:30:12 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] iio: as3935: Use devm_delayed_work_autocancel()
-Date:   Sun, 13 Feb 2022 13:30:11 +0100
-Message-Id: <8d5c50f191bd8f751849d72127f83b14a7636d64.1644755396.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Sun, 13 Feb 2022 07:37:17 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9935AEFD
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 04:37:12 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 54320210EE;
+        Sun, 13 Feb 2022 12:37:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1644755831; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9czmSGPY3nPWptFPCkPuWs1wn6iugfKjUHNktEIIfn0=;
+        b=0vH+7crR/bFQJyUOfn4hDkvNJUhLKPHKaMlk++G0Kli1kd81vhiWpoOGC4S5kTk7tkpk/G
+        VaLNbYaq5NIxEjl8Nw1ybtLeXdKK2urLZ+vrn9WtNYKj+je0ayn3g25dSOC92E3LhgpGwU
+        FJylmxUn6g0DEKT6UMTjoAW/wuegWIo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1644755831;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9czmSGPY3nPWptFPCkPuWs1wn6iugfKjUHNktEIIfn0=;
+        b=S3pF3WGyvxakE339AYTm9bnkabWgmisRwBgfoG11qf95d4zmSC20qPJEXwfLP9d1mypGev
+        Y2KWe9nKfo4aUHCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3347B1331A;
+        Sun, 13 Feb 2022 12:37:11 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id tNEmC3f7CGLdQAAAMHmgww
+        (envelope-from <bp@suse.de>); Sun, 13 Feb 2022 12:37:11 +0000
+Date:   Sun, 13 Feb 2022 13:37:17 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] sched/urgent for 5.17-rc4
+Message-ID: <Ygj7feK+vdtPw6zj@zn.tnic>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_delayed_work_autocancel() instead of hand writing it.
-It saves a few lines of code.
+Hi Linus,
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+please pull a single urgent scheduling fix for 5.17.
+
+Thx.
+
 ---
- drivers/iio/proximity/as3935.c | 12 ++----------
- 1 file changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-index bd7595db31d4..00e06491b188 100644
---- a/drivers/iio/proximity/as3935.c
-+++ b/drivers/iio/proximity/as3935.c
-@@ -12,6 +12,7 @@
- #include <linux/interrupt.h>
- #include <linux/delay.h>
- #include <linux/workqueue.h>
-+#include <linux/devm-helpers.h>
- #include <linux/mutex.h>
- #include <linux/err.h>
- #include <linux/irq.h>
-@@ -344,14 +345,6 @@ static SIMPLE_DEV_PM_OPS(as3935_pm_ops, as3935_suspend, as3935_resume);
- #define AS3935_PM_OPS NULL
- #endif
- 
--static void as3935_stop_work(void *data)
--{
--	struct iio_dev *indio_dev = data;
--	struct as3935_state *st = iio_priv(indio_dev);
--
--	cancel_delayed_work_sync(&st->work);
--}
--
- static int as3935_probe(struct spi_device *spi)
- {
- 	struct device *dev = &spi->dev;
-@@ -432,8 +425,7 @@ static int as3935_probe(struct spi_device *spi)
- 
- 	calibrate_as3935(st);
- 
--	INIT_DELAYED_WORK(&st->work, as3935_event_work);
--	ret = devm_add_action(dev, as3935_stop_work, indio_dev);
-+	ret = devm_delayed_work_autocancel(dev, &st->work, as3935_event_work);
- 	if (ret)
- 		return ret;
- 
+The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
+
+  Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/sched_urgent_for_v5.17_rc4
+
+for you to fetch changes up to 13765de8148f71fa795e0a6607de37c49ea5915a:
+
+  sched/fair: Fix fault in reweight_entity (2022-02-06 22:37:26 +0100)
+
+----------------------------------------------------------------
+- Fix a NULL-ptr dereference when recalculating a sched entity's weight
+
+----------------------------------------------------------------
+Tadeusz Struk (1):
+      sched/fair: Fix fault in reweight_entity
+
+ kernel/sched/core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 -- 
-2.32.0
+Regards/Gruss,
+    Boris.
 
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
