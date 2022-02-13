@@ -2,316 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5268C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 11:52:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C815AC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 11:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235776AbiBMLwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 06:52:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57054 "EHLO
+        id S235809AbiBMLxE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 06:53:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235745AbiBMLwA (ORCPT
+        with ESMTP id S235745AbiBMLxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 06:52:00 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 776F25B896
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 03:51:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644753114; x=1676289114;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FKoVdFmGi/mHbJcMylYreR6AHCaw8dsocPpqkdYBv/Q=;
-  b=ciZOV+QPSJ5FhXhbx2f62UlMxanPdAc1Avp72aCbje2Fp7i2cdfbXEVh
-   C3G6JHlriJ1Wnv/RX6w+6qSlr6Z9MERIhWsnQXrzb4YtzDLtQYVLcFfsT
-   ybh8naeADPB26xBt/EMSInbZ4Qpbn0hmpzy4h5ZzDa6GAQdh6IxMR421s
-   gJP0RDyFAGWtsFxJWCBnFlYKWTqEzQEiIvnM0Do0wUbztSxZxMLFbQloN
-   z97HRLXfzMH+jxSvfaltQYgObGpbOZWhm1rbapzSgKmaesZtXrdsweHYi
-   g8U6s2PY0KPDRpzXVZghbXydoO05Cl7RoB0JUP5sV/+vOcFFrQIo8cuv0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10256"; a="230580876"
-X-IronPort-AV: E=Sophos;i="5.88,365,1635231600"; 
-   d="scan'208";a="230580876"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2022 03:51:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,365,1635231600"; 
-   d="scan'208";a="774669631"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 13 Feb 2022 03:51:52 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJDPz-0007Rs-RL; Sun, 13 Feb 2022 11:51:51 +0000
-Date:   Sun, 13 Feb 2022 19:51:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Wei Yang <richard.weiyang@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: include/linux/build_bug.h:78:41: error: static assertion failed:
- "offsetof(struct page, mapping) == offsetof(struct folio, mapping)"
-Message-ID: <202202131932.diaqTbxo-lkp@intel.com>
+        Sun, 13 Feb 2022 06:53:02 -0500
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E865B899;
+        Sun, 13 Feb 2022 03:52:57 -0800 (PST)
+Received: by mail-qv1-xf32.google.com with SMTP id d7so12640325qvk.2;
+        Sun, 13 Feb 2022 03:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ypYEF45YCKKIdDHjouvAAAG2lyLXjqrY5CQNbYfOknI=;
+        b=eCWqTkpsETaYEeYsA3m2vj0uiea0laWiSjLkPRnEacous6O7JrnYslxdn9MpoN8Obs
+         s+B3MBv63Dnx7s20W42vyg3UX4WzcYykSspy2ODntZgUagiy2HWLggZhF1pnJKYqvHze
+         XsVQJiMAAP3QLt8pX2HJdbfmcQYbamp1ivzc7aFa+Sr/OEtNV3LCdV7mUnMUwFrHIu7S
+         j3tn9BBwgQityJvJzcvcynEeQZNxh5rsHW3aZWTmzp1OsXQNUT60w8wYkKh38xNxDugA
+         rkMIPk1AWlSB9NYgACXKcA7s+opSaXWDHjfW5hO3Q3Nh8PEfpFULip27pT+ev306nASd
+         A0QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ypYEF45YCKKIdDHjouvAAAG2lyLXjqrY5CQNbYfOknI=;
+        b=34r/o31UXMcgSPSTzECXsZOutJ8/dXKBkieTFfXGHCm/wrBHJqdxKbYp+x3A1+Rb08
+         NckGn4jbnzho9Bq7cJJCAOiK6Wokwq81CTdNy8MwzCHu2ILAICfa/P8S6BQetMe2ezz6
+         fCIO05JWNOj0Q6Jqq7FmTBjohPTrwrE7kZlKWVdsSVqJDy024kY5hsctLVJBmQru7WiD
+         0BB+GFxkNNSPCGhtRPOrrjTpV4GM63CGnqBxrqP7qraW0ZlFXxYid7qzrT3/V3KMV8Er
+         ulqG4eKYridasg4aWfPNcXX5Tj9WaKfiZNtxKWObRRI4NMODfRC9f+9FfASRHGiObxod
+         BONg==
+X-Gm-Message-State: AOAM531GCdE4M34SCY8R22bg8TqTnK4Ea37WmLtRUcuvPm1VJYDcSDVk
+        XZAhacG3HhgFnNCQViMQDC7mCtYwXSo87S1GFc0=
+X-Google-Smtp-Source: ABdhPJz/8Ek/3x9uym5HDbnJD4Mt8KqQf2CayEK1/NYDyMkc9ARLump2dvB3zT7oIXSPcWrN47pcccgNs4v2KczTCIQ=
+X-Received: by 2002:ad4:576b:: with SMTP id r11mr6495521qvx.34.1644753176669;
+ Sun, 13 Feb 2022 03:52:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220213213935.2c5ef8c2@canb.auug.org.au>
+In-Reply-To: <20220213213935.2c5ef8c2@canb.auug.org.au>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Sun, 13 Feb 2022 12:52:45 +0100
+Message-ID: <CAOX2RU5NzOK+d-QEMsOiSPX85M2_B44SeJUteZepsyZny7fgnQ@mail.gmail.com>
+Subject: Re: linux-next: Fixes tag needs some work in the qcom tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b81b1829e7e39f6cebdf6e4d5484eacbceda8554
-commit: 536f4217ced62b671bd759f6b549621a5654a70f mm: page->mapping folio->mapping should have the same offset
-date:   2 weeks ago
-config: parisc-randconfig-r004-20220213 (https://download.01.org/0day-ci/archive/20220213/202202131932.diaqTbxo-lkp@intel.com/config)
-compiler: hppa64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=536f4217ced62b671bd759f6b549621a5654a70f
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 536f4217ced62b671bd759f6b549621a5654a70f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc prepare
+On Sun, 13 Feb 2022 at 11:39, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> In commit
+>
+>   bf8f5182b8f5 ("clk: qcom: ipq8074: fix PCI-E clock oops")
+>
+> Fixes tag
+>
+>   Fixes: f0cfcf1a ("clk: qcom: ipq8074: Add missing clocks for pcie")
+>
+> has these problem(s):
+>
+>   - SHA1 should be at least 12 digits long
+>     Can be fixed for the future by setting core.abbrev to 12 (or more)
+>     or (for git v2.11 or later) just making sure it is not set (or set to
+>     "auto").
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Stephen,
 
-All errors (new ones prefixed by >>):
+Sorry for the short hash, don't know how this happened.
+Do you want me to send a v3 with the fixed hash?
 
-      18 |         if (!(word & (~0ul << 32))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:20:22: warning: left shift count >= width of type [-Wshift-count-overflow]
-      20 |                 word <<= 32;
-         |                      ^~~
-   include/asm-generic/bitops/__fls.h:23:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      23 |         if (!(word & (~0ul << (BITS_PER_LONG-16)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:27:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      27 |         if (!(word & (~0ul << (BITS_PER_LONG-8)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:31:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      31 |         if (!(word & (~0ul << (BITS_PER_LONG-4)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:35:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         if (!(word & (~0ul << (BITS_PER_LONG-2)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:39:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      39 |         if (!(word & (~0ul << (BITS_PER_LONG-1))))
-         |                            ^~
-   In file included from arch/parisc/include/asm/bitops.h:201,
-                    from include/linux/bitops.h:33,
-                    from include/linux/kernel.h:22,
-                    from arch/parisc/include/asm/bug.h:5,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/parisc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/rcupdate.h:27,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from arch/parisc/kernel/asm-offsets.c:18:
-   include/asm-generic/bitops/__fls.h: In function '__fls':
-   include/asm-generic/bitops/__fls.h:18:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      18 |         if (!(word & (~0ul << 32))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:20:22: warning: left shift count >= width of type [-Wshift-count-overflow]
-      20 |                 word <<= 32;
-         |                      ^~~
-   include/asm-generic/bitops/__fls.h:23:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      23 |         if (!(word & (~0ul << (BITS_PER_LONG-16)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:27:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      27 |         if (!(word & (~0ul << (BITS_PER_LONG-8)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:31:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      31 |         if (!(word & (~0ul << (BITS_PER_LONG-4)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:35:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      35 |         if (!(word & (~0ul << (BITS_PER_LONG-2)))) {
-         |                            ^~
-   include/asm-generic/bitops/__fls.h:39:28: warning: left shift count >= width of type [-Wshift-count-overflow]
-      39 |         if (!(word & (~0ul << (BITS_PER_LONG-1))))
-         |                            ^~
-   In file included from arch/parisc/include/asm/processor.h:18,
-                    from arch/parisc/include/asm/thread_info.h:6,
-                    from include/linux/thread_info.h:60,
-                    from include/asm-generic/preempt.h:5,
-                    from ./arch/parisc/include/generated/asm/preempt.h:1,
-                    from include/linux/preempt.h:78,
-                    from include/linux/rcupdate.h:27,
-                    from include/linux/rculist.h:11,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from arch/parisc/kernel/asm-offsets.c:18:
-   arch/parisc/include/asm/pdc.h: At top level:
-   arch/parisc/include/asm/pdc.h:77:24: warning: 'struct pdc_memory_table' declared inside parameter list will not be visible outside of this definition or declaration
-      77 |                 struct pdc_memory_table *tbl, unsigned long entries);
-         |                        ^~~~~~~~~~~~~~~~
-   arch/parisc/include/asm/pdc.h:76:30: warning: 'struct pdc_memory_table_raddr' declared inside parameter list will not be visible outside of this definition or declaration
-      76 | int pdc_mem_mem_table(struct pdc_memory_table_raddr *r_addr,
-         |                              ^~~~~~~~~~~~~~~~~~~~~~
-   In file included from include/linux/compiler_types.h:65,
-                    from <command-line>:
-   include/linux/smp.h:34:33: error: requested alignment '20' is not a positive power of 2
-      34 |         __aligned(sizeof(struct __call_single_data));
-         |                                 ^~~~~~~~~~~~~~~~~~
-   include/linux/compiler_attributes.h:33:68: note: in definition of macro '__aligned'
-      33 | #define __aligned(x)                    __attribute__((__aligned__(x)))
-         |                                                                    ^
-   In file included from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/rculist.h:10,
-                    from include/linux/pid.h:5,
-                    from include/linux/sched.h:14,
-                    from arch/parisc/kernel/asm-offsets.c:18:
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, lru) == offsetof(struct folio, lru)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:263:1: note: in expansion of macro 'FOLIO_MATCH'
-     263 | FOLIO_MATCH(lru, lru);
-         | ^~~~~~~~~~~
->> include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, mapping) == offsetof(struct folio, mapping)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:264:1: note: in expansion of macro 'FOLIO_MATCH'
-     264 | FOLIO_MATCH(mapping, mapping);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, compound_head) == offsetof(struct folio, lru)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:265:1: note: in expansion of macro 'FOLIO_MATCH'
-     265 | FOLIO_MATCH(compound_head, lru);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, index) == offsetof(struct folio, index)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:266:1: note: in expansion of macro 'FOLIO_MATCH'
-     266 | FOLIO_MATCH(index, index);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, private) == offsetof(struct folio, private)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:267:1: note: in expansion of macro 'FOLIO_MATCH'
-     267 | FOLIO_MATCH(private, private);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, _mapcount) == offsetof(struct folio, _mapcount)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:268:1: note: in expansion of macro 'FOLIO_MATCH'
-     268 | FOLIO_MATCH(_mapcount, _mapcount);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, _refcount) == offsetof(struct folio, _refcount)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:269:1: note: in expansion of macro 'FOLIO_MATCH'
-     269 | FOLIO_MATCH(_refcount, _refcount);
-         | ^~~~~~~~~~~
-   include/linux/build_bug.h:78:41: error: static assertion failed: "offsetof(struct page, memcg_data) == offsetof(struct folio, memcg_data)"
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                         ^~~~~~~~~~~~~~
-   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
-      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-         |                                  ^~~~~~~~~~~~~~~
-   include/linux/mm_types.h:261:9: note: in expansion of macro 'static_assert'
-     261 |         static_assert(offsetof(struct page, pg) == offsetof(struct folio, fl))
-         |         ^~~~~~~~~~~~~
-   include/linux/mm_types.h:271:1: note: in expansion of macro 'FOLIO_MATCH'
-     271 | FOLIO_MATCH(memcg_data, memcg_data);
-         | ^~~~~~~~~~~
-   In file included from include/linux/mm.h:33,
-                    from include/linux/pid_namespace.h:7,
-                    from include/linux/ptrace.h:10,
-                    from arch/parisc/kernel/asm-offsets.c:20:
-   include/linux/pgtable.h: In function 'pud_index':
-   include/linux/pgtable.h:77:25: warning: right shift count >= width of type [-Wshift-count-overflow]
-      77 |         return (address >> PUD_SHIFT) & (PTRS_PER_PUD - 1);
-         |                         ^~
-   include/linux/pgtable.h: In function 'pgd_offset_pgd':
-   include/linux/pgtable.h:84:29: warning: right shift count >= width of type [-Wshift-count-overflow]
-      84 | #define pgd_index(a)  (((a) >> PGDIR_SHIFT) & (PTRS_PER_PGD - 1))
-         |                             ^~
-   include/linux/pgtable.h:124:23: note: in expansion of macro 'pgd_index'
-     124 |         return (pgd + pgd_index(address));
-         |                       ^~~~~~~~~
-   In file included from include/linux/stringhash.h:7,
-                    from include/linux/dcache.h:15,
-
-
-vim +78 include/linux/build_bug.h
-
-bc6245e5efd70c Ian Abbott       2017-07-10  60  
-6bab69c65013be Rasmus Villemoes 2019-03-07  61  /**
-6bab69c65013be Rasmus Villemoes 2019-03-07  62   * static_assert - check integer constant expression at build time
-6bab69c65013be Rasmus Villemoes 2019-03-07  63   *
-6bab69c65013be Rasmus Villemoes 2019-03-07  64   * static_assert() is a wrapper for the C11 _Static_assert, with a
-6bab69c65013be Rasmus Villemoes 2019-03-07  65   * little macro magic to make the message optional (defaulting to the
-6bab69c65013be Rasmus Villemoes 2019-03-07  66   * stringification of the tested expression).
-6bab69c65013be Rasmus Villemoes 2019-03-07  67   *
-6bab69c65013be Rasmus Villemoes 2019-03-07  68   * Contrary to BUILD_BUG_ON(), static_assert() can be used at global
-6bab69c65013be Rasmus Villemoes 2019-03-07  69   * scope, but requires the expression to be an integer constant
-6bab69c65013be Rasmus Villemoes 2019-03-07  70   * expression (i.e., it is not enough that __builtin_constant_p() is
-6bab69c65013be Rasmus Villemoes 2019-03-07  71   * true for expr).
-6bab69c65013be Rasmus Villemoes 2019-03-07  72   *
-6bab69c65013be Rasmus Villemoes 2019-03-07  73   * Also note that BUILD_BUG_ON() fails the build if the condition is
-6bab69c65013be Rasmus Villemoes 2019-03-07  74   * true, while static_assert() fails the build if the expression is
-6bab69c65013be Rasmus Villemoes 2019-03-07  75   * false.
-6bab69c65013be Rasmus Villemoes 2019-03-07  76   */
-6bab69c65013be Rasmus Villemoes 2019-03-07  77  #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
-6bab69c65013be Rasmus Villemoes 2019-03-07 @78  #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-6bab69c65013be Rasmus Villemoes 2019-03-07  79  
-
-:::::: The code at line 78 was first introduced by commit
-:::::: 6bab69c65013bed5fce9f101a64a84d0385b3946 build_bug.h: add wrapper for _Static_assert
-
-:::::: TO: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Regards,
+Robert
+>
+> --
+> Cheers,
+> Stephen Rothwell
