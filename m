@@ -2,74 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E488C43217
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 07:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234051AbiBMG53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 01:57:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40690 "EHLO
+        id S233991AbiBMHDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 02:03:13 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234043AbiBMG5K (ORCPT
+        with ESMTP id S231410AbiBMHDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 01:57:10 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861B45DE65
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:57:05 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 246FC201417;
-        Sun, 13 Feb 2022 06:57:00 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 707DF80871; Sun, 13 Feb 2022 07:54:07 +0100 (CET)
-Date:   Sun, 13 Feb 2022 07:54:07 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH v2 04/10] random: group initialization wait functions
-Message-ID: <YgirDzvwEYRwvLHS@owl.dominikbrodowski.net>
-References: <20220212122318.623435-1-Jason@zx2c4.com>
- <20220212122318.623435-5-Jason@zx2c4.com>
+        Sun, 13 Feb 2022 02:03:12 -0500
+Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74245DE65
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 23:03:05 -0800 (PST)
+Received: from omf03.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay07.hostedemail.com (Postfix) with ESMTP id C0B9C20F14;
+        Sun, 13 Feb 2022 07:03:04 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf03.hostedemail.com (Postfix) with ESMTPA id A063F6000D;
+        Sun, 13 Feb 2022 07:02:37 +0000 (UTC)
+Message-ID: <3bd6ada59f411a7685d7e64eeb670540d4bfdcde.camel@perches.com>
+Subject: [PATCH] checkpatch: add early_param exception to blank line after
+ struct/function test
+From:   Joe Perches <joe@perches.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andy Whitcroft <apw@canonical.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        linux-kernel@vger.kernel.org
+Date:   Sat, 12 Feb 2022 23:03:02 -0800
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220212122318.623435-5-Jason@zx2c4.com>
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: A063F6000D
+X-Stat-Signature: x1ao4dhk6jmd4ibbpj3b5hbrz1nkjhcb
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+Iv5VSe0HrJpNOjUgwWIMqpX6LHBkUuPA=
+X-HE-Tag: 1644735757-263964
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +/*
-> + * Returns whether or not the urandom pool has been seeded and thus guaranteed
-> + * to supply cryptographically secure random numbers. This applies to: the
-> + * /dev/urandom device, the get_random_bytes function, and the get_random_{u32,
-> + * ,u64,int,long} family of functions.
-> + *
-> + * Returns: true if the urandom pool has been seeded.
-> + *          false if the urandom pool has not been seeded.
+Add early_param as another exception to the blank line preferred after
+function/struct/union declaration or definition test.
 
-I think this comment should be updated, as there is no "urandom pool";
-instead we should refer to the  "random pool" or the "random base pool".
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ scripts/checkpatch.pl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +/*
-> + * Wait for the urandom pool to be seeded and thus guaranteed to supply
-> + * cryptographically secure random numbers. This applies to: the /dev/urandom
-> + * device, the get_random_bytes function, and the get_random_{u32,u64,int,long}
-> + * family of functions. Using any of these functions without first calling
-> + * this function forfeits the guarantee of security.
-> + *
-> + * Returns: 0 if the urandom pool has been seeded.
-> + *          -ERESTARTSYS if the function was interrupted by a signal.
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 071b3304f5d7c..727d23b934da2 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -3930,7 +3930,7 @@ sub process {
+ 		if ($prevline =~ /^[\+ ]};?\s*$/ &&
+ 		    $line =~ /^\+/ &&
+ 		    !($line =~ /^\+\s*$/ ||
+-		      $line =~ /^\+\s*EXPORT_SYMBOL/ ||
++		      $line =~ /^\+\s*(?:EXPORT_SYMBOL|early_param)/ ||
+ 		      $line =~ /^\+\s*MODULE_/i ||
+ 		      $line =~ /^\+\s*\#\s*(?:end|elif|else)/ ||
+ 		      $line =~ /^\+[a-z_]*init/ ||
 
-Same here.
 
-> +/*
-> + * Add a callback function that will be invoked when the nonblocking
-> + * pool is initialised.
-
-Same here ("nonblocking pool").
-
-Other than that, looks fine.
-
-Thanks,
-	Dominik
