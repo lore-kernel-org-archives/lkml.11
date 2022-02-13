@@ -2,104 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF740C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD534C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237436AbiBMR1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 12:27:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43238 "EHLO
+        id S237412AbiBMRh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 12:37:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233208AbiBMR1D (ORCPT
+        with ESMTP id S229581AbiBMRh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 12:27:03 -0500
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323552F7;
-        Sun, 13 Feb 2022 09:26:57 -0800 (PST)
-Received: from [192.168.0.2] (ip5f5aee62.dynamic.kabel-deutschland.de [95.90.238.98])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Sun, 13 Feb 2022 12:37:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40A759A70;
+        Sun, 13 Feb 2022 09:37:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7352161E64846;
-        Sun, 13 Feb 2022 18:26:54 +0100 (CET)
-Message-ID: <18464474-77e9-1a53-265f-b9718d43e8cd@molgen.mpg.de>
-Date:   Sun, 13 Feb 2022 18:26:53 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8155EB80B46;
+        Sun, 13 Feb 2022 17:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2154EC340F1;
+        Sun, 13 Feb 2022 17:37:49 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BhgujmGH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644773866;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KzeRk+q9X7yreqZXOe2rKT8HieNs8MmYCncgF1afFCA=;
+        b=BhgujmGH+fM6WvNonjJDkYv0kNi1+j8f4eS3Dx2r4oQ3oGzzs8AlofFO3ME/H7uIw2+Z8o
+        wY5criDLh0Q51PJRix9k3EVkE0YSUf03TKfJyFPG6XoIbSGwCJsuL9q/AWMA4yMeMK3KzY
+        4stn/jpE3Gsk6Gin0z9+11DIOpWq950=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 62e9e6cd (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sun, 13 Feb 2022 17:37:46 +0000 (UTC)
+Received: by mail-yb1-f180.google.com with SMTP id c6so39784383ybk.3;
+        Sun, 13 Feb 2022 09:37:45 -0800 (PST)
+X-Gm-Message-State: AOAM533J4RvLGE+Tyf0PuM+KirZAoRZm9/MqktVj7v0dsUwXBDlmUVMs
+        aPkvaMg2YjW8TSMS6wbdrIAxTlp9b6w4fNTotWw=
+X-Google-Smtp-Source: ABdhPJwc58MVBsmNBRa5Jx+/F8n8Er/6ECOx8BWEIwhQclcaQSLMGYBTfBohbw83tZnZnXnRkelvPkk98BPhR9CmUsY=
+X-Received: by 2002:a81:3283:: with SMTP id y125mr10762552ywy.100.1644773864692;
+ Sun, 13 Feb 2022 09:37:44 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: BUG: sleeping function called from invalid context at
- include/linux/sched/mm.h:256
-Content-Language: en-US
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org, linux-mm@kvack.org,
+References: <YgZ6IEbiDgz5X1ON@linutronix.de> <20220211162515.554867-1-Jason@zx2c4.com>
+ <YgaSYlVEBOxfJbSD@linutronix.de> <CAHmME9rC_q4LGq2JaAAeGbtRA2cibTe9bnvhMLng+QnzAy2DVg@mail.gmail.com>
+ <YgaV0UZO1KfmtLLh@linutronix.de>
+In-Reply-To: <YgaV0UZO1KfmtLLh@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Sun, 13 Feb 2022 18:37:33 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rsOWuprpYqo9G9eUboQwUxRgWqYRYgyHG7cNOG16c5EA@mail.gmail.com>
+Message-ID: <CAHmME9rsOWuprpYqo9G9eUboQwUxRgWqYRYgyHG7cNOG16c5EA@mail.gmail.com>
+Subject: Re: [PATCH v6] random: defer fast pool mixing to worker
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jason Baron <jbaron@akamai.com>, rcu@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>
-References: <244218af-df6a-236e-0a52-268247dd8271@molgen.mpg.de>
- <20220212234802.GR4285@paulmck-ThinkPad-P17-Gen-1>
- <3fa9ec7e-0bc1-b972-c21b-473a9ef2e15f@molgen.mpg.de>
- <20220213144542.GT4285@paulmck-ThinkPad-P17-Gen-1>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220213144542.GT4285@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        "Theodore Ts'o" <tytso@mit.edu>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Paul,
+On Fri, Feb 11, 2022 at 5:59 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> > > What do we do here vs RT? I suggested this
+> > >   https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/commit/?id=a2d2d54409481aa23a3e11ab9559a843e36a79ec
+> > >
+> > > Is this doable?
+> >
+> > It might be, but last time I checked it seemed problematic. As I
+> > mentioned in an earlier thread, I'll take a look again at that next
+> > week after this patch here settles. Haven't forgotten.
+>
+> Ah, cheers.
 
+I started looking at this and came up with this draft with questions:
+https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?h=jd/no-irq-trylocks
 
-Am 13.02.22 um 15:45 schrieb Paul E. McKenney:
-> On Sun, Feb 13, 2022 at 08:39:13AM +0100, Paul Menzel wrote:
+Some research remains...
 
->> Am 13.02.22 um 00:48 schrieb Paul E. McKenney:
->>> On Sun, Feb 13, 2022 at 12:05:50AM +0100, Paul Menzel wrote:
->>
->> […]
->>
->>>> Running rcutorture on the POWER8 system IBM S822LC with Ubuntu 20.10, it
->>>> found the bug below. I more or less used rcu/dev (0ba8896d2fd7
->>>> (lib/irq_poll: Declare IRQ_POLL softirq vector as ksoftirqd-parking safe))
->>>> [1]. The bug manifested for the four configurations below.
->>>>
->>>> 1.  results-rcutorture-kasan/SRCU-T
->>>> 2.  results-rcutorture-kasan/TINY02
->>>> 3.  results-rcutorture/SRCU-T
->>>> 4.  results-rcutorture/TINY02
->>>
->>> Adding Frederic on CC...
->>>
->>> I am dropping these three for the moment:
->>>
->>> 0ba8896d2fd75 lib/irq_poll: Declare IRQ_POLL softirq vector as ksoftirqd-parking safe
->>> efa8027149a1f tick/rcu: Stop allowing RCU_SOFTIRQ in idle
->>> d338d22b9d338 tick/rcu: Remove obsolete rcu_needs_cpu() parameters
->>>
->>> Though it might be that these are victims of circumstance, in other
->>> words, that the original bug that Paul Menzel reported was caused by
->>> something else.
->>
->> Even without these three patches, the issue is reproducible. I tested commit
->> 7a935b7ac61b (tools/nolibc/stdlib: implement abort()).
-> 
-> Ah, I thought you were saying that the issue was caused by them.
-> 
-> I will put them back.  And apologies to Frederic for kicking his
-> patches out!
-
-Sorry for being unclear.
-
-> Are you able to bisect to see what commit introduced the problem?
-
-I have not checked yet, if it’s a regression. I am going to test it next 
-week.
-
-[…]
-
-
-Kind regards,
-
+Jason
