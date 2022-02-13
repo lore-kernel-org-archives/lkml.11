@@ -2,110 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E724CC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:57:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB63C43219
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233991AbiBMGvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 01:51:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39300 "EHLO
+        id S234038AbiBMG5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 01:57:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233949AbiBMGvk (ORCPT
+        with ESMTP id S233996AbiBMG5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 01:51:40 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255795DE4B
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:51:35 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id i6so21854796pfc.9
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:51:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8jN3bHrs2SjohtF/Og+xdp1QXzW54h0HCo7HFf5/MZw=;
-        b=eGO6WKGk4GF2G1wmSF6YwpVCyUpzoU7kgAHkt2OWvZscvoVLb2sotXMmB0JArmFkdH
-         GZxv240kCgeHEhPXTYzUDow84izMIzZxlfxRqdHQ6poqNxgqd3SBEdZaBIbOt2VfzCOz
-         WB90oXtyxZJqjWoJkG72qtck4qMxHp+GNv+NNlHkFfVAzLOP6WpCXganJp/d3GKhz3Yp
-         dDQ2IWWdYJRDLLYVl86vEf0KIoDIv6kqdWbViLcQzUP/6utM0FpBiWqZQKW5fLsjZNxa
-         AqbUxPohLLEDKau9zLqZLxyzAnQdLrzEjf/iAMJb2D4TcTY3N0qUMmOdvnfMu8pjio9Y
-         a0FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8jN3bHrs2SjohtF/Og+xdp1QXzW54h0HCo7HFf5/MZw=;
-        b=K86focrZ0ljOzY7UG5HOuN5yhyA+dSzMvZruTx1apyg2rQ/HDR5qHW5ycSeGLJtDAB
-         mki8rxXAaRyVEMkK2+4TOjGCuDX5mXTd9QMzV8V+lJd6Pjtpnyrd77TFz/VMgD+pewm+
-         YySpaCngsWrTyxDcMPfPNcx2U+9AlaMiYsA19MInSPGL9qTxz34AiX8jqFXerJk7Rlwj
-         nk0SBo+qOo/r/rBnZA8ZWp7mQzFCui9lIoAhGv64WCo+ic0FALaCBq49zxJbZhf0ZvCY
-         gTFAEUTdCwBCf7WELKIEDps2txeUZhfF0sDffDEtV1pokf/pfq7g5TONFwc6rtiPqeJC
-         3Jww==
-X-Gm-Message-State: AOAM531Qn/HbWi1DmlG4Tj71OQzJmQKMOib+uIRTGquZ5QFzxU0rmB5W
-        WdCw/NONdaEFT/0vZssDcaE=
-X-Google-Smtp-Source: ABdhPJzJFjlAe/vGkkjEE8ukKoZrPMom+3E9OHjTtQHdOrydJ0vW9rr7l+VrgOEHXNJQZysF9XqUjQ==
-X-Received: by 2002:a63:d318:: with SMTP id b24mr7253607pgg.255.1644735094326;
-        Sat, 12 Feb 2022 22:51:34 -0800 (PST)
-Received: from ubuntu-server.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
-        by smtp.googlemail.com with ESMTPSA id v2sm9794515pjt.55.2022.02.12.22.51.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 22:51:34 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Cc:     Tong Zhang <ztong0001@gmail.com>
-Subject: [PATCH] drm/i915: fix build issue when using clang
-Date:   Sat, 12 Feb 2022 22:51:06 -0800
-Message-Id: <20220213065106.48062-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 13 Feb 2022 01:57:07 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AA55DE58
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:57:02 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id DC82F2013FF;
+        Sun, 13 Feb 2022 06:56:59 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 8CB19809A1; Sun, 13 Feb 2022 07:55:05 +0100 (CET)
+Date:   Sun, 13 Feb 2022 07:55:05 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 00/10] random: re-group and re-document functions
+Message-ID: <YgirSXcAxKyO9BhD@owl.dominikbrodowski.net>
+References: <20220212122318.623435-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220212122318.623435-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-drm/i915 target adds some extra cflags, especially it does re-apply -Wall.
-In clang this will override -Wno-format-security and cause the build to
-fail when CONFIG_DRM_I915_WERROR=y. While with GCC this does not happen.
-We reapply -Wno-format-security here to get around this issue.
+Am Sat, Feb 12, 2022 at 01:23:08PM +0100 schrieb Jason A. Donenfeld:
+> We previously had massive documentation comments and functions strewn
+> all about. This attempts to restore sanity by dividing the code into a
+> few sections:
+> 
+> - Initialization and readiness waiting.
+> - Fast key erasure RNG.
+> - Entropy accumulation and extraction.
+> - Entropy collection.
+> - Userspace read/write.
+> - Sysctl.
+> 
+> The result of this ordering and this grouping is only 2 forward
+> declarations, indicating that this is probably a sensible grouping.
+> Also, some documentation that was just hopelessly out of date been
+> removed. We'll later look into re-adding parts of this to the Linux man
+> pages project.
+> 
+> No functional changes.
 
-drivers/gpu/drm/i915/gt/intel_gt.c:983:2: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
-        GEM_TRACE("ERROR\n");
-        ^~~~~~~~~~~~~~~~~~~~
-./drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM_TRACE'
- #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
-                       ^~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/kernel.h:369:3: note: expanded from macro 'trace_printk'
-                do_trace_printk(fmt, ##__VA_ARGS__);    \
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/kernel.h:383:30: note: expanded from macro 'do_trace_printk'
-                __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);   \
-                                           ^~~~~~~~~~~~~~~~
-drivers/gpu/drm/i915/gt/intel_gt.c:983:2: note: treat the string as an argument to avoid this
+Hi Jason,
 
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- drivers/gpu/drm/i915/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+thanks for your massive patchset. While some of it was a bit tedious and
+repetetive to review, feel free to add my
 
-diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-index 1b62b9f65196..c04e05a3d39f 100644
---- a/drivers/gpu/drm/i915/Makefile
-+++ b/drivers/gpu/drm/i915/Makefile
-@@ -13,6 +13,7 @@
- # will most likely get a sudden build breakage... Hopefully we will fix
- # new warnings before CI updates!
- subdir-ccflags-y := -Wall -Wextra
-+subdir-ccflags-y += -Wno-format-security
- subdir-ccflags-y += -Wno-unused-parameter
- subdir-ccflags-y += -Wno-type-limits
- subdir-ccflags-y += -Wno-missing-field-initializers
--- 
-2.25.1
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
+to patchs 1-3, 6 and 8-10. For patches 4, 5 and 7, I have some comments;
+once addressed, feel free to add my reviewed-by tag to those as well.
+
+Thanks,
+	Dominik
