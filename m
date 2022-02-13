@@ -2,161 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 933E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:01:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 18:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237621AbiBMSBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 13:01:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53794 "EHLO
+        id S237639AbiBMSCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 13:02:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbiBMSBW (ORCPT
+        with ESMTP id S234146AbiBMSCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 13:01:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347285AEE2;
-        Sun, 13 Feb 2022 10:01:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4DA6611EA;
-        Sun, 13 Feb 2022 18:01:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB97C004E1;
-        Sun, 13 Feb 2022 18:01:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644775276;
-        bh=AyH6AirEXf7ydHkgN12SlyzFm4b00PX0Q2c5n2q81fs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tpZM0GMhH6Kl8AzxC+b4KXsVtQ7GD1iUnUsLbHRfVDHTpS3rEmua/fzS+8t2c1vdi
-         tYrDlPLBMwC+o4RY8R/9LZ8x52HYO+KedS9R8Keru9xgKU1QpbhWJYsMLDqr6O+qYA
-         AlVi4N/Gid/B8s3i2OD/Kfs7T8Zz/wi1MEYlNfY7mU1tT9kQRNl3We3YWb/jFcaf3A
-         IVgTYroz6UMe1NRERyme4yAKugJRxmRi1pXlxyOtZI37/SYYgBBx6e7utrVMam15BY
-         lVBtg6DbGY2dJV9E6r+2ViAVCYlBZv52R4xCguJn23dFRzMqai3rsNIyyLEw9trRMf
-         J5OAh1RHLVCPA==
-Date:   Sun, 13 Feb 2022 18:07:57 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: Re: [PATCH v3 1/1] iio: chemical: atlas-ezo-sensor: Make use of
- device properties
-Message-ID: <20220213180757.751d1350@jic23-huawei>
-In-Reply-To: <20220207124204.11658-1-andriy.shevchenko@linux.intel.com>
-References: <20220207124204.11658-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 13 Feb 2022 13:02:47 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D5B180
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:02:41 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id i34so26388624lfv.2
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:02:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OQb5jjxot49LgjHmzyBNQHYR8MDQIKcC739RRM0sxGo=;
+        b=KcO5BamHYhDQz3M13BlgPvwIoCJe5swOLMwBli5+LeHH3/CwzONlqZGEUhJdQq/7bC
+         2s+zyJzA5gSp4H7n/wB2ixfooqW/3fbW53CfVMOO1A0/H2BIKLGTTyiaEHZXY0NE17ZF
+         zr69ZACjRis5ga0XY6pe7YzI+jBPXwFyliKOs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OQb5jjxot49LgjHmzyBNQHYR8MDQIKcC739RRM0sxGo=;
+        b=bAlaPe50Evk1dxQDmf0mIhmc7gE6CLpNlGjQpk096LtJKap1f2xPK2DloyPfr0deQe
+         DgGNZwiS7LV7Fst9x3dDbVCjaXCzrHYXrfVI8ZtYuzkVk61H65bxeXCKT9GueK8tL6fy
+         M0PokWSoFgBlMyVOfa7LGcrty6mOF3Xq1a8UspaHuATRDMXrwy7XMJoQ1g66hFdXy3FN
+         RIgPa6DuJFBUwq7uXr4V/zntGKKnPKFgUMBAqsuZSXTcljZd89fdd0/srhuQ/zpMv7hY
+         VubmYjLUlqPHVu6IGklQMTTqoqm/elI1izotoaGWFAGr/j8LA5KMFtczHKRsqirPBQor
+         lUig==
+X-Gm-Message-State: AOAM531bd+ZgVGjj3kr/0yrW9+i11LPVrSJwTA5N4NMoRmzY7rxlNjcM
+        fJ6/JIoBL9Uf12jDGFgfyYV9cHqBJ/FDN/qP
+X-Google-Smtp-Source: ABdhPJye+e6LNwym+97li1TtZ4tOuaSd33zvW2Q7box3709Z9KFmbPaYNHBXmT2Ikx68eQ4eXaDEXA==
+X-Received: by 2002:a05:6512:3b91:: with SMTP id g17mr8482504lfv.79.1644775359926;
+        Sun, 13 Feb 2022 10:02:39 -0800 (PST)
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com. [209.85.208.177])
+        by smtp.gmail.com with ESMTPSA id b9sm3818385lfb.222.2022.02.13.10.02.39
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Feb 2022 10:02:39 -0800 (PST)
+Received: by mail-lj1-f177.google.com with SMTP id be32so839438ljb.7
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 10:02:39 -0800 (PST)
+X-Received: by 2002:a2e:8081:: with SMTP id i1mr6885582ljg.506.1644775358861;
+ Sun, 13 Feb 2022 10:02:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <Ygj7feK+vdtPw6zj@zn.tnic>
+In-Reply-To: <Ygj7feK+vdtPw6zj@zn.tnic>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 13 Feb 2022 10:02:22 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiHUWHHcPLCvyXQKf2wbL3L1SOQSGVuCdf-py6QZGnuqQ@mail.gmail.com>
+Message-ID: <CAHk-=wiHUWHHcPLCvyXQKf2wbL3L1SOQSGVuCdf-py6QZGnuqQ@mail.gmail.com>
+Subject: Re: [GIT PULL] sched/urgent for 5.17-rc4
+To:     Borislav Petkov <bp@suse.de>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon,  7 Feb 2022 14:42:04 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Sun, Feb 13, 2022 at 4:37 AM Borislav Petkov <bp@suse.de> wrote:
+>
+> Tadeusz Struk (1):
+>       sched/fair: Fix fault in reweight_entity
 
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+I've pulled this, but this really smells bad to me.
 
-+Cc: Matt
+If set_load_weight() can see a process that hasn't even had the
+runqueue pointer set yet, then what keeps *others* from the same
+thing?
 
-Looks straight forward to me so I'll queue it up and Matt can comment
-after if he likes.
+Adding a test like this in set_load_weight() just makes me go "what
+makes this function so special"? IOW, why could only that function see
+this situation with a missing cfs_rq pointer?
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-all the normal checks.
+I really get the feeling that this is papering over a serious mistake
+in how commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an
+invalid sched_task_group") now causes fundamental process state to be
+initialized too late - when the process is already visible to others.
 
-Thanks,
+The setpriority() -> dequeue_load_avg() chain just seems to be one
+possible case.
 
-Jonathan
+*ANYBODY* that does find_task_by_vpid(who) would seem to be able to
+find a task that hasn't actually been fully set up yet, and
 
+Somebody tell me why I'm wrong, and what makes that setpriority thing
+so magically special. Please.
 
-> ---
-> v3: reincarnated enum (Jonathan)
->  drivers/iio/chemical/atlas-ezo-sensor.c | 32 +++++++++++++------------
->  1 file changed, 17 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
-> index b1bacfe3c3ce..bbcf5a59c1f4 100644
-> --- a/drivers/iio/chemical/atlas-ezo-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ezo-sensor.c
-> @@ -6,13 +6,15 @@
->   * Author: Matt Ranostay <matt.ranostay@konsulko.com>
->   */
->  
-> -#include <linux/module.h>
->  #include <linux/init.h>
->  #include <linux/delay.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/module.h>
->  #include <linux/mutex.h>
-> +#include <linux/property.h>
->  #include <linux/err.h>
->  #include <linux/i2c.h>
-> -#include <linux/of_device.h>
-> +
->  #include <linux/iio/iio.h>
->  
->  #define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
-> @@ -33,7 +35,7 @@ struct atlas_ezo_device {
->  
->  struct atlas_ezo_data {
->  	struct i2c_client *client;
-> -	struct atlas_ezo_device *chip;
-> +	const struct atlas_ezo_device *chip;
->  
->  	/* lock to avoid multiple concurrent read calls */
->  	struct mutex lock;
-> @@ -184,17 +186,17 @@ static const struct iio_info atlas_info = {
->  };
->  
->  static const struct i2c_device_id atlas_ezo_id[] = {
-> -	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
-> -	{ "atlas-o2-ezo", ATLAS_O2_EZO },
-> -	{ "atlas-hum-ezo", ATLAS_HUM_EZO },
-> +	{ "atlas-co2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_CO2_EZO] },
-> +	{ "atlas-o2-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_O2_EZO] },
-> +	{ "atlas-hum-ezo", (kernel_ulong_t)&atlas_ezo_devices[ATLAS_HUM_EZO] },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
->  
->  static const struct of_device_id atlas_ezo_dt_ids[] = {
-> -	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
-> -	{ .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
-> -	{ .compatible = "atlas,hum-ezo", .data = (void *)ATLAS_HUM_EZO, },
-> +	{ .compatible = "atlas,co2-ezo", .data = &atlas_ezo_devices[ATLAS_CO2_EZO], },
-> +	{ .compatible = "atlas,o2-ezo", .data = &atlas_ezo_devices[ATLAS_O2_EZO], },
-> +	{ .compatible = "atlas,hum-ezo", .data = &atlas_ezo_devices[ATLAS_HUM_EZO], },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
-> @@ -202,20 +204,20 @@ MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
->  static int atlas_ezo_probe(struct i2c_client *client,
->  		       const struct i2c_device_id *id)
->  {
-> +	const struct atlas_ezo_device *chip;
->  	struct atlas_ezo_data *data;
-> -	struct atlas_ezo_device *chip;
-> -	const struct of_device_id *of_id;
->  	struct iio_dev *indio_dev;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
-> -	of_id = of_match_device(atlas_ezo_dt_ids, &client->dev);
-> -	if (!of_id)
-> -		chip = &atlas_ezo_devices[id->driver_data];
-> +	if (dev_fwnode(&client->dev))
-> +		chip = device_get_match_data(&client->dev);
->  	else
-> -		chip = &atlas_ezo_devices[(unsigned long)of_id->data];
-> +		chip = (const struct atlas_ezo_device *)id->driver_data;
-> +	if (!chip)
-> +		return -EINVAL;
->  
->  	indio_dev->info = &atlas_info;
->  	indio_dev->name = ATLAS_EZO_DRV_NAME;
-
+                    Linus
