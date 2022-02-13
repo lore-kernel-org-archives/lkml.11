@@ -2,85 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95340C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 07:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D02CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 07:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234225AbiBMHlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 02:41:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54114 "EHLO
+        id S234273AbiBMHrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 02:47:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234062AbiBMHlv (ORCPT
+        with ESMTP id S229555AbiBMHrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 02:41:51 -0500
-Received: from smtp.smtpout.orange.fr (smtp07.smtpout.orange.fr [80.12.242.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6613033B
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 23:41:44 -0800 (PST)
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id J9VsnUjWKSDrIJ9VtnIP2o; Sun, 13 Feb 2022 08:41:42 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 13 Feb 2022 08:41:42 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH] backlight: backlight: Slighly simplify devm_of_find_backlight()
-Date:   Sun, 13 Feb 2022 08:41:39 +0100
-Message-Id: <f998a4291d865273afa0d1f85764a9ac7fbc1b64.1644738084.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Sun, 13 Feb 2022 02:47:21 -0500
+X-Greylist: delayed 468 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 12 Feb 2022 23:47:15 PST
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ef0:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361756267;
+        Sat, 12 Feb 2022 23:47:14 -0800 (PST)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 5CA532800B3D2;
+        Sun, 13 Feb 2022 08:39:24 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 3FDC22DEC2D; Sun, 13 Feb 2022 08:39:24 +0100 (CET)
+Date:   Sun, 13 Feb 2022 08:39:24 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Aditya Garg <gargaditya08@live.com>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Jeremy Kerr <jk@ozlabs.org>,
+        "joeyli.kernel@gmail.com" <joeyli.kernel@gmail.com>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "eric.snowberg@oracle.com" <eric.snowberg@oracle.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "jlee@suse.com" <jlee@suse.com>,
+        "James.Bottomley@hansenpartnership.com" 
+        <James.Bottomley@HansenPartnership.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "mic@digikod.net" <mic@digikod.net>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aun-Ali Zaidi <admin@kodeit.net>
+Subject: Re: [PATCH v3] efi: Do not import certificates from UEFI Secure Boot
+ for T2 Macs
+Message-ID: <20220213073924.GA7648@wunner.de>
+References: <9D0C961D-9999-4C41-A44B-22FEAF0DAB7F@live.com>
+ <755cffe1dfaf43ea87cfeea124160fe0@AcuMS.aculab.com>
+ <B6D697AB-2AC5-4925-8300-26BBB4AC3D99@live.com>
+ <20103919-A276-4CA6-B1AD-6E45DB58500B@live.com>
+ <7038A8ED-AC52-4966-836B-7B346713AEE9@live.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7038A8ED-AC52-4966-836B-7B346713AEE9@live.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use devm_add_action_or_reset() instead of devm_add_action()+hand writing
-what is done in the release function, should an error occur.
+On Thu, Feb 10, 2022 at 10:47:25AM +0000, Aditya Garg wrote:
+> +/* Apple Macs with T2 Security chip don't support these UEFI variables.
+> + * The T2 chip manages the Secure Boot and does not allow Linux to boot
+> + * if it is turned on. If turned off, an attempt to get certificates
+> + * causes a crash, so we simply return 0 for them in each function.
+> + */
+> +
+> +static const struct dmi_system_id uefi_skip_cert[] = {
+> +
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro15,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,3") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookPro16,4") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir8,2") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacBookAir9,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacMini8,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "MacPro7,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,1") },
+> +	{ UEFI_QUIRK_SKIP_CERT("Apple Inc.", "iMac20,2") },
+> +	{ }
+> +};
 
-This is more straightforward and saves a few lines of code.
+The T2 is represented by a PCI device with ID 106B:1802.  I think it
+would be more elegant to sense presence of that device instead of
+hardcoding a long dmi list, i.e.:
 
-While at it, remove a useless test in devm_backlight_release(). 'data' is
-known to be not NULL when this function is called.
+static bool apple_t2_present(void)
+{
+	struct pci_dev *pdev;
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/video/backlight/backlight.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+	if (!x86_apple_machine)
+		return false;
 
-diff --git a/drivers/video/backlight/backlight.c b/drivers/video/backlight/backlight.c
-index 4ae6fae94ac2..b788ff3d0f45 100644
---- a/drivers/video/backlight/backlight.c
-+++ b/drivers/video/backlight/backlight.c
-@@ -710,8 +710,7 @@ static void devm_backlight_release(void *data)
- {
- 	struct backlight_device *bd = data;
- 
--	if (bd)
--		put_device(&bd->dev);
-+	put_device(&bd->dev);
- }
- 
- /**
-@@ -737,11 +736,10 @@ struct backlight_device *devm_of_find_backlight(struct device *dev)
- 	bd = of_find_backlight(dev);
- 	if (IS_ERR_OR_NULL(bd))
- 		return bd;
--	ret = devm_add_action(dev, devm_backlight_release, bd);
--	if (ret) {
--		put_device(&bd->dev);
-+	ret = devm_add_action_or_reset(dev, devm_backlight_release, bd);
-+	if (ret)
- 		return ERR_PTR(ret);
--	}
-+
- 	return bd;
- }
- EXPORT_SYMBOL(devm_of_find_backlight);
--- 
-2.32.0
+	pdev = pci_get_device(PCI_VENDOR_ID_APPLE, 0x1802, NULL);
+	if (pdev) {
+		pci_put_dev(pdev);
+		return true;
+	}
 
+	return false;
+}
