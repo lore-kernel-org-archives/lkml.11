@@ -2,62 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE73C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E724CC4332F
 	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 06:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiBMG5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 01:57:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40662 "EHLO
+        id S233991AbiBMGvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 01:51:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233997AbiBMG5H (ORCPT
+        with ESMTP id S233949AbiBMGvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 01:57:07 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0625DE65
-        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:57:02 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id C7BA42013FE;
-        Sun, 13 Feb 2022 06:56:59 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 366FB80A2B; Sun, 13 Feb 2022 07:55:20 +0100 (CET)
-Date:   Sun, 13 Feb 2022 07:55:20 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH 1/3] random: unify early init crng load accounting
-Message-ID: <YgirWF8p24lW7+gp@owl.dominikbrodowski.net>
-References: <20220212231022.679926-1-Jason@zx2c4.com>
- <20220212231022.679926-2-Jason@zx2c4.com>
+        Sun, 13 Feb 2022 01:51:40 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255795DE4B
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:51:35 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id i6so21854796pfc.9
+        for <linux-kernel@vger.kernel.org>; Sat, 12 Feb 2022 22:51:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8jN3bHrs2SjohtF/Og+xdp1QXzW54h0HCo7HFf5/MZw=;
+        b=eGO6WKGk4GF2G1wmSF6YwpVCyUpzoU7kgAHkt2OWvZscvoVLb2sotXMmB0JArmFkdH
+         GZxv240kCgeHEhPXTYzUDow84izMIzZxlfxRqdHQ6poqNxgqd3SBEdZaBIbOt2VfzCOz
+         WB90oXtyxZJqjWoJkG72qtck4qMxHp+GNv+NNlHkFfVAzLOP6WpCXganJp/d3GKhz3Yp
+         dDQ2IWWdYJRDLLYVl86vEf0KIoDIv6kqdWbViLcQzUP/6utM0FpBiWqZQKW5fLsjZNxa
+         AqbUxPohLLEDKau9zLqZLxyzAnQdLrzEjf/iAMJb2D4TcTY3N0qUMmOdvnfMu8pjio9Y
+         a0FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8jN3bHrs2SjohtF/Og+xdp1QXzW54h0HCo7HFf5/MZw=;
+        b=K86focrZ0ljOzY7UG5HOuN5yhyA+dSzMvZruTx1apyg2rQ/HDR5qHW5ycSeGLJtDAB
+         mki8rxXAaRyVEMkK2+4TOjGCuDX5mXTd9QMzV8V+lJd6Pjtpnyrd77TFz/VMgD+pewm+
+         YySpaCngsWrTyxDcMPfPNcx2U+9AlaMiYsA19MInSPGL9qTxz34AiX8jqFXerJk7Rlwj
+         nk0SBo+qOo/r/rBnZA8ZWp7mQzFCui9lIoAhGv64WCo+ic0FALaCBq49zxJbZhf0ZvCY
+         gTFAEUTdCwBCf7WELKIEDps2txeUZhfF0sDffDEtV1pokf/pfq7g5TONFwc6rtiPqeJC
+         3Jww==
+X-Gm-Message-State: AOAM531Qn/HbWi1DmlG4Tj71OQzJmQKMOib+uIRTGquZ5QFzxU0rmB5W
+        WdCw/NONdaEFT/0vZssDcaE=
+X-Google-Smtp-Source: ABdhPJzJFjlAe/vGkkjEE8ukKoZrPMom+3E9OHjTtQHdOrydJ0vW9rr7l+VrgOEHXNJQZysF9XqUjQ==
+X-Received: by 2002:a63:d318:: with SMTP id b24mr7253607pgg.255.1644735094326;
+        Sat, 12 Feb 2022 22:51:34 -0800 (PST)
+Received: from ubuntu-server.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
+        by smtp.googlemail.com with ESMTPSA id v2sm9794515pjt.55.2022.02.12.22.51.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 12 Feb 2022 22:51:34 -0800 (PST)
+From:   Tong Zhang <ztong0001@gmail.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Cc:     Tong Zhang <ztong0001@gmail.com>
+Subject: [PATCH] drm/i915: fix build issue when using clang
+Date:   Sat, 12 Feb 2022 22:51:06 -0800
+Message-Id: <20220213065106.48062-1-ztong0001@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220212231022.679926-2-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Sun, Feb 13, 2022 at 12:10:20AM +0100 schrieb Jason A. Donenfeld:
-> crng_fast_load() and crng_slow_load() have different semantics:
-> 
-> - crng_fast_load() xors and accounts with crng_init_cnt.
-> - crng_slow_load() hashes and doesn't account.
-> 
-> However add_hwgenerator_randomness() can afford to hash (it's called
-> from a kthread), and it should account. Additionally, ones that can
-> afford to hash don't need to take a trylock but can take a normal lock.
-> So, we combine these into one function, crng_pre_init_inject(), which
-> allows us to control these in a uniform way. This will make it simpler
-> later to simplify this all down when the time comes for that.
+drm/i915 target adds some extra cflags, especially it does re-apply -Wall.
+In clang this will override -Wno-format-security and cause the build to
+fail when CONFIG_DRM_I915_WERROR=y. While with GCC this does not happen.
+We reapply -Wno-format-security here to get around this issue.
 
-I thought the call to crng_fast_load() from add_input_randomness() is on its
-way out?
+drivers/gpu/drm/i915/gt/intel_gt.c:983:2: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
+        GEM_TRACE("ERROR\n");
+        ^~~~~~~~~~~~~~~~~~~~
+./drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM_TRACE'
+ #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~
+./include/linux/kernel.h:369:3: note: expanded from macro 'trace_printk'
+                do_trace_printk(fmt, ##__VA_ARGS__);    \
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./include/linux/kernel.h:383:30: note: expanded from macro 'do_trace_printk'
+                __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);   \
+                                           ^~~~~~~~~~~~~~~~
+drivers/gpu/drm/i915/gt/intel_gt.c:983:2: note: treat the string as an argument to avoid this
 
-Otherwise, patch looks fine:
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+---
+ drivers/gpu/drm/i915/Makefile | 1 +
+ 1 file changed, 1 insertion(+)
 
-	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
+index 1b62b9f65196..c04e05a3d39f 100644
+--- a/drivers/gpu/drm/i915/Makefile
++++ b/drivers/gpu/drm/i915/Makefile
+@@ -13,6 +13,7 @@
+ # will most likely get a sudden build breakage... Hopefully we will fix
+ # new warnings before CI updates!
+ subdir-ccflags-y := -Wall -Wextra
++subdir-ccflags-y += -Wno-format-security
+ subdir-ccflags-y += -Wno-unused-parameter
+ subdir-ccflags-y += -Wno-type-limits
+ subdir-ccflags-y += -Wno-missing-field-initializers
+-- 
+2.25.1
 
-Thanks,
-	Dominik
