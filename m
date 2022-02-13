@@ -2,95 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B67C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 19:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0BEDC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 19:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237967AbiBMTVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 14:21:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35206 "EHLO
+        id S238023AbiBMTZq convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 14:25:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229840AbiBMTVq (ORCPT
+        with ESMTP id S238006AbiBMTZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 14:21:46 -0500
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B19DC310
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 11:21:39 -0800 (PST)
-Received: from imladris.surriel.com ([96.67.55.152])
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1nJKR4-0000LX-Ui; Sun, 13 Feb 2022 14:21:26 -0500
-Message-ID: <8aafa00865f564d58dfa39a1e2816a8ec0eab097.camel@surriel.com>
-Subject: Re: [PATCH] mm: clean up hwpoison page cache page in fault path
-From:   Rik van Riel <riel@surriel.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        linux-mm@kvack.org, Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Matthew Wilcox <willy@infradead.org>
-Date:   Sun, 13 Feb 2022 14:21:26 -0500
-In-Reply-To: <10f4319c-45fe-2a7b-db6f-2d5fe8ae98a0@nvidia.com>
-References: <20220211170557.7964a301@imladris.surriel.com>
-         <10f4319c-45fe-2a7b-db6f-2d5fe8ae98a0@nvidia.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-8nhOn9cXF7OD7/XqPxdK"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Sun, 13 Feb 2022 14:25:45 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E608318;
+        Sun, 13 Feb 2022 11:25:38 -0800 (PST)
+Date:   Sun, 13 Feb 2022 19:25:26 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 01/12] iio: buffer-dma: Get rid of outgoing queue
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Christian =?iso-8859-1?b?S/ZuaWc=?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Message-Id: <EMC97R.6CF1131XF9J13@crapouillou.net>
+In-Reply-To: <20220213185740.0322a83d@jic23-huawei>
+References: <20220207125933.81634-1-paul@crapouillou.net>
+        <20220207125933.81634-2-paul@crapouillou.net>
+        <20220213185740.0322a83d@jic23-huawei>
 MIME-Version: 1.0
-Sender: riel@shelob.surriel.com
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Jonathan,
 
---=-8nhOn9cXF7OD7/XqPxdK
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Le dim., févr. 13 2022 at 18:57:40 +0000, Jonathan Cameron 
+<jic23@kernel.org> a écrit :
+> On Mon,  7 Feb 2022 12:59:22 +0000
+> Paul Cercueil <paul@crapouillou.net> wrote:
+> 
+>>  The buffer-dma code was using two queues, incoming and outgoing, to
+>>  manage the state of the blocks in use.
+>> 
+>>  While this totally works, it adds some complexity to the code,
+>>  especially since the code only manages 2 blocks. It is much easier 
+>> to
+>>  just check each block's state manually, and keep a counter for the 
+>> next
+>>  block to dequeue.
+>> 
+>>  Since the new DMABUF based API wouldn't use the outgoing queue 
+>> anyway,
+>>  getting rid of it now makes the upcoming changes simpler.
+>> 
+>>  With this change, the IIO_BLOCK_STATE_DEQUEUED is now useless, and 
+>> can
+>>  be removed.
+>> 
+>>  v2: - Only remove the outgoing queue, and keep the incoming queue, 
+>> as we
+>>        want the buffer to start streaming data as soon as it is 
+>> enabled.
+>>      - Remove IIO_BLOCK_STATE_DEQUEUED, since it is now functionally 
+>> the
+>>        same as IIO_BLOCK_STATE_DONE.
+>> 
+>>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+>>  ---
+> 
+> Trivial process thing but change log should be here, not above as we 
+> don't
+> want it to end up in the main git log.
 
-On Sun, 2022-02-13 at 00:56 -0800, John Hubbard wrote:
-> On Fri, 11 Feb 2022, Rik van Riel wrote:
->=20
-> > =C2=A0=C2=A0=C2=A0=20
-> > This is particularly embarrassing when the page was offlined due to
-> > having too many corrected memory errors. Now we are killing tasks
-> > due to them trying to access memory that probably isn't even
-> > corrupted.
->=20
-> I'd recommend deleting that paragraph entirely. It's a separate
-> question, and it is not necessarily an accurate assessment of that
-> question either: the engineers who set the thresholds for "too many
-> corrected errors" may not--in fact, probably *will not*--agree with
-> your
-> feeling that the memory is still working and reliable!
+I'm kinda used to do this now, it's the policy for sending patches to 
+the DRM tree. I like it because "git notes" disappear after rebases and 
+it's a pain. At least like this I don't lose the changelog.
 
-Fair enough. We try to offline pages before we get to
-a point where the error correction might no longer be
-able to correct the error correctly, but I am pretty
-sure I have seen a few odd kernel crashes following a
-stream of corrected errors that strongly suggested
-corruption had in fact happened.
+But okay, I'll change it for v3, if there's a v3.
 
-I'll take that paragraph out if anybody else asks
-for further changes for v3 of the patch.
+Cheers,
+-Paul
 
---=20
-All Rights Reversed.
+>>   drivers/iio/buffer/industrialio-buffer-dma.c | 44 
+>> ++++++++++----------
+>>   include/linux/iio/buffer-dma.h               |  7 ++--
+>>   2 files changed, 26 insertions(+), 25 deletions(-)
+>> 
 
---=-8nhOn9cXF7OD7/XqPxdK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmIJWjYACgkQznnekoTE
-3oNdogf+Ich/XnBrCMzlpA+55TM6I1e+YVX3wzvOc+1CPhoPe0GwAcxnPBKfDkOd
-Yh9T7IsM71FRlCHL7pl6P7fppcsrfgqcxm5dcsFwPY9Jcj74GCZs9Fi2jxfo8Exb
-NOHNFo4mj9X/izCQoKzF887bjoTXZpMhb0RylbNxrm1uxwbw8mSkfRyo7U5kYf24
-9gtSCw6Ag/ZKLU5omsYLcvTqeJ5619m3wNwKGXoIKYyYRy74nfTykyD/y+xWIF1z
-lb3nNMqUJx4B8J0d6J/x1EafCxHLThObqw2dy6/expQpwDT/rzgNipFCdhDOG0rr
-1PIkhOQi80oESJc0zmN/ocoz7I2r+A==
-=wbch
------END PGP SIGNATURE-----
-
---=-8nhOn9cXF7OD7/XqPxdK--
