@@ -2,135 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:45:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC85C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237459AbiBMRpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 12:45:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48284 "EHLO
+        id S237486AbiBMRsF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 12:48:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiBMRpe (ORCPT
+        with ESMTP id S229581AbiBMRsE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 12:45:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7BD5A089;
-        Sun, 13 Feb 2022 09:45:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20349B80B34;
-        Sun, 13 Feb 2022 17:45:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B4C7C004E1;
-        Sun, 13 Feb 2022 17:45:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644774325;
-        bh=COdjjC01iBK0JsZH5nPzUnTD03GE7GcsFLUEE/Ys078=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jd+OqXxA3UrIHgrbShzIXIookEG90ZszYD9NMleOcmGnUOITjSH4Air83X3RTEvzM
-         qxBvvNy3xmDZ353nDFD/ixGI/vke33csZgbUqMkeKrVReqY5cSRrOtHF3kWjKntWvC
-         60FlthrLUJ7y5AWxqkjRnhMh6Srfjj9EU/EcK6++9T01+mF5vJ8xogkoVSmIAYjLRI
-         56ntp5T/nUsL5+jX3kcZgliwl4zgiVEY9sZKcCprnJxnZ65S1u6Bn+E/F+7qNjWQZO
-         sIQLqi/5vVDqFoGERlPua5poOLVPIqc1lWMw2UwBqXReSnUGDG/ajcLlsGaLEa5XCj
-         N3GP6h5/tHMjQ==
-Date:   Sun, 13 Feb 2022 17:52:07 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: ssp_sensors: Make use of device properties
-Message-ID: <20220213175207.143e5767@jic23-huawei>
-In-Reply-To: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
-References: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 13 Feb 2022 12:48:04 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A30F25A098
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 09:47:57 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-186-LeVe8n1APwumlclMeJaqYQ-1; Sun, 13 Feb 2022 17:47:54 +0000
+X-MC-Unique: LeVe8n1APwumlclMeJaqYQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Sun, 13 Feb 2022 17:47:52 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Sun, 13 Feb 2022 17:47:52 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Segher Boessenkool' <segher@kernel.crashing.org>
+CC:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: Remove branch in csum_shift()
+Thread-Topic: [PATCH] net: Remove branch in csum_shift()
+Thread-Index: AQHYHyQqmTo4K/pb5UWdDmTfE7rfRayQxWFwgABxD4CAAIxicA==
+Date:   Sun, 13 Feb 2022 17:47:52 +0000
+Message-ID: <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
+References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
+ <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
+ <20220213091619.GY614@gate.crashing.org>
+In-Reply-To: <20220213091619.GY614@gate.crashing.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 10 Feb 2022 15:57:24 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
+From: Segher Boessenkool 
+> Sent: 13 February 2022 09:16
+....
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/common/ssp_sensors/ssp_dev.c | 22 +++++-----------------
->  1 file changed, 5 insertions(+), 17 deletions(-)
+> > What happens on x86-64?
+> >
+> > Trying to do the same in the x86 ipcsum code tended to make the code worse.
+> > (Although that test is for an odd length fragment and can just be removed.)
 > 
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-> index eafaf4529df5..c1abd20ff808 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-> @@ -7,9 +7,10 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/mfd/core.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
-> -#include <linux/of.h>
-> -#include <linux/of_platform.h>
-> +#include <linux/property.h>
-> +
->  #include "ssp.h"
->  
->  #define SSP_WDT_TIME			10000
-> @@ -425,7 +426,6 @@ int ssp_queue_ssp_refresh_task(struct ssp_data *data, unsigned int delay)
->  				  msecs_to_jiffies(delay));
->  }
->  
-> -#ifdef CONFIG_OF
->  static const struct of_device_id ssp_of_match[] = {
->  	{
->  		.compatible	= "samsung,sensorhub-rinato",
-> @@ -441,8 +441,6 @@ MODULE_DEVICE_TABLE(of, ssp_of_match);
->  static struct ssp_data *ssp_parse_dt(struct device *dev)
->  {
->  	struct ssp_data *data;
-> -	struct device_node *node = dev->of_node;
-> -	const struct of_device_id *match;
->  
->  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->  	if (!data)
-> @@ -461,22 +459,12 @@ static struct ssp_data *ssp_parse_dt(struct device *dev)
->  	if (IS_ERR(data->mcu_reset_gpiod))
->  		return NULL;
->  
-> -	match = of_match_node(ssp_of_match, node);
-> -	if (!match)
-> -		return NULL;
-> -
-> -	data->sensorhub_info = match->data;
-> +	data->sensorhub_info = device_get_match_data(dev);
->  
->  	dev_set_drvdata(dev, data);
->  
->  	return data;
->  }
-> -#else
-> -static struct ssp_data *ssp_parse_dt(struct device *pdev)
-> -{
-> -	return NULL;
-> -}
-> -#endif
->  
->  /**
->   * ssp_register_consumer() - registers iio consumer in ssp framework
-> @@ -670,7 +658,7 @@ static struct spi_driver ssp_driver = {
->  	.remove = ssp_remove,
->  	.driver = {
->  		.pm = &ssp_pm_ops,
-> -		.of_match_table = of_match_ptr(ssp_of_match),
-> +		.of_match_table = ssp_of_match,
->  		.name = "sensorhub"
->  	},
->  };
+> In an ideal world the compiler could choose the optimal code sequences
+> everywhere.  But that won't ever happen, the search space is way too
+> big.  So compilers just use heuristics, not exhaustive search like
+> superopt does.  There is a middle way of course, something with directed
+> searches, and maybe in a few decades systems will be fast enough.  Until
+> then we will very often see code that is 10% slower and 30% bigger than
+> necessary.  A single insn more than needed isn't so bad :-)
+
+But it can be a lot more than that.
+
+> Making things branch-free is very much worth it here though!
+
+I tried to find out where 'here' is.
+
+I can't get godbolt to generate anything like that object code
+for a call to csum_shift().
+
+I can't actually get it to issue a rotate (x86 of ppc).
+
+I think it is only a single instruction because the compiler
+has saved 'offset & 1' much earlier instead of doing testing
+'offset & 1' just prior to the conditional.
+It certainly has a nasty habit of doing that pessimisation.
+
+So while it helps a specific call site it may be much
+worse in general.
+
+I also suspect that the addc/addze pair could be removed
+by passing the old checksum into csum_partial.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
