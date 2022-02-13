@@ -2,66 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A900C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 13:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AABC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 13:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiBMNIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 08:08:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36100 "EHLO
+        id S236216AbiBMNLV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 08:11:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiBMNIR (ORCPT
+        with ESMTP id S229674AbiBMNLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 08:08:17 -0500
+        Sun, 13 Feb 2022 08:11:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965915B88F
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:08:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963945D65D
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:11:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB2661175
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 13:08:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72BC9C340F0
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 13:08:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DEBF61164
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 13:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B30DC340EF
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 13:11:13 +0000 (UTC)
 Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="k6SFkzer"
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="GAcHZxXo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644757687;
+        t=1644757871;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=YoXlrtp1L0W5/yTU1Jd3iz8yL8+rzRT8N1JuVJxuCFU=;
-        b=k6SFkzerCHo8Hjv/GY8ebjjO6T07jkhn+wB+uKT36Z6xnHHkNewin+2kNIqxJprxO0ZKx3
-        WVtfOk9a4ToXbmbr8w2ejiwkaLNIu5fBXiT+GXKQIpwYaSP5GsKrFUms6Y2tdIP15DkVeM
-        riaFGpsxEuZuPygYogArKjAqVZUcW8g=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d4aefb45 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        bh=8vqWWoulwDvbUUq049soUccncLgPDpV5oO0KcHp9aO0=;
+        b=GAcHZxXosJ6a1NMsk+8Cnx/pkCQPdjXpdq/IRLDoiKqXEd3C5ND7fBSYktrtj/5h+FNX1v
+        vJlmR/USV2DUVwd5irXdOo5G5JFzse+/h57wOkC9vFxRtB1yVqCKx8+Y6hDVX+sjBIGPJk
+        bauIDjGX87zy6pCIAUFR/S4VrLGvdsg=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8bddafa1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
         for <linux-kernel@vger.kernel.org>;
-        Sun, 13 Feb 2022 13:08:06 +0000 (UTC)
-Received: by mail-yb1-f181.google.com with SMTP id y6so38573158ybc.5
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:08:06 -0800 (PST)
-X-Gm-Message-State: AOAM531xWfcPB52q2Zc8mULCUQ6pXy6yzdLBrDDXQF/js3GO2pUSk8Px
-        ynWyHNivS+V1XXa/1kjKI16S5xbEMtwh5dc8Nm8=
-X-Google-Smtp-Source: ABdhPJxFJyCVUlnTE5hJ8VmgliIH1hKdPybHaOMY90F1WUZdEsOKjEzeRK6COoTZVCsU/TQmkos/4whFSgS1juInUhY=
-X-Received: by 2002:a25:dc14:: with SMTP id y20mr5308263ybe.115.1644757686332;
- Sun, 13 Feb 2022 05:08:06 -0800 (PST)
+        Sun, 13 Feb 2022 13:11:11 +0000 (UTC)
+Received: by mail-yb1-f174.google.com with SMTP id j2so38739221ybu.0
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 05:11:11 -0800 (PST)
+X-Gm-Message-State: AOAM533u3LY/rXnyVgdSq5TX6QS/vU0F0Nsp25OjehPhK57CiwADxRS+
+        AQ+l0xqRQgArrnWtsD59RF1DcQLbvLWuGliFCYY=
+X-Google-Smtp-Source: ABdhPJyqZ7NOe/bo/EAnyPWUNP2UpXq0B/WbnOo8+8e3ly20+FumUF/xRT36Ix2nYModegUOPtBwBgyCSuY0G66ONxM=
+X-Received: by 2002:a25:4144:: with SMTP id o65mr8327105yba.113.1644757870686;
+ Sun, 13 Feb 2022 05:11:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20220212122318.623435-1-Jason@zx2c4.com> <YgirSXcAxKyO9BhD@owl.dominikbrodowski.net>
-In-Reply-To: <YgirSXcAxKyO9BhD@owl.dominikbrodowski.net>
+References: <20220212122318.623435-1-Jason@zx2c4.com> <20220212122318.623435-5-Jason@zx2c4.com>
+ <YgirDzvwEYRwvLHS@owl.dominikbrodowski.net>
+In-Reply-To: <YgirDzvwEYRwvLHS@owl.dominikbrodowski.net>
 From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sun, 13 Feb 2022 14:07:55 +0100
-X-Gmail-Original-Message-ID: <CAHmME9os8G7bmvksE3bWkzRF4OAg-BMZUzi6TX0odug4oLUvsg@mail.gmail.com>
-Message-ID: <CAHmME9os8G7bmvksE3bWkzRF4OAg-BMZUzi6TX0odug4oLUvsg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/10] random: re-group and re-document functions
+Date:   Sun, 13 Feb 2022 14:11:00 +0100
+X-Gmail-Original-Message-ID: <CAHmME9rfWxPpUe0pmZZKqHMjfd_x_=LozgNdQR2reiTahEsM_w@mail.gmail.com>
+Message-ID: <CAHmME9rfWxPpUe0pmZZKqHMjfd_x_=LozgNdQR2reiTahEsM_w@mail.gmail.com>
+Subject: Re: [PATCH v2 04/10] random: group initialization wait functions
 To:     Dominik Brodowski <linux@dominikbrodowski.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 7:57 AM Dominik Brodowski
-<linux@dominikbrodowski.net> wrote:
->
-> thanks for your massive patchset. While some of it was a bit tedious and
-> repetetive to review, feel free to add my
-
-Thank you very much for slogging through it and reviewing it! Much appreciated.
+Nice catch. Will unify these to be "input pool" since that's what
+we're still calling it in the variables and elsewhere.
