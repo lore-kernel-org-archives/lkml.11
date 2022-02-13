@@ -2,86 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD534C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3FF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 13 Feb 2022 17:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237412AbiBMRh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 12:37:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46164 "EHLO
+        id S237459AbiBMRpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 12:45:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiBMRh6 (ORCPT
+        with ESMTP id S229581AbiBMRpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 12:37:58 -0500
+        Sun, 13 Feb 2022 12:45:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40A759A70;
-        Sun, 13 Feb 2022 09:37:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7BD5A089;
+        Sun, 13 Feb 2022 09:45:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8155EB80B46;
-        Sun, 13 Feb 2022 17:37:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2154EC340F1;
-        Sun, 13 Feb 2022 17:37:49 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="BhgujmGH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644773866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=KzeRk+q9X7yreqZXOe2rKT8HieNs8MmYCncgF1afFCA=;
-        b=BhgujmGH+fM6WvNonjJDkYv0kNi1+j8f4eS3Dx2r4oQ3oGzzs8AlofFO3ME/H7uIw2+Z8o
-        wY5criDLh0Q51PJRix9k3EVkE0YSUf03TKfJyFPG6XoIbSGwCJsuL9q/AWMA4yMeMK3KzY
-        4stn/jpE3Gsk6Gin0z9+11DIOpWq950=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 62e9e6cd (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Sun, 13 Feb 2022 17:37:46 +0000 (UTC)
-Received: by mail-yb1-f180.google.com with SMTP id c6so39784383ybk.3;
-        Sun, 13 Feb 2022 09:37:45 -0800 (PST)
-X-Gm-Message-State: AOAM533J4RvLGE+Tyf0PuM+KirZAoRZm9/MqktVj7v0dsUwXBDlmUVMs
-        aPkvaMg2YjW8TSMS6wbdrIAxTlp9b6w4fNTotWw=
-X-Google-Smtp-Source: ABdhPJwc58MVBsmNBRa5Jx+/F8n8Er/6ECOx8BWEIwhQclcaQSLMGYBTfBohbw83tZnZnXnRkelvPkk98BPhR9CmUsY=
-X-Received: by 2002:a81:3283:: with SMTP id y125mr10762552ywy.100.1644773864692;
- Sun, 13 Feb 2022 09:37:44 -0800 (PST)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20349B80B34;
+        Sun, 13 Feb 2022 17:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B4C7C004E1;
+        Sun, 13 Feb 2022 17:45:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644774325;
+        bh=COdjjC01iBK0JsZH5nPzUnTD03GE7GcsFLUEE/Ys078=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jd+OqXxA3UrIHgrbShzIXIookEG90ZszYD9NMleOcmGnUOITjSH4Air83X3RTEvzM
+         qxBvvNy3xmDZ353nDFD/ixGI/vke33csZgbUqMkeKrVReqY5cSRrOtHF3kWjKntWvC
+         60FlthrLUJ7y5AWxqkjRnhMh6Srfjj9EU/EcK6++9T01+mF5vJ8xogkoVSmIAYjLRI
+         56ntp5T/nUsL5+jX3kcZgliwl4zgiVEY9sZKcCprnJxnZ65S1u6Bn+E/F+7qNjWQZO
+         sIQLqi/5vVDqFoGERlPua5poOLVPIqc1lWMw2UwBqXReSnUGDG/ajcLlsGaLEa5XCj
+         N3GP6h5/tHMjQ==
+Date:   Sun, 13 Feb 2022 17:52:07 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: ssp_sensors: Make use of device properties
+Message-ID: <20220213175207.143e5767@jic23-huawei>
+In-Reply-To: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
+References: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <YgZ6IEbiDgz5X1ON@linutronix.de> <20220211162515.554867-1-Jason@zx2c4.com>
- <YgaSYlVEBOxfJbSD@linutronix.de> <CAHmME9rC_q4LGq2JaAAeGbtRA2cibTe9bnvhMLng+QnzAy2DVg@mail.gmail.com>
- <YgaV0UZO1KfmtLLh@linutronix.de>
-In-Reply-To: <YgaV0UZO1KfmtLLh@linutronix.de>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Sun, 13 Feb 2022 18:37:33 +0100
-X-Gmail-Original-Message-ID: <CAHmME9rsOWuprpYqo9G9eUboQwUxRgWqYRYgyHG7cNOG16c5EA@mail.gmail.com>
-Message-ID: <CAHmME9rsOWuprpYqo9G9eUboQwUxRgWqYRYgyHG7cNOG16c5EA@mail.gmail.com>
-Subject: Re: [PATCH v6] random: defer fast pool mixing to worker
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 5:59 PM Sebastian Andrzej Siewior
-<bigeasy@linutronix.de> wrote:
-> > > What do we do here vs RT? I suggested this
-> > >   https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git/commit/?id=a2d2d54409481aa23a3e11ab9559a843e36a79ec
-> > >
-> > > Is this doable?
-> >
-> > It might be, but last time I checked it seemed problematic. As I
-> > mentioned in an earlier thread, I'll take a look again at that next
-> > week after this patch here settles. Haven't forgotten.
->
-> Ah, cheers.
+On Thu, 10 Feb 2022 15:57:24 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-I started looking at this and came up with this draft with questions:
-https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?h=jd/no-irq-trylocks
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied to the togreg branch of iio.git and pushed out as testing.
 
-Some research remains...
+Thanks,
 
-Jason
+Jonathan
+
+> ---
+>  drivers/iio/common/ssp_sensors/ssp_dev.c | 22 +++++-----------------
+>  1 file changed, 5 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> index eafaf4529df5..c1abd20ff808 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> @@ -7,9 +7,10 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/mfd/core.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+> -#include <linux/of_platform.h>
+> +#include <linux/property.h>
+> +
+>  #include "ssp.h"
+>  
+>  #define SSP_WDT_TIME			10000
+> @@ -425,7 +426,6 @@ int ssp_queue_ssp_refresh_task(struct ssp_data *data, unsigned int delay)
+>  				  msecs_to_jiffies(delay));
+>  }
+>  
+> -#ifdef CONFIG_OF
+>  static const struct of_device_id ssp_of_match[] = {
+>  	{
+>  		.compatible	= "samsung,sensorhub-rinato",
+> @@ -441,8 +441,6 @@ MODULE_DEVICE_TABLE(of, ssp_of_match);
+>  static struct ssp_data *ssp_parse_dt(struct device *dev)
+>  {
+>  	struct ssp_data *data;
+> -	struct device_node *node = dev->of_node;
+> -	const struct of_device_id *match;
+>  
+>  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+>  	if (!data)
+> @@ -461,22 +459,12 @@ static struct ssp_data *ssp_parse_dt(struct device *dev)
+>  	if (IS_ERR(data->mcu_reset_gpiod))
+>  		return NULL;
+>  
+> -	match = of_match_node(ssp_of_match, node);
+> -	if (!match)
+> -		return NULL;
+> -
+> -	data->sensorhub_info = match->data;
+> +	data->sensorhub_info = device_get_match_data(dev);
+>  
+>  	dev_set_drvdata(dev, data);
+>  
+>  	return data;
+>  }
+> -#else
+> -static struct ssp_data *ssp_parse_dt(struct device *pdev)
+> -{
+> -	return NULL;
+> -}
+> -#endif
+>  
+>  /**
+>   * ssp_register_consumer() - registers iio consumer in ssp framework
+> @@ -670,7 +658,7 @@ static struct spi_driver ssp_driver = {
+>  	.remove = ssp_remove,
+>  	.driver = {
+>  		.pm = &ssp_pm_ops,
+> -		.of_match_table = of_match_ptr(ssp_of_match),
+> +		.of_match_table = ssp_of_match,
+>  		.name = "sensorhub"
+>  	},
+>  };
+
