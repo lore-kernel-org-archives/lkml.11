@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB81C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BA9C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345241AbiBNKGD (ORCPT
+        id S1345406AbiBNKGJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:06:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54780 "EHLO
+        Mon, 14 Feb 2022 05:06:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345363AbiBNKBg (ORCPT
+        with ESMTP id S1345669AbiBNKBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:01:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6C313F7B;
-        Mon, 14 Feb 2022 01:47:45 -0800 (PST)
+        Mon, 14 Feb 2022 05:01:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 977631EC6C;
+        Mon, 14 Feb 2022 01:48:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D335B80D83;
-        Mon, 14 Feb 2022 09:47:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10CDC340E9;
-        Mon, 14 Feb 2022 09:47:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2798861252;
+        Mon, 14 Feb 2022 09:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 040B3C36AE7;
+        Mon, 14 Feb 2022 09:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832063;
-        bh=sQixh5DIJLEptq/NRsx0AS5rxevNIJ7IbnjT13iz9LY=;
+        s=korg; t=1644832082;
+        bh=N3T3q2dVigTnrrBC916Z3kDWsICXJCmLkqSPQOiA/64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ggmbgebd3EvOv/r0PVXlVEoEQ1LpKA5lHDHHQTvzZ1OZof1M7OIxP8vs4xYwmLpiV
-         2UidTgPgMwpFUck7DHQAeJCcWOCKw7LJl28zL6PRtg0KEQ/7o5Z8wR3C1V2q2jm3M6
-         nHUaAx2LsrBYFZrkUb6iuPDWR631n98WVcezecZ8=
+        b=vngEcNpFjP7FlMnZfxGe9+t3D8HHakXIW+3JWNyIU48bVQfskfXslWJyaodEOCFRn
+         5E156fKg3oOEgE7Q+jICTHxo11yPqfzSCgCJHDZSI5kZYj3pGA7A8wtCAovDM00rNI
+         3KZ4k5WSBG9boqZou1sKs2WjPB4eHNl06N1c30nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rtm@csail.mit.edu,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 026/172] NFSv4.1: Fix uninitialised variable in devicenotify
-Date:   Mon, 14 Feb 2022 10:24:44 +0100
-Message-Id: <20220214092507.312235026@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Petlan <mpetlan@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.15 074/172] ACPI/IORT: Check node revision for PMCG resources
+Date:   Mon, 14 Feb 2022 10:25:32 +0100
+Message-Id: <20220214092508.962459721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,106 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit b05bf5c63b326ce1da84ef42498d8e0e292e694c ]
+commit da5fb9e1ad3fbf632dce735f1bdad257ca528499 upstream.
 
-When decode_devicenotify_args() exits with no entries, we need to
-ensure that the struct cb_devicenotifyargs is initialised to
-{ 0, NULL } in order to avoid problems in
-nfs4_callback_devicenotify().
+The original version of the IORT PMCG definition had an oversight
+wherein there was no way to describe the second register page for an
+implementation using the recommended RELOC_CTRS feature. Although the
+spec was fixed, and the final patches merged to ACPICA and Linux written
+against the new version, it seems that some old firmware based on the
+original revision has survived and turned up in the wild.
 
-Reported-by: <rtm@csail.mit.edu>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Add a check for the original PMCG definition, and avoid filling in the
+second memory resource with nonsense if so. Otherwise it is likely that
+something horrible will happen when the PMCG driver attempts to probe.
+
+Reported-by: Michael Petlan <mpetlan@redhat.com>
+Fixes: 24e516049360 ("ACPI/IORT: Add support for PMCG")
+Cc: <stable@vger.kernel.org> # 5.2.x
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/75628ae41c257fb73588f7bf1c4459160e04be2b.1643916258.git.robin.murphy@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/callback.h      |  2 +-
- fs/nfs/callback_proc.c |  2 +-
- fs/nfs/callback_xdr.c  | 18 +++++++++---------
- 3 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/acpi/arm64/iort.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/callback.h b/fs/nfs/callback.h
-index 6a2033131c068..ccd4f245cae24 100644
---- a/fs/nfs/callback.h
-+++ b/fs/nfs/callback.h
-@@ -170,7 +170,7 @@ struct cb_devicenotifyitem {
- };
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1361,9 +1361,17 @@ static void __init arm_smmu_v3_pmcg_init
+ 	res[0].start = pmcg->page0_base_address;
+ 	res[0].end = pmcg->page0_base_address + SZ_4K - 1;
+ 	res[0].flags = IORESOURCE_MEM;
+-	res[1].start = pmcg->page1_base_address;
+-	res[1].end = pmcg->page1_base_address + SZ_4K - 1;
+-	res[1].flags = IORESOURCE_MEM;
++	/*
++	 * The initial version in DEN0049C lacked a way to describe register
++	 * page 1, which makes it broken for most PMCG implementations; in
++	 * that case, just let the driver fail gracefully if it expects to
++	 * find a second memory resource.
++	 */
++	if (node->revision > 0) {
++		res[1].start = pmcg->page1_base_address;
++		res[1].end = pmcg->page1_base_address + SZ_4K - 1;
++		res[1].flags = IORESOURCE_MEM;
++	}
  
- struct cb_devicenotifyargs {
--	int				 ndevs;
-+	uint32_t			 ndevs;
- 	struct cb_devicenotifyitem	 *devs;
- };
- 
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index ed9d580826f5a..f2bc5b5b764b7 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -358,7 +358,7 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 				  struct cb_process_state *cps)
- {
- 	struct cb_devicenotifyargs *args = argp;
--	int i;
-+	uint32_t i;
- 	__be32 res = 0;
- 	struct nfs_client *clp = cps->clp;
- 	struct nfs_server *server = NULL;
-diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
-index 4c48d85f65170..ce3d1d5b1291f 100644
---- a/fs/nfs/callback_xdr.c
-+++ b/fs/nfs/callback_xdr.c
-@@ -258,11 +258,9 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 				void *argp)
- {
- 	struct cb_devicenotifyargs *args = argp;
-+	uint32_t tmp, n, i;
- 	__be32 *p;
- 	__be32 status = 0;
--	u32 tmp;
--	int n, i;
--	args->ndevs = 0;
- 
- 	/* Num of device notifications */
- 	p = xdr_inline_decode(xdr, sizeof(uint32_t));
-@@ -271,7 +269,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 		goto out;
- 	}
- 	n = ntohl(*p++);
--	if (n <= 0)
-+	if (n == 0)
- 		goto out;
- 	if (n > ULONG_MAX / sizeof(*args->devs)) {
- 		status = htonl(NFS4ERR_BADXDR);
-@@ -330,19 +328,21 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 			dev->cbd_immediate = 0;
- 		}
- 
--		args->ndevs++;
--
- 		dprintk("%s: type %d layout 0x%x immediate %d\n",
- 			__func__, dev->cbd_notify_type, dev->cbd_layout_type,
- 			dev->cbd_immediate);
- 	}
-+	args->ndevs = n;
-+	dprintk("%s: ndevs %d\n", __func__, args->ndevs);
-+	return 0;
-+err:
-+	kfree(args->devs);
- out:
-+	args->devs = NULL;
-+	args->ndevs = 0;
- 	dprintk("%s: status %d ndevs %d\n",
- 		__func__, ntohl(status), args->ndevs);
- 	return status;
--err:
--	kfree(args->devs);
--	goto out;
- }
- 
- static __be32 decode_sessionid(struct xdr_stream *xdr,
--- 
-2.34.1
-
+ 	if (pmcg->overflow_gsiv)
+ 		acpi_iort_register_irq(pmcg->overflow_gsiv, "overflow",
 
 
