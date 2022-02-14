@@ -2,171 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69BE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230172AbiBNVHR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:07:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57632 "EHLO
+        id S230304AbiBNVHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:07:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiBNVHP (ORCPT
+        with ESMTP id S230190AbiBNVHV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:07:15 -0500
-Received: from mail-vs1-xe4a.google.com (mail-vs1-xe4a.google.com [IPv6:2607:f8b0:4864:20::e4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28833107D03
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:07 -0800 (PST)
-Received: by mail-vs1-xe4a.google.com with SMTP id u25-20020a67f659000000b0031aa82b8e6cso1678213vso.16
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:07 -0800 (PST)
+        Mon, 14 Feb 2022 16:07:21 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76499108578
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:12 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id d27so28870282wrc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:07:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=ImRH9XpLCVO1AMuO+0vNf/s5u0DDeswWDZhxgck4GTg=;
-        b=ia0I32JcmImFFnzIt0dqwG5SCKqP3qmsRwXloN2N+PGLZBEGdTIaEiefH7BWNWqVDV
-         XMS+2Qp8Gn8onGXQeidk1/eyV4BGFi+iJhdN5bKvPJSt2bg+7rhKiGoeYBxP9FhA8CTR
-         ZWoyXjaKKmoBd+EBuh92636y9JchIAmpQ3EhRAMYKrxLuOo3E0MC5nisdofLJORwfLTW
-         FCDE8f34hR/2mfBaRfsTXU9/JO6WZYM/AUOz11NiIoVBd3A8lbSxa736AgJ+yBIv6y5d
-         lcdtYUtgEQeM49nnc+LcevfvZeXK1740krM6xLH5nTDNjp2PbKluWQJP+muJeHu0xTS/
-         9cPQ==
+        d=algolia.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=A/acD8nSSN2qwtutUsyLXhKazSyANNDkpT+zY2rd4hY=;
+        b=nVmTdnZw7YS+eOlZnhLC79w+4t4/B3iz1ng/yDksfg/oJnsdGedCB/leWt4F2kYknO
+         7dGtPvmWBIBnrYjN2tStnfnG1f/GyVOsAz1QTFx8GHzm9xeiF7LTqpi/f3lj7RSa4/zw
+         cacVk2TsFlUn65lyO5kHwFyc3nh3JDiFZc2kk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=ImRH9XpLCVO1AMuO+0vNf/s5u0DDeswWDZhxgck4GTg=;
-        b=gZga9Zk1ucEFOK++QmN6lSKlwRf9UMBrua5NHQnxrs3HnYzRttjazzox1IfJy3mDHa
-         xrYNk7xV6T8Ye8IkB4rC4vpgjFUy0vdgzZQK3Y/1+4j9+RIAHAbfRRHF+vKGk5GMq2C2
-         /YpvZ8n7I7FWcxZ3DsLVGkmwC0+doKv6BK2oLLvf6a1BbKa0NUbfQGazdE4lIgDVGRyJ
-         DV3Ll2JM0be54cwalsMQ5mqUnhdK44Kl53e+IYXbE946lPnPwITQjXDaAejMbTEcrZK6
-         7X6LAZ2EyOe8wFzeAsICQDrifL7m1YHakak2vmEH9yQF+bbrxRTpLAXnI/uVaZVDEQKL
-         2sVA==
-X-Gm-Message-State: AOAM5326LVxDGxy5uMSN1st3vr1NQQe39f7uJ+RkNCd1qoPhaMA61p6+
-        xwGebNd67P2MB2JP70cp7QVJLCPlS3nT
-X-Google-Smtp-Source: ABdhPJw4BEO7Wb+8vsvCdbSI6yFU0rSYMXuBhd6tOWudkdTVun04vOC8de/M5fPlrqu4GEYS3RMYa2UPop+A
-X-Received: from kalutes-cloudtop-1.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f1])
- (user=kalutes job=sendgmr) by 2002:a05:6a00:a87:: with SMTP id
- b7mr470587pfl.51.1644868771650; Mon, 14 Feb 2022 11:59:31 -0800 (PST)
-Date:   Mon, 14 Feb 2022 19:59:08 +0000
-Message-Id: <20220214195908.4070138-1-kalutes@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.265.g69c8d7142f-goog
-Subject: [PATCH] Virtio-balloon: add user space API for sizing
-From:   Kameron Lutes <kalutes@google.com>
-To:     "Michael S . Tsirkin" <mst@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, virtio-dev@lists.oasis-open.org,
-        kvm@vger.kernel.org
-Cc:     Suleiman Souhlal <suleiman@chromium.org>,
-        Charles William Dick <cwd@google.com>,
-        Kameron Lutes <kalutes@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=A/acD8nSSN2qwtutUsyLXhKazSyANNDkpT+zY2rd4hY=;
+        b=ISJgk66ffOoQ/WHV0rA8YbbsUAYBzRkXpC7jcV0+ZZWxvT3L/Q84APO4bp1/kqAkjL
+         o5ru34C8J6EO4fxmlD1gtUk2gMFm/H2iV0hMgV10M4VNjr/d1SXvoYWjmpuwVGS2xWl6
+         +vEWRXSES0J7FYDkjpcWF5cPSkx+1oKnrmKPNJOyB59/aCV/84x6MfK3fWeq1O/UvZVo
+         nhjPJqCvvlJJvZO4Ok79zZPohAhZjrxGwPmKPnvqSfKWK574W6iIlZHDGNHR8BGckWg8
+         ApTm+G8csBHat60PQiI7+Nw8LFs8PRlVjQ8ZlY/Yr1Vp4CxsETnvMJYoD2I+n6PiGHAo
+         5cuw==
+X-Gm-Message-State: AOAM532uQKQe6X+G8WEB8pPtIeYOFoswTu8tLdi09oox7g8WqV2To8CO
+        y7SnM3NqXOSM4f+ltDdlNGxbLmxsskwXPNOV
+X-Google-Smtp-Source: ABdhPJzMTd/9kIRwNcQZCPYOLULANyq8hwJbViUkoG0vZJn1Ki2BLhMt59etGy6TljzXYaha+J9ynw==
+X-Received: by 2002:a5d:4910:: with SMTP id x16mr684033wrq.360.1644872830574;
+        Mon, 14 Feb 2022 13:07:10 -0800 (PST)
+Received: from xavier-xps ([2a01:e0a:830:d971:752e:e19b:a691:2171])
+        by smtp.gmail.com with ESMTPSA id p12sm13244032wmg.36.2022.02.14.13.07.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 13:07:10 -0800 (PST)
+Date:   Mon, 14 Feb 2022 22:07:08 +0100
+From:   Xavier Roche <xavier.roche@algolia.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org,
+        Xavier Roche <xavier.roche@algolia.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.vnet.ibm.com>
+Subject: fs: race between vfs_rename and do_linkat (mv and link)
+Message-ID: <20220214210708.GA2167841@xavier-xps>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new linux API will allow user space applications to directly
-control the size of the virtio-balloon. This is useful in
-situations where the guest must quickly respond to drastically
-increased memory pressure and cannot wait for the host to adjust
-the balloon's size.
+There has been a longstanding race condition between vfs_rename and do_linkat,
+when those operations are done in parallel:
 
-Under the current wording of the Virtio spec, guest driven
-behavior such as this is permitted:
+1. Moving a file to an existing target file (eg. mv file target)
+2. Creating a link from the target file  to a third file (eg. ln target link)
 
-VIRTIO Version 1.1 Section 5.5.6
-"The device is driven either by the receipt of a configuration
-change notification, or by changing guest memory needs, such as
-performing memory compaction or responding to out of memory
-conditions."
+A typical example would be (1) a regular process putting a new version
+of a database in place and (2) a regular process backuping the live
+database by hardlinking it.
 
-The intended use case for this API is one where the host
-communicates a deflation limit to the guest. The guest may then
-choose to respond to memory pressure by deflating its balloon down
-to the guest's allowable limit.
+My understanding is that as the target file is never erased on client
+side, but just replaced, the link should never fail.
 
-Signed-off-by: Kameron Lutes <kalutes@google.com>
----
- drivers/virtio/virtio_balloon.c | 55 +++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+The issue seem to lie inside vfs_link (fs/namei.c):
+       inode_lock(inode);
+       /* Make sure we don't allow creating hardlink to an unlinked file */
+       if (inode->i_nlink == 0 && !(inode->i_state & I_LINKABLE))
+               error =  -ENOENT;
 
-diff --git a/drivers/virtio/virtio_balloon.c b/drivers/virtio/virtio_balloon.c
-index f4c34a2a6b8e..aa06305a3137 100644
---- a/drivers/virtio/virtio_balloon.c
-+++ b/drivers/virtio/virtio_balloon.c
-@@ -878,6 +878,54 @@ static int virtio_balloon_register_shrinker(struct virtio_balloon *vb)
- 	return register_shrinker(&vb->shrinker);
- }
- 
-+static ssize_t balloon_size_show(struct device *dev,
-+				 struct device_attribute *attr, char *buf)
-+{
-+	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
-+	u32 num_pages;
-+
-+	/*
-+	 * Read the size directly from the balloon's configuration.
-+	 * The caller expects the balloon size enforced by the host,
-+	 * not the actual balloon size
-+	 */
-+	virtio_cread(vdev, struct virtio_balloon_config, num_pages,
-+		     &num_pages);
-+
-+	return sprintf(buf, "0x%x", num_pages);
-+}
-+
-+static ssize_t balloon_size_store(struct device *dev,
-+				  struct device_attribute *attr,
-+				  const char *buf, size_t count)
-+{
-+	struct virtio_device *vdev = container_of(dev, struct virtio_device, dev);
-+	u32 num_pages;
-+	int err;
-+
-+	err = kstrtou32(buf, 0, &num_pages);
-+
-+	if (err < 0) {
-+		dev_err(dev, "Failed to read balloon size from file\n");
-+		return err;
-+	}
-+
-+	/*
-+	 * Write num_pages back to the balloon's config section
-+	 */
-+	virtio_cwrite_le(vdev, struct virtio_balloon_config, num_pages,
-+		      &num_pages);
-+
-+	/*
-+	 * Signal to the balloon that the configuration has changed.
-+	 * This triggers any necessary resizing actions
-+	 */
-+	virtballoon_changed(vdev);
-+
-+	return count;
-+}
-+static DEVICE_ATTR_RW(balloon_size);
-+
- static int virtballoon_probe(struct virtio_device *vdev)
- {
- 	struct virtio_balloon *vb;
-@@ -1015,12 +1063,19 @@ static int virtballoon_probe(struct virtio_device *vdev)
- 			goto out_unregister_oom;
- 	}
- 
-+	err = device_create_file(&vb->vdev->dev, &dev_attr_balloon_size);
-+	if (err)
-+		goto out_unregister_page_reporting;
-+
- 	virtio_device_ready(vdev);
- 
- 	if (towards_target(vb))
- 		virtballoon_changed(vdev);
- 	return 0;
- 
-+out_unregister_page_reporting:
-+	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_REPORTING))
-+		page_reporting_unregister(&vb->pr_dev_info);
- out_unregister_oom:
- 	if (virtio_has_feature(vb->vdev, VIRTIO_BALLOON_F_DEFLATE_ON_OOM))
- 		unregister_oom_notifier(&vb->oom_nb);
--- 
-2.35.1.265.g69c8d7142f-goog
+The possible answer is that the inode refcount is zero because the
+file has just been replaced concurrently, old file being erased, and
+as such, the link operation is failing.
 
+The race appears to have been introduced by aae8a97d3ec30, to fix
+_another_ race between unlink and link (but I'm not sure to understand
+what were the implications).
+
+Reverting the inode->i_nlink == 0 section "fixes" the issue, but would
+probably reintroduce this another issue.
+
+At this point I don't know what would be the best way to fix this issue.
+
+Trivial case that will lead to ENOENT: (reproduced on 5.16.5)
+Note that the race _seems_ to last while some IO are pending (getting the
+race on tmpfs is typically much harder)
+
+========== Cut here ==========
+#!/bin/bash
+#
+
+rm -f link file target
+touch target
+
+# Link target -> link in loop
+while ln target link && rm link; do :; done &
+
+# Overwrite file -> target in loop until we fail
+while touch file && mv file target; do :; done &
+
+wait
+========== Cut here ==========
+
+Kudos to Xavier Grand from Algolia for spotting the issue with a
+reproducible case.
+
+The issue was reported three years ago, but only on the fsdevel
+mailing-list, where it might have been overlooked.
+It was also reported at https://bugzilla.kernel.org/show_bug.cgi?id=204705
