@@ -2,138 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5182C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348965AbiBNKpK (ORCPT
+        id S1349157AbiBNKrx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:45:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60378 "EHLO
+        Mon, 14 Feb 2022 05:47:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349101AbiBNKoz (ORCPT
+        with ESMTP id S1350233AbiBNKqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:44:55 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45419BC9D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:07:04 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Mon, 14 Feb 2022 05:46:17 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA9375C15
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:09:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=d5GJFaZfEuG4Hdri9olKUMmdfH3QS7N4ZwsXYTk7jcU=; b=pqJuoFpwMHO7muPWRFwYzzA3Em
+        1+lHxe8LmKC25l/y3p9w91f+ketCVBGvmylvFJvGqRPP4qwKoPNpuESVyEV7YBnGe1zyNVE+toRaG
+        PifsPo2sSopRefCp6+nAKfyaWM9ZXU9QsRdkwTp34VOGuVuHc2kULQsz0Hi8ZhIFqbAzghXO7+NqH
+        MUpXtvPB2kUmhqA+U3vPSqNL3FqRumfW7WY1o7Wu5pbp6xWev/0Eeb6S36poIBQuzqRtyzViYs9u4
+        W7VC5Uq2BhWxYY6SWlRL9qXp3BUFzh/xKrYICTlEioQsJHNdKk5NK2tmzSCnCIx1BqIxyK10oRSR3
+        HuoXi5Og==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJYI3-00CloE-A7; Mon, 14 Feb 2022 10:09:03 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 00CAA210EC;
-        Mon, 14 Feb 2022 10:07:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1644833223; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+72dd9i2dKPgLkrK9l7LAsT6WmguVVk+/wOxv28xopg=;
-        b=E5x2yLSgPfZyMGWvWNYQkuer+RuAcL54G2pyS/cQQS0/1V4mEfHsKv1rf2KCBB+AhEwpin
-        gVqjWDokUVFXZQVeM9jOKWtfgD4lkXcXOBTQF60qnoLMbXLYVHQEdznnGV9anuG9pX6Ja/
-        R1TQH7sI21yn+4LFF3ECaPhAH7umdvk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1644833223;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+72dd9i2dKPgLkrK9l7LAsT6WmguVVk+/wOxv28xopg=;
-        b=HJDw8vxtElWuZxUEz8sglubYXcadMkFL59Xzlh52RHBoOvXFz4E308F/eGKCzDskII2zOA
-        bpKh+4crkPy0guCg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A876B13A3C;
-        Mon, 14 Feb 2022 10:07:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id WnXkJsYpCmIROwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 14 Feb 2022 10:07:02 +0000
-Message-ID: <b8037dbf-77de-43e9-31a0-f96a1e31727a@suse.cz>
-Date:   Mon, 14 Feb 2022 11:07:01 +0100
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2E45B3002C5;
+        Mon, 14 Feb 2022 11:09:02 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id F157B2067AC08; Mon, 14 Feb 2022 11:09:01 +0100 (CET)
+Date:   Mon, 14 Feb 2022 11:09:01 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     tj@kernel.org, arbn@yandex-team.com, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, Minye Zhu <zhuminye@bytedance.com>
+Subject: Re: [PATCH] sched/cpuacct: fix charge percpu cpuusage
+Message-ID: <YgoqPT67g2NcV/eH@hirez.programming.kicks-ass.net>
+References: <20220213120118.93471-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH v2 01/13] mm/munlock: delete page_mlock() and all its
- works
-Content-Language: en-US
-To:     Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com>
- <5ed1f01-3e7e-7e26-cc1-2b7a574e2147@google.com>
- <4a5bc989-e59a-d421-faf4-8156f700ec99@suse.cz>
- <ed2c4952-f3e-688d-40c1-53afebe5c7cb@google.com>
- <957e2ea6-d01e-256f-51a0-d927a93b50a5@suse.cz>
- <eeee75ac-c888-6458-3438-24fe39adccae@google.com>
- <f795d6e9-f87b-c1d9-eb5a-561db0d7b9a@google.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <f795d6e9-f87b-c1d9-eb5a-561db0d7b9a@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220213120118.93471-1-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/22 07:59, Hugh Dickins wrote:
-> We have recommended some applications to mlock their userspace, but that
-> turns out to be counter-productive: when many processes mlock the same
-> file, contention on rmap's i_mmap_rwsem can become intolerable at exit: it
-> is needed for write, to remove any vma mapping that file from rmap's tree;
-> but hogged for read by those with mlocks calling page_mlock() (formerly
-> known as try_to_munlock()) on *each* page mapped from the file (the
-> purpose being to find out whether another process has the page mlocked,
-> so therefore it should not be unmlocked yet).
+On Sun, Feb 13, 2022 at 08:01:18PM +0800, Chengming Zhou wrote:
+> The cpuacct_account_field() is always called by the current task
+> itself, so it's ok to use __this_cpu_add() to charge the tick time.
 > 
-> Several optimizations have been made in the past: one is to skip
-> page_mlock() when mapcount tells that nothing else has this page
-> mapped; but that doesn't help at all when others do have it mapped.
-> This time around, I initially intended to add a preliminary search
-> of the rmap tree for overlapping VM_LOCKED ranges; but that gets
-> messy with locking order, when in doubt whether a page is actually
-> present; and risks adding even more contention on the i_mmap_rwsem.
+> But cpuacct_charge() maybe called by update_curr() in load_balance()
+> on a random CPU, different from the CPU on which the task is running.
+> So __this_cpu_add() will charge that cputime to a random incorrect CPU.
 > 
-> A solution would be much easier, if only there were space in struct page
-> for an mlock_count... but actually, most of the time, there is space for
-> it - an mlocked page spends most of its life on an unevictable LRU, but
-> since 3.18 removed the scan_unevictable_pages sysctl, that "LRU" has
-> been redundant.  Let's try to reuse its page->lru.
-> 
-> But leave that until a later patch: in this patch, clear the ground by
-> removing page_mlock(), and all the infrastructure that has gathered
-> around it - which mostly hinders understanding, and will make reviewing
-> new additions harder.  Don't mind those old comments about THPs, they
-> date from before 4.5's refcounting rework: splitting is not a risk here.
-> 
-> Just keep a minimal version of munlock_vma_page(), as reminder of what it
-> should attend to (in particular, the odd way PGSTRANDED is counted out of
-> PGMUNLOCKED), and likewise a stub for munlock_vma_pages_range().  Move
-> unchanged __mlock_posix_error_return() out of the way, down to above its
-> caller: this series then makes no further change after mlock_fixup().
-> 
-> After this and each following commit, the kernel builds, boots and runs;
-> but with deficiencies which may show up in testing of mlock and munlock.
-> The system calls succeed or fail as before, and mlock remains effective
-> in preventing page reclaim; but meminfo's Unevictable and Mlocked amounts
-> may be shown too low after mlock, grow, then stay too high after munlock:
-> with previously mlocked pages remaining unevictable for too long, until
-> finally unmapped and freed and counts corrected. Normal service will be
-> resumed in "mm/munlock: mlock_pte_range() when mlocking or munlocking".
+> Reported-by: Minye Zhu <zhuminye@bytedance.com>
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-Great!
+Can I get a Fixes: tag for this?
 
-> Signed-off-by: Hugh Dickins <hughd@google.com>
+> ---
+>  kernel/sched/cpuacct.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
+> index 3d06c5e4220d..75fbc212cb71 100644
+> --- a/kernel/sched/cpuacct.c
+> +++ b/kernel/sched/cpuacct.c
+> @@ -335,11 +335,12 @@ static struct cftype files[] = {
+>  void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+>  {
+>  	struct cpuacct *ca;
+> +	unsigned int cpu = task_cpu(tsk);
+>  
+>  	rcu_read_lock();
+>  
+>  	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+> -		__this_cpu_add(*ca->cpuusage, cputime);
+> +		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
+>  
+>  	rcu_read_unlock();
+>  }
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Also, while we there, what about this as an additional patch?
 
+--- a/kernel/sched/cpuacct.c
++++ b/kernel/sched/cpuacct.c
+@@ -334,15 +334,13 @@ static struct cftype files[] = {
+  */
+ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+ {
+-	struct cpuacct *ca;
+ 	unsigned int cpu = task_cpu(tsk);
++	struct cpuacct *ca;
+ 
+-	rcu_read_lock();
++	lockdep_assert_rq_held(cpu_rq(cpu));
+ 
+ 	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
+ 		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
+-
+-	rcu_read_unlock();
+ }
+ 
+ /*
