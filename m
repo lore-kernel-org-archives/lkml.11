@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346573AbiBNKTY (ORCPT
+        id S1346242AbiBNKT3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43966 "EHLO
+        Mon, 14 Feb 2022 05:19:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347860AbiBNKQz (ORCPT
+        with ESMTP id S1347884AbiBNKQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0347F7C780;
+        Mon, 14 Feb 2022 05:16:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF50C7C785;
         Mon, 14 Feb 2022 01:54:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02BFAB80D83;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCE9F612FF;
+        Mon, 14 Feb 2022 09:54:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 140F1C340E9;
         Mon, 14 Feb 2022 09:54:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE67DC340F0;
-        Mon, 14 Feb 2022 09:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832457;
-        bh=d+kEBIHewkuWC6lO+UBYJFu3t9iYpHMhNr5974kvkSo=;
+        s=korg; t=1644832461;
+        bh=S6jq1AUIQOTMbtbZ3xBIuNqN0kpzsRgOxa7dhQpOpws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FUH3ZDt03ksLWaekP7DrC0TZ8Y7paPOdqWIukq4jTb/4Jw/0nZe6d48HXxJK6x49+
-         UTs5PJkEXEPv963vq1w2APpllaEqyEhJ24FVlkHQKdmv4IaSwo1lCGeXI1iBwnTsx+
-         RUlD3sRtX+NwYIhze5CPhjW/oz5uq0DN1UNj9i2w=
+        b=YsBtBjgQ2nc1ZZk4IKfYwGp+x8GYdntKlD9IkW7KSWroX1qR3lbVn0JEy7UYTWHIc
+         tiobhPg6bR07zXUV1BAmQGSNLamJvEKar8sv6k0AQRwDqnOiW39xlQb9nn/2iIroqv
+         QJaDT51Z0jK6VZbym3rqJQrFvyR5HxUlGG5is+zM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
         Anna Schumaker <Anna.Schumaker@Netapp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 021/203] NFSv4 only print the label when its queried
-Date:   Mon, 14 Feb 2022 10:24:25 +0100
-Message-Id: <20220214092510.934456217@linuxfoundation.org>
+Subject: [PATCH 5.16 022/203] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Mon, 14 Feb 2022 10:24:26 +0100
+Message-Id: <20220214092510.967470574@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-When the bitmask of the attributes doesn't include the security label,
-don't bother printing it. Since the label might not be null terminated,
-adjust the printing format accordingly.
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4xdr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
-index 69862bf6db001..801119b7a5964 100644
---- a/fs/nfs/nfs4xdr.c
-+++ b/fs/nfs/nfs4xdr.c
-@@ -4200,10 +4200,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
- 		} else
- 			printk(KERN_WARNING "%s: label too long (%u)!\n",
- 					__func__, len);
-+		if (label && label->label)
-+			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
-+				__func__, label->len, (char *)label->label,
-+				label->len, label->pi, label->lfs);
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index d8b5a250ca050..47a6cf892c95a 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1343,8 +1343,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
  	}
--	if (label && label->label)
--		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
--			(char *)label->label, label->len, label->pi, label->lfs);
- 	return status;
- }
+ 	nfs_put_client(clp);
  
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
+ 
+ 	return nfs_probe_server(server, NFS_FH(d_inode(server->super->s_root)));
 -- 
 2.34.1
 
