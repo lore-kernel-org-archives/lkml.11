@@ -2,110 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AB8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CC8C35275
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356573AbiBNQhQ (ORCPT
+        id S1356609AbiBNQhe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:37:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42952 "EHLO
+        Mon, 14 Feb 2022 11:37:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356466AbiBNQgt (ORCPT
+        with ESMTP id S1352072AbiBNQhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:36:49 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B064165162
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:36:16 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id i14so27752534wrc.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:36:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=n+pe1ICl9ewzw4TZgGAHasEYIW8plx51y2a9efb27Bk=;
-        b=MAolyPYplTZr3Z0asslEHMSvIqKgp7oSbecwg+8PK2eS2NYe4IhZFTvnXMMFa+T9LW
-         luq8pOeuYQZtMGoz+OycvRsWeR4WU0/ej/saNASo8jNPOp61B3W29XgLj0KNbpYBe9GM
-         JDcYBGXnOeMaMpQ+9sw55288pkr2TvpvRfb5iJ1zYOO1ZDX4zBCRJdLtHHYtkMqzK6F+
-         46PYgnBYVpoRy77XDdSeXF8K5WlDpzbflTQsTwYO6FrR0qPEdXEWlcVeL0JrmuBFEooH
-         u/d6zEF9znxqQBL12T1BrxToRIuCFpCADTnOtCCu2z54iOCrQ8afbsWBqOEsfrhLv2Xs
-         hmDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=n+pe1ICl9ewzw4TZgGAHasEYIW8plx51y2a9efb27Bk=;
-        b=3vyPCkfspekrNw5WM7sT/QreF/k2SoVDYcznuwyEYfSIAFvi+l8VxFR9+W/pDLPk9P
-         MqWJic+rjIi33nekoyrUD+ihovjR1IMMSlMloSUhKWx7+ap6Z4MLyU12BAQc2FJeFAfq
-         ts/KvT/0MUOoPBVUkC1lcQR0llOQ1z03oMgb6jMk/wdfDQgGXRzvtNoFPIKCa3qcG5fi
-         mybn+4QuZzMNobePN52XSXL1gZdSJgNAGhodFRcq1BuXI69A2l9g0M3E2DiykG0rH8u0
-         Va+lMdaAIQT+ItrfQwE+/vdIn8GNaOcPcOzdWlOGy6jjmxDw1cfmKf7GpfKwZ5/Fmfy4
-         PKZQ==
-X-Gm-Message-State: AOAM533XfDjOPtUFPPxBQBjPODREgqqEy93WTKbqj3gSL5mRDmZsh2rp
-        oL16kDoA+oHqvagEs9AR3LLZRQ==
-X-Google-Smtp-Source: ABdhPJwT1NDvOiOtqW1aozcoW/vxtXUCGwkn3VR8i+/m2MuLda31W368jJ3lCfYDYYb8SQ/X/Kf+Lw==
-X-Received: by 2002:adf:e5ce:: with SMTP id a14mr346377wrn.317.1644856575188;
-        Mon, 14 Feb 2022 08:36:15 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id x18sm29792103wrw.17.2022.02.14.08.36.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 08:36:14 -0800 (PST)
-Date:   Mon, 14 Feb 2022 16:36:12 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Michael Walle <michael@walle.cc>, SoC Team <soc@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>
-Subject: Re: [PATCH] MAINTAINERS: add myself as a maintainer for the sl28cpld
-Message-ID: <YgqE/OvNDco5wEY3@google.com>
-References: <20220207184652.1218447-1-michael@walle.cc>
- <YgpkCyoSMg5RYfkO@google.com>
- <YgpkQMbhWAJG6oCh@google.com>
- <CAK8P3a0UWO=h6K4NpzCVC2vbOvThJH28GM5ddm9U1crr1Su7vQ@mail.gmail.com>
+        Mon, 14 Feb 2022 11:37:02 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845765170;
+        Mon, 14 Feb 2022 08:36:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7FFADCE19D9;
+        Mon, 14 Feb 2022 16:36:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF5AC340EE;
+        Mon, 14 Feb 2022 16:36:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644856592;
+        bh=/86KMr0jNBuJ/zqhHefOXTiqAWO1yELIA3z6g/367IQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ju2iGesCRW+FUxlTNWTSRCgy2RFCuZmRYFpVLrljojp/Ih1OBpPciIhZmM3Mzx76Y
+         pq5UVjX55O0F8EXS8TaAkyYpSzYdo5XnN3HUDTfqVZjd5Sxm+EgqhUJfUY0qFQsOiM
+         WPe43LcxQCw3FNNhUfT3JoeBojFKSdpgkUg8J9I/dv80iMXlTOJQyVuvr1Ic44t/BW
+         sshZLtCicnOONQZDNhIZJ2ShtALDJCGKaAWUcBcXH8Jbk1posHGnpQW7HLIfAPf8T5
+         5TP+rCS3n73O88MVkDoM2JLsZFfmsE0haaOo3bUAhntO+4hI+BH5xYhaxIiM5tV/MT
+         +qH72eefIpddw==
+From:   Arnd Bergmann <arnd@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
+        linux-kernel@vger.kernel.org
+Cc:     linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
+        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
+        tsbogend@alpha.franken.de, nickhu@andestech.com,
+        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
+        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
+        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
+        dalias@libc.org, davem@davemloft.net, richard@nod.at,
+        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
+        akpm@linux-foundation.org, ardb@kernel.org,
+        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org
+Subject: [PATCH 04/14] x86: use more conventional access_ok() definition
+Date:   Mon, 14 Feb 2022 17:34:42 +0100
+Message-Id: <20220214163452.1568807-5-arnd@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20220214163452.1568807-1-arnd@kernel.org>
+References: <20220214163452.1568807-1-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK8P3a0UWO=h6K4NpzCVC2vbOvThJH28GM5ddm9U1crr1Su7vQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022, Arnd Bergmann wrote:
+From: Arnd Bergmann <arnd@arndb.de>
 
-> On Mon, Feb 14, 2022 at 3:16 PM Lee Jones <lee.jones@linaro.org> wrote:
-> >
-> > On Mon, 14 Feb 2022, Lee Jones wrote:
-> >
-> > > On Mon, 07 Feb 2022, Michael Walle wrote:
-> > >
-> > > > The sl28cpld is a management controller found on the Kontron SMARC-sAL28
-> > > > board for now. Support for it was added by me quite a while ago, but I
-> > > > didn't add a MAINTAINERS entry. Add it now.
-> > > >
-> > > > Signed-off-by: Michael Walle <michael@walle.cc>
-> > > > ---
-> > > > Hi,
-> > > >
-> > > > since this affects so many subsystems, I'm not sure through which tree this
-> > > > should go. I'm sending this to the arm soc maintainers because it's an
-> > > > aarch64 board where this driver is used as well as Lee as the MFD
-> > > > maintainer.
-> > >
-> > > I'm happy to take this, if it pleases everyone.
-> >
-> > Hold on, you're not going to get many Acks if you don't send it to the
-> > other subsystem maintainers. :)
-> 
-> I've already applied this one through the soc tree.
+The way that access_ok() is defined on x86 is slightly different from
+most other architectures, and a bit more complex.
 
-You did?  I missed the acceptance email.
+The generic version tends to result in the best output on all
+architectures, as it results in single comparison against a constant
+limit for calls with a known size.
 
-It would have been nice to give the other maintainers a chance to look
-at it first, but I guess it's not a big deal in the great scheme.
+There are a few callers of __range_not_ok(), all of which use TASK_SIZE
+as the limit rather than TASK_SIZE_MAX, but I could not see any reason
+for picking this. Changing these to call __access_ok() instead uses the
+default limit, but keeps the behavior otherwise.
 
+x86 is the only architecture with a WARN_ON_IN_IRQ() checking
+access_ok(), but it's probably best to leave that in place.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ arch/x86/include/asm/uaccess.h | 38 +++++++++++-----------------------
+ 1 file changed, 12 insertions(+), 26 deletions(-)
+
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index ac96f9b2d64b..6956a63291b6 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -16,30 +16,13 @@
+  * Test whether a block of memory is a valid user space address.
+  * Returns 0 if the range is valid, nonzero otherwise.
+  */
+-static inline bool __chk_range_not_ok(unsigned long addr, unsigned long size, unsigned long limit)
++static inline bool __access_ok(void __user *ptr, unsigned long size)
+ {
+-	/*
+-	 * If we have used "sizeof()" for the size,
+-	 * we know it won't overflow the limit (but
+-	 * it might overflow the 'addr', so it's
+-	 * important to subtract the size from the
+-	 * limit, not add it to the address).
+-	 */
+-	if (__builtin_constant_p(size))
+-		return unlikely(addr > limit - size);
+-
+-	/* Arbitrary sizes? Be careful about overflow */
+-	addr += size;
+-	if (unlikely(addr < size))
+-		return true;
+-	return unlikely(addr > limit);
+-}
++	unsigned long limit = TASK_SIZE_MAX;
++	unsigned long addr = ptr;
+ 
+-#define __range_not_ok(addr, size, limit)				\
+-({									\
+-	__chk_user_ptr(addr);						\
+-	__chk_range_not_ok((unsigned long __force)(addr), size, limit); \
+-})
++	return (size <= limit) && (addr <= (limit - size));
++}
+ 
+ #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+ static inline bool pagefault_disabled(void);
+@@ -66,12 +49,15 @@ static inline bool pagefault_disabled(void);
+  * Return: true (nonzero) if the memory block may be valid, false (zero)
+  * if it is definitely invalid.
+  */
+-#define access_ok(addr, size)					\
+-({									\
+-	WARN_ON_IN_IRQ();						\
+-	likely(!__range_not_ok(addr, size, TASK_SIZE_MAX));		\
++#define access_ok(addr, size)		\
++({					\
++	WARN_ON_IN_IRQ();		\
++	likely(__access_ok(addr, size));\
+ })
+ 
++#define __range_not_ok(addr, size, limit)	(!__access_ok(addr, size))
++#define __chk_range_not_ok(addr, size, limit)	(!__access_ok((void __user *)addr, size))
++
+ extern int __get_user_1(void);
+ extern int __get_user_2(void);
+ extern int __get_user_4(void);
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.29.2
+
