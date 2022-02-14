@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92792C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345737AbiBNKNL (ORCPT
+        id S1345254AbiBNKNQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:13:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43966 "EHLO
+        Mon, 14 Feb 2022 05:13:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235917AbiBNKMM (ORCPT
+        with ESMTP id S1345525AbiBNKMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:12:12 -0500
+        Mon, 14 Feb 2022 05:12:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158AE6541D;
-        Mon, 14 Feb 2022 01:50:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 102C2652D3;
+        Mon, 14 Feb 2022 01:50:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A607661238;
-        Mon, 14 Feb 2022 09:50:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89B3BC340EF;
-        Mon, 14 Feb 2022 09:50:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0EFB612BF;
+        Mon, 14 Feb 2022 09:50:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794CCC340E9;
+        Mon, 14 Feb 2022 09:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832242;
-        bh=/DjVnQ7jgYXBQt/wqucYtc26jeqXAAs5ubdP37etpC8=;
+        s=korg; t=1644832245;
+        bh=nyQhR6VxYrmQChXEtTWPCthKdRv7SdJZk83vIwv/vAc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=waCoVNG7HUTxmBDKMSORBAnj9ufPEGA+SSWO1NeoGn6hFxwDlz0zxQUxZUQXHERHM
-         T4zegbXRAslsWOWve3R7VdFlj40XUXkbGiFZcX1uIGoJdTu7N+y20mqpS0aMcSzkII
-         kkC4TUsTLMvtJDMernnvkmMEibdwM+AJ2+sov0T8=
+        b=fgCiyVvtELDzHiiOqPOm97ZbtRRC7L16D2qvQTjonekj1ztRVpRhu5Zm4Kjdk3UNQ
+         G6OC61h4pStZkKlptUhjdr1Kgaj82xzENJbc28qzXUtx1zLd1py1SjKPNH85iqOAbb
+         BjgwgBOwo7Yuz31Y9S2EuOASzEHM3vPoPs5mrY08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Selwin Sebastian <Selwin.Sebastian@amd.com>,
-        Raju Rangoju <Raju.Rangoju@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Steen Hegelund <steen.hegelund@microchip.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 124/172] net: amd-xgbe: disable interrupts during pci removal
-Date:   Mon, 14 Feb 2022 10:26:22 +0100
-Message-Id: <20220214092510.696909905@linuxfoundation.org>
+Subject: [PATCH 5.15 098/172] net: sparx5: Fix get_stat64 crash in tcpdump
+Date:   Mon, 14 Feb 2022 10:25:56 +0100
+Message-Id: <20220214092509.793186955@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -52,39 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raju Rangoju <Raju.Rangoju@amd.com>
+From: Steen Hegelund <steen.hegelund@microchip.com>
 
-[ Upstream commit 68c2d6af1f1e469544d6cbe9a601d96fb9c00e7f ]
+[ Upstream commit ed14fc7a79ab43e9f2cb1fa9c1733fdc133bba30 ]
 
-Hardware interrupts are enabled during the pci probe, however,
-they are not disabled during pci removal.
+This problem was found with Sparx5 when the tcpdump tool requests the
+do_get_stats64 (sparx5_get_stats64) statistic.
 
-Disable all hardware interrupts during pci removal to avoid any
-issues.
+The portstats pointer was incorrectly incremented when fetching priority
+based statistics.
 
-Fixes: e75377404726 ("amd-xgbe: Update PCI support to use new IRQ functions")
-Suggested-by: Selwin Sebastian <Selwin.Sebastian@amd.com>
-Signed-off-by: Raju Rangoju <Raju.Rangoju@amd.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: af4b11022e2d (net: sparx5: add ethtool configuration and statistics support)
+Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+Link: https://lore.kernel.org/r/20220203102900.528987-1-steen.hegelund@microchip.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-pci.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-index 90cb55eb54665..014513ce00a14 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-pci.c
-@@ -418,6 +418,9 @@ static void xgbe_pci_remove(struct pci_dev *pdev)
- 
- 	pci_free_irq_vectors(pdata->pcidev);
- 
-+	/* Disable all interrupts in the hardware */
-+	XP_IOWRITE(pdata, XP_INT_EN, 0x0);
-+
- 	xgbe_free_pdata(pdata);
- }
- 
+diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+index 59783fc46a7b9..10b866e9f7266 100644
+--- a/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
++++ b/drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+@@ -1103,7 +1103,7 @@ void sparx5_get_stats64(struct net_device *ndev,
+ 	stats->tx_carrier_errors = portstats[spx5_stats_tx_csense_cnt];
+ 	stats->tx_window_errors = portstats[spx5_stats_tx_late_coll_cnt];
+ 	stats->rx_dropped = portstats[spx5_stats_ana_ac_port_stat_lsb_cnt];
+-	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx, ++stats)
++	for (idx = 0; idx < 2 * SPX5_PRIOS; ++idx)
+ 		stats->rx_dropped += portstats[spx5_stats_green_p0_rx_port_drop
+ 					       + idx];
+ 	stats->tx_dropped = portstats[spx5_stats_tx_local_drop];
 -- 
 2.34.1
 
