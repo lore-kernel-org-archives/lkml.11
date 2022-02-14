@@ -2,78 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5108C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348615AbiBNKjH (ORCPT
+        id S1348856AbiBNKjL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:39:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49168 "EHLO
+        Mon, 14 Feb 2022 05:39:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348856AbiBNKgB (ORCPT
+        with ESMTP id S1348918AbiBNKgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:01 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534C2205D4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:02:21 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 0D41E210F4;
-        Mon, 14 Feb 2022 10:02:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1644832940; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5mCqPoiiSFqVsEsSBkh61HkdEnJ7cMxylRwFu11LaQA=;
-        b=OzueHF+cFHoaypaGmaasoI+PnOp34/rRlN6Qiq2/lo8bgGwlYqrOAPjoIKt+rDBmOgDlty
-        Ek+RRwmKgEl56VXke2AvkLvUuwBZOWgglmy3NCIGpcAF5x1WraV2cQQobQTag2v15fjjEU
-        HJJOhafFQFWPy+ScYqd/Oe71/GxR3Z4=
-Received: from suse.cz (unknown [10.100.216.66])
+        Mon, 14 Feb 2022 05:36:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15EB65793;
+        Mon, 14 Feb 2022 02:02:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 81597A3B8E;
-        Mon, 14 Feb 2022 10:02:19 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 11:02:19 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sergey Senozhatsky <senozhatsky@chromium.org>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Hillf Danton <hdanton@sina.com>, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: [PATCH printk v1 10/13] printk: add kthread console printers
-Message-ID: <Ygooq5zdsQHJ5Eiy@alley>
-References: <20220207194323.273637-1-john.ogness@linutronix.de>
- <20220208083620.2736-1-hdanton@sina.com>
- <87v8xpmx9n.fsf@jogness.linutronix.de>
- <YgKD6X9eiADTnvIi@alley>
- <Ygny42nqV+3R5fp9@google.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1986077B;
+        Mon, 14 Feb 2022 10:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65C96C340E9;
+        Mon, 14 Feb 2022 10:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832944;
+        bh=NMjWGwPSU2DDunwZRA4fzUKy64zLoxOq04HsvxNVkF0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=03qq2bwQl3GbyS2JY8YLwnNI8FAdsnRvsgZXRvSuU+1f9L3CMrdz1nnlqaUUzT6NZ
+         yyxZE8NpE0iaFBz7Lety0Uj4qB+zz0l7LcFo/p+98iZvRTOfLv5am6YUL7zy47TVhz
+         aKNykEyNQUf7iUO5/UZP+ITdZ86rEPoWHiMw0lMI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
+Subject: [PATCH 5.16 173/203] USB: gadget: validate interface OS descriptor requests
+Date:   Mon, 14 Feb 2022 10:26:57 +0100
+Message-Id: <20220214092516.122068022@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ygny42nqV+3R5fp9@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-02-14 15:12:51, Sergey Senozhatsky wrote:
-> On (22/02/08 15:53), Petr Mladek wrote:
-> > My mine concern is that the kthread_worker API still uses an internal
-> > lock. And it is yet another layer that might be hard to debug when
-> > printk() does not work.
-> 
-> Isn't this also true for kthreads? Looks like we add "couple of spin_locks"
-> to the picture - rq, etc. - one way of the other.
+From: Szymon Heidrich <szymon.heidrich@gmail.com>
 
-kthread_worker API is built on top of kthreads. It means one more
-lock, one more layer to deal with.
+commit 75e5b4849b81e19e9efe1654b30d7f3151c33c2c upstream.
 
-If anyone wants to propose workqueues or kthread_worker API, please,
-come up with a code and proof that it makes things easier.
+Stall the control endpoint in case provided index exceeds array size of
+MAX_CONFIG_INTERFACES or when the retrieved function pointer is null.
 
-It is fine to mention this possibility. It is fine to consider it.
-It is fine to keep it in mind. But I do not want to spent too much
-time on theoretic discussions at the moment. We have a code now.
-John has spent non-trivial time on it. Let's concentrate
-on review.
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/usb/gadget/composite.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-Best Regards,
-Petr
+--- a/drivers/usb/gadget/composite.c
++++ b/drivers/usb/gadget/composite.c
+@@ -1975,6 +1975,9 @@ unknown:
+ 				if (w_index != 0x5 || (w_value >> 8))
+ 					break;
+ 				interface = w_value & 0xFF;
++				if (interface >= MAX_CONFIG_INTERFACES ||
++				    !os_desc_cfg->interface[interface])
++					break;
+ 				buf[6] = w_index;
+ 				count = count_ext_prop(os_desc_cfg,
+ 					interface);
+
+
