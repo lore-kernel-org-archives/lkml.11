@@ -2,106 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4130C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352155AbiBNMCq convert rfc822-to-8bit (ORCPT
+        id S1352180AbiBNMDn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:02:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60756 "EHLO
+        Mon, 14 Feb 2022 07:03:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234179AbiBNMCo (ORCPT
+        with ESMTP id S234179AbiBNMDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:02:44 -0500
-X-Greylist: delayed 97 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 04:02:36 PST
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C31D41;
-        Mon, 14 Feb 2022 04:02:36 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:02:26 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 2/2] pwm: jz4740: Add support for X1000 SoC
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     robh+dt@kernel.org, linux-mips@vger.kernel.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <2SMA7R.9OBQWV0ONR102@crapouillou.net>
-In-Reply-To: <20220209231141.20184-2-aidanmacdonald.0x0@gmail.com>
-References: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
-        <20220209231141.20184-2-aidanmacdonald.0x0@gmail.com>
+        Mon, 14 Feb 2022 07:03:41 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6014D65;
+        Mon, 14 Feb 2022 04:03:33 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: adalessandro)
+        with ESMTPSA id E2B501F438D7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644840212;
+        bh=udMH2bb1ZVp+VDSfiDlModpHLLav3cr8I6TcP5b8eBM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OlU4OsTRNQ2WyqTcTvr0CXKeYf9reHgF0SovJRz2cOpsATdVDHU8Ga22SQ/DQAoKp
+         jteCmBKGVDQpNDaEkAF5TzwzLn19PY0MC41oTkh+eiAAxbiZclAt+trVfOsIZDpHD/
+         uEvQ+BZaJTPywUdjbY8Eib1aWUBIvpgFazvWXwh4t9NXU3JIo7RNHoxpoRh1DhKlIC
+         iMQIJBkSzt38Qiybz8SaozbMGa3MlFz+yMKHJqjYvnYNLRUsBGNm7vWGrdRHlxIv/5
+         wWiSR+K+SLd0bNl5Jm7BzgsQwFM2sKXY26tG5EL4O4PSuxLDirIomJb5pgSITyqZk3
+         +MQK6+irlQn0A==
+From:   Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        kernel@pengutronix.de, linux-arm-kernel@lists.infradead.org,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org
+Cc:     ariel.dalessandro@collabora.com, broonie@kernel.org,
+        festevam@gmail.com, krzysztof.kozlowski@canonical.com,
+        lgirdwood@gmail.com, michael@amarulasolutions.com,
+        robh+dt@kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org
+Subject: [PATCH v3] arm64: dts: imx8mn-bsh-smm-s2pro: Add tlv320aic31xx audio card node
+Date:   Mon, 14 Feb 2022 09:03:07 -0300
+Message-Id: <20220214120307.15665-1-ariel.dalessandro@collabora.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aidan,
+BSH SystemMaster (SMM) S2 PRO board comes with an audio card based on
+tlv320aic31xx family codec.
 
-Le mer., févr. 9 2022 at 23:11:42 +0000, Aidan MacDonald 
-<aidanmacdonald.0x0@gmail.com> a écrit :
-> The X1000 has the same TCU / PWM hardware as other Ingenic SoCs,
-> but it has only 5 channels.
-> 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
->  arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
->  drivers/pwm/pwm-jz4740.c              |  5 +++++
+The audio card exposes two playback devices, one of them using the EASRC
+(Enhanced Asynchronous Sample Rate Converter) module. Note that this
+would require SDMA and EASRC firmware in order to work.
 
-Please put the driver and device tree changes into separate patches.
+Signed-off-by: Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+---
+ .../dts/freescale/imx8mn-bsh-smm-s2pro.dts    | 94 +++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
-Cheers,
--Paul
-
->  2 files changed, 18 insertions(+)
-> 
-> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi 
-> b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> index 8bd27edef216..0dcf37527c8e 100644
-> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> @@ -127,6 +127,19 @@ wdt: watchdog@0 {
->  			clocks = <&tcu TCU_CLK_WDT>;
->  			clock-names = "wdt";
->  		};
-> +
-> +		pwm: pwm@40 {
-> +			compatible = "ingenic,x1000-pwm";
-> +			reg = <0x40 0x80>;
-> +
-> +			#pwm-cells = <3>;
-> +
-> +			clocks = <&tcu TCU_CLK_TIMER0>, <&tcu TCU_CLK_TIMER1>,
-> +				 <&tcu TCU_CLK_TIMER2>, <&tcu TCU_CLK_TIMER3>,
-> +				 <&tcu TCU_CLK_TIMER4>;
-> +			clock-names = "timer0", "timer1", "timer2",
-> +				      "timer3", "timer4";
-> +		};
->  	};
-> 
->  	rtc: rtc@10003000 {
-> diff --git a/drivers/pwm/pwm-jz4740.c b/drivers/pwm/pwm-jz4740.c
-> index 23dc1fb770e2..a5fdf97c0d2e 100644
-> --- a/drivers/pwm/pwm-jz4740.c
-> +++ b/drivers/pwm/pwm-jz4740.c
-> @@ -256,10 +256,15 @@ static const struct soc_info __maybe_unused 
-> jz4725b_soc_info = {
->  	.num_pwms = 6,
->  };
-> 
-> +static const struct soc_info __maybe_unused x1000_soc_info = {
-> +	.num_pwms = 5,
-> +};
-> +
->  #ifdef CONFIG_OF
->  static const struct of_device_id jz4740_pwm_dt_ids[] = {
->  	{ .compatible = "ingenic,jz4740-pwm", .data = &jz4740_soc_info },
->  	{ .compatible = "ingenic,jz4725b-pwm", .data = &jz4725b_soc_info },
-> +	{ .compatible = "ingenic,x1000-pwm", .data = &x1000_soc_info },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, jz4740_pwm_dt_ids);
-> --
-> 2.34.1
-> 
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts b/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
+index c6a8ed6745c1..44e2635d3096 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mn-bsh-smm-s2pro.dts
+@@ -7,6 +7,7 @@
+ /dts-v1/;
+ 
+ #include "imx8mn-bsh-smm-s2-common.dtsi"
++#include <dt-bindings/sound/tlv320aic31xx.h>
+ 
+ / {
+ 	model = "BSH SMM S2 PRO";
+@@ -16,6 +17,69 @@ memory@40000000 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x40000000 0x0 0x20000000>;
+ 	};
++
++	sound-tlv320aic31xx {
++		compatible = "fsl,imx-audio-tlv320aic31xx";
++		model = "tlv320aic31xx-hifi";
++		audio-cpu = <&sai3>;
++		audio-codec = <&codec>;
++		audio-asrc = <&easrc>;
++		audio-routing =
++			"Ext Spk", "SPL",
++			"Ext Spk", "SPR";
++		mclk-id = <PLL_CLKIN_BCLK>;
++	};
++
++	vdd_input: vdd_input {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd_input";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++};
++
++&easrc {
++	fsl,asrc-rate = <48000>;
++	fsl,asrc-format = <10>;
++	status = "okay";
++};
++
++&i2c2 {
++	clock-frequency = <400000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_i2c2>;
++	status = "okay";
++
++	tlv320dac3101: audio-codec@18 {
++		#sound-dai-cells = <0>;
++		compatible = "ti,tlv320dac3101";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_dac_rst>;
++		reg = <0x18>;
++
++		ai31xx-micbias-vg = <MICBIAS_AVDDV>;
++
++		HPVDD-supply = <&buck4_reg>;
++		SPRVDD-supply = <&vdd_input>;
++		SPLVDD-supply = <&vdd_input>;
++		AVDD-supply = <&buck4_reg>;
++		IOVDD-supply = <&buck4_reg>;
++		DVDD-supply = <&buck5_reg>;
++		reset-gpios = <&gpio1 6 GPIO_ACTIVE_LOW>;
++
++		clocks = <&clk IMX8MN_CLK_SAI3_ROOT>;
++		clock-names = "mclk";
++	};
++};
++
++&sai3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_sai3>;
++	assigned-clocks = <&clk IMX8MN_CLK_SAI3>;
++	assigned-clock-parents = <&clk IMX8MN_AUDIO_PLL1_OUT>;
++	assigned-clock-rates = <24576000>;
++	fsl,sai-mclk-direction-output;
++	status = "okay";
+ };
+ 
+ /* eMMC */
+@@ -30,6 +94,36 @@ &usdhc1 {
+ };
+ 
+ &iomuxc {
++	pinctrl_dac_rst: dacrstgrp {
++		fsl,pins = <
++			MX8MN_IOMUXC_GPIO1_IO06_GPIO1_IO6		0x19 /* DAC_RST */
++		>;
++	};
++
++	pinctrl_espi2: espi2grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK		0x082
++			MX8MN_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI		0x082
++			MX8MN_IOMUXC_ECSPI2_MISO_ECSPI2_MISO		0x082
++			MX8MN_IOMUXC_ECSPI2_SS0_ECSPI2_SS0		0x040
++		>;
++	};
++
++	pinctrl_i2c2: i2c2grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_I2C2_SCL_I2C2_SCL			0x400000c3
++			MX8MN_IOMUXC_I2C2_SDA_I2C2_SDA			0x400000c3
++		>;
++	};
++
++	pinctrl_sai3: sai3grp {
++		fsl,pins = <
++			MX8MN_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC		0xd6
++			MX8MN_IOMUXC_SAI3_TXC_SAI3_TX_BCLK		0xd6
++			MX8MN_IOMUXC_SAI3_TXD_SAI3_TX_DATA0		0xd6
++		>;
++	};
++
+ 	pinctrl_usdhc1: usdhc1grp {
+ 		fsl,pins = <
+ 			MX8MN_IOMUXC_SD1_CLK_USDHC1_CLK			0x40000090
+-- 
+2.34.1
 
