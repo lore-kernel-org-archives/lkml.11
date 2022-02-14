@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E52AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344633AbiBNKEs (ORCPT
+        id S1344836AbiBNKEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43464 "EHLO
+        Mon, 14 Feb 2022 05:04:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344044AbiBNJ7d (ORCPT
+        with ESMTP id S1344037AbiBNJ7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:33 -0500
+        Mon, 14 Feb 2022 04:59:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6830C39;
-        Mon, 14 Feb 2022 01:47:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E635AC52;
+        Mon, 14 Feb 2022 01:47:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C8D61287;
-        Mon, 14 Feb 2022 09:47:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EEA4C340E9;
-        Mon, 14 Feb 2022 09:47:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A52661252;
+        Mon, 14 Feb 2022 09:47:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 652E0C340F2;
+        Mon, 14 Feb 2022 09:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832020;
-        bh=a9hRDb8jeBX3+CfUzzLMVZKn6WHEX5RbBWJPBjc8rVk=;
+        s=korg; t=1644832023;
+        bh=7Wh51CxNRkFsP+UxkO1n+8BoQxcYRbLgccZ/aypOW70=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhAlvnpSADhfNokPN9NH9K8fr9XPBUyKPaJaFj+ml1XB0OTxZogTLfr+5ev47njQk
-         4fGnPKSaw0iQ6SA1+edEBCfApeatRNWgisBHv25LP583KfiS1rJMR/zR2kycXBI68V
-         NOMOI8eR9nBy/FOOsn3NrODSg/Ke22KyZGtYzk5g=
+        b=VWbqZFlpjp/gBtDuiKq4BR4qMlN0s6uRb1LoFp/4UdJ/Ue7owWH8PN9oBb1vclAhK
+         AFGKIH+EFyz/fyVKx0j00TIxSuk/ySnILpqgmBrK8nSggPRU6AgmYijo+Wk2kqLHC3
+         bZ5O5Fs7eMYbKP1QX7wFjWkJAJNHKgCEoDavncpU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhan Liu <zhan.liu@amd.com>,
-        Charlene Liu <charlene.liu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 054/172] drm/amd/display: Correct MPC split policy for DCN301
-Date:   Mon, 14 Feb 2022 10:25:12 +0100
-Message-Id: <20220214092508.258889793@linuxfoundation.org>
+Subject: [PATCH 5.15 055/172] usb: dwc2: gadget: dont try to disable ep0 in dwc2_hsotg_suspend
+Date:   Mon, 14 Feb 2022 10:25:13 +0100
+Message-Id: <20220214092508.292332419@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,39 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhan Liu <zhan.liu@amd.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit ac46d93235074a6c5d280d35771c23fd8620e7d9 ]
+[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
 
-[Why]
-DCN301 has seamless boot enabled. With MPC split enabled
-at the same time, system will hang.
+Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
+logs before returning -EINVAL:
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
 
-[How]
-Revert MPC split policy back to "MPC_SPLIT_AVOID". Since we have
-ODM combine enabled on DCN301, pipe split is not necessary here.
+To avoid these two logs while suspending, start disabling the endpoint
+from the index 1, as done in dwc2_hsotg_udc_stop:
 
-Signed-off-by: Zhan Liu <zhan.liu@amd.com>
-Reviewed-by: Charlene Liu <charlene.liu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+	/* all endpoints should be shutdown */
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
+	}
+
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c | 2 +-
+ drivers/usb/dwc2/gadget.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-index 9e2f18a0c9483..26ebe00a55f67 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
-@@ -863,7 +863,7 @@ static const struct dc_debug_options debug_defaults_drv = {
- 	.disable_clock_gate = true,
- 	.disable_pplib_clock_request = true,
- 	.disable_pplib_wm_range = true,
--	.pipe_split_policy = MPC_SPLIT_DYNAMIC,
-+	.pipe_split_policy = MPC_SPLIT_AVOID,
- 	.force_single_disp_pipe_split = false,
- 	.disable_dcc = DCC_ENABLE,
- 	.vsr_support = true,
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index ea0d2d6139a68..0909b088a284b 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -5096,7 +5096,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+ 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ 		spin_unlock_irqrestore(&hsotg->lock, flags);
+ 
+-		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
++		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+ 			if (hsotg->eps_in[ep])
+ 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+ 			if (hsotg->eps_out[ep])
 -- 
 2.34.1
 
