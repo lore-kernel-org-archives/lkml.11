@@ -2,155 +2,642 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD48C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9A8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiBOAAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 19:00:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39990 "EHLO
+        id S232378AbiBOAA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:00:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232315AbiBOAAe (ORCPT
+        with ESMTP id S232348AbiBOAAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 19:00:34 -0500
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2079.outbound.protection.outlook.com [40.107.243.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F067D40A30
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:00:25 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=E9ohbPc9OY/s2XSJ+e0a3acL3hBT9xVjKi/M/H5sIbGZnoleh53HcwU5v5IV+KQtCGvWEtXX5wp1o1/AWdjl/yeyqU1qgtgt0KQXYb6iUZFa6sfa2sGQdtbF3OhSd9a2MXkSrH2/JmX9YyZHRUugA2/nlxDqtw13dtoNjEOrzX6u9xKgw5U6/3JJLa8kAkIa4dCqmeSbfvtTfoo28q56oxRqueD+bZHbfgWj4Z4GA5s7VRp2TM3eumPxzzdvL/oqofWeDxhNSwLP2Zay5CmV29lhsvBvy7NKhca5siuqN2NFixH5yBcZJI4P6mqKoaAfn/IrZIAeODDwyYFOVU1R5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6m+khP40jw3Nmgzgv8CUk2CeRg/5iPb6gK2L4CWgrFs=;
- b=C7PQDP0Iz0/EqKMgysJXRGldwCtPB3suZxweQUy0yNktgFjYgd7jux1a8TlUoOW479NcsNts9zzxD7aLeBrgkPLZDDAk4BCZc4GQs3YJBgF6dSa18/qsRicEZOE/FDoOhvodh5M5HnC9ioMgghO7Amn4R4Tm961scvI6grvPWgFjJeEaWQ9TVyX76CvunSXnZ8lXwqnKynmDZRcYTJmZgDc/Ro71WO1hYf4fWIAND/QjR5syH4KXRzaSsaIbky1HjPtM/wriRtz6RpUwUVRZYoUcjxW/oV9P7SXkh/kvpXBqPGQ1gN7uRSuwfCV+56pXlxmcFKPOogs861hRtn789g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6m+khP40jw3Nmgzgv8CUk2CeRg/5iPb6gK2L4CWgrFs=;
- b=1VLyZo1kOHgEYHzDCvLsxB+pZHtA4YGTGah60Txjm7xwM31UWu3D6YvvNfMaXiaoZ2PX76c92JfZZALnsY2gZdxCE7C2xbbanfGSbUaCcr/BmMP/sI4ciiz21gDLhnFbyzzZCuthHRCl/Pr0J3Mn5dIFM+IX8WnKB9Pj2kCCKGE=
-Received: from DS7PR06CA0011.namprd06.prod.outlook.com (2603:10b6:8:2a::6) by
- DM6PR12MB4233.namprd12.prod.outlook.com (2603:10b6:5:210::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4975.15; Tue, 15 Feb 2022 00:00:24 +0000
-Received: from DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
- (2603:10b6:8:2a:cafe::5) by DS7PR06CA0011.outlook.office365.com
- (2603:10b6:8:2a::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
- Transport; Tue, 15 Feb 2022 00:00:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT038.mail.protection.outlook.com (10.13.173.137) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4975.11 via Frontend Transport; Tue, 15 Feb 2022 00:00:23 +0000
-Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 14 Feb
- 2022 18:00:22 -0600
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-CC:     Kees Cook <keescook@chromium.org>,
-        Thomas Lendacky <Thomas.Lendacky@amd.com>,
-        <hughsient@gmail.com>,
-        Martin Fernandez <martin.fernandez@eclypsium.com>,
-        <linux-kernel@vger.kernel.org>,
-        "Brijesh Singh" <brijesh.singh@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v3] x86/cpu: clear SME features when not in use
-Date:   Mon, 14 Feb 2022 17:58:01 -0600
-Message-ID: <20220214235801.238260-1-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 14 Feb 2022 19:00:42 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59B0419AF;
+        Mon, 14 Feb 2022 16:00:29 -0800 (PST)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EMeUE2020024;
+        Tue, 15 Feb 2022 00:00:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=kqlcqmF5w2MGv7JpCS8yHLa0y1a97OHn8G/774OLrzY=;
+ b=GjtFNz1W3GWfwVqC5fIB3730gWcM0vrD3p/DOUIlXzxaDugIbjfyIRLxyXAiL7IVxI8P
+ tQkZgym6UV596pWHjZmhMy0d7s3ZC+3LTvK4oV3f7hBGBWKcBMUL6jTh7WmaVToyuA/H
+ i49cT8ZHuFFpR/k+XW2QpFK6jqQfMYXtLlJhvdSDNowJWqBGgIExapPTuw//kEao8ezu
+ vNvE3z7a0pWDnYtKyzX3HAf3IYlqwcTfcpVG0MVvn39oNi19NVfry22lCeXTTREK4n6x
+ z4m9x2h6J364GLnE4v+iEWT5dDXvEfK+Uf6lDoLJSGOtOttdAhA1052EGVj3X/QKuNMu hA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e79fw72jv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:28 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21ENwrDm022756;
+        Tue, 15 Feb 2022 00:00:28 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e79fw72hx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:27 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21ENw1uu006757;
+        Tue, 15 Feb 2022 00:00:25 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3e64h9su98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 15 Feb 2022 00:00:25 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21F00K8345875638
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 15 Feb 2022 00:00:20 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AF18DA405D;
+        Tue, 15 Feb 2022 00:00:20 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0AC32A405B;
+        Tue, 15 Feb 2022 00:00:20 +0000 (GMT)
+Received: from p-imbrenda (unknown [9.145.2.54])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 15 Feb 2022 00:00:19 +0000 (GMT)
+Date:   Mon, 14 Feb 2022 16:52:59 +0100
+From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: Re: [PATCH v4 02/10] KVM: s390: Honor storage keys when accessing
+ guest memory
+Message-ID: <20220214165259.4bd4fd12@p-imbrenda>
+In-Reply-To: <20220211182215.2730017-3-scgl@linux.ibm.com>
+References: <20220211182215.2730017-1-scgl@linux.ibm.com>
+        <20220211182215.2730017-3-scgl@linux.ibm.com>
+Organization: IBM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2fe44da9-8ff8-4b11-ed16-08d9f01629ea
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4233:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB42335AE633F378B127783BA6E2349@DM6PR12MB4233.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nQV1tQelg7DiEUlIOkUaGqiMrCoYApEtOOZT9t1ZHxQOHulq36WQPLUwLUl8iOByzukW8c/nQQflrjqfiNv9hQoEb3w15mZeOS8/KjBCVTkAqxE7nRAAO3yqqz2gvnNErcfqpkNs3avjTkg5XvyL+/G0p8M5lrh4qIQ+9TVIdHEbhV2BggBc6gd31JE7x15ZwqKC3VbsUgGSdi9PoWgIBvesdvKomLeVgy5P/PDL44DFJr5LdS04VosYBJGC8Ga92ey/+uxyeCEuGx+h6FV2jkzvq2HStrXDtS+R+7tNTWg9HyS/sviAXwdZSIL6uLE4fm6jLAdp1FdOCQfcqzroydjjhqdj6DcnmljIiDGQf5FMCQ3paLRXRiSsqn+yaFrIQgWNgqtb5BBjth/yXE7NXjh06lQWOy4tcHNni+Oxe879/Yih2pa3xD/bXpZ3L3xAdbmNuq8pslmkHxxEYjfxPXdliLpL2MCNwzEHhyDB36+SFbiGxsxOr2qo7l/zQvbMd1AYYXA4cSs4LDF7aEQ8VNWPoAWaEBW1rdbKwfqTm5ipDRISRxrkPKWn6kl2gg47jB931gMb8p5MD8H/jVnzbWlap2APoBXdVNXxTkSTcpiH42JXqA7Z99qzMqMo7JDgN4yN6negDMaq+XG8CepSe1wSzC8RDTmgnK4CRMo4fRFV2h8q7d3iBUPOObT9/vEW0oB8kgBP6OD4+2ayTZ4gFw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(336012)(8676002)(70586007)(70206006)(4326008)(426003)(6666004)(86362001)(508600001)(2616005)(83380400001)(16526019)(1076003)(26005)(82310400004)(110136005)(54906003)(316002)(186003)(36756003)(356005)(2906002)(81166007)(40460700003)(47076005)(5660300002)(8936002)(44832011)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 00:00:23.2063
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2fe44da9-8ff8-4b11-ed16-08d9f01629ea
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4233
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gfTjf90qZ4AvqYeAcnLexv9Iiib7MAD2
+X-Proofpoint-ORIG-GUID: foHyACBzmzgQStrT5ICHysPy7DXc8Fg7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 bulkscore=0
+ malwarescore=0 suspectscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
+ impostorscore=0 priorityscore=1501 phishscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140134
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the SME CPU feature flag is reflective of whether the CPU
-supports the features but not whether they have been activated by the
-kernel.
+On Fri, 11 Feb 2022 19:22:07 +0100
+Janis Schoetterl-Glausch <scgl@linux.ibm.com> wrote:
 
-Change this around to clear the features if the kernel is not using
-them so userspace can determine if they are available and in use
-from `/proc/cpuinfo`.
+> Storage key checking had not been implemented for instructions emulated
+> by KVM. Implement it by enhancing the functions used for guest access,
+> in particular those making use of access_guest which has been renamed
+> to access_guest_with_key.
+> Accesses via access_guest_real should not be key checked.
+> 
+> For actual accesses, key checking is done by
+> copy_from/to_user_key (which internally uses MVCOS/MVCP/MVCS).
+> In cases where accessibility is checked without an actual access,
+> this is performed by getting the storage key and checking if the access
+> key matches. In both cases, if applicable, storage and fetch protection
+> override are honored.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+> Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+> Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
 
-As the feature flag is now cleared on systems that SME isn't active
-use CPUID 0x8000001f to confirm SME availability before calling
-`native_wbinvd`.
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-Changes from v2->v3:
- * Drop all changes related to SEV, these will be worked out separately.
- * Only clear SME flag rather than all flags if sme_me_mask is not set
-
- arch/x86/kernel/cpu/amd.c | 3 +++
- arch/x86/kernel/process.c | 5 ++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index 4edb6f0f628c..8421b9d9f552 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -607,6 +607,9 @@ static void early_detect_mem_encrypt(struct cpuinfo_x86 *c)
- 		if (IS_ENABLED(CONFIG_X86_32))
- 			goto clear_all;
- 
-+		if (!sme_me_mask)
-+			setup_clear_cpu_cap(X86_FEATURE_SME);
-+
- 		rdmsrl(MSR_K7_HWCR, msr);
- 		if (!(msr & MSR_K7_HWCR_SMMLOCK))
- 			goto clear_sev;
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 81d8ef036637..e131d71b3cae 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -765,8 +765,11 @@ void stop_this_cpu(void *dummy)
- 	 * without the encryption bit, they don't race each other when flushed
- 	 * and potentially end up with the wrong entry being committed to
- 	 * memory.
-+	 *
-+	 * Test the CPUID bit directly because the machine might've cleared
-+	 * X86_FEATURE_SME due to cmdline options.
- 	 */
--	if (boot_cpu_has(X86_FEATURE_SME))
-+	if (cpuid_eax(0x8000001f) & BIT(0))
- 		native_wbinvd();
- 	for (;;) {
- 		/*
--- 
-2.34.1
+> ---
+>  arch/s390/include/asm/ctl_reg.h |   2 +
+>  arch/s390/include/asm/page.h    |   2 +
+>  arch/s390/kvm/gaccess.c         | 187 ++++++++++++++++++++++++++++++--
+>  arch/s390/kvm/gaccess.h         |  77 +++++++++++--
+>  arch/s390/kvm/intercept.c       |  12 +-
+>  arch/s390/kvm/kvm-s390.c        |   4 +-
+>  6 files changed, 253 insertions(+), 31 deletions(-)
+> 
+> diff --git a/arch/s390/include/asm/ctl_reg.h b/arch/s390/include/asm/ctl_reg.h
+> index 04dc65f8901d..c800199a376b 100644
+> --- a/arch/s390/include/asm/ctl_reg.h
+> +++ b/arch/s390/include/asm/ctl_reg.h
+> @@ -12,6 +12,8 @@
+>  
+>  #define CR0_CLOCK_COMPARATOR_SIGN	BIT(63 - 10)
+>  #define CR0_LOW_ADDRESS_PROTECTION	BIT(63 - 35)
+> +#define CR0_FETCH_PROTECTION_OVERRIDE	BIT(63 - 38)
+> +#define CR0_STORAGE_PROTECTION_OVERRIDE	BIT(63 - 39)
+>  #define CR0_EMERGENCY_SIGNAL_SUBMASK	BIT(63 - 49)
+>  #define CR0_EXTERNAL_CALL_SUBMASK	BIT(63 - 50)
+>  #define CR0_CLOCK_COMPARATOR_SUBMASK	BIT(63 - 52)
+> diff --git a/arch/s390/include/asm/page.h b/arch/s390/include/asm/page.h
+> index d98d17a36c7b..cfc4d6fb2385 100644
+> --- a/arch/s390/include/asm/page.h
+> +++ b/arch/s390/include/asm/page.h
+> @@ -20,6 +20,8 @@
+>  #define PAGE_SIZE	_PAGE_SIZE
+>  #define PAGE_MASK	_PAGE_MASK
+>  #define PAGE_DEFAULT_ACC	0
+> +/* storage-protection override */
+> +#define PAGE_SPO_ACC		9
+>  #define PAGE_DEFAULT_KEY	(PAGE_DEFAULT_ACC << 4)
+>  
+>  #define HPAGE_SHIFT	20
+> diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
+> index 4460808c3b9a..7fca0cff4c12 100644
+> --- a/arch/s390/kvm/gaccess.c
+> +++ b/arch/s390/kvm/gaccess.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/mm_types.h>
+>  #include <linux/err.h>
+>  #include <linux/pgtable.h>
+> +#include <linux/bitfield.h>
+>  
+>  #include <asm/gmap.h>
+>  #include "kvm-s390.h"
+> @@ -794,6 +795,79 @@ static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
+>  	return 1;
+>  }
+>  
+> +static bool fetch_prot_override_applicable(struct kvm_vcpu *vcpu, enum gacc_mode mode,
+> +					   union asce asce)
+> +{
+> +	psw_t *psw = &vcpu->arch.sie_block->gpsw;
+> +	unsigned long override;
+> +
+> +	if (mode == GACC_FETCH || mode == GACC_IFETCH) {
+> +		/* check if fetch protection override enabled */
+> +		override = vcpu->arch.sie_block->gcr[0];
+> +		override &= CR0_FETCH_PROTECTION_OVERRIDE;
+> +		/* not applicable if subject to DAT && private space */
+> +		override = override && !(psw_bits(*psw).dat && asce.p);
+> +		return override;
+> +	}
+> +	return false;
+> +}
+> +
+> +static bool fetch_prot_override_applies(unsigned long ga, unsigned int len)
+> +{
+> +	return ga < 2048 && ga + len <= 2048;
+> +}
+> +
+> +static bool storage_prot_override_applicable(struct kvm_vcpu *vcpu)
+> +{
+> +	/* check if storage protection override enabled */
+> +	return vcpu->arch.sie_block->gcr[0] & CR0_STORAGE_PROTECTION_OVERRIDE;
+> +}
+> +
+> +static bool storage_prot_override_applies(u8 access_control)
+> +{
+> +	/* matches special storage protection override key (9) -> allow */
+> +	return access_control == PAGE_SPO_ACC;
+> +}
+> +
+> +static int vcpu_check_access_key(struct kvm_vcpu *vcpu, u8 access_key,
+> +				 enum gacc_mode mode, union asce asce, gpa_t gpa,
+> +				 unsigned long ga, unsigned int len)
+> +{
+> +	u8 storage_key, access_control;
+> +	unsigned long hva;
+> +	int r;
+> +
+> +	/* access key 0 matches any storage key -> allow */
+> +	if (access_key == 0)
+> +		return 0;
+> +	/*
+> +	 * caller needs to ensure that gfn is accessible, so we can
+> +	 * assume that this cannot fail
+> +	 */
+> +	hva = gfn_to_hva(vcpu->kvm, gpa_to_gfn(gpa));
+> +	mmap_read_lock(current->mm);
+> +	r = get_guest_storage_key(current->mm, hva, &storage_key);
+> +	mmap_read_unlock(current->mm);
+> +	if (r)
+> +		return r;
+> +	access_control = FIELD_GET(_PAGE_ACC_BITS, storage_key);
+> +	/* access key matches storage key -> allow */
+> +	if (access_control == access_key)
+> +		return 0;
+> +	if (mode == GACC_FETCH || mode == GACC_IFETCH) {
+> +		/* it is a fetch and fetch protection is off -> allow */
+> +		if (!(storage_key & _PAGE_FP_BIT))
+> +			return 0;
+> +		if (fetch_prot_override_applicable(vcpu, mode, asce) &&
+> +		    fetch_prot_override_applies(ga, len))
+> +			return 0;
+> +	}
+> +	if (storage_prot_override_applicable(vcpu) &&
+> +	    storage_prot_override_applies(access_control))
+> +		return 0;
+> +	return PGM_PROTECTION;
+> +}
+> +
+>  /**
+>   * guest_range_to_gpas() - Calculate guest physical addresses of page fragments
+>   * covering a logical range
+> @@ -804,6 +878,7 @@ static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
+>   * @len: length of range in bytes
+>   * @asce: address-space-control element to use for translation
+>   * @mode: access mode
+> + * @access_key: access key to mach the range's storage keys against
+>   *
+>   * Translate a logical range to a series of guest absolute addresses,
+>   * such that the concatenation of page fragments starting at each gpa make up
+> @@ -830,7 +905,8 @@ static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
+>   */
+>  static int guest_range_to_gpas(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+>  			       unsigned long *gpas, unsigned long len,
+> -			       const union asce asce, enum gacc_mode mode)
+> +			       const union asce asce, enum gacc_mode mode,
+> +			       u8 access_key)
+>  {
+>  	psw_t *psw = &vcpu->arch.sie_block->gpsw;
+>  	unsigned int offset = offset_in_page(ga);
+> @@ -857,6 +933,10 @@ static int guest_range_to_gpas(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+>  		}
+>  		if (rc)
+>  			return trans_exc(vcpu, rc, ga, ar, mode, prot);
+> +		rc = vcpu_check_access_key(vcpu, access_key, mode, asce, gpa, ga,
+> +					   fragment_len);
+> +		if (rc)
+> +			return trans_exc(vcpu, rc, ga, ar, mode, PROT_TYPE_KEYC);
+>  		if (gpas)
+>  			*gpas++ = gpa;
+>  		offset = 0;
+> @@ -880,16 +960,54 @@ static int access_guest_page(struct kvm *kvm, enum gacc_mode mode, gpa_t gpa,
+>  	return rc;
+>  }
+>  
+> -int access_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+> -		 unsigned long len, enum gacc_mode mode)
+> +static int
+> +access_guest_page_with_key(struct kvm *kvm, enum gacc_mode mode, gpa_t gpa,
+> +			   void *data, unsigned int len, u8 access_key)
+> +{
+> +	struct kvm_memory_slot *slot;
+> +	bool writable;
+> +	gfn_t gfn;
+> +	hva_t hva;
+> +	int rc;
+> +
+> +	gfn = gpa >> PAGE_SHIFT;
+> +	slot = gfn_to_memslot(kvm, gfn);
+> +	hva = gfn_to_hva_memslot_prot(slot, gfn, &writable);
+> +
+> +	if (kvm_is_error_hva(hva))
+> +		return PGM_ADDRESSING;
+> +	/*
+> +	 * Check if it's a ro memslot, even tho that can't occur (they're unsupported).
+> +	 * Don't try to actually handle that case.
+> +	 */
+> +	if (!writable && mode == GACC_STORE)
+> +		return -EOPNOTSUPP;
+> +	hva += offset_in_page(gpa);
+> +	if (mode == GACC_STORE)
+> +		rc = copy_to_user_key((void __user *)hva, data, len, access_key);
+> +	else
+> +		rc = copy_from_user_key(data, (void __user *)hva, len, access_key);
+> +	if (rc)
+> +		return PGM_PROTECTION;
+> +	if (mode == GACC_STORE)
+> +		mark_page_dirty_in_slot(kvm, slot, gfn);
+> +	return 0;
+> +}
+> +
+> +int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+> +			  void *data, unsigned long len, enum gacc_mode mode,
+> +			  u8 access_key)
+>  {
+>  	psw_t *psw = &vcpu->arch.sie_block->gpsw;
+>  	unsigned long nr_pages, idx;
+>  	unsigned long gpa_array[2];
+>  	unsigned int fragment_len;
+>  	unsigned long *gpas;
+> +	enum prot_type prot;
+>  	int need_ipte_lock;
+>  	union asce asce;
+> +	bool try_storage_prot_override;
+> +	bool try_fetch_prot_override;
+>  	int rc;
+>  
+>  	if (!len)
+> @@ -904,16 +1022,47 @@ int access_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+>  		gpas = vmalloc(array_size(nr_pages, sizeof(unsigned long)));
+>  	if (!gpas)
+>  		return -ENOMEM;
+> +	try_fetch_prot_override = fetch_prot_override_applicable(vcpu, mode, asce);
+> +	try_storage_prot_override = storage_prot_override_applicable(vcpu);
+>  	need_ipte_lock = psw_bits(*psw).dat && !asce.r;
+>  	if (need_ipte_lock)
+>  		ipte_lock(vcpu);
+> -	rc = guest_range_to_gpas(vcpu, ga, ar, gpas, len, asce, mode);
+> -	for (idx = 0; idx < nr_pages && !rc; idx++) {
+> +	/*
+> +	 * Since we do the access further down ultimately via a move instruction
+> +	 * that does key checking and returns an error in case of a protection
+> +	 * violation, we don't need to do the check during address translation.
+> +	 * Skip it by passing access key 0, which matches any storage key,
+> +	 * obviating the need for any further checks. As a result the check is
+> +	 * handled entirely in hardware on access, we only need to take care to
+> +	 * forego key protection checking if fetch protection override applies or
+> +	 * retry with the special key 9 in case of storage protection override.
+> +	 */
+> +	rc = guest_range_to_gpas(vcpu, ga, ar, gpas, len, asce, mode, 0);
+> +	if (rc)
+> +		goto out_unlock;
+> +	for (idx = 0; idx < nr_pages; idx++) {
+>  		fragment_len = min(PAGE_SIZE - offset_in_page(gpas[idx]), len);
+> -		rc = access_guest_page(vcpu->kvm, mode, gpas[idx], data, fragment_len);
+> +		if (try_fetch_prot_override && fetch_prot_override_applies(ga, fragment_len)) {
+> +			rc = access_guest_page(vcpu->kvm, mode, gpas[idx],
+> +					       data, fragment_len);
+> +		} else {
+> +			rc = access_guest_page_with_key(vcpu->kvm, mode, gpas[idx],
+> +							data, fragment_len, access_key);
+> +		}
+> +		if (rc == PGM_PROTECTION && try_storage_prot_override)
+> +			rc = access_guest_page_with_key(vcpu->kvm, mode, gpas[idx],
+> +							data, fragment_len, PAGE_SPO_ACC);
+> +		if (rc == PGM_PROTECTION)
+> +			prot = PROT_TYPE_KEYC;
+> +		if (rc)
+> +			break;
+>  		len -= fragment_len;
+>  		data += fragment_len;
+> +		ga = kvm_s390_logical_to_effective(vcpu, ga + fragment_len);
+>  	}
+> +	if (rc > 0)
+> +		rc = trans_exc(vcpu, rc, ga, ar, mode, prot);
+> +out_unlock:
+>  	if (need_ipte_lock)
+>  		ipte_unlock(vcpu);
+>  	if (nr_pages > ARRAY_SIZE(gpa_array))
+> @@ -940,12 +1089,13 @@ int access_guest_real(struct kvm_vcpu *vcpu, unsigned long gra,
+>  }
+>  
+>  /**
+> - * guest_translate_address - translate guest logical into guest absolute address
+> + * guest_translate_address_with_key - translate guest logical into guest absolute address
+>   * @vcpu: virtual cpu
+>   * @gva: Guest virtual address
+>   * @ar: Access register
+>   * @gpa: Guest physical address
+>   * @mode: Translation access mode
+> + * @access_key: access key to mach the storage key with
+>   *
+>   * Parameter semantics are the same as the ones from guest_translate.
+>   * The memory contents at the guest address are not changed.
+> @@ -953,8 +1103,9 @@ int access_guest_real(struct kvm_vcpu *vcpu, unsigned long gra,
+>   * Note: The IPTE lock is not taken during this function, so the caller
+>   * has to take care of this.
+>   */
+> -int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> -			    unsigned long *gpa, enum gacc_mode mode)
+> +int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> +				     unsigned long *gpa, enum gacc_mode mode,
+> +				     u8 access_key)
+>  {
+>  	union asce asce;
+>  	int rc;
+> @@ -963,7 +1114,17 @@ int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+>  	rc = get_vcpu_asce(vcpu, &asce, gva, ar, mode);
+>  	if (rc)
+>  		return rc;
+> -	return guest_range_to_gpas(vcpu, gva, ar, gpa, 1, asce, mode);
+> +	return guest_range_to_gpas(vcpu, gva, ar, gpa, 1, asce, mode,
+> +				   access_key);
+> +}
+> +
+> +int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> +			    unsigned long *gpa, enum gacc_mode mode)
+> +{
+> +	u8 access_key = psw_bits(vcpu->arch.sie_block->gpsw).key;
+> +
+> +	return guest_translate_address_with_key(vcpu, gva, ar, gpa, mode,
+> +						access_key);
+>  }
+>  
+>  /**
+> @@ -973,9 +1134,10 @@ int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+>   * @ar: Access register
+>   * @length: Length of test range
+>   * @mode: Translation access mode
+> + * @access_key: access key to mach the storage keys with
+>   */
+>  int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> -		    unsigned long length, enum gacc_mode mode)
+> +		    unsigned long length, enum gacc_mode mode, u8 access_key)
+>  {
+>  	union asce asce;
+>  	int rc = 0;
+> @@ -984,7 +1146,8 @@ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+>  	if (rc)
+>  		return rc;
+>  	ipte_lock(vcpu);
+> -	rc = guest_range_to_gpas(vcpu, gva, ar, NULL, length, asce, mode);
+> +	rc = guest_range_to_gpas(vcpu, gva, ar, NULL, length, asce, mode,
+> +				 access_key);
+>  	ipte_unlock(vcpu);
+>  
+>  	return rc;
+> diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
+> index 7c72a5e3449f..e5b2f56e7962 100644
+> --- a/arch/s390/kvm/gaccess.h
+> +++ b/arch/s390/kvm/gaccess.h
+> @@ -186,24 +186,31 @@ enum gacc_mode {
+>  	GACC_IFETCH,
+>  };
+>  
+> +int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> +				     unsigned long *gpa, enum gacc_mode mode,
+> +				     u8 access_key);
+> +
+>  int guest_translate_address(struct kvm_vcpu *vcpu, unsigned long gva,
+>  			    u8 ar, unsigned long *gpa, enum gacc_mode mode);
+> +
+>  int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
+> -		    unsigned long length, enum gacc_mode mode);
+> +		    unsigned long length, enum gacc_mode mode, u8 access_key);
+>  
+> -int access_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+> -		 unsigned long len, enum gacc_mode mode);
+> +int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+> +			  void *data, unsigned long len, enum gacc_mode mode,
+> +			  u8 access_key);
+>  
+>  int access_guest_real(struct kvm_vcpu *vcpu, unsigned long gra,
+>  		      void *data, unsigned long len, enum gacc_mode mode);
+>  
+>  /**
+> - * write_guest - copy data from kernel space to guest space
+> + * write_guest_with_key - copy data from kernel space to guest space
+>   * @vcpu: virtual cpu
+>   * @ga: guest address
+>   * @ar: access register
+>   * @data: source address in kernel space
+>   * @len: number of bytes to copy
+> + * @access_key: access key the storage key needs to match
+>   *
+>   * Copy @len bytes from @data (kernel space) to @ga (guest address).
+>   * In order to copy data to guest space the PSW of the vcpu is inspected:
+> @@ -214,8 +221,8 @@ int access_guest_real(struct kvm_vcpu *vcpu, unsigned long gra,
+>   * The addressing mode of the PSW is also inspected, so that address wrap
+>   * around is taken into account for 24-, 31- and 64-bit addressing mode,
+>   * if the to be copied data crosses page boundaries in guest address space.
+> - * In addition also low address and DAT protection are inspected before
+> - * copying any data (key protection is currently not implemented).
+> + * In addition low address, DAT and key protection checks are performed before
+> + * copying any data.
+>   *
+>   * This function modifies the 'struct kvm_s390_pgm_info pgm' member of @vcpu.
+>   * In case of an access exception (e.g. protection exception) pgm will contain
+> @@ -243,10 +250,53 @@ int access_guest_real(struct kvm_vcpu *vcpu, unsigned long gra,
+>   *	 if data has been changed in guest space in case of an exception.
+>   */
+>  static inline __must_check
+> +int write_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+> +			 void *data, unsigned long len, u8 access_key)
+> +{
+> +	return access_guest_with_key(vcpu, ga, ar, data, len, GACC_STORE,
+> +				     access_key);
+> +}
+> +
+> +/**
+> + * write_guest - copy data from kernel space to guest space
+> + * @vcpu: virtual cpu
+> + * @ga: guest address
+> + * @ar: access register
+> + * @data: source address in kernel space
+> + * @len: number of bytes to copy
+> + *
+> + * The behaviour of write_guest is identical to write_guest_with_key, except
+> + * that the PSW access key is used instead of an explicit argument.
+> + */
+> +static inline __must_check
+>  int write_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+>  		unsigned long len)
+>  {
+> -	return access_guest(vcpu, ga, ar, data, len, GACC_STORE);
+> +	u8 access_key = psw_bits(vcpu->arch.sie_block->gpsw).key;
+> +
+> +	return write_guest_with_key(vcpu, ga, ar, data, len, access_key);
+> +}
+> +
+> +/**
+> + * read_guest_with_key - copy data from guest space to kernel space
+> + * @vcpu: virtual cpu
+> + * @ga: guest address
+> + * @ar: access register
+> + * @data: destination address in kernel space
+> + * @len: number of bytes to copy
+> + * @access_key: access key the storage key needs to match
+> + *
+> + * Copy @len bytes from @ga (guest address) to @data (kernel space).
+> + *
+> + * The behaviour of read_guest_with_key is identical to write_guest_with_key,
+> + * except that data will be copied from guest space to kernel space.
+> + */
+> +static inline __must_check
+> +int read_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
+> +			void *data, unsigned long len, u8 access_key)
+> +{
+> +	return access_guest_with_key(vcpu, ga, ar, data, len, GACC_FETCH,
+> +				     access_key);
+>  }
+>  
+>  /**
+> @@ -259,14 +309,16 @@ int write_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+>   *
+>   * Copy @len bytes from @ga (guest address) to @data (kernel space).
+>   *
+> - * The behaviour of read_guest is identical to write_guest, except that
+> - * data will be copied from guest space to kernel space.
+> + * The behaviour of read_guest is identical to read_guest_with_key, except
+> + * that the PSW access key is used instead of an explicit argument.
+>   */
+>  static inline __must_check
+>  int read_guest(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar, void *data,
+>  	       unsigned long len)
+>  {
+> -	return access_guest(vcpu, ga, ar, data, len, GACC_FETCH);
+> +	u8 access_key = psw_bits(vcpu->arch.sie_block->gpsw).key;
+> +
+> +	return read_guest_with_key(vcpu, ga, ar, data, len, access_key);
+>  }
+>  
+>  /**
+> @@ -287,7 +339,10 @@ static inline __must_check
+>  int read_guest_instr(struct kvm_vcpu *vcpu, unsigned long ga, void *data,
+>  		     unsigned long len)
+>  {
+> -	return access_guest(vcpu, ga, 0, data, len, GACC_IFETCH);
+> +	u8 access_key = psw_bits(vcpu->arch.sie_block->gpsw).key;
+> +
+> +	return access_guest_with_key(vcpu, ga, 0, data, len, GACC_IFETCH,
+> +				     access_key);
+>  }
+>  
+>  /**
+> diff --git a/arch/s390/kvm/intercept.c b/arch/s390/kvm/intercept.c
+> index d07ff646d844..8bd42a20d924 100644
+> --- a/arch/s390/kvm/intercept.c
+> +++ b/arch/s390/kvm/intercept.c
+> @@ -331,18 +331,18 @@ static int handle_mvpg_pei(struct kvm_vcpu *vcpu)
+>  
+>  	kvm_s390_get_regs_rre(vcpu, &reg1, &reg2);
+>  
+> -	/* Make sure that the source is paged-in */
+> -	rc = guest_translate_address(vcpu, vcpu->run->s.regs.gprs[reg2],
+> -				     reg2, &srcaddr, GACC_FETCH);
+> +	/* Ensure that the source is paged-in, no actual access -> no key checking */
+> +	rc = guest_translate_address_with_key(vcpu, vcpu->run->s.regs.gprs[reg2],
+> +					      reg2, &srcaddr, GACC_FETCH, 0);
+>  	if (rc)
+>  		return kvm_s390_inject_prog_cond(vcpu, rc);
+>  	rc = kvm_arch_fault_in_page(vcpu, srcaddr, 0);
+>  	if (rc != 0)
+>  		return rc;
+>  
+> -	/* Make sure that the destination is paged-in */
+> -	rc = guest_translate_address(vcpu, vcpu->run->s.regs.gprs[reg1],
+> -				     reg1, &dstaddr, GACC_STORE);
+> +	/* Ensure that the source is paged-in, no actual access -> no key checking */
+> +	rc = guest_translate_address_with_key(vcpu, vcpu->run->s.regs.gprs[reg1],
+> +					      reg1, &dstaddr, GACC_STORE, 0);
+>  	if (rc)
+>  		return kvm_s390_inject_prog_cond(vcpu, rc);
+>  	rc = kvm_arch_fault_in_page(vcpu, dstaddr, 1);
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index 2296b1ff1e02..fdbd6c1dc709 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -4713,7 +4713,7 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>  	case KVM_S390_MEMOP_LOGICAL_READ:
+>  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+>  			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+> -					    mop->size, GACC_FETCH);
+> +					    mop->size, GACC_FETCH, 0);
+>  			break;
+>  		}
+>  		r = read_guest(vcpu, mop->gaddr, mop->ar, tmpbuf, mop->size);
+> @@ -4725,7 +4725,7 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+>  	case KVM_S390_MEMOP_LOGICAL_WRITE:
+>  		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
+>  			r = check_gva_range(vcpu, mop->gaddr, mop->ar,
+> -					    mop->size, GACC_STORE);
+> +					    mop->size, GACC_STORE, 0);
+>  			break;
+>  		}
+>  		if (copy_from_user(tmpbuf, uaddr, mop->size)) {
 
