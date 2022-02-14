@@ -2,100 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A84C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356237AbiBNQTA (ORCPT
+        id S1356265AbiBNQT1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:19:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60132 "EHLO
+        Mon, 14 Feb 2022 11:19:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233120AbiBNQS5 (ORCPT
+        with ESMTP id S235279AbiBNQTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:18:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D15C42EE7;
-        Mon, 14 Feb 2022 08:18:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDA85614B9;
-        Mon, 14 Feb 2022 16:18:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4100C340EE;
-        Mon, 14 Feb 2022 16:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644855529;
-        bh=30+VMmwq/+Ww84ESrOXe06POA0Lt6UwrPtl9Lt+70b4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KOdYiF6NBh0X3dd/jzIhVKqdjaCmSJlkRYSvp07dsQjKWRt87+hxE5Qkxzgiox82b
-         Q0lG9XKZMUafPhEzNdkWJ9pgtbWL/Ae6TS6H2p9dxHs056p1kYoDx3tcOc8LOxq+QN
-         6Lcj/tKD80W5TqvPm2mHxabC4PROpQUJQZZxrRjdy1nLxqZ8rt8jiGUtWRjxFZiAdQ
-         oAlCm5pe0ZzQqlvfZQsvUsI/ThgHSr4gPsN0Y/2C8ge+S1lxr94UEacWYVwU0wARZw
-         G1XfdixxC/bixfsPJcml60Rx6vBQwu0P1eZGiPKWbnFsl3J9WBV+FmnXya0Yh+Q9gs
-         znGjTT7Owwbrg==
-Date:   Mon, 14 Feb 2022 16:18:43 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Cc:     thierry.reding@gmail.com, jonathanh@nvidia.com,
-        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
-        skomatineni@nvidia.com, ldewangan@nvidia.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        p.zabel@pengutronix.de
-Subject: Re: [PATCH 2/6] spi: Tegra234 QUAD SPI compatible
-Message-ID: <YgqA45CXxLTx7TY4@sirena.org.uk>
-References: <1643970576-31503-1-git-send-email-kyarlagadda@nvidia.com>
- <1643970576-31503-3-git-send-email-kyarlagadda@nvidia.com>
+        Mon, 14 Feb 2022 11:19:25 -0500
+X-Greylist: delayed 325 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 08:19:16 PST
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC9142EE7;
+        Mon, 14 Feb 2022 08:19:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644855555;
+        bh=uSiLH41ols2or+PlxwtXv6HH6qStx8ca3yFi6b4NLDA=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=ZC7ys4YhFML+XPJP4mpPLukOKwb3QxulUMHO1uX8Hq+HpNupjBq/FCaMNZWCyzOrC
+         j4XAOTnkQ82dP5VK3x9FkaVwl9jvII4DfttWmiXFtUL3EXEeKXVKBdSWBH71mgYOo8
+         29J1VuwkZ/58p81/nn9SE5mDcQhIMg3Fxj+h3Vas=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.70] ([149.172.237.68]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4hzZ-1oK5ig2JyZ-011et8; Mon, 14
+ Feb 2022 17:13:21 +0100
+Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+To:     Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+ <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+ <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <9791fb9a-0c27-bfeb-5ff8-fb70f1968048@gmx.de>
+Date:   Mon, 14 Feb 2022 17:13:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="At+QsLQe3QIxJ5HT"
-Content-Disposition: inline
-In-Reply-To: <1643970576-31503-3-git-send-email-kyarlagadda@nvidia.com>
-X-Cookie: Your lucky color has faded.
+In-Reply-To: <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:YBdfvrtYI85+zaH+ORjAj6/z8NhLNObYZSKxNdCEkYmHpFKgUBz
+ cvg3dOdbbi7AbkXhFtpSGhjhlkoJcur1g466o350MRispTjbtggc/xvrNm0IEnPKTmC4Fkg
+ ROY/D/pVATsNvg4nEopPdn+DX0L1U4hzKUnMq65l9KuxdLJPNytzgJQ4VZ54vUVWFPmvQlR
+ C3w+lEE3o7q8OAa4qDaLQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:pSOpZ7x17Fc=:woJNeKPRbcarBQfg1Sp6p7
+ EZIgFKw/ObO5hG40inIuLkbDrW1Cy7/VwTqs4SL8vVgokDaexgmTkVpPcpfkMVgEGXaC+131K
+ 4MOJ40qg77xhl/2+g7sROXl0Gpev4OgRHgi8d8TOCHryUcg0C+xeH3jJUQ4rsAMO43iFAwH8F
+ 75Toj4COP0vB9E19Bwik9eh0ykb+6Kf4ASJttjlHCAXoe0XfAdyyBSunQKrlCAglRtZe9HzUK
+ oi1hvv9ayePRgRydJopIP6VlkO4I548O+ARH7wjVq1nTcLYa/y6XJaepY4Xa785OyxBEeK97Q
+ r4HO7QJ0NVzeQmMR/TaaMX5d+1SBy3p7iXyk+fGvAALLUQIEwGDmjC80me3wmv25Y09Thsd+P
+ r3TDp5YYU5zxoH0fDwewDIB0NN00k/daykXSa5lZEryBsk7L2KFj6LavAYexzwxTtkfWzNJJk
+ FbWUzMRTW1utAZqfn79VzUjdHp8CyChiPxrEvTxxkBaAXqgn5bWjXGSLe79ZnvHjtbdi/INY1
+ rFGKejQMMz7kUqwAYqTf2ZqwAyvKR8csmuMT7fcvk1NAvx7bFgXd6MQUIBrrumCAGpmMyfmvU
+ aZz2Ly5EU7gSzjXoeKvKZEuqiTKRH63DGcBKlFEUIk3RaRoeW6oi6byeqAHBmR+iXwBcHbKu6
+ a/G9Hv63wvfuUBBDVJCwWQztHY7+uOg+KlLHzLqKfqoDXAVZfyuvWOJKiuAS+redDyvtLbQGB
+ V2eXimZUERoDCGoFgvy2jkR0q2k2wg82foqSOhBQTbMvJVf4eMnPCSTTaO/c5b+HzflTN8VlF
+ 24OW7D3XS9fDozKPj5Z3MYrX3GKAkiDzuEbp2vbXBndwDASH3mm0UVetIVI+g/39rI+UwN9YM
+ GWJbDrnRsL3NKXXssaoqD8JtDdPk3F/jMtg8Naw8KEnJBfPmuHkZjIoptMzEymDsDpWZGZljI
+ er4IGuIcrlknVgq173Hrr1C+2dX5woLtmBq7AXP3JnUfZs3Qowf4HQAWUPPEAkV/rJ7fTMs52
+ br0Rg8YOY1vLM1kQ58Gt+ffgs02crf7kRhTh2xwNgKGy3tnH4D2fPtXZsKNMQGm4LrkbAVBoH
+ wngwmUzMkytIXs=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---At+QsLQe3QIxJ5HT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On Fri, Feb 04, 2022 at 03:59:32PM +0530, Krishna Yarlagadda wrote:
-> Add compatible string for Tegra234 for Tegra QUAD SPI
->=20
-> Signed-off-by: Krishna Yarlagadda <kyarlagadda@nvidia.com>
+On 14.02.22 at 06:41, Jiri Slaby wrote:
+> On 13. 02. 22, 23:27, Lino Sanfilippo wrote:
+>> Several drivers that support setting the RS485 configuration via usersp=
+ace
+>> implement on or more of the following tasks:
+>>
+>> - in case of an invalid RTS configuration (both RTS after send and RTS =
+on
+>> =C2=A0=C2=A0 send set or both unset) fall back to enable RTS on send an=
+d disable RTS
+>> =C2=A0=C2=A0 after send
+>>
+>> - nullify the padding field of the returned serial_rs485 struct
+>>
+>> - copy the configuration into the uart port struct
+>>
+>> - limit RTS delays to 100 ms
+>>
+>> Move these tasks into the serial core to make them generic and to provi=
+de
+>> a consistent beheviour among all drivers.
+>>
+>> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+>> ---
+>> =C2=A0 drivers/tty/serial/serial_core.c | 13 +++++++++++++
+>> =C2=A0 1 file changed, 13 insertions(+)
+>>
+>> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/seri=
+al_core.c
+>> index 846192a7b4bf..3fab4070359c 100644
+>> --- a/drivers/tty/serial/serial_core.c
+>> +++ b/drivers/tty/serial/serial_core.c
+>> @@ -1282,8 +1282,21 @@ static int uart_set_rs485_config(struct uart_por=
+t *port,
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (copy_from_user(&rs485, rs485_user, s=
+izeof(*rs485_user)))
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return -EFAULT;
+>> =C2=A0 +=C2=A0=C2=A0=C2=A0 /* pick sane settings if the user hasn't */
+>> +=C2=A0=C2=A0=C2=A0 if (!(rs485.flags & SER_RS485_RTS_ON_SEND) =3D=3D
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 !(rs485.flags & SER_RS485_R=
+TS_AFTER_SEND)) {
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags |=3D SER_RS485_=
+RTS_ON_SEND;
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rs485.flags &=3D ~SER_RS485=
+_RTS_AFTER_SEND;
+>> +=C2=A0=C2=A0=C2=A0 }
+>> +=C2=A0=C2=A0=C2=A0 /* clamp the delays to [0, 100ms] */
+>> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_before_send =3D min(rs485.delay_rts=
+_before_send, 100U);
+>> +=C2=A0=C2=A0=C2=A0 rs485.delay_rts_after_send =3D min(rs485.delay_rts_=
+after_send, 100U);
+>
+> Why is this magic 100?
 
-This breaks an x86_64 allmodconfig build:
+The only drivers that seem to care about a max value for the RTS delays us=
+e 100 ms
+(omap-serial, amba pl011, 8250) so I chose this to stay compatible with th=
+e current
+driver implementations. 100 ms also seems large enough to be used as a gen=
+eral max value.
 
-/mnt/kernel/drivers/spi/spi-tegra210-quad.c: In function 'tegra_qspi_probe':
-/mnt/kernel/drivers/spi/spi-tegra210-quad.c:1322:2: error: ignoring return =
-value of 'device_reset' declared with attribute 'warn_unused_result' [-Werr=
-or=3Dunused-result]
- 1322 |  device_reset(tqspi->dev);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~
-/mnt/kernel/drivers/spi/spi-tegra210-quad.c: In function 'tegra_qspi_handle=
-_error':
-/mnt/kernel/drivers/spi/spi-tegra210-quad.c:957:2: error: ignoring return v=
-alue of 'device_reset' declared with attribute 'warn_unused_result' [-Werro=
-r=3Dunused-result]
-  957 |  device_reset(tqspi->dev);
-      |  ^~~~~~~~~~~~~~~~~~~~~~~~
+> Can we have that number somehow documented? You should define a macro fo=
+r that anyway.
 
+Ok, I will do so.
 
---At+QsLQe3QIxJ5HT
-Content-Type: application/pgp-signature; name="signature.asc"
+>
+>> +=C2=A0=C2=A0=C2=A0 memset(rs485.padding, 0, sizeof(rs485.padding));
+>
+> What is this memset good for?
 
------BEGIN PGP SIGNATURE-----
+Drivers like max310x, amba-pl011, 8250_pci, 8250_fintek, 8250_lpc18xx seem=
+ to care about
+returning a serial_rs485 struct with cleared padding field to userspace. S=
+o they all clear
+that field on their own. Although not really necessary, to me this seems t=
+o be a good
+default behavior, so I added it to the serial core.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIKgOMACgkQJNaLcl1U
-h9Bjuwf/VbgBj6Nl0baUijAzK/jUkC0Q/kbtBGV9SdEmIYhv1GZQySMAxbh69PMl
-MXwI4JwdVs0SHVHCFFqmCL3X4f6+dZIabNSdTlo6UfTxbM4LvGNyoqMC99fasg9/
-0XV/eyb51O783NVT4ZGumapiz07W/Urlw3QIgM0lmINoH0RlD1Aqh58LW4EUd+zA
-IkwVm5OpcU6Am5ubysVmInNBiU5OmhMAN1TVdLaTz2r5R+ooducLijBE7gMnNluZ
-yPgC/UdkFEUwT4oW4xpzeuXASX+94/E+r1OGfesPq/qou21P8fAh59K0Fskp1ssf
-vEPF3R2bOU9ivbOb0Q6aYRNFI2974Q==
-=zBVd
------END PGP SIGNATURE-----
+>
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock_irqsave(&port->lock, flags);
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D port->rs485_config(port, &rs485)=
+;
+>> +=C2=A0=C2=A0=C2=A0 if (!ret)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 port->rs485 =3D rs485;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irqrestore(&port->lock, flag=
+s);
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret)
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+>
+> thanks,
 
---At+QsLQe3QIxJ5HT--
+Thanks for the review!
+
+Regards,
+Lino
