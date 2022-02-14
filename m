@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B724CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B6BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344533AbiBNKCm (ORCPT
+        id S1344587AbiBNKCr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:02:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43276 "EHLO
+        Mon, 14 Feb 2022 05:02:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343949AbiBNJ5o (ORCPT
+        with ESMTP id S1344052AbiBNJ6M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:57:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE8E6A39A;
-        Mon, 14 Feb 2022 01:46:01 -0800 (PST)
+        Mon, 14 Feb 2022 04:58:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB2D6A3B7;
+        Mon, 14 Feb 2022 01:46:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46789B80DC6;
-        Mon, 14 Feb 2022 09:46:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67A13C340E9;
-        Mon, 14 Feb 2022 09:45:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51FDAB80DC7;
+        Mon, 14 Feb 2022 09:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E6AC340E9;
+        Mon, 14 Feb 2022 09:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831959;
-        bh=LZ/Ng8GaZeAuzefv9xIp1LyLk8VNTsIYnLOZI240d4A=;
+        s=korg; t=1644831962;
+        bh=uTVbxloRA/oMSMkup+LNxAM+kjT2Mh6U5zYG9RnWECE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sbCNh5eOiyzDcBVuX0fH24YGr1YaxkTKc8P5dk6N31U43WGdJLE6aAvIRD9x5J0CE
-         SymBPOPXpOES+RcY4Pn2GumGNKI10PvT2aymHcafA1XtR4UdNCxFh93z8svU7H5WaS
-         Eww32JfWyEv4uCTVNs/Bt6p2t6xItJGywvuW2fiw=
+        b=eejCPZqwJ0lg4Camvy5UgFbPHtw/dPEhZRMjV/JkQrRY2Y59es/Skl7hVJXMMLAn9
+         jSDYQn14XLo6j7Vubfo+H6JHH+9BcBPMza/nHYxqYY9RZuTqi8QULSb9kAdd+TGT/Z
+         oBr9utt2fA6ZMUIEkvk2pxWRyugyU/kiS6XOYhok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 027/172] NFSv4 remove zero number of fs_locations entries error check
-Date:   Mon, 14 Feb 2022 10:24:45 +0100
-Message-Id: <20220214092507.344652337@linuxfoundation.org>
+Subject: [PATCH 5.15 036/172] perf/x86/rapl: fix AMD event handling
+Date:   Mon, 14 Feb 2022 10:24:54 +0100
+Message-Id: <20220214092507.650404408@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,48 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Stephane Eranian <eranian@google.com>
 
-[ Upstream commit 90e12a3191040bd3854d3e236c35921e4e92a044 ]
+[ Upstream commit 0036fb00a756a2f6e360d44e2e3d2200a8afbc9b ]
 
-Remove the check for the zero length fs_locations reply in the
-xdr decoding, and instead check for that in the migration code.
+The RAPL events exposed under /sys/devices/power/events should only reflect
+what the underlying hardware actually support. This is how it works on Intel
+RAPL and Intel core/uncore PMUs in general.
+But on AMD, this was not the case. All possible RAPL events were advertised.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+This is what it showed on an AMD Fam17h:
+$ ls /sys/devices/power/events/
+energy-cores        energy-gpu          energy-pkg          energy-psys
+energy-ram          energy-cores.scale  energy-gpu.scale    energy-pkg.scale
+energy-psys.scale   energy-ram.scale    energy-cores.unit   energy-gpu.unit
+energy-pkg.unit     energy-psys.unit    energy-ram.unit
+
+Yet, on AMD Fam17h, only energy-pkg is supported.
+
+This patch fixes the problem. Given the way perf_msr_probe() works, the
+amd_rapl_msrs[] table has to have all entries filled out and in particular
+the group field, otherwise perf_msr_probe() defaults to making the event
+visible.
+
+With the patch applied, the kernel now only shows was is actually supported:
+
+$ ls /sys/devices/power/events/
+energy-pkg  energy-pkg.scale  energy-pkg.unit
+
+The patch also uses the RAPL_MSR_MASK because only the 32-bits LSB of the
+RAPL counters are relevant when reading power consumption.
+
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220105185659.643355-1-eranian@google.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4state.c | 3 +++
- fs/nfs/nfs4xdr.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/events/rapl.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index f22818a80c2c7..acc1cd3e63a48 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -2105,6 +2105,9 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
- 	}
+diff --git a/arch/x86/events/rapl.c b/arch/x86/events/rapl.c
+index 85feafacc445d..77e3a47af5ad5 100644
+--- a/arch/x86/events/rapl.c
++++ b/arch/x86/events/rapl.c
+@@ -536,11 +536,14 @@ static struct perf_msr intel_rapl_spr_msrs[] = {
+  * - perf_msr_probe(PERF_RAPL_MAX)
+  * - want to use same event codes across both architectures
+  */
+-static struct perf_msr amd_rapl_msrs[PERF_RAPL_MAX] = {
+-	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr },
++static struct perf_msr amd_rapl_msrs[] = {
++	[PERF_RAPL_PP0]  = { 0, &rapl_events_cores_group, 0, false, 0 },
++	[PERF_RAPL_PKG]  = { MSR_AMD_PKG_ENERGY_STATUS,  &rapl_events_pkg_group,   test_msr, false, RAPL_MSR_MASK },
++	[PERF_RAPL_RAM]  = { 0, &rapl_events_ram_group,   0, false, 0 },
++	[PERF_RAPL_PP1]  = { 0, &rapl_events_gpu_group,   0, false, 0 },
++	[PERF_RAPL_PSYS] = { 0, &rapl_events_psys_group,  0, false, 0 },
+ };
  
- 	result = -NFS4ERR_NXIO;
-+	if (!locations->nlocations)
-+		goto out;
-+
- 	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
- 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
- 			__func__);
-diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
-index 5e886518f2d45..2a1bf0a72d5bf 100644
---- a/fs/nfs/nfs4xdr.c
-+++ b/fs/nfs/nfs4xdr.c
-@@ -3693,8 +3693,6 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
- 	if (unlikely(!p))
- 		goto out_eio;
- 	n = be32_to_cpup(p);
--	if (n <= 0)
--		goto out_eio;
- 	for (res->nlocations = 0; res->nlocations < n; res->nlocations++) {
- 		u32 m;
- 		struct nfs4_fs_location *loc;
+-
+ static int rapl_cpu_offline(unsigned int cpu)
+ {
+ 	struct rapl_pmu *pmu = cpu_to_rapl_pmu(cpu);
 -- 
 2.34.1
 
