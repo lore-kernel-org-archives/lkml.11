@@ -2,96 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D42C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF53C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:32:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355157AbiBNObq (ORCPT
+        id S1355161AbiBNOc1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:31:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41488 "EHLO
+        Mon, 14 Feb 2022 09:32:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbiBNObm (ORCPT
+        with ESMTP id S231570AbiBNOcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:31:42 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8639D41991;
-        Mon, 14 Feb 2022 06:31:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644849094; x=1676385094;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=TCvN5c5+MpHRPW/ZD+5q8UT9550dKUoLFTp3U6+05Rw=;
-  b=bG/XaRjcqhoc6plrAsdfnY5LAOc5uSPS9WW/kykTzkYNC05VC8VD46/X
-   14ki7lUbxC9D/KusS7sBnztG2WgiLuSd2Pqn1EPXsB6cMvvOpMGQuNsfE
-   naVLnGCaMxjuw7zIpHRTdy7MEcnzRZzLFmpDyQ2+MAaLW1KoPozjwTeVK
-   AhPIbN60dA9IcRGOW/zjcrJ8qdW+J/XXkKvQTKrCwhv8YRr5ypGE9Ga6D
-   rJlp9cfTRVxIbGvCglGqmoxsK5Fa4ICnZJYSsICNlZ9/ENfggjGfsWdfh
-   c2mVmLNPZSK97vYUu1lCWq0rtKskoOuYPXGGGrb0eZdIQXHfPe57q1NB3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="233647302"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="233647302"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 06:31:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="495679213"
-Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
-  by orsmga006.jf.intel.com with ESMTP; 14 Feb 2022 06:31:29 -0800
-Message-ID: <366a3afc-071f-ae77-d06d-25ad750976dc@intel.com>
-Date:   Mon, 14 Feb 2022 16:31:28 +0200
+        Mon, 14 Feb 2022 09:32:23 -0500
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B4A41991;
+        Mon, 14 Feb 2022 06:32:15 -0800 (PST)
+Received: by mail-qk1-f172.google.com with SMTP id m25so14460832qka.9;
+        Mon, 14 Feb 2022 06:32:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+D9TDb8zgo7SYyd9U66f/5PMXdHiP4mRfXaTW0S+zdU=;
+        b=f4byYKflNUzTLr72E+3GStpf2gLhBp60fh42HnSbM9yTeLwE4rotE2d60zbRyHg8dS
+         dhpQWJycSL2RwO/tAg/lei1hUhQJOVrOF+AzZOsan1EzLCx+Rwvfot39CEx5EOBLUeA/
+         r35BFZGmHVoNdZchrCO+fNjPw8OeU3C6qD0oRswRI1kHxF6HODPk8Yzu/kjuSdSTP4NN
+         IMXshtVgMZe5FS8NCv2jMIH9+BdQR3HjXhojK+MD5T2GBu6Ifsk2b4f8pby89Xo3ITVd
+         CV4xLIaHslCf/DScQE3AyaN0i6kP6hTdpOph694CDPB8juBYOkgHfF2hG66e2ihanuTz
+         dG/g==
+X-Gm-Message-State: AOAM5329TfO2xG30G4w9phlV1ZBz2fejt+yU0OD8AvU0UijIZUjjmeET
+        dao24ATtBo3xkKiyc1Kv1B+CrcYq4YWhKsuP
+X-Google-Smtp-Source: ABdhPJzgHQw0kWDsRpHgdImRm6LVfnu2ylZ8LNmFcGR9mbXut5XGz74HRkaaBhWodGcWtPvpF+3P6Q==
+X-Received: by 2002:a05:620a:24d0:: with SMTP id m16mr7167670qkn.558.1644849134281;
+        Mon, 14 Feb 2022 06:32:14 -0800 (PST)
+Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com. [209.85.219.173])
+        by smtp.gmail.com with ESMTPSA id f20sm18099940qtf.39.2022.02.14.06.32.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 06:32:14 -0800 (PST)
+Received: by mail-yb1-f173.google.com with SMTP id p19so46606414ybc.6;
+        Mon, 14 Feb 2022 06:32:14 -0800 (PST)
+X-Received: by 2002:ab0:384c:: with SMTP id h12mr3670905uaw.122.1644848795466;
+ Mon, 14 Feb 2022 06:26:35 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v1] scsi: ufs: remove clk_scaling_lock when clkscaling
- isn't supported.
-Content-Language: en-US
-To:     Kiwoong Kim <kwmad.kim@samsung.com>,
-        'Avri Altman' <Avri.Altman@wdc.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        cang@codeaurora.org, sc.suh@samsung.com, hy50.seo@samsung.com,
-        sh425.lee@samsung.com, bhoon95.kim@samsung.com,
-        vkumar.1997@samsung.com
-References: <CGME20220205074128epcas2p40901c37a7328e825d8697f8d3269edba@epcas2p4.samsung.com>
- <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
- <DM6PR04MB657519E60FAFA19434531CE2FC2B9@DM6PR04MB6575.namprd04.prod.outlook.com>
- <007101d81eed$4d120a60$e7361f20$@samsung.com>
- <3f2938f7-2a9e-60e8-5237-fe7ebc3b4296@intel.com>
- <000001d81fcb$3b962f30$b2c28d90$@samsung.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <000001d81fcb$3b962f30$b2c28d90$@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220211210757.612595-1-Jason@zx2c4.com> <fcab986b-d0bd-c798-de17-266abcdc7da2@gentoo.org>
+ <CAHmME9ooEbgiv3DRk87ei+rUoVNMJthY7UuG_xCgm=kfMZAajw@mail.gmail.com>
+In-Reply-To: <CAHmME9ooEbgiv3DRk87ei+rUoVNMJthY7UuG_xCgm=kfMZAajw@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 14 Feb 2022 15:26:24 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXDj+BVCs4Syg39vjnHGKcwJnCgDxrGoOiEFM_T4ojwPg@mail.gmail.com>
+Message-ID: <CAMuHMdXDj+BVCs4Syg39vjnHGKcwJnCgDxrGoOiEFM_T4ojwPg@mail.gmail.com>
+Subject: Re: [PATCH RFC v0] random: block in /dev/urandom
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Joshua Kinard <kumba@gentoo.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@google.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Theodore Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/02/2022 06:44, Kiwoong Kim wrote:
->> The error handler really should have exclusive access.  One of the places
->> you change does explain that:
->>
->>  		 * Hold the scaling lock just in case dev cmds
->>  		 * are sent via bsg and/or sysfs.
->>  		 */
->> -		down_write(&hba->clk_scaling_lock);
->> +		if (ufshcd_is_clkscaling_supported(hba))
->> +			down_write(&hba->clk_scaling_lock); 
-> 
-> 
-> Yeah.., I saw the comment but didn't get why.
-> 
-> Is there anyone who knows why it's necessary for all SoCs?
-> At lease, I know there is no reason to forbid concurrent executions of dev cmd and power mode change.
-> 
-> If there's nothing, how about adding a quick to ignore it?
+Hi Jason,
 
-Is it worth it?
+On Mon, Feb 14, 2022 at 3:05 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> On Sun, Feb 13, 2022 at 12:06 AM Joshua Kinard <kumba@gentoo.org> wrote:
+> > The R6000/R6000A CPU only ever existed in systems in the late 1980's that
+> > were fairly large, and I don't think there is a complete, working unit out
+> > there that can actually boot up, let alone boot a Linux kernel.
+>
+> So from what you've written, it sounds like MIPS is actually not a problem here.
+>
+> So the only systems we're actually talking about without a good cycle
+> counter are non-Amiga m68k? If so, that'd be a pretty terrific
+> finding. It'd mean that this idea can move forward, and we only need
+> to worry about some m68k museum pieces with misconfigured
+> userspaces...
 
-The error handler really should have exclusive access.
-Have you considered, for example, races of ufshcd_reset_and restore() and dev commands, tm commands, UIC commands.
-I suspect more locking is needed not less.
+I'm afraid you missed one important detail.  You wrote:
+
+> On every platform, random_get_entropy() is connected to get_cycles(),
+> except for three: m68k, MIPS, and RISC-V.
+
+The default implementation in include/asm-generic/timex.h is:
+
+    static inline cycles_t get_cycles(void)
+    {
+            return 0;
+    }
+
+Several architectures do not implement get_cycles(), or implement it
+with a variant that's very similar or identical to the generic version.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
