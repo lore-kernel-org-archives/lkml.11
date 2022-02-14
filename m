@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 653ABC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DA3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347607AbiBNK3g (ORCPT
+        id S1347108AbiBNK3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57146 "EHLO
+        Mon, 14 Feb 2022 05:29:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232904AbiBNK1h (ORCPT
+        with ESMTP id S1347089AbiBNK1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:27:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE6195A0E;
-        Mon, 14 Feb 2022 01:58:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEBC95A1F;
+        Mon, 14 Feb 2022 01:58:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3572F60921;
-        Mon, 14 Feb 2022 09:58:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1745EC340E9;
-        Mon, 14 Feb 2022 09:58:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84B7860A14;
+        Mon, 14 Feb 2022 09:58:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4422AC340E9;
+        Mon, 14 Feb 2022 09:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832691;
-        bh=cDrmzps+EwVMIVwa4E3JRtZVdxrZkoacSvcnAIzOuQo=;
+        s=korg; t=1644832694;
+        bh=SixfaTtzdyMqwe0H6Yan4n+a7bywP5NajjS/j0fBXjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AZirjobC00MKz59tBbmcee+q0T/qoHZRj5xLsOGppIeTm5GAR0GImyLl9vLBFxIJD
-         U1NXly1UB9yAx4ZUYJM4i1XxL682A130cRMfvmT95bWubjRi0Zn7CeRCkRmPtiREWN
-         Isif5Idd3TLQMliGcODJE5NtyItgZJCo9iU+ZTBU=
+        b=vUszrsg4CegqfzRrmzeatSIGfJU9qIqWJmpCm9cCQ8rkkS1oeYGcLE8WqTDg8UpIk
+         SNZ17HUeJqdKea19h3ABmtRno7vQPBSIePqKivMQNO2Z1iMNlAawj4/mQ5WSfO0LfK
+         NiJHkDkmFrgkyPkEjcRIvI23J/Kq3bUcuim8LAl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 094/203] ARM: dts: meson: Fix the UART compatible strings
-Date:   Mon, 14 Feb 2022 10:25:38 +0100
-Message-Id: <20220214092513.460176580@linuxfoundation.org>
+Subject: [PATCH 5.16 095/203] ARM: dts: meson8: Fix the UART device-tree schema validation
+Date:   Mon, 14 Feb 2022 10:25:39 +0100
+Message-Id: <20220214092513.492972629@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -53,66 +53,73 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
+[ Upstream commit 57007bfb5469ba31cacf69d52195e8b75f43e32d ]
 
 The dt-bindings for the UART controller only allow the following values
-for Meson6 SoCs:
-- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson6-uart"
+for Meson8 SoCs:
+- "amlogic,meson8-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson8-uart"
 
 Use the correct fallback compatible string "amlogic,meson-ao-uart" for
 AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
 domain UART controllers.
 
-Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
+Also update the order of the clocks to match the order defined in the
+yaml schema.
+
+Fixes: 6ca77502050eff ("ARM: dts: meson8: use stable UART bindings with correct gate clock")
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
+Link: https://lore.kernel.org/r/20211227180026.4068352-3-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/meson.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/meson8.dtsi | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
-index 3be7cba603d5a..26eaba3fa96f3 100644
---- a/arch/arm/boot/dts/meson.dtsi
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -59,7 +59,7 @@ hwrng: rng@8100 {
- 			};
+diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
+index f80ddc98d3a2b..9997a5d0333a3 100644
+--- a/arch/arm/boot/dts/meson8.dtsi
++++ b/arch/arm/boot/dts/meson8.dtsi
+@@ -736,27 +736,27 @@ &timer_abcde {
+ };
  
- 			uart_A: serial@84c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84c0 0x18>;
- 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
- 				fifo-size = <128>;
-@@ -67,7 +67,7 @@ uart_A: serial@84c0 {
- 			};
+ &uart_AO {
+-	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_CLK81>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8-uart", "amlogic,meson-ao-uart";
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
  
- 			uart_B: serial@84dc {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84dc 0x18>;
- 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -105,7 +105,7 @@ saradc: adc@8680 {
- 			};
+ &uart_A {
+-	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART0>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
  
- 			uart_C: serial@8700 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x8700 0x18>;
- 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -228,7 +228,7 @@ ir_receiver: ir-receiver@480 {
- 			};
+ &uart_B {
+-	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART1>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
  
- 			uart_AO: serial@4c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
- 				reg = <0x4c0 0x18>;
- 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
+ &uart_C {
+-	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART2>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &usb0 {
 -- 
 2.34.1
 
