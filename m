@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B13C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345343AbiBNKJV (ORCPT
+        id S1344593AbiBNKJ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:09:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54814 "EHLO
+        Mon, 14 Feb 2022 05:09:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344599AbiBNKEl (ORCPT
+        with ESMTP id S1344355AbiBNKEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:04:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5469EBC8E;
-        Mon, 14 Feb 2022 01:49:08 -0800 (PST)
+        Mon, 14 Feb 2022 05:04:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A70564A3ED;
+        Mon, 14 Feb 2022 01:49:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11075B80DC8;
-        Mon, 14 Feb 2022 09:49:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A057C340E9;
-        Mon, 14 Feb 2022 09:49:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C848B80DC8;
+        Mon, 14 Feb 2022 09:49:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B81FC340E9;
+        Mon, 14 Feb 2022 09:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832145;
-        bh=tPEjF7F9Mz+qnlVTN+3+8I9Hs7K5Y+z4WT9v7HTWFkM=;
+        s=korg; t=1644832149;
+        bh=RGZA6G40eAW3uX2cR5Zais31mABtdKrTd4GgeiCbSUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHFZR25o7iP8fSZsr/3Cl81ZxLL87aF2K2wkqDaY6P53WkPcHstj82D/OcB/obAiT
-         Vr4YzVWjo7oVF78O07upudOhqarSEs3uMbNA68Ma/DCS9c8U6nD/gdYx87lTg8e/mj
-         qfL0khX2B5X5GorV4dZSP/2daNTosa5ItYbxwshc=
+        b=nA3V7YoNpFStkhoZKUIJjjbSImyeJmMGCePRFwxkLn5EUWZ+7Rd7lGeKu7C8Bns5A
+         KOSPGkh3LAwGZEG5HQWUHcOInReePdZJwGBEfU11yweab2lkhYJO43CK/4NPxhW88Q
+         3s5hjQXelUR/lHI8Vj9wpD+/85zuih3rizNvl6fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Liu Ying <victor.liu@nxp.com>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH 5.15 092/172] phy: dphy: Correct clk_pre parameter
-Date:   Mon, 14 Feb 2022 10:25:50 +0100
-Message-Id: <20220214092509.583577287@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mikko=20Salom=C3=A4ki?= <ms@datarespons.se>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 093/172] gpio: aggregator: Fix calling into sleeping GPIO controllers
+Date:   Mon, 14 Feb 2022 10:25:51 +0100
+Message-Id: <20220214092509.617063943@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -53,154 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Ying <victor.liu@nxp.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 9a8406ba1a9a2965c27e0db1d7753471d12ee9ff ]
+[ Upstream commit 2cba05451a6d0c703bb74f1a250691404f27c4f1 ]
 
-The D-PHY specification (v1.2) explicitly mentions that the T-CLK-PRE
-parameter's unit is Unit Interval(UI) and the minimum value is 8.  Also,
-kernel doc of the 'clk_pre' member of struct phy_configure_opts_mipi_dphy
-mentions that it should be in UI.  However, the dphy core driver wrongly
-sets 'clk_pre' to 8000, which seems to hint that it's in picoseconds.
+If the parent GPIO controller is a sleeping controller (e.g. a GPIO
+controller connected to I2C), getting or setting a GPIO triggers a
+might_sleep() warning.  This happens because the GPIO Aggregator takes
+the can_sleep flag into account only for its internal locking, not for
+calling into the parent GPIO controller.
 
-So, let's fix the dphy core driver to correctly reflect the T-CLK-PRE
-parameter's minimum value according to the D-PHY specification.
+Fix this by using the gpiod_[gs]et*_cansleep() APIs when calling into a
+sleeping GPIO controller.
 
-I'm assuming that all impacted custom drivers shall program values in
-TxByteClkHS cycles into hardware for the T-CLK-PRE parameter.  The D-PHY
-specification mentions that the frequency of TxByteClkHS is exactly 1/8
-the High-Speed(HS) bit rate(each HS bit consumes one UI).  So, relevant
-custom driver code is changed to program those values as
-DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE), then.
-
-Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
-Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
-as I don't have the hardwares.
-
-Fixes: 2ed869990e14 ("phy: Add MIPI D-PHY configuration options")
-Tested-by: Liu Ying <victor.liu@nxp.com> # RM67191 DSI panel on i.MX8mq EVK
-Reviewed-by: Andrzej Hajda <andrzej.hajda@intel.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com> # for phy-meson-axg-mipi-dphy.c
-Tested-by: Neil Armstrong <narmstrong@baylibre.com> # for phy-meson-axg-mipi-dphy.c
-Tested-by: Guido Günther <agx@sigxcpu.org> # Librem 5 (imx8mq) with it's rather picky panel
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Liu Ying <victor.liu@nxp.com>
-Link: https://lore.kernel.org/r/20220124024007.1465018-1-victor.liu@nxp.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Mikko Salomäki <ms@datarespons.se>
+Fixes: 828546e24280f721 ("gpio: Add GPIO Aggregator")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/nwl-dsi.c                 | 12 +++++-------
- drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c    |  3 ++-
- drivers/phy/phy-core-mipi-dphy.c                 |  4 ++--
- drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c |  3 ++-
- 4 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/gpio/gpio-aggregator.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
-index a7389a0facfb4..af07eeb47ca02 100644
---- a/drivers/gpu/drm/bridge/nwl-dsi.c
-+++ b/drivers/gpu/drm/bridge/nwl-dsi.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/irq.h>
- #include <linux/math64.h>
-@@ -196,12 +197,9 @@ static u32 ps2bc(struct nwl_dsi *dsi, unsigned long long ps)
- /*
-  * ui2bc - UI time periods to byte clock cycles
-  */
--static u32 ui2bc(struct nwl_dsi *dsi, unsigned long long ui)
-+static u32 ui2bc(unsigned int ui)
+diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+index 34e35b64dcdc0..23047dc84ef1b 100644
+--- a/drivers/gpio/gpio-aggregator.c
++++ b/drivers/gpio/gpio-aggregator.c
+@@ -273,7 +273,8 @@ static int gpio_fwd_get(struct gpio_chip *chip, unsigned int offset)
  {
--	u32 bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
--
--	return DIV64_U64_ROUND_UP(ui * dsi->lanes,
--				  dsi->mode.clock * 1000 * bpp);
-+	return DIV_ROUND_UP(ui, BITS_PER_BYTE);
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	return gpiod_get_value(fwd->descs[offset]);
++	return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offset])
++			       : gpiod_get_value(fwd->descs[offset]);
  }
  
- /*
-@@ -232,12 +230,12 @@ static int nwl_dsi_config_host(struct nwl_dsi *dsi)
+ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -292,7 +293,10 @@ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 	for_each_set_bit(i, mask, fwd->chip.ngpio)
+ 		descs[j++] = fwd->descs[i];
+ 
+-	error = gpiod_get_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		error = gpiod_get_array_value_cansleep(j, descs, NULL, values);
++	else
++		error = gpiod_get_array_value(j, descs, NULL, values);
+ 	if (error)
+ 		return error;
+ 
+@@ -327,7 +331,10 @@ static void gpio_fwd_set(struct gpio_chip *chip, unsigned int offset, int value)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	gpiod_set_value(fwd->descs[offset], value);
++	if (chip->can_sleep)
++		gpiod_set_value_cansleep(fwd->descs[offset], value);
++	else
++		gpiod_set_value(fwd->descs[offset], value);
+ }
+ 
+ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -346,7 +353,10 @@ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 		descs[j++] = fwd->descs[i];
  	}
  
- 	/* values in byte clock cycles */
--	cycles = ui2bc(dsi, cfg->clk_pre);
-+	cycles = ui2bc(cfg->clk_pre);
- 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_t_pre: 0x%x\n", cycles);
- 	nwl_dsi_write(dsi, NWL_DSI_CFG_T_PRE, cycles);
- 	cycles = ps2bc(dsi, cfg->lpx + cfg->clk_prepare + cfg->clk_zero);
- 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_tx_gap (pre): 0x%x\n", cycles);
--	cycles += ui2bc(dsi, cfg->clk_pre);
-+	cycles += ui2bc(cfg->clk_pre);
- 	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_t_post: 0x%x\n", cycles);
- 	nwl_dsi_write(dsi, NWL_DSI_CFG_T_POST, cycles);
- 	cycles = ps2bc(dsi, cfg->hs_exit);
-diff --git a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-index cd2332bf0e31a..fdbd64c03e12b 100644
---- a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-+++ b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-@@ -9,6 +9,7 @@
+-	gpiod_set_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		gpiod_set_array_value_cansleep(j, descs, NULL, values);
++	else
++		gpiod_set_array_value(j, descs, NULL, values);
+ }
  
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/bits.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/io.h>
-@@ -250,7 +251,7 @@ static int phy_meson_axg_mipi_dphy_power_on(struct phy *phy)
- 		     (DIV_ROUND_UP(priv->config.clk_zero, temp) << 16) |
- 		     (DIV_ROUND_UP(priv->config.clk_prepare, temp) << 24));
- 	regmap_write(priv->regmap, MIPI_DSI_CLK_TIM1,
--		     DIV_ROUND_UP(priv->config.clk_pre, temp));
-+		     DIV_ROUND_UP(priv->config.clk_pre, BITS_PER_BYTE));
- 
- 	regmap_write(priv->regmap, MIPI_DSI_HS_TIM,
- 		     DIV_ROUND_UP(priv->config.hs_exit, temp) |
-diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
-index 288c9c67aa748..ccb4045685cdd 100644
---- a/drivers/phy/phy-core-mipi-dphy.c
-+++ b/drivers/phy/phy-core-mipi-dphy.c
-@@ -36,7 +36,7 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
- 
- 	cfg->clk_miss = 0;
- 	cfg->clk_post = 60000 + 52 * ui;
--	cfg->clk_pre = 8000;
-+	cfg->clk_pre = 8;
- 	cfg->clk_prepare = 38000;
- 	cfg->clk_settle = 95000;
- 	cfg->clk_term_en = 0;
-@@ -97,7 +97,7 @@ int phy_mipi_dphy_config_validate(struct phy_configure_opts_mipi_dphy *cfg)
- 	if (cfg->clk_post < (60000 + 52 * ui))
- 		return -EINVAL;
- 
--	if (cfg->clk_pre < 8000)
-+	if (cfg->clk_pre < 8)
- 		return -EINVAL;
- 
- 	if (cfg->clk_prepare < 38000 || cfg->clk_prepare > 95000)
-diff --git a/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c b/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
-index 347dc79a18c18..630e01b5c19b9 100644
---- a/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
-+++ b/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
-@@ -5,6 +5,7 @@
-  * Author: Wyon Bi <bivvy.bi@rock-chips.com>
-  */
- 
-+#include <linux/bits.h>
- #include <linux/kernel.h>
- #include <linux/clk.h>
- #include <linux/iopoll.h>
-@@ -364,7 +365,7 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
- 	 * The value of counter for HS Tclk-pre
- 	 * Tclk-pre = Tpin_txbyteclkhs * value
- 	 */
--	clk_pre = DIV_ROUND_UP(cfg->clk_pre, t_txbyteclkhs);
-+	clk_pre = DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE);
- 
- 	/*
- 	 * The value of counter for HS Tlpx Time
+ static void gpio_fwd_set_multiple_locked(struct gpio_chip *chip,
 -- 
 2.34.1
 
