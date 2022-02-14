@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 539D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B95AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242926AbiBNJ2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:28:07 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40836 "EHLO
+        id S242948AbiBNJ2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:28:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiBNJ2G (ORCPT
+        with ESMTP id S232064AbiBNJ2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:06 -0500
+        Mon, 14 Feb 2022 04:28:09 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148D760A8F;
-        Mon, 14 Feb 2022 01:27:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D8260A8E;
+        Mon, 14 Feb 2022 01:28:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4BD160DFD;
-        Mon, 14 Feb 2022 09:27:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 726D8C340EF;
-        Mon, 14 Feb 2022 09:27:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 98C9360DFD;
+        Mon, 14 Feb 2022 09:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DC5BC340F0;
+        Mon, 14 Feb 2022 09:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830878;
-        bh=0lxXy/jVMS9pYNsQkVICaXhZEM0lAPgI5MzlHy/N10E=;
+        s=korg; t=1644830881;
+        bh=Rk+bx6izfFhamqI62DLqstxwO1vrmy+lWTIj8j3BP2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w3Jc81cdiHJzM2eCqoR1ksaj/Kb0uP+DZ42hsT8ZO4eg2R3B3ysUEl0RvqW+6flqw
-         /D/np4M/18wJoBzGN6K1XWNMctRx6xbC9pSWpKY0myX+lUxnK5P7ighgSvS3qsKZAc
-         nCEWi7a6d+YfU2gUMii3KBdkC5Qb+9ZbHQXyWgHg=
+        b=AQwjzYuc1jrdeC+YyYozLOwCLvxvOYvNcIF8ik+DFikSJhjO8OycTYgNbb58k+GyO
+         l6FUlQwR8V70dQ7HvFmeKV5kD1Wk6bQKY+fB0tnZ3fQ8oUgFS7KZNkNwQs6MpDB1OR
+         uBQox4vam55RONGa46pMCGzY0TRyrXAq1rqe+R30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 4.9 01/34] integrity: check the return value of audit_log_start()
-Date:   Mon, 14 Feb 2022 10:25:27 +0100
-Message-Id: <20220214092445.995230860@linuxfoundation.org>
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 10/34] nfs: nfs4clinet: check the return value of kstrdup()
+Date:   Mon, 14 Feb 2022 10:25:36 +0100
+Message-Id: <20220214092446.281702710@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,31 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-commit 83230351c523b04ff8a029a4bdf97d881ecb96fc upstream.
+[ Upstream commit fbd2057e5329d3502a27491190237b6be52a1cb6 ]
 
-audit_log_start() returns audit_buffer pointer on success or NULL on
-error, so it is better to check the return value of it.
+kstrdup() returns NULL when some internal memory errors happen, it is
+better to check the return value of it so to catch the memory error in
+time.
 
-Fixes: 3323eec921ef ("integrity: IMA as an integrity service provider")
 Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/integrity_audit.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/nfs/nfs4client.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/security/integrity/integrity_audit.c
-+++ b/security/integrity/integrity_audit.c
-@@ -39,6 +39,8 @@ void integrity_audit_msg(int audit_msgno
- 		return;
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index 2fb4633897084..48baa92846e5f 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -1329,8 +1329,11 @@ int nfs4_update_server(struct nfs_server *server, const char *hostname,
+ 		goto out;
+ 	}
  
- 	ab = audit_log_start(current->audit_context, GFP_KERNEL, audit_msgno);
-+	if (!ab)
-+		return;
- 	audit_log_format(ab, "pid=%d uid=%u auid=%u ses=%u",
- 			 task_pid_nr(current),
- 			 from_kuid(&init_user_ns, current_cred()->uid),
+-	if (server->nfs_client->cl_hostname == NULL)
++	if (server->nfs_client->cl_hostname == NULL) {
+ 		server->nfs_client->cl_hostname = kstrdup(hostname, GFP_KERNEL);
++		if (server->nfs_client->cl_hostname == NULL)
++			return -ENOMEM;
++	}
+ 	nfs_server_insert_lists(server);
+ 
+ 	error = nfs_probe_destination(server);
+-- 
+2.34.1
+
 
 
