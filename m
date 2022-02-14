@@ -2,135 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 05:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D55FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 05:41:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240526AbiBNFlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 00:41:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39928 "EHLO
+        id S240537AbiBNFle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 00:41:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235084AbiBNFlR (ORCPT
+        with ESMTP id S238010AbiBNFlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 00:41:17 -0500
-X-Greylist: delayed 374 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 21:41:08 PST
-Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193FF4EA18;
-        Sun, 13 Feb 2022 21:41:07 -0800 (PST)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 650673200D78;
-        Mon, 14 Feb 2022 00:34:52 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 14 Feb 2022 00:34:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; bh=FwpXgRHkKOnxGk
-        gH2V9GHUXNJiCu/ssAJnUnC7PmQaI=; b=BC798HSJ7e7u3jkh9OrLq5my9B4tLn
-        tXgji4leFe0NI/Dw9Vj8wzpQko66NYAq0ikQM/jyo1WJtxpPVdCu2nx7DJYMcocK
-        WlTyLnn6kIt2cNyUc2Zs4v9GkZpNHMT7OrDeOc0M4ErnLa6VD65DAb2T7QQCr6br
-        LZMiYbZbeLU7iCeRcZDJfnOEZUd1BPyHA/iy2qHU+552006Jf7p6gnY4G94EwpLH
-        ZZ2GkQ7sCPgLmNIcXyhIENpmhYZ2RX4OR/+qTfETKIeqZkE5nj2mVVt0Nv0sGKvA
-        hfTNvXikYZFaygCeRdbyd8ufh3+td53Jdr/4qjArpw35k5qek54EEOkw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=FwpXgRHkKOnxGkgH2V9GHUXNJiCu/ssAJnUnC7PmQ
-        aI=; b=m3oOoN5bGKTNrL7MiWfJ/tln8VgqzV7RT4TlMO/dory7wzYWzBIylZi4y
-        IXpzOS5pw/3SQPbstTRd5I7VwS29ol1cngkBfDqhZRjofsNsZQpV2w6+JUo5ZWIN
-        uYemA2UA4S0becx2E+imXzw1MMcvGC3znqMb2qFlcRVhvyxKjoG3uE2NE1VjQQZW
-        O0iN3ep99eN92Dge23nRDGh+/2MW0MGb7sO3gTwexByuId7SFjvezq1KZW3Gl2VS
-        tOXttx5Czrt94V+pJlEzPQcwxLm6GYF3R0c/OM9lLyxIYyUwCdnYQ3DtBepcB2t+
-        Wrbpii2+km2KeDkuuq5sQnLEjxlkw==
-X-ME-Sender: <xms:--kJYvoZdlSChlPxCFL5GNsUPmqiYYwxGCQDIQNm4ufRWYOaUICNhw>
-    <xme:--kJYprHDRgzoV8jJwgAJqEWQKbONeRX7L6kfBAqkkT8WqkPcda3t7okLuH8lXrWd
-    eT1RgCZNXZ0>
-X-ME-Received: <xmr:--kJYsOwiiRGj5Gspm_UByqpC5YpqpZLtGzOsWiWJtbrT7uNs_g5Pth0hPNH7jVqOueyTRG651omd8tB6FxJwkbmvDxXCvLYUYem4SQgRF7dH3yQPpY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedugdekhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepkffuhffvffgjfhgtfggggfesthekre
-    dttderjeenucfhrhhomhepkfgrnhcumfgvnhhtuceorhgrvhgvnhesthhhvghmrgifrdhn
-    vghtqeenucggtffrrghtthgvrhhnpefgleelkeetheelgeehueejueduhfeufffgleehgf
-    evtdehhffhhffhtddugfefheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehrrghvvghnsehthhgvmhgrfidrnhgvth
-X-ME-Proxy: <xmx:--kJYi7hg3zFuw-53VOuXiFLzX2YVBZXif2wRok9NXFMiLvtSgxGPQ>
-    <xmx:--kJYu74ITcGONthlpAcjzRemZ-W2ZW3TacvMVHxnPZ3Ed5iOQ0f3w>
-    <xmx:--kJYqhta18-_ICGC6ssPuek4bNndL_Lbp_V_BPBecDcIb05RbQiKA>
-    <xmx:--kJYkSk2C6dUB63xHnWLltPpVR_iMzafZVL_5c2UxavF6djSoh9fA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 14 Feb 2022 00:34:49 -0500 (EST)
-Message-ID: <b042424ce0e68f576fdab268adeeff90d48da8a8.camel@themaw.net>
-Subject: Re: [ANNOUNCE] autofs 5.1.8 release
-From:   Ian Kent <raven@themaw.net>
-To:     NeilBrown <neilb@suse.de>
-Cc:     autofs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 14 Feb 2022 13:34:46 +0800
-In-Reply-To: <164444398868.27779.4643380819577932837@noble.neil.brown.name>
-References: <b54fb31652a4ba76b39db66b8ae795ee3af6f025.camel@themaw.net>
-         <164444398868.27779.4643380819577932837@noble.neil.brown.name>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+        Mon, 14 Feb 2022 00:41:24 -0500
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058004EA11;
+        Sun, 13 Feb 2022 21:41:17 -0800 (PST)
+Received: by mail-ed1-f43.google.com with SMTP id s7so25345862edd.3;
+        Sun, 13 Feb 2022 21:41:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=UODiaWTZTO5qlU00FWM6CcCRa/ILiX84iGscvUMk8+E=;
+        b=4dNGZcEdM9ivYr8sDJYwX1XGsJCj96kux7tnoy2JAjSdTvciZuzaAiLGGcnM0418RK
+         0GYpc68aU7V0Dfpu5szHT6UtUXSAh04bKiPU6MOtgNiJGnRXp2tN1MHeQ5wS3L2wcQTD
+         Uu4SdIwyqUrIAUjhvUSm3pOeAkQ+mbPBGp0dG/REVkW0yDm1BarKflvOvsADyhjcIJ9P
+         KXCIVFHLLbo6nA/bsdzZoGWE+h0I1qZpul98w9ivDWSPKf0Z+/F+3XxgH8cEO9uG5fAS
+         LnpKVOiaw1QkrqJ0s1g/WGEKqTg21ohMJ2no2G5sx5XPPpeDsgYdVd+bB+1Ol51nt5aS
+         1BMA==
+X-Gm-Message-State: AOAM530QqWT7EQ7FW/y7AhaMmT+nZpbuejP2cw2jPXBFYYltDKtQyBT9
+        5qHqWfKqijbLJEPjSWhIrAk=
+X-Google-Smtp-Source: ABdhPJyuQDIOMXfuuo91JtjsHZ+mln7dCRyvjT6jZY72fda4wnY2b4VSFc1jdoPxFKGHjsLgq4GZ0A==
+X-Received: by 2002:a05:6402:190f:: with SMTP id e15mr13795490edz.195.1644817275463;
+        Sun, 13 Feb 2022 21:41:15 -0800 (PST)
+Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
+        by smtp.gmail.com with ESMTPSA id jz17sm10240567ejb.195.2022.02.13.21.41.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Feb 2022 21:41:14 -0800 (PST)
+Message-ID: <aa45fed9-7a40-7ac1-a000-18d2805d088f@kernel.org>
+Date:   Mon, 14 Feb 2022 06:41:13 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/9] serial: core: move RS485 configuration tasks from
+ drivers into core
+Content-Language: en-US
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>, gregkh@linuxfoundation.org
+Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
+        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+        ludovic.desroches@microchip.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de
+References: <20220213222737.15709-1-LinoSanfilippo@gmx.de>
+ <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220213222737.15709-2-LinoSanfilippo@gmx.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-10 at 08:59 +1100, NeilBrown wrote:
-> On Tue, 19 Oct 2021, Ian Kent wrote:
-> > Hi all,
-> > 
-> > It's time for a release, autofs-5.1.8.
-> > 
-> ...
-> > - also require TCP_REQUESTED when setting NFS port.
+On 13. 02. 22, 23:27, Lino Sanfilippo wrote:
+> Several drivers that support setting the RS485 configuration via userspace
+> implement on or more of the following tasks:
 > 
-> Unfortunately that last patch is buggy.  TCP_REQUESTED is masked out
-> in
-> the caller.
+> - in case of an invalid RTS configuration (both RTS after send and RTS on
+>    send set or both unset) fall back to enable RTS on send and disable RTS
+>    after send
+> 
+> - nullify the padding field of the returned serial_rs485 struct
+> 
+> - copy the configuration into the uart port struct
+> 
+> - limit RTS delays to 100 ms
+> 
+> Move these tasks into the serial core to make them generic and to provide
+> a consistent beheviour among all drivers.
+> 
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> ---
+>   drivers/tty/serial/serial_core.c | 13 +++++++++++++
+>   1 file changed, 13 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 846192a7b4bf..3fab4070359c 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -1282,8 +1282,21 @@ static int uart_set_rs485_config(struct uart_port *port,
+>   	if (copy_from_user(&rs485, rs485_user, sizeof(*rs485_user)))
+>   		return -EFAULT;
+>   
+> +	/* pick sane settings if the user hasn't */
+> +	if (!(rs485.flags & SER_RS485_RTS_ON_SEND) ==
+> +	    !(rs485.flags & SER_RS485_RTS_AFTER_SEND)) {
+> +		rs485.flags |= SER_RS485_RTS_ON_SEND;
+> +		rs485.flags &= ~SER_RS485_RTS_AFTER_SEND;
+> +	}
+> +	/* clamp the delays to [0, 100ms] */
+> +	rs485.delay_rts_before_send = min(rs485.delay_rts_before_send, 100U);
+> +	rs485.delay_rts_after_send = min(rs485.delay_rts_after_send, 100U);
 
-Mmm ... sounds like I've made a mistake there.
-I'll need to sort that out, thanks for pointing it out.
+Why is this magic 100? Can we have that number somehow documented? You 
+should define a macro for that anyway.
 
-> 
-> Maybe the following is best.
-> 
-> NeilBrown
-> 
-> From: NeilBrown <neilb@suse.de>
-> Subject: [PATCH] Test TCP request correctly in nfs_get_info()
-> 
-> The TCP_REQUESTED flag is masked out by the caller, so it never gets
-> to
-> nfs_get_info().
+> +	memset(rs485.padding, 0, sizeof(rs485.padding));
 
-That wasn't my intent, I'll need to look at it again.
-The case I'm trying to cover is fairly specific so I will need to
-look at it again.
+What is this memset good for?
 
-Ian
+>   	spin_lock_irqsave(&port->lock, flags);
+>   	ret = port->rs485_config(port, &rs485);
+> +	if (!ret)
+> +		port->rs485 = rs485;
+>   	spin_unlock_irqrestore(&port->lock, flags);
+>   	if (ret)
+>   		return ret;
 
-> We can test if TCP was requested by examining the 'proto' parameter.
-> 
-> Signed-off-by: NeilBrown <neilb@suse.de>
-> 
-> diff --git a/modules/replicated.c b/modules/replicated.c
-> index 09075dd0c1b4..3ac7ee432e73 100644
-> --- a/modules/replicated.c
-> +++ b/modules/replicated.c
-> @@ -291,7 +291,7 @@ static unsigned int get_nfs_info(unsigned logopt,
-> struct host *host,
->  
->         rpc_info->proto = proto;
->         if (port < 0) {
-> -               if ((version & NFS4_REQUESTED) && (version &
-> TCP_REQUESTED))
-> +               if ((version & NFS4_REQUESTED) && (proto ==
-> IPPROTO_TCP))
->                         rpc_info->port = NFS_PORT;
->                 else
->                         port = 0;
-> 
-
+thanks,
+-- 
+js
+suse labs
