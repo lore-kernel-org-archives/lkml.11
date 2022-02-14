@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B84C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88301C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243162AbiBNJaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:30:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42668 "EHLO
+        id S243323AbiBNJal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:30:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243300AbiBNJaW (ORCPT
+        with ESMTP id S243315AbiBNJa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:30:22 -0500
+        Mon, 14 Feb 2022 04:30:28 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4287AE77;
-        Mon, 14 Feb 2022 01:29:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082591AD97;
+        Mon, 14 Feb 2022 01:29:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5063460C8A;
-        Mon, 14 Feb 2022 09:29:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1691FC340F2;
-        Mon, 14 Feb 2022 09:29:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9731D60DFD;
+        Mon, 14 Feb 2022 09:29:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A7DAC340E9;
+        Mon, 14 Feb 2022 09:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830976;
-        bh=WVAeUqgrH/pNsmuq3GgGhWwHLzCf/geaD98MM19BHyA=;
+        s=korg; t=1644830980;
+        bh=drmrAjMBS4/4+KGRaliNlKHw6jc6/KCWTqv+/6f4d/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BNFNaqGiMBXRw32zAGBDaUMMYPfkYa1NTvcDqenI6KIURuq8rulRZ1woLylj9mi7P
-         s2l4RPHAvynNexihSfv42zmHUIAZbd1L2DnIsdpaqPwHBn1PMb6Lj85i5RCCWTpQrp
-         9LmUm7zTua1zEsPK9AyytrGzDnVhSqS85rz53kTc=
+        b=m6sASpi8nNx8TfxxBPZdrHy+/RuMUvCPnuMl5HTphS+l8ZtmAOHkNqJ58nflDezBb
+         cDjSc6MNDqbzX/v4F+YG4uUOPgkIB+8wMTO6TbAsXQy13MMSOWuTDDuw7tC3bIgjxA
+         9rwNjdXM2M5Ap6ijGtNnvH2rHNVo6iFyuYtzAeTk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Subject: [PATCH 4.9 25/34] n_tty: wake up poll(POLLRDNORM) on receiving data
-Date:   Mon, 14 Feb 2022 10:25:51 +0100
-Message-Id: <20220214092446.757731373@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>
+Subject: [PATCH 4.9 26/34] usb: dwc3: gadget: Prevent core from processing stale TRBs
+Date:   Mon, 14 Feb 2022 10:25:52 +0100
+Message-Id: <20220214092446.789301420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -47,84 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
+From: Udipto Goswami <quic_ugoswami@quicinc.com>
 
-commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
+commit 117b4e96c7f362eb6459543883fc07f77662472c upstream.
 
-The poll man page says POLLRDNORM is equivalent to POLLIN when used as
-an event.
-$ man poll
-<snip>
-              POLLRDNORM
-                     Equivalent to POLLIN.
+With CPU re-ordering on write instructions, there might
+be a chance that the HWO is set before the TRB is updated
+with the new mapped buffer address.
+And in the case where core is processing a list of TRBs
+it is possible that it fetched the TRBs when the HWO is set
+but before the buffer address is updated.
+Prevent this by adding a memory barrier before the HWO
+is updated to ensure that the core always process the
+updated TRBs.
 
-However, in n_tty driver, POLLRDNORM does not return until timeout even
-if there is terminal input, whereas POLLIN returns.
-
-The following test program works until kernel-3.17, but the test stops
-in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
-
-[Steps to run test program]
-  $ cc -o test-pollrdnorm test-pollrdnorm.c
-  $ ./test-pollrdnorm
-  foo          <-- Type in something from the terminal followed by [RET].
-                   The string should be echoed back.
-
-  ------------------------< test-pollrdnorm.c >------------------------
-  #include <stdio.h>
-  #include <errno.h>
-  #include <poll.h>
-  #include <unistd.h>
-
-  void main(void)
-  {
-	int		n;
-	unsigned char	buf[8];
-	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
-
-	n = poll(fds, 1, -1);
-	if (n < 0)
-		perror("poll");
-	n = read(0, buf, 8);
-	if (n < 0)
-		perror("read");
-	if (n > 0)
-		write(1, buf, n);
-  }
-  ------------------------------------------------------------------------
-
-The attached patch fixes this problem.  Many calls to
-wake_up_interruptible_poll() in the kernel source code already specify
-"POLLIN | POLLRDNORM".
-
-Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
+Fixes: f6bafc6a1c9d ("usb: dwc3: convert TRBs into bitshifts")
+Cc: stable <stable@vger.kernel.org>
+Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+Link: https://lore.kernel.org/r/1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_tty.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/gadget.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1377,7 +1377,7 @@ handle_newline:
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--			wake_up_interruptible_poll(&tty->read_wait, POLLIN);
-+			wake_up_interruptible_poll(&tty->read_wait, POLLIN | POLLRDNORM);
- 			return 0;
- 		}
- 	}
-@@ -1658,7 +1658,7 @@ static void __receive_buf(struct tty_str
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -902,6 +902,19 @@ static void dwc3_prepare_one_trb(struct
+ 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
+ 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(req->request.stream_id);
  
- 	if (read_cnt(ldata)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--		wake_up_interruptible_poll(&tty->read_wait, POLLIN);
-+		wake_up_interruptible_poll(&tty->read_wait, POLLIN | POLLRDNORM);
- 	}
- }
++	/*
++	 * As per data book 4.2.3.2TRB Control Bit Rules section
++	 *
++	 * The controller autonomously checks the HWO field of a TRB to determine if the
++	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
++	 * is valid before setting the HWO field to '1'. In most systems, this means that
++	 * software must update the fourth DWORD of a TRB last.
++	 *
++	 * However there is a possibility of CPU re-ordering here which can cause
++	 * controller to observe the HWO bit set prematurely.
++	 * Add a write memory barrier to prevent CPU re-ordering.
++	 */
++	wmb();
+ 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
  
+ 	trace_dwc3_prepare_trb(dep, trb);
 
 
