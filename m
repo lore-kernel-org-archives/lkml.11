@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F151C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78292C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345771AbiBNKBz (ORCPT
+        id S1345399AbiBNKBh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:01:55 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43510 "EHLO
+        Mon, 14 Feb 2022 05:01:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344419AbiBNJ4L (ORCPT
+        with ESMTP id S1344734AbiBNJ40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:56:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8CD6CA67;
-        Mon, 14 Feb 2022 01:44:34 -0800 (PST)
+        Mon, 14 Feb 2022 04:56:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7336D1AB;
+        Mon, 14 Feb 2022 01:44:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E867B80DBF;
-        Mon, 14 Feb 2022 09:44:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8920C340E9;
-        Mon, 14 Feb 2022 09:44:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1606D61238;
+        Mon, 14 Feb 2022 09:44:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0766C340E9;
+        Mon, 14 Feb 2022 09:44:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831872;
-        bh=QsNESD3ovvJn16NRwkN3uzf4k3ZPt6v4eLTA/pYShbc=;
+        s=korg; t=1644831891;
+        bh=0c7FPgrkzkPBYHxqx3yzOUKo/b1ktRrCosiqLKiIf0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dqwRk5xa49rTjcJsJ2upCQBcWbUphUy2lQ1koNwZeF65zvcX833rh7ACHDYcVa4AB
-         2o00FbQ80+ADGPjTfQzb8cMmMYJvznnKESER4sfRuoI/fl1d1lJpFDCzFP7YLADcON
-         JTOJEJwTx/EKgT8eeXRKHeKtqxZqij+LTLD7ecd0=
+        b=pp//SrBpq6rKVXZn8Q0c4omy3r787rdZJGN+3URkxdIpkyMsXX/yeFP2KmeEvtcGq
+         cq7P5ERDo7f/NjgLUAC4FZPHJpivAnHflAxnWtPKeAMUm7somytfp2cxn+e8Elqkvw
+         rdZhK0p7DRhCiLFglKbvYMdKxSjcUzZEhaqR5DC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 111/116] can: isotp: fix error path in isotp_sendmsg() to unlock wait queue
-Date:   Mon, 14 Feb 2022 10:26:50 +0100
-Message-Id: <20220214092502.627756264@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.15 013/172] NFSD: Fix NFSv3 SETATTR/CREATEs handling of large file sizes
+Date:   Mon, 14 Feb 2022 10:24:31 +0100
+Message-Id: <20220214092506.834910416@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-References: <20220214092458.668376521@linuxfoundation.org>
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,77 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 8375dfac4f683e1b2c5956d919d36aeedad46699 upstream.
+commit a648fdeb7c0e17177a2280344d015dba3fbe3314 upstream.
 
-Commit 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent
-access in isotp_sendmsg()") introduced a new locking scheme that may render
-the userspace application in a locking state when an error is detected.
-This issue shows up under high load on simultaneously running isotp channels
-with identical configuration which is against the ISO specification and
-therefore breaks any reasonable PDU communication anyway.
+iattr::ia_size is a loff_t, so these NFSv3 procedures must be
+careful to deal with incoming client size values that are larger
+than s64_max without corrupting the value.
 
-Fixes: 43a08c3bdac4 ("can: isotp: isotp_sendmsg(): fix TX buffer concurrent access in isotp_sendmsg()")
-Link: https://lore.kernel.org/all/20220209073601.25728-1-socketcan@hartkopp.net
+Silently capping the value results in storing a different value
+than the client passed in which is unexpected behavior, so remove
+the min_t() check in decode_sattr3().
+
+Note that RFC 1813 permits only the WRITE procedure to return
+NFS3ERR_FBIG. We believe that NFSv3 reference implementations
+also return NFS3ERR_FBIG when ia_size is too large.
+
 Cc: stable@vger.kernel.org
-Cc: Ziyang Xuan <william.xuanziyang@huawei.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ fs/nfsd/nfs3xdr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -885,24 +885,24 @@ static int isotp_sendmsg(struct socket *
- 
- 	if (!size || size > MAX_MSG_LENGTH) {
- 		err = -EINVAL;
--		goto err_out;
-+		goto err_out_drop;
+--- a/fs/nfsd/nfs3xdr.c
++++ b/fs/nfsd/nfs3xdr.c
+@@ -254,7 +254,7 @@ svcxdr_decode_sattr3(struct svc_rqst *rq
+ 		if (xdr_stream_decode_u64(xdr, &newsize) < 0)
+ 			return false;
+ 		iap->ia_valid |= ATTR_SIZE;
+-		iap->ia_size = min_t(u64, newsize, NFS_OFFSET_MAX);
++		iap->ia_size = newsize;
  	}
- 
- 	err = memcpy_from_msg(so->tx.buf, msg, size);
- 	if (err < 0)
--		goto err_out;
-+		goto err_out_drop;
- 
- 	dev = dev_get_by_index(sock_net(sk), so->ifindex);
- 	if (!dev) {
- 		err = -ENXIO;
--		goto err_out;
-+		goto err_out_drop;
- 	}
- 
- 	skb = sock_alloc_send_skb(sk, so->ll.mtu + sizeof(struct can_skb_priv),
- 				  msg->msg_flags & MSG_DONTWAIT, &err);
- 	if (!skb) {
- 		dev_put(dev);
--		goto err_out;
-+		goto err_out_drop;
- 	}
- 
- 	can_skb_reserve(skb);
-@@ -967,7 +967,7 @@ static int isotp_sendmsg(struct socket *
- 	if (err) {
- 		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
- 			       __func__, err);
--		goto err_out;
-+		goto err_out_drop;
- 	}
- 
- 	if (wait_tx_done) {
-@@ -980,6 +980,9 @@ static int isotp_sendmsg(struct socket *
- 
- 	return size;
- 
-+err_out_drop:
-+	/* drop this PDU and unlock a potential wait queue */
-+	old_state = ISOTP_IDLE;
- err_out:
- 	so->tx.state = old_state;
- 	if (so->tx.state == ISOTP_IDLE)
+ 	if (xdr_stream_decode_u32(xdr, &set_it) < 0)
+ 		return false;
 
 
