@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3770C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348517AbiBNKhT (ORCPT
+        id S1348564AbiBNKhY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:37:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41860 "EHLO
+        Mon, 14 Feb 2022 05:37:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348285AbiBNKem (ORCPT
+        with ESMTP id S1348292AbiBNKem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:34:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AEFD65;
-        Mon, 14 Feb 2022 02:01:29 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEAD9D6A;
+        Mon, 14 Feb 2022 02:01:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B303B80DC8;
-        Mon, 14 Feb 2022 10:01:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29594C340EF;
-        Mon, 14 Feb 2022 10:01:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68C6BB80DD5;
+        Mon, 14 Feb 2022 10:01:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D1CC340EF;
+        Mon, 14 Feb 2022 10:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832886;
-        bh=FD7hxa2jEtY6i1xVR5DzXc/fIJ+b4smOrkuJF1LIwOY=;
+        s=korg; t=1644832890;
+        bh=XqiW59tqA5tURicwKmtRFK/00GoJ67mH+dt7Y8YvL9I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iCpXDv2+ntAYNjpILrH4tHWmqMGGMkjcI4/HIBEoDvHD9Hw9qBlJtulUQMgfv049a
-         +W7vmQ4z8gwCKUXC5zkkJsF0HPE1XKN73TcgLrEHToiYWdqz/iH4CQ57tqG0yI1a0n
-         0T47YgIB24p7VZ6knk5mFJuA5Xfh4Dlr4rDWLlxg=
+        b=PtZ5KbU9Yf2fkzDIwn6KvbQwRS1P72oF7RTwAEiR4yw9PZymqvMQIo3lPphR8KZWR
+         4du/cDqrY8MQxbTDrMJWw8gG/L7qm65K3HLt3rOM9k9hPq8cBfkyeoy2ktcDdp0WXx
+         2leHdPlUDSSmKQDnlglyJKA7ltIzFa5J/Emp2/7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Gurucharan G <gurucharanx.g@intel.com>,
+        stable@vger.kernel.org, Dave Ertman <david.m.ertman@intel.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Sunitha Mekala <sunithax.d.mekala@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 157/203] ice: fix IPIP and SIT TSO offload
-Date:   Mon, 14 Feb 2022 10:26:41 +0100
-Message-Id: <20220214092515.579789231@linuxfoundation.org>
+Subject: [PATCH 5.16 158/203] ice: Fix KASAN error in LAG NETDEV_UNREGISTER handler
+Date:   Mon, 14 Feb 2022 10:26:42 +0100
+Message-Id: <20220214092515.612374050@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -53,100 +52,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+From: Dave Ertman <david.m.ertman@intel.com>
 
-[ Upstream commit 46b699c50c0304cdbd725d7740073a7f9d5edb10 ]
+[ Upstream commit bea1898f65b9b7096cb4e73e97c83b94718f1fa1 ]
 
-The driver was avoiding offload for IPIP (at least) frames due to
-parsing the inner header offsets incorrectly when trying to check
-lengths.
+Currently, the same handler is called for both a NETDEV_BONDING_INFO
+LAG unlink notification as for a NETDEV_UNREGISTER call.  This is
+causing a problem though, since the netdev_notifier_info passed has
+a different structure depending on which event is passed.  The problem
+manifests as a call trace from a BUG: KASAN stack-out-of-bounds error.
 
-This length check works for VXLAN frames but fails on IPIP frames
-because skb_transport_offset points to the inner header in IPIP
-frames, which meant the subtraction of transport_header from
-inner_network_header returns a negative value (-20).
+Fix this by creating a handler specific to NETDEV_UNREGISTER that only
+is passed valid elements in the netdev_notifier_info struct for the
+NETDEV_UNREGISTER event.
 
-With the code before this patch, everything continued to work, but GSO
-was being used to segment, causing throughputs of 1.5Gb/s per thread.
-After this patch, throughput is more like 10Gb/s per thread for IPIP
-traffic.
+Also included is the removal of an unbalanced dev_put on the peer_netdev
+and related braces.
 
-Fixes: e94d44786693 ("ice: Implement filter sync, NDO operations and bump version")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Fixes: 6a8b357278f5 ("ice: Respond to a NETDEV_UNREGISTER event for LAG")
+Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+Tested-by: Sunitha Mekala <sunithax.d.mekala@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/intel/ice/ice_lan_tx_rx.h    |  1 +
- drivers/net/ethernet/intel/ice/ice_main.c     | 25 +++++++++++++------
- 2 files changed, 18 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lag.c | 34 +++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-index d981dc6f23235..85a612838a898 100644
---- a/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lan_tx_rx.h
-@@ -568,6 +568,7 @@ struct ice_tx_ctx_desc {
- 			(0x3FFFFULL << ICE_TXD_CTX_QW1_TSO_LEN_S)
- 
- #define ICE_TXD_CTX_QW1_MSS_S	50
-+#define ICE_TXD_CTX_MIN_MSS	64
- 
- #define ICE_TXD_CTX_QW1_VSI_S	50
- #define ICE_TXD_CTX_QW1_VSI_M	(0x3FFULL << ICE_TXD_CTX_QW1_VSI_S)
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 73c61cdb036f9..68d3de6d42218 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -8540,6 +8540,7 @@ ice_features_check(struct sk_buff *skb,
- 		   struct net_device __always_unused *netdev,
- 		   netdev_features_t features)
- {
-+	bool gso = skb_is_gso(skb);
- 	size_t len;
- 
- 	/* No point in doing any of this if neither checksum nor GSO are
-@@ -8552,24 +8553,32 @@ ice_features_check(struct sk_buff *skb,
- 	/* We cannot support GSO if the MSS is going to be less than
- 	 * 64 bytes. If it is then we need to drop support for GSO.
- 	 */
--	if (skb_is_gso(skb) && (skb_shinfo(skb)->gso_size < 64))
-+	if (gso && (skb_shinfo(skb)->gso_size < ICE_TXD_CTX_MIN_MSS))
- 		features &= ~NETIF_F_GSO_MASK;
- 
--	len = skb_network_header(skb) - skb->data;
-+	len = skb_network_offset(skb);
- 	if (len > ICE_TXD_MACLEN_MAX || len & 0x1)
- 		goto out_rm_features;
- 
--	len = skb_transport_header(skb) - skb_network_header(skb);
-+	len = skb_network_header_len(skb);
- 	if (len > ICE_TXD_IPLEN_MAX || len & 0x1)
- 		goto out_rm_features;
- 
- 	if (skb->encapsulation) {
--		len = skb_inner_network_header(skb) - skb_transport_header(skb);
--		if (len > ICE_TXD_L4LEN_MAX || len & 0x1)
--			goto out_rm_features;
-+		/* this must work for VXLAN frames AND IPIP/SIT frames, and in
-+		 * the case of IPIP frames, the transport header pointer is
-+		 * after the inner header! So check to make sure that this
-+		 * is a GRE or UDP_TUNNEL frame before doing that math.
-+		 */
-+		if (gso && (skb_shinfo(skb)->gso_type &
-+			    (SKB_GSO_GRE | SKB_GSO_UDP_TUNNEL))) {
-+			len = skb_inner_network_header(skb) -
-+			      skb_transport_header(skb);
-+			if (len > ICE_TXD_L4LEN_MAX || len & 0x1)
-+				goto out_rm_features;
-+		}
- 
--		len = skb_inner_transport_header(skb) -
--		      skb_inner_network_header(skb);
-+		len = skb_inner_network_header_len(skb);
- 		if (len > ICE_TXD_IPLEN_MAX || len & 0x1)
- 			goto out_rm_features;
+diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
+index e375ac849aecd..4f954db01b929 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lag.c
++++ b/drivers/net/ethernet/intel/ice/ice_lag.c
+@@ -204,17 +204,39 @@ ice_lag_unlink(struct ice_lag *lag,
+ 		lag->upper_netdev = NULL;
  	}
+ 
+-	if (lag->peer_netdev) {
+-		dev_put(lag->peer_netdev);
+-		lag->peer_netdev = NULL;
+-	}
+-
++	lag->peer_netdev = NULL;
+ 	ice_set_sriov_cap(pf);
+ 	ice_set_rdma_cap(pf);
+ 	lag->bonded = false;
+ 	lag->role = ICE_LAG_NONE;
+ }
+ 
++/**
++ * ice_lag_unregister - handle netdev unregister events
++ * @lag: LAG info struct
++ * @netdev: netdev reporting the event
++ */
++static void ice_lag_unregister(struct ice_lag *lag, struct net_device *netdev)
++{
++	struct ice_pf *pf = lag->pf;
++
++	/* check to see if this event is for this netdev
++	 * check that we are in an aggregate
++	 */
++	if (netdev != lag->netdev || !lag->bonded)
++		return;
++
++	if (lag->upper_netdev) {
++		dev_put(lag->upper_netdev);
++		lag->upper_netdev = NULL;
++		ice_set_sriov_cap(pf);
++		ice_set_rdma_cap(pf);
++	}
++	/* perform some cleanup in case we come back */
++	lag->bonded = false;
++	lag->role = ICE_LAG_NONE;
++}
++
+ /**
+  * ice_lag_changeupper_event - handle LAG changeupper event
+  * @lag: LAG info struct
+@@ -307,7 +329,7 @@ ice_lag_event_handler(struct notifier_block *notif_blk, unsigned long event,
+ 		ice_lag_info_event(lag, ptr);
+ 		break;
+ 	case NETDEV_UNREGISTER:
+-		ice_lag_unlink(lag, ptr);
++		ice_lag_unregister(lag, netdev);
+ 		break;
+ 	default:
+ 		break;
 -- 
 2.34.1
 
