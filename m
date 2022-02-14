@@ -2,93 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236027AbiBNSnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:43:10 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56896 "EHLO
+        id S231625AbiBNSrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 13:47:09 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238772AbiBNSnJ (ORCPT
+        with ESMTP id S229821AbiBNSrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:43:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6B6AA6C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:42:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3660360F45
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33092C340E9;
-        Mon, 14 Feb 2022 18:42:40 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 13:42:38 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ftrace: ensure trace buffer is at least 4096 bytes
- large
-Message-ID: <20220214134238.20255872@gandalf.local.home>
-In-Reply-To: <20220214134456.1751749-1-svens@linux.ibm.com>
-References: <20220214134456.1751749-1-svens@linux.ibm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 14 Feb 2022 13:47:03 -0500
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B958C70913
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:46:47 -0800 (PST)
+Received: by mail-io1-f70.google.com with SMTP id y124-20020a6bc882000000b0060fbfe14d03so11158629iof.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:46:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=qMoLJBAbF6b15k+JxV0FF5gwlXjQrey2dRuI3+dpzKE=;
+        b=4n666PaJKZ+TQRR7K0dL/VfmDAlLIrZ+DtpkvQoFXj206VabJxGp0t7lRu5Rbr6DV/
+         /KnsiZ6Ww3oZDes2aKZ6l83wC3k2m7gt69r+qLq2sTwhu59/W6GDjr+g1f8Fa/dawF2u
+         9JXAf/HgkvzH2tmR8opDLqQfNYgiYnQ/jqEHcZbj5j5gO1ATgLqgUHZjcyHAdccVSXNe
+         NHbMjdsq8LqbfQNyoGxSUYMYCVNptOz7P2IKO9GRhveBY9gV6OZCOwzdosavqk8acTBV
+         bL12sabWLRgILjUnOz4j0AcL7XJnhj1xRAE33H2EdikwldeITiIVLnOn+getNsac1JwA
+         uE2Q==
+X-Gm-Message-State: AOAM531r3gVvFuQWYJUxTbK6MEnV8Yk+TTvTeRcFTCbCfQ2myryM+6F0
+        oQWXtEdyhO6vyxBDB24yP7V2PJdzCDCwDHyWrj/plg2Zx9SX
+X-Google-Smtp-Source: ABdhPJwr8DWPrO5HIF0EfWDSQp/4Hswh9YS6I9drsyxbeZ4K29bwe92mTlOZljIfSHNojoENzUFgRY+/bLTcDqG9Ym4p46X8WNmx
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1586:: with SMTP id m6mr120117ilu.233.1644864319237;
+ Mon, 14 Feb 2022 10:45:19 -0800 (PST)
+Date:   Mon, 14 Feb 2022 10:45:19 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000073b3e805d7fed17e@google.com>
+Subject: [syzbot] KASAN: vmalloc-out-of-bounds Read in bpf_jit_free
+From:   syzbot <syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 14:44:56 +0100
-Sven Schnelle <svens@linux.ibm.com> wrote:
+Hello,
 
-> Booting the kernel with 'trace_buf_size=1' give a warning at
-> boot during the ftrace selftests:
-> 
-> [    0.892809] Running postponed tracer tests:
-> [    0.892893] Testing tracer function:
-> [    0.901899] Callback from call_rcu_tasks_trace() invoked.
-> [    0.983829] Callback from call_rcu_tasks_rude() invoked.
-> [    1.072003] .. bad ring buffer .. corrupted trace buffer ..
-> [    1.091944] Callback from call_rcu_tasks() invoked.
-> [    1.097695] PASSED
-> [    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
-> [    1.353474] ------------[ cut here ]------------
-> [    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
-> 
-> Therefore enforce a minimum of 4096 bytes to make the selftest pass.
-> 
-> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+syzbot found the following issue on:
 
-Thanks,
+HEAD commit:    e5313968c41b Merge branch 'Split bpf_sk_lookup remote_port..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10baced8700000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c40b67275bfe2a58
+dashboard link: https://syzkaller.appspot.com/bug?extid=2f649ec6d2eea1495a8f
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-I'll queue this up for the next merge window.
+Unfortunately, I don't have any reproducer for this issue yet.
 
--- Steve
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2f649ec6d2eea1495a8f@syzkaller.appspotmail.com
 
-> ---
->  kernel/trace/trace.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-> index 7c2578efde26..3050892d1812 100644
-> --- a/kernel/trace/trace.c
-> +++ b/kernel/trace/trace.c
-> @@ -1474,10 +1474,12 @@ static int __init set_buf_size(char *str)
->  	if (!str)
->  		return 0;
->  	buf_size = memparse(str, &str);
-> -	/* nr_entries can not be zero */
-> -	if (buf_size == 0)
-> -		return 0;
-> -	trace_buf_size = buf_size;
-> +	/*
-> +	 * nr_entries can not be zero and the startup
-> +	 * tests require some buffer space. Therefore
-> +	 * ensure we have at least 4096 bytes of buffer.
-> +	 */
-> +	trace_buf_size = max(4096UL, buf_size);
->  	return 1;
->  }
->  __setup("trace_buf_size=", set_buf_size);
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_binary_pack_free kernel/bpf/core.c:1120 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in bpf_jit_free+0x2b5/0x2e0 kernel/bpf/core.c:1151
+Read of size 4 at addr ffffffffa0001a80 by task kworker/0:18/13642
 
+CPU: 0 PID: 13642 Comm: kworker/0:18 Not tainted 5.16.0-syzkaller-11655-ge5313968c41b #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events bpf_prog_free_deferred
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xf/0x336 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ bpf_jit_binary_pack_free kernel/bpf/core.c:1120 [inline]
+ bpf_jit_free+0x2b5/0x2e0 kernel/bpf/core.c:1151
+ bpf_prog_free_deferred+0x5c1/0x790 kernel/bpf/core.c:2524
+ process_one_work+0x9ac/0x1650 kernel/workqueue.c:2307
+ worker_thread+0x657/0x1110 kernel/workqueue.c:2454
+ kthread+0x2e9/0x3a0 kernel/kthread.c:377
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+ </TASK>
+
+
+Memory state around the buggy address:
+ ffffffffa0001980: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffffffa0001a00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffffffa0001a80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                   ^
+ ffffffffa0001b00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffffffa0001b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
