@@ -2,97 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5550C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D66E1C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347479AbiBNKVR (ORCPT
+        id S1347561AbiBNKVU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:21:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44706 "EHLO
+        Mon, 14 Feb 2022 05:21:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347973AbiBNKRB (ORCPT
+        with ESMTP id S1347953AbiBNKRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90318CD9E;
-        Mon, 14 Feb 2022 01:54:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CCE460F31;
-        Mon, 14 Feb 2022 09:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2D80C340E9;
-        Mon, 14 Feb 2022 09:54:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832445;
-        bh=7wu8b6agGOA1q3qTSBxQDmnk8+fRPmC6y+mRFVQk5vw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kVgAlQcaHclp010hvq6QHy8Bpynd9e5A306Obx+Yh+cBD6T+sa/t3X43gbDlXI4+8
-         MYMN3hyeM2jRdl7dmonaHZ+8pJqzen83/Jqe8xnfwzPFXZXbQCxjnD23NEgYvlXaIg
-         iE7xInLNbrTIwvEskTiePJeW9QMYNyOoMERR7/Nw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 017/203] NFSD: Clamp WRITE offsets
-Date:   Mon, 14 Feb 2022 10:24:21 +0100
-Message-Id: <20220214092510.806006366@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:17:00 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA188CD97;
+        Mon, 14 Feb 2022 01:54:26 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 79C3A47F;
+        Mon, 14 Feb 2022 10:54:23 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644832463;
+        bh=aUVnJ4wIPvMcFSf1znk2gPQHK2Wcph2lWqBu4+e+lV4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J9Y5iGHHtcuiXm1vvqsm7FI1Bmbq+pu61xCQMZDMvj7rRyF3kszrjZ+y6DsCM0TnZ
+         qKBISSaCdg1yUWMGiMjhs6uz203wbs8LFhQs4u+vwuty7NMCwH0YM7jro1IAKdjmQ3
+         acjj1kcM7G9+RL15zhtS2JSj1ZTs1Lem1JJSnkAg=
+Date:   Mon, 14 Feb 2022 11:54:17 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
+        dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
+        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
+        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
+        tomi.valkeinen@ideasonboard.com,
+        bcm-kernel-feedback-list@broadcom.com,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH v5 03/11] dt-bindings: media: Add bindings for
+ bcm2835-unicam
+Message-ID: <YgomyazKaV2QnfYQ@pendragon.ideasonboard.com>
+References: <20220208155027.891055-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220208155027.891055-4-jeanmichel.hautbois@ideasonboard.com>
+ <f58bf6a9-c63f-19ab-36c8-a9a7b9182859@i2se.com>
+ <20220214093954.5y4jbqcddmwhgxr5@houat>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220214093954.5y4jbqcddmwhgxr5@houat>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+On Mon, Feb 14, 2022 at 10:39:54AM +0100, Maxime Ripard wrote:
+> Hi,
+> 
+> On Sun, Feb 13, 2022 at 04:48:45PM +0100, Stefan Wahren wrote:
+> > as someone with a little more insight to the clocks, i like to know your
+> > opinion about the bcm2835-unicam binding.
+> > 
+> > Am 08.02.22 um 16:50 schrieb Jean-Michel Hautbois:
+> > > Introduce the dt-bindings documentation for bcm2835 CCP2/CSI2 Unicam
+> > > camera interface.
+> > >
+> > > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> > > Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> > > Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+> > > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > >
+> > > ---
+> > > v4:
+> > > - make MAINTAINERS its own patch
+> > > - describe the reg and clocks correctly
+> > > - use a vendor entry for the number of data lanes
+> > > ---
+> > >  .../bindings/media/brcm,bcm2835-unicam.yaml   | 117 ++++++++++++++++++
+> > >  1 file changed, 117 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > new file mode 100644
+> > > index 000000000000..1938ace23b3d
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> > > @@ -0,0 +1,117 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Broadcom BCM283x Camera Interface (Unicam)
+> > > +
+> > > +maintainers:
+> > > +  - Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> > > +
+> > > +description: |-
+> > > +  The Unicam block on BCM283x SoCs is the receiver for either
+> > > +  CSI-2 or CCP2 data from image sensors or similar devices.
+> > > +
+> > > +  The main platform using this SoC is the Raspberry Pi family of boards.  On
+> > > +  the Pi the VideoCore firmware can also control this hardware block, and
+> > > +  driving it from two different processors will cause issues.  To avoid this,
+> > > +  the firmware checks the device tree configuration during boot. If it finds
+> > > +  device tree nodes whose name starts with 'csi' then it will stop the firmware
+> > > +  accessing the block, and it can then safely be used via the device tree
+> > > +  binding.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    const: brcm,bcm2835-unicam
+> > > +
+> > > +  reg:
+> > > +    items:
+> > > +      - description: Unicam block.
+> > > +      - description: Clock Manager Image (CMI) block.
+> > > +
+> > > +  reg-names:
+> > > +    items:
+> > > +      - const: unicam
+> > > +      - const: cmi
+> > > +
+> > > +  interrupts:
+> > > +    maxItems: 1
+> > > +
+> > > +  clocks:
+> > > +    items:
+> > > +      - description: Clock to drive the LP state machine of Unicam.
+> > > +      - description: Clock for the VPU (core clock).
+> > > +
+> > > +  clock-names:
+> > > +    items:
+> > > +      - const: lp
+> > > +      - const: vpu
+> > > +
+> > 
+> > according to this patch [1], the unicam driver only needs the VPU clock
+> > reference just to enforce a minimum of 250 MHz. The firmware clock
+> > binding and its driver is specific to the bcm2711, but the Unicam IP
+> > exists since bcm2835.
+> > 
+> > So do you think the clock part is correct or should be the VPU clock
+> > optional?
+> 
+> I think we should keep it mandatory. Indeed, that clock is shared with
+> the HVS that will change its rate on a regular basis, so even just
+> enforcing that 250MHz while it's on without a clock handle will be
+> fairly hard.
+> 
+> Also, those are the constraints we have now, but having the clock handle
+> all the time will allow us to add any constraint we might need in the
+> future.
+> 
+> And BCM2711 or not, the clock has probably always been there.
 
-commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
+Furthermore, regardless of what the driver needs, Unicam operates with
+the VPU clock, so I think it makes sense to reference it in the device
+tree.
 
-Ensure that a client cannot specify a WRITE range that falls in a
-byte range outside what the kernel's internal types (such as loff_t,
-which is signed) can represent. The kiocb iterators, invoked in
-nfsd_vfs_write(), should properly limit write operations to within
-the underlying file system's s_maxbytes.
+-- 
+Regards,
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/nfsd/nfs3proc.c |    5 +++++
- fs/nfsd/nfs4proc.c |    5 +++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
---- a/fs/nfsd/nfs3proc.c
-+++ b/fs/nfsd/nfs3proc.c
-@@ -199,6 +199,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
- 				(unsigned long long) argp->offset,
- 				argp->stable? " stable" : "");
- 
-+	resp->status = nfserr_fbig;
-+	if (argp->offset > (u64)OFFSET_MAX ||
-+	    argp->offset + argp->len > (u64)OFFSET_MAX)
-+		return rpc_success;
-+
- 	fh_copy(&resp->fh, &argp->fh);
- 	resp->committed = argp->stable;
- 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
---- a/fs/nfsd/nfs4proc.c
-+++ b/fs/nfsd/nfs4proc.c
-@@ -1018,8 +1018,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
- 	unsigned long cnt;
- 	int nvecs;
- 
--	if (write->wr_offset >= OFFSET_MAX)
--		return nfserr_inval;
-+	if (write->wr_offset > (u64)OFFSET_MAX ||
-+	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
-+		return nfserr_fbig;
- 
- 	cnt = write->wr_buflen;
- 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
-
-
+Laurent Pinchart
