@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C557C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1380EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229544AbiBNJhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:37:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52428 "EHLO
+        id S243368AbiBNJh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:37:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244501AbiBNJf6 (ORCPT
+        with ESMTP id S244813AbiBNJgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:35:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9DABF78;
-        Mon, 14 Feb 2022 01:33:51 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A832A6CA4A;
+        Mon, 14 Feb 2022 01:34:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D9BC61023;
-        Mon, 14 Feb 2022 09:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E48C340EF;
-        Mon, 14 Feb 2022 09:33:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D11AB80DA9;
+        Mon, 14 Feb 2022 09:34:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87195C340E9;
+        Mon, 14 Feb 2022 09:34:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831188;
-        bh=uMMeRoT+ybvFtU0MX3yKDdCNfcVrwyog8G8R/v9tMPU=;
+        s=korg; t=1644831248;
+        bh=0KFL7EUzAu7Eb7oUe3MpZrguecfrpKt/qiwj88UrN+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VsH0BpcX+xlPLkghRvGcxzn+Z3VAfAxCq1QarlW1jtaObrLprmHzZzYtPPEBVsk8u
-         xu4DZPQjE7jdNSUc5wPc4BLO4xSZTMqrJwyeLkcgicyR1/XTNmm9dTN0qVBMlXZpNV
-         ugpUlR1PnhcIwUtMWNlwkkF33lgN+Yu0pOj6fTwQ=
+        b=GbE8lKZsfPNe+ucadJEDuHNfn4GOHw8tT8QZVmlm/1M6t1qhvUqp3/fAu/t4OlW0E
+         b9auAYLVAsJLTh3ZV8FNJEKU9aE7aJ9pLwjjtuXqejkUQt6o1dRKzFHim/5de6Z9fs
+         EzmTl30wDwwFp5ApK8znHn9tjpflBeScLsk/NZtM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 4.19 07/49] NFSD: Clamp WRITE offsets
-Date:   Mon, 14 Feb 2022 10:25:33 +0100
-Message-Id: <20220214092448.544263590@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephan Brunner <s.brunner@stephan-brunner.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.19 44/49] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
+Date:   Mon, 14 Feb 2022 10:26:10 +0100
+Message-Id: <20220214092449.764605832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -47,51 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Stephan Brunner <s.brunner@stephan-brunner.net>
 
-commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
+commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
 
-Ensure that a client cannot specify a WRITE range that falls in a
-byte range outside what the kernel's internal types (such as loff_t,
-which is signed) can represent. The kiocb iterators, invoked in
-nfsd_vfs_write(), should properly limit write operations to within
-the underlying file system's s_maxbytes.
+Programmable lab power supplies made by GW Instek, such as the
+GPP-2323, have a USB port exposing a serial port to control the device.
 
+Stringing the supplied Windows driver, references to the ch341 chip are
+found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
+("GW Instek USB2.0-Serial" as per the USB product name) works out of the
+box, communication and control is now possible.
+
+This patch should work with any GPP series power supply due to
+similarities in the product line.
+
+Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
+Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
 Cc: stable@vger.kernel.org
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfs3proc.c |    5 +++++
- fs/nfsd/nfs4proc.c |    5 +++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/usb/serial/ch341.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/nfsd/nfs3proc.c
-+++ b/fs/nfsd/nfs3proc.c
-@@ -200,6 +200,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
- 				(unsigned long long) argp->offset,
- 				argp->stable? " stable" : "");
- 
-+	resp->status = nfserr_fbig;
-+	if (argp->offset > (u64)OFFSET_MAX ||
-+	    argp->offset + argp->len > (u64)OFFSET_MAX)
-+		return rpc_success;
-+
- 	fh_copy(&resp->fh, &argp->fh);
- 	resp->committed = argp->stable;
- 	nvecs = svc_fill_write_vector(rqstp, rqstp->rq_arg.pages,
---- a/fs/nfsd/nfs4proc.c
-+++ b/fs/nfsd/nfs4proc.c
-@@ -997,8 +997,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
- 	unsigned long cnt;
- 	int nvecs;
- 
--	if (write->wr_offset >= OFFSET_MAX)
--		return nfserr_inval;
-+	if (write->wr_offset > (u64)OFFSET_MAX ||
-+	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
-+		return nfserr_fbig;
- 
- 	cnt = write->wr_buflen;
- 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -84,6 +84,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x1a86, 0x5523) },
+ 	{ USB_DEVICE(0x1a86, 0x7522) },
+ 	{ USB_DEVICE(0x1a86, 0x7523) },
++	{ USB_DEVICE(0x2184, 0x0057) },
+ 	{ USB_DEVICE(0x4348, 0x5523) },
+ 	{ USB_DEVICE(0x9986, 0x7523) },
+ 	{ },
 
 
