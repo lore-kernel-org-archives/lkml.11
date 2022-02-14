@@ -2,121 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D48CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FBFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbiBNUts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:49:48 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35424 "EHLO
+        id S229790AbiBNUtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:49:50 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiBNUtp (ORCPT
+        with ESMTP id S229757AbiBNUto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:49:45 -0500
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E7215FC87
+        Mon, 14 Feb 2022 15:49:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8AC15F601
         for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:49:29 -0800 (PST)
-Received: by mail-qt1-x82f.google.com with SMTP id o3so16589538qtm.12
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:49:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HDLiuYUP5DHdmjW4f062r2zlI41NFhxRv09UtgBUw+M=;
-        b=QnBu1cdZSNMZMwTUOhTAgwrDV0UDotuXjd+L9tGoRib5LiAOViseQ3Shth3I3/9cUX
-         F9FE9WP/n9IXs5G/YdanGCNFX3mwzenNKyGas7OHzij+neOt+7N0L8gulZksssphH0JK
-         ZdAH701JpydqzO4zSQ63RxEFI/i6gMAqnIMJnBkw252CYXQsB0CmiD9JEAKRqabXkDss
-         C24cvW5+nsV74dkDMeh0PKiv6q73XtCwF3kNhQmHGY7iVbEX5fIf1tLZZzQ/qHEwjapy
-         YPS22mz/ReXGyT+0yl9O+kILA0cSXtpXCAn5q4MdtEBUg/J2KAwutMzm1ZQ8iCW+2Fdu
-         29yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HDLiuYUP5DHdmjW4f062r2zlI41NFhxRv09UtgBUw+M=;
-        b=xUQ0smfRzCFJjqbxTxCsyblRW+6aoNqzyEUsCm/j6LRfcE5qqnp3TxHyL62Kn0JHqr
-         ee+ZFz3SzDs3/ubM9KEDk3L1zmja0WJVceYMIPjdLO43jY8yoOuU87NMNVyjxrBtuj3i
-         StqlateR6rf4zSeSGwYfChac5MEPc/iirnTI9dRrBwiitOlX8U7vtCsltLMPBrj40RmT
-         nNwnLQj+a+ydehV/QqWndsGJzOFgJrU9W6fhQUQ6kkP5kKfD8NEsdpEB6M0i4InlKe+A
-         kPbdW+KceWWVJJExfrYTBN52qgnq1dy4UA2LwwX3X1CyGWmc3/MnW7re/shicSXbhpTg
-         KEAw==
-X-Gm-Message-State: AOAM532P/Aqab6ZDNslkH3dDQUZrVecgyWfGd8A2g2VYjmD+6S08Xs9b
-        ANhTnmkS+f5aTq/6mJSMXCx3XQC6v39IYKktVJtdPYzvv7zS2w==
-X-Google-Smtp-Source: ABdhPJzbvpTWXVuIjS/XjHNa8littqTkjF6TQBikKhXHbgTCjjUteC4b/xejz1U2eG7DGGSoU8BB+NLCXOAU65/AcM4=
-X-Received: by 2002:a05:620a:470a:: with SMTP id bs10mr392145qkb.583.1644871152704;
- Mon, 14 Feb 2022 12:39:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5942610A1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:28:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CF1C340EB;
+        Mon, 14 Feb 2022 19:28:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644866937;
+        bh=zRzXMCM9AhF3WBIJ4GuTK+ukLtut1AMLJ1G7ORC9iMo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=b+KNMhMmSRyY30RB495UofKiq8RCAoxZ29bKm99qeU5cyjakjYbzzcr74HtjwzIwr
+         cOurBuPKU/EahWT87CKDYhUaP0vAThxFcXXQN0i1qoFSAS+kofwPd2BIMA61cNJ9s5
+         aTTuDcblueQaenPKeRXnNbduZxc8vDKFXMtn2jBHsd0e90iktNhU0o+NblIF+KWrGo
+         PKL3ZV3PpwTq9euozbw7iLvsG/c0uxGER+GXMeGqOwh9LFUdOCPJ/ds1lwHHLJ9H0b
+         6FHu4YkEKEiBEgUy+gGS7/gxb8o68h17PuQVsqbZwjMZ2XiI8J7yK93/CXvIz5jiZV
+         B6c/tEaw3NlvQ==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] ftrace: Remove unused ftrace_startup_enable() stub
+Date:   Mon, 14 Feb 2022 12:28:47 -0700
+Message-Id: <20220214192847.488166-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
- <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
- <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
- <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
- <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
- <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com>
- <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
- <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com>
- <CA+khW7i46Rg8q=8goXdmuJuZ+NOuZ5AP6fSbSVzyqcU3C5iX4A@mail.gmail.com>
- <CAADnVQK+Eh9qCuoBWZ1cRQ4h+fS5J+zy+GePEGXijZ_BD_5Q3w@mail.gmail.com>
- <CA+khW7jeptVgZziTqexXp2dNC0Kk+di8f8xkd2dTzXb8YR0Mjw@mail.gmail.com> <CAADnVQLvVEBowTKuRpYny47L6Az4C2LqrD3T4bnG_i2vCfE2TQ@mail.gmail.com>
-In-Reply-To: <CAADnVQLvVEBowTKuRpYny47L6Az4C2LqrD3T4bnG_i2vCfE2TQ@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Mon, 14 Feb 2022 12:39:01 -0800
-Message-ID: <CA+khW7gY9O+=8MExreeV6jziMSEJVMSvP2Nvn9FRwvA4d6ipdA@mail.gmail.com>
-Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
- cgroup_view link
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Joe Burton <jevburton.kernel@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:28 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Feb 14, 2022 at 12:23 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > On Mon, Feb 14, 2022 at 11:25 AM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Mon, Feb 14, 2022 at 10:29 AM Hao Luo <haoluo@google.com> wrote:
-> > > > Hi Alexei,
-> > > >
-> > > > Actually, I found this almost worked, except that the tracepoints
-> > > > cgroup_mkdir and cgroup_rmdir are not sleepable. They are inside a
-> > > > spinlock's critical section with irq off. I guess one solution is to
-> > > > offload the sleepable part of the bpf prog into a thread context. We
-> > > > may create a dedicated kernel thread or use workqueue for this. Do you
-> > > > have any advice?
-> > >
-> > > Are you referring to spin_lock in TRACE_CGROUP_PATH
-> > > that protects global trace_cgroup_path[] buffer?
-> >
-> > Yes, that's the spin_lock I am talking about.
-> >
-> > > That is fixable.
-> > > Do you actually need the string path returned by cgroup_path() in bpf prog?
-> > > Maybe prog can call cgroup_path() by itself when necessary.
-> > > Parsing strings isn't great anyway. The bpf prog probably needs the last
-> > > part of the dir only. So cgrp->kn->name would do it?
-> > > The TRACE_CGROUP_PATH wasn't designed to be turned on 24/7.
-> > > That global spin_lock is not great for production use.
-> > > No need to delegate sleepable bpf to thread context.
-> > > Let's refactor that tracepoint a bit.
-> >
-> > No, we don't need cgroup_path(). We are going to name the directories
-> > by cgrp->kn->id. I can add a fast version for cgroup_xxx tracepoints,
-> > which don't require the full path and can be turned on 24/7.
->
-> Sounds good. We need a flag for tracepoints anyway to indicate
-> which ones are sleepable.
-> Probably similar to what we did for DEFINE_EVENT_WRITABLE.
+When building with clang + CONFIG_DYNAMIC_FTRACE=n + W=1, there is a
+warning:
 
-No problem. I'll take a look at it. Thanks!
+  kernel/trace/ftrace.c:7194:20: error: unused function 'ftrace_startup_enable' [-Werror,-Wunused-function]
+  static inline void ftrace_startup_enable(int command) { }
+                     ^
+  1 error generated.
+
+Clang warns on instances of static inline functions in .c files with W=1
+after commit 6863f5643dd7 ("kbuild: allow Clang to find unused static
+inline functions for W=1 build").
+
+The ftrace_startup_enable() stub has been unused since
+commit e1effa0144a1 ("ftrace: Annotate the ops operation on update"),
+where its use outside of the CONFIG_DYNAMIC_TRACE section was replaced
+by ftrace_startup_all().  Remove it to resolve the warning.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ kernel/trace/ftrace.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index f9feb197b2da..a4b462b6f944 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -7191,7 +7191,6 @@ static int __init ftrace_nodyn_init(void)
+ core_initcall(ftrace_nodyn_init);
+ 
+ static inline int ftrace_init_dyn_tracefs(struct dentry *d_tracer) { return 0; }
+-static inline void ftrace_startup_enable(int command) { }
+ static inline void ftrace_startup_all(int command) { }
+ 
+ # define ftrace_startup_sysctl()	do { } while (0)
+
+base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
+-- 
+2.35.1
+
