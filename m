@@ -2,100 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9944FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A83C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229992AbiBNU6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:58:12 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48476 "EHLO
+        id S229911AbiBNU6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:58:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiBNU6E (ORCPT
+        with ESMTP id S229522AbiBNU6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:58:04 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E1911EF08;
-        Mon, 14 Feb 2022 12:57:27 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id g1so11521631pfv.1;
-        Mon, 14 Feb 2022 12:57:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8eI79aPTVtqYQhM0bTcpnqJ4UdG4+AWyiT8hNcdyv7Q=;
-        b=ZSV4ZqXKji33uFcHmgvE05zjLOm9kEVHG6oWJ7eZKZPZ4kZ2nggGrMqLqKlPL34Ek1
-         /u/NM4futt7QdWUDzgYKzfBFqB3ZZBZkwOMzOMhGC7cko+Qztmw8XHcfcb0gNwQq8MkU
-         7507ocXVBAmsp48WPhA5XpPf/bn2aWqzt0WtH8bdY9cWxbZexhWBaUs3sZd0U5bp1e3T
-         ruHrM+VNwVpvBmLdyRZvIgDd/7i3XcHwZsLkaOtpINL3arjnaQdH3B8XpxaFk+Fyctd1
-         shUZRC0TnpWCQftQMjh+GxGmupgih3F576KJYbNUbrq4yUWvlv3OvixikVZXYjiUMish
-         slvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=8eI79aPTVtqYQhM0bTcpnqJ4UdG4+AWyiT8hNcdyv7Q=;
-        b=o3eE+CYEMxE67VxanFZkAPqsQZg+QwdShIlzmrMsDPTDscgsb+V1JTgAu2XeRlGiQo
-         FyH4zrAW9ChQ5sJDpeVuTw+km3LV3olOdpHgBVnDIu1n2O0nIId7XDCtW61bJpQdaLLG
-         P02SmNdoee0lNRVmA6IjkiCjTZFSpV7yS9x5sdcDwkLcyYk8C577LFWcbsnIsnjs4eE3
-         FMLEYCdvq7VmLFJ6sfYidkyC6c1b7ooNl3UqE4WcFTPoviC9o/Cer5so+I7k4QyEZYMD
-         LP1hTjDWH1Tv3KiHEP2RPu9D8Pq/yC+lQtm/9UOlKR1laqkwBpSISYtI+PxJIuFIoldT
-         Iw/w==
-X-Gm-Message-State: AOAM533ABcdnkONUWee9QGL7nG2NFhRkd61eYyqQGxOuRso8THXsMiYb
-        1Rp7oBCuFiaZK4v0qnvNWbRLUMxMr0s=
-X-Google-Smtp-Source: ABdhPJyUfTPTFZc8hUeHI+dD4bfFcL0x2ysfp78YkPhpEXIAqKojYn5U65C+/pWyd/cczefXz/Cd4w==
-X-Received: by 2002:a63:68c1:: with SMTP id d184mr494872pgc.405.1644868241417;
-        Mon, 14 Feb 2022 11:50:41 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id q94sm3968073pja.27.2022.02.14.11.50.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:50:41 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 14 Feb 2022 09:50:39 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Zhang Qiao <zhangqiao22@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        lizefan.x@bytedance.com, hannes@cmpxchg.org, matthltc@us.ibm.com,
-        bblum@google.com, menage@google.com, akpm@linux-foundation.org,
-        longman@redhat.com, mkoutny@suse.com, zhaogongyi@huawei.com
-Subject: Re: [PATCH] cgroup/cpuset: Fix a race between cpuset_attach() and
- cpu hotplug
-Message-ID: <Ygqyj7nns+mxH81t@slm.duckdns.org>
-References: <20220121101210.84926-1-zhangqiao22@huawei.com>
+        Mon, 14 Feb 2022 15:58:10 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F6B5110EEF;
+        Mon, 14 Feb 2022 12:57:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644872260; x=1676408260;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+ZOSDcI2qdIWgBn8a33RycD675mh/DMLTMtB1BKSO68=;
+  b=Cu7J1A8t5paQM1GqwgCcVmlmdK0objzjfsNA+cBKoJszkbaPz8r31ggE
+   kGemuABrYYLJHfIaRZ6Bs3E3GaibUrER3gHScEdMNDuR/Mx+EN9sdDJA/
+   hMvP3stXA81IRXW0vF1dyj+b2mkH4AORXyKZChO0c97DGNidTAQy+KXvL
+   PVl/IYiwTNSUGRh0gqPdHGfs+OF4VXwbJDnB9T1SbCj692QnvS/3FHfwk
+   5QHRCUBbVKNVHjeqey2e4aeg+0PRuiJc+OHDB5rPcUr+/Vbw8TryzBo+w
+   3smuAEJtEsyaV1+nHlls8C1wztq+6Q2EJg1kHAlpO7Bh4CM7aTyoJxadJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="310916638"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="310916638"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 12:35:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="635415061"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 12:35:19 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJi46-0008vY-HT; Mon, 14 Feb 2022 20:35:18 +0000
+Date:   Tue, 15 Feb 2022 04:34:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     kbuild-all@lists.01.org, mdf@kernel.org, hao.wu@intel.com,
+        yilun.xu@intel.com, trix@redhat.com, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, system@metrotek.ru,
+        Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Subject: Re: [PATCH] fpga: microsemi-spi: add Microsemi FPGA manager
+Message-ID: <202202150434.i0eTuy1u-lkp@intel.com>
+References: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121101210.84926-1-zhangqiao22@huawei.com>
+In-Reply-To: <20220214133835.25097-1-i.bornyakov@metrotek.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 06:12:10PM +0800, Zhang Qiao wrote:
-> As previously discussed(https://lkml.org/lkml/2022/1/20/51),
-> cpuset_attach() is affected with similar cpu hotplug race,
-> as follow scenario:
-> 
->      cpuset_attach()				cpu hotplug
->     ---------------------------            ----------------------
->     down_write(cpuset_rwsem)
->     guarantee_online_cpus() // (load cpus_attach)
-> 					sched_cpu_deactivate
-> 					  set_cpu_active()
-> 					  // will change cpu_active_mask
->     set_cpus_allowed_ptr(cpus_attach)
->       __set_cpus_allowed_ptr_locked()
->        // (if the intersection of cpus_attach and
->          cpu_active_mask is empty, will return -EINVAL)
->     up_write(cpuset_rwsem)
-> 
-> To avoid races such as described above, protect cpuset_attach() call
-> with cpu_hotplug_lock.
-> 
-> Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
-> Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
-> Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+Hi Ivan,
 
-Applied to cgroup/for-5.17-fixes w/ stable cc'd.
+Thank you for the patch! Perhaps something to improve:
 
-Thanks and sorry about the delay.
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.17-rc4 next-20220214]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
--- 
-tejun
+url:    https://github.com/0day-ci/linux/commits/Ivan-Bornyakov/fpga-microsemi-spi-add-Microsemi-FPGA-manager/20220214-222923
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 754e0b0e35608ed5206d6a67a791563c631cec07
+config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220215/202202150434.i0eTuy1u-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/19d9c174f03a9b8387ba654d558351cac9d63d24
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Ivan-Bornyakov/fpga-microsemi-spi-add-Microsemi-FPGA-manager/20220214-222923
+        git checkout 19d9c174f03a9b8387ba654d558351cac9d63d24
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash drivers/fpga/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+   drivers/fpga/microsemi-spi.c: In function 'microsemi_fpga_ops_write':
+>> drivers/fpga/microsemi-spi.c:244:30: warning: format '%d' expects argument of type 'int', but argument 3 has type 'ssize_t' {aka 'long int'} [-Wformat=]
+     244 |                 dev_err(dev, "Failed to find bitstream start %d\n",
+         |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:244:17: note: in expansion of macro 'dev_err'
+     244 |                 dev_err(dev, "Failed to find bitstream start %d\n",
+         |                 ^~~~~~~
+   drivers/fpga/microsemi-spi.c:244:63: note: format string is defined here
+     244 |                 dev_err(dev, "Failed to find bitstream start %d\n",
+         |                                                              ~^
+         |                                                               |
+         |                                                               int
+         |                                                              %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+   drivers/fpga/microsemi-spi.c:252:30: warning: format '%d' expects argument of type 'int', but argument 3 has type 'ssize_t' {aka 'long int'} [-Wformat=]
+     252 |                 dev_err(dev, "Failed to parse bitstream size %d\n",
+         |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:252:17: note: in expansion of macro 'dev_err'
+     252 |                 dev_err(dev, "Failed to parse bitstream size %d\n",
+         |                 ^~~~~~~
+   drivers/fpga/microsemi-spi.c:252:63: note: format string is defined here
+     252 |                 dev_err(dev, "Failed to parse bitstream size %d\n",
+         |                                                              ~^
+         |                                                               |
+         |                                                               int
+         |                                                              %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+   drivers/fpga/microsemi-spi.c:260:25: warning: format '%d' expects argument of type 'int', but argument 3 has type 'ssize_t' {aka 'long int'} [-Wformat=]
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:259:17: note: in expansion of macro 'dev_err'
+     259 |                 dev_err(dev,
+         |                 ^~~~~~~
+   drivers/fpga/microsemi-spi.c:260:70: note: format string is defined here
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                                                                     ~^
+         |                                                                      |
+         |                                                                      int
+         |                                                                     %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+   drivers/fpga/microsemi-spi.c:260:25: warning: format '%d' expects argument of type 'int', but argument 4 has type 'ssize_t' {aka 'long int'} [-Wformat=]
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:259:17: note: in expansion of macro 'dev_err'
+     259 |                 dev_err(dev,
+         |                 ^~~~~~~
+   drivers/fpga/microsemi-spi.c:260:89: note: format string is defined here
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                                                                                        ~^
+         |                                                                                         |
+         |                                                                                         int
+         |                                                                                        %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+>> drivers/fpga/microsemi-spi.c:260:25: warning: format '%d' expects argument of type 'int', but argument 5 has type 'size_t' {aka 'long unsigned int'} [-Wformat=]
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:259:17: note: in expansion of macro 'dev_err'
+     259 |                 dev_err(dev,
+         |                 ^~~~~~~
+   drivers/fpga/microsemi-spi.c:260:107: note: format string is defined here
+     260 |                         "Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+         |                                                                                                          ~^
+         |                                                                                                           |
+         |                                                                                                           int
+         |                                                                                                          %ld
+   In file included from include/linux/device.h:15,
+                    from include/linux/spi/spi.h:10,
+                    from drivers/fpga/microsemi-spi.c:7:
+   drivers/fpga/microsemi-spi.c:274:33: warning: format '%d' expects argument of type 'int', but argument 4 has type 'ssize_t' {aka 'long int'} [-Wformat=]
+     274 |                                 "Failed to write bitstream frame number %d of %d\n",
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/fpga/microsemi-spi.c:273:25: note: in expansion of macro 'dev_err'
+     273 |                         dev_err(dev,
+         |                         ^~~~~~~
+   drivers/fpga/microsemi-spi.c:274:80: note: format string is defined here
+     274 |                                 "Failed to write bitstream frame number %d of %d\n",
+         |                                                                               ~^
+         |                                                                                |
+         |                                                                                int
+         |                                                                               %ld
+
+
+vim +244 drivers/fpga/microsemi-spi.c
+
+   225	
+   226	static int microsemi_fpga_ops_write(struct fpga_manager *mgr, const char *buf,
+   227					    size_t count)
+   228	{
+   229		ssize_t bitstream_start = 0, bitstream_size;
+   230		struct microsemi_fpga_priv *priv = mgr->priv;
+   231		struct spi_device *spi = priv->spi;
+   232		struct device *dev = &mgr->dev;
+   233		u8 tmp_buf[SPI_FRAME_SIZE + 1];
+   234		int ret, i;
+   235	
+   236		if (crc_ccitt(0, buf, count)) {
+   237			dev_err(dev, "CRC error\n");
+   238	
+   239			return -EINVAL;
+   240		}
+   241	
+   242		bitstream_start = lookup_block_start(BITSTREAM_ID, buf, count);
+   243		if (bitstream_start < 0) {
+ > 244			dev_err(dev, "Failed to find bitstream start %d\n",
+   245				bitstream_start);
+   246	
+   247			return bitstream_start;
+   248		}
+   249	
+   250		bitstream_size = parse_bitstream_size(buf, count);
+   251		if (bitstream_size < 0) {
+   252			dev_err(dev, "Failed to parse bitstream size %d\n",
+   253				bitstream_size);
+   254	
+   255			return bitstream_size;
+   256		}
+   257	
+   258		if (bitstream_start + bitstream_size * SPI_FRAME_SIZE > count) {
+   259			dev_err(dev,
+ > 260				"Bitstram outruns firmware. Bitstream start %d, bitstream size %d, firmware size %d\n",
+   261				bitstream_start, bitstream_size * SPI_FRAME_SIZE, count);
+   262	
+   263			return -EFAULT;
+   264		}
+   265	
+   266		for (i = 0; i < bitstream_size; i++) {
+   267			tmp_buf[0] = SPI_FRAME;
+   268			memcpy(tmp_buf + 1, buf + bitstream_start + i * SPI_FRAME_SIZE,
+   269			       SPI_FRAME_SIZE);
+   270	
+   271			ret = microsemi_spi_write(spi, tmp_buf, sizeof(tmp_buf));
+   272			if (ret) {
+   273				dev_err(dev,
+   274					"Failed to write bitstream frame number %d of %d\n",
+   275					i, bitstream_size);
+   276	
+   277				return ret;
+   278			}
+   279		}
+   280	
+   281		return 0;
+   282	}
+   283	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
