@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F63C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345186AbiBNKIY (ORCPT
+        id S1345203AbiBNKIc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:08:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53612 "EHLO
+        Mon, 14 Feb 2022 05:08:32 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344762AbiBNKC6 (ORCPT
+        with ESMTP id S1344007AbiBNKDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:02:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9454C40A17;
-        Mon, 14 Feb 2022 01:48:38 -0800 (PST)
+        Mon, 14 Feb 2022 05:03:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9FAAE6D;
+        Mon, 14 Feb 2022 01:48:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34DA66126B;
-        Mon, 14 Feb 2022 09:48:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 827D1C340E9;
-        Mon, 14 Feb 2022 09:48:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5931561284;
+        Mon, 14 Feb 2022 09:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B674C340E9;
+        Mon, 14 Feb 2022 09:48:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832117;
-        bh=5VH8L7tI6N2kV+EX2YOtx1QVX/xjPOomFTTF7cF4La8=;
+        s=korg; t=1644832120;
+        bh=DZddstfJZ895lO5EZorp9IHJ1iljzh9LsKYGGT105rA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b40rNQD53l+hlQqyKuw2p9o55UnFd7XkR/YCNYEDKuasxddl0Ekc4RxGcCa1SSJLM
-         y9kq4eFfGtyyf1RnNLUZpGLnkADpwsVenJPpzDr3eb13BZrVwoQpNn67rc9cZ4TUIG
-         V2NRSE3z2DjWQzT+3daIWU76lu3A8stp4DgadgMQ=
+        b=qf7Z8BMEvhsWtev6HikW4VshFU0mBTzJbb+XtDNpcfDX3wFYFTTjDxA7Hm4ktIYzv
+         Osgic6lfV83Dqj8gpsVlP7GzUyCCiZ5Fqsq2THB6aZRXTzNHH4UTHDsdqDsYzQ7efX
+         ofglEZYY6SKYRsMrZBm7kE2nr45GRWrvd+HbpnDQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Cooper <alcooperx@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 084/172] phy: broadcom: Kconfig: Fix PHY_BRCM_USB config option
-Date:   Mon, 14 Feb 2022 10:25:42 +0100
-Message-Id: <20220214092509.310822278@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 085/172] staging: fbtft: Fix error path in fbtft_driver_module_init()
+Date:   Mon, 14 Feb 2022 10:25:43 +0100
+Message-Id: <20220214092509.343227988@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,42 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Al Cooper <alcooperx@gmail.com>
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-[ Upstream commit 5070ce86246a8a4ebacd0c15b121e6b6325bc167 ]
+[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
 
-The previous commit 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on
-the BCM4908") added a second "default" line for ARCH_BCM_4908 above
-the original "default" line for ARCH_BRCMSTB. When two "default"
-lines are used, only the first is used and this change stopped
-the PHY_BRCM_USB option for being enabled for ARCH_BRCMSTB.
-The fix is to use one "default line with "||".
+If registering the platform driver fails, the function must not return
+without undoing the spi driver registration first.
 
-Fixes: 4b402fa8e0b7 ("phy: phy-brcm-usb: support PHY on the BCM4908")
-Signed-off-by: Al Cooper <alcooperx@gmail.com>
-Acked-by: Rafał Miłecki <rafal@milecki.pl>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20211201180653.35097-4-alcooperx@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: c296d5f9957c ("staging: fbtft: core support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/broadcom/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/fbtft/fbtft.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/broadcom/Kconfig b/drivers/phy/broadcom/Kconfig
-index fd92b73b71095..1dcfa3bd1442d 100644
---- a/drivers/phy/broadcom/Kconfig
-+++ b/drivers/phy/broadcom/Kconfig
-@@ -95,8 +95,7 @@ config PHY_BRCM_USB
- 	depends on OF
- 	select GENERIC_PHY
- 	select SOC_BRCMSTB if ARCH_BRCMSTB
--	default ARCH_BCM4908
--	default ARCH_BRCMSTB
-+	default ARCH_BCM4908 || ARCH_BRCMSTB
- 	help
- 	  Enable this to support the Broadcom STB USB PHY.
- 	  This driver is required by the USB XHCI, EHCI and OHCI
+diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
+index 76f8c090a8370..06afaa9d505ba 100644
+--- a/drivers/staging/fbtft/fbtft.h
++++ b/drivers/staging/fbtft/fbtft.h
+@@ -332,7 +332,10 @@ static int __init fbtft_driver_module_init(void)                           \
+ 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
+ 	if (ret < 0)                                                       \
+ 		return ret;                                                \
+-	return platform_driver_register(&fbtft_driver_platform_driver);    \
++	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
++	if (ret < 0)                                                       \
++		spi_unregister_driver(&fbtft_driver_spi_driver);           \
++	return ret;                                                        \
+ }                                                                          \
+ 									   \
+ static void __exit fbtft_driver_module_exit(void)                          \
 -- 
 2.34.1
 
