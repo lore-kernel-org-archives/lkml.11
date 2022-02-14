@@ -2,173 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10381C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:04:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35807C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233779AbiBNLFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:05:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36278 "EHLO
+        id S1350186AbiBNLFh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:05:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349902AbiBNLER (ORCPT
+        with ESMTP id S1349672AbiBNLFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:04:17 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489DD9BF41
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:32:24 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id e7so32304400ejn.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:32:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bo43NL5WgxumOcYzft9YAYcZtXZd3PhX1zRfnI8bjDk=;
-        b=PwKUejzP04bJB9L/Xde/ppijUOqMNVBq9vZlUz8ZRPTY1pYD15Qe45sYIb0L4FtYjb
-         IyHnd2MnK/h2O2Tgfk/gptsiXpiVPFmpyOiMIYZ3h3GbbMT/zThfR804PQhY1IP7zIdJ
-         aMQnJLR8dJcolWGL9V1jh44yloHcNd2XxkIMe4SSC2qDHeTUVItjzrlvlA7Au4Vgr7cU
-         Zato8b5lzV8arQ0jk1QCL32j3v8TLC6ia37OUo60O5jGLZj5GiSQCyrH4oAjLMK42LG+
-         n4E4U7nK62f6MkYa12GS9HsWkddfGsrl5IgLk6bOn73UlNxOHunebmRMBirlqw7M/v83
-         2AfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bo43NL5WgxumOcYzft9YAYcZtXZd3PhX1zRfnI8bjDk=;
-        b=a6S5wrIiUmEp3kbOuyJb+F568cJ9f3UHxIpK3PRbY+YRBWYfRrGxJQM3sQUHRZ9DG/
-         SLyEVae6i+8KtFTnKPB+mEKJ3ARgNFKuHrPbjohTgnq/ZtlbyZUWDF4W0ou6krnfc3h8
-         W1abdx41EcFRD6Z1tNl9UeTnTsQdM+Op+EaU8R10l/kDqWuOGH6+Lqy8WYUeOoyHwKPG
-         4amvt9MFUKL3DiMTLI4SMRWA2hytzUAVdlsEqRwV/koq0BN9MCM28UGsRRNx2Qw81S4u
-         D2nBt/CGVLL0USRVDxTqTfAV8itD3rCoFnhTo3WmmFgIWskgMvb8CUOjrQUqBzJNOZPF
-         +EVQ==
-X-Gm-Message-State: AOAM531l1l6ZQC7vwYRN9LLK3ibuLB6IW7aXRHjFWv17tqi14ygFz7HE
-        Hw/RF+GiPIts9TL5sApTuQiaFw==
-X-Google-Smtp-Source: ABdhPJzudq88kL+Iol19BJzjrgl1fm4cOkIenjo5ffzfo2Cq+RmmG6+GIBXvUdT1/FwGqrO8PNu6hA==
-X-Received: by 2002:a17:907:a42a:: with SMTP id sg42mr11159538ejc.723.1644834742774;
-        Mon, 14 Feb 2022 02:32:22 -0800 (PST)
-Received: from fedora.lab.9e.network (ip-078-094-000-051.um19.pools.vodafone-ip.de. [78.94.0.51])
-        by smtp.gmail.com with ESMTPSA id b19sm1857940ede.37.2022.02.14.02.32.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 02:32:22 -0800 (PST)
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Peter Rosin <peda@axentia.se>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v5 1/3] dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
-Date:   Mon, 14 Feb 2022 11:31:14 +0100
-Message-Id: <20220214103116.68472-2-patrick.rudolph@9elements.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214103116.68472-1-patrick.rudolph@9elements.com>
-References: <20220214103116.68472-1-patrick.rudolph@9elements.com>
+        Mon, 14 Feb 2022 06:05:24 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACDC2DEF;
+        Mon, 14 Feb 2022 02:33:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1644834803;
+        bh=C52L81Zv6DgbMZ32Hm9sPxd7zXF+yQ2jiwL8dR4ieg4=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=KnJwe0LutHn9sbuIrMoUZoJGhki7eiG5xu5f3Vz1L83YUvdFWghUTrdbvMfphWHUh
+         pBx1t0QFUOqTqZyeSuOJshjA1LcH7/IqpYrvBBnsq+5wxRBUwCPgvvPDy3lBSHmTv9
+         +FpSytip4vWTQpH0tEW2q/fGAPBSuG6FEuiLShEM=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.123.94] ([88.152.144.107]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MFsYx-1nVLkT3WO7-00HNq3; Mon, 14
+ Feb 2022 11:28:02 +0100
+Message-ID: <49d3aeab-1fe6-8d17-bc83-78f3555109c7@gmx.de>
+Date:   Mon, 14 Feb 2022 11:27:53 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
+ value
+Content-Language: en-US
+To:     Andreas Schwab <schwab@linux-m68k.org>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org,
+        Sunil V L <sunilvl@ventanamicro.com>
+References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
+ <877d9xx14f.fsf@igel.home> <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
+ <87tud1vjn4.fsf@igel.home>
+From:   Heinrich Schuchardt <xypron.glpk@gmx.de>
+In-Reply-To: <87tud1vjn4.fsf@igel.home>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:kWX1RyymCzZi3HShz7TOEYlEEIuEzCNmVUcoaTDwlboEDX5KwFu
+ T11R6pzWrra/U18O4BDT+sVEhjcz8mGruHI8KlMlxezPRwjHQjP7BDC7kB7HE7wSbWk5dG9
+ A2yqlqau3mBKveqkKrrIjPWTC6WpDX8zIYF0Ip/e/9ud3RGLLFFsmhrML5JLwj88Mx458FZ
+ mehheaVewk32SY9MHOJ3Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gW86zBi/V3o=:IslAMeGKcQDNVWpsEcUkOU
+ 757RAkn0+7tCs9VFCWiekFHWUmgamtMaUmqZwNPl49h7pLOqMHyU8fWz4HPHVVtLwew94i6TG
+ 7J0A5G5GqDOABx5xmDWoaf2iGtPeFVJnrjKVKLi2eBnb0kxeiTsQqQzUQm9nL5vesxdhxppi9
+ TLQhUQrWTmKYOPY64VupXAVyyxx01glCx69Wkqr01auVEq41YDuZgBbArXhTVCi/k+f2fag2o
+ /8Q3LVl5WHhJ8dULXOLizrXgl8qL5tWyiB/uADVaj37BZp6yTdjjVsLoA4Pz9NmuMi6vWcJFb
+ chAjjguQ7QWkStS42cIruUWoJO5j0svY28NY4c89MLh2NHNgtTJgYbuPPiyqHEtxo5wU8fl7o
+ U8MHhrRs7NK345HKhNJQ4WzQdARRdNA7PwnmK2+3Mb4VPtEha5Zj3BGN4W7A+8HfwX4bTZIzX
+ 1MWYWM8YAeVeSduNKLn+01tnZOwsvGhrAAA9+w+S0TeBYSDQoXQJQA0D6Eyiv79DELk111oHG
+ g8+aMcdzYI0fnzspJTJKAiNUmit0BzY75Vav7AEoRdTD60CjTLQhK1KXZbpbN+9KJ2ygfzdrJ
+ 6QwD1KrZTHFTvcPRtG+BebwYCmwlPNhesWjwiMxt5Uu1Eh6j097PrLUbU2sVjCSn1myDaVIOA
+ gUJXgJk4/FGRvL5i1WcSM8WLxD+FDXPqwL21uJc8RZxJEdxbw5+4+MC0HHHz9Vs7q3inenF9g
+ p5edhbvHqd+54Pz26fJSaP7bz0mGP1AdB8DdPGVtRx9kI9h05KPGELYQsHEZUmUGKRMQjjPn8
+ rFEbVBUZbGmiX+N+ypdjYlIPaQGeeAkEQWKfD/yUe38VuGTUMyb2y/qOdGTmDb9miJ4IcWV5x
+ MQ3vFXWw6F4Ug7sTjRaML3OL56ODYiJiqRdrpRRyNsRq7KzD40MvvbCkQE1xtmG/B9+jOXHvI
+ dEr8rnyOmrYsNFaubgQJ4vHDxnUEEjUPlornLA0INKVHomW1qvzAmRbzvdAUv7ansGAnecRZ8
+ tWUPfQlIar5MYQeLE6QF/PE3EsjVFDSNH5D3BrfN+rEdwUIqupiC4OxA3JMuOj4zZ2ozSVCF+
+ tlB/l0M+/zjzok=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update the pca954x bindings to add support for the Maxim MAX735x/MAX736x
-chips. The functionality will be provided by the exisintg pca954x driver.
+On 2/14/22 11:15, Andreas Schwab wrote:
+> On Feb 14 2022, Heinrich Schuchardt wrote:
+>
+>> set_boot_hartid() implies that the caller can change the boot hart ID.
+>> As this is not a case this name obviously would be a misnomer.
+>
+> initialize_boot_hartid would fit better.
+>
 
-While on it make the interrupts support conditionally as not all of the
-existing chips have interrupts.
-
-For chips that are powered off by default add an optional regulator
-called vdd-supply.
-
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
----
- .../bindings/i2c/i2c-mux-pca954x.yaml         | 44 ++++++++++++++-----
- 1 file changed, 34 insertions(+), 10 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-index 9f1726d0356b..8d90127b06ce 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-@@ -4,21 +4,48 @@
- $id: http://devicetree.org/schemas/i2c/i2c-mux-pca954x.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: NXP PCA954x I2C bus switch
-+title: NXP PCA954x I2C and compatible bus switches
- 
- maintainers:
-   - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- 
- description:
--  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices.
-+  The binding supports NXP PCA954x and PCA984x I2C mux/switch devices,
-+  and the Maxim MAX735x and MAX736x I2C mux/switch devices.
- 
- allOf:
-   - $ref: /schemas/i2c/i2c-mux.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - maxim,max7367
-+              - maxim,max7369
-+              - nxp,pca9542
-+              - nxp,pca9543
-+              - nxp,pca9544
-+              - nxp,pca9545
-+    then:
-+      properties:
-+        interrupts:
-+          maxitems: 1
-+
-+        "#interrupt-cells":
-+          const: 2
-+
-+        interrupt-controller: true
- 
- properties:
-   compatible:
-     oneOf:
-       - enum:
-+          - maxim,max7356
-+          - maxim,max7357
-+          - maxim,max7358
-+          - maxim,max7367
-+          - maxim,max7368
-+          - maxim,max7369
-           - nxp,pca9540
-           - nxp,pca9542
-           - nxp,pca9543
-@@ -38,14 +65,6 @@ properties:
-   reg:
-     maxItems: 1
- 
--  interrupts:
--    maxItems: 1
--
--  "#interrupt-cells":
--    const: 2
--
--  interrupt-controller: true
--
-   reset-gpios:
-     maxItems: 1
- 
-@@ -59,6 +78,9 @@ properties:
-     description: if present, overrides i2c-mux-idle-disconnect
-     $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
- 
-+  vdd-supply:
-+    description: A voltage regulator supplying power to the chip.
-+
- required:
-   - compatible
-   - reg
-@@ -79,6 +101,8 @@ examples:
-             #size-cells = <0>;
-             reg = <0x74>;
- 
-+            vdd-supply = <&p3v3>;
-+
-             interrupt-parent = <&ipic>;
-             interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
-             interrupt-controller;
--- 
-2.34.1
+Another misnomer.
 
