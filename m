@@ -2,694 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEA38C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DE6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 07:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241035AbiBNHAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:00:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52800 "EHLO
+        id S241064AbiBNHAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:00:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241010AbiBNHAU (ORCPT
+        with ESMTP id S233654AbiBNHAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 02:00:20 -0500
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF79657B21
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:00:12 -0800 (PST)
-Received: by mail-qv1-xf30.google.com with SMTP id f19so3531544qvb.6
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 23:00:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=C0Y84dYD9sFygHCKxpmtcY7wcY3f3jCo48mx1bRlRP8=;
-        b=AGIXIi/KMzKQguM+zV5XDzDi//9N5+9YlAHWhsj3ZxVv0LT7L6Nn7pr9rpW1T4HUi2
-         jXzP5DZhD9mYiUosNvHTHquZkE6FLb/v1NClqKAx6xm2BvtMIEEUkWYjwE+BzxIHEEgE
-         9WlBEwUjI3gem4O40PJGem3oU6g3Z1guqotlUjX8EU1Q21CmTZ/eobQUEOEELtV1440Y
-         hlywekNmpAZ+ZaaE34gA6Xr0gRNWBJbbUigtLHyhwuRBfOQTQGUqw8+mN2PM5TxLbDJu
-         rRMfgmeQIYXSo1qNXN0z8dJ7l6MF2OKUXtyJitigLdGqyIc7uzPvYjsYOSiyCNChXtM2
-         CEVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=C0Y84dYD9sFygHCKxpmtcY7wcY3f3jCo48mx1bRlRP8=;
-        b=uu6LSsjCw2xhiuCjyeieDS6rEDEMVHkSTCrgFt8TpzJennppqixeCgCdPSQgPRIwvE
-         YIGlh5jwxTNAPu+Ub1Z4qgwNJfnySz2vA7x6BOLYTCAHMD5KByv66h8U8MxWGgLSx/SW
-         EKdjn6aF3NIeX75mujZifkuFKflJS1io164fjmyp7QnkHD34vZY5nfwF9b0rioypGObo
-         6a6/p3TQr66kZjMRrzzxgFn4qQX4M9dwzI4BDftCLZtYRVML0WLo5XE29BQWpu0FsnXa
-         WdvQrNS0rcgVW+wWBppeVPNYrpnsjkQ8bHGUbwW3Ml8UwNIIGHSeIIVCMPw7L9yclQ4I
-         XFrg==
-X-Gm-Message-State: AOAM532SXrw5zoNe63066X6rPBpbMWF6EWXCZt4kqi0JGq228v8QpZNx
-        IzdvUEwJEkKprVnZwkkovDDl9g==
-X-Google-Smtp-Source: ABdhPJzIqBiFZeNPevqAEr6WtpzuyYyP1U9aHnY7jNKpFmo5UAmxkzqo+UgWJ0VqyZxowpX8BGk89A==
-X-Received: by 2002:a05:6214:f09:: with SMTP id gw9mr8555312qvb.84.1644822010067;
-        Sun, 13 Feb 2022 23:00:10 -0800 (PST)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id c2sm11322926qkp.0.2022.02.13.23.00.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 23:00:09 -0800 (PST)
-Date:   Sun, 13 Feb 2022 22:59:36 -0800 (PST)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
+        Mon, 14 Feb 2022 02:00:51 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41DA7575DD;
+        Sun, 13 Feb 2022 23:00:43 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Jxw950SNLz4xPv;
+        Mon, 14 Feb 2022 18:00:41 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1644822041;
+        bh=9j5wM1xu7+Youllh7eWo2TtvexX2Ec2GaWIzXe1Huls=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JlUoyUcE77r2G+5Xc7+E9LD3IjBy5sa+rfmg2yi5eswigrVuMr0hi4grNNW6Ig7KJ
+         6qR3E3O41og91BvvCP6sYQSons/85EGPmE0shduCB/vQf0kD2xXTpZKYvdV0Rk3V6s
+         yiMEzDm996D5teWAYJp+Fmz9NNaJ/Kn0y0/46n7xUzqea1hzlG1mnDTyAS5cQumkeh
+         rRpV49beye9CJ1vl32CujwiYAonHbfyma0euCtMJr2vWA/zJZ7vyHRoVE7CVViGcb1
+         F1nVY9UknKI4zquboJ4aEDkDk97enrzUrVOl3uJ0UCER0vPz5FaHb/JJ0+W7YpDD2U
+         GMeZ1t3sOjL3A==
+Date:   Mon, 14 Feb 2022 18:00:40 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
 To:     Andrew Morton <akpm@linux-foundation.org>
-cc:     Hugh Dickins <hughd@google.com>, Vlastimil Babka <vbabka@suse.cz>,
-        Michal Hocko <mhocko@suse.com>,
-        "Kirill A. Shutemov" <kirill@shutemov.name>,
-        Matthew Wilcox <willy@infradead.org>,
-        David Hildenbrand <david@redhat.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Yu Zhao <yuzhao@google.com>, Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: [PATCH v2 01/13] mm/munlock: delete page_mlock() and all its works
-In-Reply-To: <eeee75ac-c888-6458-3438-24fe39adccae@google.com>
-Message-ID: <f795d6e9-f87b-c1d9-eb5a-561db0d7b9a@google.com>
-References: <8e4356d-9622-a7f0-b2c-f116b5f2efea@google.com> <5ed1f01-3e7e-7e26-cc1-2b7a574e2147@google.com> <4a5bc989-e59a-d421-faf4-8156f700ec99@suse.cz> <ed2c4952-f3e-688d-40c1-53afebe5c7cb@google.com> <957e2ea6-d01e-256f-51a0-d927a93b50a5@suse.cz>
- <eeee75ac-c888-6458-3438-24fe39adccae@google.com>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the akpm-current tree
+Message-ID: <20220214180040.44f8316a@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/signed; boundary="Sig_/Jvn3.4.Ycg7TpMedO5l4EnN";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have recommended some applications to mlock their userspace, but that
-turns out to be counter-productive: when many processes mlock the same
-file, contention on rmap's i_mmap_rwsem can become intolerable at exit: it
-is needed for write, to remove any vma mapping that file from rmap's tree;
-but hogged for read by those with mlocks calling page_mlock() (formerly
-known as try_to_munlock()) on *each* page mapped from the file (the
-purpose being to find out whether another process has the page mlocked,
-so therefore it should not be unmlocked yet).
+--Sig_/Jvn3.4.Ycg7TpMedO5l4EnN
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Several optimizations have been made in the past: one is to skip
-page_mlock() when mapcount tells that nothing else has this page
-mapped; but that doesn't help at all when others do have it mapped.
-This time around, I initially intended to add a preliminary search
-of the rmap tree for overlapping VM_LOCKED ranges; but that gets
-messy with locking order, when in doubt whether a page is actually
-present; and risks adding even more contention on the i_mmap_rwsem.
+Hi all,
 
-A solution would be much easier, if only there were space in struct page
-for an mlock_count... but actually, most of the time, there is space for
-it - an mlocked page spends most of its life on an unevictable LRU, but
-since 3.18 removed the scan_unevictable_pages sysctl, that "LRU" has
-been redundant.  Let's try to reuse its page->lru.
+After merging the akpm-current tree, today's linux-next build (powerpc
+allyesconfig) failed like this:
 
-But leave that until a later patch: in this patch, clear the ground by
-removing page_mlock(), and all the infrastructure that has gathered
-around it - which mostly hinders understanding, and will make reviewing
-new additions harder.  Don't mind those old comments about THPs, they
-date from before 4.5's refcounting rework: splitting is not a risk here.
+arch/powerpc/kvm/book3s_hv_uvmem.c: In function 'kvmppc_uvmem_get_page':
+arch/powerpc/kvm/book3s_hv_uvmem.c:691:39: error: invalid use of undefined =
+type 'struct dev_pagemap'
+  691 |         pfn_first =3D kvmppc_uvmem_pgmap.range.start >> PAGE_SHIFT;
+      |                                       ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:693:50: error: invalid use of undefined =
+type 'struct dev_pagemap'
+  693 |                    (range_len(&kvmppc_uvmem_pgmap.range) >> PAGE_SH=
+IFT);
+      |                                                  ^
+arch/powerpc/kvm/book3s_hv_uvmem.c: In function 'kvmppc_uvmem_page_free':
+arch/powerpc/kvm/book3s_hv_uvmem.c:1010:44: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1010 |                         (kvmppc_uvmem_pgmap.range.start >> PAGE_SHI=
+FT);
+      |                                            ^
+arch/powerpc/kvm/book3s_hv_uvmem.c: At top level:
+arch/powerpc/kvm/book3s_hv_uvmem.c:1026:21: error: variable 'kvmppc_uvmem_o=
+ps' has initializer but incomplete type
+ 1026 | static const struct dev_pagemap_ops kvmppc_uvmem_ops =3D {
+      |                     ^~~~~~~~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1027:10: error: 'const struct dev_pagema=
+p_ops' has no member named 'page_free'
+ 1027 |         .page_free =3D kvmppc_uvmem_page_free,
+      |          ^~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1027:22: error: excess elements in struc=
+t initializer [-Werror]
+ 1027 |         .page_free =3D kvmppc_uvmem_page_free,
+      |                      ^~~~~~~~~~~~~~~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1027:22: note: (near initialization for =
+'kvmppc_uvmem_ops')
+arch/powerpc/kvm/book3s_hv_uvmem.c:1028:10: error: 'const struct dev_pagema=
+p_ops' has no member named 'migrate_to_ram'
+ 1028 |         .migrate_to_ram =3D kvmppc_uvmem_migrate_to_ram,
+      |          ^~~~~~~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1028:27: error: excess elements in struc=
+t initializer [-Werror]
+ 1028 |         .migrate_to_ram =3D kvmppc_uvmem_migrate_to_ram,
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1028:27: note: (near initialization for =
+'kvmppc_uvmem_ops')
+arch/powerpc/kvm/book3s_hv_uvmem.c: In function 'kvmppc_uvmem_init':
+arch/powerpc/kvm/book3s_hv_uvmem.c:1172:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1172 |         kvmppc_uvmem_pgmap.type =3D MEMORY_DEVICE_PRIVATE;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1172:35: error: 'MEMORY_DEVICE_PRIVATE' =
+undeclared (first use in this function); did you mean 'CONFIG_DEVICE_PRIVAT=
+E'?
+ 1172 |         kvmppc_uvmem_pgmap.type =3D MEMORY_DEVICE_PRIVATE;
+      |                                   ^~~~~~~~~~~~~~~~~~~~~
+      |                                   CONFIG_DEVICE_PRIVATE
+arch/powerpc/kvm/book3s_hv_uvmem.c:1172:35: note: each undeclared identifie=
+r is reported only once for each function it appears in
+arch/powerpc/kvm/book3s_hv_uvmem.c:1173:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1173 |         kvmppc_uvmem_pgmap.range.start =3D res->start;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1174:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1174 |         kvmppc_uvmem_pgmap.range.end =3D res->end;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1175:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1175 |         kvmppc_uvmem_pgmap.nr_range =3D 1;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1176:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1176 |         kvmppc_uvmem_pgmap.ops =3D &kvmppc_uvmem_ops;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1178:27: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1178 |         kvmppc_uvmem_pgmap.owner =3D &kvmppc_uvmem_pgmap;
+      |                           ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1179:16: error: implicit declaration of =
+function 'memremap_pages'; did you mean 'memcmp_pages'? [-Werror=3Dimplicit=
+-function-declaration]
+ 1179 |         addr =3D memremap_pages(&kvmppc_uvmem_pgmap, NUMA_NO_NODE);
+      |                ^~~~~~~~~~~~~~
+      |                memcmp_pages
+arch/powerpc/kvm/book3s_hv_uvmem.c:1179:14: error: assignment to 'void *' f=
+rom 'int' makes pointer from integer without a cast [-Werror=3Dint-conversi=
+on]
+ 1179 |         addr =3D memremap_pages(&kvmppc_uvmem_pgmap, NUMA_NO_NODE);
+      |              ^
+arch/powerpc/kvm/book3s_hv_uvmem.c:1197:9: error: implicit declaration of f=
+unction 'memunmap_pages'; did you mean 'memcmp_pages'? [-Werror=3Dimplicit-=
+function-declaration]
+ 1197 |         memunmap_pages(&kvmppc_uvmem_pgmap);
+      |         ^~~~~~~~~~~~~~
+      |         memcmp_pages
+In file included from include/linux/device.h:17,
+                 from arch/powerpc/include/asm/io.h:27,
+                 from include/linux/io.h:13,
+                 from include/linux/irq.h:20,
+                 from arch/powerpc/include/asm/hardirq.h:6,
+                 from include/linux/hardirq.h:11,
+                 from include/linux/highmem.h:11,
+                 from include/linux/pagemap.h:11,
+                 from arch/powerpc/kvm/book3s_hv_uvmem.c:89:
+arch/powerpc/kvm/book3s_hv_uvmem.c: In function 'kvmppc_uvmem_free':
+arch/powerpc/kvm/book3s_hv_uvmem.c:1210:46: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1210 |         release_mem_region(kvmppc_uvmem_pgmap.range.start,
+      |                                              ^
+include/linux/ioport.h:278:76: note: in definition of macro 'release_mem_re=
+gion'
+  278 | #define release_mem_region(start,n)     __release_region(&iomem_res=
+ource, (start), (n))
+      |                                                                    =
+        ^~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1211:57: error: invalid use of undefined=
+ type 'struct dev_pagemap'
+ 1211 |                            range_len(&kvmppc_uvmem_pgmap.range));
+      |                                                         ^
+include/linux/ioport.h:278:85: note: in definition of macro 'release_mem_re=
+gion'
+  278 | #define release_mem_region(start,n)     __release_region(&iomem_res=
+ource, (start), (n))
+      |                                                                    =
+                 ^
+arch/powerpc/kvm/book3s_hv_uvmem.c: At top level:
+arch/powerpc/kvm/book3s_hv_uvmem.c:99:27: error: storage size of 'kvmppc_uv=
+mem_pgmap' isn't known
+   99 | static struct dev_pagemap kvmppc_uvmem_pgmap;
+      |                           ^~~~~~~~~~~~~~~~~~
+arch/powerpc/kvm/book3s_hv_uvmem.c:1026:37: error: storage size of 'kvmppc_=
+uvmem_ops' isn't known
+ 1026 | static const struct dev_pagemap_ops kvmppc_uvmem_ops =3D {
+      |                                     ^~~~~~~~~~~~~~~~
 
-Just keep a minimal version of munlock_vma_page(), as reminder of what it
-should attend to (in particular, the odd way PGSTRANDED is counted out of
-PGMUNLOCKED), and likewise a stub for munlock_vma_pages_range().  Move
-unchanged __mlock_posix_error_return() out of the way, down to above its
-caller: this series then makes no further change after mlock_fixup().
+Presumably caused by commit
 
-After this and each following commit, the kernel builds, boots and runs;
-but with deficiencies which may show up in testing of mlock and munlock.
-The system calls succeed or fail as before, and mlock remains effective
-in preventing page reclaim; but meminfo's Unevictable and Mlocked amounts
-may be shown too low after mlock, grow, then stay too high after munlock:
-with previously mlocked pages remaining unevictable for too long, until
-finally unmapped and freed and counts corrected. Normal service will be
-resumed in "mm/munlock: mlock_pte_range() when mlocking or munlocking".
+  5ba71dc7727a ("mm: don't include <linux/memremap.h> in <linux/mm.h>")
 
-Signed-off-by: Hugh Dickins <hughd@google.com>
+I applied the following patch:
+
+From: Stephen Rothwell <sfr@canb.auug.org.au>
+Date: Mon, 14 Feb 2022 17:47:53 +1100
+Subject: [PATCH] fix for "mm: don't include <linux/memremap.h> in
+ <linux/mm.h>"
+
+Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 ---
-v2: Restore munlock_vma_pages_range() VM_LOCKED_CLEAR_MASK, per Vlastimil.
-    Add paragraph to changelog on what does not work yet, per Vlastimil.
-    These v2 replacement patches based on 5.17-rc2 like v1.
+ arch/powerpc/kvm/book3s_hv_uvmem.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- include/linux/rmap.h |   6 -
- mm/internal.h        |   2 +-
- mm/mlock.c           | 375 +++----------------------------------------
- mm/rmap.c            |  80 ---------
- 4 files changed, 25 insertions(+), 438 deletions(-)
-
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index e704b1a4c06c..dc48aa8c2c94 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -237,12 +237,6 @@ unsigned long page_address_in_vma(struct page *, struct vm_area_struct *);
-  */
- int folio_mkclean(struct folio *);
- 
--/*
-- * called in munlock()/munmap() path to check for other vmas holding
-- * the page mlocked.
-- */
--void page_mlock(struct page *page);
--
- void remove_migration_ptes(struct page *old, struct page *new, bool locked);
- 
- /*
-diff --git a/mm/internal.h b/mm/internal.h
-index d80300392a19..e48c486d5ddf 100644
---- a/mm/internal.h
-+++ b/mm/internal.h
-@@ -409,7 +409,7 @@ static inline void munlock_vma_pages_all(struct vm_area_struct *vma)
-  * must be called with vma's mmap_lock held for read or write, and page locked.
-  */
- extern void mlock_vma_page(struct page *page);
--extern unsigned int munlock_vma_page(struct page *page);
-+extern void munlock_vma_page(struct page *page);
- 
- extern int mlock_future_check(struct mm_struct *mm, unsigned long flags,
- 			      unsigned long len);
-diff --git a/mm/mlock.c b/mm/mlock.c
-index 8f584eddd305..aec4ce7919da 100644
---- a/mm/mlock.c
-+++ b/mm/mlock.c
-@@ -46,12 +46,6 @@ EXPORT_SYMBOL(can_do_mlock);
-  * be placed on the LRU "unevictable" list, rather than the [in]active lists.
-  * The unevictable list is an LRU sibling list to the [in]active lists.
-  * PageUnevictable is set to indicate the unevictable state.
-- *
-- * When lazy mlocking via vmscan, it is important to ensure that the
-- * vma's VM_LOCKED status is not concurrently being modified, otherwise we
-- * may have mlocked a page that is being munlocked. So lazy mlock must take
-- * the mmap_lock for read, and verify that the vma really is locked
-- * (see mm/rmap.c).
-  */
- 
- /*
-@@ -106,299 +100,28 @@ void mlock_vma_page(struct page *page)
- 	}
- }
- 
--/*
-- * Finish munlock after successful page isolation
-- *
-- * Page must be locked. This is a wrapper for page_mlock()
-- * and putback_lru_page() with munlock accounting.
-- */
--static void __munlock_isolated_page(struct page *page)
--{
--	/*
--	 * Optimization: if the page was mapped just once, that's our mapping
--	 * and we don't need to check all the other vmas.
--	 */
--	if (page_mapcount(page) > 1)
--		page_mlock(page);
--
--	/* Did try_to_unlock() succeed or punt? */
--	if (!PageMlocked(page))
--		count_vm_events(UNEVICTABLE_PGMUNLOCKED, thp_nr_pages(page));
--
--	putback_lru_page(page);
--}
--
--/*
-- * Accounting for page isolation fail during munlock
-- *
-- * Performs accounting when page isolation fails in munlock. There is nothing
-- * else to do because it means some other task has already removed the page
-- * from the LRU. putback_lru_page() will take care of removing the page from
-- * the unevictable list, if necessary. vmscan [page_referenced()] will move
-- * the page back to the unevictable list if some other vma has it mlocked.
-- */
--static void __munlock_isolation_failed(struct page *page)
--{
--	int nr_pages = thp_nr_pages(page);
--
--	if (PageUnevictable(page))
--		__count_vm_events(UNEVICTABLE_PGSTRANDED, nr_pages);
--	else
--		__count_vm_events(UNEVICTABLE_PGMUNLOCKED, nr_pages);
--}
--
- /**
-  * munlock_vma_page - munlock a vma page
-  * @page: page to be unlocked, either a normal page or THP page head
-- *
-- * returns the size of the page as a page mask (0 for normal page,
-- *         HPAGE_PMD_NR - 1 for THP head page)
-- *
-- * called from munlock()/munmap() path with page supposedly on the LRU.
-- * When we munlock a page, because the vma where we found the page is being
-- * munlock()ed or munmap()ed, we want to check whether other vmas hold the
-- * page locked so that we can leave it on the unevictable lru list and not
-- * bother vmscan with it.  However, to walk the page's rmap list in
-- * page_mlock() we must isolate the page from the LRU.  If some other
-- * task has removed the page from the LRU, we won't be able to do that.
-- * So we clear the PageMlocked as we might not get another chance.  If we
-- * can't isolate the page, we leave it for putback_lru_page() and vmscan
-- * [page_referenced()/try_to_unmap()] to deal with.
-  */
--unsigned int munlock_vma_page(struct page *page)
-+void munlock_vma_page(struct page *page)
- {
--	int nr_pages;
--
--	/* For page_mlock() and to serialize with page migration */
-+	/* Serialize with page migration */
- 	BUG_ON(!PageLocked(page));
--	VM_BUG_ON_PAGE(PageTail(page), page);
--
--	if (!TestClearPageMlocked(page)) {
--		/* Potentially, PTE-mapped THP: do not skip the rest PTEs */
--		return 0;
--	}
--
--	nr_pages = thp_nr_pages(page);
--	mod_zone_page_state(page_zone(page), NR_MLOCK, -nr_pages);
--
--	if (!isolate_lru_page(page))
--		__munlock_isolated_page(page);
--	else
--		__munlock_isolation_failed(page);
--
--	return nr_pages - 1;
--}
--
--/*
-- * convert get_user_pages() return value to posix mlock() error
-- */
--static int __mlock_posix_error_return(long retval)
--{
--	if (retval == -EFAULT)
--		retval = -ENOMEM;
--	else if (retval == -ENOMEM)
--		retval = -EAGAIN;
--	return retval;
--}
--
--/*
-- * Prepare page for fast batched LRU putback via putback_lru_evictable_pagevec()
-- *
-- * The fast path is available only for evictable pages with single mapping.
-- * Then we can bypass the per-cpu pvec and get better performance.
-- * when mapcount > 1 we need page_mlock() which can fail.
-- * when !page_evictable(), we need the full redo logic of putback_lru_page to
-- * avoid leaving evictable page in unevictable list.
-- *
-- * In case of success, @page is added to @pvec and @pgrescued is incremented
-- * in case that the page was previously unevictable. @page is also unlocked.
-- */
--static bool __putback_lru_fast_prepare(struct page *page, struct pagevec *pvec,
--		int *pgrescued)
--{
--	VM_BUG_ON_PAGE(PageLRU(page), page);
--	VM_BUG_ON_PAGE(!PageLocked(page), page);
--
--	if (page_mapcount(page) <= 1 && page_evictable(page)) {
--		pagevec_add(pvec, page);
--		if (TestClearPageUnevictable(page))
--			(*pgrescued)++;
--		unlock_page(page);
--		return true;
--	}
--
--	return false;
--}
- 
--/*
-- * Putback multiple evictable pages to the LRU
-- *
-- * Batched putback of evictable pages that bypasses the per-cpu pvec. Some of
-- * the pages might have meanwhile become unevictable but that is OK.
-- */
--static void __putback_lru_fast(struct pagevec *pvec, int pgrescued)
--{
--	count_vm_events(UNEVICTABLE_PGMUNLOCKED, pagevec_count(pvec));
--	/*
--	 *__pagevec_lru_add() calls release_pages() so we don't call
--	 * put_page() explicitly
--	 */
--	__pagevec_lru_add(pvec);
--	count_vm_events(UNEVICTABLE_PGRESCUED, pgrescued);
--}
--
--/*
-- * Munlock a batch of pages from the same zone
-- *
-- * The work is split to two main phases. First phase clears the Mlocked flag
-- * and attempts to isolate the pages, all under a single zone lru lock.
-- * The second phase finishes the munlock only for pages where isolation
-- * succeeded.
-- *
-- * Note that the pagevec may be modified during the process.
-- */
--static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
--{
--	int i;
--	int nr = pagevec_count(pvec);
--	int delta_munlocked = -nr;
--	struct pagevec pvec_putback;
--	struct lruvec *lruvec = NULL;
--	int pgrescued = 0;
--
--	pagevec_init(&pvec_putback);
--
--	/* Phase 1: page isolation */
--	for (i = 0; i < nr; i++) {
--		struct page *page = pvec->pages[i];
--		struct folio *folio = page_folio(page);
--
--		if (TestClearPageMlocked(page)) {
--			/*
--			 * We already have pin from follow_page_mask()
--			 * so we can spare the get_page() here.
--			 */
--			if (TestClearPageLRU(page)) {
--				lruvec = folio_lruvec_relock_irq(folio, lruvec);
--				del_page_from_lru_list(page, lruvec);
--				continue;
--			} else
--				__munlock_isolation_failed(page);
--		} else {
--			delta_munlocked++;
--		}
-+	VM_BUG_ON_PAGE(PageTail(page), page);
- 
--		/*
--		 * We won't be munlocking this page in the next phase
--		 * but we still need to release the follow_page_mask()
--		 * pin. We cannot do it under lru_lock however. If it's
--		 * the last pin, __page_cache_release() would deadlock.
--		 */
--		pagevec_add(&pvec_putback, pvec->pages[i]);
--		pvec->pages[i] = NULL;
--	}
--	if (lruvec) {
--		__mod_zone_page_state(zone, NR_MLOCK, delta_munlocked);
--		unlock_page_lruvec_irq(lruvec);
--	} else if (delta_munlocked) {
--		mod_zone_page_state(zone, NR_MLOCK, delta_munlocked);
--	}
-+	if (TestClearPageMlocked(page)) {
-+		int nr_pages = thp_nr_pages(page);
- 
--	/* Now we can release pins of pages that we are not munlocking */
--	pagevec_release(&pvec_putback);
--
--	/* Phase 2: page munlock */
--	for (i = 0; i < nr; i++) {
--		struct page *page = pvec->pages[i];
--
--		if (page) {
--			lock_page(page);
--			if (!__putback_lru_fast_prepare(page, &pvec_putback,
--					&pgrescued)) {
--				/*
--				 * Slow path. We don't want to lose the last
--				 * pin before unlock_page()
--				 */
--				get_page(page); /* for putback_lru_page() */
--				__munlock_isolated_page(page);
--				unlock_page(page);
--				put_page(page); /* from follow_page_mask() */
--			}
-+		mod_zone_page_state(page_zone(page), NR_MLOCK, -nr_pages);
-+		if (!isolate_lru_page(page)) {
-+			putback_lru_page(page);
-+			count_vm_events(UNEVICTABLE_PGMUNLOCKED, nr_pages);
-+		} else if (PageUnevictable(page)) {
-+			count_vm_events(UNEVICTABLE_PGSTRANDED, nr_pages);
- 		}
- 	}
--
--	/*
--	 * Phase 3: page putback for pages that qualified for the fast path
--	 * This will also call put_page() to return pin from follow_page_mask()
--	 */
--	if (pagevec_count(&pvec_putback))
--		__putback_lru_fast(&pvec_putback, pgrescued);
--}
--
--/*
-- * Fill up pagevec for __munlock_pagevec using pte walk
-- *
-- * The function expects that the struct page corresponding to @start address is
-- * a non-TPH page already pinned and in the @pvec, and that it belongs to @zone.
-- *
-- * The rest of @pvec is filled by subsequent pages within the same pmd and same
-- * zone, as long as the pte's are present and vm_normal_page() succeeds. These
-- * pages also get pinned.
-- *
-- * Returns the address of the next page that should be scanned. This equals
-- * @start + PAGE_SIZE when no page could be added by the pte walk.
-- */
--static unsigned long __munlock_pagevec_fill(struct pagevec *pvec,
--			struct vm_area_struct *vma, struct zone *zone,
--			unsigned long start, unsigned long end)
--{
--	pte_t *pte;
--	spinlock_t *ptl;
--
--	/*
--	 * Initialize pte walk starting at the already pinned page where we
--	 * are sure that there is a pte, as it was pinned under the same
--	 * mmap_lock write op.
--	 */
--	pte = get_locked_pte(vma->vm_mm, start,	&ptl);
--	/* Make sure we do not cross the page table boundary */
--	end = pgd_addr_end(start, end);
--	end = p4d_addr_end(start, end);
--	end = pud_addr_end(start, end);
--	end = pmd_addr_end(start, end);
--
--	/* The page next to the pinned page is the first we will try to get */
--	start += PAGE_SIZE;
--	while (start < end) {
--		struct page *page = NULL;
--		pte++;
--		if (pte_present(*pte))
--			page = vm_normal_page(vma, start, *pte);
--		/*
--		 * Break if page could not be obtained or the page's node+zone does not
--		 * match
--		 */
--		if (!page || page_zone(page) != zone)
--			break;
--
--		/*
--		 * Do not use pagevec for PTE-mapped THP,
--		 * munlock_vma_pages_range() will handle them.
--		 */
--		if (PageTransCompound(page))
--			break;
--
--		get_page(page);
--		/*
--		 * Increase the address that will be returned *before* the
--		 * eventual break due to pvec becoming full by adding the page
--		 */
--		start += PAGE_SIZE;
--		if (pagevec_add(pvec, page) == 0)
--			break;
--	}
--	pte_unmap_unlock(pte, ptl);
--	return start;
- }
- 
- /*
-@@ -413,75 +136,13 @@ static unsigned long __munlock_pagevec_fill(struct pagevec *pvec,
-  *
-  * Returns with VM_LOCKED cleared.  Callers must be prepared to
-  * deal with this.
-- *
-- * We don't save and restore VM_LOCKED here because pages are
-- * still on lru.  In unmap path, pages might be scanned by reclaim
-- * and re-mlocked by page_mlock/try_to_unmap before we unmap and
-- * free them.  This will result in freeing mlocked pages.
-  */
- void munlock_vma_pages_range(struct vm_area_struct *vma,
- 			     unsigned long start, unsigned long end)
- {
- 	vma->vm_flags &= VM_LOCKED_CLEAR_MASK;
- 
--	while (start < end) {
--		struct page *page;
--		unsigned int page_mask = 0;
--		unsigned long page_increm;
--		struct pagevec pvec;
--		struct zone *zone;
--
--		pagevec_init(&pvec);
--		/*
--		 * Although FOLL_DUMP is intended for get_dump_page(),
--		 * it just so happens that its special treatment of the
--		 * ZERO_PAGE (returning an error instead of doing get_page)
--		 * suits munlock very well (and if somehow an abnormal page
--		 * has sneaked into the range, we won't oops here: great).
--		 */
--		page = follow_page(vma, start, FOLL_GET | FOLL_DUMP);
--
--		if (page && !IS_ERR(page)) {
--			if (PageTransTail(page)) {
--				VM_BUG_ON_PAGE(PageMlocked(page), page);
--				put_page(page); /* follow_page_mask() */
--			} else if (PageTransHuge(page)) {
--				lock_page(page);
--				/*
--				 * Any THP page found by follow_page_mask() may
--				 * have gotten split before reaching
--				 * munlock_vma_page(), so we need to compute
--				 * the page_mask here instead.
--				 */
--				page_mask = munlock_vma_page(page);
--				unlock_page(page);
--				put_page(page); /* follow_page_mask() */
--			} else {
--				/*
--				 * Non-huge pages are handled in batches via
--				 * pagevec. The pin from follow_page_mask()
--				 * prevents them from collapsing by THP.
--				 */
--				pagevec_add(&pvec, page);
--				zone = page_zone(page);
--
--				/*
--				 * Try to fill the rest of pagevec using fast
--				 * pte walk. This will also update start to
--				 * the next page to process. Then munlock the
--				 * pagevec.
--				 */
--				start = __munlock_pagevec_fill(&pvec, vma,
--						zone, start, end);
--				__munlock_pagevec(&pvec, zone);
--				goto next;
--			}
--		}
--		page_increm = 1 + page_mask;
--		start += page_increm * PAGE_SIZE;
--next:
--		cond_resched();
--	}
-+	/* Reimplementation to follow in later commit */
- }
- 
- /*
-@@ -645,6 +306,18 @@ static unsigned long count_mm_mlocked_page_nr(struct mm_struct *mm,
- 	return count >> PAGE_SHIFT;
- }
- 
-+/*
-+ * convert get_user_pages() return value to posix mlock() error
-+ */
-+static int __mlock_posix_error_return(long retval)
-+{
-+	if (retval == -EFAULT)
-+		retval = -ENOMEM;
-+	else if (retval == -ENOMEM)
-+		retval = -EAGAIN;
-+	return retval;
-+}
-+
- static __must_check int do_mlock(unsigned long start, size_t len, vm_flags_t flags)
- {
- 	unsigned long locked;
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 6a1e8c7f6213..7ce7f1946cff 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1996,76 +1996,6 @@ void try_to_migrate(struct page *page, enum ttu_flags flags)
- 		rmap_walk(page, &rwc);
- }
- 
--/*
-- * Walks the vma's mapping a page and mlocks the page if any locked vma's are
-- * found. Once one is found the page is locked and the scan can be terminated.
-- */
--static bool page_mlock_one(struct page *page, struct vm_area_struct *vma,
--				 unsigned long address, void *unused)
--{
--	struct page_vma_mapped_walk pvmw = {
--		.page = page,
--		.vma = vma,
--		.address = address,
--	};
--
--	/* An un-locked vma doesn't have any pages to lock, continue the scan */
--	if (!(vma->vm_flags & VM_LOCKED))
--		return true;
--
--	while (page_vma_mapped_walk(&pvmw)) {
--		/*
--		 * Need to recheck under the ptl to serialise with
--		 * __munlock_pagevec_fill() after VM_LOCKED is cleared in
--		 * munlock_vma_pages_range().
--		 */
--		if (vma->vm_flags & VM_LOCKED) {
--			/*
--			 * PTE-mapped THP are never marked as mlocked; but
--			 * this function is never called on a DoubleMap THP,
--			 * nor on an Anon THP (which may still be PTE-mapped
--			 * after DoubleMap was cleared).
--			 */
--			mlock_vma_page(page);
--			/*
--			 * No need to scan further once the page is marked
--			 * as mlocked.
--			 */
--			page_vma_mapped_walk_done(&pvmw);
--			return false;
--		}
--	}
--
--	return true;
--}
--
--/**
-- * page_mlock - try to mlock a page
-- * @page: the page to be mlocked
-- *
-- * Called from munlock code. Checks all of the VMAs mapping the page and mlocks
-- * the page if any are found. The page will be returned with PG_mlocked cleared
-- * if it is not mapped by any locked vmas.
-- */
--void page_mlock(struct page *page)
--{
--	struct rmap_walk_control rwc = {
--		.rmap_one = page_mlock_one,
--		.done = page_not_mapped,
--		.anon_lock = page_lock_anon_vma_read,
--
--	};
--
--	VM_BUG_ON_PAGE(!PageLocked(page) || PageLRU(page), page);
--	VM_BUG_ON_PAGE(PageCompound(page) && PageDoubleMap(page), page);
--
--	/* Anon THP are only marked as mlocked when singly mapped */
--	if (PageTransCompound(page) && PageAnon(page))
--		return;
--
--	rmap_walk(page, &rwc);
--}
--
- #ifdef CONFIG_DEVICE_PRIVATE
- struct make_exclusive_args {
- 	struct mm_struct *mm;
-@@ -2291,11 +2221,6 @@ static struct anon_vma *rmap_walk_anon_lock(struct page *page,
-  *
-  * Find all the mappings of a page using the mapping pointer and the vma chains
-  * contained in the anon_vma struct it points to.
-- *
-- * When called from page_mlock(), the mmap_lock of the mm containing the vma
-- * where the page was found will be held for write.  So, we won't recheck
-- * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-- * LOCKED.
-  */
- static void rmap_walk_anon(struct page *page, struct rmap_walk_control *rwc,
- 		bool locked)
-@@ -2344,11 +2269,6 @@ static void rmap_walk_anon(struct page *page, struct rmap_walk_control *rwc,
-  *
-  * Find all the mappings of a page using the mapping pointer and the vma chains
-  * contained in the address_space struct it points to.
-- *
-- * When called from page_mlock(), the mmap_lock of the mm containing the vma
-- * where the page was found will be held for write.  So, we won't recheck
-- * vm_flags for that VMA.  That should be OK, because that vma shouldn't be
-- * LOCKED.
-  */
- static void rmap_walk_file(struct page *page, struct rmap_walk_control *rwc,
- 		bool locked)
--- 
+diff --git a/arch/powerpc/kvm/book3s_hv_uvmem.c b/arch/powerpc/kvm/book3s_h=
+v_uvmem.c
+index 8b6438fa18fc..8cabdb39cbbc 100644
+--- a/arch/powerpc/kvm/book3s_hv_uvmem.c
++++ b/arch/powerpc/kvm/book3s_hv_uvmem.c
+@@ -91,6 +91,7 @@
+ #include <linux/kvm_host.h>
+ #include <linux/ksm.h>
+ #include <linux/of.h>
++#include <linux/memremap.h>
+ #include <asm/ultravisor.h>
+ #include <asm/mman.h>
+ #include <asm/kvm_ppc.h>
+--=20
 2.34.1
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Jvn3.4.Ycg7TpMedO5l4EnN
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIJ/hgACgkQAVBC80lX
+0Gy00wf/f2NhFekXKQAySXzjZDKSgHXD+y+pnS0nGyfNtdz/2gJzgW5xm+Pp7kaR
+ISzxCY3WHNqsDpCNRDZxMiQZTMn8c5RhE8RGRLKwgQ2CMb0KXdx0wKu4oCW9u5nO
+4a6+FcuRWVzk6wYX9LPSSFpTVG1AO7jC3LqFOVqSzUYjsAK9ABQYASDqwBKcf4Eq
+TGAu0A+INZiWpHy66jUTieIBrn77eB5ODfAYGut0pZ/+Kgry2EAewf3krucCPffC
+q2FLUhUergkndT7uOUmdE2dRm0YYGpD8/KTxmD7Gc2U9y7R+i3aXk9wC0fb1DkIj
+knbObRC8ggkD7P5FXe2kLJA+4wcKaA==
+=ROAr
+-----END PGP SIGNATURE-----
+
+--Sig_/Jvn3.4.Ycg7TpMedO5l4EnN--
