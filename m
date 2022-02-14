@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D414C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D292AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbiBNVDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:03:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42032 "EHLO
+        id S230108AbiBNVDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:03:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230083AbiBNVC5 (ORCPT
+        with ESMTP id S230094AbiBNVDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:02:57 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17095D21EB;
-        Mon, 14 Feb 2022 13:02:47 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id 719871F43907
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644869128;
-        bh=1uxuJpUNgwUp11TPN1NKA7OMJKeBwVw0ZqlthMDA3F0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dgCpr307YqBKISxEPPv8wm5ciiXYOnfRHSotaSu8avXJ+gv4zXKhvUIayUkFttVLP
-         ep4Nb0BaR5hda+XrvZQUeKxpuEyIx7L0lpMzuRxSLrk+qTk6o7gx6B3+2xKreJmaVK
-         Wio52gU7WsIdGBoqwAiZ0Yl3s1PeRYSUz1tHEuUUXOIGuYPlTK1rAZ5cL6KWbFATSh
-         MW9TDixQhqFuKt6rch0Z0ul1nfbzq7CKZ5aOYs3EBnrW10ssQv5fb7+Ica6EWBVAlo
-         wRAFjrJ9vB2c45YKkADeGEFcUfEmJPaJd3DeZYAX6Z4yMIB3Kc7k3HcxCc36pwj8ho
-         YYno4Uc8EVAiQ==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Robert Foss <robert.foss@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     kernel@collabora.com,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH v3] arm64: dts: mt8183: jacuzzi: Fix bus properties in anx's DSI endpoint
-Date:   Mon, 14 Feb 2022 15:05:07 -0500
-Message-Id: <20220214200507.2500693-1-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 14 Feb 2022 16:03:17 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E45F8B92
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:03:07 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 886D94033B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:03:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644872586;
+        bh=2bp2Rosxu6+8ZhH/EAY6coxFH5lGR8Dxl8BwV5vJAno=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=GyBG5qnie5SYEK6t+mzBwe6I+QC3QBsorZzTpJy741H0Px8qrnxVpeA4TzMgJ+l4J
+         u2KwdmVIOARsCHYbIG4KHaVYON+soBEfR1WROzxUbshV8cCy3ox7XhAKqPxesQuiUo
+         pmbIOwGoC5I1TrkX68d3osnFbDbRutE1EjumwQhBeAbAV4b4SyjuBKOVpsJEMllP8/
+         2o5DNKNUbAVb4vMOJVnhiw2aGOLXJuLuCkXst/n741ahbScziWtLnCJQTBG1LCoM7W
+         KjvKjYYoED4JI0CvxcIdQn2DiZ+4wdnGg20W+j9B98az8ySbF9hmqKduhCj52aEtsD
+         I4V7EFAc5YZ5g==
+Received: by mail-ej1-f70.google.com with SMTP id ho37-20020a1709070ea500b006cd51be5cd8so6381645ejc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:03:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=2bp2Rosxu6+8ZhH/EAY6coxFH5lGR8Dxl8BwV5vJAno=;
+        b=v6EZng97YmNU2GQuMWtV2SrooaS2XFvpMN6ALcFwhRx6CYA0hgSWkZsxP2ePPYiNw9
+         EThCM6F6aOg19h82BmVPgvwzYgwS9yjkqbgBEVX5vX9FxzH1EVzvTdpC1/Pwf78qr5Pq
+         5FoWsMgocpN4GM0QyS70oH7DgjLHqlVsbERClGj+5AM/AibUu9M52Mll2RWpFKLzfupU
+         W0dHpspNW+VubH8wlYYlErMth3fR8B5/C4xeEe9w683bwMJvZIoYXUtX/pz/zupf+p/C
+         t6Doj1UjeKZ6F0cbDqVIP7tjpU0oZ9eCnK4tt8O6aNTCBE0RoOysMuY8ZqD+Q4Gvrso7
+         PXBA==
+X-Gm-Message-State: AOAM533Oc3uYYK6IaCau8PI1tjtbolSAgm0eGUUm100OKHN5zCZxn0NL
+        KWrIh/4Eg5sGgOjoyLylNGp6gmm7WaO2nsyQvRAdh246Auyc5cieiMRkeEpOrIPvtHhP1NxeKHb
+        6ENic7KPzT/icvousvAHxzJlAflflpiZctBj1yrbL7Q==
+X-Received: by 2002:aa7:c3da:: with SMTP id l26mr727082edr.294.1644872586069;
+        Mon, 14 Feb 2022 13:03:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx2FJZ3WFrmr3yKtdBu95hKE7kW2/adNT3dVxtT4u/B6q+4CQFvbOXViM594Gt5SL7EJZdGvA==
+X-Received: by 2002:aa7:c3da:: with SMTP id l26mr727056edr.294.1644872585884;
+        Mon, 14 Feb 2022 13:03:05 -0800 (PST)
+Received: from [192.168.0.106] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id j21sm1153464ejj.193.2022.02.14.13.03.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 13:03:05 -0800 (PST)
+Message-ID: <f9cdef5e-a52b-03ba-a069-e0bc16ccd595@canonical.com>
+Date:   Mon, 14 Feb 2022 22:03:04 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 11/15] dt-bindings: pwm: intel, keembay: do not require
+ pwm-cells
+Content-Language: en-US
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Anson Huang <anson.huang@nxp.com>,
+        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
+        Rahul Tanwar <rtanwar@maxlinear.com>,
+        Jeff LaBundy <jeff@labundy.com>,
+        Yash Shah <yash.shah@sifive.com>,
+        Sagar Kadam <sagar.kadam@sifive.com>,
+        Vignesh R <vigneshr@ti.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-riscv@lists.infradead.org
+References: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com>
+ <20220214081605.161394-11-krzysztof.kozlowski@canonical.com>
+ <20220214182824.gevtqbtv4qrddjqb@pengutronix.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220214182824.gevtqbtv4qrddjqb@pengutronix.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mt8183-kukui-jacuzzi has an anx7625 bridge connected to the output of
-its DSI host. However, after commit fd0310b6fe7d ("drm/bridge: anx7625:
-add MIPI DPI input feature"), a bus-type property started being required
-in the endpoint node by the driver to indicate whether it is DSI or DPI.
+On 14/02/2022 19:28, Uwe Kleine-König wrote:
+> Hello Krzysztof,
+> 
+> when I read the subject line I thought the patch intention to be wrong.
+> Maybe make that:
+> 
+> 	dt-bindings: intel,keembay-pwm: Don't require #pwm-cells twice
+> 
+> ?
 
-Add the missing bus-type property and set it to 5
-(V4L2_FWNODE_BUS_TYPE_PARALLEL) so that the driver has its input
-configured to DSI and the display pipeline can probe correctly.
+Ah, yes, this sounds better. I'll send a v2.
 
-While at it, also set the data-lanes property that was also introduced
-in that same commit, so that we don't rely on the default value.
 
-Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-
----
-v2: https://lore.kernel.org/all/20220201174643.843102-1-nfraprado@collabora.com
-v1: https://lore.kernel.org/all/20220120224204.773117-1-nfraprado@collabora.com
-
-Changes in v3:
-- Added missing Reviewed-by
-
-Changes in v2:
-- (thanks Rob) Use proper format when refering to commit in commit
-  message as pointed out by checkpatch
-
- arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-index 8f7bf33f607d..e8f133dc96b9 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-@@ -171,6 +171,8 @@ port@0 {
- 
- 			anx7625_in: endpoint {
- 				remote-endpoint = <&dsi_out>;
-+				bus-type = <5>;
-+				data-lanes = <0 1 2 3>;
- 			};
- 		};
- 
--- 
-2.35.1
-
+Best regards,
+Krzysztof
