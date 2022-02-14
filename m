@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E019CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F33C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349698AbiBNKly (ORCPT
+        id S1350095AbiBNKlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:41:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48558 "EHLO
+        Mon, 14 Feb 2022 05:41:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348753AbiBNKic (ORCPT
+        with ESMTP id S1348323AbiBNKhi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:38:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75BCA9949;
-        Mon, 14 Feb 2022 02:03:56 -0800 (PST)
+        Mon, 14 Feb 2022 05:37:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED28A888F;
+        Mon, 14 Feb 2022 02:03:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E415B80DB7;
-        Mon, 14 Feb 2022 10:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0A6C340EF;
-        Mon, 14 Feb 2022 10:03:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E3EA60DD6;
+        Mon, 14 Feb 2022 10:03:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9E8FC340E9;
+        Mon, 14 Feb 2022 10:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833034;
-        bh=zSxF394CzzOLorVxrPxYGvkJ2LgkRa2Vc1AgazkaAPA=;
+        s=korg; t=1644833005;
+        bh=WjWj5UqYMO2b8veFSO60vsb49mBfNNGgkUPB3nQIBpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Oye9LT94VrLqNbYCIJowybnHEcTNw3H8q8Jv3IS0yate0VpMMXC53CSW5A2QDMStJ
-         781Jmc5u+daQgBzNVonUfugch8DBSp+comXOO5Feqr/YNxtop6dWwcI3dzflGp7BKp
-         S2gDPBVCkG1+ulC+KyBeQ6vLQ20j73LTzU8h1EKY=
+        b=TPk0Jv+Vnvo+W+TZl45ybVPJKTbu5oh3R9MFGS2wmMNhHOZ/f5oiOnrLIqoJ8k655
+         59Bauk9/mOQsV4nsYP2LfJvT+GqWDo3qgrdz+ik0NZ/66SdJ+gxRLQFEOWsVoEpNIa
+         WAeJHYn4u+bOmknvcV0GPPWjrOlcvSjsCqAVHpO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Chia-Wei Wang <chiawei_wang@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.16 202/203] docs/ABI: testing: aspeed-uart-routing: Escape asterisk
-Date:   Mon, 14 Feb 2022 10:27:26 +0100
-Message-Id: <20220214092517.240687299@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+Subject: [PATCH 5.16 194/203] sched/fair: Fix fault in reweight_entity
+Date:   Mon, 14 Feb 2022 10:27:18 +0100
+Message-Id: <20220214092516.983676726@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,51 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+From: Tadeusz Struk <tadeusz.struk@linaro.org>
 
-commit 088400521e421a1df7d0128dc0f9246db4ef1c7c upstream.
+commit 13765de8148f71fa795e0a6607de37c49ea5915a upstream.
 
-Escape asterisk symbols to fix the following warning:
+Syzbot found a GPF in reweight_entity. This has been bisected to
+commit 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid
+sched_task_group")
 
-"WARNING: Inline emphasis start-string without end-string"
+There is a race between sched_post_fork() and setpriority(PRIO_PGRP)
+within a thread group that causes a null-ptr-deref in
+reweight_entity() in CFS. The scenario is that the main process spawns
+number of new threads, which then call setpriority(PRIO_PGRP, 0, -20),
+wait, and exit.  For each of the new threads the copy_process() gets
+invoked, which adds the new task_struct and calls sched_post_fork()
+for it.
 
-Fixes: c6807970c3bc ("soc: aspeed: Add UART routing support")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Link: https://lore.kernel.org/r/20220124014351.9121-1-chiawei_wang@aspeedtech.com
-Link: https://lore.kernel.org/r/20220201070027.196314-1-joel@jms.id.au'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+In the above scenario there is a possibility that
+setpriority(PRIO_PGRP) and set_one_prio() will be called for a thread
+in the group that is just being created by copy_process(), and for
+which the sched_post_fork() has not been executed yet. This will
+trigger a null pointer dereference in reweight_entity(), as it will
+try to access the run queue pointer, which hasn't been set.
+
+Before the mentioned change the cfs_rq pointer for the task  has been
+set in sched_fork(), which is called much earlier in copy_process(),
+before the new task is added to the thread_group.  Now it is done in
+the sched_post_fork(), which is called after that.  To fix the issue
+the remove the update_load param from the update_load param() function
+and call reweight_task() only if the task flag doesn't have the
+TASK_NEW flag set.
+
+Fixes: 4ef0c5c6b5ba ("kernel/sched: Fix sched_fork() access an invalid sched_task_group")
+Reported-by: syzbot+af7a719bc92395ee41b3@syzkaller.appspotmail.com
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220203161846.1160750-1-tadeusz.struk@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/sched/core.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing
-+++ b/Documentation/ABI/testing/sysfs-driver-aspeed-uart-routing
-@@ -1,4 +1,4 @@
--What:		/sys/bus/platform/drivers/aspeed-uart-routing/*/uart*
-+What:		/sys/bus/platform/drivers/aspeed-uart-routing/\*/uart\*
- Date:		September 2021
- Contact:	Oskar Senft <osk@google.com>
- 		Chia-Wei Wang <chiawei_wang@aspeedtech.com>
-@@ -9,7 +9,7 @@ Description:	Selects the RX source of th
- 		depends on the selected file.
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1203,8 +1203,9 @@ int tg_nop(struct task_group *tg, void *
+ }
+ #endif
  
- 		e.g.
--		cat /sys/bus/platform/drivers/aspeed-uart-routing/*.uart_routing/uart1
-+		cat /sys/bus/platform/drivers/aspeed-uart-routing/\*.uart_routing/uart1
- 		[io1] io2 io3 io4 uart2 uart3 uart4 io6
+-static void set_load_weight(struct task_struct *p, bool update_load)
++static void set_load_weight(struct task_struct *p)
+ {
++	bool update_load = !(READ_ONCE(p->__state) & TASK_NEW);
+ 	int prio = p->static_prio - MAX_RT_PRIO;
+ 	struct load_weight *load = &p->se.load;
  
- 		In this case, UART1 gets its input from IO1 (physical serial port 1).
-@@ -17,7 +17,7 @@ Description:	Selects the RX source of th
- Users:		OpenBMC.  Proposed changes should be mailed to
- 		openbmc@lists.ozlabs.org
+@@ -4392,7 +4393,7 @@ int sched_fork(unsigned long clone_flags
+ 			p->static_prio = NICE_TO_PRIO(0);
  
--What:		/sys/bus/platform/drivers/aspeed-uart-routing/*/io*
-+What:		/sys/bus/platform/drivers/aspeed-uart-routing/\*/io\*
- Date:		September 2021
- Contact:	Oskar Senft <osk@google.com>
- 		Chia-Wei Wang <chiawei_wang@aspeedtech.com>
+ 		p->prio = p->normal_prio = p->static_prio;
+-		set_load_weight(p, false);
++		set_load_weight(p);
+ 
+ 		/*
+ 		 * We don't need the reset flag anymore after the fork. It has
+@@ -6879,7 +6880,7 @@ void set_user_nice(struct task_struct *p
+ 		put_prev_task(rq, p);
+ 
+ 	p->static_prio = NICE_TO_PRIO(nice);
+-	set_load_weight(p, true);
++	set_load_weight(p);
+ 	old_prio = p->prio;
+ 	p->prio = effective_prio(p);
+ 
+@@ -7170,7 +7171,7 @@ static void __setscheduler_params(struct
+ 	 */
+ 	p->rt_priority = attr->sched_priority;
+ 	p->normal_prio = normal_prio(p);
+-	set_load_weight(p, true);
++	set_load_weight(p);
+ }
+ 
+ /*
+@@ -9409,7 +9410,7 @@ void __init sched_init(void)
+ #endif
+ 	}
+ 
+-	set_load_weight(&init_task, false);
++	set_load_weight(&init_task);
+ 
+ 	/*
+ 	 * The boot idle thread does lazy MMU switching as well:
 
 
