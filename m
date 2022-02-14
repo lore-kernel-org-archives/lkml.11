@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343582AbiBNJxI (ORCPT
+        id S1343596AbiBNJxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:53:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43948 "EHLO
+        Mon, 14 Feb 2022 04:53:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245553AbiBNJtb (ORCPT
+        with ESMTP id S245509AbiBNJuA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:49:31 -0500
+        Mon, 14 Feb 2022 04:50:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C871ADAF;
-        Mon, 14 Feb 2022 01:41:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FD5A1B2;
+        Mon, 14 Feb 2022 01:41:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D26461172;
-        Mon, 14 Feb 2022 09:41:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65B7FC340F1;
-        Mon, 14 Feb 2022 09:41:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAF2B611B8;
+        Mon, 14 Feb 2022 09:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEF7C340E9;
+        Mon, 14 Feb 2022 09:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831661;
-        bh=DZddstfJZ895lO5EZorp9IHJ1iljzh9LsKYGGT105rA=;
+        s=korg; t=1644831667;
+        bh=iPR46toKRaybBG1ZVK3CBILUGx+GNDjIARheSgboNc4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WfvBvacmFcYjl/3QMpCNzN+A7jicSDV21j8fkqw/52uOm6vSDPkpqDmysY2b6Q+bB
-         MXBszmhoqPMFvkOtXaoSxym3ZvvDMzfAMhmyc0bhBmaGYxbLDPc+DOA3sJ1LM9wci/
-         hwHfIKfCDNfz/gnvLZNyEeXRaQ6Hk2tDbJJog/9s=
+        b=FpDezGbSitP+dJTpmXYZjxp+j/hknZBCIv7/GsIHXVO0BmbNNq3KkqHAOxI4WJ0e1
+         y+urcOKq16gEDTD+oL5jAXM4DFLhdGsEAcTr8exdXhDdrypHqBeCJzE2M/iSIpWlqU
+         LgHfuxTpq1v9kOzVi5RR+2i67n05RpRfZ2r8PNCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 054/116] staging: fbtft: Fix error path in fbtft_driver_module_init()
-Date:   Mon, 14 Feb 2022 10:25:53 +0100
-Message-Id: <20220214092500.591568014@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 056/116] phy: xilinx: zynqmp: Fix bus width setting for SGMII
+Date:   Mon, 14 Feb 2022 10:25:55 +0100
+Message-Id: <20220214092500.669503172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,38 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
+[ Upstream commit 37291f60d0822f191748c2a54ce63b0bc669020f ]
 
-If registering the platform driver fails, the function must not return
-without undoing the spi driver registration first.
+TX_PROT_BUS_WIDTH and RX_PROT_BUS_WIDTH are single registers with
+separate bit fields for each lane. The code in xpsgtr_phy_init_sgmii was
+not preserving the existing register value for other lanes, so enabling
+the PHY in SGMII mode on one lane zeroed out the settings for all other
+lanes, causing other PS-GTR peripherals such as USB3 to malfunction.
 
-Fixes: c296d5f9957c ("staging: fbtft: core support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Use xpsgtr_clr_set to only manipulate the desired bits in the register.
+
+Fixes: 4a33bea00314 ("phy: zynqmp: Add PHY driver for the Xilinx ZynqMP Gigabit Transceiver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Link: https://lore.kernel.org/r/20220126001600.1592218-1-robert.hancock@calian.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fbtft/fbtft.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/phy/xilinx/phy-zynqmp.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
-index 76f8c090a8370..06afaa9d505ba 100644
---- a/drivers/staging/fbtft/fbtft.h
-+++ b/drivers/staging/fbtft/fbtft.h
-@@ -332,7 +332,10 @@ static int __init fbtft_driver_module_init(void)                           \
- 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
- 	if (ret < 0)                                                       \
- 		return ret;                                                \
--	return platform_driver_register(&fbtft_driver_platform_driver);    \
-+	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
-+	if (ret < 0)                                                       \
-+		spi_unregister_driver(&fbtft_driver_spi_driver);           \
-+	return ret;                                                        \
- }                                                                          \
- 									   \
- static void __exit fbtft_driver_module_exit(void)                          \
+diff --git a/drivers/phy/xilinx/phy-zynqmp.c b/drivers/phy/xilinx/phy-zynqmp.c
+index 2b0f921b6ee3d..b8ccac6f31467 100644
+--- a/drivers/phy/xilinx/phy-zynqmp.c
++++ b/drivers/phy/xilinx/phy-zynqmp.c
+@@ -134,7 +134,8 @@
+ #define PROT_BUS_WIDTH_10		0x0
+ #define PROT_BUS_WIDTH_20		0x1
+ #define PROT_BUS_WIDTH_40		0x2
+-#define PROT_BUS_WIDTH_SHIFT		2
++#define PROT_BUS_WIDTH_SHIFT(n)		((n) * 2)
++#define PROT_BUS_WIDTH_MASK(n)		GENMASK((n) * 2 + 1, (n) * 2)
+ 
+ /* Number of GT lanes */
+ #define NUM_LANES			4
+@@ -443,12 +444,12 @@ static void xpsgtr_phy_init_sata(struct xpsgtr_phy *gtr_phy)
+ static void xpsgtr_phy_init_sgmii(struct xpsgtr_phy *gtr_phy)
+ {
+ 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
++	u32 mask = PROT_BUS_WIDTH_MASK(gtr_phy->lane);
++	u32 val = PROT_BUS_WIDTH_10 << PROT_BUS_WIDTH_SHIFT(gtr_phy->lane);
+ 
+ 	/* Set SGMII protocol TX and RX bus width to 10 bits. */
+-	xpsgtr_write(gtr_dev, TX_PROT_BUS_WIDTH,
+-		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
+-	xpsgtr_write(gtr_dev, RX_PROT_BUS_WIDTH,
+-		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
++	xpsgtr_clr_set(gtr_dev, TX_PROT_BUS_WIDTH, mask, val);
++	xpsgtr_clr_set(gtr_dev, RX_PROT_BUS_WIDTH, mask, val);
+ 
+ 	xpsgtr_bypass_scrambler_8b10b(gtr_phy);
+ }
 -- 
 2.34.1
 
