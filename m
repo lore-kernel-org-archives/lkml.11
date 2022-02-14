@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243914AbiBNJnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33140 "EHLO
+        id S244419AbiBNJnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244451AbiBNJke (ORCPT
+        with ESMTP id S244731AbiBNJkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:40:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E4EAE73;
-        Mon, 14 Feb 2022 01:35:56 -0800 (PST)
+        Mon, 14 Feb 2022 04:40:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9AF1ADA3;
+        Mon, 14 Feb 2022 01:36:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB21D60F87;
-        Mon, 14 Feb 2022 09:35:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A363BC340E9;
-        Mon, 14 Feb 2022 09:35:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4140BB80DC1;
+        Mon, 14 Feb 2022 09:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E81C340E9;
+        Mon, 14 Feb 2022 09:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831355;
-        bh=ttAjhxJxsbbfewrD5hFVV63NeMqgPW7t1AYSU8g2YOs=;
+        s=korg; t=1644831365;
+        bh=MOZOwi/NmU+Y+P9f1zL+muT/fljXOeAP2DOSZDOZ7hU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LCbEU942iDmoaXXeFmPI1wE/f4KRFgFEv+HCihF8PclM4anP1sblDxA0Z0I7m8VTs
-         So5S/yGkAOXG8/5X8ppj5UIv4tQDX1q0zwXc65xAJhDYXhy8E0Yw3uWKgJqwXGWTB9
-         qS5nqYFpkEijeEGs+XJd+febiKsMCFKfjBRPoAyg=
+        b=zHv4YAQt3D7WRC3KhXK0vPitlsxavXFx4WYEtU1IFIFoKXOjjHYYYxqXROT8lsxcw
+         +Qnnae8vpemMCPm1BZCRNzfRDWm3SQvLnnv+lNxIXtsKOhywbTqoNYoBaLGlbGzVly
+         demjynWMRxyG7yEw98+WlmK8sPIc+vKyCeZtAQfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aurelien Jarno <aurelien@aurel32.net>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.4 27/71] riscv: fix build with binutils 2.38
-Date:   Mon, 14 Feb 2022 10:25:55 +0100
-Message-Id: <20220214092452.926762935@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: [PATCH 5.4 05/71] mmc: sdhci-of-esdhc: Check for error num after setting mask
+Date:   Mon, 14 Feb 2022 10:25:33 +0100
+Message-Id: <20220214092452.209678682@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,50 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurelien Jarno <aurelien@aurel32.net>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 6df2a016c0c8a3d0933ef33dd192ea6606b115e3 upstream.
+commit 40c67c291a93f8846c4a972c9ef1b7ba4544c8d0 upstream.
 
->From version 2.38, binutils default to ISA spec version 20191213. This
-means that the csr read/write (csrr*/csrw*) instructions and fence.i
-instruction has separated from the `I` extension, become two standalone
-extensions: Zicsr and Zifencei. As the kernel uses those instruction,
-this causes the following build failure:
+Because of the possible failure of the dma_supported(), the
+dma_set_mask_and_coherent() may return error num.
+Therefore, it should be better to check it and return the error if
+fails.
+And since the sdhci_setup_host() has already checked the return value of
+the enable_dma, we need not check it in sdhci_resume_host() again.
 
-  CC      arch/riscv/kernel/vdso/vgettimeofday.o
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler messages:
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-
-The fix is to specify those extensions explicitely in -march. However as
-older binutils version do not support this, we first need to detect
-that.
-
-Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
-Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Fixes: 5552d7ad596c ("mmc: sdhci-of-esdhc: set proper dma mask for ls104x chips")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Link: https://lore.kernel.org/r/20220112083156.1124782-1-jiasheng@iscas.ac.cn
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/Makefile |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/mmc/host/sdhci-of-esdhc.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -48,6 +48,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32
- riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
- riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
- riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
-+
-+# Newer binutils versions default to ISA spec version 20191213 which moves some
-+# instructions from the I extension to the Zicsr and Zifencei extensions.
-+toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
-+riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
-+
- KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
- KBUILD_AFLAGS += -march=$(riscv-march-y)
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -519,12 +519,16 @@ static void esdhc_of_adma_workaround(str
+ 
+ static int esdhc_of_enable_dma(struct sdhci_host *host)
+ {
++	int ret;
+ 	u32 value;
+ 	struct device *dev = mmc_dev(host->mmc);
+ 
+ 	if (of_device_is_compatible(dev->of_node, "fsl,ls1043a-esdhc") ||
+-	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc"))
+-		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc")) {
++		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
++		if (ret)
++			return ret;
++	}
+ 
+ 	value = sdhci_readl(host, ESDHC_DMA_SYSCTL);
  
 
 
