@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0158C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05ADEC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344173AbiBNJz7 (ORCPT
+        id S1344319AbiBNJ4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33318 "EHLO
+        Mon, 14 Feb 2022 04:56:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344151AbiBNJvd (ORCPT
+        with ESMTP id S1344830AbiBNJwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:33 -0500
+        Mon, 14 Feb 2022 04:52:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C6377A8E;
-        Mon, 14 Feb 2022 01:42:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6267B542;
+        Mon, 14 Feb 2022 01:43:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ED34611F9;
-        Mon, 14 Feb 2022 09:42:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 732FAC340E9;
-        Mon, 14 Feb 2022 09:42:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BED2360FA2;
+        Mon, 14 Feb 2022 09:43:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9948EC340E9;
+        Mon, 14 Feb 2022 09:43:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831752;
-        bh=0v9TIcwA/Vbn20Rlsqb/6ZLsZbXcSZQqHmpK8wJkvJY=;
+        s=korg; t=1644831797;
+        bh=W/rZpCwWfP2MIfCd7ghjXQZP0wpoXvZV20V3NBzfweU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LdKsReFVJl3zuN3WsUOdsh93KzRD2M+NUOMqGHvKZ430WRRa4bpcrqV5iPK4jMFqf
-         S5wEepyZ1sTQXsUiFbkqY8UdSdJTFxCYdkNibUBUxw2sslTtFdlXjtg93kaavRwWFD
-         J5H9T+Q1y1UmOad+j2likw/nJ9L11pS8mba7w4Pw=
+        b=N/AOPdbSG6Z4bnPJKnW/bSPRVC+V6RlOgvCecexDWjo8I5KGPZq3wYgylUCeX7PAq
+         +gps+2a9WGPyYDE3ite41FXQGzfTrBoXxF8QJdLq8UOHoKTRdOwQ8qUQv+bpi9QKGL
+         1X5qz5iooLmgp4d5txH20d9XpvN46IU1zS9jjpMo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/116] net: mscc: ocelot: fix mutex lock error during ethtool stats read
-Date:   Mon, 14 Feb 2022 10:26:24 +0100
-Message-Id: <20220214092501.704177712@linuxfoundation.org>
+        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
+Subject: [PATCH 5.10 098/116] USB: gadget: validate interface OS descriptor requests
+Date:   Mon, 14 Feb 2022 10:26:37 +0100
+Message-Id: <20220214092502.161187259@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -52,85 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Foster <colin.foster@in-advantage.com>
+From: Szymon Heidrich <szymon.heidrich@gmail.com>
 
-[ Upstream commit 7fbf6795d127a3b1bb39b0e42579904cf6db1624 ]
+commit 75e5b4849b81e19e9efe1654b30d7f3151c33c2c upstream.
 
-An ongoing workqueue populates the stats buffer. At the same time, a user
-might query the statistics. While writing to the buffer is mutex-locked,
-reading from the buffer wasn't. This could lead to buggy reads by ethtool.
+Stall the control endpoint in case provided index exceeds array size of
+MAX_CONFIG_INTERFACES or when the retrieved function pointer is null.
 
-This patch fixes the former blamed commit, but the bug was introduced in
-the latter.
-
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-Fixes: 1e1caa9735f90 ("ocelot: Clean up stats update deferred work")
-Fixes: a556c76adc052 ("net: mscc: Add initial Ocelot switch support")
-Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/all/20220210150451.416845-2-colin.foster@in-advantage.com/
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/composite.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 52401915828a1..a06466ecca12a 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -848,12 +848,11 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
- }
- EXPORT_SYMBOL(ocelot_get_strings);
- 
-+/* Caller must hold &ocelot->stats_lock */
- static void ocelot_update_stats(struct ocelot *ocelot)
- {
- 	int i, j;
- 
--	mutex_lock(&ocelot->stats_lock);
--
- 	for (i = 0; i < ocelot->num_phys_ports; i++) {
- 		/* Configure the port to read the stats from */
- 		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
-@@ -872,8 +871,6 @@ static void ocelot_update_stats(struct ocelot *ocelot)
- 					      ~(u64)U32_MAX) + val;
- 		}
- 	}
--
--	mutex_unlock(&ocelot->stats_lock);
- }
- 
- static void ocelot_check_stats_work(struct work_struct *work)
-@@ -882,7 +879,9 @@ static void ocelot_check_stats_work(struct work_struct *work)
- 	struct ocelot *ocelot = container_of(del_work, struct ocelot,
- 					     stats_work);
- 
-+	mutex_lock(&ocelot->stats_lock);
- 	ocelot_update_stats(ocelot);
-+	mutex_unlock(&ocelot->stats_lock);
- 
- 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
- 			   OCELOT_STATS_CHECK_DELAY);
-@@ -892,12 +891,16 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
- {
- 	int i;
- 
-+	mutex_lock(&ocelot->stats_lock);
-+
- 	/* check and update now */
- 	ocelot_update_stats(ocelot);
- 
- 	/* Copy all counters */
- 	for (i = 0; i < ocelot->num_stats; i++)
- 		*data++ = ocelot->stats[port * ocelot->num_stats + i];
-+
-+	mutex_unlock(&ocelot->stats_lock);
- }
- EXPORT_SYMBOL(ocelot_get_ethtool_stats);
- 
--- 
-2.34.1
-
+--- a/drivers/usb/gadget/composite.c
++++ b/drivers/usb/gadget/composite.c
+@@ -1944,6 +1944,9 @@ unknown:
+ 				if (w_index != 0x5 || (w_value >> 8))
+ 					break;
+ 				interface = w_value & 0xFF;
++				if (interface >= MAX_CONFIG_INTERFACES ||
++				    !os_desc_cfg->interface[interface])
++					break;
+ 				buf[6] = w_index;
+ 				count = count_ext_prop(os_desc_cfg,
+ 					interface);
 
 
