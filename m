@@ -2,72 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C05C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343600AbiBNJxD (ORCPT
+        id S1343582AbiBNJxI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:53:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60860 "EHLO
+        Mon, 14 Feb 2022 04:53:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245606AbiBNJt5 (ORCPT
+        with ESMTP id S245553AbiBNJtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:49:57 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6597A1A8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:41:07 -0800 (PST)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jxzhl1g6kzccyW;
-        Mon, 14 Feb 2022 17:39:51 +0800 (CST)
-Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 17:40:55 +0800
-Received: from [10.174.177.173] (10.174.177.173) by
- dggpeml500003.china.huawei.com (7.185.36.200) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 17:40:55 +0800
-Message-ID: <b6dc758b-492d-1000-24e5-643e38d3166e@huawei.com>
-Date:   Mon, 14 Feb 2022 17:40:55 +0800
+        Mon, 14 Feb 2022 04:49:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C871ADAF;
+        Mon, 14 Feb 2022 01:41:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D26461172;
+        Mon, 14 Feb 2022 09:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65B7FC340F1;
+        Mon, 14 Feb 2022 09:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831661;
+        bh=DZddstfJZ895lO5EZorp9IHJ1iljzh9LsKYGGT105rA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WfvBvacmFcYjl/3QMpCNzN+A7jicSDV21j8fkqw/52uOm6vSDPkpqDmysY2b6Q+bB
+         MXBszmhoqPMFvkOtXaoSxym3ZvvDMzfAMhmyc0bhBmaGYxbLDPc+DOA3sJ1LM9wci/
+         hwHfIKfCDNfz/gnvLZNyEeXRaQ6Hk2tDbJJog/9s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 054/116] staging: fbtft: Fix error path in fbtft_driver_module_init()
+Date:   Mon, 14 Feb 2022 10:25:53 +0100
+Message-Id: <20220214092500.591568014@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: Question about nohz and sysidle
-Content-Language: en-US
-From:   Yu Liao <liaoyu15@huawei.com>
-CC:     <paulmck@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liwei391@huawei.com>
-References: <b881759b-d281-fdc3-71b7-4429d84cd734@huawei.com>
-To:     <frederic@kernel.org>
-In-Reply-To: <b881759b-d281-fdc3-71b7-4429d84cd734@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.173]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500003.china.huawei.com (7.185.36.200)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry, I sent to the old email address.
+From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 
-On 2022/2/14 16:28, Yu Liao wrote:
-> Hi Frederic,
-> 
-> I'm working on an issue about nohz. When NO_HZ_FULL is enabled, CPU 0 
-> handles the timekeeping duty on behalf of all other CPUs, which means 
-> CPU 0 never stop tick even in sysidle state. This is a powersaving issue.
-> 
-> I found your patchset (nohz: Support sysidle) in the below link.
-> https://lore.kernel.org/all/1406569056-30217-1-git-send-email-fweisbec@gmail.com/ 
-> 
-> But these patches haven't been merged into mainline yet and sysidle 
-> state detection has been removed by commit fe5ac724d81a (rcu: Remove 
-> nohz_full full-system-idle state machine) as well.
-> 
-> I tried your patches and it does work, why are we no longer 
-> working on stopping timekeeping duty when all full dynticks CPUs are idle?
-> 
-> Thanks,
-> Yu
+[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
+
+If registering the platform driver fails, the function must not return
+without undoing the spi driver registration first.
+
+Fixes: c296d5f9957c ("staging: fbtft: core support")
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/staging/fbtft/fbtft.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
+index 76f8c090a8370..06afaa9d505ba 100644
+--- a/drivers/staging/fbtft/fbtft.h
++++ b/drivers/staging/fbtft/fbtft.h
+@@ -332,7 +332,10 @@ static int __init fbtft_driver_module_init(void)                           \
+ 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
+ 	if (ret < 0)                                                       \
+ 		return ret;                                                \
+-	return platform_driver_register(&fbtft_driver_platform_driver);    \
++	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
++	if (ret < 0)                                                       \
++		spi_unregister_driver(&fbtft_driver_spi_driver);           \
++	return ret;                                                        \
+ }                                                                          \
+ 									   \
+ static void __exit fbtft_driver_module_exit(void)                          \
+-- 
+2.34.1
+
+
+
