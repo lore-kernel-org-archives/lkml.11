@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6570EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38855C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245102AbiBNJox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:44:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33974 "EHLO
+        id S245193AbiBNJo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:44:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245522AbiBNJlg (ORCPT
+        with ESMTP id S245556AbiBNJlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2906F65813;
-        Mon, 14 Feb 2022 01:37:34 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F9F65824;
+        Mon, 14 Feb 2022 01:37:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C636CB80DCD;
-        Mon, 14 Feb 2022 09:37:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E214EC340E9;
-        Mon, 14 Feb 2022 09:37:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8726AB80DC8;
+        Mon, 14 Feb 2022 09:37:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4EBEC340EF;
+        Mon, 14 Feb 2022 09:37:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831451;
-        bh=wNgkAF06IGvZrAxpv0aSJAIX++t4ouMnr681T3JhozU=;
+        s=korg; t=1644831454;
+        bh=hBXwcKH8k+zEpg1EUB7WTJMbXB/JJNlZlsdTHpX67CY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aj1yweXn1yYCxTmQc/wxkXnci+uun91Xi5BwTzmX9uzjsuuDwmK+/JXO/7cjj9c1I
-         vihgEeRTEyirdDTv/UKgY8pqGWQLhkJqWr+9HzR/1Bp4iLHN46MdqYpMlQvVAzJxXg
-         o72+fxkrXo2PMVw29YkpYAeiYmLZ7JWK/fYBYYAM=
+        b=UUGV+d9BBa+bUNUiA0tWzCtz5Qy9hE9x5Pm7JJTSN18H6ALtmjsCz+mhCUxlkdmBN
+         Jez9vUvHz7ZyPGtlwE8+UfhvF3Tkb/NUqzjALj1jwJLq+IPTqNZ+8BHdFMGcZulgq8
+         s+xNjVPNrw3SCW+8G92Ng/MGk+7VJFjXdchLL0wA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mathias Krause <minipli@grsecurity.net>,
+        stable@vger.kernel.org, Samuel Mendoza-Jonas <samjonas@amazon.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 39/71] misc: fastrpc: avoid double fput() on failed usercopy
-Date:   Mon, 14 Feb 2022 10:26:07 +0100
-Message-Id: <20220214092453.349087538@linuxfoundation.org>
+Subject: [PATCH 5.4 40/71] ixgbevf: Require large buffers for build_skb on 82599VF
+Date:   Mon, 14 Feb 2022 10:26:08 +0100
+Message-Id: <20220214092453.385324672@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -50,53 +51,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Krause <minipli@grsecurity.net>
+From: Samuel Mendoza-Jonas <samjonas@amazon.com>
 
-[ Upstream commit 46963e2e0629cb31c96b1d47ddd89dc3d8990b34 ]
+[ Upstream commit fe68195daf34d5dddacd3f93dd3eafc4beca3a0e ]
 
-If the copy back to userland fails for the FASTRPC_IOCTL_ALLOC_DMA_BUFF
-ioctl(), we shouldn't assume that 'buf->dmabuf' is still valid. In fact,
-dma_buf_fd() called fd_install() before, i.e. "consumed" one reference,
-leaving us with none.
+>From 4.17 onwards the ixgbevf driver uses build_skb() to build an skb
+around new data in the page buffer shared with the ixgbe PF.
+This uses either a 2K or 3K buffer, and offsets the DMA mapping by
+NET_SKB_PAD + NET_IP_ALIGN. When using a smaller buffer RXDCTL is set to
+ensure the PF does not write a full 2K bytes into the buffer, which is
+actually 2K minus the offset.
 
-Calling dma_buf_put() will therefore put a reference we no longer own,
-leading to a valid file descritor table entry for an already released
-'file' object which is a straight use-after-free.
+However on the 82599 virtual function, the RXDCTL mechanism is not
+available. The driver attempts to work around this by using the SET_LPE
+mailbox method to lower the maximm frame size, but the ixgbe PF driver
+ignores this in order to keep the PF and all VFs in sync[0].
 
-Simply avoid calling dma_buf_put() and rely on the process exit code to
-do the necessary cleanup, if needed, i.e. if the file descriptor is
-still valid.
+This means the PF will write up to the full 2K set in SRRCTL, causing it
+to write NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the buffer.
+With 4K pages split into two buffers, this means it either writes
+NET_SKB_PAD + NET_IP_ALIGN bytes past the first buffer (and into the
+second), or NET_SKB_PAD + NET_IP_ALIGN bytes past the end of the DMA
+mapping.
 
-Fixes: 6cffd79504ce ("misc: fastrpc: Add support for dmabuf exporter")
-Acked-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Mathias Krause <minipli@grsecurity.net>
-Link: https://lore.kernel.org/r/20220127130218.809261-1-minipli@grsecurity.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Avoid this by only enabling build_skb when using "large" buffers (3K).
+These are placed in each half of an order-1 page, preventing the PF from
+writing past the end of the mapping.
+
+[0]: Technically it only ever raises the max frame size, see
+ixgbe_set_vf_lpe() in ixgbe_sriov.c
+
+Fixes: f15c5ba5b6cd ("ixgbevf: add support for using order 1 pages to receive large frames")
+Signed-off-by: Samuel Mendoza-Jonas <samjonas@amazon.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/fastrpc.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
-index f76c64084f4b2..fb5ddf3864fdd 100644
---- a/drivers/misc/fastrpc.c
-+++ b/drivers/misc/fastrpc.c
-@@ -1245,7 +1245,14 @@ static int fastrpc_dmabuf_alloc(struct fastrpc_user *fl, char __user *argp)
- 	}
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+index be8e6d4e376ec..9bd02766a4bcc 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c
+@@ -1979,14 +1979,15 @@ static void ixgbevf_set_rx_buffer_len(struct ixgbevf_adapter *adapter,
+ 	if (adapter->flags & IXGBEVF_FLAGS_LEGACY_RX)
+ 		return;
  
- 	if (copy_to_user(argp, &bp, sizeof(bp))) {
--		dma_buf_put(buf->dmabuf);
-+		/*
-+		 * The usercopy failed, but we can't do much about it, as
-+		 * dma_buf_fd() already called fd_install() and made the
-+		 * file descriptor accessible for the current process. It
-+		 * might already be closed and dmabuf no longer valid when
-+		 * we reach this point. Therefore "leak" the fd and rely on
-+		 * the process exit path to do any required cleanup.
-+		 */
- 		return -EFAULT;
- 	}
+-	set_ring_build_skb_enabled(rx_ring);
++	if (PAGE_SIZE < 8192)
++		if (max_frame > IXGBEVF_MAX_FRAME_BUILD_SKB)
++			set_ring_uses_large_buffer(rx_ring);
  
+-	if (PAGE_SIZE < 8192) {
+-		if (max_frame <= IXGBEVF_MAX_FRAME_BUILD_SKB)
+-			return;
++	/* 82599 can't rely on RXDCTL.RLPML to restrict the size of the frame */
++	if (adapter->hw.mac.type == ixgbe_mac_82599_vf && !ring_uses_large_buffer(rx_ring))
++		return;
+ 
+-		set_ring_uses_large_buffer(rx_ring);
+-	}
++	set_ring_build_skb_enabled(rx_ring);
+ }
+ 
+ /**
 -- 
 2.34.1
 
