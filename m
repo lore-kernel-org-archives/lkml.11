@@ -2,77 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCFEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D668BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242306AbiBNIpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:45:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45070 "EHLO
+        id S240726AbiBNIpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:45:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbiBNIpG (ORCPT
+        with ESMTP id S242188AbiBNIpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 03:45:06 -0500
-Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9EC4DF55
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 00:44:59 -0800 (PST)
-Received: from [167.98.27.226] (helo=rainbowdash)
-        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1nJWcG-0007ZZ-Cs; Mon, 14 Feb 2022 08:21:48 +0000
-Received: from ben by rainbowdash with local (Exim 4.95)
-        (envelope-from <ben@rainbowdash>)
-        id 1nJWcG-004vz3-2K;
-        Mon, 14 Feb 2022 08:21:48 +0000
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-To:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
-        linux-pci@vger.kernel.org
-Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
-        david.abdurachmanov@gmail.com,
-        Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 1/2] PCI: fu740: fix finding GPIOs
-Date:   Mon, 14 Feb 2022 08:21:43 +0000
-Message-Id: <20220214082144.1176084-2-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
-References: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
+        Mon, 14 Feb 2022 03:45:08 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C58F4DF55
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 00:45:01 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id i21so26572439pfd.13
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 00:45:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Ip60qtQLWzCCFSF+fXmXro0EJ/H2HAFhLM6Bus5v4e4=;
+        b=uoqq23/QbISo1al/LhPmOxKzV5GAPTB76zb7Qa5T4GxRxNSX22mE6amrutaiEfsAcC
+         jp7Bx5yaizO2+3qb4siYPg54h6U93ED9fMzF05dxpP7HTKfmC6AtXsnC3yBJLOUIBUMf
+         DS5pROkZ5oo0YvTJsdiXi0qfKBpg7P6WebThI8kPhtTb/HGhWQIqAh1uhwZ5LqPehBt2
+         WUQIwk+R4Qq2/xElBFW1xanMT5c69jX//G+d6aLHDZ4uxQdXWB2VM3D5j8YybE0gBXcH
+         yMrVpSzK01LKgjfnq1nOIAic3yn/Znqvnhxkyq777YbDKs9N8Pr4hfWZSd8o4iVTQeTU
+         uWUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Ip60qtQLWzCCFSF+fXmXro0EJ/H2HAFhLM6Bus5v4e4=;
+        b=bEfeFReDwOHSCg6498H5vV7Qi0E1gKYA+93iXU9Os0+fOqcj9CezewYqjO5fxcIaKe
+         zDiGomSU8v6o0sm3WY3COZZ9CJE4COcbU4Fxu/0I3U+FrkGc9yIbgwEST5ngxY901tOC
+         eW1zwyWFmAQQKWmS0CQQJwVCH6l21ie2rB27nHKGV1Qk64pWox8/V2f6UhwpcxmdilEm
+         mB4sU1STTN7WoesYeaam8rvY0K1B3SOouv5hoE6LWWv/zBF+z34NX0vuPiSn6G+1SQ37
+         S4ygEgDQGYFOa1gm3tftWbobN5pKMo9lOh2bD0rW/+1izP0nyziYGhGTYflobtJOFi42
+         /1FA==
+X-Gm-Message-State: AOAM531hUyVgkN88RGKB58pH1gtgPEjUJSckBn3R5fL9H7PSAs3KiLHw
+        H/JTahCjTGBhgXB0f4Met6kk
+X-Google-Smtp-Source: ABdhPJwsYeE/PV70SFfexNjlPf9cNb8toQrpVB41ThYKDdMSFNKSSG4CT+EJ4n42UULgh8il/9nWfQ==
+X-Received: by 2002:a63:fc65:: with SMTP id r37mr10968001pgk.123.1644828300703;
+        Mon, 14 Feb 2022 00:45:00 -0800 (PST)
+Received: from thinkpad ([2409:4072:817:5a6f:3104:62c0:1941:5033])
+        by smtp.gmail.com with ESMTPSA id m23sm33785439pff.201.2022.02.14.00.44.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 00:45:00 -0800 (PST)
+Date:   Mon, 14 Feb 2022 14:14:55 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 6/8] ARM: dts: qcom: sdx65: Add support for APCS block
+Message-ID: <20220214084455.GF3494@thinkpad>
+References: <1644822137-27760-1-git-send-email-quic_rohiagar@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644822137-27760-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The calls to devm_gpiod_get_optional() have the -gpios at the end of
-the name. This means the pcie driver is not finding the necessary
-reset or power GPOOs to allow the PCIe devices on the SiFive Unmatched
-boards.
+On Mon, Feb 14, 2022 at 12:32:17PM +0530, Rohit Agarwal wrote:
+> The APCS block on SDX65 acts as a mailbox controller and also provides
+> clock output for the Cortex A7 CPU.
+> 
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
 
-This has not been a noted bug as the PCIe probe from u-boot has been
-required to get the PCIe working due to other issues with the system
-setup. It could have been broken since the driver inclusion, and not
-been noticed as it is not necessary for the driver to funciton.
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
- drivers/pci/controller/dwc/pcie-fu740.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks,
+Mani
 
-diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
-index 00cde9a248b5..842b7202b96e 100644
---- a/drivers/pci/controller/dwc/pcie-fu740.c
-+++ b/drivers/pci/controller/dwc/pcie-fu740.c
-@@ -259,11 +259,11 @@ static int fu740_pcie_probe(struct platform_device *pdev)
- 		return PTR_ERR(afp->mgmt_base);
- 
- 	/* Fetch GPIOs */
--	afp->reset = devm_gpiod_get_optional(dev, "reset-gpios", GPIOD_OUT_LOW);
-+	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
- 	if (IS_ERR(afp->reset))
- 		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
- 
--	afp->pwren = devm_gpiod_get_optional(dev, "pwren-gpios", GPIOD_OUT_LOW);
-+	afp->pwren = devm_gpiod_get_optional(dev, "pwren", GPIOD_OUT_LOW);
- 	if (IS_ERR(afp->pwren))
- 		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
- 
--- 
-2.34.1
-
+> ---
+>  arch/arm/boot/dts/qcom-sdx65.dtsi | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+> index 2900ffe..1646c7c 100644
+> --- a/arch/arm/boot/dts/qcom-sdx65.dtsi
+> +++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+> @@ -133,6 +133,15 @@
+>  			#clock-cells = <0>;
+>  		};
+>  
+> +		apcs: mailbox@17810000 {
+> +			compatible = "qcom,sdx65-apcs-gcc", "syscon";
+> +			reg = <0x17810000 0x2000>;
+> +			#mbox-cells = <1>;
+> +			clocks = <&rpmhcc RPMH_CXO_CLK>, <&a7pll>, <&gcc GPLL0>;
+> +			clock-names = "ref", "pll", "aux";
+> +			#clock-cells = <0>;
+> +		};
+> +
+>  		timer@17820000 {
+>  			#address-cells = <1>;
+>  			#size-cells = <1>;
+> -- 
+> 2.7.4
+> 
