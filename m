@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA483C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B8E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243458AbiBNJbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:31:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41928 "EHLO
+        id S243516AbiBNJbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:31:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243414AbiBNJbJ (ORCPT
+        with ESMTP id S243441AbiBNJbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99773BF55;
-        Mon, 14 Feb 2022 01:30:16 -0800 (PST)
+        Mon, 14 Feb 2022 04:31:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB56BF53;
+        Mon, 14 Feb 2022 01:30:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1800460C8A;
-        Mon, 14 Feb 2022 09:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F355CC340E9;
-        Mon, 14 Feb 2022 09:30:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF069B80D83;
+        Mon, 14 Feb 2022 09:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20F07C340EF;
+        Mon, 14 Feb 2022 09:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831015;
-        bh=MCjR5djHfF6Jm7ho/tzh2m3oMgwvsFoWOd7hkghuuQc=;
+        s=korg; t=1644831012;
+        bh=nYslgeNak5ILpjm8/69W2TdwvNNOr5bMUskwb787vUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i5Jy/Wk9vqIz6K45BaUmcDSquB0nxzsJDnDg/QYr0lcD+V0cHahAvmfQ6blSS0eLy
-         WP9TGIlEuMft7DxISeTLWJPnUkahClVVYjHF23twRBGsJQLD7athaEboD3h1646+r0
-         asZuU0on/5cratcpxs69S21yqs5RNQVrbKq+aZHU=
+        b=zPrmCe+6e9qBXrhwXJXjroaF8hksaNszvrcrUindG88A0bpLxcD7feIEM+6uz8IVL
+         AYTzzLvr/p7XxYXLCla7QhxUypSZNYgQrxrtoYG1yyUR0cPjHIuGQGqeCcbMKk4QH7
+         1rrPNs/aTt0/zG6l0Yt1WW1lCNh6SuB6Zk9otaLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Frank van der Linden <fllinden@amazon.com>
-Subject: [PATCH 4.14 17/44] bpf: Add kconfig knob for disabling unpriv bpf by default
-Date:   Mon, 14 Feb 2022 10:25:40 +0100
-Message-Id: <20220214092448.467759740@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 16/44] Revert "net: axienet: Wait for PhyRstCmplt after core reset"
+Date:   Mon, 14 Feb 2022 10:25:39 +0100
+Message-Id: <20220214092448.434681680@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -49,148 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+This reverts commit ff594e1b6f39f07f050759de2d27c36b7739c0c9.
 
-commit 08389d888287c3823f80b0216766b71e17f0aba5 upstream.
+Breaks the build on 4.14 and 4.9.
 
-Add a kconfig knob which allows for unprivileged bpf to be disabled by default.
-If set, the knob sets /proc/sys/kernel/unprivileged_bpf_disabled to value of 2.
-
-This still allows a transition of 2 -> {0,1} through an admin. Similarly,
-this also still keeps 1 -> {1} behavior intact, so that once set to permanently
-disabled, it cannot be undone aside from a reboot.
-
-We've also added extra2 with max of 2 for the procfs handler, so that an admin
-still has a chance to toggle between 0 <-> 2.
-
-Either way, as an additional alternative, applications can make use of CAP_BPF
-that we added a while ago.
-
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net
-[fllinden@amazon.com: backported to 4.14]
-Signed-off-by: Frank van der Linden <fllinden@amazon.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/sysctl/kernel.txt |   21 +++++++++++++++++++++
- init/Kconfig                    |   10 ++++++++++
- kernel/bpf/syscall.c            |    3 ++-
- kernel/sysctl.c                 |   29 +++++++++++++++++++++++++----
- 4 files changed, 58 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
---- a/Documentation/sysctl/kernel.txt
-+++ b/Documentation/sysctl/kernel.txt
-@@ -91,6 +91,7 @@ show up in /proc/sys/kernel:
- - sysctl_writes_strict
- - tainted
- - threads-max
-+- unprivileged_bpf_disabled
- - unknown_nmi_panic
- - watchdog
- - watchdog_thresh
-@@ -999,6 +1000,26 @@ available RAM pages threads-max is reduc
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index d2ba466613c0a..7876e56a5b5db 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -279,16 +279,6 @@ static int axienet_dma_bd_init(struct net_device *ndev)
+ 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+ 			  cr | XAXIDMA_CR_RUNSTOP_MASK);
  
- ==============================================================
- 
-+unprivileged_bpf_disabled:
-+
-+Writing 1 to this entry will disable unprivileged calls to bpf();
-+once disabled, calling bpf() without CAP_SYS_ADMIN will return
-+-EPERM. Once set to 1, this can't be cleared from the running kernel
-+anymore.
-+
-+Writing 2 to this entry will also disable unprivileged calls to bpf(),
-+however, an admin can still change this setting later on, if needed, by
-+writing 0 or 1 to this entry.
-+
-+If BPF_UNPRIV_DEFAULT_OFF is enabled in the kernel config, then this
-+entry will default to 2 instead of 0.
-+
-+  0 - Unprivileged calls to bpf() are enabled
-+  1 - Unprivileged calls to bpf() are disabled without recovery
-+  2 - Unprivileged calls to bpf() are disabled
-+
-+==============================================================
-+
- unknown_nmi_panic:
- 
- The value in this file affects behavior of handling NMI. When the
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -1378,6 +1378,16 @@ config ADVISE_SYSCALLS
- 	  applications use these syscalls, you can disable this option to save
- 	  space.
- 
-+config BPF_UNPRIV_DEFAULT_OFF
-+	bool "Disable unprivileged BPF by default"
-+	depends on BPF_SYSCALL
-+	help
-+	  Disables unprivileged BPF by default by setting the corresponding
-+	  /proc/sys/kernel/unprivileged_bpf_disabled knob to 2. An admin can
-+	  still reenable it by setting it to 0 later on, or permanently
-+	  disable it by setting it to 1 (from which no other transition to
-+	  0 is possible anymore).
-+
- config USERFAULTFD
- 	bool "Enable userfaultfd() system call"
- 	select ANON_INODES
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -37,7 +37,8 @@ static DEFINE_SPINLOCK(prog_idr_lock);
- static DEFINE_IDR(map_idr);
- static DEFINE_SPINLOCK(map_idr_lock);
- 
--int sysctl_unprivileged_bpf_disabled __read_mostly;
-+int sysctl_unprivileged_bpf_disabled __read_mostly =
-+	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
- 
- static const struct bpf_map_ops * const bpf_map_types[] = {
- #define BPF_PROG_TYPE(_id, _ops)
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -242,6 +242,28 @@ static int sysrq_sysctl_handler(struct c
- 
- #endif
- 
-+#ifdef CONFIG_BPF_SYSCALL
-+static int bpf_unpriv_handler(struct ctl_table *table, int write,
-+                             void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	int ret, unpriv_enable = *(int *)table->data;
-+	bool locked_state = unpriv_enable == 1;
-+	struct ctl_table tmp = *table;
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	tmp.data = &unpriv_enable;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret) {
-+		if (locked_state && unpriv_enable != 1)
-+			return -EPERM;
-+		*(int *)table->data = unpriv_enable;
-+	}
-+	return ret;
-+}
-+#endif
-+
- static struct ctl_table kern_table[];
- static struct ctl_table vm_table[];
- static struct ctl_table fs_table[];
-@@ -1201,10 +1223,9 @@ static struct ctl_table kern_table[] = {
- 		.data		= &sysctl_unprivileged_bpf_disabled,
- 		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
- 		.mode		= 0644,
--		/* only handle a transition from default "0" to "1" */
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= &one,
--		.extra2		= &one,
-+		.proc_handler	= bpf_unpriv_handler,
-+		.extra1		= &zero,
-+		.extra2		= &two,
- 	},
- #endif
- #if defined(CONFIG_TREE_RCU) || defined(CONFIG_PREEMPT_RCU)
+-	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
+-	ret = read_poll_timeout(axienet_ior, value,
+-				value & XAE_INT_PHYRSTCMPLT_MASK,
+-				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
+-				XAE_IS_OFFSET);
+-	if (ret) {
+-		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
+-		return ret;
+-	}
+-
+ 	return 0;
+ out:
+ 	axienet_dma_bd_release(ndev);
+-- 
+2.34.1
+
 
 
