@@ -2,44 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62048C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC98C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244838AbiBNJo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:44:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33984 "EHLO
+        id S244865AbiBNJoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:44:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244986AbiBNJlC (ORCPT
+        with ESMTP id S244983AbiBNJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:41:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26215A184;
-        Mon, 14 Feb 2022 01:36:48 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A891ADA7;
+        Mon, 14 Feb 2022 01:36:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C64F4B80DC4;
-        Mon, 14 Feb 2022 09:36:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D388BC340E9;
-        Mon, 14 Feb 2022 09:36:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F59C60F87;
+        Mon, 14 Feb 2022 09:36:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3ADFC340E9;
+        Mon, 14 Feb 2022 09:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831405;
-        bh=h/90sFQJ4ADpeoVXdbJhADLAI2IKpcQnwVbtczvVWjg=;
+        s=korg; t=1644831398;
+        bh=DqHdHTwGY9ECVd1fMS2r5aNiB2rMUb0e+u093JFxsMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVJeGEBmloFVjenri8+GQbqerYy2l6KI55vt5u9iidsJJn71sseGtW9HRAhZhP3Gx
-         4ax0PlVrc5x4VEGpBFTk//ylK+h0gY+bkjLFI8adP5btjVk2tBDI6rTtrbQVWSjBjg
-         28fNmsLBLIc/p6wR9tcQa0L68/gVVLHdqv2DtHjc=
+        b=AR28315Os6kCn+pJKlfrmCum4wEky9MEhmxP+RVZE7SA3eRJ2kMCOCaYolk898sNu
+         SSCLY283JOqJ75c+O1NnBcyLJNqmOZZ65pgFOtCgym/tzBUpvK9ROjtpFKWPoxE0pH
+         Kp0mURiBmETBKNiekjGDj/WqomIgKUXY4PGPcg/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Vlad Buslov <vladbu@nvidia.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 44/71] net: do not keep the dst cache when uncloning an skb dst and its metadata
-Date:   Mon, 14 Feb 2022 10:26:12 +0100
-Message-Id: <20220214092453.530126018@linuxfoundation.org>
+        stable@vger.kernel.org, Zechuan Chen <chenzechuan1@huawei.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Yang Jihong <yangjihong1@huawei.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.4 34/71] perf probe: Fix ppc64 perf probe add events failed case
+Date:   Mon, 14 Feb 2022 10:26:02 +0100
+Message-Id: <20220214092453.167162721@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -51,64 +62,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Zechuan Chen <chenzechuan1@huawei.com>
 
-[ Upstream commit cfc56f85e72f5b9c5c5be26dc2b16518d36a7868 ]
+commit 4624f199327a704dd1069aca1c3cadb8f2a28c6f upstream.
 
-When uncloning an skb dst and its associated metadata a new dst+metadata
-is allocated and the tunnel information from the old metadata is copied
-over there.
+Because of commit bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms
+lookup across powerpc ABIv1 and ABIv2"), in ppc64 ABIv1, our perf
+command eliminates the need to use the prefix "." at the symbol name.
 
-The issue is the tunnel metadata has references to cached dst, which are
-copied along the way. When a dst+metadata refcount drops to 0 the
-metadata is freed including the cached dst entries. As they are also
-referenced in the initial dst+metadata, this ends up in UaFs.
+But when the command "perf probe -a schedule" is executed on ppc64
+ABIv1, it obtains two symbol address information through /proc/kallsyms,
+for example:
 
-In practice the above did not happen because of another issue, the
-dst+metadata was never freed because its refcount never dropped to 0
-(this will be fixed in a subsequent patch).
+  cat /proc/kallsyms | grep -w schedule
+  c000000000657020 T .schedule
+  c000000000d4fdb8 D schedule
 
-Fix this by initializing the dst cache after copying the tunnel
-information from the old metadata to also unshare the dst cache.
+The symbol "D schedule" is not a function symbol, and perf will print:
+"p:probe/schedule _text+13958584"Failed to write event: Invalid argument
 
-Fixes: d71785ffc7e7 ("net: add dst_cache to ovs vxlan lwtunnel")
-Cc: Paolo Abeni <pabeni@redhat.com>
-Reported-by: Vlad Buslov <vladbu@nvidia.com>
-Tested-by: Vlad Buslov <vladbu@nvidia.com>
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Acked-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Therefore, when searching symbols from map and adding probe point for
+them, a symbol type check is added. If the type of symbol is not a
+function, skip it.
+
+Fixes: bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms lookup across powerpc ABIv1 and ABIv2")
+Signed-off-by: Zechuan Chen <chenzechuan1@huawei.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jianlin Lv <Jianlin.Lv@arm.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Cc: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lore.kernel.org/r/20211228111338.218602-1-chenzechuan1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/dst_metadata.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ tools/perf/util/probe-event.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-index 14efa0ded75dd..b997e0c1e3627 100644
---- a/include/net/dst_metadata.h
-+++ b/include/net/dst_metadata.h
-@@ -123,6 +123,19 @@ static inline struct metadata_dst *tun_dst_unclone(struct sk_buff *skb)
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -2954,6 +2954,9 @@ static int find_probe_trace_events_from_
+ 	for (j = 0; j < num_matched_functions; j++) {
+ 		sym = syms[j];
  
- 	memcpy(&new_md->u.tun_info, &md_dst->u.tun_info,
- 	       sizeof(struct ip_tunnel_info) + md_size);
-+#ifdef CONFIG_DST_CACHE
-+	/* Unclone the dst cache if there is one */
-+	if (new_md->u.tun_info.dst_cache.cache) {
-+		int ret;
++		if (sym->type != STT_FUNC)
++			continue;
 +
-+		ret = dst_cache_init(&new_md->u.tun_info.dst_cache, GFP_ATOMIC);
-+		if (ret) {
-+			metadata_dst_free(new_md);
-+			return ERR_PTR(ret);
-+		}
-+	}
-+#endif
-+
- 	skb_dst_drop(skb);
- 	dst_hold(&new_md->dst);
- 	skb_dst_set(skb, &new_md->dst);
--- 
-2.34.1
-
+ 		tev = (*tevs) + ret;
+ 		tp = &tev->point;
+ 		if (ret == num_matched_functions) {
 
 
