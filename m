@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97462C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345167AbiBNKKL (ORCPT
+        id S1345057AbiBNKKT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53654 "EHLO
+        Mon, 14 Feb 2022 05:10:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344617AbiBNKEu (ORCPT
+        with ESMTP id S1345129AbiBNKFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:04:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B8DF4BFDF;
-        Mon, 14 Feb 2022 01:49:13 -0800 (PST)
+        Mon, 14 Feb 2022 05:05:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C8A74314;
+        Mon, 14 Feb 2022 01:49:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8D861284;
-        Mon, 14 Feb 2022 09:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5490C340E9;
-        Mon, 14 Feb 2022 09:49:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6957612CE;
+        Mon, 14 Feb 2022 09:49:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23D87C340E9;
+        Mon, 14 Feb 2022 09:49:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832152;
-        bh=LDr9fet3QinOPzrvjIlFRpO51oUaf2hH9I6poxqYFRs=;
+        s=korg; t=1644832165;
+        bh=KQ+9AInoANFoWzhgLj+DNeCDUD5Jcu/QtFa5pulHFos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pdtHBmV5fE8HGwnlxGV0RkVGCn6nIHn3KlTjS/PZAt6FOG7K5/q+IaazBld0DRyM0
-         6LKVOJmusYV5DqhZwXlar7n/REEC5LjGfhvd5BqAP6DKSnVs6Tw/Fw6K7HuhznCFKx
-         1JD1s2yCP4w/NAAGXzn7bMxFLWZgDQtbN4EN0T8Y=
+        b=ptSmP0jUyJ+kYVBHJRXER7ANYoGU7S0QyWqrp+Uo49XeyfFi/EYf7Je1roAfSozWa
+         AzJTQpNrQ+/f3cJWAswpsYvBi8ARCIKdemlbyE4YM/stZX5zpljj919c8IKQD761Kd
+         WHVjCW/xDsguwmwFMYWScbSOvhdcI2tohGYIx80M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 094/172] NFS: Dont overfill uncached readdir pages
-Date:   Mon, 14 Feb 2022 10:25:52 +0100
-Message-Id: <20220214092509.650004231@linuxfoundation.org>
+        stable@vger.kernel.org, Pingfan Liu <kernelfans@gmail.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 067/172] riscv: cpu-hotplug: clear cpu from numa map when teardown
+Date:   Mon, 14 Feb 2022 10:25:25 +0100
+Message-Id: <20220214092508.719417577@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,40 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: trondmy@kernel.org <trondmy@kernel.org>
+From: Pingfan Liu <kernelfans@gmail.com>
 
-[ Upstream commit d9c4e39c1f8f8a8ebaccf00b8f22c14364b2d27e ]
+commit f40fe31c01445f31253b15bef2412b33ae31093b upstream.
 
-If we're doing an uncached read of the directory, then we ideally want
-to read only the exact set of entries that will fit in the buffer
-supplied by the getdents() system call. So unlike the case where we're
-reading into the page cache, let's send only one READDIR call, before
-trying to fill up the buffer.
+There is numa_add_cpu() when cpus online, accordingly, there should be
+numa_remove_cpu() when cpus offline.
 
-Fixes: 35df59d3ef69 ("NFS: Reduce number of RPC calls when doing uncached readdir")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+Fixes: 4f0e8eef772e ("riscv: Add numa support for riscv64 platform")
+Cc: stable@vger.kernel.org
+[Palmer: Add missing NUMA include]
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/dir.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/riscv/kernel/cpu-hotplug.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index db6abd4733bfb..af7881bc6b3e6 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -870,7 +870,8 @@ static int nfs_readdir_xdr_to_array(struct nfs_readdir_descriptor *desc,
+--- a/arch/riscv/kernel/cpu-hotplug.c
++++ b/arch/riscv/kernel/cpu-hotplug.c
+@@ -12,6 +12,7 @@
+ #include <linux/sched/hotplug.h>
+ #include <asm/irq.h>
+ #include <asm/cpu_ops.h>
++#include <asm/numa.h>
+ #include <asm/sbi.h>
  
- 		status = nfs_readdir_page_filler(desc, entry, pages, pglen,
- 						 arrays, narrays);
--	} while (!status && nfs_readdir_page_needs_filling(page));
-+	} while (!status && nfs_readdir_page_needs_filling(page) &&
-+		page_mapping(page));
+ void cpu_stop(void);
+@@ -46,6 +47,7 @@ int __cpu_disable(void)
+ 		return ret;
  
- 	nfs_readdir_free_pages(pages, array_size);
- out_release_label:
--- 
-2.34.1
-
+ 	remove_cpu_topology(cpu);
++	numa_remove_cpu(cpu);
+ 	set_cpu_online(cpu, false);
+ 	irq_migrate_all_off_this_cpu();
+ 
 
 
