@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4890DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FA1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232871AbiBNKIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:08:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53606 "EHLO
+        id S1344761AbiBNKIx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:08:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344761AbiBNKEK (ORCPT
+        with ESMTP id S1345093AbiBNKEN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:04:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CF943496;
-        Mon, 14 Feb 2022 01:48:52 -0800 (PST)
+        Mon, 14 Feb 2022 05:04:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB45512;
+        Mon, 14 Feb 2022 01:48:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D8E7B80D83;
-        Mon, 14 Feb 2022 09:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7443AC340EF;
-        Mon, 14 Feb 2022 09:48:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D135612D0;
+        Mon, 14 Feb 2022 09:48:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D135EC340E9;
+        Mon, 14 Feb 2022 09:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832130;
-        bh=ZpMz6lI2fdG/Wzo5lXOmPabcTGrlBaNjRWX7oyNMaGQ=;
+        s=korg; t=1644832136;
+        bh=H9AOZ4VvMnz+eej4Jp2A9tk40+GzB/tTtRcrZcb3Tu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HR/4zn7Zg0pHVOSEqWYeMgX5KSLO/qxQ44X662cD5ca31JWyF4No/7Hh0WPo3A3Nw
-         PssTq+JfF7sDZ4uEzQPWWkl0B5ErEahqzkWAeiacibV3/RU5EtYZy+tTOQsqC1nXI2
-         V5EoIWHPp6gML5NM1+qM1VRkg5gTWCtxIsUqKTTA=
+        b=QemBq8kNZq3A72x7Rt8hRCt5gYQV96/OFBvI314Zt0q+5dLPXmFp4q70MUY2o5Dy0
+         tlEgIJsgjbF+2NsakNxP06yGSCSzk7OLRqDOWyg/WDW68MJzMnA/aOJqdXTxrHEpGx
+         jFTVqMavcs/kK4O5+NCOEX2l9d2Y33E2EwfQhTNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/172] phy: stm32: fix a refcount leak in stm32_usbphyc_pll_enable()
-Date:   Mon, 14 Feb 2022 10:25:46 +0100
-Message-Id: <20220214092509.450851928@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Liam Merwick <liam.merwick@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 063/172] KVM: SVM: Dont kill SEV guest if SMAP erratum triggers in usermode
+Date:   Mon, 14 Feb 2022 10:25:21 +0100
+Message-Id: <20220214092508.576251831@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -48,35 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit cfc826c88a79e22ba5d8001556eb2c7efd8a01b6 ]
+[ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
 
-This error path needs to decrement "usbphyc->n_pll_cons.counter" before
-returning.
+Inject a #GP instead of synthesizing triple fault to try to avoid killing
+the guest if emulation of an SEV guest fails due to encountering the SMAP
+erratum.  The injected #GP may still be fatal to the guest, e.g. if the
+userspace process is providing critical functionality, but KVM should
+make every attempt to keep the guest alive.
 
-Fixes: 5b1af71280ab ("phy: stm32: rework PLL Lock detection")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Link: https://lore.kernel.org/r/20220112111724.GB3019@kili
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
+Message-Id: <20220120010719.711476-10-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/st/phy-stm32-usbphyc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/st/phy-stm32-usbphyc.c b/drivers/phy/st/phy-stm32-usbphyc.c
-index 937a14fa7448a..da05642d3bd4a 100644
---- a/drivers/phy/st/phy-stm32-usbphyc.c
-+++ b/drivers/phy/st/phy-stm32-usbphyc.c
-@@ -225,7 +225,7 @@ static int stm32_usbphyc_pll_enable(struct stm32_usbphyc *usbphyc)
- 
- 		ret = __stm32_usbphyc_pll_disable(usbphyc);
- 		if (ret)
--			return ret;
-+			goto dec_n_pll_cons;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 980abc437cdaa..f05aa7290267d 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4473,7 +4473,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
+ 	is_user = svm_get_cpl(vcpu) == 3;
+ 	if (smap && (!smep || is_user)) {
+ 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
+-		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
++
++		/*
++		 * If the fault occurred in userspace, arbitrarily inject #GP
++		 * to avoid killing the guest and to hopefully avoid confusing
++		 * the guest kernel too much, e.g. injecting #PF would not be
++		 * coherent with respect to the guest's page tables.  Request
++		 * triple fault if the fault occurred in the kernel as there's
++		 * no fault that KVM can inject without confusing the guest.
++		 * In practice, the triple fault is moot as no sane SEV kernel
++		 * will execute from user memory while also running with SMAP=1.
++		 */
++		if (is_user)
++			kvm_inject_gp(vcpu, 0);
++		else
++			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
  	}
  
- 	ret = stm32_usbphyc_regulators_enable(usbphyc);
+ 	return false;
 -- 
 2.34.1
 
