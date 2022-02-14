@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A703FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242689AbiBNKi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:38:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48006 "EHLO
+        id S1348393AbiBNKid (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:38:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242944AbiBNKet (ORCPT
+        with ESMTP id S1348220AbiBNKeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:34:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A816B6463;
-        Mon, 14 Feb 2022 02:01:58 -0800 (PST)
+        Mon, 14 Feb 2022 05:34:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CA3BC82;
+        Mon, 14 Feb 2022 02:02:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 631E8B80E0D;
-        Mon, 14 Feb 2022 10:01:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF6A8C340EF;
-        Mon, 14 Feb 2022 10:01:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C269B60DD3;
+        Mon, 14 Feb 2022 10:01:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ABB4C340E9;
+        Mon, 14 Feb 2022 10:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832916;
-        bh=Gj3Z9M/ZYEBo4oID8ujH6W/lVH/mp2oAgAzRkJJzenA=;
+        s=korg; t=1644832919;
+        bh=kBk9rwrQ8IjaiqnLRz8c7PBbVQhRD4GH1Rd2rgHKem8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qvRHiilpnFwRC8LbEQiSTZBDZSLJg3a0HHWYXubVjQA8gkt0a5VlkKgZeGa1vAjZo
-         kDBDe4m1Xg4UK9FmZW9YVlEqZ0VmlxYPsnUmLvkLhSIRlw2vcHbIYV/zZ6ysNYiJ2M
-         Or9DqDgDcMBKxoEKvTIU0fiLrUMel6Q2/1xf7xiY=
+        b=RvjieYAH13no9Zkm1DEE0tgyaEKYFNulGd8B1HMn1wDMLMRdEoKVUVVqJgw2DSOM0
+         bJ2NDungeGT9tJwSPWNPu0zopWgkgdnhNSOcHt/2n9ac/nxoQuKknVEdNY+/AU+ngI
+         Fy7vKgD4a5N6FlURejBbXmsIDg6Ta1JU41lnWcjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jonas Malaco <jonas@protocubo.io>
-Subject: [PATCH 5.16 165/203] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
-Date:   Mon, 14 Feb 2022 10:26:49 +0100
-Message-Id: <20220214092515.850069036@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH 5.16 166/203] usb: dwc2: drd: fix soft connect when gadget is unconfigured
+Date:   Mon, 14 Feb 2022 10:26:50 +0100
+Message-Id: <20220214092515.890891533@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -48,43 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Malaco <jonas@protocubo.io>
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-commit c0689e46be23160d925dca95dfc411f1a0462708 upstream.
+commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87 upstream.
 
-Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
-size") revealed that ee1004_eeprom_read() did not properly limit how
-many bytes to read at once.
+When the gadget driver hasn't been (yet) configured, and the cable is
+connected to a HOST, the SFTDISCON gets cleared unconditionally, so the
+HOST tries to enumerate it.
+At the host side, this can result in a stuck USB port or worse. When
+getting lucky, some dmesg can be observed at the host side:
+ new high-speed USB device number ...
+ device descriptor read/64, error -110
 
-In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
-length to read as an u8.  If count == 256 after taking into account the
-offset and page boundary, the cast to u8 overflows.  And this is common
-when user space tries to read the entire EEPROM at once.
+Fix it in drd, by checking the enabled flag before calling
+dwc2_hsotg_core_connect(). It will be called later, once configured,
+by the normal flow:
+- udc_bind_to_driver
+ - usb_gadget_connect
+   - dwc2_hsotg_pullup
+     - dwc2_hsotg_core_connect
 
-To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
-the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
-
-Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
-Cc: stable@vger.kernel.org
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Jonas Malaco <jonas@protocubo.io>
-Link: https://lore.kernel.org/r/20220203165024.47767-1-jonas@protocubo.io
+Fixes: 17f934024e84 ("usb: dwc2: override PHY input signals with usb role switch support")
+Cc: stable@kernel.org
+Reviewed-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/1644423353-17859-1-git-send-email-fabrice.gasnier@foss.st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/eeprom/ee1004.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/dwc2/drd.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/misc/eeprom/ee1004.c
-+++ b/drivers/misc/eeprom/ee1004.c
-@@ -114,6 +114,9 @@ static ssize_t ee1004_eeprom_read(struct
- 	if (offset + count > EE1004_PAGE_SIZE)
- 		count = EE1004_PAGE_SIZE - offset;
- 
-+	if (count > I2C_SMBUS_BLOCK_MAX)
-+		count = I2C_SMBUS_BLOCK_MAX;
-+
- 	return i2c_smbus_read_i2c_block_data_or_emulated(client, offset, count, buf);
- }
- 
+--- a/drivers/usb/dwc2/drd.c
++++ b/drivers/usb/dwc2/drd.c
+@@ -109,8 +109,10 @@ static int dwc2_drd_role_sw_set(struct u
+ 		already = dwc2_ovr_avalid(hsotg, true);
+ 	} else if (role == USB_ROLE_DEVICE) {
+ 		already = dwc2_ovr_bvalid(hsotg, true);
+-		/* This clear DCTL.SFTDISCON bit */
+-		dwc2_hsotg_core_connect(hsotg);
++		if (hsotg->enabled) {
++			/* This clear DCTL.SFTDISCON bit */
++			dwc2_hsotg_core_connect(hsotg);
++		}
+ 	} else {
+ 		if (dwc2_is_device_mode(hsotg)) {
+ 			if (!dwc2_ovr_bvalid(hsotg, false))
 
 
