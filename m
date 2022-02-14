@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81A1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E45AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245088AbiBNJpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:45:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33258 "EHLO
+        id S245018AbiBNJp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:45:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244973AbiBNJnk (ORCPT
+        with ESMTP id S243229AbiBNJnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:43:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA04069CFA;
-        Mon, 14 Feb 2022 01:37:58 -0800 (PST)
+        Mon, 14 Feb 2022 04:43:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E696CA54;
+        Mon, 14 Feb 2022 01:38:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E0BCB80D83;
-        Mon, 14 Feb 2022 09:37:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE6FC340E9;
-        Mon, 14 Feb 2022 09:37:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0638B80DA9;
+        Mon, 14 Feb 2022 09:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7872C340F0;
+        Mon, 14 Feb 2022 09:37:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831476;
-        bh=fNboLNrTTiztMzk5UQDqt4sM5NYrXTofzAbuRL2RH+E=;
+        s=korg; t=1644831479;
+        bh=OS55XowkhI3CqDz/e8i9pKkA6nzSUACJ0ExuNWM5heM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uurxPptttCTLXIPS11+37zRv8aFhFKu1wUAVfavAn/GJIhxCRsE/I3bGxHxpSAgGt
-         r0+3PJ6xCEObglxL7kduysCt9cl15NHzV1yRM2xI8MFVn7jjPqAOMpNwVqQu5WXARs
-         2eyNFtTb1IPtWQL57AEvi2xey59T6ha2jZwb4Bho=
+        b=Vd/a8uDBUOu/ARi8ptN1GAr0CfCtcUWD733umecV0RQTSekdlayfnQwa0CCLkttoV
+         bnz7Ozou9+23REwjDzHIFB29Bxc7PrmetYrusPFfRQ8KBYv14HLRK4oakgr8y34M0I
+         Hqb3U7DW+Te8ApA7vijzgm/s/LADO9bAOU3kGolg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.4 67/71] seccomp: Invalidate seccomp mode to catch death failures
-Date:   Mon, 14 Feb 2022 10:26:35 +0100
-Message-Id: <20220214092454.290611893@linuxfoundation.org>
+        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH 5.4 68/71] hwmon: (dell-smm) Speed up setting of fan speed
+Date:   Mon, 14 Feb 2022 10:26:36 +0100
+Message-Id: <20220214092454.325425404@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,64 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Armin Wolf <W_Armin@gmx.de>
 
-commit 495ac3069a6235bfdf516812a2a9b256671bbdf9 upstream.
+commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
 
-If seccomp tries to kill a process, it should never see that process
-again. To enforce this proactively, switch the mode to something
-impossible. If encountered: WARN, reject all syscalls, and attempt to
-kill the process again even harder.
+When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
+causing an unnecessary SMM call since from the two users of this
+function, only i8k_ioctl_unlocked() needs to know the new fan status
+while dell_smm_write() ignores the new fan status.
+Since SMM calls can be very slow while also making error reporting
+difficult for dell_smm_write(), remove the function call from
+i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
 
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Will Drewry <wad@chromium.org>
-Fixes: 8112c4f140fa ("seccomp: remove 2-phase API")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
+Tested on a Dell Inspiron 3505.
+
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+Reviewed-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/seccomp.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/kernel/seccomp.c
-+++ b/kernel/seccomp.c
-@@ -28,6 +28,9 @@
- #include <linux/syscalls.h>
- #include <linux/sysctl.h>
- 
-+/* Not exposed in headers: strictly internal use only. */
-+#define SECCOMP_MODE_DEAD	(SECCOMP_MODE_FILTER + 1)
-+
- #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
- #include <asm/syscall.h>
- #endif
-@@ -706,6 +709,7 @@ static void __secure_computing_strict(in
- #ifdef SECCOMP_DEBUG
- 	dump_stack();
- #endif
-+	current->seccomp.mode = SECCOMP_MODE_DEAD;
- 	seccomp_log(this_syscall, SIGKILL, SECCOMP_RET_KILL_THREAD, true);
- 	do_exit(SIGKILL);
+--- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -301,7 +301,7 @@ static int i8k_get_fan_nominal_speed(int
  }
-@@ -892,6 +896,7 @@ static int __seccomp_filter(int this_sys
- 	case SECCOMP_RET_KILL_THREAD:
- 	case SECCOMP_RET_KILL_PROCESS:
+ 
+ /*
+- * Set the fan speed (off, low, high). Returns the new fan status.
++ * Set the fan speed (off, low, high, ...).
+  */
+ static int i8k_set_fan(int fan, int speed)
+ {
+@@ -313,7 +313,7 @@ static int i8k_set_fan(int fan, int spee
+ 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
+ 	regs.ebx = (fan & 0xff) | (speed << 8);
+ 
+-	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
++	return i8k_smm(&regs);
+ }
+ 
+ static int i8k_get_temp_type(int sensor)
+@@ -427,7 +427,7 @@ static int
+ i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
+ {
+ 	int val = 0;
+-	int speed;
++	int speed, err;
+ 	unsigned char buff[16];
+ 	int __user *argp = (int __user *)arg;
+ 
+@@ -488,7 +488,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
+ 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
+ 			return -EFAULT;
+ 
+-		val = i8k_set_fan(val, speed);
++		err = i8k_set_fan(val, speed);
++		if (err < 0)
++			return err;
++
++		val = i8k_get_fan_status(val);
+ 		break;
+ 
  	default:
-+		current->seccomp.mode = SECCOMP_MODE_DEAD;
- 		seccomp_log(this_syscall, SIGSYS, action, true);
- 		/* Dump core only if this is the last remaining thread. */
- 		if (action == SECCOMP_RET_KILL_PROCESS ||
-@@ -944,6 +949,11 @@ int __secure_computing(const struct secc
- 		return 0;
- 	case SECCOMP_MODE_FILTER:
- 		return __seccomp_filter(this_syscall, sd, false);
-+	/* Surviving SECCOMP_RET_KILL_* must be proactively impossible. */
-+	case SECCOMP_MODE_DEAD:
-+		WARN_ON_ONCE(1);
-+		do_exit(SIGKILL);
-+		return -1;
- 	default:
- 		BUG();
- 	}
 
 
