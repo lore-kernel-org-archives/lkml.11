@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61827C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78704C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348686AbiBNKho (ORCPT
+        id S1348373AbiBNKhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:37:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41514 "EHLO
+        Mon, 14 Feb 2022 05:37:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348346AbiBNKes (ORCPT
+        with ESMTP id S1348339AbiBNKes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:34:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EF3117B;
-        Mon, 14 Feb 2022 02:01:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C551115F;
+        Mon, 14 Feb 2022 02:01:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A4E4B80D6D;
-        Mon, 14 Feb 2022 10:01:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A39BBC340E9;
-        Mon, 14 Feb 2022 10:01:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFADEB80DFE;
+        Mon, 14 Feb 2022 10:01:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6140C340F0;
+        Mon, 14 Feb 2022 10:01:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832906;
-        bh=CLfqbK5DAgyx3E+ykodxSz0Gwtxu7xIMZXMF5qlQwTE=;
+        s=korg; t=1644832899;
+        bh=73+Jfh2LwBaG5LGIUyw6QX/yEA7vXUv691IUNXbaKZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JIw1bkAa+bJf2ejkLa/3FVSk9L0MAqNY4OlGfCljsKRL3ZyZ7WWi5Y18hH3Cjoxjy
-         5XR5zsV4oHjedP96wHf8MMUDvPpkbWnS0Ua/XApGfLtHjdsRKq8+Nr9PNAbupL3DBZ
-         yLeD3rtK87HA2Cbw7IQHrim1rv16+JEEc4Krzv+o=
+        b=V5haO/ByeFs6Jl1biw1UKZrLiFjvb4twcYZ59dxp1KxFP9tRPMvXYMkWg5/ypZAx0
+         JNg1bRyhlVe5MICJU+NFnPHIlfwlJkONJqK1U7LpRgaa6R1jl2jcp2aMLh+jkjPduo
+         wr6SXy20pNX7Zq2HH2CYBdPXqF+xFXHNxwtS5soA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH 5.16 162/203] vt_ioctl: fix array_index_nospec in vt_setactivate
-Date:   Mon, 14 Feb 2022 10:26:46 +0100
-Message-Id: <20220214092515.745236545@linuxfoundation.org>
+        Colin Foster <colin.foster@in-advantage.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 160/203] net: mscc: ocelot: fix mutex lock error during ethtool stats read
+Date:   Mon, 14 Feb 2022 10:26:44 +0100
+Message-Id: <20220214092515.675063913@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,40 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Colin Foster <colin.foster@in-advantage.com>
 
-commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
+[ Upstream commit 7fbf6795d127a3b1bb39b0e42579904cf6db1624 ]
 
-array_index_nospec ensures that an out-of-bounds value is set to zero
-on the transient path. Decreasing the value by one afterwards causes
-a transient integer underflow. vsa.console should be decreased first
-and then sanitized with array_index_nospec.
+An ongoing workqueue populates the stats buffer. At the same time, a user
+might query the statistics. While writing to the buffer is mutex-locked,
+reading from the buffer wasn't. This could lead to buggy reads by ethtool.
 
-Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
-Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
-Amsterdam.
+This patch fixes the former blamed commit, but the bug was introduced in
+the latter.
 
-Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Fixes: 1e1caa9735f90 ("ocelot: Clean up stats update deferred work")
+Fixes: a556c76adc052 ("net: mscc: Add initial Ocelot switch support")
+Reported-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Link: https://lore.kernel.org/all/20220210150451.416845-2-colin.foster@in-advantage.com/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/vt/vt_ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -599,8 +599,8 @@ static int vt_setactivate(struct vt_seta
- 	if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
- 		return -ENXIO;
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index ac5849436d021..02edd383dea22 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1609,12 +1609,11 @@ void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data)
+ }
+ EXPORT_SYMBOL(ocelot_get_strings);
  
--	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES + 1);
- 	vsa.console--;
-+	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES);
- 	console_lock();
- 	ret = vc_allocate(vsa.console);
- 	if (ret) {
++/* Caller must hold &ocelot->stats_lock */
+ static void ocelot_update_stats(struct ocelot *ocelot)
+ {
+ 	int i, j;
+ 
+-	mutex_lock(&ocelot->stats_lock);
+-
+ 	for (i = 0; i < ocelot->num_phys_ports; i++) {
+ 		/* Configure the port to read the stats from */
+ 		ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(i), SYS_STAT_CFG);
+@@ -1633,8 +1632,6 @@ static void ocelot_update_stats(struct ocelot *ocelot)
+ 					      ~(u64)U32_MAX) + val;
+ 		}
+ 	}
+-
+-	mutex_unlock(&ocelot->stats_lock);
+ }
+ 
+ static void ocelot_check_stats_work(struct work_struct *work)
+@@ -1643,7 +1640,9 @@ static void ocelot_check_stats_work(struct work_struct *work)
+ 	struct ocelot *ocelot = container_of(del_work, struct ocelot,
+ 					     stats_work);
+ 
++	mutex_lock(&ocelot->stats_lock);
+ 	ocelot_update_stats(ocelot);
++	mutex_unlock(&ocelot->stats_lock);
+ 
+ 	queue_delayed_work(ocelot->stats_queue, &ocelot->stats_work,
+ 			   OCELOT_STATS_CHECK_DELAY);
+@@ -1653,12 +1652,16 @@ void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data)
+ {
+ 	int i;
+ 
++	mutex_lock(&ocelot->stats_lock);
++
+ 	/* check and update now */
+ 	ocelot_update_stats(ocelot);
+ 
+ 	/* Copy all counters */
+ 	for (i = 0; i < ocelot->num_stats; i++)
+ 		*data++ = ocelot->stats[port * ocelot->num_stats + i];
++
++	mutex_unlock(&ocelot->stats_lock);
+ }
+ EXPORT_SYMBOL(ocelot_get_ethtool_stats);
+ 
+-- 
+2.34.1
+
 
 
