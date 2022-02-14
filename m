@@ -2,143 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B17C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B96BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357537AbiBNSgD (ORCPT
+        id S1357504AbiBNShk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:36:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41820 "EHLO
+        Mon, 14 Feb 2022 13:37:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239417AbiBNSgC (ORCPT
+        with ESMTP id S232272AbiBNShj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:36:02 -0500
-X-Greylist: delayed 467 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 10:35:53 PST
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DE7652E3;
-        Mon, 14 Feb 2022 10:35:53 -0800 (PST)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 490F15C0250;
-        Mon, 14 Feb 2022 13:28:03 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 14 Feb 2022 13:28:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stwcx.xyz; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=Qcwq5i6dPGz8fm
-        2l69OpbijAoZXeTdKUljxVFonj5pg=; b=ZfY/IqGewCEVDT+SpQQimzo7lV0aXw
-        o7oOy+w/TdWN9r+Ip12oZbb8PvYA2rtzB884ybRgDBKxqlT+Ql7OQ04MJqWO5zhj
-        iThCX/QxuWlO3G9NC90STBpKK6282ALvS/bLObbanvTo1lO6Q/mj5NvQr5JTrnAE
-        JyE1mRsmgM9dC+D2dEMxQ/NCZ6Hk+iSJGek9Ydm2/EJRy9Az35IPUDzgmG9nWOPz
-        e7Bqyt3LCc+BwmNbTeHnfF33CekhYUVCKj19eUghckHByFSoyE/w+MGOaBkAergd
-        5+VJZNYS5/NX1NtJvpGE6F6LWjrxNiBrntb1d3TndcYd1zEDJ4/LKTKg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=Qcwq5i6dPGz8fm2l69OpbijAoZXeTdKUljxVFonj5
-        pg=; b=Yf2rCmo191gvt55Y3HNHTt+drZO+Zk9lpbcdD0hH6iG3tRmmwoBB9coJm
-        XYFD6VAa6ElSSqdIZC1kDo/nDJIt3aF0Qd03sR7FUA+4DfsNa7qkTh5lqGHyncGJ
-        Um9NOoLp0JjkENh8zwDjSm1qbvGj+W9OxdZSKKNfs2NHwwQ3Nyj7DWwZ2SIaga6Z
-        nq1OVm8EQAJxjx0OHWaTcW1MKjkH4bQpZakogejZv/uHIb8jMNISd77wzHXiobJA
-        yt1wz2IvUEj8xx1zWDwxd4EY766Y5+zLMOFZYRux+4ErxxFcnpA0m9gAdD+PQvT/
-        VqiNyq8t2u72pvs+NhReS/UxOvu7w==
-X-ME-Sender: <xms:Mp8KYhqDXSYTHlRvrGn5HWuEG5GbH29glKPOou4OJvMM25hgdIeMKw>
-    <xme:Mp8KYjpKiAlKFCouRAvlmKSB9WQM7Ws9X9hLNefeCXlVyXuoqDx8_iEs096GI6M9e
-    WHx1FOmEVGPOS12w0o>
-X-ME-Received: <xmr:Mp8KYuMOkDKYl0UJszQdSrzv-Va0hcirXmB3kYAj2_VfGXuc_vR14EK0Fg4lEc7yDrhA0AKF2QTTI7iUCwxkE4VrfMwvxCf2>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedvgddutdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    gfrhhlucfvnfffucdlfeehmdenucfjughrpeffhffvuffkfhggtggugfgjsehtqhertddt
-    tddvnecuhfhrohhmpefrrghtrhhitghkucghihhllhhirghmshcuoehprghtrhhitghkse
-    hsthiftgigrdighiiiqeenucggtffrrghtthgvrhhnpedtleffieffieeghfelueekteff
-    uedvhfefffeigfeikeekuddtgfehvddvieehkeenucffohhmrghinhepkhgvrhhnvghlrd
-    horhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhep
-    phgrthhrihgtkhesshhtfigtgidrgiihii
-X-ME-Proxy: <xmx:Mp8KYs603cxG8DTbpYBUzrWkPDAwp6k1loBUpyJv5_334M5j4dKgiw>
-    <xmx:Mp8KYg7UAvn_v9K6qThCMsLMKygXZRA6l5CulYMZDv6bj0HeHUyKIg>
-    <xmx:Mp8KYkh6h7JCrSzwvjez5dFrwv4F1j3qIwqAVuj830uH7L6Ea7ZmkA>
-    <xmx:M58KYtvi-UsPV19EcRQGIezyZFYz-6wlN-IqMfkUdmavzZ1e2qijXQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 14 Feb 2022 13:28:01 -0500 (EST)
-Date:   Mon, 14 Feb 2022 12:27:59 -0600
-From:   Patrick Williams <patrick@stwcx.xyz>
-To:     Potin Lai <potin.lai@quantatw.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/10] update Facebook Bletchley BMC
-Message-ID: <Ygqe6lwWUdgv+8ss@patrickw3-mbp>
-References: <20220214042538.12132-1-potin.lai@quantatw.com>
+        Mon, 14 Feb 2022 13:37:39 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF9160ABE;
+        Mon, 14 Feb 2022 10:37:30 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 2D80A1F38A;
+        Mon, 14 Feb 2022 18:37:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1644863849; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=hcAP1oYRKlVZf+ejwok9nLI2R/eE64Eg/5Ilx8Cevaw=;
+        b=mKoMck6I7z0K8iD8TC1sp81Sq377hEFQ0MnsnbZj+N2a9zXv5vKRAHC6mPUFiHBBAS8faE
+        5OuPLV4QNi/EXTMWfaEsG0kiFbwM6EfutYXrIKrNAiw+1Kxghfi9dRG/wmtArgm4br+BdH
+        4TPyenKVQwpcIOGTeaKF1ZwQQmmEzSw=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0A97F13A85;
+        Mon, 14 Feb 2022 18:37:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xsMQAmmhCmJNRAAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Mon, 14 Feb 2022 18:37:29 +0000
+Date:   Mon, 14 Feb 2022 19:37:27 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        containers@lists.linux-foundation.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/8] ucounts: Fix RLIMIT_NPROC regression
+Message-ID: <20220214183727.GA10803@blackbody.suse.cz>
+References: <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
+ <20220211021324.4116773-1-ebiederm@xmission.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220214042538.12132-1-potin.lai@quantatw.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220211021324.4116773-1-ebiederm@xmission.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:25:28PM +0800, Potin Lai wrote:
-> This patch series update Facebook Bletchley BMC devicetree base on EVT HW
-> schematioc design, and rebase SLED numbering to 1-based for OpenBMC
-> multi-host.
->=20
-> - GPIO:
->   - adding more gpio line names
->   - include interrupt line in io expander for gpio interrupt monitoring
->=20
-> - SPI flash:
->   - adding dual flash BSM module support
->   - switch to spi2-gpio on spi2 due to unstable signal issue
->=20
-> - Hwmon Sensors:
->   - adding INA230 sensors for monitoring
->   - fix ADM1278 shunt-resistor
->=20
-> - MDIO Bus: enable mido3 bus
->=20
-> - RTC: switch to external battery-backed rtc
->=20
-> - OpenBMC: 1-based SLED numbering
->=20
->=20
-> LINK: [v1] https://lore.kernel.org/all/20220211014347.24841-1-potin.lai@q=
-uantatw.com/
->=20
->=20
-> Changes v1 --> v2:
-> - update the details of new added gpio line names in commit message
-> - add battery-backed rtc information in comment and commit message
+On Thu, Feb 10, 2022 at 08:13:17PM -0600, "Eric W. Biederman" <ebiederm@xmission.com> wrote:
+> This can be fixed either by fixing the test or by moving the increment
+> to be before the test.  Fix it my moving copy_creds which contains
+> the increment before is_ucounts_overlimit.
 
-Thank you for the details there Potin.
+This is simpler than my approach and I find it correct too.
 
->=20
-> Potin Lai (10):
->   arch: arm: dts: bletchley: switch sled numbering to 1-based
->   arch: arm: dts: bletchley: separate leds into multiple groups
->   arch: arm: dts: bletchley: update gpio-line-names
->   arch: arm: dts: bletchley: update fmc configurations
->   arch: arm: dts: bletchley: switch to spi-gpio for spi2
->   arch: arm: dts: bletchley: add interrupt support for sled io expander
->   arch: arm: dts: bletchley: add shunt-resistor for ADM1278
->   arch: arm: dts: bletchley: add INA230 sensor on each sled
->   arch: arm: dts: bletchley: enable mdio3 bus
->   arch: arm: dts: bletchley: cleanup redundant nodes
->=20
->  .../dts/aspeed-bmc-facebook-bletchley.dts     | 303 +++++++++++-------
->  1 file changed, 194 insertions(+), 109 deletions(-)
->=20
-> --=20
-> 2.17.1
->=20
+> Both the test in fork and the test in set_user were semantically
+> changed when the code moved to ucounts.  The change of the test in
+> fork was bad because it was before the increment.
+>
+> The test in set_user was wrong and the change to ucounts fixed it.  So
+> this fix is only restore the old behavior in one lcatio not two.
 
-Entire series is
+Whom should be the task accounted to in the case of set*uid? (The change
+to ucounts made the check against the pre-switch user's ucounts.)
 
-Reviewed-by: Patrick Williams <patrick@stwcx.xyz>
+> ---
+>  kernel/fork.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
---=20
-Patrick Williams
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+
