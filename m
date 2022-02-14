@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 941C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F298C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243915AbiBNJeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:34:14 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43170 "EHLO
+        id S244013AbiBNJeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:34:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243902AbiBNJd1 (ORCPT
+        with ESMTP id S243768AbiBNJd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:33:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7024AE67;
-        Mon, 14 Feb 2022 01:32:04 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE87AE6D;
+        Mon, 14 Feb 2022 01:32:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FCD9B80DD5;
-        Mon, 14 Feb 2022 09:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3BB0C340E9;
-        Mon, 14 Feb 2022 09:32:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B9D960F87;
+        Mon, 14 Feb 2022 09:32:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D17E0C340E9;
+        Mon, 14 Feb 2022 09:32:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831122;
-        bh=n4817CO9pdbJ3ChJpjW17R3o3ihg1GkqoU+V/JWWfz4=;
+        s=korg; t=1644831125;
+        bh=PlvEcycpV1nvF2g388FL0znRyecBtkKmN44AHTvezXU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXXgHA1sDz5q+AJIsYHXmibgNt29OI6DnIpFuFrBjb5hS2/8oNMDkae3CZoN7fEas
-         ErqIZLs9EToeuv3W8Rlk3Q6WvI6mcawH+MKHNIQ5moYsAIPQiUg7L9HcLHUVKYFd/b
-         JN1AA/NpUQuDXWdt9qKyj4KziyEVgvYXPHsm35iI=
+        b=VGrJ4R3k9T7ujOkZr1SAZ7FaOMyo5ejt733EBC3ouX1Y2pWsC6VKDShVUj3eDpPWw
+         cA17tqvDJpWGn2SIfLmQtvP6kGaYSV1a+SSQO94R7JtlhA2o2KFpUfJwxguSkJ28V9
+         ReOIdbxv6yLSKkJepljnQyjdMfkj+YKjAe7vTgBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pawel Dembicki <paweldembicki@gmail.com>,
+        stable@vger.kernel.org,
+        Stephan Brunner <s.brunner@stephan-brunner.net>,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.14 38/44] USB: serial: option: add ZTE MF286D modem
-Date:   Mon, 14 Feb 2022 10:26:01 +0100
-Message-Id: <20220214092449.138817342@linuxfoundation.org>
+Subject: [PATCH 4.14 39/44] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
+Date:   Mon, 14 Feb 2022 10:26:02 +0100
+Message-Id: <20220214092449.168749199@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -48,62 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawel Dembicki <paweldembicki@gmail.com>
+From: Stephan Brunner <s.brunner@stephan-brunner.net>
 
-commit d48384c7ed6c8fe4727eaa0f3048f62afd1cd715 upstream.
+commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
 
-Modem from ZTE MF286D is an Qualcomm MDM9250 based 3G/4G modem.
+Programmable lab power supplies made by GW Instek, such as the
+GPP-2323, have a USB port exposing a serial port to control the device.
 
-T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
-D:  Ver= 3.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
-P:  Vendor=19d2 ProdID=1485 Rev=52.87
-S:  Manufacturer=ZTE,Incorporated
-S:  Product=ZTE Technologies MSM
-S:  SerialNumber=MF286DZTED000000
-C:* #Ifs= 7 Cfg#= 1 Atr=80 MxPwr=896mA
-A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=02 Prot=ff Driver=rndis_host
-E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-E:  Ad=81(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=01(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=83(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-E:  Ad=8e(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=0f(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
-E:  Ad=05(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-E:  Ad=89(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+Stringing the supplied Windows driver, references to the ch341 chip are
+found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
+("GW Instek USB2.0-Serial" as per the USB product name) works out of the
+box, communication and control is now possible.
 
-Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+This patch should work with any GPP series power supply due to
+similarities in the product line.
+
+Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
+Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
 Cc: stable@vger.kernel.org
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/serial/ch341.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1652,6 +1652,8 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(ZTE_VENDOR_ID, 0x1476, 0xff) },	/* GosunCn ZTE WeLink ME3630 (ECM/NCM mode) */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1481, 0xff, 0x00, 0x00) }, /* ZTE MF871A */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1485, 0xff, 0xff, 0xff),  /* ZTE MF286D */
-+	  .driver_info = RSVD(5) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1533, 0xff, 0xff, 0xff) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1534, 0xff, 0xff, 0xff) },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x1535, 0xff, 0xff, 0xff) },
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -87,6 +87,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x1a86, 0x5523) },
+ 	{ USB_DEVICE(0x1a86, 0x7522) },
+ 	{ USB_DEVICE(0x1a86, 0x7523) },
++	{ USB_DEVICE(0x2184, 0x0057) },
+ 	{ USB_DEVICE(0x4348, 0x5523) },
+ 	{ USB_DEVICE(0x9986, 0x7523) },
+ 	{ },
 
 
