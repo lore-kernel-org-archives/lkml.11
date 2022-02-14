@@ -2,127 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E4BAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E77C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiBNU47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:56:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42936 "EHLO
+        id S229926AbiBNU5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:57:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230078AbiBNU4u (ORCPT
+        with ESMTP id S229556AbiBNU4u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 15:56:50 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB47E110EEF
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE0BB1342E6
         for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:56:25 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id 0684A1F43F8A
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644872138;
-        bh=FhWthb7qNxu03PTR+1xu680Z2C1ejB/i7ZmEdzpMulc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h7bvmDJKC/KLr4wErTlMsyAfKeEyGqSN6gQTzua8c952ikB5zzidLyuqZj/TmEacs
-         y0YqIAKrwnY7a2hNH1aCH5UuWsRK3+1SOs/aH/NXsIA7MJy9fDzCmfK+sun84KWgX+
-         sywl+KZvKaya4FjMpVwt6+yvpC3l68VBJp11/y3VLGMxzojyzM0KR6LDs05abIasap
-         UN1GWUHQpLTOh8bSLc92ByJyQ3ejdBHgFfb3lD8f/sF3BryDEsMrZAVgH7XTQu5TN4
-         ymmZSQTxVGkaaV0g1kdEbkROA2OYHVmxI92OptcZPPM25ICEcvkcUufskkBr+GBBt4
-         EP48qKEq6heJw==
-Date:   Mon, 14 Feb 2022 15:55:31 -0500
-From:   Alyssa Rosenzweig <alyssa@collabora.com>
-To:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-Cc:     dri-devel@lists.freedesktop.org, Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Steven Price <steven.price@arm.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: Re: [PATCH] drm/panfrost: Dynamically allocate pm_domains
-Message-ID: <YgrBwwT37DpOOkt5@maud>
-References: <20220214203132.4722-1-alyssa.rosenzweig@collabora.com>
+Received: from terra.local.svanheule.net (104.153-136-217.adsl-dyn.isp.belgacom.be [217.136.153.104])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id A555A2A25FA;
+        Mon, 14 Feb 2022 19:57:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1644865026;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+86Lva2nWXdctV7renNiPdMAVhU1O2KM95YNgJd594E=;
+        b=eOC++pB2oI/36x0RFPblsMEWhenygKKH7fBA/mDP3V7yTUMQZUX3CbpJwuZEfr5WhglQTF
+        FNSJjmIxDFa7/kmOSXBLwLKu06K2gs6sa/tUJQuPr/cGEQrLXKsGrlLfJ8EYsrLijZIkDE
+        9DZK+OBDnJvFMx5Ro/aaGumdb+EQMJI+OiUd1oUj5BRo/DWafP4q7o8aTM2ejh/6OS+/w7
+        JW5VqdDik5TjKlc5ATsVYqXEv2Qboo39h0FwYK4K1DpxhG98RyzIO4PC6wtYi22qCLL/Gm
+        RUIExlTKvzMFnEWkoHIqhBsHuo8HTCrrbpUrSu0V6I+SEvnyOFWuBfDcsILTkA==
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
+        Sander Vanheule <sander@svanheule.net>
+Subject: [PATCH v5 1/4] irqchip/realtek-rtl: use irq_domain_add_linear
+Date:   Mon, 14 Feb 2022 19:56:58 +0100
+Message-Id: <e4d352e0f8b4aa7fba958c6e07101ef7ee7ade6d.1644864700.git.sander@svanheule.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1644864700.git.sander@svanheule.net>
+References: <cover.1644864700.git.sander@svanheule.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214203132.4722-1-alyssa.rosenzweig@collabora.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mali_kbase hardcodes MAX_PM_DOMAINS (=5 for the mt8192 kernel). I have
-no real objection to it but Angelo did. Maybe should've marked this RFC.
+When using an offset of 0, irq_domain_add_simple is identical to
+irq_domain_add_linear on DT-based systems, so use the latter instead.
 
-On Mon, Feb 14, 2022 at 03:31:32PM -0500, Alyssa Rosenzweig wrote:
-> MT8192 requires 5 power domains. Rather than bump MAX_PM_DOMAINS and
-> waste memory on every supported Panfrost chip, instead dynamically
-> allocate pm_domain_devs and pm_domain_links. This adds some flexibility;
-> it seems inevitable a new MediaTek device will require more than 5
-> domains.
-> 
-> On non-MediaTek devices, this saves a small amount of memory.
-> 
-> Suggested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-> ---
->  drivers/gpu/drm/panfrost/panfrost_device.c | 14 ++++++++++----
->  drivers/gpu/drm/panfrost/panfrost_device.h |  5 ++---
->  2 files changed, 12 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
-> index ee612303f076..661cdec320af 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_device.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_device.c
-> @@ -127,7 +127,10 @@ static void panfrost_pm_domain_fini(struct panfrost_device *pfdev)
->  {
->  	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(pfdev->pm_domain_devs); i++) {
-> +	if (!pfdev->pm_domain_devs || !pfdev->pm_domain_links)
-> +		return;
-> +
-> +	for (i = 0; i < pfdev->comp->num_pm_domains; i++) {
->  		if (!pfdev->pm_domain_devs[i])
->  			break;
->  
-> @@ -161,9 +164,12 @@ static int panfrost_pm_domain_init(struct panfrost_device *pfdev)
->  		return -EINVAL;
->  	}
->  
-> -	if (WARN(num_domains > ARRAY_SIZE(pfdev->pm_domain_devs),
-> -			"Too many supplies in compatible structure.\n"))
-> -		return -EINVAL;
-> +	pfdev->pm_domain_devs = devm_kcalloc(pfdev->dev, num_domains,
-> +					     sizeof(*pfdev->pm_domain_devs),
-> +					     GFP_KERNEL);
-> +	pfdev->pm_domain_links = devm_kcalloc(pfdev->dev, num_domains,
-> +					      sizeof(*pfdev->pm_domain_links),
-> +					      GFP_KERNEL);
->  
->  	for (i = 0; i < num_domains; i++) {
->  		pfdev->pm_domain_devs[i] =
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
-> index 8b25278f34c8..98e3039696f9 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_device.h
-> +++ b/drivers/gpu/drm/panfrost/panfrost_device.h
-> @@ -22,7 +22,6 @@ struct panfrost_job;
->  struct panfrost_perfcnt;
->  
->  #define NUM_JOB_SLOTS 3
-> -#define MAX_PM_DOMAINS 3
->  
->  struct panfrost_features {
->  	u16 id;
-> @@ -87,8 +86,8 @@ struct panfrost_device {
->  	struct regulator_bulk_data *regulators;
->  	struct reset_control *rstc;
->  	/* pm_domains for devices with more than one. */
-> -	struct device *pm_domain_devs[MAX_PM_DOMAINS];
-> -	struct device_link *pm_domain_links[MAX_PM_DOMAINS];
-> +	struct device **pm_domain_devs;
-> +	struct device_link **pm_domain_links;
->  	bool coherent;
->  
->  	struct panfrost_features features;
-> -- 
-> 2.34.1
-> 
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+---
+ drivers/irqchip/irq-realtek-rtl.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 50a56820c99b..14e049eed0f2 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -171,8 +171,7 @@ static int __init realtek_rtl_of_init(struct device_node *node, struct device_no
+ 	/* Disable all cascaded interrupts */
+ 	writel(0, REG(RTL_ICTL_GIMR));
+ 
+-	domain = irq_domain_add_simple(node, 32, 0,
+-				       &irq_domain_ops, NULL);
++	domain = irq_domain_add_linear(node, 32, &irq_domain_ops, NULL);
+ 
+ 	ret = map_interrupts(node, domain);
+ 	if (ret) {
+-- 
+2.35.1
+
