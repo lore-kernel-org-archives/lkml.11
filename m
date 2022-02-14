@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E15C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C15C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244935AbiBNJnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34086 "EHLO
+        id S244730AbiBNJnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245227AbiBNJlN (ORCPT
+        with ESMTP id S245299AbiBNJlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2674E652E7;
-        Mon, 14 Feb 2022 01:37:16 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ED2652FE;
+        Mon, 14 Feb 2022 01:37:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D082AB80DCD;
-        Mon, 14 Feb 2022 09:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECA5DC340E9;
-        Mon, 14 Feb 2022 09:37:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A38B7B80DCC;
+        Mon, 14 Feb 2022 09:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2D8C340E9;
+        Mon, 14 Feb 2022 09:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831433;
-        bh=m//ix3XPBPrvcEFkN+P3oNvi1ozebqHaRfxVNaNA0N8=;
+        s=korg; t=1644831436;
+        bh=wDqnvc6CLUgfoEy20HXPoeHFbVA62YBNGu44nsE+AWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u90AJFWu1kNruLfyUV1uDt3RmkbMX+RymZ+hfQfp/x5FUlhLodvScKSX0m13XHP+K
-         78jx3DFl7xh1fwDPIu6myt9cS8qfGIo3D9QErxouwMCI4uuTW1SVYQlUJFZsw88GqJ
-         4DFJdJJY8WwPe2fBcU/em/VKqCYmf6JoBXAaksqk=
+        b=OHBy7WCJhS/wCGxImxuLoeAAhCtPcEU6tjtG/YWeZrVGXRRvagqbnGMXdIGh90xA/
+         g3Ii57gzZIc5mxG0N7mLSMxhjtyTgllcBV8PJPUtK/D0qDn6VVqQ9I0mq9/unOvOqI
+         QD/iW810+4/MnUzaLojut5fBt0Ox9vpxYKh5QDjM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 35/71] ARM: dts: meson: Fix the UART compatible strings
-Date:   Mon, 14 Feb 2022 10:26:03 +0100
-Message-Id: <20220214092453.207005977@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jonas Malaco <jonas@protocubo.io>
+Subject: [PATCH 5.4 53/71] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
+Date:   Mon, 14 Feb 2022 10:26:21 +0100
+Message-Id: <20220214092453.828207928@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -50,69 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Jonas Malaco <jonas@protocubo.io>
 
-[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
+commit c0689e46be23160d925dca95dfc411f1a0462708 upstream.
 
-The dt-bindings for the UART controller only allow the following values
-for Meson6 SoCs:
-- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson6-uart"
+Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
+size") revealed that ee1004_eeprom_read() did not properly limit how
+many bytes to read at once.
 
-Use the correct fallback compatible string "amlogic,meson-ao-uart" for
-AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
-domain UART controllers.
+In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
+length to read as an u8.  If count == 256 after taking into account the
+offset and page boundary, the cast to u8 overflows.  And this is common
+when user space tries to read the entire EEPROM at once.
 
-Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
+the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
+
+Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
+Cc: stable@vger.kernel.org
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Jonas Malaco <jonas@protocubo.io>
+Link: https://lore.kernel.org/r/20220203165024.47767-1-jonas@protocubo.io
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/meson.dtsi | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/misc/eeprom/ee1004.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
-index c4447f6c8b2cb..e141ce7484841 100644
---- a/arch/arm/boot/dts/meson.dtsi
-+++ b/arch/arm/boot/dts/meson.dtsi
-@@ -49,14 +49,14 @@ hwrng: rng@8100 {
- 			};
+--- a/drivers/misc/eeprom/ee1004.c
++++ b/drivers/misc/eeprom/ee1004.c
+@@ -82,6 +82,9 @@ static ssize_t ee1004_eeprom_read(struct
+ 	if (unlikely(offset + count > EE1004_PAGE_SIZE))
+ 		count = EE1004_PAGE_SIZE - offset;
  
- 			uart_A: serial@84c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84c0 0x18>;
- 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
- 			};
- 
- 			uart_B: serial@84dc {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x84dc 0x18>;
- 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -94,7 +94,7 @@ saradc: adc@8680 {
- 			};
- 
- 			uart_C: serial@8700 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart";
- 				reg = <0x8700 0x18>;
- 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
-@@ -196,7 +196,7 @@ ir_receiver: ir-receiver@480 {
- 			};
- 
- 			uart_AO: serial@4c0 {
--				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
-+				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
- 				reg = <0x4c0 0x18>;
- 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
- 				status = "disabled";
--- 
-2.34.1
-
++	if (count > I2C_SMBUS_BLOCK_MAX)
++		count = I2C_SMBUS_BLOCK_MAX;
++
+ 	status = i2c_smbus_read_i2c_block_data_or_emulated(client, offset,
+ 							   count, buf);
+ 	dev_dbg(&client->dev, "read %zu@%d --> %d\n", count, offset, status);
 
 
