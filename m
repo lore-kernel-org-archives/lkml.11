@@ -2,80 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C60C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06179C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351857AbiBNLxj convert rfc822-to-8bit (ORCPT
+        id S1351931AbiBNLyL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:53:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55076 "EHLO
+        Mon, 14 Feb 2022 06:54:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242465AbiBNLxf (ORCPT
+        with ESMTP id S244236AbiBNLyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:53:35 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26ED8C35;
-        Mon, 14 Feb 2022 03:53:28 -0800 (PST)
-Date:   Mon, 14 Feb 2022 11:52:58 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2 1/2] dts: x1000: Fix missing TCU clock in tcu device
- node
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     robh+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-        linux-mips@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <ACMA7R.XSUTVF0NI87S3@crapouillou.net>
-In-Reply-To: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
-References: <20220212150927.39513-1-aidanmacdonald.0x0@gmail.com>
+        Mon, 14 Feb 2022 06:54:07 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7382CC35
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:54:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644839640; x=1676375640;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=78NBjTW1Usi2nU8xVnJBMuVMyBmU+wkZ71QX/Ue0630=;
+  b=MsB0pwev7lKx4T308RNkRCu7iIombQAeqqrzgBzX1eGWwQT6BX9JZuNr
+   /HsIWsBpFpZEqzHl5aztyYyxgkKYLi7cjn+pdJVghCDqMTjOx/4Oumo+3
+   oH6qvXJcS980EbQQ8LpSy6UEI48HZ5pCC9mjkOdFR63Yy/DA3tF4VV/nS
+   4HAyosiiNTX5s01D5j4sxdEkGel3EdOtvVMIuXiGYFtRyFqN9sJSVK1ZB
+   Mw0qC9UOFxRHz3bNoREfzB535bA4EE7o8DP1gJPYpKk25sfURi45hefBR
+   8T6f0zxXfKVp6vhsOwW6kq4YYk275fU+pIIVeM1pL6atFGFz2DCrWQ0g5
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="310811907"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="310811907"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:54:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="775107823"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 14 Feb 2022 03:53:58 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJZva-0008Tt-4t; Mon, 14 Feb 2022 11:53:58 +0000
+Date:   Mon, 14 Feb 2022 19:53:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liu Yi L <yi.l.liu@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [luxis1999-iommufd:iommufd-v5.17-rc1 29/29]
+ drivers/iommu/iommufd/pages.c:482:2: error: implicit declaration of function
+ 'kunmap_atomic'
+Message-ID: <202202141921.KB6IvVIV-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc1
+head:   0afc8638a638ddb14a59876ee72e869b770f4c02
+commit: 0afc8638a638ddb14a59876ee72e869b770f4c02 [29/29] iommufd: Add device mmio map support
+config: i386-randconfig-a015 (https://download.01.org/0day-ci/archive/20220214/202202141921.KB6IvVIV-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/luxis1999/iommufd/commit/0afc8638a638ddb14a59876ee72e869b770f4c02
+        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
+        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc1
+        git checkout 0afc8638a638ddb14a59876ee72e869b770f4c02
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/iommu/iommufd/
 
-Le sam., févr. 12 2022 at 15:09:27 +0000, Aidan MacDonald 
-<aidanmacdonald.0x0@gmail.com> a écrit :
-> This should've been present all along, but was omitted due to
-> a mistake in the TCU driver.
-> 
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+All errors (new ones prefixed by >>):
 
-Cheers,
--Paul
+>> drivers/iommu/iommufd/pages.c:482:2: error: implicit declaration of function 'kunmap_atomic' [-Werror,-Wimplicit-function-declaration]
+           pte_unmap_unlock(ptep, ptl);
+           ^
+   include/linux/mm.h:2345:2: note: expanded from macro 'pte_unmap_unlock'
+           pte_unmap(pte);                                 \
+           ^
+   include/linux/pgtable.h:99:24: note: expanded from macro 'pte_unmap'
+   #define pte_unmap(pte) kunmap_atomic((pte))
+                          ^
+   1 error generated.
 
-> ---
-> v1 -> v2: 
-> https://lore.kernel.org/linux-mips/20220209230145.18943-1-aidanmacdonald.0x0@gmail.com/
-> 
->  * Split DTS changes to separate patch.
-> 
->  arch/mips/boot/dts/ingenic/x1000.dtsi | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/mips/boot/dts/ingenic/x1000.dtsi 
-> b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> index 8bd27edef216..c69df8eb158e 100644
-> --- a/arch/mips/boot/dts/ingenic/x1000.dtsi
-> +++ b/arch/mips/boot/dts/ingenic/x1000.dtsi
-> @@ -111,8 +111,9 @@ tcu: timer@10002000 {
-> 
->  		clocks = <&cgu X1000_CLK_RTCLK>,
->  			 <&cgu X1000_CLK_EXCLK>,
-> -			 <&cgu X1000_CLK_PCLK>;
-> -		clock-names = "rtc", "ext", "pclk";
-> +			 <&cgu X1000_CLK_PCLK>,
-> +			 <&cgu X1000_CLK_TCU>;
-> +		clock-names = "rtc", "ext", "pclk", "tcu";
-> 
->  		interrupt-controller;
->  		#interrupt-cells = <1>;
-> --
-> 2.34.1
-> 
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for IOMMUFD
+   Depends on IOMMU_SUPPORT
+   Selected by
+   - VFIO_PCI_CORE && VFIO && PCI && MMU
 
 
+vim +/kunmap_atomic +482 drivers/iommu/iommufd/pages.c
+
+   449	
+   450	static int follow_fault_pfn(struct vm_area_struct *vma, struct mm_struct *mm,
+   451				    unsigned long vaddr, unsigned long *pfn,
+   452				    bool write_fault)
+   453	{
+   454		pte_t *ptep;
+   455		spinlock_t *ptl;
+   456		int ret;
+   457	
+   458		ret = follow_pte(vma->vm_mm, vaddr, &ptep, &ptl);
+   459		if (ret) {
+   460			bool unlocked = false;
+   461	
+   462			ret = fixup_user_fault(mm, vaddr,
+   463					       FAULT_FLAG_REMOTE |
+   464					       (write_fault ?  FAULT_FLAG_WRITE : 0),
+   465					       &unlocked);
+   466			if (unlocked)
+   467				return -EAGAIN;
+   468	
+   469			if (ret)
+   470				return ret;
+   471	
+   472			ret = follow_pte(vma->vm_mm, vaddr, &ptep, &ptl);
+   473			if (ret)
+   474				return ret;
+   475		}
+   476	
+   477		if (write_fault && !pte_write(*ptep))
+   478			ret = -EFAULT;
+   479		else
+   480			*pfn = pte_pfn(*ptep);
+   481	
+ > 482		pte_unmap_unlock(ptep, ptl);
+   483		return ret;
+   484	}
+   485	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
