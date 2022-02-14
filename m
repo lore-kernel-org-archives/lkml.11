@@ -2,159 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B433C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:53:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D770C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiBNUxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:53:23 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54578 "EHLO
+        id S229975AbiBNUx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:53:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229893AbiBNUxP (ORCPT
+        with ESMTP id S229959AbiBNUxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:53:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC33192F32;
-        Mon, 14 Feb 2022 12:52:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 14 Feb 2022 15:53:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D091AE71
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:52:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644871801;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PnSI6GRwhiLVduAgjDq1s+p9mRa4u96HTUbVgulW5N0=;
+        b=BouVRxr6iDtRCT7seyQUHUbw1bkK0nWe39t08pPrHUyF4vOwQ9RlfORZinxWvR+pMdYSPx
+        EN3m7T4M+fMQskPkIFVZmGF3T9ZC/5S4+14ucK95+zgY2i0yOOPnxwH89FlkhA/9aHQu0s
+        rO8+UkPwxYsoKkZDiAal86qJhWSIFN4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-99-avBPzm4xMHOX4_tl_TEC2Q-1; Mon, 14 Feb 2022 15:08:11 -0500
+X-MC-Unique: avBPzm4xMHOX4_tl_TEC2Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55B22B81676;
-        Mon, 14 Feb 2022 19:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE8CCC340E9;
-        Mon, 14 Feb 2022 19:45:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644867955;
-        bh=4cKu19CUQjjP0ctay0xc/Jduy9kkgqnkY9pQd62QArE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KCADrosyMNCwkao6AFfBCZhGg4c1Z/2yQdqXzDh5BumNhXkVnuZCl8ehECJRTJk/+
-         ZcArc0VlJNrY3IeqrlMNjDFUJGHkagJzqlboUR5+Fwg1ZoufMIudgaqFmJJM8TloYN
-         mbA7mgLfynKiiseJYURbmghxWDmeBDlWGD8M0KQs/dI3Zx29o1+Nepg8aLYPMvYJ4m
-         V/gq+0AsGrHYQMklCBGeGpRJ5zcG5A90o1gSuNA6kT/x/lOpm0aZFx+bQx3RhrO0wI
-         VKbRgHQzyemnleetBAHLbzJEyq8J/BFlubmyau4VHqxRPj0vGjz7+SnPiwFQd7W/KY
-         kPrUG3q862C8g==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id F0CF6400FE; Mon, 14 Feb 2022 16:45:51 -0300 (-03)
-Date:   Mon, 14 Feb 2022 16:45:51 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
-        Song Liu <song@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Stephen Brennan <stephen.s.brennan@oracle.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        German Gomez <german.gomez@arm.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Hao Luo <haoluo@google.com>, eranian@google.com
-Subject: Re: [PATCH v3 05/22] perf maps: Use a pointer for kmaps
-Message-ID: <Ygqxb4R5arsW2yiD@kernel.org>
-References: <20220211103415.2737789-1-irogers@google.com>
- <20220211103415.2737789-6-irogers@google.com>
- <Ygabd1q3G1x19LU3@kernel.org>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 015781091DA1;
+        Mon, 14 Feb 2022 20:08:10 +0000 (UTC)
+Received: from [10.22.12.21] (unknown [10.22.12.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 81B20452E2;
+        Mon, 14 Feb 2022 20:08:09 +0000 (UTC)
+Message-ID: <0b497f83-3a05-623e-e336-3efc5df59fa5@redhat.com>
+Date:   Mon, 14 Feb 2022 15:08:09 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ygabd1q3G1x19LU3@kernel.org>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 1/2] locking/lockdep: Cleanup reinit_class()
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, Will Deacon <will.deacon@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org
+References: <20220211035526.1329503-1-longman@redhat.com>
+ <Ygo8HNXGNq6X4Jov@hirez.programming.kicks-ass.net>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <Ygo8HNXGNq6X4Jov@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Fri, Feb 11, 2022 at 02:23:03PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Fri, Feb 11, 2022 at 02:33:58AM -0800, Ian Rogers escreveu:
-> > struct maps is reference counted, using a pointer is more idiomatic.
-> 
-> So, I tried to apply this after adding this to the cset comming log to
-> make sure reviewers know that this is just a clarifying comming, no code
-> change:
-> 
-> Committer notes:
-> 
-> Definition of machine__kernel_maps(machine), the replacement of &machine->kmaps
-> 
-> static inline
-> struct maps *machine__kernel_maps(struct machine *machine)
-> {
->         return machine->kmaps;
-> }
-> 
-> but then when building on a f34 system I got:
-> 
->   CC      /tmp/build/perf/bench/inject-buildid.o
-> In file included from /var/home/acme/git/perf/tools/perf/util/build-id.h:10,
->                  from /var/home/acme/git/perf/tools/perf/util/dso.h:13,
->                  from tests/vmlinux-kallsyms.c:8:
-> In function ‘machine__kernel_maps’,
->     inlined from ‘test__vmlinux_matches_kallsyms’ at tests/vmlinux-kallsyms.c:122:22:
-> /var/home/acme/git/perf/tools/perf/util/machine.h:86:23: error: ‘vmlinux.kmaps’ is used uninitialized [-Werror=uninitialized]
->    86 |         return machine->kmaps;
->       |                ~~~~~~~^~~~~~~
-> tests/vmlinux-kallsyms.c: In function ‘test__vmlinux_matches_kallsyms’:
-> tests/vmlinux-kallsyms.c:121:34: note: ‘vmlinux’ declared here
->   121 |         struct machine kallsyms, vmlinux;
->       |                                  ^~~~~~~
-> cc1: all warnings being treated as errors
-> make[4]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:96: /tmp/build/perf/tests/vmlinux-kallsyms.o] Error 1
-> make[4]: *** Waiting for unfinished jobs....
->   CC      /tmp/build/perf/util/config.o
->   CC      /tmp/build/perf/arch/x86/util/archinsn.o
->   CC      /tmp/build/perf/arch/x86/util/intel-pt.o
->   CC      /tmp/build/perf/arch/x86/util/intel-bts.o
->   CC      /tmp/build/perf/util/db-export.o
->   CC      /tmp/build/perf/util/event.o
-> make[3]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:139: tests] Error 2
-> make[3]: *** Waiting for unfinished jobs....
-> 
-> Can you please  take a look at that?
+On 2/14/22 06:25, Peter Zijlstra wrote:
+> On Thu, Feb 10, 2022 at 10:55:25PM -0500, Waiman Long wrote:
+>> Replace the duplicated WARN_ON_ONCE() tests in reinit_class() with
+>> BUILD_BUG_ON().
+>>
+>> Signed-off-by: Waiman Long <longman@redhat.com>
+>> ---
+>>   include/linux/lockdep_types.h | 4 ++++
+>>   kernel/locking/lockdep.c      | 6 +++---
+>>   2 files changed, 7 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/linux/lockdep_types.h b/include/linux/lockdep_types.h
+>> index d22430840b53..446d981ae3a2 100644
+>> --- a/include/linux/lockdep_types.h
+>> +++ b/include/linux/lockdep_types.h
+>> @@ -108,6 +108,10 @@ struct lock_class {
+>>   	 */
+>>   	struct list_head		locks_after, locks_before;
+>>   
+>> +	/*
+>> +	 * All the fields that require re-initialization after being zapped
+>> +	 * must be put after "key".
+>> +	 */
+>>   	const struct lockdep_subclass_key *key;
+>>   	unsigned int			subclass;
+>>   	unsigned int			dep_gen_id;
+>> diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+>> index d4252b5c9863..77bbe557d48b 100644
+>> --- a/kernel/locking/lockdep.c
+>> +++ b/kernel/locking/lockdep.c
+>> @@ -6015,10 +6015,10 @@ static void reinit_class(struct lock_class *class)
+>>   	WARN_ON_ONCE(!class->lock_entry.next);
+>>   	WARN_ON_ONCE(!list_empty(&class->locks_after));
+>>   	WARN_ON_ONCE(!list_empty(&class->locks_before));
+>> +	BUILD_BUG_ON(offsetof(struct lock_class, lock_entry) > offset);
+>> +	BUILD_BUG_ON(offsetof(struct lock_class, locks_after) > offset);
+>> +	BUILD_BUG_ON(offsetof(struct lock_class, locks_before) > offset);
+>>   	memset(p + offset, 0, sizeof(*class) - offset);
+>> -	WARN_ON_ONCE(!class->lock_entry.next);
+>> -	WARN_ON_ONCE(!list_empty(&class->locks_after));
+>> -	WARN_ON_ONCE(!list_empty(&class->locks_before));
+>>   }
+>>   
+>>   static inline int within(const void *addr, void *start, unsigned long size)
+>> -- 
+>> 2.27.0
+>>
+> Yeah, except that this doesn't build because it conflicts with a
+> previous patch you actually Acked:
+>
+>   https://lore.kernel.org/all/20211213132618.105737-1-xiujianfeng@huawei.com/T/#m0e9474a9204ec29fb2135135ce3134640a3f27b5
+>
+Sorry, my bad. I forgot to check tip.
 
-I'm applying this on top:
+I have just sent out a v2 that will work on tip.
 
-diff --git a/tools/perf/tests/vmlinux-kallsyms.c b/tools/perf/tests/vmlinux-kallsyms.c
-index 84bf5f64006560f5..93dee542a177ed1d 100644
---- a/tools/perf/tests/vmlinux-kallsyms.c
-+++ b/tools/perf/tests/vmlinux-kallsyms.c
-@@ -119,7 +119,7 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
- 	struct symbol *sym;
- 	struct map *kallsyms_map, *vmlinux_map, *map;
- 	struct machine kallsyms, vmlinux;
--	struct maps *maps = machine__kernel_maps(&vmlinux);
-+	struct maps *maps;
- 	u64 mem_start, mem_end;
- 	bool header_printed;
- 
-@@ -132,6 +132,8 @@ static int test__vmlinux_matches_kallsyms(struct test_suite *test __maybe_unused
- 	machine__init(&kallsyms, "", HOST_KERNEL_ID);
- 	machine__init(&vmlinux, "", HOST_KERNEL_ID);
- 
-+	maps = machine__kernel_maps(&vmlinux);
-+
- 	/*
- 	 * Step 2:
- 	 *
+Cheers,
+Longman
+
