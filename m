@@ -2,130 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E67AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E32C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiBNTWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:22:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:40272 "EHLO
+        id S229545AbiBNTer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 14:34:47 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:50104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBNTWZ (ORCPT
+        with ESMTP id S229450AbiBNTeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:22:25 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33167C3C29
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:22:09 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id i6so29013913pfc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:22:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C9OZ9lkGBew1Fln2B2Xqa8Kc+RoaWdl8qu2n91DF9/U=;
-        b=hhAaz3l9bpuzcy32r4CyqqTbSACA3Q838DbOiDNTEimvdn8BCLkdNr5gnKXUFnJA7E
-         WmlJkWt/Gm3KpnNgwkQHy8JyfGSWEXnJGwj6vfBo96JaceCoTkZgVftIge0tWeTqGcjP
-         c1toamzvFbePA4yVzR5Ka5wvYFth+A+Bh5Nr5voXoUfi7JBKhWgJr2tW8kyH0BU5dFAb
-         ozo9YHny4JiQx2Sn22gBZk6SrhOQ3WuzssXT5AW5gzsyWgUXmpeRU/nwqXHLONv0/i+o
-         KYdQSKcXoipUtNscRkraqPirqIY/70J88Ph5+LJ75B/tD9KWO2b9Hc4U5vU9ufAlpcKI
-         AAvQ==
+        Mon, 14 Feb 2022 14:34:46 -0500
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CDAF68CE;
+        Mon, 14 Feb 2022 11:34:30 -0800 (PST)
+Received: by mail-pf1-f177.google.com with SMTP id i6so29065373pfc.9;
+        Mon, 14 Feb 2022 11:34:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=C9OZ9lkGBew1Fln2B2Xqa8Kc+RoaWdl8qu2n91DF9/U=;
-        b=WzMwJ8l1fdpZvYcxJ8OG/eoxDUwkKRxuCP0NmHAqQ8XCkbMeY3l6hNEMymClFbHWGp
-         Rz+E8tFIXA/rMaL3TPj16WfEznMeI9VEzHd72eTOhBpVX1OuqN3URwE4JwvFWRUX5ii1
-         ARy7/zMGQv7MZn5QL/NoJNjzR3t4MiNjBdjJmtfqFdW76izvSJarDcRW4qNJSa1U3rpA
-         tI4QV2phTQRgnbD8dEMaC8ZkXae5bq6ziwwT5CR3rT6NL+UTryU1cAPz1MyCY1kWJdkE
-         CUtlZaDGkomXZs8cYCN0JI2akeT+aNZ/1U2L8JG/vrkM1r8d1UQQTzFzUNckuAEWN/7v
-         J96A==
-X-Gm-Message-State: AOAM531UZm879XkuECC4Gs2+Qt1qpp08lPJGTSdotKPn5XX9zVEz0nym
-        RsxLXEdVlzEBRRLC3Dgo0xw=
-X-Google-Smtp-Source: ABdhPJxizpu7aO8fhZ4pszeLACJjumFlOfT1nPVUPLYHDgNJCYesNvG3Zr6w8dyny4yeBWRt+Y8Llw==
-X-Received: by 2002:a63:864a:: with SMTP id x71mr439600pgd.272.1644866234650;
-        Mon, 14 Feb 2022 11:17:14 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id q12sm39114023pfk.199.2022.02.14.11.17.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:17:14 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 14 Feb 2022 09:17:12 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Borislav Petkov <bp@suse.de>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        zhangqiao22@huawei.com, dietmar.eggemann@arm.com
-Subject: Re: [GIT PULL] sched/urgent for 5.17-rc4
-Message-ID: <YgqquDnQe3SihgJU@slm.duckdns.org>
-References: <Ygj7feK+vdtPw6zj@zn.tnic>
- <CAHk-=wiHUWHHcPLCvyXQKf2wbL3L1SOQSGVuCdf-py6QZGnuqQ@mail.gmail.com>
- <YgoWoh6pIzlsQx6d@hirez.programming.kicks-ass.net>
- <YgoeCbwj5mbCR0qA@hirez.programming.kicks-ass.net>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5ExIxNXqqgrHdK1kZ6JH/FGJOcN5wTaLxWYB94zLwWk=;
+        b=3EU9LG1Kf21MXyLc4NsFZzmoEaRNN+UQNVNO5q6K8WbzKRdolHiLMxdJYZW/QScvhl
+         9yo58tdnOMNH4lnBKag3zysL9g+uoeqXDeXTzVzxvKCCxxXIBOE28nDW10VuSMRXGT6g
+         3jwarwuAGQ5WgqMx+enpzdZY7IhEj08NQVBtiAWDw5BxwX4EWSphPs+AaG/8/YcV+BQN
+         qTlqq1lXBhJCW7blE4ZrrEXUz1xbUMHpXtNTQ6ZAg1kk0l7Lb2JUaImGw+gym1KFY++k
+         8lJgAfQkqbq3VZ40JGaXEzqZPbB3V865Ji6gkgiFPNIn52KZhjpSrwxB1OAOUR+MHZHv
+         9Ipg==
+X-Gm-Message-State: AOAM5339661mxmCErrLjjiD6NGjS0dzyXLL+Xlzj/o1eeBlo+lkyOvRp
+        WO6bKPDMB/Nu1PbkcyqxuLg=
+X-Google-Smtp-Source: ABdhPJzgNkJZP+2jVtDP/65BE7x2NnucJrnDd0NwGpVjygZ6+cfDZW7L5nveVzjW6B9J57IdJLVrNQ==
+X-Received: by 2002:a05:6a00:1828:: with SMTP id y40mr176402pfa.15.1644866952957;
+        Mon, 14 Feb 2022 11:29:12 -0800 (PST)
+Received: from ?IPV6:2600:1010:b05a:bf8:cd06:5464:d61e:f6b4? ([2600:1010:b05a:bf8:cd06:5464:d61e:f6b4])
+        by smtp.gmail.com with ESMTPSA id o125sm2883479pfb.116.2022.02.14.11.29.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 11:29:12 -0800 (PST)
+Message-ID: <62a5170b-48c0-a372-5392-08f5112d7a06@acm.org>
+Date:   Mon, 14 Feb 2022 11:29:08 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgoeCbwj5mbCR0qA@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1] scsi: ufs: remove clk_scaling_lock when clkscaling
+ isn't supported.
+Content-Language: en-US
+To:     Kiwoong Kim <kwmad.kim@samsung.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alim.akhtar@samsung.com,
+        avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        cang@codeaurora.org, adrian.hunter@intel.com, sc.suh@samsung.com,
+        hy50.seo@samsung.com, sh425.lee@samsung.com,
+        bhoon95.kim@samsung.com, vkumar.1997@samsung.com
+References: <CGME20220205074128epcas2p40901c37a7328e825d8697f8d3269edba@epcas2p4.samsung.com>
+ <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <1644046760-83345-1-git-send-email-kwmad.kim@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello, Peter.
+On 2/4/22 23:39, Kiwoong Kim wrote:
+> clk_scaling_lock is to prevent from running clkscaling related operations
+> with others which might be affected by the operations concurrently.
+> I think it looks hardware specific.
+> If the feature isn't supported, I think there is no reasonto prevent from
+> running other functions, such as ufshcd_queuecommand and
+> ufshcd_exec_dev_cmd, concurrently.
+> 
+> So I add a condition at some points protecting with clk_scaling_lock.
+> 
+> Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+> ---
+>   drivers/scsi/ufs/ufshcd.c | 21 ++++++++++++++-------
+>   1 file changed, 14 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+> index 460d2b4..8471c90 100644
+> --- a/drivers/scsi/ufs/ufshcd.c
+> +++ b/drivers/scsi/ufs/ufshcd.c
+> @@ -2980,7 +2980,8 @@ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
+>   	/* Protects use of hba->reserved_slot. */
+>   	lockdep_assert_held(&hba->dev_cmd.lock);
+>   
+> -	down_read(&hba->clk_scaling_lock);
+> +	if (ufshcd_is_clkscaling_supported(hba))
+> +		down_read(&hba->clk_scaling_lock);
+>   
+>   	lrbp = &hba->lrb[tag];
+>   	WARN_ON(lrbp->cmd);
 
-On Mon, Feb 14, 2022 at 10:16:57AM +0100, Peter Zijlstra wrote:
-> diff --git a/kernel/fork.c b/kernel/fork.c
-> index d75a528f7b21..05faebafe2b5 100644
-> --- a/kernel/fork.c
-> +++ b/kernel/fork.c
-> @@ -2266,6 +2266,13 @@ static __latent_entropy struct task_struct *copy_process(
->  	if (retval)
->  		goto bad_fork_put_pidfd;
->  
-> +	/*
-> +	 * Now that the cgroups are pinned, re-clone the parent cgroup and put
-> +	 * the new task on the correct runqueue. All this *before* the task
-> +	 * becomes visible.
-> +	 */
-> +	sched_cgroup_fork(p, args);
+I don't like this patch at all. This patch makes testing the UFS driver 
+more complicated without having any clear benefit. Additionally, adding 
+if-statements in front of locking makes static source code analysis 
+harder and is an anti-pattern. Please don't do this.
 
-Would it be less confusing to comment that this isn't ->can_fork() because
-scheduler task_group needs to be initialized for autogroup even when cgroup
-is disabled and maybe name it sched_cgroup_can_fork() even if it always
-succeeds?
-
-> +void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs)
->  {
->  	unsigned long flags;
-> -#ifdef CONFIG_CGROUP_SCHED
-> -	struct task_group *tg;
-> -#endif
->  
-> +	/*
-> +	 * Because we're not yet on the pid-hash, p->pi_lock isn't strictly
-> +	 * required yet, but lockdep gets upset if rules are violated.
-> +	 */
->  	raw_spin_lock_irqsave(&p->pi_lock, flags);
->  #ifdef CONFIG_CGROUP_SCHED
-> -	tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
-> -			  struct task_group, css);
-> -	p->sched_task_group = autogroup_task_group(p, tg);
-> +	if (1) {
-> +		struct task_group *tg;
-> +		tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
-> +				  struct task_group, css);
-> +		tg = autogroup_task_group(p, tg);
-> +		p->sched_task_group = autogroup_task_group(p, tg);
-> +	}
-
-I suppose the double autogroup_task_group() call is unintentional?
-
-Otherwise, looks good to me. The only requirement from cgroup side is that
-the membership should be initialized between ->can_fork() and ->fork()
-inclusively, and sans autogroup this would have been done as a part of
-->can_fork() so the proposed change makes sense to me.
-
-Thanks.
-
--- 
-tejun
+Bart.
