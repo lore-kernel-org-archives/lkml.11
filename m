@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F52C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237161AbiBNKWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:22:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49688 "EHLO
+        id S235978AbiBNKWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:22:39 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346753AbiBNKUl (ORCPT
+        with ESMTP id S1347242AbiBNKVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:20:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057137C7B5;
-        Mon, 14 Feb 2022 01:55:15 -0800 (PST)
+        Mon, 14 Feb 2022 05:21:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034326E367;
+        Mon, 14 Feb 2022 01:55:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60DC0B80DC8;
-        Mon, 14 Feb 2022 09:55:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A595C340E9;
-        Mon, 14 Feb 2022 09:55:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54D026128D;
+        Mon, 14 Feb 2022 09:55:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A201C340E9;
+        Mon, 14 Feb 2022 09:55:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832511;
-        bh=QtDiWEcSmKNrDcBtsN8v0rSVjLkbZyrSSGtXPtH3eQQ=;
+        s=korg; t=1644832532;
+        bh=0SfkfVxXg/rLEx5QSx9ET6CL2EpylA2wl8N0n1dSK6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e/tJqyLrQstZ2+t9nh8v4B6QqmBW3YzvvVhP6WGX7inzyt5/6CJwY4eHn4CoYtWYH
-         1BxXsReS6VNgn+ES7TkuUC2+klRl0P5un8MC8umBRfxfmhNiHJkyB5woRpuSD2hsAR
-         7HqqVVA4qcuLj6oCJkWBc67S03+daPCGtShuEMnM=
+        b=x7lVfKoYbE4kMeIMdghg0Oc3KByo5NgPTetijykYWvcPxiGv4UhmC504cyXFh9KHI
+         evYj02bnYIvahZhNjGYqTK1fd9Dj/GQY5wYs2D7IQWPC0wt947hp4SHiMI/9f2SCPZ
+         hl74bT1dlq6upkmkcZ9vwwYqv2pwbKfETACHKEW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Padmanabha Srinivasaiah <treasure4paddy@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 036/203] drm/vc4: Fix deadlock on DSI device attach error
-Date:   Mon, 14 Feb 2022 10:24:40 +0100
-Message-Id: <20220214092511.434199460@linuxfoundation.org>
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 013/203] net: phy: marvell: Fix MDI-x polarity setting in 88e1118-compatible PHYs
+Date:   Mon, 14 Feb 2022 10:24:17 +0100
+Message-Id: <20220214092510.670030845@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,120 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
+From: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
 
-[ Upstream commit 0a3d12ab5097b1d045e693412e6b366b7e82031b ]
+commit aec12836e7196e4d360b2cbf20cf7aa5139ad2ec upstream.
 
-DSI device attach to DSI host will be done with host device's lock
-held.
+When setting up autonegotiation for 88E1118R and compatible PHYs,
+a software reset of PHY is issued before setting up polarity.
+This is incorrect as changes of MDI Crossover Mode bits are
+disruptive to the normal operation and must be followed by a
+software reset to take effect. Let's patch m88e1118_config_aneg()
+to fix the issue mentioned before by invoking software reset
+of the PHY just after setting up MDI-x polarity.
 
-Un-registering host in "device attach" error path (ex: probe retry)
-will result in deadlock with below call trace and non operational
-DSI display.
-
-Startup Call trace:
-[   35.043036]  rt_mutex_slowlock.constprop.21+0x184/0x1b8
-[   35.043048]  mutex_lock_nested+0x7c/0xc8
-[   35.043060]  device_del+0x4c/0x3e8
-[   35.043075]  device_unregister+0x20/0x40
-[   35.043082]  mipi_dsi_remove_device_fn+0x18/0x28
-[   35.043093]  device_for_each_child+0x68/0xb0
-[   35.043105]  mipi_dsi_host_unregister+0x40/0x90
-[   35.043115]  vc4_dsi_host_attach+0xf0/0x120 [vc4]
-[   35.043199]  mipi_dsi_attach+0x30/0x48
-[   35.043209]  tc358762_probe+0x128/0x164 [tc358762]
-[   35.043225]  mipi_dsi_drv_probe+0x28/0x38
-[   35.043234]  really_probe+0xc0/0x318
-[   35.043244]  __driver_probe_device+0x80/0xe8
-[   35.043254]  driver_probe_device+0xb8/0x118
-[   35.043263]  __device_attach_driver+0x98/0xe8
-[   35.043273]  bus_for_each_drv+0x84/0xd8
-[   35.043281]  __device_attach+0xf0/0x150
-[   35.043290]  device_initial_probe+0x1c/0x28
-[   35.043300]  bus_probe_device+0xa4/0xb0
-[   35.043308]  deferred_probe_work_func+0xa0/0xe0
-[   35.043318]  process_one_work+0x254/0x700
-[   35.043330]  worker_thread+0x4c/0x448
-[   35.043339]  kthread+0x19c/0x1a8
-[   35.043348]  ret_from_fork+0x10/0x20
-
-Shutdown Call trace:
-[  365.565417] Call trace:
-[  365.565423]  __switch_to+0x148/0x200
-[  365.565452]  __schedule+0x340/0x9c8
-[  365.565467]  schedule+0x48/0x110
-[  365.565479]  schedule_timeout+0x3b0/0x448
-[  365.565496]  wait_for_completion+0xac/0x138
-[  365.565509]  __flush_work+0x218/0x4e0
-[  365.565523]  flush_work+0x1c/0x28
-[  365.565536]  wait_for_device_probe+0x68/0x158
-[  365.565550]  device_shutdown+0x24/0x348
-[  365.565561]  kernel_restart_prepare+0x40/0x50
-[  365.565578]  kernel_restart+0x20/0x70
-[  365.565591]  __do_sys_reboot+0x10c/0x220
-[  365.565605]  __arm64_sys_reboot+0x2c/0x38
-[  365.565619]  invoke_syscall+0x4c/0x110
-[  365.565634]  el0_svc_common.constprop.3+0xfc/0x120
-[  365.565648]  do_el0_svc+0x2c/0x90
-[  365.565661]  el0_svc+0x4c/0xf0
-[  365.565671]  el0t_64_sync_handler+0x90/0xb8
-[  365.565682]  el0t_64_sync+0x180/0x184
-
-Signed-off-by: Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220118005127.29015-1-treasure4paddy@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 605f196efbf8 ("phy: Add support for Marvell 88E1118 PHY")
+Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Cc: stable@vger.kernel.org
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_dsi.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/net/phy/marvell.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index a229da58962a2..9300d3354c512 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1262,7 +1262,6 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
- 			       struct mipi_dsi_device *device)
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1215,16 +1215,15 @@ static int m88e1118_config_aneg(struct p
  {
- 	struct vc4_dsi *dsi = host_to_dsi(host);
--	int ret;
+ 	int err;
  
- 	dsi->lanes = device->lanes;
- 	dsi->channel = device->channel;
-@@ -1297,18 +1296,15 @@ static int vc4_dsi_host_attach(struct mipi_dsi_host *host,
- 		return 0;
- 	}
+-	err = genphy_soft_reset(phydev);
++	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
+ 	if (err < 0)
+ 		return err;
  
--	ret = component_add(&dsi->pdev->dev, &vc4_dsi_ops);
--	if (ret) {
--		mipi_dsi_host_unregister(&dsi->dsi_host);
--		return ret;
--	}
--
+-	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
++	err = genphy_config_aneg(phydev);
+ 	if (err < 0)
+ 		return err;
+ 
+-	err = genphy_config_aneg(phydev);
 -	return 0;
-+	return component_add(&dsi->pdev->dev, &vc4_dsi_ops);
++	return genphy_soft_reset(phydev);
  }
  
- static int vc4_dsi_host_detach(struct mipi_dsi_host *host,
- 			       struct mipi_dsi_device *device)
- {
-+	struct vc4_dsi *dsi = host_to_dsi(host);
-+
-+	component_del(&dsi->pdev->dev, &vc4_dsi_ops);
- 	return 0;
- }
- 
-@@ -1686,9 +1682,7 @@ static int vc4_dsi_dev_remove(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct vc4_dsi *dsi = dev_get_drvdata(dev);
- 
--	component_del(&pdev->dev, &vc4_dsi_ops);
- 	mipi_dsi_host_unregister(&dsi->dsi_host);
--
- 	return 0;
- }
- 
--- 
-2.34.1
-
+ static int m88e1118_config_init(struct phy_device *phydev)
 
 
