@@ -2,78 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3425EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E11C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229658AbiBNT5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:57:50 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:60134 "EHLO
+        id S229742AbiBNUBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:01:51 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiBNT5p (ORCPT
+        with ESMTP id S229630AbiBNUBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:57:45 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83C4182072
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:57:34 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso20602798oon.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:57:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=B3WRB1YL+L5+JbxjEZnwA++AmlGgE13EuGL+PRtHx8Q=;
-        b=AG59o1FvNvGvpQjnEKK7YIua4+FGo7zkXCx11iAZy3iRr1cIHX4gAGKMYtlr+uUtkK
-         vQ/XbgHjhIMTeqSRSpp3SphCTkg1b1RZgd7SdlkMgl0tVADRCb97t7zFbMb3q+qwalUh
-         5mFP3ayooEfBQKfTTG8fK2M/3Zk7Sn+qMMyZE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B3WRB1YL+L5+JbxjEZnwA++AmlGgE13EuGL+PRtHx8Q=;
-        b=VisHdv8bRA81l312VQ21z5r3kQCgSnGX2oZlY4NrZEZ/l3xMVlnfikNJ45GVRo51wF
-         h2PoWhCz7NEa0YsWgqLjVP8zPcAf4cgyqkZfiUbQDNfL3KzWoglQve7pdUYjBoQZtWkI
-         OhF8aFfA3H6kQpVi/f5K0a2nc0hIOJEV0EvW+eBdWp4QOdFbYdbGg2bV++a2q9AVJOiR
-         atCwstDjUD7qZf3Dx7HsQDgMZbHNf+GTb48nf90VaCOVPXTjgy04umZWrksDL+MteX97
-         PM31MDX1fsGUlByvVsCM8ZCS5uxzO/nnUDxTXHQO23ZnsGuGhA4OwtB7Hf758N//0pFU
-         MXsQ==
-X-Gm-Message-State: AOAM533zS6+lRt6r+6BBxD9oEh4WMmKGjAfwS/B5fE/SH2IY1ILmAB+X
-        OAfn/wurittqqdaNWgzDHmQpVM3kJcMxhQ==
-X-Google-Smtp-Source: ABdhPJy+kZEHNiyZXB8hQH3+c79ZYEF67uFWvHkrb/jUovgvh6gYuF9jGI1/GqjQlyBi5+IQy5S5qQ==
-X-Received: by 2002:a17:90a:688e:: with SMTP id a14mr132426pjd.63.1644866725061;
-        Mon, 14 Feb 2022 11:25:25 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c4sm25662839pfl.131.2022.02.14.11.25.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:25:24 -0800 (PST)
-Date:   Mon, 14 Feb 2022 11:25:23 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Shuah Khan <shuah@kernel.org>, kernel@collabora.com,
-        sherry.yang@oracle.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V2] selftests: Use -isystem instead of -I to include
- headers
-Message-ID: <202202141125.085DF9BA6@keescook>
-References: <20220214160756.3543590-1-usama.anjum@collabora.com>
+        Mon, 14 Feb 2022 15:01:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D02214AC8A;
+        Mon, 14 Feb 2022 12:01:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D74396115F;
+        Mon, 14 Feb 2022 19:44:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45256C340E9;
+        Mon, 14 Feb 2022 19:44:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644867881;
+        bh=jxOYiEgPWektpf5sVKihUYWrVFKV0HAUXvsI0SeCjrY=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=dRO6ISvNTvfNGuc219bHukN3m5ziudzHyjjyHNwbAp4XOotmfmGfAXli6ng7PYyXw
+         sWFG+c35AJQTFFKLSn16Q72apFPWfzeJXWsQyTXV7GyHj8qifh+iwVgoIe7y+4bcaZ
+         C4bUJcxCZOTRc7HOgbfLuXmMJPQ8OIhG/Q4nSmrwdYCMNgOtpMccwOrgM7lKNHD2iv
+         6gZJt+JBJF5KoXLO6RjkRA63GJYzgtGC8cNjK8jvEhqNrd+CPsDtswo6JHWrXVfYSs
+         TynDNMULeQidgTK9AYSBvvyLAz4SEcRhTUPb159geRvTv7KbG53RWrWL7vnSo4qH9K
+         IlIVMKhhf+ZMQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 024035C0388; Mon, 14 Feb 2022 11:44:40 -0800 (PST)
+Date:   Mon, 14 Feb 2022 11:44:40 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Chris Mason <clm@fb.com>
+Cc:     Giuseppe Scrivano <gscrivan@redhat.com>,
+        "riel@surriel.com" <riel@surriel.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH RFC fs/namespace] Make kern_unmount() use
+ synchronize_rcu_expedited()
+Message-ID: <20220214194440.GZ4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220214190549.GA2815154@paulmck-ThinkPad-P17-Gen-1>
+ <C88FC9A7-D6AD-4382-B74A-175922F57852@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220214160756.3543590-1-usama.anjum@collabora.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <C88FC9A7-D6AD-4382-B74A-175922F57852@fb.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 09:07:56PM +0500, Muhammad Usama Anjum wrote:
-> Selftests need kernel headers and glibc for compilation. In compilation
-> of selftests, uapi headers from kernel source are used instead of
-> default ones while glibc has already been compiled with different header
-> files installed in the operating system. So there can be redefination
-> warnings from compiler. These warnings can be suppressed by using
-> -isystem to include the uapi headers.
+On Mon, Feb 14, 2022 at 07:26:49PM +0000, Chris Mason wrote:
 > 
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> 
+> > On Feb 14, 2022, at 2:05 PM, Paul E. McKenney <paulmck@kernel.org> wrote:
+> > 
+> > Experimental.  Not for inclusion.  Yet, anyway.
+> > 
+> > Freeing large numbers of namespaces in quick succession can result in
+> > a bottleneck on the synchronize_rcu() invoked from kern_unmount().
+> > This patch applies the synchronize_rcu_expedited() hammer to allow
+> > further testing and fault isolation.
+> > 
+> > Hey, at least there was no need to change the comment!  ;-)
+> > 
+> 
+> I don’t think this will be fast enough.  I think the problem is that commit e1eb26fa62d04ec0955432be1aa8722a97cb52e7 is putting all of the ipc namespace frees onto a list, and every free includes one call to synchronize_rcu()
+> 
+> The end result is that we can create new namespaces much much faster than we can free them, and eventually we run out.  I found this while debugging clone() returning ENOSPC because create_ipc_ns() was returning ENOSPC.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Moving from synchronize_rcu() to synchronize_rcu_expedited() does buy
+you at least an order of magnitude.  But yes, it should be possible to
+get rid of all but one call per batch, which would be better.  Maybe
+a bit more complicated, but probably not that much.
 
--- 
-Kees Cook
+Let me see what I can come up with.
+
+If this is an emergency, I still suggest trying the patch as a short-term
+workaround.
+
+							Thanx, Paul
