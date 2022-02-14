@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70991C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95221C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245090AbiBNJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:49:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44456 "EHLO
+        id S245535AbiBNJtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:49:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343706AbiBNJqZ (ORCPT
+        with ESMTP id S1343766AbiBNJq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:25 -0500
+        Mon, 14 Feb 2022 04:46:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3CF765488;
-        Mon, 14 Feb 2022 01:39:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5776B0AC;
+        Mon, 14 Feb 2022 01:39:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65A61611D2;
-        Mon, 14 Feb 2022 09:39:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E296C340E9;
-        Mon, 14 Feb 2022 09:39:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B294611DE;
+        Mon, 14 Feb 2022 09:39:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EE73C36AE2;
+        Mon, 14 Feb 2022 09:39:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831588;
-        bh=nl3gPIYfJzLGecfMeJs3IXQ2hN/sva0u53e++ciJdV8=;
+        s=korg; t=1644831595;
+        bh=P3qbYayGFjFb/gkQnpdVwoJRURSj299ER3xrYVzQ6Bw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/87ax4Aby1UzGp7paA4dgIBaXEW90FtFKhRfqiYpwBs1pA4Rsyj9PsMcicGiA1Mw
-         vsnpg4aT7z38VXgQ8pTxq/bbjaRIWCCwU8ZruGaHzRUf3G4iA3cisHMK3k/g9lPMZ9
-         nDrYnnZzpVftup5OmTXPrK/JZR0rvtlkczOKHLqM=
+        b=gTey1wGd+ABT8Uhdpd8I652Pd4z02SCzxxCSwX9jXF11IVInIbFBMlGQL6dmqLkaF
+         EIAkcxagKMd6Xms/HvWQVZ4kFuhtbGtxPmfr0fb/1S9edSBhGri6qufyaI7zrmYowI
+         Adu+7jWbIxu/Y0MfUscG9d3j/MPONUsS1s32E0+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.10 003/116] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
-Date:   Mon, 14 Feb 2022 10:25:02 +0100
-Message-Id: <20220214092458.789828706@linuxfoundation.org>
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Tong Zhang <ztong0001@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 031/116] scsi: myrs: Fix crash in error case
+Date:   Mon, 14 Feb 2022 10:25:30 +0100
+Message-Id: <20220214092459.767457421@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,84 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+From: Tong Zhang <ztong0001@gmail.com>
 
-commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
+[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
 
-Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
-ima_template_fmt") introduced an additional check on the ima_template
-variable to avoid multiple template selection.
+In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
+with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
+crash the kernel.
 
-Unfortunately, ima_template could be also set by the setup function of the
-ima_hash= parameter, when it calls ima_template_desc_current(). This causes
-attempts to choose a new template with ima_template= or with
-ima_template_fmt=, after ima_hash=, to be ignored.
+[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
+[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
+[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[    1.110774] Call Trace:
+[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
+[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
+[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
+[    1.111500]  local_pci_probe+0x48/0x90
 
-Achieve the goal of the commit mentioned with the new static variable
-template_setup_done, so that template selection requests after ima_hash=
-are not ignored.
-
-Finally, call ima_init_template_list(), if not already done, to initialize
-the list of templates before lookup_template_desc() is called.
-
-Reported-by: Guo Zihua <guozihua@huawei.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Cc: stable@vger.kernel.org
-Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_template.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/scsi/myrs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -27,6 +27,7 @@ static struct ima_template_desc builtin_
+diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
+index 78c41bbf67562..e6a6678967e52 100644
+--- a/drivers/scsi/myrs.c
++++ b/drivers/scsi/myrs.c
+@@ -2272,7 +2272,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
+ 	myrs_unmap(cs);
  
- static LIST_HEAD(defined_templates);
- static DEFINE_SPINLOCK(template_list);
-+static int template_setup_done;
- 
- static const struct ima_template_field supported_fields[] = {
- 	{.field_id = "d", .field_init = ima_eventdigest_init,
-@@ -80,10 +81,11 @@ static int __init ima_template_setup(cha
- 	struct ima_template_desc *template_desc;
- 	int template_len = strlen(str);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
--	ima_init_template_list();
-+	if (!ima_template)
-+		ima_init_template_list();
- 
- 	/*
- 	 * Verify that a template with the supplied name exists.
-@@ -107,6 +109,7 @@ static int __init ima_template_setup(cha
+ 	if (cs->mmio_base) {
+-		cs->disable_intr(cs);
++		if (cs->disable_intr)
++			cs->disable_intr(cs);
+ 		iounmap(cs->mmio_base);
+ 		cs->mmio_base = NULL;
  	}
- 
- 	ima_template = template_desc;
-+	template_setup_done = 1;
- 	return 1;
- }
- __setup("ima_template=", ima_template_setup);
-@@ -115,7 +118,7 @@ static int __init ima_template_fmt_setup
- {
- 	int num_templates = ARRAY_SIZE(builtin_templates);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
- 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
-@@ -126,6 +129,7 @@ static int __init ima_template_fmt_setup
- 
- 	builtin_templates[num_templates - 1].fmt = str;
- 	ima_template = builtin_templates + num_templates - 1;
-+	template_setup_done = 1;
- 
- 	return 1;
- }
+-- 
+2.34.1
+
 
 
