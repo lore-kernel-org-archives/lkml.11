@@ -2,115 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E723C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6222C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236860AbiBNKmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:42:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49184 "EHLO
+        id S1348859AbiBNKmq (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:42:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348912AbiBNKkH (ORCPT
+        with ESMTP id S1348737AbiBNKkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:40:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0ECD41318;
-        Mon, 14 Feb 2022 02:04:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF9B0B80DCA;
-        Mon, 14 Feb 2022 10:03:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9372C340EF;
-        Mon, 14 Feb 2022 10:03:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833015;
-        bh=QUkw2cL9AMbwzEWly0EXBWLsADd+Rau9WRrGJKiibKI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAhEvelr+6eJEMxi8JiMCRmfojz3cGjihhrj7VDVdOEaYyQk5xxAAWxqyf21TkrGT
-         bkoDEiUjQPN51xsi4ISAf8XXxoVSBpkWACfT4z4Zn2aH1j/8Sen/aLtzmzXODf/YWu
-         8XCajxR9HLM0A90kkjS4cnDfsCDXhI3nf/dUWeKM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 196/203] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
-Date:   Mon, 14 Feb 2022 10:27:20 +0100
-Message-Id: <20220214092517.044600427@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:40:08 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB2E2A9970;
+        Mon, 14 Feb 2022 02:04:08 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CFBEF1396;
+        Mon, 14 Feb 2022 02:03:58 -0800 (PST)
+Received: from [10.163.47.15] (unknown [10.163.47.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E32D3F718;
+        Mon, 14 Feb 2022 02:03:56 -0800 (PST)
+Subject: Re: [PATCH 23/30] um/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+To:     kernel test robot <lkp@intel.com>, linux-mm@kvack.org
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-arch@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
+        linux-um@lists.infradead.org
+References: <1644805853-21338-24-git-send-email-anshuman.khandual@arm.com>
+ <202202141426.Q2fKI6yq-lkp@intel.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <4063465a-126d-9bef-5831-d8340cb9aaec@arm.com>
+Date:   Mon, 14 Feb 2022 15:33:56 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <202202141426.Q2fKI6yq-lkp@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
-
-commit c80b27cfd93ba9f5161383f798414609e84729f3 upstream.
-
-The driver is initiating NVMe PRLIs to determine device NVMe support.  This
-should not be occurring if CONFIG_NVME_FC support is disabled.
-
-Correct this by changing the default value for FC4 support. Currently it
-defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
-in the kernel, the default value is just FCP.
-
-Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
-Reviewed-by: Ewan D. Milne <emilne@redhat.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/scsi/lpfc/lpfc.h      |   13 ++++++++++---
- drivers/scsi/lpfc/lpfc_attr.c |    4 ++--
- 2 files changed, 12 insertions(+), 5 deletions(-)
-
---- a/drivers/scsi/lpfc/lpfc.h
-+++ b/drivers/scsi/lpfc/lpfc.h
-@@ -1165,6 +1165,16 @@ struct lpfc_hba {
- 	uint32_t cfg_hostmem_hgp;
- 	uint32_t cfg_log_verbose;
- 	uint32_t cfg_enable_fc4_type;
-+#define LPFC_ENABLE_FCP  1
-+#define LPFC_ENABLE_NVME 2
-+#define LPFC_ENABLE_BOTH 3
-+#if (IS_ENABLED(CONFIG_NVME_FC))
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
-+#else
-+#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
-+#endif
- 	uint32_t cfg_aer_support;
- 	uint32_t cfg_sriov_nr_virtfn;
- 	uint32_t cfg_request_firmware_upgrade;
-@@ -1186,9 +1196,6 @@ struct lpfc_hba {
- 	uint32_t cfg_ras_fwlog_func;
- 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
- 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
--#define LPFC_ENABLE_FCP  1
--#define LPFC_ENABLE_NVME 2
--#define LPFC_ENABLE_BOTH 3
- 	uint32_t cfg_enable_pbde;
- 	uint32_t cfg_enable_mi;
- 	struct nvmet_fc_target_port *targetport;
---- a/drivers/scsi/lpfc/lpfc_attr.c
-+++ b/drivers/scsi/lpfc/lpfc_attr.c
-@@ -3978,8 +3978,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
-  *                    3 - register both FCP and NVME
-  * Supported values are [1,3]. Default value is 3
-  */
--LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
--	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
-+LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
-+	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
- 	    "Enable FC4 Protocol support - FCP / NVME");
- 
- /*
 
 
+On 2/14/22 12:10 PM, kernel test robot wrote:
+> All errors (new ones prefixed by >>):
+> 
+>    arch/x86/um/mem_32.c: In function 'gate_vma_init':
+>>> arch/x86/um/mem_32.c:20:26: error: '__P101' undeclared (first use in this function)
+>       20 |  gate_vma.vm_page_prot = __P101;
+>          |                          ^~~~~~
+>    arch/x86/um/mem_32.c:20:26: note: each undeclared identifier is reported only once for each function it appears in
+
+Also the following instance still has reference to __PXXX symbols.
+
+arch/arm/lib/uaccess_with_memcpy.c:     user_ptr = vmap(&dst_page, 1, VM_IOREMAP, __pgprot(__P010));
+
+Will fix both.
