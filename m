@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B2CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344761AbiBNKIx (ORCPT
+        id S1345107AbiBNKI4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:08:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53658 "EHLO
+        Mon, 14 Feb 2022 05:08:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345093AbiBNKEN (ORCPT
+        with ESMTP id S1344798AbiBNKEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:04:13 -0500
+        Mon, 14 Feb 2022 05:04:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB45512;
-        Mon, 14 Feb 2022 01:48:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A7443AF3;
+        Mon, 14 Feb 2022 01:48:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D135612D0;
-        Mon, 14 Feb 2022 09:48:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D135EC340E9;
-        Mon, 14 Feb 2022 09:48:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0EB16126B;
+        Mon, 14 Feb 2022 09:48:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE17C340E9;
+        Mon, 14 Feb 2022 09:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832136;
-        bh=H9AOZ4VvMnz+eej4Jp2A9tk40+GzB/tTtRcrZcb3Tu4=;
+        s=korg; t=1644832133;
+        bh=On09NtlxisAFDWKGqSyeGfJb1Y/OGiixVGVkNghruI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QemBq8kNZq3A72x7Rt8hRCt5gYQV96/OFBvI314Zt0q+5dLPXmFp4q70MUY2o5Dy0
-         tlEgIJsgjbF+2NsakNxP06yGSCSzk7OLRqDOWyg/WDW68MJzMnA/aOJqdXTxrHEpGx
-         jFTVqMavcs/kK4O5+NCOEX2l9d2Y33E2EwfQhTNE=
+        b=QgpiZS6/wCnUiTwrhuWInUStNCJaF7wX+bOR5b+vfJNUUuQuaXli1CJM91W7G7NnJ
+         deGlf4LxuOlYj/lKH77UHd/Ijc09Hd/jd1/sKHAmb81PYuhmhX9Kexn5qXIy4Jn+Vh
+         4N9MGyY89mHA2ElgtbGe2Y+YxZ1bRzFLAU2YVMKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Liam Merwick <liam.merwick@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
+        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 063/172] KVM: SVM: Dont kill SEV guest if SMAP erratum triggers in usermode
-Date:   Mon, 14 Feb 2022 10:25:21 +0100
-Message-Id: <20220214092508.576251831@linuxfoundation.org>
+Subject: [PATCH 5.15 089/172] ARM: dts: imx7ulp: Fix assigned-clocks-parents typo
+Date:   Mon, 14 Feb 2022 10:25:47 +0100
+Message-Id: <20220214092509.481822737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,52 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
+[ Upstream commit 6d58c5e21a3fe355ce6d1808e96d02a610265218 ]
 
-Inject a #GP instead of synthesizing triple fault to try to avoid killing
-the guest if emulation of an SEV guest fails due to encountering the SMAP
-erratum.  The injected #GP may still be fatal to the guest, e.g. if the
-userspace process is providing critical functionality, but KVM should
-make every attempt to keep the guest alive.
+The correct property name is 'assigned-clock-parents', not
+'assigned-clocks-parents'. Though if the platform works with the typo, one
+has to wonder if the property is even needed.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-Message-Id: <20220120010719.711476-10-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Fixes: 8b8c7d97e2c7 ("ARM: dts: imx7ulp: Add wdog1 node")
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/imx7ulp.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 980abc437cdaa..f05aa7290267d 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4473,7 +4473,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
- 	is_user = svm_get_cpl(vcpu) == 3;
- 	if (smap && (!smep || is_user)) {
- 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
--		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
-+
-+		/*
-+		 * If the fault occurred in userspace, arbitrarily inject #GP
-+		 * to avoid killing the guest and to hopefully avoid confusing
-+		 * the guest kernel too much, e.g. injecting #PF would not be
-+		 * coherent with respect to the guest's page tables.  Request
-+		 * triple fault if the fault occurred in the kernel as there's
-+		 * no fault that KVM can inject without confusing the guest.
-+		 * In practice, the triple fault is moot as no sane SEV kernel
-+		 * will execute from user memory while also running with SMAP=1.
-+		 */
-+		if (is_user)
-+			kvm_inject_gp(vcpu, 0);
-+		else
-+			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
- 	}
+diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dtsi
+index b7ea37ad4e55c..bcec98b964114 100644
+--- a/arch/arm/boot/dts/imx7ulp.dtsi
++++ b/arch/arm/boot/dts/imx7ulp.dtsi
+@@ -259,7 +259,7 @@ wdog1: watchdog@403d0000 {
+ 			interrupts = <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
+ 			assigned-clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
+-			assigned-clocks-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
++			assigned-clock-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
+ 			timeout-sec = <40>;
+ 		};
  
- 	return false;
 -- 
 2.34.1
 
