@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ED2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 06:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D12C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 06:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240708AbiBNGMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 01:12:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51678 "EHLO
+        id S240746AbiBNGMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 01:12:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240790AbiBNGMA (ORCPT
+        with ESMTP id S234009AbiBNGML (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 01:12:00 -0500
+        Mon, 14 Feb 2022 01:12:11 -0500
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A51E5A5BC
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 22:11:46 -0800 (PST)
-X-UUID: ea1162e328e849e49bfd60b1859a16a4-20220214
-X-UUID: ea1162e328e849e49bfd60b1859a16a4-20220214
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC44517C8
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 22:12:04 -0800 (PST)
+X-UUID: 804206638c494790b379c756bf117352-20220214
+X-UUID: 804206638c494790b379c756bf117352-20220214
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
         (envelope-from <yong.wu@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1084419650; Mon, 14 Feb 2022 14:11:42 +0800
+        with ESMTP id 1051305853; Mon, 14 Feb 2022 14:12:01 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 14 Feb 2022 14:11:41 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 14 Feb 2022 14:12:00 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Feb 2022 14:11:39 +0800
+ Transport; Mon, 14 Feb 2022 14:11:58 +0800
 From:   Yong Wu <yong.wu@mediatek.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         David Airlie <airlied@linux.ie>,
@@ -38,13 +37,13 @@ CC:     James Wang <james.qian.wang@arm.com>,
         <iommu@lists.linux-foundation.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        <linux-kernel@vger.kernel.org>, "Joerg Roedel" <joro@8bytes.org>,
+        <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
         Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
         Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         <linux-mediatek@lists.infradead.org>,
         Chun-Kuang Hu <chunkuang.hu@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "Stephen Boyd" <sboyd@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         Hsin-Yi Wang <hsinyi@chromium.org>,
@@ -54,12 +53,15 @@ CC:     James Wang <james.qian.wang@arm.com>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Sebastian Reichel <sre@kernel.org>,
         Yong Wu <yong.wu@mediatek.com>,
-        "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 18/23] drm: of: Make use of the helper component_release_of
-Date:   Mon, 14 Feb 2022 14:08:14 +0800
-Message-ID: <20220214060819.7334-19-yong.wu@mediatek.com>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        <alsa-devel@alsa-project.org>
+Subject: [PATCH 20/23] ASoC: codecs: wcd938x: Make use of the helper component_compare/release_of
+Date:   Mon, 14 Feb 2022 14:08:16 +0800
+Message-ID: <20220214060819.7334-21-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20220214060819.7334-1-yong.wu@mediatek.com>
 References: <20220214060819.7334-1-yong.wu@mediatek.com>
@@ -70,41 +72,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the common release helper from component.
+Use the common compare/release helpers from component.
 
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Takashi Iwai <tiwai@suse.com>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: alsa-devel@alsa-project.org
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/gpu/drm/drm_of.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ sound/soc/codecs/wcd938x.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_of.c b/drivers/gpu/drm/drm_of.c
-index 59d368ea006b..9a2cfab3a177 100644
---- a/drivers/gpu/drm/drm_of.c
-+++ b/drivers/gpu/drm/drm_of.c
-@@ -18,11 +18,6 @@
-  * properties.
-  */
+diff --git a/sound/soc/codecs/wcd938x.c b/sound/soc/codecs/wcd938x.c
+index eff200a07d9f..54f4a41ceca2 100644
+--- a/sound/soc/codecs/wcd938x.c
++++ b/sound/soc/codecs/wcd938x.c
+@@ -4417,16 +4417,6 @@ static const struct component_master_ops wcd938x_comp_ops = {
+ 	.unbind = wcd938x_unbind,
+ };
  
--static void drm_release_of(struct device *dev, void *data)
+-static int wcd938x_compare_of(struct device *dev, void *data)
+-{
+-	return dev->of_node == data;
+-}
+-
+-static void wcd938x_release_of(struct device *dev, void *data)
 -{
 -	of_node_put(data);
 -}
 -
- /**
-  * drm_of_crtc_port_mask - find the mask of a registered CRTC by port OF node
-  * @dev: DRM device
-@@ -94,7 +89,7 @@ void drm_of_component_match_add(struct device *master,
- 				struct device_node *node)
- {
- 	of_node_get(node);
--	component_match_add_release(master, matchptr, drm_release_of,
-+	component_match_add_release(master, matchptr, component_release_of,
- 				    compare, node);
+ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+ 					struct device *dev,
+ 					struct component_match **matchptr)
+@@ -4442,8 +4432,8 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+ 	}
+ 
+ 	of_node_get(wcd938x->rxnode);
+-	component_match_add_release(dev, matchptr, wcd938x_release_of,
+-				    wcd938x_compare_of,	wcd938x->rxnode);
++	component_match_add_release(dev, matchptr, component_release_of,
++				    component_compare_of, wcd938x->rxnode);
+ 
+ 	wcd938x->txnode = of_parse_phandle(np, "qcom,tx-device", 0);
+ 	if (!wcd938x->txnode) {
+@@ -4451,8 +4441,8 @@ static int wcd938x_add_slave_components(struct wcd938x_priv *wcd938x,
+ 		return -ENODEV;
+ 	}
+ 	of_node_get(wcd938x->txnode);
+-	component_match_add_release(dev, matchptr, wcd938x_release_of,
+-				    wcd938x_compare_of,	wcd938x->txnode);
++	component_match_add_release(dev, matchptr, component_release_of,
++				    component_compare_of, wcd938x->txnode);
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(drm_of_component_match_add);
+ 
 -- 
 2.18.0
 
