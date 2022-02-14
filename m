@@ -2,99 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B273C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07336C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351157AbiBNLZW (ORCPT
+        id S1351170AbiBNLZ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:25:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51876 "EHLO
+        Mon, 14 Feb 2022 06:25:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351046AbiBNLYu (ORCPT
+        with ESMTP id S1351100AbiBNLYu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 06:24:50 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CC636A038
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:00:36 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id p5so44649394ybd.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:00:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3ql8NUq1Mhfk4FgjJdYn+6AtR/wTalZy71vD2iX7360=;
-        b=HaouLhMkFE1Tiq9r67ZkbspsEZEGeDsEDrcBcXHPlhVMTAnQoNqML7O1lgdKdbp6Sy
-         0VxaapMKnjgFJqH17uSVhB+naf4kLHC5kmz1MQBGUsjb7Ng8d+E5Hn+SfNFyDEUZIrNb
-         AJSF1hjzKM42IFMG7pYWyIply6TGhegP4lACG++dR+vSYq8fOZbIwSJE7px5hElaNRWt
-         C7341jM9DgM8SGFMyfu4TF6Wz8tv41ujpV36F8CueKK8Ug1ASS1hMFkQLW2Oj/m8OdET
-         GVnHtQCj1PkI18M+WSp+dJ2ix2w3lEoaMHzhkzK0XD89pm0C+JOHiW2gTSFARUBUXF/g
-         pU7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3ql8NUq1Mhfk4FgjJdYn+6AtR/wTalZy71vD2iX7360=;
-        b=MT43JCfktwb2ZfYQKAcJYaU0FMvjvqPxIQJunTac6FkEnc5n3f/rTQczwA9/L64wCF
-         kmp449J3GN4KSXXB3zqvotuynKWTbCs+kaAdiO9fn7CZL7cJzL2MHxqaA7Tp0DnwQDiu
-         HQc/XRlCkOGdkqrIHMZUcjxDxeTk2SIM1gk3oaencfeXAsp3jwtZdU5GXORHQnh7Jkyg
-         ikblCgJFgDOZKx0tzhfU8ioI7KjstaPAH7Rxk1ec/OB+fnxoDd51XE9bNM2H/4nh8zdD
-         6O+RwKO1PDPZPcINWeIIF4fgzEXXKWWfPkS8ih3fmhVCbhfMx49dwzl5le+AMH56tmWk
-         ukfQ==
-X-Gm-Message-State: AOAM531k1AjhGvZQqGs49+WhA9sp0uLNvd9L28Bq6wPiXiNSKH/4dTXV
-        oUXf2sTFzw3DT5k6PZ+aiJx1ZMpmLO48ANxZKpcghQ==
-X-Google-Smtp-Source: ABdhPJy5yJJ+Rt8wVdvh+tLvsVhIt8bcoEhuSC4CHI8yHpu2ldBu+EEupqbDrNGS7Cp4eKQwSrOPWrrzNZyXwLqR52c=
-X-Received: by 2002:a81:3542:: with SMTP id c63mr13303504ywa.87.1644836433843;
- Mon, 14 Feb 2022 03:00:33 -0800 (PST)
+X-Greylist: delayed 503 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 03:00:40 PST
+Received: from mail-4321.protonmail.ch (mail-4321.protonmail.ch [185.70.43.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD93E6A04A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:00:40 -0800 (PST)
+Received: from mail-0201.mail-europe.com (mail-0201.mail-europe.com [51.77.79.158])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        by mail-4321.protonmail.ch (Postfix) with ESMTPS id 4Jy1JM4G1Nz4x0y4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:52:19 +0000 (UTC)
+Authentication-Results: mail-4321.protonmail.ch;
+        dkim=pass (2048-bit key) header.d=emersion.fr header.i=@emersion.fr header.b="LThY4lgU"
+Date:   Mon, 14 Feb 2022 10:52:13 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
+        s=protonmail2; t=1644835934;
+        bh=MlZxepE7UcCIx7JdbAa36YidmF6d5y+C8F78t64Xio0=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+         Message-ID;
+        b=LThY4lgUqhN8sGqwUbzGNFG1jSZlOqseiQAm9FRwnlotQK8Bibz9NV5fvBRzZkA6e
+         AKdMcgVjEBUpigN+wbQqLLFpMpKqwoX4f/XY+4BKYUTk9WLnDIkOhF2IYvOYMxXq4H
+         /+su7TPrhRIkglRZdbbO4kQikJA2b6Qjq8D6y/OXk1/hIsJfRqkNgbPpDFTLkhegbZ
+         iaoLIMVLTzrHznyG58N/ooRjJnqpJpXq5iboveuFIgQPg4EJtHXoDn2D6MvMkgbJTs
+         nms6hiOAFWrVqs6w8Er37CEQVw+JzcW3PYzmzFJVIQyOmoq/+Qd497VPQPxmkUH7FK
+         VPZyRvj0tT/IA==
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From:   Simon Ser <contact@emersion.fr>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        =?utf-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        dri-devel@lists.freedesktop.org, Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Reply-To: Simon Ser <contact@emersion.fr>
+Subject: Re: [PATCH v4 1/6] drm/format-helper: Add drm_fb_xrgb8888_to_gray8_line()
+Message-ID: <aW25lLbuIQGCr0FHtnqiM-UB-VYfk-BaLhhwq3Ur9ONgrXyxHspO_JKXCIgAeI0IBhW7hqZwTdACzd9a1b8A9MIBDrn12ymzMGYjbeqcSYE=@emersion.fr>
+In-Reply-To: <YgoxFBGNsrezVxmi@smile.fi.intel.com>
+References: <20220211091927.2988283-1-javierm@redhat.com> <20220211091927.2988283-2-javierm@redhat.com> <YgY6OqN+guBlt/ED@smile.fi.intel.com> <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com> <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com> <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de> <87pmnt7gm3.fsf@intel.com> <YgaDj6Wld4b7S6DF@smile.fi.intel.com> <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de> <YgoxFBGNsrezVxmi@smile.fi.intel.com>
 MIME-Version: 1.0
-References: <20220214092506.354292783@linuxfoundation.org>
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Mon, 14 Feb 2022 16:30:22 +0530
-Message-ID: <CA+G9fYv72=mb-9UqAF5kK1TZ5+HEEjY=1_372K30tAzKEmAR0g@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/172] 5.15.24-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022 at 15:16, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.24 release.
-> There are 172 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.24-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Monday, February 14th, 2022 at 11:38, Andy Shevchenko <andriy.shevchenko=
+@linux.intel.com> wrote:
 
-On Linux mainline master branch with arm64 clang-nigtly build failed
-due to following errors and warnings.
-Now it is also noticed on stable-rc 5.15 and 5.16.
+> > > > IMO *always* prefer a for loop over while or do-while.
+> > > >
+> > > > The for (i =3D 0; i < N; i++) is such a strong paradigm in C. You
+> > > > instantly know how many times you're going to loop, at a glance. No=
+t so
+> > > > with with the alternatives, which should be used sparingly.
+> > >
+> > > while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
+> >
+> > Naw, that's not true.
+>
+> In the section 3.5 "Loops - While and For" in "The C Programming
+> Language" 2nd by K&R, the authors said:
+>
+> =09The for statement ... is equivalent to ... while..."
+>
+> They said that for is equivalent to while, and not otherwise.
+>
+> Also, syntax sugar by definition declares something that can be written a=
+s
+> a single line of code, which usually is done using more (not always).
 
-net/ipv4/tcp_input.c: clang: error: clang frontend command failed with
-exit code 139 (use -v to see invocation)
-https://github.com/llvm/llvm-project/issues/53811
+arr[i] is syntaxic sugar for *(arr + i), yet we keep writing the former,
+because it's way more readable. The same goes for the for vs. while loops.
+It may be obvious for you because you're a C guru, but to me it just obfusc=
+ates
+the code. Too many C projects end up becoming completely unreadable because=
+ of
+patterns like these.
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
---
-Linaro LKFT
-https://lkft.linaro.org
+Idiomatic C code isn't written by doing pointless micro-optimizations.
