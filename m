@@ -2,96 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64455C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD9CFC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345120AbiBNJ4g (ORCPT
+        id S1345531AbiBNJ4y convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:56:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34404 "EHLO
+        Mon, 14 Feb 2022 04:56:54 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344176AbiBNJve (ORCPT
+        with ESMTP id S1344916AbiBNJwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:34 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8966177AB7;
-        Mon, 14 Feb 2022 01:42:36 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E48Tt4002850;
-        Mon, 14 Feb 2022 04:42:35 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e7fsvgx15-1
+        Mon, 14 Feb 2022 04:52:07 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B167B557;
+        Mon, 14 Feb 2022 01:43:24 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21E8kHEJ012501;
+        Mon, 14 Feb 2022 09:42:51 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e785swfce-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 04:42:34 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21E9gXP2061731
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Feb 2022 04:42:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Feb
- 2022 04:42:32 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 14 Feb 2022 04:42:32 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E9gM3X009467;
-        Mon, 14 Feb 2022 04:42:29 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 3/3] MAINTAINERS: add maintainer for ADA4250 driver
-Date:   Mon, 14 Feb 2022 11:41:15 +0200
-Message-ID: <20220214094115.48548-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214094115.48548-1-antoniu.miclaus@analog.com>
-References: <20220214094115.48548-1-antoniu.miclaus@analog.com>
+        Mon, 14 Feb 2022 09:42:51 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21E9dnIL001483;
+        Mon, 14 Feb 2022 09:42:48 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma03ams.nl.ibm.com with ESMTP id 3e64h9kgkm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 09:42:48 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21E9WRad27525510
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 09:32:27 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EBBE311C06C;
+        Mon, 14 Feb 2022 09:42:45 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5CA0411C052;
+        Mon, 14 Feb 2022 09:42:45 +0000 (GMT)
+Received: from smtp.tlslab.ibm.com (unknown [9.101.4.1])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with SMTP;
+        Mon, 14 Feb 2022 09:42:45 +0000 (GMT)
+Received: from yukon.ibmuc.com (unknown [9.171.60.190])
+        by smtp.tlslab.ibm.com (Postfix) with ESMTP id A2AF12201E5;
+        Mon, 14 Feb 2022 10:42:43 +0100 (CET)
+From:   =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+To:     linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org
+Cc:     Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed@lists.ozlabs.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>
+Subject: [PATCH 05/10] spi: aspeed: Adjust direct mapping to device size
+Date:   Mon, 14 Feb 2022 10:42:26 +0100
+Message-Id: <20220214094231.3753686-6-clg@kaod.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220214094231.3753686-1-clg@kaod.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: roVMIGsN-wS3IZLMbA5rnFtHpJpN-Zd5
-X-Proofpoint-ORIG-GUID: roVMIGsN-wS3IZLMbA5rnFtHpJpN-Zd5
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ySFE6WxU1sMm1cIrMdIdBbJzw2ZzwQUk
+X-Proofpoint-ORIG-GUID: ySFE6WxU1sMm1cIrMdIdBbJzw2ZzwQUk
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=809
- suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202140058
+ definitions=2022-02-14_01,2022-02-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=974
+ malwarescore=0 adultscore=0 lowpriorityscore=0 clxscore=1034
+ impostorscore=0 priorityscore=1501 bulkscore=0 suspectscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add myself as maintainer for the ADA4250 driver.
+The segment registers of the FMC/SPI controllers provide a way to
+configure the mapping window of the flash device contents on the AHB
+bus. Adjust this window to the size of the spi-mem mapping.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Things get more complex with multiple devices. The driver needs to
+also adjust the window of the next device to make sure that there is
+no overlap, even if there is no available device. The proposal below
+is not perfect but it is covering all the cases we have seen on
+different boards with one and two devices on the same bus.
+
+Signed-off-by: Cédric Le Goater <clg@kaod.org>
 ---
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/spi/spi-aspeed-smc.c | 88 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 88 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce7168aa..0410054a7bf5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1075,6 +1075,14 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	drivers/media/i2c/ad9389b*
+diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
+index 8d33fcb7736a..9c4eacfed72c 100644
+--- a/drivers/spi/spi-aspeed-smc.c
++++ b/drivers/spi/spi-aspeed-smc.c
+@@ -426,6 +426,92 @@ static int aspeed_spi_chip_set_default_window(struct aspeed_spi_chip *chip)
+ 	return chip->ahb_window_size ? 0 : -1;
+ }
  
-+ANALOG DEVICES INC ADA4250 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-+F:	drivers/iio/amplifiers/ada4250.c
++static int aspeed_spi_set_window(struct aspeed_spi *aspi,
++				 const struct aspeed_spi_window *win)
++{
++	u32 start = aspi->ahb_base_phy + win->offset;
++	u32 end = start + win->size;
++	void __iomem *seg_reg = aspi->regs + CE0_SEGMENT_ADDR_REG + win->cs * 4;
++	u32 seg_val_backup = readl(seg_reg);
++	u32 seg_val = aspi->data->segment_reg(aspi, start, end);
 +
- ANALOG DEVICES INC ADGS1408 DRIVER
- M:	Mircea Caprioru <mircea.caprioru@analog.com>
- S:	Supported
++	if (seg_val == seg_val_backup)
++		return 0;
++
++	writel(seg_val, seg_reg);
++
++	/*
++	 * Restore initial value if something goes wrong else we could
++	 * loose access to the chip.
++	 */
++	if (seg_val != readl(seg_reg)) {
++		dev_err(aspi->dev, "CE%d invalid window [ 0x%.8x - 0x%.8x ] %dMB",
++			win->cs, start, end - 1, win->size >> 20);
++		writel(seg_val_backup, seg_reg);
++		return -EIO;
++	}
++
++	if (win->size)
++		dev_dbg(aspi->dev, "CE%d new window [ 0x%.8x - 0x%.8x ] %dMB",
++			win->cs, start, end - 1,  win->size >> 20);
++	else
++		dev_dbg(aspi->dev, "CE%d window closed", win->cs);
++
++	return 0;
++}
++
++/*
++ * Yet to be done when possible :
++ * - Align mappings on flash size (we don't have the info)
++ * - ioremap each window, not strictly necessary since the overall window
++ *   is correct.
++ */
++static int aspeed_spi_chip_adjust_window(struct aspeed_spi_chip *chip,
++					 u32 local_offset, u32 size)
++{
++	struct aspeed_spi *aspi = chip->aspi;
++	struct aspeed_spi_window windows[ASPEED_SPI_MAX_NUM_CS] = { 0 };
++	struct aspeed_spi_window *win = &windows[chip->cs];
++	int ret;
++
++	aspeed_spi_get_windows(aspi, windows);
++
++	/* Adjust this chip window */
++	win->offset += local_offset;
++	win->size = size;
++
++	if (win->offset + win->size > aspi->ahb_window_size) {
++		win->size = aspi->ahb_window_size - win->offset;
++		dev_warn(aspi->dev, "CE%d window resized to %dMB", chip->cs, win->size >> 20);
++	}
++
++	ret = aspeed_spi_set_window(aspi, win);
++	if (ret)
++		return ret;
++
++	/* Update chip mapping info */
++	chip->ahb_base = aspi->ahb_base + win->offset;
++	chip->ahb_window_size = win->size;
++
++	/*
++	 * Also adjust next chip window to make sure that it does not
++	 * overlap with the current window.
++	 */
++	if (chip->cs < aspi->data->max_cs - 1) {
++		struct aspeed_spi_window *next = &windows[chip->cs + 1];
++
++		/* Change offset and size to keep the same end address */
++		if ((next->offset + next->size) > (win->offset + win->size))
++			next->size = (next->offset + next->size) - (win->offset + win->size);
++		else
++			next->size = 0;
++		next->offset = win->offset + win->size;
++
++		aspeed_spi_set_window(aspi, next);
++	}
++	return 0;
++}
++
+ static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
+ {
+ 	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
+@@ -440,6 +526,8 @@ static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
+ 	if (op->data.dir != SPI_MEM_DATA_IN)
+ 		return -EOPNOTSUPP;
+ 
++	aspeed_spi_chip_adjust_window(chip, desc->info.offset, desc->info.length);
++
+ 	if (desc->info.length > chip->ahb_window_size)
+ 		dev_warn(aspi->dev, "CE%d window (%dMB) too small for mapping",
+ 			 chip->cs, chip->ahb_window_size >> 20);
 -- 
-2.35.1
+2.34.1
 
