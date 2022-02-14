@@ -2,98 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 118E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B74EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiBNVBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:01:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36910 "EHLO
+        id S230048AbiBNVCU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:02:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiBNVBl (ORCPT
+        with ESMTP id S229685AbiBNVCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:01:41 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC2D9BBA6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:01:21 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id z16so9444500pfh.3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:01:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uNlqPYCMD53jWiyYXdw9aak0gXKhbsSuXuZhyXCyHmg=;
-        b=NoQiEClPzkJ+XRi6hmHI7774JKuLP1E6J/oyoThWYOq5Le9xuEEagPZFK5pGpZUwfd
-         xHznHquGdtKJtk87zj95OL5aTurOmtI0yHvKo2bXXPrg9MdfzJmjHopMYad/7c+xl+sO
-         3v+rVvU8U1FDaPm1J0U9rDeyUq98GgoNviIWM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uNlqPYCMD53jWiyYXdw9aak0gXKhbsSuXuZhyXCyHmg=;
-        b=OoNq1uzKJ64VVwtD5kbGlfT+cf0KHZR+rxwPviXeXNzE13aML2o1CPlk2yymkkxY2X
-         ZazvgrnWMGnHN61ixudWte/z1t0+U/jp30jlHW+ty+TQ5Krwx3zNUawCvJ+f4I8Orl+q
-         DIO59vnH9H6eexuo7Qi41lQmHHX1TFNNgZ7xfYxWbPsD2rlJ1pH5liMTZSSgsTjYXoAJ
-         c/yRNu0RP75ANqBeoY7qe8R7UPLeBh8xRFvWwTqEgz6SM/QYrQ6c+hKMVB9UqnKJPp5/
-         sSSl1laTPxfl8P6EGsbDQNsH3MDuOHbJrhgjt6OkVnq1vrnWfMJ9qyR7NUclH85mupKV
-         +lIg==
-X-Gm-Message-State: AOAM532WNVifzwrX3N1GkYlJ69ChOgAOT+gM3/VYXKpthFINdT4La5Q9
-        ZoLiQcBf3BoJ/ohpqqoClewMI01Yk9qE+kU4
-X-Google-Smtp-Source: ABdhPJx3g62mmoCZharDwWks2mvOlhT7OdG28aRRlZ9wCSL27LNKps3w44wRU/SPAObV5Cqn4ljM3Q==
-X-Received: by 2002:a63:d90d:: with SMTP id r13mr621700pgg.129.1644870621248;
-        Mon, 14 Feb 2022 12:30:21 -0800 (PST)
-Received: from e29534637f20 ([203.221.136.13])
-        by smtp.gmail.com with ESMTPSA id g126sm389283pgc.31.2022.02.14.12.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 12:30:20 -0800 (PST)
-Date:   Mon, 14 Feb 2022 20:30:10 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 000/203] 5.16.10-rc1 review
-Message-ID: <20220214203010.GA7@e29534637f20>
-References: <20220214092510.221474733@linuxfoundation.org>
+        Mon, 14 Feb 2022 16:02:18 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27039B65FB;
+        Mon, 14 Feb 2022 13:02:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644872530; x=1676408530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OPsg9/jpppi/LY2t/Fw9MvKZpBWLmJurE/YRhV48e5M=;
+  b=kTVSOK0ZxUkFKfCvwjGZVyYcQm++sQzlB4CeQAow52Sm3gnloHZLsZ6V
+   Q3ya5Z8fr0aKAzdcI8wKfSaGEvQeBNnbJ8QwMiDbW9icQvVmDI7oqNeqq
+   8afj/vxRFSh1oVLDXatO5Kd3sfGtxQfeKgDod3TjTQ2HGJVzbZ4RT6+Ap
+   B/EDp2acHTDB4N5CcnNOOV3vBScGLg1fbvYA4gw1jvzAZBMQe8pK2pACg
+   5Wk+RgdMTvEn/rgTqji8ZOZLhiAO11GfEhOSishFI2dz7tloyAX7aZ7bt
+   0ykCMPMekSgBsGJOmX2YpQvfbY/BEb2OwNyiXAYZtNu3r9e9HaBNEN4Bu
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230128955"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="230128955"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 11:13:18 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="485651771"
+Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 11:13:16 -0800
+Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nJgmh-0008qn-Mw; Mon, 14 Feb 2022 19:13:15 +0000
+Date:   Tue, 15 Feb 2022 03:12:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v1 2/2] serial: sh-sci: Switch to use dev_err_probe_ptr()
+Message-ID: <202202150314.3Ybl4jns-lkp@intel.com>
+References: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+In-Reply-To: <20220214143248.502-2-andriy.shevchenko@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:24:04AM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.10 release.
-> There are 203 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
+Hi Andy,
 
-Hi Greg,
+I love your patch! Yet something to improve:
 
-5.16.10-rc1 tested.
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on usb/usb-testing linux/master linus/master v5.17-rc4 next-20220214]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Run tested on:
-- Allwinner H6 (Tanix TX6)
-- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
+url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: hexagon-buildonly-randconfig-r001-20220214 (https://download.01.org/0day-ci/archive/20220215/202202150314.3Ybl4jns-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project ea071884b0cc7210b3cc5fe858f0e892a779a23b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/810910d324cc80b092207d043651de696d293cbd
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/driver-core-add-a-wrapper-to-device-probe-log-helper-to-return-pointer/20220214-223425
+        git checkout 810910d324cc80b092207d043651de696d293cbd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/tty/serial/
 
-In addition - build tested on:
-- Allwinner A64
-- Allwinner H3
-- Allwinner H5
-- NXP iMX6
-- NXP iMX8
-- Qualcomm Dragonboard
-- Rockchip RK3288
-- Rockchip RK3328
-- Rockchip RK3399pro
-- Samsung Exynos
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
---
-Rudi
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/serial/sh-sci.c:3205:83: error: too few arguments to function call, expected 4, have 3
+                   return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+                          ~~~~~~~~~~~~~~~~~                                                        ^
+   include/linux/device.h:988:7: note: 'dev_err_probe_ptr' declared here
+   void *dev_err_probe_ptr(const struct device *dev, int err, const char *fmt, va_list args)
+         ^
+   1 error generated.
+
+
+vim +3205 drivers/tty/serial/sh-sci.c
+
+  3187	
+  3188	static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+  3189						  unsigned int *dev_id)
+  3190	{
+  3191		struct device_node *np = pdev->dev.of_node;
+  3192		struct reset_control *rstc;
+  3193		struct plat_sci_port *p;
+  3194		struct sci_port *sp;
+  3195		const void *data;
+  3196		int id, ret;
+  3197	
+  3198		if (!IS_ENABLED(CONFIG_OF) || !np)
+  3199			return ERR_PTR(-EINVAL);
+  3200	
+  3201		data = of_device_get_match_data(&pdev->dev);
+  3202	
+  3203		rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
+  3204		if (IS_ERR(rstc))
+> 3205			return dev_err_probe_ptr(&pdev->dev, PTR_ERR(rstc), "failed to get reset ctrl\n");
+  3206	
+  3207		ret = reset_control_deassert(rstc);
+  3208		if (ret) {
+  3209			dev_err(&pdev->dev, "failed to deassert reset %d\n", ret);
+  3210			return ERR_PTR(ret);
+  3211		}
+  3212	
+  3213		ret = devm_add_action_or_reset(&pdev->dev, sci_reset_control_assert, rstc);
+  3214		if (ret) {
+  3215			dev_err(&pdev->dev, "failed to register assert devm action, %d\n",
+  3216				ret);
+  3217			return ERR_PTR(ret);
+  3218		}
+  3219	
+  3220		p = devm_kzalloc(&pdev->dev, sizeof(struct plat_sci_port), GFP_KERNEL);
+  3221		if (!p)
+  3222			return ERR_PTR(-ENOMEM);
+  3223	
+  3224		/* Get the line number from the aliases node. */
+  3225		id = of_alias_get_id(np, "serial");
+  3226		if (id < 0 && ~sci_ports_in_use)
+  3227			id = ffz(sci_ports_in_use);
+  3228		if (id < 0) {
+  3229			dev_err(&pdev->dev, "failed to get alias id (%d)\n", id);
+  3230			return ERR_PTR(-EINVAL);
+  3231		}
+  3232		if (id >= ARRAY_SIZE(sci_ports)) {
+  3233			dev_err(&pdev->dev, "serial%d out of range\n", id);
+  3234			return ERR_PTR(-EINVAL);
+  3235		}
+  3236	
+  3237		sp = &sci_ports[id];
+  3238		*dev_id = id;
+  3239	
+  3240		p->type = SCI_OF_TYPE(data);
+  3241		p->regtype = SCI_OF_REGTYPE(data);
+  3242	
+  3243		sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
+  3244	
+  3245		return p;
+  3246	}
+  3247	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
