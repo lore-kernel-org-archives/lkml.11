@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BE8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45016C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345152AbiBNKF5 (ORCPT
+        id S1345196AbiBNKF7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:05:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54536 "EHLO
+        Mon, 14 Feb 2022 05:05:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345210AbiBNKB2 (ORCPT
+        with ESMTP id S1345309AbiBNKBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:01:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75ACC13E33;
-        Mon, 14 Feb 2022 01:47:34 -0800 (PST)
+        Mon, 14 Feb 2022 05:01:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BAED13F15;
+        Mon, 14 Feb 2022 01:47:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12E0361252;
-        Mon, 14 Feb 2022 09:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD902C340EF;
-        Mon, 14 Feb 2022 09:47:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49C7A61252;
+        Mon, 14 Feb 2022 09:47:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28535C340E9;
+        Mon, 14 Feb 2022 09:47:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832053;
-        bh=+NBcL0Eq3UCVybOvYfablR+3wu7sDTLFohP96udNTEs=;
+        s=korg; t=1644832059;
+        bh=0SOO8xkYBZ52xNgcRbuIriuBZKJmD4xqKnRP+PGEuL4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIDt0FKh0O02NDla50BKPZEFj+3lGKZWuiL1LvRiiWDTBQnVW1B2uKjHjKmkcX+K+
-         D2iqJi+VAI4/it2Z7C9W7N15ACv4l+wbEqFiqDTJs+lHRe3JDSE56kSjPTzi5aWRoX
-         H2pH8uMcEnschqByGXt+J6afllAAvxGsY0qlbiJ8=
+        b=GygL/AxUbOJapveWGSu4t7KZ0F5eRoZaT7uahBMaTqWh8xQ4O+Kf6ofEjCv8gVsEi
+         wIiH2UVkoU2UW6FK1pqYzCzbfn5EyyUZBGTN7fR1vze49Xs+tjsHO/OjU3Pf/UavtV
+         2Xm1hP6rLGwYGFmbe9iyBpmrfeSlNiF65eKePtdA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 033/172] net/sunrpc: fix reference count leaks in rpc_sysfs_xprt_state_change
-Date:   Mon, 14 Feb 2022 10:24:51 +0100
-Message-Id: <20220214092507.542826837@linuxfoundation.org>
+        stable@vger.kernel.org, Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 035/172] irqchip/realtek-rtl: Service all pending interrupts
+Date:   Mon, 14 Feb 2022 10:24:53 +0100
+Message-Id: <20220214092507.615736547@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -52,47 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+From: Sander Vanheule <sander@svanheule.net>
 
-[ Upstream commit 776d794f28c95051bc70405a7b1fa40115658a18 ]
+[ Upstream commit 960dd884ddf5621ae6284cd3a42724500a97ae4c ]
 
-The refcount leak issues take place in an error handling path. When the
-3rd argument buf doesn't match with "offline", "online" or "remove", the
-function simply returns -EINVAL and forgets to decrease the reference
-count of a rpc_xprt object and a rpc_xprt_switch object increased by
-rpc_sysfs_xprt_kobj_get_xprt() and
-rpc_sysfs_xprt_kobj_get_xprt_switch(), causing reference count leaks of
-both unused objects.
+Instead of only servicing the lowest pending interrupt line, make sure
+all pending SoC interrupts are serviced before exiting the chained
+handler. This adds a small overhead if only one interrupt is pending,
+but should prevent rapid re-triggering of the handler.
 
-Fix this issue by jumping to the error handling path labelled with
-out_put when buf matches none of "offline", "online" or "remove".
-
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/5082ad3cb8b4eedf55075561b93eff6570299fe1.1641739718.git.sander@svanheule.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/sysfs.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/irqchip/irq-realtek-rtl.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/sunrpc/sysfs.c b/net/sunrpc/sysfs.c
-index 9a6f17e18f73b..379cf0e4d965b 100644
---- a/net/sunrpc/sysfs.c
-+++ b/net/sunrpc/sysfs.c
-@@ -291,8 +291,10 @@ static ssize_t rpc_sysfs_xprt_state_change(struct kobject *kobj,
- 		online = 1;
- 	else if (!strncmp(buf, "remove", 6))
- 		remove = 1;
--	else
--		return -EINVAL;
-+	else {
-+		count = -EINVAL;
-+		goto out_put;
-+	}
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 568614edd88f4..50a56820c99bc 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -76,16 +76,20 @@ static void realtek_irq_dispatch(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
+ 	struct irq_domain *domain;
+-	unsigned int pending;
++	unsigned long pending;
++	unsigned int soc_int;
  
- 	if (wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_KILLABLE)) {
- 		count = -EINTR;
+ 	chained_irq_enter(chip, desc);
+ 	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
++
+ 	if (unlikely(!pending)) {
+ 		spurious_interrupt();
+ 		goto out;
+ 	}
++
+ 	domain = irq_desc_get_handler_data(desc);
+-	generic_handle_domain_irq(domain, __ffs(pending));
++	for_each_set_bit(soc_int, &pending, 32)
++		generic_handle_domain_irq(domain, soc_int);
+ 
+ out:
+ 	chained_irq_exit(chip, desc);
 -- 
 2.34.1
 
