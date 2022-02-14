@@ -2,188 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9454C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C919C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356044AbiBNPzm (ORCPT
+        id S1356052AbiBNP50 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:55:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45430 "EHLO
+        Mon, 14 Feb 2022 10:57:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242711AbiBNPzk (ORCPT
+        with ESMTP id S231160AbiBNP5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:55:40 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5824F4968F;
-        Mon, 14 Feb 2022 07:55:31 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id A75051F38B;
-        Mon, 14 Feb 2022 15:55:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1644854129; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=k9MmC9qkXYRWrTYfRcCJEivsJms60nX4tIrMOUzEtWM=;
-        b=u2FyfK++GVdTzQOjqWcqZGLBUUzrDhYKtU57FNklJOt/e4NK7Ftz0UbOcIPXvf2tiz8yjC
-        lOg4m1lH1HgqVUk5WhL9P0848EpI0TeXdVvzmIRoxnDQUtvmgcKuSfY1LwMOO9hOAfDpie
-        JLjWKG8CZYhVYy8OF3M7nq+jfqPZ6Gw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1644854129;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=k9MmC9qkXYRWrTYfRcCJEivsJms60nX4tIrMOUzEtWM=;
-        b=DZL+qoheqv/LmFulfWwBj6ooEqSB1jfA3QUYZzmGmg+dkmwxT83ob8JmlxLvtLwJu6Pvpa
-        ANP+ga/h5qpfxHCg==
-Received: from kunlun.suse.cz (unknown [10.100.128.76])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id E4E27A3B89;
-        Mon, 14 Feb 2022 15:55:25 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 16:55:24 +0100
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, kexec@lists.infradead.org,
-        Philipp Rudo <prudo@redhat.com>,
-        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
-        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Frank van der Linden <fllinden@amazon.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>,
-        linux-security-module@vger.kernel.org
-Subject: Re: [PATCH v5 2/6] powerpc/kexec_file: Add KEXEC_SIG support.
-Message-ID: <20220214155524.GN3113@kunlun.suse.cz>
-References: <cover.1641900831.git.msuchanek@suse.de>
- <d95f7c6865bcad5ee37dcbec240e79aa742f5e1d.1641900831.git.msuchanek@suse.de>
- <cff97dbe262919ff709a5ad2c4af6a702cc72a95.camel@linux.ibm.com>
- <a8d717a44e5e919676e9b1e197cac781db46da87.camel@linux.ibm.com>
+        Mon, 14 Feb 2022 10:57:23 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4350488A4;
+        Mon, 14 Feb 2022 07:57:15 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id s6-20020a0568301e0600b0059ea5472c98so11851861otr.11;
+        Mon, 14 Feb 2022 07:57:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uZNWbRMtuksjwc81DX+Fw9WpJ0JU037g2Zhi2MTrlPs=;
+        b=Gx4zfhMnWxjxMuzz7x+8v7Yc8bYKfiWNfP8peCcAuULiijqukaLPDruLwU+6pe+Wd/
+         CsSvb2/VgB73mQqUTvwNL4wMj8MqHHo7bZhYV4w1vw4p9SdwUPcAkAu57QGU2tBoIX2V
+         v+LRmgsD+4vJNk6gLrvUG1OKtuIi42v3pBdz8fvBR4bDx8t6Cg9/Ccu+veLqookmUWut
+         fpvAOeAVsPcs3234WhzS1abWoqlc6jLjx3cw8zkE/tzR0iHSWdnn67Mg1rC0JNRzZ7I1
+         /+5T8Pe1TaWkKpc7R32ZY3X/aMvDT2ZBWUElBkncThc5dhT7GFyApxCaVplYzsioaBAy
+         HNbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=uZNWbRMtuksjwc81DX+Fw9WpJ0JU037g2Zhi2MTrlPs=;
+        b=D912eKzCmC87Wtl0+HoxUv/fo0/+CtEsJe2qY1pwBAgUTgiEloQO6ovAMIL+belF/V
+         1/Q8KnxQq/ddyoX3rr5mbrGku0TOGk89DO7h3QwghuRM4rqbWQjCiujorV2TlHXy+e6k
+         avBh1tSJ2pQEluDB23wXbxqhA/jzBaLeEvHKiw347QU9ynyr/XQA9xSOhb+Rfun4Uxpg
+         bfLhLh6g2XJJXYc6tAIpalGY2eTIusWzCuwTWmHr03kayO6H6DZ2tuVEq4YraFwiYboM
+         5GNnMB3aFgAEZd3IPLiie896GtZaSY3jbrHcufJYGt8PGx8fg58zJsfVsaxfXVudMPRZ
+         x8bA==
+X-Gm-Message-State: AOAM532AGCNLgmBkeDPcXwJCDeTNrEbmMj3B6xmfGo6rnYskeoeTqfRD
+        UKKelj7HiokMTmyK5O3WYDs=
+X-Google-Smtp-Source: ABdhPJwP1G7aCfnH8seOnIkYH+ZJDcWocmRx+VDleeZSoFJAfprDEzzxaLWD5+w/+0EpYf4DDjIu8g==
+X-Received: by 2002:a9d:6086:: with SMTP id m6mr160226otj.284.1644854235199;
+        Mon, 14 Feb 2022 07:57:15 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id g10sm12515699otn.65.2022.02.14.07.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 07:57:14 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 14 Feb 2022 07:57:13 -0800
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     andrew@lunn.ch, gregory.clement@bootlin.com, robh+dt@kernel.org,
+        wim@linux-watchdog.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-watchdog@vger.kernel.org
+Subject: Re: [PATCH 2/2] watchdog: orion_wdt: support pretimeout on Armada-XP
+Message-ID: <20220214155713.GA275186@roeck-us.net>
+References: <20220211003257.2037332-1-chris.packham@alliedtelesis.co.nz>
+ <20220211003257.2037332-3-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a8d717a44e5e919676e9b1e197cac781db46da87.camel@linux.ibm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220211003257.2037332-3-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On Mon, Feb 14, 2022 at 10:14:16AM -0500, Mimi Zohar wrote:
-> Hi Michal,
+On Fri, Feb 11, 2022 at 01:32:57PM +1300, Chris Packham wrote:
+> Commit e07a4c79ca75 ("watchdog: orion_wdt: use timer1 as a pretimeout")
+> added support for a pretimeout on Armada-38x variants. Because the
+> Armada-XP variants use armada370_start/armada370_stop (due to missing an
+> explicit RSTOUT mask bit for the watchdog). Add the required pretimeout
+> support to armada370_start/armada370_stop for Armada-XP.
 > 
-> On Sun, 2022-02-13 at 21:59 -0500, Mimi Zohar wrote:
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+
+> ---
+>  drivers/watchdog/orion_wdt.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 > 
-> > 
-> > On Tue, 2022-01-11 at 12:37 +0100, Michal Suchanek wrote:
-> > > diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> > > index dea74d7717c0..1cde9b6c5987 100644
-> > > --- a/arch/powerpc/Kconfig
-> > > +++ b/arch/powerpc/Kconfig
-> > > @@ -560,6 +560,22 @@ config KEXEC_FILE
-> > >  config ARCH_HAS_KEXEC_PURGATORY
-> > >         def_bool KEXEC_FILE
-> > >  
-> > > +config KEXEC_SIG
-> > > +       bool "Verify kernel signature during kexec_file_load() syscall"
-> > > +       depends on KEXEC_FILE && MODULE_SIG_FORMAT
-> > > +       help
-> > > +         This option makes kernel signature verification mandatory for
-
-This is actually wrong. KEXEC_SIG makes it mandatory that any signature
-that is appended is valid and made by a key that is part of the platform
-keyiring (which is also wrong, built-in keys should be also accepted).
-KEXEC_SIG_FORCE or an IMA policy makes it mandatory that the signature
-is present.
-
-> > > +         the kexec_file_load() syscall.
-> > 
-> > When KEXEC_SIG is enabled on other architectures, IMA does not define a
-> > kexec 'appraise' policy rule.  Refer to the policy rules in
-> > security/ima/ima_efi.c.  Similarly the kexec 'appraise' policy rule in
-
-I suppose you mean security/integrity/ima/ima_efi.c
-
-I also think it's misguided because KEXEC_SIG in itself does not enforce
-the signature. KEXEC_SIG_FORCE does.
-
-> > arch/powerpc/kernel/ima_policy.c should not be defined.
-
-I suppose you mean arch/powerpc/kernel/ima_arch.c - see above.
-
-
-Thanks for taking the time to reseach and summarize the differences.
-
-> The discussion shouldn't only be about IMA vs. KEXEC_SIG kernel image
-> signature verification.  Let's try and reframe the problem a bit.
-> 
-> 1. Unify and simply the existing kexec signature verification so
-> verifying the KEXEC kernel image signature works irrespective of
-> signature type - PE, appended signature.
-> 
-> solution: enable KEXEC_SIG  (This patch set, with the above powerpc IMA
-> policy changes.)
-> 
-> 2. Measure and include the kexec kernel image in a log for attestation,
-> if desired.
-> 
-> solution: enable IMA_ARCH_POLICY 
-> - Powerpc: requires trusted boot to be enabled.
-> - EFI:   requires  secure boot to be enabled.  The IMA efi policy
-> doesn't differentiate between secure and trusted boot.
-> 
-> 3. Carry the kexec kernel image measurement across kexec, if desired
-> and supported on the architecture.
-> 
-> solution: enable IMA_KEXEC
-> 
-> Comparison: 
-> - Are there any differences between IMA vs. KEXEC_SIG measuring the
-> kexec kernel image?
-> 
-> One of the main differences is "what" is included in the measurement
-> list differs.  In both cases, the 'd-ng' field of the IMA measurement
-> list template (e.g. ima-ng, ima-sig, ima-modsig) is the full file hash
-> including the appended signature.  With IMA and the 'ima-modsig'
-> template, an additional hash without the appended signature is defined,
-> as well as including the appended signature in the 'sig' field.
-> 
-> Including the file hash and appended signature in the measurement list
-> allows an attestation server, for example, to verify the appended
-> signature without having to know the file hash without the signature.
-
-I don't understand this part. Isn't the hash *with* signature always
-included, and the distinguishing part about IMA is the hash *without*
-signature which is the same irrespective of signature type (PE, appended
-xattr) and irrespective of the keyt used for signoing?
-
-> Other differences are already included in the Kconfig KEXEC_SIG "Notes"
-> section.
-
-Which besides what is already described above would be blacklisting
-specific binaries, which is much more effective if you have hashes of
-binaries without signature.
-
-Thanks
-
-Michal
+> diff --git a/drivers/watchdog/orion_wdt.c b/drivers/watchdog/orion_wdt.c
+> index 127eefc9161d..e25e6bf4647f 100644
+> --- a/drivers/watchdog/orion_wdt.c
+> +++ b/drivers/watchdog/orion_wdt.c
+> @@ -238,8 +238,10 @@ static int armada370_start(struct watchdog_device *wdt_dev)
+>  	atomic_io_modify(dev->reg + TIMER_A370_STATUS, WDT_A370_EXPIRED, 0);
+>  
+>  	/* Enable watchdog timer */
+> -	atomic_io_modify(dev->reg + TIMER_CTRL, dev->data->wdt_enable_bit,
+> -						dev->data->wdt_enable_bit);
+> +	reg = dev->data->wdt_enable_bit;
+> +	if (dev->wdt.info->options & WDIOF_PRETIMEOUT)
+> +		reg |= TIMER1_ENABLE_BIT;
+> +	atomic_io_modify(dev->reg + TIMER_CTRL, reg, reg);
+>  
+>  	/* Enable reset on watchdog */
+>  	reg = readl(dev->rstout);
+> @@ -312,7 +314,7 @@ static int armada375_stop(struct watchdog_device *wdt_dev)
+>  static int armada370_stop(struct watchdog_device *wdt_dev)
+>  {
+>  	struct orion_watchdog *dev = watchdog_get_drvdata(wdt_dev);
+> -	u32 reg;
+> +	u32 reg, mask;
+>  
+>  	/* Disable reset on watchdog */
+>  	reg = readl(dev->rstout);
+> @@ -320,7 +322,10 @@ static int armada370_stop(struct watchdog_device *wdt_dev)
+>  	writel(reg, dev->rstout);
+>  
+>  	/* Disable watchdog timer */
+> -	atomic_io_modify(dev->reg + TIMER_CTRL, dev->data->wdt_enable_bit, 0);
+> +	mask = dev->data->wdt_enable_bit;
+> +	if (wdt_dev->info->options & WDIOF_PRETIMEOUT)
+> +		mask |= TIMER1_ENABLE_BIT;
+> +	atomic_io_modify(dev->reg + TIMER_CTRL, mask, 0);
+>  
+>  	return 0;
+>  }
