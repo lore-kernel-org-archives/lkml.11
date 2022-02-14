@@ -2,195 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 499DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0CEC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355798AbiBNPUw (ORCPT
+        id S1355801AbiBNPVO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:20:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46840 "EHLO
+        Mon, 14 Feb 2022 10:21:14 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355785AbiBNPUt (ORCPT
+        with ESMTP id S1355797AbiBNPVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:20:49 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E4C5BD24;
-        Mon, 14 Feb 2022 07:20:41 -0800 (PST)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EE4hmJ009969;
-        Mon, 14 Feb 2022 15:20:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
- to : cc : references : in-reply-to : mime-version : message-id :
- content-type : content-transfer-encoding; s=pp1;
- bh=fkrUmfPtt6zYPcLAlCBt3JXgVA+JKKKc7SEZHzMLDOM=;
- b=R2d7Kt2UArwcORU2EzATFwybq1li5NUpNiwpJTJoRXXdwYy7N0Wktbfgeqb2kfVkCu6Q
- 2z7Mnz0hEvfdohgEgjWWIIEaDYAs0e+mDrl/eb41Rj1/U0tDwx+D+EtBzPrShfgzti9J
- znm6pi3nL8D0RAvg92LMGnTDoJBtPlDu79cCvYvi8OlrJ86DcosN9K1NW+MOL8Fyfz2Q
- 6Y+KyGSbWXtRl29G0/k0CDnj4QF4LnVoyV3lUlr+V8Y3GgoQYmkxGBJZ+kubhjdkUENj
- OXFUuIpGGzThL+j+A3g8rivdCBKXUGLfMTfCzQqRgMwRunPzSqeG4smx4SVFkLOhpSBJ lg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bq5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 15:20:05 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21EEtWhP029986;
-        Mon, 14 Feb 2022 15:20:05 GMT
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7c4e1bny-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 15:20:05 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EFD1f1020571;
-        Mon, 14 Feb 2022 15:20:03 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06fra.de.ibm.com with ESMTP id 3e645jdw7n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 15:20:02 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EFK0GI48365924
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 15:20:00 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 58A52A405E;
-        Mon, 14 Feb 2022 15:20:00 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9CB76A4055;
-        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
-Received: from localhost (unknown [9.43.124.167])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Feb 2022 15:19:59 +0000 (GMT)
-Date:   Mon, 14 Feb 2022 20:49:57 +0530
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: Re: [PATCH v2 08/13] powerpc/ftrace: Prepare PPC64's ftrace_caller()
- for CONFIG_DYNAMIC_FTRACE_WITH_ARGS
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Jiri Kosina <jikos@kernel.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Ingo Molnar <mingo@redhat.com>, Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
-        <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
-In-Reply-To: <850817333cc76593699032e8e9a70d8c36e1af1e.1640017960.git.christophe.leroy@csgroup.eu>
+        Mon, 14 Feb 2022 10:21:12 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBCF606FD;
+        Mon, 14 Feb 2022 07:21:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644852063; x=1676388063;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=uHYs5i5tsOn7AC9eTjApEogxg8S/6QrNxF6kUCTkTSE=;
+  b=wUCTtgoxLRz7NIeb88IBA+2O0Fc0LDzBbOYXq8HhNjV/+R0PwKJHyZ39
+   hPmbhWSDew3ibDxdMu0u5uDo/tnU6oaNyl7xWwgEhRgTixjF1cARnvDKI
+   o8HoRxkS5W6uoYgYfUDSnqty0RQd+TQSL030HrTVfOhlPd279tIFWwt3K
+   k=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Feb 2022 07:21:03 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 07:21:02 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Feb 2022 07:20:42 -0800
+Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 14 Feb 2022 07:20:35 -0800
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
+        <perex@perex.cz>, <tiwai@suse.com>,
+        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
+        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-gpio@vger.kernel.org>
+CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
+Subject: [PATCH v6 4/7] pinctrl: qcom: Update lpi pin group structure
+Date:   Mon, 14 Feb 2022 20:49:51 +0530
+Message-ID: <1644851994-22732-5-git-send-email-quic_srivasam@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
 MIME-Version: 1.0
-User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
-Message-Id: <1644851672.d8a13a7hsf.naveen@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Hmu2hYFU9gEsaZJi4w4TCpwYTGPH5jdQ
-X-Proofpoint-ORIG-GUID: X2BX5tu4QyN2Hw7dSQafa7aVJYunyltG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_06,2022-02-14_03,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- adultscore=0 clxscore=1011 lowpriorityscore=0 impostorscore=0
- suspectscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 phishscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140093
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
-Thanks for your work enabling DYNAMIC_FTRACE_WITH_ARGS on powerpc. Sorry=20
-for the late review on this series, but I have a few comments below.
+Update lpi group structure with core group_desc structure
+to avoid redundant struct params.
 
+Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+---
+ drivers/pinctrl/qcom/pinctrl-lpass-lpi.c | 44 +++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
-Christophe Leroy wrote:
-> In order to implement CONFIG_DYNAMIC_FTRACE_WITH_ARGS, change ftrace_call=
-er()
-> to handle LIVEPATCH the same way as frace_caller_regs().
->=20
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-> ---
->  .../powerpc/kernel/trace/ftrace_64_mprofile.S | 25 ++++++++++++++-----
->  1 file changed, 19 insertions(+), 6 deletions(-)
-
-I think we also need to save r1 into pt_regs so that the stack pointer=20
-is available in the callbacks.
-
-Other than that, a few minor nits below...
-
->=20
-> diff --git a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S b/arch/powerp=
-c/kernel/trace/ftrace_64_mprofile.S
-> index d636fc755f60..f6f787819273 100644
-> --- a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
-> +++ b/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
-> @@ -172,14 +172,19 @@ _GLOBAL(ftrace_caller)
->  	addi	r3, r3, function_trace_op@toc@l
->  	ld	r5, 0(r3)
-> =20
-> +#ifdef CONFIG_LIVEPATCH_64
-> +	SAVE_GPR(14, r1)
-> +	mr	r14,r7		/* remember old NIP */
-                    ^ add a space
-> +#endif
-
-Please add a blank line here, to match the formatting for the rest of=20
-this file.
-
->  	/* Calculate ip from nip-4 into r3 for call below */
->  	subi    r3, r7, MCOUNT_INSN_SIZE
-> =20
->  	/* Put the original return address in r4 as parent_ip */
-> +	std	r0, _LINK(r1)
->  	mr	r4, r0
-> =20
-> -	/* Set pt_regs to NULL */
-> -	li	r6, 0
-> +	/* Load &pt_regs in r6 for call below */
-> +	addi    r6, r1 ,STACK_FRAME_OVERHEAD
-                      ^^ incorrect spacing
-> =20
->  	/* ftrace_call(r3, r4, r5, r6) */
->  .globl ftrace_call
-> @@ -189,6 +194,10 @@ ftrace_call:
-> =20
->  	ld	r3, _NIP(r1)
->  	mtctr	r3
-
-Another blank line here.
-
-> +#ifdef CONFIG_LIVEPATCH_64
-> +	cmpd	r14, r3		/* has NIP been altered? */
-> +	REST_GPR(14, r1)
-> +#endif
-> =20
->  	/* Restore gprs */
->  	REST_GPRS(3, 10, r1)
-> @@ -196,13 +205,17 @@ ftrace_call:
->  	/* Restore callee's TOC */
->  	ld	r2, 24(r1)
-> =20
-> +	/* Restore possibly modified LR */
-> +	ld	r0, _LINK(r1)
-> +	mtlr	r0
-> +
->  	/* Pop our stack frame */
->  	addi	r1, r1, SWITCH_FRAME_SIZE
-> =20
-> -	/* Reload original LR */
-> -	ld	r0, LRSAVE(r1)
-> -	mtlr	r0
-> -
-> +#ifdef CONFIG_LIVEPATCH_64
-> +        /* Based on the cmpd above, if the NIP was altered handle livepa=
-tch */
-> +	bne-	livepatch_handler
-> +#endif
-
-Here too.
-
->  	/* Handle function_graph or go back */
->  	b	ftrace_caller_common
-> =20
-
-
-- Naveen
+diff --git a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+index 3c15f80..54750ba 100644
+--- a/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
++++ b/drivers/pinctrl/qcom/pinctrl-lpass-lpi.c
+@@ -51,11 +51,11 @@
+ 
+ #define LPI_PINGROUP(id, soff, f1, f2, f3, f4)		\
+ 	{						\
+-		.name = "gpio" #id,			\
+-		.pins = gpio##id##_pins,		\
++		.group.name = "gpio" #id,			\
++		.group.pins = gpio##id##_pins,		\
+ 		.pin = id,				\
+ 		.slew_offset = soff,			\
+-		.npins = ARRAY_SIZE(gpio##id##_pins),	\
++		.group.num_pins = ARRAY_SIZE(gpio##id##_pins),	\
+ 		.funcs = (int[]){			\
+ 			LPI_MUX_gpio,			\
+ 			LPI_MUX_##f1,			\
+@@ -67,9 +67,7 @@
+ 	}
+ 
+ struct lpi_pingroup {
+-	const char *name;
+-	const unsigned int *pins;
+-	unsigned int npins;
++	struct group_desc group;
+ 	unsigned int pin;
+ 	/* Bit offset in slew register for SoundWire pins only */
+ 	int slew_offset;
+@@ -150,20 +148,20 @@ enum sm8250_lpi_functions {
+ 	LPI_MUX__,
+ };
+ 
+-static const unsigned int gpio0_pins[] = { 0 };
+-static const unsigned int gpio1_pins[] = { 1 };
+-static const unsigned int gpio2_pins[] = { 2 };
+-static const unsigned int gpio3_pins[] = { 3 };
+-static const unsigned int gpio4_pins[] = { 4 };
+-static const unsigned int gpio5_pins[] = { 5 };
+-static const unsigned int gpio6_pins[] = { 6 };
+-static const unsigned int gpio7_pins[] = { 7 };
+-static const unsigned int gpio8_pins[] = { 8 };
+-static const unsigned int gpio9_pins[] = { 9 };
+-static const unsigned int gpio10_pins[] = { 10 };
+-static const unsigned int gpio11_pins[] = { 11 };
+-static const unsigned int gpio12_pins[] = { 12 };
+-static const unsigned int gpio13_pins[] = { 13 };
++static int gpio0_pins[] = { 0 };
++static int gpio1_pins[] = { 1 };
++static int gpio2_pins[] = { 2 };
++static int gpio3_pins[] = { 3 };
++static int gpio4_pins[] = { 4 };
++static int gpio5_pins[] = { 5 };
++static int gpio6_pins[] = { 6 };
++static int gpio7_pins[] = { 7 };
++static int gpio8_pins[] = { 8 };
++static int gpio9_pins[] = { 9 };
++static int gpio10_pins[] = { 10 };
++static int gpio11_pins[] = { 11 };
++static int gpio12_pins[] = { 12 };
++static int gpio13_pins[] = { 13 };
+ static const char * const swr_tx_clk_groups[] = { "gpio0" };
+ static const char * const swr_tx_data_groups[] = { "gpio1", "gpio2", "gpio5" };
+ static const char * const swr_rx_clk_groups[] = { "gpio3" };
+@@ -262,7 +260,7 @@ static const char *lpi_gpio_get_group_name(struct pinctrl_dev *pctldev,
+ {
+ 	struct lpi_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
+ 
+-	return pctrl->data->groups[group].name;
++	return pctrl->data->groups[group].group.name;
+ }
+ 
+ static int lpi_gpio_get_group_pins(struct pinctrl_dev *pctldev,
+@@ -272,8 +270,8 @@ static int lpi_gpio_get_group_pins(struct pinctrl_dev *pctldev,
+ {
+ 	struct lpi_pinctrl *pctrl = pinctrl_dev_get_drvdata(pctldev);
+ 
+-	*pins = pctrl->data->groups[group].pins;
+-	*num_pins = pctrl->data->groups[group].npins;
++	*pins = pctrl->data->groups[group].group.pins;
++	*num_pins = pctrl->data->groups[group].group.num_pins;
+ 
+ 	return 0;
+ }
+-- 
+2.7.4
 
