@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E939C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346476AbiBNKUF (ORCPT
+        id S1346191AbiBNKUI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42334 "EHLO
+        Mon, 14 Feb 2022 05:20:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346494AbiBNKPu (ORCPT
+        with ESMTP id S1346483AbiBNKPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:15:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0931678069;
-        Mon, 14 Feb 2022 01:52:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A61A78060;
+        Mon, 14 Feb 2022 01:52:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4667C612BF;
-        Mon, 14 Feb 2022 09:52:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22667C340E9;
-        Mon, 14 Feb 2022 09:52:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34ACC612B4;
+        Mon, 14 Feb 2022 09:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E76B2C340E9;
+        Mon, 14 Feb 2022 09:52:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832373;
-        bh=CLfqbK5DAgyx3E+ykodxSz0Gwtxu7xIMZXMF5qlQwTE=;
+        s=korg; t=1644832370;
+        bh=NOLA5kg11otvmBJsW+m0RL1uhgYczBCkkn/7e1ziXuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2JVbCZIr5Y+4IMXsARQW2xoA2GwIQfjIgmUUCD/sILsMMwasupXgkGgfwsaCQrKE
-         lnQhq0osuW5q8HGhP9Ze7xrIK4q6oylJQug/cSRBUlCEhV/ONfa/KINSQy/NOwoHZn
-         O3N21oLUzsLspXLoDs2jbF5fzhJZyIVN9KP1Rvko=
+        b=KPIf9udLTHu/J3CRNNrw7GtV7RAXsdCa18dKBrBU0uEfIE9NUxWW+atuYz3aRhjX/
+         2gtNDEBZg0aKYnXrwC4+oRxp5/zlwflqiLdx4Z9VXQ+3xcdQ3rpiw6fbWBnTY0VJb7
+         85gKEHw2top38HS/MbKIeW5Ev63RoHEGW9Ke8UZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>
-Subject: [PATCH 5.15 134/172] vt_ioctl: fix array_index_nospec in vt_setactivate
-Date:   Mon, 14 Feb 2022 10:26:32 +0100
-Message-Id: <20220214092511.036875993@linuxfoundation.org>
+        stable@vger.kernel.org, Vijay Dhanraj <vijay.dhanraj@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.15 164/172] x86/sgx: Silence softlockup detection when releasing large enclaves
+Date:   Mon, 14 Feb 2022 10:27:02 +0100
+Message-Id: <20220214092512.049990826@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,40 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakob Koschel <jakobkoschel@gmail.com>
+From: Reinette Chatre <reinette.chatre@intel.com>
 
-commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
+commit 8795359e35bc33bf86b6d0765aa7f37431db3b9c upstream.
 
-array_index_nospec ensures that an out-of-bounds value is set to zero
-on the transient path. Decreasing the value by one afterwards causes
-a transient integer underflow. vsa.console should be decreased first
-and then sanitized with array_index_nospec.
+Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
+triggers the softlockup detector.
 
-Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
-Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
-Amsterdam.
+Actual SGX systems have 128GB of enclave memory or more.  The
+"unclobbered_vdso_oversubscribed" selftest creates one enclave which
+consumes all of the enclave memory on the system. Tearing down such a
+large enclave takes around a minute, most of it in the loop where
+the EREMOVE instruction is applied to each individual 4k enclave page.
 
-Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
-Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
-Cc: stable <stable@vger.kernel.org>
+Spending one minute in a loop triggers the softlockup detector.
+
+Add a cond_resched() to give other tasks a chance to run and placate
+the softlockup detector.
+
+Cc: stable@vger.kernel.org
+Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
+Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
+Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
+Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+Tested-by: Jarkko Sakkinen <jarkko@kernel.org>  (kselftest as sanity check)
+Link: https://lkml.kernel.org/r/ced01cac1e75f900251b0a4ae1150aa8ebd295ec.1644345232.git.reinette.chatre@intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/vt/vt_ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/cpu/sgx/encl.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -599,8 +599,8 @@ static int vt_setactivate(struct vt_seta
- 	if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
- 		return -ENXIO;
+--- a/arch/x86/kernel/cpu/sgx/encl.c
++++ b/arch/x86/kernel/cpu/sgx/encl.c
+@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
+ 		}
  
--	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES + 1);
- 	vsa.console--;
-+	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES);
- 	console_lock();
- 	ret = vc_allocate(vsa.console);
- 	if (ret) {
+ 		kfree(entry);
++		/* Invoke scheduler to prevent soft lockups. */
++		cond_resched();
+ 	}
+ 
+ 	xa_destroy(&encl->page_array);
 
 
