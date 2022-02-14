@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 480E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34137C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243276AbiBNJnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33146 "EHLO
+        id S231292AbiBNJnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245038AbiBNJlE (ORCPT
+        with ESMTP id S245087AbiBNJlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0492AA1A3;
-        Mon, 14 Feb 2022 01:36:59 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78D2A1B9;
+        Mon, 14 Feb 2022 01:37:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 884016116D;
-        Mon, 14 Feb 2022 09:36:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50893C340EF;
-        Mon, 14 Feb 2022 09:36:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F4A5B80DA9;
+        Mon, 14 Feb 2022 09:37:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90F05C340E9;
+        Mon, 14 Feb 2022 09:37:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831418;
-        bh=81aYpI91jq53HB2t3OGicrrculO2wPexrRicI87XbMQ=;
+        s=korg; t=1644831424;
+        bh=oot8H8SG+fLifHmlvEmUgAK75vhWQy+DzZGm3AcsJhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O8BPlj/k1bxr06aij+DJHWoqI2VBrWqTxlxjP7CF5EEoGpeJ4+TyZF8CQAA2BkLOF
-         LmennnIKjua7gf0pL/4dPtSdK8cFQ4EQDfRLXPO/IMvk5TthOLEJW1JPwUOFmWGhhy
-         e/b3oP4DG2lOlA0mvKXfOGxlDI/xWLOymXzjSCko=
+        b=sZrrydqyyOX4VKaO1ifYNTyVXiLFrnuScez57OSMsHDvYMAE90DmMw7m4vjU8xGMf
+         kAm+Rjbn+YDfZH/0vgNBx2VHxyDtBJoMhwFlM/EcguDoFdaq9SQrL4cganF9WZfQ7d
+         lJNKuvIC50ZPir0o/gWmY0QMO6khdWOk6OeicEv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 48/71] tipc: rate limit warning for received illegal binding update
-Date:   Mon, 14 Feb 2022 10:26:16 +0100
-Message-Id: <20220214092453.666682678@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Jakob Koschel <jakobkoschel@gmail.com>
+Subject: [PATCH 5.4 50/71] vt_ioctl: fix array_index_nospec in vt_setactivate
+Date:   Mon, 14 Feb 2022 10:26:18 +0100
+Message-Id: <20220214092453.731026197@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,38 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: Jakob Koschel <jakobkoschel@gmail.com>
 
-[ Upstream commit c7223d687758462826a20e9735305d55bb874c70 ]
+commit 61cc70d9e8ef5b042d4ed87994d20100ec8896d9 upstream.
 
-It would be easy to craft a message containing an illegal binding table
-update operation. This is handled correctly by the code, but the
-corresponding warning printout is not rate limited as is should be.
-We fix this now.
+array_index_nospec ensures that an out-of-bounds value is set to zero
+on the transient path. Decreasing the value by one afterwards causes
+a transient integer underflow. vsa.console should be decreased first
+and then sanitized with array_index_nospec.
 
-Fixes: b97bf3fd8f6a ("[TIPC] Initial merge")
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Kasper Acknowledgements: Jakob Koschel, Brian Johannesmeyer, Kaveh
+Razavi, Herbert Bos, Cristiano Giuffrida from the VUSec group at VU
+Amsterdam.
+
+Co-developed-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Brian Johannesmeyer <bjohannesmeyer@gmail.com>
+Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+Link: https://lore.kernel.org/r/20220127144406.3589293-1-jakobkoschel@gmail.com
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/name_distr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/vt/vt_ioctl.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 836e629e8f4ab..661bc2551a0a2 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -290,7 +290,7 @@ static bool tipc_update_nametbl(struct net *net, struct distr_item *i,
- 		pr_warn_ratelimited("Failed to remove binding %u,%u from %x\n",
- 				    type, lower, node);
- 	} else {
--		pr_warn("Unrecognized name table message received\n");
-+		pr_warn_ratelimited("Unknown name table message received\n");
- 	}
- 	return false;
- }
--- 
-2.34.1
-
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -715,9 +715,9 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (vsa.console == 0 || vsa.console > MAX_NR_CONSOLES)
+ 			ret = -ENXIO;
+ 		else {
+-			vsa.console = array_index_nospec(vsa.console,
+-							 MAX_NR_CONSOLES + 1);
+ 			vsa.console--;
++			vsa.console = array_index_nospec(vsa.console,
++							 MAX_NR_CONSOLES);
+ 			console_lock();
+ 			ret = vc_allocate(vsa.console);
+ 			if (ret == 0) {
 
 
