@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 096ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241939AbiBNKcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41686 "EHLO
+        id S1347315AbiBNKck (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:32:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348906AbiBNKbL (ORCPT
+        with ESMTP id S1348928AbiBNKbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B1D9DD54;
-        Mon, 14 Feb 2022 01:59:53 -0800 (PST)
+        Mon, 14 Feb 2022 05:31:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFF5216;
+        Mon, 14 Feb 2022 01:59:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32FC4B80DCE;
-        Mon, 14 Feb 2022 09:59:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6714AC340E9;
-        Mon, 14 Feb 2022 09:59:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A4A60921;
+        Mon, 14 Feb 2022 09:59:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A553C340E9;
+        Mon, 14 Feb 2022 09:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832782;
-        bh=kBKRvywjjqjNpuL5Kwxupm6Ld+fvT0fycBmoWsPxpms=;
+        s=korg; t=1644832785;
+        bh=aJUAwIrosiZGWRzf6yXVGdTcM6ZHiOGnt5DM2fqHz2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f1NeO0WwjnmdrcLIglKw4oP43gB1tUvkNyVXHvyJqiD+ct+nMOw5avyocmLrL8fZC
-         L60jcwd+3pu35cjICBqLPikFjo4mQAz0L5p7T3yz3+XHvYtxXg32EGbUuFiXLmkvDh
-         +ewEPdyjzBtt3GJGctTJA6TpsQQgaXdiZKIgEk+M=
+        b=ViRjUuN76qrmULet0l4daaRHMQwdGzppKLxJ8rGOxt6hJLs3HM6hKZN2BusPCxO6t
+         lcdHb1NCcwiLl5nm/2VJx8R7ecfywjtGv+kzIBDs4jZyDuWaW3Xq4RBIXx/Zq/0+fu
+         uk7nfWXBV1MzU32NGsZ2q4CccECv8hVZU/euvDD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Talal Ahmad <talalahmad@google.com>,
-        Arjun Roy <arjunroy@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 123/203] tcp: take care of mixed splice()/sendmsg(MSG_ZEROCOPY) case
-Date:   Mon, 14 Feb 2022 10:26:07 +0100
-Message-Id: <20220214092514.420537078@linuxfoundation.org>
+Subject: [PATCH 5.16 124/203] net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over IP
+Date:   Mon, 14 Feb 2022 10:26:08 +0100
+Message-Id: <20220214092514.451740366@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -54,100 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit f8d9d938514f46c4892aff6bfe32f425e84d81cc ]
+[ Upstream commit 59085208e4a2183998964844f8684fea0378128d ]
 
-syzbot found that mixing sendpage() and sendmsg(MSG_ZEROCOPY)
-calls over the same TCP socket would again trigger the
-infamous warning in inet_sock_destruct()
+The filters for the PTP trap keys are incorrectly configured, in the
+sense that is2_entry_set() only looks at trap->key.ipv4.dport or
+trap->key.ipv6.dport if trap->key.ipv4.proto or trap->key.ipv6.proto is
+set to IPPROTO_TCP or IPPROTO_UDP.
 
-	WARN_ON(sk_forward_alloc_get(sk));
+But we don't do that, so is2_entry_set() goes through the "else" branch
+of the IP protocol check, and ends up installing a rule for "Any IP
+protocol match" (because msk is also 0). The UDP port is ignored.
 
-While Talal took into account a mix of regular copied data
-and MSG_ZEROCOPY one in the same skb, the sendpage() path
-has been forgotten.
+This means that when we run "ptp4l -i swp0 -4", all IP traffic is
+trapped to the CPU, which hinders bridging.
 
-We want the charging to happen for sendpage(), because
-pages could be coming from a pipe. What is missing is the
-downgrading of pure zerocopy status to make sure
-sk_forward_alloc will stay synced.
+Fix this by specifying the IP protocol in the VCAP IS2 filters for PTP
+over UDP.
 
-Add tcp_downgrade_zcopy_pure() helper so that we can
-use it from the two callers.
-
-Fixes: 9b65b17db723 ("net: avoid double accounting for pure zerocopy skbs")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Talal Ahmad <talalahmad@google.com>
-Cc: Arjun Roy <arjunroy@google.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Link: https://lore.kernel.org/r/20220203225547.665114-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 96ca08c05838 ("net: mscc: ocelot: set up traps for PTP packets")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c | 33 +++++++++++++++++++--------------
- 1 file changed, 19 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 94cbba9fb12b1..28abb0bb1c515 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -936,6 +936,22 @@ void tcp_remove_empty_skb(struct sock *sk)
- 	}
- }
- 
-+/* skb changing from pure zc to mixed, must charge zc */
-+static int tcp_downgrade_zcopy_pure(struct sock *sk, struct sk_buff *skb)
-+{
-+	if (unlikely(skb_zcopy_pure(skb))) {
-+		u32 extra = skb->truesize -
-+			    SKB_TRUESIZE(skb_end_offset(skb));
-+
-+		if (!sk_wmem_schedule(sk, extra))
-+			return -ENOMEM;
-+
-+		sk_mem_charge(sk, extra);
-+		skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
-+	}
-+	return 0;
-+}
-+
- static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 				      struct page *page, int offset, size_t *size)
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 294bb4eb3833f..ac5849436d021 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1292,6 +1292,8 @@ static void
+ ocelot_populate_ipv4_ptp_event_trap_key(struct ocelot_vcap_filter *trap)
  {
-@@ -971,7 +987,7 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- 		tcp_mark_push(tp, skb);
- 		goto new_segment;
- 	}
--	if (!sk_wmem_schedule(sk, copy))
-+	if (tcp_downgrade_zcopy_pure(sk, skb) || !sk_wmem_schedule(sk, copy))
- 		return NULL;
- 
- 	if (can_coalesce) {
-@@ -1319,19 +1335,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
- 
--			/* skb changing from pure zc to mixed, must charge zc */
--			if (unlikely(skb_zcopy_pure(skb))) {
--				u32 extra = skb->truesize -
--					    SKB_TRUESIZE(skb_end_offset(skb));
--
--				if (!sk_wmem_schedule(sk, extra))
--					goto wait_for_space;
--
--				sk_mem_charge(sk, extra);
--				skb_shinfo(skb)->flags &= ~SKBFL_PURE_ZEROCOPY;
--			}
--
--			if (!sk_wmem_schedule(sk, copy))
-+			if (tcp_downgrade_zcopy_pure(sk, skb) ||
-+			    !sk_wmem_schedule(sk, copy))
- 				goto wait_for_space;
- 
- 			err = skb_copy_to_page_nocache(sk, &msg->msg_iter, skb,
+ 	trap->key_type = OCELOT_VCAP_KEY_IPV4;
++	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
++	trap->key.ipv4.proto.mask[0] = 0xff;
+ 	trap->key.ipv4.dport.value = PTP_EV_PORT;
+ 	trap->key.ipv4.dport.mask = 0xffff;
+ }
+@@ -1300,6 +1302,8 @@ static void
+ ocelot_populate_ipv6_ptp_event_trap_key(struct ocelot_vcap_filter *trap)
+ {
+ 	trap->key_type = OCELOT_VCAP_KEY_IPV6;
++	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
++	trap->key.ipv4.proto.mask[0] = 0xff;
+ 	trap->key.ipv6.dport.value = PTP_EV_PORT;
+ 	trap->key.ipv6.dport.mask = 0xffff;
+ }
+@@ -1308,6 +1312,8 @@ static void
+ ocelot_populate_ipv4_ptp_general_trap_key(struct ocelot_vcap_filter *trap)
+ {
+ 	trap->key_type = OCELOT_VCAP_KEY_IPV4;
++	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
++	trap->key.ipv4.proto.mask[0] = 0xff;
+ 	trap->key.ipv4.dport.value = PTP_GEN_PORT;
+ 	trap->key.ipv4.dport.mask = 0xffff;
+ }
+@@ -1316,6 +1322,8 @@ static void
+ ocelot_populate_ipv6_ptp_general_trap_key(struct ocelot_vcap_filter *trap)
+ {
+ 	trap->key_type = OCELOT_VCAP_KEY_IPV6;
++	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
++	trap->key.ipv4.proto.mask[0] = 0xff;
+ 	trap->key.ipv6.dport.value = PTP_GEN_PORT;
+ 	trap->key.ipv6.dport.mask = 0xffff;
+ }
 -- 
 2.34.1
 
