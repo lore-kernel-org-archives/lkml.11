@@ -2,138 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C014EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 05:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 05:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239564AbiBNFlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 00:41:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39834 "EHLO
+        id S240526AbiBNFlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 00:41:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235084AbiBNFlF (ORCPT
+        with ESMTP id S235084AbiBNFlR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 00:41:05 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3A14EA11
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 21:40:57 -0800 (PST)
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 539303F1D1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:40:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644817256;
-        bh=UtvxLt+fpaGCh4jLiStzvvcYAH2mUcrQBrILFyvETHQ=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=ezWhJ7mibNiVfEkqGAmR3CVoUbO10dpwmIurNNYXl8JEMqH7/62A9MSisC2MXcNiU
-         ryrIpQyl20etJAcvwnKLL0yUBaFKAJeSbyaa54brjuPy695i7FJj7+A9JEJuEqY9dm
-         Qhz7uTHB1hyXDg4NF1e9S0ToxLOnN88BEaT6itQnDV77o1nAmGJ66b6FKXb+VZNmgB
-         9uVkzjxAk+OgO8MtqGmaeCKZkqpf5u3JCJjZrG4Ddh2YaGVWYvGb53JoFXCkUxa55n
-         XMy53vNcphoBLBhHheHx9axc5FlH2b8adu5tjctetZN4Z9ydMcT8o1FLslbw0cJy8M
-         cPUcyKufiizZQ==
-Received: by mail-oi1-f197.google.com with SMTP id o4-20020aca5a04000000b002d3a5cc05b9so3275209oib.6
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 21:40:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UtvxLt+fpaGCh4jLiStzvvcYAH2mUcrQBrILFyvETHQ=;
-        b=hwLsEBZZO3mlW0lQZgTFtaT3JD5GobwZmL5/OsXwjXyih6dLW/vegh3/F+90hSb3Rj
-         NhDWXGrdctqWWeNL4y5Bd+cbbpKq2j9rClU1VVTcS0QAIi7bXDILDN5nPgxkt5kQjH5Z
-         5ZJiHouF0+MOFaieLRnxNsGsS+cM5Ybz8gimRfM0c2nu7GWo4AmEwfoTqI+vgIwFXF4E
-         XLIM19ISQDtU3GW19EFfJLFePTc8ChgXs87SkVhTumH3RxHUfROZExqQ5siApPLRg5Bu
-         jERDY3IuQxrIhP1mrG5i7n+uLthM2Fiex+BvpBLTebW4c/qPjkGvZXhP8zpTYnOuze3u
-         faaQ==
-X-Gm-Message-State: AOAM533/T91tWXe5ER8uRaww3nr+zwnaOtd6J/lodhJngeAh8gL7mb6i
-        ijULq0DytpndYKbt9KP6jHS7s25ZBBAaY1n7vkOb3udCsPXVRt0t4cn1DuWusLaLyVDno52bE+T
-        Zm2Q9fnDKOfl8fiQiPBBp5LogV1FYlysfGoYKvd1c8uIbObt5boSJrQDNcw==
-X-Received: by 2002:a05:6870:a3c5:: with SMTP id h5mr3402021oak.247.1644817255190;
-        Sun, 13 Feb 2022 21:40:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPCy9bN1oZ8Fb+tXY12LBK9yr/J6dD3YY1lBryjJfZAi/D4hbOhXWOqdMlquheJmLDAjefs+nJoK4ul/gBG5s=
-X-Received: by 2002:a05:6870:a3c5:: with SMTP id h5mr3402014oak.247.1644817254878;
- Sun, 13 Feb 2022 21:40:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <YelxMFOiqnfIVmyy@lunn.ch> <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
- <Yeqzhx3GbMzaIbj6@lunn.ch> <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
- <YerOIXi7afbH/3QJ@lunn.ch> <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com> <Yex0rZ0wRWQH/L4n@lunn.ch>
-In-Reply-To: <Yex0rZ0wRWQH/L4n@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Mon, 14 Feb 2022 13:40:43 +0800
-Message-ID: <CAAd53p6pfuYDor3vgm_bHFe_o7urNhv7W6=QGxVz6c=htt7wLg@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>, linux@armlinux.org.uk,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Mon, 14 Feb 2022 00:41:17 -0500
+X-Greylist: delayed 374 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 21:41:08 PST
+Received: from wout4-smtp.messagingengine.com (wout4-smtp.messagingengine.com [64.147.123.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 193FF4EA18;
+        Sun, 13 Feb 2022 21:41:07 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 650673200D78;
+        Mon, 14 Feb 2022 00:34:52 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Mon, 14 Feb 2022 00:34:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; bh=FwpXgRHkKOnxGk
+        gH2V9GHUXNJiCu/ssAJnUnC7PmQaI=; b=BC798HSJ7e7u3jkh9OrLq5my9B4tLn
+        tXgji4leFe0NI/Dw9Vj8wzpQko66NYAq0ikQM/jyo1WJtxpPVdCu2nx7DJYMcocK
+        WlTyLnn6kIt2cNyUc2Zs4v9GkZpNHMT7OrDeOc0M4ErnLa6VD65DAb2T7QQCr6br
+        LZMiYbZbeLU7iCeRcZDJfnOEZUd1BPyHA/iy2qHU+552006Jf7p6gnY4G94EwpLH
+        ZZ2GkQ7sCPgLmNIcXyhIENpmhYZ2RX4OR/+qTfETKIeqZkE5nj2mVVt0Nv0sGKvA
+        hfTNvXikYZFaygCeRdbyd8ufh3+td53Jdr/4qjArpw35k5qek54EEOkw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=FwpXgRHkKOnxGkgH2V9GHUXNJiCu/ssAJnUnC7PmQ
+        aI=; b=m3oOoN5bGKTNrL7MiWfJ/tln8VgqzV7RT4TlMO/dory7wzYWzBIylZi4y
+        IXpzOS5pw/3SQPbstTRd5I7VwS29ol1cngkBfDqhZRjofsNsZQpV2w6+JUo5ZWIN
+        uYemA2UA4S0becx2E+imXzw1MMcvGC3znqMb2qFlcRVhvyxKjoG3uE2NE1VjQQZW
+        O0iN3ep99eN92Dge23nRDGh+/2MW0MGb7sO3gTwexByuId7SFjvezq1KZW3Gl2VS
+        tOXttx5Czrt94V+pJlEzPQcwxLm6GYF3R0c/OM9lLyxIYyUwCdnYQ3DtBepcB2t+
+        Wrbpii2+km2KeDkuuq5sQnLEjxlkw==
+X-ME-Sender: <xms:--kJYvoZdlSChlPxCFL5GNsUPmqiYYwxGCQDIQNm4ufRWYOaUICNhw>
+    <xme:--kJYprHDRgzoV8jJwgAJqEWQKbONeRX7L6kfBAqkkT8WqkPcda3t7okLuH8lXrWd
+    eT1RgCZNXZ0>
+X-ME-Received: <xmr:--kJYsOwiiRGj5Gspm_UByqpC5YpqpZLtGzOsWiWJtbrT7uNs_g5Pth0hPNH7jVqOueyTRG651omd8tB6FxJwkbmvDxXCvLYUYem4SQgRF7dH3yQPpY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedugdekhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepkffuhffvffgjfhgtfggggfesthekre
+    dttderjeenucfhrhhomhepkfgrnhcumfgvnhhtuceorhgrvhgvnhesthhhvghmrgifrdhn
+    vghtqeenucggtffrrghtthgvrhhnpefgleelkeetheelgeehueejueduhfeufffgleehgf
+    evtdehhffhhffhtddugfefheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhep
+    mhgrihhlfhhrohhmpehrrghvvghnsehthhgvmhgrfidrnhgvth
+X-ME-Proxy: <xmx:--kJYi7hg3zFuw-53VOuXiFLzX2YVBZXif2wRok9NXFMiLvtSgxGPQ>
+    <xmx:--kJYu74ITcGONthlpAcjzRemZ-W2ZW3TacvMVHxnPZ3Ed5iOQ0f3w>
+    <xmx:--kJYqhta18-_ICGC6ssPuek4bNndL_Lbp_V_BPBecDcIb05RbQiKA>
+    <xmx:--kJYkSk2C6dUB63xHnWLltPpVR_iMzafZVL_5c2UxavF6djSoh9fA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 14 Feb 2022 00:34:49 -0500 (EST)
+Message-ID: <b042424ce0e68f576fdab268adeeff90d48da8a8.camel@themaw.net>
+Subject: Re: [ANNOUNCE] autofs 5.1.8 release
+From:   Ian Kent <raven@themaw.net>
+To:     NeilBrown <neilb@suse.de>
+Cc:     autofs@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         linux-kernel@vger.kernel.org
+Date:   Mon, 14 Feb 2022 13:34:46 +0800
+In-Reply-To: <164444398868.27779.4643380819577932837@noble.neil.brown.name>
+References: <b54fb31652a4ba76b39db66b8ae795ee3af6f025.camel@themaw.net>
+         <164444398868.27779.4643380819577932837@noble.neil.brown.name>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 5:18 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > One more idea:
-> > The hw reset default for register 16 is 0x101e. If the current value
-> > is different when entering config_init then we could preserve it
-> > because intentionally a specific value has been set.
-> > Only if we find the hw reset default we'd set the values according
-> > to the current code.
->
-> We can split the problem into two.
->
-> 1) I think saving LED configuration over suspend/resume is not an
-> issue. It is probably something we will be needed if we ever get PHY
-> LED configuration via sys/class/leds.
->
-> 2) Knowing something else has configured the LEDs and the Linux driver
-> should not touch it. In general, Linux tries not to trust the
-> bootloader, because experience has shown bad things can happen when
-> you do. We cannot tell if the LED configuration is different to
-> defaults because something has deliberately set it, or it is just
-> messed up, maybe from the previous boot/kexec, maybe by the
-> bootloader. Even this Dell system BIOS gets it wrong, it configures
-> the LED on power on, but not resume !?!?!. And what about reboot?
+On Thu, 2022-02-10 at 08:59 +1100, NeilBrown wrote:
+> On Tue, 19 Oct 2021, Ian Kent wrote:
+> > Hi all,
+> > 
+> > It's time for a release, autofs-5.1.8.
+> > 
+> ...
+> > - also require TCP_REQUESTED when setting NFS port.
+> 
+> Unfortunately that last patch is buggy.  TCP_REQUESTED is masked out
+> in
+> the caller.
 
-The LED will be reconfigured correctly after each reboot.
-The platform firmware folks doesn't want to restore the value on
-resume because the Windows driver already does that. They are afraid
-it may cause regression if firmware does the same thing.
+Mmm ... sounds like I've made a mistake there.
+I'll need to sort that out, thanks for pointing it out.
 
->
-> So i really would like the bootloader to explicitly say it has
-> configured the LEDs and it takes full responsibility for any and all
-> bad behaviour as a result.
+> 
+> Maybe the following is best.
+> 
+> NeilBrown
+> 
+> From: NeilBrown <neilb@suse.de>
+> Subject: [PATCH] Test TCP request correctly in nfs_get_info()
+> 
+> The TCP_REQUESTED flag is masked out by the caller, so it never gets
+> to
+> nfs_get_info().
 
-This is an ACPI based platform and we are working on new firmware
-property "use-firmware-led" to give driver a hint:
-...
-    Scope (_SB.PC00.OTN0)
-    {
-        Name (_DSD, Package (0x02)  // _DSD: Device-Specific Data
-        {
-            ToUUID ("daffd814-6eba-4d8c-8a91-bc9bbf4aa301") /* Device
-Properties for _DSD */,
-            Package (0x01)
-            {
-                Package (0x02)
-                {
-                    "use-firmware-led",
-                    One
-                }
-            }
-        })
-    }
-...
+That wasn't my intent, I'll need to look at it again.
+The case I'm trying to cover is fairly specific so I will need to
+look at it again.
 
-Because the property is under PCI device namespace, I am not sure how
-to (cleanly) bring the property from the phylink side to phydev side.
-Do you have any suggestion?
+Ian
 
-Kai-Heng
+> We can test if TCP was requested by examining the 'proto' parameter.
+> 
+> Signed-off-by: NeilBrown <neilb@suse.de>
+> 
+> diff --git a/modules/replicated.c b/modules/replicated.c
+> index 09075dd0c1b4..3ac7ee432e73 100644
+> --- a/modules/replicated.c
+> +++ b/modules/replicated.c
+> @@ -291,7 +291,7 @@ static unsigned int get_nfs_info(unsigned logopt,
+> struct host *host,
+>  
+>         rpc_info->proto = proto;
+>         if (port < 0) {
+> -               if ((version & NFS4_REQUESTED) && (version &
+> TCP_REQUESTED))
+> +               if ((version & NFS4_REQUESTED) && (proto ==
+> IPPROTO_TCP))
+>                         rpc_info->port = NFS_PORT;
+>                 else
+>                         port = 0;
+> 
 
->
->           Andrew
