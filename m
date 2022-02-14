@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E51FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245399AbiBNJtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:49:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43862 "EHLO
+        id S245567AbiBNJth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:49:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344110AbiBNJqm (ORCPT
+        with ESMTP id S1344151AbiBNJqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FEDA66612;
-        Mon, 14 Feb 2022 01:40:12 -0800 (PST)
+        Mon, 14 Feb 2022 04:46:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E897766628;
+        Mon, 14 Feb 2022 01:40:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50B1FB80DC1;
-        Mon, 14 Feb 2022 09:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 747D9C340E9;
-        Mon, 14 Feb 2022 09:40:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB956117D;
+        Mon, 14 Feb 2022 09:40:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E114C340E9;
+        Mon, 14 Feb 2022 09:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831607;
-        bh=GmHD2H6wXTPw4OsDfCiRyEE9zZtwRyeGAsCLUx/cKAA=;
+        s=korg; t=1644831609;
+        bh=bGyyTllWn9VeEU87vfFmIRuIH3toa/eBi1YJ/SiYrRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oej72s+GXo2oMVdqEe3uk2nmnRXyqBJNZN2B2GNqBsuOTmy0YmK6ZatZv0nvxDl4C
-         aBDfch+pURsfBalC1ujUzrGh5EMCnvM1dCP9tJLohG2h53Otp5Ks3xQLG++eWfIEpA
-         9qJVzP9SvsNMpMIKHbF9yvJ6N4w7783j73oRunyg=
+        b=RhoUhwAvqKPxMV5WK4VdatxA4tCJ+GMQ93uE36grwze9MRVWIvIf/pyDl3zWzi05S
+         JMfEqZw4QEPPzCZjp91OXRVcs5uzSL656BuEGyWlNYyBS2UMJfouMCAj5mXFtie20b
+         juWH8Xx0iYImH6VI0ByQMEms/2zftt/BckaELEdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.10 005/116] mmc: sdhci-of-esdhc: Check for error num after setting mask
-Date:   Mon, 14 Feb 2022 10:25:04 +0100
-Message-Id: <20220214092458.864552120@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com,
+        Ziyang Xuan <william.xuanziyang@huawei.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.10 006/116] can: isotp: fix potential CAN frame reception race in isotp_rcv()
+Date:   Mon, 14 Feb 2022 10:25:05 +0100
+Message-Id: <20220214092458.895195012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,48 +51,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-commit 40c67c291a93f8846c4a972c9ef1b7ba4544c8d0 upstream.
+commit 7c759040c1dd03954f650f147ae7175476d51314 upstream.
 
-Because of the possible failure of the dma_supported(), the
-dma_set_mask_and_coherent() may return error num.
-Therefore, it should be better to check it and return the error if
-fails.
-And since the sdhci_setup_host() has already checked the return value of
-the enable_dma, we need not check it in sdhci_resume_host() again.
+When receiving a CAN frame the current code logic does not consider
+concurrently receiving processes which do not show up in real world
+usage.
 
-Fixes: 5552d7ad596c ("mmc: sdhci-of-esdhc: set proper dma mask for ls104x chips")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Ziyang Xuan writes:
+
+The following syz problem is one of the scenarios. so->rx.len is
+changed by isotp_rcv_ff() during isotp_rcv_cf(), so->rx.len equals
+0 before alloc_skb() and equals 4096 after alloc_skb(). That will
+trigger skb_over_panic() in skb_put().
+
+=======================================================
+CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc8-syzkaller #0
+RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113
+Call Trace:
+ <TASK>
+ skb_over_panic net/core/skbuff.c:118 [inline]
+ skb_put.cold+0x24/0x24 net/core/skbuff.c:1990
+ isotp_rcv_cf net/can/isotp.c:570 [inline]
+ isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668
+ deliver net/can/af_can.c:574 [inline]
+ can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635
+ can_receive+0x31d/0x580 net/can/af_can.c:665
+ can_rcv+0x120/0x1c0 net/can/af_can.c:696
+ __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5465
+ __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5579
+
+Therefore we make sure the state changes and data structures stay
+consistent at CAN frame reception time by adding a spin_lock in
+isotp_rcv(). This fixes the issue reported by syzkaller but does not
+affect real world operation.
+
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/linux-can/d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com/T/
+Link: https://lore.kernel.org/all/20220208200026.13783-1-socketcan@hartkopp.net
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220112083156.1124782-1-jiasheng@iscas.ac.cn
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
+Reported-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/host/sdhci-of-esdhc.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ net/can/isotp.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
---- a/drivers/mmc/host/sdhci-of-esdhc.c
-+++ b/drivers/mmc/host/sdhci-of-esdhc.c
-@@ -524,12 +524,16 @@ static void esdhc_of_adma_workaround(str
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -56,6 +56,7 @@
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
++#include <linux/spinlock.h>
+ #include <linux/hrtimer.h>
+ #include <linux/wait.h>
+ #include <linux/uio.h>
+@@ -145,6 +146,7 @@ struct isotp_sock {
+ 	struct tpcon rx, tx;
+ 	struct list_head notifier;
+ 	wait_queue_head_t wait;
++	spinlock_t rx_lock; /* protect single thread state machine */
+ };
  
- static int esdhc_of_enable_dma(struct sdhci_host *host)
- {
-+	int ret;
- 	u32 value;
- 	struct device *dev = mmc_dev(host->mmc);
+ static LIST_HEAD(isotp_notifier_list);
+@@ -615,11 +617,17 @@ static void isotp_rcv(struct sk_buff *sk
  
- 	if (of_device_is_compatible(dev->of_node, "fsl,ls1043a-esdhc") ||
--	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc"))
--		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
-+	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc")) {
-+		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
-+		if (ret)
-+			return ret;
-+	}
+ 	n_pci_type = cf->data[ae] & 0xF0;
  
- 	value = sdhci_readl(host, ESDHC_DMA_SYSCTL);
++	/* Make sure the state changes and data structures stay consistent at
++	 * CAN frame reception time. This locking is not needed in real world
++	 * use cases but the inconsistency can be triggered with syzkaller.
++	 */
++	spin_lock(&so->rx_lock);
++
+ 	if (so->opt.flags & CAN_ISOTP_HALF_DUPLEX) {
+ 		/* check rx/tx path half duplex expectations */
+ 		if ((so->tx.state != ISOTP_IDLE && n_pci_type != N_PCI_FC) ||
+ 		    (so->rx.state != ISOTP_IDLE && n_pci_type == N_PCI_FC))
+-			return;
++			goto out_unlock;
+ 	}
  
+ 	switch (n_pci_type) {
+@@ -668,6 +676,9 @@ static void isotp_rcv(struct sk_buff *sk
+ 		isotp_rcv_cf(sk, cf, ae, skb);
+ 		break;
+ 	}
++
++out_unlock:
++	spin_unlock(&so->rx_lock);
+ }
+ 
+ static void isotp_fill_dataframe(struct canfd_frame *cf, struct isotp_sock *so,
+@@ -1407,6 +1418,7 @@ static int isotp_init(struct sock *sk)
+ 	so->txtimer.function = isotp_tx_timer_handler;
+ 
+ 	init_waitqueue_head(&so->wait);
++	spin_lock_init(&so->rx_lock);
+ 
+ 	spin_lock(&isotp_notifier_lock);
+ 	list_add_tail(&so->notifier, &isotp_notifier_list);
 
 
