@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 133E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244801AbiBNJmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:42:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33920 "EHLO
+        id S231808AbiBNJms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:42:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244972AbiBNJlC (ORCPT
+        with ESMTP id S245000AbiBNJlD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C25E65798;
-        Mon, 14 Feb 2022 01:36:31 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB41A193;
+        Mon, 14 Feb 2022 01:36:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0CE6B80DCB;
-        Mon, 14 Feb 2022 09:36:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E292CC340E9;
-        Mon, 14 Feb 2022 09:36:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C0B061172;
+        Mon, 14 Feb 2022 09:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4100EC340E9;
+        Mon, 14 Feb 2022 09:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831389;
-        bh=KvmdLp6G040VjpO7IuJ2RHy/LaQdJtkxJmJzfRYcEvo=;
+        s=korg; t=1644831414;
+        bh=LUzrZ0HODNmYMs1a86YjqdHJIgQG8o+g6TrynlDeyVU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zh9mOo21hEEXkHujLWWQboa3dWxB8bWP9cgYzPB7imkL+jo5Xv1yWrhrIPdu3qnyW
-         3HdPpAnW1WJh75pUPk/YNCEoP6KMn1w/gu5DOMvd4ZP6o72/CEuEVr6VkEi/LkbJxf
-         go14xfEyWxOsDMQqHl9GO7neqGeB86OAlkdrlUXk=
+        b=W6qb8Thn9nP2kNcBlCUsowZJmRFSZdr2xHwyX+s5MDWVg9tnMrWtnwCwEGepdsTWj
+         Ig4XlCnRocEbkS0itqDbzPbaCsOZ+l1w0QXzyg7+TA4gTYtoDt1J+6THacbh7Rbkgi
+         R3tqxBiO+vdifl579SblYVY7cO1hbVecFfJSqGDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Petlan <mpetlan@redhat.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.4 31/71] ACPI/IORT: Check node revision for PMCG resources
-Date:   Mon, 14 Feb 2022 10:25:59 +0100
-Message-Id: <20220214092453.067325044@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Lunn <andrew@lunn.ch>, Andrew Jeffery <andrew@aj.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 47/71] net: mdio: aspeed: Add missing MODULE_DEVICE_TABLE
+Date:   Mon, 14 Feb 2022 10:26:15 +0100
+Message-Id: <20220214092453.635370227@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -50,55 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Joel Stanley <joel@jms.id.au>
 
-commit da5fb9e1ad3fbf632dce735f1bdad257ca528499 upstream.
+[ Upstream commit bc1c3c3b10db4f37c41e6107751a8d450d9c431c ]
 
-The original version of the IORT PMCG definition had an oversight
-wherein there was no way to describe the second register page for an
-implementation using the recommended RELOC_CTRS feature. Although the
-spec was fixed, and the final patches merged to ACPICA and Linux written
-against the new version, it seems that some old firmware based on the
-original revision has survived and turned up in the wild.
+Fix loading of the driver when built as a module.
 
-Add a check for the original PMCG definition, and avoid filling in the
-second memory resource with nonsense if so. Otherwise it is likely that
-something horrible will happen when the PMCG driver attempts to probe.
-
-Reported-by: Michael Petlan <mpetlan@redhat.com>
-Fixes: 24e516049360 ("ACPI/IORT: Add support for PMCG")
-Cc: <stable@vger.kernel.org> # 5.2.x
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/75628ae41c257fb73588f7bf1c4459160e04be2b.1643916258.git.robin.murphy@arm.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Andrew Jeffery <andrew@aj.id.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/arm64/iort.c |   14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/phy/mdio-aspeed.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -1373,9 +1373,17 @@ static void __init arm_smmu_v3_pmcg_init
- 	res[0].start = pmcg->page0_base_address;
- 	res[0].end = pmcg->page0_base_address + SZ_4K - 1;
- 	res[0].flags = IORESOURCE_MEM;
--	res[1].start = pmcg->page1_base_address;
--	res[1].end = pmcg->page1_base_address + SZ_4K - 1;
--	res[1].flags = IORESOURCE_MEM;
-+	/*
-+	 * The initial version in DEN0049C lacked a way to describe register
-+	 * page 1, which makes it broken for most PMCG implementations; in
-+	 * that case, just let the driver fail gracefully if it expects to
-+	 * find a second memory resource.
-+	 */
-+	if (node->revision > 0) {
-+		res[1].start = pmcg->page1_base_address;
-+		res[1].end = pmcg->page1_base_address + SZ_4K - 1;
-+		res[1].flags = IORESOURCE_MEM;
-+	}
+diff --git a/drivers/net/phy/mdio-aspeed.c b/drivers/net/phy/mdio-aspeed.c
+index 966c3b4ad59d1..e2273588c75b6 100644
+--- a/drivers/net/phy/mdio-aspeed.c
++++ b/drivers/net/phy/mdio-aspeed.c
+@@ -148,6 +148,7 @@ static const struct of_device_id aspeed_mdio_of_match[] = {
+ 	{ .compatible = "aspeed,ast2600-mdio", },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, aspeed_mdio_of_match);
  
- 	if (pmcg->overflow_gsiv)
- 		acpi_iort_register_irq(pmcg->overflow_gsiv, "overflow",
+ static struct platform_driver aspeed_mdio_driver = {
+ 	.driver = {
+-- 
+2.34.1
+
 
 
