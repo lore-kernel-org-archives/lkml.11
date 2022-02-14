@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24471C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36778C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345441AbiBNKJl (ORCPT
+        id S1345480AbiBNKJs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:09:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35432 "EHLO
+        Mon, 14 Feb 2022 05:09:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345322AbiBNKGH (ORCPT
+        with ESMTP id S1345594AbiBNKGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:06:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4679174630;
-        Mon, 14 Feb 2022 01:49:29 -0800 (PST)
+        Mon, 14 Feb 2022 05:06:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296474DCA;
+        Mon, 14 Feb 2022 01:49:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C148761284;
-        Mon, 14 Feb 2022 09:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 996D8C340E9;
-        Mon, 14 Feb 2022 09:49:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B42F661238;
+        Mon, 14 Feb 2022 09:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09D5C340EF;
+        Mon, 14 Feb 2022 09:49:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832168;
-        bh=3epFaGK+vhe/wOw2uqSsd6GvhL9Cvq9qJdaq6ifWC2k=;
+        s=korg; t=1644832171;
+        bh=A4SdmNYLAnveL9cm0e3pqcw/lppUkfyaqYDwasfTHx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c6WOvrnq3jkKNnPSHQEmKHYz+LebrnnDY6Afx5Uh8NYA51NwLb1oDEjJX3nBGPSlU
-         Udy3+cRvDu2t1CAGFosUfq3ZehN6iasoUcl0H1yWle3GDzh2xPc6AAWTZXiac7w2Oq
-         sMslRlLYzchA/H8Z33c+iqqlWvFiwHvLa6OKxLtw=
+        b=X5nmCx4pIw69sw+P918zfDv8N1xUweMmkYOJP7AoEHNFNumTAZHEMbfVAg/FtPSOa
+         abbWvCXOaJXgWSp+kygb73l+r2ZOv0WMcom1Mz6/AOrWP6JX8m/9FY/L4AWYXUaVa7
+         hPPpnhD9x0dque9UqpHgHjOv4yKMg+8Wv/ExrEP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 068/172] riscv: eliminate unreliable __builtin_frame_address(1)
-Date:   Mon, 14 Feb 2022 10:25:26 +0100
-Message-Id: <20220214092508.750772172@linuxfoundation.org>
+        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>
+Subject: [PATCH 5.15 069/172] gfs2: Fix gfs2_release for non-writers regression
+Date:   Mon, 14 Feb 2022 10:25:27 +0100
+Message-Id: <20220214092508.782354238@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,113 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changbin Du <changbin.du@gmail.com>
+From: Bob Peterson <rpeterso@redhat.com>
 
-commit 6a00ef4493706a23120057fafbc62379bcde11ec upstream.
+commit d3add1a9519dcacd6e644ecac741c56cf18b67f5 upstream.
 
-I tried different pieces of code which uses __builtin_frame_address(1)
-(with both gcc version 7.5.0 and 10.3.0) to verify whether it works as
-expected on riscv64. The result is negative.
+When a file is opened for writing, the vfs code (do_dentry_open)
+calls get_write_access for the inode, thus incrementing the inode's write
+count. That writer normally then creates a multi-block reservation for
+the inode (i_res) that can be re-used by other writers, which speeds up
+writes for applications that stupidly loop on open/write/close.
+When the writes are all done, the multi-block reservation should be
+deleted when the file is closed by the last "writer."
 
-What the compiler had generated is as below:
-31                      fp = (unsigned long)__builtin_frame_address(1);
-   0xffffffff80006024 <+200>:   ld      s1,0(s0)
+Commit 0ec9b9ea4f83 broke that concept when it moved the call to
+gfs2_rs_delete before the check for FMODE_WRITE.  Non-writers have no
+business removing the multi-block reservations of writers. In fact, if
+someone opens and closes the file for RO while a writer has a
+multi-block reservation, the RO closer will delete the reservation
+midway through the write, and this results in:
 
-It takes '0(s0)' as the address of frame 1 (caller), but the actual address
-should be '-16(s0)'.
+kernel BUG at fs/gfs2/rgrp.c:677! (or thereabouts) which is:
+BUG_ON(rs->rs_requested); from function gfs2_rs_deltree.
 
-          |       ...       | <-+
-          +-----------------+   |
-          | return address  |   |
-          | previous fp     |   |
-          | saved registers |   |
-          | local variables |   |
-  $fp --> |       ...       |   |
-          +-----------------+   |
-          | return address  |   |
-          | previous fp --------+
-          | saved registers |
-  $sp --> | local variables |
-          +-----------------+
+This patch moves the check back inside the check for FMODE_WRITE.
 
-This leads the kernel can not dump the full stack trace on riscv.
-
-[    7.222126][    T1] Call Trace:
-[    7.222804][    T1] [<ffffffff80006058>] dump_backtrace+0x2c/0x3a
-
-This problem is not exposed on most riscv builds just because the '0(s0)'
-occasionally is the address frame 2 (caller's caller), if only ra and fp
-are stored in frame 1 (caller).
-
-          |       ...       | <-+
-          +-----------------+   |
-          | return address  |   |
-  $fp --> | previous fp     |   |
-          +-----------------+   |
-          | return address  |   |
-          | previous fp --------+
-          | saved registers |
-  $sp --> | local variables |
-          +-----------------+
-
-This could be a *bug* of gcc that should be fixed. But as noted in gcc
-manual "Calling this function with a nonzero argument can have
-unpredictable effects, including crashing the calling program.", let's
-remove the '__builtin_frame_address(1)' in backtrace code.
-
-With this fix now it can show full stack trace:
-[   10.444838][    T1] Call Trace:
-[   10.446199][    T1] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
-[   10.447711][    T1] [<ffffffff800060ac>] show_stack+0x32/0x3e
-[   10.448710][    T1] [<ffffffff80a005c0>] dump_stack_lvl+0x58/0x7a
-[   10.449941][    T1] [<ffffffff80a005f6>] dump_stack+0x14/0x1c
-[   10.450929][    T1] [<ffffffff804c04ee>] ubsan_epilogue+0x10/0x5a
-[   10.451869][    T1] [<ffffffff804c092e>] __ubsan_handle_load_invalid_value+0x6c/0x78
-[   10.453049][    T1] [<ffffffff8018f834>] __pagevec_release+0x62/0x64
-[   10.455476][    T1] [<ffffffff80190830>] truncate_inode_pages_range+0x132/0x5be
-[   10.456798][    T1] [<ffffffff80190ce0>] truncate_inode_pages+0x24/0x30
-[   10.457853][    T1] [<ffffffff8045bb04>] kill_bdev+0x32/0x3c
-...
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Fixes: eac2f3059e02 ("riscv: stacktrace: fix the riscv stacktrace when CONFIG_FRAME_POINTER enabled")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 0ec9b9ea4f83 ("gfs2: Check for active reservation in gfs2_release")
+Cc: stable@vger.kernel.org # v5.12+
+Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/stacktrace.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ fs/gfs2/file.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/arch/riscv/kernel/stacktrace.c
-+++ b/arch/riscv/kernel/stacktrace.c
-@@ -22,15 +22,16 @@ void notrace walk_stackframe(struct task
- 			     bool (*fn)(void *, unsigned long), void *arg)
- {
- 	unsigned long fp, sp, pc;
-+	int level = 0;
+--- a/fs/gfs2/file.c
++++ b/fs/gfs2/file.c
+@@ -711,10 +711,11 @@ static int gfs2_release(struct inode *in
+ 	kfree(file->private_data);
+ 	file->private_data = NULL;
  
- 	if (regs) {
- 		fp = frame_pointer(regs);
- 		sp = user_stack_pointer(regs);
- 		pc = instruction_pointer(regs);
- 	} else if (task == NULL || task == current) {
--		fp = (unsigned long)__builtin_frame_address(1);
--		sp = (unsigned long)__builtin_frame_address(0);
--		pc = (unsigned long)__builtin_return_address(0);
-+		fp = (unsigned long)__builtin_frame_address(0);
-+		sp = sp_in_global;
-+		pc = (unsigned long)walk_stackframe;
- 	} else {
- 		/* task blocked in __switch_to */
- 		fp = task->thread.s[0];
-@@ -42,7 +43,7 @@ void notrace walk_stackframe(struct task
- 		unsigned long low, high;
- 		struct stackframe *frame;
+-	if (gfs2_rs_active(&ip->i_res))
+-		gfs2_rs_delete(ip, &inode->i_writecount);
+-	if (file->f_mode & FMODE_WRITE)
++	if (file->f_mode & FMODE_WRITE) {
++		if (gfs2_rs_active(&ip->i_res))
++			gfs2_rs_delete(ip, &inode->i_writecount);
+ 		gfs2_qa_put(ip);
++	}
+ 	return 0;
+ }
  
--		if (unlikely(!__kernel_text_address(pc) || !fn(arg, pc)))
-+		if (unlikely(!__kernel_text_address(pc) || (level++ >= 1 && !fn(arg, pc))))
- 			break;
- 
- 		/* Validate frame pointer */
 
 
