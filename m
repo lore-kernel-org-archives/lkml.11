@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51FF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C557C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243333AbiBNJhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:37:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52506 "EHLO
+        id S229544AbiBNJhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:37:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245204AbiBNJge (ORCPT
+        with ESMTP id S244501AbiBNJf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C288467347;
-        Mon, 14 Feb 2022 01:34:29 -0800 (PST)
+        Mon, 14 Feb 2022 04:35:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9DABF78;
+        Mon, 14 Feb 2022 01:33:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47BB5B80DA9;
-        Mon, 14 Feb 2022 09:34:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 811FEC340E9;
-        Mon, 14 Feb 2022 09:34:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D9BC61023;
+        Mon, 14 Feb 2022 09:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E48C340EF;
+        Mon, 14 Feb 2022 09:33:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831264;
-        bh=npV7+7qWHd5WvacA6RlehkZNwnLWwdwZj0cIKganXdc=;
+        s=korg; t=1644831188;
+        bh=uMMeRoT+ybvFtU0MX3yKDdCNfcVrwyog8G8R/v9tMPU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UlA9uRuwk+QtZlGjWmvVd/NvCcre72MvtJEa3SEXZMVduWj/A1g1Mu7dAEn7Vh0w+
-         7Lmdt/x3SbGOBEQVMXR26U5qKgPOdDc0pgN/KhW7SAN3EmpmqlQ83fwuFaKq/El2++
-         EFP+ZoQIbohcEMtX3L+neUHnbNDI8iB0BD9qkk+A=
+        b=VsH0BpcX+xlPLkghRvGcxzn+Z3VAfAxCq1QarlW1jtaObrLprmHzZzYtPPEBVsk8u
+         xu4DZPQjE7jdNSUc5wPc4BLO4xSZTMqrJwyeLkcgicyR1/XTNmm9dTN0qVBMlXZpNV
+         ugpUlR1PnhcIwUtMWNlwkkF33lgN+Yu0pOj6fTwQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Armin Wolf <W_Armin@gmx.de>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH 4.19 48/49] hwmon: (dell-smm) Speed up setting of fan speed
-Date:   Mon, 14 Feb 2022 10:26:14 +0100
-Message-Id: <20220214092449.900018489@linuxfoundation.org>
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.19 07/49] NFSD: Clamp WRITE offsets
+Date:   Mon, 14 Feb 2022 10:25:33 +0100
+Message-Id: <20220214092448.544263590@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,70 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Armin Wolf <W_Armin@gmx.de>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit c0d79987a0d82671bff374c07f2201f9bdf4aaa2 upstream.
+commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
 
-When setting the fan speed, i8k_set_fan() calls i8k_get_fan_status(),
-causing an unnecessary SMM call since from the two users of this
-function, only i8k_ioctl_unlocked() needs to know the new fan status
-while dell_smm_write() ignores the new fan status.
-Since SMM calls can be very slow while also making error reporting
-difficult for dell_smm_write(), remove the function call from
-i8k_set_fan() and call it separately in i8k_ioctl_unlocked().
+Ensure that a client cannot specify a WRITE range that falls in a
+byte range outside what the kernel's internal types (such as loff_t,
+which is signed) can represent. The kiocb iterators, invoked in
+nfsd_vfs_write(), should properly limit write operations to within
+the underlying file system's s_maxbytes.
 
-Tested on a Dell Inspiron 3505.
-
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-Reviewed-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20211021190531.17379-6-W_Armin@gmx.de
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hwmon/dell-smm-hwmon.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ fs/nfsd/nfs3proc.c |    5 +++++
+ fs/nfsd/nfs4proc.c |    5 +++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/hwmon/dell-smm-hwmon.c
-+++ b/drivers/hwmon/dell-smm-hwmon.c
-@@ -304,7 +304,7 @@ static int i8k_get_fan_nominal_speed(int
- }
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -200,6 +200,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
+ 				(unsigned long long) argp->offset,
+ 				argp->stable? " stable" : "");
  
- /*
-- * Set the fan speed (off, low, high). Returns the new fan status.
-+ * Set the fan speed (off, low, high, ...).
-  */
- static int i8k_set_fan(int fan, int speed)
- {
-@@ -316,7 +316,7 @@ static int i8k_set_fan(int fan, int spee
- 	speed = (speed < 0) ? 0 : ((speed > i8k_fan_max) ? i8k_fan_max : speed);
- 	regs.ebx = (fan & 0xff) | (speed << 8);
- 
--	return i8k_smm(&regs) ? : i8k_get_fan_status(fan);
-+	return i8k_smm(&regs);
- }
- 
- static int i8k_get_temp_type(int sensor)
-@@ -430,7 +430,7 @@ static int
- i8k_ioctl_unlocked(struct file *fp, unsigned int cmd, unsigned long arg)
- {
- 	int val = 0;
--	int speed;
-+	int speed, err;
- 	unsigned char buff[16];
- 	int __user *argp = (int __user *)arg;
- 
-@@ -491,7 +491,11 @@ i8k_ioctl_unlocked(struct file *fp, unsi
- 		if (copy_from_user(&speed, argp + 1, sizeof(int)))
- 			return -EFAULT;
- 
--		val = i8k_set_fan(val, speed);
-+		err = i8k_set_fan(val, speed);
-+		if (err < 0)
-+			return err;
++	resp->status = nfserr_fbig;
++	if (argp->offset > (u64)OFFSET_MAX ||
++	    argp->offset + argp->len > (u64)OFFSET_MAX)
++		return rpc_success;
 +
-+		val = i8k_get_fan_status(val);
- 		break;
+ 	fh_copy(&resp->fh, &argp->fh);
+ 	resp->committed = argp->stable;
+ 	nvecs = svc_fill_write_vector(rqstp, rqstp->rq_arg.pages,
+--- a/fs/nfsd/nfs4proc.c
++++ b/fs/nfsd/nfs4proc.c
+@@ -997,8 +997,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
+ 	unsigned long cnt;
+ 	int nvecs;
  
- 	default:
+-	if (write->wr_offset >= OFFSET_MAX)
+-		return nfserr_inval;
++	if (write->wr_offset > (u64)OFFSET_MAX ||
++	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
++		return nfserr_fbig;
+ 
+ 	cnt = write->wr_buflen;
+ 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
 
 
