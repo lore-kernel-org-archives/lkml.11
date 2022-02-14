@@ -2,125 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 102E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EA55C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:34:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355882AbiBNRe4 (ORCPT
+        id S1357111AbiBNRfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:34:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57102 "EHLO
+        Mon, 14 Feb 2022 12:35:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233371AbiBNRey (ORCPT
+        with ESMTP id S1357103AbiBNRfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:34:54 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B265406;
-        Mon, 14 Feb 2022 09:34:45 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id h7-20020a17090a648700b001b927560c2bso15334518pjj.1;
-        Mon, 14 Feb 2022 09:34:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=apnN0rYl+OR6PUK+71gKAmUuuy1MXm8SpHDSHheapQc=;
-        b=PkE0ZISIikKihgqyEmgleK5vFffN7Dkqf+BF3fP4eiTxUPbO/8pgH7SrrohSTNwDo6
-         9XL56ttmwbdIASNROorrTUwJvIi4KVku9jrN7MqG9zT5/1z9/l657DXYzmIkmlTpwOQW
-         vHlesGH7u7cvgrnz+ofvIkYcW2SlBfX+bUzfmtA0gvmWOu4x+xFo4dnom7tPC/cm5+42
-         KPVu9awJq9D0OX1PZAMXzcoBG0Gc3vy8g0zN8m4mOpMRKAd+6pYJsMFWDxTjV9+qjrMb
-         QFha5efL6bPmTlNgYYlBz4eKLGj+T3aPIMOhDEdPNVYsDmU8a0resxFefm6YNQT5audI
-         GWMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=apnN0rYl+OR6PUK+71gKAmUuuy1MXm8SpHDSHheapQc=;
-        b=6BzX3bzzHHy9lzuFsJSwUE/kVUcdO6lPFVX9ArABPMCj9AFYULkITtxV6Q3zkytOfB
-         NrvQnYzjoTcX/7T12zreTzM41W90y9hx3wkZRcd/+D0+ot8X5kH0m0RYb37Im67ErvB/
-         2kxEMSMZCUUN5EcoWae5ABKaEaNbGL+4QSX1sl2FY/yO/RLblYXZOZX3ZEIUTQ9paMNh
-         zSQwc5fFqwbQIe86Gofm5q+MxMXRTJlzNLqZfdteB5T6lTPpwuAKUP+IUWh6jPBuW5qT
-         fHJrMWq4ttIez7P9+59qPR/J1Is1GeXIsOBtfAbp8Uf+FO6nLudaqjitIwNn0zi7eF70
-         k3JA==
-X-Gm-Message-State: AOAM532sWL452tLQPc8wB1r7tzWs9cSujVUZ1k1UoiJZyRXqXLktq1m1
-        roj2HEWLCDSivgbpZ/4OodH0PKUgZi8=
-X-Google-Smtp-Source: ABdhPJxQmVTzKYH18qIy9otiYAlZ8hossATt3HpXdW1A0Xc0VYFl+e1UaTk5hbPT5gPJn+8sxJGFyw==
-X-Received: by 2002:a17:903:22d0:: with SMTP id y16mr790620plg.107.1644860084808;
-        Mon, 14 Feb 2022 09:34:44 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id a9sm184432pgb.56.2022.02.14.09.34.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 09:34:44 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 14 Feb 2022 07:34:42 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        syzbot <syzbot+831661966588c802aae9@syzkaller.appspotmail.com>,
-        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: Re: [syzbot] possible deadlock in worker_thread
-Message-ID: <YgqSsuSN5C7StvKx@slm.duckdns.org>
-References: <0000000000005975a605d7aef05e@google.com>
- <8ea57ddf-a09c-43f2-4285-4dfb908ad967@acm.org>
- <ccd04d8a-154b-543e-e1c3-84bc655508d1@I-love.SAKURA.ne.jp>
- <71d6f14e-46af-cc5a-bc70-af1cdc6de8d5@acm.org>
- <309c86b7-2a4c-1332-585f-7bcd59cfd762@I-love.SAKURA.ne.jp>
- <aa2bf24e-981a-a811-c5d8-a75f0b8f693a@acm.org>
- <2959649d-cfbc-bdf2-02ac-053b8e7af030@I-love.SAKURA.ne.jp>
- <YgnQGZWT/n3VAITX@slm.duckdns.org>
- <8ebd003c-f748-69b4-3a4f-fb80a3f39d36@I-love.SAKURA.ne.jp>
+        Mon, 14 Feb 2022 12:35:00 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD84965414
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:34:50 -0800 (PST)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JyBDN5xhcz6H6jL;
+        Tue, 15 Feb 2022 01:34:28 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 18:34:47 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 14 Feb 2022 17:34:44 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
+CC:     <mst@redhat.com>, <jasowang@redhat.com>,
+        <baolu.lu@linux.intel.com>, <iommu@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>, <hch@lst.de>,
+        <chenxiang66@hisilicon.com>, <linuxarm@huawei.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v5 0/5] iommu: Allow IOVA rcache range be configured
+Date:   Tue, 15 Feb 2022 01:29:01 +0800
+Message-ID: <1644859746-20279-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8ebd003c-f748-69b4-3a4f-fb80a3f39d36@I-love.SAKURA.ne.jp>
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+For streaming DMA mappings involving an IOMMU and whose IOVA len regularly
+exceeds the IOVA rcache upper limit (meaning that they are not cached),
+performance can be reduced. 
 
-On Mon, Feb 14, 2022 at 10:36:57PM +0900, Tetsuo Handa wrote:
-> OK. Then, I propose below patch. If you are OK with this approach, I can
-> keep this via my tree as a linux-next only experimental patch for one or
-> two weeks, in order to see if someone complains.
+This may be much more pronounced from commit 4e89dce72521 ("iommu/iova:
+Retry from last rb tree node if iova search fails"), as discussed at [0].
 
-I don't mind you testing that way but this and would much prefer this and
-related changes in the wq tree.
+IOVAs which cannot be cached are highly involved in the IOVA ageing issue,
+as discussed at [1].
 
-> +static void warn_if_flushing_global_workqueue(struct workqueue_struct *wq)
-> +{
-> +#ifdef CONFIG_PROVE_LOCKING
-> +	static DEFINE_RATELIMIT_STATE(flush_warn_rs, 600 * HZ, 1);
-> +	const char *name;
-> +
-> +	if (wq == system_wq)
-> +		name = "system_wq";
-> +	else if (wq == system_highpri_wq)
-> +		name = "system_highpri_wq";
-> +	else if (wq == system_long_wq)
-> +		name = "system_long_wq";
-> +	else if (wq == system_unbound_wq)
-> +		name = "system_unbound_wq";
-> +	else if (wq == system_freezable_wq)
-> +		name = "system_freezable_wq";
-> +	else if (wq == system_power_efficient_wq)
-> +		name = "system_power_efficient_wq";
-> +	else if (wq == system_freezable_power_efficient_wq)
-> +		name = "system_freezable_power_efficient_wq";
-> +	else
-> +		return;
-> +	ratelimit_set_flags(&flush_warn_rs, RATELIMIT_MSG_ON_RELEASE);
-> +	if (!__ratelimit(&flush_warn_rs))
-> +		return;
-> +	pr_warn("Since system-wide WQ is shared, flushing system-wide WQ can introduce unexpected locking dependency. Please replace %s usage in your code with your local WQ.\n",
-> +		name);
-> +	dump_stack();
-> +#endif
+This series allows the IOVA rcache range be configured, so that we may
+cache all IOVAs per domain, thus improving performance.
 
-Instead of doing the above, please add a wq flag to mark system wqs and
-trigger the warning that way and I'd leave it regardless of PROVE_LOCKING.
+A new IOMMU group sysfs file is added - max_opt_dma_size - which is used
+indirectly to configure the IOVA rcache range:
+/sys/kernel/iommu_groups/X/max_opt_dma_size
 
-Thanks.
+This file is updated same as how the IOMMU group default domain type is
+updated, i.e. must unbind the only device in the group first.
+
+The inspiration here comes from block layer request queue sysfs
+"optimal_io_size" file, in /sys/block/sdX/queue/optimal_io_size
+
+Some old figures* for storage scenario (when increasing IOVA rcache range
+to cover all DMA mapping sizes from the LLD):
+v5.13-rc1 baseline:			1200K IOPS
+With series:				1800K IOPS
+
+All above are for IOMMU strict mode. Non-strict mode gives ~1800K IOPS in
+all scenarios.
+
+Based on v5.17-rc4 + [2]
+* I lost my high data throughout test setup
+
+Differences to v4:
+https://lore.kernel.org/linux-iommu/1626259003-201303-1-git-send-email-john.garry@huawei.com/
+- Major rebase
+- Change the "Refactor iommu_group_store_type()" to not use a callback
+  and an op type enum instead
+  - I didn't pick up Will's Ack as it has changed so much
+- Use a domain feature flag to keep same default group type
+- Add wrapper for default IOVA rcache range
+- Combine last 2x patches
+
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+[1] https://lore.kernel.org/linux-iommu/1607538189-237944-1-git-send-email-john.garry@huawei.com/
+[2] https://lore.kernel.org/linux-iommu/20220203063345-mutt-send-email-mst@kernel.org/T/#m5b2b59576d35cad544314470f32e5f40ac5d1fe9
+
+John Garry (5):
+  iommu: Refactor iommu_group_store_type()
+  iova: Allow rcache range upper limit to be flexible
+  iommu: Allow iommu_change_dev_def_domain() realloc same default domain
+    type
+  iommu: Allow max opt DMA len be set for a group via sysfs
+  iova: Add iova_len argument to iova_domain_init_rcaches()
+
+ .../ABI/testing/sysfs-kernel-iommu_groups     |  16 ++
+ drivers/iommu/dma-iommu.c                     |  15 +-
+ drivers/iommu/iommu.c                         | 202 +++++++++++++-----
+ drivers/iommu/iova.c                          |  37 ++--
+ drivers/vdpa/vdpa_user/iova_domain.c          |   4 +-
+ include/linux/iommu.h                         |   7 +
+ include/linux/iova.h                          |   6 +-
+ 7 files changed, 212 insertions(+), 75 deletions(-)
 
 -- 
-tejun
+2.26.2
+
