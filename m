@@ -2,184 +2,404 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76ACAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7014C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230184AbiBNTEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:04:41 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:51480 "EHLO
+        id S230334AbiBNTEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 14:04:47 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiBNTEU (ORCPT
+        with ESMTP id S230101AbiBNTEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:04:20 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [IPv6:2001:4b98:dc4:8::240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387D18D6A8;
-        Mon, 14 Feb 2022 11:04:01 -0800 (PST)
-Received: from relay4-d.mail.gandi.net (unknown [217.70.183.196])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 812EACD6B9;
-        Mon, 14 Feb 2022 18:50:10 +0000 (UTC)
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id BF614E0005;
-        Mon, 14 Feb 2022 18:49:26 +0000 (UTC)
-Date:   Mon, 14 Feb 2022 19:50:35 +0100
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Steve Longerbeam <slongerbeam@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/9] media: imx: Store the type of hardware
- implementation
-Message-ID: <20220214185035.uomrdkzth7adkw5c@uno.localdomain>
-References: <20220211142752.779952-1-alexander.stein@ew.tq-group.com>
- <20220211142752.779952-2-alexander.stein@ew.tq-group.com>
+        Mon, 14 Feb 2022 14:04:37 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956248EB7F;
+        Mon, 14 Feb 2022 11:04:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644865455; x=1676401455;
+  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=v8K8WDuCx0FUJsLulDJkHzTRTw32m+wWCK1EuR2Zzdc=;
+  b=lpVkkc8bvd3lAQFwK0R877cIvm96xFzeHHbCCRVO9Eqp72qb4YL3ydaY
+   ZF2xpGl+q5ww/d0yViPuN6sORQRIxfopMX5g5WR39yP7Smzhsm3rxwSOB
+   xd7m+Dm3Ot29kUJNpl+DCMd+a39qQb3UwTANM9SFaqB0fnoyJvhy/Kn81
+   soO7YgI+qo3WylMWQcXtw8HsHrsu5IF0XsObelmCQuRLWVGcNPgeSfF55
+   QwEPTyP6KOq97Vh20Jj0sffC5sBSzXD6iBKzLiqjfVrLIZyN+wHz5M0nj
+   /aTmWWzwWPpmyBnlcw690TUXF38A6aPuUFFJh05mSZXITZWjxBeO/Wiyr
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="274734056"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="274734056"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 10:57:04 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="485641019"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 10:57:03 -0800
+Received: from debox1-desk1.jf.intel.com (debox1-desk1.jf.intel.com [10.54.75.53])
+        by linux.intel.com (Postfix) with ESMTP id D8F11580CB8;
+        Mon, 14 Feb 2022 10:57:03 -0800 (PST)
+Message-ID: <6f6c341360128e047216be632a9377860ecd1d0b.camel@linux.intel.com>
+Subject: Re: [PATCH V7 3/3] selftests: sdsi: test sysfs setup
+From:   "David E. Box" <david.e.box@linux.intel.com>
+Reply-To: david.e.box@linux.intel.com
+To:     Hans de Goede <hdegoede@redhat.com>, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
+        mgross@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Date:   Mon, 14 Feb 2022 10:57:03 -0800
+In-Reply-To: <b431a81f-a2c0-cdc5-208b-7e8adb03cf23@redhat.com>
+References: <20220212013252.1293396-1-david.e.box@linux.intel.com>
+         <20220212013252.1293396-4-david.e.box@linux.intel.com>
+         <b431a81f-a2c0-cdc5-208b-7e8adb03cf23@redhat.com>
+Organization: David E. Box
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220211142752.779952-2-alexander.stein@ew.tq-group.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexander, Dorota,
+On Mon, 2022-02-14 at 12:10 +0100, Hans de Goede wrote:
+> Hi,
+> 
+> On 2/12/22 02:32, David E. Box wrote:
+> > Tests file configuration and error handling of the Intel Software
+> > Defined Silicon sysfs ABI.
+> > 
+> > Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+> > ---
+> > V7
+> >   - No changes.
+> > V6
+> >   - No changes.
+> > V5
+> >   - No changes.
+> > V4
+> >   - No changes.
+> > V3
+> >   - Add tests to check PCI device removal handling and to check for
+> >     driver memory leaks.
+> > V2
+> >   - New patch.
+> > 
+> >  MAINTAINERS                                   |   1 +
+> >  tools/testing/selftests/drivers/sdsi/sdsi.sh  |  18 ++
+> >  .../selftests/drivers/sdsi/sdsi_test.py       | 226 ++++++++++++++++++
+> >  3 files changed, 245 insertions(+)
+> >  create mode 100755 tools/testing/selftests/drivers/sdsi/sdsi.sh
+> >  create mode 100644 tools/testing/selftests/drivers/sdsi/sdsi_test.py
+> > 
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 80325cbde3bd..a05c6b40601a 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -9874,6 +9874,7 @@ M:        David E. Box <david.e.box@linux.intel.com>
+> >  S:     Supported
+> >  F:     drivers/platform/x86/intel/sdsi.c
+> >  F:     tools/arch/x86/intel_sdsi/
+> > +F:     tools/testing/selftests/drivers/sdsi/
+> >  
+> >  INTEL SKYLAKE INT3472 ACPI DEVICE DRIVER
+> >  M:     Daniel Scally <djrscally@gmail.com>
+> > diff --git a/tools/testing/selftests/drivers/sdsi/sdsi.sh
+> > b/tools/testing/selftests/drivers/sdsi/sdsi.sh
+> > new file mode 100755
+> > index 000000000000..8db71961d164
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/drivers/sdsi/sdsi.sh
+> > @@ -0,0 +1,18 @@
+> > +#!/bin/sh
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +# Runs tests for the intel_sdsi driver
+> > +
+> > +if ! /sbin/modprobe -q -r intel_sdsi; then
+> > +       echo "drivers/sdsi: [SKIP]"
+> > +       exit 77
+> > +fi
+> 
+> You should also test that python3 and pytest are available and if not then
+> also skip this test.
 
-On Fri, Feb 11, 2022 at 03:27:44PM +0100, Alexander Stein wrote:
-> From: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
->
-> The driver covers i.MX5/6, as well as i.MX7/8 hardware.
-> Those implementations differ, e.g. in the sizes of buffers they accept.
->
-> Some functionality should be abstracted, and storing type achieves that.
->
-> Signed-off-by: Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
-> Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-> ---
-> Changes in v2:
-> * Switch back to using enum
->
->  drivers/staging/media/imx/imx-ic-prpencvf.c   | 3 ++-
->  drivers/staging/media/imx/imx-media-capture.c | 5 ++++-
->  drivers/staging/media/imx/imx-media-csi.c     | 3 ++-
->  drivers/staging/media/imx/imx-media.h         | 8 +++++++-
->  drivers/staging/media/imx/imx7-media-csi.c    | 3 ++-
->  5 files changed, 17 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/staging/media/imx/imx-ic-prpencvf.c b/drivers/staging/media/imx/imx-ic-prpencvf.c
-> index 9b81cfbcd777..671bb9a681aa 100644
-> --- a/drivers/staging/media/imx/imx-ic-prpencvf.c
-> +++ b/drivers/staging/media/imx/imx-ic-prpencvf.c
-> @@ -1266,7 +1266,8 @@ static int prp_registered(struct v4l2_subdev *sd)
->
->  	priv->vdev = imx_media_capture_device_init(ic_priv->ipu_dev,
->  						   &ic_priv->sd,
-> -						   PRPENCVF_SRC_PAD, true);
-> +						   PRPENCVF_SRC_PAD, true,
-> +						   DEVICE_TYPE_IMX56);
->  	if (IS_ERR(priv->vdev))
->  		return PTR_ERR(priv->vdev);
->
-> diff --git a/drivers/staging/media/imx/imx-media-capture.c b/drivers/staging/media/imx/imx-media-capture.c
-> index 93ba09236010..65dc95a48ecc 100644
-> --- a/drivers/staging/media/imx/imx-media-capture.c
-> +++ b/drivers/staging/media/imx/imx-media-capture.c
-> @@ -34,6 +34,7 @@ struct capture_priv {
->
->  	struct imx_media_video_dev vdev;	/* Video device */
->  	struct media_pad vdev_pad;		/* Video device pad */
-> +	enum imx_media_device_type type;	/* Type of hardware implementation */
->
->  	struct v4l2_subdev *src_sd;		/* Source subdev */
->  	int src_sd_pad;				/* Source subdev pad */
-> @@ -957,7 +958,8 @@ EXPORT_SYMBOL_GPL(imx_media_capture_device_unregister);
->
->  struct imx_media_video_dev *
->  imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
-> -			      int pad, bool legacy_api)
-> +			      int pad, bool legacy_api,
-> +			      enum imx_media_device_type type)
->  {
->  	struct capture_priv *priv;
->  	struct video_device *vfd;
-> @@ -972,6 +974,7 @@ imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
->  	priv->src_sd_pad = pad;
->  	priv->dev = dev;
->  	priv->legacy_api = legacy_api;
-> +	priv->type = type;
->
->  	mutex_init(&priv->mutex);
->  	INIT_LIST_HEAD(&priv->ready_q);
-> diff --git a/drivers/staging/media/imx/imx-media-csi.c b/drivers/staging/media/imx/imx-media-csi.c
-> index bd7f156f2d52..d5557bb4913d 100644
-> --- a/drivers/staging/media/imx/imx-media-csi.c
-> +++ b/drivers/staging/media/imx/imx-media-csi.c
-> @@ -1803,7 +1803,8 @@ static int csi_registered(struct v4l2_subdev *sd)
->  	}
->
->  	priv->vdev = imx_media_capture_device_init(priv->sd.dev, &priv->sd,
-> -						   CSI_SRC_PAD_IDMAC, true);
-> +						   CSI_SRC_PAD_IDMAC, true,
-> +						   DEVICE_TYPE_IMX56);
->  	if (IS_ERR(priv->vdev)) {
->  		ret = PTR_ERR(priv->vdev);
->  		goto free_fim;
-> diff --git a/drivers/staging/media/imx/imx-media.h b/drivers/staging/media/imx/imx-media.h
-> index f263fc3adbb9..e4c22b3ccd57 100644
-> --- a/drivers/staging/media/imx/imx-media.h
-> +++ b/drivers/staging/media/imx/imx-media.h
-> @@ -96,6 +96,11 @@ enum imx_pixfmt_sel {
->  	PIXFMT_SEL_ANY = PIXFMT_SEL_YUV | PIXFMT_SEL_RGB | PIXFMT_SEL_BAYER,
->  };
->
-> +enum imx_media_device_type {
-> +	DEVICE_TYPE_IMX56,
-> +	DEVICE_TYPE_IMX78,
-> +};
-> +
+Okay
 
-Isn't this too coarse as a distinction ?
+> 
+> > +
+> > +if /sbin/modprobe -q intel_sdsi; then
+> > +       python3 -m pytest sdsi_test.py
+> 
+> You are ignoring the return value of the python script here, you probably want
+> something like
+> this instead:
+> 
+> if /sbin/modprobe -q intel_sdsi && python3 -m pytest sdsi_test.py; then
+> 
+> 
+> 
+> 
+> > +       /sbin/modprobe -q -r intel_sdsi
 
-I tried adding per-soc identifiers here:
-https://lore.kernel.org/linux-media/20220214184318.409208-5-jacopo@jmondi.org/T/#u
+Okay
 
-Maybe they can help ?
+> 
+> Why? now you are leaving the system behind in a different state then it was
+> before?
 
->  struct imx_media_buffer {
->  	struct vb2_v4l2_buffer vbuf; /* v4l buffer must be first */
->  	struct list_head  list;
-> @@ -282,7 +287,8 @@ int imx_media_ic_unregister(struct v4l2_subdev *sd);
->  /* imx-media-capture.c */
->  struct imx_media_video_dev *
->  imx_media_capture_device_init(struct device *dev, struct v4l2_subdev *src_sd,
-> -			      int pad, bool legacy_api);
-> +			      int pad, bool legacy_api,
-> +			      enum imx_media_device_type type);
->  void imx_media_capture_device_remove(struct imx_media_video_dev *vdev);
->  int imx_media_capture_device_register(struct imx_media_video_dev *vdev,
->  				      u32 link_flags);
-> diff --git a/drivers/staging/media/imx/imx7-media-csi.c b/drivers/staging/media/imx/imx7-media-csi.c
-> index 32311fc0e2a4..173dd014c2d6 100644
-> --- a/drivers/staging/media/imx/imx7-media-csi.c
-> +++ b/drivers/staging/media/imx/imx7-media-csi.c
-> @@ -1039,7 +1039,8 @@ static int imx7_csi_registered(struct v4l2_subdev *sd)
->  	}
->
->  	csi->vdev = imx_media_capture_device_init(csi->sd.dev, &csi->sd,
-> -						  IMX7_CSI_PAD_SRC, false);
-> +						  IMX7_CSI_PAD_SRC, false,
-> +						  DEVICE_TYPE_IMX78);
->  	if (IS_ERR(csi->vdev))
->  		return PTR_ERR(csi->vdev);
->
-> --
-> 2.25.1
->
+I assumed that the driver had to be installed to run the test, so I uninstall it
+after. But it could have already been installed. Will change to match the
+initial state. Thanks.
+
+David
+
+> 
+> Regards,
+> 
+> Hans
+> 
+> 
+> > +
+> > +       echo "drivers/sdsi: ok"
+> > +else
+> > +       echo "drivers/sdsi: [FAIL]"
+> > +       exit 1
+> > +fi
+> > diff --git a/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+> > b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+> > new file mode 100644
+> > index 000000000000..4922edfe461f
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+> > @@ -0,0 +1,226 @@
+> > +#!/usr/bin/env python3
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +
+> > +from struct import pack
+> > +from time import sleep
+> > +
+> > +import errno
+> > +import glob
+> > +import os
+> > +import subprocess
+> > +
+> > +try:
+> > +    import pytest
+> > +except ImportError:
+> > +    print("Unable to import pytest python module.")
+> > +    print("\nIf not already installed, you may do so with:")
+> > +    print("\t\tpip3 install pytest")
+> > +    exit(1)
+> > +
+> > +SOCKETS = glob.glob('/sys/bus/auxiliary/devices/intel_vsec.sdsi.*')
+> > +NUM_SOCKETS = len(SOCKETS)
+> > +
+> > +MODULE_NAME = 'sdsi'
+> > +DEV_PREFIX = 'intel_vsec.sdsi'
+> > +CLASS_DIR = '/sys/bus/auxiliary/devices'
+> > +GUID = "0x6dd191"
+> > +
+> > +def read_bin_file(file):
+> > +    with open(file, mode='rb') as f:
+> > +        content = f.read()
+> > +    return content
+> > +
+> > +def get_dev_file_path(socket, file):
+> > +    return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/' + file
+> > +
+> > +def kmemleak_enabled():
+> > +    kmemleak = "/sys/kernel/debug/kmemleak"
+> > +    return os.path.isfile(kmemleak)
+> > +
+> > +class TestSDSiDriver:
+> > +    def test_driver_loaded(self):
+> > +        lsmod_p = subprocess.Popen(('lsmod'), stdout=subprocess.PIPE)
+> > +        result = subprocess.check_output(('grep', '-q', MODULE_NAME),
+> > stdin=lsmod_p.stdout)
+> > +
+> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+> > +class TestSDSiFilesClass:
+> > +
+> > +    def read_value(self, file):
+> > +        f = open(file, "r")
+> > +        value = f.read().strip("\n")
+> > +        return value
+> > +
+> > +    def get_dev_folder(self, socket):
+> > +        return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/'
+> > +
+> > +    def test_sysfs_files_exist(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +        print (folder)
+> > +        assert os.path.isfile(folder + "guid") == True
+> > +        assert os.path.isfile(folder + "provision_akc") == True
+> > +        assert os.path.isfile(folder + "provision_cap") == True
+> > +        assert os.path.isfile(folder + "state_certificate") == True
+> > +        assert os.path.isfile(folder + "registers") == True
+> > +
+> > +    def test_sysfs_file_permissions(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +        mode = os.stat(folder + "guid").st_mode & 0o777
+> > +        assert mode == 0o444    # Read all
+> > +        mode = os.stat(folder + "registers").st_mode & 0o777
+> > +        assert mode == 0o400    # Read owner
+> > +        mode = os.stat(folder + "provision_akc").st_mode & 0o777
+> > +        assert mode == 0o200    # Read owner
+> > +        mode = os.stat(folder + "provision_cap").st_mode & 0o777
+> > +        assert mode == 0o200    # Read owner
+> > +        mode = os.stat(folder + "state_certificate").st_mode & 0o777
+> > +        assert mode == 0o400    # Read owner
+> > +
+> > +    def test_sysfs_file_ownership(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +
+> > +        st = os.stat(folder + "guid")
+> > +        assert st.st_uid == 0
+> > +        assert st.st_gid == 0
+> > +
+> > +        st = os.stat(folder + "registers")
+> > +        assert st.st_uid == 0
+> > +        assert st.st_gid == 0
+> > +
+> > +        st = os.stat(folder + "provision_akc")
+> > +        assert st.st_uid == 0
+> > +        assert st.st_gid == 0
+> > +
+> > +        st = os.stat(folder + "provision_cap")
+> > +        assert st.st_uid == 0
+> > +        assert st.st_gid == 0
+> > +
+> > +        st = os.stat(folder + "state_certificate")
+> > +        assert st.st_uid == 0
+> > +        assert st.st_gid == 0
+> > +
+> > +    def test_sysfs_file_sizes(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +
+> > +        if self.read_value(folder + "guid") == GUID:
+> > +            st = os.stat(folder + "registers")
+> > +            assert st.st_size == 72
+> > +
+> > +        st = os.stat(folder + "provision_akc")
+> > +        assert st.st_size == 1024
+> > +
+> > +        st = os.stat(folder + "provision_cap")
+> > +        assert st.st_size == 1024
+> > +
+> > +        st = os.stat(folder + "state_certificate")
+> > +        assert st.st_size == 4096
+> > +
+> > +    def test_no_seek_allowed(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +        rand_file = bytes(os.urandom(8))
+> > +
+> > +        f = open(folder + "provision_cap", "wb", 0)
+> > +        f.seek(1)
+> > +        with pytest.raises(OSError) as error:
+> > +            f.write(rand_file)
+> > +        assert error.value.errno == errno.ESPIPE
+> > +        f.close()
+> > +
+> > +        f = open(folder + "provision_akc", "wb", 0)
+> > +        f.seek(1)
+> > +        with pytest.raises(OSError) as error:
+> > +            f.write(rand_file)
+> > +        assert error.value.errno == errno.ESPIPE
+> > +        f.close()
+> > +
+> > +    def test_registers_seek(self, socket):
+> > +        folder = self.get_dev_folder(socket)
+> > +
+> > +        # Check that the value read from an offset of the entire
+> > +        # file is none-zero and the same as the value read
+> > +        # from seeking to the same location
+> > +        f = open(folder + "registers", "rb")
+> > +        data = f.read()
+> > +        f.seek(64)
+> > +        id = f.read()
+> > +        assert id != bytes(0)
+> > +        assert data[64:] == id
+> > +        f.close()
+> > +
+> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+> > +class TestSDSiMailboxCmdsClass:
+> > +    def test_provision_akc_eoverflow_1017_bytes(self, socket):
+> > +
+> > +        # The buffer for writes is 1k, of with 8 bytes must be
+> > +        # reserved for the command, leaving 1016 bytes max.
+> > +        # Check that we get an overflow error for 1017 bytes.
+> > +        node = get_dev_file_path(socket, "provision_akc")
+> > +        rand_file = bytes(os.urandom(1017))
+> > +
+> > +        f = open(node, 'wb', 0)
+> > +        with pytest.raises(OSError) as error:
+> > +            f.write(rand_file)
+> > +        assert error.value.errno == errno.EOVERFLOW
+> > +        f.close()
+> > +
+> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+> > +class TestSdsiDriverLocksClass:
+> > +    def test_enodev_when_pci_device_removed(self, socket):
+> > +        node = get_dev_file_path(socket, "provision_akc")
+> > +        dev_name = DEV_PREFIX + '.' + str(socket)
+> > +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
+> > +        rand_file = bytes(os.urandom(8))
+> > +
+> > +        f = open(node, 'wb', 0)
+> > +        g = open(node, 'wb', 0)
+> > +
+> > +        with open(driver_dir + 'unbind', 'w') as k:
+> > +            print(dev_name, file = k)
+> > +
+> > +        with pytest.raises(OSError) as error:
+> > +            f.write(rand_file)
+> > +        assert error.value.errno == errno.ENODEV
+> > +
+> > +        with pytest.raises(OSError) as error:
+> > +            g.write(rand_file)
+> > +        assert error.value.errno == errno.ENODEV
+> > +
+> > +        f.close()
+> > +        g.close()
+> > +
+> > +        # Short wait needed to allow file to close before pulling driver
+> > +        sleep(1)
+> > +
+> > +        p = subprocess.Popen(('modprobe', '-r', 'intel_sdsi'))
+> > +        p.wait()
+> > +        p = subprocess.Popen(('modprobe', '-r', 'intel_vsec'))
+> > +        p.wait()
+> > +        p = subprocess.Popen(('modprobe', 'intel_vsec'))
+> > +        p.wait()
+> > +
+> > +        # Short wait needed to allow driver time to get inserted
+> > +        # before continuing tests
+> > +        sleep(1)
+> > +
+> > +    def test_memory_leak(self, socket):
+> > +        if not kmemleak_enabled:
+> > +            pytest.skip("kmemleak not enabled in kernel")
+> > +
+> > +        dev_name = DEV_PREFIX + '.' + str(socket)
+> > +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
+> > +
+> > +        with open(driver_dir + 'unbind', 'w') as k:
+> > +            print(dev_name, file = k)
+> > +
+> > +        sleep(1)
+> > +
+> > +        subprocess.check_output(('modprobe', '-r', 'intel_sdsi'))
+> > +        subprocess.check_output(('modprobe', '-r', 'intel_vsec'))
+> > +
+> > +        with open('/sys/kernel/debug/kmemleak', 'w') as f:
+> > +            print('scan', file = f)
+> > +        sleep(5)
+> > +
+> > +        assert os.stat('/sys/kernel/debug/kmemleak').st_size == 0
+> > +
+> > +        subprocess.check_output(('modprobe', 'intel_vsec'))
+> > +        sleep(1)
+> 
+
+
