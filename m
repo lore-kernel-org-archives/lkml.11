@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57799C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22242C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245325AbiBNJuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43940 "EHLO
+        id S245676AbiBNJuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245247AbiBNJo7 (ORCPT
+        with ESMTP id S245307AbiBNJpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:44:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 575CA6A03D;
-        Mon, 14 Feb 2022 01:38:28 -0800 (PST)
+        Mon, 14 Feb 2022 04:45:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845AF60DA0;
+        Mon, 14 Feb 2022 01:38:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAA646117F;
-        Mon, 14 Feb 2022 09:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4700C340E9;
-        Mon, 14 Feb 2022 09:38:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D82611BC;
+        Mon, 14 Feb 2022 09:38:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C6DC340E9;
+        Mon, 14 Feb 2022 09:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831507;
-        bh=6e54lmGimgKn631egJa57mEvUiKAcn1kkE1kiEEqHbE=;
+        s=korg; t=1644831532;
+        bh=rmFaxeqV0WmNFAlFuIswJzBEHxPusxQB4kPuyZQRoGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qm1rcjFrzk/ykllEYxgkG5sUF56ll3RRTWZWyBmwK+oCgBPBQ/T0Y+nRhPT6zS4Oc
-         R/vOBIwj1qsgzAbacB4kTrqFnAnpibi50juVCHVEF5X6ZWbRTazZjgam/SPeGe8xU1
-         rB+746z96elKyjtYMsP81sKHLE3Ue+GOZees+oS0=
+        b=0iARKuZQ4ssUFCPolUDnifxeZszQfQkpGZ8yZDr72A2zNQA8X1Hu59wzkt5zTibS9
+         6Y80f5ucQd/HW4PV6QuYzJKEeQPAhYC38wlGcPQwMXLEufVQfpGL5fHqliOXoL3yCv
+         ryPPmDBgOBUvaTpUZEYWVloR/bTBdYilUC8BdHxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 62/71] USB: serial: ftdi_sio: add support for Brainboxes US-159/235/320
-Date:   Mon, 14 Feb 2022 10:26:30 +0100
-Message-Id: <20220214092454.121056874@linuxfoundation.org>
+        stable@vger.kernel.org, Yordan Karadzhov <ykaradzhov@vmware.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 5.10 013/116] tracing: Propagate is_signed to expression
+Date:   Mon, 14 Feb 2022 10:25:12 +0100
+Message-Id: <20220214092459.143523020@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,58 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cameron Williams <cang1@live.co.uk>
+From: Tom Zanussi <zanussi@kernel.org>
 
-commit fbb9b194e15a63c56c5664e76ccd0e85c6100cea upstream.
+commit 097f1eefedeab528cecbd35586dfe293853ffb17 upstream.
 
-This patch adds support for the Brainboxes US-159, US-235 and US-320
-USB-to-Serial devices.
+During expression parsing, a new expression field is created which
+should inherit the properties of the operands, such as size and
+is_signed.
 
-Signed-off-by: Cameron Williams <cang1@live.co.uk>
+is_signed propagation was missing, causing spurious errors with signed
+operands.  Add it in parse_expr() and parse_unary() to fix the problem.
+
+Link: https://lkml.kernel.org/r/f4dac08742fd7a0920bf80a73c6c44042f5eaa40.1643319703.git.zanussi@kernel.org
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Fixes: 100719dcef447 ("tracing: Add simple expression support to hist triggers")
+Reported-by: Yordan Karadzhov <ykaradzhov@vmware.com>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215513
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/ftdi_sio.c     |    3 +++
- drivers/usb/serial/ftdi_sio_ids.h |    3 +++
- 2 files changed, 6 insertions(+)
+ kernel/trace/trace_events_hist.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/usb/serial/ftdi_sio.c
-+++ b/drivers/usb/serial/ftdi_sio.c
-@@ -969,6 +969,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_023_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_034_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_101_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_159_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_2_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_3_PID) },
-@@ -977,12 +978,14 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_6_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_7_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_8_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_235_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_257_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_2_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_3_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_4_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_313_PID) },
-+	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_320_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_324_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_1_PID) },
- 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_2_PID) },
---- a/drivers/usb/serial/ftdi_sio_ids.h
-+++ b/drivers/usb/serial/ftdi_sio_ids.h
-@@ -1506,6 +1506,9 @@
- #define BRAINBOXES_VX_023_PID		0x1003 /* VX-023 ExpressCard 1 Port RS422/485 */
- #define BRAINBOXES_VX_034_PID		0x1004 /* VX-034 ExpressCard 2 Port RS422/485 */
- #define BRAINBOXES_US_101_PID		0x1011 /* US-101 1xRS232 */
-+#define BRAINBOXES_US_159_PID		0x1021 /* US-159 1xRS232 */
-+#define BRAINBOXES_US_235_PID		0x1017 /* US-235 1xRS232 */
-+#define BRAINBOXES_US_320_PID		0x1019 /* US-320 1xRS422/485 */
- #define BRAINBOXES_US_324_PID		0x1013 /* US-324 1xRS422/485 1Mbaud */
- #define BRAINBOXES_US_606_1_PID		0x2001 /* US-606 6 Port RS232 Serial Port 1 and 2 */
- #define BRAINBOXES_US_606_2_PID		0x2002 /* US-606 6 Port RS232 Serial Port 3 and 4 */
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -2154,6 +2154,8 @@ static struct hist_field *parse_unary(st
+ 		(HIST_FIELD_FL_TIMESTAMP | HIST_FIELD_FL_TIMESTAMP_USECS);
+ 	expr->fn = hist_field_unary_minus;
+ 	expr->operands[0] = operand1;
++	expr->size = operand1->size;
++	expr->is_signed = operand1->is_signed;
+ 	expr->operator = FIELD_OP_UNARY_MINUS;
+ 	expr->name = expr_str(expr, 0);
+ 	expr->type = kstrdup(operand1->type, GFP_KERNEL);
+@@ -2293,6 +2295,7 @@ static struct hist_field *parse_expr(str
+ 
+ 	/* The operand sizes should be the same, so just pick one */
+ 	expr->size = operand1->size;
++	expr->is_signed = operand1->is_signed;
+ 
+ 	expr->operator = field_op;
+ 	expr->name = expr_str(expr, 0);
 
 
