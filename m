@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED252C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353518AbiBNMuR (ORCPT
+        id S1353531AbiBNMup (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:50:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42714 "EHLO
+        Mon, 14 Feb 2022 07:50:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353486AbiBNMuP (ORCPT
+        with ESMTP id S242811AbiBNMun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:50:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637034B85C;
-        Mon, 14 Feb 2022 04:50:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4A1161468;
-        Mon, 14 Feb 2022 12:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E67EFC340E9;
-        Mon, 14 Feb 2022 12:50:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644843003;
-        bh=dCZAZFFTFztaUC3w9E7PynQEzmnHStV4WtGOFsBCoMc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NxuzBnXVhRj04xQho/0LIHIQWG+EkuGcsPcdH80rm/QChJgLscBCwiEIrFWu1I9Ig
-         UgkI+xyU50G6u5+t+lNJSNW/HEtSdBRL0oOzFH83eXtZQbIQ92FiYwkLov3vpZGIln
-         NU8XzL8C6+/lhtAy4CvvbKb/v1blCUd1Vzi66K2EETkJn51JpahjmH3s+YByDuW9ja
-         Wv8BQ8RFp0aQs9sfW9RMtGqDJgjgwf0WTeSYGUA0j9DIxcQME/GuHEWBH8qrFL0uHQ
-         KFdJUAeG/I0dONMbAe6iDvOZwc7uzp5t6mTegnEiF+qjW7LkoDWHkGsp+1lwNnBHsy
-         UrI0lE4UaIkAA==
-Date:   Mon, 14 Feb 2022 12:49:58 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Jon Lin <jon.lin@rock-chips.com>
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] spi: rockchip: Preset cs-high and clk polarity in
- setup progress
-Message-ID: <YgpP9j80OuhkCN8p@sirena.org.uk>
-References: <20220211034344.4130-1-jon.lin@rock-chips.com>
- <20220211034344.4130-2-jon.lin@rock-chips.com>
- <YgZHalrdhhilxROt@sirena.org.uk>
- <4222ce7d-a1e3-1728-fec2-976946b06ba9@rock-chips.com>
+        Mon, 14 Feb 2022 07:50:43 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3FE4B873;
+        Mon, 14 Feb 2022 04:50:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644843035; x=1676379035;
+  h=to:cc:references:from:subject:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=Eb6rJWw2D0/3or5NxM/OEIohDMtNNIjXLf3CGb8tFSs=;
+  b=oGAFyXjl4N6S2DGcpLM4IwF308xkIGzaX4vjfWZ5Vm72eJcScjNBBpAa
+   Ebu77i/dAf2jxSMDnZ2k2SPJALmTASrMVPWDBj9amZNn/3iKOrP/GeTBT
+   8DHibcqW6LjQbMMYMKgxVMBqZZwwX/eHjpIkNfjeurCHr/zfS7Ih4GFuA
+   ObZCKD+q1gAO/2HWd9ZVvwWPv9YZNOy7TRt56VcaDlJEurolWZiPFJHmn
+   T+SnyFhLANyQBEks+8HdtdLY59A48XXxbn5PBpgkHe9pbPnGvdWRU4DVL
+   DV3zPUVJ6GWA/8mIcyFtULCAl1bBVybQC+l0mqVL2eKNIe+sVkQP2UcRk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="274652689"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="274652689"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 04:50:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="570163664"
+Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
+  by orsmga001.jf.intel.com with ESMTP; 14 Feb 2022 04:50:17 -0800
+To:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mathias Nyman <mathias.nyman@intel.com>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_ugoswami@quicinc.com, Jung Daehwan <dh10.jung@samsung.com>
+References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+ <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
+From:   Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: Re: [PATCH v2] xhci: reduce xhci_handshake timeout in xhci_reset
+Message-ID: <d82746d2-4096-1477-42dd-fd393e0ff827@linux.intel.com>
+Date:   Mon, 14 Feb 2022 14:51:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="WgfHOPUjhPwyc1Eh"
-Content-Disposition: inline
-In-Reply-To: <4222ce7d-a1e3-1728-fec2-976946b06ba9@rock-chips.com>
-X-Cookie: Am I in GRADUATE SCHOOL yet?
+In-Reply-To: <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 14.2.2022 14.20, Pavankumar Kondeti wrote:
+> From: Daehwan Jung <dh10.jung@samsung.com>
+> 
+> xhci_reset() is called with interrupts disabled. Waiting 10 seconds for
+> controller reset and controller ready operations can be fatal to the
+> system when controller is timed out. Reduce the timeout to 1 second
+> and print a error message when the time out happens.
+> 
+> Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
 
---WgfHOPUjhPwyc1Eh
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 14, 2022 at 04:40:19PM +0800, Jon Lin wrote:
-> =E5=9C=A8 2022/2/11 19:24, Mark Brown =E5=86=99=E9=81=93:
+The commit 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
+intentionally increased the timeout to 10 seconds as that host might take 9
+seconds to complete reset. This was done almost 10 years ago so I don't know
+if it really is an issue anymore.
 
-> > > +   cr0 |=3D ((spi->mode & 0x3) << CR0_SCPH_OFFSET);
-> > > +   if (spi->mode & SPI_CS_HIGH)
-> > > +           cr0 |=3D BIT(spi->chip_select) << CR0_SOI_OFFSET;
+Anyways, your patch might break Renesas 72021 instead of fixing it.
 
-> > What ensures that this read/modify/write doesn't race with a transfer
-> > running on another client device in the case where the controller has
-> > more than one device connected?  Similarly with the mode, though it's
-> > not great to have devices with different modes connected to a single
-> > controller.
+I agree that busylooping up to 10 seconds with interrupts disabled doesn't make sense.
 
-> I have no idea how to deal with the conflict configuration between
-> different cs, and also I find nothing strategy in others spi drivers.
-> As we all know, some configurations should be consistent for different
-> CS devices, such as SPI_CPOL, so I suggest the framework to make
-> corresponding early warning prompts.
+Lets see if there is another solution for your case.
 
-As covered in the documentation setup() for one device may run while
-another is active, therefore if multiple devices are configured in the
-same register you should use a lock to ensure there can't be multiple
-writes.  Note that the above appears to not just be setting the mode but
-also the chip select so if you've got two SPI_CS_HIGH devices then
-they'll both be going in and separately setting cr0.
+- Does a "guard interval" after writing the reset help?
+  For example Intel xHCI needs 1ms before touching xHC after writing the reset bit
 
---WgfHOPUjhPwyc1Eh
-Content-Type: application/pgp-signature; name="signature.asc"
+- Is it the CNR bit or the RESET bit that fails? could be just stuck CNR bit? 
+ 
+- we only disable local interrupts when xhci_reset() is called from xhci_stop(),
+  and sometimes from xhci_shutdown() and xhci_resume() if some conditions are met.
+  Have you identified which one is the problematic case?
 
------BEGIN PGP SIGNATURE-----
+  I think we halt the host in the above case first, meaning there should be no
+  xHC interrupts when xhci_reset() is called. So if we could guarantee xhci interrupt
+  isn't handled on this cpu, maybe we could somehow enable local interrupt after 
+  halting the host?
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIKT/YACgkQJNaLcl1U
-h9AZKAf/VpLE2vWn6R3N7yXYDuY8eeyBOVUEXfG484ts/lnv56h0WYC6lFZRT6Ge
-4yg6uV+fWsAsC+jbNXgNg5+AOpVwuN/fDkAN/5E3bVOAVTnTaWDvT0A7U1YvsP+u
-IGrkUB3RTshl8j/w7V2v7axa+tWkEH8s6lkz1T+UhgqQFPeFtQfuHY6kRbuFYAGW
-IOs1d3Au4t0jQmhhT3dT9Q/2Cm0lM7nOCNxqh/JbkPD/G6Va1NKYh2dLSUgR2pZe
-tkD6K1gmx05dWC+olXHVLYu8ZHuqjJysmrrwpQM7pprHZAShZ8+MYW8UGnYPJ+Bx
-6k2s6LozuXeMH+w3ygNO8f4axFUKVQ==
-=xViN
------END PGP SIGNATURE-----
+  haven't really thought this true yet, but something like this could e investigated:
 
---WgfHOPUjhPwyc1Eh--
+  spin_lock_irqsave()
+  xhci_halt()
+  < enable interrupts, magically turn spin_lock_irqsave() to just keeping spin lock>
+  xhci_reset()
+  spin_unlock()
+
+-Mathias
