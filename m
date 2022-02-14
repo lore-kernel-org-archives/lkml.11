@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBDDCC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB7EC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:11:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345920AbiBNKLN (ORCPT
+        id S1345997AbiBNKLZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:11:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35434 "EHLO
+        Mon, 14 Feb 2022 05:11:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345098AbiBNKIJ (ORCPT
+        with ESMTP id S1344614AbiBNKI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:08:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B3775C15;
-        Mon, 14 Feb 2022 01:50:10 -0800 (PST)
+        Mon, 14 Feb 2022 05:08:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9526C907;
+        Mon, 14 Feb 2022 01:50:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2398EB80DC4;
-        Mon, 14 Feb 2022 09:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51D69C340E9;
-        Mon, 14 Feb 2022 09:50:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 862B5612BF;
+        Mon, 14 Feb 2022 09:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69699C340EF;
+        Mon, 14 Feb 2022 09:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832207;
-        bh=NztMsR2kgqmVFtrKAa0G1xzND/aCA27veuaAtsBHcvM=;
+        s=korg; t=1644832215;
+        bh=yBRwaPPBX7oiofAb7QQqNGhdMzKYQcdZ2HG2mnhRb+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NY7414+8jYzcEJdws9uiupL8Y21hoQTTvCRsL++R4gMAKVSaMD8qd1o6N82wofwFs
-         WGACdifhUg7XWJ82tL8vCm+BUZNFz6Ko/raoCOa3W7YQm+bp1IiG7rSNQB7ZwbcY5U
-         jkkoGwkSiVHIg5j4LJQ20mG0Lx6i8al5X1Uw/7lE=
+        b=uabF6/4CJKINkK3byvm4CJTJFIJtZSbjWgWN8pKHTQilyad/fvSYvEaND5stMOlgi
+         V4HkJNhWRQ/AaJoOnBeSF9z37qUTMlzMbIsAQwV/JOBnFB86GCn640faQ9us9tsPG3
+         GeW09AEfcqpvaoAaD8YqbQfqdgYN7Z6d04fZzU1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/172] net: dsa: felix: dont use devres for mdiobus
-Date:   Mon, 14 Feb 2022 10:26:12 +0100
-Message-Id: <20220214092510.367795301@linuxfoundation.org>
+Subject: [PATCH 5.15 115/172] net: dsa: mt7530: fix kernel bug in mdiobus_free() when unbinding
+Date:   Mon, 14 Feb 2022 10:26:13 +0100
+Message-Id: <20220214092510.399068887@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -53,73 +53,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 209bdb7ec6a28c7cdf580a0a98afbc9fc3b98932 ]
+[ Upstream commit 9ffe3d09e32da45bb5a29cf2e80ec8d7534010c5 ]
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+Nobody in this driver calls mdiobus_unregister(), which is necessary if
+mdiobus_register() completes successfully. So if the devres callbacks
+that free the mdiobus get invoked (this is the case when unbinding the
+driver), mdiobus_free() will BUG if the mdiobus is still registered,
+which it is.
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
+My speculation is that this is due to the fact that prior to commit
+ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+from June 2020, _devm_mdiobus_free() used to call mdiobus_unregister().
+But at the time that the mt7530 support was introduced in May 2021, the
+API was already changed. It's therefore likely that the blamed patch was
+developed on an older tree, and incorrectly adapted to net-next. This
+makes the Fixes: tag correct.
 
-The Felix VSC9959 switch is a PCI device, so the initial set of
-constraints that I thought would cause this (I2C or SPI buses which call
-->remove on ->shutdown) do not apply. But there is one more which
-applies here.
+Fix the problem by using the devres variant of mdiobus_register.
 
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the felix switch driver on shutdown.
-
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
-
-The felix driver has the code structure in place for orderly mdiobus
-removal, so just replace devm_mdiobus_alloc_size() with the non-devres
-variant, and add manual free where necessary, to ensure that we don't
-let devres free a still-registered bus.
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Fixes: ba751e28d442 ("net: dsa: mt7530: add interrupt support")
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mt7530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 11b42fd812e4a..e53ad283e2596 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1066,7 +1066,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 		return PTR_ERR(hw);
- 	}
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 9890672a206d0..fb59efc7f9266 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -2066,7 +2066,7 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
+ 	if (priv->irq)
+ 		mt7530_setup_mdio_irq(priv);
  
--	bus = devm_mdiobus_alloc_size(dev, sizeof(*mdio_priv));
-+	bus = mdiobus_alloc_size(sizeof(*mdio_priv));
- 	if (!bus)
- 		return -ENOMEM;
- 
-@@ -1086,6 +1086,7 @@ static int vsc9959_mdio_bus_alloc(struct ocelot *ocelot)
- 	rc = mdiobus_register(bus);
- 	if (rc < 0) {
- 		dev_err(dev, "failed to register MDIO bus\n");
-+		mdiobus_free(bus);
- 		return rc;
- 	}
- 
-@@ -1135,6 +1136,7 @@ static void vsc9959_mdio_bus_free(struct ocelot *ocelot)
- 		lynx_pcs_destroy(pcs);
- 	}
- 	mdiobus_unregister(felix->imdio);
-+	mdiobus_free(felix->imdio);
- }
- 
- static void vsc9959_sched_speed_set(struct ocelot *ocelot, int port,
+-	ret = mdiobus_register(bus);
++	ret = devm_mdiobus_register(dev, bus);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register MDIO bus: %d\n", ret);
+ 		if (priv->irq)
 -- 
 2.34.1
 
