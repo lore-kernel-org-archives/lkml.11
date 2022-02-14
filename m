@@ -2,88 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E8CC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:42:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353248AbiBNLm3 (ORCPT
+        id S1352908AbiBNLmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:42:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43198 "EHLO
+        Mon, 14 Feb 2022 06:42:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353779AbiBNLmA (ORCPT
+        with ESMTP id S1353773AbiBNLmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 06:42:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279FA66CB3;
-        Mon, 14 Feb 2022 03:33:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1CF4B80E63;
-        Mon, 14 Feb 2022 11:33:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACC4C340EF;
-        Mon, 14 Feb 2022 11:33:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644838390;
-        bh=mB4W/H/vrB0d77K6nBnjaR9o/mXDf3g7YMz3F6i2XPs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P9eOPxoPwj3QMg77pz+4V2ZXKrBN0sxp4V6IAZ7lW13IoezGtFUAgvvOXD+9lnTma
-         FkRvZrj6JM1DJxfvX3OP9mVNfVwJ5iasyMQRi33pnY7/KFrfyOHH6GDblmX+gkpFJH
-         MgdN3dGv0EUn/wSaNy7fi2uuEjGz4Fhb/NaCO+Wk=
-Date:   Mon, 14 Feb 2022 12:33:07 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     =?utf-8?B?5pa96YyV6bS7?= <vincent.sunplus@gmail.com>
-Cc:     stern@rowland.harvard.edu, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, wells.lu@sunplus.com
-Subject: Re: [PATCH v1 1/2] usb: host: ehci-sunplus: Add driver for ehci in
- Sunplus SP7021
-Message-ID: <Ygo980Tg3aZdDQDH@kroah.com>
-References: <1644827562-17244-1-git-send-email-vincent.sunplus@gmail.com>
- <1644827562-17244-2-git-send-email-vincent.sunplus@gmail.com>
- <YgoVBv/z1uCsR1Y0@kroah.com>
- <CAPvp3Rhtb-g1A5FG6_1irzX2fG-VACU3T4tST1Xo99cnnL==MQ@mail.gmail.com>
- <Ygodd+TFQGnhki6A@kroah.com>
- <CAPvp3RiPVkonTtAdTcLqQuPggg6zw8yNEPf-mR0+1bbtSsdtEg@mail.gmail.com>
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D13E66239;
+        Mon, 14 Feb 2022 03:33:45 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id h18so4226803edb.7;
+        Mon, 14 Feb 2022 03:33:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=XoIGUc7L1CNxby6hJQisyEzt3VmpKa35bNMvST/YPuE=;
+        b=JlN98nyPpMDUKHiyYlGiPuS7cQJHiFTCs3X6VJUvUDUyjMH04GGi1UiVpeTpW0etd5
+         piy+HN1nnL3JqFiwFC2q/KiFgk8tp6xOXEZMSUjbGTto63xB0ZZ8rKvn4Id3sx0suOa3
+         YqnROkPIS+UkqAqF6v8eCKUPgbumINw1KwtblAfeFsP49L/S5BzM8XiM0V4mJaV5yGys
+         AzA4WejMe721YwVpHQe5uv1AaDYxvmB/fCtrLcaaaS+k21qCVsEUZViAc60oeaP6Ni4A
+         dMAgEtn2oQ4cX7A8MWI9CpcMuiyLePimbafnMB1L28kzbj9t4geyzCVGcLgd5cP5TmhT
+         I8bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=XoIGUc7L1CNxby6hJQisyEzt3VmpKa35bNMvST/YPuE=;
+        b=fju/APajZwRvSTMVZzJBvlx5hzM9PKgP7sDw+YhNC5Rg8sc7TixE3mq0lhisOUvRoy
+         xVx+QrIghOKUgAHDiEZD1REtIYAeOI/Pkv2OnpalcdeoLBNXqrLaXhf349Dt9wUycu5r
+         A7fiDO/hR5c9Ti+tYXApW/O2DbmTTHW+Xd+ktRDUmZt+Qj1ah0Yyn5DiWvn6nlaxjQVn
+         J+OKYrfWwjOkqEgS09xFqYIlA1OzxPsPH1fNY+YH5VaBnQTrQRm5uno4dOlefqIPKwbv
+         Cw5EdqkaSLAe9MqMf4p6/bqVeCYRSBCaYbIkxXqu4YlVUwo5Nb5jFF7YP3K8XiPV8/Tw
+         ktgw==
+X-Gm-Message-State: AOAM530zy1nADY8Ir72KnjHwFfForsXOXSbVbI0CckAo5s8LIMupbrGA
+        yPR0vaArHetjDcG+nQIosMVhJdihyjmxlfzaDsk=
+X-Google-Smtp-Source: ABdhPJxdjDrQ1VObEg1fJDmTAzjNNascf/eT/ASfc96PvXg+NyV2kooWdTZhgBk30cN/cpVwEf4p/OyzKfS1/Y1gQqI=
+X-Received: by 2002:a05:6402:4254:: with SMTP id g20mr15512109edb.281.1644838422989;
+ Mon, 14 Feb 2022 03:33:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAPvp3RiPVkonTtAdTcLqQuPggg6zw8yNEPf-mR0+1bbtSsdtEg@mail.gmail.com>
+References: <20220214033620.4059-1-jagathjog1996@gmail.com> <20220214033620.4059-4-jagathjog1996@gmail.com>
+In-Reply-To: <20220214033620.4059-4-jagathjog1996@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 14 Feb 2022 13:32:14 +0200
+Message-ID: <CAHp75VcWym5vyDAVyTUCpj=Qkm28VUaqdqJ7VuFL_bsb0fmhaA@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] iio: potentiometer: Add support for Maxim DS3502
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 05:48:20PM +0800, 施錕鴻 wrote:
-> Greg KH <gregkh@linuxfoundation.org> 於 2022年2月14日 週一 下午5:14寫道：
-> >
-> > On Mon, Feb 14, 2022 at 05:03:00PM +0800, 施錕鴻 wrote:
-> > > Hi, Greg
-> > >     About this issue, my colleague Hammer Hsieh has explained it to
-> > > you recently in the mail of "[PATCH v7 2/2] serial: sunplus-uart: Add
-> > > Sunplus
-> > > SoC UART Driver". The ehci driver and uart one are in the same Sunplus Soc.
-> >
-> > I do not know what you are referring to, sorry.  Remember we get
-> > thousands of emails a week.
-> >
-> > Please be explicit and make the code work properly for each patch you
-> > submit.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> Hi, Greg
->     About data incoherence issue between memory bus and peripheral bus.
-> In case of AXI bus, use non-posted write can avoid data incoherence issue.
->     What if in case of post write:
-> Send a specific command after last write command. SDCTRL identify specific
-> command, means previous write command done. Then send the interrupt
-> signal to interrupt controller. And then interrupt controller sends done signal
-> to Master. Master receives done signal, means write command done. Then
-> issue a interrupt or proceed next write command.
+On Mon, Feb 14, 2022 at 5:36 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+>
+> The DS3502 is a 7-bit, nonvolatile digital potentiometer featuring
+> an output voltage range of up to 15.5V.
+> DS3502 support is implemented into existing ds1803 driver
 
-I do not understand what you are referring to here as I have no context
-:(
+Be consistent here and in other commit messages with how you refer to
+the IC parts, i.e.
+DS1803. Don't forget English grammar and punctuation, i.e. missed period above.
 
+> Datasheet: https://datasheets.maximintegrated.com/en/ds/DS3502.pdf
+
+>
+
+A tag block may not have blank lines. Drop it.
+
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+
+...
+
+> -       tristate "Maxim Integrated DS1803 Digital Potentiometer driver"
+> +       tristate "Maxim Integrated DS1803 and similar Digital Potentiometer driver"
+
+Please, list them like other drivers do:
+
+       tristate "Maxim Integrated DS1803/DS... Digital Potentiometer driver"
+
+...
+
+> -         Say yes here to build support for the Maxim Integrated DS1803
+> -         digital potentiometer chip.
+> +         Say yes here to build support for the Maxim Integrated DS1803 and
+> +         similar digital potentiometer chip.
+
+Same here.
+
+...
+
+> - * Maxim Integrated DS1803 digital potentiometer driver
+> + * Maxim Integrated DS1803 and similar digital potentiometer driver
+
+Same here.
+
+...
+
+> -#define DS1803_MAX_POS         255
+> -#define DS1803_WRITE(chan)     (0xa8 | ((chan) + 1))
+
+Not sure why these were removed (or moved?)
+
+...
+
+> +static const struct ds1803_cfg ds1803_cfg[] = {
+> +       [DS1803_010] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  10,
+> +                        .channels = ds1803_channels,
+> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> +       [DS1803_050] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms =  50,
+> +                        .channels = ds1803_channels,
+> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> +       [DS1803_100] = { .wipers = 2, .avail = { 0, 1, 255 }, .kohms = 100,
+> +                        .channels = ds1803_channels,
+> +                        .num_channels = ARRAY_SIZE(ds1803_channels) },
+> +       [DS3502] =     { .wipers = 1, .avail = { 0, 1, 127 }, .kohms =  10,
+> +                        .channels = ds3502_channels,
+> +                        .num_channels = ARRAY_SIZE(ds3502_channels) },
+>  };
+
+Split this on a per type basis. I believe it won't be too much work,
+also, consider adding channels as a separate preparatory patch as you
+did with avail.
+
+...
+
+> -       data->cfg = &ds1803_cfg[id->driver_data];
+> +       data->chip_type = (uintptr_t)device_get_match_data(dev);
+> +       if (data->chip_type < DS1803_010 || data->chip_type > DS3502)
+> +               data->chip_type = id->driver_data;
+
+Split it into a separate patch and use pointer validation instead:
+
+data->cfg = ...
+if (!data->cfg)
+  data->cfg = ...id->driver_data;
+
+...
+
+> -       { .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
+> -       { .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
+> -       { .compatible = "maxim,ds1803-100", .data = &ds1803_cfg[DS1803_100] },
+> +       { .compatible = "maxim,ds1803-010", .data = (void *)DS1803_010 },
+> +       { .compatible = "maxim,ds1803-050", .data = (void *)DS1803_050 },
+> +       { .compatible = "maxim,ds1803-100", .data = (void *)DS1803_100 },
+
+This is not good, please use pointers as it was before.
+
+> +       { .compatible = "maxim,ds3502",     .data = (void *)DS3502 },
+
+Ditto. Create a new, separate structure for this type.
+
+...
+
+>         { "ds1803-010", DS1803_010 },
+>         { "ds1803-050", DS1803_050 },
+>         { "ds1803-100", DS1803_100 },
+> +       { "ds3502",     DS3502     },
+
+Too many spaces.
+Besides this, please create a new prerequisite patch to convert this
+to use pointers as above.
+
+-- 
+With Best Regards,
+Andy Shevchenko
