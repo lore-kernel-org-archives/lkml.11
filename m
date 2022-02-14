@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B50C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244476AbiBNJlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:41:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33136 "EHLO
+        id S244512AbiBNJl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:41:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244512AbiBNJke (ORCPT
+        with ESMTP id S244569AbiBNJke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:40:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B0AB84E;
-        Mon, 14 Feb 2022 01:35:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9994EAE6F;
+        Mon, 14 Feb 2022 01:35:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BC92B80DC4;
-        Mon, 14 Feb 2022 09:35:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 484DFC340E9;
-        Mon, 14 Feb 2022 09:35:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4CAFB80DA9;
+        Mon, 14 Feb 2022 09:35:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 184D8C340E9;
+        Mon, 14 Feb 2022 09:35:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831339;
-        bh=nBbcmC2clBtFUE4+r3jUl7e4KKEhA/7ys6t+U2NjNkU=;
+        s=korg; t=1644831329;
+        bh=nFiWx+3e3Mkbt3NrtocNjgORR1FvmAKTE3TtK8vz04g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3p/UZhwvllCpW6/vcsFWwHMWWutb0MIAyND+y8rMsYg77PI7y2uq22K8kcxEuWBR
-         Qb9hftZ+Ak/iXHrgW2fDce84P3AjDG1OpnliVRvT37eujxtqDmWdTckuUzOiaMQLLP
-         Z5Qr+ngF4DY2J7AY1SEuzll+F5dm59yxNOl782ag=
+        b=AzLHFpBWwgfdy7IXnbGMKjC4DPOsvDMj8eFjxFiwhLT70bsGZffCcnVdIlIOvsTpm
+         FkrvpYfKP1SEqAKKN3HHLLOrUE/qhKShseU6e8cHWfbHAfsuPXqJPS3jmNoL5lRRqi
+         Ihf8VvSjBHrRR1CtOTq2n3pC3cgqYirKQimu1sjI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 22/71] PM: hibernate: Remove register_nosave_region_late()
-Date:   Mon, 14 Feb 2022 10:25:50 +0100
-Message-Id: <20220214092452.761290303@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.4 02/71] ima: Remove ima_policy file before directory
+Date:   Mon, 14 Feb 2022 10:25:30 +0100
+Message-Id: <20220214092452.105351407@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -52,93 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-[ Upstream commit 33569ef3c754a82010f266b7b938a66a3ccf90a4 ]
+commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
 
-It is an unused wrapper forcing kmalloc allocation for registering
-nosave regions. Also, rename __register_nosave_region() to
-register_nosave_region() now that there is no need for disambiguation.
+The removal of ima_dir currently fails since ima_policy still exists, so
+remove the ima_policy file before removing the directory.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/suspend.h | 11 +----------
- kernel/power/snapshot.c | 21 +++++++--------------
- 2 files changed, 8 insertions(+), 24 deletions(-)
+ security/integrity/ima/ima_fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index cd97d2c8840cc..44dd49cb2ea05 100644
---- a/include/linux/suspend.h
-+++ b/include/linux/suspend.h
-@@ -428,15 +428,7 @@ struct platform_hibernation_ops {
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -494,12 +494,12 @@ int __init ima_fs_init(void)
  
- #ifdef CONFIG_HIBERNATION
- /* kernel/power/snapshot.c */
--extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
--static inline void __init register_nosave_region(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 0);
--}
--static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 1);
--}
-+extern void register_nosave_region(unsigned long b, unsigned long e);
- extern int swsusp_page_is_forbidden(struct page *);
- extern void swsusp_set_page_free(struct page *);
- extern void swsusp_unset_page_free(struct page *);
-@@ -453,7 +445,6 @@ extern struct pbe *restore_pblist;
- int pfn_is_nosave(unsigned long pfn);
- #else /* CONFIG_HIBERNATION */
- static inline void register_nosave_region(unsigned long b, unsigned long e) {}
--static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
- static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
- static inline void swsusp_set_page_free(struct page *p) {}
- static inline void swsusp_unset_page_free(struct page *p) {}
-diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
-index d65f2d5ab6942..46455aa7951ec 100644
---- a/kernel/power/snapshot.c
-+++ b/kernel/power/snapshot.c
-@@ -945,8 +945,7 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
-  * Register a range of page frames the contents of which should not be saved
-  * during hibernation (to be used in the early initialization code).
-  */
--void __init __register_nosave_region(unsigned long start_pfn,
--				     unsigned long end_pfn, int use_kmalloc)
-+void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
- {
- 	struct nosave_region *region;
- 
-@@ -962,18 +961,12 @@ void __init __register_nosave_region(unsigned long start_pfn,
- 			goto Report;
- 		}
- 	}
--	if (use_kmalloc) {
--		/* During init, this shouldn't fail */
--		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
--		BUG_ON(!region);
--	} else {
--		/* This allocation cannot fail */
--		region = memblock_alloc(sizeof(struct nosave_region),
--					SMP_CACHE_BYTES);
--		if (!region)
--			panic("%s: Failed to allocate %zu bytes\n", __func__,
--			      sizeof(struct nosave_region));
--	}
-+	/* This allocation cannot fail */
-+	region = memblock_alloc(sizeof(struct nosave_region),
-+				SMP_CACHE_BYTES);
-+	if (!region)
-+		panic("%s: Failed to allocate %zu bytes\n", __func__,
-+		      sizeof(struct nosave_region));
- 	region->start_pfn = start_pfn;
- 	region->end_pfn = end_pfn;
- 	list_add_tail(&region->list, &nosave_regions);
--- 
-2.34.1
-
+ 	return 0;
+ out:
++	securityfs_remove(ima_policy);
+ 	securityfs_remove(violations);
+ 	securityfs_remove(runtime_measurements_count);
+ 	securityfs_remove(ascii_runtime_measurements);
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_symlink);
+ 	securityfs_remove(ima_dir);
+-	securityfs_remove(ima_policy);
+ 	return -1;
+ }
 
 
