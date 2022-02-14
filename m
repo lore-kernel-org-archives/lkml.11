@@ -2,62 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6222C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A17BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348859AbiBNKmq (ORCPT
+        id S1348906AbiBNKmu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:42:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52194 "EHLO
+        Mon, 14 Feb 2022 05:42:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348737AbiBNKkI (ORCPT
+        with ESMTP id S1348843AbiBNKkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:40:08 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CB2E2A9970;
-        Mon, 14 Feb 2022 02:04:08 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CFBEF1396;
-        Mon, 14 Feb 2022 02:03:58 -0800 (PST)
-Received: from [10.163.47.15] (unknown [10.163.47.15])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E32D3F718;
-        Mon, 14 Feb 2022 02:03:56 -0800 (PST)
-Subject: Re: [PATCH 23/30] um/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-To:     kernel test robot <lkp@intel.com>, linux-mm@kvack.org
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch@vger.kernel.org, Jeff Dike <jdike@addtoit.com>,
-        linux-um@lists.infradead.org
-References: <1644805853-21338-24-git-send-email-anshuman.khandual@arm.com>
- <202202141426.Q2fKI6yq-lkp@intel.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <4063465a-126d-9bef-5831-d8340cb9aaec@arm.com>
-Date:   Mon, 14 Feb 2022 15:33:56 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 14 Feb 2022 05:40:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025AD66CA8;
+        Mon, 14 Feb 2022 02:04:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8252760909;
+        Mon, 14 Feb 2022 10:04:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B76CC340E9;
+        Mon, 14 Feb 2022 10:04:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644833052;
+        bh=VurFU58a1cNgjY+xlro4xnBrTwWyCaOg886ucNWiblY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Qzq8HYns/aw9mppqvioj3ooDOKWb7mv5ymM1KnLQRW3kOkoGwiqsI644eCIcClhIz
+         hTXYE1U30wxrw65EafIF9c0/nx14me3E3ZMJUO6oWGJGMQEcJXbxDi5W7JZtu5u3G9
+         5EtxfiSgEYHrwYHCe4Z5gyv8kuo1spBHItHxvrko=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: [PATCH 5.16 182/203] speakup-dectlk: Restore pitch setting
+Date:   Mon, 14 Feb 2022 10:27:06 +0100
+Message-Id: <20220214092516.435165441@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <202202141426.Q2fKI6yq-lkp@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+commit bca828ccdd6548d24613d0cede04ada4dfb2f89c upstream.
+
+d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+introduced the inflection parameter, but happened to drop the pitch
+parameter from the dectlk driver. This restores it.
+
+Cc: stable@vger.kernel.org
+Fixes: d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Link: https://lore.kernel.org/r/20220206015626.aesbhvvdkmqsrbaw@begin
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/accessibility/speakup/speakup_dectlk.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/accessibility/speakup/speakup_dectlk.c
++++ b/drivers/accessibility/speakup/speakup_dectlk.c
+@@ -44,6 +44,7 @@ static struct var_t vars[] = {
+ 	{ CAPS_START, .u.s = {"[:dv ap 160] " } },
+ 	{ CAPS_STOP, .u.s = {"[:dv ap 100 ] " } },
+ 	{ RATE, .u.n = {"[:ra %d] ", 180, 75, 650, 0, 0, NULL } },
++	{ PITCH, .u.n = {"[:dv ap %d] ", 122, 50, 350, 0, 0, NULL } },
+ 	{ INFLECTION, .u.n = {"[:dv pr %d] ", 100, 0, 10000, 0, 0, NULL } },
+ 	{ VOL, .u.n = {"[:dv g5 %d] ", 86, 60, 86, 0, 0, NULL } },
+ 	{ PUNCT, .u.n = {"[:pu %c] ", 0, 0, 2, 0, 0, "nsa" } },
 
 
-On 2/14/22 12:10 PM, kernel test robot wrote:
-> All errors (new ones prefixed by >>):
-> 
->    arch/x86/um/mem_32.c: In function 'gate_vma_init':
->>> arch/x86/um/mem_32.c:20:26: error: '__P101' undeclared (first use in this function)
->       20 |  gate_vma.vm_page_prot = __P101;
->          |                          ^~~~~~
->    arch/x86/um/mem_32.c:20:26: note: each undeclared identifier is reported only once for each function it appears in
-
-Also the following instance still has reference to __PXXX symbols.
-
-arch/arm/lib/uaccess_with_memcpy.c:     user_ptr = vmap(&dst_page, 1, VM_IOREMAP, __pgprot(__P010));
-
-Will fix both.
