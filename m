@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346197AbiBNK3V (ORCPT
+        id S1347582AbiBNK31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33136 "EHLO
+        Mon, 14 Feb 2022 05:29:27 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348418AbiBNK05 (ORCPT
+        with ESMTP id S1348684AbiBNK13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6028302D;
-        Mon, 14 Feb 2022 01:57:57 -0800 (PST)
+        Mon, 14 Feb 2022 05:27:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C6670338;
+        Mon, 14 Feb 2022 01:58:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5065861291;
-        Mon, 14 Feb 2022 09:57:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30429C340E9;
-        Mon, 14 Feb 2022 09:57:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 280F960917;
+        Mon, 14 Feb 2022 09:58:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E21C340F0;
+        Mon, 14 Feb 2022 09:58:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832663;
-        bh=vLP6QBEs6yQfhcdW3YJt9BxzrxtuLathGQXDlJJ08WY=;
+        s=korg; t=1644832688;
+        bh=XXznSEZvIIe+Gt+j1A06PKbteTGPY2//2Pwu74RfzTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0WJRpZBDorJwDxvicIffaVyOMnBtaT0rrrRVVHFHSRDOAdMowzuaI6q5pRC6Q8dQ
-         EtzmFFJ8s8WRzjDpGnE3Zhqdb6EgKwUT8x4DFP2Ye9l5hZSp9PwEM9LVNHK5jy9jsQ
-         JvfzvGbgdy/n4Km1ojYfyUxDaOOYNO4sfLwuFptw=
+        b=wn1V+sGeVMcSK1z/k1VwklNnLu8eCyrtp9PLvBgVJwHMT4TU0UeuzO4FUL+jKOS46
+         zJ96rsrLsE4OEkKFDWMwcBVgFqHFyDLpreK/iMSxNKtDPIPGOIvwRMKp2dkjrbcFMS
+         YF4CbgPeTYCi98dOSrtXlygaClBJyQL83Ht9sJhg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 087/203] drm/amdgpu/display: change pipe policy for DCN 2.0
-Date:   Mon, 14 Feb 2022 10:25:31 +0100
-Message-Id: <20220214092513.227448126@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@bitmer.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 093/203] ARM: dts: Fix timer regression for beagleboard revision c
+Date:   Mon, 14 Feb 2022 10:25:37 +0100
+Message-Id: <20220214092513.419785641@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,35 +53,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Tony Lindgren <tony@atomide.com>
 
-commit 6e7545ddb13416fd200e0b91c0acfd0404e2e27b upstream.
+[ Upstream commit 23885389dbbbbc698986e77a45c1fc44a6e3632e ]
 
-Fixes hangs on driver load with multiple displays on
-DCN 2.0 parts.
+Commit e428e250fde6 ("ARM: dts: Configure system timers for omap3")
+caused a timer regression for beagleboard revision c where the system
+clockevent stops working if omap3isp module is unloaded.
 
-Bug: https://bugzilla.kernel.org/show_bug.cgi?id=215511
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1877
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1886
-Fixes: ee2698cf79cc ("drm/amd/display: Changed pipe split policy to allow for multi-display pipe split")
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Turns out we still have beagleboard revisions a-b4 capacitor c70 quirks
+applied that limit the usable timers for no good reason. This also affects
+the power management as we use the system clock instead of the 32k clock
+source.
+
+Let's fix the issue by adding a new omap3-beagle-ab4.dts for the old timer
+quirks. This allows us to remove the timer quirks for later beagleboard
+revisions. We also need to update the related timer quirk check for the
+correct compatible property.
+
+Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
+Cc: linux-kernel@vger.kernel.org
+Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Rob Herring <robh+dt@kernel.org>
+Reported-by: Jarkko Nikula <jarkko.nikula@bitmer.com>
+Tested-by: Jarkko Nikula <jarkko.nikula@bitmer.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../devicetree/bindings/arm/omap/omap.txt     |  3 ++
+ arch/arm/boot/dts/Makefile                    |  1 +
+ arch/arm/boot/dts/omap3-beagle-ab4.dts        | 47 +++++++++++++++++++
+ arch/arm/boot/dts/omap3-beagle.dts            | 33 -------------
+ drivers/clocksource/timer-ti-dm-systimer.c    |  2 +-
+ 5 files changed, 52 insertions(+), 34 deletions(-)
+ create mode 100644 arch/arm/boot/dts/omap3-beagle-ab4.dts
 
---- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
-@@ -1069,7 +1069,7 @@ static const struct dc_debug_options deb
- 		.timing_trace = false,
- 		.clock_trace = true,
- 		.disable_pplib_clock_request = true,
--		.pipe_split_policy = MPC_SPLIT_DYNAMIC,
-+		.pipe_split_policy = MPC_SPLIT_AVOID_MULT_DISP,
- 		.force_single_disp_pipe_split = false,
- 		.disable_dcc = DCC_ENABLE,
- 		.vsr_support = true,
+diff --git a/Documentation/devicetree/bindings/arm/omap/omap.txt b/Documentation/devicetree/bindings/arm/omap/omap.txt
+index e77635c5422c6..fa8b31660cadd 100644
+--- a/Documentation/devicetree/bindings/arm/omap/omap.txt
++++ b/Documentation/devicetree/bindings/arm/omap/omap.txt
+@@ -119,6 +119,9 @@ Boards (incomplete list of examples):
+ - OMAP3 BeagleBoard : Low cost community board
+   compatible = "ti,omap3-beagle", "ti,omap3430", "ti,omap3"
+ 
++- OMAP3 BeagleBoard A to B4 : Early BeagleBoard revisions A to B4 with a timer quirk
++  compatible = "ti,omap3-beagle-ab4", "ti,omap3-beagle", "ti,omap3430", "ti,omap3"
++
+ - OMAP3 Tobi with Overo : Commercial expansion board with daughter board
+   compatible = "gumstix,omap3-overo-tobi", "gumstix,omap3-overo", "ti,omap3430", "ti,omap3"
+ 
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 0de64f237cd87..a387ebe8919b1 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -794,6 +794,7 @@ dtb-$(CONFIG_ARCH_OMAP3) += \
+ 	logicpd-som-lv-37xx-devkit.dtb \
+ 	omap3430-sdp.dtb \
+ 	omap3-beagle.dtb \
++	omap3-beagle-ab4.dtb \
+ 	omap3-beagle-xm.dtb \
+ 	omap3-beagle-xm-ab.dtb \
+ 	omap3-cm-t3517.dtb \
+diff --git a/arch/arm/boot/dts/omap3-beagle-ab4.dts b/arch/arm/boot/dts/omap3-beagle-ab4.dts
+new file mode 100644
+index 0000000000000..990ff2d846868
+--- /dev/null
++++ b/arch/arm/boot/dts/omap3-beagle-ab4.dts
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/dts-v1/;
++
++#include "omap3-beagle.dts"
++
++/ {
++	model = "TI OMAP3 BeagleBoard A to B4";
++	compatible = "ti,omap3-beagle-ab4", "ti,omap3-beagle", "ti,omap3430", "ti,omap3";
++};
++
++/*
++ * Workaround for capacitor C70 issue, see "Boards revision A and < B5"
++ * section at https://elinux.org/BeagleBoard_Community
++ */
++
++/* Unusable as clocksource because of unreliable oscillator */
++&counter32k {
++	status = "disabled";
++};
++
++/* Unusable as clockevent because of unreliable oscillator, allow to idle */
++&timer1_target {
++	/delete-property/ti,no-reset-on-init;
++	/delete-property/ti,no-idle;
++	timer@0 {
++		/delete-property/ti,timer-alwon;
++	};
++};
++
++/* Preferred always-on timer for clocksource */
++&timer12_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		/* Always clocked by secure_32k_fck */
++	};
++};
++
++/* Preferred timer for clockevent */
++&timer2_target {
++	ti,no-reset-on-init;
++	ti,no-idle;
++	timer@0 {
++		assigned-clocks = <&gpt2_fck>;
++		assigned-clock-parents = <&sys_ck>;
++	};
++};
+diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
+index f9f34b8458e91..0548b391334fd 100644
+--- a/arch/arm/boot/dts/omap3-beagle.dts
++++ b/arch/arm/boot/dts/omap3-beagle.dts
+@@ -304,39 +304,6 @@ &usbhsehci {
+ 	phys = <0 &hsusb2_phy>;
+ };
+ 
+-/* Unusable as clocksource because of unreliable oscillator */
+-&counter32k {
+-	status = "disabled";
+-};
+-
+-/* Unusable as clockevent because if unreliable oscillator, allow to idle */
+-&timer1_target {
+-	/delete-property/ti,no-reset-on-init;
+-	/delete-property/ti,no-idle;
+-	timer@0 {
+-		/delete-property/ti,timer-alwon;
+-	};
+-};
+-
+-/* Preferred always-on timer for clocksource */
+-&timer12_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		/* Always clocked by secure_32k_fck */
+-	};
+-};
+-
+-/* Preferred timer for clockevent */
+-&timer2_target {
+-	ti,no-reset-on-init;
+-	ti,no-idle;
+-	timer@0 {
+-		assigned-clocks = <&gpt2_fck>;
+-		assigned-clock-parents = <&sys_ck>;
+-	};
+-};
+-
+ &twl_gpio {
+ 	ti,use-leds;
+ 	/* pullups: BIT(1) */
+diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
+index b6f97960d8ee0..5c40ca1d4740e 100644
+--- a/drivers/clocksource/timer-ti-dm-systimer.c
++++ b/drivers/clocksource/timer-ti-dm-systimer.c
+@@ -241,7 +241,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
+ 	bool quirk_unreliable_oscillator = false;
+ 
+ 	/* Quirk unreliable 32 KiHz oscillator with incomplete dts */
+-	if (of_machine_is_compatible("ti,omap3-beagle") ||
++	if (of_machine_is_compatible("ti,omap3-beagle-ab4") ||
+ 	    of_machine_is_compatible("timll,omap3-devkit8000")) {
+ 		quirk_unreliable_oscillator = true;
+ 		counter_32k = -ENODEV;
+-- 
+2.34.1
+
 
 
