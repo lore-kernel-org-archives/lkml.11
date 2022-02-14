@@ -2,114 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:11:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231726AbiBNWJ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:09:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55142 "EHLO
+        id S231736AbiBNWLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 17:11:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231719AbiBNWJ0 (ORCPT
+        with ESMTP id S230197AbiBNWLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:09:26 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9D2313C395
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:09:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644876557; x=1676412557;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MN0LuCClIf12LDl41vx5eilbtSgL9wlzY9x+3q5BCBs=;
-  b=EtAaLvNpPPRqKtCAEAHuxJgR9s1LR/QdJXfTdqDqJOVPVPSjL3RpDGgS
-   BLtECiS4Uo0ggLD13tQ3LPp1a5nCh4zYqs0d5tTQdkaruw9SP3TEB6REI
-   dLZlI6oqtEAtoR9cY2ZEzlyLmlZHNPjJhC8WdbCjOJI0kUtFGtzFA6dW4
-   dziEpPx1IR1SqRwpOuSNSEKe5Gdj97uJxV/g0QX+0ejzTWA5oRhG1FyDR
-   jDPHJrLXA1tgUSKX22716gsorAChqtpt4RMOARIlvUkvzevy219l+VAev
-   Z3zi/nTXRxnU5INxTmA2Dd+bcR8dc+XVN6Ox1vd/G7e7PLxG7NfFld3aM
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="237604182"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="237604182"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 14:09:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="635461870"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 14:09:11 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id EC53E107; Tue, 15 Feb 2022 00:09:26 +0200 (EET)
-Date:   Tue, 15 Feb 2022 01:09:26 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@intel.com>, tglx@linutronix.de,
-        mingo@redhat.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 22/29] x86/tdx: Make pages shared in ioremap()
-Message-ID: <20220214220926.fjwlyieatwjhcpij@black.fi.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-23-kirill.shutemov@linux.intel.com>
- <YgFIaJ8ijgQQ04Nv@zn.tnic>
- <1d77e91c-e151-7846-6cd4-6264236ca5ae@intel.com>
- <YgFWpGQfA84Y0mW/@zn.tnic>
+        Mon, 14 Feb 2022 17:11:51 -0500
+X-Greylist: delayed 3597 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 14:11:42 PST
+Received: from slate.cs.rochester.edu (slate.cs.rochester.edu [128.151.167.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1082EB820A;
+        Mon, 14 Feb 2022 14:11:41 -0800 (PST)
+Received: from node1x10a.cs.rochester.edu (node1x10a.cs.rochester.edu [192.5.53.74])
+        by slate.cs.rochester.edu (8.14.7/8.14.7) with ESMTP id 21ELAx5P010783
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 14 Feb 2022 16:10:59 -0500
+Received: from node1x10a.cs.rochester.edu (localhost [127.0.0.1])
+        by node1x10a.cs.rochester.edu (8.15.2/8.15.1) with ESMTP id 21ELAxL3031113;
+        Mon, 14 Feb 2022 16:10:59 -0500
+Received: (from szhai2@localhost)
+        by node1x10a.cs.rochester.edu (8.15.2/8.15.1/Submit) id 21ELAuk4031106;
+        Mon, 14 Feb 2022 16:10:56 -0500
+From:   Shuang Zhai <szhai2@cs.rochester.edu>
+To:     mgorman@techsingularity.net
+Cc:     akpm@linux-foundation.org, djwong@kernel.org, efault@gmx.de,
+        hakavlad@inbox.lv, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org, mhocko@suse.com,
+        regressions@lists.linux.dev, riel@surriel.com, vbabka@suse.cz
+Subject: [PATCH v4 1/1] mm: vmscan: Reduce throttling due to a failure to make progress
+Date:   Mon, 14 Feb 2022 16:10:50 -0500
+Message-Id: <20220214211050.31049-1-szhai2@cs.rochester.edu>
+X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20211202150614.22440-1-mgorman@techsingularity.net>
+References: <20211202150614.22440-1-mgorman@techsingularity.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgFWpGQfA84Y0mW/@zn.tnic>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 06:28:04PM +0100, Borislav Petkov wrote:
-> On Mon, Feb 07, 2022 at 08:57:39AM -0800, Dave Hansen wrote:
-> > We can surely *do* this with cc_something() helpers.  It's just not as
-> > easy as making cc_set/cc_clear().
-> 
-> Sure, that's easy: cc_pgprot_{enc,dec}() or so.
+Hi Mel,
 
-So, I've ended up with this in <asm/pgtable.h>
+Mel Gorman wrote:
+>
+> Mike Galbraith, Alexey Avramov and Darrick Wong all reported similar
+> problems due to reclaim throttling for excessive lengths of time.
+> In Alexey's case, a memory hog that should go OOM quickly stalls for
+> several minutes before stalling. In Mike and Darrick's cases, a small
+> memcg environment stalled excessively even though the system had enough
+> memory overall.
+>
 
-/*
- * Macros to add or remove encryption attribute
- */
-#ifdef CONFIG_ARCH_HAS_CC_PLATFORM
-pgprotval_t cc_enc(pgprotval_t protval);
-pgprotval_t cc_dec(pgprotval_t protval);
-#define pgprot_encrypted(prot)	__pgprot(cc_enc(pgprot_val(prot)))
-#define pgprot_decrypted(prot)	__pgprot(cc_dec(pgprot_val(prot)))
-#else
-#define pgprot_encrypted(prot) (prot)
-#define pgprot_decrypted(prot) (prot)
-#endif
+I recently found a regression when I tested MGLRU with fio on Linux
+5.16-rc6 [1]. After this patch was applied, I re-ran the test with Linux
+5.16, but the regression has not been fixed yet. 
 
-And cc_platform.c:
+The workload is to let fio perform random access on files with buffered
+IO. The total file size is 2x the memory size. Files are stored on pmem.
+For each configuration, I ran fio 10 times and reported the average and
+the standard deviation.
 
-pgprotval_t cc_enc(pgprotval_t protval)
-{
-	if (sme_me_mask)
-		return __sme_set(protval);
-	else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-		return protval & ~tdx_shared_mask();
-	else
-		return protval;
-}
+Fio command
+===========
 
-pgprotval_t cc_dec(pgprotval_t protval)
-{
-	if (sme_me_mask)
-		return __sme_clr(protval);
-	else if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
-		return protval | tdx_shared_mask();
-	else
-		return protval;
-}
-EXPORT_SYMBOL_GPL(cc_dec);
--- 
- Kirill A. Shutemov
+$ numactl --cpubind=0 --membind=0 fio --name=randread \
+  --directory=/mnt/pmem/ --size={10G, 5G} --io_size=1000TB \
+  --time_based --numjobs={40, 80} --ioengine=io_uring \
+  --ramp_time=20m --runtime=10m --iodepth=128 \
+  --iodepth_batch_submit=32 --iodepth_batch_complete=32 \
+  --rw=randread --random_distribution=random \
+  --direct=0 --norandommap --group_reporting
+
+Results in throughput (MB/s):
+=============================
+
++------------+------+-------+------+-------+----------+-------+
+| Jobs / CPU | 5.15 | stdev | 5.16 | stdev | 5.17-rc3 | stdev |
++------------+------+-------+------+-------+----------+-------+
+| 1          | 8411 | 75    | 7459 | 38    | 7331     | 36    |
++------------+------+-------+------+-------+----------+-------+
+| 2          | 8417 | 54    | 7491 | 41    | 7383     | 15    |
++------------+------+-------+------+-------+----------+-------+
+
+[1] https://lore.kernel.org/linux-mm/20220105024423.26409-1-szhai2@cs.rochester.edu/
+
+Thanks!
+
+Shuang
