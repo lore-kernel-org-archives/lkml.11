@@ -2,209 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5480C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbiBNV0W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:26:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35220 "EHLO
+        id S231252AbiBNV0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:26:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiBNV0T (ORCPT
+        with ESMTP id S231235AbiBNV0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:26:19 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 267D1710DD
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:26:10 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id u20so4621509lff.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:26:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=xB7MDihYGx4nWu/GuBF27GgwlKh3zzMd7sng4PC9OAg=;
-        b=AlVXfUdq3X/vSQj1QADxlefqzYOIxjNWuIGVTNcQd90bTzHdMLXt1diiYfHcXmfDuo
-         Aih+Ei5sv53Rvnfwr6T+Giffv/hPnsONKFFuY2MDaby2I/Gm/wkOK3W25ZFOa3QTswJK
-         etjN6hFfrsFB0uHvKeOLdTbOErJPlMDj409uuOgjaLBCd7DDEDWC89ZjaA+b9qyZ40kj
-         s0vZ3yX4ID2jYqbVwwVsaHm/Vvm4t/enqPFSc5JTB/j4R1JzwarD/mLvPFiGLs27GTHY
-         OzNCXT4ZuoxDbUdaDSQpUyuqB1ItZusqu95/zc54s7Tn3oSLSHXezYPdHrPXDjs96Thu
-         gSQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=xB7MDihYGx4nWu/GuBF27GgwlKh3zzMd7sng4PC9OAg=;
-        b=4bw7QA0F3R0zGw/gX9iPiemnYblB9pIBF1BF67pEgxibS2M7TeLGK1vo+c5XyNY2HQ
-         YMrVVPIK7Q7j0IzYKWJ1/sECO1Q3Sjjvr5Sy8eXDl5prbkPGyhQ3bU033MxKxYmizVqx
-         PwiZrZFzq24F8OLWQoDoyzvFPbF/bgfQdkp/xv+KnhCKmVfEXEELQseEwOdEMlTYEvLB
-         uNTayi+bgZPZF6DsDVaJH+SC3Jnas5FUFBNKytARwEyVlIRPXF2p1oWuODp+03aJvZgq
-         ECeQdTBOpLpq/XtiklDA0FJIGAsHoCN/rOLSiF5+qG3WRpO8DecqjXKY/bEQCz5Wo2aH
-         On/g==
-X-Gm-Message-State: AOAM5330V47C48kY3GNg9WGiaGvVjHm6n7d5BJ1JAwAMddsW6+OSyfzz
-        njZQinrhPgH1ygxwyXEMOlxibiyZd6Vt9HOFZ+Chrw==
-X-Google-Smtp-Source: ABdhPJy9LX4qMvZpJWEnI58VfURh6/MLmchoH4ymKbepXoxQzUy25zdnmOiESxtwDTq7E3tlrLuGpZ/EsyrQdVvZllE=
-X-Received: by 2002:a05:6512:1699:: with SMTP id bu25mr695407lfb.403.1644873968216;
- Mon, 14 Feb 2022 13:26:08 -0800 (PST)
+        Mon, 14 Feb 2022 16:26:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5763BB9D73;
+        Mon, 14 Feb 2022 13:26:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7EB9B81678;
+        Mon, 14 Feb 2022 19:48:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F834C340E9;
+        Mon, 14 Feb 2022 19:48:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644868118;
+        bh=6CPzKa/jy62UCHjGbLUgVBG8XhojQHJmyDzVBz+gPz8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R3kB8oqgBk6EVg5CIPE0hIH6DYKuQyhbj41LI2Zu1KV/lsB5zeVnY3wIAQ+SDoTwW
+         xpjIolDQcScuZ0DVqop4kK0Ntv+27D3129QOtCKxuBvI+BF4KO3bmOhocVf9KG+NWQ
+         G62Ri5tP+T0awA6b7PBpSvbg2nRMOvYaMl0qnHZRuLSYOyR172/owARg9IwMy+gEqM
+         kPrWx4eE8WBS8N6MWE17ENgnwYfpBmLBTSvnucgDiBlnYmORrczNRmTnyCWStEurCu
+         4Jkkua/Q4WNOOmIn6AU2zWYIhOAVlA4TkOmW6hS2s+baxbYHCaKnUgTCZi4CbhhEma
+         zpAvUMHD6Y5cQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id EE6F7400FE; Mon, 14 Feb 2022 16:48:35 -0300 (-03)
+Date:   Mon, 14 Feb 2022 16:48:35 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@collabora.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Leo Yan <leo.yan@linaro.org>, Andi Kleen <ak@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Madhavan Srinivasan <maddy@linux.ibm.com>,
+        Shunsuke Nakamura <nakamura.shun@fujitsu.com>,
+        Song Liu <song@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        Stephen Brennan <stephen.s.brennan@oracle.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Hao Luo <haoluo@google.com>, eranian@google.com
+Subject: Re: [PATCH v3 06/22] perf test: Use pointer for maps
+Message-ID: <YgqyE+vYyOf1HaRj@kernel.org>
+References: <20220211103415.2737789-1-irogers@google.com>
+ <20220211103415.2737789-7-irogers@google.com>
 MIME-Version: 1.0
-References: <20220211161831.3493782-1-tjmercier@google.com> <20220211161831.3493782-7-tjmercier@google.com>
-In-Reply-To: <20220211161831.3493782-7-tjmercier@google.com>
-From:   Todd Kjos <tkjos@google.com>
-Date:   Mon, 14 Feb 2022 13:25:55 -0800
-Message-ID: <CAHRSSEwWEeW2+Pd17VUNrPYSWhOu-ao7rgnk-pNROcfH6abTzA@mail.gmail.com>
-Subject: Re: [RFC v2 6/6] android: binder: Add a buffer flag to relinquish
- ownership of fds
-To:     "T.J. Mercier" <tjmercier@google.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, kaleshsingh@google.com,
-        Kenny.Ho@amd.com, dri-devel@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211103415.2737789-7-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 8:19 AM T.J. Mercier <tjmercier@google.com> wrote:
->
-> This patch introduces a buffer flag BINDER_BUFFER_FLAG_SENDER_NO_NEED
-> that a process sending an fd array to another process over binder IPC
-> can set to relinquish ownership of the fds being sent for memory
-> accounting purposes. If the flag is found to be set during the fd array
-> translation and the fd is for a DMA-BUF, the buffer is uncharged from
-> the sender's cgroup and charged to the receiving process's cgroup
-> instead.
->
-> It is up to the sending process to ensure that it closes the fds
-> regardless of whether the transfer failed or succeeded.
->
-> Most graphics shared memory allocations in Android are done by the
-> graphics allocator HAL process. On requests from clients, the HAL process
-> allocates memory and sends the fds to the clients over binder IPC.
-> The graphics allocator HAL will not retain any references to the
-> buffers. When the HAL sets the BINDER_BUFFER_FLAG_SENDER_NO_NEED for fd
-> arrays holding DMA-BUF fds, the gpu cgroup controller will be able to
-> correctly charge the buffers to the client processes instead of the
-> graphics allocator HAL.
->
-> From: Hridya Valsaraju <hridya@google.com>
-> Signed-off-by: Hridya Valsaraju <hridya@google.com>
-> Co-developed-by: T.J. Mercier <tjmercier@google.com>
-> Signed-off-by: T.J. Mercier <tjmercier@google.com>
+Em Fri, Feb 11, 2022 at 02:33:59AM -0800, Ian Rogers escreveu:
+> struct maps is reference counted, using a pointer is more idiomatic.
+> 
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
-> changes in v2
-> - Move dma-buf cgroup charge transfer from a dma_buf_op defined by every
-> heap to a single dma-buf function for all heaps per Daniel Vetter and
-> Christian K=C3=B6nig.
->
->  drivers/android/binder.c            | 26 ++++++++++++++++++++++++++
->  include/uapi/linux/android/binder.h |  1 +
->  2 files changed, 27 insertions(+)
->
-> diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-> index 8351c5638880..f50d88ded188 100644
-> --- a/drivers/android/binder.c
-> +++ b/drivers/android/binder.c
-> @@ -42,6 +42,7 @@
->
->  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
->
-> +#include <linux/dma-buf.h>
->  #include <linux/fdtable.h>
->  #include <linux/file.h>
->  #include <linux/freezer.h>
-> @@ -2482,8 +2483,10 @@ static int binder_translate_fd_array(struct list_h=
-ead *pf_head,
-
-Is this only needed for the BINDER_TYPE_FDA case (multiple fds)? This
-never needs to be done in the BINDER_TYPE_FD case (single fd)?
-
+>  tools/perf/tests/maps.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/tools/perf/tests/maps.c b/tools/perf/tests/maps.c
+> index e308a3296cef..6f53f17f788e 100644
+> --- a/tools/perf/tests/maps.c
+> +++ b/tools/perf/tests/maps.c
+> @@ -35,7 +35,7 @@ static int check_maps(struct map_def *merged, unsigned int size, struct maps *ma
+>  
+>  static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest __maybe_unused)
 >  {
->         binder_size_t fdi, fd_buf_size;
->         binder_size_t fda_offset;
-> +       bool transfer_gpu_charge =3D false;
->         const void __user *sender_ufda_base;
->         struct binder_proc *proc =3D thread->proc;
-> +       struct binder_proc *target_proc =3D t->to_proc;
->         int ret;
->
->         fd_buf_size =3D sizeof(u32) * fda->num_fds;
-> @@ -2521,8 +2524,15 @@ static int binder_translate_fd_array(struct list_h=
-ead *pf_head,
->         if (ret)
->                 return ret;
->
-> +       if (IS_ENABLED(CONFIG_CGROUP_GPU) &&
-> +               parent->flags & BINDER_BUFFER_FLAG_SENDER_NO_NEED)
-> +               transfer_gpu_charge =3D true;
-> +
->         for (fdi =3D 0; fdi < fda->num_fds; fdi++) {
->                 u32 fd;
-> +               struct dma_buf *dmabuf;
-> +               struct gpucg *gpucg;
-> +
->                 binder_size_t offset =3D fda_offset + fdi * sizeof(fd);
->                 binder_size_t sender_uoffset =3D fdi * sizeof(fd);
->
-> @@ -2532,6 +2542,22 @@ static int binder_translate_fd_array(struct list_h=
-ead *pf_head,
->                                                   in_reply_to);
->                 if (ret)
->                         return ret > 0 ? -EINVAL : ret;
-> +
-> +               if (!transfer_gpu_charge)
-> +                       continue;
-> +
-> +               dmabuf =3D dma_buf_get(fd);
-> +               if (IS_ERR(dmabuf))
-> +                       continue;
-> +
-> +               gpucg =3D gpucg_get(target_proc->tsk);
-> +               ret =3D dma_buf_charge_transfer(dmabuf, gpucg);
-> +               if (ret) {
-> +                       pr_warn("%d:%d Unable to transfer DMA-BUF fd char=
-ge to %d",
-> +                               proc->pid, thread->pid, target_proc->pid)=
-;
-> +                       gpucg_put(gpucg);
-> +               }
-> +               dma_buf_put(dmabuf);
->         }
->         return 0;
+> -	struct maps maps;
+> +	struct maps *maps;
+>  	unsigned int i;
+>  	struct map_def bpf_progs[] = {
+>  		{ "bpf_prog_1", 200, 300 },
+> @@ -64,7 +64,7 @@ static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest
+>  	struct map *map_kcore1, *map_kcore2, *map_kcore3;
+>  	int ret;
+>  
+> -	maps__init(&maps, NULL);
+> +	maps = maps__new(NULL);
+
+Now that is dynamicly allocated we need to check for the constructor
+result, I'm fixing this up.
+
+- Arnaldo
+  
+>  	for (i = 0; i < ARRAY_SIZE(bpf_progs); i++) {
+>  		struct map *map;
+> @@ -74,7 +74,7 @@ static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest
+>  
+>  		map->start = bpf_progs[i].start;
+>  		map->end   = bpf_progs[i].end;
+> -		maps__insert(&maps, map);
+> +		maps__insert(maps, map);
+>  		map__put(map);
+>  	}
+>  
+> @@ -99,25 +99,25 @@ static int test__maps__merge_in(struct test_suite *t __maybe_unused, int subtest
+>  	map_kcore3->start = 880;
+>  	map_kcore3->end   = 1100;
+>  
+> -	ret = maps__merge_in(&maps, map_kcore1);
+> +	ret = maps__merge_in(maps, map_kcore1);
+>  	TEST_ASSERT_VAL("failed to merge map", !ret);
+>  
+> -	ret = check_maps(merged12, ARRAY_SIZE(merged12), &maps);
+> +	ret = check_maps(merged12, ARRAY_SIZE(merged12), maps);
+>  	TEST_ASSERT_VAL("merge check failed", !ret);
+>  
+> -	ret = maps__merge_in(&maps, map_kcore2);
+> +	ret = maps__merge_in(maps, map_kcore2);
+>  	TEST_ASSERT_VAL("failed to merge map", !ret);
+>  
+> -	ret = check_maps(merged12, ARRAY_SIZE(merged12), &maps);
+> +	ret = check_maps(merged12, ARRAY_SIZE(merged12), maps);
+>  	TEST_ASSERT_VAL("merge check failed", !ret);
+>  
+> -	ret = maps__merge_in(&maps, map_kcore3);
+> +	ret = maps__merge_in(maps, map_kcore3);
+>  	TEST_ASSERT_VAL("failed to merge map", !ret);
+>  
+> -	ret = check_maps(merged3, ARRAY_SIZE(merged3), &maps);
+> +	ret = check_maps(merged3, ARRAY_SIZE(merged3), maps);
+>  	TEST_ASSERT_VAL("merge check failed", !ret);
+>  
+> -	maps__exit(&maps);
+> +	maps__delete(maps);
+>  	return TEST_OK;
 >  }
-> diff --git a/include/uapi/linux/android/binder.h b/include/uapi/linux/and=
-roid/binder.h
-> index 3246f2c74696..169fd5069a1a 100644
-> --- a/include/uapi/linux/android/binder.h
-> +++ b/include/uapi/linux/android/binder.h
-> @@ -137,6 +137,7 @@ struct binder_buffer_object {
->
->  enum {
->         BINDER_BUFFER_FLAG_HAS_PARENT =3D 0x01,
-> +       BINDER_BUFFER_FLAG_SENDER_NO_NEED =3D 0x02,
->  };
->
->  /* struct binder_fd_array_object - object describing an array of fds in =
-a buffer
-> --
+>  
+> -- 
 > 2.35.1.265.g69c8d7142f-goog
->
+
+-- 
+
+- Arnaldo
