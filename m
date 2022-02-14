@@ -2,271 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 880E2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:14:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 03:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239894AbiBNDOm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 22:14:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50570 "EHLO
+        id S239907AbiBNDPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 22:15:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiBNDOl (ORCPT
+        with ESMTP id S239904AbiBNDPk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 22:14:41 -0500
-X-Greylist: delayed 362 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 13 Feb 2022 19:14:30 PST
-Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 5857750E3B;
-        Sun, 13 Feb 2022 19:14:30 -0800 (PST)
-Received: from localhost.localdomain (unknown [123.60.114.22])
-        by mail-app4 (Coremail) with SMTP id cS_KCgAXHQmcxwliUo4aCQ--.6446S2;
-        Mon, 14 Feb 2022 11:08:13 +0800 (CST)
-From:   lostway@zju.edu.cn
-To:     linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        bp@alien8.de, tony.luck@intel.com, james.morse@arm.com
-Subject: [PATCH v3] RAS: Report ARM processor information to userspace
-Date:   Mon, 14 Feb 2022 11:08:12 +0800
-Message-Id: <20220214030813.135766-1-lostway@zju.edu.cn>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cS_KCgAXHQmcxwliUo4aCQ--.6446S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxtF4rGw1xJry8CF1UJr1DKFg_yoW3Ar43pF
-        n8CryYkr4rJFsxG3y3JayF93y3X3s5uw1DK343Xay7CFs5ur1qqFs0gr42kF93Jr98J34a
-        q3Wqgry3Ca4DJrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkYb7Iv0xC_tr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCF04k2
-        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
-        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41l
-        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIx
-        AIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
-        jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8dpnPUUUUU==
-X-CM-SenderInfo: isrxjjaqquq6lmxovvfxof0/
+        Sun, 13 Feb 2022 22:15:40 -0500
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D5350E3B;
+        Sun, 13 Feb 2022 19:15:31 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V4JvugQ_1644808523;
+Received: from localhost(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0V4JvugQ_1644808523)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 14 Feb 2022 11:15:29 +0800
+From:   Guixin Liu <kanie@linux.alibaba.com>
+To:     bostroesser@gmail.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xiaoguang.wang@linux.alibaba.com,
+        xlpang@linux.alibaba.com
+Subject: [PATCH V2] scsi: target: tcmu: Make cmd_ring_size changeable via configfs.
+Date:   Mon, 14 Feb 2022 11:15:23 +0800
+Message-Id: <1644808523-21069-1-git-send-email-kanie@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengwei Luo <luoshengwei@huawei.com>
+Make cmd_ring_size changeable similar to the way it is done for
+max_data_area_mb, the reason is that our tcmu client will create
+thousands of tcmu instances, and this will consume lots of mem with
+default 8Mb cmd ring size for every backstore.
 
-The original arm_event trace code only traces out ARM processor error
-information data. It's not enough for user to take appropriate action.
+One can change the value by typing:
+    echo "cmd_ring_size_mb=N" > control
+The "N" is a integer between 1 to 8, if set 1, the cmd ring can hold
+about 6k cmds(tcmu_cmd_entry about 176 byte) at least.
 
-According to UEFI_2_9 specification chapter N2.4.4, the ARM processor
-error section includes several ARM processor error information, several
-ARM processor context information and several vendor specific error
-information structures. In addition to these info, there are error
-severity and cpu logical index about the event. Report all of these
-information to userspace via perf i/f. So that the user can do cpu core
-isolation according to error severity and other info.
+The value is printed when doing:
+    cat info
+In addition, a new readonly attribute 'cmd_ring_size_mb' returns the
+value in read.
 
-Signed-off-by: Shengwei Luo <luoshengwei@huawei.com>
-Signed-off-by: Jason Tian <jason@os.amperecomputing.com>
+Reviewed-by: Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
 ---
-Links:
-https://lore.kernel.org/lkml/20220126030906.56765-1-lostway@zju.edu.cn/
-https://lore.kernel.org/lkml/20210205022229.313030-1-jason@os.amperecomputing.com/
+ Change the code according to Bodo Stroesser <bostroesser@gmail.com>`s review.
 
-v2->v3:
-Add signed-off of original author.
-Fix commit message to explain why a change is being done.
+ drivers/target/target_core_user.c | 71 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 62 insertions(+), 9 deletions(-)
 
-v1->v2:
-Cleaned up ci warnings.
----
- drivers/acpi/apei/ghes.c |  3 +--
- drivers/ras/ras.c        | 46 ++++++++++++++++++++++++++++++++++++--
- include/linux/ras.h      | 15 +++++++++++--
- include/ras/ras_event.h  | 48 +++++++++++++++++++++++++++++++++++-----
- 4 files changed, 101 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-index 0c5c9acc6254..f824c26057b1 100644
---- a/drivers/acpi/apei/ghes.c
-+++ b/drivers/acpi/apei/ghes.c
-@@ -490,9 +490,8 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
- 	int sec_sev, i;
- 	char *p;
+diff --git a/drivers/target/target_core_user.c b/drivers/target/target_core_user.c
+index 7b2a89a..4b000f0 100644
+--- a/drivers/target/target_core_user.c
++++ b/drivers/target/target_core_user.c
+@@ -61,10 +61,10 @@
+ #define TCMU_TIME_OUT (30 * MSEC_PER_SEC)
  
--	log_arm_hw_error(err);
--
- 	sec_sev = ghes_severity(gdata->error_severity);
-+	log_arm_hw_error(err, sec_sev);
- 	if (sev != GHES_SEV_RECOVERABLE || sec_sev != GHES_SEV_RECOVERABLE)
- 		return false;
- 
-diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
-index 95540ea8dd9d..2a7f424d59b9 100644
---- a/drivers/ras/ras.c
-+++ b/drivers/ras/ras.c
-@@ -21,9 +21,51 @@ void log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,
- 	trace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);
- }
- 
--void log_arm_hw_error(struct cper_sec_proc_arm *err)
-+void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
- {
--	trace_arm_event(err);
-+	u32 pei_len;
-+	u32 ctx_len = 0;
-+	s32 vsei_len;
-+	u8 *pei_err;
-+	u8 *ctx_err;
-+	u8 *ven_err_data;
-+	struct cper_arm_err_info *err_info;
-+	struct cper_arm_ctx_info *ctx_info;
-+	int n, sz;
-+	int cpu;
-+
-+	pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
-+	pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
-+
-+	err_info = (struct cper_arm_err_info *)(err + 1);
-+	ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
-+	ctx_err = (u8 *)ctx_info;
-+	for (n = 0; n < err->context_info_num; n++) {
-+		sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
-+		ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
-+		ctx_len += sz;
-+	}
-+
-+	vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
-+						pei_len + ctx_len);
-+	if (vsei_len < 0) {
-+		pr_warn(FW_BUG
-+			"section length: %d\n", err->section_length);
-+		pr_warn(FW_BUG
-+			"section length is too small\n");
-+		pr_warn(FW_BUG
-+			"firmware-generated error record is incorrect\n");
-+		vsei_len = 0;
-+	}
-+	ven_err_data = (u8 *)ctx_info;
-+
-+	cpu = GET_LOGICAL_INDEX(err->mpidr);
-+	/* when return value is invalid, set cpu index to -1 */
-+	if (cpu < 0)
-+		cpu = -1;
-+
-+	trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
-+			ven_err_data, (u32)vsei_len, sev, cpu);
- }
- 
- static int __init ras_init(void)
-diff --git a/include/linux/ras.h b/include/linux/ras.h
-index 1f4048bf2674..4529775374d0 100644
---- a/include/linux/ras.h
-+++ b/include/linux/ras.h
-@@ -24,7 +24,7 @@ int __init parse_cec_param(char *str);
- void log_non_standard_event(const guid_t *sec_type,
- 			    const guid_t *fru_id, const char *fru_text,
- 			    const u8 sev, const u8 *err, const u32 len);
--void log_arm_hw_error(struct cper_sec_proc_arm *err);
-+void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev);
- #else
- static inline void
- log_non_standard_event(const guid_t *sec_type,
-@@ -32,7 +32,18 @@ log_non_standard_event(const guid_t *sec_type,
- 		       const u8 sev, const u8 *err, const u32 len)
- { return; }
- static inline void
--log_arm_hw_error(struct cper_sec_proc_arm *err) { return; }
-+log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev) { return; }
- #endif
- 
-+#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+#include <asm/smp_plat.h>
-+/*
-+ * Include ARM specific SMP header which provides a function mapping mpidr to
-+ * cpu logical index.
-+ */
-+#define GET_LOGICAL_INDEX(mpidr) get_logical_index(mpidr & MPIDR_HWID_BITMASK)
-+#else
-+#define GET_LOGICAL_INDEX(mpidr) -EINVAL
-+#endif /* CONFIG_ARM || CONFIG_ARM64 */
-+
- #endif /* __RAS_H__ */
-diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
-index d0337a41141c..92cfb61bdb20 100644
---- a/include/ras/ras_event.h
-+++ b/include/ras/ras_event.h
-@@ -168,11 +168,24 @@ TRACE_EVENT(mc_event,
-  * This event is generated when hardware detects an ARM processor error
-  * has occurred. UEFI 2.6 spec section N.2.4.4.
-  */
-+#define APEIL "ARM Processor Err Info data len"
-+#define APEID "ARM Processor Err Info raw data"
-+#define APECIL "ARM Processor Err Context Info data len"
-+#define APECID "ARM Processor Err Context Info raw data"
-+#define VSEIL "Vendor Specific Err Info data len"
-+#define VSEID "Vendor Specific Err Info raw data"
- TRACE_EVENT(arm_event,
- 
--	TP_PROTO(const struct cper_sec_proc_arm *proc),
-+	TP_PROTO(const struct cper_sec_proc_arm *proc, const u8 *pei_err,
-+			const u32 pei_len,
-+			const u8 *ctx_err,
-+			const u32 ctx_len,
-+			const u8 *oem,
-+			const u32 oem_len,
-+			u8 sev,
-+			int cpu),
- 
--	TP_ARGS(proc),
-+	TP_ARGS(proc, pei_err, pei_len, ctx_err, ctx_len, oem, oem_len, sev, cpu),
- 
- 	TP_STRUCT__entry(
- 		__field(u64, mpidr)
-@@ -180,6 +193,14 @@ TRACE_EVENT(arm_event,
- 		__field(u32, running_state)
- 		__field(u32, psci_state)
- 		__field(u8, affinity)
-+		__field(u32, pei_len)
-+		__dynamic_array(u8, buf, pei_len)
-+		__field(u32, ctx_len)
-+		__dynamic_array(u8, buf1, ctx_len)
-+		__field(u32, oem_len)
-+		__dynamic_array(u8, buf2, oem_len)
-+		__field(u8, sev)
-+		__field(int, cpu)
- 	),
- 
- 	TP_fast_assign(
-@@ -199,12 +220,29 @@ TRACE_EVENT(arm_event,
- 			__entry->running_state = ~0;
- 			__entry->psci_state = ~0;
- 		}
-+		__entry->pei_len = pei_len;
-+		memcpy(__get_dynamic_array(buf), pei_err, pei_len);
-+		__entry->ctx_len = ctx_len;
-+		memcpy(__get_dynamic_array(buf1), ctx_err, ctx_len);
-+		__entry->oem_len = oem_len;
-+		memcpy(__get_dynamic_array(buf2), oem, oem_len);
-+		__entry->sev = sev;
-+		__entry->cpu = cpu;
- 	),
- 
--	TP_printk("affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
--		  "running state: %d; PSCI state: %d",
-+	TP_printk("cpu: %d; error: %d; affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
-+		  "running state: %d; PSCI state: %d; "
-+		  "%s: %d; %s: %s; %s: %d; %s: %s; %s: %d; %s: %s",
-+		  __entry->cpu,
-+		  __entry->sev,
- 		  __entry->affinity, __entry->mpidr, __entry->midr,
--		  __entry->running_state, __entry->psci_state)
-+		  __entry->running_state, __entry->psci_state,
-+		  APEIL, __entry->pei_len, APEID,
-+		  __print_hex(__get_dynamic_array(buf), __entry->pei_len),
-+		  APECIL, __entry->ctx_len, APECID,
-+		  __print_hex(__get_dynamic_array(buf1), __entry->ctx_len),
-+		  VSEIL, __entry->oem_len, VSEID,
-+		  __print_hex(__get_dynamic_array(buf2), __entry->oem_len))
- );
+ /* For mailbox plus cmd ring, the size is fixed 8MB */
+-#define MB_CMDR_SIZE (8 * 1024 * 1024)
++#define MB_CMDR_SIZE_DEF (8 * 1024 * 1024)
+ /* Offset of cmd ring is size of mailbox */
+ #define CMDR_OFF sizeof(struct tcmu_mailbox)
+-#define CMDR_SIZE (MB_CMDR_SIZE - CMDR_OFF)
++#define CMDR_SIZE_DEF (MB_CMDR_SIZE_DEF - CMDR_OFF)
  
  /*
+  * For data area, the default block size is PAGE_SIZE and
+@@ -1617,6 +1617,7 @@ static struct se_device *tcmu_alloc_device(struct se_hba *hba, const char *name)
+ 
+ 	udev->data_pages_per_blk = DATA_PAGES_PER_BLK_DEF;
+ 	udev->max_blocks = DATA_AREA_PAGES_DEF / udev->data_pages_per_blk;
++	udev->cmdr_size = CMDR_SIZE_DEF;
+ 	udev->data_area_mb = TCMU_PAGES_TO_MBS(DATA_AREA_PAGES_DEF);
+ 
+ 	mutex_init(&udev->cmdr_lock);
+@@ -2189,7 +2190,7 @@ static int tcmu_configure_device(struct se_device *dev)
+ 		goto err_bitmap_alloc;
+ 	}
+ 
+-	mb = vzalloc(MB_CMDR_SIZE);
++	mb = vzalloc(udev->cmdr_size + CMDR_OFF);
+ 	if (!mb) {
+ 		ret = -ENOMEM;
+ 		goto err_vzalloc;
+@@ -2198,10 +2199,9 @@ static int tcmu_configure_device(struct se_device *dev)
+ 	/* mailbox fits in first part of CMDR space */
+ 	udev->mb_addr = mb;
+ 	udev->cmdr = (void *)mb + CMDR_OFF;
+-	udev->cmdr_size = CMDR_SIZE;
+-	udev->data_off = MB_CMDR_SIZE;
++	udev->data_off = udev->cmdr_size + CMDR_OFF;
+ 	data_size = TCMU_MBS_TO_PAGES(udev->data_area_mb) << PAGE_SHIFT;
+-	udev->mmap_pages = (data_size + MB_CMDR_SIZE) >> PAGE_SHIFT;
++	udev->mmap_pages = (data_size + udev->cmdr_size + CMDR_OFF) >> PAGE_SHIFT;
+ 	udev->data_blk_size = udev->data_pages_per_blk * PAGE_SIZE;
+ 	udev->dbi_thresh = 0; /* Default in Idle state */
+ 
+@@ -2221,7 +2221,7 @@ static int tcmu_configure_device(struct se_device *dev)
+ 
+ 	info->mem[0].name = "tcm-user command & data buffer";
+ 	info->mem[0].addr = (phys_addr_t)(uintptr_t)udev->mb_addr;
+-	info->mem[0].size = data_size + MB_CMDR_SIZE;
++	info->mem[0].size = data_size + udev->cmdr_size + CMDR_OFF;
+ 	info->mem[0].memtype = UIO_MEM_NONE;
+ 
+ 	info->irqcontrol = tcmu_irqcontrol;
+@@ -2401,7 +2401,7 @@ static void tcmu_reset_ring(struct tcmu_dev *udev, u8 err_level)
+ enum {
+ 	Opt_dev_config, Opt_dev_size, Opt_hw_block_size, Opt_hw_max_sectors,
+ 	Opt_nl_reply_supported, Opt_max_data_area_mb, Opt_data_pages_per_blk,
+-	Opt_err,
++	Opt_cmd_ring_size_mb, Opt_err,
+ };
+ 
+ static match_table_t tokens = {
+@@ -2412,6 +2412,7 @@ enum {
+ 	{Opt_nl_reply_supported, "nl_reply_supported=%d"},
+ 	{Opt_max_data_area_mb, "max_data_area_mb=%d"},
+ 	{Opt_data_pages_per_blk, "data_pages_per_blk=%d"},
++	{Opt_cmd_ring_size_mb, "cmd_ring_size_mb=%d"},
+ 	{Opt_err, NULL}
+ };
+ 
+@@ -2509,6 +2510,41 @@ static int tcmu_set_data_pages_per_blk(struct tcmu_dev *udev, substring_t *arg)
+ 	return ret;
+ }
+ 
++static int tcmu_set_cmd_ring_size(struct tcmu_dev *udev, substring_t *arg)
++{
++	int val, ret;
++
++	ret = match_int(arg, &val);
++	if (ret < 0) {
++		pr_err("match_int() failed for cmd_ring_size_mb=. Error %d.\n",
++		       ret);
++		return ret;
++	}
++
++	if (val <= 0) {
++		pr_err("Invalid cmd_ring_size_mb %d.\n", val);
++		return -EINVAL;
++	}
++
++	mutex_lock(&udev->cmdr_lock);
++	if (udev->data_bitmap) {
++		pr_err("Cannot set cmd_ring_size_mb after it has been enabled.\n");
++		ret = -EINVAL;
++		goto unlock;
++	}
++
++	udev->cmdr_size = (val << 20) - CMDR_OFF;
++	if (val > (MB_CMDR_SIZE_DEF >> 20)) {
++		pr_err("%d is too large. Adjusting cmd_ring_size_mb to global limit of %u\n",
++		       val, (MB_CMDR_SIZE_DEF >> 20));
++		udev->cmdr_size = CMDR_SIZE_DEF;
++	}
++
++unlock:
++	mutex_unlock(&udev->cmdr_lock);
++	return ret;
++}
++
+ static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
+ 		const char *page, ssize_t count)
+ {
+@@ -2563,6 +2599,9 @@ static ssize_t tcmu_set_configfs_dev_params(struct se_device *dev,
+ 		case Opt_data_pages_per_blk:
+ 			ret = tcmu_set_data_pages_per_blk(udev, &args[0]);
+ 			break;
++		case Opt_cmd_ring_size_mb:
++			ret = tcmu_set_cmd_ring_size(udev, &args[0]);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -2584,7 +2623,9 @@ static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
+ 		     udev->dev_config[0] ? udev->dev_config : "NULL");
+ 	bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
+ 	bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
+-	bl += sprintf(b + bl, "DataPagesPerBlk: %u\n", udev->data_pages_per_blk);
++	bl += sprintf(b + bl, "DataPagesPerBlk: %u", udev->data_pages_per_blk);
++	bl += sprintf(b + bl, "CmdRingSizeMB: %lu\n",
++		      (udev->cmdr_size + CMDR_OFF) >> 20);
+ 
+ 	return bl;
+ }
+@@ -2693,6 +2734,17 @@ static ssize_t tcmu_data_pages_per_blk_show(struct config_item *item,
+ }
+ CONFIGFS_ATTR_RO(tcmu_, data_pages_per_blk);
+ 
++static ssize_t tcmu_cmd_ring_size_mb_show(struct config_item *item, char *page)
++{
++	struct se_dev_attrib *da = container_of(to_config_group(item),
++						struct se_dev_attrib, da_group);
++	struct tcmu_dev *udev = TCMU_DEV(da->da_dev);
++
++	return snprintf(page, PAGE_SIZE, "%lu\n",
++			(udev->cmdr_size + CMDR_OFF) >> 20);
++}
++CONFIGFS_ATTR_RO(tcmu_, cmd_ring_size_mb);
++
+ static ssize_t tcmu_dev_config_show(struct config_item *item, char *page)
+ {
+ 	struct se_dev_attrib *da = container_of(to_config_group(item),
+@@ -3064,6 +3116,7 @@ static ssize_t tcmu_free_kept_buf_store(struct config_item *item, const char *pa
+ 	&tcmu_attr_qfull_time_out,
+ 	&tcmu_attr_max_data_area_mb,
+ 	&tcmu_attr_data_pages_per_blk,
++	&tcmu_attr_cmd_ring_size_mb,
+ 	&tcmu_attr_dev_config,
+ 	&tcmu_attr_dev_size,
+ 	&tcmu_attr_emulate_write_cache,
 -- 
-2.27.0
+1.8.3.1
 
