@@ -2,307 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E5F2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36527C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbiBNUTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:19:08 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:34534 "EHLO
+        id S229500AbiBNUXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:23:02 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbiBNUTG (ORCPT
+        with ESMTP id S229446AbiBNUXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:19:06 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4275466AE9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:18:49 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z13so10511336edc.12
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:18:49 -0800 (PST)
+        Mon, 14 Feb 2022 15:23:00 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F931E6822
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:21:20 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id d187so31131036pfa.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:21:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=74xO36BDU1K2kM94jAnc+IqbseiwYq2p06UAqZ0ryFo=;
-        b=c37eLOL7saW9Wn5fiSdcjaa8yxZnnHFwC59twkn3OBXkNp41b4lxaeX76HLhjgLsZw
-         A8v6lMY+4/q/tP347qHRnZF9a/4N8P/s/fUv2rkVUu2+Tm7/IUgLPZPPrM7UUuzwzWrP
-         M/KmiB/eGM6s1L0ag/LGMQXRraw6yhLSbDg8W8ZUd5LZW5nvg+kESFLBcTzUdObC7K7N
-         +4NVSPhuNbbSYs7gdF5yOPJ8NwzdJn4CVRrG6+/5GUpozgSFckuAy6KOg3kYtQwBgPTH
-         flaBsSapMBcyhj9mWUPXBS6Gz2jxMZVKeWUjxbo7qWqyezIsF/Q0F4h2+0+4vS0eTBTR
-         uoUw==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DF9WT/Vv+v/rFZpH2c7Do8/144JbYcaXb42/q6Y+A0U=;
+        b=QIyQthQljzLDrV1j/8Di/lSTC4O9i7AJ4h+RyA0Gbr4rcktlIyiBLn6GTX8uKH6LcT
+         jHb/KGlZVkhdQXIFz3E2u6cgJcFB9mYMV6IHktSAy+pSDAun9LkQRlfDlpWDNdv8isxg
+         OKtqc7zE/vmR6+ggIAD2GVAjrM2eJ1Mjo6GLo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=74xO36BDU1K2kM94jAnc+IqbseiwYq2p06UAqZ0ryFo=;
-        b=EpzTm1iGlGZrndIALFonvKFGWcAxnRTc3Ah2VBI9lNoVQy/OPbeBhMJokAoujAF1Op
-         0ZTCVRUAMqZg3xWRK9anrHJ+lBGCb8hHtW2KzE9JQ1zqGG3qnIhi62jXNj1dYfTTfzj0
-         /cJ8KYJKNm+T6a3AhzE4XBWGHJxnBfmKZQbXiKZuViY0yMVQF4tQ0e1SRV6NWIlqJXdP
-         aSnmerdTMb71kPrPoMxR6a4YcXN52z62CDwKEgsm5PT1zpqAXcC7Wk9bh+uo3vp2Prp9
-         44ZaRPl+d00R/p3NgrU40c+pOB4/nJQISkwiUYmvf+TIqWlg04Q/Z+d8F3Hjwt5wIWsf
-         WuvQ==
-X-Gm-Message-State: AOAM530Eii77FbulHmWXUPR71xGVLOybp877eQrOrJ7yn1UNdVLvoj6K
-        oCHian57hgJ58hWZi2zmJ2/VwXVDxbO0NPXbQ+0F5FvV/04=
-X-Google-Smtp-Source: ABdhPJzMfOxfTwLir5Q2D2cGEPfpLyAj/3XELvpKpQIJ0xE3Vk0qpPzz1N84QajfKk8XSMtXtQrLEyxFae09pnt0HYw=
-X-Received: by 2002:a05:6402:3492:: with SMTP id v18mr199648edc.345.1644865637481;
- Mon, 14 Feb 2022 11:07:17 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DF9WT/Vv+v/rFZpH2c7Do8/144JbYcaXb42/q6Y+A0U=;
+        b=rLFidTy6tKJ2aN4QjuHBrTGfISAw161eaTMJLtO4I8dgFqMTmcCuzkaM/hLTd5VhgA
+         xwr6UssqlyJwjAcBk4dG8BogpgQIeQPG9jvJmKBMqaPkrqgnvPfF6mc5k8qZHArHOiuk
+         0FhQnCNeIe5T5MnW8lzeyJoe+hFnY/fCrfMOOYg/9TyCcD1VL+WTcTZYqWY1pq0Qm4zr
+         Gt0ZMBcrZ0R7Rjom1QIYYii7la3z79z9i6qkY3JwLpHQW2hpVGdpAM+sedrqVHZT/hgi
+         wWBWEXeVzQ7JZn3K7MijE0f7Wd8y+T1JHigty5mWB3yVx8f0AOhsNApY4A+G57j0vDuj
+         8yJA==
+X-Gm-Message-State: AOAM533d5WGAfk737MKdwEpL6YQoeiKQmOgUnZQoka8lLPDa/1Bmhepn
+        T9/rEWiee/WC8ge7+hCFGE2j7U+z2tlo9Q==
+X-Google-Smtp-Source: ABdhPJyGvGVuw3HE04nf6pE0tMBuCUxgl2p9O4asWDDxJJCfFsjyzXK4t7nX3MjYl8E01F0Y9HZ41Q==
+X-Received: by 2002:a17:903:2281:: with SMTP id b1mr686528plh.158.1644869246223;
+        Mon, 14 Feb 2022 12:07:26 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id lw16sm9718884pjb.51.2022.02.14.12.07.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 12:07:25 -0800 (PST)
+Date:   Mon, 14 Feb 2022 12:07:25 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     Andy Lutomirski <luto@amacapital.net>,
+        Robert =?utf-8?B?xZp3acSZY2tp?= <robert@swiecki.net>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Jann Horn <jannh@google.com>, Will Drewry <wad@chromium.org>,
+        linux-api@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [RFC] Get siginfo from unreaped task
+Message-ID: <202202141152.6296CD7F@keescook>
+References: <CAP145phC6S6Zda-ZWLH1s4ZfDPh79rtf_7vzs-yvt1vykUCP4A@mail.gmail.com>
+ <CF5167CE-FA1C-4CEC-9EA8-5EE8041FE7C4@amacapital.net>
+ <20220213085212.cwzuqlrabpgbnbac@wittgenstein>
 MIME-Version: 1.0
-References: <00000000000072ef2c05d7f81950@google.com>
-In-Reply-To: <00000000000072ef2c05d7f81950@google.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Mon, 14 Feb 2022 11:07:05 -0800
-Message-ID: <CAHbLzkpr=xHC7C2+wkOGUB24924T4L1Lx_v+m1Ke8Ku3ym7wYw@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in __oom_reap_task_mm
-To:     syzbot <syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, brauner@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220213085212.cwzuqlrabpgbnbac@wittgenstein>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 2:44 AM syzbot
-<syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following issue on:
->
-> HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1229b2f8700000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2ccf63a4bd07cf39cab0
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> userspace arch: i386
->
-> Unfortunately, I don't have any reproducer for this issue yet.
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com
->
-> ==================================================================
-> BUG: KASAN: use-after-free in can_madv_lru_vma mm/internal.h:76 [inline]
-> BUG: KASAN: use-after-free in __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
-> Read of size 8 at addr ffff88807b868ba8 by task syz-executor.2/12778
->
-> CPU: 0 PID: 12778 Comm: syz-executor.2 Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
->  __kasan_report mm/kasan/report.c:442 [inline]
->  kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
->  can_madv_lru_vma mm/internal.h:76 [inline]
->  __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
->  __do_sys_process_mrelease+0x3f2/0x450 mm/oom_kill.c:1196
->  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
->  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
->  do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-> RIP: 0023:0xf6e70549
-> Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-> RSP: 002b:00000000f586a5cc EFLAGS: 00000296 ORIG_RAX: 00000000000001c0
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000000000
-> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-> RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
->  </TASK>
->
-> Allocated by task 12778:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track mm/kasan/common.c:45 [inline]
->  set_alloc_info mm/kasan/common.c:436 [inline]
->  __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
->  kasan_slab_alloc include/linux/kasan.h:260 [inline]
->  slab_post_alloc_hook mm/slab.h:732 [inline]
->  slab_alloc_node mm/slub.c:3230 [inline]
->  slab_alloc mm/slub.c:3238 [inline]
->  kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
->  vm_area_dup+0x88/0x2b0 kernel/fork.c:357
->  dup_mmap kernel/fork.c:554 [inline]
->  dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
->  copy_mm kernel/fork.c:1503 [inline]
->  copy_process+0x71f8/0x7300 kernel/fork.c:2164
->  kernel_clone+0xe7/0xab0 kernel/fork.c:2555
->  __do_compat_sys_ia32_clone+0xac/0xe0 arch/x86/kernel/sys_ia32.c:254
->  do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
->  __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
->  do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
->
-> Freed by task 12780:
->  kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
->  kasan_set_track+0x21/0x30 mm/kasan/common.c:45
->  kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
->  ____kasan_slab_free mm/kasan/common.c:366 [inline]
->  ____kasan_slab_free+0x130/0x160 mm/kasan/common.c:328
->  kasan_slab_free include/linux/kasan.h:236 [inline]
->  slab_free_hook mm/slub.c:1728 [inline]
->  slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
->  slab_free mm/slub.c:3509 [inline]
->  kmem_cache_free+0xd8/0x340 mm/slub.c:3526
->  remove_vma+0x135/0x170 mm/mmap.c:189
->  exit_mmap+0x29a/0x670 mm/mmap.c:3186
->  __mmput+0x122/0x4b0 kernel/fork.c:1114
->  mmput+0x56/0x60 kernel/fork.c:1135
->  exit_mm kernel/exit.c:507 [inline]
->  do_exit+0xa3c/0x2a30 kernel/exit.c:793
->  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
->  get_signal+0x4b0/0x28c0 kernel/signal.c:2862
->  arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
->  handle_signal_work kernel/entry/common.c:148 [inline]
->  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->  exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
->  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
->  __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
->  do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+On Sun, Feb 13, 2022 at 09:52:12AM +0100, Christian Brauner wrote:
+> On Sat, Feb 12, 2022 at 06:32:08PM -0800, Andy Lutomirski wrote:
+> > 
+> > > On Feb 12, 2022, at 3:24 AM, Robert Święcki <robert@swiecki.net> wrote:
+> > > 
+> > > ﻿sob., 12 lut 2022 o 05:28 Kees Cook <keescook@chromium.org> napisał(a):
+> > >> 
+> > >> Make siginfo available through PTRACE_GETSIGINFO after process death,
+> > >> without needing to have already used PTRACE_ATTACH. Uses 48 more bytes
+> > >> in task_struct, though I bet there might be somewhere else we could
+> > >> stash a copy of it?
+> > > 
+> > > An alternative way of accessing this info could be abusing the
+> > > waitid() interface, with some additional, custom to Linux, flag
+> > > 
+> > > waitid(P_ALL, 0, &si, __WCHILDSIGINFO);
+> > > 
+> > > which would change what is put into si.
+> > > 
+> > > But maybe ptrace() is better, because it's mostly incompatible with
+> > > other OSes anyway on the behavior/flag level, while waitd() seems to
+> > > be POSIX/BSD standard, even if Linux specifies some additional flags.
+> > > 
+> > > 
+> > 
+> > I had a kind of opposite thought, which is that it would be very nice
+> > to be able to get all the waitid() data without reaping a process or
+> > even necessarily being its parent.  Maybe these can be combined?  A
+> > new waitid() option like you’re suggesting could add siginfo (and
+> > might need permissions).  And we could have a different waitid() flag
+> > that says “maybe not my child, don’t reap” (and also needs
+> > permissions).
+> > 
+> > Although the “don’t reap” thing is fundamentally racy. What a sane
+> > process manager actually wants is an interface to read all this info
+> > from a pidfd, which means it all needs to get stuck in struct pid. And
+> 
+> /me briefly pops out from vacation
+> 
+> Agreed and not just siginfo I would expect(?). We already came to that
+> conclusion when we first introduced them.
+> 
+> > task_struct needs a completion or wait queue so you can actually wait
+> > for a pidfd to exit (unless someone already did this — I had patches a
+> > while back).  And this would be awesome.
+> 
+> Currently, you can wait for a pidfd to exit via polling and you can use
+> a pidfd to pass it to waitid(P_PIDFD, pidfd, ...).
+> 
+> /me pops back into vacation
 
-It seems process_mrelease() may be racy with exiting. mmgrab() just
-pin mm struct, but doesn't guarantee the associated address space
-still exists. mmget or mmget_not_zero() may be needed at first glance.
+Right, so waitid already has all the infrastructure for this, so I think
+adding it there makes a lot of sense. Here's what I've got:
 
-The below untested patch (compiled) may be able to fix it.
 
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index 832fb330376e..c389995bcc71 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -1185,9 +1185,11 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd,
-unsigned int, flags)
-        if (!reap)
-                goto drop_mm;
 
-+       if (!mmget_not_zero(mm))
-+               goto drop_mm;
-        if (mmap_read_lock_killable(mm)) {
-                ret = -EINTR;
--               goto drop_mm;
-+               goto put_mm;
-        }
-        /*
-         * Check MMF_OOM_SKIP again under mmap_read_lock protection to ensure
-@@ -1197,6 +1199,8 @@ SYSCALL_DEFINE2(process_mrelease, int, pidfd,
-unsigned int, flags)
-                ret = -EAGAIN;
-        mmap_read_unlock(mm);
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index f5b2be39a78c..e40789e801ef 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1178,6 +1178,7 @@ struct task_struct {
+ #endif
+ 	/* Ptrace state: */
+ 	unsigned long			ptrace_message;
++	kernel_siginfo_t		death_siginfo;
+ 	kernel_siginfo_t		*last_siginfo;
+ 
+ 	struct task_io_accounting	ioac;
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 9b04631acde8..41f6ba6b7aa7 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2825,6 +2825,10 @@ bool get_signal(struct ksignal *ksig)
+ 		}
+ 
+ 	fatal:
++		/* Allow siginfo to be queried until reaped. */
++		copy_siginfo(&current->death_siginfo, &ksig->info);
++		current->last_siginfo = &current->death_siginfo;
++
+ 		spin_unlock_irq(&sighand->siglock);
+ 		if (unlikely(cgroup_task_frozen(current)))
+ 			cgroup_leave_frozen(true);
+diff --git a/include/uapi/linux/wait.h b/include/uapi/linux/wait.h
+index 85b809fc9f11..7258cd4510ba 100644
+--- a/include/uapi/linux/wait.h
++++ b/include/uapi/linux/wait.h
+@@ -9,6 +9,7 @@
+ #define WCONTINUED	0x00000008
+ #define WNOWAIT		0x01000000	/* Don't reap, just poll status.  */
+ 
++#define __WCHILDSIGINFO	0x10000000	/* Report child's siginfo. */
+ #define __WNOTHREAD	0x20000000	/* Don't wait on children of other threads in this group */
+ #define __WALL		0x40000000	/* Wait on all children, regardless of type */
+ #define __WCLONE	0x80000000	/* Wait only on non-SIGCHLD children */
+diff --git a/kernel/exit.c b/kernel/exit.c
+index d54efddd378b..70ecb996cecd 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -953,6 +953,7 @@ struct waitid_info {
+ 	uid_t uid;
+ 	int status;
+ 	int cause;
++	kernel_siginfo_t siginfo;
+ };
+ 
+ struct wait_opts {
+@@ -964,7 +965,7 @@ struct wait_opts {
+ 	int			wo_stat;
+ 	struct rusage		*wo_rusage;
+ 
+-	wait_queue_entry_t		child_wait;
++	wait_queue_entry_t	child_wait;
+ 	int			notask_error;
+ };
+ 
+@@ -1012,11 +1013,16 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+ 	int state, status;
+ 	pid_t pid = task_pid_vnr(p);
+ 	uid_t uid = from_kuid_munged(current_user_ns(), task_uid(p));
+-	struct waitid_info *infop;
++	struct waitid_info *infop = wo->wo_info;
+ 
+ 	if (!likely(wo->wo_flags & WEXITED))
+ 		return 0;
+ 
++	/* Before WNOWAIT so a copy can be extracted without reaping. */
++	if (unlikely(wo->wo_flags & __WCHILDSIGINFO)) {
++		if (infop && p->last_siginfo)
++			copy_siginfo(&infop->siginfo, p->last_siginfo);
++	}
+ 	if (unlikely(wo->wo_flags & WNOWAIT)) {
+ 		status = (p->signal->flags & SIGNAL_GROUP_EXIT)
+ 			? p->signal->group_exit_code : p->exit_code;
+@@ -1121,7 +1127,6 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
+ 		release_task(p);
+ 
+ out_info:
+-	infop = wo->wo_info;
+ 	if (infop) {
+ 		if ((status & 0x7f) == 0) {
+ 			infop->cause = CLD_EXITED;
+@@ -1564,7 +1569,7 @@ static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
+ 	unsigned int f_flags = 0;
+ 
+ 	if (options & ~(WNOHANG|WNOWAIT|WEXITED|WSTOPPED|WCONTINUED|
+-			__WNOTHREAD|__WCLONE|__WALL))
++			__WNOTHREAD|__WCLONE|__WALL|__WCHILDSIGINFO))
+ 		return -EINVAL;
+ 	if (!(options & (WEXITED|WSTOPPED|WCONTINUED)))
+ 		return -EINVAL;
+@@ -1638,6 +1645,10 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
+ 	if (!infop)
+ 		return err;
+ 
++	/* __WCHILDSIGINFO */
++	if (info->siginfo.signo)
++		return copy_siginfo_to_user(infop, &info->siginfo);
++
+ 	if (!user_write_access_begin(infop, sizeof(*infop)))
+ 		return -EFAULT;
+ 
+@@ -1781,6 +1792,12 @@ COMPAT_SYSCALL_DEFINE5(waitid,
+ 	if (!infop)
+ 		return err;
+ 
++	/* __WCHILDSIGINFO */
++	if (info->siginfo.signo)
++		return copy_siginfo_to_user32(
++				(struct compat_siginfo __user *)infop,
++				&info->siginfo);
++
+ 	if (!user_write_access_begin(infop, sizeof(*infop)))
+ 		return -EFAULT;
+ 
 
-+put_mm:
-+       mmput(mm);
- drop_mm:
-        mmdrop(mm);
- put_task:
 
->
-> The buggy address belongs to the object at ffff88807b868b58
->  which belongs to the cache vm_area_struct of size 200
-> The buggy address is located 80 bytes inside of
->  200-byte region [ffff88807b868b58, ffff88807b868c20)
-> The buggy address belongs to the page:
-> page:ffffea0001ee1a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7b868
-> memcg:ffff88804fe94a01
-> flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-> raw: 00fff00000000200 dead000000000100 dead000000000122 ffff888140006a00
-> raw: 0000000000000000 00000000000f000f 00000001ffffffff ffff88804fe94a01
-> page dumped because: kasan: bad access detected
-> page_owner tracks the page as allocated
-> page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 3175, ts 344170603641, free_ts 344164018467
->  prep_new_page mm/page_alloc.c:2434 [inline]
->  get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
->  __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
->  alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
->  alloc_slab_page mm/slub.c:1799 [inline]
->  allocate_slab mm/slub.c:1944 [inline]
->  new_slab+0x28a/0x3b0 mm/slub.c:2004
->  ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
->  __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
->  slab_alloc_node mm/slub.c:3196 [inline]
->  slab_alloc mm/slub.c:3238 [inline]
->  kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3243
->  vm_area_dup+0x88/0x2b0 kernel/fork.c:357
->  dup_mmap kernel/fork.c:554 [inline]
->  dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
->  copy_mm kernel/fork.c:1503 [inline]
->  copy_process+0x71f8/0x7300 kernel/fork.c:2164
->  kernel_clone+0xe7/0xab0 kernel/fork.c:2555
->  __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> page last free stack trace:
->  reset_page_owner include/linux/page_owner.h:24 [inline]
->  free_pages_prepare mm/page_alloc.c:1352 [inline]
->  free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
->  free_unref_page_prepare mm/page_alloc.c:3325 [inline]
->  free_unref_page_list+0x1a9/0xfa0 mm/page_alloc.c:3441
->  release_pages+0x317/0x1220 mm/swap.c:980
->  tlb_batch_pages_flush mm/mmu_gather.c:50 [inline]
->  tlb_flush_mmu_free mm/mmu_gather.c:243 [inline]
->  tlb_flush_mmu mm/mmu_gather.c:250 [inline]
->  tlb_finish_mmu+0x165/0x8c0 mm/mmu_gather.c:341
->  exit_mmap+0x21b/0x670 mm/mmap.c:3180
->  __mmput+0x122/0x4b0 kernel/fork.c:1114
->  mmput+0x56/0x60 kernel/fork.c:1135
->  exit_mm kernel/exit.c:507 [inline]
->  do_exit+0xa3c/0x2a30 kernel/exit.c:793
->  do_group_exit+0xd2/0x2f0 kernel/exit.c:935
->  get_signal+0x4b0/0x28c0 kernel/signal.c:2862
->  arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
->  handle_signal_work kernel/entry/common.c:148 [inline]
->  exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
->  exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
->  syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
->  __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
->  do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
->  entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
->
-> Memory state around the buggy address:
->  ffff88807b868a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->  ffff88807b868b00: fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb fb
-> >ffff88807b868b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->                                   ^
->  ffff88807b868c00: fb fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb
->  ffff88807b868c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ==================================================================
-> ----------------
-> Code disassembly (best guess):
->    0:   03 74 c0 01             add    0x1(%rax,%rax,8),%esi
->    4:   10 05 03 74 b8 01       adc    %al,0x1b87403(%rip)        # 0x1b8740d
->    a:   10 06                   adc    %al,(%rsi)
->    c:   03 74 b4 01             add    0x1(%rsp,%rsi,4),%esi
->   10:   10 07                   adc    %al,(%rdi)
->   12:   03 74 b0 01             add    0x1(%rax,%rsi,4),%esi
->   16:   10 08                   adc    %cl,(%rax)
->   18:   03 74 d8 01             add    0x1(%rax,%rbx,8),%esi
->   1c:   00 00                   add    %al,(%rax)
->   1e:   00 00                   add    %al,(%rax)
->   20:   00 51 52                add    %dl,0x52(%rcx)
->   23:   55                      push   %rbp
->   24:   89 e5                   mov    %esp,%ebp
->   26:   0f 34                   sysenter
->   28:   cd 80                   int    $0x80
-> * 2a:   5d                      pop    %rbp <-- trapping instruction
->   2b:   5a                      pop    %rdx
->   2c:   59                      pop    %rcx
->   2d:   c3                      retq
->   2e:   90                      nop
->   2f:   90                      nop
->   30:   90                      nop
->   31:   90                      nop
->   32:   8d b4 26 00 00 00 00    lea    0x0(%rsi,%riz,1),%esi
->   39:   8d b4 26 00 00 00 00    lea    0x0(%rsi,%riz,1),%esi
->
->
-> ---
-> This report is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this issue. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->
+One usability question I have is:
+
+- if the process just exited normally, should it return an empty
+  siginfo, or should it ignore __WCHILDSIGINFO? (I have it ignoring it
+  above.)
+
+
+-- 
+Kees Cook
