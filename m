@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A848C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A575FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243016AbiBNKAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:00:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43442 "EHLO
+        id S1344644AbiBNKAr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:00:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345358AbiBNJ4o (ORCPT
+        with ESMTP id S1345594AbiBNJ47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:56:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E6636FA25;
-        Mon, 14 Feb 2022 01:45:28 -0800 (PST)
+        Mon, 14 Feb 2022 04:56:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985BE8302A;
+        Mon, 14 Feb 2022 01:45:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08A8B61238;
-        Mon, 14 Feb 2022 09:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE2DAC340E9;
-        Mon, 14 Feb 2022 09:45:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 440C1B80DC6;
+        Mon, 14 Feb 2022 09:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 731B8C340E9;
+        Mon, 14 Feb 2022 09:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831927;
-        bh=cNXuiQbp4eVaybtXIz+X39csbOButa7r68/wQKJtlsk=;
+        s=korg; t=1644831937;
+        bh=lyJPkVECiprsua+kfLo7vwcWYPr4vADc2/aJV5dQ37A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qGENJfQLowkdnrrertqOAh7lwx6MFcfRBuD4jJcncJSIFG+B0sb0x//PQgBwcKTyb
-         J/UTEpL0hijvON9HaT/3LaVW/DHwBjjRjqgEwsiV3EflMvBkcbrNmGBtPtt1+WReMY
-         C6/9E5mtZxsVN6dv+687uvBStkK9JYBp8jqq0gSg=
+        b=BOilgbm/TntvH3HQy2jcbm4vsEaUW+2e0TZhD7apBQjQhrfQg1yd8xOmZlzpA99/2
+         yHdUeoNnhoV+PgIGkVtQD1/a3OFtIHObMFVd/DCbe4X5RPGbs6FiGUOz+PRjNlgJdJ
+         804PcMORGmnA1n0p4fmn3ZsRAYDgO8lG9e9o9fBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 024/172] NFSv4 only print the label when its queried
-Date:   Mon, 14 Feb 2022 10:24:42 +0100
-Message-Id: <20220214092507.231681795@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.15 004/172] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
+Date:   Mon, 14 Feb 2022 10:24:22 +0100
+Message-Id: <20220214092506.514075983@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,42 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-[ Upstream commit 2c52c8376db7160a1dd8a681c61c9258405ef143 ]
+commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
 
-When the bitmask of the attributes doesn't include the security label,
-don't bother printing it. Since the label might not be null terminated,
-adjust the printing format accordingly.
+Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
+ima_template_fmt") introduced an additional check on the ima_template
+variable to avoid multiple template selection.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Unfortunately, ima_template could be also set by the setup function of the
+ima_hash= parameter, when it calls ima_template_desc_current(). This causes
+attempts to choose a new template with ima_template= or with
+ima_template_fmt=, after ima_hash=, to be ignored.
+
+Achieve the goal of the commit mentioned with the new static variable
+template_setup_done, so that template selection requests after ima_hash=
+are not ignored.
+
+Finally, call ima_init_template_list(), if not already done, to initialize
+the list of templates before lookup_template_desc() is called.
+
+Reported-by: Guo Zihua <guozihua@huawei.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Cc: stable@vger.kernel.org
+Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4xdr.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ security/integrity/ima/ima_template.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
-index a8cff19c6f00c..5e886518f2d45 100644
---- a/fs/nfs/nfs4xdr.c
-+++ b/fs/nfs/nfs4xdr.c
-@@ -4197,10 +4197,11 @@ static int decode_attr_security_label(struct xdr_stream *xdr, uint32_t *bitmap,
- 		} else
- 			printk(KERN_WARNING "%s: label too long (%u)!\n",
- 					__func__, len);
-+		if (label && label->label)
-+			dprintk("%s: label=%.*s, len=%d, PI=%d, LFS=%d\n",
-+				__func__, label->len, (char *)label->label,
-+				label->len, label->pi, label->lfs);
- 	}
--	if (label && label->label)
--		dprintk("%s: label=%s, len=%d, PI=%d, LFS=%d\n", __func__,
--			(char *)label->label, label->len, label->pi, label->lfs);
- 	return status;
- }
+--- a/security/integrity/ima/ima_template.c
++++ b/security/integrity/ima/ima_template.c
+@@ -29,6 +29,7 @@ static struct ima_template_desc builtin_
  
--- 
-2.34.1
-
+ static LIST_HEAD(defined_templates);
+ static DEFINE_SPINLOCK(template_list);
++static int template_setup_done;
+ 
+ static const struct ima_template_field supported_fields[] = {
+ 	{.field_id = "d", .field_init = ima_eventdigest_init,
+@@ -101,10 +102,11 @@ static int __init ima_template_setup(cha
+ 	struct ima_template_desc *template_desc;
+ 	int template_len = strlen(str);
+ 
+-	if (ima_template)
++	if (template_setup_done)
+ 		return 1;
+ 
+-	ima_init_template_list();
++	if (!ima_template)
++		ima_init_template_list();
+ 
+ 	/*
+ 	 * Verify that a template with the supplied name exists.
+@@ -128,6 +130,7 @@ static int __init ima_template_setup(cha
+ 	}
+ 
+ 	ima_template = template_desc;
++	template_setup_done = 1;
+ 	return 1;
+ }
+ __setup("ima_template=", ima_template_setup);
+@@ -136,7 +139,7 @@ static int __init ima_template_fmt_setup
+ {
+ 	int num_templates = ARRAY_SIZE(builtin_templates);
+ 
+-	if (ima_template)
++	if (template_setup_done)
+ 		return 1;
+ 
+ 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
+@@ -147,6 +150,7 @@ static int __init ima_template_fmt_setup
+ 
+ 	builtin_templates[num_templates - 1].fmt = str;
+ 	ima_template = builtin_templates + num_templates - 1;
++	template_setup_done = 1;
+ 
+ 	return 1;
+ }
 
 
