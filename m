@@ -2,74 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91947C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B221C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355674AbiBNPKx (ORCPT
+        id S1355677AbiBNPLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:10:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39646 "EHLO
+        Mon, 14 Feb 2022 10:11:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355658AbiBNPKe (ORCPT
+        with ESMTP id S1344845AbiBNPLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:10:34 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648C94E398;
-        Mon, 14 Feb 2022 07:10:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644851426; x=1676387426;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=kKVOBmMe2B7p8elBdEp7lhzQwa1aL7hnCEPJyvhHj1I=;
-  b=QEhlFIzQZ89Oq1L/pSpv5Z7mutPmU+z86pwikYXDpqp9db7Ot7Si0GLX
-   ug7PuoGS/wO1eW7HEIO99bGG/th59GpxTjK/4nnlG0rKv/mkLZrLGyOGJ
-   TweehWXGH90K446wLWr053ZL+VfEdKPPNNMIl2xw2igB7R8X1KRPLfWvG
-   ztZt2IHZ2TsgImfTn9OWqNzyGtraG/hGN+91lGbliDyoBk70ZKeBWu4c4
-   Osjc6YVSHwL7KYVY7fq7iL07ISQ2eQkkDPho9drPJD5pTKBOXoy6uSZG4
-   s4ACdjZz4fGNfwg77X1EyEQ/h952V0PceY/0pDZcPIgAxcQm3PLDEjvmQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="237516123"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="237516123"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 07:10:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="495709581"
-Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.59])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 07:10:24 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJcyn-004Zzv-JX;
-        Mon, 14 Feb 2022 17:09:29 +0200
-Date:   Mon, 14 Feb 2022 17:09:29 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        syzbot+0591ccf54ee05344e4eb@syzkaller.appspotmail.com
-Subject: Re: [PATCH v1 1/1] i2c: smbus: Check for parent device before
- dereference
-Message-ID: <YgpwqcRbDp38+NAa@smile.fi.intel.com>
-References: <20220204155920.13364-1-andriy.shevchenko@linux.intel.com>
+        Mon, 14 Feb 2022 10:11:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F754D275
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:10:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A838D61256
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:10:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 007E9C340F0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 15:10:51 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="oeAYpuB/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644851448;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WiHpJxXkjs+MwRu7CzpGstcpnssWU0+FrDB+V1LRRO4=;
+        b=oeAYpuB/xUC6umcKR3Pf0NKsb1w4xi/Pr9L1l2ywDthe57MSaMUWVDEoa5D+4wpox3vKRm
+        x+qMKoACekRiyEmy8zK/XEv/38yemb03+JCZTMVDDgPnrZxftUcuWiuq0Gg+pUCj2oruhc
+        J0GTnoXY5lcTosyQo6LgqKMRPyXW3Ik=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id aacb0857 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 14 Feb 2022 15:10:48 +0000 (UTC)
+Received: by mail-yb1-f173.google.com with SMTP id bt13so47092555ybb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:10:48 -0800 (PST)
+X-Gm-Message-State: AOAM5300Dpfbspb5Osu0aA0HrY3I5mFeOhqvF1byi+mgkbYeYXRkn2N1
+        e2++QzyIu+LOp4/XeShosFgSY4mwFg4lvXtD1eE=
+X-Google-Smtp-Source: ABdhPJwIM3qC/XB6WQH0TwXmYcRUk4ywsdbbjaHMut37DBU85a3VNyGQnhoBt2LyjMFxmN0F0NudHgjcLqteHdH6FKs=
+X-Received: by 2002:a25:dc14:: with SMTP id y20mr94918ybe.115.1644851446872;
+ Mon, 14 Feb 2022 07:10:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220204155920.13364-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
+ <20220214133735.966528-1-Jason@zx2c4.com> <Ygpkej/vnMvUDIlP@linutronix.de>
+ <CAHmME9ruM85U+dp4coBRJUBdk=iHXFZq3ZvHSiDXmpV+BoZEVw@mail.gmail.com>
+ <Ygpr9Xg0I+ZVzp9v@linutronix.de> <CAHmME9rp+O3+yjX_q-BS8y06PigbkEgi4vn=nzLACnBAWZt-vA@mail.gmail.com>
+ <Ygpv/kLWCmTzUTki@linutronix.de>
+In-Reply-To: <Ygpv/kLWCmTzUTki@linutronix.de>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 14 Feb 2022 16:10:36 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qrhpRCox2mR2UEStWxev2Zu14htBkpv3mdFEkVqacvVQ@mail.gmail.com>
+Message-ID: <CAHmME9qrhpRCox2mR2UEStWxev2Zu14htBkpv3mdFEkVqacvVQ@mail.gmail.com>
+Subject: Re: [PATCH v2] random: set fast pool count to zero in cpuhp teardown
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Theodore Ts'o" <tytso@mit.edu>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 04, 2022 at 05:59:20PM +0200, Andy Shevchenko wrote:
-> An I²C adapter might be instantiated without parent. In such case
-> there is no property can be retrieved. Skip SMBus alert setup when
-> this happens.
+Hi Sebastian,
 
-As of today the problem is still in v5.17-rcX.
+On Mon, Feb 14, 2022 at 4:06 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+> But you acked my question regarding boot-up? So the teardown callback
+> won't happen during boot-up.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I'd like to do only one method here, so we can set those fields in
+startup, provided it happens early enough.
+> > So I think it seems better to keep it before CPUHP_TIMERS_PREPARE, but
+> > do it on startup rather than teardown. Seem reasonable? Would that
+> > mean we zero out before IRQs are enabled?
+> I would only zero it if the upper-most bit is there.
 
+I still don't quite understand: why can't we just unconditionally
+zero, always, before CPUHP_TIMERS_PREPARE?
 
+> And then have another one after
+
+Two of them seems a little bit out of hand in complexity here... Let's
+just find one phase where we can simply set variables without too much
+fiddly logic. I'll send a v+1 of what I have in mind for the startup
+path.
+
+Jason
