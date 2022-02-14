@@ -2,100 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D12C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356405AbiBNQa5 (ORCPT
+        id S1356406AbiBNQbW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:30:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39038 "EHLO
+        Mon, 14 Feb 2022 11:31:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356418AbiBNQal (ORCPT
+        with ESMTP id S236701AbiBNQbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:30:41 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087AE60D92
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:30:33 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id f19so4680818qvb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:30:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JskXaZJX9EqtyU9nDYwhDYopK1GYBeF5QAk0Zlst3K8=;
-        b=WFoQIvGxJEbg8UOaiV70tS6PGdyf3qjcG0fNJQKbyHSfj48VnWpT1uPRsHkSjKp4oI
-         VyXEAHc0fq+QePjMo/XUxaUdqQMw6JpndQdJRAM+wSSoz81Cj3PoON8L3Dmir1bNHNxO
-         JLMBAFjfwqf69spTV2mC/gqt6Gw5T35QWKhp0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JskXaZJX9EqtyU9nDYwhDYopK1GYBeF5QAk0Zlst3K8=;
-        b=ZPC7wGrbG2+p+O9jiM0DNVxXXkP4UARcQlO7AEd8UnkuYYoPVHM5e0mvLtsywkE0+2
-         S6/6KIOQifB2h0tvWDYNhtbOnsU+AMNZiPovRfuEiwEwtsfyEOp+EGqQjQQKe/ShxHWa
-         VNKlYyotzQimkjcQVp7lFU30e/JSxxLz9kdBc/aXVkkjTlYBuyGr08r0I4sM1tDjJ4AS
-         92thoBrDBlv5rXtDg+G3amIjbwQL86ohkYGDF8MqMTffNb/8H9TmuGH5msqA2CFPs49U
-         7Ji4I5axL6NxJcXo+/bO1biMNsXOxaEPz4y3eVXEj03cSG6uW3nL8suWiyArBEFlAUuy
-         XK1w==
-X-Gm-Message-State: AOAM532ww2h7MAemVoMKkHFLGsdS5tUjpPxhcNSQVxADIYRFqYJqd0UF
-        DJGk02Um54/RkrC3QyF2j1g6XNpBBvHYlg==
-X-Google-Smtp-Source: ABdhPJxxBqY9/7Gi8/6HyuHGxXZowoEIg5v7/Yucc9haz25H27ve1NZxd3krv+h7JF1cvkCUhxoQYw==
-X-Received: by 2002:a05:6214:daf:: with SMTP id h15mr335331qvh.46.1644856232955;
-        Mon, 14 Feb 2022 08:30:32 -0800 (PST)
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com. [209.85.160.178])
-        by smtp.gmail.com with ESMTPSA id g21sm18237059qtb.70.2022.02.14.08.30.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 08:30:32 -0800 (PST)
-Received: by mail-qt1-f178.google.com with SMTP id s1so15862109qtw.9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:30:32 -0800 (PST)
-X-Received: by 2002:a02:3b67:: with SMTP id i39mr299652jaf.50.1644855749283;
- Mon, 14 Feb 2022 08:22:29 -0800 (PST)
+        Mon, 14 Feb 2022 11:31:20 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A37960D89;
+        Mon, 14 Feb 2022 08:31:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644856270; x=1676392270;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/rNAITY1+98uvbGAZzlsiQlo0IS/4Nq0dkDRoszUuaY=;
+  b=BeuZIttaCaix2+ct0TPYPBEyQC5sz40+DMQIYdYcq/4mtdQyNYrnkGdS
+   MnxTVBuM1PFfdiFlnmDoFkwN4S1toC6KZ/idsbmWMLTAx9P2pBmXpCnZ7
+   ixgqWiZTpCqNXmzNMZMd28GEoRVehuSM2aAoZmpYzXA7AnLB4ejo8iGmt
+   2FEAePObj3qo4z93ToQr1M/dNJ3Koz6l6qz9f8slVv5gyu3q+UDdtEndK
+   S3JXn1YMGiL4k73rePaZtGy4mtRD+W1fzZnm7C29rHNWdDLnVrJr+oV7I
+   4pQ5MpHlkOO9HH/2Gog18PSK/+oIMF2XUhRMGa/zg3BJquZbsZUbwv4e5
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="250071302"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="250071302"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 08:31:08 -0800
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="603341808"
+Received: from punajuuri.fi.intel.com (HELO paasikivi.fi.intel.com) ([10.237.72.43])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 08:31:04 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id C7AE6201DB;
+        Mon, 14 Feb 2022 18:31:01 +0200 (EET)
+Date:   Mon, 14 Feb 2022 18:31:01 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 21/66] media: sun6i-csi: Always set exclusive module
+ clock rate
+Message-ID: <YgqDxWwUeVQu+05O@paasikivi.fi.intel.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-22-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com> <20220214081916.162014-5-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220214081916.162014-5-krzysztof.kozlowski@canonical.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 14 Feb 2022 08:22:18 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=Wzr=ra=_mt63Uj2p6PSNoEF1F=zN0-0yg5rcWkBFYkZw@mail.gmail.com>
-Message-ID: <CAD=FV=Wzr=ra=_mt63Uj2p6PSNoEF1F=zN0-0yg5rcWkBFYkZw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] arm64: dts: rk3399: align Google CROS EC PWM node
- name with dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, chrome-platform@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-pwm <linux-pwm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220205185429.2278860-22-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Paul,
 
-On Mon, Feb 14, 2022 at 12:20 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> dtschema expects PWM node name to be a generic "pwm".  This also matches
-> Devicetree specification requirements about generic node names.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Thanks for the patchbomb.
+
+On Sat, Feb 05, 2022 at 07:53:44PM +0100, Paul Kocialkowski wrote:
+> In some situations the default rate of the module clock is not the
+> required one for operation (for example when reconfiguring the clock
+> tree to use a different parent). As a result, always set the correct
+> rate for the clock (and take care of cleanup).
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
 > ---
->  arch/arm64/boot/dts/rockchip/rk3399-gru-chromebook.dtsi | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../platform/sunxi/sun6i-csi/sun6i_csi.c      | 54 ++++++++++++++-----
+>  1 file changed, 41 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> index 8155e9560164..2355088fdc37 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> @@ -856,28 +849,53 @@ static int sun6i_csi_resources_setup(struct sun6i_csi_device *csi_dev,
+>  		return PTR_ERR(csi_dev->clk_ram);
+>  	}
+>  
+> +	if (of_device_is_compatible(dev->of_node, "allwinner,sun50i-a64-csi"))
+> +		clk_mod_rate = 300000000;
+> +	else
+> +		clk_mod_rate = 297000000;
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+This would be nice to put in OF match data.
+
+Of course the driver did this already before the patch. The approach still
+scales badly.
+
+-- 
+Regards,
+
+Sakari Ailus
