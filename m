@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81A1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245274AbiBNJpV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:45:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33972 "EHLO
+        id S245088AbiBNJpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:45:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244917AbiBNJnD (ORCPT
+        with ESMTP id S244973AbiBNJnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:43:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD26D69CE4;
-        Mon, 14 Feb 2022 01:37:55 -0800 (PST)
+        Mon, 14 Feb 2022 04:43:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA04069CFA;
+        Mon, 14 Feb 2022 01:37:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59F28B80DA9;
-        Mon, 14 Feb 2022 09:37:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78D9BC340F0;
-        Mon, 14 Feb 2022 09:37:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E0BCB80D83;
+        Mon, 14 Feb 2022 09:37:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BE6FC340E9;
+        Mon, 14 Feb 2022 09:37:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831473;
-        bh=+G1g/Z93f1zz309HBo79pRVjKS1a7Jevtkt1wE2TZEU=;
+        s=korg; t=1644831476;
+        bh=fNboLNrTTiztMzk5UQDqt4sM5NYrXTofzAbuRL2RH+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dx+AYcqhE0ARQ98vzqKeW8mrVrNhJbCCYfQ8eTxrbi9d86LCAwRP50B5hueRskdyV
-         hSoS5pj1Ybzk0wJzu+6ks6MzeRmDRPqAfXNJylC4om0L8JoeHB4RzXLrydwSoygGTC
-         VWhJ0eln0xR5OTY8Dh6/NJV4F/kSzixsm9BVSZTQ=
+        b=uurxPptttCTLXIPS11+37zRv8aFhFKu1wUAVfavAn/GJIhxCRsE/I3bGxHxpSAgGt
+         r0+3PJ6xCEObglxL7kduysCt9cl15NHzV1yRM2xI8MFVn7jjPqAOMpNwVqQu5WXARs
+         2eyNFtTb1IPtWQL57AEvi2xey59T6ha2jZwb4Bho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Scott Russell <Scott.Russell2@ncr.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 66/71] USB: serial: cp210x: add CPI Bulk Coin Recycler id
-Date:   Mon, 14 Feb 2022 10:26:34 +0100
-Message-Id: <20220214092454.258840056@linuxfoundation.org>
+        stable@vger.kernel.org, Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.4 67/71] seccomp: Invalidate seccomp mode to catch death failures
+Date:   Mon, 14 Feb 2022 10:26:35 +0100
+Message-Id: <20220214092454.290611893@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -48,33 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Kees Cook <keescook@chromium.org>
 
-commit 6ca0c6283340d819bf9c7d8e76be33c9fbd903ab upstream.
+commit 495ac3069a6235bfdf516812a2a9b256671bbdf9 upstream.
 
-Add the device id for the Crane Payment Innovation / Money Controls Bulk
-Coin Recycler:
+If seccomp tries to kill a process, it should never see that process
+again. To enforce this proactively, switch the mode to something
+impossible. If encountered: WARN, reject all syscalls, and attempt to
+kill the process again even harder.
 
-	https://www.cranepi.com/en/system/files/Support/OM_BCR_EN_V1-04_0.pdf
-
-Reported-by: Scott Russell <Scott.Russell2@ncr.com>
+Cc: Andy Lutomirski <luto@amacapital.net>
+Cc: Will Drewry <wad@chromium.org>
+Fixes: 8112c4f140fa ("seccomp: remove 2-phase API")
 Cc: stable@vger.kernel.org
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/cp210x.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/seccomp.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -70,6 +70,7 @@ static const struct usb_device_id id_tab
- 	{ USB_DEVICE(0x0FCF, 0x1004) }, /* Dynastream ANT2USB */
- 	{ USB_DEVICE(0x0FCF, 0x1006) }, /* Dynastream ANT development board */
- 	{ USB_DEVICE(0x0FDE, 0xCA05) }, /* OWL Wireless Electricity Monitor CM-160 */
-+	{ USB_DEVICE(0x106F, 0x0003) },	/* CPI / Money Controls Bulk Coin Recycler */
- 	{ USB_DEVICE(0x10A6, 0xAA26) }, /* Knock-off DCU-11 cable */
- 	{ USB_DEVICE(0x10AB, 0x10C5) }, /* Siemens MC60 Cable */
- 	{ USB_DEVICE(0x10B5, 0xAC70) }, /* Nokia CA-42 USB */
+--- a/kernel/seccomp.c
++++ b/kernel/seccomp.c
+@@ -28,6 +28,9 @@
+ #include <linux/syscalls.h>
+ #include <linux/sysctl.h>
+ 
++/* Not exposed in headers: strictly internal use only. */
++#define SECCOMP_MODE_DEAD	(SECCOMP_MODE_FILTER + 1)
++
+ #ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+ #include <asm/syscall.h>
+ #endif
+@@ -706,6 +709,7 @@ static void __secure_computing_strict(in
+ #ifdef SECCOMP_DEBUG
+ 	dump_stack();
+ #endif
++	current->seccomp.mode = SECCOMP_MODE_DEAD;
+ 	seccomp_log(this_syscall, SIGKILL, SECCOMP_RET_KILL_THREAD, true);
+ 	do_exit(SIGKILL);
+ }
+@@ -892,6 +896,7 @@ static int __seccomp_filter(int this_sys
+ 	case SECCOMP_RET_KILL_THREAD:
+ 	case SECCOMP_RET_KILL_PROCESS:
+ 	default:
++		current->seccomp.mode = SECCOMP_MODE_DEAD;
+ 		seccomp_log(this_syscall, SIGSYS, action, true);
+ 		/* Dump core only if this is the last remaining thread. */
+ 		if (action == SECCOMP_RET_KILL_PROCESS ||
+@@ -944,6 +949,11 @@ int __secure_computing(const struct secc
+ 		return 0;
+ 	case SECCOMP_MODE_FILTER:
+ 		return __seccomp_filter(this_syscall, sd, false);
++	/* Surviving SECCOMP_RET_KILL_* must be proactively impossible. */
++	case SECCOMP_MODE_DEAD:
++		WARN_ON_ONCE(1);
++		do_exit(SIGKILL);
++		return -1;
+ 	default:
+ 		BUG();
+ 	}
 
 
