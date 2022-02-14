@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C90C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343601AbiBNJxR (ORCPT
+        id S1343691AbiBNJxV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:53:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33228 "EHLO
+        Mon, 14 Feb 2022 04:53:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245668AbiBNJuM (ORCPT
+        with ESMTP id S245544AbiBNJuN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:50:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111961ADBA;
-        Mon, 14 Feb 2022 01:41:13 -0800 (PST)
+        Mon, 14 Feb 2022 04:50:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734C625E98;
+        Mon, 14 Feb 2022 01:41:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57D72B80DA9;
-        Mon, 14 Feb 2022 09:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 619C7C340E9;
-        Mon, 14 Feb 2022 09:41:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 540F161190;
+        Mon, 14 Feb 2022 09:41:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34C1EC340EF;
+        Mon, 14 Feb 2022 09:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831669;
-        bh=On09NtlxisAFDWKGqSyeGfJb1Y/OGiixVGVkNghruI0=;
+        s=korg; t=1644831675;
+        bh=OwigAV6fhT7YdraeaXtXy7WEvpHp92vEVh3hKPQ1iP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRaaoDRsSV9TS1qm0Ia8aYXsBXwerBDuOHhV2rWSrazGLJctp4T7JjtuCOY6ADcyo
-         GiHWgG/UGMPwwAMGTQFYgybsZnIl7M117JZDUkqzN6TebaNrfz1dnPPv2dBaa+fBCz
-         bvmc0eZ0vN5RDakXNNEtv0CcJNLtJ5Evc63P/lMw=
+        b=GBxtVcjVrhJrMDsrvzmtPquw2cHK3ho3g3q2N7Uh3Qyr/HF/MGzo2/qfltD9C9ZD0
+         BiqbjDzDdN/frL2NNTJOxYdfR3HrjSQytLUbiNVS4QKUYfxaACkoLuFX8iW/2NPbjO
+         Th+4YB+OXOxkHM2fCFrjMGQ7tTusGXqPiAV6dNGw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mikko=20Salom=C3=A4ki?= <ms@datarespons.se>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 057/116] ARM: dts: imx7ulp: Fix assigned-clocks-parents typo
-Date:   Mon, 14 Feb 2022 10:25:56 +0100
-Message-Id: <20220214092500.711608974@linuxfoundation.org>
+Subject: [PATCH 5.10 059/116] gpio: aggregator: Fix calling into sleeping GPIO controllers
+Date:   Mon, 14 Feb 2022 10:25:58 +0100
+Message-Id: <20220214092500.781219665@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,35 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit 6d58c5e21a3fe355ce6d1808e96d02a610265218 ]
+[ Upstream commit 2cba05451a6d0c703bb74f1a250691404f27c4f1 ]
 
-The correct property name is 'assigned-clock-parents', not
-'assigned-clocks-parents'. Though if the platform works with the typo, one
-has to wonder if the property is even needed.
+If the parent GPIO controller is a sleeping controller (e.g. a GPIO
+controller connected to I2C), getting or setting a GPIO triggers a
+might_sleep() warning.  This happens because the GPIO Aggregator takes
+the can_sleep flag into account only for its internal locking, not for
+calling into the parent GPIO controller.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
-Fixes: 8b8c7d97e2c7 ("ARM: dts: imx7ulp: Add wdog1 node")
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fix this by using the gpiod_[gs]et*_cansleep() APIs when calling into a
+sleeping GPIO controller.
+
+Reported-by: Mikko Salomäki <ms@datarespons.se>
+Fixes: 828546e24280f721 ("gpio: Add GPIO Aggregator")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx7ulp.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-aggregator.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dtsi
-index b7ea37ad4e55c..bcec98b964114 100644
---- a/arch/arm/boot/dts/imx7ulp.dtsi
-+++ b/arch/arm/boot/dts/imx7ulp.dtsi
-@@ -259,7 +259,7 @@ wdog1: watchdog@403d0000 {
- 			interrupts = <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
- 			assigned-clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
--			assigned-clocks-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
-+			assigned-clock-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
- 			timeout-sec = <40>;
- 		};
+diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+index dfd8a4876a27a..d5f25246404d9 100644
+--- a/drivers/gpio/gpio-aggregator.c
++++ b/drivers/gpio/gpio-aggregator.c
+@@ -330,7 +330,8 @@ static int gpio_fwd_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
  
+-	return gpiod_get_value(fwd->descs[offset]);
++	return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offset])
++			       : gpiod_get_value(fwd->descs[offset]);
+ }
+ 
+ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -349,7 +350,10 @@ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 	for_each_set_bit(i, mask, fwd->chip.ngpio)
+ 		descs[j++] = fwd->descs[i];
+ 
+-	error = gpiod_get_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		error = gpiod_get_array_value_cansleep(j, descs, NULL, values);
++	else
++		error = gpiod_get_array_value(j, descs, NULL, values);
+ 	if (error)
+ 		return error;
+ 
+@@ -384,7 +388,10 @@ static void gpio_fwd_set(struct gpio_chip *chip, unsigned int offset, int value)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	gpiod_set_value(fwd->descs[offset], value);
++	if (chip->can_sleep)
++		gpiod_set_value_cansleep(fwd->descs[offset], value);
++	else
++		gpiod_set_value(fwd->descs[offset], value);
+ }
+ 
+ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -403,7 +410,10 @@ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 		descs[j++] = fwd->descs[i];
+ 	}
+ 
+-	gpiod_set_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		gpiod_set_array_value_cansleep(j, descs, NULL, values);
++	else
++		gpiod_set_array_value(j, descs, NULL, values);
+ }
+ 
+ static void gpio_fwd_set_multiple_locked(struct gpio_chip *chip,
 -- 
 2.34.1
 
