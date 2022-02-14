@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2FFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF26C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245567AbiBNJth (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:49:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42974 "EHLO
+        id S245580AbiBNJto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:49:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344151AbiBNJqn (ORCPT
+        with ESMTP id S1343994AbiBNJqf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:43 -0500
+        Mon, 14 Feb 2022 04:46:35 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E897766628;
-        Mon, 14 Feb 2022 01:40:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365C86AA6D;
+        Mon, 14 Feb 2022 01:40:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CB956117D;
-        Mon, 14 Feb 2022 09:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E114C340E9;
-        Mon, 14 Feb 2022 09:40:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A2C9611DF;
+        Mon, 14 Feb 2022 09:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76699C340EF;
+        Mon, 14 Feb 2022 09:40:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831609;
-        bh=bGyyTllWn9VeEU87vfFmIRuIH3toa/eBi1YJ/SiYrRQ=;
+        s=korg; t=1644831604;
+        bh=n1qsIm72eVmDCyK2h8ZoQhDWe6tCmwaW4bloGcFk00g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RhoUhwAvqKPxMV5WK4VdatxA4tCJ+GMQ93uE36grwze9MRVWIvIf/pyDl3zWzi05S
-         JMfEqZw4QEPPzCZjp91OXRVcs5uzSL656BuEGyWlNYyBS2UMJfouMCAj5mXFtie20b
-         juWH8Xx0iYImH6VI0ByQMEms/2zftt/BckaELEdw=
+        b=TyHoLvy9V7BLZkEnTEn3OKb32zXUWyGBlrJMWfP7LUWMX5hyzBS6TMr/4MAMq8nao
+         cUSaH0SCXOS28yzz2/GLvgIGbLt+5FSJaEVOQnaMKXYkpI0+Vlz1YcInBasAaLjOSt
+         duPmVkesE1TpbmevbwIoN0Z57vjVDx0E5zJcRjBc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com,
-        Ziyang Xuan <william.xuanziyang@huawei.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 006/116] can: isotp: fix potential CAN frame reception race in isotp_rcv()
-Date:   Mon, 14 Feb 2022 10:25:05 +0100
-Message-Id: <20220214092458.895195012@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.10 004/116] ima: Do not print policy rule with inactive LSM labels
+Date:   Mon, 14 Feb 2022 10:25:03 +0100
+Message-Id: <20220214092458.828412636@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,109 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Hartkopp <socketcan@hartkopp.net>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-commit 7c759040c1dd03954f650f147ae7175476d51314 upstream.
+commit 89677197ae709eb1ab3646952c44f6a171c9e74c upstream.
 
-When receiving a CAN frame the current code logic does not consider
-concurrently receiving processes which do not show up in real world
-usage.
+Before printing a policy rule scan for inactive LSM labels in the policy
+rule. Inactive LSM labels are identified by args_p != NULL and
+rule == NULL.
 
-Ziyang Xuan writes:
-
-The following syz problem is one of the scenarios. so->rx.len is
-changed by isotp_rcv_ff() during isotp_rcv_cf(), so->rx.len equals
-0 before alloc_skb() and equals 4096 after alloc_skb(). That will
-trigger skb_over_panic() in skb_put().
-
-=======================================================
-CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc8-syzkaller #0
-RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113
-Call Trace:
- <TASK>
- skb_over_panic net/core/skbuff.c:118 [inline]
- skb_put.cold+0x24/0x24 net/core/skbuff.c:1990
- isotp_rcv_cf net/can/isotp.c:570 [inline]
- isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668
- deliver net/can/af_can.c:574 [inline]
- can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635
- can_receive+0x31d/0x580 net/can/af_can.c:665
- can_rcv+0x120/0x1c0 net/can/af_can.c:696
- __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5465
- __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5579
-
-Therefore we make sure the state changes and data structures stay
-consistent at CAN frame reception time by adding a spin_lock in
-isotp_rcv(). This fixes the issue reported by syzkaller but does not
-affect real world operation.
-
-Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
-Link: https://lore.kernel.org/linux-can/d7e69278-d741-c706-65e1-e87623d9a8e8@huawei.com/T/
-Link: https://lore.kernel.org/all/20220208200026.13783-1-socketcan@hartkopp.net
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
-Reported-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 483ec26eed42 ("ima: ima/lsm policy rule loading logic bug fixes")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org> # v5.6+
+Acked-by: Christian Brauner <brauner@kernel.org>
+[zohar@linux.ibm.com: Updated "Fixes" tag]
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/can/isotp.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ security/integrity/ima/ima_policy.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -56,6 +56,7 @@
- #include <linux/module.h>
- #include <linux/init.h>
- #include <linux/interrupt.h>
-+#include <linux/spinlock.h>
- #include <linux/hrtimer.h>
- #include <linux/wait.h>
- #include <linux/uio.h>
-@@ -145,6 +146,7 @@ struct isotp_sock {
- 	struct tpcon rx, tx;
- 	struct list_head notifier;
- 	wait_queue_head_t wait;
-+	spinlock_t rx_lock; /* protect single thread state machine */
- };
+--- a/security/integrity/ima/ima_policy.c
++++ b/security/integrity/ima/ima_policy.c
+@@ -1636,6 +1636,14 @@ int ima_policy_show(struct seq_file *m,
  
- static LIST_HEAD(isotp_notifier_list);
-@@ -615,11 +617,17 @@ static void isotp_rcv(struct sk_buff *sk
+ 	rcu_read_lock();
  
- 	n_pci_type = cf->data[ae] & 0xF0;
- 
-+	/* Make sure the state changes and data structures stay consistent at
-+	 * CAN frame reception time. This locking is not needed in real world
-+	 * use cases but the inconsistency can be triggered with syzkaller.
-+	 */
-+	spin_lock(&so->rx_lock);
++	/* Do not print rules with inactive LSM labels */
++	for (i = 0; i < MAX_LSM_RULES; i++) {
++		if (entry->lsm[i].args_p && !entry->lsm[i].rule) {
++			rcu_read_unlock();
++			return 0;
++		}
++	}
 +
- 	if (so->opt.flags & CAN_ISOTP_HALF_DUPLEX) {
- 		/* check rx/tx path half duplex expectations */
- 		if ((so->tx.state != ISOTP_IDLE && n_pci_type != N_PCI_FC) ||
- 		    (so->rx.state != ISOTP_IDLE && n_pci_type == N_PCI_FC))
--			return;
-+			goto out_unlock;
- 	}
- 
- 	switch (n_pci_type) {
-@@ -668,6 +676,9 @@ static void isotp_rcv(struct sk_buff *sk
- 		isotp_rcv_cf(sk, cf, ae, skb);
- 		break;
- 	}
-+
-+out_unlock:
-+	spin_unlock(&so->rx_lock);
- }
- 
- static void isotp_fill_dataframe(struct canfd_frame *cf, struct isotp_sock *so,
-@@ -1407,6 +1418,7 @@ static int isotp_init(struct sock *sk)
- 	so->txtimer.function = isotp_tx_timer_handler;
- 
- 	init_waitqueue_head(&so->wait);
-+	spin_lock_init(&so->rx_lock);
- 
- 	spin_lock(&isotp_notifier_lock);
- 	list_add_tail(&so->notifier, &isotp_notifier_list);
+ 	if (entry->action & MEASURE)
+ 		seq_puts(m, pt(Opt_measure));
+ 	if (entry->action & DONT_MEASURE)
 
 
