@@ -2,116 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 407FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5663C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbiBNUyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:54:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58582 "EHLO
+        id S229453AbiBNUz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:55:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiBNUyR (ORCPT
+        with ESMTP id S229611AbiBNUz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:54:17 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74E45BC9B
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:53:51 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id p7so15816449qvk.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:53:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RIas+GyVDApC3xDrXULa8rp+llTjzXjwfENj9r1hIhE=;
-        b=qFTlR0PWa747IABqwNN/t8GNIse7KZphJV5hb5vFFtsGpXNfVaZtn7Hyjm+JfpF+eM
-         mwYqBmTgvYY3zZ4WSa+5bokDrFUpN7LCfTNJea82vfqeTF7DiUI/At97Ha0OfuhKOi2a
-         kUslq1/4r5JPlE/qXy4lnJ633NCJXlUuUpnDPyHDOV/oan3sqPcVJtF9W/WJKHxQyIOW
-         d9XCPDQq0pyvfqbLp2iRBcG388aYhHJSmKOKTiWQBPQF+0TwuuWX50jn02l1qrFbWPhM
-         +5T3jqdNitbG8jENnTpfEbraUbFJMa6bB9obQOAIilKXLCuvDPYffS7y0NNe6N1qCirQ
-         9VVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=RIas+GyVDApC3xDrXULa8rp+llTjzXjwfENj9r1hIhE=;
-        b=haYJ4q+lKuxiwELkAWkvWgrhi2OlnWSL1OFTotOaJzpNFmobMRozmsuvnm/K1yYQjv
-         CidqtvhKc1LTZnc9L83pEzI0xqEYEeBUEUMb13iBXrSBe8CPO3r3Lv4gPifEeknovxLJ
-         9fWGg/SmndibRt9bWawYT7QvT7/eeG4ffXJ+bHCTuworzTgqNEi+9rpuOKbWdyeZ+RzR
-         QZzqwbMbr2p/nsHKyLvpv5YxZKS2/ZyXFl1Whsn9kOZ2XpYTrnfdUFflCWZJXqg+lDgd
-         X/3YroRD+SiSZXcR66sGHz5Op5cJcXtXpzj3xc0QMKVXAsPZ4uc4ageHf7QQHP/aZrVN
-         fAAQ==
-X-Gm-Message-State: AOAM533GgKrPotYK5Mpfw27fRsYUhuB4vCVFbXmzcd90zvIBTjlI4cxo
-        0U9BhSXiEkC55wRsZal+oUE0KG02tec=
-X-Google-Smtp-Source: ABdhPJx5efBjjZxkoqMiDNkblXbHgtDCztk7rsHet1nW179xwlXvIPgrOUzNy2Dwc6k6XC2SXQOJRA==
-X-Received: by 2002:a17:903:283:: with SMTP id j3mr393533plr.132.1644867834186;
-        Mon, 14 Feb 2022 11:43:54 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id q2sm39651861pfj.94.2022.02.14.11.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:43:53 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 14 Feb 2022 09:43:52 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Padmanabha Srinivasaiah <treasure4paddy@gmail.com>
-Cc:     jiangshanlai@gmail.com, linux-kernel@vger.kernel.org,
-        paulmck@kernel.org, linux-rpi-kernel@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] workqueue: Fix race in schedule and flush work
-Message-ID: <Ygqw+EHo//6VGs6q@slm.duckdns.org>
-References: <20220210184319.25009-1-treasure4paddy@gmail.com>
+        Mon, 14 Feb 2022 15:55:26 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AEE0FA200;
+        Mon, 14 Feb 2022 12:55:05 -0800 (PST)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EI4XRX026782;
+        Mon, 14 Feb 2022 20:38:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=RFRim46dVEX/HWt+vVkSniQsaEJBboiclm7GP8zWmHw=;
+ b=VZ0CpleugKrWQbvdpuPtrFjiSelxRc9LWlG0K17Gw4KEeu2Hzt+vL8Ofl0AvqPLPT5y+
+ +UV2ueeh1oUrN6uwOUSi2STFbjtq8AgVXVf48A9p9KKqZs9LLTeXL0yZAtFQPX1l3fXb
+ bBYhQjzIJPLAMi3fbXj3Pi3LUTOiDfey02p1JJhR6I9Ow1zl4KIhDUPrY1LALmagT2C5
+ IwpRABylm6vK4/nXffLId8lV2vyD9sV/bDXm/BEHy+QWnCaBVUBmwkzm+z0TarPrFhSD
+ 1tyKezr/fgzq8s4yxF2jZn4xK1ka4vxY+Pwba0l3lbGdv33zS+mJ0jlrGhPBFd/9oToM Og== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3e79213xs7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 20:38:31 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EKH5i1005260;
+        Mon, 14 Feb 2022 20:38:30 GMT
+Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
+        by ppma01wdc.us.ibm.com with ESMTP id 3e64ha8c37-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 20:38:30 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EKcTmI32178632
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 14 Feb 2022 20:38:29 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 18B49C6061;
+        Mon, 14 Feb 2022 20:38:29 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B4107C6057;
+        Mon, 14 Feb 2022 20:38:28 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 14 Feb 2022 20:38:28 +0000 (GMT)
+Message-ID: <3133af38-4d68-1f69-3610-f87fca640354@linux.ibm.com>
+Date:   Mon, 14 Feb 2022 15:38:28 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220210184319.25009-1-treasure4paddy@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
+ new template 'ima-ngv2'
+Content-Language: en-US
+To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
+Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-5-zohar@linux.ibm.com>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220211214310.119257-5-zohar@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: idWyenUAAO3QKt3lr44-h8I8jxofxECX
+X-Proofpoint-ORIG-GUID: idWyenUAAO3QKt3lr44-h8I8jxofxECX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 clxscore=1015 mlxscore=0 lowpriorityscore=0 spamscore=0
+ priorityscore=1501 phishscore=0 adultscore=0 impostorscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202140118
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
 
-> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> index 33f1106b4f99..a3f53f859e9d 100644
-> --- a/kernel/workqueue.c
-> +++ b/kernel/workqueue.c
-> @@ -3326,28 +3326,38 @@ EXPORT_SYMBOL(cancel_delayed_work_sync);
->   */
->  int schedule_on_each_cpu(work_func_t func)
->  {
-> -	int cpu;
->  	struct work_struct __percpu *works;
-> +	cpumask_var_t sched_cpumask;
-> +	int cpu, ret = 0;
->  
-> -	works = alloc_percpu(struct work_struct);
-> -	if (!works)
-> +	if (!alloc_cpumask_var(&sched_cpumask, GFP_KERNEL))
->  		return -ENOMEM;
->  
-> +	works = alloc_percpu(struct work_struct);
-> +	if (!works) {
-> +		ret = -ENOMEM;
-> +		goto free_cpumask;
-> +	}
+On 2/11/22 16:43, Mimi Zohar wrote:
+> In preparation to differentiate between regular IMA file hashes and
+> fs-verity's file digests, define a new template field named 'd-type'.
+> Define a new template named 'ima-ngv2', which includes the new 'd-type'
+> field.
+>
+> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> ---
+>   security/integrity/ima/ima_template.c     |  3 +++
+>   security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
+>   security/integrity/ima/ima_template_lib.h |  2 ++
+>   3 files changed, 18 insertions(+)
+>
+> diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+> index db1ad6d7a57f..b321342e5bee 100644
+> --- a/security/integrity/ima/ima_template.c
+> +++ b/security/integrity/ima/ima_template.c
+> @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
+>   static struct ima_template_desc builtin_templates[] = {
+>   	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
+>   	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
+> +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
+>   	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
+>   	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
+>   	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
+> @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
+>   	 .field_show = ima_show_template_digest_ng},
+>   	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
+>   	 .field_show = ima_show_template_string},
+> +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
+> +	 .field_show = ima_show_template_string},
+>   	{.field_id = "sig", .field_init = ima_eventsig_init,
+>   	 .field_show = ima_show_template_sig},
+>   	{.field_id = "buf", .field_init = ima_eventbuf_init,
+> diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
+> index 7155d17a3b75..a213579e825e 100644
+> --- a/security/integrity/ima/ima_template_lib.c
+> +++ b/security/integrity/ima/ima_template_lib.c
+> @@ -383,6 +383,19 @@ int ima_eventdigest_ng_init(struct ima_event_data *event_data,
+>   					   hash_algo, field_data);
+>   }
+>   
+> +/*
+> + * This function writes the digest type of an event.
+> + */
+> +int ima_eventdigest_type_init(struct ima_event_data *event_data,
+> +			      struct ima_field_data *field_data)
+> +{
+> +	static const char * const digest_type[] = {"ima"};
+
+This array makes sense with 6/8.
+
+Acked-by: Stefan Berger <stefanb@linux.ibm.com>
+
+
 > +
->  	cpus_read_lock();
->  
-> -	for_each_online_cpu(cpu) {
-> +	cpumask_copy(sched_cpumask, cpu_online_mask);
-> +	for_each_cpu_and(cpu, sched_cpumask, cpu_online_mask) {
-
-This definitely would need a comment explaining what's going on cuz it looks
-weird to be copying the cpumask which is supposed to stay stable due to the
-cpus_read_lock(). Given that it can only happen during early boot and the
-online cpus can only be expanding, maybe just add sth like:
-
-        if (early_during_boot) {
-                for_each_possible_cpu(cpu)
-                        INIT_WORK(per_cpu_ptr(works, cpu), func);
-        }
-
-BTW, who's calling schedule_on_each_cpu() that early during boot. It makes
-no sense to do this while the cpumasks can't be stabilized.
-
-Thanks.
-
--- 
-tejun
+> +	return ima_write_template_field_data(digest_type[0],
+> +					     strlen(digest_type[0]),
+> +					     DATA_FMT_STRING, field_data);
+> +}
+> +
+>   /*
+>    * This function writes the digest of the file which is expected to match the
+>    * digest contained in the file's appended signature.
+> diff --git a/security/integrity/ima/ima_template_lib.h b/security/integrity/ima/ima_template_lib.h
+> index c71f1de95753..539a5e354925 100644
+> --- a/security/integrity/ima/ima_template_lib.h
+> +++ b/security/integrity/ima/ima_template_lib.h
+> @@ -38,6 +38,8 @@ int ima_eventname_init(struct ima_event_data *event_data,
+>   		       struct ima_field_data *field_data);
+>   int ima_eventdigest_ng_init(struct ima_event_data *event_data,
+>   			    struct ima_field_data *field_data);
+> +int ima_eventdigest_type_init(struct ima_event_data *event_data,
+> +			      struct ima_field_data *field_data);
+>   int ima_eventdigest_modsig_init(struct ima_event_data *event_data,
+>   				struct ima_field_data *field_data);
+>   int ima_eventname_ng_init(struct ima_event_data *event_data,
