@@ -2,132 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBAB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2878C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346536AbiBNKTQ (ORCPT
+        id S1346569AbiBNKTU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:16 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44110 "EHLO
+        Mon, 14 Feb 2022 05:19:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:47964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347634AbiBNKQk (ORCPT
+        with ESMTP id S1347676AbiBNKQp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:40 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EBC8C7C8;
-        Mon, 14 Feb 2022 01:54:13 -0800 (PST)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21E803Wp016262;
-        Mon, 14 Feb 2022 09:53:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=DsNmjSHticmC1pAG1ErE4wFkPS88YyqO6VEKTMmKaQ0=;
- b=Uk65lxTnlWAxj3+A169KNOum6WcLbN7pI8oTmxisQHgzRUwSI4Fq7+WbsaYjLXEf+qx6
- 1cWJVvvr5EkAlH4LQDMjcGHPAhLr2Im0MeBpQHA4VnOtGwv+mpx6Lt1mLZ9qr/5IdMo5
- 6xNVeEE0VDNTowWNMTBKU90TmegLKGy9Di3eOg1q6xG1pnGepAY5/0anFR+xoWWjL2vv
- khVPzWphA/bJNrN0DPqhnE7dHzktwY/J4UlTCVPsrMn01PTmM5Bd/LlyQFM4aRJb7lBN
- GQRm7XFhG+HnxdekDmsHbGadUS4uYwE1ZDvsJ6TR7qqMggz3oLaceQVUDrm+gpx85cav ZA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e6thxf5vd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:53:22 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21E9p8fX007354;
-        Mon, 14 Feb 2022 09:53:21 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e6thxf5us-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:53:21 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21E9halr029231;
-        Mon, 14 Feb 2022 09:53:19 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e645jbnes-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 09:53:19 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21E9gvqf38994182
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 09:42:58 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2693D5204F;
-        Mon, 14 Feb 2022 09:53:16 +0000 (GMT)
-Received: from sig-9-145-84-135.uk.ibm.com (unknown [9.145.84.135])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 5EFB85206B;
-        Mon, 14 Feb 2022 09:53:14 +0000 (GMT)
-Message-ID: <6caad65b6229e8e01ce4e125a40f8c1ad2007d39.camel@linux.ibm.com>
-Subject: Re: [PATCH] parport_pc: Also enable driver for PCI systems
-From:   Niklas Schnelle <schnelle@linux.ibm.com>
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 14 Feb 2022 10:53:13 +0100
-In-Reply-To: <alpine.DEB.2.21.2202140917540.34636@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202122313460.34636@angie.orcam.me.uk>
-         <CAMuHMdW-utcFzCZTgqONjxs=U662nF0=aBQu7Zi7FBQouwiA3g@mail.gmail.com>
-         <e5ec2e3be2e70e690bd9112bd23297d05a2993e6.camel@linux.ibm.com>
-         <alpine.DEB.2.21.2202140917540.34636@angie.orcam.me.uk>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: sa9z-6Pqwjl221V-INKoEOYV98uYRQhM
-X-Proofpoint-ORIG-GUID: YQquexsItY657nTmxfIzzQy8ETd2_kD7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 clxscore=1015 mlxlogscore=874 priorityscore=1501
- malwarescore=0 phishscore=0 suspectscore=0 spamscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140058
+        Mon, 14 Feb 2022 05:16:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1898C7CA;
+        Mon, 14 Feb 2022 01:54:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A3DF4B80DFE;
+        Mon, 14 Feb 2022 09:54:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D327AC340E9;
+        Mon, 14 Feb 2022 09:54:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832451;
+        bh=JsS9Skp3vsyC7yBa+nz/KP8/8m1F36/h6fchRD4RKj4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EPeuNRTlI9oR0bvOl6j5X28YgKiqpNOcL6KpBoOL1TSEClbB+og134VSaze5CvVLa
+         lLuqGk6wSoKvsbRGgCfEcTJ0gV/O7oJyaG86rcS4HyVZTzfS9bxnwgaoHGI1LSZ/ze
+         81fQwWmrkV3VHXkGPCHa3I0TBdGKZCR+TKUsILj8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Aloni <dan.aloni@vastdata.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.16 019/203] NFSD: Fix the behavior of READ near OFFSET_MAX
+Date:   Mon, 14 Feb 2022 10:24:23 +0100
+Message-Id: <20220214092510.871536905@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-14 at 09:21 +0000, Maciej W. Rozycki wrote:
-> On Mon, 14 Feb 2022, Niklas Schnelle wrote:
-> 
-> > > > --- linux-macro.orig/drivers/parport/Kconfig
-> > > > +++ linux-macro/drivers/parport/Kconfig
-> > > > @@ -42,7 +42,7 @@ if PARPORT
-> > > > 
-> > > >  config PARPORT_PC
-> > > >         tristate "PC-style hardware"
-> > > > -       depends on ARCH_MIGHT_HAVE_PC_PARPORT
-> > > > +       depends on ARCH_MIGHT_HAVE_PC_PARPORT || PCI
-> > 
-> > This would allow selecting PARPORT_PC on s390 e.g. for allyesconfig and
-> > randconfig and like POWER9 we definitely do not support I/O port
-> > access.
-> 
->  I guess we'll have to stop it with !S390 then short-term.  I don't think 
-> an issue with s390 should be blocking all the other platforms that can use 
-> these drivers just fine.  I'll post v2 with that installed if you agree.
-> 
->   Maciej
+From: Chuck Lever <chuck.lever@oracle.com>
 
-Though a bit ugly that sounds fine by me. Thanks.
+commit 0cb4d23ae08c48f6bf3c29a8e5c4a74b8388b960 upstream.
+
+Dan Aloni reports:
+> Due to commit 8cfb9015280d ("NFS: Always provide aligned buffers to
+> the RPC read layers") on the client, a read of 0xfff is aligned up
+> to server rsize of 0x1000.
+>
+> As a result, in a test where the server has a file of size
+> 0x7fffffffffffffff, and the client tries to read from the offset
+> 0x7ffffffffffff000, the read causes loff_t overflow in the server
+> and it returns an NFS code of EINVAL to the client. The client as
+> a result indefinitely retries the request.
+
+The Linux NFS client does not handle NFS?ERR_INVAL, even though all
+NFS specifications permit servers to return that status code for a
+READ.
+
+Instead of NFS?ERR_INVAL, have out-of-range READ requests succeed
+and return a short result. Set the EOF flag in the result to prevent
+the client from retrying the READ request. This behavior appears to
+be consistent with Solaris NFS servers.
+
+Note that NFSv3 and NFSv4 use u64 offset values on the wire. These
+must be converted to loff_t internally before use -- an implicit
+type cast is not adequate for this purpose. Otherwise VFS checks
+against sb->s_maxbytes do not work properly.
+
+Reported-by: Dan Aloni <dan.aloni@vastdata.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/nfsd/nfs3proc.c |    8 ++++++--
+ fs/nfsd/nfs4proc.c |    8 ++++++--
+ fs/nfsd/nfs4xdr.c  |    8 ++------
+ 3 files changed, 14 insertions(+), 10 deletions(-)
+
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -150,13 +150,17 @@ nfsd3_proc_read(struct svc_rqst *rqstp)
+ 	unsigned int len;
+ 	int v;
+ 
+-	argp->count = min_t(u32, argp->count, max_blocksize);
+-
+ 	dprintk("nfsd: READ(3) %s %lu bytes at %Lu\n",
+ 				SVCFH_fmt(&argp->fh),
+ 				(unsigned long) argp->count,
+ 				(unsigned long long) argp->offset);
+ 
++	argp->count = min_t(u32, argp->count, max_blocksize);
++	if (argp->offset > (u64)OFFSET_MAX)
++		argp->offset = (u64)OFFSET_MAX;
++	if (argp->offset + argp->count > (u64)OFFSET_MAX)
++		argp->count = (u64)OFFSET_MAX - argp->offset;
++
+ 	v = 0;
+ 	len = argp->count;
+ 	resp->pages = rqstp->rq_next_page;
+--- a/fs/nfsd/nfs4proc.c
++++ b/fs/nfsd/nfs4proc.c
+@@ -782,12 +782,16 @@ nfsd4_read(struct svc_rqst *rqstp, struc
+ 	__be32 status;
+ 
+ 	read->rd_nf = NULL;
+-	if (read->rd_offset >= OFFSET_MAX)
+-		return nfserr_inval;
+ 
+ 	trace_nfsd_read_start(rqstp, &cstate->current_fh,
+ 			      read->rd_offset, read->rd_length);
+ 
++	read->rd_length = min_t(u32, read->rd_length, svc_max_payload(rqstp));
++	if (read->rd_offset > (u64)OFFSET_MAX)
++		read->rd_offset = (u64)OFFSET_MAX;
++	if (read->rd_offset + read->rd_length > (u64)OFFSET_MAX)
++		read->rd_length = (u64)OFFSET_MAX - read->rd_offset;
++
+ 	/*
+ 	 * If we do a zero copy read, then a client will see read data
+ 	 * that reflects the state of the file *after* performing the
+--- a/fs/nfsd/nfs4xdr.c
++++ b/fs/nfsd/nfs4xdr.c
+@@ -3997,10 +3997,8 @@ nfsd4_encode_read(struct nfsd4_compoundr
+ 	}
+ 	xdr_commit_encode(xdr);
+ 
+-	maxcount = svc_max_payload(resp->rqstp);
+-	maxcount = min_t(unsigned long, maxcount,
++	maxcount = min_t(unsigned long, read->rd_length,
+ 			 (xdr->buf->buflen - xdr->buf->len));
+-	maxcount = min_t(unsigned long, maxcount, read->rd_length);
+ 
+ 	if (file->f_op->splice_read &&
+ 	    test_bit(RQ_SPLICE_OK, &resp->rqstp->rq_flags))
+@@ -4837,10 +4835,8 @@ nfsd4_encode_read_plus(struct nfsd4_comp
+ 		return nfserr_resource;
+ 	xdr_commit_encode(xdr);
+ 
+-	maxcount = svc_max_payload(resp->rqstp);
+-	maxcount = min_t(unsigned long, maxcount,
++	maxcount = min_t(unsigned long, read->rd_length,
+ 			 (xdr->buf->buflen - xdr->buf->len));
+-	maxcount = min_t(unsigned long, maxcount, read->rd_length);
+ 	count    = maxcount;
+ 
+ 	eof = read->rd_offset >= i_size_read(file_inode(file));
 
 
