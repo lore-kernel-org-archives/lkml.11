@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09823C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546DCC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345562AbiBNKG0 (ORCPT
+        id S1345687AbiBNKGm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:06:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54308 "EHLO
+        Mon, 14 Feb 2022 05:06:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345455AbiBNKBj (ORCPT
+        with ESMTP id S1345741AbiBNKBx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:01:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3633F193E3;
-        Mon, 14 Feb 2022 01:47:52 -0800 (PST)
+        Mon, 14 Feb 2022 05:01:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8824F2019D;
+        Mon, 14 Feb 2022 01:48:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A85BEB80D83;
-        Mon, 14 Feb 2022 09:47:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD059C340E9;
-        Mon, 14 Feb 2022 09:47:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24CBA61296;
+        Mon, 14 Feb 2022 09:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ED9AC340E9;
+        Mon, 14 Feb 2022 09:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832069;
-        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
+        s=korg; t=1644832088;
+        bh=oS2lkPCp3aLbjy4x18EkIQmiDK4N9sOMmcJlDMqhD+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wx+/zjM4tkk+5etze377zscVjUbSgyQiy3Nmg+STxsKgtpzhNTe+Wy7/idgbwG+3e
-         HgnMEVdDBA3mKJCRp34mRcRtQMxi1AX3tg39My7tAt36JlVwRYUSCjxRVfMX1pr2pM
-         kuXZUz2jpDltlgZm4qhnjHb5S27pUzyr67zfnJPQ=
+        b=hXwf9ty7D0l5Yh4l1w4m6h+1wTuZxwIBa/yFUyt3dqMCPdGh+nWKvPfpCULaG1Chh
+         Z5M9zk9VdpWSzA/YwgxkSuMsHUn/qTnNlBylc6Vh4sA2K8LbApW6+XKA5H4SfvFpgH
+         qaAHQC2IlH2WZ5GQg4SOJMXqOK5pyu3CsR+K+krk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.15 070/172] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
-Date:   Mon, 14 Feb 2022 10:25:28 +0100
-Message-Id: <20220214092508.815036399@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 076/172] drm/amdgpu/display: change pipe policy for DCN 2.0
+Date:   Mon, 14 Feb 2022 10:25:34 +0100
+Message-Id: <20220214092509.031262694@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,41 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
+commit 6e7545ddb13416fd200e0b91c0acfd0404e2e27b upstream.
 
-Currently, SD card fails to mount due to the following pinctrl error:
+Fixes hangs on driver load with multiple displays on
+DCN 2.0 parts.
 
-[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
-[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
-[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
-[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
-
-Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
-is already been used by the mmc0-pins-fixup pinctrl group.
-
-With this change the rootfs can be mounted and the imx23-evk board can
-boot successfully.
-
-Cc: <stable@vger.kernel.org>
-Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Bug: https://bugzilla.kernel.org/show_bug.cgi?id=215511
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1877
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1886
+Fixes: ee2698cf79cc ("drm/amd/display: Changed pipe split policy to allow for multi-display pipe split")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx23-evk.dts |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/imx23-evk.dts
-+++ b/arch/arm/boot/dts/imx23-evk.dts
-@@ -79,7 +79,6 @@
- 						MX23_PAD_LCD_RESET__GPIO_1_18
- 						MX23_PAD_PWM3__GPIO_1_29
- 						MX23_PAD_PWM4__GPIO_1_30
--						MX23_PAD_SSP1_DETECT__SSP1_DETECT
- 					>;
- 					fsl,drive-strength = <MXS_DRIVE_4mA>;
- 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_resource.c
+@@ -1067,7 +1067,7 @@ static const struct dc_debug_options deb
+ 		.timing_trace = false,
+ 		.clock_trace = true,
+ 		.disable_pplib_clock_request = true,
+-		.pipe_split_policy = MPC_SPLIT_DYNAMIC,
++		.pipe_split_policy = MPC_SPLIT_AVOID_MULT_DISP,
+ 		.force_single_disp_pipe_split = false,
+ 		.disable_dcc = DCC_ENABLE,
+ 		.vsr_support = true,
 
 
