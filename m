@@ -2,130 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5707C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C741C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229844AbiBNUzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:55:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38394 "EHLO
+        id S229732AbiBNU4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:56:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiBNUzm (ORCPT
+        with ESMTP id S229647AbiBNU4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:55:42 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E4A4505D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:55:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=CXEqwpQFX6+wtg9ntMCowRKmtf3vYnKkWg75N3fDGBM=; b=TOoEE9VYw3HhWdMRJcdgkO5wX6
-        o+sRHoBbN6ayVTjwpsHWSjrhk4FldjYS++5hVexgMPIRaW3Rc3yLCTUMfcjhRAYRuguwlTRW9qEL/
-        8sfta/Zml0CQZxIFWQU/UdeIzeCRLncKrOF5a5V94MQFu6oJuhoMY9ir6Kzoq0ueepnFaXKCTB8bp
-        HQNYNFtobL1zCxIWNCYGhdYxiNHkUiUrJoTKB92R+5HYpzM7e3uaGIPeemS8Vi5z3IUTF8Hp/46lI
-        w3QqWsCbVEwks61fVA868Wnw5eBkuVESaiLe5h0OCxwvxN2hjY4R16Sk0LFKvcCoEOYjO19/Vhu0G
-        sMuGzPzQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJh8f-00DCih-2N; Mon, 14 Feb 2022 19:35:57 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D255D30003C;
-        Mon, 14 Feb 2022 20:35:54 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8F6012B524F1E; Mon, 14 Feb 2022 20:35:54 +0100 (CET)
-Date:   Mon, 14 Feb 2022 20:35:54 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Borislav Petkov <bp@suse.de>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        zhangqiao22@huawei.com, dietmar.eggemann@arm.com
-Subject: Re: [GIT PULL] sched/urgent for 5.17-rc4
-Message-ID: <YgqvGuQUF1BdpAl0@hirez.programming.kicks-ass.net>
-References: <Ygj7feK+vdtPw6zj@zn.tnic>
- <CAHk-=wiHUWHHcPLCvyXQKf2wbL3L1SOQSGVuCdf-py6QZGnuqQ@mail.gmail.com>
- <YgoWoh6pIzlsQx6d@hirez.programming.kicks-ass.net>
- <YgoeCbwj5mbCR0qA@hirez.programming.kicks-ass.net>
- <YgqquDnQe3SihgJU@slm.duckdns.org>
+        Mon, 14 Feb 2022 15:56:13 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1519DBD16
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:55:48 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id a42so8600292ljq.13
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:55:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0OkHBiaZEL4gbI88uAFjC4BevdegDkSw2mEVoE6XUQM=;
+        b=o/c8WGQ7vgEvxtzZSzEGkFFVcPUiHrl0G51Eg5NUiYHpcN3AIktYX1CzP78vLb2HCv
+         LyiqVlMYdkmHuBOpsyo/3V9Cj1FG5i2UtaP2pa4VVE7DPWVR0qrTIeuZJzSShHz31KtV
+         aG2q2Q+V1pIZOhlqrMm86Ieu10aJTAtNG3yAp85NUacZ5B9enUnoF98FgCEJuYwGuOR1
+         t/YcS4wqhUQgpObHz7ewBESmzKaLyvkXbT7E+XnLM/nDVEbqTumoE8kp9c32zg+fZ/Cm
+         kD09NV6hr9tEchdA4EsbPzDQ4YuOHJVTlkhoDxtAqfFcgQJzv29t30e/mp0RRlaVif14
+         p9DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0OkHBiaZEL4gbI88uAFjC4BevdegDkSw2mEVoE6XUQM=;
+        b=NCGG2unQE9gh/4QZ03pVLvg7V3vpmmuJcjwvV/Wx1KdmubQrg7PBaOPW4UvIGYtvhN
+         sCXjaixEsmm+CGTFgghQxs94w22/QxHDmSrae9oKJPFAojUsfLMXq2Dx9WJ1r7Q5PAR0
+         IwRdfQRCtI+sPKAjS7P97Uw455SAlRc2Z7GAgsKLZH21vo28vI6wB5IsjjJw1eSHMMrh
+         9a3PwUqmY35klsDh8uTWgRGVNAEDS3/IkLdELzC1P1c4vzU9EaoqJGKRClMhkR1/GNGH
+         Glllw/2LmFT9Ndj1cdKtYcnLp6ZvrKiGLp/MsXxTtFSsbd691URaOd6TZ8YTTWxSgKtX
+         WJ6A==
+X-Gm-Message-State: AOAM531gMRmvn6ey0yWhrNOjYyi+sdzPDzXUU+sEeIlmFBsFJgxbZ6tm
+        5CV/wRXQiH7U4SgFoH6Mu1fNMQH1KgHDbzFDdsUvZT4q/Ag=
+X-Google-Smtp-Source: ABdhPJx8lRnGEvo2BKjuadxx0kxXF47MC+omvIOvGqqY/xfT6A0YxtvN/5OElk6DOL9teF9tVH9vVeya6dhvDDCanxQ=
+X-Received: by 2002:a05:6512:139e:: with SMTP id p30mr572513lfa.502.1644869981206;
+ Mon, 14 Feb 2022 12:19:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YgqquDnQe3SihgJU@slm.duckdns.org>
+References: <20220211161831.3493782-1-tjmercier@google.com>
+ <20220211161831.3493782-7-tjmercier@google.com> <Ygdfe3XSvN8iFuUc@kroah.com>
+ <CAHRSSEwoJ67Sr_=gtSaP91cbpjJjZdOo57cfAhv3r-ye0da7PA@mail.gmail.com> <CAJuCfpHf=Ewm0e9kguY3MEGVHU_cyviVXByi0oQtq7kTtOOD=A@mail.gmail.com>
+In-Reply-To: <CAJuCfpHf=Ewm0e9kguY3MEGVHU_cyviVXByi0oQtq7kTtOOD=A@mail.gmail.com>
+From:   Todd Kjos <tkjos@google.com>
+Date:   Mon, 14 Feb 2022 12:19:28 -0800
+Message-ID: <CAHRSSEzsn-EVKXTRfmpbPR9u0wNpdvdZoX64Tm_mB1DQMRSUPQ@mail.gmail.com>
+Subject: Re: [RFC v2 6/6] android: binder: Add a buffer flag to relinquish
+ ownership of fds
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "T.J. Mercier" <tjmercier@google.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
+        DRI mailing list <dri-devel@lists.freedesktop.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-media <linux-media@vger.kernel.org>,
+        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
+        <linaro-mm-sig@lists.linaro.org>,
+        cgroups mailinglist <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 09:17:12AM -1000, Tejun Heo wrote:
-> Hello, Peter.
-> 
-> On Mon, Feb 14, 2022 at 10:16:57AM +0100, Peter Zijlstra wrote:
-> > diff --git a/kernel/fork.c b/kernel/fork.c
-> > index d75a528f7b21..05faebafe2b5 100644
-> > --- a/kernel/fork.c
-> > +++ b/kernel/fork.c
-> > @@ -2266,6 +2266,13 @@ static __latent_entropy struct task_struct *copy_process(
-> >  	if (retval)
-> >  		goto bad_fork_put_pidfd;
-> >  
-> > +	/*
-> > +	 * Now that the cgroups are pinned, re-clone the parent cgroup and put
-> > +	 * the new task on the correct runqueue. All this *before* the task
-> > +	 * becomes visible.
-> > +	 */
-> > +	sched_cgroup_fork(p, args);
-> 
-> Would it be less confusing to comment that this isn't ->can_fork() because
-> scheduler task_group needs to be initialized for autogroup even when cgroup
-> is disabled and maybe name it sched_cgroup_can_fork() even if it always
-> succeeds?
+On Mon, Feb 14, 2022 at 11:29 AM Suren Baghdasaryan <surenb@google.com> wro=
+te:
+>
+> On Mon, Feb 14, 2022 at 10:33 AM Todd Kjos <tkjos@google.com> wrote:
+> >
+> > On Fri, Feb 11, 2022 at 11:19 PM Greg Kroah-Hartman
+> > <gregkh@linuxfoundation.org> wrote:
+> > >
+> > > On Fri, Feb 11, 2022 at 04:18:29PM +0000, T.J. Mercier wrote:
+> >
+> > Title: "android: binder: Add a buffer flag to relinquish ownership of f=
+ds"
+> >
+> > Please drop the "android:" from the title.
+> >
+> > > > This patch introduces a buffer flag BINDER_BUFFER_FLAG_SENDER_NO_NE=
+ED
+> > > > that a process sending an fd array to another process over binder I=
+PC
+> > > > can set to relinquish ownership of the fds being sent for memory
+> > > > accounting purposes. If the flag is found to be set during the fd a=
+rray
+> > > > translation and the fd is for a DMA-BUF, the buffer is uncharged fr=
+om
+> > > > the sender's cgroup and charged to the receiving process's cgroup
+> > > > instead.
+> > > >
+> > > > It is up to the sending process to ensure that it closes the fds
+> > > > regardless of whether the transfer failed or succeeded.
+> > > >
+> > > > Most graphics shared memory allocations in Android are done by the
+> > > > graphics allocator HAL process. On requests from clients, the HAL p=
+rocess
+> > > > allocates memory and sends the fds to the clients over binder IPC.
+> > > > The graphics allocator HAL will not retain any references to the
+> > > > buffers. When the HAL sets the BINDER_BUFFER_FLAG_SENDER_NO_NEED fo=
+r fd
+> > > > arrays holding DMA-BUF fds, the gpu cgroup controller will be able =
+to
+> > > > correctly charge the buffers to the client processes instead of the
+> > > > graphics allocator HAL.
+> > > >
+> > > > From: Hridya Valsaraju <hridya@google.com>
+> > > > Signed-off-by: Hridya Valsaraju <hridya@google.com>
+> > > > Co-developed-by: T.J. Mercier <tjmercier@google.com>
+> > > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
+> > > > ---
+> > > > changes in v2
+> > > > - Move dma-buf cgroup charge transfer from a dma_buf_op defined by =
+every
+> > > > heap to a single dma-buf function for all heaps per Daniel Vetter a=
+nd
+> > > > Christian K=C3=B6nig.
+> > > >
+> > > >  drivers/android/binder.c            | 26 +++++++++++++++++++++++++=
++
+> > > >  include/uapi/linux/android/binder.h |  1 +
+> > > >  2 files changed, 27 insertions(+)
+> > > >
+> > > > diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+> > > > index 8351c5638880..f50d88ded188 100644
+> > > > --- a/drivers/android/binder.c
+> > > > +++ b/drivers/android/binder.c
+> > > > @@ -42,6 +42,7 @@
+> > > >
+> > > >  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> > > >
+> > > > +#include <linux/dma-buf.h>
+> > > >  #include <linux/fdtable.h>
+> > > >  #include <linux/file.h>
+> > > >  #include <linux/freezer.h>
+> > > > @@ -2482,8 +2483,10 @@ static int binder_translate_fd_array(struct =
+list_head *pf_head,
+> > > >  {
+> > > >       binder_size_t fdi, fd_buf_size;
+> > > >       binder_size_t fda_offset;
+> > > > +     bool transfer_gpu_charge =3D false;
+> > > >       const void __user *sender_ufda_base;
+> > > >       struct binder_proc *proc =3D thread->proc;
+> > > > +     struct binder_proc *target_proc =3D t->to_proc;
+> > > >       int ret;
+> > > >
+> > > >       fd_buf_size =3D sizeof(u32) * fda->num_fds;
+> > > > @@ -2521,8 +2524,15 @@ static int binder_translate_fd_array(struct =
+list_head *pf_head,
+> > > >       if (ret)
+> > > >               return ret;
+> > > >
+> > > > +     if (IS_ENABLED(CONFIG_CGROUP_GPU) &&
+> > > > +             parent->flags & BINDER_BUFFER_FLAG_SENDER_NO_NEED)
+> > > > +             transfer_gpu_charge =3D true;
+> > > > +
+> > > >       for (fdi =3D 0; fdi < fda->num_fds; fdi++) {
+> > > >               u32 fd;
+> > > > +             struct dma_buf *dmabuf;
+> > > > +             struct gpucg *gpucg;
+> > > > +
+> > > >               binder_size_t offset =3D fda_offset + fdi * sizeof(fd=
+);
+> > > >               binder_size_t sender_uoffset =3D fdi * sizeof(fd);
+> > > >
+> > > > @@ -2532,6 +2542,22 @@ static int binder_translate_fd_array(struct =
+list_head *pf_head,
+> > > >                                                 in_reply_to);
+> > > >               if (ret)
+> > > >                       return ret > 0 ? -EINVAL : ret;
+> > > > +
+> > > > +             if (!transfer_gpu_charge)
+> > > > +                     continue;
+> > > > +
+> > > > +             dmabuf =3D dma_buf_get(fd);
+> > > > +             if (IS_ERR(dmabuf))
+> > > > +                     continue;
+> > > > +
+> > > > +             gpucg =3D gpucg_get(target_proc->tsk);
+> > > > +             ret =3D dma_buf_charge_transfer(dmabuf, gpucg);
+> > > > +             if (ret) {
+> > > > +                     pr_warn("%d:%d Unable to transfer DMA-BUF fd =
+charge to %d",
+> > > > +                             proc->pid, thread->pid, target_proc->=
+pid);
+> > > > +                     gpucg_put(gpucg);
+> > > > +             }
+> > > > +             dma_buf_put(dmabuf);
+> >
+> > Since we are creating a new gpu cgroup abstraction, couldn't this
+> > "transfer" be done in userspace by the target instead of in the kernel
+> > driver? Then this patch would reduce to just a flag on the buffer
+> > object.
+>
+> Are you suggesting to have a userspace accessible cgroup interface for
+> transferring buffer charges and the target process to use that
+> interface for requesting the buffer to be charged to its cgroup?
 
-So there's two things that need doing; the re-cloning of the task_group
-thing, but also calling of __set_task_cpu() which sets up the proper
-runqueue links.
+Well, I'm asking why we need to do these cgroup-ish actions in the
+kernel when it seems more natural to do it in userspace.
 
-The first is CGroup only, and *could* in theory be done in ->can_fork(),
-but the second needs to be done unconditionally, and it doesn't make
-much sense to split this up.
+> I'm worried about the case when the target process does not request
+> the transfer after receiving the buffer with this flag set. The charge
+> would stay with the wrong process and accounting will be invalid.
 
-I actually tried, but it made the patch bigger/uglier -- but maybe I
-didn't try hard enough.
+I suspect this would be implemented in libbinder wherever the fd array
+object is handled, so it wouldn't require changes to every process.
 
-> > +void sched_cgroup_fork(struct task_struct *p, struct kernel_clone_args *kargs)
-> >  {
-> >  	unsigned long flags;
-> > -#ifdef CONFIG_CGROUP_SCHED
-> > -	struct task_group *tg;
-> > -#endif
-> >  
-> > +	/*
-> > +	 * Because we're not yet on the pid-hash, p->pi_lock isn't strictly
-> > +	 * required yet, but lockdep gets upset if rules are violated.
-> > +	 */
-> >  	raw_spin_lock_irqsave(&p->pi_lock, flags);
-> >  #ifdef CONFIG_CGROUP_SCHED
-> > -	tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
-> > -			  struct task_group, css);
-> > -	p->sched_task_group = autogroup_task_group(p, tg);
-> > +	if (1) {
-> > +		struct task_group *tg;
-> > +		tg = container_of(kargs->cset->subsys[cpu_cgrp_id],
-> > +				  struct task_group, css);
-> > +		tg = autogroup_task_group(p, tg);
-> > +		p->sched_task_group = autogroup_task_group(p, tg);
-> > +	}
-> 
-> I suppose the double autogroup_task_group() call is unintentional?
+>
+> Technically, since the proposed cgroup supports charge transfer from
+> the very beginning, the userspace can check if the cgroup is mounted
+> and if so then it knows this feature is supported.
 
-Yeah, that's a silly fail. Will ammend.
+Has some userspace code for this been written? I'd like to be
+convinced that these changes need to be in the binder kernel driver
+instead of in userspace.
 
-> Otherwise, looks good to me. The only requirement from cgroup side is that
-> the membership should be initialized between ->can_fork() and ->fork()
-> inclusively, and sans autogroup this would have been done as a part of
-> ->can_fork() so the proposed change makes sense to me.
-
-Thanks! I suppose I should go write me a Changelog then... assuming it
-actually works :-)
+>
+> > This also solves the issue that Greg brought up about
+> > userspace needing to know whether the kernel implements this feature
+> > (older kernel running with newer userspace). I think we could just
+> > reserve some flags for userspace to use (and since those flags are
+> > "reserved" for older kernels, this would enable this feature even for
+> > old kernels)
+> >
+> > > >       }
+> > > >       return 0;
+> > > >  }
+> > > > diff --git a/include/uapi/linux/android/binder.h b/include/uapi/lin=
+ux/android/binder.h
+> > > > index 3246f2c74696..169fd5069a1a 100644
+> > > > --- a/include/uapi/linux/android/binder.h
+> > > > +++ b/include/uapi/linux/android/binder.h
+> > > > @@ -137,6 +137,7 @@ struct binder_buffer_object {
+> > > >
+> > > >  enum {
+> > > >       BINDER_BUFFER_FLAG_HAS_PARENT =3D 0x01,
+> > > > +     BINDER_BUFFER_FLAG_SENDER_NO_NEED =3D 0x02,
+> > > >  };
+> > > >
+> > > >  /* struct binder_fd_array_object - object describing an array of f=
+ds in a buffer
+> > > > --
+> > > > 2.35.1.265.g69c8d7142f-goog
+> > > >
+> > >
+> > > How does userspace know that binder supports this new flag?  And wher=
+e
+> > > is the userspace test for this new feature?  Isn't there a binder tes=
+t
+> > > framework somewhere?
+> > >
+> > > thanks,
+> > >
+> > > greg k-h
