@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08C33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244791AbiBNJmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:42:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33930 "EHLO
+        id S244801AbiBNJmn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:42:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244971AbiBNJlC (ORCPT
+        with ESMTP id S244972AbiBNJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:41:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC5A65797;
-        Mon, 14 Feb 2022 01:36:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C25E65798;
+        Mon, 14 Feb 2022 01:36:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7C16B80DA9;
-        Mon, 14 Feb 2022 09:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 025F1C340E9;
-        Mon, 14 Feb 2022 09:36:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0CE6B80DCB;
+        Mon, 14 Feb 2022 09:36:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E292CC340E9;
+        Mon, 14 Feb 2022 09:36:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831386;
-        bh=3QIS+JduvWa+345oQLZSG4xFS4uZ8ucq3Rru6CK+hIU=;
+        s=korg; t=1644831389;
+        bh=KvmdLp6G040VjpO7IuJ2RHy/LaQdJtkxJmJzfRYcEvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eh/jsido6PGfTh3c0XpeqwIEC+8V7qsi0pHtVVYOoH3Ixe798U3/pWVzcdAKKS0dM
-         D089fsSQo7IzlInSNd0SzDdzLar1+IVIGCxJ3/5oq3M7hnXwfw2FMi22xdDQ1nwttr
-         z7Fk+pOceF6PGOcICrdAZdU9Bt+j36ca9GMzwAx0=
+        b=Zh9mOo21hEEXkHujLWWQboa3dWxB8bWP9cgYzPB7imkL+jo5Xv1yWrhrIPdu3qnyW
+         3HdPpAnW1WJh75pUPk/YNCEoP6KMn1w/gu5DOMvd4ZP6o72/CEuEVr6VkEi/LkbJxf
+         go14xfEyWxOsDMQqHl9GO7neqGeB86OAlkdrlUXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
-        Hannes Reinecke <hare@suse.de>, Christoph Hellwig <hch@lst.de>
-Subject: [PATCH 5.4 30/71] nvme-tcp: fix bogus request completion when failing to send AER
-Date:   Mon, 14 Feb 2022 10:25:58 +0100
-Message-Id: <20220214092453.029832946@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Petlan <mpetlan@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.4 31/71] ACPI/IORT: Check node revision for PMCG resources
+Date:   Mon, 14 Feb 2022 10:25:59 +0100
+Message-Id: <20220214092453.067325044@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -48,42 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sagi Grimberg <sagi@grimberg.me>
+From: Robin Murphy <robin.murphy@arm.com>
 
-commit 63573807b27e0faf8065a28b1bbe1cbfb23c0130 upstream.
+commit da5fb9e1ad3fbf632dce735f1bdad257ca528499 upstream.
 
-AER is not backed by a real request, hence we should not incorrectly
-assume that when failing to send a nvme command, it is a normal request
-but rather check if this is an aer and if so complete the aer (similar
-to the normal completion path).
+The original version of the IORT PMCG definition had an oversight
+wherein there was no way to describe the second register page for an
+implementation using the recommended RELOC_CTRS feature. Although the
+spec was fixed, and the final patches merged to ACPICA and Linux written
+against the new version, it seems that some old firmware based on the
+original revision has survived and turned up in the wild.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Add a check for the original PMCG definition, and avoid filling in the
+second memory resource with nonsense if so. Otherwise it is likely that
+something horrible will happen when the PMCG driver attempts to probe.
+
+Reported-by: Michael Petlan <mpetlan@redhat.com>
+Fixes: 24e516049360 ("ACPI/IORT: Add support for PMCG")
+Cc: <stable@vger.kernel.org> # 5.2.x
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/75628ae41c257fb73588f7bf1c4459160e04be2b.1643916258.git.robin.murphy@arm.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/tcp.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/acpi/arm64/iort.c |   14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
---- a/drivers/nvme/host/tcp.c
-+++ b/drivers/nvme/host/tcp.c
-@@ -840,7 +840,15 @@ static inline void nvme_tcp_done_send_re
- 
- static void nvme_tcp_fail_request(struct nvme_tcp_request *req)
- {
--	nvme_tcp_end_request(blk_mq_rq_from_pdu(req), NVME_SC_HOST_PATH_ERROR);
-+	if (nvme_tcp_async_req(req)) {
-+		union nvme_result res = {};
-+
-+		nvme_complete_async_event(&req->queue->ctrl->ctrl,
-+				cpu_to_le16(NVME_SC_HOST_PATH_ERROR), &res);
-+	} else {
-+		nvme_tcp_end_request(blk_mq_rq_from_pdu(req),
-+				NVME_SC_HOST_PATH_ERROR);
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1373,9 +1373,17 @@ static void __init arm_smmu_v3_pmcg_init
+ 	res[0].start = pmcg->page0_base_address;
+ 	res[0].end = pmcg->page0_base_address + SZ_4K - 1;
+ 	res[0].flags = IORESOURCE_MEM;
+-	res[1].start = pmcg->page1_base_address;
+-	res[1].end = pmcg->page1_base_address + SZ_4K - 1;
+-	res[1].flags = IORESOURCE_MEM;
++	/*
++	 * The initial version in DEN0049C lacked a way to describe register
++	 * page 1, which makes it broken for most PMCG implementations; in
++	 * that case, just let the driver fail gracefully if it expects to
++	 * find a second memory resource.
++	 */
++	if (node->revision > 0) {
++		res[1].start = pmcg->page1_base_address;
++		res[1].end = pmcg->page1_base_address + SZ_4K - 1;
++		res[1].flags = IORESOURCE_MEM;
 +	}
- }
  
- static int nvme_tcp_try_send_data(struct nvme_tcp_request *req)
+ 	if (pmcg->overflow_gsiv)
+ 		acpi_iort_register_irq(pmcg->overflow_gsiv, "overflow",
 
 
