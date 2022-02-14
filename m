@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92473C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E723C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236375AbiBNKm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:42:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60118 "EHLO
+        id S236860AbiBNKmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:42:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348913AbiBNKkH (ORCPT
+        with ESMTP id S1348912AbiBNKkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:40:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00585A996C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0ECD41318;
         Mon, 14 Feb 2022 02:04:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5760660C71;
-        Mon, 14 Feb 2022 10:03:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F72FC340EF;
-        Mon, 14 Feb 2022 10:03:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF9B0B80DCA;
+        Mon, 14 Feb 2022 10:03:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9372C340EF;
+        Mon, 14 Feb 2022 10:03:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644833018;
-        bh=Iba0bhVWbv65LEtyimLjewsI7MTZ4cgTdh9iuTXjT8U=;
+        s=korg; t=1644833015;
+        bh=QUkw2cL9AMbwzEWly0EXBWLsADd+Rau9WRrGJKiibKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oyP3XmsHY84Vfsvr+fcDybtyZ7DlfOYi1p47V5kxOgRyQekX0Pbk9Tst9bluZJXi0
-         RDBHNJenT4xQ3gs6UNZUMcpcHtx9b34m3iYNylr+UakGxwfE2w3hVUmTIEgMf8H87A
-         pLjv0k65+nvegBQhrAIcpsQtd7Vdr4JFKW/sbpS0=
+        b=XAhEvelr+6eJEMxi8JiMCRmfojz3cGjihhrj7VDVdOEaYyQk5xxAAWxqyf21TkrGT
+         bkoDEiUjQPN51xsi4ISAf8XXxoVSBpkWACfT4z4Zn2aH1j/8Sen/aLtzmzXODf/YWu
+         8XCajxR9HLM0A90kkjS4cnDfsCDXhI3nf/dUWeKM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, "Ewan D. Milne" <emilne@redhat.com>,
         James Smart <jsmart2021@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 197/203] scsi: lpfc: Reduce log messages seen after firmware download
-Date:   Mon, 14 Feb 2022 10:27:21 +0100
-Message-Id: <20220214092517.074843878@linuxfoundation.org>
+Subject: [PATCH 5.16 196/203] scsi: lpfc: Remove NVMe support if kernel has NVME_FC disabled
+Date:   Mon, 14 Feb 2022 10:27:20 +0100
+Message-Id: <20220214092517.044600427@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,60 +51,66 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: James Smart <jsmart2021@gmail.com>
 
-commit 5852ed2a6a39c862c8a3fdf646e1f4e01b91d710 upstream.
+commit c80b27cfd93ba9f5161383f798414609e84729f3 upstream.
 
-Messages around firmware download were incorrectly tagged as being related
-to discovery trace events. Thus, firmware download status ended up dumping
-the trace log as well as the firmware update message. As there were a
-couple of log messages in this state, the trace log was dumped multiple
-times.
+The driver is initiating NVMe PRLIs to determine device NVMe support.  This
+should not be occurring if CONFIG_NVME_FC support is disabled.
 
-Resolve this by converting from trace events to SLI events.
+Correct this by changing the default value for FC4 support. Currently it
+defaults to FCP and NVMe. With change, when NVME_FC support is not enabled
+in the kernel, the default value is just FCP.
 
-Link: https://lore.kernel.org/r/20220207180442.72836-1-jsmart2021@gmail.com
+Link: https://lore.kernel.org/r/20220207180516.73052-1-jsmart2021@gmail.com
 Reviewed-by: Ewan D. Milne <emilne@redhat.com>
 Signed-off-by: James Smart <jsmart2021@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_init.c |    2 +-
- drivers/scsi/lpfc/lpfc_sli.c  |    8 +++++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/scsi/lpfc/lpfc.h      |   13 ++++++++++---
+ drivers/scsi/lpfc/lpfc_attr.c |    4 ++--
+ 2 files changed, 12 insertions(+), 5 deletions(-)
 
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -2104,7 +2104,7 @@ lpfc_handle_eratt_s4(struct lpfc_hba *ph
- 		}
- 		if (reg_err1 == SLIPORT_ERR1_REG_ERR_CODE_2 &&
- 		    reg_err2 == SLIPORT_ERR2_REG_FW_RESTART) {
--			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
-+			lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
- 					"3143 Port Down: Firmware Update "
- 					"Detected\n");
- 			en_rn_msg = false;
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -13365,6 +13365,7 @@ lpfc_sli4_eratt_read(struct lpfc_hba *ph
- 	uint32_t uerr_sta_hi, uerr_sta_lo;
- 	uint32_t if_type, portsmphr;
- 	struct lpfc_register portstat_reg;
-+	u32 logmask;
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -1165,6 +1165,16 @@ struct lpfc_hba {
+ 	uint32_t cfg_hostmem_hgp;
+ 	uint32_t cfg_log_verbose;
+ 	uint32_t cfg_enable_fc4_type;
++#define LPFC_ENABLE_FCP  1
++#define LPFC_ENABLE_NVME 2
++#define LPFC_ENABLE_BOTH 3
++#if (IS_ENABLED(CONFIG_NVME_FC))
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_BOTH
++#else
++#define LPFC_MAX_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#define LPFC_DEF_ENBL_FC4_TYPE LPFC_ENABLE_FCP
++#endif
+ 	uint32_t cfg_aer_support;
+ 	uint32_t cfg_sriov_nr_virtfn;
+ 	uint32_t cfg_request_firmware_upgrade;
+@@ -1186,9 +1196,6 @@ struct lpfc_hba {
+ 	uint32_t cfg_ras_fwlog_func;
+ 	uint32_t cfg_enable_bbcr;	/* Enable BB Credit Recovery */
+ 	uint32_t cfg_enable_dpp;	/* Enable Direct Packet Push */
+-#define LPFC_ENABLE_FCP  1
+-#define LPFC_ENABLE_NVME 2
+-#define LPFC_ENABLE_BOTH 3
+ 	uint32_t cfg_enable_pbde;
+ 	uint32_t cfg_enable_mi;
+ 	struct nvmet_fc_target_port *targetport;
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -3978,8 +3978,8 @@ LPFC_ATTR_R(nvmet_mrq_post,
+  *                    3 - register both FCP and NVME
+  * Supported values are [1,3]. Default value is 3
+  */
+-LPFC_ATTR_R(enable_fc4_type, LPFC_ENABLE_BOTH,
+-	    LPFC_ENABLE_FCP, LPFC_ENABLE_BOTH,
++LPFC_ATTR_R(enable_fc4_type, LPFC_DEF_ENBL_FC4_TYPE,
++	    LPFC_ENABLE_FCP, LPFC_MAX_ENBL_FC4_TYPE,
+ 	    "Enable FC4 Protocol support - FCP / NVME");
  
- 	/*
- 	 * For now, use the SLI4 device internal unrecoverable error
-@@ -13415,7 +13416,12 @@ lpfc_sli4_eratt_read(struct lpfc_hba *ph
- 				readl(phba->sli4_hba.u.if_type2.ERR1regaddr);
- 			phba->work_status[1] =
- 				readl(phba->sli4_hba.u.if_type2.ERR2regaddr);
--			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
-+			logmask = LOG_TRACE_EVENT;
-+			if (phba->work_status[0] ==
-+				SLIPORT_ERR1_REG_ERR_CODE_2 &&
-+			    phba->work_status[1] == SLIPORT_ERR2_REG_FW_RESTART)
-+				logmask = LOG_SLI;
-+			lpfc_printf_log(phba, KERN_ERR, logmask,
- 					"2885 Port Status Event: "
- 					"port status reg 0x%x, "
- 					"port smphr reg 0x%x, "
+ /*
 
 
