@@ -2,88 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57EBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F03AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344867AbiBNLpf (ORCPT
+        id S1352793AbiBNLqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:45:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45246 "EHLO
+        Mon, 14 Feb 2022 06:46:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352634AbiBNLom (ORCPT
+        with ESMTP id S1352730AbiBNLpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:44:42 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE687C52;
-        Mon, 14 Feb 2022 03:39:07 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:39:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644838746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DXbq0tADiA1e8237ZJnCsYfJ4qqjQmGrNdy9V8g+GD8=;
-        b=MIiAp1avZ4WyMS8mF/E2GKZM9OsesUa4wuZ+ixeqoeujTMMLvtQ0AQPX/wyEHQB9gFL3gf
-        YrYeTAd/klUck2UDc6craKnXFy+Sm76fccwAo6r/MBtVZ/KMWhW0AZeofYEASqVkXjQmo6
-        +xljGrriNUzLFvHucdjvoSnz6z3fIEzMOG2UhFTDjmIkRiKIcvkPqk3ED35MxsMUn1aJQo
-        IZQUlSIEZ87Wy4TFSV7sYKZnOShkGI+wDiG7h0Cm5jiOwUAq0iYkK0GUkQ9kWR+hKG/uGw
-        Bi+Acb7TuHb0o5szOLG1g1T1ncTjS22SOm8XxeNmXWxwlXt0DS8mKPL2YqBlyQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644838746;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DXbq0tADiA1e8237ZJnCsYfJ4qqjQmGrNdy9V8g+GD8=;
-        b=7xLGTC0gx0WKqfra9wO5jaCeW5r8AGDWDARdETFncnR1wpChCuFG6cVivCIFOCHkRf8szn
-        bg4+mhZsjdCMqCCQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH 2/8] kernel/fork: Duplicate task_struct before stack
- allocation.
-Message-ID: <Ygo/WWSQHFkGn095@linutronix.de>
-References: <20220125152652.1963111-1-bigeasy@linutronix.de>
- <20220125152652.1963111-3-bigeasy@linutronix.de>
- <8340d413-4951-5e62-ef5f-f396523edac7@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8340d413-4951-5e62-ef5f-f396523edac7@kernel.org>
+        Mon, 14 Feb 2022 06:45:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9779FD5
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:41:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F54661230
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4C3C340E9;
+        Mon, 14 Feb 2022 11:41:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644838877;
+        bh=3BY0+oBaGeuz3GbarqpFktWz85tdWsJYhePtRlV0rWY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nqbpe/MwLiK0hjcHwjC4tZ3oLrBfkYvzpNDqStYjFR0Q7IQfDUy2t4hCB2UiMj10t
+         /dvm2YnhufyVgqGEOLrb21tdRZrkik3idw/fw3wGTl6RYoXvuk04T/WQrmVuhldrBy
+         A82KnXGws7miSkRqw8ReUHeEXIFgzbyVD0n9PLLr9RvI37oz/k2JmBeGlARlA41g8A
+         NC+38QGNalX4LCz6HaASSQlCBL6gwJtLeCz/ICG6MFaPbeUbpAZPbABYrbWFgfD0lO
+         TNquDn9PmmhGQ0tpnhF8d0Bi4sUzc8DMbax8hepXrHpUOw4ZDvo/DQPMMuMm/meM6G
+         tENKayKzRNkFg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nJZjH-007l6H-Bh; Mon, 14 Feb 2022 11:41:15 +0000
+Date:   Mon, 14 Feb 2022 11:41:14 +0000
+Message-ID: <87mtit4qw5.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
+        surenb@google.com, kernel-team@android.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Walbran <qwandor@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu
+Subject: Re: [PATCH 0/7] KVM: arm64: Hypervisor stack enhancements
+In-Reply-To: <20220210224220.4076151-1-kaleshsingh@google.com>
+References: <20220210224220.4076151-1-kaleshsingh@google.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: kaleshsingh@google.com, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, catalin.marinas@arm.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, ardb@kernel.org, mark.rutland@arm.com, pasha.tatashin@soleen.com, joey.gouly@arm.com, pcc@google.com, qwandor@google.com, ascull@google.com, pbonzini@redhat.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-11 15:42:38 [-0800], Andy Lutomirski wrote:
-> On 1/25/22 07:26, Sebastian Andrzej Siewior wrote:
-> > alloc_thread_stack_node() already populates the task_struct::stack
-> > member except on IA64. The stack pointer is saved and populated again
-> > because IA64 needs it and arch_dup_task_struct() overwrites it.
+On Thu, 10 Feb 2022 22:41:41 +0000,
+Kalesh Singh <kaleshsingh@google.com> wrote:
 > 
-> I understand the problem, I think.
+> This series is based on v5.17-rc3 and adds the following stack features to
+> the KVM nVHE hypervisor:
 > 
-> > 
-> > Allocate thread's stack after task_struct has been duplicated as a
-> > preparation.
-> > 
+> == Hyp Stack Guard Pages ==
 > 
-> But I don't understand this.  How does this patch relate to the problem?
+> Based on the technique used by arm64 VMAP_STACK to detect overflow.
+> i.e. the stack is aligned to twice its size which ensure that the 
+> 'stack shift' bit of any valid SP is 0. The 'stack shift' bit can be
+> tested in the exception entry to detect overflow without corrupting GPRs.
 
-So I duplicate the task-struct, assign the stack pointer in
-alloc_thread_stack_node() with no need to update the stack pointer
-later. Otherwise arch_dup_task_struct() would reset the pointer.
+Having quickly parsed the code, this seems to only be effective for
+pKVM and the EL2-allocated stack. Is there any technical reason not to
+implement this for the much more common case of 'classic' KVM in nVHE
+mode?
 
-> Also, you appear to be missing a change to the free_stack and free_tsk code
-> at the end of dup_task_struct().
+Thanks,
 
-It looks right. What am I missing?
+	M.
 
-Sebastian
+-- 
+Without deviation from the norm, progress is not possible.
