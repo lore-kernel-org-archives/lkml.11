@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC05DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C137C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348450AbiBNKkq (ORCPT
+        id S1349257AbiBNKlB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48512 "EHLO
+        Mon, 14 Feb 2022 05:41:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348950AbiBNKgE (ORCPT
+        with ESMTP id S1349615AbiBNKgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:04 -0500
+        Mon, 14 Feb 2022 05:36:38 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB32988B20;
-        Mon, 14 Feb 2022 02:02:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C38A41A2;
+        Mon, 14 Feb 2022 02:02:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AEDF60C71;
-        Mon, 14 Feb 2022 10:02:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60ED2C340E9;
-        Mon, 14 Feb 2022 10:02:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB3760B31;
+        Mon, 14 Feb 2022 10:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367D5C340E9;
+        Mon, 14 Feb 2022 10:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832948;
-        bh=iVVprejHhTHrKXydZFMArGB8nKpVGa/J/tekSOuOWgU=;
+        s=korg; t=1644832966;
+        bh=lUg6UgIUo1yE4iHE1a1K4H9EBvuK+VqmJ7QfNaWBFas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dNIreoc6mYSj22Kpag/ieTqREbHaTwIoWFhRfGwb6J7N5tQyHeTG2Xdj1HXma6cgi
-         gq0KEAnNi/EY0X9CQUgeaoNwzSdF2zHf1+iUZW3+5ozIvrO6JbiQPHMSBa5cxLsOt7
-         MDNK8wnULmAWfgmb24gFKOUnDcf/ofrj87iG5hiQ=
+        b=0TxgY2Jyl5ZVkEyBKyRJH9ti72TThmy965Y5VKM9JC+ZtHsZ99mcN9JLyMx60S6Mc
+         Xj2ZqAhJ4YZhmsFctpN/xmbMGeGzaTb1sAPz9n0Ct6Ts0QV7CdaqvFT06C9qIoac93
+         WjUFinVYAy0am6vqKGRW66E6Z7+N0EFUHWB1wrGo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
-Subject: [PATCH 5.16 174/203] usb: gadget: rndis: check size of RNDIS_MSG_SET command
-Date:   Mon, 14 Feb 2022 10:26:58 +0100
-Message-Id: <20220214092516.158278972@linuxfoundation.org>
+        stable@vger.kernel.org, Joel Stanley <joel@jms.id.au>,
+        Andrew Lunn <andrew@lunn.ch>, Andrew Jeffery <andrew@aj.id.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 149/203] net: mdio: aspeed: Add missing MODULE_DEVICE_TABLE
+Date:   Mon, 14 Feb 2022 10:26:33 +0100
+Message-Id: <20220214092515.309426817@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,43 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Joel Stanley <joel@jms.id.au>
 
-commit 38ea1eac7d88072bbffb630e2b3db83ca649b826 upstream.
+[ Upstream commit bc1c3c3b10db4f37c41e6107751a8d450d9c431c ]
 
-Check the size of the RNDIS_MSG_SET command given to us before
-attempting to respond to an invalid message size.
+Fix loading of the driver when built as a module.
 
-Reported-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc: stable@kernel.org
-Tested-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f160e99462c6 ("net: phy: Add mdio-aspeed")
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Andrew Jeffery <andrew@aj.id.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/rndis.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/mdio/mdio-aspeed.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/usb/gadget/function/rndis.c
-+++ b/drivers/usb/gadget/function/rndis.c
-@@ -637,14 +637,17 @@ static int rndis_set_response(struct rnd
- 	rndis_set_cmplt_type *resp;
- 	rndis_resp_t *r;
+diff --git a/drivers/net/mdio/mdio-aspeed.c b/drivers/net/mdio/mdio-aspeed.c
+index 966c3b4ad59d1..e2273588c75b6 100644
+--- a/drivers/net/mdio/mdio-aspeed.c
++++ b/drivers/net/mdio/mdio-aspeed.c
+@@ -148,6 +148,7 @@ static const struct of_device_id aspeed_mdio_of_match[] = {
+ 	{ .compatible = "aspeed,ast2600-mdio", },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, aspeed_mdio_of_match);
  
-+	BufLength = le32_to_cpu(buf->InformationBufferLength);
-+	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
-+	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
-+	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
-+		    return -EINVAL;
-+
- 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
- 	if (!r)
- 		return -ENOMEM;
- 	resp = (rndis_set_cmplt_type *)r->buf;
- 
--	BufLength = le32_to_cpu(buf->InformationBufferLength);
--	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
--
- #ifdef	VERBOSE_DEBUG
- 	pr_debug("%s: Length: %d\n", __func__, BufLength);
- 	pr_debug("%s: Offset: %d\n", __func__, BufOffset);
+ static struct platform_driver aspeed_mdio_driver = {
+ 	.driver = {
+-- 
+2.34.1
+
 
 
