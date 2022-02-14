@@ -2,73 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 115ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2FDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236646AbiBNQWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:22:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34710 "EHLO
+        id S1356290AbiBNQXQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 11:23:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233335AbiBNQWe (ORCPT
+        with ESMTP id S237864AbiBNQXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:22:34 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D2050B23
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:22:27 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id i6so28174342pfc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:22:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ltEJ7E4BWBQeXlg11/N0m4ls8Uk/IhOuIbuZYCef4Qk=;
-        b=IXmjpqau+DaUR/5xQSJGBnkGUyDaCitlnAoCP3aF8lTStpgwVxYilTXncL/kk/aROW
-         SmajbmzKXfv+U0XxvLy111mpLRySzoDwmruZdONpLJKAaEfB0hjkHgY4QpiKy/zyAyIr
-         FDQyHIKG8w38flcPpgHGYMYLkhU7ija6z7p3sMKbfIhW4kFura3GYysQqMIaS4Br0pGv
-         rS7i0csbsfLWD1NevfD9c++WYw13XEwwsELBU2x3wpNfd7m4A5wZgI+kj75sy3KZAiHt
-         5dKg/wXmyAWNGOTql45RoP2t/iCfWY/kNh3fxJ8KCxBr5CTqvue0DfoG+QQiozJZ9CjO
-         fdLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=ltEJ7E4BWBQeXlg11/N0m4ls8Uk/IhOuIbuZYCef4Qk=;
-        b=7N7dg1e2Sr8bEDJsKMxP8N84U0l4Jg75llR2u1ETn0DLH2Rm7EyJagS7pV07Wyr0WV
-         OtSjJ0jCCsytxzwm3qQy3arILyOhX/OHwUiKgzpnTmI0LNvvjJWOo2acbdvp97BugbhY
-         QXvS/aOe030jpzNBsLMIYIwG4t0y6HGGXt1etEXwgMO5aAQm+0Ph8heYGJs99ovnZOHH
-         uWmI4t2qZD6gvyBjUMuofuMS1k9kIZCGTdl2Ve5HbMZP6KdxUlPtjehQfuDVH+eXTL0V
-         vdRnS32iOEG8qXTs5gs+GdcyELehKmGXd2H5HHSmWAbaK7BKGx2mc9LX5g60fZ6RoCGs
-         dx3Q==
-X-Gm-Message-State: AOAM532jAwzPbPH0Cxoz+8aqt2UjfTMz+CIGfMutekeVSXY+bpoh+Hdw
-        eZ1xHfqkrwWpHGf2WAW0op0=
-X-Google-Smtp-Source: ABdhPJx5fzzD/gdf+c0lSFQS4625i0HpoCk4kU0YkSEqVRkJQinMEReQOI9dMaggVFYmtGsRLGDCgQ==
-X-Received: by 2002:a63:68c1:: with SMTP id d184mr386604pgc.405.1644855746806;
-        Mon, 14 Feb 2022 08:22:26 -0800 (PST)
-Received: from mi-HP-ProDesk-600-G5-PCI-MT.xiaomi.com ([43.224.245.244])
-        by smtp.gmail.com with ESMTPSA id x23sm37294540pfh.216.2022.02.14.08.22.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 08:22:26 -0800 (PST)
-From:   chenguanyou <chenguanyou9338@gmail.com>
-X-Google-Original-From: chenguanyou <chenguanyou@xiaomi.com>
-To:     longman@redhat.com, gregkh@linuxfoundation.org
-Cc:     dave@stgolabs.net, hdanton@sina.com, linux-kernel@vger.kernel.org,
-        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
-        quic_aiquny@quicinc.com, will@kernel.org
-Subject: Re:[PATCH v5] locking/rwsem: Make handoff bit handling more consistent
-Date:   Tue, 15 Feb 2022 00:22:18 +0800
-Message-Id: <20220214162218.13930-1-chenguanyou@xiaomi.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211116012912.723980-1-longman@redhat.com>
-References: <20211116012912.723980-1-longman@redhat.com>
+        Mon, 14 Feb 2022 11:23:14 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6638C60A9B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:23:05 -0800 (PST)
+Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MJV5K-1nZ7eB3Pb6-00Jr7m for <linux-kernel@vger.kernel.org>; Mon, 14 Feb
+ 2022 17:23:03 +0100
+Received: by mail-wr1-f41.google.com with SMTP id j26so16901372wrb.7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:23:03 -0800 (PST)
+X-Gm-Message-State: AOAM530MzYqMCZBshDWyR0r/WpufWbb0Cb9yLQ9cx1kOmeHtKp4pI6HI
+        hv/eiP2WLUu2/AZb034plDdgQnZ5C+CdPAjydmc=
+X-Google-Smtp-Source: ABdhPJyG+jgpVi3VfDfCUUdvqz8L8f7kQFYsusxm0coFeTiylsS6SErvSFrlMbDk8neM8L62+ULjFBu3y9eBOV0ciJc=
+X-Received: by 2002:adf:e5ce:: with SMTP id a14mr303823wrn.317.1644855783467;
+ Mon, 14 Feb 2022 08:23:03 -0800 (PST)
+MIME-Version: 1.0
+References: <20220207184652.1218447-1-michael@walle.cc> <YgpkCyoSMg5RYfkO@google.com>
+ <YgpkQMbhWAJG6oCh@google.com>
+In-Reply-To: <YgpkQMbhWAJG6oCh@google.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 14 Feb 2022 17:22:47 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0UWO=h6K4NpzCVC2vbOvThJH28GM5ddm9U1crr1Su7vQ@mail.gmail.com>
+Message-ID: <CAK8P3a0UWO=h6K4NpzCVC2vbOvThJH28GM5ddm9U1crr1Su7vQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add myself as a maintainer for the sl28cpld
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Michael Walle <michael@walle.cc>, SoC Team <soc@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:O+YnL10ezeU7myro1RjijajOTfmvAEDE5xmIbCJNcUuhk+2z9T+
+ d7K1rZIoVFDaMQb0QfSPZbWLjCn9D1ex3nbP4sJ8BGBbnZ7GVWcYSKNHCl9ndBh09aJB1zk
+ /Xvj2mQVzTxkV/+b9BtXhij63l/6jy9vXf/Tp6iId8WXKleO+m4rz3bDVNtmnmOIe8qGDqj
+ 16z95wXKPZVyhWXG9AEEQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:kTns834XWFs=:+o71QcMnOtIwg4WAquKVdR
+ KzSK1tnOriW66iZgjKnjSz0escEE3t9ZQhSwZLQsQdqgDufsIeUhaslkSw2Kk8kXnioGgn656
+ IWPWYGYhm7gUAOLZU3pKR5j6040kdoEKgdnpUUmzxVFlNZ8KvUB71QkEzHFb+ijtyZPQsHSRM
+ s8dlaSe0zMOiy9IphIWjLb0tRU2cHzxw0wLkYOqQtpo4zH7MryA7Cr29wxMemy9chXDxWtL9k
+ hL3oUyxlmaENMYzDNOmhKkNCjRRtlcSNLTLGHAw+9r0wMaa3OB2M4sqqTBUSQy/IR5qKNcupj
+ U075+9dtl2k0F5PJgxX+70ITqiuw3pdNMg6RnAzsVwuHAHYWXx0JiHlFfrQTh2iuxZjB6F15e
+ osOZg0u74Sv7L7RW+72E3Mm1McONbOmoc8uD3t9lTAoVdJSOAIwfoe/8BLszNuykydxf1TmT+
+ CoDnnjUV7CbaMfTTsRnQn1RMRG2rpH/rHD5SKb9ZKAaa/m/818JlE2ledGg6WrJYZ7CfQo5lq
+ f1Qwzywdzlgwbj7m7VZSzTNTNZvPwrz5zY2aoKT61mAZF87iQEtPe5+2/5OcNIpRs0iFFRF8C
+ ZUnIz/URLYytKqwOfiUKwG4AcgUFn9sTbYgbCxWaz/AlnmTWVtlGD45/0YMTB2Uu4QlUXN7m8
+ 5Nq5rfntDSazkmEYknVQF9kYad8GX05Gp3YbXgt3YogNsh0i7uSXtT0z20f/D7fmMbGifHdiB
+ bcshVNGqZ7DZqqdFCkOP3G3t+dPSIuIirSBoypPhuabtlPJYVNaw64XzorYfWR//ruHARhQRH
+ 8iyzFfEXEK7WTf0ADi5oLQMfy8FX5kBghgxbzkdzzU4vFQVGG0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->> Hi Waiman, Greg,
->> This patch has been merged in branch linux-5.16.y.
->> Can we take it to the linux-5.10.y LTS version?
+On Mon, Feb 14, 2022 at 3:16 PM Lee Jones <lee.jones@linaro.org> wrote:
+>
+> On Mon, 14 Feb 2022, Lee Jones wrote:
+>
+> > On Mon, 07 Feb 2022, Michael Walle wrote:
+> >
+> > > The sl28cpld is a management controller found on the Kontron SMARC-sAL28
+> > > board for now. Support for it was added by me quite a while ago, but I
+> > > didn't add a MAINTAINERS entry. Add it now.
+> > >
+> > > Signed-off-by: Michael Walle <michael@walle.cc>
+> > > ---
+> > > Hi,
+> > >
+> > > since this affects so many subsystems, I'm not sure through which tree this
+> > > should go. I'm sending this to the arm soc maintainers because it's an
+> > > aarch64 board where this driver is used as well as Lee as the MFD
+> > > maintainer.
+> >
+> > I'm happy to take this, if it pleases everyone.
+>
+> Hold on, you're not going to get many Acks if you don't send it to the
+> other subsystem maintainers. :)
 
->What is "this patch"?
+I've already applied this one through the soc tree.
 
-commit d257cc8cb8d5355ffc43a96bab94db7b5a324803 ("locking/rwsem: Make handoff bit handling more consistent")
-
-thanks,
+         Arnd
