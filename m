@@ -2,97 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C67EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC64C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348580AbiBNKiC (ORCPT
+        id S1348681AbiBNKiG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:38:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41890 "EHLO
+        Mon, 14 Feb 2022 05:38:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348343AbiBNKes (ORCPT
+        with ESMTP id S1348352AbiBNKes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:34:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ADF6116A;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 151B01164;
         Mon, 14 Feb 2022 02:01:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCC3860909;
-        Mon, 14 Feb 2022 10:01:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C09C340EF;
-        Mon, 14 Feb 2022 10:01:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832903;
-        bh=hrcrTy0cRXNwgEcLdpsqXuhhWEcEWyiPMkeNf8MiMww=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eC1jJAzUd+pVOOspYzsyvv+L16D4x3rI3dfQ5nl+nAW/oak3Jok0WegHAGzE7EWZY
-         UQZINjzRcISXxlnUaksu72Cihur/2+9BfbMrrZnxIGXeI7eh++wLSeb3kp3VrCRxRn
-         +uSttIFg1vylxmEk/Cz6+VQFjZBHrWpQ89+v0yNg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 161/203] net: dsa: mv88e6xxx: fix use-after-free in mv88e6xxx_mdios_unregister
-Date:   Mon, 14 Feb 2022 10:26:45 +0100
-Message-Id: <20220214092515.706740856@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFF79B80DC8;
+        Mon, 14 Feb 2022 10:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF7BC340E9;
+        Mon, 14 Feb 2022 10:01:38 +0000 (UTC)
+Message-ID: <713cee9b-c96c-119a-65be-3c289b361915@xs4all.nl>
+Date:   Mon, 14 Feb 2022 11:01:36 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [RFC] media: uapi: Move HEVC stateless controls out of staging
+Content-Language: en-US
+To:     =?UTF-8?Q?Jernej_=c5=a0krabec?= <jernej.skrabec@gmail.com>,
+        mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
+        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
+        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
+        jonas@kwiboo.se, nicolas@ndufresne.ca,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        kernel@collabora.com, Alex Bee <knaerzche@gmail.com>,
+        jc@kynesim.co.uk
+References: <20220201123439.353854-1-benjamin.gaignard@collabora.com>
+ <8038233.T7Z3S40VBb@kista>
+From:   Hans Verkuil <hverkuil-cisco@xs4all.nl>
+In-Reply-To: <8038233.T7Z3S40VBb@kista>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi all,
 
-[ Upstream commit 51a04ebf21122d5c76a716ecd9bfc33ea44b2b39 ]
+On 2/13/22 12:33, Jernej Škrabec wrote:
+> Hi Benjamin,
+> 
+> CC: Alex, John
+> 
+> Sorry for late response, but I've been very busy last week.
+> 
+> First of all, thank you for doing this! It's about time that HEVC moves 
+> forward.
+> 
+> Dne torek, 01. februar 2022 ob 13:34:39 CET je Benjamin Gaignard napisal(a):
+>> The HEVC stateless 'uAPI' was staging and marked explicitly in the
+>> V4L2 specification that it will change and is unstable.
+>>
+>> Note that these control IDs were never exported as a public API,
+>> they were only defined in kernel-local headers (hevc-ctrls.h).
+>>
+>> While moving the controls out of staging they are renamed and
+>> control IDs get new numbers.
+>> Drivers (Hantro, Cedrus) and Documentation are updated accordaly.
+> 
+> accordaly -> accordingly
+> 
+>>
+>> Additional structures fields has been added for RKVDEC driver usage.
+> 
+> You should do separate patch for that, preceding this one. One patch should 
+> only do one thing.
+> 
+> I also suggest that you add additional patch for removing bit_size field in 
+> struct v4l2_ctrl_hevc_slice_params. Similar fields were already removed from 
+> MPEG2 and H264 structures. Bit size can be deduced from output buffer size and 
+> it doesn't hurt if bit size in Cedrus is set to bigger value than actual slice 
+> bit size.
+> 
+>> Hantro dedicated control is moving to hantro-media.h
+>> Since hevc-ctrls.h content has been dispatched in others file, remove it.
+>>
+>> fluster tests results on IMX8MQ is 77/147 for HEVC codec.
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> 
+> Note that Cedrus still needs additional information in order to decode some 
+> HEVC videos. Missing info is num_entry_point_offsets and list of all 
+> entry_point_offset_minus1 (obviously, num_entry_point_offsets in size).
+> 
+> I suggest that this is represented in a new control, which would use dynamic 
+> array feature, written by Hans. While Cedrus supports max. 256 entries, it can 
+> be much bigger in theory, but in reality, it's much smaller (like 4-8 
+> entries).
 
-Since struct mv88e6xxx_mdio_bus *mdio_bus is the bus->priv of something
-allocated with mdiobus_alloc_size(), this means that mdiobus_free(bus)
-will free the memory backing the mdio_bus as well. Therefore, the
-mdio_bus->list element is freed memory, but we continue to iterate
-through the list of MDIO buses using that list element.
+I've rebased my dynarray tree, so it is up to date again:
 
-To fix this, use the proper list iterator that handles element deletion
-by keeping a copy of the list element next pointer.
+https://git.linuxtv.org/hverkuil/media_tree.git/log/?h=dynarray
 
-Fixes: f53a2ce893b2 ("net: dsa: mv88e6xxx: don't use devres for mdiobus")
-Reported-by: Rafael Richter <rafael.richter@gin.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220210174017.3271099-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Regards,
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index fcd648d0f6372..70cea1b95298a 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3465,10 +3465,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
- 
- {
--	struct mv88e6xxx_mdio_bus *mdio_bus;
-+	struct mv88e6xxx_mdio_bus *mdio_bus, *p;
- 	struct mii_bus *bus;
- 
--	list_for_each_entry(mdio_bus, &chip->mdios, list) {
-+	list_for_each_entry_safe(mdio_bus, p, &chip->mdios, list) {
- 		bus = mdio_bus->bus;
- 
- 		if (!mdio_bus->external)
--- 
-2.34.1
+	Hans
 
-
-
+> 
+> Last but not least, data_bit_offset should be better defined. Currently it 
+> points right after last header bit, just like Cedrus needs it. However, there 
+> is padding after that, at least 1 bit and 8 bits at most, so slice data always 
+> starts from byte aligned address. It probably make sense to rework that field 
+> to be byte offset, not bit, just like in VA-API. Note that RPi HEVC driver also 
+> uses byte aligned address directly. Cedrus would need some kind of workaround 
+> and only one that works is this one:
+> https://github.com/bootlin/libva-v4l2-request/blob/master/src/h265.c#L191-L209
+> 
+> Best regards,
+> Jernej
+> 
+> 
