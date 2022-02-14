@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F8A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:20:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346191AbiBNKUI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44112 "EHLO
+        id S242533AbiBNKUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:20:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346483AbiBNKPu (ORCPT
+        with ESMTP id S1346683AbiBNKP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:15:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A61A78060;
-        Mon, 14 Feb 2022 01:52:57 -0800 (PST)
+        Mon, 14 Feb 2022 05:15:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065F879235;
+        Mon, 14 Feb 2022 01:53:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34ACC612B4;
-        Mon, 14 Feb 2022 09:52:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E76B2C340E9;
-        Mon, 14 Feb 2022 09:52:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5156CB80DC4;
+        Mon, 14 Feb 2022 09:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 689E9C340E9;
+        Mon, 14 Feb 2022 09:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832370;
-        bh=NOLA5kg11otvmBJsW+m0RL1uhgYczBCkkn/7e1ziXuw=;
+        s=korg; t=1644832386;
+        bh=kBk9rwrQ8IjaiqnLRz8c7PBbVQhRD4GH1Rd2rgHKem8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KPIf9udLTHu/J3CRNNrw7GtV7RAXsdCa18dKBrBU0uEfIE9NUxWW+atuYz3aRhjX/
-         2gtNDEBZg0aKYnXrwC4+oRxp5/zlwflqiLdx4Z9VXQ+3xcdQ3rpiw6fbWBnTY0VJb7
-         85gKEHw2top38HS/MbKIeW5Ev63RoHEGW9Ke8UZg=
+        b=kKhdRsbBqM5yQ56uf0qs8niOwVGxX0v8YrWr0heQ9TKoC71kevTH4Mq13k5B3aN/5
+         dCf4kUmPqR7WOLCkbwUriI02Xth07vcxlA+Of7ug68a67vL9k6axKoNR17UaY0vLct
+         xWaFvvjFGUooyepRing/+TvB2jOSon5WstSMbjps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 164/172] x86/sgx: Silence softlockup detection when releasing large enclaves
-Date:   Mon, 14 Feb 2022 10:27:02 +0100
-Message-Id: <20220214092512.049990826@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH 5.15 138/172] usb: dwc2: drd: fix soft connect when gadget is unconfigured
+Date:   Mon, 14 Feb 2022 10:26:36 +0100
+Message-Id: <20220214092511.164824295@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,48 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reinette Chatre <reinette.chatre@intel.com>
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-commit 8795359e35bc33bf86b6d0765aa7f37431db3b9c upstream.
+commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87 upstream.
 
-Vijay reported that the "unclobbered_vdso_oversubscribed" selftest
-triggers the softlockup detector.
+When the gadget driver hasn't been (yet) configured, and the cable is
+connected to a HOST, the SFTDISCON gets cleared unconditionally, so the
+HOST tries to enumerate it.
+At the host side, this can result in a stuck USB port or worse. When
+getting lucky, some dmesg can be observed at the host side:
+ new high-speed USB device number ...
+ device descriptor read/64, error -110
 
-Actual SGX systems have 128GB of enclave memory or more.  The
-"unclobbered_vdso_oversubscribed" selftest creates one enclave which
-consumes all of the enclave memory on the system. Tearing down such a
-large enclave takes around a minute, most of it in the loop where
-the EREMOVE instruction is applied to each individual 4k enclave page.
+Fix it in drd, by checking the enabled flag before calling
+dwc2_hsotg_core_connect(). It will be called later, once configured,
+by the normal flow:
+- udc_bind_to_driver
+ - usb_gadget_connect
+   - dwc2_hsotg_pullup
+     - dwc2_hsotg_core_connect
 
-Spending one minute in a loop triggers the softlockup detector.
-
-Add a cond_resched() to give other tasks a chance to run and placate
-the softlockup detector.
-
-Cc: stable@vger.kernel.org
-Fixes: 1728ab54b4be ("x86/sgx: Add a page reclaimer")
-Reported-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-Signed-off-by: Reinette Chatre <reinette.chatre@intel.com>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
-Tested-by: Jarkko Sakkinen <jarkko@kernel.org>  (kselftest as sanity check)
-Link: https://lkml.kernel.org/r/ced01cac1e75f900251b0a4ae1150aa8ebd295ec.1644345232.git.reinette.chatre@intel.com
+Fixes: 17f934024e84 ("usb: dwc2: override PHY input signals with usb role switch support")
+Cc: stable@kernel.org
+Reviewed-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/1644423353-17859-1-git-send-email-fabrice.gasnier@foss.st.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/sgx/encl.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/dwc2/drd.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/cpu/sgx/encl.c
-+++ b/arch/x86/kernel/cpu/sgx/encl.c
-@@ -410,6 +410,8 @@ void sgx_encl_release(struct kref *ref)
- 		}
- 
- 		kfree(entry);
-+		/* Invoke scheduler to prevent soft lockups. */
-+		cond_resched();
- 	}
- 
- 	xa_destroy(&encl->page_array);
+--- a/drivers/usb/dwc2/drd.c
++++ b/drivers/usb/dwc2/drd.c
+@@ -109,8 +109,10 @@ static int dwc2_drd_role_sw_set(struct u
+ 		already = dwc2_ovr_avalid(hsotg, true);
+ 	} else if (role == USB_ROLE_DEVICE) {
+ 		already = dwc2_ovr_bvalid(hsotg, true);
+-		/* This clear DCTL.SFTDISCON bit */
+-		dwc2_hsotg_core_connect(hsotg);
++		if (hsotg->enabled) {
++			/* This clear DCTL.SFTDISCON bit */
++			dwc2_hsotg_core_connect(hsotg);
++		}
+ 	} else {
+ 		if (dwc2_is_device_mode(hsotg)) {
+ 			if (!dwc2_ovr_bvalid(hsotg, false))
 
 
