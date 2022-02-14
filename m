@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE790C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57410C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239918AbiBNJzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33252 "EHLO
+        id S1344004AbiBNJzm (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:55:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344756AbiBNJwB (ORCPT
+        with ESMTP id S1344814AbiBNJwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:52:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C63E6D3A3;
-        Mon, 14 Feb 2022 01:43:12 -0800 (PST)
+        Mon, 14 Feb 2022 04:52:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B296D3BD;
+        Mon, 14 Feb 2022 01:43:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB360FA2;
-        Mon, 14 Feb 2022 09:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C35A9C340E9;
-        Mon, 14 Feb 2022 09:43:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82C00B80DD1;
+        Mon, 14 Feb 2022 09:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB0A7C340E9;
+        Mon, 14 Feb 2022 09:43:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831791;
-        bh=lrgQINDT48P+sKYwHswUTTKmWWrF21F0fKyR27zr+30=;
+        s=korg; t=1644831794;
+        bh=3Qb0QBR+YQaYjxWbt9zoEjqLjwnuUCDefGaXjzmaZuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SfTZmarI9IqA+poNNZ8Na08LlTZ8M1qfknuSmWt7sG4VYdU+ln3Jrbl2/goC9atU8
-         w1gSCIhFzT3GU3xqXzzprgy8jknXv79V975qJiwIakOE6ZFVQQZG/M0PdtUCFQDSEV
-         XPK8UAh3iWo8E1TLEdJM2eO+6cijlvR4pjaHnqRQ=
+        b=ihLRypVkaII2zmW8jIi0JGWcXKHcMQXEmXTXWO4XyAHWVEAsVivgziEfoiE7bZ8u6
+         G7yn7jg7zGhCX82k2AUOtNohBNQIfvTq5gylfcCY0X4DQT/VvK1dMmerx2S3x3VoW/
+         A7VIkIRcKjHFNPi3JQfsCd/jzVapR+pgWaT3LbdY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Adam Ford <aford173@gmail.com>
-Subject: [PATCH 5.10 097/116] usb: gadget: udc: renesas_usb3: Fix host to USB_ROLE_NONE transition
-Date:   Mon, 14 Feb 2022 10:26:36 +0100
-Message-Id: <20220214092502.127742382@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 071/116] net: dsa: bcm_sf2: dont use devres for mdiobus
+Date:   Mon, 14 Feb 2022 10:26:10 +0100
+Message-Id: <20220214092501.211643229@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,45 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 459702eea6132888b5c5b64c0e9c626da4ec2493 upstream.
+[ Upstream commit 08f1a20822349004bb9cc1b153ecb516e9f2889d ]
 
-The support the external role switch a variety of situations were
-addressed, but the transition from USB_ROLE_HOST to USB_ROLE_NONE
-leaves the host up which can cause some error messages when
-switching from host to none, to gadget, to none, and then back
-to host again.
+As explained in commits:
+74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 
- xhci-hcd ee000000.usb: Abort failed to stop command ring: -110
- xhci-hcd ee000000.usb: xHCI host controller not responding, assume dead
- xhci-hcd ee000000.usb: HC died; cleaning up
- usb 4-1: device not accepting address 6, error -108
- usb usb4-port1: couldn't allocate usb_device
+mdiobus_free() will panic when called from devm_mdiobus_free() <-
+devres_release_all() <- __device_release_driver(), and that mdiobus was
+not previously unregistered.
 
-After this happens it will not act as a host again.
-Fix this by releasing the host mode when transitioning to USB_ROLE_NONE.
+The Starfighter 2 is a platform device, so the initial set of
+constraints that I thought would cause this (I2C or SPI buses which call
+->remove on ->shutdown) do not apply. But there is one more which
+applies here.
 
-Fixes: 0604160d8c0b ("usb: gadget: udc: renesas_usb3: Enhance role switch support")
-Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Link: https://lore.kernel.org/r/20220128223603.2362621-1-aford173@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If the DSA master itself is on a bus that calls ->remove from ->shutdown
+(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+between the switch and the DSA master, and device_links_unbind_consumers()
+will unbind the bcm_sf2 switch driver on shutdown.
+
+So the same treatment must be applied to all DSA switch drivers, which
+is: either use devres for both the mdiobus allocation and registration,
+or don't use devres at all.
+
+The bcm_sf2 driver has the code structure in place for orderly mdiobus
+removal, so just replace devm_mdiobus_alloc() with the non-devres
+variant, and add manual free where necessary, to ensure that we don't
+let devres free a still-registered bus.
+
+Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/udc/renesas_usb3.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/dsa/bcm_sf2.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/udc/renesas_usb3.c
-+++ b/drivers/usb/gadget/udc/renesas_usb3.c
-@@ -2378,6 +2378,8 @@ static void handle_ext_role_switch_state
- 	switch (role) {
- 	case USB_ROLE_NONE:
- 		usb3->connection_state = USB_ROLE_NONE;
-+		if (cur_role == USB_ROLE_HOST)
-+			device_release_driver(host);
- 		if (usb3->driver)
- 			usb3_disconnect(usb3);
- 		usb3_vbus_out(usb3, false);
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 690e9d9495e75..08a675a5328d7 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -504,7 +504,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
+ 	get_device(&priv->master_mii_bus->dev);
+ 	priv->master_mii_dn = dn;
+ 
+-	priv->slave_mii_bus = devm_mdiobus_alloc(ds->dev);
++	priv->slave_mii_bus = mdiobus_alloc();
+ 	if (!priv->slave_mii_bus) {
+ 		of_node_put(dn);
+ 		return -ENOMEM;
+@@ -564,8 +564,10 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
+ 	}
+ 
+ 	err = mdiobus_register(priv->slave_mii_bus);
+-	if (err && dn)
++	if (err && dn) {
++		mdiobus_free(priv->slave_mii_bus);
+ 		of_node_put(dn);
++	}
+ 
+ 	return err;
+ }
+@@ -573,6 +575,7 @@ static int bcm_sf2_mdio_register(struct dsa_switch *ds)
+ static void bcm_sf2_mdio_unregister(struct bcm_sf2_priv *priv)
+ {
+ 	mdiobus_unregister(priv->slave_mii_bus);
++	mdiobus_free(priv->slave_mii_bus);
+ 	of_node_put(priv->master_mii_dn);
+ }
+ 
+-- 
+2.34.1
+
 
 
