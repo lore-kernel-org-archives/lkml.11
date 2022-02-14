@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4129C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D94DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237274AbiBNKaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:30:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33380 "EHLO
+        id S1347480AbiBNKaP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:30:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347543AbiBNK3F (ORCPT
+        with ESMTP id S1347688AbiBNK3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:29:05 -0500
+        Mon, 14 Feb 2022 05:29:49 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F7298F6B;
-        Mon, 14 Feb 2022 01:58:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870847091C;
+        Mon, 14 Feb 2022 01:58:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 860D4B80D6D;
-        Mon, 14 Feb 2022 09:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9492FC340E9;
-        Mon, 14 Feb 2022 09:58:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C33B6B80DCF;
+        Mon, 14 Feb 2022 09:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0237DC340E9;
+        Mon, 14 Feb 2022 09:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832715;
-        bh=/kvuUnbi5mWqDPHzY3HwB9slTUfUSoIsVvCWl1dVzJI=;
+        s=korg; t=1644832721;
+        bh=Ps3oBb9b+xFWRMsLAGzbqJCxUR2gJJ6YgKqya6yTpKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ew9DtpPdTxT1szperVCGxY/jV6Be8L4O/uqaH0TV/eZCBBcNhX//cjL9J8VeteNtQ
-         +MxHRwRuDKoh98nVYfQbk96KWB36O5tl1qQC+kRaFx7AnKfxcPD/IW5tY5bwtG2AYR
-         m8/70MomEt2ehqMfVvbWTQQq83ONcQ5Q4u18ykUk=
+        b=RWHwhEOpv+T0IJcDx85mulKfXnFVrimojxrsu/WbQx5TQj6C1R/5xyLUrSMWIhH2b
+         +AvZ01EIC3oHUBWDpnnjMGERUEBr41nEcrGXL7AAvNkWzD2ktbM4mrEaxymjbmoNJm
+         DP59TWC3Vh3Rt6vtF4B2QU77tH03RY3WYMXrBb74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 101/203] ARM: dts: imx6qdl-udoo: Properly describe the SD card detect
-Date:   Mon, 14 Feb 2022 10:25:45 +0100
-Message-Id: <20220214092513.682996086@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 102/203] phy: xilinx: zynqmp: Fix bus width setting for SGMII
+Date:   Mon, 14 Feb 2022 10:25:46 +0100
+Message-Id: <20220214092513.716954518@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -49,52 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 993d66140f8d1c1853a3b58b77b43b681eb64dee ]
+[ Upstream commit 37291f60d0822f191748c2a54ce63b0bc669020f ]
 
-GPIO7_IO00 is used as SD card detect.
+TX_PROT_BUS_WIDTH and RX_PROT_BUS_WIDTH are single registers with
+separate bit fields for each lane. The code in xpsgtr_phy_init_sgmii was
+not preserving the existing register value for other lanes, so enabling
+the PHY in SGMII mode on one lane zeroed out the settings for all other
+lanes, causing other PS-GTR peripherals such as USB3 to malfunction.
 
-Properly describe this in the devicetree.
+Use xpsgtr_clr_set to only manipulate the desired bits in the register.
 
-Fixes: 40cdaa542cf0 ("ARM: dts: imx6q-udoo: Add initial board support")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 4a33bea00314 ("phy: zynqmp: Add PHY driver for the Xilinx ZynqMP Gigabit Transceiver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Acked-by: Michal Simek <michal.simek@xilinx.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Link: https://lore.kernel.org/r/20220126001600.1592218-1-robert.hancock@calian.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx6qdl-udoo.dtsi | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/phy/xilinx/phy-zynqmp.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-udoo.dtsi b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-index d07d8f83456d2..ccfa8e320be62 100644
---- a/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-@@ -5,6 +5,8 @@
-  * Author: Fabio Estevam <fabio.estevam@freescale.com>
-  */
+diff --git a/drivers/phy/xilinx/phy-zynqmp.c b/drivers/phy/xilinx/phy-zynqmp.c
+index f478d8a17115b..9be9535ad7ab7 100644
+--- a/drivers/phy/xilinx/phy-zynqmp.c
++++ b/drivers/phy/xilinx/phy-zynqmp.c
+@@ -134,7 +134,8 @@
+ #define PROT_BUS_WIDTH_10		0x0
+ #define PROT_BUS_WIDTH_20		0x1
+ #define PROT_BUS_WIDTH_40		0x2
+-#define PROT_BUS_WIDTH_SHIFT		2
++#define PROT_BUS_WIDTH_SHIFT(n)		((n) * 2)
++#define PROT_BUS_WIDTH_MASK(n)		GENMASK((n) * 2 + 1, (n) * 2)
  
-+#include <dt-bindings/gpio/gpio.h>
-+
- / {
- 	aliases {
- 		backlight = &backlight;
-@@ -226,6 +228,7 @@ MX6QDL_PAD_SD3_DAT0__SD3_DATA0		0x17059
- 				MX6QDL_PAD_SD3_DAT1__SD3_DATA1		0x17059
- 				MX6QDL_PAD_SD3_DAT2__SD3_DATA2		0x17059
- 				MX6QDL_PAD_SD3_DAT3__SD3_DATA3		0x17059
-+				MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
- 			>;
- 		};
+ /* Number of GT lanes */
+ #define NUM_LANES			4
+@@ -445,12 +446,12 @@ static void xpsgtr_phy_init_sata(struct xpsgtr_phy *gtr_phy)
+ static void xpsgtr_phy_init_sgmii(struct xpsgtr_phy *gtr_phy)
+ {
+ 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
++	u32 mask = PROT_BUS_WIDTH_MASK(gtr_phy->lane);
++	u32 val = PROT_BUS_WIDTH_10 << PROT_BUS_WIDTH_SHIFT(gtr_phy->lane);
  
-@@ -304,7 +307,7 @@ &usbotg {
- &usdhc3 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_usdhc3>;
--	non-removable;
-+	cd-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
- 	status = "okay";
- };
+ 	/* Set SGMII protocol TX and RX bus width to 10 bits. */
+-	xpsgtr_write(gtr_dev, TX_PROT_BUS_WIDTH,
+-		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
+-	xpsgtr_write(gtr_dev, RX_PROT_BUS_WIDTH,
+-		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
++	xpsgtr_clr_set(gtr_dev, TX_PROT_BUS_WIDTH, mask, val);
++	xpsgtr_clr_set(gtr_dev, RX_PROT_BUS_WIDTH, mask, val);
  
+ 	xpsgtr_bypass_scrambler_8b10b(gtr_phy);
+ }
 -- 
 2.34.1
 
