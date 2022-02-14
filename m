@@ -2,203 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3950EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:35:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiBNVfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:35:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34088 "EHLO
+        id S231577AbiBNVfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:35:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230518AbiBNVe7 (ORCPT
+        with ESMTP id S231249AbiBNVfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:34:59 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A5315720F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:32:13 -0800 (PST)
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 397B7407BD
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:32:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1644874332;
-        bh=Vpk09spyV9imDGj1kfUzd1GTJIyfhaN7DgNwXJd/bD0=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=e60NqLzyZV697QIjr9gD8+zn8IrsHL1ZzR6zifawktptCcEAwwDezFbPv/rcvfegL
-         YHjZz6Dw8tLgtclLzCOSJqnt30ciTOGqIiNVlF3DF1Fx+sNCDy7y6DK6zASXPn59Rq
-         UDJ9x3W+rG1I8PtUxFafBIt/A3N/rqOtVA1uD2gADBmCSY4UFBp8/nWHPGR3f+KrBQ
-         /vcskUVtn82dBXNBbURNNUi2AOna799rPxsKglqCdd2DLbzEAkT2H8ZfpZ0f6vDzEd
-         zyKBiOVn49p1jweSKCySzJNzypXS30DfRy6i9RGaMkoLQjv7g5pjyQnfn4D5+JL0Q1
-         zgCEro8Lz4MvQ==
-Received: by mail-ej1-f71.google.com with SMTP id qa30-20020a170907869e00b006cee5e080easo1349506ejc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:32:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Vpk09spyV9imDGj1kfUzd1GTJIyfhaN7DgNwXJd/bD0=;
-        b=gn26s9Yl0rjVCxxNI5Kd3p0J+W0KNDIFkWg0io7257KfXnkwBhnqijaXXpvj6PJiyk
-         CgJwRFeAPVsp30Zer3jR36w1eX52xAt+7KWf/i3D6dTgHAtTrIpJ2nMOQgFqJZM2ogo0
-         6M31OTdhGbMQHX4hwVbpkxgaTPUGn8DzsVPCSEhpGQJzzTzx8VciV2q8bRiK2vX0n2SG
-         K8+l+mV+vP0R+iroeOEztkmw6nAaUWR7n/hjAC/tGtDra17uJh7Cl42+MsHNTSKCiNWZ
-         dAv7U1BiJbYEbOPqfl3flOghOtJBvSVKBgjH0f3Ngj7da9qwX88PLaMUD+X2QY03LXf4
-         8hgA==
-X-Gm-Message-State: AOAM5329DpSQaqNB0hnryuifxQxsaNALXQ7Vr1t1lk9DW1ASUvY0aC2G
-        klgaH6RNRrg1xTA1QwJ7Te5OKjzLW/ThU9fwNyz+TTsUKvWTPidHBcI94EQWSMlDM/SCM4ScJCl
-        9xYrEiiAyzU5KB773lAl3V388Njp6IdxSwSTRV5+TyA==
-X-Received: by 2002:a17:907:9687:: with SMTP id hd7mr561411ejc.715.1644874331561;
-        Mon, 14 Feb 2022 13:32:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyqnjThzRbcUFM+c4bi7NwvMvdAFVVUVTZmoKvJUlbWhdI51H+3uTCCB+/iNFrzs2cm1lQjfg==
-X-Received: by 2002:a17:907:9687:: with SMTP id hd7mr561405ejc.715.1644874331369;
-        Mon, 14 Feb 2022 13:32:11 -0800 (PST)
-Received: from [192.168.0.106] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id h11sm3910302edb.68.2022.02.14.13.32.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 13:32:10 -0800 (PST)
-Message-ID: <af2405be-5af5-1e5b-66f2-93842eb8cde5@canonical.com>
-Date:   Mon, 14 Feb 2022 22:32:09 +0100
+        Mon, 14 Feb 2022 16:35:21 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85D5159EBA;
+        Mon, 14 Feb 2022 13:33:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644874387; x=1676410387;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IvBaQoac9SdSxMy/aBRplJsi4/+x3xY3JY7OPph3BGY=;
+  b=frBDgvVGv0wgpQ+W2J96s6F00fmebIRT3AEGIrvA/01l2FAp99+I8s9H
+   Pj3oMEoU5X0Txy6MWVO8JhYLNNCqnapugDws4gEO5NfqbYq45d2N5lXc+
+   6j+V8FPFhRK9Sw79wQ6fIc3pmuJCvjfr6lB2gDYUdTjOMHxrYjZKn4Yz3
+   /9h3JnHhs7JhMeyJQs1fn6RWa5bdkHneeAVhoBKQUIl4oBHONIpl6N3Qu
+   yalQxiVQl+tyb0nr7MJfYoCoGmUozcDv0iQI/O+yZdWe5MaVaLwIwNZxE
+   X7n6YnmcN+GTjWD+zx1Ct6tfk3UvkQVG1yRojXGSG2YHz97BIsTE4PdeN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="230827935"
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="230827935"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 13:33:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
+   d="scan'208";a="485726861"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 13:33:07 -0800
+Received: from debox1-desk4.intel.com (unknown [10.255.228.161])
+        by linux.intel.com (Postfix) with ESMTP id E4B47580D3A;
+        Mon, 14 Feb 2022 13:33:06 -0800 (PST)
+From:   "David E. Box" <david.e.box@linux.intel.com>
+To:     hdegoede@redhat.com, david.e.box@linux.intel.com,
+        mgross@linux.intel.com, rjw@rjwysocki.net,
+        srinivas.pandruvada@intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+Subject: [PATCH 3/3] platform/x86/intel: vsec: Add DG2 support
+Date:   Mon, 14 Feb 2022 13:32:58 -0800
+Message-Id: <20220214213258.1929462-4-david.e.box@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220214213258.1929462-1-david.e.box@linux.intel.com>
+References: <20220214213258.1929462-1-david.e.box@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [1/1] dt-bindings: pwm:Convert pwm-mtk-disp.txt format file to
- pwm-mtk-disp.yaml format file
-Content-Language: en-US
-To:     xinlei.lee@mediatek.com, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
-        robh+dt@kernel.org, matthias.bgg@gmail.com
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <1644847276-27622-1-git-send-email-xinlei.lee@mediatek.com>
- <1644847276-27622-2-git-send-email-xinlei.lee@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <1644847276-27622-2-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/02/2022 15:01, xinlei.lee@mediatek.com wrote:
-> From: xinlei lee <xinlei.lee@mediatek.com>
+Add Platform Monitoring Technology support for DG2 platforms.
 
-Commit msg is needed.
+Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+---
+ drivers/platform/x86/intel/pmt/class.c | 2 ++
+ drivers/platform/x86/intel/vsec.c      | 9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-Subject - missing space after ':' and it is too long. No need to say
-"format file" twice.
+diff --git a/drivers/platform/x86/intel/pmt/class.c b/drivers/platform/x86/intel/pmt/class.c
+index a3ec09fe2f38..d25fffb2103d 100644
+--- a/drivers/platform/x86/intel/pmt/class.c
++++ b/drivers/platform/x86/intel/pmt/class.c
+@@ -31,6 +31,8 @@
+ static const struct pci_device_id pmt_telem_early_client_pci_ids[] = {
+ 	{ PCI_VDEVICE(INTEL, 0x467d) }, /* ADL */
+ 	{ PCI_VDEVICE(INTEL, 0x490e) }, /* DG1 */
++	{ PCI_VDEVICE(INTEL, 0x4f93) }, /* DG2_G10 */
++	{ PCI_VDEVICE(INTEL, 0x4f95) }, /* DG2_G11 */
+ 	{ PCI_VDEVICE(INTEL, 0x9a0d) }, /* TGL */
+ 	{ }
+ };
+diff --git a/drivers/platform/x86/intel/vsec.c b/drivers/platform/x86/intel/vsec.c
+index d182122c261d..f256c7ca5452 100644
+--- a/drivers/platform/x86/intel/vsec.c
++++ b/drivers/platform/x86/intel/vsec.c
+@@ -396,17 +396,26 @@ static const struct intel_vsec_platform_info dg1_info = {
+ 	.quirks = VSEC_QUIRK_NO_DVSEC,
+ };
+ 
++/* DG2 info */
++static const struct intel_vsec_platform_info dg2_info = {
++	.quirks = VSEC_QUIRK_TABLE_SHIFT
++};
++
+ #ifdef CONFIG_PM_SLEEP
+ static const struct dev_pm_ops intel_vsec_pm_ops = {};
+ #endif
+ 
+ #define PCI_DEVICE_ID_INTEL_VSEC_ADL		0x467d
+ #define PCI_DEVICE_ID_INTEL_VSEC_DG1		0x490e
++#define PCI_DEVICE_ID_INTEL_VSEC_DG2_G10	0x4f93
++#define PCI_DEVICE_ID_INTEL_VSEC_DG2_G11	0x4f95
+ #define PCI_DEVICE_ID_INTEL_VSEC_OOBMSM		0x09a7
+ #define PCI_DEVICE_ID_INTEL_VSEC_TGL		0x9a0d
+ static const struct pci_device_id intel_vsec_pci_ids[] = {
+ 	{ PCI_DEVICE_DATA(INTEL, VSEC_ADL, &tgl_info) },
+ 	{ PCI_DEVICE_DATA(INTEL, VSEC_DG1, &dg1_info) },
++	{ PCI_DEVICE_DATA(INTEL, VSEC_DG2_G10, &dg2_info) },
++	{ PCI_DEVICE_DATA(INTEL, VSEC_DG2_G11, &dg2_info) },
+ 	{ PCI_DEVICE_DATA(INTEL, VSEC_OOBMSM, NULL) },
+ 	{ PCI_DEVICE_DATA(INTEL, VSEC_TGL, &tgl_info) },
+ 	{ }
+-- 
+2.25.1
 
-You miss "PATCH" in subject. Using `git format-patch` is the easiest way
-to create proper patches.
-
-> 
-> Signed-off-by: xinlei lee <xinlei.lee@mediatek.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-mtk-disp.yaml      | 60 ++++++++++++++++++++++
->  1 file changed, 60 insertions(+)
-
-I do not see the conversion here... You only add one file. Where is the
-removal?
-
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-mtk-disp.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.yaml b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.yaml
-> new file mode 100644
-> index 0000000..2f1183e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-mtk-disp.yaml
-
-Let's name the file as with most bindings, so with vendor:
-"mediatek,pwm-disp.yaml"
-
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pwm/pwm-mtk-disp.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: mediatek PWM Controller Device Tree Bindings
-> +
-> +maintainers:
-> +  - Thierry Reding <thierry.reding@gmail.com>
-> +  - Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> +  - Lee Jones <lee.jones@linaro.org>
-> +  - Rob Herring <robh+dt@kernel.org>
-> +
-
-allOf referencing pwm.yaml
-
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - mediatek,mt2701-disp-pwm
-> +      - mediatek,mt6595-disp-pwm
-> +      - mediatek,mt8173-disp-pwm
-> +      - mediatek,mt8183-disp-pwm
-> +      - mediatek,mt8186-disp-pwm
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Main Clock
-> +      - description: Mm Clock
-> +
-
-
-This schema was not tested. Please run it against your DTS files (make
-dtbs_check). You need pwm-cells and power-domains. Maybe more...
-
-> +  clock-names:
-> +    items:
-> +      - const: main
-> +      - const: mm
-
-Blank line.
-
-> +required:
-
-"compatible" is required, put it first in the list.
-
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/mt8186-clk.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-
-Blank line.
-
-> +    disp_pwm: disp_pwm0@1100e000 {
-
-node name: "pwm" (generic as schema and devicetree specification ask for).
-
-> +        compatible = "mediatek,mt8183-disp-pwm";
-> +        reg = <0x1100e000 0x1000>;
-> +        interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&topckgen CLK_TOP_DISP_PWM>,
-> +                 <&infracfg_ao CLK_INFRA_AO_DISP_PWM>;
-> +        clock-names = "main", "mm";
-> +        status = "okay";
-
-No need for status.
-
-> +    };
-> \ No newline at end of file
-
-
-Best regards,
-Krzysztof
