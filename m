@@ -2,104 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8ABCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20286C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352282AbiBNLq7 (ORCPT
+        id S1352246AbiBNLrD convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:46:59 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46742 "EHLO
+        Mon, 14 Feb 2022 06:47:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352564AbiBNLpV (ORCPT
+        with ESMTP id S1352300AbiBNLjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:45:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547FFBC07;
-        Mon, 14 Feb 2022 03:42:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5D0C61239;
-        Mon, 14 Feb 2022 11:42:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36DB9C340F0;
-        Mon, 14 Feb 2022 11:42:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644838948;
-        bh=N7rh+XBt1OX/shzAlcZiOlTmzf+JEyhpGWcp2MiIStk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OEhdptYx8JASrx2hZQVjdkyeBJgNEQGTvl5Ly9W8hGH8ryFzfz3UOD65bjMe4AOl4
-         eHaUJLhWceDn0Tb1NZhuR1SP9+xnLGtDrFh6Z59psqU5xbrgC2VAHoh4968qs7skNx
-         5hrk1AhMUhghsSpxG6OvbfraRoBpq3UTD7Njo+zr1BDNK/LbmIhkzPavdNhQ/X/+wi
-         +MUued9GxBVl5JsdD9XDlVNOmbGZddaKlxs54ilB2931MZRmBpEDWHhRUTMztyPchE
-         ESEJ/13GNsac93biwiUr8rCTyrNioPAlm1gKkD4x/5PKEtrP0js3cn5EazzFkAFF8v
-         vlh2Hvwe99fOQ==
-Received: by pali.im (Postfix)
-        id 0CCE7153C; Mon, 14 Feb 2022 12:42:26 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v2 2/2] PCI: iproc: Set all 24 bits of PCI class code
-Date:   Mon, 14 Feb 2022 12:41:09 +0100
-Message-Id: <20220214114109.26809-2-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220214114109.26809-1-pali@kernel.org>
-References: <20220214114109.26809-1-pali@kernel.org>
+        Mon, 14 Feb 2022 06:39:46 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BD4C1DA46;
+        Mon, 14 Feb 2022 03:31:12 -0800 (PST)
+Date:   Mon, 14 Feb 2022 11:30:54 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v15 2/7] drm/ingenic: Add dw-hdmi driver specialization
+ for jz4780
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-mips <linux-mips@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>,
+        Ezequiel Garcia <ezequiel@collabora.com>
+Message-Id: <IBLA7R.1NQX4KVACXPK3@crapouillou.net>
+In-Reply-To: <AD978522-8321-476D-955C-3CDD747EFCAC@goldelico.com>
+References: <cover.1644681054.git.hns@goldelico.com>
+        <e6e1f3f44e6979a998ec9c372e329b6facaded15.1644681054.git.hns@goldelico.com>
+        <58IA7R.PZ9FQXN7FVAK@crapouillou.net>
+        <AD978522-8321-476D-955C-3CDD747EFCAC@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register 0x43c in its low 24 bits contains PCI class code.
 
-Update code to set all 24 bits of PCI class code and not only upper 16 bits
-of PCI class code.
 
-Use a new macro PCI_CLASS_BRIDGE_PCI_NORMAL which represents whole 24 bits
-of normal PCI bridge class.
+Le lun., févr. 14 2022 at 12:02:53 +0100, H. Nikolaus Schaller 
+<hns@goldelico.com> a écrit :
+> Hi Paul,
+> 
+>>  Am 14.02.2022 um 11:24 schrieb Paul Cercueil <paul@crapouillou.net>:
+>> 
+>>  Hi,
+>> 
+>>  Le sam., févr. 12 2022 at 16:50:50 +0100, H. Nikolaus Schaller 
+>> <hns@goldelico.com> a écrit :
+> 
+>>>  +static void ingenic_dw_hdmi_cleanup(void *data)
+>>>  +{
+>>>  +	struct dw_hdmi *hdmi = (struct dw_hdmi *)data;
+>>>  +
+>>>  +	dw_hdmi_remove(hdmi);
+>>>  +}
+>>>  +
+>>>  +static int ingenic_dw_hdmi_probe(struct platform_device *pdev)
+>>>  +{
+>>>  +	struct dw_hdmi *hdmi;
+>>>  +
+>>>  +	hdmi = dw_hdmi_probe(pdev, &ingenic_dw_hdmi_plat_data);
+>>>  +	if (IS_ERR(hdmi))
+>>>  +		return PTR_ERR(hdmi);
+>>>  +
+>>>  +	return devm_add_action_or_reset(&pdev->dev, 
+>>> ingenic_dw_hdmi_cleanup, hdmi);
+>> 
+>>  I think I said it already, but in this driver you could use a 
+>> .remove callback, there's not much point in using devm cleanups in 
+>> such a simple setup.
+> 
+> Well it was your suggestion after v8:
+> 
+> https://lore.kernel.org/all/DIA33R.QE29K7RKLI2C1@crapouillou.net/
 
-Signed-off-by: Pali RohÃ¡r <pali@kernel.org>
-Acked-by: Roman Bacik <roman.bacik@broadcom.com>
-Acked-by: Ray Jui <ray.jui@broadcom.com>
+It made sense for your v8, not so much for your v15...
 
----
-Roman helped me with this change and confirmed that class code is stored
-really in bits [23:0] of custom register 0x43c (normally class code is
-stored in bits [31:8] of pci register 0x08).
----
- drivers/pci/controller/pcie-iproc.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+> So we now almost go back to RFC v1 almost 2 years ago:
+> 
+> https://patchwork.kernel.org/project/linux-mips/patch/2c131e1fb19e19f958a612f7186bc83f4afb0b0a.1582744379.git.hns@goldelico.com/
+> 
+> Of course there was a good reason to better handle the regulator
+> AND the dw_hdmi_remove() by a single mechanism.
+> 
+> Now the regulator has gone and been replaced by the hdmi connector
+> and we can go back.
+> 
+>> 
+>>  In your probe you could just:
+>>  return PTR_ERR_OR_ZERO(hdmi);
+> 
+> No, this does not work since we need to platform_set_drvdata().
+> to be able to access the private struct in the remove callback.
+> And checking errors after platform_set_drvdata() can be done but
+> looks strange to me.
 
-diff --git a/drivers/pci/controller/pcie-iproc.c b/drivers/pci/controller/pcie-iproc.c
-index 3df4ab209253..2519201b0e51 100644
---- a/drivers/pci/controller/pcie-iproc.c
-+++ b/drivers/pci/controller/pcie-iproc.c
-@@ -789,14 +789,13 @@ static int iproc_pcie_check_link(struct iproc_pcie *pcie)
- 		return -EFAULT;
- 	}
- 
--	/* force class to PCI_CLASS_BRIDGE_PCI (0x0604) */
-+	/* force class to PCI_CLASS_BRIDGE_PCI_NORMAL (0x060400) */
- #define PCI_BRIDGE_CTRL_REG_OFFSET	0x43c
--#define PCI_CLASS_BRIDGE_MASK		0xffff00
--#define PCI_CLASS_BRIDGE_SHIFT		8
-+#define PCI_BRIDGE_CTRL_REG_CLASS_MASK	0xffffff
- 	iproc_pci_raw_config_read32(pcie, 0, PCI_BRIDGE_CTRL_REG_OFFSET,
- 				    4, &class);
--	class &= ~PCI_CLASS_BRIDGE_MASK;
--	class |= (PCI_CLASS_BRIDGE_PCI << PCI_CLASS_BRIDGE_SHIFT);
-+	class &= ~PCI_BRIDGE_CTRL_REG_CLASS_MASK;
-+	class |= PCI_CLASS_BRIDGE_PCI_NORMAL;
- 	iproc_pci_raw_config_write32(pcie, 0, PCI_BRIDGE_CTRL_REG_OFFSET,
- 				     4, class);
- 
--- 
-2.20.1
+Yeah, I guess it would look strange. Fine then.
+
+Then I guess just merge your current [6/7] with this one (and make sure 
+it comes after your current [5/7]) and it looks mergeable to me.
+
+Cheers,
+-Paul
+
+> It is up to you what you prefer.
+> 
+>> 
+>>>  +}
+>>>  +
+>>>  +static struct platform_driver ingenic_dw_hdmi_driver = {
+>>>  +	.probe  = ingenic_dw_hdmi_probe,
+>>>  +	.driver = {
+>>>  +		.name = "dw-hdmi-ingenic",
+>>>  +		.of_match_table = ingenic_dw_hdmi_dt_ids,
+>>>  +	},
+>>>  +};
+>>>  +module_platform_driver(ingenic_dw_hdmi_driver);
+>>>  +
+>>>  +MODULE_DESCRIPTION("JZ4780 Specific DW-HDMI Driver Extension");
+>>>  +MODULE_LICENSE("GPL v2");
+>>>  +MODULE_ALIAS("platform:dwhdmi-ingenic");
+>> 
+>>  Should probably be "platform:dw-hdmi-ingenic"?
+> 
+> Yes, indeed. Thanks for spotting!
+> 
+> Was also good in v1. Probably someone deleted the hyphen unnoticed 
+> during editing of "jz4780" to "ingenic"...
+
+
+
 
