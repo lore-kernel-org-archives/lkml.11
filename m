@@ -2,90 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA20DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA666C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351926AbiBNLjL (ORCPT
+        id S1352472AbiBNLjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:39:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42210 "EHLO
+        Mon, 14 Feb 2022 06:39:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352025AbiBNLjB (ORCPT
+        with ESMTP id S1352013AbiBNLja (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:39:01 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03C26163;
-        Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id r64-20020a17090a43c600b001b8854e682eso15540188pjg.0;
-        Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UTXgoU8n+KrzppBWMa0hmTFNwCf9odk0keuvKtaxU/k=;
-        b=cnBuoZw/RKHhZsGhbrd4qubVrdgqaBcgF2vbB3TLWl8veImaTHi6FiowKDVE2OsPaQ
-         3+hEBVsaBZoUrga9sKj4zUSo7mwvsBepRCyWZAOkpyC7qZ/1ezKf3T64rZSWOA4XrXXs
-         5K5UEu+nNpRJzOuKQyecbIjxZdyKqqVqMdQmmH/y99QQZ2kLWX23TkzeaP7dwJYBhTGx
-         KWdHVfBFhbFbPJNr7CIbLXk7xUbGCPvkEZRtzuQdqKA4zrI/dlxwPXgbsbEVTWQ3y65D
-         c4EGfc4mJuFpDkcNpdzxW1BLPwFzNXaHGJKkG/2srCpvk64MoTle8XsxOayWytNs2HVr
-         dFAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UTXgoU8n+KrzppBWMa0hmTFNwCf9odk0keuvKtaxU/k=;
-        b=KWV9spucEcgIUB9jcaIxSJbxuavOZteARYK2i8htwqDQTNpYEo6rWmJrTXu8kbvIdG
-         KmB+BehsD1BN5UwoVEFZnEkXWby6MHi5lDCcxsdlzrY1h+aUdD+yxLJWC+T6VaBWGh3Y
-         E9NU+wv7sQl2cl+VEK7ByIfkxE0DHW0XDZgb24t7ctwjoEkTWU7nPgmW4LJhvhyTHYsd
-         KMUrCeZU9WhwcskNhNwIqmg6LvLlP00AhSKskSjnX9Pgy8XecnteeHvKlpHgzEM5EBkx
-         njLdVSa0+v9yEDCbBgNMPgzaYANB5umqYbTlz0YaVd/YN/otqh/ZO5g6TQ2xrh7I/lqI
-         +s4g==
-X-Gm-Message-State: AOAM530y4clQv7G0Py++hV5D5HUScPnkvjWFFX1wM2xbT9V6Jph2Luvl
-        q6w+TtVN48hiBKk0UdpfmpY=
-X-Google-Smtp-Source: ABdhPJzFsd/ZU8jacmR8tjLDWME3wdGPlEDldYIhUxu28Eo9nQBVjMthkkAZOx//XOQb15xsKiE/EA==
-X-Received: by 2002:a17:90b:4c06:: with SMTP id na6mr14002951pjb.62.1644838128522;
-        Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-Received: from ?IPV6:2404:f801:0:5:8000::52c? ([2404:f801:9000:1a:efea::52c])
-        by smtp.gmail.com with ESMTPSA id 16sm14490561pgz.76.2022.02.14.03.28.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 03:28:48 -0800 (PST)
-Message-ID: <4f433f07-05be-f81f-43e8-55c3f1af23b3@gmail.com>
-Date:   Mon, 14 Feb 2022 19:28:40 +0800
+        Mon, 14 Feb 2022 06:39:30 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E3CDE8B;
+        Mon, 14 Feb 2022 03:29:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644838182; x=1676374182;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=L8LQgDjx0EOOe2M9p7V6FYObzOK0Cj9rYbobse8T9IQ=;
+  b=hwIot3nRZlzQeibazRS60y4VaAjyAAxVFr6W6tB2unGRT68e1Gsxwn3h
+   gSvb5kk2nM96FDGq4m17wKW2fz4uJWTtglYy9emUeGx6oA1m4pr4jeGD7
+   NdKVSmN/DQR9LVj4QCVsRKDjam5A7PqX2lpRL+oQ5txOAwqe1ozH3rOiF
+   cEXFl9SAHIVKFAzJML2n4lfObyuw370OZD8VUy6jdrgEOsxSjpXt7xwYJ
+   YffOIn0ATsEfBcya35jUGfVq0l7LUtPQ+m4d5yGBBAtstPnTsxL53SOUT
+   KS0EN1TPzKy6YjWNsOZAaDjnDXPtzgQYcZdYbeqCmR3PwLyOdGa17FR1z
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="250276735"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="250276735"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:29:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="587167012"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Feb 2022 03:29:39 -0800
+From:   Tianfei zhang <tianfei.zhang@intel.com>
+To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v1 3/7] fpga: dfl: Allow for ports with no local bar space.
+Date:   Mon, 14 Feb 2022 06:26:15 -0500
+Message-Id: <20220214112619.219761-4-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220214112619.219761-1-tianfei.zhang@intel.com>
+References: <20220214112619.219761-1-tianfei.zhang@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH V2 1/2] Swiotlb: Add swiotlb_alloc_from_low_pages switch
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, hch@infradead.org,
-        m.szyprowski@samsung.com, robin.murphy@arm.com,
-        michael.h.kelley@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
-        brijesh.singh@amd.com, konrad.wilk@oracle.com,
-        parri.andrea@gmail.com, thomas.lendacky@amd.com
-References: <20220209122302.213882-1-ltykernel@gmail.com>
- <20220209122302.213882-2-ltykernel@gmail.com> <20220214081919.GA18337@lst.de>
-From:   Tianyu Lan <ltykernel@gmail.com>
-In-Reply-To: <20220214081919.GA18337@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/14/2022 4:19 PM, Christoph Hellwig wrote:
-> Adding a function to set the flag doesn't really change much.  As Robin
-> pointed out last time you should fine a way to just call
-> swiotlb_init_with_tbl directly with the memory allocated the way you
-> like it.  Or given that we have quite a few of these trusted hypervisor
-> schemes maybe add an argument to swiotlb_init that specifies how to
-> allocate the memory.
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
 
-Thanks for your suggestion. I will try the first approach first approach.
+From a fpga partial reconfiguration standpoint, a port
+may not be connected any local BAR space.  The port could
+be connected to a different PCIe Physical Function (PF) or
+Virtual Function (VF), in which case another driver instance
+would manage the endpoint.
+
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+---
+ drivers/fpga/dfl-pci.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
+index 4d68719e608f..8abd9b408403 100644
+--- a/drivers/fpga/dfl-pci.c
++++ b/drivers/fpga/dfl-pci.c
+@@ -243,6 +243,7 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
+ 		v = readq(base + FME_HDR_CAP);
+ 		port_num = FIELD_GET(FME_CAP_NUM_PORTS, v);
+ 
++		dev_info(&pcidev->dev, "port_num = %d\n", port_num);
+ 		WARN_ON(port_num > MAX_DFL_FPGA_PORT_NUM);
+ 
+ 		for (i = 0; i < port_num; i++) {
+@@ -258,6 +259,13 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
+ 			 */
+ 			bar = FIELD_GET(FME_PORT_OFST_BAR_ID, v);
+ 			offset = FIELD_GET(FME_PORT_OFST_DFH_OFST, v);
++			if (bar >= PCI_STD_NUM_BARS) {
++				dev_info(&pcidev->dev, "skipping port without local BAR space %d\n",
++					 bar);
++				continue;
++			} else {
++				dev_info(&pcidev->dev, "BAR %d offset %u\n", bar, offset);
++			}
+ 			start = pci_resource_start(pcidev, bar) + offset;
+ 			len = pci_resource_len(pcidev, bar) - offset;
+ 
+-- 
+2.17.1
 
