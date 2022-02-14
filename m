@@ -2,100 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F822C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DA8EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230434AbiBNVSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:18:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36436 "EHLO
+        id S230442AbiBNVTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:19:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230442AbiBNVS3 (ORCPT
+        with ESMTP id S230429AbiBNVTT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:18:29 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD53211628B;
-        Mon, 14 Feb 2022 13:18:19 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id p14so15806734ejf.11;
-        Mon, 14 Feb 2022 13:18:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=99BahZfDqfQoln2rf6Bj3xU3QXecprDtHuHMCBkgrcQ=;
-        b=qhf19N3SLoLekl8nSgEbpHiFYk6ResBtkXfsJl63wafe0VQ0y5uwdcbx4dh7Api/cr
-         pq4kpVN3rz8ufkFRa9PQhw12DgU06aBBMlGjIZ82TXZkn5kbidmhueb3xMvAz8cyvLFK
-         23OCsQ5snWWXIQrfygum5Ml7tz1ev7oa/U9muYVV8pA1ru4b2uJnVoNiHqJAUlw6HTVD
-         4YwuEf7WP8XA/Rm/UEIkIOK+MRnmJTKW4dRGuT49tZEp3Adgnjs0GNTOr22NQe/Yb5r4
-         ZRdbMxoYgxE3NBz9Kcl1JoZpZ2VWWqZLEqmaXpiuwLy5eS4Rlf+vH+mqr6eGRoqwxN34
-         hTIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=99BahZfDqfQoln2rf6Bj3xU3QXecprDtHuHMCBkgrcQ=;
-        b=8MvPCrp9Qh5VxH2eo86CV29dxKzn8thbL0ONZVBFka85iaKFnH1b0dMWsgzz8zE0mR
-         3k9A4OeUByrY9Y1Wni31rKSwFze+yTqTiR4Erd9Tms0t+aKDE527JJ5NfE4tCGKWZ8Le
-         AUeUxqyr1hntfjfkxJC3zkTqwgPhEmQfNOM8hvmK3cv7EmqASyRdo6uWc7GRvBM1jahg
-         UVDkpTtN0gnqR+GEpCP+cTpEW+akEFA8qb5QWdfqovmSubzEmknQqY1UPgCSX4DqE+QO
-         jENLitKRUII5Rimq2jZ7vgeHYHrSTWqDJyZDd+L7fGKl+J8SuFufKK6ns6B+MLaM3Ui3
-         P+GQ==
-X-Gm-Message-State: AOAM5322brr9yqyWrOx1rmIPNZS5W+a3qnOxarsVgsGYVHpXDNeAIBKw
-        +koQZSToxcZVQ2eHjHiKL3v5Q6LMfyjS/g==
-X-Google-Smtp-Source: ABdhPJwiFYCfncVtqTqjdVCBhQycol1aX209bItLXOycZar8UGc4dq3/BcvtHafFwyhS52svnZjIdA==
-X-Received: by 2002:a17:907:16aa:: with SMTP id hc42mr167762ejc.307.1644865723011;
-        Mon, 14 Feb 2022 11:08:43 -0800 (PST)
-Received: from kista.localdomain (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id m17sm2316338ejn.118.2022.02.14.11.08.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 11:08:42 -0800 (PST)
-From:   Jernej Skrabec <jernej.skrabec@gmail.com>
-To:     mripard@kernel.org, paul.kocialkowski@bootlin.com
-Cc:     mchehab@kernel.org, wens@csie.org, gregkh@linuxfoundation.org,
-        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Subject: [PATCH] media: cedrus: h264: Fix neighbour info buffer size
-Date:   Mon, 14 Feb 2022 20:08:39 +0100
-Message-Id: <20220214190839.707889-1-jernej.skrabec@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 14 Feb 2022 16:19:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E49420F4F
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:19:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644873549;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Q96OLP5Yl8UkjEdoCatzc1klg8X6Lv50lENo/00OMTY=;
+        b=RYXfHa57pY26fvAP3ArhStL+ooPq6dyyVyHr3Gt6xF3XgeIZEkotL1CEl2BuySGy7FyelR
+        NK8be1idCPtIomgQPHxhjG98kLnPx9LE5YywE2U0XDF9t0exIBdvkR50dBVLSya0k7v8K9
+        pqWyM4W0zI2HhBkrE3mAoYdfzWlnAcI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-400-6Fhu9fOOOiSWMWAnquGI1g-1; Mon, 14 Feb 2022 15:07:35 -0500
+X-MC-Unique: 6Fhu9fOOOiSWMWAnquGI1g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 44CA181431A;
+        Mon, 14 Feb 2022 20:07:34 +0000 (UTC)
+Received: from llong.com (unknown [10.22.12.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 14747610A8;
+        Mon, 14 Feb 2022 20:07:22 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Waiman Long <longman@redhat.com>
+Subject: [PATCH-tip v2] locking/lockdep: Cleanup reinit_class()
+Date:   Mon, 14 Feb 2022 15:07:12 -0500
+Message-Id: <20220214200712.43452-1-longman@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to BSP library source, H264 neighbour info buffer size needs
-to be 32 kiB for H6. This is similar to H265 decoding, which also needs
-double buffer size in comparison to older Cedrus core generations.
+Replace the duplicated WARN_ON_ONCE() tests in reinit_class() with
+BUILD_BUG_ON() which have the same effect of making sure that those
+lists aren't cleared accidentally because of their placements in the
+lock_class structure.
 
-Increase buffer size to cover H6 needs. Since increase is not that big
-in absolute numbers, it doesn't make sense to complicate logic for older
-generations.
-
-Issue was discovered using iommu and cross checked with BSP library
-source.
-
-Fixes: 6eb9b758e307 ("media: cedrus: Add H264 decoding support")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- drivers/staging/media/sunxi/cedrus/cedrus_h264.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/lockdep_types.h | 4 ++++
+ kernel/locking/lockdep.c      | 8 +++++---
+ 2 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-index b4173a8926d6..d8fb93035470 100644
---- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-+++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
-@@ -38,7 +38,7 @@ struct cedrus_h264_sram_ref_pic {
+diff --git a/include/linux/lockdep_types.h b/include/linux/lockdep_types.h
+index d22430840b53..446d981ae3a2 100644
+--- a/include/linux/lockdep_types.h
++++ b/include/linux/lockdep_types.h
+@@ -108,6 +108,10 @@ struct lock_class {
+ 	 */
+ 	struct list_head		locks_after, locks_before;
  
- #define CEDRUS_H264_FRAME_NUM		18
++	/*
++	 * All the fields that require re-initialization after being zapped
++	 * must be put after "key".
++	 */
+ 	const struct lockdep_subclass_key *key;
+ 	unsigned int			subclass;
+ 	unsigned int			dep_gen_id;
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 2e6892ec3756..5fb015dc1686 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -6011,13 +6011,15 @@ static void zap_class(struct pending_free *pf, struct lock_class *class)
  
--#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(16 * SZ_1K)
-+#define CEDRUS_NEIGHBOR_INFO_BUF_SIZE	(32 * SZ_1K)
- #define CEDRUS_MIN_PIC_INFO_BUF_SIZE       (130 * SZ_1K)
+ static void reinit_class(struct lock_class *class)
+ {
++	const unsigned int key_offset = offsetof(struct lock_class, key);
++
+ 	WARN_ON_ONCE(!class->lock_entry.next);
+ 	WARN_ON_ONCE(!list_empty(&class->locks_after));
+ 	WARN_ON_ONCE(!list_empty(&class->locks_before));
++	BUILD_BUG_ON(offsetof(struct lock_class, lock_entry) > key_offset);
++	BUILD_BUG_ON(offsetof(struct lock_class, locks_after) > key_offset);
++	BUILD_BUG_ON(offsetof(struct lock_class, locks_before) > key_offset);
+ 	memset_startat(class, 0, key);
+-	WARN_ON_ONCE(!class->lock_entry.next);
+-	WARN_ON_ONCE(!list_empty(&class->locks_after));
+-	WARN_ON_ONCE(!list_empty(&class->locks_before));
+ }
  
- static void cedrus_h264_write_sram(struct cedrus_dev *dev,
+ static inline int within(const void *addr, void *start, unsigned long size)
 -- 
-2.35.1
+2.27.0
 
