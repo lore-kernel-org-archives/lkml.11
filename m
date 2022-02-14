@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C13D6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346728AbiBNKX3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:23:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53390 "EHLO
+        id S232060AbiBNKXi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:23:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347535AbiBNKVT (ORCPT
+        with ESMTP id S1347635AbiBNKVV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:21:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01D147D29B;
-        Mon, 14 Feb 2022 01:55:45 -0800 (PST)
+        Mon, 14 Feb 2022 05:21:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9627DE14;
+        Mon, 14 Feb 2022 01:55:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF55FB80DCD;
-        Mon, 14 Feb 2022 09:55:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10903C340E9;
-        Mon, 14 Feb 2022 09:55:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D766160F25;
+        Mon, 14 Feb 2022 09:55:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6C59C340E9;
+        Mon, 14 Feb 2022 09:55:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832529;
-        bh=l0PJjO+e5VJdWj/04DSb6gvQ/YyKbHI2YE4QxJza6hs=;
+        s=korg; t=1644832548;
+        bh=cfXOxnZgcPdfoYQeHM0c0yyXmHPUq5UCgsWsGd9TXlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ug/G4alaMp76I/s5AYBXYzXvsx6P9C1COZp0zoKXfzHXTMc5/ZUCOD3nQUMpKwMVT
-         LbesKQpE4dNsvmyaV54CMbBfw9ZVw1uCT1c69NtgY+qVOc0buq1iNIBAioNtOO+bP+
-         CK061/mGeRlUeyPgLQ3RRwV3U0BZ2F70nU9HAB18=
+        b=Zre4T3VLD53RdA8dVh1rOC6B9bolWTIyL/vwKp73MiXzaBblYwsFpprvuq3j0GapC
+         IMR8AL7eZt2+i15Qd2FEesPsB8z3DxZoIIa0FBuyIOI/hLqLTF0RB8QIAjjzQ+lD/g
+         tmAflhqK3ozt+SF+tSgY0Yu2t7Zy8cibxvwWvDBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 012/203] net: phy: marvell: Fix RGMII Tx/Rx delays setting in 88e1121-compatible PHYs
-Date:   Mon, 14 Feb 2022 10:24:16 +0100
-Message-Id: <20220214092510.636380201@linuxfoundation.org>
+        stable@vger.kernel.org, Kiwoong Kim <kwmad.kim@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 050/203] scsi: ufs: Treat link loss as fatal error
+Date:   Mon, 14 Feb 2022 10:24:54 +0100
+Message-Id: <20220214092511.919563337@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,65 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-commit fe4f57bf7b585dca58f1496c4e2481ecbae18126 upstream.
+[ Upstream commit c99b9b2301492b665b6e51ba6c06ec362eddcd10 ]
 
-It is mandatory for a software to issue a reset upon modifying RGMII
-Receive Timing Control and RGMII Transmit Timing Control bit fields of MAC
-Specific Control register 2 (page 2, register 21) otherwise the changes
-won't be perceived by the PHY (the same is applicable for a lot of other
-registers). Not setting the RGMII delays on the platforms that imply it'
-being done on the PHY side will consequently cause the traffic loss. We
-discovered that the denoted soft-reset is missing in the
-m88e1121_config_aneg() method for the case if the RGMII delays are
-modified but the MDIx polarity isn't changed or the auto-negotiation is
-left enabled, thus causing the traffic loss on our platform with Marvell
-Alaska 88E1510 installed. Let's fix that by issuing the soft-reset if the
-delays have been actually set in the m88e1121_config_aneg_rgmii_delays()
-method.
+This event is raised when link is lost as specified in UFSHCI spec and that
+means communication is not possible. Thus initializing UFS interface needs
+to be done.
 
-Cc: stable@vger.kernel.org
-Fixes: d6ab93364734 ("net: phy: marvell: Avoid unnecessary soft reset")
-Signed-off-by: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Serge Semin <fancer.lancer@gmail.com>
-Link: https://lore.kernel.org/r/20220205203932.26899-1-Pavel.Parkhomenko@baikalelectronics.ru
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Make UFS driver considers Link Lost as fatal in the INT_FATAL_ERRORS
+mask. This will trigger a host reset whenever a link lost interrupt occurs.
+
+Link: https://lore.kernel.org/r/1642743475-54275-1-git-send-email-kwmad.kim@samsung.com
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/scsi/ufs/ufshci.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -553,9 +553,9 @@ static int m88e1121_config_aneg_rgmii_de
- 	else
- 		mscr = 0;
+diff --git a/drivers/scsi/ufs/ufshci.h b/drivers/scsi/ufs/ufshci.h
+index 6a295c88d850f..a7ff0e5b54946 100644
+--- a/drivers/scsi/ufs/ufshci.h
++++ b/drivers/scsi/ufs/ufshci.h
+@@ -142,7 +142,8 @@ static inline u32 ufshci_version(u32 major, u32 minor)
+ #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
+ 				CONTROLLER_FATAL_ERROR |\
+ 				SYSTEM_BUS_FATAL_ERROR |\
+-				CRYPTO_ENGINE_FATAL_ERROR)
++				CRYPTO_ENGINE_FATAL_ERROR |\
++				UIC_LINK_LOST)
  
--	return phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
--				MII_88E1121_PHY_MSCR_REG,
--				MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
-+	return phy_modify_paged_changed(phydev, MII_MARVELL_MSCR_PAGE,
-+					MII_88E1121_PHY_MSCR_REG,
-+					MII_88E1121_PHY_MSCR_DELAY_MASK, mscr);
- }
- 
- static int m88e1121_config_aneg(struct phy_device *phydev)
-@@ -569,11 +569,13 @@ static int m88e1121_config_aneg(struct p
- 			return err;
- 	}
- 
-+	changed = err;
-+
- 	err = marvell_set_polarity(phydev, phydev->mdix_ctrl);
- 	if (err < 0)
- 		return err;
- 
--	changed = err;
-+	changed |= err;
- 
- 	err = genphy_config_aneg(phydev);
- 	if (err < 0)
+ /* HCS - Host Controller Status 30h */
+ #define DEVICE_PRESENT				0x1
+-- 
+2.34.1
+
 
 
