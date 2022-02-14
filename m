@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79ACBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E52AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345171AbiBNKEn (ORCPT
+        id S1344633AbiBNKEs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:43 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44200 "EHLO
+        Mon, 14 Feb 2022 05:04:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344355AbiBNJ72 (ORCPT
+        with ESMTP id S1344044AbiBNJ7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F65C2B;
-        Mon, 14 Feb 2022 01:46:54 -0800 (PST)
+        Mon, 14 Feb 2022 04:59:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6830C39;
+        Mon, 14 Feb 2022 01:47:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE709B80D83;
-        Mon, 14 Feb 2022 09:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C9EC340EF;
-        Mon, 14 Feb 2022 09:46:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C8D61287;
+        Mon, 14 Feb 2022 09:47:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EEA4C340E9;
+        Mon, 14 Feb 2022 09:47:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832011;
-        bh=HaqVs4QPEEUCzW8Zpf+6cvRAf3Kw8e0KtqSsmrSwqOA=;
+        s=korg; t=1644832020;
+        bh=a9hRDb8jeBX3+CfUzzLMVZKn6WHEX5RbBWJPBjc8rVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tHdLAnvQEC+EKhvZSYUEIvBWqz9deiHymni9w0+igvD9M3E6aMas0Dj8wG/Iu/GpX
-         sqi2pNqXf5lRHYp0qSWaHH+Bm2/xuEfhXWKGX6Wki+pph1nEJo6ZjfedwhZN5BZN29
-         hVZCbOalVPHX5eHN2KfKR5et2VR7I7z46hfyzw/I=
+        b=fhAlvnpSADhfNokPN9NH9K8fr9XPBUyKPaJaFj+ml1XB0OTxZogTLfr+5ev47njQk
+         4fGnPKSaw0iQ6SA1+edEBCfApeatRNWgisBHv25LP583KfiS1rJMR/zR2kycXBI68V
+         NOMOI8eR9nBy/FOOsn3NrODSg/Ke22KyZGtYzk5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Tong Zhang <ztong0001@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Zhan Liu <zhan.liu@amd.com>,
+        Charlene Liu <charlene.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/172] scsi: myrs: Fix crash in error case
-Date:   Mon, 14 Feb 2022 10:25:09 +0100
-Message-Id: <20220214092508.139689203@linuxfoundation.org>
+Subject: [PATCH 5.15 054/172] drm/amd/display: Correct MPC split policy for DCN301
+Date:   Mon, 14 Feb 2022 10:25:12 +0100
+Message-Id: <20220214092508.258889793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,46 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tong Zhang <ztong0001@gmail.com>
+From: Zhan Liu <zhan.liu@amd.com>
 
-[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
+[ Upstream commit ac46d93235074a6c5d280d35771c23fd8620e7d9 ]
 
-In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
-with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
-crash the kernel.
+[Why]
+DCN301 has seamless boot enabled. With MPC split enabled
+at the same time, system will hang.
 
-[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
-[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
-[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
-[    1.110774] Call Trace:
-[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
-[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
-[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
-[    1.111500]  local_pci_probe+0x48/0x90
+[How]
+Revert MPC split policy back to "MPC_SPLIT_AVOID". Since we have
+ODM combine enabled on DCN301, pipe split is not necessary here.
 
-Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Zhan Liu <zhan.liu@amd.com>
+Reviewed-by: Charlene Liu <charlene.liu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/myrs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
-index 07f274afd7e5e..a4d244ee4548c 100644
---- a/drivers/scsi/myrs.c
-+++ b/drivers/scsi/myrs.c
-@@ -2265,7 +2265,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
- 	myrs_unmap(cs);
- 
- 	if (cs->mmio_base) {
--		cs->disable_intr(cs);
-+		if (cs->disable_intr)
-+			cs->disable_intr(cs);
- 		iounmap(cs->mmio_base);
- 		cs->mmio_base = NULL;
- 	}
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+index 9e2f18a0c9483..26ebe00a55f67 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_resource.c
+@@ -863,7 +863,7 @@ static const struct dc_debug_options debug_defaults_drv = {
+ 	.disable_clock_gate = true,
+ 	.disable_pplib_clock_request = true,
+ 	.disable_pplib_wm_range = true,
+-	.pipe_split_policy = MPC_SPLIT_DYNAMIC,
++	.pipe_split_policy = MPC_SPLIT_AVOID,
+ 	.force_single_disp_pipe_split = false,
+ 	.disable_dcc = DCC_ENABLE,
+ 	.vsr_support = true,
 -- 
 2.34.1
 
