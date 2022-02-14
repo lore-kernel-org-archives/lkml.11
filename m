@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C939C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232750AbiBNJ5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:57:21 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34404 "EHLO
+        id S242243AbiBNJ5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:57:25 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343633AbiBNJuz (ORCPT
+        with ESMTP id S1343607AbiBNJuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:50:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2E4657B3;
-        Mon, 14 Feb 2022 01:41:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A82657A4;
+        Mon, 14 Feb 2022 01:41:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE93E611B8;
-        Mon, 14 Feb 2022 09:41:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D536EC340E9;
-        Mon, 14 Feb 2022 09:41:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B00F61172;
+        Mon, 14 Feb 2022 09:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71944C340EF;
+        Mon, 14 Feb 2022 09:41:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831712;
-        bh=a6lTLUlCPFqhaJW682/k6YpdxQGr5eC5ep3SweaQk3c=;
+        s=korg; t=1644831706;
+        bh=WxH1Jvs2nKiTr7Ngr070ShsLHsw6r7eBxqgxaRmGV10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1t/dpL1ivJHHVRSm3jXz3QcgRc+Hoxts8FQ4LpQ0G7Si7E3ziIu5YcJM//bPhWCpI
-         Fu1Q9gVqevlRZB+PV9OChQLDNhfn48IPIjUOXgjfQxxNIOQtYcApi5ZTO1RDv7Huuk
-         zy046O4z1yQUso+/2MgmSetUAJ3VuPJU7MOAgGwU=
+        b=jPvunWNq7PgnQAZ2+lruoR5awVHY3niAZU+jgd0jzNiVQZRWzL5u653X4kzpqsS3s
+         jc/YxXJ+lonsEY2TzBuAsxpBFUrAV92uTMQYUHnfn896/wW/fWkZVa1uHk4v6a6CEF
+         9jak/oavRbmCpVYC5ZELWKRp/KGBxycoY6ZPqYLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Liam Merwick <liam.merwick@oracle.com>,
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 040/116] KVM: SVM: Dont kill SEV guest if SMAP erratum triggers in usermode
-Date:   Mon, 14 Feb 2022 10:25:39 +0100
-Message-Id: <20220214092500.062896165@linuxfoundation.org>
+Subject: [PATCH 5.10 038/116] KVM: nVMX: eVMCS: Filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER
+Date:   Mon, 14 Feb 2022 10:25:37 +0100
+Message-Id: <20220214092459.998110689@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,52 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit cdf85e0c5dc766fc7fc779466280e454a6d04f87 ]
+[ Upstream commit 7a601e2cf61558dfd534a9ecaad09f5853ad8204 ]
 
-Inject a #GP instead of synthesizing triple fault to try to avoid killing
-the guest if emulation of an SEV guest fails due to encountering the SMAP
-erratum.  The injected #GP may still be fatal to the guest, e.g. if the
-userspace process is providing critical functionality, but KVM should
-make every attempt to keep the guest alive.
+Enlightened VMCS v1 doesn't have VMX_PREEMPTION_TIMER_VALUE field,
+PIN_BASED_VMX_PREEMPTION_TIMER is also filtered out already so it makes
+sense to filter out VM_EXIT_SAVE_VMX_PREEMPTION_TIMER too.
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Liam Merwick <liam.merwick@oracle.com>
-Message-Id: <20220120010719.711476-10-seanjc@google.com>
+Note, none of the currently existing Windows/Hyper-V versions are known
+to enable 'save VMX-preemption timer value' when eVMCS is in use, the
+change is aimed at making the filtering future proof.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-3-vkuznets@redhat.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/svm/svm.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/evmcs.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index fa543c355fbdb..d515c8e68314c 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4155,7 +4155,21 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int i
- 			return true;
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index bd41d9462355f..011929a638230 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -59,7 +59,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ 	 SECONDARY_EXEC_SHADOW_VMCS |					\
+ 	 SECONDARY_EXEC_TSC_SCALING |					\
+ 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
+-#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL)
++#define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
++	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
++	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
  
- 		pr_err_ratelimited("KVM: SEV Guest triggered AMD Erratum 1096\n");
--		kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
-+
-+		/*
-+		 * If the fault occurred in userspace, arbitrarily inject #GP
-+		 * to avoid killing the guest and to hopefully avoid confusing
-+		 * the guest kernel too much, e.g. injecting #PF would not be
-+		 * coherent with respect to the guest's page tables.  Request
-+		 * triple fault if the fault occurred in the kernel as there's
-+		 * no fault that KVM can inject without confusing the guest.
-+		 * In practice, the triple fault is moot as no sane SEV kernel
-+		 * will execute from user memory while also running with SMAP=1.
-+		 */
-+		if (is_user)
-+			kvm_inject_gp(vcpu, 0);
-+		else
-+			kvm_make_request(KVM_REQ_TRIPLE_FAULT, vcpu);
- 	}
- 
- 	return false;
 -- 
 2.34.1
 
