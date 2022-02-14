@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348483AbiBNKfl (ORCPT
+        id S1348045AbiBNKhH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:35:41 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43868 "EHLO
+        Mon, 14 Feb 2022 05:37:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348066AbiBNKej (ORCPT
+        with ESMTP id S1348267AbiBNKel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:34:39 -0500
+        Mon, 14 Feb 2022 05:34:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C11AA1AB;
-        Mon, 14 Feb 2022 01:41:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CABDAD61;
+        Mon, 14 Feb 2022 02:01:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25576B80DC4;
-        Mon, 14 Feb 2022 09:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 599FBC340E9;
-        Mon, 14 Feb 2022 09:41:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 808E0B80DCD;
+        Mon, 14 Feb 2022 10:01:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F21EC340E9;
+        Mon, 14 Feb 2022 10:01:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831672;
-        bh=DyZCzf4MLSkV/RMSq/CCyIhyjZqCMJ2VWAna2pi/fsk=;
+        s=korg; t=1644832880;
+        bh=5oRXJ9iYbP6bvP3H+2211ccCJikkhXoMnaErPQRQCtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UORf68Q5Jv4Yzuw8f4Cj3G9jrb00jgQy3omDY2NRRhi0S8CCLaYmQy3PYrRmWK4y6
-         HJq6+hyJNMtT3u1EK7Uy/Z9aV+0wdeXpiJMoZK7ypuBdOK54HM+IhUV0qEgOXY6aap
-         dhRSkHBAXNTux99gJszWWsf13BOoVtol6SvODsXg=
+        b=rNm7BAxBDKJVrF68571OKyZTsCFusJBn+XmZhrzTOlLcEaU1EAcQbXzjC/lNlkakN
+         7NbxcgF/Pr0WpYzSwiPMqdOMpwax12I7iYtUwPZdDl6k5SnfySQqeWhtF2dsdfcD+z
+         i/6y71vybYvYltWzp9MI/4GZMK9uT57fgpN+K67A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Pratham Pratap <quic_ppratap@quicinc.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        stable@vger.kernel.org,
+        Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 058/116] usb: f_fs: Fix use-after-free for epfile
-Date:   Mon, 14 Feb 2022 10:25:57 +0100
-Message-Id: <20220214092500.747995676@linuxfoundation.org>
+Subject: [PATCH 5.16 155/203] dpaa2-eth: unregister the netdev before disconnecting from the PHY
+Date:   Mon, 14 Feb 2022 10:26:39 +0100
+Message-Id: <20220214092515.514862032@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-References: <20220214092458.668376521@linuxfoundation.org>
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,161 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Udipto Goswami <quic_ugoswami@quicinc.com>
+From: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
 
-[ Upstream commit ebe2b1add1055b903e2acd86b290a85297edc0b3 ]
+[ Upstream commit 9ccc6e0c8959a019bb40f6b18704b142c04b19a8 ]
 
-Consider a case where ffs_func_eps_disable is called from
-ffs_func_disable as part of composition switch and at the
-same time ffs_epfile_release get called from userspace.
-ffs_epfile_release will free up the read buffer and call
-ffs_data_closed which in turn destroys ffs->epfiles and
-mark it as NULL. While this was happening the driver has
-already initialized the local epfile in ffs_func_eps_disable
-which is now freed and waiting to acquire the spinlock. Once
-spinlock is acquired the driver proceeds with the stale value
-of epfile and tries to free the already freed read buffer
-causing use-after-free.
+The netdev should be unregistered before we are disconnecting from the
+MAC/PHY so that the dev_close callback is called and the PHY and the
+phylink workqueues are actually stopped before we are disconnecting and
+destroying the phylink instance.
 
-Following is the illustration of the race:
-
-      CPU1                                  CPU2
-
-   ffs_func_eps_disable
-   epfiles (local copy)
-					ffs_epfile_release
-					ffs_data_closed
-					if (last file closed)
-					ffs_data_reset
-					ffs_data_clear
-					ffs_epfiles_destroy
-spin_lock
-dereference epfiles
-
-Fix this races by taking epfiles local copy & assigning it under
-spinlock and if epfiles(local) is null then update it in ffs->epfiles
-then finally destroy it.
-Extending the scope further from the race, protecting the ep related
-structures, and concurrent accesses.
-
-Fixes: a9e6f83c2df1 ("usb: gadget: f_fs: stop sleeping in ffs_func_eps_disable")
-Co-developed-by: Udipto Goswami <quic_ugoswami@quicinc.com>
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pratham Pratap <quic_ppratap@quicinc.com>
-Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
-Link: https://lore.kernel.org/r/1643256595-10797-1-git-send-email-quic_ugoswami@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 719479230893 ("dpaa2-eth: add MAC/PHY support through phylink")
+Signed-off-by: Robert-Ionut Alexa <robert-ionut.alexa@nxp.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 56 ++++++++++++++++++++++--------
- 1 file changed, 42 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index d8652321e15e9..bb0d92837f677 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -1710,16 +1710,24 @@ static void ffs_data_put(struct ffs_data *ffs)
- 
- static void ffs_data_closed(struct ffs_data *ffs)
- {
-+	struct ffs_epfile *epfiles;
-+	unsigned long flags;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 8e643567abce2..70c8dd6cf3508 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -4523,12 +4523,12 @@ static int dpaa2_eth_remove(struct fsl_mc_device *ls_dev)
+ #ifdef CONFIG_DEBUG_FS
+ 	dpaa2_dbg_remove(priv);
+ #endif
 +
- 	ENTER();
++	unregister_netdev(net_dev);
+ 	rtnl_lock();
+ 	dpaa2_eth_disconnect_mac(priv);
+ 	rtnl_unlock();
  
- 	if (atomic_dec_and_test(&ffs->opened)) {
- 		if (ffs->no_disconnect) {
- 			ffs->state = FFS_DEACTIVATED;
--			if (ffs->epfiles) {
--				ffs_epfiles_destroy(ffs->epfiles,
--						   ffs->eps_count);
--				ffs->epfiles = NULL;
--			}
-+			spin_lock_irqsave(&ffs->eps_lock, flags);
-+			epfiles = ffs->epfiles;
-+			ffs->epfiles = NULL;
-+			spin_unlock_irqrestore(&ffs->eps_lock,
-+							flags);
-+
-+			if (epfiles)
-+				ffs_epfiles_destroy(epfiles,
-+						 ffs->eps_count);
-+
- 			if (ffs->setup_state == FFS_SETUP_PENDING)
- 				__ffs_ep0_stall(ffs);
- 		} else {
-@@ -1766,14 +1774,27 @@ static struct ffs_data *ffs_data_new(const char *dev_name)
- 
- static void ffs_data_clear(struct ffs_data *ffs)
- {
-+	struct ffs_epfile *epfiles;
-+	unsigned long flags;
-+
- 	ENTER();
- 
- 	ffs_closed(ffs);
- 
- 	BUG_ON(ffs->gadget);
- 
--	if (ffs->epfiles) {
--		ffs_epfiles_destroy(ffs->epfiles, ffs->eps_count);
-+	spin_lock_irqsave(&ffs->eps_lock, flags);
-+	epfiles = ffs->epfiles;
-+	ffs->epfiles = NULL;
-+	spin_unlock_irqrestore(&ffs->eps_lock, flags);
-+
-+	/*
-+	 * potential race possible between ffs_func_eps_disable
-+	 * & ffs_epfile_release therefore maintaining a local
-+	 * copy of epfile will save us from use-after-free.
-+	 */
-+	if (epfiles) {
-+		ffs_epfiles_destroy(epfiles, ffs->eps_count);
- 		ffs->epfiles = NULL;
- 	}
- 
-@@ -1921,12 +1942,15 @@ static void ffs_epfiles_destroy(struct ffs_epfile *epfiles, unsigned count)
- 
- static void ffs_func_eps_disable(struct ffs_function *func)
- {
--	struct ffs_ep *ep         = func->eps;
--	struct ffs_epfile *epfile = func->ffs->epfiles;
--	unsigned count            = func->ffs->eps_count;
-+	struct ffs_ep *ep;
-+	struct ffs_epfile *epfile;
-+	unsigned short count;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
-+	count = func->ffs->eps_count;
-+	epfile = func->ffs->epfiles;
-+	ep = func->eps;
- 	while (count--) {
- 		/* pending requests get nuked */
- 		if (likely(ep->ep))
-@@ -1944,14 +1968,18 @@ static void ffs_func_eps_disable(struct ffs_function *func)
- 
- static int ffs_func_eps_enable(struct ffs_function *func)
- {
--	struct ffs_data *ffs      = func->ffs;
--	struct ffs_ep *ep         = func->eps;
--	struct ffs_epfile *epfile = ffs->epfiles;
--	unsigned count            = ffs->eps_count;
-+	struct ffs_data *ffs;
-+	struct ffs_ep *ep;
-+	struct ffs_epfile *epfile;
-+	unsigned short count;
- 	unsigned long flags;
- 	int ret = 0;
- 
- 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
-+	ffs = func->ffs;
-+	ep = func->eps;
-+	epfile = ffs->epfiles;
-+	count = ffs->eps_count;
- 	while(count--) {
- 		ep->ep->driver_data = ep;
- 
+-	unregister_netdev(net_dev);
+-
+ 	dpaa2_eth_dl_port_del(priv);
+ 	dpaa2_eth_dl_traps_unregister(priv);
+ 	dpaa2_eth_dl_free(priv);
 -- 
 2.34.1
 
