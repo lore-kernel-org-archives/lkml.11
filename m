@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E89C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244202AbiBNJie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:34 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52396 "EHLO
+        id S243425AbiBNJik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244361AbiBNJfx (ORCPT
+        with ESMTP id S244610AbiBNJgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:35:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62372AE61;
-        Mon, 14 Feb 2022 01:33:40 -0800 (PST)
+        Mon, 14 Feb 2022 04:36:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB1C66F8E;
+        Mon, 14 Feb 2022 01:33:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2192960F87;
-        Mon, 14 Feb 2022 09:33:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4C9C340E9;
-        Mon, 14 Feb 2022 09:33:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4103B80DC1;
+        Mon, 14 Feb 2022 09:33:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C6BDC340E9;
+        Mon, 14 Feb 2022 09:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831216;
-        bh=maGwADFh5ujhe3YbMq/qFuGWPGji6b+uUxhJF/LdLww=;
+        s=korg; t=1644831213;
+        bh=q+SyW+Db9SwZ6P7VPGG64vPhkk7vtP3jZwuRCE8SVao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2gFSKOSD+kG3Qo6fWTPOdyy2AE2MT6eL8LLXcX5pgtvV2K9wSpRmXd0NYZpEfjvd
-         vlX69BVpQgn+YNfVv1QJQwgv2XR84SGQEx4+J33LIcnN/cxOiQ4s5r0W0VPtKDln7F
-         0e8DxGbqPZ3RCno6+A+0x3n9MVSUILrsFsQmH1nI=
+        b=v48dBxBZJ4/g13AUX2XVhQg2BMAJRumrjJ3tvrSiEGc3ZwPsB1r48jDYXVaaeOCFE
+         WyVH+fC/P/I4J3RfHo2LuLPWOdakIQA0bTue3+IkWXH7EUmqkbno8tVT1uNAgepWNi
+         xym0H2LI8QI7J8M3bQ+uhJGJchZx5RRwp8GUFJIw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 20/49] net: bridge: fix stale eth hdr pointer in br_dev_xmit
-Date:   Mon, 14 Feb 2022 10:25:46 +0100
-Message-Id: <20220214092448.956124456@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pratham Pratap <quic_ppratap@quicinc.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 25/49] usb: f_fs: Fix use-after-free for epfile
+Date:   Mon, 14 Feb 2022 10:25:51 +0100
+Message-Id: <20220214092449.123615579@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,55 +50,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+From: Udipto Goswami <quic_ugoswami@quicinc.com>
 
-commit 823d81b0fa2cd83a640734e74caee338b5d3c093 upstream.
+[ Upstream commit ebe2b1add1055b903e2acd86b290a85297edc0b3 ]
 
-In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
-if the packet has the vlan header inside (e.g. bridge with disabled
-tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
-to extract the vid before filtering which in turn calls pskb_may_pull()
-and we may end up with a stale eth pointer. Moreover the cached eth header
-pointer will generally be wrong after that operation. Remove the eth header
-caching and just use eth_hdr() directly, the compiler does the right thing
-and calculates it only once so we don't lose anything.
+Consider a case where ffs_func_eps_disable is called from
+ffs_func_disable as part of composition switch and at the
+same time ffs_epfile_release get called from userspace.
+ffs_epfile_release will free up the read buffer and call
+ffs_data_closed which in turn destroys ffs->epfiles and
+mark it as NULL. While this was happening the driver has
+already initialized the local epfile in ffs_func_eps_disable
+which is now freed and waiting to acquire the spinlock. Once
+spinlock is acquired the driver proceeds with the stale value
+of epfile and tries to free the already freed read buffer
+causing use-after-free.
 
-Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Eduardo Vela <Nava> <evn@google.com>
+Following is the illustration of the race:
+
+      CPU1                                  CPU2
+
+   ffs_func_eps_disable
+   epfiles (local copy)
+					ffs_epfile_release
+					ffs_data_closed
+					if (last file closed)
+					ffs_data_reset
+					ffs_data_clear
+					ffs_epfiles_destroy
+spin_lock
+dereference epfiles
+
+Fix this races by taking epfiles local copy & assigning it under
+spinlock and if epfiles(local) is null then update it in ffs->epfiles
+then finally destroy it.
+Extending the scope further from the race, protecting the ep related
+structures, and concurrent accesses.
+
+Fixes: a9e6f83c2df1 ("usb: gadget: f_fs: stop sleeping in ffs_func_eps_disable")
+Co-developed-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pratham Pratap <quic_ppratap@quicinc.com>
+Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+Link: https://lore.kernel.org/r/1643256595-10797-1-git-send-email-quic_ugoswami@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_device.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/usb/gadget/function/f_fs.c | 56 ++++++++++++++++++++++--------
+ 1 file changed, 42 insertions(+), 14 deletions(-)
 
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -39,7 +39,6 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
- 	struct pcpu_sw_netstats *brstats = this_cpu_ptr(br->stats);
- 	const struct nf_br_ops *nf_ops;
- 	const unsigned char *dest;
--	struct ethhdr *eth;
- 	u16 vid = 0;
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index 9271a7009a00f..49eb4e3c760f4 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -1636,16 +1636,24 @@ static void ffs_data_put(struct ffs_data *ffs)
  
- 	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
-@@ -60,15 +59,14 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
- 	BR_INPUT_SKB_CB(skb)->brdev = dev;
+ static void ffs_data_closed(struct ffs_data *ffs)
+ {
++	struct ffs_epfile *epfiles;
++	unsigned long flags;
++
+ 	ENTER();
  
- 	skb_reset_mac_header(skb);
--	eth = eth_hdr(skb);
- 	skb_pull(skb, ETH_HLEN);
+ 	if (atomic_dec_and_test(&ffs->opened)) {
+ 		if (ffs->no_disconnect) {
+ 			ffs->state = FFS_DEACTIVATED;
+-			if (ffs->epfiles) {
+-				ffs_epfiles_destroy(ffs->epfiles,
+-						   ffs->eps_count);
+-				ffs->epfiles = NULL;
+-			}
++			spin_lock_irqsave(&ffs->eps_lock, flags);
++			epfiles = ffs->epfiles;
++			ffs->epfiles = NULL;
++			spin_unlock_irqrestore(&ffs->eps_lock,
++							flags);
++
++			if (epfiles)
++				ffs_epfiles_destroy(epfiles,
++						 ffs->eps_count);
++
+ 			if (ffs->setup_state == FFS_SETUP_PENDING)
+ 				__ffs_ep0_stall(ffs);
+ 		} else {
+@@ -1692,14 +1700,27 @@ static struct ffs_data *ffs_data_new(const char *dev_name)
  
- 	if (!br_allowed_ingress(br, br_vlan_group_rcu(br), skb, &vid))
- 		goto out;
+ static void ffs_data_clear(struct ffs_data *ffs)
+ {
++	struct ffs_epfile *epfiles;
++	unsigned long flags;
++
+ 	ENTER();
  
- 	if (IS_ENABLED(CONFIG_INET) &&
--	    (eth->h_proto == htons(ETH_P_ARP) ||
--	     eth->h_proto == htons(ETH_P_RARP)) &&
-+	    (eth_hdr(skb)->h_proto == htons(ETH_P_ARP) ||
-+	     eth_hdr(skb)->h_proto == htons(ETH_P_RARP)) &&
- 	    br->neigh_suppress_enabled) {
- 		br_do_proxy_suppress_arp(skb, br, vid, NULL);
- 	} else if (IS_ENABLED(CONFIG_IPV6) &&
+ 	ffs_closed(ffs);
+ 
+ 	BUG_ON(ffs->gadget);
+ 
+-	if (ffs->epfiles) {
+-		ffs_epfiles_destroy(ffs->epfiles, ffs->eps_count);
++	spin_lock_irqsave(&ffs->eps_lock, flags);
++	epfiles = ffs->epfiles;
++	ffs->epfiles = NULL;
++	spin_unlock_irqrestore(&ffs->eps_lock, flags);
++
++	/*
++	 * potential race possible between ffs_func_eps_disable
++	 * & ffs_epfile_release therefore maintaining a local
++	 * copy of epfile will save us from use-after-free.
++	 */
++	if (epfiles) {
++		ffs_epfiles_destroy(epfiles, ffs->eps_count);
+ 		ffs->epfiles = NULL;
+ 	}
+ 
+@@ -1847,12 +1868,15 @@ static void ffs_epfiles_destroy(struct ffs_epfile *epfiles, unsigned count)
+ 
+ static void ffs_func_eps_disable(struct ffs_function *func)
+ {
+-	struct ffs_ep *ep         = func->eps;
+-	struct ffs_epfile *epfile = func->ffs->epfiles;
+-	unsigned count            = func->ffs->eps_count;
++	struct ffs_ep *ep;
++	struct ffs_epfile *epfile;
++	unsigned short count;
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
++	count = func->ffs->eps_count;
++	epfile = func->ffs->epfiles;
++	ep = func->eps;
+ 	while (count--) {
+ 		/* pending requests get nuked */
+ 		if (likely(ep->ep))
+@@ -1870,14 +1894,18 @@ static void ffs_func_eps_disable(struct ffs_function *func)
+ 
+ static int ffs_func_eps_enable(struct ffs_function *func)
+ {
+-	struct ffs_data *ffs      = func->ffs;
+-	struct ffs_ep *ep         = func->eps;
+-	struct ffs_epfile *epfile = ffs->epfiles;
+-	unsigned count            = ffs->eps_count;
++	struct ffs_data *ffs;
++	struct ffs_ep *ep;
++	struct ffs_epfile *epfile;
++	unsigned short count;
+ 	unsigned long flags;
+ 	int ret = 0;
+ 
+ 	spin_lock_irqsave(&func->ffs->eps_lock, flags);
++	ffs = func->ffs;
++	ep = func->eps;
++	epfile = ffs->epfiles;
++	count = ffs->eps_count;
+ 	while(count--) {
+ 		ep->ep->driver_data = ep;
+ 
+-- 
+2.34.1
+
 
 
