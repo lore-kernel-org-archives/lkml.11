@@ -2,89 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22EFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A52C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346794AbiBNKUm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44754 "EHLO
+        id S242066AbiBNKVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:21:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346914AbiBNKQM (ORCPT
+        with ESMTP id S1346250AbiBNKRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72557B57C;
-        Mon, 14 Feb 2022 01:53:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCE9D60F25;
-        Mon, 14 Feb 2022 09:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94FBEC340E9;
-        Mon, 14 Feb 2022 09:53:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832389;
-        bh=2bxlapIbZ7DOSdflx2EZloe76yIzRk8iWg3zk2A8E8w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q8EFZldfW3N1MEzcjbzfmit8NVZJIqxR3OeCVZb8ZAa6oFH4fl2nHz7h2bcAXl2Li
-         Q7pvBNx2hBS16FON+ILnOEUIudHS+7HNqLydJ06KWVtgrzWIkkEECAzYH0GiBqqVDK
-         W93SVGtMk62XNarJGf2flhCYwBJJ4cBRKSKrHjds=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable@kernel.org, Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 5.15 139/172] Revert "usb: dwc2: drd: fix soft connect when gadget is unconfigured"
-Date:   Mon, 14 Feb 2022 10:26:37 +0100
-Message-Id: <20220214092511.203292225@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-References: <20220214092506.354292783@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:17:55 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F16187C79A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:54:50 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52E131396;
+        Mon, 14 Feb 2022 01:54:05 -0800 (PST)
+Received: from [10.163.47.15] (unknown [10.163.47.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1074B3F718;
+        Mon, 14 Feb 2022 01:54:03 -0800 (PST)
+Subject: Re: [PATCH v6] mm: Uninline copy_overflow()
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <e1723b9cfa924bcefcd41f69d0025b38e4c9364e.1644819985.git.christophe.leroy@csgroup.eu>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <50eed483-9f0a-7aee-1bfd-e89106a80424@arm.com>
+Date:   Mon, 14 Feb 2022 15:24:03 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e1723b9cfa924bcefcd41f69d0025b38e4c9364e.1644819985.git.christophe.leroy@csgroup.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-commit 736e8d89044c1c330967fb938fa766cd9e0d8af0 upstream.
-
-This reverts commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87.
-
-It causes build errors as reported by the kernel test robot.
-
-Link: https://lore.kernel.org/r/202202112236.AwoOTtHO-lkp@intel.com
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 269cbcf7b72d ("usb: dwc2: drd: fix soft connect when gadget is unconfigured")
-Cc: stable@kernel.org
-Cc: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Cc: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/dwc2/drd.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
---- a/drivers/usb/dwc2/drd.c
-+++ b/drivers/usb/dwc2/drd.c
-@@ -109,10 +109,8 @@ static int dwc2_drd_role_sw_set(struct u
- 		already = dwc2_ovr_avalid(hsotg, true);
- 	} else if (role == USB_ROLE_DEVICE) {
- 		already = dwc2_ovr_bvalid(hsotg, true);
--		if (hsotg->enabled) {
--			/* This clear DCTL.SFTDISCON bit */
--			dwc2_hsotg_core_connect(hsotg);
--		}
-+		/* This clear DCTL.SFTDISCON bit */
-+		dwc2_hsotg_core_connect(hsotg);
- 	} else {
- 		if (dwc2_is_device_mode(hsotg)) {
- 			if (!dwc2_ovr_bvalid(hsotg, false))
 
 
+On 2/14/22 11:56 AM, Christophe Leroy wrote:
+> While building a small config with CONFIG_CC_OPTIMISE_FOR_SIZE,
+> I ended up with more than 50 times the following function in vmlinux
+> because GCC doesn't honor the 'inline' keyword:
+> 
+> 	c00243bc <copy_overflow>:
+> 	c00243bc:	94 21 ff f0 	stwu    r1,-16(r1)
+> 	c00243c0:	7c 85 23 78 	mr      r5,r4
+> 	c00243c4:	7c 64 1b 78 	mr      r4,r3
+> 	c00243c8:	3c 60 c0 62 	lis     r3,-16286
+> 	c00243cc:	7c 08 02 a6 	mflr    r0
+> 	c00243d0:	38 63 5e e5 	addi    r3,r3,24293
+> 	c00243d4:	90 01 00 14 	stw     r0,20(r1)
+> 	c00243d8:	4b ff 82 45 	bl      c001c61c <__warn_printk>
+> 	c00243dc:	0f e0 00 00 	twui    r0,0
+> 	c00243e0:	80 01 00 14 	lwz     r0,20(r1)
+> 	c00243e4:	38 21 00 10 	addi    r1,r1,16
+> 	c00243e8:	7c 08 03 a6 	mtlr    r0
+> 	c00243ec:	4e 80 00 20 	blr
+> 
+> With -Winline, GCC tells:
+> 
+> 	/include/linux/thread_info.h:212:20: warning: inlining failed in call to 'copy_overflow': call is unlikely and code size would grow [-Winline]
+> 
+> copy_overflow() is a non conditional warning called by
+> check_copy_size() on an error path.
+> 
+> check_copy_size() have to remain inlined in order to benefit
+> from constant folding, but copy_overflow() is not worth inlining.
+> 
+> Uninline the warning when CONFIG_BUG is selected.
+> 
+> When CONFIG_BUG is not selected, WARN() does nothing so skip it.
+> 
+> This reduces the size of vmlinux by almost 4kbytes.
+
+Just wondering, is this the only such scenario which results in
+an avoidable bloated vmlinux image ?
+
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> ---
+> v6: I should have gone sleeping yesterday night instead of sending v5 out. Sorry for the noise. Fix EXPORT_SYMBOL()
+> 
+> v5: Change to EXPORT_SYMBOL() instead of EXPORT_SYMBOL_GPL()
+> 
+> v4: Make copy_overflow() a no-op when CONFIG_BUG is not selected
+> 
+> v3: Added missing ; after EXPORT_SYMBOL()
+> 
+> v2: Added missing EXPORT_SYMBOL() and enhanced commit message
+> ---
+>  include/linux/thread_info.h | 5 ++++-
+>  mm/maccess.c                | 6 ++++++
+>  2 files changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
+> index 73a6f34b3847..9f392ec76f2b 100644
+> --- a/include/linux/thread_info.h
+> +++ b/include/linux/thread_info.h
+> @@ -209,9 +209,12 @@ __bad_copy_from(void);
+>  extern void __compiletime_error("copy destination size is too small")
+>  __bad_copy_to(void);
+>  
+> +void __copy_overflow(int size, unsigned long count);
+> +
+>  static inline void copy_overflow(int size, unsigned long count)
+>  {
+> -	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
+> +	if (IS_ENABLED(CONFIG_BUG))
+> +		__copy_overflow(size, count);
+>  }
+>  
+>  static __always_inline __must_check bool
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index d3f1a1f0b1c1..3fed2b876539 100644
+> --- a/mm/maccess.c
+> +++ b/mm/maccess.c
+> @@ -335,3 +335,9 @@ long strnlen_user_nofault(const void __user *unsafe_addr, long count)
+>  
+>  	return ret;
+>  }
+> +
+> +void __copy_overflow(int size, unsigned long count)
+> +{
+> +	WARN(1, "Buffer overflow detected (%d < %lu)!\n", size, count);
+> +}
+> +EXPORT_SYMBOL(__copy_overflow);
+> 
