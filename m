@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347956AbiBNKeB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:34:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43740 "EHLO
+        id S242276AbiBNKeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:34:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347752AbiBNKct (ORCPT
+        with ESMTP id S1347805AbiBNKcu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:32:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D446C4F;
-        Mon, 14 Feb 2022 02:00:26 -0800 (PST)
+        Mon, 14 Feb 2022 05:32:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2432BCD;
+        Mon, 14 Feb 2022 02:00:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9649C6077B;
-        Mon, 14 Feb 2022 10:00:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F4AC340E9;
-        Mon, 14 Feb 2022 10:00:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEAC60B3A;
+        Mon, 14 Feb 2022 10:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 679EFC340EF;
+        Mon, 14 Feb 2022 10:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832819;
-        bh=foWXnFOf9ZPLRGsRL/WHDIoeJtrQr8lElaKtUhB1ngY=;
+        s=korg; t=1644832825;
+        bh=Km2YhEkEz2xOCSXKSI50CX7nkOUZDmi2vmFH2ra+6Pw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Opr7wuF2/ROp6skzi9pUxXQWtfLDv/Ho9K051bPXwItAklunLBwliRBYir/oJe9yd
-         S+VcCJ1njQ8WowBMjofSAxYV8gZOQDMDlwzORnpr9tczvB6KFLJ8+5h5CyNhIt0RGf
-         ojdLcoPZ+WO3Sk+Rq590jT30ob60EOuyxyyUI1JU=
+        b=QCKChNz5PL9AKqy9LmJ1I7sBZCrk9WmnOpRl7Rptm4b2Yrkki0T0t+2lG9REGcMdj
+         SYGlVDBKEBXE++I5/HjPNC4VrBq4ig9aN0KteFIgfYJtUHamDE+ih0eylKLHiuUqcO
+         EInpSyGxzwoWhJ8vHKwu4qMyZCJJFWdQF7MOLT7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Richter <Rafael.Richter@gin.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Daniel Klauer <daniel.klauer@gin.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mikko=20Salom=C3=A4ki?= <ms@datarespons.se>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 134/203] net: dsa: mv88e6xxx: dont use devres for mdiobus
-Date:   Mon, 14 Feb 2022 10:26:18 +0100
-Message-Id: <20220214092514.785303891@linuxfoundation.org>
+Subject: [PATCH 5.16 109/203] gpio: aggregator: Fix calling into sleeping GPIO controllers
+Date:   Mon, 14 Feb 2022 10:25:53 +0100
+Message-Id: <20220214092513.947410133@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -54,142 +52,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Geert Uytterhoeven <geert+renesas@glider.be>
 
-[ Upstream commit f53a2ce893b2c7884ef94471f170839170a4eba0 ]
+[ Upstream commit 2cba05451a6d0c703bb74f1a250691404f27c4f1 ]
 
-As explained in commits:
-74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
-5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
+If the parent GPIO controller is a sleeping controller (e.g. a GPIO
+controller connected to I2C), getting or setting a GPIO triggers a
+might_sleep() warning.  This happens because the GPIO Aggregator takes
+the can_sleep flag into account only for its internal locking, not for
+calling into the parent GPIO controller.
 
-mdiobus_free() will panic when called from devm_mdiobus_free() <-
-devres_release_all() <- __device_release_driver(), and that mdiobus was
-not previously unregistered.
+Fix this by using the gpiod_[gs]et*_cansleep() APIs when calling into a
+sleeping GPIO controller.
 
-The mv88e6xxx is an MDIO device, so the initial set of constraints that
-I thought would cause this (I2C or SPI buses which call ->remove on
-->shutdown) do not apply. But there is one more which applies here.
-
-If the DSA master itself is on a bus that calls ->remove from ->shutdown
-(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
-between the switch and the DSA master, and device_links_unbind_consumers()
-will unbind the Marvell switch driver on shutdown.
-
-systemd-shutdown[1]: Powering off.
-mv88e6085 0x0000000008b96000:00 sw_gl0: Link is Down
-fsl-mc dpbp.9: Removing from iommu group 7
-fsl-mc dpbp.8: Removing from iommu group 7
-------------[ cut here ]------------
-kernel BUG at drivers/net/phy/mdio_bus.c:677!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-Modules linked in:
-CPU: 0 PID: 1 Comm: systemd-shutdow Not tainted 5.16.5-00040-gdc05f73788e5 #15
-pc : mdiobus_free+0x44/0x50
-lr : devm_mdiobus_free+0x10/0x20
-Call trace:
- mdiobus_free+0x44/0x50
- devm_mdiobus_free+0x10/0x20
- devres_release_all+0xa0/0x100
- __device_release_driver+0x190/0x220
- device_release_driver_internal+0xac/0xb0
- device_links_unbind_consumers+0xd4/0x100
- __device_release_driver+0x4c/0x220
- device_release_driver_internal+0xac/0xb0
- device_links_unbind_consumers+0xd4/0x100
- __device_release_driver+0x94/0x220
- device_release_driver+0x28/0x40
- bus_remove_device+0x118/0x124
- device_del+0x174/0x420
- fsl_mc_device_remove+0x24/0x40
- __fsl_mc_device_remove+0xc/0x20
- device_for_each_child+0x58/0xa0
- dprc_remove+0x90/0xb0
- fsl_mc_driver_remove+0x20/0x5c
- __device_release_driver+0x21c/0x220
- device_release_driver+0x28/0x40
- bus_remove_device+0x118/0x124
- device_del+0x174/0x420
- fsl_mc_bus_remove+0x80/0x100
- fsl_mc_bus_shutdown+0xc/0x1c
- platform_shutdown+0x20/0x30
- device_shutdown+0x154/0x330
- kernel_power_off+0x34/0x6c
- __do_sys_reboot+0x15c/0x250
- __arm64_sys_reboot+0x20/0x30
- invoke_syscall.constprop.0+0x4c/0xe0
- do_el0_svc+0x4c/0x150
- el0_svc+0x24/0xb0
- el0t_64_sync_handler+0xa8/0xb0
- el0t_64_sync+0x178/0x17c
-
-So the same treatment must be applied to all DSA switch drivers, which
-is: either use devres for both the mdiobus allocation and registration,
-or don't use devres at all.
-
-The Marvell driver already has a good structure for mdiobus removal, so
-just plug in mdiobus_free and get rid of devres.
-
-Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-Reported-by: Rafael Richter <Rafael.Richter@gin.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Daniel Klauer <daniel.klauer@gin.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Mikko Salomäki <ms@datarespons.se>
+Fixes: 828546e24280f721 ("gpio: Add GPIO Aggregator")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpio/gpio-aggregator.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index cd8462d1e27c0..fcd648d0f6372 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3415,7 +3415,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- 			return err;
- 	}
+diff --git a/drivers/gpio/gpio-aggregator.c b/drivers/gpio/gpio-aggregator.c
+index e9671d1660ef4..ac20f9bd1be61 100644
+--- a/drivers/gpio/gpio-aggregator.c
++++ b/drivers/gpio/gpio-aggregator.c
+@@ -278,7 +278,8 @@ static int gpio_fwd_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
  
--	bus = devm_mdiobus_alloc_size(chip->dev, sizeof(*mdio_bus));
-+	bus = mdiobus_alloc_size(sizeof(*mdio_bus));
- 	if (!bus)
- 		return -ENOMEM;
- 
-@@ -3440,14 +3440,14 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- 	if (!external) {
- 		err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
- 		if (err)
--			return err;
-+			goto out;
- 	}
- 
- 	err = of_mdiobus_register(bus, np);
- 	if (err) {
- 		dev_err(chip->dev, "Cannot register MDIO bus (%d)\n", err);
- 		mv88e6xxx_g2_irq_mdio_free(chip, bus);
--		return err;
-+		goto out;
- 	}
- 
- 	if (external)
-@@ -3456,6 +3456,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- 		list_add(&mdio_bus->list, &chip->mdios);
- 
- 	return 0;
-+
-+out:
-+	mdiobus_free(bus);
-+	return err;
+-	return gpiod_get_value(fwd->descs[offset]);
++	return chip->can_sleep ? gpiod_get_value_cansleep(fwd->descs[offset])
++			       : gpiod_get_value(fwd->descs[offset]);
  }
  
- static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
-@@ -3471,6 +3475,7 @@ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
- 			mv88e6xxx_g2_irq_mdio_free(chip, bus);
+ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -293,7 +294,10 @@ static int gpio_fwd_get_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 	for_each_set_bit(i, mask, fwd->chip.ngpio)
+ 		descs[j++] = fwd->descs[i];
  
- 		mdiobus_unregister(bus);
-+		mdiobus_free(bus);
- 	}
+-	error = gpiod_get_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		error = gpiod_get_array_value_cansleep(j, descs, NULL, values);
++	else
++		error = gpiod_get_array_value(j, descs, NULL, values);
+ 	if (error)
+ 		return error;
+ 
+@@ -328,7 +332,10 @@ static void gpio_fwd_set(struct gpio_chip *chip, unsigned int offset, int value)
+ {
+ 	struct gpiochip_fwd *fwd = gpiochip_get_data(chip);
+ 
+-	gpiod_set_value(fwd->descs[offset], value);
++	if (chip->can_sleep)
++		gpiod_set_value_cansleep(fwd->descs[offset], value);
++	else
++		gpiod_set_value(fwd->descs[offset], value);
  }
  
+ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+@@ -343,7 +350,10 @@ static void gpio_fwd_set_multiple(struct gpiochip_fwd *fwd, unsigned long *mask,
+ 		descs[j++] = fwd->descs[i];
+ 	}
+ 
+-	gpiod_set_array_value(j, descs, NULL, values);
++	if (fwd->chip.can_sleep)
++		gpiod_set_array_value_cansleep(j, descs, NULL, values);
++	else
++		gpiod_set_array_value(j, descs, NULL, values);
+ }
+ 
+ static void gpio_fwd_set_multiple_locked(struct gpio_chip *chip,
 -- 
 2.34.1
 
