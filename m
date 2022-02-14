@@ -2,338 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD204C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11024C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350001AbiBNLDD (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:03:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36260 "EHLO
+        id S238782AbiBNLEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:04:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349896AbiBNLCk (ORCPT
+        with ESMTP id S242452AbiBNLEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:02:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4930E6A38C;
-        Mon, 14 Feb 2022 02:30:22 -0800 (PST)
-Date:   Mon, 14 Feb 2022 10:30:19 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644834620;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Oat99tgLVc3VO/TCsRS+s9la///6XyEWq3GDiITFjw=;
-        b=S2MQQtad3HukXRBDiZqPiQuDUBCQ+DaBfW9//Rrjafjlk05yUjR5xwt+P6jOml7REa7lFW
-        uFa7UCLSAr/xB8hbuqpgdSkh7VoJvivjQ+fvgl5BaZeeS8r/B8WEqvCsSIhSuJTf7thPfV
-        LPCqbzEV8gGRiaBKGJUG9GF5K/rmBhuoipyqvB6EseqQVig0FVjVpal47nzX8pnGoO6Zpg
-        MPYhN/0nE2LQACc+POLGY3yFOPc3Mw7+bG4/LpFf9yuEPIzLH6gVmaRz1Q9x9d9gY82aG0
-        0AdHbkKJemikj0PYHlAmLjExixy/tF27YbGj2MyEsy2jeFD0504neBjKiQ3+cw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644834620;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Oat99tgLVc3VO/TCsRS+s9la///6XyEWq3GDiITFjw=;
-        b=iNSJPU+m+WCW7Iy8aeESrINChp9xIDmPMa424nh0moRj5daeB1vtWwIVV/YBJNgTPrHik3
-        S70z53FHFhwz9TCw==
-From:   "tip-bot2 for Mel Gorman" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Adjust the allowed NUMA imbalance when
- SD_NUMA spans multiple LLCs
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Gautham R. Shenoy" <gautham.shenoy@amd.com>,
-        K Prateek Nayak <kprateek.nayak@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220208094334.16379-3-mgorman@techsingularity.net>
-References: <20220208094334.16379-3-mgorman@techsingularity.net>
-MIME-Version: 1.0
-Message-ID: <164483461936.16921.3057563828132780882.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+        Mon, 14 Feb 2022 06:04:07 -0500
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90055.outbound.protection.outlook.com [40.107.9.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C9A98F68;
+        Mon, 14 Feb 2022 02:32:10 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NTMv+N0x+nO+1WBiMVMLfkem4buOLhUdVda1urOwV2gYiJeSr64+cKIFroUACKDl12fuTgykLOndlMUdvfHMQSKpT1QgSdtXzNDoxWTiqwnePyCtd6czBwYpgnGsMiVnQdwn29Q81sIYlvgXgMcqIuW0Z950reYzBrH+9t53qvxO6lpCqhFS3E8X2dtmfFlKudAce2zDq6ffnCZxTbKZGBQfcaEMg094QXhDriDRFIAM1xN2R3dwFDCLcA1Mhko4xOGC552ZhoACdVWSzPIGzNvviCx5mWSibjaO1AYDAQsOmT9jQGVg1Qcc/TxOD+/mksYiTA/oqksjpOMAN7onaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Cuo4qimfKjBPuK/hoO6apT0bj6Z03RZibWibq0ra9SY=;
+ b=mVr9cu5zIaUGY/uvtiFB9IlVN/n/L5hzRgvXZeqWwtTXIooGDDjE5Mf/brPFvYy65HbvOq/MhvoiZVhxd0WkBKZgbUhrGE/4A8kvpPCqPrcEEIPyPjLv1VxefN033fanIUYFJCNF6nArGm2Ek7S2wqJzBaGMt2g/c8egYFxdi7/xN1Fkise86Nto6vZVkyVguqazpG7GP+eUEA3BnPEwPQw1UjPE5Gqu2TZmx0k8HrrfOLKmQfrN6DY6VayfASONXmuCNJos6EKMZ4Vs4OvgRfdbKroah/Co9Ebnni2EKdbniaUGFnH1a5OFJA6QLqye+UwteQ8kB4rsv589Dq/vVA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
+ by PR1P264MB1439.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:1e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.12; Mon, 14 Feb
+ 2022 10:32:08 +0000
+Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::c9a2:1db0:5469:54e1%9]) with mapi id 15.20.4975.019; Mon, 14 Feb 2022
+ 10:32:08 +0000
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Kees Cook <keescook@chromium.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+CC:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>
+Subject: Re: [PATCH v3 08/12] asm-generic: Refactor
+ dereference_[kernel]_function_descriptor()
+Thread-Topic: [PATCH v3 08/12] asm-generic: Refactor
+ dereference_[kernel]_function_descriptor()
+Thread-Index: AQHXw1P/PUxVyxRC4kaaREcUBcBn5ayNS9uAgADyA4CABVe0gA==
+Date:   Mon, 14 Feb 2022 10:32:08 +0000
+Message-ID: <5bb6160d-0f7b-ad2b-8933-3cb97a535b54@csgroup.eu>
+References: <cover.1634457599.git.christophe.leroy@csgroup.eu>
+ <93a2006a5d90292baf69cb1c34af5785da53efde.1634457599.git.christophe.leroy@csgroup.eu>
+ <8735kr814c.fsf@mpe.ellerman.id.au> <202202101655.13C794F0F@keescook>
+In-Reply-To: <202202101655.13C794F0F@keescook>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=csgroup.eu;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 284c394f-a0fb-4f5f-2fe2-08d9efa5409c
+x-ms-traffictypediagnostic: PR1P264MB1439:EE_
+x-microsoft-antispam-prvs: <PR1P264MB14393A2BCD6EFEF0116B4DD8ED339@PR1P264MB1439.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fQhC+53FkY7fVzWKWzwwZ3uwU60C1eSwpvM192FugAX66P1ES1+eCTx0YTqaZcDJIceeb0XLN6CnXVjh17afO7sWHNHtH1IqpvuL3qMlwAPezqJCUN+w3wWqUVJFhp58vz/b84AxNq4bcrw97NqLRb6dqflrvJmVjL0Z1PBrfRjWQpTZMLot2GTq2FZ4DNyPsxAHRADDItlY0v9I50qoMVgkjRUv+0e37CM71Dyof09D0UOAksBti/6HpYO32eWwAxkXG/ZKXI+t7oO5pMqbNViphnFAQHveFGldkbBt9JEQPjUWcAuupq9XSkbCfMH1ounobfkbWbeq+W1YhjLUJ1UUFLgr/TMtAe/tAc2K4db1a/1QIiAdrm6KOTIFqCSBCS9SWEs8nQPelDNGvd1VInVEXSpJhoFCQdA2oS6jn4mSw4CE5DgwrZ9cfG7XD+o0x1OEgKZkGvINtRs/lcftnC13qflL6/EeQfGtm8uWTPsZ5O9r5K/LeSvY0mLxQxZtxrRgq0alvAtWYAPOu0WHPVw4eKv9wd5S7QZ45RpOXntq/Np3222mwWBcwUOj1nTgBUQzvE4gYviFDbH6tZ2MTsKH1MjGCJX5YXiEcQYLL5guEdY85y3qOGQMaxyQnJ4/GebWz+rVW0/gWTiadmP+zH1ooo4OW1iQKPOppYBaHU6DqLRb7zjQ6snsDlK71IG+DWmVD9GwDgDi8eD6/bTYkourSFZS010zCD6DyMMNBAoQIcof82XUTaioz16qMbINFBYBeLLFSe654ZnYMDZLR0I4/32HVsAJkv7WSxmg2QA=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(5660300002)(44832011)(6506007)(31686004)(26005)(2906002)(7416002)(186003)(36756003)(2616005)(66574015)(66946007)(54906003)(110136005)(38070700005)(508600001)(6486002)(6512007)(122000001)(38100700002)(91956017)(71200400001)(316002)(86362001)(8676002)(4326008)(31696002)(66476007)(66556008)(76116006)(66446008)(64756008)(41533002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VVVwZzdnK1EvUC9UOGEzMHNoVkhiVVpVODJoWWlKeStaN1VrMUNVeVFVTHQy?=
+ =?utf-8?B?cnpuM1RsbUpOdTNHOEtGeXVjWCtFeDdPbDl1eWJ1bEZRTndIWG1STThHRU5E?=
+ =?utf-8?B?NlR0cnBzZVd0blg4ODRITERzdVA3Sm1ueFpyT0NWcnhTUHNJZXM3Q2xraHVq?=
+ =?utf-8?B?L1o2aVFjYktaZ3RMSWpqQ1dLV2RYNDlGdG9BQ0g1b0d5bGlKNm81OGwwemRP?=
+ =?utf-8?B?SEptanY0ZzJJOVpaWU1VOWkyaEdwS3RzOWlRVHFUZDc2TDhqT0VCUHRvK3Vt?=
+ =?utf-8?B?bEIrekorNmlYamIrSjAydnhaRVpxVG5JUHcyNy8zNmNMUmlhek9TREdqaFky?=
+ =?utf-8?B?SkN4U2k4N3E0bHExNkJOY0xoa1hSaVUreUE4MGlpcWc1NXhDRVhOczFxRE8y?=
+ =?utf-8?B?N1RrWkd0eldXcFhiKzlqODBQbXVtTi8vUlE5M1gzRTlFMCtQcUpUa2NhSjli?=
+ =?utf-8?B?c3BQVHA0em9mWGlRdXlrRzllNnNqNnhRVzM1NFJVc3pLTkg1Vm1NL3p4cFVJ?=
+ =?utf-8?B?TTF2TGxIUlo0TGh0aW1taFo5dFNFcHgrODd2WUNQbHZMYkFUTktoaHBCamFY?=
+ =?utf-8?B?a1A1WU5BYUZtKzZ2b3pLUTU1cUFNMjY5RHBSM1FvTHZOSW1KbkY1WWlTZC9p?=
+ =?utf-8?B?YlFZa0FTNkhpN3N3Nng0SjQ2VXVTOXNHR3RwV3FEWWs1czJYVm5tTkZBZzVa?=
+ =?utf-8?B?U3pDZnlDeUpHSitPWHlRSVhTbDRnaWNHanBaMjVJSkt4dVZXV25SUlJDYk5I?=
+ =?utf-8?B?NVlVSTduMXM2blJVSjlhbHVyWXJpMHJHdld1N0NReHBzNk5zc0xWTHNWR0FG?=
+ =?utf-8?B?YkhsWC9hWGZQY1Bud1VPZU4razBqTDNBdU0zYXIrbDZIVXdad2ZYZ2MwQzND?=
+ =?utf-8?B?dTZuQzBXTjJmR3lqN2ZOQWkwbGRxdTd5WjVocWxSSjRRMTM3dk5lUitoQ1h4?=
+ =?utf-8?B?QTBPdmtDUmZVS1FDSTN3Z1ZDSGkvY2UrK2dKWVlpbk9zdWFXL3pLMmdwSXJ3?=
+ =?utf-8?B?WlZ4ZUMvRGxieDU3ajFiWFFZMTBCWlF2d05RcmVTOVRIMSs4Q0ZSeStXbUxu?=
+ =?utf-8?B?YXY3MnlVbVloRkZTNlkxdGdOekJ3V3hwVURqZGtCakxCV0pMb0UxcjgrYVd4?=
+ =?utf-8?B?OXkyZXV4dVNhSXZPQ3dJNWkyN0ZpMEFjak9JVStYWkphbW1tVDBkdWdhMDIz?=
+ =?utf-8?B?bjV5RVpwRFJPM0RjTEFLZ0J3T0pOZmxCb1c2VFdla0h2M1htck44RE8zcitY?=
+ =?utf-8?B?MEdLVHdLR1NkZDV0VVR0RXpxT1M4MWt4T3p5eWt6RmhyVkNYSUNGZGZ0U245?=
+ =?utf-8?B?a3BROXF6dFNIdHZPVHFjTWNsOXZjemd6ZHMzcEtzTFFLTGRkSjlaaW1GTnds?=
+ =?utf-8?B?SVV5dG5zOW0vbmljUlFXYzhJU2JidWN3aWE2UGhXQjV4RmVBU1BEVU9Uc2k3?=
+ =?utf-8?B?L1o4M3c3Q2ZPR1BQeTNHMWhhWVBYdVhMU1E3YkpVU0MxWHNwN1dISWpneFlV?=
+ =?utf-8?B?NUhjdUZvck81cXRvVGp6OUw1M21pcXRIcGJTdVVzY1RCRTFpZjZNYW1tNE1F?=
+ =?utf-8?B?RGJRNEZ1KzN4UXhOTGFKMmFMYWdncTVMMG1XWFFPYTFDeE9CWENta0ROTFk1?=
+ =?utf-8?B?TzU3ZWR3ckZwT09MTkxGTFBzUVEvZTYvRSs4S3cxQTh0dGczazZNUzkzNFhG?=
+ =?utf-8?B?a2l4cFc0UzFYdkY4S3o4SmljVHhmbjZkRzhxTlRvbmlGSFg1S1J1cEZrdVlX?=
+ =?utf-8?B?bU5KZVFOM0paREtVMjBaS2NkclBrc1pTbEw1WmI2bFJZbUFPNWV0NzRJSkox?=
+ =?utf-8?B?MFJCOHNqeXE3ZitnNXVLb2xZS1Z1MkhSeUdlNkhTQnpxWWphVkk5NXkxSERj?=
+ =?utf-8?B?UG9xaTNRb2owN1ByMWEvdTR6RzU0eUJ0aXJycjJSMnQrOXB4UjlIdjNOZ3dv?=
+ =?utf-8?B?Q2lsUXdzaFJjTU9hK25xME9GeXViTnJmVEdvbnMzekQwQjBXb29EU0ZGeDVw?=
+ =?utf-8?B?anI4YmRyNmc0NU5hNjJESGdlbVZISEFIZUNIMldxbnZxWmhpckQzUlRXQUxI?=
+ =?utf-8?B?VUM3OUVpTW9DRER2aDlGckUyN0JaMWkxNnZjQ1lVL1Fxa3Bmb0M3UUQ3dTBR?=
+ =?utf-8?B?MzJML1VZSzR3UmNydjBjalFORXQ0WG1TREp3YUN1dTZhaFUwS21VLzBkYTll?=
+ =?utf-8?B?eklDRUoxWEhEdWdDQW5xZW1wcjIyKzliMkVwUmNlZkw4Zk84YVZBTEM4MlJt?=
+ =?utf-8?Q?d6r/lT8Z+fdjZa2vSo/sXd20us+GtkO9EN7tk6y55U=3D?=
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-ID: <6B58436803DD0049B0EEE7FEFBAFC545@FRAP264.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: csgroup.eu
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 284c394f-a0fb-4f5f-2fe2-08d9efa5409c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Feb 2022 10:32:08.1318
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +c+uOljieL4tzyKN03yx0uMs17gbri3FdipkY+4IdliCCpCclQRP6A88yid+3jG8WNAPXikzQp1HkdA2tpZ5LTielZKX1Uj/DRvWjNQI1nY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1439
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the sched/core branch of tip:
-
-Commit-ID:     e496132ebedd870b67f1f6d2428f9bb9d7ae27fd
-Gitweb:        https://git.kernel.org/tip/e496132ebedd870b67f1f6d2428f9bb9d7ae27fd
-Author:        Mel Gorman <mgorman@techsingularity.net>
-AuthorDate:    Tue, 08 Feb 2022 09:43:34 
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Fri, 11 Feb 2022 23:30:08 +01:00
-
-sched/fair: Adjust the allowed NUMA imbalance when SD_NUMA spans multiple LLCs
-
-Commit 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA
-nodes") allowed an imbalance between NUMA nodes such that communicating
-tasks would not be pulled apart by the load balancer. This works fine when
-there is a 1:1 relationship between LLC and node but can be suboptimal
-for multiple LLCs if independent tasks prematurely use CPUs sharing cache.
-
-Zen* has multiple LLCs per node with local memory channels and due to
-the allowed imbalance, it's far harder to tune some workloads to run
-optimally than it is on hardware that has 1 LLC per node. This patch
-allows an imbalance to exist up to the point where LLCs should be balanced
-between nodes.
-
-On a Zen3 machine running STREAM parallelised with OMP to have on instance
-per LLC the results and without binding, the results are
-
-                            5.17.0-rc0             5.17.0-rc0
-                               vanilla       sched-numaimb-v6
-MB/sec copy-16    162596.94 (   0.00%)   580559.74 ( 257.05%)
-MB/sec scale-16   136901.28 (   0.00%)   374450.52 ( 173.52%)
-MB/sec add-16     157300.70 (   0.00%)   564113.76 ( 258.62%)
-MB/sec triad-16   151446.88 (   0.00%)   564304.24 ( 272.61%)
-
-STREAM can use directives to force the spread if the OpenMP is new
-enough but that doesn't help if an application uses threads and
-it's not known in advance how many threads will be created.
-
-Coremark is a CPU and cache intensive benchmark parallelised with
-threads. When running with 1 thread per core, the vanilla kernel
-allows threads to contend on cache. With the patch;
-
-                               5.17.0-rc0             5.17.0-rc0
-                                  vanilla       sched-numaimb-v5
-Min       Score-16   368239.36 (   0.00%)   389816.06 (   5.86%)
-Hmean     Score-16   388607.33 (   0.00%)   427877.08 *  10.11%*
-Max       Score-16   408945.69 (   0.00%)   481022.17 (  17.62%)
-Stddev    Score-16    15247.04 (   0.00%)    24966.82 ( -63.75%)
-CoeffVar  Score-16        3.92 (   0.00%)        5.82 ( -48.48%)
-
-It can also make a big difference for semi-realistic workloads
-like specjbb which can execute arbitrary numbers of threads without
-advance knowledge of how they should be placed. Even in cases where
-the average performance is neutral, the results are more stable.
-
-                               5.17.0-rc0             5.17.0-rc0
-                                  vanilla       sched-numaimb-v6
-Hmean     tput-1      71631.55 (   0.00%)    73065.57 (   2.00%)
-Hmean     tput-8     582758.78 (   0.00%)   556777.23 (  -4.46%)
-Hmean     tput-16   1020372.75 (   0.00%)  1009995.26 (  -1.02%)
-Hmean     tput-24   1416430.67 (   0.00%)  1398700.11 (  -1.25%)
-Hmean     tput-32   1687702.72 (   0.00%)  1671357.04 (  -0.97%)
-Hmean     tput-40   1798094.90 (   0.00%)  2015616.46 *  12.10%*
-Hmean     tput-48   1972731.77 (   0.00%)  2333233.72 (  18.27%)
-Hmean     tput-56   2386872.38 (   0.00%)  2759483.38 (  15.61%)
-Hmean     tput-64   2909475.33 (   0.00%)  2925074.69 (   0.54%)
-Hmean     tput-72   2585071.36 (   0.00%)  2962443.97 (  14.60%)
-Hmean     tput-80   2994387.24 (   0.00%)  3015980.59 (   0.72%)
-Hmean     tput-88   3061408.57 (   0.00%)  3010296.16 (  -1.67%)
-Hmean     tput-96   3052394.82 (   0.00%)  2784743.41 (  -8.77%)
-Hmean     tput-104  2997814.76 (   0.00%)  2758184.50 (  -7.99%)
-Hmean     tput-112  2955353.29 (   0.00%)  2859705.09 (  -3.24%)
-Hmean     tput-120  2889770.71 (   0.00%)  2764478.46 (  -4.34%)
-Hmean     tput-128  2871713.84 (   0.00%)  2750136.73 (  -4.23%)
-Stddev    tput-1       5325.93 (   0.00%)     2002.53 (  62.40%)
-Stddev    tput-8       6630.54 (   0.00%)    10905.00 ( -64.47%)
-Stddev    tput-16     25608.58 (   0.00%)     6851.16 (  73.25%)
-Stddev    tput-24     12117.69 (   0.00%)     4227.79 (  65.11%)
-Stddev    tput-32     27577.16 (   0.00%)     8761.05 (  68.23%)
-Stddev    tput-40     59505.86 (   0.00%)     2048.49 (  96.56%)
-Stddev    tput-48    168330.30 (   0.00%)    93058.08 (  44.72%)
-Stddev    tput-56    219540.39 (   0.00%)    30687.02 (  86.02%)
-Stddev    tput-64    121750.35 (   0.00%)     9617.36 (  92.10%)
-Stddev    tput-72    223387.05 (   0.00%)    34081.13 (  84.74%)
-Stddev    tput-80    128198.46 (   0.00%)    22565.19 (  82.40%)
-Stddev    tput-88    136665.36 (   0.00%)    27905.97 (  79.58%)
-Stddev    tput-96    111925.81 (   0.00%)    99615.79 (  11.00%)
-Stddev    tput-104   146455.96 (   0.00%)    28861.98 (  80.29%)
-Stddev    tput-112    88740.49 (   0.00%)    58288.23 (  34.32%)
-Stddev    tput-120   186384.86 (   0.00%)    45812.03 (  75.42%)
-Stddev    tput-128    78761.09 (   0.00%)    57418.48 (  27.10%)
-
-Similarly, for embarassingly parallel problems like NPB-ep, there are
-improvements due to better spreading across LLC when the machine is not
-fully utilised.
-
-                              vanilla       sched-numaimb-v6
-Min       ep.D       31.79 (   0.00%)       26.11 (  17.87%)
-Amean     ep.D       31.86 (   0.00%)       26.17 *  17.86%*
-Stddev    ep.D        0.07 (   0.00%)        0.05 (  24.41%)
-CoeffVar  ep.D        0.22 (   0.00%)        0.20 (   7.97%)
-Max       ep.D       31.93 (   0.00%)       26.21 (  17.91%)
-
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
-Tested-by: K Prateek Nayak <kprateek.nayak@amd.com>
-Link: https://lore.kernel.org/r/20220208094334.16379-3-mgorman@techsingularity.net
----
- include/linux/sched/topology.h |  1 +-
- kernel/sched/fair.c            | 22 +++++++-------
- kernel/sched/topology.c        | 53 +++++++++++++++++++++++++++++++++-
- 3 files changed, 66 insertions(+), 10 deletions(-)
-
-diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
-index 8054641..56cffe4 100644
---- a/include/linux/sched/topology.h
-+++ b/include/linux/sched/topology.h
-@@ -93,6 +93,7 @@ struct sched_domain {
- 	unsigned int busy_factor;	/* less balancing by factor if busy */
- 	unsigned int imbalance_pct;	/* No balance until over watermark */
- 	unsigned int cache_nice_tries;	/* Leave cache hot tasks for # tries */
-+	unsigned int imb_numa_nr;	/* Nr running tasks that allows a NUMA imbalance */
- 
- 	int nohz_idle;			/* NOHZ IDLE status */
- 	int flags;			/* See SD_* */
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index ea71016..5c4bfff 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -1489,6 +1489,7 @@ struct task_numa_env {
- 
- 	int src_cpu, src_nid;
- 	int dst_cpu, dst_nid;
-+	int imb_numa_nr;
- 
- 	struct numa_stats src_stats, dst_stats;
- 
-@@ -1503,7 +1504,7 @@ struct task_numa_env {
- static unsigned long cpu_load(struct rq *rq);
- static unsigned long cpu_runnable(struct rq *rq);
- static inline long adjust_numa_imbalance(int imbalance,
--					int dst_running, int dst_weight);
-+					int dst_running, int imb_numa_nr);
- 
- static inline enum
- numa_type numa_classify(unsigned int imbalance_pct,
-@@ -1884,7 +1885,7 @@ static void task_numa_find_cpu(struct task_numa_env *env,
- 		dst_running = env->dst_stats.nr_running + 1;
- 		imbalance = max(0, dst_running - src_running);
- 		imbalance = adjust_numa_imbalance(imbalance, dst_running,
--							env->dst_stats.weight);
-+						  env->imb_numa_nr);
- 
- 		/* Use idle CPU if there is no imbalance */
- 		if (!imbalance) {
-@@ -1949,8 +1950,10 @@ static int task_numa_migrate(struct task_struct *p)
- 	 */
- 	rcu_read_lock();
- 	sd = rcu_dereference(per_cpu(sd_numa, env.src_cpu));
--	if (sd)
-+	if (sd) {
- 		env.imbalance_pct = 100 + (sd->imbalance_pct - 100) / 2;
-+		env.imb_numa_nr = sd->imb_numa_nr;
-+	}
- 	rcu_read_unlock();
- 
- 	/*
-@@ -9005,10 +9008,9 @@ static bool update_pick_idlest(struct sched_group *idlest,
-  * This is an approximation as the number of running tasks may not be
-  * related to the number of busy CPUs due to sched_setaffinity.
-  */
--static inline bool
--allow_numa_imbalance(unsigned int running, unsigned int weight)
-+static inline bool allow_numa_imbalance(int running, int imb_numa_nr)
- {
--	return (running < (weight >> 2));
-+	return running <= imb_numa_nr;
- }
- 
- /*
-@@ -9148,7 +9150,7 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 			 * allowed. If there is a real need of migration,
- 			 * periodic load balance will take care of it.
- 			 */
--			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
-+			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, sd->imb_numa_nr))
- 				return NULL;
- 		}
- 
-@@ -9240,9 +9242,9 @@ next_group:
- #define NUMA_IMBALANCE_MIN 2
- 
- static inline long adjust_numa_imbalance(int imbalance,
--				int dst_running, int dst_weight)
-+				int dst_running, int imb_numa_nr)
- {
--	if (!allow_numa_imbalance(dst_running, dst_weight))
-+	if (!allow_numa_imbalance(dst_running, imb_numa_nr))
- 		return imbalance;
- 
- 	/*
-@@ -9354,7 +9356,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 		/* Consider allowing a small imbalance between NUMA groups */
- 		if (env->sd->flags & SD_NUMA) {
- 			env->imbalance = adjust_numa_imbalance(env->imbalance,
--				local->sum_nr_running + 1, local->group_weight);
-+				local->sum_nr_running + 1, env->sd->imb_numa_nr);
- 		}
- 
- 		return;
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index d201a70..e6cd559 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -2242,6 +2242,59 @@ build_sched_domains(const struct cpumask *cpu_map, struct sched_domain_attr *att
- 		}
- 	}
- 
-+	/*
-+	 * Calculate an allowed NUMA imbalance such that LLCs do not get
-+	 * imbalanced.
-+	 */
-+	for_each_cpu(i, cpu_map) {
-+		unsigned int imb = 0;
-+		unsigned int imb_span = 1;
-+
-+		for (sd = *per_cpu_ptr(d.sd, i); sd; sd = sd->parent) {
-+			struct sched_domain *child = sd->child;
-+
-+			if (!(sd->flags & SD_SHARE_PKG_RESOURCES) && child &&
-+			    (child->flags & SD_SHARE_PKG_RESOURCES)) {
-+				struct sched_domain *top, *top_p;
-+				unsigned int nr_llcs;
-+
-+				/*
-+				 * For a single LLC per node, allow an
-+				 * imbalance up to 25% of the node. This is an
-+				 * arbitrary cutoff based on SMT-2 to balance
-+				 * between memory bandwidth and avoiding
-+				 * premature sharing of HT resources and SMT-4
-+				 * or SMT-8 *may* benefit from a different
-+				 * cutoff.
-+				 *
-+				 * For multiple LLCs, allow an imbalance
-+				 * until multiple tasks would share an LLC
-+				 * on one node while LLCs on another node
-+				 * remain idle.
-+				 */
-+				nr_llcs = sd->span_weight / child->span_weight;
-+				if (nr_llcs == 1)
-+					imb = sd->span_weight >> 2;
-+				else
-+					imb = nr_llcs;
-+				sd->imb_numa_nr = imb;
-+
-+				/* Set span based on the first NUMA domain. */
-+				top = sd;
-+				top_p = top->parent;
-+				while (top_p && !(top_p->flags & SD_NUMA)) {
-+					top = top->parent;
-+					top_p = top->parent;
-+				}
-+				imb_span = top_p ? top_p->span_weight : sd->span_weight;
-+			} else {
-+				int factor = max(1U, (sd->span_weight / imb_span));
-+
-+				sd->imb_numa_nr = imb * factor;
-+			}
-+		}
-+	}
-+
- 	/* Calculate CPU capacity for physical packages and nodes */
- 	for (i = nr_cpumask_bits-1; i >= 0; i--) {
- 		if (!cpumask_test_cpu(i, cpu_map))
+DQoNCkxlIDExLzAyLzIwMjIgw6AgMDE6NTYsIEtlZXMgQ29vayBhIMOpY3JpdMKgOg0KPiBPbiBU
+aHUsIEZlYiAxMCwgMjAyMiBhdCAwOTozMDo0M1BNICsxMTAwLCBNaWNoYWVsIEVsbGVybWFuIHdy
+b3RlOg0KPj4gQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3BoZS5sZXJveUBjc2dyb3VwLmV1PiB3
+cml0ZXM6DQo+Pj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9leHRhYmxlLmMgYi9rZXJuZWwvZXh0YWJs
+ZS5jDQo+Pj4gaW5kZXggYjBlYTVlYjBjM2I0Li4xZWYxMzc4OWJlYTkgMTAwNjQ0DQo+Pj4gLS0t
+IGEva2VybmVsL2V4dGFibGUuYw0KPj4+ICsrKyBiL2tlcm5lbC9leHRhYmxlLmMNCj4+PiBAQCAt
+MTU5LDEyICsxNjAsMzIgQEAgaW50IGtlcm5lbF90ZXh0X2FkZHJlc3ModW5zaWduZWQgbG9uZyBh
+ZGRyKQ0KPj4+ICAgfQ0KPj4+ICAgDQo+Pj4gICAvKg0KPj4+IC0gKiBPbiBzb21lIGFyY2hpdGVj
+dHVyZXMgKFBQQzY0LCBJQTY0KSBmdW5jdGlvbiBwb2ludGVycw0KPj4+ICsgKiBPbiBzb21lIGFy
+Y2hpdGVjdHVyZXMgKFBQQzY0LCBJQTY0LCBQQVJJU0MpIGZ1bmN0aW9uIHBvaW50ZXJzDQo+Pj4g
+ICAgKiBhcmUgYWN0dWFsbHkgb25seSB0b2tlbnMgdG8gc29tZSBkYXRhIHRoYXQgdGhlbiBob2xk
+cyB0aGUNCj4+PiAgICAqIHJlYWwgZnVuY3Rpb24gYWRkcmVzcy4gQXMgYSByZXN1bHQsIHRvIGZp
+bmQgaWYgYSBmdW5jdGlvbg0KPj4+ICAgICogcG9pbnRlciBpcyBwYXJ0IG9mIHRoZSBrZXJuZWwg
+dGV4dCwgd2UgbmVlZCB0byBkbyBzb21lDQo+Pj4gICAgKiBzcGVjaWFsIGRlcmVmZXJlbmNpbmcg
+Zmlyc3QuDQo+Pj4gICAgKi8NCj4+PiArI2lmZGVmIENPTkZJR19IQVZFX0ZVTkNUSU9OX0RFU0NS
+SVBUT1JTDQo+Pj4gK3ZvaWQgKmRlcmVmZXJlbmNlX2Z1bmN0aW9uX2Rlc2NyaXB0b3Iodm9pZCAq
+cHRyKQ0KPj4+ICt7DQo+Pj4gKwlmdW5jX2Rlc2NfdCAqZGVzYyA9IHB0cjsNCj4+PiArCXZvaWQg
+KnA7DQo+Pj4gKw0KPj4+ICsJaWYgKCFnZXRfa2VybmVsX25vZmF1bHQocCwgKHZvaWQgKikmZGVz
+Yy0+YWRkcikpDQo+Pj4gKwkJcHRyID0gcDsNCj4+PiArCXJldHVybiBwdHI7DQo+Pj4gK30NCj4+
+DQo+PiBUaGlzIG5lZWRzIGFuIEVYUE9SVF9TWU1CT0xfR1BMKCksIG90aGVyd2lzZSB0aGUgYnVp
+bGQgYnJlYWtzIGFmdGVyDQo+PiBwYXRjaCAxMCB3aXRoIENPTkZJR19MS0RUTT1tLg0KPiANCj4g
+T2ggZ29vZCBjYXRjaCENCj4gDQo+IChUaGVyZSBoYXZlIGJlZW4gYSBmZXcgY2FzZXMgb2YgTEtE
+VE09bSBiZWluZyB0aGUgb25seSB0aGluZyBuZWVkZWQgYQ0KPiBzeW1ib2wsIHNvIEkndmUgcG9u
+ZGVyZWQgZ2l2aW5nIGl0IGEgbmFtZXNwYWNlIG9yIGNvbnN0cnVjdGluZyBhIGxpdHRsZQ0KPiBp
+ZmRlZiB3cmFwcGVyLi4uIGJ1dCB0aGlzIHNlZW1zIG9rIHRvIGV4cG9ydC4uLikNCj4gDQoNCnBv
+d2VycGMgYW5kIGlhNjQgaGFkIGl0IGFzIGEgc3RhdGljIGlubGluZSwgYnV0IHBhcmlzYyBoYWQg
+aXQgYXMgYSBwbGFpbiANCmZ1bmN0aW9uIGFuZCBkaWRuJ3QgZXhwb3J0IGl0LiBTbyBJIGd1ZXNz
+IHRoZSBleHBvcnQgaXMgbm90IHJlcXVpcmVkIGF0IA0KdGhpcyBwb2ludC4gSSB3aWxsIGV4cG9y
+dCBpdCBpbiBwYXRjaCAxMCB3aGVuIGl0IGJlY29tZXMgbmVjZXNzYXJ5Lg0KDQpDaHJpc3RvcGhl
