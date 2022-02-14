@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09120C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB92C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346938AbiBNKYi (ORCPT
+        id S1346947AbiBNKYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:24:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50544 "EHLO
+        Mon, 14 Feb 2022 05:24:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346642AbiBNKXC (ORCPT
+        with ESMTP id S1346966AbiBNKXJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:23:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0F560A8F;
-        Mon, 14 Feb 2022 01:56:16 -0800 (PST)
+        Mon, 14 Feb 2022 05:23:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F8860ABD;
+        Mon, 14 Feb 2022 01:56:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D86DCB80DBE;
-        Mon, 14 Feb 2022 09:56:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21793C340E9;
-        Mon, 14 Feb 2022 09:56:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69CE060FA2;
+        Mon, 14 Feb 2022 09:56:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30708C340E9;
+        Mon, 14 Feb 2022 09:56:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832573;
-        bh=5CgUbtEjWetjccIjMGSrNUZ2M+3dIRfWytZnM1eefAw=;
+        s=korg; t=1644832576;
+        bh=rLhsafBCTYJ0kb1t3aQgksvKXgmCdBjj0TYBC5ydbvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f+HyQrJsSxdsil6EuF+1Ng7oVG4dLVR76+FGGhSrn2m04/fNFRucvUyuB2nHVJHM4
-         6nfZZJRpArj5vIgY1oNlTgkmpKr7Zb9hfZMBD50twYvMd0WMJRT3L5T+JCBVX06v2d
-         uZppZLklGXu01umeLZsGKIvKBYM6i3A1w3LlQ+j0=
+        b=qr5X/Ib7TtF7pxsQwsLicwDuC4/Pd8XHsynGdYDOi2hWz9T62BbD6rhCXDd7MOCRE
+         QC9vHv5zSTKOCuMleeof4JtobGf92jpAs4l3png3rvjozHG07J3fIqPaVXp7HfTfIh
+         RvKPAnXU6MmvyLPN1UCgqxh0ZsfFhfu5dMru69Zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilya Leoshkevich <iii@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        stable@vger.kernel.org,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        James Clark <james.clark@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 040/203] s390/module: test loading modules with a lot of relocations
-Date:   Mon, 14 Feb 2022 10:24:44 +0100
-Message-Id: <20220214092511.569191366@linuxfoundation.org>
+Subject: [PATCH 5.16 058/203] perf: Always wake the parent event
+Date:   Mon, 14 Feb 2022 10:25:02 +0100
+Message-Id: <20220214092512.228339005@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -52,188 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilya Leoshkevich <iii@linux.ibm.com>
+From: James Clark <james.clark@arm.com>
 
-[ Upstream commit 90c5318795eefa09a9f9aef8d18a904e24962b5c ]
+[ Upstream commit 961c39121759ad09a89598ec4ccdd34ae0468a19 ]
 
-Add a test in order to prevent regressions.
+When using per-process mode and event inheritance is set to true,
+forked processes will create a new perf events via inherit_event() ->
+perf_event_alloc(). But these events will not have ring buffers
+assigned to them. Any call to wakeup will be dropped if it's called on
+an event with no ring buffer assigned because that's the object that
+holds the wakeup list.
 
-Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+If the child event is disabled due to a call to
+perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
+dropped leaving userspace hanging forever on the poll.
+
+Normally the event is explicitly re-enabled by userspace after it
+wakes up to read the aux data, but in this case it does not get woken
+up so the event remains disabled.
+
+This can be reproduced when using Arm SPE and 'stress' which forks once
+before running the workload. By looking at the list of aux buffers read,
+it's apparent that they stop after the fork:
+
+  perf record -e arm_spe// -vvv -- stress -c 1
+
+With this patch applied they continue to be printed. This behaviour
+doesn't happen when using systemwide or per-cpu mode.
+
+Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
+Signed-off-by: James Clark <james.clark@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/Kconfig                    | 15 +++++++++
- arch/s390/lib/Makefile               |  3 ++
- arch/s390/lib/test_modules.c         | 35 +++++++++++++++++++
- arch/s390/lib/test_modules.h         | 50 ++++++++++++++++++++++++++++
- arch/s390/lib/test_modules_helpers.c | 13 ++++++++
- 5 files changed, 116 insertions(+)
- create mode 100644 arch/s390/lib/test_modules.c
- create mode 100644 arch/s390/lib/test_modules.h
- create mode 100644 arch/s390/lib/test_modules_helpers.c
+ kernel/events/core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index 2a5bb4f29cfed..0344c68f3ffde 100644
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -947,6 +947,9 @@ config S390_GUEST
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 04e6e2dae60e4..a0e21d0f36d7a 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6004,6 +6004,8 @@ static void ring_buffer_attach(struct perf_event *event,
+ 	struct perf_buffer *old_rb = NULL;
+ 	unsigned long flags;
  
- endmenu
++	WARN_ON_ONCE(event->parent);
++
+ 	if (event->rb) {
+ 		/*
+ 		 * Should be impossible, we set this when removing
+@@ -6061,6 +6063,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
  
-+config S390_MODULES_SANITY_TEST_HELPERS
-+	def_bool n
++	if (event->parent)
++		event = event->parent;
 +
- menu "Selftests"
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6074,6 +6079,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
+ {
+ 	struct perf_buffer *rb;
  
- config S390_UNWIND_SELFTEST
-@@ -973,4 +976,16 @@ config S390_KPROBES_SANITY_TEST
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6772,7 +6780,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
+ 		goto out;
  
- 	  Say N if you are unsure.
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		goto out;
  
-+config S390_MODULES_SANITY_TEST
-+	def_tristate n
-+	depends on KUNIT
-+	default KUNIT_ALL_TESTS
-+	prompt "Enable s390 specific modules tests"
-+	select S390_MODULES_SANITY_TEST_HELPERS
-+	help
-+	  This option enables an s390 specific modules test. This option is
-+	  not useful for distributions or general kernels, but only for
-+	  kernel developers working on architecture code.
-+
-+	  Say N if you are unsure.
- endmenu
-diff --git a/arch/s390/lib/Makefile b/arch/s390/lib/Makefile
-index 707cd4622c132..69feb8ed3312d 100644
---- a/arch/s390/lib/Makefile
-+++ b/arch/s390/lib/Makefile
-@@ -17,4 +17,7 @@ KASAN_SANITIZE_uaccess.o := n
- obj-$(CONFIG_S390_UNWIND_SELFTEST) += test_unwind.o
- CFLAGS_test_unwind.o += -fno-optimize-sibling-calls
+@@ -6838,7 +6846,7 @@ static void perf_aux_sample_output(struct perf_event *event,
+ 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+ 		return;
  
-+obj-$(CONFIG_S390_MODULES_SANITY_TEST) += test_modules.o
-+obj-$(CONFIG_S390_MODULES_SANITY_TEST_HELPERS) += test_modules_helpers.o
-+
- lib-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
-diff --git a/arch/s390/lib/test_modules.c b/arch/s390/lib/test_modules.c
-new file mode 100644
-index 0000000000000..d056baa8fbb0c
---- /dev/null
-+++ b/arch/s390/lib/test_modules.c
-@@ -0,0 +1,35 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <kunit/test.h>
-+#include <linux/module.h>
-+
-+#include "test_modules.h"
-+
-+#define DECLARE_RETURN(i) int test_modules_return_ ## i(void)
-+REPEAT_10000(DECLARE_RETURN);
-+
-+/*
-+ * Test that modules with many relocations are loaded properly.
-+ */
-+static void test_modules_many_vmlinux_relocs(struct kunit *test)
-+{
-+	int result = 0;
-+
-+#define CALL_RETURN(i) result += test_modules_return_ ## i()
-+	REPEAT_10000(CALL_RETURN);
-+	KUNIT_ASSERT_EQ(test, result, 49995000);
-+}
-+
-+static struct kunit_case modules_testcases[] = {
-+	KUNIT_CASE(test_modules_many_vmlinux_relocs),
-+	{}
-+};
-+
-+static struct kunit_suite modules_test_suite = {
-+	.name = "modules_test_s390",
-+	.test_cases = modules_testcases,
-+};
-+
-+kunit_test_suites(&modules_test_suite);
-+
-+MODULE_LICENSE("GPL");
-diff --git a/arch/s390/lib/test_modules.h b/arch/s390/lib/test_modules.h
-new file mode 100644
-index 0000000000000..43b5e4b4af3e4
---- /dev/null
-+++ b/arch/s390/lib/test_modules.h
-@@ -0,0 +1,50 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+#ifndef TEST_MODULES_H
-+#define TEST_MODULES_H
-+
-+#define __REPEAT_10000_3(f, x) \
-+	f(x ## 0); \
-+	f(x ## 1); \
-+	f(x ## 2); \
-+	f(x ## 3); \
-+	f(x ## 4); \
-+	f(x ## 5); \
-+	f(x ## 6); \
-+	f(x ## 7); \
-+	f(x ## 8); \
-+	f(x ## 9)
-+#define __REPEAT_10000_2(f, x) \
-+	__REPEAT_10000_3(f, x ## 0); \
-+	__REPEAT_10000_3(f, x ## 1); \
-+	__REPEAT_10000_3(f, x ## 2); \
-+	__REPEAT_10000_3(f, x ## 3); \
-+	__REPEAT_10000_3(f, x ## 4); \
-+	__REPEAT_10000_3(f, x ## 5); \
-+	__REPEAT_10000_3(f, x ## 6); \
-+	__REPEAT_10000_3(f, x ## 7); \
-+	__REPEAT_10000_3(f, x ## 8); \
-+	__REPEAT_10000_3(f, x ## 9)
-+#define __REPEAT_10000_1(f, x) \
-+	__REPEAT_10000_2(f, x ## 0); \
-+	__REPEAT_10000_2(f, x ## 1); \
-+	__REPEAT_10000_2(f, x ## 2); \
-+	__REPEAT_10000_2(f, x ## 3); \
-+	__REPEAT_10000_2(f, x ## 4); \
-+	__REPEAT_10000_2(f, x ## 5); \
-+	__REPEAT_10000_2(f, x ## 6); \
-+	__REPEAT_10000_2(f, x ## 7); \
-+	__REPEAT_10000_2(f, x ## 8); \
-+	__REPEAT_10000_2(f, x ## 9)
-+#define REPEAT_10000(f) \
-+	__REPEAT_10000_1(f, 0); \
-+	__REPEAT_10000_1(f, 1); \
-+	__REPEAT_10000_1(f, 2); \
-+	__REPEAT_10000_1(f, 3); \
-+	__REPEAT_10000_1(f, 4); \
-+	__REPEAT_10000_1(f, 5); \
-+	__REPEAT_10000_1(f, 6); \
-+	__REPEAT_10000_1(f, 7); \
-+	__REPEAT_10000_1(f, 8); \
-+	__REPEAT_10000_1(f, 9)
-+
-+#endif
-diff --git a/arch/s390/lib/test_modules_helpers.c b/arch/s390/lib/test_modules_helpers.c
-new file mode 100644
-index 0000000000000..1670349a03eba
---- /dev/null
-+++ b/arch/s390/lib/test_modules_helpers.c
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <linux/export.h>
-+
-+#include "test_modules.h"
-+
-+#define DEFINE_RETURN(i) \
-+	int test_modules_return_ ## i(void) \
-+	{ \
-+		return 1 ## i - 10000; \
-+	} \
-+	EXPORT_SYMBOL_GPL(test_modules_return_ ## i)
-+REPEAT_10000(DEFINE_RETURN);
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		return;
+ 
 -- 
 2.34.1
 
