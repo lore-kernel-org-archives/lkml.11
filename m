@@ -2,210 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05881C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AFFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231489AbiBNVgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:36:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43862 "EHLO
+        id S231259AbiBNVhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:37:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231491AbiBNVgF (ORCPT
+        with ESMTP id S230429AbiBNVhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:36:05 -0500
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA2BBC8E
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:35:48 -0800 (PST)
-Received: from terra.local.svanheule.net (104.153-136-217.adsl-dyn.isp.belgacom.be [217.136.153.104])
+        Mon, 14 Feb 2022 16:37:34 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D970112D0B4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:37:25 -0800 (PST)
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 670EF2A25FB;
-        Mon, 14 Feb 2022 19:57:07 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1644865027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NWlSj3jND0Xw2BaE2cX6gEUMtrMa1vlnKfokepbt1e4=;
-        b=nXya5L0GgmhPE3+2pHiO94UCKR06POE2QGOtaucxne1rk7/Dx31b5OCoUmJ8qM26bwgdac
-        7m/se8DraRuXQfA44Cs0Kjni1yI9RY1WgJ99pj1NtQLbA60aUxXetFzbki15AIX9i4f/L+
-        rp7cDSm91ob60+QBUq8DYh46/UX0ZWKxkyT+unmgbqPW89R28p2QDm+9HxrP97osL4ViMR
-        AP3bqW41Etfad7dPg/WaetQjDJcusPyP8GRvRWlwHPW+jwICJrqlTFgTQn9kLTWqTIBsZb
-        B6r5YslRtqIQW/AfuFKVLmZsRGxziF6nd3B1by0omI0JWdkRAWC0vmiSqj/Huw==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Birger Koblitz <mail@birger-koblitz.de>,
-        Bert Vermeulen <bert@biot.com>,
-        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
-        Sander Vanheule <sander@svanheule.net>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 2/4] dt-bindings: interrupt-controller: realtek,rtl-intc: require parents
-Date:   Mon, 14 Feb 2022 19:56:59 +0100
-Message-Id: <a8001b64563a92cd3ca9a3c9190b87d7a3505497.1644864700.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1644864700.git.sander@svanheule.net>
-References: <cover.1644864700.git.sander@svanheule.net>
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A69553F1E8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644874644;
+        bh=kT/ZbStYKrIw4n+GRbiyCeyEm9jDf9nRetcAQkPpfiI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+         In-Reply-To:Content-Type;
+        b=aUTtIIzvYfj0v/80+GqkQ0QLTMiXM8o0ZmSbuRnOkQ0BmnHHv0bfig37ndQLNxJiB
+         mtgs+oGET55UI6eaqwijQZqEzvaZ2KVMDGeDxNUiuw6ShL6zw7utWpzI9T1PUYU2Dg
+         8suyKmx01OCZhtWEK7jYxP4MMdOVxXBL+b2QCwjG1FZjjab3ZnQ3dxj3uG0Y0NxDYU
+         vsV1RhCTFGNZKT7rRd/QsKNTCDi3QYJZJL+MKMw29a89twTMN1IMQvsx2AS48Krv9V
+         A+Y8mGstpM/5nI6B5Tkkdxl3P1LrZCXacfKLRwTFK9kdYmPa5prrR7DbIX5oAXLLHR
+         QaF6cRLfwHLuQ==
+Received: by mail-wr1-f69.google.com with SMTP id p9-20020adf9589000000b001e333885ac1so7391245wrp.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:37:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kT/ZbStYKrIw4n+GRbiyCeyEm9jDf9nRetcAQkPpfiI=;
+        b=5+gHcTfp/yzP+lfZLoZvmU48VYlU5zaW3owKsJIoPEryFdHObmKP2KmJ9hc2VIrJrT
+         O5NJ4IkF9Zjr6WUKKpnIiCMYAecl3Ra4raDShOCZVlzl/cPfzJsWTqTHHH8Yo/hKklFT
+         bNFCuFkTy3caGdEBGYDEAhYfvxQ3o8tl1Vi9S4o3qK50JwbDYJat6HI8eueDDQyjXQ4O
+         6SYP8fWMxWPaSj1Q9N4FieB0oTaF0W60T/UWF0dHH1gCtb+otjtD6uLbKpfhjMVgYYdd
+         Y9LL6oe5/w4ohGpqPv/8Ax4RFkpDELZ57G9lIh9B34y7EINLOaLv1t5Jb0zjdPcKYvMT
+         J8Jw==
+X-Gm-Message-State: AOAM533+ZzSNlAWIQrkxxwC685DoRIbKzzkm9L9+HkFPHZjzgDTVxttF
+        9+Sl4e3odcY0GiYzHUCzA0HRWAESRTWbe/++Xo0GDwYpa+jt1r4CwhfTQT5/M/h4qG6trU9ZqjA
+        5cGkgeaVrBQPc35X0+8o25JJQFQqO/va19HSSmn25iQ==
+X-Received: by 2002:a5d:4745:: with SMTP id o5mr716526wrs.275.1644874643595;
+        Mon, 14 Feb 2022 13:37:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyy8FAd8AthJ50nYJRkJC2MLR9VdV0C5UiWk2N5lGhZra0fVO3q6DDUwAMpmDmMD2+Wryc6ZQ==
+X-Received: by 2002:a5d:4745:: with SMTP id o5mr716511wrs.275.1644874643350;
+        Mon, 14 Feb 2022 13:37:23 -0800 (PST)
+Received: from [192.168.0.106] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id b15sm26932080wri.96.2022.02.14.13.37.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 13:37:22 -0800 (PST)
+Message-ID: <a7ab4c1e-99d9-b78e-4c49-c565432f081d@canonical.com>
+Date:   Mon, 14 Feb 2022 22:37:22 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 1/4] iio:frequency:admv1014: add support for ADMV1014
+Content-Language: en-US
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220214073418.4528-1-antoniu.miclaus@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220214073418.4528-1-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt router has 32 inputs, and up to 15 outputs connected to
-the MIPS CPU's interrupts. The way these are mapped to each other is
-runtime configurable. This controller can also mask individual interrupt
-sources, and has a status register to indicate pending interrupts. This
-means the controller is not transparent, and the use of "interrupt-map"
-inappropriate. Instead, a list of parent interrupts should be specified.
+On 14/02/2022 08:34, Antoniu Miclaus wrote:
+> The ADMV1014 is a silicon germanium (SiGe), wideband,
+> microwave downconverter optimized for point to point microwave
+> radio designs operating in the 24 GHz to 44 GHz frequency range.
+> 
+> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADMV1014.pdf
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+> no changes in v7.
+>  drivers/iio/frequency/Kconfig    |  10 +
+>  drivers/iio/frequency/Makefile   |   1 +
+>  drivers/iio/frequency/admv1014.c | 824 +++++++++++++++++++++++++++++++
+>  3 files changed, 835 insertions(+)
+>  create mode 100644 drivers/iio/frequency/admv1014.c
+> 
+> diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
+> index 2c9e0559e8a4..493221f42077 100644
+> --- a/drivers/iio/frequency/Kconfig
+> +++ b/drivers/iio/frequency/Kconfig
+> @@ -50,6 +50,16 @@ config ADF4371
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called adf4371.
+>  
+> +config ADMV1014
+> +	tristate "Analog Devices ADMV1014 Microwave Downconverter"
+> +	depends on SPI && COMMON_CLK && 64BIT
+> +	help
+> +	  Say yes here to build support for Analog Devices ADMV1014
+> +	  24 GHz to 44 GHz, Wideband, Microwave Downconverter.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called admv1014.
+> +
+>  config ADRF6780
+>          tristate "Analog Devices ADRF6780 Microwave Upconverter"
+>          depends on SPI
+> diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
+> index ae3136c79202..5f0348e5eb53 100644
+> --- a/drivers/iio/frequency/Makefile
+> +++ b/drivers/iio/frequency/Makefile
+> @@ -7,4 +7,5 @@
+>  obj-$(CONFIG_AD9523) += ad9523.o
+>  obj-$(CONFIG_ADF4350) += adf4350.o
+>  obj-$(CONFIG_ADF4371) += adf4371.o
+> +obj-$(CONFIG_ADMV1014) += admv1014.o
+>  obj-$(CONFIG_ADRF6780) += adrf6780.o
+> diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
+> new file mode 100644
+> index 000000000000..59a6b1f3b7cb
+> --- /dev/null
+> +++ b/drivers/iio/frequency/admv1014.c
+> @@ -0,0 +1,824 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * ADMV1014 driver
+> + *
+> + * Copyright 2022 Analog Devices Inc.
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/bits.h>
+> +#include <linux/clk.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/clk-provider.h>
 
-Two-part compatibles are introduced to be able to require "interrupts"
-for new devicetrees. The relevant descriptions are extended or added to
-more clearly describe the functionality of this controller. The old
-compatible, with "interrupt-map" and "#address-cells", is deprecated.
-Interrupt specifiers for new compatibles will require two cells, to
-indicate the output selection.
+Where do you use/define clock provider?
 
-To prevent spurious changes to the binding when more SoCs are added,
-"allOf" is used with one "if", and the compatible enum only has one
-item.
-
-The example is updated to provide a correct example for RTL8380 SoCs.
-
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
-Changes in v5:
-- Add Rob's Reviewed-by
-
-Changes in v4:
-- Indicate more clearly that the controller is not transparent.
-
- .../realtek,rtl-intc.yaml                     | 82 ++++++++++++++-----
- 1 file changed, 62 insertions(+), 20 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-index 9e76fff20323..f212962afd62 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
-@@ -6,6 +6,14 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Realtek RTL SoC interrupt controller devicetree bindings
- 
-+description:
-+  Interrupt controller and router for Realtek MIPS SoCs, allowing each SoC
-+  interrupt to be routed to one parent CPU (hardware) interrupt, or left
-+  disconnected.
-+  All connected input lines from SoC peripherals can be masked individually,
-+  and an interrupt status register is present to indicate which interrupts are
-+  pending.
-+
- maintainers:
-   - Birger Koblitz <mail@birger-koblitz.de>
-   - Bert Vermeulen <bert@biot.com>
-@@ -13,45 +21,79 @@ maintainers:
- 
- properties:
-   compatible:
--    const: realtek,rtl-intc
-+    oneOf:
-+      - items:
-+          - enum:
-+              - realtek,rtl8380-intc
-+          - const: realtek,rtl-intc
-+      - const: realtek,rtl-intc
-+        deprecated: true
- 
--  "#interrupt-cells":
--    const: 1
-+  "#interrupt-cells": true
- 
-   reg:
-     maxItems: 1
- 
-   interrupts:
--    maxItems: 1
-+    minItems: 1
-+    maxItems: 15
-+    description:
-+      List of parent interrupts, in the order that they are connected to this
-+      interrupt router's outputs.
- 
-   interrupt-controller: true
- 
--  "#address-cells":
--    const: 0
--
--  interrupt-map:
--    description: Describes mapping from SoC interrupts to CPU interrupts
--
- required:
-   - compatible
-   - reg
-   - "#interrupt-cells"
-   - interrupt-controller
--  - "#address-cells"
--  - interrupt-map
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          const: realtek,rtl-intc
-+    then:
-+      properties:
-+        "#interrupt-cells":
-+          const: 1
-+
-+        "#address-cells":
-+          const: 0
-+
-+        interrupt-map: true
-+      required:
-+        - "#address-cells"
-+        - interrupt-map
-+    else:
-+      properties:
-+        "#interrupt-cells":
-+          description:
-+            Two cells to specify which line to connect to, and which output it should
-+            be routed to. Both cells use a zero-based index.
-+          const: 2
-+      required:
-+        - interrupts
- 
- additionalProperties: false
- 
- examples:
-   - |
-     intc: interrupt-controller@3000 {
--      compatible = "realtek,rtl-intc";
--      #interrupt-cells = <1>;
-+      compatible = "realtek,rtl8380-intc", "realtek,rtl-intc";
-+      #interrupt-cells = <2>;
-       interrupt-controller;
--      reg = <0x3000 0x20>;
--      #address-cells = <0>;
--      interrupt-map =
--              <31 &cpuintc 2>,
--              <30 &cpuintc 1>,
--              <29 &cpuintc 5>;
-+      reg = <0x3000 0x18>;
-+
-+      interrupt-parent = <&cpuintc>;
-+      interrupts = <2>, <3>, <4>, <5>, <6>;
-+    };
-+
-+    irq-consumer@0 {
-+      reg = <0 4>;
-+      interrupt-parent = <&intc>;
-+      interrupts =
-+        <19 3>, /* IRQ 19, routed to output 3 (cpuintc 5) */
-+        <18 4>; /* IRQ 18, routed to output 4 (cpuintc 6) */
-     };
--- 
-2.35.1
-
+Best regards,
+Krzysztof
