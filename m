@@ -2,121 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED197C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355617AbiBNPHj (ORCPT
+        id S1355622AbiBNPJb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:07:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37498 "EHLO
+        Mon, 14 Feb 2022 10:09:31 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350292AbiBNPHf (ORCPT
+        with ESMTP id S243886AbiBNPJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:07:35 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A42BC5D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:07:27 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJcwk-0007C6-06; Mon, 14 Feb 2022 16:07:22 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJcwf-00GZDl-K1; Mon, 14 Feb 2022 16:07:16 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJcwe-0038vY-42; Mon, 14 Feb 2022 16:07:16 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] mfd: stmfx: Improve error message triggered by regulator fault in .remove()
-Date:   Mon, 14 Feb 2022 16:07:10 +0100
-Message-Id: <20220214150710.312269-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1895; h=from:subject; bh=7otsfwH6fSTSNUg7D7PDPsJdAxvDx1C+OtM3X6y9WW4=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiCnAahVc9oU88f9z5+LdgQOM1K1huVzxH5a+FLmWY K9ojzgSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYgpwGgAKCRDB/BR4rcrsCYhVB/ 9x07HzFdma9g0XNiJMNDxDayGfAdWxyIOGpO+YuzleN4hktHzAof+9Ev8LRGtv+sL0AUF8LjDgpfjc acuWNwW8TxaKvXq8jSkVwJBU8qGCGT9MeXJOzH37Od5J4ONBCrWObqSBRb5R4d9sJwwvmausAJuYJZ YnwV1Jq3GV33j+RRStbRBhXBIihNTgBEhWf2zabifTj8tnqmf/lfQCL2XABByq0dtcLIvkA7BdzNCN PwX2tXHjdtTjWRsnMwzr42WR++dtsQOw8KhHLBu3B9IJZidKwXGKTWsMo9ojObuKe1wHP1qwoR963I LUMZOkThhFh4FecJ13wIJXT+Un3oKK
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Mon, 14 Feb 2022 10:09:27 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACAC2B84F;
+        Mon, 14 Feb 2022 07:09:18 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id w6so2583763ljj.3;
+        Mon, 14 Feb 2022 07:09:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=OgvzWeL2gxETa8bIbp1BwS5Hh69YjWAn3iFy8+tRqGw=;
+        b=ak1nW1+BZAwK5RCQKmXlHfSW8FsrZ12pXLx6VLwCzJBSGaf/eYxYKTIozKy/iHq9Eb
+         gbhUrDLfhXd8mt4gE72NMH0Y0SUrbG8XX62VFN8dHZMJktdj/W9Jc/i3b3ljvRBc/KWS
+         IHa+v553SIYYrKwb0KeM17Xi25jAQ6eSQ35ZwWvJBO32mmBC95rXiTdBKt0mo/tBjKwV
+         dXk3Znze1VIp9N57+uSfoW1OFPcqVVO/3adZiBAIt/wRh8nfTQxMRxxLfGA+X1UjIBXh
+         chXl+gzl7OYVrJtXByRIMPaPWcfjqbKMdKngl3p8QE5n0rH+LyTO/UbHvJLVcwhotIjL
+         kRFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
+         :content-transfer-encoding;
+        bh=OgvzWeL2gxETa8bIbp1BwS5Hh69YjWAn3iFy8+tRqGw=;
+        b=bIlESxHdvG1N/UaYKz+kqkU2m0+o1WEB47iRrUdIsc6Qmu53zYWQsDLug5GGvjdu0j
+         828UtS1zmZLeERudyaW/OJj6XsEBMD2IiVQwmug+JWrWEFp59fXgE83Efv8OWxF65zDZ
+         UPKHFTSmF0HL4Ktq1V3mfXaEiu4WQhyzI1AAJllHnw6hpk8A/iCMnCWxTiGubaOjFyRR
+         g6k/pdyNSw2jVfsGWJW1AL1HYa7Axvew1QS6BVweWbHDiEX4W3fYyZm0X4HvtRasB6Jr
+         LYvCQe9w7YzfRNXpz0zxMl1x6l79c0NfGXhu/Xqx/n1KCP3r38nRLm8wqXf2Ue1Jd8bK
+         HqMA==
+X-Gm-Message-State: AOAM531Jro/Nvx3X0U8jNivzBJFk0o2F7SW0P+0O821yVaMJQc1OeKMf
+        2miRVuQ3QDNzJrwHgO7fqfrzP3LdKhdDIm2xAAc=
+X-Google-Smtp-Source: ABdhPJzrVtGFstrzvnKZ4tnYHXap5XehMS2FWVkPXeBZVXB9SQTHOhHBolLaHw90l3iPGN3chwWx+A==
+X-Received: by 2002:a2e:a0cd:: with SMTP id f13mr134764ljm.116.1644851356663;
+        Mon, 14 Feb 2022 07:09:16 -0800 (PST)
+Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
+        by smtp.gmail.com with ESMTPSA id bp37sm3933236lfb.86.2022.02.14.07.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 07:09:16 -0800 (PST)
+Message-ID: <620a709c.1c69fb81.2fe5d.168b@mx.google.com>
+Date:   Mon, 14 Feb 2022 07:09:16 -0800 (PST)
+X-Google-Original-Date: Mon, 14 Feb 2022 15:09:11 GMT
+From:   Fox Chen <foxhlchen@gmail.com>
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+Subject: RE: [PATCH 5.16 000/203] 5.16.10-rc1 review
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Fox Chen <foxhlchen@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Returning a non-zero value in an i2c remove callback results in the i2c
-core emitting a very generic error message ("remove failed (-ESOMETHING),
-will be ignored") and as the message indicates not further error handling
-is done.
+On Mon, 14 Feb 2022 10:24:04 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> This is the start of the stable review cycle for the 5.16.10 release.
+> There are 203 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.10-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Instead emit a more specific error message and then return zero in
-.remove().
-
-The long-term goal is to make the i2c remove prototype return void, making
-all implementations return 0 is preparatory work for this change.
-
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-Changes since (implicit) v1:
-
- - put declaration of ret and assignment in two lines.
-   (requested by Lee Jones)
-
- drivers/mfd/stmfx.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/mfd/stmfx.c b/drivers/mfd/stmfx.c
-index e095a3930142..122f96094410 100644
---- a/drivers/mfd/stmfx.c
-+++ b/drivers/mfd/stmfx.c
-@@ -392,17 +392,22 @@ static int stmfx_chip_init(struct i2c_client *client)
- 	return ret;
- }
- 
--static int stmfx_chip_exit(struct i2c_client *client)
-+static void stmfx_chip_exit(struct i2c_client *client)
- {
- 	struct stmfx *stmfx = i2c_get_clientdata(client);
- 
- 	regmap_write(stmfx->map, STMFX_REG_IRQ_SRC_EN, 0);
- 	regmap_write(stmfx->map, STMFX_REG_SYS_CTRL, 0);
- 
--	if (stmfx->vdd)
--		return regulator_disable(stmfx->vdd);
-+	if (stmfx->vdd) {
-+		int ret;
- 
-+		ret = regulator_disable(stmfx->vdd);
-+		if (ret)
-+			dev_err(&client->dev,
-+				"Failed to disable vdd regulator: %pe\n",
-+				ERR_PTR(ret));
-+	}
--	return 0;
- }
- 
- static int stmfx_probe(struct i2c_client *client,
-@@ -466,7 +471,9 @@ static int stmfx_remove(struct i2c_client *client)
- {
- 	stmfx_irq_exit(client);
- 
--	return stmfx_chip_exit(client);
-+	stmfx_chip_exit(client);
-+
-+	return 0;
- }
- 
- #ifdef CONFIG_PM_SLEEP
-
-base-commit: dcb85f85fa6f142aae1fe86f399d4503d49f2b60
--- 
-2.34.1
+5.16.10-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
+                
+Tested-by: Fox Chen <foxhlchen@gmail.com>
 
