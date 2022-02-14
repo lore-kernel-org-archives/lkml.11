@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C46C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84012C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346343AbiBNKTq (ORCPT
+        id S1346644AbiBNKTu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44034 "EHLO
+        Mon, 14 Feb 2022 05:19:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348077AbiBNKRG (ORCPT
+        with ESMTP id S1348114AbiBNKRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:17:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA978CDBC;
-        Mon, 14 Feb 2022 01:54:30 -0800 (PST)
+        Mon, 14 Feb 2022 05:17:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC038E18A;
+        Mon, 14 Feb 2022 01:54:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF0F1B80DCF;
-        Mon, 14 Feb 2022 09:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CE80C340E9;
-        Mon, 14 Feb 2022 09:54:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F99661236;
+        Mon, 14 Feb 2022 09:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E54C340E9;
+        Mon, 14 Feb 2022 09:54:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832467;
-        bh=06YH9P+l1jwR/vVqn2iC1iLA8A09ItHL0sdYonjrSlY=;
+        s=korg; t=1644832470;
+        bh=TTBJeXbq5yAFOFz/yrsHu+gLD33xprQvk2fi8ibSHGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ATEGO2tYZEaABx3LOAT295k/OsDhLRZkqnDsw5rqeQ0u+4yMmvyUkOW39FBaljIX4
-         vVJaEwu0/H3CmBQV1jjmiGNgju614ufzZaqdsh/Ao+mbgJdSRul+H9sMz/c7zbOzIO
-         Srowru+84pYwaSaJopf6DOxlTs+KCVyN5dCE4Hj0=
+        b=I2WNbL1TYO2g6Qk/qExeF3GAfUSZL1IkluO56mTaMPduy3mhXanmvHwVnc3Awj7zG
+         T69ypL43YGVRsVFQk8zwtjT6fBRn+6r3Nf8InxlA6aZ1P8Ly7FMp/nsxsFBOlKn27R
+         ThPMkvkvDOJMew0UrVRPQNV7A8YMDLKDUMrzy9MM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.16 006/203] ima: Do not print policy rule with inactive LSM labels
-Date:   Mon, 14 Feb 2022 10:24:10 +0100
-Message-Id: <20220214092510.435666537@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 024/203] NFSv4 remove zero number of fs_locations entries error check
+Date:   Mon, 14 Feb 2022 10:24:28 +0100
+Message-Id: <20220214092511.032576775@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,41 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Berger <stefanb@linux.ibm.com>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-commit 89677197ae709eb1ab3646952c44f6a171c9e74c upstream.
+[ Upstream commit 90e12a3191040bd3854d3e236c35921e4e92a044 ]
 
-Before printing a policy rule scan for inactive LSM labels in the policy
-rule. Inactive LSM labels are identified by args_p != NULL and
-rule == NULL.
+Remove the check for the zero length fs_locations reply in the
+xdr decoding, and instead check for that in the migration code.
 
-Fixes: 483ec26eed42 ("ima: ima/lsm policy rule loading logic bug fixes")
-Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-Cc: <stable@vger.kernel.org> # v5.6+
-Acked-by: Christian Brauner <brauner@kernel.org>
-[zohar@linux.ibm.com: Updated "Fixes" tag]
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_policy.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ fs/nfs/nfs4state.c | 3 +++
+ fs/nfs/nfs4xdr.c   | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -1967,6 +1967,14 @@ int ima_policy_show(struct seq_file *m,
+diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
+index f63dfa01001c9..f3265575c28d2 100644
+--- a/fs/nfs/nfs4state.c
++++ b/fs/nfs/nfs4state.c
+@@ -2106,6 +2106,9 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
+ 	}
  
- 	rcu_read_lock();
- 
-+	/* Do not print rules with inactive LSM labels */
-+	for (i = 0; i < MAX_LSM_RULES; i++) {
-+		if (entry->lsm[i].args_p && !entry->lsm[i].rule) {
-+			rcu_read_unlock();
-+			return 0;
-+		}
-+	}
+ 	result = -NFS4ERR_NXIO;
++	if (!locations->nlocations)
++		goto out;
 +
- 	if (entry->action & MEASURE)
- 		seq_puts(m, pt(Opt_measure));
- 	if (entry->action & DONT_MEASURE)
+ 	if (!(locations->fattr.valid & NFS_ATTR_FATTR_V4_LOCATIONS)) {
+ 		dprintk("<-- %s: No fs_locations data, migration skipped\n",
+ 			__func__);
+diff --git a/fs/nfs/nfs4xdr.c b/fs/nfs/nfs4xdr.c
+index 801119b7a5964..71a00e48bd2dd 100644
+--- a/fs/nfs/nfs4xdr.c
++++ b/fs/nfs/nfs4xdr.c
+@@ -3696,8 +3696,6 @@ static int decode_attr_fs_locations(struct xdr_stream *xdr, uint32_t *bitmap, st
+ 	if (unlikely(!p))
+ 		goto out_eio;
+ 	n = be32_to_cpup(p);
+-	if (n <= 0)
+-		goto out_eio;
+ 	for (res->nlocations = 0; res->nlocations < n; res->nlocations++) {
+ 		u32 m;
+ 		struct nfs4_fs_location *loc;
+-- 
+2.34.1
+
 
 
