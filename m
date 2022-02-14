@@ -2,85 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C626DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352688AbiBNLnc (ORCPT
+        id S1352626AbiBNLnk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:43:32 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43198 "EHLO
+        Mon, 14 Feb 2022 06:43:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352874AbiBNLnP (ORCPT
+        with ESMTP id S229685AbiBNLnS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:43:15 -0500
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAF36C94D;
-        Mon, 14 Feb 2022 03:35:02 -0800 (PST)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id E9BC51C0B96; Mon, 14 Feb 2022 12:35:00 +0100 (CET)
-Date:   Mon, 14 Feb 2022 12:35:00 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 4.19 00/49] 4.19.230-rc1 review
-Message-ID: <20220214113500.GB7989@duo.ucw.cz>
-References: <20220214092448.285381753@linuxfoundation.org>
+        Mon, 14 Feb 2022 06:43:18 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC6526D966;
+        Mon, 14 Feb 2022 03:35:08 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id h8so10241687ejy.4;
+        Mon, 14 Feb 2022 03:35:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3J6eRdmKEMyvk87DRaAXQaXppLltRQ4LA3+XirchFxA=;
+        b=Jxj6DU6co/Vr+l0USdm3w6jdGohzXgvtlk4K9zaYfE0UE4fdpkJAyE/f1L6xu9wbM1
+         Mqbsc1yN5iOCWpdx4mwscUBQKWmakAqK6CtSMVMInBBVoH3LH4b332zMPONbVj8QlwPn
+         A4v0pyA+4yAkOwnz2ao5qWpbsvC9ddJi86XfaYxa4E7gjTGN256xy2ADMSX9uJheYc0x
+         DxPPaUbCKnDjXsz6//BWmUZNSdj0DAY8D6DoFwkTGkFkxEOIvPtSj80E5zWdcRCQ4MQ0
+         NgSAdtEIMgEYCzFhzTGdgnrFwrS1pNtPlk+JbFvdNPK0bgY2ogk0R/TAJw8IDI/8yn+u
+         IpLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3J6eRdmKEMyvk87DRaAXQaXppLltRQ4LA3+XirchFxA=;
+        b=B0Y1/WKMOBw5wcqlmv2Rbj+OXAN6fs45Sx8AjTDbkhyYWHW4UUI9al4nti8rvGWo+T
+         9rIvylBwRPDpC1xkWB0M4w4shifAxw4RFirPwpls7HoDOUE97P0FgAu2xGJgFha6clvt
+         ItYuAdc+dEqqkx1F0bXqMu6iz4W/mRmwEV10rRF6S63fY1z2gxriaXd9n1p64dwCyO2s
+         KhEfO5GaDPnqTmJZoJD6fzcqi9NcU0dz37mJ32/1UTkzG1ybR8QWy/1SURwQ3CZeZoAq
+         Rjbd+FaAlCfoUpIif8lYpnxsrd6k0ypC4tO05auBxIM1n3ktFjDEJ/QrVypUc/LmPedX
+         Ymog==
+X-Gm-Message-State: AOAM5314EXjd26mGI5Fu2yJhAIqDD66D/ET/+vxryHQ4HotzO4G2GeoY
+        E4oGMUv/9K6jUymrjzBl04R6zlrOifPa+JeyLW7hz4dwtWJWzw==
+X-Google-Smtp-Source: ABdhPJz+0EzQshm9MotYZJdj3ES6556nBEyrExLmu/yNZmkwHFHdZvwtOR6XSqnFAqEpMlN1s7uDxdYixPE6r9IJ7Xs=
+X-Received: by 2002:a17:906:604d:: with SMTP id p13mr10880088ejj.639.1644838507355;
+ Mon, 14 Feb 2022 03:35:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="yEPQxsgoJgBvi8ip"
-Content-Disposition: inline
-In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220214033620.4059-1-jagathjog1996@gmail.com>
+In-Reply-To: <20220214033620.4059-1-jagathjog1996@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 14 Feb 2022 13:33:38 +0200
+Message-ID: <CAHp75VfUgqNUAShjbsXhA3mJ9YTDwtoxNDiFMX7iu-MgGFFCpA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/4] iio: potentiometer: Add support for DS3502
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 14, 2022 at 5:36 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+>
+> Add dt-bindings and support for Maxim DS3502 into existing ds1803 driver.
+> DS3502 is a 7 bit Nonvolatile Digital Potentiometer.
 
---yEPQxsgoJgBvi8ip
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A very good start! A few minor comments to be addressed and one patch
+has to be split to at least three.
 
-Hi!
-
-> This is the start of the stable review cycle for the 4.19.230 release.
-> There are 49 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-
-CIP testing did not find any problems here:                                =
-                                   =20
-                                                                           =
-                                   =20
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y                             =20
-                                                                           =
-                                   =20
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>                              =
-                                   =20
-                                                                           =
-                                   =20
-Best regards,                                                              =
-                                   =20
-                                                                Pavel      =
-                                   =20
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---yEPQxsgoJgBvi8ip
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYgo+ZAAKCRAw5/Bqldv6
-8vEKAKCh+RhH4mqzHpY95271rD9janOSygCcDfRdFsvBcmJTK9eB9ww6Am/hgb4=
-=lOYL
------END PGP SIGNATURE-----
-
---yEPQxsgoJgBvi8ip--
+-- 
+With Best Regards,
+Andy Shevchenko
