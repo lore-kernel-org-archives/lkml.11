@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F7FEC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F56EC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347057AbiBNKUr (ORCPT
+        id S1347155AbiBNKUv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:20:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44804 "EHLO
+        Mon, 14 Feb 2022 05:20:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347210AbiBNKQX (ORCPT
+        with ESMTP id S1347061AbiBNKQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8F189CC4;
-        Mon, 14 Feb 2022 01:53:43 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A52C6D4F4;
+        Mon, 14 Feb 2022 01:53:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34666B80DC4;
-        Mon, 14 Feb 2022 09:53:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644D9C340E9;
-        Mon, 14 Feb 2022 09:53:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0270760DFE;
+        Mon, 14 Feb 2022 09:53:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23B3C340E9;
+        Mon, 14 Feb 2022 09:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832420;
-        bh=0SNWPaXymZm3bX46jRXr1RWWCMk24h+5vqzYav0VjV8=;
+        s=korg; t=1644832410;
+        bh=XHsiq3PFMyIQmhdaRWxgmjhLZbm1cobgoXAss8jZOOw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bjZjaKQNhzyHBAiGhob4yZZxoSNzSbU3/wgE1DGk4VKCq0K1R1d1Db2Lzuceq8z+8
-         0/mJgKpfoiaLLoq0tCECAwLJb58EANuhQqPVUTlmaYYGVcufgU9hZPwv4yIAvOfuEu
-         N2/RvT1LszvlORJR/ymZY+aWSED1SjTC4icvx5jQ=
+        b=Z/1+mNZu510jc/r63Iva38LJEy0HfBP9JyKhLRx+fv9GqGpbMsWHJ5z6Cz0tMPBzF
+         Ys+P2+y1JGz5sCKlN/fHjw80t/M/B8eraCfjeOtNOBTYYP1rlbXPhaBjtweXaUB//n
+         LKE7lDL2nokq9N6kPddfBc1qKNPRb2Alvt5i6SZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.16 001/203] integrity: check the return value of audit_log_start()
-Date:   Mon, 14 Feb 2022 10:24:05 +0100
-Message-Id: <20220214092510.273014505@linuxfoundation.org>
+        stable@vger.kernel.org, Song Liu <song@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.15 171/172] perf: Fix list corruption in perf_cgroup_switch()
+Date:   Mon, 14 Feb 2022 10:27:09 +0100
+Message-Id: <20220214092512.292969197@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,33 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Song Liu <song@kernel.org>
 
-commit 83230351c523b04ff8a029a4bdf97d881ecb96fc upstream.
+commit 5f4e5ce638e6a490b976ade4a40017b40abb2da0 upstream.
 
-audit_log_start() returns audit_buffer pointer on success or NULL on
-error, so it is better to check the return value of it.
+There's list corruption on cgrp_cpuctx_list. This happens on the
+following path:
 
-Fixes: 3323eec921ef ("integrity: IMA as an integrity service provider")
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Cc: <stable@vger.kernel.org>
-Reviewed-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+  perf_cgroup_switch: list_for_each_entry(cgrp_cpuctx_list)
+      cpu_ctx_sched_in
+         ctx_sched_in
+            ctx_pinned_sched_in
+              merge_sched_in
+                  perf_cgroup_event_disable: remove the event from the list
+
+Use list_for_each_entry_safe() to allow removing an entry during
+iteration.
+
+Fixes: 058fe1c0440e ("perf/core: Make cgroup switch visit only cpuctxs with cgroup events")
+Signed-off-by: Song Liu <song@kernel.org>
+Reviewed-by: Rik van Riel <riel@surriel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220204004057.2961252-1-song@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/integrity_audit.c |    2 ++
- 1 file changed, 2 insertions(+)
+ kernel/events/core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/security/integrity/integrity_audit.c
-+++ b/security/integrity/integrity_audit.c
-@@ -45,6 +45,8 @@ void integrity_audit_message(int audit_m
- 		return;
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -839,7 +839,7 @@ static DEFINE_PER_CPU(struct list_head,
+  */
+ static void perf_cgroup_switch(struct task_struct *task, int mode)
+ {
+-	struct perf_cpu_context *cpuctx;
++	struct perf_cpu_context *cpuctx, *tmp;
+ 	struct list_head *list;
+ 	unsigned long flags;
  
- 	ab = audit_log_start(audit_context(), GFP_KERNEL, audit_msgno);
-+	if (!ab)
-+		return;
- 	audit_log_format(ab, "pid=%d uid=%u auid=%u ses=%u",
- 			 task_pid_nr(current),
- 			 from_kuid(&init_user_ns, current_uid()),
+@@ -850,7 +850,7 @@ static void perf_cgroup_switch(struct ta
+ 	local_irq_save(flags);
+ 
+ 	list = this_cpu_ptr(&cgrp_cpuctx_list);
+-	list_for_each_entry(cpuctx, list, cgrp_cpuctx_entry) {
++	list_for_each_entry_safe(cpuctx, tmp, list, cgrp_cpuctx_entry) {
+ 		WARN_ON_ONCE(cpuctx->ctx.nr_cgroups == 0);
+ 
+ 		perf_ctx_lock(cpuctx, cpuctx->task_ctx);
 
 
