@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76512C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347402AbiBNK2S (ORCPT
+        id S1347127AbiBNK2V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33138 "EHLO
+        Mon, 14 Feb 2022 05:28:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347728AbiBNK0T (ORCPT
+        with ESMTP id S1347860AbiBNK0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF3680217;
-        Mon, 14 Feb 2022 01:57:28 -0800 (PST)
+        Mon, 14 Feb 2022 05:26:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FAD80902;
+        Mon, 14 Feb 2022 01:57:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50921B80DD0;
-        Mon, 14 Feb 2022 09:57:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFAAC340E9;
-        Mon, 14 Feb 2022 09:57:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A789B80DCE;
+        Mon, 14 Feb 2022 09:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DAC8C340E9;
+        Mon, 14 Feb 2022 09:57:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832638;
-        bh=nDySB6UXuT3u6CrlRf1gGUS+olwtOzGHIaEFmYJVFJc=;
+        s=korg; t=1644832641;
+        bh=sJ6+mzYe74c4klAocmWr1wXKcpylYLufUpLD0y2wM5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O0b74A6d+TRteVhPqDy/sT998Fl5IkQ7F68pT8P1KUQcFenxn9He9kp7A81oMfdDB
-         QWMOZ0etugR2T2yH7nuSmXHjOyfvi2idAcsH6XIISVXygMNaCHnyN19xR8ifKRAtvf
-         Pi/IPvNRFYMeI45QY7/lbv52SP/AQZldBOw1+UdE=
+        b=aJX8Anm92ECgkLkTnt2UEsimEW93vQABrLbeN28tbwjwAN1qKuXvd/uYEuPKxXTc7
+         8i7LQAuF48BDFR9Xi1M+xt7zj71BoDFOm8GXKHknct0O9+Llse/K/CAvoHhFcXKMvq
+         jxrw+W+F+kJIb3eH3V4BD1HGiLPzMfnySdZVe95g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Saurav Kashyap <skashyap@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 047/203] scsi: qedf: Change context reset messages to ratelimited
-Date:   Mon, 14 Feb 2022 10:24:51 +0100
-Message-Id: <20220214092511.817031892@linuxfoundation.org>
+Subject: [PATCH 5.16 038/203] net: sched: Clarify error message when qdisc kind is unknown
+Date:   Mon, 14 Feb 2022 10:24:42 +0100
+Message-Id: <20220214092511.496573425@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,47 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurav Kashyap <skashyap@marvell.com>
+From: Victor Nogueira <victor@mojatatu.com>
 
-[ Upstream commit 64fd4af6274eb0f49d29772c228fffcf6bde1635 ]
+[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
 
-If FCoE is not configured, libfc/libfcoe keeps on retrying FLOGI and after
-3 retries driver does a context reset and tries fipvlan again.  This leads
-to context reset message flooding the logs. Hence ratelimit the message to
-prevent flooding the logs.
+When adding a tc rule with a qdisc kind that is not supported or not
+compiled into the kernel, the kernel emits the following error: "Error:
+Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
+compiled in and it was not obvious right away what the message meant
+without looking at the kernel code.
 
-Link: https://lore.kernel.org/r/20220117135311.6256-4-njavali@marvell.com
-Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Change the error message to be more explicit and say the qdisc kind is
+unknown.
+
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qedf/qedf_main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
-index 6e367b40ecc96..e0e03443d7703 100644
---- a/drivers/scsi/qedf/qedf_main.c
-+++ b/drivers/scsi/qedf/qedf_main.c
-@@ -911,7 +911,7 @@ void qedf_ctx_soft_reset(struct fc_lport *lport)
- 	struct qed_link_output if_link;
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 910a36ed56343..e4a7ce5c79f4f 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1204,7 +1204,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
  
- 	if (lport->vport) {
--		QEDF_ERR(NULL, "Cannot issue host reset on NPIV port.\n");
-+		printk_ratelimited("Cannot issue host reset on NPIV port.\n");
- 		return;
+ 	err = -ENOENT;
+ 	if (!ops) {
+-		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
++		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
+ 		goto err_out;
  	}
- 
-@@ -3979,7 +3979,9 @@ void qedf_stag_change_work(struct work_struct *work)
- 	struct qedf_ctx *qedf =
- 	    container_of(work, struct qedf_ctx, stag_work.work);
- 
--	QEDF_ERR(&qedf->dbg_ctx, "Performing software context reset.\n");
-+	printk_ratelimited("[%s]:[%s:%d]:%d: Performing software context reset.",
-+			dev_name(&qedf->pdev->dev), __func__, __LINE__,
-+			qedf->dbg_ctx.host_no);
- 	qedf_ctx_soft_reset(qedf->lport);
- }
  
 -- 
 2.34.1
