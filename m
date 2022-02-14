@@ -2,176 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F093DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75722C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiBNUDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:03:38 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35486 "EHLO
+        id S229769AbiBNUFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:05:32 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiBNUDf (ORCPT
+        with ESMTP id S229459AbiBNUF3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:03:35 -0500
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F106510F20D
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:03:17 -0800 (PST)
-Received: by mail-yb1-f177.google.com with SMTP id j2so49686605ybu.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:03:17 -0800 (PST)
+        Mon, 14 Feb 2022 15:05:29 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DBE1A3768;
+        Mon, 14 Feb 2022 12:05:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=EBOPhqSf+aywWxhUqpiwT6NM6RUx7mAerBj7xaF4Kxk=;
-        b=qqO3lcD+cemdiR+mXW04vHX6a84DDvxfqa3p1ElfyL7Az/3/hsz4DHtC0bT5Yk7bgc
-         INz5aMjx/fsdmICmRWrJswQ4SGCwyu1FXzE6zfxapPHAaNVwXwzEpw+Qlp5wGWWjMIl6
-         o/xV5PMrldoKsPnq/3NEeEI97fMyQ3TWtMaxWYZLb6dU49Gd7NMjBp/vhDPcTpI4Qq99
-         td/j/ORxFAlhA7kxpiv77vhZ3RYK8VFWwkPO/D5yEPMgaGSQj5u63nO/4hWCd0fiZBzl
-         tugxlyFWyrfblP5Z1lOJ5ZHvPXW9pkG1BfPNwfh7VMvsIU30MOa8GBcPrSUI1SwC1ruA
-         Ffpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=EBOPhqSf+aywWxhUqpiwT6NM6RUx7mAerBj7xaF4Kxk=;
-        b=BJRUXSTHZMVVtgEc1zNRUOR0GotAPSLQkFAI5hpp/PhloJ++5xyaySG789aUhfLMVr
-         5d3/rt6XyQwQWzGGN7LR+GzQyX3Sqz8dKQsVfY8qKIlbbiL9CygbbXZeglj+g/V+CqEV
-         o+kjtf70g5Hw0/9DMx2asiEP7ZdlrO9qTQTeyVkN/xgrSLxuTk0ZFBh/RI9CnEsTqD50
-         pOZTtFNcVBgxX7AZt384nuyVh3aGHHtKk7IJeJN5PR/1PllMHY7DF/Yrri90XWxyi4BM
-         4/0ktdr6E/FYZnVGzlZAbNQfvCACzdK7sa0OLHN6w9lGHNkQ3zXPrfFZZ2zOwodg+qzo
-         ikPQ==
-X-Gm-Message-State: AOAM530rJMrQvI+2sdY0WPPD2qunHjt7umlaunzr9XrDgIdlVwa/0dgw
-        ZTL3sd5iafnMtjYIoTiCUrPOlTnad4EJrkbla84=
-X-Google-Smtp-Source: ABdhPJwX1fQ9ooMynxhV+ZrSEHGFOuJ0zg+b9O+K7gr/d7kRmT6xVhPHiGTrk1wl/8FC9OBbmpm+FeVkqtr7K5Jd3Ng=
-X-Received: by 2002:a25:148b:: with SMTP id 133mr724420ybu.270.1644868706855;
- Mon, 14 Feb 2022 11:58:26 -0800 (PST)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1644869110; x=1676405110;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GFe66AWLT+MQYAQ2dAVPVsypw1KVTvBSrIl/sWoPZfA=;
+  b=FyWJAbI+/JzzL7QCZC/oAPiCVqdFhDxMVbArs2ebLRfOLD5amJxN7E8I
+   co9/C9cCTdWj2JOZu7jaRObF+UT3rP+/iELXGdjV1qeMy2JB7WZvTVsGa
+   Rbz2YbVQDd356cyuxHIo/PxmGS/uLqqYLskBS7en0qwalS3D0K/K+JVBh
+   w=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Feb 2022 12:00:14 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 12:00:14 -0800
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 14 Feb 2022 12:00:13 -0800
+Received: from [10.216.29.10] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 14 Feb
+ 2022 12:00:09 -0800
+Message-ID: <c02d28ce-bef4-0b71-e90a-991ef4fae9d3@quicinc.com>
+Date:   Tue, 15 Feb 2022 01:30:04 +0530
 MIME-Version: 1.0
-References: <20220213065106.48062-1-ztong0001@gmail.com> <YglQW7gVNoRJ7QpQ@dev-arch.archlinux-ax161>
-In-Reply-To: <YglQW7gVNoRJ7QpQ@dev-arch.archlinux-ax161>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Mon, 14 Feb 2022 11:58:16 -0800
-Message-ID: <CAA5qM4AMf0Tzdsm3jX5_gVw0Uh3d5DwqFB0PGTvsfEwL-v4Nhw@mail.gmail.com>
-Subject: Re: [PATCH] drm/i915: fix build issue when using clang
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        intel-gfx@lists.freedesktop.org,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v5] drivers: thermal: clear all mitigation when thermal
+ zone is disabled
+To:     Lukasz Luba <lukasz.luba@arm.com>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        "Amit Kucheria" <amitk@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+References: <1643307093-22501-1-git-send-email-quic_manafm@quicinc.com>
+ <4024218b-7938-e181-f456-bff4b3fb157a@arm.com>
+From:   Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
+In-Reply-To: <4024218b-7938-e181-f456-bff4b3fb157a@arm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 10:39 AM Nathan Chancellor <nathan@kernel.org> wrot=
-e:
->
-> On Sat, Feb 12, 2022 at 10:51:06PM -0800, Tong Zhang wrote:
-> > drm/i915 target adds some extra cflags, especially it does re-apply -Wa=
-ll.
-> > In clang this will override -Wno-format-security and cause the build to
-> > fail when CONFIG_DRM_I915_WERROR=3Dy. While with GCC this does not happ=
-en.
-> > We reapply -Wno-format-security here to get around this issue.
->
-> For what it's worth, GCC would warn in the exact same way if
-> -Wformat-security was included within -Wall like it is for clang:
->
-> drivers/gpu/drm/i915/gt/intel_gt.c: In function =E2=80=98intel_gt_invalid=
-ate_tlbs=E2=80=99:
-> drivers/gpu/drm/i915/gt/intel_gt.c:988:9: error: format not a string lite=
-ral and no format arguments [-Werror=3Dformat-security]
->   988 |         GEM_TRACE("\n");
->       |         ^~~~~~~~~
-> cc1: all warnings being treated as errors
->
-> drivers/gpu/drm/i915/gt/selftest_execlists.c: In function =E2=80=98live_s=
-anitycheck=E2=80=99:
-> drivers/gpu/drm/i915/gt/selftest_execlists.c:142:25: error: format not a =
-string literal and no format arguments [-Werror=3Dformat-security]
->   142 |                         GEM_TRACE("spinner failed to start\n");
->       |                         ^~~~~~~~~
-> drivers/gpu/drm/i915/gt/selftest_execlists.c: In function =E2=80=98live_p=
-reempt=E2=80=99:
-> drivers/gpu/drm/i915/gt/selftest_execlists.c:1775:25: error: format not a=
- string literal and no format arguments [-Werror=3Dformat-security]
->  1775 |                         GEM_TRACE("lo spinner failed to start\n")=
-;
->       |                         ^~~~~~~~~
-> drivers/gpu/drm/i915/gt/selftest_execlists.c:1792:25: error: format not a=
- string literal and no format arguments [-Werror=3Dformat-security]
->  1792 |                         GEM_TRACE("hi spinner failed to start\n")=
-;
->       |                         ^~~~~~~~~
-> cc1: all warnings being treated as errors
->
-> If fixing these warnings instead of just disabling the warning is
-> undesirable (since I feel like the entire point of the i195 cflags
-> situation is to enable more warnings than the main Makefile), I think
-> the commit message should be rewritten to something along the lines of:
->
-> "drm/i915 adds some extra cflags, namely -Wall, which causes
-> instances of -Wformat-security to appear when building with clang, even
-> though this warning is turned off kernel-wide in the main Makefile:"
->
-> > drivers/gpu/drm/i915/gt/intel_gt.c:983:2: error: format string is not a=
- string literal (potentially insecure) [-Werror,-Wformat-security]
-> >         GEM_TRACE("ERROR\n");
-> >         ^~~~~~~~~~~~~~~~~~~~
-> > ./drivers/gpu/drm/i915/i915_gem.h:76:24: note: expanded from macro 'GEM=
-_TRACE'
-> >  #define GEM_TRACE(...) trace_printk(__VA_ARGS__)
-> >                        ^~~~~~~~~~~~~~~~~~~~~~~~~
-> > ./include/linux/kernel.h:369:3: note: expanded from macro 'trace_printk=
-'
-> >                 do_trace_printk(fmt, ##__VA_ARGS__);    \
-> >                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > ./include/linux/kernel.h:383:30: note: expanded from macro 'do_trace_pr=
-intk'
-> >                 __trace_bprintk(_THIS_IP_, trace_printk_fmt, ##args);  =
- \
-> >                                            ^~~~~~~~~~~~~~~~
-> > drivers/gpu/drm/i915/gt/intel_gt.c:983:2: note: treat the string as an =
-argument to avoid this
->
-> "This does not happen with GCC because it does not enable
-> -Wformat-security with -Wall. Disable -Wformat-security within the i915
-> Makefile so that these warnings do not show up with clang."
->
-> The actual diff itself looks fine to me.
->
-> Cheers,
-> Nathan
->
-> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-> > ---
-> >  drivers/gpu/drm/i915/Makefile | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makef=
-ile
-> > index 1b62b9f65196..c04e05a3d39f 100644
-> > --- a/drivers/gpu/drm/i915/Makefile
-> > +++ b/drivers/gpu/drm/i915/Makefile
-> > @@ -13,6 +13,7 @@
-> >  # will most likely get a sudden build breakage... Hopefully we will fi=
-x
-> >  # new warnings before CI updates!
-> >  subdir-ccflags-y :=3D -Wall -Wextra
-> > +subdir-ccflags-y +=3D -Wno-format-security
-> >  subdir-ccflags-y +=3D -Wno-unused-parameter
-> >  subdir-ccflags-y +=3D -Wno-type-limits
-> >  subdir-ccflags-y +=3D -Wno-missing-field-initializers
-> > --
-> > 2.25.1
-> >
 
-Thank you Nathan!
-I will send a v2 with a revised commit message.
-Thanks,
-- Tong
+On 1/31/2022 12:55 PM, Lukasz Luba wrote:
+> Hi Manaf,
+>
+> On 1/27/22 6:11 PM, Manaf Meethalavalappu Pallikunhi wrote:
+>> Whenever a thermal zone is in trip violated state, there is a chance
+>> that the same thermal zone mode can be disabled either via
+>> thermal core API or via thermal zone sysfs. Once it is disabled,
+>> the framework bails out any re-evaluation of thermal zone. It leads
+>> to a case where if it is already in mitigation state, it will stay
+>> the same state forever.
+>>
+>> To avoid above mentioned issue, add support to bind/unbind
+>> governor from thermal zone during thermal zone mode change request
+>> and clear all existing throttling in governor unbind_from_tz()
+>> callback.
+>
+> I have one use case:
+> This would be a bit dangerous, e.g. to switch governors while there is a
+> high temperature. Although, sounds reasonable to left a 'default' state
+> for a next governor.
+>
+I believe only way to change the governror via userspace at runtime.
+
+Just re-evaluate thermal zone  (thermal_zone_device_update) immediately  
+after
+
+thermal_zone_device_set_policy()  in same policy_store() context, isn't 
+it good enough ?
+
+Not sure how a "default" state  can be reverted once governor change is 
+done.
+
+Re-evaluating thermal zone doesn't guarantee that it will recover previous
+
+set default state for all governors, right ?
+
+>>
+>> Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+>> Signed-off-by: Manaf Meethalavalappu Pallikunhi 
+>> <quic_manafm@quicinc.com>
+>> ---
+>>   drivers/thermal/gov_power_allocator.c |  3 +++
+>>   drivers/thermal/gov_step_wise.c       | 26 ++++++++++++++++++++++++++
+>>   drivers/thermal/thermal_core.c        | 31 
+>> +++++++++++++++++++++++++++----
+>>   3 files changed, 56 insertions(+), 4 deletions(-)
+>
+> Why only two governors need that change and not all?
+> Because they don't have 'bind/unbind' callbacks, then maybe we should
+> change that as well to make it consistent?
+I will update other governors as well in v6
+>
+> Regards,
+> Lukasz
