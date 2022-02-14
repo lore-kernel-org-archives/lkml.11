@@ -2,97 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25223C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B60C2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354887AbiBNOFi (ORCPT
+        id S1354891AbiBNOGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:05:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44262 "EHLO
+        Mon, 14 Feb 2022 09:06:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232274AbiBNOFb (ORCPT
+        with ESMTP id S1354879AbiBNOGT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:05:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7263EB66;
-        Mon, 14 Feb 2022 06:05:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CDF260F89;
-        Mon, 14 Feb 2022 14:05:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12E44C340F2;
-        Mon, 14 Feb 2022 14:05:23 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="bUqw6ue4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1644847519;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QLgXSQB9b7XXmln9u8fQm/jVMLmkRr2wWxHA9OmWt1Q=;
-        b=bUqw6ue42avgTupnGw+h3faOhezXLsRWTERXCZkTjiWU3EWGaqVZsPu+EWoU5dYsEG+yLv
-        +R8ELL3RtI+O5xzed/w6dCHENmSJY17DIsFCz4wh50dQ8yEejNWROH1hC18dE+D/kbmxlB
-        0GQjkMV/rWNUQPZtVmTX+sAiVbwU9yg=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 578f523a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 14 Feb 2022 14:05:19 +0000 (UTC)
-Received: by mail-yb1-f170.google.com with SMTP id p19so46358915ybc.6;
-        Mon, 14 Feb 2022 06:05:18 -0800 (PST)
-X-Gm-Message-State: AOAM532F4gfGjOq0Z0C7uMF+EaCAGDjZwE7npd1i7rNqJHyOKCrro5MX
-        V7OL+97gtZ82qD92WNwnonghT/03r99Yb0W7B+c=
-X-Google-Smtp-Source: ABdhPJx1rAQYW+BsQ/vOucuTQJhI9pVZ01yF0DPyTFL1e5L2Bmfiie7EtWck0pGXAqYbtpOZPqa2kzjO14vEvrtdV/A=
-X-Received: by 2002:a25:4144:: with SMTP id o65mr12095580yba.113.1644847514782;
- Mon, 14 Feb 2022 06:05:14 -0800 (PST)
+        Mon, 14 Feb 2022 09:06:19 -0500
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4024A3C4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:06:12 -0800 (PST)
+Received: by mail-yb1-xb2d.google.com with SMTP id l125so13259821ybl.4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:06:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9M5OW/p/N+317mqw1a7QGwFIU/E34FcnEw0pMzdlDnM=;
+        b=XX2XWY3WEwfuGdCxy/g536HNRWOaAtAH42XA+oGj+uwqJfaSZF8dQ0L2/gdNtV+7rB
+         VJDbHURITZAj7S3thHnskzdeveYUD7SBi8iM3r97pkGz0ehx3CdRcagu9RUtqM9jvJCk
+         CxbAEi6ry/UyS6B/kQ5vwGigHJ6YXvG6pZ5ivH6FznJsyD0vu1Gum+0wIhqa5dUw+xUs
+         HF4BsE+rPLn7v4RjyQBVPOh1zxRvmYJtTODZ7l1MQArcQAv55WYghBQO1kDdEgbWoEnV
+         QBcNmz5iCEhga5UbzIZLe0WxyvpVH3+BhdDGBKIAMgsa2vobgfMwaILu2cn9NZFSVbZU
+         EDiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9M5OW/p/N+317mqw1a7QGwFIU/E34FcnEw0pMzdlDnM=;
+        b=U/EHxEKuwZzSOiTggcuRDVUmrZCPH1CukHhaPBK9qNdiIFOID/ngHRL6n/LlUDe5bL
+         AhRfW0Bj8e7YJtGYx7zNWbaZqOLpD3X5LpcAzaXK6stS/J4eDyMXtrqAs+knuj6lIP3z
+         OEgwN6WwAzIRFFBkyTq/4pZBRw05BqFABvejjphG8V5Cw5TzAwWbUDyMp41G6j5lmBED
+         MVYvGyHveZ+0QJXjwKT4DvH/OsdWw/ECUB8rybY+3gqpIBZGqD/f4Mw8dh/9RioSVNJZ
+         j0OSBSZPbkmjy0CaBF3GN1A7b+4R5xYn3k1zH0WXlrQSu2OOapdqaAZxnSed5Tb8cDFg
+         5zJg==
+X-Gm-Message-State: AOAM530LUFPCRfjgXiC1B0g89/FVKdEZmGnd73f3FvPvkExeMqfwhtPB
+        MQ6d39aT//sh71dfUyC/JbkEdxtuM+1FNv4DlOZlLg==
+X-Google-Smtp-Source: ABdhPJybkgqEwTJ0yZ5TqAONojA2iJ+32VTFfDuw6K3jdn4eeVbSn+HBrHa1lvMNw+ZFvbw/Z/C9kzy+yQp4GlPqJGc=
+X-Received: by 2002:a25:f404:: with SMTP id q4mr12321552ybd.146.1644847570937;
+ Mon, 14 Feb 2022 06:06:10 -0800 (PST)
 MIME-Version: 1.0
-References: <20220211210757.612595-1-Jason@zx2c4.com> <fcab986b-d0bd-c798-de17-266abcdc7da2@gentoo.org>
-In-Reply-To: <fcab986b-d0bd-c798-de17-266abcdc7da2@gentoo.org>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 14 Feb 2022 15:05:03 +0100
-X-Gmail-Original-Message-ID: <CAHmME9ooEbgiv3DRk87ei+rUoVNMJthY7UuG_xCgm=kfMZAajw@mail.gmail.com>
-Message-ID: <CAHmME9ooEbgiv3DRk87ei+rUoVNMJthY7UuG_xCgm=kfMZAajw@mail.gmail.com>
-Subject: Re: [PATCH RFC v0] random: block in /dev/urandom
-To:     Joshua Kinard <kumba@gentoo.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Eric Biggers <ebiggers@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+References: <720d0a9a42e33148fcac45cd39a727093a32bf32.1614965598.git.robin.murphy@arm.com>
+ <a730070d718cb119f77c8ca1782a0d4189bfb3e7.1614965598.git.robin.murphy@arm.com>
+ <0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com> <20210730143431.GB1517404@mutt>
+ <8b358507-dbdf-b05b-c1da-2ec9903a2912@arm.com> <CADYN=9LE2JnE+vmv_UaeyJj_RpHcp+zZUv711VuQekLSiQ2bJA@mail.gmail.com>
+In-Reply-To: <CADYN=9LE2JnE+vmv_UaeyJj_RpHcp+zZUv711VuQekLSiQ2bJA@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Mon, 14 Feb 2022 19:36:00 +0530
+Message-ID: <CA+G9fYu7ctvOfdvBkDZ1nABz0TaYZ49FUKVTctn+mBTCmk9JCQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] arm64: dts: juno: Enable more SMMUs
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <Lorenzo.Pieralisi@arm.com>,
+        Liviu Dudau <Liviu.Dudau@arm.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-stable <stable@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Theodore Ts'o" <tytso@mit.edu>
+        Sasha Levin <sashal@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        lkft-triage@lists.linaro.org,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Mark Brown <broonie@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joshua,
+Hi Robin,
 
-Thanks a lot for the historical background.
+Since we did not get a reply on this email thread.
+and those intermittent failures are causing a lot of noise in reports summary.
+We will wait one more week and stop running 64k page size testing on
+Juno-r2 devices.
 
-On Sun, Feb 13, 2022 at 12:06 AM Joshua Kinard <kumba@gentoo.org> wrote:
-> The R6000/R6000A CPU only ever existed in systems in the late 1980's that
-> were fairly large, and I don't think there is a complete, working unit out
-> there that can actually boot up, let alone boot a Linux kernel.
+> > > diff --git a/arch/arm64/boot/dts/arm/juno-base.dtsi b/arch/arm64/boot/dts/arm/juno-base.dtsi
+> > > index 8e7a66943b01..d3148730e951 100644
+> > > --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
+> > > +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
+> > > @@ -545,8 +545,7 @@ pcie_ctlr: pcie@40000000 {
+> > >                           <0x02000000 0x00 0x50000000 0x00 0x50000000 0x0 0x08000000>,
+> > >                           <0x42000000 0x40 0x00000000 0x40 0x00000000 0x1 0x00000000>;
+> > >                  /* Standard AXI Translation entries as programmed by EDK2 */
+> > > -               dma-ranges = <0x02000000 0x0 0x2c1c0000 0x0 0x2c1c0000 0x0 0x00040000>,
+> > > -                            <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
+> > > +               dma-ranges = <0x02000000 0x0 0x80000000 0x0 0x80000000 0x0 0x80000000>,
+> > >                               <0x43000000 0x8 0x00000000 0x8 0x00000000 0x2 0x00000000>;
+> > >                  #interrupt-cells = <1>;
+> > >                  interrupt-map-mask = <0 0 0 7>;
+> > >
 
-So from what you've written, it sounds like MIPS is actually not a problem here.
+Reference email thread,
+https://lore.kernel.org/stable/0a1d437d-9ea0-de83-3c19-e07f560ad37c@arm.com/
 
-So the only systems we're actually talking about without a good cycle
-counter are non-Amiga m68k? If so, that'd be a pretty terrific
-finding. It'd mean that this idea can move forward, and we only need
-to worry about some m68k museum pieces with misconfigured
-userspaces...
-
-Jason
+- Naresh
