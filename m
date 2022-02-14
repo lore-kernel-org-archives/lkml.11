@@ -2,235 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E171C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:28:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B47C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356345AbiBNQ3G (ORCPT
+        id S1356349AbiBNQ3d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:29:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37372 "EHLO
+        Mon, 14 Feb 2022 11:29:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236773AbiBNQ3D (ORCPT
+        with ESMTP id S1356348AbiBNQ33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:29:03 -0500
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29731C73;
-        Mon, 14 Feb 2022 08:28:54 -0800 (PST)
-Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 533571BF20A;
-        Mon, 14 Feb 2022 16:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644856132;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5duxPRqWDu+1JL3oVHLVTFQSMMgYnhs6Kqh7x0Swsnk=;
-        b=X6pwmukcd11Mw7rgTo4OKu1ESaDmEN4fj2oNd+qz1feH91E4jnTQThvEWarS0aIXZMPeU9
-        B8h/kZlDoJCIF0L8SQfDVo+xwYIjNME3aCAk9cupji/XDzP1v2sbT0J7CCDs8MnMxUrzbW
-        TW3U5YQ/CVYu7bOGu9ljX4/4ZLxe657soWOXimNA5YbYUNc5pqIArVn4hYeadDhkWxNsZw
-        KiCfZHdZTjAYQSHtD810UfmclTdztaMEGGbUbNQB0YNNXpF6Y9RiYRYJdW8DDRf+Mnda+Q
-        kX2bqtcKOnclqVKjQlfBa1Vgq2LONfL5khac3De3DmV53nd/cLvINt5oSJgicw==
-Date:   Mon, 14 Feb 2022 17:28:50 +0100
-From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Rob Herring <robh@kernel.org>, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-staging@lists.linux.dev, Yong Deng <yong.deng@magewell.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Helen Koike <helen.koike@collabora.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v2 61/66] dt-bindings: media: Add Allwinner A31 ISP
- bindings documentation
-Message-ID: <YgqDQs/GJVxZMB+C@aptenodytes>
-References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
- <20220205185429.2278860-62-paul.kocialkowski@bootlin.com>
- <YgE/+UmP4nJVxtRT@pendragon.ideasonboard.com>
- <YgZ9GjgasiPljg9X@robh.at.kernel.org>
- <YgbMmLht/AXb5R1y@pendragon.ideasonboard.com>
+        Mon, 14 Feb 2022 11:29:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 215035FF0B
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:29:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFEBF614D3
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D07CC340E9;
+        Mon, 14 Feb 2022 16:29:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644856161;
+        bh=R1d02V76htJZBVQORex0kXIw/s8UK5VVtOKdpThhKyA=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=VwJvm0KYfGpykWMe6Y2SpHAd7Oburhir3zl9WAp1TgHbEnDrjZY4dLyZ+PqXO/PhA
+         rCKMaqdUqVlFw0iwALrogvrt7mjZWP6+OmCAfhtdEo5Tj3cM6DQWH+HL75vse8cVZG
+         HrqWs8j0jGL3s4zFm+ILrHTn9T6nru8ulryKM+Voggj2c6gK3Xoil4kFtyU14tfuLa
+         zo2S5PPdJfJVZkTKd79BlaMswMKX753lfE1iAH2coxmVqLuIElO8C0JVdiyrYelx1D
+         oFp5XfxDh5TTzy7R1f4Kb09R9BXXyuFyFCVumiT/XDkocU+r3PloLPt+Qmfz+G4Jjb
+         BAc2WF44MZodw==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id D62795C0388; Mon, 14 Feb 2022 08:29:20 -0800 (PST)
+Date:   Mon, 14 Feb 2022 08:29:20 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-kernel@vger.kernel.org, christophe.leroy@csgroup.eu
+Subject: Re: [PATCH 0/3] tick: Fix softirq related warnings
+Message-ID: <20220214162920.GX4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220208161635.544701-1-frederic@kernel.org>
+ <bd2a0eb7-2b0b-bb45-3c58-bfce3049bb94@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yzLvnjd3wstFCaVx"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YgbMmLht/AXb5R1y@pendragon.ideasonboard.com>
+In-Reply-To: <bd2a0eb7-2b0b-bb45-3c58-bfce3049bb94@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 14, 2022 at 06:46:59AM +0100, Paul Menzel wrote:
+> Dear Frederic,
+> 
+> 
+> Am 08.02.22 um 17:16 schrieb Frederic Weisbecker:
+> > Some cleanups and debug rework.
+> > 
+> > git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
+> > 	timers/core
+> > 
+> > HEAD: 18b00369d58da4c73946d5f8ebed8e8c7ade89e2
+> > 
+> > Thanks,
+> > 	Frederic
+> > ---
+> > 
+> > Frederic Weisbecker (3):
+> >        tick/rcu: Remove obsolete rcu_needs_cpu() parameters
+> >        tick/rcu: Stop allowing RCU_SOFTIRQ in idle
+> >        lib/irq_poll: Declare IRQ_POLL softirq vector as ksoftirqd-parking safe
+> > 
+> > 
+> >   include/linux/interrupt.h | 11 ++++++++-
+> >   include/linux/rcutiny.h   |  3 +--
+> >   include/linux/rcutree.h   |  2 +-
+> >   kernel/rcu/tree.c         |  3 +--
+> >   kernel/time/tick-sched.c  | 60 ++++++++++++++++++++++++++++++++++-------------
+> >   5 files changed, 57 insertions(+), 22 deletions(-)
+> 
+> I tested this series on the IBM S822LC with Ubuntu 20.10 and rcu/dev (commit
+> 0ba8896d2fd7 (lib/irq_poll: Declare IRQ_POLL softirq vector as
+> ksoftirqd-parking safe)). Running `sudo ppc64_cpu --smt=off` the warnings
+> are gone.
+> 
+> Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
---yzLvnjd3wstFCaVx
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I will apply on my next rebase, thank you!
 
-Hi,
+And thanks to Peter and Christophe for chasing this down!
 
-On Fri 11 Feb 22, 22:52, Laurent Pinchart wrote:
-> Hi Rob,
->=20
-> On Fri, Feb 11, 2022 at 09:13:30AM -0600, Rob Herring wrote:
-> > On Mon, Feb 07, 2022 at 05:51:21PM +0200, Laurent Pinchart wrote:
-> > > On Sat, Feb 05, 2022 at 07:54:24PM +0100, Paul Kocialkowski wrote:
-> > > > This introduces YAML bindings documentation for the Allwinner A31 I=
-mage
-> > > > Signal Processor (ISP).
-> > > >=20
-> > > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > ---
-> > > >  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++=
-++++
-> > > >  1 file changed, 117 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/media/allwinn=
-er,sun6i-a31-isp.yaml
-> > > >=20
-> > > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6=
-i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a3=
-1-isp.yaml
-> > > > new file mode 100644
-> > > > index 000000000000..2d87022c43ce
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-i=
-sp.yaml
-> > > > @@ -0,0 +1,117 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.y=
-aml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tr=
-ee Bindings
-> > > > +
-> > > > +maintainers:
-> > > > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    enum:
-> > > > +      - allwinner,sun6i-a31-isp
-> > > > +      - allwinner,sun8i-v3s-isp
-> > > > +
-> > > > +  reg:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  interrupts:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  clocks:
-> > > > +    items:
-> > > > +      - description: Bus Clock
-> > > > +      - description: Module Clock
-> > > > +      - description: DRAM Clock
-> > >=20
-> > > That's interesting, does the ISP have a dedicated DRAM ?
-> > >=20
-> > > > +
-> > > > +  clock-names:
-> > > > +    items:
-> > > > +      - const: bus
-> > > > +      - const: mod
-> > > > +      - const: ram
-> > > > +
-> > > > +  resets:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  ports:
-> > > > +    $ref: /schemas/graph.yaml#/properties/ports
-> > > > +
-> > > > +    properties:
-> > > > +      port@0:
-> > > > +        $ref: /schemas/graph.yaml#/$defs/port-base
-> > > > +        description: CSI0 input port
-> > > > +
-> > > > +        properties:
-> > > > +          reg:
-> > > > +            const: 0
-> > > > +
-> > > > +          endpoint:
-> > > > +            $ref: video-interfaces.yaml#
-> > > > +            unevaluatedProperties: false
-> > >=20
-> > > If no other property than remote-endpoint are allowed, I'd write
-> > >=20
-> > >           endpoint:
-> > >             $ref: video-interfaces.yaml#
-> > > 	    remote-endpoint: true
-> >=20
-> > You just mixed a node and a property...
->=20
-> Yes, I meant
->=20
->            endpoint:
->              $ref: video-interfaces.yaml#
->              properties:
->                remote-endpoint: true
->=20
-> and actually add
->=20
->              additionalProperties: false
->=20
-> > 'remote-endpoint' is always allowed, so need to put it here and every=
-=20
-> > other user. So 'unevaluatedProperties' is correct. But it would be good=
-=20
-> > to define what properties from video-interfaces.yaml are used here.
->=20
-> I've been looking at this recently. The usual pattern is to write
->=20
->     endpoint:
->       $ref: video-interfaces.yaml#
->       unevaluatedProperties: false
->       properties:
->         hsync-polarity: true
->         vsync-polarity: true
->=20
-> to express that the hsync-polarity and vsync-polarity properties are
-> used. However, this will still validate fine if, for instance,
-> data-lanes was specified in the device tree. Shouldn't we use
-> additionalProperties instead of unevaluatedProperties here ? If so,
-> specifying remote-endpoint: true seems needed.
-
-My understanding is that unevaluatedProperties well allow all properties
-defined in the included video-interfaces.yaml ref but reject others
-while additionalProperties will reject any unspecified local property,
-even if it is declared in the ref.
-
-In any case with the ISP maybe we don't even want to take the ref from
-video-interfaces.yaml since we are dealing with an internal fifo between
-two devices. Maybe it would be more appropriate to ref
-/schemas/graph.yaml#/$defs/endpoint-base, which already defines
-remote-endpoint too.
-
-What do you think?
-
-Paul
-
---=20
-Paul Kocialkowski, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
-
---yzLvnjd3wstFCaVx
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmIKg0EACgkQ3cLmz3+f
-v9Fg/ggAoquw4gO5eekW7dxNLQONv8zyL3sxR/AwEuZlLOhjPUHeJzQwg5NupSx8
-AqsMfFQA68MxH3nsQNRZkCFLXTIzmrK/xZRRX7OFD8cLQjKjMJmbz6gpm32UHBJr
-un2rlNt0N8+iY9xKne3vQFPscOhnVFk/i5bdYj65jCfOiZF+jvnUwYtFcgoeQrv7
-r4Hu6A2hlK9O8t+kG9oJ0MSU9ZdYTeXuLTg9W1QtSkt2bSxVauV0JxRKO7Wo67D6
-LqwIEBtpEikyWIMARqoR3BcroJvCPNK96AmyZ9eKkTmpC+NI8pOLJyxwdRhqPN1o
-njaQSFJo2B9w/O690dh0GMhf5B2I3Q==
-=B7GD
------END PGP SIGNATURE-----
-
---yzLvnjd3wstFCaVx--
+							Thanx, Paul
