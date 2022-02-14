@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE12EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347701AbiBNKcs (ORCPT
+        id S1347778AbiBNKcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38158 "EHLO
+        Mon, 14 Feb 2022 05:32:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347858AbiBNKaj (ORCPT
+        with ESMTP id S1347973AbiBNKan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:30:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D0270CE0;
-        Mon, 14 Feb 2022 01:59:08 -0800 (PST)
+        Mon, 14 Feb 2022 05:30:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB7D6A39F;
+        Mon, 14 Feb 2022 01:59:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8024B80DC8;
-        Mon, 14 Feb 2022 09:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E483EC340EF;
-        Mon, 14 Feb 2022 09:59:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DCB10B80D6D;
+        Mon, 14 Feb 2022 09:58:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2417FC340EF;
+        Mon, 14 Feb 2022 09:58:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832744;
-        bh=9gahyeLnbkRBgOkWxxyP2q3atLHrR6v1XwsdkB7+PGE=;
+        s=korg; t=1644832737;
+        bh=3epFaGK+vhe/wOw2uqSsd6GvhL9Cvq9qJdaq6ifWC2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i20lY47uCKLP/CaazcpUsMneyzTy+zPuJ6OeUdMd8EGa2xRtQZSODRJ0xSMCIT6Vo
-         hwm2SDYi+GP74CRte8c+sTMv2NWmp8wxVHcsGGkai0yqn7LsNjb7OLNAaOk1vjXUdL
-         B4J+0drK72KCYrPNwcvr/ZH+Q9yf+wNR0qzgVqr4=
+        b=1OGefQ8XS1oCibLf7M7V5pgH1ML5prBtTJaY640+5N5OhLoPjy/Ly4cE/uH59sKbm
+         4HWMsTj/H1BQb8Ri3XA8LwWNv5bmdwXOU+2GpAKrC3N4aSJysFEPhsSq/Nf822bOL0
+         f5JIWQmgrFRYSv3Cyrfn3rD2MJ/8VMMHRWh+kmiI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 5.16 079/203] Revert "gfs2: check context in gfs2_glock_put"
-Date:   Mon, 14 Feb 2022 10:25:23 +0100
-Message-Id: <20220214092512.963476086@linuxfoundation.org>
+        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 077/203] riscv: eliminate unreliable __builtin_frame_address(1)
+Date:   Mon, 14 Feb 2022 10:25:21 +0100
+Message-Id: <20220214092512.896653495@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -48,36 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Gruenbacher <agruenba@redhat.com>
+From: Changbin Du <changbin.du@gmail.com>
 
-commit 356b8103d4c495d5440e3e687db9026ec2b76043 upstream.
+commit 6a00ef4493706a23120057fafbc62379bcde11ec upstream.
 
-It turns out that the might_sleep() call that commit 660a6126f8c3 adds
-is triggering occasional data corruption in testing.  We're not sure
-about the root cause yet, but since this commit was added as a debugging
-aid only, revert it for now.
+I tried different pieces of code which uses __builtin_frame_address(1)
+(with both gcc version 7.5.0 and 10.3.0) to verify whether it works as
+expected on riscv64. The result is negative.
 
-This reverts commit 660a6126f8c3208f6df8d552039cda078a8426d1.
+What the compiler had generated is as below:
+31                      fp = (unsigned long)__builtin_frame_address(1);
+   0xffffffff80006024 <+200>:   ld      s1,0(s0)
 
-Fixes: 660a6126f8c3 ("gfs2: check context in gfs2_glock_put")
-Cc: stable@vger.kernel.org # v5.16+
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+It takes '0(s0)' as the address of frame 1 (caller), but the actual address
+should be '-16(s0)'.
+
+          |       ...       | <-+
+          +-----------------+   |
+          | return address  |   |
+          | previous fp     |   |
+          | saved registers |   |
+          | local variables |   |
+  $fp --> |       ...       |   |
+          +-----------------+   |
+          | return address  |   |
+          | previous fp --------+
+          | saved registers |
+  $sp --> | local variables |
+          +-----------------+
+
+This leads the kernel can not dump the full stack trace on riscv.
+
+[    7.222126][    T1] Call Trace:
+[    7.222804][    T1] [<ffffffff80006058>] dump_backtrace+0x2c/0x3a
+
+This problem is not exposed on most riscv builds just because the '0(s0)'
+occasionally is the address frame 2 (caller's caller), if only ra and fp
+are stored in frame 1 (caller).
+
+          |       ...       | <-+
+          +-----------------+   |
+          | return address  |   |
+  $fp --> | previous fp     |   |
+          +-----------------+   |
+          | return address  |   |
+          | previous fp --------+
+          | saved registers |
+  $sp --> | local variables |
+          +-----------------+
+
+This could be a *bug* of gcc that should be fixed. But as noted in gcc
+manual "Calling this function with a nonzero argument can have
+unpredictable effects, including crashing the calling program.", let's
+remove the '__builtin_frame_address(1)' in backtrace code.
+
+With this fix now it can show full stack trace:
+[   10.444838][    T1] Call Trace:
+[   10.446199][    T1] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
+[   10.447711][    T1] [<ffffffff800060ac>] show_stack+0x32/0x3e
+[   10.448710][    T1] [<ffffffff80a005c0>] dump_stack_lvl+0x58/0x7a
+[   10.449941][    T1] [<ffffffff80a005f6>] dump_stack+0x14/0x1c
+[   10.450929][    T1] [<ffffffff804c04ee>] ubsan_epilogue+0x10/0x5a
+[   10.451869][    T1] [<ffffffff804c092e>] __ubsan_handle_load_invalid_value+0x6c/0x78
+[   10.453049][    T1] [<ffffffff8018f834>] __pagevec_release+0x62/0x64
+[   10.455476][    T1] [<ffffffff80190830>] truncate_inode_pages_range+0x132/0x5be
+[   10.456798][    T1] [<ffffffff80190ce0>] truncate_inode_pages+0x24/0x30
+[   10.457853][    T1] [<ffffffff8045bb04>] kill_bdev+0x32/0x3c
+...
+
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
+Fixes: eac2f3059e02 ("riscv: stacktrace: fix the riscv stacktrace when CONFIG_FRAME_POINTER enabled")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/gfs2/glock.c |    3 ---
- 1 file changed, 3 deletions(-)
+ arch/riscv/kernel/stacktrace.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/fs/gfs2/glock.c
-+++ b/fs/gfs2/glock.c
-@@ -301,9 +301,6 @@ void gfs2_glock_queue_put(struct gfs2_gl
- 
- void gfs2_glock_put(struct gfs2_glock *gl)
+--- a/arch/riscv/kernel/stacktrace.c
++++ b/arch/riscv/kernel/stacktrace.c
+@@ -22,15 +22,16 @@ void notrace walk_stackframe(struct task
+ 			     bool (*fn)(void *, unsigned long), void *arg)
  {
--	/* last put could call sleepable dlm api */
--	might_sleep();
--
- 	if (lockref_put_or_lock(&gl->gl_lockref))
- 		return;
+ 	unsigned long fp, sp, pc;
++	int level = 0;
  
+ 	if (regs) {
+ 		fp = frame_pointer(regs);
+ 		sp = user_stack_pointer(regs);
+ 		pc = instruction_pointer(regs);
+ 	} else if (task == NULL || task == current) {
+-		fp = (unsigned long)__builtin_frame_address(1);
+-		sp = (unsigned long)__builtin_frame_address(0);
+-		pc = (unsigned long)__builtin_return_address(0);
++		fp = (unsigned long)__builtin_frame_address(0);
++		sp = sp_in_global;
++		pc = (unsigned long)walk_stackframe;
+ 	} else {
+ 		/* task blocked in __switch_to */
+ 		fp = task->thread.s[0];
+@@ -42,7 +43,7 @@ void notrace walk_stackframe(struct task
+ 		unsigned long low, high;
+ 		struct stackframe *frame;
+ 
+-		if (unlikely(!__kernel_text_address(pc) || !fn(arg, pc)))
++		if (unlikely(!__kernel_text_address(pc) || (level++ >= 1 && !fn(arg, pc))))
+ 			break;
+ 
+ 		/* Validate frame pointer */
 
 
