@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347315AbiBNKck (ORCPT
+        id S1347615AbiBNKco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:32:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41858 "EHLO
+        Mon, 14 Feb 2022 05:32:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348928AbiBNKbM (ORCPT
+        with ESMTP id S1346380AbiBNKaP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:31:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDFF5216;
-        Mon, 14 Feb 2022 01:59:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A4A60921;
-        Mon, 14 Feb 2022 09:59:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A553C340E9;
-        Mon, 14 Feb 2022 09:59:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832785;
-        bh=aJUAwIrosiZGWRzf6yXVGdTcM6ZHiOGnt5DM2fqHz2U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViRjUuN76qrmULet0l4daaRHMQwdGzppKLxJ8rGOxt6hJLs3HM6hKZN2BusPCxO6t
-         lcdHb1NCcwiLl5nm/2VJx8R7ecfywjtGv+kzIBDs4jZyDuWaW3Xq4RBIXx/Zq/0+fu
-         uk7nfWXBV1MzU32NGsZ2q4CccECv8hVZU/euvDD0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 124/203] net: mscc: ocelot: fix all IP traffic getting trapped to CPU with PTP over IP
-Date:   Mon, 14 Feb 2022 10:26:08 +0100
-Message-Id: <20220214092514.451740366@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
-References: <20220214092510.221474733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 14 Feb 2022 05:30:15 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED0370CC1;
+        Mon, 14 Feb 2022 01:59:02 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 06CD51F43053
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644832741;
+        bh=OaINPsaheT6XUF0+hFr141uKFbMlStd2byNaS6I2GKs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fGemg3CLB1WP8e5KYjv0QDiN8sv7DuAdkLeRWz7Svak1RqzeSREYL4mIrBDLKFNAb
+         i2cRTKJ+Gsl0Pj6yAAo8qxpzXg6Ns+FtuXmeFkOINlU+b3WDFaiFxijoiHtts1W0Gn
+         uWqtFsbSGDqHe4VVhmjEgtxP+36lok5C8WKldI3eP3+GfKkddyCh9wxBIzZuqSb+Rv
+         hRgNp3dTgwu0Tgsma0i7nNkgNMfhwK+7LRB+9XWbcJSlzebKyS+YfUIoEehQZVgjb9
+         dlGDbTEeU9eeF/c6B6ZYYwdugaIaayKPqDdRn5tdOByWmUIE87AvmpiydgZko+gpak
+         70qs8d1QAkefg==
+Message-ID: <87db864e-fc74-189a-a665-bf51db8b5321@collabora.com>
+Date:   Mon, 14 Feb 2022 10:58:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH v4 1/3] dt-bindings: pinctrl: mt8186: add pinctrl file and
+ binding document
+Content-Language: en-US
+To:     Guodong Liu <guodong.liu@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>
+Cc:     Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220214030631.4969-1-guodong.liu@mediatek.com>
+ <20220214030631.4969-2-guodong.liu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220214030631.4969-2-guodong.liu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Il 14/02/22 04:06, Guodong Liu ha scritto:
+> 1. This patch adds pinctrl file for mt8186.
+> 2. This patch adds mt8186 compatible node in binding document.
+> 
+> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+> ---
+>   .../bindings/pinctrl/pinctrl-mt8186.yaml      |  302 +++++
+>   include/dt-bindings/pinctrl/mt8186-pinfunc.h  | 1174 +++++++++++++++++
+>   2 files changed, 1476 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
+>   create mode 100644 include/dt-bindings/pinctrl/mt8186-pinfunc.h
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
+> new file mode 100644
+> index 000000000000..582d131af4e3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml
 
-[ Upstream commit 59085208e4a2183998964844f8684fea0378128d ]
+...snip...
 
-The filters for the PTP trap keys are incorrectly configured, in the
-sense that is2_entry_set() only looks at trap->key.ipv4.dport or
-trap->key.ipv6.dport if trap->key.ipv4.proto or trap->key.ipv6.proto is
-set to IPPROTO_TCP or IPPROTO_UDP.
+> diff --git a/include/dt-bindings/pinctrl/mt8186-pinfunc.h b/include/dt-bindings/pinctrl/mt8186-pinfunc.h
+> new file mode 100644
+> index 000000000000..dcff86201a61
+> --- /dev/null
+> +++ b/include/dt-bindings/pinctrl/mt8186-pinfunc.h
+> @@ -0,0 +1,1174 @@
+> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+> +/*
+> + * Copyright (C) 2021 MediaTek Inc.
+> + * Author: Guodong Liu <Guodong.Liu@mediatek.com>
+> + *
+> + */
+> +
 
-But we don't do that, so is2_entry_set() goes through the "else" branch
-of the IP protocol check, and ends up installing a rule for "Any IP
-protocol match" (because msk is also 0). The UDP port is ignored.
+Hello,
+I've just noticed that we have a typo here....
 
-This means that when we run "ptp4l -i swp0 -4", all IP traffic is
-trapped to the CPU, which hinders bridging.
+You wrote "MT8168", but this should be "MT8186" instead; please fix it.
 
-Fix this by specifying the IP protocol in the VCAP IS2 filters for PTP
-over UDP.
+P.S.: I'm sorry for not seeing that before!
 
-Fixes: 96ca08c05838 ("net: mscc: ocelot: set up traps for PTP packets")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mscc/ocelot.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> +#ifndef __MT8168_PINFUNC_H
+> +#define __MT8168_PINFUNC_H
+> +
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 294bb4eb3833f..ac5849436d021 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1292,6 +1292,8 @@ static void
- ocelot_populate_ipv4_ptp_event_trap_key(struct ocelot_vcap_filter *trap)
- {
- 	trap->key_type = OCELOT_VCAP_KEY_IPV4;
-+	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
-+	trap->key.ipv4.proto.mask[0] = 0xff;
- 	trap->key.ipv4.dport.value = PTP_EV_PORT;
- 	trap->key.ipv4.dport.mask = 0xffff;
- }
-@@ -1300,6 +1302,8 @@ static void
- ocelot_populate_ipv6_ptp_event_trap_key(struct ocelot_vcap_filter *trap)
- {
- 	trap->key_type = OCELOT_VCAP_KEY_IPV6;
-+	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
-+	trap->key.ipv4.proto.mask[0] = 0xff;
- 	trap->key.ipv6.dport.value = PTP_EV_PORT;
- 	trap->key.ipv6.dport.mask = 0xffff;
- }
-@@ -1308,6 +1312,8 @@ static void
- ocelot_populate_ipv4_ptp_general_trap_key(struct ocelot_vcap_filter *trap)
- {
- 	trap->key_type = OCELOT_VCAP_KEY_IPV4;
-+	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
-+	trap->key.ipv4.proto.mask[0] = 0xff;
- 	trap->key.ipv4.dport.value = PTP_GEN_PORT;
- 	trap->key.ipv4.dport.mask = 0xffff;
- }
-@@ -1316,6 +1322,8 @@ static void
- ocelot_populate_ipv6_ptp_general_trap_key(struct ocelot_vcap_filter *trap)
- {
- 	trap->key_type = OCELOT_VCAP_KEY_IPV6;
-+	trap->key.ipv4.proto.value[0] = IPPROTO_UDP;
-+	trap->key.ipv4.proto.mask[0] = 0xff;
- 	trap->key.ipv6.dport.value = PTP_GEN_PORT;
- 	trap->key.ipv6.dport.mask = 0xffff;
- }
--- 
-2.34.1
+..snip..
 
+> +
+> +#endif /* __MT8168-PINFUNC_H */
 
-
+Thank you,
+Angelo
