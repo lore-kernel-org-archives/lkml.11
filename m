@@ -2,284 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C741C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiBNU4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:56:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41504 "EHLO
+        id S229793AbiBNU43 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:56:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiBNU4N (ORCPT
+        with ESMTP id S229802AbiBNU4W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:56:13 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1519DBD16
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:55:48 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id a42so8600292ljq.13
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:55:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0OkHBiaZEL4gbI88uAFjC4BevdegDkSw2mEVoE6XUQM=;
-        b=o/c8WGQ7vgEvxtzZSzEGkFFVcPUiHrl0G51Eg5NUiYHpcN3AIktYX1CzP78vLb2HCv
-         LyiqVlMYdkmHuBOpsyo/3V9Cj1FG5i2UtaP2pa4VVE7DPWVR0qrTIeuZJzSShHz31KtV
-         aG2q2Q+V1pIZOhlqrMm86Ieu10aJTAtNG3yAp85NUacZ5B9enUnoF98FgCEJuYwGuOR1
-         t/YcS4wqhUQgpObHz7ewBESmzKaLyvkXbT7E+XnLM/nDVEbqTumoE8kp9c32zg+fZ/Cm
-         kD09NV6hr9tEchdA4EsbPzDQ4YuOHJVTlkhoDxtAqfFcgQJzv29t30e/mp0RRlaVif14
-         p9DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0OkHBiaZEL4gbI88uAFjC4BevdegDkSw2mEVoE6XUQM=;
-        b=NCGG2unQE9gh/4QZ03pVLvg7V3vpmmuJcjwvV/Wx1KdmubQrg7PBaOPW4UvIGYtvhN
-         sCXjaixEsmm+CGTFgghQxs94w22/QxHDmSrae9oKJPFAojUsfLMXq2Dx9WJ1r7Q5PAR0
-         IwRdfQRCtI+sPKAjS7P97Uw455SAlRc2Z7GAgsKLZH21vo28vI6wB5IsjjJw1eSHMMrh
-         9a3PwUqmY35klsDh8uTWgRGVNAEDS3/IkLdELzC1P1c4vzU9EaoqJGKRClMhkR1/GNGH
-         Glllw/2LmFT9Ndj1cdKtYcnLp6ZvrKiGLp/MsXxTtFSsbd691URaOd6TZ8YTTWxSgKtX
-         WJ6A==
-X-Gm-Message-State: AOAM531gMRmvn6ey0yWhrNOjYyi+sdzPDzXUU+sEeIlmFBsFJgxbZ6tm
-        5CV/wRXQiH7U4SgFoH6Mu1fNMQH1KgHDbzFDdsUvZT4q/Ag=
-X-Google-Smtp-Source: ABdhPJx8lRnGEvo2BKjuadxx0kxXF47MC+omvIOvGqqY/xfT6A0YxtvN/5OElk6DOL9teF9tVH9vVeya6dhvDDCanxQ=
-X-Received: by 2002:a05:6512:139e:: with SMTP id p30mr572513lfa.502.1644869981206;
- Mon, 14 Feb 2022 12:19:41 -0800 (PST)
+        Mon, 14 Feb 2022 15:56:22 -0500
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E9BB10781F
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:56:01 -0800 (PST)
+Received: from terra.local.svanheule.net (104.153-136-217.adsl-dyn.isp.belgacom.be [217.136.153.104])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id D3FCA2A25FC;
+        Mon, 14 Feb 2022 19:57:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1644865028;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YgNeTAxbgrC315MC1Jy5FCAajTIfZfPRjFdqJmtvvKY=;
+        b=HN66mIkyyFsyVscl1o8gJyjO8eWD2hnaTwsJXHwZ7+ZHTwAJmoYuNj1H+C9s4+uAPLZBOH
+        g25lPkv4buqJC8bNbUm+UssFwL6JvaxfUTBITi/uZuNj2dT5ggI8JsATC4JEudjgjVLVch
+        YvMtUYweOZQ2TfdQ85efdWHA8TGZsXiWpRG55+maducZXNuNbpOR3ICNIA61a3No4TaKGZ
+        BdnKA2mHhbKs09/WReffUUqHWWoHFY9QNrnfuN3Rvoy4U3W0b7h2NIqNg/Kg+WSC3o06N/
+        SarAxqUoNFvKTCB+x9TZM47wGqd3BX/M8wFUcZTFUnktA6DO21l3i+30KFodOg==
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
+        Sander Vanheule <sander@svanheule.net>
+Subject: [PATCH v5 3/4] irqchip/realtek-rtl: use parent interrupts
+Date:   Mon, 14 Feb 2022 19:57:00 +0100
+Message-Id: <6484523d69a41e262a7c2d8bac76d31e189cdcbc.1644864700.git.sander@svanheule.net>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1644864700.git.sander@svanheule.net>
+References: <cover.1644864700.git.sander@svanheule.net>
 MIME-Version: 1.0
-References: <20220211161831.3493782-1-tjmercier@google.com>
- <20220211161831.3493782-7-tjmercier@google.com> <Ygdfe3XSvN8iFuUc@kroah.com>
- <CAHRSSEwoJ67Sr_=gtSaP91cbpjJjZdOo57cfAhv3r-ye0da7PA@mail.gmail.com> <CAJuCfpHf=Ewm0e9kguY3MEGVHU_cyviVXByi0oQtq7kTtOOD=A@mail.gmail.com>
-In-Reply-To: <CAJuCfpHf=Ewm0e9kguY3MEGVHU_cyviVXByi0oQtq7kTtOOD=A@mail.gmail.com>
-From:   Todd Kjos <tkjos@google.com>
-Date:   Mon, 14 Feb 2022 12:19:28 -0800
-Message-ID: <CAHRSSEzsn-EVKXTRfmpbPR9u0wNpdvdZoX64Tm_mB1DQMRSUPQ@mail.gmail.com>
-Subject: Re: [RFC v2 6/6] android: binder: Add a buffer flag to relinquish
- ownership of fds
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        DRI mailing list <dri-devel@lists.freedesktop.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 11:29 AM Suren Baghdasaryan <surenb@google.com> wro=
-te:
->
-> On Mon, Feb 14, 2022 at 10:33 AM Todd Kjos <tkjos@google.com> wrote:
-> >
-> > On Fri, Feb 11, 2022 at 11:19 PM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Fri, Feb 11, 2022 at 04:18:29PM +0000, T.J. Mercier wrote:
-> >
-> > Title: "android: binder: Add a buffer flag to relinquish ownership of f=
-ds"
-> >
-> > Please drop the "android:" from the title.
-> >
-> > > > This patch introduces a buffer flag BINDER_BUFFER_FLAG_SENDER_NO_NE=
-ED
-> > > > that a process sending an fd array to another process over binder I=
-PC
-> > > > can set to relinquish ownership of the fds being sent for memory
-> > > > accounting purposes. If the flag is found to be set during the fd a=
-rray
-> > > > translation and the fd is for a DMA-BUF, the buffer is uncharged fr=
-om
-> > > > the sender's cgroup and charged to the receiving process's cgroup
-> > > > instead.
-> > > >
-> > > > It is up to the sending process to ensure that it closes the fds
-> > > > regardless of whether the transfer failed or succeeded.
-> > > >
-> > > > Most graphics shared memory allocations in Android are done by the
-> > > > graphics allocator HAL process. On requests from clients, the HAL p=
-rocess
-> > > > allocates memory and sends the fds to the clients over binder IPC.
-> > > > The graphics allocator HAL will not retain any references to the
-> > > > buffers. When the HAL sets the BINDER_BUFFER_FLAG_SENDER_NO_NEED fo=
-r fd
-> > > > arrays holding DMA-BUF fds, the gpu cgroup controller will be able =
-to
-> > > > correctly charge the buffers to the client processes instead of the
-> > > > graphics allocator HAL.
-> > > >
-> > > > From: Hridya Valsaraju <hridya@google.com>
-> > > > Signed-off-by: Hridya Valsaraju <hridya@google.com>
-> > > > Co-developed-by: T.J. Mercier <tjmercier@google.com>
-> > > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> > > > ---
-> > > > changes in v2
-> > > > - Move dma-buf cgroup charge transfer from a dma_buf_op defined by =
-every
-> > > > heap to a single dma-buf function for all heaps per Daniel Vetter a=
-nd
-> > > > Christian K=C3=B6nig.
-> > > >
-> > > >  drivers/android/binder.c            | 26 +++++++++++++++++++++++++=
+The interrupt-map property for "realtek,rtl-intc" has been deprecated in
+favor of a list of parent interrupts. Drop the open-coded parser for
+interrupt-map, and use the first parent interrupt instead. If no parent
+was provided, the driver will assume that this is the first hardware
+interrupt of the SoC's MIPS CPU.
+
+All SoC interrupts were treated equally, independent of which output
+they were actually routed to. This means the driver might as well route
+all interrupts to the first output, and achieve the same behaviour.
+
+Without the interrupt-map property, interrupt routing information is no
+longer available at initialisation. Routing setup will now happen later,
+when a hardware interrupt is mapped by the subsystem.
+
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+---
+Changes since v4:
+- Use irq_domain_add_linear instead of irq_domain_add_simple
+- Drop 'inline' specifiers from static functions
+
+ drivers/irqchip/irq-realtek-rtl.c | 133 ++++++++++++++----------------
+ 1 file changed, 61 insertions(+), 72 deletions(-)
+
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 14e049eed0f2..2a349082af81 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -21,11 +21,33 @@
+ #define RTL_ICTL_IRR2		0x10
+ #define RTL_ICTL_IRR3		0x14
+ 
++#define RTL_ICTL_NUM_INPUTS	32
 +
-> > > >  include/uapi/linux/android/binder.h |  1 +
-> > > >  2 files changed, 27 insertions(+)
-> > > >
-> > > > diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-> > > > index 8351c5638880..f50d88ded188 100644
-> > > > --- a/drivers/android/binder.c
-> > > > +++ b/drivers/android/binder.c
-> > > > @@ -42,6 +42,7 @@
-> > > >
-> > > >  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> > > >
-> > > > +#include <linux/dma-buf.h>
-> > > >  #include <linux/fdtable.h>
-> > > >  #include <linux/file.h>
-> > > >  #include <linux/freezer.h>
-> > > > @@ -2482,8 +2483,10 @@ static int binder_translate_fd_array(struct =
-list_head *pf_head,
-> > > >  {
-> > > >       binder_size_t fdi, fd_buf_size;
-> > > >       binder_size_t fda_offset;
-> > > > +     bool transfer_gpu_charge =3D false;
-> > > >       const void __user *sender_ufda_base;
-> > > >       struct binder_proc *proc =3D thread->proc;
-> > > > +     struct binder_proc *target_proc =3D t->to_proc;
-> > > >       int ret;
-> > > >
-> > > >       fd_buf_size =3D sizeof(u32) * fda->num_fds;
-> > > > @@ -2521,8 +2524,15 @@ static int binder_translate_fd_array(struct =
-list_head *pf_head,
-> > > >       if (ret)
-> > > >               return ret;
-> > > >
-> > > > +     if (IS_ENABLED(CONFIG_CGROUP_GPU) &&
-> > > > +             parent->flags & BINDER_BUFFER_FLAG_SENDER_NO_NEED)
-> > > > +             transfer_gpu_charge =3D true;
-> > > > +
-> > > >       for (fdi =3D 0; fdi < fda->num_fds; fdi++) {
-> > > >               u32 fd;
-> > > > +             struct dma_buf *dmabuf;
-> > > > +             struct gpucg *gpucg;
-> > > > +
-> > > >               binder_size_t offset =3D fda_offset + fdi * sizeof(fd=
-);
-> > > >               binder_size_t sender_uoffset =3D fdi * sizeof(fd);
-> > > >
-> > > > @@ -2532,6 +2542,22 @@ static int binder_translate_fd_array(struct =
-list_head *pf_head,
-> > > >                                                 in_reply_to);
-> > > >               if (ret)
-> > > >                       return ret > 0 ? -EINVAL : ret;
-> > > > +
-> > > > +             if (!transfer_gpu_charge)
-> > > > +                     continue;
-> > > > +
-> > > > +             dmabuf =3D dma_buf_get(fd);
-> > > > +             if (IS_ERR(dmabuf))
-> > > > +                     continue;
-> > > > +
-> > > > +             gpucg =3D gpucg_get(target_proc->tsk);
-> > > > +             ret =3D dma_buf_charge_transfer(dmabuf, gpucg);
-> > > > +             if (ret) {
-> > > > +                     pr_warn("%d:%d Unable to transfer DMA-BUF fd =
-charge to %d",
-> > > > +                             proc->pid, thread->pid, target_proc->=
-pid);
-> > > > +                     gpucg_put(gpucg);
-> > > > +             }
-> > > > +             dma_buf_put(dmabuf);
-> >
-> > Since we are creating a new gpu cgroup abstraction, couldn't this
-> > "transfer" be done in userspace by the target instead of in the kernel
-> > driver? Then this patch would reduce to just a flag on the buffer
-> > object.
->
-> Are you suggesting to have a userspace accessible cgroup interface for
-> transferring buffer charges and the target process to use that
-> interface for requesting the buffer to be charged to its cgroup?
+ #define REG(x)		(realtek_ictl_base + x)
+ 
+ static DEFINE_RAW_SPINLOCK(irq_lock);
+ static void __iomem *realtek_ictl_base;
+ 
++/*
++ * IRR0-IRR3 store 4 bits per interrupt, but Realtek uses inverted numbering,
++ * placing IRQ 31 in the first four bits. A routing value of '0' means the
++ * interrupt is left disconnected. Routing values {1..15} connect to output
++ * lines {0..14}.
++ */
++#define IRR_OFFSET(idx)		(4 * (3 - (idx * 4) / 32))
++#define IRR_SHIFT(idx)		((idx * 4) % 32)
++
++static void write_irr(void __iomem *irr0, int idx, u32 value)
++{
++	unsigned int offset = IRR_OFFSET(idx);
++	unsigned int shift = IRR_SHIFT(idx);
++	u32 irr;
++
++	irr = readl(irr0 + offset) & ~(0xf << shift);
++	irr |= (value & 0xf) << shift;
++	writel(irr, irr0 + offset);
++}
++
+ static void realtek_ictl_unmask_irq(struct irq_data *i)
+ {
+ 	unsigned long flags;
+@@ -62,8 +84,14 @@ static struct irq_chip realtek_ictl_irq = {
+ 
+ static int intc_map(struct irq_domain *d, unsigned int irq, irq_hw_number_t hw)
+ {
++	unsigned long flags;
++
+ 	irq_set_chip_and_handler(irq, &realtek_ictl_irq, handle_level_irq);
+ 
++	raw_spin_lock_irqsave(&irq_lock, flags);
++	write_irr(REG(RTL_ICTL_IRR0), hw, 1);
++	raw_spin_unlock_irqrestore(&irq_lock, flags);
++
+ 	return 0;
+ }
+ 
+@@ -95,89 +123,50 @@ static void realtek_irq_dispatch(struct irq_desc *desc)
+ 	chained_irq_exit(chip, desc);
+ }
+ 
+-/*
+- * SoC interrupts are cascaded to MIPS CPU interrupts according to the
+- * interrupt-map in the device tree. Each SoC interrupt gets 4 bits for
+- * the CPU interrupt in an Interrupt Routing Register. Max 32 SoC interrupts
+- * thus go into 4 IRRs. A routing value of '0' means the interrupt is left
+- * disconnected. Routing values {1..15} connect to output lines {0..14}.
+- */
+-static int __init map_interrupts(struct device_node *node, struct irq_domain *domain)
+-{
+-	struct device_node *cpu_ictl;
+-	const __be32 *imap;
+-	u32 imaplen, soc_int, cpu_int, tmp, regs[4];
+-	int ret, i, irr_regs[] = {
+-		RTL_ICTL_IRR3,
+-		RTL_ICTL_IRR2,
+-		RTL_ICTL_IRR1,
+-		RTL_ICTL_IRR0,
+-	};
+-	u8 mips_irqs_set;
+-
+-	ret = of_property_read_u32(node, "#address-cells", &tmp);
+-	if (ret || tmp)
+-		return -EINVAL;
+-
+-	imap = of_get_property(node, "interrupt-map", &imaplen);
+-	if (!imap || imaplen % 3)
+-		return -EINVAL;
+-
+-	mips_irqs_set = 0;
+-	memset(regs, 0, sizeof(regs));
+-	for (i = 0; i < imaplen; i += 3 * sizeof(u32)) {
+-		soc_int = be32_to_cpup(imap);
+-		if (soc_int > 31)
+-			return -EINVAL;
+-
+-		cpu_ictl = of_find_node_by_phandle(be32_to_cpup(imap + 1));
+-		if (!cpu_ictl)
+-			return -EINVAL;
+-		ret = of_property_read_u32(cpu_ictl, "#interrupt-cells", &tmp);
+-		if (ret || tmp != 1)
+-			return -EINVAL;
+-		of_node_put(cpu_ictl);
+-
+-		cpu_int = be32_to_cpup(imap + 2);
+-		if (cpu_int > 7 || cpu_int < 2)
+-			return -EINVAL;
+-
+-		if (!(mips_irqs_set & BIT(cpu_int))) {
+-			irq_set_chained_handler_and_data(cpu_int, realtek_irq_dispatch,
+-							 domain);
+-			mips_irqs_set |= BIT(cpu_int);
+-		}
+-
+-		/* Use routing values (1..6) for CPU interrupts (2..7) */
+-		regs[(soc_int * 4) / 32] |= (cpu_int - 1) << (soc_int * 4) % 32;
+-		imap += 3;
+-	}
+-
+-	for (i = 0; i < 4; i++)
+-		writel(regs[i], REG(irr_regs[i]));
+-
+-	return 0;
+-}
+-
+ static int __init realtek_rtl_of_init(struct device_node *node, struct device_node *parent)
+ {
++	struct of_phandle_args oirq;
+ 	struct irq_domain *domain;
+-	int ret;
++	unsigned int soc_irq;
++	int parent_irq;
+ 
+ 	realtek_ictl_base = of_iomap(node, 0);
+ 	if (!realtek_ictl_base)
+ 		return -ENXIO;
+ 
+-	/* Disable all cascaded interrupts */
++	/* Disable all cascaded interrupts and clear routing */
+ 	writel(0, REG(RTL_ICTL_GIMR));
++	for (soc_irq = 0; soc_irq < RTL_ICTL_NUM_INPUTS; soc_irq++)
++		write_irr(REG(RTL_ICTL_IRR0), soc_irq, 0);
++
++	if (WARN_ON(!of_irq_count(node))) {
++		/*
++		 * If DT contains no parent interrupts, assume MIPS CPU IRQ 2
++		 * (HW0) is connected to the first output. This is the case for
++		 * all known hardware anyway. "interrupt-map" is deprecated, so
++		 * don't bother trying to parse that.
++		 */
++		oirq.np = of_find_compatible_node(NULL, NULL, "mti,cpu-interrupt-controller");
++		oirq.args_count = 1;
++		oirq.args[0] = 2;
++
++		parent_irq = irq_create_of_mapping(&oirq);
++
++		of_node_put(oirq.np);
++	} else {
++		parent_irq = of_irq_get(node, 0);
++	}
+ 
+-	domain = irq_domain_add_linear(node, 32, &irq_domain_ops, NULL);
++	if (parent_irq < 0)
++		return parent_irq;
++	else if (!parent_irq)
++		return -ENODEV;
+ 
+-	ret = map_interrupts(node, domain);
+-	if (ret) {
+-		pr_err("invalid interrupt map\n");
+-		return ret;
+-	}
++	domain = irq_domain_add_linear(node, RTL_ICTL_NUM_INPUTS, &irq_domain_ops, NULL);
++	if (!domain)
++		return -ENOMEM;
++
++	irq_set_chained_handler_and_data(parent_irq, realtek_irq_dispatch, domain);
+ 
+ 	return 0;
+ }
+-- 
+2.35.1
 
-Well, I'm asking why we need to do these cgroup-ish actions in the
-kernel when it seems more natural to do it in userspace.
-
-> I'm worried about the case when the target process does not request
-> the transfer after receiving the buffer with this flag set. The charge
-> would stay with the wrong process and accounting will be invalid.
-
-I suspect this would be implemented in libbinder wherever the fd array
-object is handled, so it wouldn't require changes to every process.
-
->
-> Technically, since the proposed cgroup supports charge transfer from
-> the very beginning, the userspace can check if the cgroup is mounted
-> and if so then it knows this feature is supported.
-
-Has some userspace code for this been written? I'd like to be
-convinced that these changes need to be in the binder kernel driver
-instead of in userspace.
-
->
-> > This also solves the issue that Greg brought up about
-> > userspace needing to know whether the kernel implements this feature
-> > (older kernel running with newer userspace). I think we could just
-> > reserve some flags for userspace to use (and since those flags are
-> > "reserved" for older kernels, this would enable this feature even for
-> > old kernels)
-> >
-> > > >       }
-> > > >       return 0;
-> > > >  }
-> > > > diff --git a/include/uapi/linux/android/binder.h b/include/uapi/lin=
-ux/android/binder.h
-> > > > index 3246f2c74696..169fd5069a1a 100644
-> > > > --- a/include/uapi/linux/android/binder.h
-> > > > +++ b/include/uapi/linux/android/binder.h
-> > > > @@ -137,6 +137,7 @@ struct binder_buffer_object {
-> > > >
-> > > >  enum {
-> > > >       BINDER_BUFFER_FLAG_HAS_PARENT =3D 0x01,
-> > > > +     BINDER_BUFFER_FLAG_SENDER_NO_NEED =3D 0x02,
-> > > >  };
-> > > >
-> > > >  /* struct binder_fd_array_object - object describing an array of f=
-ds in a buffer
-> > > > --
-> > > > 2.35.1.265.g69c8d7142f-goog
-> > > >
-> > >
-> > > How does userspace know that binder supports this new flag?  And wher=
-e
-> > > is the userspace test for this new feature?  Isn't there a binder tes=
-t
-> > > framework somewhere?
-> > >
-> > > thanks,
-> > >
-> > > greg k-h
