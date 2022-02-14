@@ -2,222 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F667C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6457C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243589AbiBNJb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:31:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42650 "EHLO
+        id S243292AbiBNJcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:32:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243533AbiBNJbT (ORCPT
+        with ESMTP id S243171AbiBNJb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:31:19 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364D3AE47
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:30:22 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id m7so14012483pjk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:30:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VcnEn/2NWd+/RTs+MullchxIkZjgGZxkU+9opOFbT/E=;
-        b=gBTRLGlaAj4HJU+BV6EKy1c7SRjH3ZcYNjesOBAIUBrh/uJhWfqNl4nuvTvank74fG
-         0Fll3ywyLTal5NaXfV95mwYlAMez8rk1khrDRLlKR6cGCIwsm79cmXPrFfb1qEXUy5QF
-         XUpcU2pDxOq6U/6ODZq3rCeT/5yti0Vz6XB/gUKZDMsy9nxIV+889Bo3t1Ar5w/NkiY/
-         QbN9Q7xhG5aqC1ykGXzg3frw8QOXhjXr8K2osJ7VypdPmuUuU9S91ig7qh8E6uomgVNJ
-         TJlU2PasI8nha32acKj4h5iCGfQRiJoUopwJyYmHBNpTJToSexWQtID9cnFfcBB6eTZz
-         0jiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VcnEn/2NWd+/RTs+MullchxIkZjgGZxkU+9opOFbT/E=;
-        b=iKSIZVrk8uhdZeImfc15MdBZQNrAR7jCTwTBeL4PRP72AAKxEyZKK1LcWDmdBXruSI
-         UIhFq4RuupyjIljxHKd5ShK0wqheyxnMLmuEivCCRILum/0UDPj4PX10dH14ZUA5gBwE
-         S5aB9L0+aJXrMji16v5hg2OZo5EnbTw7JMYRXC8NtwTVyUAR0Xa2cZYxQJVi910ToU5g
-         Mw+CIhK5z+FIZJhOQDvTT3HlpS+PEV22Zb/jirM1PjWSPo9EYmvwYJhoqOw02TYio+qQ
-         dnBZSk1I6lFn1yuxSPCKpey3ZLAS74ont4FiTuWzz78/AvmqlZz5C69CIWFf5h/fni9h
-         yafA==
-X-Gm-Message-State: AOAM533Zi3Amnb67bjaKKf3CNNcWA7sMszW2j73zGsYkXzEIvms+wbif
-        Jt/9aNrGRtuhzkYi8arZrvZBzkVDvU0z0NA=
-X-Google-Smtp-Source: ABdhPJw+/gbE94SUWsRBzGerqbSwRwYgZd0xqI8AQd5IBANHze8aVI2ksk/Qqd2UmHldJ+0vAgxYEw==
-X-Received: by 2002:a17:902:d88f:: with SMTP id b15mr13442997plz.44.1644831021418;
-        Mon, 14 Feb 2022 01:30:21 -0800 (PST)
-Received: from thinkpad ([2409:4072:817:5a6f:3104:62c0:1941:5033])
-        by smtp.gmail.com with ESMTPSA id g4sm35616188pfv.63.2022.02.14.01.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 01:30:21 -0800 (PST)
-Date:   Mon, 14 Feb 2022 15:00:12 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Rob Herring <robh@kernel.org>, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [RFC PATCH 1/5] PCI: endpoint: Add ops and flag to support
- internal DMAC
-Message-ID: <20220214093012.GI3494@thinkpad>
-References: <20220126195043.28376-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220126195043.28376-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Mon, 14 Feb 2022 04:31:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B034AE41;
+        Mon, 14 Feb 2022 01:30:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEB14B80DC5;
+        Mon, 14 Feb 2022 09:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E854CC340E9;
+        Mon, 14 Feb 2022 09:30:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831021;
+        bh=Ug9e0H5vXPr8eJ+XBkiyzsIfVnY04iyCxHeJHXPLEp8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mkXG7IX/pNdLRoEuurW+TqZpygqJgAnRjWQVhQyBW8C8Sm4gVzF27dTLmdggqXyA6
+         0r/kYL+mRS+ZfOAWVV0ldf4f/mkeP5E74jjITKRFJanEACpUqCs8SA0xd5ZL9/1I4V
+         oL7a1Wu0GAHWvzDsT3MfPNHrnAx5O8z2rall7Lz0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 19/44] ARM: dts: meson: Fix the UART compatible strings
+Date:   Mon, 14 Feb 2022 10:25:42 +0100
+Message-Id: <20220214092448.537068998@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
+References: <20220214092447.897544753@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220126195043.28376-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 26, 2022 at 07:50:39PM +0000, Lad Prabhakar wrote:
-> Add flag to indicate if PCIe EP supports internal DMAC and also add a
-> wrapper function which invokes dmac_transfer() callback which lands
-> in the PCIe EP driver.
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  drivers/pci/endpoint/pci-epf-core.c | 32 +++++++++++++++++++++++++++++
->  include/linux/pci-epc.h             |  8 ++++++++
->  include/linux/pci-epf.h             |  7 +++++++
->  3 files changed, 47 insertions(+)
-> 
-> diff --git a/drivers/pci/endpoint/pci-epf-core.c b/drivers/pci/endpoint/pci-epf-core.c
-> index 9ed556936f48..f70576d0d4b2 100644
-> --- a/drivers/pci/endpoint/pci-epf-core.c
-> +++ b/drivers/pci/endpoint/pci-epf-core.c
-> @@ -239,6 +239,38 @@ void pci_epf_remove_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf)
->  }
->  EXPORT_SYMBOL_GPL(pci_epf_remove_vepf);
->  
-> +/**
-> + * pci_epf_internal_dmac_xfr() - transfer data between EPC and remote PCIe RC
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-Transfer data between EP and host using internal DMA engine
+[ Upstream commit 5225e1b87432dcf0d0fc3440824b91d04c1d6cc1 ]
 
-> + * @epf: the EPF device that performs the data transfer operation
-> + * @dma_dst: The destination address of the data transfer. It can be a physical
-> + *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
-> + * @dma_src: The source address of the data transfer. It can be a physical
-> + *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
-> + * @len: The size of the data transfer
-> + *
-> + * Invoke to transfer data between EPC and remote PCIe RC using internal dmac.
-> + */
-> +int pci_epf_internal_dmac_xfr(struct pci_epf *epf, dma_addr_t dma_dst,
-> +			      dma_addr_t dma_src, size_t len,
-> +			      enum pci_epf_xfr_direction dir)
+The dt-bindings for the UART controller only allow the following values
+for Meson6 SoCs:
+- "amlogic,meson6-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson6-uart"
 
-How about "pci_epf_internal_dma_xfer"? I think DMAC is somewhat platform
-specific so we could just use DMA. And "xfer" is being used more commonly for
-"transfer".
+Use the correct fallback compatible string "amlogic,meson-ao-uart" for
+AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
+domain UART controllers.
 
-> +{
-> +	struct pci_epc *epc = epf->epc;
-> +	int ret;
-> +
-> +	if (IS_ERR_OR_NULL(epc) || IS_ERR_OR_NULL(epf))
-> +		return -EINVAL;
-> +
-> +	if (!epc->ops->dmac_transfer)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&epf->lock);
-> +	ret = epc->ops->dmac_transfer(epc, epf, dma_dst, dma_src, len, dir);
+Fixes: ec9b59162fd831 ("ARM: dts: meson6: use stable UART bindings")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211227180026.4068352-2-martin.blumenstingl@googlemail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm/boot/dts/meson.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-internal_dma_xfer? It doesn't look perfect but I can't think of any other way to
-represent it as an internal dma callback.
+diff --git a/arch/arm/boot/dts/meson.dtsi b/arch/arm/boot/dts/meson.dtsi
+index cd6ad072e72c1..05dfd74a40044 100644
+--- a/arch/arm/boot/dts/meson.dtsi
++++ b/arch/arm/boot/dts/meson.dtsi
+@@ -86,14 +86,14 @@ hwrng: rng@8100 {
+ 			};
+ 
+ 			uart_A: serial@84c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84c0 0x18>;
+ 				interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+ 			};
+ 
+ 			uart_B: serial@84dc {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x84dc 0x18>;
+ 				interrupts = <GIC_SPI 75 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -131,7 +131,7 @@ saradc: adc@8680 {
+ 			};
+ 
+ 			uart_C: serial@8700 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart";
+ 				reg = <0x8700 0x18>;
+ 				interrupts = <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+@@ -196,7 +196,7 @@ ir_receiver: ir-receiver@480 {
+ 			};
+ 
+ 			uart_AO: serial@4c0 {
+-				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart", "amlogic,meson-uart";
++				compatible = "amlogic,meson6-uart", "amlogic,meson-ao-uart";
+ 				reg = <0x4c0 0x18>;
+ 				interrupts = <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>;
+ 				status = "disabled";
+-- 
+2.34.1
 
-> +	mutex_unlock(&epf->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_epf_internal_dmac_xfr);
-> +
->  /**
->   * pci_epf_free_space() - free the allocated PCI EPF register space
->   * @epf: the EPF device from whom to free the memory
-> diff --git a/include/linux/pci-epc.h b/include/linux/pci-epc.h
-> index a48778e1a4ee..b55dacd09e1e 100644
-> --- a/include/linux/pci-epc.h
-> +++ b/include/linux/pci-epc.h
-> @@ -58,6 +58,7 @@ pci_epc_interface_string(enum pci_epc_interface_type type)
->   * @map_msi_irq: ops to map physical address to MSI address and return MSI data
->   * @start: ops to start the PCI link
->   * @stop: ops to stop the PCI link
-> + * @dmac_transfer: ops to transfer data using internal DMAC
->   * @get_features: ops to get the features supported by the EPC
->   * @owner: the module owner containing the ops
->   */
-> @@ -86,6 +87,9 @@ struct pci_epc_ops {
->  			       u32 *msi_addr_offset);
->  	int	(*start)(struct pci_epc *epc);
->  	void	(*stop)(struct pci_epc *epc);
-> +	int	(*dmac_transfer)(struct pci_epc *epc, struct pci_epf *epf,
-> +				 dma_addr_t dma_dst, dma_addr_t dma_src,
-> +				 size_t len, enum pci_epf_xfr_direction dir);
->  	const struct pci_epc_features* (*get_features)(struct pci_epc *epc,
->  						       u8 func_no, u8 vfunc_no);
->  	struct module *owner;
-> @@ -159,6 +163,8 @@ struct pci_epc {
->   *			for initialization
->   * @msi_capable: indicate if the endpoint function has MSI capability
->   * @msix_capable: indicate if the endpoint function has MSI-X capability
-> + * @internal_dmac: indicate if the endpoint function has internal DMAC
-> + * @internal_dmac_mask: indicates the DMA mask to be applied for the device
->   * @reserved_bar: bitmap to indicate reserved BAR unavailable to function driver
->   * @bar_fixed_64bit: bitmap to indicate fixed 64bit BARs
->   * @bar_fixed_size: Array specifying the size supported by each BAR
-> @@ -169,6 +175,8 @@ struct pci_epc_features {
->  	unsigned int	core_init_notifier : 1;
->  	unsigned int	msi_capable : 1;
->  	unsigned int	msix_capable : 1;
-> +	unsigned int	internal_dmac : 1;
-> +	u64		internal_dmac_mask;
 
-internal_dma?
 
->  	u8	reserved_bar;
->  	u8	bar_fixed_64bit;
->  	u64	bar_fixed_size[PCI_STD_NUM_BARS];
-> diff --git a/include/linux/pci-epf.h b/include/linux/pci-epf.h
-> index 009a07147c61..78d661db085d 100644
-> --- a/include/linux/pci-epf.h
-> +++ b/include/linux/pci-epf.h
-> @@ -32,6 +32,11 @@ enum pci_barno {
->  	BAR_5,
->  };
->  
-> +enum pci_epf_xfr_direction {
-> +	PCIE_TO_INTERNAL,
-> +	INTERNAL_TO_PCIE,
-
-I think we could just use "dma_data_direction" as we are anyway transferring
-data between host and device.
-
-Thanks,
-Mani
-
-> +};
-> +
->  /**
->   * struct pci_epf_header - represents standard configuration header
->   * @vendorid: identifies device manufacturer
-> @@ -209,6 +214,8 @@ void pci_epf_free_space(struct pci_epf *epf, void *addr, enum pci_barno bar,
->  			enum pci_epc_interface_type type);
->  int pci_epf_bind(struct pci_epf *epf);
->  void pci_epf_unbind(struct pci_epf *epf);
-> +int pci_epf_internal_dmac_xfr(struct pci_epf *epf, dma_addr_t dma_dst, dma_addr_t dma_src,
-> +			      size_t len, enum pci_epf_xfr_direction dir);
->  struct config_group *pci_epf_type_add_cfs(struct pci_epf *epf,
->  					  struct config_group *group);
->  int pci_epf_add_vepf(struct pci_epf *epf_pf, struct pci_epf *epf_vf);
-> -- 
-> 2.25.1
-> 
