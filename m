@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 674F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245552AbiBNJtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:49:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42958 "EHLO
+        id S245384AbiBNJt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:49:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343846AbiBNJqa (ORCPT
+        with ESMTP id S1343967AbiBNJqe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:30 -0500
+        Mon, 14 Feb 2022 04:46:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D932D69CCA;
-        Mon, 14 Feb 2022 01:40:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC47C60D8F;
+        Mon, 14 Feb 2022 01:40:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9061FB80DC7;
-        Mon, 14 Feb 2022 09:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A7B6C340E9;
-        Mon, 14 Feb 2022 09:39:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 99C5DB80DC6;
+        Mon, 14 Feb 2022 09:40:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99616C340E9;
+        Mon, 14 Feb 2022 09:40:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831598;
-        bh=ojmiylI0YjC8wN3pyGRx1nGh82RjVji27PqBngnvtws=;
+        s=korg; t=1644831601;
+        bh=ROdNpk6GGl3zwq7T6WvJRSyShTsDYOP5Ert8FCnHo9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gyn1zm8fFw8lMX5yQG6thwUX1e9H24jyz+GNkttteyJm/2q1uY5ID2GBBqq7oTXJt
-         07NHw0QQxzsKvl5ikXcv89pcPh0+O1dFH1KZY3Dur/Gfh1YYyo7dWaHZlZoiYmKhIN
-         3NjqbcTHk3/bNXmVOU7aKpC74O9sih7wxme5yjdg=
+        b=kYVMIm/Akv07g2CzJhLjlHhfe4SlSLBLV67r86hEjOhMrhdutkSyiCwwEZfzpOW9t
+         9ksuGhBVqgc/w/0mO48Iq7Vp+frAQ1bPKfwGuLQjCB4/8yTprd2XYSySfLN0IKAKP7
+         u4ByNKER7bbqzcMMK/ZuI3EnKywpkDtPzC1MjszI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 032/116] PM: hibernate: Remove register_nosave_region_late()
-Date:   Mon, 14 Feb 2022 10:25:31 +0100
-Message-Id: <20220214092459.800350010@linuxfoundation.org>
+Subject: [PATCH 5.10 033/116] usb: dwc2: gadget: dont try to disable ep0 in dwc2_hsotg_suspend
+Date:   Mon, 14 Feb 2022 10:25:32 +0100
+Message-Id: <20220214092459.834245616@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -52,91 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 33569ef3c754a82010f266b7b938a66a3ccf90a4 ]
+[ Upstream commit ac55d163855924aa5af9f1560977da8f346963c8 ]
 
-It is an unused wrapper forcing kmalloc allocation for registering
-nosave regions. Also, rename __register_nosave_region() to
-register_nosave_region() now that there is no need for disambiguation.
+Calling dwc2_hsotg_ep_disable on ep0 (in/out) will lead to the following
+logs before returning -EINVAL:
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
+dwc2 49000000.usb-otg: dwc2_hsotg_ep_disable: called for ep0
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+To avoid these two logs while suspending, start disabling the endpoint
+from the index 1, as done in dwc2_hsotg_udc_stop:
+
+	/* all endpoints should be shutdown */
+	for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+		if (hsotg->eps_in[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+		if (hsotg->eps_out[ep])
+			dwc2_hsotg_ep_disable_lock(&hsotg->eps_out[ep]->ep);
+	}
+
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211207130101.270314-1-amelie.delaunay@foss.st.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/suspend.h | 11 +----------
- kernel/power/snapshot.c | 21 +++++++--------------
- 2 files changed, 8 insertions(+), 24 deletions(-)
+ drivers/usb/dwc2/gadget.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-index 8af13ba60c7e4..c1310c571d805 100644
---- a/include/linux/suspend.h
-+++ b/include/linux/suspend.h
-@@ -430,15 +430,7 @@ struct platform_hibernation_ops {
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index 449f19c3633c2..ec54971063f8f 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -5032,7 +5032,7 @@ int dwc2_hsotg_suspend(struct dwc2_hsotg *hsotg)
+ 		hsotg->gadget.speed = USB_SPEED_UNKNOWN;
+ 		spin_unlock_irqrestore(&hsotg->lock, flags);
  
- #ifdef CONFIG_HIBERNATION
- /* kernel/power/snapshot.c */
--extern void __register_nosave_region(unsigned long b, unsigned long e, int km);
--static inline void __init register_nosave_region(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 0);
--}
--static inline void __init register_nosave_region_late(unsigned long b, unsigned long e)
--{
--	__register_nosave_region(b, e, 1);
--}
-+extern void register_nosave_region(unsigned long b, unsigned long e);
- extern int swsusp_page_is_forbidden(struct page *);
- extern void swsusp_set_page_free(struct page *);
- extern void swsusp_unset_page_free(struct page *);
-@@ -457,7 +449,6 @@ int pfn_is_nosave(unsigned long pfn);
- int hibernate_quiet_exec(int (*func)(void *data), void *data);
- #else /* CONFIG_HIBERNATION */
- static inline void register_nosave_region(unsigned long b, unsigned long e) {}
--static inline void register_nosave_region_late(unsigned long b, unsigned long e) {}
- static inline int swsusp_page_is_forbidden(struct page *p) { return 0; }
- static inline void swsusp_set_page_free(struct page *p) {}
- static inline void swsusp_unset_page_free(struct page *p) {}
-diff --git a/kernel/power/snapshot.c b/kernel/power/snapshot.c
-index 46b1804c1ddf7..1da013f50059a 100644
---- a/kernel/power/snapshot.c
-+++ b/kernel/power/snapshot.c
-@@ -944,8 +944,7 @@ static void memory_bm_recycle(struct memory_bitmap *bm)
-  * Register a range of page frames the contents of which should not be saved
-  * during hibernation (to be used in the early initialization code).
-  */
--void __init __register_nosave_region(unsigned long start_pfn,
--				     unsigned long end_pfn, int use_kmalloc)
-+void __init register_nosave_region(unsigned long start_pfn, unsigned long end_pfn)
- {
- 	struct nosave_region *region;
- 
-@@ -961,18 +960,12 @@ void __init __register_nosave_region(unsigned long start_pfn,
- 			goto Report;
- 		}
- 	}
--	if (use_kmalloc) {
--		/* During init, this shouldn't fail */
--		region = kmalloc(sizeof(struct nosave_region), GFP_KERNEL);
--		BUG_ON(!region);
--	} else {
--		/* This allocation cannot fail */
--		region = memblock_alloc(sizeof(struct nosave_region),
--					SMP_CACHE_BYTES);
--		if (!region)
--			panic("%s: Failed to allocate %zu bytes\n", __func__,
--			      sizeof(struct nosave_region));
--	}
-+	/* This allocation cannot fail */
-+	region = memblock_alloc(sizeof(struct nosave_region),
-+				SMP_CACHE_BYTES);
-+	if (!region)
-+		panic("%s: Failed to allocate %zu bytes\n", __func__,
-+		      sizeof(struct nosave_region));
- 	region->start_pfn = start_pfn;
- 	region->end_pfn = end_pfn;
- 	list_add_tail(&region->list, &nosave_regions);
+-		for (ep = 0; ep < hsotg->num_of_eps; ep++) {
++		for (ep = 1; ep < hsotg->num_of_eps; ep++) {
+ 			if (hsotg->eps_in[ep])
+ 				dwc2_hsotg_ep_disable_lock(&hsotg->eps_in[ep]->ep);
+ 			if (hsotg->eps_out[ep])
 -- 
 2.34.1
 
