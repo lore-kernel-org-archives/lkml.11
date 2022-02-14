@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245665AbiBNJum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43850 "EHLO
+        id S1343492AbiBNJur (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245590AbiBNJqB (ORCPT
+        with ESMTP id S245635AbiBNJqD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:46:01 -0500
+        Mon, 14 Feb 2022 04:46:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5787179A;
-        Mon, 14 Feb 2022 01:39:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A548717B3;
+        Mon, 14 Feb 2022 01:39:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FBE6102D;
-        Mon, 14 Feb 2022 09:39:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA932C340E9;
-        Mon, 14 Feb 2022 09:39:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C82236102D;
+        Mon, 14 Feb 2022 09:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC86C340E9;
+        Mon, 14 Feb 2022 09:39:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831551;
-        bh=l/brSncTN6vdt2U5TbNasSHodgL5NGbj4Cmm4cRhARM=;
+        s=korg; t=1644831554;
+        bh=4RIDEAq+c22nmmG4y8cxqHGvT85mUiWcK7yNYU3i7IM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kV3aBEoNiFTuzgQn5wrJh3PzSFSc2QinnfGP2NoOBvyLOUeUmv9gbjQgOstydVuxN
-         DNyw+i9N6YJsAK6Kh2jBzRDApwF2kAJ8DUL4a2tTf4nWh+5H1c7kh/kSU5sbCkRx8C
-         J8Dmhpn+tDt9riA9Q4FyTQ1Za5ENG2dch4T9nWSM=
+        b=aqJXK3/nkfETofJ1CeDtn3sUOWG+pdjyCrsnsoK9TWMgoufkPBpSHRI3W2krsc/Bl
+         g6Y5cQ0mW/5JR+Wind0zlxFToW0usSLBoH6RUNcryzVJIcRIPjN/4wcIz6iRpwg4FX
+         0GzyRFbAv6ni8945ZoiRYdpcYyTQ41aNJ9YQgt5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 019/116] NFSv4 expose nfs_parse_server_name function
-Date:   Mon, 14 Feb 2022 10:25:18 +0100
-Message-Id: <20220214092459.342264804@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.10 002/116] ima: Remove ima_policy file before directory
+Date:   Mon, 14 Feb 2022 10:25:01 +0100
+Message-Id: <20220214092458.753440143@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,51 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
+commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
 
-Make nfs_parse_server_name available outside of nfs4namespace.c.
+The removal of ima_dir currently fails since ima_policy still exists, so
+remove the ima_policy file before removing the directory.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/nfs4_fs.h       | 3 ++-
- fs/nfs/nfs4namespace.c | 4 ++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ security/integrity/ima/ima_fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index 3e344bec3647b..de71cf89a24ee 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -281,7 +281,8 @@ struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
- int nfs4_submount(struct fs_context *, struct nfs_server *);
- int nfs4_replace_transport(struct nfs_server *server,
- 				const struct nfs4_fs_locations *locations);
--
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net);
- /* nfs4proc.c */
- extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
- extern int nfs4_async_handle_error(struct rpc_task *task,
-diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
-index 873342308dc0d..f1ed4f60a7f33 100644
---- a/fs/nfs/nfs4namespace.c
-+++ b/fs/nfs/nfs4namespace.c
-@@ -164,8 +164,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -496,12 +496,12 @@ int __init ima_fs_init(void)
+ 
  	return 0;
+ out:
++	securityfs_remove(ima_policy);
+ 	securityfs_remove(violations);
+ 	securityfs_remove(runtime_measurements_count);
+ 	securityfs_remove(ascii_runtime_measurements);
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_symlink);
+ 	securityfs_remove(ima_dir);
+-	securityfs_remove(ima_policy);
+ 	return -1;
  }
- 
--static size_t nfs_parse_server_name(char *string, size_t len,
--		struct sockaddr *sa, size_t salen, struct net *net)
-+size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
-+			     size_t salen, struct net *net)
- {
- 	ssize_t ret;
- 
--- 
-2.34.1
-
 
 
