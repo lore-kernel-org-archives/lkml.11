@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2795CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5488C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241341AbiBNJ2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:28:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41374 "EHLO
+        id S243025AbiBNJ2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:28:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243024AbiBNJ2a (ORCPT
+        with ESMTP id S243073AbiBNJ2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D1960AA5;
-        Mon, 14 Feb 2022 01:28:23 -0800 (PST)
+        Mon, 14 Feb 2022 04:28:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373AF60D90;
+        Mon, 14 Feb 2022 01:28:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2D45E60F6F;
-        Mon, 14 Feb 2022 09:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10347C340E9;
-        Mon, 14 Feb 2022 09:28:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3BDDB80DC7;
+        Mon, 14 Feb 2022 09:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F41A2C340E9;
+        Mon, 14 Feb 2022 09:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830902;
-        bh=/CiVd4L2TQFjdRRZsgg7Yry6nYmJ+8enyPL1HjltIro=;
+        s=korg; t=1644830905;
+        bh=0WY8f51R/Y2rl4lHjqHCXNYYMMBguLRFJ5mUJaq5XnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EkMqboEyN3CZDEqIDg9twEYLHCzV2RpS/aIljhS7kl9Orn/SL3Dcv92S5qMRbFAJr
-         /Jnh7N7ZUBubBamxvAWF8t7kfYcR0zs5a5ZLapHusIhYaMzFmtmuFnWuQn7m7Np0Gb
-         4flAikqRSOw/r6u0UjZjSf1MXrdjRce+a2otM5PU=
+        b=1PjIbJiRBQ5SIFrauq9tBrgwt7ZgSWwOYLLcyAOD9zu7l/9LSzWMmv4tH6k6xub4X
+         hWRhDkN+4QpNIvw9bt3vAxu2qcvRJC0zL12cK8ne2B6wcIQv/1xTjWHOKzJeF2t9J1
+         ci+4mkSNmnEmoSeVV2SLWNxoqI/lNKbuSYCjcah4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 17/34] bonding: pair enable_port with slave_arr_updates
-Date:   Mon, 14 Feb 2022 10:25:43 +0100
-Message-Id: <20220214092446.502266045@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 4.9 02/34] ima: Remove ima_policy file before directory
+Date:   Mon, 14 Feb 2022 10:25:28 +0100
+Message-Id: <20220214092446.025737875@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -50,55 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mahesh Bandewar <maheshb@google.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-[ Upstream commit 23de0d7b6f0e3f9a6283a882594c479949da1120 ]
+commit f7333b9572d0559e00352a926c92f29f061b4569 upstream.
 
-When 803.2ad mode enables a participating port, it should update
-the slave-array. I have observed that the member links are participating
-and are part of the active aggregator while the traffic is egressing via
-only one member link (in a case where two links are participating). Via
-kprobes I discovered that slave-arr has only one link added while
-the other participating link wasn't part of the slave-arr.
+The removal of ima_dir currently fails since ima_policy still exists, so
+remove the ima_policy file before removing the directory.
 
-I couldn't see what caused that situation but the simple code-walk
-through provided me hints that the enable_port wasn't always associated
-with the slave-array update.
-
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Mahesh Bandewar <maheshb@google.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Link: https://lore.kernel.org/r/20220207222901.1795287-1-maheshb@google.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4af4662fa4a9 ("integrity: IMA policy")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_3ad.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/integrity/ima/ima_fs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 1e2ee97b92406..578d8e12e2d21 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -971,8 +971,8 @@ static void ad_mux_machine(struct port *port, bool *update_slave_arr)
- 				if (port->aggregator &&
- 				    port->aggregator->is_active &&
- 				    !__port_is_enabled(port)) {
--
- 					__enable_port(port);
-+					*update_slave_arr = true;
- 				}
- 			}
- 			break;
-@@ -1724,6 +1724,7 @@ static void ad_agg_selection_logic(struct aggregator *agg,
- 			     port = port->next_port_in_aggregator) {
- 				__enable_port(port);
- 			}
-+			*update_slave_arr = true;
- 		}
- 	}
+--- a/security/integrity/ima/ima_fs.c
++++ b/security/integrity/ima/ima_fs.c
+@@ -477,11 +477,11 @@ int __init ima_fs_init(void)
  
--- 
-2.34.1
-
+ 	return 0;
+ out:
++	securityfs_remove(ima_policy);
+ 	securityfs_remove(violations);
+ 	securityfs_remove(runtime_measurements_count);
+ 	securityfs_remove(ascii_runtime_measurements);
+ 	securityfs_remove(binary_runtime_measurements);
+ 	securityfs_remove(ima_dir);
+-	securityfs_remove(ima_policy);
+ 	return -1;
+ }
 
 
