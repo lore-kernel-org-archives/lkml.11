@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C15C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82569C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244730AbiBNJnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:25 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33930 "EHLO
+        id S244955AbiBNJnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:35 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245299AbiBNJlV (ORCPT
+        with ESMTP id S244663AbiBNJks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:21 -0500
+        Mon, 14 Feb 2022 04:40:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1ED2652FE;
-        Mon, 14 Feb 2022 01:37:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AEBB87F;
+        Mon, 14 Feb 2022 01:36:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A38B7B80DCC;
-        Mon, 14 Feb 2022 09:37:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA2D8C340E9;
-        Mon, 14 Feb 2022 09:37:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0DBFB80DC8;
+        Mon, 14 Feb 2022 09:35:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A216C340E9;
+        Mon, 14 Feb 2022 09:35:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831436;
-        bh=wDqnvc6CLUgfoEy20HXPoeHFbVA62YBNGu44nsE+AWA=;
+        s=korg; t=1644831335;
+        bh=X0E4WVPFXgHyWjQLo8X5V4Un4nPYt7YLfCvR7RUnq7w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHBy7WCJhS/wCGxImxuLoeAAhCtPcEU6tjtG/YWeZrVGXRRvagqbnGMXdIGh90xA/
-         g3Ii57gzZIc5mxG0N7mLSMxhjtyTgllcBV8PJPUtK/D0qDn6VVqQ9I0mq9/unOvOqI
-         QD/iW810+4/MnUzaLojut5fBt0Ox9vpxYKh5QDjM=
+        b=AGaPl5hFAmIoyINhSV2EnABWLDKfDO2X00MF/nUsezIfnvOTmbh7PMUOkGFrZ9Sfu
+         vpL3JWrBCKMNjiCGV5HafdKd9xojcsUrb5BmyDSS3lX886cWd0+8Hee5j8042aiEgi
+         mQC7kXVlc5ONvFbeLABYz7dDeqaD0pY1+nFU/u6c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jonas Malaco <jonas@protocubo.io>
-Subject: [PATCH 5.4 53/71] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
-Date:   Mon, 14 Feb 2022 10:26:21 +0100
-Message-Id: <20220214092453.828207928@linuxfoundation.org>
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Tong Zhang <ztong0001@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 21/71] scsi: myrs: Fix crash in error case
+Date:   Mon, 14 Feb 2022 10:25:49 +0100
+Message-Id: <20220214092452.729910214@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -48,43 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonas Malaco <jonas@protocubo.io>
+From: Tong Zhang <ztong0001@gmail.com>
 
-commit c0689e46be23160d925dca95dfc411f1a0462708 upstream.
+[ Upstream commit 4db09593af0b0b4d7d4805ebb3273df51d7cc30d ]
 
-Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
-size") revealed that ee1004_eeprom_read() did not properly limit how
-many bytes to read at once.
+In myrs_detect(), cs->disable_intr is NULL when privdata->hw_init() fails
+with non-zero. In this case, myrs_cleanup(cs) will call a NULL ptr and
+crash the kernel.
 
-In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
-length to read as an u8.  If count == 256 after taking into account the
-offset and page boundary, the cast to u8 overflows.  And this is common
-when user space tries to read the entire EEPROM at once.
+[    1.105606] myrs 0000:00:03.0: Unknown Initialization Error 5A
+[    1.105872] myrs 0000:00:03.0: Failed to initialize Controller
+[    1.106082] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[    1.110774] Call Trace:
+[    1.110950]  myrs_cleanup+0xe4/0x150 [myrs]
+[    1.111135]  myrs_probe.cold+0x91/0x56a [myrs]
+[    1.111302]  ? DAC960_GEM_intr_handler+0x1f0/0x1f0 [myrs]
+[    1.111500]  local_pci_probe+0x48/0x90
 
-To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
-the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
-
-Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
-Cc: stable@vger.kernel.org
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Jonas Malaco <jonas@protocubo.io>
-Link: https://lore.kernel.org/r/20220203165024.47767-1-jonas@protocubo.io
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220123225717.1069538-1-ztong0001@gmail.com
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/eeprom/ee1004.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/myrs.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/misc/eeprom/ee1004.c
-+++ b/drivers/misc/eeprom/ee1004.c
-@@ -82,6 +82,9 @@ static ssize_t ee1004_eeprom_read(struct
- 	if (unlikely(offset + count > EE1004_PAGE_SIZE))
- 		count = EE1004_PAGE_SIZE - offset;
+diff --git a/drivers/scsi/myrs.c b/drivers/scsi/myrs.c
+index cfc3f8b4174ab..2d3d14aa46b4b 100644
+--- a/drivers/scsi/myrs.c
++++ b/drivers/scsi/myrs.c
+@@ -2272,7 +2272,8 @@ static void myrs_cleanup(struct myrs_hba *cs)
+ 	myrs_unmap(cs);
  
-+	if (count > I2C_SMBUS_BLOCK_MAX)
-+		count = I2C_SMBUS_BLOCK_MAX;
-+
- 	status = i2c_smbus_read_i2c_block_data_or_emulated(client, offset,
- 							   count, buf);
- 	dev_dbg(&client->dev, "read %zu@%d --> %d\n", count, offset, status);
+ 	if (cs->mmio_base) {
+-		cs->disable_intr(cs);
++		if (cs->disable_intr)
++			cs->disable_intr(cs);
+ 		iounmap(cs->mmio_base);
+ 		cs->mmio_base = NULL;
+ 	}
+-- 
+2.34.1
+
 
 
