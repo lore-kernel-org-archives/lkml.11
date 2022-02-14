@@ -2,96 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CCBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350439AbiBNLPs (ORCPT
+        id S1350614AbiBNLR4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:15:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44386 "EHLO
+        Mon, 14 Feb 2022 06:17:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350274AbiBNLPG (ORCPT
+        with ESMTP id S1350657AbiBNLR3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:15:06 -0500
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 8DDA9EFF84
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:43:54 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1644835435; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=rcn9ALIlWKMM2fTTA+HHH8I55YhsQbojYCrOJlAIZU4=; b=J+7iEfwFJGrg00+hUMASg8e8mxBt0mve0sCzaDONZGIwqiRp58jux1m4Akp9zETtB0lpRcX/
- fL8DvzKOLTR6AcMIpK88O4/TYCRfb30tlj/0BlWOhS57BFmwOWwdBaJQvCmMArLLQQfEi2w3
- aQFgFnhgV2vbaw36OJm7HR8z8S4=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 620a326519d16b66a926d08a (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 14 Feb 2022 10:43:49
- GMT
-Sender: zijuhu=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id A12CAC43165; Mon, 14 Feb 2022 10:43:48 +0000 (UTC)
-Received: from zijuhu-gv.qualcomm.com (unknown [180.166.53.21])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: zijuhu)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A47C4C43164;
-        Mon, 14 Feb 2022 10:43:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A47C4C43164
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=codeaurora.org
-From:   Zijun Hu <zijuhu@codeaurora.org>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
-Cc:     linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, c-hbandi@codeaurora.org,
-        hemantg@codeaurora.org, rjliao@codeaurora.org,
-        zijuhu@codeaurora.org, tjiang@codeaurora.org,
-        Zijun Hu <quic_zijuhu@quicinc.com>
-Subject: [PATCH v4] Bluetooth: btusb: Improve stability for QCA devices
-Date:   Mon, 14 Feb 2022 18:43:39 +0800
-Message-Id: <1644835419-23943-1-git-send-email-zijuhu@codeaurora.org>
-X-Mailer: git-send-email 2.7.4
+        Mon, 14 Feb 2022 06:17:29 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EE175C2C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:49:59 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id y6-20020a7bc186000000b0037bdc5a531eso5407801wmi.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:49:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DXv8SmLAPMNrPJ3mqwP/UuQ6ZTsnkTp239g0OTWzlWA=;
+        b=Mzulk2XClL7m/nGCOdw94t+dgDFGHB4aVksteuofaaRa6xxyPqxvdn7NK6SdQpTIMm
+         84gOQ2nkgwCF9lkU3ebqn9ocLqVhl9nK7Ol91VzuatvgUT3/MILOC8C+5Dge0ll5speM
+         OPvTq4XR4At4lH7P+VkO3WylRaVGmycHr8XnjFvvjFWoYFm2f1BQtXk2q6Pr8qQwOt3c
+         Nc9YMgKNlihGbhiwqPc3Hs7FekGV//l+Px+d3fDULIOGW9seSwIaQSDaiouk5PerQLqc
+         j1auWiU7PiaW3VMZu/4Uh2g4Wcc/fNkhXlYwqYQWnZU1G0FGf7yHWAlqbIYnf4cv1g8a
+         VHFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DXv8SmLAPMNrPJ3mqwP/UuQ6ZTsnkTp239g0OTWzlWA=;
+        b=kp1uMbT2eEdYfwolM8jHXQjWqRTxQA89o1POkVk/vJY2q9426X/9Uakfh+bymZ8PEQ
+         mLTKqZ9O5He1RcYrFw0SsQSn2OEpWndY9Q3EU4rkzNgC+vCUMDMfq72MfyJiGckPlWDB
+         gfdD3zbNB5livOoiEQt+dEIfybHjT5YfFa8CgjMUqDFdJg8BebeEJbT35OswfTcNoAal
+         eGS/JHe5wML4c5t0SLbJHcfc88FVY1TKLBLhyyCwqxajDTGXk0flieZvF5nuDEijCUiy
+         glgSx8o0Fjc3VEIdYQXN8DD1omJ5cGM/F2xyR6oaCfd27xip3sMOfAKf+qNd6ETF7qEO
+         6qhQ==
+X-Gm-Message-State: AOAM533E6SMEKrqkGY4pWEPWlI7N2gtg7h9TdJPzzCziW5X5+eP9hBxw
+        oiWBYeh8kJ1mGOQbUozB6PEAWA==
+X-Google-Smtp-Source: ABdhPJzKJsy80xYZ3+bzTwXnv+y+Y5fOp64rrpJitEd3V8DuS1Z1Eai8C0vh/48VKS2HutAE73zE3g==
+X-Received: by 2002:a05:600c:b59:: with SMTP id k25mr10603699wmr.170.1644835798574;
+        Mon, 14 Feb 2022 02:49:58 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id h6sm1920631wmq.8.2022.02.14.02.49.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 02:49:58 -0800 (PST)
+Message-ID: <7a796e98-ef79-e50f-77b8-0b7ae533f06a@linaro.org>
+Date:   Mon, 14 Feb 2022 10:49:56 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: nvmem: SID: Add compatible for D1
+Content-Language: en-US
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-sunxi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+References: <20220203012502.10661-1-samuel@sholland.org>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220203012502.10661-1-samuel@sholland.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-WCN6855 2.1 will reset to apply firmware downloaded, so wait
-a moment for reset done then go ahead to improve stability.
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- drivers/bluetooth/btusb.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+On 03/02/2022 01:25, Samuel Holland wrote:
+> D1 has a SID like other Allwinner SoCs, but with a unique eFuse layout.
+> Add a new compatible string for it.
+> 
+> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> ---
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index ef5d52f0e123..9e0d59d4382a 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2999,6 +2999,7 @@ static int btusb_set_bdaddr_wcn6855(struct hci_dev *hdev,
- #define QCA_PATCH_UPDATED	0x80
- #define QCA_DFU_TIMEOUT		3000
- #define QCA_FLAG_MULTI_NVM      0x80
-+#define QCA_BT_RESET_WAIT_MS    100
- 
- #define WCN6855_2_0_RAM_VERSION_GF 0x400c1200
- #define WCN6855_2_1_RAM_VERSION_GF 0x400c1211
-@@ -3325,6 +3326,13 @@ static int btusb_setup_qca(struct hci_dev *hdev)
- 		err = btusb_setup_qca_load_nvm(hdev, &ver, info);
- 		if (err < 0)
- 			return err;
-+
-+		/* WCN6855 2.1 will reset to apply firmware downloaded here, so
-+		 * wait ~100ms for reset Done then go ahead, otherwise, it maybe
-+		 * cause potential enable failure.
-+		 */
-+		if (info->rom_version == 0x00130201)
-+			msleep(QCA_BT_RESET_WAIT_MS);
- 	}
- 
- 	return 0;
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
 
+Applied both thanks,
+
+--srini
+> 
+>   .../devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml       | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
+> index 6687ab720304..e558587ff885 100644
+> --- a/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
+> +++ b/Documentation/devicetree/bindings/nvmem/allwinner,sun4i-a10-sid.yaml
+> @@ -20,6 +20,7 @@ properties:
+>         - const: allwinner,sun7i-a20-sid
+>         - const: allwinner,sun8i-a83t-sid
+>         - const: allwinner,sun8i-h3-sid
+> +      - const: allwinner,sun20i-d1-sid
+>         - const: allwinner,sun50i-a64-sid
+>         - items:
+>             - const: allwinner,sun50i-a100-sid
