@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240320AbiBNKkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:13 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49120 "EHLO
+        id S1348672AbiBNKkV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:40:21 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350165AbiBNKg6 (ORCPT
+        with ESMTP id S1350261AbiBNKhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E720A66DA;
-        Mon, 14 Feb 2022 02:03:29 -0800 (PST)
+        Mon, 14 Feb 2022 05:37:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C249DA66F7;
+        Mon, 14 Feb 2022 02:03:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCA0360C76;
-        Mon, 14 Feb 2022 10:02:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE6EC340E9;
-        Mon, 14 Feb 2022 10:02:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33265B80DC8;
+        Mon, 14 Feb 2022 10:03:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D0DFC340F0;
+        Mon, 14 Feb 2022 10:03:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832970;
-        bh=yBRwaPPBX7oiofAb7QQqNGhdMzKYQcdZ2HG2mnhRb+4=;
+        s=korg; t=1644833008;
+        bh=6e54lmGimgKn631egJa57mEvUiKAcn1kkE1kiEEqHbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ThEUqpE+tzIoo6r7JOBUdZcGFiPDssedEjsE9sKDIyz2lgf1ZlhK+aHm051l2JjCJ
-         DSn6Zf1oOSnRDPSczOqViW4ovtNT3vVc6R4spuX76p79Q8TU89c+ITWOBttAXrVCjL
-         A9tVpyIuLm8WecD2gBhcvZINrLz1BbRCPZ+6eXD4=
+        b=zQJTsUj9reYBILzgcvAEagdOSvmCgc28cSXAkrqPRvmAoNakKmkMD5N9bvIrWPo6p
+         VxZUEuNG90yCzUC5A5VhPKF8keBIGC6UjekAsx3dhQULKJEydT/v1wN21f92ZjwLn8
+         OsLEXea5/NzcCLaEQ6D40ocgo8Q03v5xzwmi+47Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 140/203] net: dsa: mt7530: fix kernel bug in mdiobus_free() when unbinding
-Date:   Mon, 14 Feb 2022 10:26:24 +0100
-Message-Id: <20220214092514.990174009@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.16 177/203] USB: serial: ftdi_sio: add support for Brainboxes US-159/235/320
+Date:   Mon, 14 Feb 2022 10:27:01 +0100
+Message-Id: <20220214092516.262397216@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,50 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Cameron Williams <cang1@live.co.uk>
 
-[ Upstream commit 9ffe3d09e32da45bb5a29cf2e80ec8d7534010c5 ]
+commit fbb9b194e15a63c56c5664e76ccd0e85c6100cea upstream.
 
-Nobody in this driver calls mdiobus_unregister(), which is necessary if
-mdiobus_register() completes successfully. So if the devres callbacks
-that free the mdiobus get invoked (this is the case when unbinding the
-driver), mdiobus_free() will BUG if the mdiobus is still registered,
-which it is.
+This patch adds support for the Brainboxes US-159, US-235 and US-320
+USB-to-Serial devices.
 
-My speculation is that this is due to the fact that prior to commit
-ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
-from June 2020, _devm_mdiobus_free() used to call mdiobus_unregister().
-But at the time that the mt7530 support was introduced in May 2021, the
-API was already changed. It's therefore likely that the blamed patch was
-developed on an older tree, and incorrectly adapted to net-next. This
-makes the Fixes: tag correct.
-
-Fix the problem by using the devres variant of mdiobus_register.
-
-Fixes: ba751e28d442 ("net: dsa: mt7530: add interrupt support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/mt7530.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    3 +++
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
-index 9890672a206d0..fb59efc7f9266 100644
---- a/drivers/net/dsa/mt7530.c
-+++ b/drivers/net/dsa/mt7530.c
-@@ -2066,7 +2066,7 @@ mt7530_setup_mdio(struct mt7530_priv *priv)
- 	if (priv->irq)
- 		mt7530_setup_mdio_irq(priv);
- 
--	ret = mdiobus_register(bus);
-+	ret = devm_mdiobus_register(dev, bus);
- 	if (ret) {
- 		dev_err(dev, "failed to register MDIO bus: %d\n", ret);
- 		if (priv->irq)
--- 
-2.34.1
-
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -969,6 +969,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_023_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_034_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_101_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_159_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_3_PID) },
+@@ -977,12 +978,14 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_6_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_7_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_8_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_235_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_257_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_3_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_4_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_313_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_320_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_324_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_2_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1506,6 +1506,9 @@
+ #define BRAINBOXES_VX_023_PID		0x1003 /* VX-023 ExpressCard 1 Port RS422/485 */
+ #define BRAINBOXES_VX_034_PID		0x1004 /* VX-034 ExpressCard 2 Port RS422/485 */
+ #define BRAINBOXES_US_101_PID		0x1011 /* US-101 1xRS232 */
++#define BRAINBOXES_US_159_PID		0x1021 /* US-159 1xRS232 */
++#define BRAINBOXES_US_235_PID		0x1017 /* US-235 1xRS232 */
++#define BRAINBOXES_US_320_PID		0x1019 /* US-320 1xRS422/485 */
+ #define BRAINBOXES_US_324_PID		0x1013 /* US-324 1xRS422/485 1Mbaud */
+ #define BRAINBOXES_US_606_1_PID		0x2001 /* US-606 6 Port RS232 Serial Port 1 and 2 */
+ #define BRAINBOXES_US_606_2_PID		0x2002 /* US-606 6 Port RS232 Serial Port 3 and 4 */
 
 
