@@ -2,125 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8939EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FFEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355756AbiBNPU2 (ORCPT
+        id S1355789AbiBNPUu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:20:28 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46666 "EHLO
+        Mon, 14 Feb 2022 10:20:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232806AbiBNPUZ (ORCPT
+        with ESMTP id S1355781AbiBNPUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:20:25 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DC3219C25;
-        Mon, 14 Feb 2022 07:20:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644852017; x=1676388017;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=zcRPXIrxXAZZZpEcrj3ktA2xCMYxeY+0zvFuMdjbo+o=;
-  b=UOcOy16tYKUvPJgKc2LUSis+/7G/7buIJQDwC6i9CZt0qXSlsX6e0lE4
-   Bp64+8KzRZGxKPTWl9YSDUsOCjn7C1aqDEThdcfhhuhLP3NdmwFMW4AA5
-   48Jh3/K+GrWF75L3ahXSNkLavt/UdvZoyIW6nOkX/kWgqMF4Y/TZJ0dtt
-   Y=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Feb 2022 07:20:17 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 07:20:16 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Feb 2022 07:20:16 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 14 Feb 2022 07:20:10 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-gpio@vger.kernel.org>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Subject: [PATCH v6 0/7] Add pin control support for lpass sc7280
-Date:   Mon, 14 Feb 2022 20:49:47 +0530
-Message-ID: <1644851994-22732-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 14 Feb 2022 10:20:48 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761435F8E8
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:20:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=Qr2y9smPLhABHY4CroiGMzJ6xRTz2IT9aOQZeTRdcAA=; b=RvPTsgMyLuheHX9yQiaR0/Igwl
+        4OLmmnWQNwB7JZjQffqPeljm58g5orQ5hGf15S/tc+6pjg7pTjOKdJX2g+W9Hu6Ijwqn2Y8y9d/pc
+        pBFDYzIxuDURcL3v7XQKasaawY5lvMCS5iIzdjbYYPKM9QAC8xBNmLioWus1ehT2uV2KzFpBZIk8j
+        8fzBZy3Ca4lUXMvI9Wcq7X93dW16mQ+HyLWekw42YUpye2I3ZaSLeNW5nYHRksCwfHWDotLuBgJqs
+        V+J1p6N4LpB+S47/AX8qhSW/bT6ZCUw7eR+duuL27+yrne0MGBaL8LgBa/dAsJ62Q/KPNV1ts+Axa
+        Pb1faHTQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJd9S-00D1ch-Lm; Mon, 14 Feb 2022 15:20:30 +0000
+Date:   Mon, 14 Feb 2022 15:20:30 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [willy-pagecache:for-next 52/85] mm/page_vma_mapped.c:246
+ page_vma_mapped_walk() warn: always true condition '(pvmw->nr_pages >= (1 <<
+ ( - 12))) => (0-u32max >= 0)'
+Message-ID: <YgpzPru8aFA5sHOI@casper.infradead.org>
+References: <202202141933.YLNzdo4f-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202202141933.YLNzdo4f-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series is to split lpass variant common pin control
-functions and SoC specific functions and to add lpass sc7280 pincontrol support.
-It also Adds dt-bindings for lpass sc7280 lpass lpi pincontrol.
+Hey Dan, is this an smatch bug?
 
-Changes Since V5:
-    -- Create new patch by updating macro name to lpi specific.
-    -- Create new patch by updating lpi pin group structure with core group_desc structure.
-    -- Fix typo errors.
-    -- Sort macros in the make file and configuration file.
-Changes Since V4:
-    -- Update commit message and description of the chip specific extraction patch.
-    -- Sort macros in kconfig and makefile.
-    -- Update optional clock voting to conditional clock voting.
-    -- Fix typo errors.
-    -- Move to quicinc domain email id's.
-Changes Since V3:
-    -- Update separate Kconfig fields for sm8250 and sc7280.
-    -- Update module license and description.
-    -- Move static variables to corresponding .c files from header file.
+On Mon, Feb 14, 2022 at 07:53:39PM +0800, kernel test robot wrote:
+> tree:   git://git.infradead.org/users/willy/pagecache for-next
+> head:   c267b33d0001488f1d9dad12d6a87655e174d914
+> commit: 9733dd1f11d6b6f8a38fa82f0cc014f7840cbd67 [52/85] mm: Convert page_vma_mapped_walk to work on PFNs
+> config: xtensa-randconfig-m031-20220213 (https://download.01.org/0day-ci/archive/20220214/202202141933.YLNzdo4f-lkp@intel.com/config)
+> compiler: xtensa-linux-gcc (GCC) 11.2.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> smatch warnings:
+> mm/page_vma_mapped.c:246 page_vma_mapped_walk() warn: always true condition '(pvmw->nr_pages >= (1 << ( - 12))) => (0-u32max >= 0)'
 
-Changes Since V2:
-    -- Add new dt-bindings for sc7280 lpi driver.
-    -- Make clock voting change as separate patch.
-    -- Split existing pincontrol driver and make common functions 
-       as part of separate file.
-    -- Rename lpass pincontrol lpi dt-bindings to sm8250 specific dt-bindings
-		
-Changes Since V1:
-    -- Make lpi pinctrl variant data structure as constant
-    -- Add appropriate commit message
-    -- Change signedoff by sequence.
+[...]
 
-Srinivasa Rao Mandadapu (7):
-  dt-bindings: pinctrl: qcom: Update lpass lpi file name to SoC specific
-  dt-bindings: pinctrl: qcom: Add sc7280 lpass lpi pinctrl bindings
-  pinctrl: qcom: Update macro name to LPI specific
-  pinctrl: qcom: Update lpi pin group structure
-  pinctrl: qcom: Extract chip specific LPASS LPI code
-  pinctrl: qcom: Add SC7280 lpass pin configuration
-  pinctrl: qcom: Update clock voting as optional
+>    244				if ((pvmw->flags & PVMW_SYNC) &&
+>    245				    transparent_hugepage_active(vma) &&
+>  > 246				    (pvmw->nr_pages >= HPAGE_PMD_NR)) {
+>    247					spinlock_t *ptl = pmd_lock(mm, pvmw->pmd);
 
- .../bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml   | 133 -----------
- .../pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml     | 115 +++++++++
- .../pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml     | 133 +++++++++++
- drivers/pinctrl/qcom/Kconfig                       |  16 ++
- drivers/pinctrl/qcom/Makefile                      |   2 +
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.c           | 257 ++-------------------
- drivers/pinctrl/qcom/pinctrl-lpass-lpi.h           |  87 +++++++
- drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c    | 170 ++++++++++++++
- drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c    | 166 +++++++++++++
- 9 files changed, 706 insertions(+), 373 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,lpass-lpi-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sc7280-lpass-lpi-pinctrl.yaml
- create mode 100644 Documentation/devicetree/bindings/pinctrl/qcom,sm8250-lpass-lpi-pinctrl.yaml
- create mode 100644 drivers/pinctrl/qcom/pinctrl-lpass-lpi.h
- create mode 100644 drivers/pinctrl/qcom/pinctrl-sc7280-lpass-lpi.c
- create mode 100644 drivers/pinctrl/qcom/pinctrl-sm8250-lpass-lpi.c
+The config in question doesn't enable CONFIG_TRANSPARENT_HUGEPAGE,
+so this condition should turn into
+	if ((pvmw->flags & PVMW_SYNC) && false && true)
+and I don't think smatch should warn on the third clause of the if
+being always-true when the second one is false.  Of course, it's not a
+literal "false", it's:
 
--- 
-2.7.4
+static inline bool transparent_hugepage_active(struct vm_area_struct *vma)
+{
+        return false;
+}
 
+unless my debugging / understanding of this issue has gone astray.
