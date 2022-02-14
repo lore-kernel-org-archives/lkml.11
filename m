@@ -2,117 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A56C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D1FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244459AbiBNLMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:12:46 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41342 "EHLO
+        id S1350075AbiBNLO3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:14:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350992AbiBNLLK (ORCPT
+        with ESMTP id S1350291AbiBNLOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:11:10 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A3EA889C;
-        Mon, 14 Feb 2022 02:39:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644835171; x=1676371171;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=C9m2rcxcDwLvUl2QbsECG3i5+PvKcHA60fHQFVqzZzs=;
-  b=dhkhntxuAdMfT9J1D8023bmadjBHne0lC0goQVMLLlrxixpdQRhFMXVw
-   wE9KhVl/y2By+y8UUtjFchH09gJWC6Tk7aaVx0xKDAzPRCOzG7EcOUhO4
-   4Hdfa5TEhNgenE7lB6+3f6N3dpfAJzoRRm0lZIQQri9Xmez1OyoshS5Z2
-   XUbOhVbyWbl2gTk/5CS5q1oE2f9JU7qPXhd/VY+iJ68as+6iIvHfWZgrz
-   KpYfRrHMIOlErd7l4yLHAtW5fPkoR2cwQS4dB3OfSekVpM/7KD8wG/R7O
-   XvqPP1i177p/Z3JnpvKxiukFzynom7c21l6Gy6lAoklGiMHXZrs68ch92
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="313342043"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="313342043"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:39:15 -0800
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="570085760"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:39:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJYkG-004Pw8-Jg;
-        Mon, 14 Feb 2022 12:38:12 +0200
-Date:   Mon, 14 Feb 2022 12:38:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v4 1/6] drm/format-helper: Add
- drm_fb_xrgb8888_to_gray8_line()
-Message-ID: <YgoxFBGNsrezVxmi@smile.fi.intel.com>
-References: <20220211091927.2988283-1-javierm@redhat.com>
- <20220211091927.2988283-2-javierm@redhat.com>
- <YgY6OqN+guBlt/ED@smile.fi.intel.com>
- <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com>
- <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com>
- <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de>
- <87pmnt7gm3.fsf@intel.com>
- <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
- <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de>
+        Mon, 14 Feb 2022 06:14:05 -0500
+Received: from mxout02.lancloud.ru (mxout02.lancloud.ru [45.84.86.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2337ECC71;
+        Mon, 14 Feb 2022 02:43:26 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 5B93A232DBED
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional()
+ optional
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Corey Minyard <minyard@acm.org>,
+        "Oleksij Rempel" <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        "Mun Yew Tham" <mun.yew.tham@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Kamal Dasu" <kdasu.kdev@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        "Miquel Raynal" <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        "Guenter Roeck" <groeck@chromium.org>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        "Liam Girdwood" <lgirdwood@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>,
+        <openipmi-developer@lists.sourceforge.net>,
+        <linux-iio@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mmc@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        <linux-phy@lists.infradead.org>,
+        <platform-driver-x86@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+References: <20220212201631.12648-1-s.shtylyov@omp.ru>
+ <20220212201631.12648-2-s.shtylyov@omp.ru>
+ <CAMuHMdUPxX7Tja6BCjEb4KDobNFPMcM66Fk7Z+VsO7pgb8JnjA@mail.gmail.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <41b49828-e0bc-3e7a-32d7-5ee41c778206@omp.ru>
+Date:   Mon, 14 Feb 2022 13:43:11 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <CAMuHMdUPxX7Tja6BCjEb4KDobNFPMcM66Fk7Z+VsO7pgb8JnjA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:03:53AM +0100, Thomas Zimmermann wrote:
-> Am 11.02.22 um 16:41 schrieb Andy Shevchenko:
+Hello!
 
-...
+On 2/14/22 11:54 AM, Geert Uytterhoeven wrote:
 
-> > > IMO *always* prefer a for loop over while or do-while.
-> > > 
-> > > The for (i = 0; i < N; i++) is such a strong paradigm in C. You
-> > > instantly know how many times you're going to loop, at a glance. Not so
-> > > with with the alternatives, which should be used sparingly.
-> > 
-> > while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
+[...]
+
+>> This patch is based on the former Andy Shevchenko's patch:
+>>
+>> https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
+>>
+>> Currently platform_get_irq_optional() returns an error code even if IRQ
+>> resource simply has not been found.  It prevents the callers from being
+>> error code agnostic in their error handling:
+>>
+>>         ret = platform_get_irq_optional(...);
+>>         if (ret < 0 && ret != -ENXIO)
+>>                 return ret; // respect deferred probe
+>>         if (ret > 0)
+>>                 ...we get an IRQ...
+>>
+>> All other *_optional() APIs seem to return 0 or NULL in case an optional
+>> resource is not available.  Let's follow this good example, so that the
+>> callers would look like:
+>>
+>>         ret = platform_get_irq_optional(...);
+>>         if (ret < 0)
+>>                 return ret;
+>>         if (ret > 0)
+>>                 ...we get an IRQ...
+>>
+>> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+>> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+>> ---
+>> Changes in version 2:
 > 
-> Naw, that's not true.
+> Thanks for the update!
+> 
+>>  drivers/base/platform.c                  | 60 +++++++++++++++---------
+> 
+> The core change LGTM.
 
-In the section 3.5 "Loops - While and For" in "The C Programming
-Language" 2nd by K&R, the authors said:
+   Thanx! :-)
 
-	The for statement ... is equivalent to ... while..."
+> I'm only looking at Renesas drivers below...
+> 
+>> --- a/drivers/mmc/host/sh_mmcif.c
+>> +++ b/drivers/mmc/host/sh_mmcif.c
+>> @@ -1465,14 +1465,14 @@ static int sh_mmcif_probe(struct platform_device *pdev)
+>>         sh_mmcif_sync_reset(host);
+>>         sh_mmcif_writel(host->addr, MMCIF_CE_INT_MASK, MASK_ALL);
+>>
+>> -       name = irq[1] < 0 ? dev_name(dev) : "sh_mmc:error";
+>> +       name = irq[1] <= 0 ? dev_name(dev) : "sh_mmc:error";
+> 
+> "== 0" should be sufficient here, if the code above would bail out
+> on errors returned by platform_get_irq_optional(), which it currently
+> doesn't do.
+> As this adds missing error handling, this is to be fixed by a separate
+> patch later?
 
-They said that for is equivalent to while, and not otherwise.
+   Yes.
 
-Also, syntax sugar by definition declares something that can be written as
-a single line of code, which usually is done using more (not always).
+[...]
+>>                 ret = devm_request_threaded_irq(dev, irq[1],
+>>                                                 sh_mmcif_intr, sh_mmcif_irqt,
+>>                                                 0, "sh_mmc:int", host);
+> 
+>> --- a/drivers/phy/renesas/phy-rcar-gen3-usb2.c
+>> +++ b/drivers/phy/renesas/phy-rcar-gen3-usb2.c
+>> @@ -439,7 +439,7 @@ static int rcar_gen3_phy_usb2_init(struct phy *p)
+>>         u32 val;
+>>         int ret;
+>>
+>> -       if (!rcar_gen3_is_any_rphy_initialized(channel) && channel->irq >= 0) {
+>> +       if (!rcar_gen3_is_any_rphy_initialized(channel) && channel->irq > 0) {
+>>                 INIT_WORK(&channel->work, rcar_gen3_phy_usb2_work);
+>>                 ret = request_irq(channel->irq, rcar_gen3_phy_usb2_irq,
+>>                                   IRQF_SHARED, dev_name(channel->dev), channel);
+>> @@ -486,7 +486,7 @@ static int rcar_gen3_phy_usb2_exit(struct phy *p)
+>>                 val &= ~USB2_INT_ENABLE_UCOM_INTEN;
+>>         writel(val, usb2_base + USB2_INT_ENABLE);
+>>
+>> -       if (channel->irq >= 0 && !rcar_gen3_is_any_rphy_initialized(channel))
+>> +       if (channel->irq > 0 && !rcar_gen3_is_any_rphy_initialized(channel))
+>>                 free_irq(channel->irq, channel);
+>>
+>>         return 0;
+> 
+> LGTM, but note that all errors returned by platform_get_irq_optional()
+> are currently ignored, even real errors, which should be propagated
+> up.
+> As this adds missing error handling, this is to be fixed by a separate
+> patch later?
 
-> An idiomatic for loop, such as for (i = ...; i < N;
-> ++i), is such a strong pattern that it's way better than the corresponding
-> while loop.
+   Yes.
 
-> > > And yes, the do-while suggested above is buggy, and you actually need to
-> > > stop and think to see why.
-> > 
-> > It depends if pixels can be 0 or not and if it's not, then does it contain last
-> > or number.
-> > 
-> > The do {} while (--pixels); might be buggy iff pixels may be 0.
+>> --- a/drivers/thermal/rcar_gen3_thermal.c
+>> +++ b/drivers/thermal/rcar_gen3_thermal.c
+>> @@ -432,6 +432,8 @@ static int rcar_gen3_thermal_request_irqs(struct rcar_gen3_thermal_priv *priv,
+>>                 irq = platform_get_irq_optional(pdev, i);
+>>                 if (irq < 0)
+>>                         return irq;
+>> +               if (!irq)
+>> +                       return -ENXIO;
+> 
+> While correct, and preserving existing behavior, this looks strange
+> to me.  Probably this should return zero instead (i.e. the check
+> above should be changed to "<= 0"), and the caller should start caring
+> about and propagating up real errors.
 
--- 
-With Best Regards,
-Andy Shevchenko
+   Hm, you're right... should be <= 0 there, it seems.
 
+> As this adds missing error handling, this is to be fixed by a separate
+> patch later?
 
+   Propagating errors from the probe() method is a matter of separate patch, yes.
+
+>>
+>>                 irqname = devm_kasprintf(dev, GFP_KERNEL, "%s:ch%d",
+>>                                          dev_name(dev), i);
+>> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+>> index fb65dc601b23..328ab074fd89 100644
+> 
+>> --- a/drivers/tty/serial/sh-sci.c
+>> +++ b/drivers/tty/serial/sh-sci.c
+> 
+> I think you missed
+> 
+>     #define SCIx_IRQ_IS_MUXED(port)                 \
+>             ((port)->irqs[SCIx_ERI_IRQ] ==  \
+>              (port)->irqs[SCIx_RXI_IRQ]) || \
+>             ((port)->irqs[SCIx_ERI_IRQ] &&  \
+>              ((port)->irqs[SCIx_RXI_IRQ] < 0))
+> 
+> above? The last condition should become "<= 0".
+
+   Yes, probably... TY!
+
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+
+MBR, Sergey
