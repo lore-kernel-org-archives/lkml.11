@@ -2,258 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29E1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D52C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354448AbiBNNiK (ORCPT
+        id S1354347AbiBNNiP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:38:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50658 "EHLO
+        Mon, 14 Feb 2022 08:38:15 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354365AbiBNNiE (ORCPT
+        with ESMTP id S1354372AbiBNNiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:38:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AB2E58386
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:37:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644845861;
+        Mon, 14 Feb 2022 08:38:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D56860D85
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:37:51 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3FF55B80E6C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544B8C340F0;
+        Mon, 14 Feb 2022 13:37:48 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="G/06a6/J"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1644845866;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=62OmRN0+ZmJkqLoaFDxhy0eO6yAnFd+9Iv9L0ky9wLc=;
-        b=VALPrGj9f1caRFUEh1UWALNzgszzsD9bNFcBQVNC6eVmx/FFACvqPUN2VJqzyG9aHr0Jes
-        57T3Uc0ldMGkLZnZemI5YAdQLL3QyH+Q6Ln3XMRaX5chW1HNmBjHALAMdxbKgwQEHOJ8o7
-        Tq+MRTF1LB7lo1uIVH2z+1JKm3zJw3w=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-384-ueTzTsbTOFKzzKZJ8L04gQ-1; Mon, 14 Feb 2022 08:37:40 -0500
-X-MC-Unique: ueTzTsbTOFKzzKZJ8L04gQ-1
-Received: by mail-wr1-f72.google.com with SMTP id d13-20020adfa34d000000b001e33a1c56f3so6918851wrb.20
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 05:37:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=62OmRN0+ZmJkqLoaFDxhy0eO6yAnFd+9Iv9L0ky9wLc=;
-        b=NT7w9Fb9w7tctIOoJgzzyKq/TFcdkMA4Jna1PByN2MwrCwWD4hSsJzvdxt4LVPcx8f
-         RQ1Q+S5zlfG0iHDI8uqnlKa8P26A3buwMLHr7TODqiVhycsAG45mDsWK7vq/19o7GwO1
-         WAGfwYXx/qUZRCrvLLgIKrBj/OUUtdH68l8Uw0boImAgt8f+KhHc4S7aZhJOOZAkZs17
-         5YWarJt/EyAwOSDFjiyKoqRxnptyp/qZrcANxaSLgnDg7KRVKRJL7o6C7tdI60HHZ9H7
-         ez5jV6iuyx1r4MNJ2pidgdjHDVMm9aFO8qic/4pwVwcuXE2M64ELQBhZMz8eIXSW55Aa
-         kehg==
-X-Gm-Message-State: AOAM532mzW+MnNSTBRCXBJwrZ+W2WamooJpvbbMe8A2ETipmAqgYiCMd
-        R+VcAQpvBIgo72+ZhUavtu3plxUOdyOhodG+9oOcN8vdH/LschdxWaDrjIfb05gnnATyAu8oY8+
-        kAWcHleic6o6U3/zAGzSOE9PENIvIJibnBoTKtJM9Fdy2nvW5Jd0EzBB+pi055cxd1sPFD+ZLz9
-        M=
-X-Received: by 2002:a5d:4ac7:: with SMTP id y7mr11632478wrs.521.1644845858092;
-        Mon, 14 Feb 2022 05:37:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw8VZXr0lt8TjYW2cqobZdRW50wOeVp8oV02mur3StsZ5D0CpVhMx2bj567oRG+kIrVHV4Xmw==
-X-Received: by 2002:a5d:4ac7:: with SMTP id y7mr11632442wrs.521.1644845857767;
-        Mon, 14 Feb 2022 05:37:37 -0800 (PST)
-Received: from minerva.home ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id y6sm3568918wrd.30.2022.02.14.05.37.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 05:37:37 -0800 (PST)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-fbdev@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        dri-devel@lists.freedesktop.org, Maxime Ripard <maxime@cerno.tech>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>
-Subject: [PATCH v6 4/6] drm/solomon: Add SSD130x OLED displays I2C support
-Date:   Mon, 14 Feb 2022 14:37:08 +0100
-Message-Id: <20220214133710.3278506-5-javierm@redhat.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214133710.3278506-1-javierm@redhat.com>
-References: <20220214133710.3278506-1-javierm@redhat.com>
+        bh=SWMo73bjvqGYEo58ZAdcrqxkbIDjXkOZjL9LLm5eZMo=;
+        b=G/06a6/J4rZBMIfe+vKNnJhj8LpG9DdTHRInWOK2/NToVXu0fgyDcvup5kT5sRlaJ8ytek
+        ECdGikCWmPpSn6MfxTvVEux1xPMPUh3tlh27WfrBXHcfjEo/VFq2AsuusBf+IbtWczNWTS
+        mVCXnRZG5FHqxzGNNTHb2egYjTTdJ0A=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 381a6391 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 14 Feb 2022 13:37:45 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     bigeasy@linutronix.de, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Sultan Alsawaf <sultan@kerneltoast.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: [PATCH v2] random: set fast pool count to zero in cpuhp teardown
+Date:   Mon, 14 Feb 2022 14:37:35 +0100
+Message-Id: <20220214133735.966528-1-Jason@zx2c4.com>
+In-Reply-To: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
+References: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ssd130x driver only provides the core support for these devices but it
-does not have any bus transport logic. Add a driver to interface over I2C.
+Rather than having to use expensive atomics, which were visibly the most
+expensive thing in the entire irq handler, simply take care of the
+extreme edge case of resetting count to 0 in the cpuhp teardown handler,
+after no more interrupts will arrive on that CPU. This simplifies the
+code a bit and lets us use vanilla variables rather than atomics, and
+performance should be improved.
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Theodore Ts'o <tytso@mit.edu>
+Cc: Jonathan Neuschäfer <j.neuschaefer@gmx.net>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Sultan Alsawaf <sultan@kerneltoast.com>
+Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
+Sebastian -
 
-(no changes since v5)
+v2 moves the teardown to CPUHP_OFFLINE…CPUHP_BRINGUP_CPU, per our
+discussion.
 
-Changes in v5:
-- Add Andy Shevchenko's Reviewed-by tag to patch #4.
+This was *way* simpler than I had anticipated, and I wish it
+were done this way originally. If this looks good to you and you ack it,
+I'll wind up merging this commit into the previous one in my branch,
+since the intermediate atomic_t stage isn't really that interesting
+any more, now that I've seen the light. Please take a look and let me
+know what you think.
 
-Changes in v4:
-- Remove unnecessary casting (Geert Uytterhoeven)
-- Remove redundant blank lines (Andy Shevchenko)
-- Remove comma after of_device_id table terminator (Andy Shevchenko)
+-Jason
 
-Changes in v3:
-- Add a separate driver for SSD130X chips I2C support (Andy Shevchenko)
+ drivers/char/random.c      | 33 ++++++++++++++++++---------------
+ include/linux/cpuhotplug.h |  1 +
+ include/linux/random.h     |  2 ++
+ kernel/cpu.c               |  6 ++++++
+ 4 files changed, 27 insertions(+), 15 deletions(-)
 
- drivers/gpu/drm/solomon/Kconfig       |   9 ++
- drivers/gpu/drm/solomon/Makefile      |   1 +
- drivers/gpu/drm/solomon/ssd130x-i2c.c | 116 ++++++++++++++++++++++++++
- 3 files changed, 126 insertions(+)
- create mode 100644 drivers/gpu/drm/solomon/ssd130x-i2c.c
-
-diff --git a/drivers/gpu/drm/solomon/Kconfig b/drivers/gpu/drm/solomon/Kconfig
-index 7720a7039e8d..5861c3ab7c45 100644
---- a/drivers/gpu/drm/solomon/Kconfig
-+++ b/drivers/gpu/drm/solomon/Kconfig
-@@ -10,3 +10,12 @@ config DRM_SSD130X
- 	  the appropriate bus transport in your chip also must be selected.
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index bf6e8627b74e..df5aef93da34 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -1179,7 +1179,7 @@ struct fast_pool {
+ 	unsigned long pool[16 / sizeof(long)];
+ 	struct work_struct mix;
+ 	unsigned long last;
+-	atomic_t count;
++	unsigned int count;
+ 	u16 reg_idx;
+ };
  
- 	  If M is selected the module will be called ssd130x.
-+
-+config DRM_SSD130X_I2C
-+	tristate "DRM support for Solomon SSD130x OLED displays (I2C bus)"
-+	depends on DRM_SSD130X && I2C
-+	select REGMAP_I2C
-+	help
-+	  Say Y here if the SSD130x OLED display is connected via I2C bus.
-+
-+	  If M is selected the module will be called ssd130x-i2c.
-diff --git a/drivers/gpu/drm/solomon/Makefile b/drivers/gpu/drm/solomon/Makefile
-index f685addb19fe..4bfc5acb0447 100644
---- a/drivers/gpu/drm/solomon/Makefile
-+++ b/drivers/gpu/drm/solomon/Makefile
-@@ -1 +1,2 @@
- obj-$(CONFIG_DRM_SSD130X)	+= ssd130x.o
-+obj-$(CONFIG_DRM_SSD130X_I2C)	+= ssd130x-i2c.o
-diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-new file mode 100644
-index 000000000000..3126aeda4ced
---- /dev/null
-+++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * DRM driver for Solomon SSD130x OLED displays (I2C bus)
-+ *
-+ * Copyright 2022 Red Hat Inc.
-+ * Author: Javier Martinez Canillas <javierm@redhat.com>
-+ *
-+ * Based on drivers/video/fbdev/ssd1307fb.c
-+ * Copyright 2012 Free Electrons
-+ */
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+
-+#include "ssd130x.h"
-+
-+#define DRIVER_NAME	"ssd130x-i2c"
-+#define DRIVER_DESC	"DRM driver for Solomon SSD130x OLED displays (I2C)"
-+
-+static const struct regmap_config ssd130x_i2c_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static int ssd130x_i2c_probe(struct i2c_client *client)
+@@ -1215,6 +1215,19 @@ static void fast_mix(u32 pool[4])
+ 
+ static DEFINE_PER_CPU(struct fast_pool, irq_randomness);
+ 
++int random_dead_cpu(unsigned int cpu)
 +{
-+	struct ssd130x_device *ssd130x;
-+	struct regmap *regmap;
-+
-+	regmap = devm_regmap_init_i2c(client, &ssd130x_i2c_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	ssd130x = ssd130x_probe(&client->dev, regmap);
-+	if (IS_ERR(ssd130x))
-+		return PTR_ERR(ssd130x);
-+
-+	i2c_set_clientdata(client, ssd130x);
-+
++	/*
++	 * Set the count to zero after offlining the CPU for two
++	 * reasons: 1) so that all new accumulated irqs are fresh
++	 * when it comes back online, and 2) so that its worker is
++	 * permitted to schedule again when it comes back online,
++	 * since the MIX_INFLIGHT flag will be cleared.
++	 */
++	per_cpu_ptr(&irq_randomness, cpu)->count = 0;
 +	return 0;
 +}
 +
-+static int ssd130x_i2c_remove(struct i2c_client *client)
-+{
-+	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
+ static u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
+ {
+ 	u32 *ptr = (u32 *)regs;
+@@ -1239,15 +1252,6 @@ static void mix_interrupt_randomness(struct work_struct *work)
+ 	local_irq_disable();
+ 	if (fast_pool != this_cpu_ptr(&irq_randomness)) {
+ 		local_irq_enable();
+-		/*
+-		 * If we are unlucky enough to have been moved to another CPU,
+-		 * during CPU hotplug while the CPU was shutdown then we set
+-		 * our count to zero atomically so that when the CPU comes
+-		 * back online, it can enqueue work again. The _release here
+-		 * pairs with the atomic_inc_return_acquire in
+-		 * add_interrupt_randomness().
+-		 */
+-		atomic_set_release(&fast_pool->count, 0);
+ 		return;
+ 	}
+ 
+@@ -1256,7 +1260,7 @@ static void mix_interrupt_randomness(struct work_struct *work)
+ 	 * consistent view, before we reenable irqs again.
+ 	 */
+ 	memcpy(pool, fast_pool->pool, sizeof(pool));
+-	atomic_set(&fast_pool->count, 0);
++	fast_pool->count = 0;
+ 	fast_pool->last = jiffies;
+ 	local_irq_enable();
+ 
+@@ -1288,14 +1292,13 @@ void add_interrupt_randomness(int irq)
+ 	}
+ 
+ 	fast_mix((u32 *)fast_pool->pool);
+-	/* The _acquire here pairs with the atomic_set_release in mix_interrupt_randomness(). */
+-	new_count = (unsigned int)atomic_inc_return_acquire(&fast_pool->count);
++	new_count = ++fast_pool->count;
+ 
+ 	if (unlikely(crng_init == 0)) {
+ 		if (new_count >= 64 &&
+ 		    crng_pre_init_inject(fast_pool->pool, sizeof(fast_pool->pool),
+ 					 true, true) > 0) {
+-			atomic_set(&fast_pool->count, 0);
++			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 			if (spin_trylock(&input_pool.lock)) {
+ 				_mix_pool_bytes(&fast_pool->pool, sizeof(fast_pool->pool));
+@@ -1313,7 +1316,7 @@ void add_interrupt_randomness(int irq)
+ 
+ 	if (unlikely(!fast_pool->mix.func))
+ 		INIT_WORK(&fast_pool->mix, mix_interrupt_randomness);
+-	atomic_or(MIX_INFLIGHT, &fast_pool->count);
++	fast_pool->count |= MIX_INFLIGHT;
+ 	queue_work_on(raw_smp_processor_id(), system_highpri_wq, &fast_pool->mix);
+ }
+ EXPORT_SYMBOL_GPL(add_interrupt_randomness);
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index 411a428ace4d..38294af566e4 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -127,6 +127,7 @@ enum cpuhp_state {
+ 	CPUHP_MM_ZSWP_POOL_PREPARE,
+ 	CPUHP_KVM_PPC_BOOK3S_PREPARE,
+ 	CPUHP_ZCOMP_PREPARE,
++	CPUHP_RANDOM_PREPARE,
+ 	CPUHP_TIMERS_PREPARE,
+ 	CPUHP_MIPS_SOC_PREPARE,
+ 	CPUHP_BP_PREPARE_DYN,
+diff --git a/include/linux/random.h b/include/linux/random.h
+index d7354de9351e..fd8c354bae8e 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -35,6 +35,8 @@ extern void add_interrupt_randomness(int irq) __latent_entropy;
+ extern void add_hwgenerator_randomness(const void *buffer, size_t count,
+ 				       size_t entropy);
+ 
++extern int random_dead_cpu(unsigned int cpu);
 +
-+	return ssd130x_remove(ssd130x);
-+}
-+
-+static void ssd130x_i2c_shutdown(struct i2c_client *client)
-+{
-+	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
-+
-+	ssd130x_shutdown(ssd130x);
-+}
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1305_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 7,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1306_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 8,
-+	.need_chargepump = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1307_deviceinfo = {
-+	.default_vcomh = 0x20,
-+	.default_dclk_div = 2,
-+	.default_dclk_frq = 12,
-+	.need_pwm = 1,
-+};
-+
-+static struct ssd130x_deviceinfo ssd130x_ssd1309_deviceinfo = {
-+	.default_vcomh = 0x34,
-+	.default_dclk_div = 1,
-+	.default_dclk_frq = 10,
-+};
-+
-+static const struct of_device_id ssd130x_of_match[] = {
-+	{
-+		.compatible = "solomon,ssd1305fb-i2c",
-+		.data = &ssd130x_ssd1305_deviceinfo,
+ extern void get_random_bytes(void *buf, size_t nbytes);
+ extern int wait_for_random_bytes(void);
+ extern int __init rand_initialize(void);
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index 407a2568f35e..f83ae4ae7275 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -34,6 +34,7 @@
+ #include <linux/scs.h>
+ #include <linux/percpu-rwsem.h>
+ #include <linux/cpuset.h>
++#include <linux/random.h>
+ 
+ #include <trace/events/power.h>
+ #define CREATE_TRACE_POINTS
+@@ -1689,6 +1690,11 @@ static struct cpuhp_step cpuhp_hp_states[] = {
+ 		.startup.single		= rcutree_prepare_cpu,
+ 		.teardown.single	= rcutree_dead_cpu,
+ 	},
++	[CPUHP_RANDOM_PREPARE] = {
++		.name			= "random:prepare",
++		.startup.single		= NULL,
++		.teardown.single	= random_dead_cpu,
 +	},
-+	{
-+		.compatible = "solomon,ssd1306fb-i2c",
-+		.data = &ssd130x_ssd1306_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1307fb-i2c",
-+		.data = &ssd130x_ssd1307_deviceinfo,
-+	},
-+	{
-+		.compatible = "solomon,ssd1309fb-i2c",
-+		.data = &ssd130x_ssd1309_deviceinfo,
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, ssd130x_of_match);
-+
-+static struct i2c_driver ssd130x_i2c_driver = {
-+	.driver = {
-+		.name = DRIVER_NAME,
-+		.of_match_table = ssd130x_of_match,
-+	},
-+	.probe_new = ssd130x_i2c_probe,
-+	.remove = ssd130x_i2c_remove,
-+	.shutdown = ssd130x_i2c_shutdown,
-+};
-+module_i2c_driver(ssd130x_i2c_driver);
-+
-+MODULE_DESCRIPTION(DRIVER_DESC);
-+MODULE_AUTHOR("Javier Martinez Canillas <javierm@redhat.com>");
-+MODULE_LICENSE("GPL v2");
+ 	/*
+ 	 * On the tear-down path, timers_dead_cpu() must be invoked
+ 	 * before blk_mq_queue_reinit_notify() from notify_dead(),
 -- 
-2.34.1
+2.35.0
 
