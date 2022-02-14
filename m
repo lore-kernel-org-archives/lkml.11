@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348719AbiBNKkB (ORCPT
+        id S1348362AbiBNKkG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49168 "EHLO
+        Mon, 14 Feb 2022 05:40:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349454AbiBNKgb (ORCPT
+        with ESMTP id S1350222AbiBNKhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:36:31 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F96715B8;
-        Mon, 14 Feb 2022 02:02:48 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 1E7051F43053
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644832956;
-        bh=EZtxgxaV8/I+n1d7kbiGccMyE4bZCHZgIhArtvVlxB4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=htFbV/VNcgY4e6NmjbTgWCT0U8vZZXgz2EkFHdw5T7VYpUSU/xek0vZEQ8ZV9UFQO
-         Qx3ahY8d7vxDW3H0k4fBsj1X070vtiA5LoDwnQN2JMeAr4j1v8S/wUkCopc4LTqkX8
-         c/ZKYxcnJLgjFbnF3R027FjtRqM5nhPH+SnY3ic7mN7X/BqlYsrJVLUQmrM31GIB0I
-         PYfrNvgMjWw4gmBmzwVBibGvDRRhWjA1EqE3dRYHEhoK2U9DDpKwKWtt+T3ifVqWIq
-         6g50M5CWKaxFaAwnMUe3CRfkFxGQ2v/BHquLmIwyODtbFc8X0I4nX0Bvizjx9biB6w
-         SGzfEywYKl8KQ==
-Message-ID: <c9ab3f7c-9b12-0c51-3de2-4abf42cdfb74@collabora.com>
-Date:   Mon, 14 Feb 2022 11:02:33 +0100
+        Mon, 14 Feb 2022 05:37:00 -0500
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21192A66ED;
+        Mon, 14 Feb 2022 02:03:31 -0800 (PST)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E86fcW022932;
+        Mon, 14 Feb 2022 11:02:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=zBXICPv5YGDXCve/KOSXwXFvMmf1sH/hj0bAI5GxYVo=;
+ b=EDzvvd/pFTWvooKLuYkeUIe99KBk+BJGKcjGoooMobeLklfhVE52vjADfET8qq9eMneR
+ tepiqHXGE8QIFRuWGM7cIrs78E0e1+xyb/W7y3nVcM2tjrjmBDJHcQKIaJqe+Jpb4UMy
+ 6wxW6+eAQgmRnhHtVnky7JpNNCvCAifMngR0OSSPTTaHGCT4LH9PQCZznxDD/L2ea35h
+ txGgky7AWYHxRUr4RhqDRXF4YQv7jociSHi5GDhQZLjo8KeTpixWTH+ufkn+qzdkC2f/
+ zgH5k9B7etZvNnZleKmO8QXfJ6Kqxnr+GvSCkXejVFnpNAvf3q3H2nT1vfpVQrcgiazh 7w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3e72j13pam-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 11:02:34 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D243A10002A;
+        Mon, 14 Feb 2022 11:02:32 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C195D2194F3;
+        Mon, 14 Feb 2022 11:02:32 +0100 (CET)
+Received: from [10.48.0.252] (10.75.127.45) by SFHDAG2NODE2.st.com
+ (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 14 Feb
+ 2022 11:02:32 +0100
+Message-ID: <8e42cb99-a442-062a-cf0a-2f8d8aff0ab3@foss.st.com>
+Date:   Mon, 14 Feb 2022 11:02:22 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 3/3] pinctrl: canonical rsel resistance selection
- property
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 00/16] STM32 configure UART nodes for DMA
 Content-Language: en-US
-To:     Guodong Liu <guodong.liu@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@kernel.org>
-Cc:     Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220214030631.4969-1-guodong.liu@mediatek.com>
- <20220214030631.4969-4-guodong.liu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220214030631.4969-4-guodong.liu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Erwan Le Ray <erwan.leray@foss.st.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Marek Vasut <marex@denx.de>,
+        Marcin Sloniewski <marcin.sloniewski@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220203171114.10888-1-erwan.leray@foss.st.com>
+From:   Alexandre TORGUE <alexandre.torgue@foss.st.com>
+In-Reply-To: <20220203171114.10888-1-erwan.leray@foss.st.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_02,2022-02-14_02,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/02/22 04:06, Guodong Liu ha scritto:
-> Change "mediatek,rsel_resistance_in_si_unit" to
-> "mediatek,rsel-resistance-in-si-unit"
+On 2/3/22 18:10, Erwan Le Ray wrote:
+> Add DMA configuration to UART nodes in stm32mp15x (SOC level) and
+> remove it at board level to keep current PIO behavior when needed.
+> For stm32-ed1 and stm32-dkx boards, UART4 (console) and UART7
+> (no HW flow control pin available) are kept in PIO mode, while USART3
+> is now configured in DMA mode.
+> UART4 (console UART) has to be kept in irq mode, as DMA support for
+> console has been removed from the driver by commit e359b4411c28
+> ("serial: stm32: fix threaded interrupt handling").
 > 
-> Fixes: fb34a9ae383a ("pinctrl: mediatek: support rsel feature")
-> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
-
-A note for maintainers: luckily, this property hasn't been used in any device-tree
-yet, so we luckily (since naming convention was not compliant) don't have to worry
-about retro-compatibility for old DTs; so...
-
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-
-> ---
->   drivers/pinctrl/mediatek/pinctrl-paris.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> For other stm32mp15x-based boards, current configuration is kept for
+> all UART instances.
 > 
-> diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
-> index d4e02c5d74a8..38c0f0c4cf95 100644
-> --- a/drivers/pinctrl/mediatek/pinctrl-paris.c
-> +++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
-> @@ -989,7 +989,7 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev,
->   	hw->nbase = hw->soc->nbase_names;
->   
->   	if (of_find_property(hw->dev->of_node,
-> -			     "mediatek,rsel_resistance_in_si_unit", NULL))
-> +			     "mediatek,rsel-resistance-in-si-unit", NULL))
->   		hw->rsel_si_unit = true;
->   	else
->   		hw->rsel_si_unit = false;
+> Erwan Le Ray (16):
+>    ARM: dts: stm32: add DMA configuration to UART nodes on stm32mp151
+>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-ed1
+>    ARM: dts: stm32: keep uart4 and uart7 behavior on stm32mp15xx-dkx
+>    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-ctouch2
+>    ARM: dts: stm32: keep uart4 behavior on icore-stm32mp1-edimm2.2
+>    ARM: dts: stm32: keep uart4 behavior on stm32mp157a-iot-box
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0-of7
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp1-microdev2.0
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp157a-stinger96
+>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-lxa-mc1
+>    ARM: dts: stm32: keep uart4 behavior on stm32mp157c-odyssey
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-drc02
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-pdk2
+>    ARM: dts: stm32: keep uart nodes behavior on stm32mp15xx-dhcom-picoitx
+>    ARM: dts: stm32: keep uart4 behavior on stm32mp15xx-dhcom-som
+>    ARM: dts: stm32: keep uart nodes behavior on
+>      stm32mp15xx-dhcor-avenger96
 > 
+>   arch/arm/boot/dts/stm32mp151.dtsi             | 21 +++++++++++++++++++
+>   .../stm32mp157a-icore-stm32mp1-ctouch2.dts    |  2 ++
+>   .../stm32mp157a-icore-stm32mp1-edimm2.2.dts   |  2 ++
+>   arch/arm/boot/dts/stm32mp157a-iot-box.dts     |  2 ++
+>   ...157a-microgea-stm32mp1-microdev2.0-of7.dts |  4 ++++
+>   ...32mp157a-microgea-stm32mp1-microdev2.0.dts |  4 ++++
+>   arch/arm/boot/dts/stm32mp157a-stinger96.dtsi  |  6 ++++++
+>   arch/arm/boot/dts/stm32mp157c-ed1.dts         |  2 ++
+>   arch/arm/boot/dts/stm32mp157c-lxa-mc1.dts     |  2 ++
+>   arch/arm/boot/dts/stm32mp157c-odyssey.dts     |  2 ++
+>   .../arm/boot/dts/stm32mp15xx-dhcom-drc02.dtsi |  4 ++++
+>   arch/arm/boot/dts/stm32mp15xx-dhcom-pdk2.dtsi |  4 ++++
+>   .../boot/dts/stm32mp15xx-dhcom-picoitx.dtsi   |  4 ++++
+>   arch/arm/boot/dts/stm32mp15xx-dhcom-som.dtsi  |  2 ++
+>   .../boot/dts/stm32mp15xx-dhcor-avenger96.dtsi |  6 ++++++
+>   arch/arm/boot/dts/stm32mp15xx-dkx.dtsi        |  4 ++++
+>   16 files changed, 71 insertions(+)
+> 
+Series applied on stm32-next.
 
+Thanks
+Alex
