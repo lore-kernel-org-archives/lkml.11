@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F225CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C41CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbiBNJnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:43:53 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33484 "EHLO
+        id S245033AbiBNJn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:43:57 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244799AbiBNJkx (ORCPT
+        with ESMTP id S244981AbiBNJlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:40:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B80654B7;
-        Mon, 14 Feb 2022 01:36:11 -0800 (PST)
+        Mon, 14 Feb 2022 04:41:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F69725E95;
+        Mon, 14 Feb 2022 01:36:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F440B80DCC;
-        Mon, 14 Feb 2022 09:36:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17A83C340EF;
-        Mon, 14 Feb 2022 09:36:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B89B0B80D83;
+        Mon, 14 Feb 2022 09:36:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02F16C340E9;
+        Mon, 14 Feb 2022 09:36:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831361;
-        bh=snN2LXEolAe1omZS7novdG4hFZ2Ief0Al+9cp4YeOlo=;
+        s=korg; t=1644831395;
+        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RQ5ujsbW5NRWHmX6jljqn52jfMn2Jnx3SiqDWPW2/hgFtpRpySQtd1Nrosb1k7PG+
-         GIpPKgNsqk8iJH0PT4xQvjMQ0rib/5TyIiFDhna4Y39qmqpaDfGS8al9Pji2Co1YqQ
-         7WP/s1m/dQwvjTtDXTaDeg4jn0/998GUfTrI+ujE=
+        b=tpckO9riehOi71KdxEo3+3dq6T1NG8R9/9QQb8h7Xl2LklBFzXGyY1uPMZry7xGLN
+         ZLw30qOTO9VWnwwN/9sRUAMJXdVIHbiElaYET/a+P1RR1DZkGMFSL70NccpS4jZ/5S
+         4BbQY0OLcN2xn4fj52QXWmeU76/Gc4VlmvmXJemo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
-        Christian Brauner <brauner@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.4 04/71] ima: Do not print policy rule with inactive LSM labels
-Date:   Mon, 14 Feb 2022 10:25:32 +0100
-Message-Id: <20220214092452.169784326@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.4 28/71] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:56 +0100
+Message-Id: <20220214092452.963339698@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,41 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Berger <stefanb@linux.ibm.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-commit 89677197ae709eb1ab3646952c44f6a171c9e74c upstream.
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-Before printing a policy rule scan for inactive LSM labels in the policy
-rule. Inactive LSM labels are identified by args_p != NULL and
-rule == NULL.
+Currently, SD card fails to mount due to the following pinctrl error:
 
-Fixes: 483ec26eed42 ("ima: ima/lsm policy rule loading logic bug fixes")
-Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-Cc: <stable@vger.kernel.org> # v5.6+
-Acked-by: Christian Brauner <brauner@kernel.org>
-[zohar@linux.ibm.com: Updated "Fixes" tag]
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
+
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
+Cc: <stable@vger.kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/integrity/ima/ima_policy.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -1382,6 +1382,14 @@ int ima_policy_show(struct seq_file *m,
- 
- 	rcu_read_lock();
- 
-+	/* Do not print rules with inactive LSM labels */
-+	for (i = 0; i < MAX_LSM_RULES; i++) {
-+		if (entry->lsm[i].args_p && !entry->lsm[i].rule) {
-+			rcu_read_unlock();
-+			return 0;
-+		}
-+	}
-+
- 	if (entry->action & MEASURE)
- 		seq_puts(m, pt(Opt_measure));
- 	if (entry->action & DONT_MEASURE)
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -79,7 +79,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
