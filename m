@@ -2,100 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B93C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67211C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345038AbiBNKEI (ORCPT
+        id S1344823AbiBNKEL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43474 "EHLO
+        Mon, 14 Feb 2022 05:04:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343946AbiBNJ7X (ORCPT
+        with ESMTP id S1343842AbiBNJ72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:23 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF584BE0;
-        Mon, 14 Feb 2022 01:46:42 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id u6so29409972lfc.3;
-        Mon, 14 Feb 2022 01:46:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=JX7AEWXC7VEIWY52t5bRvWiW+LKItzN9Fx20I+DVf7Q=;
-        b=YsRhlT93NM4dfLaeDzZGwO6e3gwuFU7eMUUlBmryc8SBCwRenDL7W7byp1JbzHcitS
-         o2k41NNVTSpvEnFlHj9WtfPIQYYzxrRh3ueitTIMJ1u0SOK8qBCVjHIG/3D4S6PnptmI
-         GT8TSd0KTiqSumJRryLTqSp0yKtbN0M5N/y8TfHGqD7LZ3bXsvkdOQEZ5d9WDz2fxJYq
-         X2jlfLaQJcP7aEKAh1WNmJF5lfJr36BNn81O0vh5Cxtl14jrL1xl9bwDiq51kqcSAM0Q
-         BEShCQiU7QTjmJ2tB7TLqGPxbXzgT0vdi1d9K3CEwK7BPZpZLFKVov9K7MJ0j9q48zbf
-         iiHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=JX7AEWXC7VEIWY52t5bRvWiW+LKItzN9Fx20I+DVf7Q=;
-        b=jTvOUcIj5NT4FsI/iQ/Uz59IPJ6KDQjwN8l99Uoc8lT9g8jwYWkaME4iKlU4ryj3sy
-         McUogGOEqiEO/mG3w70y12e4P6fh9ColC+/YhZ56TrMcFtZbyUpVAQrAdz4EbqTi+Ptz
-         H7ruIZEm4E+wmN3gEOSrqD3fXcQ7cMPCbrh3CpQPIARftQCkVkb/GC7eigza0LiGnwkE
-         bEPeV1InqrfdMkgu5GmVzfsz1Rgb4hjubgoVEze9W0cG92c4vDWH0e4bi88ukTnXh/hs
-         qLx1eNl4veFadPxlWhjbUiLUpZWJEscgpL9vxWQ+ybIIXAR1A7QWvBE+3CNGSBJ2v6As
-         5yRA==
-X-Gm-Message-State: AOAM530Xp4D5rOx0FwhwrYkhgjn4I74yKQOMF+cv0GHdgp49R8/B8pbQ
-        Q1S7OHsSkEHGsePVVCcsG6HdwvhgWjPyVJisqGc=
-X-Google-Smtp-Source: ABdhPJwB0ChPiWBxcQQTBEF/ccpfXCeN7CcbUvlTAUZiXeIJ2StOJ+hk1DsIM7X47AewXPzXDEWa/IldeHH3bjzC4e8=
-X-Received: by 2002:a05:6512:130f:: with SMTP id x15mr5145474lfu.651.1644832001032;
- Mon, 14 Feb 2022 01:46:41 -0800 (PST)
+        Mon, 14 Feb 2022 04:59:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8578C2C;
+        Mon, 14 Feb 2022 01:46:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44F7361287;
+        Mon, 14 Feb 2022 09:46:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4059C340E9;
+        Mon, 14 Feb 2022 09:46:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832014;
+        bh=KkVFtQgWDU8kC8bkFKYteuVKgn36OiBQyAW0ygsQ71w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=2wEsnRRzy2OozEIEZ4ObpMKh7oNqhKBbqiTmicFb8sbJv8Ptrdql3s9gjhKeF2RHL
+         9jr/Q1ZGpnfmlBELnbNfeq2K+SELKyZI3XUEGsNSbbngomygVFSJsABs07G4rCOEsL
+         O2noxFUagGHYvl1Wku8YQ+uPCKMqWyKEAImpckHM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 052/172] net: stmmac: reduce unnecessary wakeups from eee sw timer
+Date:   Mon, 14 Feb 2022 10:25:10 +0100
+Message-Id: <20220214092508.180040913@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <1644827562-17244-1-git-send-email-vincent.sunplus@gmail.com>
- <1644827562-17244-2-git-send-email-vincent.sunplus@gmail.com>
- <YgoVBv/z1uCsR1Y0@kroah.com> <CAPvp3Rhtb-g1A5FG6_1irzX2fG-VACU3T4tST1Xo99cnnL==MQ@mail.gmail.com>
- <Ygodd+TFQGnhki6A@kroah.com>
-In-Reply-To: <Ygodd+TFQGnhki6A@kroah.com>
-From:   =?UTF-8?B?5pa96YyV6bS7?= <vincent.sunplus@gmail.com>
-Date:   Mon, 14 Feb 2022 17:48:20 +0800
-Message-ID: <CAPvp3RiPVkonTtAdTcLqQuPggg6zw8yNEPf-mR0+1bbtSsdtEg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] usb: host: ehci-sunplus: Add driver for ehci in
- Sunplus SP7021
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     stern@rowland.harvard.edu, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, wells.lu@sunplus.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> =E6=96=BC 2022=E5=B9=B42=E6=9C=8814=E6=
-=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=885:14=E5=AF=AB=E9=81=93=EF=BC=9A
->
-> On Mon, Feb 14, 2022 at 05:03:00PM +0800, =E6=96=BD=E9=8C=95=E9=B4=BB wro=
-te:
-> > Hi, Greg
-> >     About this issue, my colleague Hammer Hsieh has explained it to
-> > you recently in the mail of "[PATCH v7 2/2] serial: sunplus-uart: Add
-> > Sunplus
-> > SoC UART Driver". The ehci driver and uart one are in the same Sunplus =
-Soc.
->
-> I do not know what you are referring to, sorry.  Remember we get
-> thousands of emails a week.
->
-> Please be explicit and make the code work properly for each patch you
-> submit.
->
-> thanks,
->
-> greg k-h
+From: Jisheng Zhang <jszhang@kernel.org>
 
-Hi, Greg
-    About data incoherence issue between memory bus and peripheral bus.
-In case of AXI bus, use non-posted write can avoid data incoherence issue.
-    What if in case of post write:
-Send a specific command after last write command. SDCTRL identify specific
-command, means previous write command done. Then send the interrupt
-signal to interrupt controller. And then interrupt controller sends done si=
-gnal
-to Master. Master receives done signal, means write command done. Then
-issue a interrupt or proceed next write command.
-    Thanks for your review.
+[ Upstream commit c74ead223deb88bdf18af8c772d7ca5a9b6c3c2b ]
+
+Currently, on EEE capable platforms, if EEE SW timer is used, the SW
+timer cause 1 wakeup/s even if the TX has successfully entered EEE.
+Remove this unnecessary wakeup by only calling mod_timer() if we
+haven't successfully entered EEE.
+
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 161e65333ed94..e6af26b2dcb81 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -400,7 +400,7 @@ static void stmmac_lpi_entry_timer_config(struct stmmac_priv *priv, bool en)
+  * Description: this function is to verify and enter in LPI mode in case of
+  * EEE.
+  */
+-static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
++static int stmmac_enable_eee_mode(struct stmmac_priv *priv)
+ {
+ 	u32 tx_cnt = priv->plat->tx_queues_to_use;
+ 	u32 queue;
+@@ -410,13 +410,14 @@ static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
+ 		struct stmmac_tx_queue *tx_q = &priv->tx_queue[queue];
+ 
+ 		if (tx_q->dirty_tx != tx_q->cur_tx)
+-			return; /* still unfinished work */
++			return -EBUSY; /* still unfinished work */
+ 	}
+ 
+ 	/* Check and enter in LPI mode */
+ 	if (!priv->tx_path_in_lpi_mode)
+ 		stmmac_set_eee_mode(priv, priv->hw,
+ 				priv->plat->en_tx_lpi_clockgating);
++	return 0;
+ }
+ 
+ /**
+@@ -448,8 +449,8 @@ static void stmmac_eee_ctrl_timer(struct timer_list *t)
+ {
+ 	struct stmmac_priv *priv = from_timer(priv, t, eee_ctrl_timer);
+ 
+-	stmmac_enable_eee_mode(priv);
+-	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
++	if (stmmac_enable_eee_mode(priv))
++		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
+ }
+ 
+ /**
+@@ -2637,8 +2638,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
+ 
+ 	if (priv->eee_enabled && !priv->tx_path_in_lpi_mode &&
+ 	    priv->eee_sw_timer_en) {
+-		stmmac_enable_eee_mode(priv);
+-		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
++		if (stmmac_enable_eee_mode(priv))
++			mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
+ 	}
+ 
+ 	/* We still have pending packets, let's call for a new scheduling */
+-- 
+2.34.1
+
+
+
