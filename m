@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA7FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA7EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244233AbiBNJkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:40:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33274 "EHLO
+        id S244461AbiBNJkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:40:23 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244404AbiBNJji (ORCPT
+        with ESMTP id S244349AbiBNJjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:39:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0567969CCC;
-        Mon, 14 Feb 2022 01:35:28 -0800 (PST)
+        Mon, 14 Feb 2022 04:39:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 720A2692AF;
+        Mon, 14 Feb 2022 01:35:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB15E60FA2;
-        Mon, 14 Feb 2022 09:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C4C6C340E9;
-        Mon, 14 Feb 2022 09:35:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 960EEB80DC9;
+        Mon, 14 Feb 2022 09:35:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B358FC340E9;
+        Mon, 14 Feb 2022 09:35:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831326;
-        bh=/T57QsHEXzWRyz9ngAgfSuXzq9rnlQ9xNPWF7J/q3zk=;
+        s=korg; t=1644831320;
+        bh=HIPORMFuV//Hr3CiBeB8KOpD7vvvwHqgFISVkSXSIQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UtzN9Sd8z64MuE27iIzzTtgSnItoINumPRA4OIoAAsuoAxtXMQfo5wsbQbQnBuylJ
-         N2/xqbyl/VKopZB0sLFBoC9XZ0vLSS/EDhcoAdRCggbAi3/Bb0KTDvGNNDXnM2/GRA
-         8XQe1LEdnU6A77DeEyI7BXoiqTw+7t+uKFQO+150=
+        b=AODVv31WNog46VZjRZWpsOEIQwNKsfiBw/fxx/7L4VVCg5zH4o0KVCRPv2IiApEGp
+         JzfhDswRF4INqMEMt7iuGax8nbGYRomp86xELiFRZMzvF1dnwEHGjqJEgfrm4NCOi5
+         Z6j1xifko54gcRwqU34sHW+ZSzPwQcoOSZZPAW2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ZouMingzhe <mingzhe.zou@easystack.cn>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Raymond Jay Golo <rjgolo@gmail.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 19/71] scsi: target: iscsi: Make sure the np under each tpg is unique
-Date:   Mon, 14 Feb 2022 10:25:47 +0100
-Message-Id: <20220214092452.665393505@linuxfoundation.org>
+Subject: [PATCH 5.4 17/71] drm: panel-orientation-quirks: Add quirk for the 1Netbook OneXPlayer
+Date:   Mon, 14 Feb 2022 10:25:45 +0100
+Message-Id: <20220214092452.598797447@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -50,41 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ZouMingzhe <mingzhe.zou@easystack.cn>
+From: Raymond Jay Golo <rjgolo@gmail.com>
 
-[ Upstream commit a861790afaa8b6369eee8a88c5d5d73f5799c0c6 ]
+[ Upstream commit d3cbc6e323c9299d10c8d2e4127c77c7d05d07b1 ]
 
-iscsit_tpg_check_network_portal() has nested for_each loops and is supposed
-to return true when a match is found. However, the tpg loop will still
-continue after existing the tpg_np loop. If this tpg_np is not the last the
-match value will be changed.
+The 1Netbook OneXPlayer uses a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Break the outer loop after finding a match and make sure the np under each
-tpg is unique.
-
-Link: https://lore.kernel.org/r/20220111054742.19582-1-mingzhe.zou@easystack.cn
-Signed-off-by: ZouMingzhe <mingzhe.zou@easystack.cn>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Raymond Jay Golo <rjgolo@gmail.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220113000619.90988-1-rjgolo@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/iscsi/iscsi_target_tpg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/target/iscsi/iscsi_target_tpg.c b/drivers/target/iscsi/iscsi_target_tpg.c
-index 8075f60fd02c3..2d5cf1714ae05 100644
---- a/drivers/target/iscsi/iscsi_target_tpg.c
-+++ b/drivers/target/iscsi/iscsi_target_tpg.c
-@@ -443,6 +443,9 @@ static bool iscsit_tpg_check_network_portal(
- 				break;
- 		}
- 		spin_unlock(&tpg->tpg_np_lock);
-+
-+		if (match)
-+			break;
- 	}
- 	spin_unlock(&tiqn->tiqn_tpg_lock);
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index 9d1bd8f491ad7..448c2f2d803a6 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -115,6 +115,12 @@ static const struct drm_dmi_panel_orientation_data lcd1280x1920_rightside_up = {
+ 	.orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP,
+ };
  
++static const struct drm_dmi_panel_orientation_data lcd1600x2560_leftside_up = {
++	.width = 1600,
++	.height = 2560,
++	.orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP,
++};
++
+ static const struct dmi_system_id orientation_data[] = {
+ 	{	/* Acer One 10 (S1003) */
+ 		.matches = {
+@@ -261,6 +267,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Default string"),
+ 		},
+ 		.driver_data = (void *)&onegx1_pro,
++	}, {	/* OneXPlayer */
++		.matches = {
++		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ONE-NETBOOK TECHNOLOGY CO., LTD."),
++		  DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "ONE XPLAYER"),
++		},
++		.driver_data = (void *)&lcd1600x2560_leftside_up,
+ 	}, {	/* Samsung GalaxyBook 10.6 */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SAMSUNG ELECTRONICS CO., LTD."),
 -- 
 2.34.1
 
