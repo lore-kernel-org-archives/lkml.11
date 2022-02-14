@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0492EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C7BC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245297AbiBNJ5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:57:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60856 "EHLO
+        id S1343922AbiBNJ5H (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:57:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343908AbiBNJv0 (ORCPT
+        with ESMTP id S1343781AbiBNJvV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11E776E18;
-        Mon, 14 Feb 2022 01:42:18 -0800 (PST)
+        Mon, 14 Feb 2022 04:51:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6788266237;
+        Mon, 14 Feb 2022 01:42:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9B4FB80DA9;
-        Mon, 14 Feb 2022 09:42:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3A46C340E9;
-        Mon, 14 Feb 2022 09:42:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0399061172;
+        Mon, 14 Feb 2022 09:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC8E7C340E9;
+        Mon, 14 Feb 2022 09:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831736;
-        bh=l1b04dHs9iwPo/OYrFEyRiBdBz6v+R69lWFlukgdJDY=;
+        s=korg; t=1644831727;
+        bh=8ne9hg8aZFb13bFIcXU1p8eTYGie1d/BxzL7azya2Bs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pZBrk7obUuAiefgeCl+RG/Q10mXeXqczGGeVPYy5u11tf56pJVlVghDU29uVGRbYp
-         X+cs+KCtLJvH33mVW3LYjfdNdBRboQ/9Oevof8t1NJizqKW5GPmYjyrPf5wAt+1g69
-         DEymvJKH942PfiUk/IaoDUQcd2SD76PvEcbbgqcM=
+        b=PDgYIF4E0aTfC9cl6shOCwS4y0hWcB3nRTKIALtFcuF9129pzopl8Ek0UdMlzaFUF
+         EMMu41yWk0K/MswbqBimdBHSOsGY/Kp24nnH9lmmIVsJJggNUBBM22TPPVnGaHlq0y
+         hqT0SxLde2kRqDwCHcPDQcgT0P8WQrs1/Zrrcq+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jon Maloy <jmaloy@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Rafael Richter <Rafael.Richter@gin.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Daniel Klauer <daniel.klauer@gin.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 080/116] tipc: rate limit warning for received illegal binding update
-Date:   Mon, 14 Feb 2022 10:26:19 +0100
-Message-Id: <20220214092501.534453000@linuxfoundation.org>
+Subject: [PATCH 5.10 069/116] net: dsa: mv88e6xxx: dont use devres for mdiobus
+Date:   Mon, 14 Feb 2022 10:26:08 +0100
+Message-Id: <20220214092501.133984211@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,36 +54,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit c7223d687758462826a20e9735305d55bb874c70 ]
+[ Upstream commit f53a2ce893b2c7884ef94471f170839170a4eba0 ]
 
-It would be easy to craft a message containing an illegal binding table
-update operation. This is handled correctly by the code, but the
-corresponding warning printout is not rate limited as is should be.
-We fix this now.
+As explained in commits:
+74b6d7d13307 ("net: dsa: realtek: register the MDIO bus under devres")
+5135e96a3dd2 ("net: dsa: don't allocate the slave_mii_bus using devres")
 
-Fixes: b97bf3fd8f6a ("[TIPC] Initial merge")
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+mdiobus_free() will panic when called from devm_mdiobus_free() <-
+devres_release_all() <- __device_release_driver(), and that mdiobus was
+not previously unregistered.
+
+The mv88e6xxx is an MDIO device, so the initial set of constraints that
+I thought would cause this (I2C or SPI buses which call ->remove on
+->shutdown) do not apply. But there is one more which applies here.
+
+If the DSA master itself is on a bus that calls ->remove from ->shutdown
+(like dpaa2-eth, which is on the fsl-mc bus), there is a device link
+between the switch and the DSA master, and device_links_unbind_consumers()
+will unbind the Marvell switch driver on shutdown.
+
+systemd-shutdown[1]: Powering off.
+mv88e6085 0x0000000008b96000:00 sw_gl0: Link is Down
+fsl-mc dpbp.9: Removing from iommu group 7
+fsl-mc dpbp.8: Removing from iommu group 7
+------------[ cut here ]------------
+kernel BUG at drivers/net/phy/mdio_bus.c:677!
+Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Modules linked in:
+CPU: 0 PID: 1 Comm: systemd-shutdow Not tainted 5.16.5-00040-gdc05f73788e5 #15
+pc : mdiobus_free+0x44/0x50
+lr : devm_mdiobus_free+0x10/0x20
+Call trace:
+ mdiobus_free+0x44/0x50
+ devm_mdiobus_free+0x10/0x20
+ devres_release_all+0xa0/0x100
+ __device_release_driver+0x190/0x220
+ device_release_driver_internal+0xac/0xb0
+ device_links_unbind_consumers+0xd4/0x100
+ __device_release_driver+0x4c/0x220
+ device_release_driver_internal+0xac/0xb0
+ device_links_unbind_consumers+0xd4/0x100
+ __device_release_driver+0x94/0x220
+ device_release_driver+0x28/0x40
+ bus_remove_device+0x118/0x124
+ device_del+0x174/0x420
+ fsl_mc_device_remove+0x24/0x40
+ __fsl_mc_device_remove+0xc/0x20
+ device_for_each_child+0x58/0xa0
+ dprc_remove+0x90/0xb0
+ fsl_mc_driver_remove+0x20/0x5c
+ __device_release_driver+0x21c/0x220
+ device_release_driver+0x28/0x40
+ bus_remove_device+0x118/0x124
+ device_del+0x174/0x420
+ fsl_mc_bus_remove+0x80/0x100
+ fsl_mc_bus_shutdown+0xc/0x1c
+ platform_shutdown+0x20/0x30
+ device_shutdown+0x154/0x330
+ kernel_power_off+0x34/0x6c
+ __do_sys_reboot+0x15c/0x250
+ __arm64_sys_reboot+0x20/0x30
+ invoke_syscall.constprop.0+0x4c/0xe0
+ do_el0_svc+0x4c/0x150
+ el0_svc+0x24/0xb0
+ el0t_64_sync_handler+0xa8/0xb0
+ el0t_64_sync+0x178/0x17c
+
+So the same treatment must be applied to all DSA switch drivers, which
+is: either use devres for both the mdiobus allocation and registration,
+or don't use devres at all.
+
+The Marvell driver already has a good structure for mdiobus removal, so
+just plug in mdiobus_free and get rid of devres.
+
+Fixes: ac3a68d56651 ("net: phy: don't abuse devres in devm_mdiobus_register()")
+Reported-by: Rafael Richter <Rafael.Richter@gin.de>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Daniel Klauer <daniel.klauer@gin.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/tipc/name_distr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index fe4edce459ad4..a757fe28bcb5f 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -315,7 +315,7 @@ static bool tipc_update_nametbl(struct net *net, struct distr_item *i,
- 		pr_warn_ratelimited("Failed to remove binding %u,%u from %x\n",
- 				    type, lower, node);
- 	} else {
--		pr_warn("Unrecognized name table message received\n");
-+		pr_warn_ratelimited("Unknown name table message received\n");
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index afc5500ef8ed9..9b451b820d7a6 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3072,7 +3072,7 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ 			return err;
  	}
- 	return false;
+ 
+-	bus = devm_mdiobus_alloc_size(chip->dev, sizeof(*mdio_bus));
++	bus = mdiobus_alloc_size(sizeof(*mdio_bus));
+ 	if (!bus)
+ 		return -ENOMEM;
+ 
+@@ -3097,14 +3097,14 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ 	if (!external) {
+ 		err = mv88e6xxx_g2_irq_mdio_setup(chip, bus);
+ 		if (err)
+-			return err;
++			goto out;
+ 	}
+ 
+ 	err = of_mdiobus_register(bus, np);
+ 	if (err) {
+ 		dev_err(chip->dev, "Cannot register MDIO bus (%d)\n", err);
+ 		mv88e6xxx_g2_irq_mdio_free(chip, bus);
+-		return err;
++		goto out;
+ 	}
+ 
+ 	if (external)
+@@ -3113,6 +3113,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
+ 		list_add(&mdio_bus->list, &chip->mdios);
+ 
+ 	return 0;
++
++out:
++	mdiobus_free(bus);
++	return err;
  }
+ 
+ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
+@@ -3128,6 +3132,7 @@ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
+ 			mv88e6xxx_g2_irq_mdio_free(chip, bus);
+ 
+ 		mdiobus_unregister(bus);
++		mdiobus_free(bus);
+ 	}
+ }
+ 
 -- 
 2.34.1
 
