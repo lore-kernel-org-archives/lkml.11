@@ -2,103 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C53C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:22:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 115ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236636AbiBNQWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:22:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34214 "EHLO
+        id S236646AbiBNQWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 11:22:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356350AbiBNQWG (ORCPT
+        with ESMTP id S233335AbiBNQWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:22:06 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CAF50B23
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:21:58 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id p63so20412204iod.11
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:21:58 -0800 (PST)
+        Mon, 14 Feb 2022 11:22:34 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D2050B23
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:22:27 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i6so28174342pfc.9
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:22:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y/lXxznWJk6t4L5VwAqaMS0+NBIKS0zk3kQAGJ/1b/k=;
-        b=JZLXUfRWra54tioTiu2lrYxDJmGtcUX8NNdySo/F7BWBvDruBVnf1bOydWNgXOogN5
-         Iz7arnCufrG1kJ9V7DcoDSRxMCbNRVV3btf8XwNiGUJYm3d1E2eS92/RlK7bOd1VQe5G
-         IQJLzFRnqEVjliOJs+NOd9nwMMPcEvNaZXjNo=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=ltEJ7E4BWBQeXlg11/N0m4ls8Uk/IhOuIbuZYCef4Qk=;
+        b=IXmjpqau+DaUR/5xQSJGBnkGUyDaCitlnAoCP3aF8lTStpgwVxYilTXncL/kk/aROW
+         SmajbmzKXfv+U0XxvLy111mpLRySzoDwmruZdONpLJKAaEfB0hjkHgY4QpiKy/zyAyIr
+         FDQyHIKG8w38flcPpgHGYMYLkhU7ija6z7p3sMKbfIhW4kFura3GYysQqMIaS4Br0pGv
+         rS7i0csbsfLWD1NevfD9c++WYw13XEwwsELBU2x3wpNfd7m4A5wZgI+kj75sy3KZAiHt
+         5dKg/wXmyAWNGOTql45RoP2t/iCfWY/kNh3fxJ8KCxBr5CTqvue0DfoG+QQiozJZ9CjO
+         fdLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y/lXxznWJk6t4L5VwAqaMS0+NBIKS0zk3kQAGJ/1b/k=;
-        b=b2kBWfeeZmaDY1lEVEQfmBxy+xvno8Ih9SObOuiSfq1ed7GyvbSJXRNcjfx5LhMGlO
-         Hf+9SK0+3VubvqVfwQa4NnKEfwtjrHFpRftWZod6+o6qXnHtBWXkGO847NzMcncpuNDM
-         skL8R5wjQg//VJr5sldlyqCq4F+PLS+T03KIXa/qvGQUt4cpIS/Dm2XRI9ji4+TNt9IF
-         SEDeq9aNug/UxYnenqvTqWGiIpqkIta7kUw64VYvxggiSVlbXZFAxTk0EOWvwyVhJyJe
-         ahBofhuGO4AlNceS2h8fL7okO3DqZlb6Fjj2x4jt/f3DeDxwF9LmlYxUBdSVeoTQV6N4
-         eRjQ==
-X-Gm-Message-State: AOAM533pMK3ez0S3b5Orkn+HsQ3XlGEUic9cguDJzd/sEqpC14Ax5Yhi
-        Di5yiUu9uWBxpB9BJxwuYccsMTb0LBuoXQ==
-X-Google-Smtp-Source: ABdhPJxI/6lrvMfTjzQ6e8M8DEhijVmyQ6zbL69JcFlMjbltR9FNFGX28T24a5XGCD8qwsLzM7EVvQ==
-X-Received: by 2002:a5e:a70e:: with SMTP id b14mr316207iod.171.1644855718167;
-        Mon, 14 Feb 2022 08:21:58 -0800 (PST)
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com. [209.85.166.171])
-        by smtp.gmail.com with ESMTPSA id y7sm13384377ila.7.2022.02.14.08.21.57
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 08:21:57 -0800 (PST)
-Received: by mail-il1-f171.google.com with SMTP id f13so12720515ilq.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:21:57 -0800 (PST)
-X-Received: by 2002:a05:6e02:19cf:: with SMTP id r15mr119973ill.180.1644855716786;
- Mon, 14 Feb 2022 08:21:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com> <20220214081916.162014-4-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220214081916.162014-4-krzysztof.kozlowski@canonical.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 14 Feb 2022 08:21:45 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=VNarYKq8cZVqWfFKccTqxH46Wmm8Tr979EVsiAoOnT_g@mail.gmail.com>
-Message-ID: <CAD=FV=VNarYKq8cZVqWfFKccTqxH46Wmm8Tr979EVsiAoOnT_g@mail.gmail.com>
-Subject: Re: [PATCH 3/4] arm64: dts: qcom: align Google CROS EC PWM node name
- with dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, chrome-platform@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-pwm <linux-pwm@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=ltEJ7E4BWBQeXlg11/N0m4ls8Uk/IhOuIbuZYCef4Qk=;
+        b=7N7dg1e2Sr8bEDJsKMxP8N84U0l4Jg75llR2u1ETn0DLH2Rm7EyJagS7pV07Wyr0WV
+         OtSjJ0jCCsytxzwm3qQy3arILyOhX/OHwUiKgzpnTmI0LNvvjJWOo2acbdvp97BugbhY
+         QXvS/aOe030jpzNBsLMIYIwG4t0y6HGGXt1etEXwgMO5aAQm+0Ph8heYGJs99ovnZOHH
+         uWmI4t2qZD6gvyBjUMuofuMS1k9kIZCGTdl2Ve5HbMZP6KdxUlPtjehQfuDVH+eXTL0V
+         vdRnS32iOEG8qXTs5gs+GdcyELehKmGXd2H5HHSmWAbaK7BKGx2mc9LX5g60fZ6RoCGs
+         dx3Q==
+X-Gm-Message-State: AOAM532jAwzPbPH0Cxoz+8aqt2UjfTMz+CIGfMutekeVSXY+bpoh+Hdw
+        eZ1xHfqkrwWpHGf2WAW0op0=
+X-Google-Smtp-Source: ABdhPJx5fzzD/gdf+c0lSFQS4625i0HpoCk4kU0YkSEqVRkJQinMEReQOI9dMaggVFYmtGsRLGDCgQ==
+X-Received: by 2002:a63:68c1:: with SMTP id d184mr386604pgc.405.1644855746806;
+        Mon, 14 Feb 2022 08:22:26 -0800 (PST)
+Received: from mi-HP-ProDesk-600-G5-PCI-MT.xiaomi.com ([43.224.245.244])
+        by smtp.gmail.com with ESMTPSA id x23sm37294540pfh.216.2022.02.14.08.22.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 08:22:26 -0800 (PST)
+From:   chenguanyou <chenguanyou9338@gmail.com>
+X-Google-Original-From: chenguanyou <chenguanyou@xiaomi.com>
+To:     longman@redhat.com, gregkh@linuxfoundation.org
+Cc:     dave@stgolabs.net, hdanton@sina.com, linux-kernel@vger.kernel.org,
+        mazhenhua@xiaomi.com, mingo@redhat.com, peterz@infradead.org,
+        quic_aiquny@quicinc.com, will@kernel.org
+Subject: Re:[PATCH v5] locking/rwsem: Make handoff bit handling more consistent
+Date:   Tue, 15 Feb 2022 00:22:18 +0800
+Message-Id: <20220214162218.13930-1-chenguanyou@xiaomi.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211116012912.723980-1-longman@redhat.com>
+References: <20211116012912.723980-1-longman@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+>> Hi Waiman, Greg,
+>> This patch has been merged in branch linux-5.16.y.
+>> Can we take it to the linux-5.10.y LTS version?
 
-On Mon, Feb 14, 2022 at 12:20 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> dtschema expects PWM node name to be a generic "pwm".  This also matches
-> Devicetree specification requirements about generic node names.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi               | 2 +-
->  arch/arm64/boot/dts/qcom/sc7280-herobrine-herobrine-r0.dts | 2 +-
->  arch/arm64/boot/dts/qcom/sc7280-herobrine.dtsi             | 2 +-
->  arch/arm64/boot/dts/qcom/sc7280-idp-ec-h1.dtsi             | 2 +-
->  arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi                 | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
+>What is "this patch"?
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+commit d257cc8cb8d5355ffc43a96bab94db7b5a324803 ("locking/rwsem: Make handoff bit handling more consistent")
+
+thanks,
