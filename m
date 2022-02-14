@@ -2,103 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0118AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9565CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240187AbiBNJjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51544 "EHLO
+        id S238845AbiBNJjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244124AbiBNJfR (ORCPT
+        with ESMTP id S244139AbiBNJfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:35:17 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F187469CDA;
-        Mon, 14 Feb 2022 01:33:12 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21E9TID0001939;
-        Mon, 14 Feb 2022 03:29:19 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21E9TIVC001937;
-        Mon, 14 Feb 2022 03:29:18 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 14 Feb 2022 03:29:18 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "'Christophe Leroy'" <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: Remove branch in csum_shift()
-Message-ID: <20220214092918.GZ614@gate.crashing.org>
-References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu> <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com> <20220213091619.GY614@gate.crashing.org> <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
-User-Agent: Mutt/1.4.2.3i
+        Mon, 14 Feb 2022 04:35:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E3BAE40;
+        Mon, 14 Feb 2022 01:33:22 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D43CF61115;
+        Mon, 14 Feb 2022 09:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98A71C340EF;
+        Mon, 14 Feb 2022 09:33:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831191;
+        bh=SeVxQyNtXy9Wp9rjGaTR1rfv/6g68X9HcuZxVVLKI+0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kO6vD0KlIuTlvJwm0RMjnEMUn6CJBk8YaTDZb3b28fOfwg8W3LTw1KYIrxipOE6jM
+         nd2to7mCXUQKdFQ+ld0W+nr8DNScz5OtMuQryW1kpr8Y5+E9qZ+ZhDK7LfiP+jAPFR
+         FGyli5BDnhgZ5RFf5MLQWlYK6ENJwNAEtUDXXnGo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 4.19 08/49] NFSD: Fix offset type in I/O trace points
+Date:   Mon, 14 Feb 2022 10:25:34 +0100
+Message-Id: <20220214092448.576066308@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
+References: <20220214092448.285381753@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 05:47:52PM +0000, David Laight wrote:
-> From: Segher Boessenkool 
-> > Sent: 13 February 2022 09:16
-> > In an ideal world the compiler could choose the optimal code sequences
-> > everywhere.  But that won't ever happen, the search space is way too
-> > big.  So compilers just use heuristics, not exhaustive search like
-> > superopt does.  There is a middle way of course, something with directed
-> > searches, and maybe in a few decades systems will be fast enough.  Until
-> > then we will very often see code that is 10% slower and 30% bigger than
-> > necessary.  A single insn more than needed isn't so bad :-)
-> 
-> But it can be a lot more than that.
+From: Chuck Lever <chuck.lever@oracle.com>
 
-Obviously, but that isn't the case here (for powerpc anyway).  My point
-here is that you won't ever get ideal generated code from your high-
-level code (which is what C is), certainly not for all architectures.
-But it *is* possible to get something reasonably good.
+commit 6a4d333d540041d244b2fca29b8417bfde20af81 upstream.
 
-> > Making things branch-free is very much worth it here though!
-> 
-> I tried to find out where 'here' is.
+NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
+verbatim without the implicit type case to loff_t.
 
-I meant "with this patch".
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/nfsd/trace.h |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-Unpredictable branches are very expensive.  They already were something
-to worry about on single-issue in-order processors, but they are much
-more expensive now.
-
-> I can't get godbolt to generate anything like that object code
-> for a call to csum_shift().
-> 
-> I can't actually get it to issue a rotate (x86 of ppc).
-
-All powerpc rotate insns start with "rl", and no other insns do.  There
-also are extended mnemonics to ease programming, like "rotlw", which is
-just a form of rlwinm (rotlw d,s,n is rlwnm d,s,n,0,31).
-
-Depending on what tool you use to display binary code it will show you
-extended mnemonics for some insns or just the basic insns.
-
-> I think it is only a single instruction because the compiler
-> has saved 'offset & 1' much earlier instead of doing testing
-> 'offset & 1' just prior to the conditional.
-
-rlwinm -- "nm" means "and mask".  rlwnm d,s,n,mb,me rotates register s
-left by the contents of register n bits, and logical ands it with the
-mask from bit mb until bit me.
-
-> It certainly has a nasty habit of doing that pessimisation.
-
-?  Not sure what you mean here.
-
-> I also suspect that the addc/addze pair could be removed
-> by passing the old checksum into csum_partial.
-
-Maybe?  Does it not have to return a reduced result here?
+--- a/fs/nfsd/trace.h
++++ b/fs/nfsd/trace.h
+@@ -53,14 +53,14 @@ TRACE_EVENT(nfsd_compound_status,
+ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 	TP_PROTO(struct svc_rqst *rqstp,
+ 		 struct svc_fh	*fhp,
+-		 loff_t		offset,
+-		 unsigned long	len),
++		 u64		offset,
++		 u32		len),
+ 	TP_ARGS(rqstp, fhp, offset, len),
+ 	TP_STRUCT__entry(
+ 		__field(u32, xid)
+ 		__field(u32, fh_hash)
+-		__field(loff_t, offset)
+-		__field(unsigned long, len)
++		__field(u64, offset)
++		__field(u32, len)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
+@@ -68,7 +68,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ 		__entry->offset = offset;
+ 		__entry->len = len;
+ 	),
+-	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
++	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
+ 		  __entry->xid, __entry->fh_hash,
+ 		  __entry->offset, __entry->len)
+ )
+@@ -77,8 +77,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
+ DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
+ 	TP_PROTO(struct svc_rqst *rqstp,	\
+ 		 struct svc_fh	*fhp,		\
+-		 loff_t		offset,		\
+-		 unsigned long	len),		\
++		 u64		offset,		\
++		 u32		len),		\
+ 	TP_ARGS(rqstp, fhp, offset, len))
+ 
+ DEFINE_NFSD_IO_EVENT(read_start);
 
 
-Segher
