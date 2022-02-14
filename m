@@ -2,102 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB3F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A51F0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 14:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355038AbiBNORp (ORCPT
+        id S1355043AbiBNORw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 09:17:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53724 "EHLO
+        Mon, 14 Feb 2022 09:17:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234816AbiBNORm (ORCPT
+        with ESMTP id S1355049AbiBNORu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 09:17:42 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8424949F9E
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:17:34 -0800 (PST)
-Date:   Mon, 14 Feb 2022 15:17:30 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644848252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I7th9FPBhTHINqz3uRpqzV8a/eogAXrdqgX5F7Ju6E4=;
-        b=ouyZslNgbCuTOkK5kZzEjR79vs+1sbKGDhHknUnUtfolGUAAK5mi3QDYVA0RvkfuLEqzx9
-        o4jeEnF1TaLbZ9G/tVdBB1iUlOuDMCzAnNlxbV59/Gpk3oRve/bcCgt7lWiy6O0S91xDnR
-        Q1+qqrrI/1FcQbSVKQOvigvmr2epR8EQsjsHmt3phRRMXGzdG7LhqHzeg5xitvXivyfqSG
-        95E0i38yjwmGxlK625cMEeDV2XewMi5PU+MOy3Od+5FohK69m6i6+m9TRCUFVuiB+hy8Di
-        uhyBNCk5bXEeo8pmb/GUCHgQ8R23+0GyycCo0yYTpIra2/HZzqCyZrTQyuWLGQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644848252;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I7th9FPBhTHINqz3uRpqzV8a/eogAXrdqgX5F7Ju6E4=;
-        b=HMbr81cK/bM5Rma33KsSoWPqO5rAZbWP/gdg1G66LvgMfYG+LXnzPcl5lSa27NyB8nU0+c
-        TZj/rp7bFIx5A8AQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Sultan Alsawaf <sultan@kerneltoast.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: Re: [PATCH v2] random: set fast pool count to zero in cpuhp teardown
-Message-ID: <Ygpkej/vnMvUDIlP@linutronix.de>
-References: <CAHmME9rAnh6nSRNYo56Ty6VSrY17ej35AoNkSjunFO0AQp1D9Q@mail.gmail.com>
- <20220214133735.966528-1-Jason@zx2c4.com>
+        Mon, 14 Feb 2022 09:17:50 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43EBE4A902
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:17:41 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id j26so16273088wrb.7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 06:17:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ln2uKU+vMAyRV7UsLvWBhWdQgf4eoy4B8mnlBh7Uf4U=;
+        b=T3wz3eCfR4tmrh0J4vy9sCp8J/jWIy5urKk6OO+cbCvyUbRGqP+i7nWcAg+4+AFO56
+         efMVlkNlLVf5dyJ55keCtaW5IeVN/wZa6mDMknpCo9YrruU3Na5DTtj/E64R8K+MyatB
+         GaYPPqu0t+7A+Ly1FCB5CGYul82Nyi3QWjgLOqC1Wx3LNNuOiqq19axcbeRXvlJLtyIT
+         wAbGVXVwM92TBH+Gu7+1O0EHWUbcGE938fc7zurGcZnjA3okbevlx5hklAnzhxNyL5zM
+         nt76eOh6Sg2mkJEgeTiXPIkMBHJh39svmpY2XgJhs6jWeND7ORQ67Hohn+YByQkCEGOJ
+         XP7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ln2uKU+vMAyRV7UsLvWBhWdQgf4eoy4B8mnlBh7Uf4U=;
+        b=pmL0M2OupjfnXwUSgvADkUp85YZaIwEgIBsLDVX+b33n1KM8YddAKA5RRsZFgsgM+p
+         +igbUKLBimK3kDc2yklpiDJQQkICeSafnss92HMFsCHpc9Sn1fR4u8xQ51Oj0Hl5wIWS
+         cUnot+5/8xhkXaWTq+JoIcoBFa1TjSFjJSEfyndSL3zujPeJ3STl29zhwAa2LFMf6noY
+         g3x4/Sag6AYWlx/QdqT8XtKh69a/ubkpdGuxmCv45q5Qrirqlu0N9SICX0r+0vfJ+atg
+         /VBUq1maA3rXJb1X2WhtG+2jmrFeDozK1wJOHjqvTefzOWTu9JuUHgSWVyjeGqF1+Lvc
+         077w==
+X-Gm-Message-State: AOAM532jUUcp+R5mBLiv2Gg5CjH3VxzOZZgkhPmpmrmaZxmet4QVILZY
+        SJ2nl04rUzYa+qsZCFBa7Zup0w==
+X-Google-Smtp-Source: ABdhPJzuSHlgADVOkpRdKXvOYxCnoS/c5megiAinBNNs6xCgR6iJuRaS9XBuz50TVKdsIMN2FiYdDQ==
+X-Received: by 2002:adf:dc08:: with SMTP id t8mr11534462wri.40.1644848259878;
+        Mon, 14 Feb 2022 06:17:39 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id y10sm11966398wmi.47.2022.02.14.06.17.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 06:17:39 -0800 (PST)
+Date:   Mon, 14 Feb 2022 14:17:37 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/4] dt-bindings: power: supply: maxim,max14577:
+ convert to dtschema
+Message-ID: <YgpkgSmxAWCNHW9l@google.com>
+References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
+ <20220111174337.223320-3-krzysztof.kozlowski@canonical.com>
+ <20220112112905.n6zb36kwop2kfm2n@earth.universe>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220214133735.966528-1-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220112112905.n6zb36kwop2kfm2n@earth.universe>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-14 14:37:35 [+0100], Jason A. Donenfeld wrote:
-> Rather than having to use expensive atomics, which were visibly the most
-> expensive thing in the entire irq handler, simply take care of the
-> extreme edge case of resetting count to 0 in the cpuhp teardown handler,
-> after no more interrupts will arrive on that CPU. This simplifies the
-> code a bit and lets us use vanilla variables rather than atomics, and
-> performance should be improved.
->=20
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Cc: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
-> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Cc: Sultan Alsawaf <sultan@kerneltoast.com>
-> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> Sebastian -
->=20
-> v2 moves the teardown to CPUHP_OFFLINE=E2=80=A6CPUHP_BRINGUP_CPU, per our
-> discussion.
+On Wed, 12 Jan 2022, Sebastian Reichel wrote:
 
-My suggestion was to move it to the startup handler with the code
-snippet I had.
-As I tried to explain, this may have two problems:
-- worker scheduled during CPU-UP before CPUHP_AP_WORKQUEUE_ONLINE are
-  probably unbound.
+> Hi,
+> 
+> On Tue, Jan 11, 2022 at 06:43:35PM +0100, Krzysztof Kozlowski wrote:
+> > Convert the Charger bindings of Maxim MAX14577/MAX77836 MUIC to DT
+> > schema format.  The existing bindings were defined in
+> > ../bindings/mfd/max14577.txt.
+> > 
+> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+> > ---
+> 
+> I expect this to be merged through MFD:
+> 
+> Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-- worker scheduled during CPU-DOWN after CPUHP_AP_WORKQUEUE_ONLINE are
-  probably unbound.
+Do you need a PR?
 
-The unbound worker may run on any CPU and thus do nothing.
-In the CPU-DOWN case before: should we rollback before
-CPUHP_RANDOM_PREPARE but after CPUHP_AP_WORKQUEUE_ONLINE then the needed
-reset (in case the worker did nothing because it was on the wrong CPU)
-will not happen.
-Therefore I think, moving it to startup, online, (as suggested in
-https://lore.kernel.org/all/Ygo3%2FpuhZFpuX91x@linutronix.de/).
-
-will not have any of this downsides/ corner cases.
-
-Sebastian
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
