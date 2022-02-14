@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEDFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343529AbiBNJyL (ORCPT
+        id S1343638AbiBNJyQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:54:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:32982 "EHLO
+        Mon, 14 Feb 2022 04:54:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343574AbiBNJux (ORCPT
+        with ESMTP id S1343632AbiBNJuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:50:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00ABD6578F;
-        Mon, 14 Feb 2022 01:41:43 -0800 (PST)
+        Mon, 14 Feb 2022 04:50:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C97657AC;
+        Mon, 14 Feb 2022 01:41:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B62611B8;
-        Mon, 14 Feb 2022 09:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 957ABC340E9;
-        Mon, 14 Feb 2022 09:41:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E85360FA2;
+        Mon, 14 Feb 2022 09:41:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13FC9C340F0;
+        Mon, 14 Feb 2022 09:41:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831703;
-        bh=KT0cpzHQsGiBnRibBTCq6GDlT8qPrltSL9wtE+Ft7B0=;
+        s=korg; t=1644831709;
+        bh=o/sKIMrGLrAkYp8Q+KzdWoLa4OteYk6nG3L46DZRWxs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ttCItVLB5XIC+tLZuYGuWYeatANMFjFYjhrwaMCjvR5vYkWzCt4/U4U/WoJOrh7Na
-         +xOQ6J5sU2yRSou660CI2s7jLAMtT9oCjZRjQ1jNIL9EvKGs4EefdMs4S49jZ8/HnY
-         TkS2OY6fQK8d7cYbcezFenYF1sFJ4y8SZ9zztaBM=
+        b=OC6cmrrjfHaEj+Msf5ZX4cLINaJ7XhHNRtQiTgg6Hb0tmJQfJaMbJM9T0OGveh2ub
+         RoO19GxSE5jibbs0R1a7KgDVWqXeWP1INamRqisyb/XKdo4ICbZBJXpMA8lL8Djblf
+         OSH27SLy5S1R/we7sFapbN2bcfLZrE6JBNlHE87Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niklas Cassel <niklas.cassel@wdc.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 067/116] gpio: sifive: use the correct register to read output values
-Date:   Mon, 14 Feb 2022 10:26:06 +0100
-Message-Id: <20220214092501.062169573@linuxfoundation.org>
+Subject: [PATCH 5.10 039/116] KVM: nVMX: Also filter MSR_IA32_VMX_TRUE_PINBASED_CTLS when eVMCS
+Date:   Mon, 14 Feb 2022 10:25:38 +0100
+Message-Id: <20220214092500.030688432@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -51,43 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Cassel <niklas.cassel@wdc.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit cc38ef936840ac29204d806deb4d1836ec509594 ]
+[ Upstream commit f80ae0ef089a09e8c18da43a382c3caac9a424a7 ]
 
-Setting the output of a GPIO to 1 using gpiod_set_value(), followed by
-reading the same GPIO using gpiod_get_value(), will currently yield an
-incorrect result.
+Similar to MSR_IA32_VMX_EXIT_CTLS/MSR_IA32_VMX_TRUE_EXIT_CTLS,
+MSR_IA32_VMX_ENTRY_CTLS/MSR_IA32_VMX_TRUE_ENTRY_CTLS pair,
+MSR_IA32_VMX_TRUE_PINBASED_CTLS needs to be filtered the same way
+MSR_IA32_VMX_PINBASED_CTLS is currently filtered as guests may solely rely
+on 'true' MSR data.
 
-This is because the SiFive GPIO device stores the output values in reg_set,
-not reg_dat.
+Note, none of the currently existing Windows/Hyper-V versions are known
+to stumble upon the unfiltered MSR_IA32_VMX_TRUE_PINBASED_CTLS, the change
+is aimed at making the filtering future proof.
 
-Supply the flag BGPIOF_READ_OUTPUT_REG_SET to bgpio_init() so that the
-generic driver reads the correct register.
-
-Fixes: 96868dce644d ("gpio/sifive: Add GPIO driver for SiFive SoCs")
-Signed-off-by: Niklas Cassel <niklas.cassel@wdc.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-[Bartosz: added the Fixes tag]
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220112170134.1904308-2-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-sifive.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/evmcs.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpio/gpio-sifive.c b/drivers/gpio/gpio-sifive.c
-index d5eb9ca119016..4f28fa73450c1 100644
---- a/drivers/gpio/gpio-sifive.c
-+++ b/drivers/gpio/gpio-sifive.c
-@@ -206,7 +206,7 @@ static int sifive_gpio_probe(struct platform_device *pdev)
- 			 NULL,
- 			 chip->base + SIFIVE_GPIO_OUTPUT_EN,
- 			 chip->base + SIFIVE_GPIO_INPUT_EN,
--			 0);
-+			 BGPIOF_READ_OUTPUT_REG_SET);
- 	if (ret) {
- 		dev_err(dev, "unable to init generic GPIO\n");
- 		return ret;
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index c0d6fee9225fe..5b68034ec5f9c 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -361,6 +361,7 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
+ 	case MSR_IA32_VMX_PROCBASED_CTLS2:
+ 		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
+ 		break;
++	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
+ 	case MSR_IA32_VMX_PINBASED_CTLS:
+ 		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
+ 		break;
 -- 
 2.34.1
 
