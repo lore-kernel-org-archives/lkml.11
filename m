@@ -2,139 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFDD7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18308C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233139AbiBNJu3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44764 "EHLO
+        id S234721AbiBNJud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:33 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245345AbiBNJpx (ORCPT
+        with ESMTP id S245522AbiBNJp6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:45:53 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C1660D9F;
-        Mon, 14 Feb 2022 01:38:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644831538; x=1676367538;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0IGPbPVaQO9WmcVVZypsyEn9AxDkiOr4ZxM5KcPK1wc=;
-  b=MVi4kPkioulQr2CO1lP/7xOWSPUzzTsokGKHEhud34EeXYOAiOLJ30LQ
-   y/9BT79qy8PUNiWHJISdv/HMDKoGGKLhkLAncbved2N9/StNILxs5iA0Z
-   L7wqcWxkYvUBZojD6QOwUjGz3MePLkZMFarC/pMx9q4AvmMpodlkbz5YX
-   tuuk7RWf9uFvYw7stYJWJ773eA44roEpDdQzPjwO44duph93rNUhjZ5BH
-   fS5yeyigcYGJg8+65Z28L54tuTFBvu+WKIVip+HrX5M3tc3/hIovrsONY
-   XkCkIWG5QyZfxC8nZdr9wgHXEyYhbgyUo19+Hspka+XoNq8DrDbfLhEsU
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="247647693"
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="247647693"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 01:38:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="635052312"
-Received: from lkp-server01.sh.intel.com (HELO d95dc2dabeb1) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 01:38:51 -0800
-Received: from kbuild by d95dc2dabeb1 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nJXoo-0008M7-E2; Mon, 14 Feb 2022 09:38:50 +0000
-Date:   Mon, 14 Feb 2022 17:38:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Guixin Liu <kanie@linux.alibaba.com>, bostroesser@gmail.com,
-        martin.petersen@oracle.com
-Cc:     kbuild-all@lists.01.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiaoguang.wang@linux.alibaba.com, xlpang@linux.alibaba.com
-Subject: Re: [PATCH V2] scsi: target: tcmu: Make cmd_ring_size changeable via
- configfs.
-Message-ID: <202202141721.OdtEVrDJ-lkp@intel.com>
-References: <1644808523-21069-1-git-send-email-kanie@linux.alibaba.com>
+        Mon, 14 Feb 2022 04:45:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE576A3BC;
+        Mon, 14 Feb 2022 01:39:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA9476117D;
+        Mon, 14 Feb 2022 09:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C10E5C340EF;
+        Mon, 14 Feb 2022 09:39:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644831545;
+        bh=mYXwYZjv48YdTVJBj6NFznd2NYDFoaanaF1gYz+8OA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RmnpgHh2coJI+m5itBYIzk/Yr0iEgLgNwcKo211iGsWhRao2KHkZ4hs4JfD9PtEG9
+         MiuQ0YHgBJsIVzm6xZ6L8YxPNrwguKBcKR+EWOx0Wv+oQs5sFDXSU/nyxSgFFkh96O
+         Yi11AgZhTOiWLt5d69QnBN5sxxxAqnjO4zbnUCZA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, rtm@csail.mit.edu,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 017/116] NFSv4.1: Fix uninitialised variable in devicenotify
+Date:   Mon, 14 Feb 2022 10:25:16 +0100
+Message-Id: <20220214092459.276752253@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644808523-21069-1-git-send-email-kanie@linux.alibaba.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Guixin,
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-Thank you for the patch! Perhaps something to improve:
+[ Upstream commit b05bf5c63b326ce1da84ef42498d8e0e292e694c ]
 
-[auto build test WARNING on mkp-scsi/for-next]
-[also build test WARNING on v5.17-rc4 next-20220211]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+When decode_devicenotify_args() exits with no entries, we need to
+ensure that the struct cb_devicenotifyargs is initialised to
+{ 0, NULL } in order to avoid problems in
+nfs4_callback_devicenotify().
 
-url:    https://github.com/0day-ci/linux/commits/Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220214-111810
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
-config: xtensa-allyesconfig (https://download.01.org/0day-ci/archive/20220214/202202141721.OdtEVrDJ-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/c972a1533164208e331a5a4d34a7ed0bb44b17ba
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Guixin-Liu/scsi-target-tcmu-Make-cmd_ring_size-changeable-via-configfs/20220214-111810
-        git checkout c972a1533164208e331a5a4d34a7ed0bb44b17ba
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/target/target_core_user.c: In function 'tcmu_show_configfs_dev_params':
->> drivers/target/target_core_user.c:2627:49: warning: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'u32' {aka 'unsigned int'} [-Wformat=]
-    2627 |         bl += sprintf(b + bl, "CmdRingSizeMB: %lu\n",
-         |                                               ~~^
-         |                                                 |
-         |                                                 long unsigned int
-         |                                               %u
-    2628 |                       (udev->cmdr_size + CMDR_OFF) >> 20);
-         |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                                    |
-         |                                                    u32 {aka unsigned int}
-   drivers/target/target_core_user.c: In function 'tcmu_cmd_ring_size_mb_show':
-   drivers/target/target_core_user.c:2743:45: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'u32' {aka 'unsigned int'} [-Wformat=]
-    2743 |         return snprintf(page, PAGE_SIZE, "%lu\n",
-         |                                           ~~^
-         |                                             |
-         |                                             long unsigned int
-         |                                           %u
-    2744 |                         (udev->cmdr_size + CMDR_OFF) >> 20);
-         |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                                                      |
-         |                                                      u32 {aka unsigned int}
-
-
-vim +2627 drivers/target/target_core_user.c
-
-  2616	
-  2617	static ssize_t tcmu_show_configfs_dev_params(struct se_device *dev, char *b)
-  2618	{
-  2619		struct tcmu_dev *udev = TCMU_DEV(dev);
-  2620		ssize_t bl = 0;
-  2621	
-  2622		bl = sprintf(b + bl, "Config: %s ",
-  2623			     udev->dev_config[0] ? udev->dev_config : "NULL");
-  2624		bl += sprintf(b + bl, "Size: %llu ", udev->dev_size);
-  2625		bl += sprintf(b + bl, "MaxDataAreaMB: %u ", udev->data_area_mb);
-  2626		bl += sprintf(b + bl, "DataPagesPerBlk: %u", udev->data_pages_per_blk);
-> 2627		bl += sprintf(b + bl, "CmdRingSizeMB: %lu\n",
-  2628			      (udev->cmdr_size + CMDR_OFF) >> 20);
-  2629	
-  2630		return bl;
-  2631	}
-  2632	
-
+Reported-by: <rtm@csail.mit.edu>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ fs/nfs/callback.h      |  2 +-
+ fs/nfs/callback_proc.c |  2 +-
+ fs/nfs/callback_xdr.c  | 18 +++++++++---------
+ 3 files changed, 11 insertions(+), 11 deletions(-)
+
+diff --git a/fs/nfs/callback.h b/fs/nfs/callback.h
+index 6a2033131c068..ccd4f245cae24 100644
+--- a/fs/nfs/callback.h
++++ b/fs/nfs/callback.h
+@@ -170,7 +170,7 @@ struct cb_devicenotifyitem {
+ };
+ 
+ struct cb_devicenotifyargs {
+-	int				 ndevs;
++	uint32_t			 ndevs;
+ 	struct cb_devicenotifyitem	 *devs;
+ };
+ 
+diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
+index be546ece383f5..b44219ce60b86 100644
+--- a/fs/nfs/callback_proc.c
++++ b/fs/nfs/callback_proc.c
+@@ -353,7 +353,7 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
+ 				  struct cb_process_state *cps)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
+-	int i;
++	uint32_t i;
+ 	__be32 res = 0;
+ 	struct nfs_client *clp = cps->clp;
+ 	struct nfs_server *server = NULL;
+diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
+index 79ff172eb1c81..1725079a05276 100644
+--- a/fs/nfs/callback_xdr.c
++++ b/fs/nfs/callback_xdr.c
+@@ -259,11 +259,9 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 				void *argp)
+ {
+ 	struct cb_devicenotifyargs *args = argp;
++	uint32_t tmp, n, i;
+ 	__be32 *p;
+ 	__be32 status = 0;
+-	u32 tmp;
+-	int n, i;
+-	args->ndevs = 0;
+ 
+ 	/* Num of device notifications */
+ 	p = xdr_inline_decode(xdr, sizeof(uint32_t));
+@@ -272,7 +270,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 		goto out;
+ 	}
+ 	n = ntohl(*p++);
+-	if (n <= 0)
++	if (n == 0)
+ 		goto out;
+ 	if (n > ULONG_MAX / sizeof(*args->devs)) {
+ 		status = htonl(NFS4ERR_BADXDR);
+@@ -331,19 +329,21 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
+ 			dev->cbd_immediate = 0;
+ 		}
+ 
+-		args->ndevs++;
+-
+ 		dprintk("%s: type %d layout 0x%x immediate %d\n",
+ 			__func__, dev->cbd_notify_type, dev->cbd_layout_type,
+ 			dev->cbd_immediate);
+ 	}
++	args->ndevs = n;
++	dprintk("%s: ndevs %d\n", __func__, args->ndevs);
++	return 0;
++err:
++	kfree(args->devs);
+ out:
++	args->devs = NULL;
++	args->ndevs = 0;
+ 	dprintk("%s: status %d ndevs %d\n",
+ 		__func__, ntohl(status), args->ndevs);
+ 	return status;
+-err:
+-	kfree(args->devs);
+-	goto out;
+ }
+ 
+ static __be32 decode_sessionid(struct xdr_stream *xdr,
+-- 
+2.34.1
+
+
+
