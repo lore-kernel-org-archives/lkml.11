@@ -2,72 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4509C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCFEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242323AbiBNIod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:44:33 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43916 "EHLO
+        id S242306AbiBNIpK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:45:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242235AbiBNIoN (ORCPT
+        with ESMTP id S231406AbiBNIpG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 03:44:13 -0500
-Received: from mail-m17664.qiye.163.com (mail-m17664.qiye.163.com [59.111.176.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839F34DF55;
-        Mon, 14 Feb 2022 00:44:06 -0800 (PST)
-Received: from localhost.localdomain (unknown [58.22.7.114])
-        by mail-m17664.qiye.163.com (Hmail) with ESMTPA id 4636E140208;
-        Mon, 14 Feb 2022 16:44:04 +0800 (CST)
-From:   Jon Lin <jon.lin@rock-chips.com>
-To:     broonie@kernel.org
-Cc:     heiko@sntech.de, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jon Lin <jon.lin@rock-chips.com>
-Subject: [PATCH v2 6/6] spi: rockchip: clear interrupt status in error handler
-Date:   Mon, 14 Feb 2022 16:43:39 +0800
-Message-Id: <20220214084339.18996-7-jon.lin@rock-chips.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220214084339.18996-1-jon.lin@rock-chips.com>
-References: <20220214084339.18996-1-jon.lin@rock-chips.com>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZCBgUCR5ZQVlLVUtZV1
-        kWDxoPAgseWUFZKDYvK1lXWShZQUhPN1dZLVlBSVdZDwkaFQgSH1lBWUMZTB9WHx1NTh0ZTB5IH0
-        JIVRMBExYaEhckFA4PWVdZFhoPEhUdFFlBWVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mio6Pww6Kz5LPBEhTjxIGQ1R
-        Hi9PFApVSlVKTU9PQ0lDSU9OSkpLVTMWGhIXVREUFVUXEhU7CRQYEFYYExILCFUYFBZFWVdZEgtZ
-        QVlOQ1VJSVVMVUpKT1lXWQgBWUFJS05INwY+
-X-HM-Tid: 0a7ef76739ddda2fkuws4636e140208
+        Mon, 14 Feb 2022 03:45:06 -0500
+Received: from imap3.hz.codethink.co.uk (imap3.hz.codethink.co.uk [176.9.8.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9EC4DF55
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 00:44:59 -0800 (PST)
+Received: from [167.98.27.226] (helo=rainbowdash)
+        by imap3.hz.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nJWcG-0007ZZ-Cs; Mon, 14 Feb 2022 08:21:48 +0000
+Received: from ben by rainbowdash with local (Exim 4.95)
+        (envelope-from <ben@rainbowdash>)
+        id 1nJWcG-004vz3-2K;
+        Mon, 14 Feb 2022 08:21:48 +0000
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+To:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
+        linux-pci@vger.kernel.org
+Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
+        david.abdurachmanov@gmail.com,
+        Ben Dooks <ben.dooks@codethink.co.uk>
+Subject: [PATCH 1/2] PCI: fu740: fix finding GPIOs
+Date:   Mon, 14 Feb 2022 08:21:43 +0000
+Message-Id: <20220214082144.1176084-2-ben.dooks@codethink.co.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
+References: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The interrupt status bit of the previous error data transmition will
-affect the next operation and cause continuous SPI transmission failure.
+The calls to devm_gpiod_get_optional() have the -gpios at the end of
+the name. This means the pcie driver is not finding the necessary
+reset or power GPOOs to allow the PCIe devices on the SiFive Unmatched
+boards.
 
-Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+This has not been a noted bug as the PCIe probe from u-boot has been
+required to get the PCIe working due to other issues with the system
+setup. It could have been broken since the driver inclusion, and not
+been noticed as it is not necessary for the driver to funciton.
+
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
 ---
+ drivers/pci/controller/dwc/pcie-fu740.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes in v2: None
-Changes in v1: None
-
- drivers/spi/spi-rockchip.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
-index fd6a1f9de119..6751aafc382a 100644
---- a/drivers/spi/spi-rockchip.c
-+++ b/drivers/spi/spi-rockchip.c
-@@ -278,8 +278,9 @@ static void rockchip_spi_handle_err(struct spi_controller *ctlr,
- 	 */
- 	spi_enable_chip(rs, false);
+diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+index 00cde9a248b5..842b7202b96e 100644
+--- a/drivers/pci/controller/dwc/pcie-fu740.c
++++ b/drivers/pci/controller/dwc/pcie-fu740.c
+@@ -259,11 +259,11 @@ static int fu740_pcie_probe(struct platform_device *pdev)
+ 		return PTR_ERR(afp->mgmt_base);
  
--	/* make sure all interrupts are masked */
-+	/* make sure all interrupts are masked and status cleared */
- 	writel_relaxed(0, rs->regs + ROCKCHIP_SPI_IMR);
-+	writel_relaxed(0xffffffff, rs->regs + ROCKCHIP_SPI_ICR);
+ 	/* Fetch GPIOs */
+-	afp->reset = devm_gpiod_get_optional(dev, "reset-gpios", GPIOD_OUT_LOW);
++	afp->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(afp->reset))
+ 		return dev_err_probe(dev, PTR_ERR(afp->reset), "unable to get reset-gpios\n");
  
- 	if (atomic_read(&rs->state) & TXDMA)
- 		dmaengine_terminate_async(ctlr->dma_tx);
+-	afp->pwren = devm_gpiod_get_optional(dev, "pwren-gpios", GPIOD_OUT_LOW);
++	afp->pwren = devm_gpiod_get_optional(dev, "pwren", GPIOD_OUT_LOW);
+ 	if (IS_ERR(afp->pwren))
+ 		return dev_err_probe(dev, PTR_ERR(afp->pwren), "unable to get pwren-gpios\n");
+ 
 -- 
-2.17.1
+2.34.1
 
