@@ -2,93 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:11:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9F5C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 22:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231736AbiBNWLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 17:11:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57004 "EHLO
+        id S231742AbiBNWNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 17:13:50 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230197AbiBNWLv (ORCPT
+        with ESMTP id S230197AbiBNWNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 17:11:51 -0500
-X-Greylist: delayed 3597 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 14:11:42 PST
-Received: from slate.cs.rochester.edu (slate.cs.rochester.edu [128.151.167.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1082EB820A;
-        Mon, 14 Feb 2022 14:11:41 -0800 (PST)
-Received: from node1x10a.cs.rochester.edu (node1x10a.cs.rochester.edu [192.5.53.74])
-        by slate.cs.rochester.edu (8.14.7/8.14.7) with ESMTP id 21ELAx5P010783
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 14 Feb 2022 16:10:59 -0500
-Received: from node1x10a.cs.rochester.edu (localhost [127.0.0.1])
-        by node1x10a.cs.rochester.edu (8.15.2/8.15.1) with ESMTP id 21ELAxL3031113;
-        Mon, 14 Feb 2022 16:10:59 -0500
-Received: (from szhai2@localhost)
-        by node1x10a.cs.rochester.edu (8.15.2/8.15.1/Submit) id 21ELAuk4031106;
-        Mon, 14 Feb 2022 16:10:56 -0500
-From:   Shuang Zhai <szhai2@cs.rochester.edu>
-To:     mgorman@techsingularity.net
-Cc:     akpm@linux-foundation.org, djwong@kernel.org, efault@gmx.de,
-        hakavlad@inbox.lv, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, mhocko@suse.com,
-        regressions@lists.linux.dev, riel@surriel.com, vbabka@suse.cz
-Subject: [PATCH v4 1/1] mm: vmscan: Reduce throttling due to a failure to make progress
-Date:   Mon, 14 Feb 2022 16:10:50 -0500
-Message-Id: <20220214211050.31049-1-szhai2@cs.rochester.edu>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20211202150614.22440-1-mgorman@techsingularity.net>
-References: <20211202150614.22440-1-mgorman@techsingularity.net>
+        Mon, 14 Feb 2022 17:13:48 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BDBE13DE23
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 14:13:39 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-3-0IuFZHXpM1-VcUsNfepTpQ-1; Mon, 14 Feb 2022 22:13:36 +0000
+X-MC-Unique: 0IuFZHXpM1-VcUsNfepTpQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 14 Feb 2022 22:13:34 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 14 Feb 2022 22:13:34 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Linus Torvalds' <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@kernel.org>
+CC:     Mark Rutland <mark.rutland@arm.com>, Rich Felker <dalias@libc.org>,
+        "linux-ia64@vger.kernel.org" <linux-ia64@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        "Brian Cain" <bcain@codeaurora.org>,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Christoph Hellwig" <hch@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Geert Uytterhoeven" <geert@linux-m68k.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, Arnd Bergmann <arnd@arndb.de>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        linux-um <linux-um@lists.infradead.org>,
+        Richard Weinberger <richard@nod.at>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Greentime Hu <green.hu@gmail.com>,
+        Stafford Horne <shorne@gmail.com>,
+        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Nick Hu <nickhu@andestech.com>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        alpha <linux-alpha@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        David Miller <davem@davemloft.net>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: RE: [PATCH 04/14] x86: use more conventional access_ok() definition
+Thread-Topic: [PATCH 04/14] x86: use more conventional access_ok() definition
+Thread-Index: AQHYIeHe9n+22PBgtUWxf89GrdwkK6yTmyQw
+Date:   Mon, 14 Feb 2022 22:13:34 +0000
+Message-ID: <2dda07f893cb4ef9b5ea2265adccb98f@AcuMS.aculab.com>
+References: <20220214163452.1568807-1-arnd@kernel.org>
+ <20220214163452.1568807-5-arnd@kernel.org> <YgqLFYqIqkIsNC92@infradead.org>
+ <CAK8P3a1F3JaYaJPy9bSCG1+YV6EN05PE0DbwpD_GT1qRwFSJ-w@mail.gmail.com>
+ <CAHk-=whq6_Nh3cB3FieP481VcRyCu69X3=wO1yLHGmcZEj69SA@mail.gmail.com>
+ <CAHk-=wgYu67OwP4LhcrPdDVxv2mOsx-Xsc2DKoVW6GZwKFtOYQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wgYu67OwP4LhcrPdDVxv2mOsx-Xsc2DKoVW6GZwKFtOYQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mel,
+RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMTQgRmVicnVhcnkgMjAyMiAyMDoyNA0KPiA+
+DQo+ID4geDg2LTY0IGhhcyBhbHdheXMoKikgdXNlZCBUQVNLX1NJWkVfTUFYIGZvciBhY2Nlc3Nf
+b2soKSwgYW5kIHRoZQ0KPiA+IGdldF91c2VyKCkgYXNzZW1ibGVyIGltcGxlbWVudGF0aW9uIGRv
+ZXMgdGhlIHNhbWUuDQo+IA0KPiBTaWRlIG5vdGU6IHdlIGNvdWxkIGp1c3QgY2hlY2sgdGhlIHNp
+Z24gYml0IGluc3RlYWQsIGFuZCBhdm9pZCBiaWcNCj4gY29uc3RhbnRzIHRoYXQgd2F5Lg0KDQpU
+aGUgY2hlYXAgdGVzdCBmb3IgbW9zdCA2NGJpdCBpcyAoYWRkciB8IHNpemUpID4+IDYyICE9IDAu
+DQoNCkkgZGlkIHNvbWUgdGVzdHMgbGFzdCB3ZWVrIGFuZCB0aGUgY29tcGlsZXJzIGNvcnJlY3Rs
+eSBvcHRpbWlzZQ0Kb3V0IGNvbnN0YW50IHNpemUuDQoNCkRvZXNuJ3Qgc3BhcmM2NCBzdGlsbCBu
+ZWVkIGEgd3JhcCB0ZXN0Pw0KT3IgaXMgdGhhdCBhc3N1bWVkIGJlY2F1c2UgdGhlcmUgaXMgYWx3
+YXlzIGFuIHVubWFwcGVkIHBhZ2UNCmFuZCB0cmFuc2ZlciBhcmUgJ2FkZXF1YXRlbHknIGRvbmUg
+b24gaW5jcmVhc2luZyBhZGRyZXNzZXM/DQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
+c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
+IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
 
-Mel Gorman wrote:
->
-> Mike Galbraith, Alexey Avramov and Darrick Wong all reported similar
-> problems due to reclaim throttling for excessive lengths of time.
-> In Alexey's case, a memory hog that should go OOM quickly stalls for
-> several minutes before stalling. In Mike and Darrick's cases, a small
-> memcg environment stalled excessively even though the system had enough
-> memory overall.
->
-
-I recently found a regression when I tested MGLRU with fio on Linux
-5.16-rc6 [1]. After this patch was applied, I re-ran the test with Linux
-5.16, but the regression has not been fixed yet. 
-
-The workload is to let fio perform random access on files with buffered
-IO. The total file size is 2x the memory size. Files are stored on pmem.
-For each configuration, I ran fio 10 times and reported the average and
-the standard deviation.
-
-Fio command
-===========
-
-$ numactl --cpubind=0 --membind=0 fio --name=randread \
-  --directory=/mnt/pmem/ --size={10G, 5G} --io_size=1000TB \
-  --time_based --numjobs={40, 80} --ioengine=io_uring \
-  --ramp_time=20m --runtime=10m --iodepth=128 \
-  --iodepth_batch_submit=32 --iodepth_batch_complete=32 \
-  --rw=randread --random_distribution=random \
-  --direct=0 --norandommap --group_reporting
-
-Results in throughput (MB/s):
-=============================
-
-+------------+------+-------+------+-------+----------+-------+
-| Jobs / CPU | 5.15 | stdev | 5.16 | stdev | 5.17-rc3 | stdev |
-+------------+------+-------+------+-------+----------+-------+
-| 1          | 8411 | 75    | 7459 | 38    | 7331     | 36    |
-+------------+------+-------+------+-------+----------+-------+
-| 2          | 8417 | 54    | 7491 | 41    | 7383     | 15    |
-+------------+------+-------+------+-------+----------+-------+
-
-[1] https://lore.kernel.org/linux-mm/20220105024423.26409-1-szhai2@cs.rochester.edu/
-
-Thanks!
-
-Shuang
