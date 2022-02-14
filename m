@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D99FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71ED3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245188AbiBNJwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:52:18 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43336 "EHLO
+        id S245584AbiBNJwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:52:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236346AbiBNJtL (ORCPT
+        with ESMTP id S245513AbiBNJtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:49:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C5FBF78;
-        Mon, 14 Feb 2022 01:40:57 -0800 (PST)
+        Mon, 14 Feb 2022 04:49:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C421AD81;
+        Mon, 14 Feb 2022 01:40:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 61452B80DA9;
-        Mon, 14 Feb 2022 09:40:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF16C340E9;
-        Mon, 14 Feb 2022 09:40:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9707960FA2;
+        Mon, 14 Feb 2022 09:40:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F771C340E9;
+        Mon, 14 Feb 2022 09:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831655;
-        bh=orlmaubXj4wded+lvdCi4RRUq/I3rcbYbHBcl1NE3Pk=;
+        s=korg; t=1644831658;
+        bh=oOQiocX8iG93SVM0rrMHhdY+iPpvsf6Slo6TpR7wMsc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SfpHevzLIxkVeDOuPhPbLRCBFPe2i52OOEY+HPZM+nWQZWY0SDmuosUSj50gE7y2L
-         sKG7Xx2/549d34ggHB9U7yfUOxRdRMIM7GVGbmMD9SOcUxXeJGkQrciQLBc1afEcQ4
-         GzQ+dUyesUkmJWeANtuEn/2eJmdeZ9XBrR265xvA=
+        b=WuEWIrE7sfuANTm76mBdSA9JzCJkzLgpHXjWzV+67B7wXkxCg/V/flECpRAMqaMyc
+         mzuHGLSqO0WJpN7tBJyOuAnJqKjVMEyynAtCWlgWADGjlEh4ouFGVIkZdSYGiFK0yN
+         fyoDx0cIaUP3NZSJfWAkPGdglVhGvxy6Q+nQuWvQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 053/116] ARM: dts: meson8b: Fix the UART device-tree schema validation
-Date:   Mon, 14 Feb 2022 10:25:52 +0100
-Message-Id: <20220214092500.551912499@linuxfoundation.org>
+Subject: [PATCH 5.10 036/116] net: stmmac: dwmac-sun8i: use return val of readl_poll_timeout()
+Date:   Mon, 14 Feb 2022 10:25:35 +0100
+Message-Id: <20220214092459.932132310@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,75 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Jisheng Zhang <jszhang@kernel.org>
 
-[ Upstream commit 3375aa77135f6aeb1107ed839a2050a4118444bc ]
+[ Upstream commit 9e0db41e7a0b6f1271cbcfb16dbf5b8641b4e440 ]
 
-The dt-bindings for the UART controller only allow the following values
-for Meson8 SoCs:
-- "amlogic,meson8b-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson8b-uart"
+When readl_poll_timeout() timeout, we'd better directly use its return
+value.
 
-Use the correct fallback compatible string "amlogic,meson-ao-uart" for
-AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
-domain UART controllers.
+Before this patch:
+[    2.145528] dwmac-sun8i: probe of 4500000.ethernet failed with error -14
 
-Also update the order of the clocks to match the order defined in the
-yaml bindings.
+After this patch:
+[    2.138520] dwmac-sun8i: probe of 4500000.ethernet failed with error -110
 
-Fixes: b02d6e73f5fc96 ("ARM: dts: meson8b: use stable UART bindings with correct gate clock")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-4-martin.blumenstingl@googlemail.com
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/meson8b.dtsi | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
-index 2401cdf5f7511..f6eb7c803174e 100644
---- a/arch/arm/boot/dts/meson8b.dtsi
-+++ b/arch/arm/boot/dts/meson8b.dtsi
-@@ -586,27 +586,27 @@ &timer_abcde {
- };
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 9f5ccf1a0a540..cad6588840d8b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -734,7 +734,7 @@ static int sun8i_dwmac_reset(struct stmmac_priv *priv)
  
- &uart_AO {
--	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_CLK81>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8b-uart", "amlogic,meson-ao-uart";
-+	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &uart_A {
--	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART0>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8b-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &uart_B {
--	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART1>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8b-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &uart_C {
--	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART2>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8b-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &usb0 {
+ 	if (err) {
+ 		dev_err(priv->device, "EMAC reset timeout\n");
+-		return -EFAULT;
++		return err;
+ 	}
+ 	return 0;
+ }
 -- 
 2.34.1
 
