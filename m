@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1059C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5250FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346500AbiBNKTE (ORCPT
+        id S1346517AbiBNKTM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:19:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44704 "EHLO
+        Mon, 14 Feb 2022 05:19:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347491AbiBNKQd (ORCPT
+        with ESMTP id S1347504AbiBNKQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7C07C146;
-        Mon, 14 Feb 2022 01:54:04 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F067C148;
+        Mon, 14 Feb 2022 01:54:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEB6DB80D6D;
-        Mon, 14 Feb 2022 09:54:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F37BEC340E9;
-        Mon, 14 Feb 2022 09:54:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF71661375;
+        Mon, 14 Feb 2022 09:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F91C340E9;
+        Mon, 14 Feb 2022 09:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832442;
-        bh=90L42e49gTnIttG60Vd1WAt35ktpCOrBMIYNDCAlMsA=;
+        s=korg; t=1644832439;
+        bh=0c7FPgrkzkPBYHxqx3yzOUKo/b1ktRrCosiqLKiIf0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FqnNQHDtl22qGgGxY9DDRAwkpYQDRpeBYoM9bFWSIwSrGiiTj1e21cywTarAwvb0m
-         2jaT1j1yMp7kIO8JCENZKrvF2DOOmYO87/jMgQxXzJcpBZMAzicXCDKva50cLgwHvT
-         1yVyeUQRsslgvhzm0k5wnnvhGSnSklGmBAowACpg=
+        b=w+9E3RELbQnpSaiarLN+pXeHBqDUNCQUxI+M++07hmRus2P29CkuccXEIX0ZPjqoL
+         JuvS24Y1HiIUkbeNGvsMHFu5dglFgVYu+KNV9gQ2MoQI1SctmdlHTXqKKiZeVsYUKh
+         wfj5uCietGiItLbDhxWo4tHEhZonSd99j82oc9/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.16 016/203] NFSD: Fix ia_size underflow
-Date:   Mon, 14 Feb 2022 10:24:20 +0100
-Message-Id: <20220214092510.772279592@linuxfoundation.org>
+Subject: [PATCH 5.16 015/203] NFSD: Fix NFSv3 SETATTR/CREATEs handling of large file sizes
+Date:   Mon, 14 Feb 2022 10:24:19 +0100
+Message-Id: <20220214092510.741563332@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -50,37 +50,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
-commit e6faac3f58c7c4176b66f63def17a34232a17b0e upstream.
+commit a648fdeb7c0e17177a2280344d015dba3fbe3314 upstream.
 
-iattr::ia_size is a loff_t, which is a signed 64-bit type. NFSv3 and
-NFSv4 both define file size as an unsigned 64-bit type. Thus there
-is a range of valid file size values an NFS client can send that is
-already larger than Linux can handle.
+iattr::ia_size is a loff_t, so these NFSv3 procedures must be
+careful to deal with incoming client size values that are larger
+than s64_max without corrupting the value.
 
-Currently decode_fattr4() dumps a full u64 value into ia_size. If
-that value happens to be larger than S64_MAX, then ia_size
-underflows. I'm about to fix up the NFSv3 behavior as well, so let's
-catch the underflow in the common code path: nfsd_setattr().
+Silently capping the value results in storing a different value
+than the client passed in which is unexpected behavior, so remove
+the min_t() check in decode_sattr3().
+
+Note that RFC 1813 permits only the WRITE procedure to return
+NFS3ERR_FBIG. We believe that NFSv3 reference implementations
+also return NFS3ERR_FBIG when ia_size is too large.
 
 Cc: stable@vger.kernel.org
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/vfs.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ fs/nfsd/nfs3xdr.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nfsd/vfs.c
-+++ b/fs/nfsd/vfs.c
-@@ -434,6 +434,10 @@ nfsd_setattr(struct svc_rqst *rqstp, str
- 			.ia_size	= iap->ia_size,
- 		};
- 
-+		host_err = -EFBIG;
-+		if (iap->ia_size < 0)
-+			goto out_unlock;
-+
- 		host_err = notify_change(&init_user_ns, dentry, &size_attr, NULL);
- 		if (host_err)
- 			goto out_unlock;
+--- a/fs/nfsd/nfs3xdr.c
++++ b/fs/nfsd/nfs3xdr.c
+@@ -254,7 +254,7 @@ svcxdr_decode_sattr3(struct svc_rqst *rq
+ 		if (xdr_stream_decode_u64(xdr, &newsize) < 0)
+ 			return false;
+ 		iap->ia_valid |= ATTR_SIZE;
+-		iap->ia_size = min_t(u64, newsize, NFS_OFFSET_MAX);
++		iap->ia_size = newsize;
+ 	}
+ 	if (xdr_stream_decode_u32(xdr, &set_it) < 0)
+ 		return false;
 
 
