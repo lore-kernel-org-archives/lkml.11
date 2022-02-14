@@ -2,404 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7014C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE3AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230334AbiBNTEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:04:47 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53102 "EHLO
+        id S229878AbiBNTFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 14:05:14 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:54868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230101AbiBNTEh (ORCPT
+        with ESMTP id S229482AbiBNTE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:04:37 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956248EB7F;
-        Mon, 14 Feb 2022 11:04:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644865455; x=1676401455;
-  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=v8K8WDuCx0FUJsLulDJkHzTRTw32m+wWCK1EuR2Zzdc=;
-  b=lpVkkc8bvd3lAQFwK0R877cIvm96xFzeHHbCCRVO9Eqp72qb4YL3ydaY
-   ZF2xpGl+q5ww/d0yViPuN6sORQRIxfopMX5g5WR39yP7Smzhsm3rxwSOB
-   xd7m+Dm3Ot29kUJNpl+DCMd+a39qQb3UwTANM9SFaqB0fnoyJvhy/Kn81
-   soO7YgI+qo3WylMWQcXtw8HsHrsu5IF0XsObelmCQuRLWVGcNPgeSfF55
-   QwEPTyP6KOq97Vh20Jj0sffC5sBSzXD6iBKzLiqjfVrLIZyN+wHz5M0nj
-   /aTmWWzwWPpmyBnlcw690TUXF38A6aPuUFFJh05mSZXITZWjxBeO/Wiyr
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10258"; a="274734056"
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="274734056"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 10:57:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="485641019"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 14 Feb 2022 10:57:03 -0800
-Received: from debox1-desk1.jf.intel.com (debox1-desk1.jf.intel.com [10.54.75.53])
-        by linux.intel.com (Postfix) with ESMTP id D8F11580CB8;
-        Mon, 14 Feb 2022 10:57:03 -0800 (PST)
-Message-ID: <6f6c341360128e047216be632a9377860ecd1d0b.camel@linux.intel.com>
-Subject: Re: [PATCH V7 3/3] selftests: sdsi: test sysfs setup
-From:   "David E. Box" <david.e.box@linux.intel.com>
-Reply-To: david.e.box@linux.intel.com
-To:     Hans de Goede <hdegoede@redhat.com>, gregkh@linuxfoundation.org,
-        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
-        mgross@linux.intel.com
-Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
-Date:   Mon, 14 Feb 2022 10:57:03 -0800
-In-Reply-To: <b431a81f-a2c0-cdc5-208b-7e8adb03cf23@redhat.com>
-References: <20220212013252.1293396-1-david.e.box@linux.intel.com>
-         <20220212013252.1293396-4-david.e.box@linux.intel.com>
-         <b431a81f-a2c0-cdc5-208b-7e8adb03cf23@redhat.com>
-Organization: David E. Box
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.4 (3.38.4-1.fc33) 
+        Mon, 14 Feb 2022 14:04:56 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90BD28EB5C;
+        Mon, 14 Feb 2022 11:04:38 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id u12so11249892plf.13;
+        Mon, 14 Feb 2022 11:04:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5/DaZmV9acYDCTgPotmTjkv5wdpuSuU2XjrOsJthBBQ=;
+        b=nWQxV8bwhbOD3UF50A117xCVxj+SdTH8j0ePhfp/vJCb8IjI9vBWg6cxXRzKNHYnA2
+         cWK3cz+qshBj6PDjeKoogB7Z176jQ/iWDg9drN0TMGnqsZjErTE8Y0fhjM2HuB0hTZ7k
+         WvoWhgELlUECaUOdFHVDVUNSFL9XTETtsx/yiLVvgbMzOxc99n7KNkG87N5dS1e59o/P
+         tG7l3iVWZoA37J/EBljjE3AvYVBP4USRavxZz22fUyPo1Fyt++TsRu3eGtHrwG5tEj67
+         0nlOi1QUyysEhYHzoj7rdRxXZjvOaS5yt/bFcOiBA9oNZ6VC7M2mvOTMw8FnY9P287O5
+         iONA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5/DaZmV9acYDCTgPotmTjkv5wdpuSuU2XjrOsJthBBQ=;
+        b=tJUuEKtMIdqTVgAUrnvnoQwjRRJp/4POslhuKcwRFyixzE5iEinnZQGYtcILC2AMOf
+         cuUqg1WycPMxGsfXcx73LMuQ/0nwkbmVhsQgTH31Q2En1mQI9nhHHg8w3NkazhXxCrk7
+         SFvFgdoi2XIDvlPQMLbD0pLdLu2gKcbTAFMm0SC3TQ67vHgnV5PDk3sFr1OuuB8tNW/P
+         UsOw7jJtz+NwT/fwl3j7WdeYDXtMNvVzsFsw/tZs0oO1okXQXfkI/bLTSOfZI2FaT8SY
+         +kS3dGKBq07bQpEBmTUQSvO7KrXbsWNej2gm2bvGMsUHfxVIUtgwHDb+wWWOb+DqnNfY
+         FS3g==
+X-Gm-Message-State: AOAM531/hdXLCQO+cjC9+xLAnT6K5wvT+lPrjTdXoLv705LiShcU7POZ
+        8cCjSmLFMBEHZWZRpugVnLs=
+X-Google-Smtp-Source: ABdhPJwoikppkKPhBbf43zKKC+nQQi8QmN17ON2BtIKBG/X7Qj3NKBvQo5nyXCW7kCKLxOljb9sS1Q==
+X-Received: by 2002:a17:90a:8c8b:: with SMTP id b11mr16258736pjo.197.1644865217384;
+        Mon, 14 Feb 2022 11:00:17 -0800 (PST)
+Received: from [192.168.1.35] (71.red-83-50-68.dynamicip.rima-tde.net. [83.50.68.71])
+        by smtp.gmail.com with ESMTPSA id d8sm3507592pjr.29.2022.02.14.11.00.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 11:00:17 -0800 (PST)
+Sender: =?UTF-8?Q?Philippe_Mathieu=2DDaud=C3=A9?= 
+        <philippe.mathieu.daude@gmail.com>
+Message-ID: <5324be35-5c49-31c1-3f9a-267a5dae8c84@amsat.org>
+Date:   Mon, 14 Feb 2022 20:00:12 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.1
+Subject: Re: [PATCH mips-fixes] MIPS: smp: fill in sibling and core maps
+ earlier
+Content-Language: en-US
+To:     Alexander Lobakin <alobakin@pm.me>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Valentin Schneider <valentin.schneider@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220212221347.442070-1-alobakin@pm.me>
+From:   =?UTF-8?Q?Philippe_Mathieu-Daud=c3=a9?= <f4bug@amsat.org>
+In-Reply-To: <20220212221347.442070-1-alobakin@pm.me>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-14 at 12:10 +0100, Hans de Goede wrote:
-> Hi,
+On 12/2/22 23:21, Alexander Lobakin wrote:
+> After enabling CONFIG_SCHED_CORE (landed during 5.14 cycle),
+> 2-core 2-thread-per-core interAptiv (CPS-driven) started emitting
+> the following:
 > 
-> On 2/12/22 02:32, David E. Box wrote:
-> > Tests file configuration and error handling of the Intel Software
-> > Defined Silicon sysfs ABI.
-> > 
-> > Signed-off-by: David E. Box <david.e.box@linux.intel.com>
-> > ---
-> > V7
-> >   - No changes.
-> > V6
-> >   - No changes.
-> > V5
-> >   - No changes.
-> > V4
-> >   - No changes.
-> > V3
-> >   - Add tests to check PCI device removal handling and to check for
-> >     driver memory leaks.
-> > V2
-> >   - New patch.
-> > 
-> >  MAINTAINERS                                   |   1 +
-> >  tools/testing/selftests/drivers/sdsi/sdsi.sh  |  18 ++
-> >  .../selftests/drivers/sdsi/sdsi_test.py       | 226 ++++++++++++++++++
-> >  3 files changed, 245 insertions(+)
-> >  create mode 100755 tools/testing/selftests/drivers/sdsi/sdsi.sh
-> >  create mode 100644 tools/testing/selftests/drivers/sdsi/sdsi_test.py
-> > 
-> > diff --git a/MAINTAINERS b/MAINTAINERS
-> > index 80325cbde3bd..a05c6b40601a 100644
-> > --- a/MAINTAINERS
-> > +++ b/MAINTAINERS
-> > @@ -9874,6 +9874,7 @@ M:        David E. Box <david.e.box@linux.intel.com>
-> >  S:     Supported
-> >  F:     drivers/platform/x86/intel/sdsi.c
-> >  F:     tools/arch/x86/intel_sdsi/
-> > +F:     tools/testing/selftests/drivers/sdsi/
-> >  
-> >  INTEL SKYLAKE INT3472 ACPI DEVICE DRIVER
-> >  M:     Daniel Scally <djrscally@gmail.com>
-> > diff --git a/tools/testing/selftests/drivers/sdsi/sdsi.sh
-> > b/tools/testing/selftests/drivers/sdsi/sdsi.sh
-> > new file mode 100755
-> > index 000000000000..8db71961d164
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/drivers/sdsi/sdsi.sh
-> > @@ -0,0 +1,18 @@
-> > +#!/bin/sh
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +# Runs tests for the intel_sdsi driver
-> > +
-> > +if ! /sbin/modprobe -q -r intel_sdsi; then
-> > +       echo "drivers/sdsi: [SKIP]"
-> > +       exit 77
-> > +fi
+> [    0.025698] CPU1 revision is: 0001a120 (MIPS interAptiv (multi))
+> [    0.048183] ------------[ cut here ]------------
+> [    0.048187] WARNING: CPU: 1 PID: 0 at kernel/sched/core.c:6025 sched_core_cpu_starting+0x198/0x240
+> [    0.048220] Modules linked in:
+> [    0.048233] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.17.0-rc3+ #35 b7b319f24073fd9a3c2aa7ad15fb7993eec0b26f
+> [    0.048247] Stack : 817f0000 00000004 327804c8 810eb050 00000000 00000004 00000000 c314fdd1
+> [    0.048278]         830cbd64 819c0000 81800000 817f0000 83070bf4 00000001 830cbd08 00000000
+> [    0.048307]         00000000 00000000 815fcbc4 00000000 00000000 00000000 00000000 00000000
+> [    0.048334]         00000000 00000000 00000000 00000000 817f0000 00000000 00000000 817f6f34
+> [    0.048361]         817f0000 818a3c00 817f0000 00000004 00000000 00000000 4dc33260 0018c933
+> [    0.048389]         ...
+> [    0.048396] Call Trace:
+> [    0.048399] [<8105a7bc>] show_stack+0x3c/0x140
+> [    0.048424] [<8131c2a0>] dump_stack_lvl+0x60/0x80
+> [    0.048440] [<8108b5c0>] __warn+0xc0/0xf4
+> [    0.048454] [<8108b658>] warn_slowpath_fmt+0x64/0x10c
+> [    0.048467] [<810bd418>] sched_core_cpu_starting+0x198/0x240
+> [    0.048483] [<810c6514>] sched_cpu_starting+0x14/0x80
+> [    0.048497] [<8108c0f8>] cpuhp_invoke_callback_range+0x78/0x140
+> [    0.048510] [<8108d914>] notify_cpu_starting+0x94/0x140
+> [    0.048523] [<8106593c>] start_secondary+0xbc/0x280
+> [    0.048539]
+> [    0.048543] ---[ end trace 0000000000000000 ]---
+> [    0.048636] Synchronize counters for CPU 1: done.
 > 
-> You should also test that python3 and pytest are available and if not then
-> also skip this test.
+> ...for each but CPU 0/boot.
+> Basic debug printks right before the mentioned line say:
+> 
+> [    0.048170] CPU: 1, smt_mask:
+> 
+> So smt_mask, which is sibling mask obviously, is empty when entering
+> the function.
+> This is critical, as sched_core_cpu_starting() calculates
+> core-scheduling parameters only once per CPU start, and it's crucial
+> to have all the parameters filled in at that moment (at least it
+> uses cpu_smt_mask() which in fact is `&cpu_sibling_map[cpu]` on
+> MIPS).
+> 
+> A bit of debugging led me to that set_cpu_sibling_map() performing
+> the actual map calculation, was being invocated after
+> notify_cpu_start(), and exactly the latter function starts CPU HP
+> callback round (sched_core_cpu_starting() is basically a CPU HP
+> callback).
+> While the flow is same on ARM64 (maps after the notifier, although
+> before calling set_cpu_online()), x86 started calculating sibling
+> maps earlier than starting the CPU HP callbacks in Linux 4.14 (see
+> [0] for the reference). Neither me nor my brief tests couldn't find
+> any potential caveats in calculating the maps right after performing
+> delay calibration, but the WARN splat is now gone.
+> The very same debug prints now yield exactly what I expected from
+> them:
+> 
+> [    0.048433] CPU: 1, smt_mask: 0-1
+> 
+> [0] https://git.kernel.org/pub/scm/linux/kernel/git/mips/linux.git/commit/?id=76ce7cfe35ef
 
-Okay
+Isn't it worth Cc'ing stable@vger.kernel.org here?
 
-> 
-> > +
-> > +if /sbin/modprobe -q intel_sdsi; then
-> > +       python3 -m pytest sdsi_test.py
-> 
-> You are ignoring the return value of the python script here, you probably want
-> something like
-> this instead:
-> 
-> if /sbin/modprobe -q intel_sdsi && python3 -m pytest sdsi_test.py; then
-> 
-> 
-> 
-> 
-> > +       /sbin/modprobe -q -r intel_sdsi
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> ---
+>   arch/mips/kernel/smp.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
 
-Okay
-
-> 
-> Why? now you are leaving the system behind in a different state then it was
-> before?
-
-I assumed that the driver had to be installed to run the test, so I uninstall it
-after. But it could have already been installed. Will change to match the
-initial state. Thanks.
-
-David
-
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-> > +
-> > +       echo "drivers/sdsi: ok"
-> > +else
-> > +       echo "drivers/sdsi: [FAIL]"
-> > +       exit 1
-> > +fi
-> > diff --git a/tools/testing/selftests/drivers/sdsi/sdsi_test.py
-> > b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
-> > new file mode 100644
-> > index 000000000000..4922edfe461f
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
-> > @@ -0,0 +1,226 @@
-> > +#!/usr/bin/env python3
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +
-> > +from struct import pack
-> > +from time import sleep
-> > +
-> > +import errno
-> > +import glob
-> > +import os
-> > +import subprocess
-> > +
-> > +try:
-> > +    import pytest
-> > +except ImportError:
-> > +    print("Unable to import pytest python module.")
-> > +    print("\nIf not already installed, you may do so with:")
-> > +    print("\t\tpip3 install pytest")
-> > +    exit(1)
-> > +
-> > +SOCKETS = glob.glob('/sys/bus/auxiliary/devices/intel_vsec.sdsi.*')
-> > +NUM_SOCKETS = len(SOCKETS)
-> > +
-> > +MODULE_NAME = 'sdsi'
-> > +DEV_PREFIX = 'intel_vsec.sdsi'
-> > +CLASS_DIR = '/sys/bus/auxiliary/devices'
-> > +GUID = "0x6dd191"
-> > +
-> > +def read_bin_file(file):
-> > +    with open(file, mode='rb') as f:
-> > +        content = f.read()
-> > +    return content
-> > +
-> > +def get_dev_file_path(socket, file):
-> > +    return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/' + file
-> > +
-> > +def kmemleak_enabled():
-> > +    kmemleak = "/sys/kernel/debug/kmemleak"
-> > +    return os.path.isfile(kmemleak)
-> > +
-> > +class TestSDSiDriver:
-> > +    def test_driver_loaded(self):
-> > +        lsmod_p = subprocess.Popen(('lsmod'), stdout=subprocess.PIPE)
-> > +        result = subprocess.check_output(('grep', '-q', MODULE_NAME),
-> > stdin=lsmod_p.stdout)
-> > +
-> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
-> > +class TestSDSiFilesClass:
-> > +
-> > +    def read_value(self, file):
-> > +        f = open(file, "r")
-> > +        value = f.read().strip("\n")
-> > +        return value
-> > +
-> > +    def get_dev_folder(self, socket):
-> > +        return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/'
-> > +
-> > +    def test_sysfs_files_exist(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +        print (folder)
-> > +        assert os.path.isfile(folder + "guid") == True
-> > +        assert os.path.isfile(folder + "provision_akc") == True
-> > +        assert os.path.isfile(folder + "provision_cap") == True
-> > +        assert os.path.isfile(folder + "state_certificate") == True
-> > +        assert os.path.isfile(folder + "registers") == True
-> > +
-> > +    def test_sysfs_file_permissions(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +        mode = os.stat(folder + "guid").st_mode & 0o777
-> > +        assert mode == 0o444    # Read all
-> > +        mode = os.stat(folder + "registers").st_mode & 0o777
-> > +        assert mode == 0o400    # Read owner
-> > +        mode = os.stat(folder + "provision_akc").st_mode & 0o777
-> > +        assert mode == 0o200    # Read owner
-> > +        mode = os.stat(folder + "provision_cap").st_mode & 0o777
-> > +        assert mode == 0o200    # Read owner
-> > +        mode = os.stat(folder + "state_certificate").st_mode & 0o777
-> > +        assert mode == 0o400    # Read owner
-> > +
-> > +    def test_sysfs_file_ownership(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +
-> > +        st = os.stat(folder + "guid")
-> > +        assert st.st_uid == 0
-> > +        assert st.st_gid == 0
-> > +
-> > +        st = os.stat(folder + "registers")
-> > +        assert st.st_uid == 0
-> > +        assert st.st_gid == 0
-> > +
-> > +        st = os.stat(folder + "provision_akc")
-> > +        assert st.st_uid == 0
-> > +        assert st.st_gid == 0
-> > +
-> > +        st = os.stat(folder + "provision_cap")
-> > +        assert st.st_uid == 0
-> > +        assert st.st_gid == 0
-> > +
-> > +        st = os.stat(folder + "state_certificate")
-> > +        assert st.st_uid == 0
-> > +        assert st.st_gid == 0
-> > +
-> > +    def test_sysfs_file_sizes(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +
-> > +        if self.read_value(folder + "guid") == GUID:
-> > +            st = os.stat(folder + "registers")
-> > +            assert st.st_size == 72
-> > +
-> > +        st = os.stat(folder + "provision_akc")
-> > +        assert st.st_size == 1024
-> > +
-> > +        st = os.stat(folder + "provision_cap")
-> > +        assert st.st_size == 1024
-> > +
-> > +        st = os.stat(folder + "state_certificate")
-> > +        assert st.st_size == 4096
-> > +
-> > +    def test_no_seek_allowed(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +        rand_file = bytes(os.urandom(8))
-> > +
-> > +        f = open(folder + "provision_cap", "wb", 0)
-> > +        f.seek(1)
-> > +        with pytest.raises(OSError) as error:
-> > +            f.write(rand_file)
-> > +        assert error.value.errno == errno.ESPIPE
-> > +        f.close()
-> > +
-> > +        f = open(folder + "provision_akc", "wb", 0)
-> > +        f.seek(1)
-> > +        with pytest.raises(OSError) as error:
-> > +            f.write(rand_file)
-> > +        assert error.value.errno == errno.ESPIPE
-> > +        f.close()
-> > +
-> > +    def test_registers_seek(self, socket):
-> > +        folder = self.get_dev_folder(socket)
-> > +
-> > +        # Check that the value read from an offset of the entire
-> > +        # file is none-zero and the same as the value read
-> > +        # from seeking to the same location
-> > +        f = open(folder + "registers", "rb")
-> > +        data = f.read()
-> > +        f.seek(64)
-> > +        id = f.read()
-> > +        assert id != bytes(0)
-> > +        assert data[64:] == id
-> > +        f.close()
-> > +
-> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
-> > +class TestSDSiMailboxCmdsClass:
-> > +    def test_provision_akc_eoverflow_1017_bytes(self, socket):
-> > +
-> > +        # The buffer for writes is 1k, of with 8 bytes must be
-> > +        # reserved for the command, leaving 1016 bytes max.
-> > +        # Check that we get an overflow error for 1017 bytes.
-> > +        node = get_dev_file_path(socket, "provision_akc")
-> > +        rand_file = bytes(os.urandom(1017))
-> > +
-> > +        f = open(node, 'wb', 0)
-> > +        with pytest.raises(OSError) as error:
-> > +            f.write(rand_file)
-> > +        assert error.value.errno == errno.EOVERFLOW
-> > +        f.close()
-> > +
-> > +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
-> > +class TestSdsiDriverLocksClass:
-> > +    def test_enodev_when_pci_device_removed(self, socket):
-> > +        node = get_dev_file_path(socket, "provision_akc")
-> > +        dev_name = DEV_PREFIX + '.' + str(socket)
-> > +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
-> > +        rand_file = bytes(os.urandom(8))
-> > +
-> > +        f = open(node, 'wb', 0)
-> > +        g = open(node, 'wb', 0)
-> > +
-> > +        with open(driver_dir + 'unbind', 'w') as k:
-> > +            print(dev_name, file = k)
-> > +
-> > +        with pytest.raises(OSError) as error:
-> > +            f.write(rand_file)
-> > +        assert error.value.errno == errno.ENODEV
-> > +
-> > +        with pytest.raises(OSError) as error:
-> > +            g.write(rand_file)
-> > +        assert error.value.errno == errno.ENODEV
-> > +
-> > +        f.close()
-> > +        g.close()
-> > +
-> > +        # Short wait needed to allow file to close before pulling driver
-> > +        sleep(1)
-> > +
-> > +        p = subprocess.Popen(('modprobe', '-r', 'intel_sdsi'))
-> > +        p.wait()
-> > +        p = subprocess.Popen(('modprobe', '-r', 'intel_vsec'))
-> > +        p.wait()
-> > +        p = subprocess.Popen(('modprobe', 'intel_vsec'))
-> > +        p.wait()
-> > +
-> > +        # Short wait needed to allow driver time to get inserted
-> > +        # before continuing tests
-> > +        sleep(1)
-> > +
-> > +    def test_memory_leak(self, socket):
-> > +        if not kmemleak_enabled:
-> > +            pytest.skip("kmemleak not enabled in kernel")
-> > +
-> > +        dev_name = DEV_PREFIX + '.' + str(socket)
-> > +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
-> > +
-> > +        with open(driver_dir + 'unbind', 'w') as k:
-> > +            print(dev_name, file = k)
-> > +
-> > +        sleep(1)
-> > +
-> > +        subprocess.check_output(('modprobe', '-r', 'intel_sdsi'))
-> > +        subprocess.check_output(('modprobe', '-r', 'intel_vsec'))
-> > +
-> > +        with open('/sys/kernel/debug/kmemleak', 'w') as f:
-> > +            print('scan', file = f)
-> > +        sleep(5)
-> > +
-> > +        assert os.stat('/sys/kernel/debug/kmemleak').st_size == 0
-> > +
-> > +        subprocess.check_output(('modprobe', 'intel_vsec'))
-> > +        sleep(1)
-> 
-
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
 
