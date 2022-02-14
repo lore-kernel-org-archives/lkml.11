@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DA3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C1ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347108AbiBNK3k (ORCPT
+        id S1347420AbiBNK3r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:29:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57568 "EHLO
+        Mon, 14 Feb 2022 05:29:47 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347089AbiBNK1h (ORCPT
+        with ESMTP id S1347288AbiBNK1m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:27:37 -0500
+        Mon, 14 Feb 2022 05:27:42 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEBC95A1F;
-        Mon, 14 Feb 2022 01:58:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82FA9680F;
+        Mon, 14 Feb 2022 01:58:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84B7860A14;
-        Mon, 14 Feb 2022 09:58:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4422AC340E9;
-        Mon, 14 Feb 2022 09:58:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B969B60909;
+        Mon, 14 Feb 2022 09:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FE1C340E9;
+        Mon, 14 Feb 2022 09:58:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832694;
-        bh=SixfaTtzdyMqwe0H6Yan4n+a7bywP5NajjS/j0fBXjc=;
+        s=korg; t=1644832705;
+        bh=EUxFAa0UKKcWMvF6DQFzzmdf+4g4HZ2M/fu4aqrh+Nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vUszrsg4CegqfzRrmzeatSIGfJU9qIqWJmpCm9cCQ8rkkS1oeYGcLE8WqTDg8UpIk
-         SNZ17HUeJqdKea19h3ABmtRno7vQPBSIePqKivMQNO2Z1iMNlAawj4/mQ5WSfO0LfK
-         NiJHkDkmFrgkyPkEjcRIvI23J/Kq3bUcuim8LAl8=
+        b=AaAnS09L4FNCAcVAzK8WujCouUHr7465fgiN6thBMQsjl2IIIUaG86pfBGQszWjYc
+         uN5YC3WKEIZmtMO7MH+R3ZA+s9OnjuXX9glq810aCOFPLbWbYpgUDF8twd5ixvBnSf
+         2rTmUrd6Gm1eLW/Y365r0JPLF8AmOeQde/qonUXs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Jerome Forissier <jerome@forissier.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 095/203] ARM: dts: meson8: Fix the UART device-tree schema validation
-Date:   Mon, 14 Feb 2022 10:25:39 +0100
-Message-Id: <20220214092513.492972629@linuxfoundation.org>
+Subject: [PATCH 5.16 098/203] tee: optee: do not check memref size on return from Secure World
+Date:   Mon, 14 Feb 2022 10:25:42 +0100
+Message-Id: <20220214092513.587308135@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,75 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Jerome Forissier <jerome@forissier.org>
 
-[ Upstream commit 57007bfb5469ba31cacf69d52195e8b75f43e32d ]
+[ Upstream commit abc8dc34d1f6e34ed346c6e3fc554127e421b769 ]
 
-The dt-bindings for the UART controller only allow the following values
-for Meson8 SoCs:
-- "amlogic,meson8-uart", "amlogic,meson-ao-uart"
-- "amlogic,meson8-uart"
+Commit c650b8dc7a79 ("tee: optee: do not check memref size on return
+from Secure World") was mistakenly lost in commit 4602c5842f64 ("optee:
+refactor driver with internal callbacks"). Remove the unwanted code
+again.
 
-Use the correct fallback compatible string "amlogic,meson-ao-uart" for
-AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
-domain UART controllers.
-
-Also update the order of the clocks to match the order defined in the
-yaml schema.
-
-Fixes: 6ca77502050eff ("ARM: dts: meson8: use stable UART bindings with correct gate clock")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211227180026.4068352-3-martin.blumenstingl@googlemail.com
+Fixes: 4602c5842f64 ("optee: refactor driver with internal callbacks")
+Signed-off-by: Jerome Forissier <jerome@forissier.org>
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/meson8.dtsi | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/tee/optee/smc_abi.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/meson8.dtsi b/arch/arm/boot/dts/meson8.dtsi
-index f80ddc98d3a2b..9997a5d0333a3 100644
---- a/arch/arm/boot/dts/meson8.dtsi
-+++ b/arch/arm/boot/dts/meson8.dtsi
-@@ -736,27 +736,27 @@ &timer_abcde {
- };
+diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
+index cf2e3293567d9..09e7ec673bb6b 100644
+--- a/drivers/tee/optee/smc_abi.c
++++ b/drivers/tee/optee/smc_abi.c
+@@ -71,16 +71,6 @@ static int from_msg_param_tmp_mem(struct tee_param *p, u32 attr,
+ 	p->u.memref.shm_offs = mp->u.tmem.buf_ptr - pa;
+ 	p->u.memref.shm = shm;
  
- &uart_AO {
--	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_CLK81>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8-uart", "amlogic,meson-ao-uart";
-+	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
+-	/* Check that the memref is covered by the shm object */
+-	if (p->u.memref.size) {
+-		size_t o = p->u.memref.shm_offs +
+-			   p->u.memref.size - 1;
+-
+-		rc = tee_shm_get_pa(shm, o, NULL);
+-		if (rc)
+-			return rc;
+-	}
+-
+ 	return 0;
+ }
  
- &uart_A {
--	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART0>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &uart_B {
--	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART1>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &uart_C {
--	compatible = "amlogic,meson8-uart", "amlogic,meson-uart";
--	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART2>;
--	clock-names = "baud", "xtal", "pclk";
-+	compatible = "amlogic,meson8-uart";
-+	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
-+	clock-names = "xtal", "pclk", "baud";
- };
- 
- &usb0 {
 -- 
 2.34.1
 
