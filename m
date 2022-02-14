@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C014C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E89C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244197AbiBNJib (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:38:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52468 "EHLO
+        id S244202AbiBNJie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:38:34 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244532AbiBNJgC (ORCPT
+        with ESMTP id S244361AbiBNJfx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:36:02 -0500
+        Mon, 14 Feb 2022 04:35:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2191AD88;
-        Mon, 14 Feb 2022 01:33:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62372AE61;
+        Mon, 14 Feb 2022 01:33:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 057A461146;
-        Mon, 14 Feb 2022 09:33:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA5B1C340E9;
-        Mon, 14 Feb 2022 09:33:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2192960F87;
+        Mon, 14 Feb 2022 09:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4C9C340E9;
+        Mon, 14 Feb 2022 09:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831231;
-        bh=dKBFCfRpfLKNMl+pvojyy7jAfmFm/01aTMmYI6c5qEQ=;
+        s=korg; t=1644831216;
+        bh=maGwADFh5ujhe3YbMq/qFuGWPGji6b+uUxhJF/LdLww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JFiO2fEaOUHZYsxCpM0jugGT/iJVjiC0NALk/s8PwpnV2Szb7JUarumwFhwmX+2xF
-         Osw0jhQSyk8snPdTfNxP1HUZEc8bQbPQDh7hgJbdRhshLcLppAJmrSESnUTXZE7jmu
-         8pWye5cbwsrTAzZ9jngrK8srL5KMDgRkcZD3ySOU=
+        b=O2gFSKOSD+kG3Qo6fWTPOdyy2AE2MT6eL8LLXcX5pgtvV2K9wSpRmXd0NYZpEfjvd
+         vlX69BVpQgn+YNfVv1QJQwgv2XR84SGQEx4+J33LIcnN/cxOiQ4s5r0W0VPtKDln7F
+         0e8DxGbqPZ3RCno6+A+0x3n9MVSUILrsFsQmH1nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>
-Subject: [PATCH 4.19 39/49] usb: dwc3: gadget: Prevent core from processing stale TRBs
-Date:   Mon, 14 Feb 2022 10:26:05 +0100
-Message-Id: <20220214092449.593492537@linuxfoundation.org>
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 20/49] net: bridge: fix stale eth hdr pointer in br_dev_xmit
+Date:   Mon, 14 Feb 2022 10:25:46 +0100
+Message-Id: <20220214092448.956124456@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,51 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Udipto Goswami <quic_ugoswami@quicinc.com>
+From: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-commit 117b4e96c7f362eb6459543883fc07f77662472c upstream.
+commit 823d81b0fa2cd83a640734e74caee338b5d3c093 upstream.
 
-With CPU re-ordering on write instructions, there might
-be a chance that the HWO is set before the TRB is updated
-with the new mapped buffer address.
-And in the case where core is processing a list of TRBs
-it is possible that it fetched the TRBs when the HWO is set
-but before the buffer address is updated.
-Prevent this by adding a memory barrier before the HWO
-is updated to ensure that the core always process the
-updated TRBs.
+In br_dev_xmit() we perform vlan filtering in br_allowed_ingress() but
+if the packet has the vlan header inside (e.g. bridge with disabled
+tx-vlan-offload) then the vlan filtering code will use skb_vlan_untag()
+to extract the vid before filtering which in turn calls pskb_may_pull()
+and we may end up with a stale eth pointer. Moreover the cached eth header
+pointer will generally be wrong after that operation. Remove the eth header
+caching and just use eth_hdr() directly, the compiler does the right thing
+and calculates it only once so we don't lose anything.
 
-Fixes: f6bafc6a1c9d ("usb: dwc3: convert TRBs into bitshifts")
-Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
-Link: https://lore.kernel.org/r/1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com
+Fixes: 057658cb33fb ("bridge: suppress arp pkts on BR_NEIGH_SUPPRESS ports")
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Eduardo Vela <Nava> <evn@google.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ net/bridge/br_device.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -1020,6 +1020,19 @@ static void __dwc3_prepare_one_trb(struc
- 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
- 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(stream_id);
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -39,7 +39,6 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
+ 	struct pcpu_sw_netstats *brstats = this_cpu_ptr(br->stats);
+ 	const struct nf_br_ops *nf_ops;
+ 	const unsigned char *dest;
+-	struct ethhdr *eth;
+ 	u16 vid = 0;
  
-+	/*
-+	 * As per data book 4.2.3.2TRB Control Bit Rules section
-+	 *
-+	 * The controller autonomously checks the HWO field of a TRB to determine if the
-+	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
-+	 * is valid before setting the HWO field to '1'. In most systems, this means that
-+	 * software must update the fourth DWORD of a TRB last.
-+	 *
-+	 * However there is a possibility of CPU re-ordering here which can cause
-+	 * controller to observe the HWO bit set prematurely.
-+	 * Add a write memory barrier to prevent CPU re-ordering.
-+	 */
-+	wmb();
- 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
+ 	memset(skb->cb, 0, sizeof(struct br_input_skb_cb));
+@@ -60,15 +59,14 @@ netdev_tx_t br_dev_xmit(struct sk_buff *
+ 	BR_INPUT_SKB_CB(skb)->brdev = dev;
  
- 	dwc3_ep_inc_enq(dep);
+ 	skb_reset_mac_header(skb);
+-	eth = eth_hdr(skb);
+ 	skb_pull(skb, ETH_HLEN);
+ 
+ 	if (!br_allowed_ingress(br, br_vlan_group_rcu(br), skb, &vid))
+ 		goto out;
+ 
+ 	if (IS_ENABLED(CONFIG_INET) &&
+-	    (eth->h_proto == htons(ETH_P_ARP) ||
+-	     eth->h_proto == htons(ETH_P_RARP)) &&
++	    (eth_hdr(skb)->h_proto == htons(ETH_P_ARP) ||
++	     eth_hdr(skb)->h_proto == htons(ETH_P_RARP)) &&
+ 	    br->neigh_suppress_enabled) {
+ 		br_do_proxy_suppress_arp(skb, br, vid, NULL);
+ 	} else if (IS_ENABLED(CONFIG_IPV6) &&
 
 
