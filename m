@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBC1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB81C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243979AbiBNJfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:35:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50082 "EHLO
+        id S243851AbiBNJfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:35:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244012AbiBNJes (ORCPT
+        with ESMTP id S244060AbiBNJes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:34:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF7F60D81;
-        Mon, 14 Feb 2022 01:32:49 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D72869286;
+        Mon, 14 Feb 2022 01:32:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A173260DFD;
-        Mon, 14 Feb 2022 09:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 871F1C340E9;
-        Mon, 14 Feb 2022 09:32:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B377B60FA2;
+        Mon, 14 Feb 2022 09:32:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EAF6C340F2;
+        Mon, 14 Feb 2022 09:32:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831167;
-        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
+        s=korg; t=1644831150;
+        bh=k8li0rbyuLmDg+tAiLENpQPLXkvUb6PfoEEdtHStkQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yv3n6DjeUaksi5gG88DSrkw9/OmkW2ebqX4Cu6bm0QoAsfKZAJLUnb4EyBO39djQ3
-         7kcvVgXu0hNMN9hjKFgoCegRBmkBg0bt1GztrvRA1hkFxyHvNvTVd0zFDM2x3/CH2c
-         4XDNw6/GIYv5rbO8a7AsQ3Ssjum7x1/1i3n18YOs=
+        b=rMFfK8HilijNOqo0wKT2xsp1DnyqpXt4RmEC9XhpbEK10INGI/GtP3BvLFsm6Wh8v
+         gU9da+G+NdJaL6jIHsiN/m+USGreoO4b7dgxPFpKIR4nF/w2bV00fH3AH0iajRCB65
+         Eifx/HZ94C1X9AsIMCOT+4Rzis+I0v55ySqKa6ns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 4.19 19/49] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
-Date:   Mon, 14 Feb 2022 10:25:45 +0100
-Message-Id: <20220214092448.925287014@linuxfoundation.org>
+        stable@vger.kernel.org, Victor Nogueira <victor@mojatatu.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 14/49] net: sched: Clarify error message when qdisc kind is unknown
+Date:   Mon, 14 Feb 2022 10:25:40 +0100
+Message-Id: <20220214092448.769554509@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -48,41 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Victor Nogueira <victor@mojatatu.com>
 
-commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
+[ Upstream commit 973bf8fdd12f0e70ea351c018e68edd377a836d1 ]
 
-Currently, SD card fails to mount due to the following pinctrl error:
+When adding a tc rule with a qdisc kind that is not supported or not
+compiled into the kernel, the kernel emits the following error: "Error:
+Specified qdisc not found.". Found via tdc testing when ETS qdisc was not
+compiled in and it was not obvious right away what the message meant
+without looking at the kernel code.
 
-[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
-[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
-[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
-[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
+Change the error message to be more explicit and say the qdisc kind is
+unknown.
 
-Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
-is already been used by the mmc0-pins-fixup pinctrl group.
-
-With this change the rootfs can be mounted and the imx23-evk board can
-boot successfully.
-
-Cc: <stable@vger.kernel.org>
-Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Victor Nogueira <victor@mojatatu.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/imx23-evk.dts |    1 -
- 1 file changed, 1 deletion(-)
+ net/sched/sch_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/imx23-evk.dts
-+++ b/arch/arm/boot/dts/imx23-evk.dts
-@@ -79,7 +79,6 @@
- 						MX23_PAD_LCD_RESET__GPIO_1_18
- 						MX23_PAD_PWM3__GPIO_1_29
- 						MX23_PAD_PWM4__GPIO_1_30
--						MX23_PAD_SSP1_DETECT__SSP1_DETECT
- 					>;
- 					fsl,drive-strength = <MXS_DRIVE_4mA>;
- 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index af035431bec60..424e70907b967 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1131,7 +1131,7 @@ static struct Qdisc *qdisc_create(struct net_device *dev,
+ 
+ 	err = -ENOENT;
+ 	if (!ops) {
+-		NL_SET_ERR_MSG(extack, "Specified qdisc not found");
++		NL_SET_ERR_MSG(extack, "Specified qdisc kind is unknown");
+ 		goto err_out;
+ 	}
+ 
+-- 
+2.34.1
+
 
 
