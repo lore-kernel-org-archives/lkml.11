@@ -2,352 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B9AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD48C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 15 Feb 2022 00:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232323AbiBOAAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 19:00:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40006 "EHLO
+        id S232347AbiBOAAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 19:00:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:39990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232317AbiBOAAf (ORCPT
+        with ESMTP id S232315AbiBOAAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 19:00:35 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743A641984;
-        Mon, 14 Feb 2022 16:00:26 -0800 (PST)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EN10KB007645;
-        Tue, 15 Feb 2022 00:00:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=C9lgz9nUygy/WNSTFeeSPkV509FapWhd0eHU3azbyjQ=;
- b=V6jz00dlAfuHvlIEDEDdZ47RlqbFWWqYXihuemO13+2W7TEhkZ0I3+EeovzPhCwu9eog
- +pi3UdbixsAHlawfet+t6L/F0dz9xLWvm7qUGVVHb66YGaOSkavJbdAfIm9qYWVNuxmh
- H0frEzi1AjBYfLYqDl0zVpq9D7OWeuaLsr0/Qul8IOusWtlcMyxmPIYr/xYLnloLM3Jj
- 5fwFA7q9iGDmskbnaTyMX5CUFrIYlFRfLkk0tl5dLGkswaoxlmQQmu+hCzqosxwvbaPz
- YX6Nb1uUPtkbAAHct0ppFXk9l0PPM3s+k7mmLw6My0dey5I3TVyOY7t3FdKVkHX/AiYq bA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7dej3p5d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 00:00:26 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21ENSUJm025655;
-        Tue, 15 Feb 2022 00:00:25 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e7dej3p4n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 00:00:25 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21ENwAlr005177;
-        Tue, 15 Feb 2022 00:00:23 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma06ams.nl.ibm.com with ESMTP id 3e645jhxjc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 15 Feb 2022 00:00:22 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21F00I5834537732
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 15 Feb 2022 00:00:18 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 529DFA4059;
-        Tue, 15 Feb 2022 00:00:18 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A6342A404D;
-        Tue, 15 Feb 2022 00:00:17 +0000 (GMT)
-Received: from p-imbrenda (unknown [9.145.2.54])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 15 Feb 2022 00:00:17 +0000 (GMT)
-Date:   Mon, 14 Feb 2022 18:58:49 +0100
-From:   Claudio Imbrenda <imbrenda@linux.ibm.com>
-To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: Re: [PATCH v4 06/10] KVM: s390: Add vm IOCTL for key checked guest
- absolute memory access
-Message-ID: <20220214185849.04331079@p-imbrenda>
-In-Reply-To: <20220211182215.2730017-7-scgl@linux.ibm.com>
-References: <20220211182215.2730017-1-scgl@linux.ibm.com>
-        <20220211182215.2730017-7-scgl@linux.ibm.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 14 Feb 2022 19:00:34 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2079.outbound.protection.outlook.com [40.107.243.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F067D40A30
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 16:00:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E9ohbPc9OY/s2XSJ+e0a3acL3hBT9xVjKi/M/H5sIbGZnoleh53HcwU5v5IV+KQtCGvWEtXX5wp1o1/AWdjl/yeyqU1qgtgt0KQXYb6iUZFa6sfa2sGQdtbF3OhSd9a2MXkSrH2/JmX9YyZHRUugA2/nlxDqtw13dtoNjEOrzX6u9xKgw5U6/3JJLa8kAkIa4dCqmeSbfvtTfoo28q56oxRqueD+bZHbfgWj4Z4GA5s7VRp2TM3eumPxzzdvL/oqofWeDxhNSwLP2Zay5CmV29lhsvBvy7NKhca5siuqN2NFixH5yBcZJI4P6mqKoaAfn/IrZIAeODDwyYFOVU1R5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6m+khP40jw3Nmgzgv8CUk2CeRg/5iPb6gK2L4CWgrFs=;
+ b=C7PQDP0Iz0/EqKMgysJXRGldwCtPB3suZxweQUy0yNktgFjYgd7jux1a8TlUoOW479NcsNts9zzxD7aLeBrgkPLZDDAk4BCZc4GQs3YJBgF6dSa18/qsRicEZOE/FDoOhvodh5M5HnC9ioMgghO7Amn4R4Tm961scvI6grvPWgFjJeEaWQ9TVyX76CvunSXnZ8lXwqnKynmDZRcYTJmZgDc/Ro71WO1hYf4fWIAND/QjR5syH4KXRzaSsaIbky1HjPtM/wriRtz6RpUwUVRZYoUcjxW/oV9P7SXkh/kvpXBqPGQ1gN7uRSuwfCV+56pXlxmcFKPOogs861hRtn789g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6m+khP40jw3Nmgzgv8CUk2CeRg/5iPb6gK2L4CWgrFs=;
+ b=1VLyZo1kOHgEYHzDCvLsxB+pZHtA4YGTGah60Txjm7xwM31UWu3D6YvvNfMaXiaoZ2PX76c92JfZZALnsY2gZdxCE7C2xbbanfGSbUaCcr/BmMP/sI4ciiz21gDLhnFbyzzZCuthHRCl/Pr0J3Mn5dIFM+IX8WnKB9Pj2kCCKGE=
+Received: from DS7PR06CA0011.namprd06.prod.outlook.com (2603:10b6:8:2a::6) by
+ DM6PR12MB4233.namprd12.prod.outlook.com (2603:10b6:5:210::21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4975.15; Tue, 15 Feb 2022 00:00:24 +0000
+Received: from DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:8:2a:cafe::5) by DS7PR06CA0011.outlook.office365.com
+ (2603:10b6:8:2a::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
+ Transport; Tue, 15 Feb 2022 00:00:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT038.mail.protection.outlook.com (10.13.173.137) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4975.11 via Frontend Transport; Tue, 15 Feb 2022 00:00:23 +0000
+Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 14 Feb
+ 2022 18:00:22 -0600
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+CC:     Kees Cook <keescook@chromium.org>,
+        Thomas Lendacky <Thomas.Lendacky@amd.com>,
+        <hughsient@gmail.com>,
+        Martin Fernandez <martin.fernandez@eclypsium.com>,
+        <linux-kernel@vger.kernel.org>,
+        "Brijesh Singh" <brijesh.singh@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH v3] x86/cpu: clear SME features when not in use
+Date:   Mon, 14 Feb 2022 17:58:01 -0600
+Message-ID: <20220214235801.238260-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: AJzA_gdQpFX90Dp5U0j_pYyepd_AzmFC
-X-Proofpoint-ORIG-GUID: toTycKR9roIP9nv0G3g-D8HnUz0prpH0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- mlxscore=0 mlxlogscore=999 priorityscore=1501 adultscore=0 malwarescore=0
- spamscore=0 clxscore=1015 suspectscore=0 bulkscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202140134
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2fe44da9-8ff8-4b11-ed16-08d9f01629ea
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4233:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR12MB42335AE633F378B127783BA6E2349@DM6PR12MB4233.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nQV1tQelg7DiEUlIOkUaGqiMrCoYApEtOOZT9t1ZHxQOHulq36WQPLUwLUl8iOByzukW8c/nQQflrjqfiNv9hQoEb3w15mZeOS8/KjBCVTkAqxE7nRAAO3yqqz2gvnNErcfqpkNs3avjTkg5XvyL+/G0p8M5lrh4qIQ+9TVIdHEbhV2BggBc6gd31JE7x15ZwqKC3VbsUgGSdi9PoWgIBvesdvKomLeVgy5P/PDL44DFJr5LdS04VosYBJGC8Ga92ey/+uxyeCEuGx+h6FV2jkzvq2HStrXDtS+R+7tNTWg9HyS/sviAXwdZSIL6uLE4fm6jLAdp1FdOCQfcqzroydjjhqdj6DcnmljIiDGQf5FMCQ3paLRXRiSsqn+yaFrIQgWNgqtb5BBjth/yXE7NXjh06lQWOy4tcHNni+Oxe879/Yih2pa3xD/bXpZ3L3xAdbmNuq8pslmkHxxEYjfxPXdliLpL2MCNwzEHhyDB36+SFbiGxsxOr2qo7l/zQvbMd1AYYXA4cSs4LDF7aEQ8VNWPoAWaEBW1rdbKwfqTm5ipDRISRxrkPKWn6kl2gg47jB931gMb8p5MD8H/jVnzbWlap2APoBXdVNXxTkSTcpiH42JXqA7Z99qzMqMo7JDgN4yN6negDMaq+XG8CepSe1wSzC8RDTmgnK4CRMo4fRFV2h8q7d3iBUPOObT9/vEW0oB8kgBP6OD4+2ayTZ4gFw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(336012)(8676002)(70586007)(70206006)(4326008)(426003)(6666004)(86362001)(508600001)(2616005)(83380400001)(16526019)(1076003)(26005)(82310400004)(110136005)(54906003)(316002)(186003)(36756003)(356005)(2906002)(81166007)(40460700003)(47076005)(5660300002)(8936002)(44832011)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Feb 2022 00:00:23.2063
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2fe44da9-8ff8-4b11-ed16-08d9f01629ea
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT038.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4233
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 11 Feb 2022 19:22:11 +0100
-Janis Schoetterl-Glausch <scgl@linux.ibm.com> wrote:
+Currently the SME CPU feature flag is reflective of whether the CPU
+supports the features but not whether they have been activated by the
+kernel.
 
-> Channel I/O honors storage keys and is performed on absolute memory.
-> For I/O emulation user space therefore needs to be able to do key
-> checked accesses.
-> The vm IOCTL supports read/write accesses, as well as checking
-> if an access would succeed.
-> Unlike relying on KVM_S390_GET_SKEYS for key checking would,
-> the vm IOCTL performs the check in lockstep with the read or write,
-> by, ultimately, mapping the access to move instructions that
-> support key protection checking with a supplied key.
-> Fetch and storage protection override are not applicable to absolute
-> accesses and so are not applied as they are when using the vcpu memop.
-> 
-> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-> Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Change this around to clear the features if the kernel is not using
+them so userspace can determine if they are available and in use
+from `/proc/cpuinfo`.
 
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+As the feature flag is now cleared on systems that SME isn't active
+use CPUID 0x8000001f to confirm SME availability before calling
+`native_wbinvd`.
 
-> ---
->  arch/s390/kvm/gaccess.c  | 72 +++++++++++++++++++++++++++++++++++
->  arch/s390/kvm/gaccess.h  |  6 +++
->  arch/s390/kvm/kvm-s390.c | 81 ++++++++++++++++++++++++++++++++++++++++
->  include/uapi/linux/kvm.h |  2 +
->  4 files changed, 161 insertions(+)
-> 
-> diff --git a/arch/s390/kvm/gaccess.c b/arch/s390/kvm/gaccess.c
-> index 37838f637707..d53a183c2005 100644
-> --- a/arch/s390/kvm/gaccess.c
-> +++ b/arch/s390/kvm/gaccess.c
-> @@ -795,6 +795,35 @@ static int low_address_protection_enabled(struct kvm_vcpu *vcpu,
->  	return 1;
->  }
->  
-> +static int vm_check_access_key(struct kvm *kvm, u8 access_key,
-> +			       enum gacc_mode mode, gpa_t gpa)
-> +{
-> +	u8 storage_key, access_control;
-> +	bool fetch_protected;
-> +	unsigned long hva;
-> +	int r;
-> +
-> +	if (access_key == 0)
-> +		return 0;
-> +
-> +	hva = gfn_to_hva(kvm, gpa_to_gfn(gpa));
-> +	if (kvm_is_error_hva(hva))
-> +		return PGM_ADDRESSING;
-> +
-> +	mmap_read_lock(current->mm);
-> +	r = get_guest_storage_key(current->mm, hva, &storage_key);
-> +	mmap_read_unlock(current->mm);
-> +	if (r)
-> +		return r;
-> +	access_control = FIELD_GET(_PAGE_ACC_BITS, storage_key);
-> +	if (access_control == access_key)
-> +		return 0;
-> +	fetch_protected = storage_key & _PAGE_FP_BIT;
-> +	if ((mode == GACC_FETCH || mode == GACC_IFETCH) && !fetch_protected)
-> +		return 0;
-> +	return PGM_PROTECTION;
-> +}
-> +
->  static bool fetch_prot_override_applicable(struct kvm_vcpu *vcpu, enum gacc_mode mode,
->  					   union asce asce)
->  {
-> @@ -994,6 +1023,26 @@ access_guest_page_with_key(struct kvm *kvm, enum gacc_mode mode, gpa_t gpa,
->  	return 0;
->  }
->  
-> +int access_guest_abs_with_key(struct kvm *kvm, gpa_t gpa, void *data,
-> +			      unsigned long len, enum gacc_mode mode, u8 access_key)
-> +{
-> +	int offset = offset_in_page(gpa);
-> +	int fragment_len;
-> +	int rc;
-> +
-> +	while (min(PAGE_SIZE - offset, len) > 0) {
-> +		fragment_len = min(PAGE_SIZE - offset, len);
-> +		rc = access_guest_page_with_key(kvm, mode, gpa, data, fragment_len, access_key);
-> +		if (rc)
-> +			return rc;
-> +		offset = 0;
-> +		len -= fragment_len;
-> +		data += fragment_len;
-> +		gpa += fragment_len;
-> +	}
-> +	return 0;
-> +}
-> +
->  int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
->  			  void *data, unsigned long len, enum gacc_mode mode,
->  			  u8 access_key)
-> @@ -1144,6 +1193,29 @@ int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
->  	return rc;
->  }
->  
-> +/**
-> + * check_gpa_range - test a range of guest physical addresses for accessibility
-> + * @kvm: virtual machine instance
-> + * @gpa: guest physical address
-> + * @length: length of test range
-> + * @mode: access mode to test, relevant for storage keys
-> + * @access_key: access key to mach the storage keys with
-> + */
-> +int check_gpa_range(struct kvm *kvm, unsigned long gpa, unsigned long length,
-> +		    enum gacc_mode mode, u8 access_key)
-> +{
-> +	unsigned int fragment_len;
-> +	int rc = 0;
-> +
-> +	while (length && !rc) {
-> +		fragment_len = min(PAGE_SIZE - offset_in_page(gpa), length);
-> +		rc = vm_check_access_key(kvm, access_key, mode, gpa);
-> +		length -= fragment_len;
-> +		gpa += fragment_len;
-> +	}
-> +	return rc;
-> +}
-> +
->  /**
->   * kvm_s390_check_low_addr_prot_real - check for low-address protection
->   * @vcpu: virtual cpu
-> diff --git a/arch/s390/kvm/gaccess.h b/arch/s390/kvm/gaccess.h
-> index c5f2e7311b17..1124ff282012 100644
-> --- a/arch/s390/kvm/gaccess.h
-> +++ b/arch/s390/kvm/gaccess.h
-> @@ -193,6 +193,12 @@ int guest_translate_address_with_key(struct kvm_vcpu *vcpu, unsigned long gva, u
->  int check_gva_range(struct kvm_vcpu *vcpu, unsigned long gva, u8 ar,
->  		    unsigned long length, enum gacc_mode mode, u8 access_key);
->  
-> +int check_gpa_range(struct kvm *kvm, unsigned long gpa, unsigned long length,
-> +		    enum gacc_mode mode, u8 access_key);
-> +
-> +int access_guest_abs_with_key(struct kvm *kvm, gpa_t gpa, void *data,
-> +			      unsigned long len, enum gacc_mode mode, u8 access_key);
-> +
->  int access_guest_with_key(struct kvm_vcpu *vcpu, unsigned long ga, u8 ar,
->  			  void *data, unsigned long len, enum gacc_mode mode,
->  			  u8 access_key);
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index c31b40abfa23..36bc73b5f5de 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -2364,6 +2364,78 @@ static bool access_key_invalid(u8 access_key)
->  	return access_key > 0xf;
->  }
->  
-> +static int kvm_s390_vm_mem_op(struct kvm *kvm, struct kvm_s390_mem_op *mop)
-> +{
-> +	void __user *uaddr = (void __user *)mop->buf;
-> +	u64 supported_flags;
-> +	void *tmpbuf = NULL;
-> +	int r, srcu_idx;
-> +
-> +	supported_flags = KVM_S390_MEMOP_F_SKEY_PROTECTION
-> +			  | KVM_S390_MEMOP_F_CHECK_ONLY;
-> +	if (mop->flags & ~supported_flags)
-> +		return -EINVAL;
-> +	if (mop->size > MEM_OP_MAX_SIZE)
-> +		return -E2BIG;
-> +	if (kvm_s390_pv_is_protected(kvm))
-> +		return -EINVAL;
-> +	if (mop->flags & KVM_S390_MEMOP_F_SKEY_PROTECTION) {
-> +		if (access_key_invalid(mop->key))
-> +			return -EINVAL;
-> +	} else {
-> +		mop->key = 0;
-> +	}
-> +	if (!(mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY)) {
-> +		tmpbuf = vmalloc(mop->size);
-> +		if (!tmpbuf)
-> +			return -ENOMEM;
-> +	}
-> +
-> +	srcu_idx = srcu_read_lock(&kvm->srcu);
-> +
-> +	if (kvm_is_error_gpa(kvm, mop->gaddr)) {
-> +		r = PGM_ADDRESSING;
-> +		goto out_unlock;
-> +	}
-> +
-> +	switch (mop->op) {
-> +	case KVM_S390_MEMOP_ABSOLUTE_READ: {
-> +		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
-> +			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_FETCH, mop->key);
-> +		} else {
-> +			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
-> +						      mop->size, GACC_FETCH, mop->key);
-> +			if (r == 0) {
-> +				if (copy_to_user(uaddr, tmpbuf, mop->size))
-> +					r = -EFAULT;
-> +			}
-> +		}
-> +		break;
-> +	}
-> +	case KVM_S390_MEMOP_ABSOLUTE_WRITE: {
-> +		if (mop->flags & KVM_S390_MEMOP_F_CHECK_ONLY) {
-> +			r = check_gpa_range(kvm, mop->gaddr, mop->size, GACC_STORE, mop->key);
-> +		} else {
-> +			if (copy_from_user(tmpbuf, uaddr, mop->size)) {
-> +				r = -EFAULT;
-> +				break;
-> +			}
-> +			r = access_guest_abs_with_key(kvm, mop->gaddr, tmpbuf,
-> +						      mop->size, GACC_STORE, mop->key);
-> +		}
-> +		break;
-> +	}
-> +	default:
-> +		r = -EINVAL;
-> +	}
-> +
-> +out_unlock:
-> +	srcu_read_unlock(&kvm->srcu, srcu_idx);
-> +
-> +	vfree(tmpbuf);
-> +	return r;
-> +}
-> +
->  long kvm_arch_vm_ioctl(struct file *filp,
->  		       unsigned int ioctl, unsigned long arg)
->  {
-> @@ -2488,6 +2560,15 @@ long kvm_arch_vm_ioctl(struct file *filp,
->  		}
->  		break;
->  	}
-> +	case KVM_S390_MEM_OP: {
-> +		struct kvm_s390_mem_op mem_op;
-> +
-> +		if (copy_from_user(&mem_op, argp, sizeof(mem_op)) == 0)
-> +			r = kvm_s390_vm_mem_op(kvm, &mem_op);
-> +		else
-> +			r = -EFAULT;
-> +		break;
-> +	}
->  	default:
->  		r = -ENOTTY;
->  	}
-> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-> index 4566f429db2c..4bc7623def87 100644
-> --- a/include/uapi/linux/kvm.h
-> +++ b/include/uapi/linux/kvm.h
-> @@ -575,6 +575,8 @@ struct kvm_s390_mem_op {
->  #define KVM_S390_MEMOP_LOGICAL_WRITE	1
->  #define KVM_S390_MEMOP_SIDA_READ	2
->  #define KVM_S390_MEMOP_SIDA_WRITE	3
-> +#define KVM_S390_MEMOP_ABSOLUTE_READ	4
-> +#define KVM_S390_MEMOP_ABSOLUTE_WRITE	5
->  /* flags for kvm_s390_mem_op->flags */
->  #define KVM_S390_MEMOP_F_CHECK_ONLY		(1ULL << 0)
->  #define KVM_S390_MEMOP_F_INJECT_EXCEPTION	(1ULL << 1)
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+Changes from v2->v3:
+ * Drop all changes related to SEV, these will be worked out separately.
+ * Only clear SME flag rather than all flags if sme_me_mask is not set
+
+ arch/x86/kernel/cpu/amd.c | 3 +++
+ arch/x86/kernel/process.c | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
+index 4edb6f0f628c..8421b9d9f552 100644
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -607,6 +607,9 @@ static void early_detect_mem_encrypt(struct cpuinfo_x86 *c)
+ 		if (IS_ENABLED(CONFIG_X86_32))
+ 			goto clear_all;
+ 
++		if (!sme_me_mask)
++			setup_clear_cpu_cap(X86_FEATURE_SME);
++
+ 		rdmsrl(MSR_K7_HWCR, msr);
+ 		if (!(msr & MSR_K7_HWCR_SMMLOCK))
+ 			goto clear_sev;
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 81d8ef036637..e131d71b3cae 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -765,8 +765,11 @@ void stop_this_cpu(void *dummy)
+ 	 * without the encryption bit, they don't race each other when flushed
+ 	 * and potentially end up with the wrong entry being committed to
+ 	 * memory.
++	 *
++	 * Test the CPUID bit directly because the machine might've cleared
++	 * X86_FEATURE_SME due to cmdline options.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_SME))
++	if (cpuid_eax(0x8000001f) & BIT(0))
+ 		native_wbinvd();
+ 	for (;;) {
+ 		/*
+-- 
+2.34.1
 
