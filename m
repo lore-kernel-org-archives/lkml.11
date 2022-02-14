@@ -2,87 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66676C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0524C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:33:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239677AbiBNCdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 21:33:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46296 "EHLO
+        id S239751AbiBNCdl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 21:33:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239733AbiBNCc7 (ORCPT
+        with ESMTP id S239613AbiBNCdG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 21:32:59 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EA95AECB
-        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 18:32:12 -0800 (PST)
-X-UUID: 5634885e033f4b2ba8bad653b3e2e193-20220214
-X-UUID: 5634885e033f4b2ba8bad653b3e2e193-20220214
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1241168833; Mon, 14 Feb 2022 10:32:09 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 14 Feb 2022 10:32:09 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 14 Feb 2022 10:32:09 +0800
-Message-ID: <9295cbd918d1303f5cc2bbb7defb94d5e338606d.camel@mediatek.com>
-Subject: Re: [0/3] Cooperate with DSI RX devices to modify dsi funcs and
- delay mipi high to cooperate with panel sequence
-From:   CK Hu <ck.hu@mediatek.com>
-To:     <xinlei.lee@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <matthias.bgg@gmail.com>
-CC:     <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <rex-bc.chen@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Mon, 14 Feb 2022 10:32:09 +0800
-In-Reply-To: <1644589818-13066-1-git-send-email-xinlei.lee@mediatek.com>
-References: <1644589818-13066-1-git-send-email-xinlei.lee@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+        Sun, 13 Feb 2022 21:33:06 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B81F25F8EF;
+        Sun, 13 Feb 2022 18:32:16 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 86C5B106F;
+        Sun, 13 Feb 2022 18:32:16 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4273D3F718;
+        Sun, 13 Feb 2022 18:32:14 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-arch@vger.kernel.org, Michal Simek <monstr@monstr.eu>
+Subject: [PATCH 24/30] microblaze/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Mon, 14 Feb 2022 08:00:47 +0530
+Message-Id: <1644805853-21338-25-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
+References: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Xinlei:
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed.
 
-On Fri, 2022-02-11 at 22:30 +0800, xinlei.lee@mediatek.com wrote:
-> From: xinlei lee <xinlei.lee@mediatek.com>
-> 
-> In order to match the changes of DSI RX devices (for example,
-> anx7625), 
-> the poweron/poweroff of dsi is extracted from enable/disable and 
-> defined as new funcs (pre_enable/post_disable).
-> 
-> The delayed MIPI signal is pulled high from LP00 to LP11, 
-> in order to match the power-on sequence of the panel.
+Cc: Michal Simek <monstr@monstr.eu>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ arch/microblaze/Kconfig               |  1 +
+ arch/microblaze/include/asm/pgtable.h | 17 -----------
+ arch/microblaze/mm/init.c             | 41 +++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 17 deletions(-)
 
-This is series a bug-fix or new feature (If anx7625 has never work in
-upstream and this series would make support anx7625, this is new
-feature) If this is a bug-fix, add Fixes tag [1] in patches.
-
-[1] 
-https://www.kernel.org/doc/html/v5.16/process/submitting-patches.html
-
-Regards,
-CK
-
-> 
-> Jitao Shi (3):
->   drm/mediatek: dsi fine tune the dsi poweron flow
->   drm/mediatek: dsi bridge implement pre_enable and post_disable
->   drm/mediatek: keep dsi as LP00 before dcs cmds transfer
-> 
->  drivers/gpu/drm/mediatek/mtk_dsi.c | 73 +++++++++++++++++++++++++---
-> ----------
->  1 file changed, 49 insertions(+), 24 deletions(-)
-> 
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 59798e43cdb0..f2c25ba8621e 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -7,6 +7,7 @@ config MICROBLAZE
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select BUILDTIME_TABLE_SORT
+diff --git a/arch/microblaze/include/asm/pgtable.h b/arch/microblaze/include/asm/pgtable.h
+index c136a01e467e..6df373077ff2 100644
+--- a/arch/microblaze/include/asm/pgtable.h
++++ b/arch/microblaze/include/asm/pgtable.h
+@@ -204,23 +204,6 @@ extern pte_t *va_to_pte(unsigned long address);
+  * We consider execute permission the same as read.
+  * Also, write permissions imply read permissions.
+  */
+-#define __P000	PAGE_NONE
+-#define __P001	PAGE_READONLY_X
+-#define __P010	PAGE_COPY
+-#define __P011	PAGE_COPY_X
+-#define __P100	PAGE_READONLY
+-#define __P101	PAGE_READONLY_X
+-#define __P110	PAGE_COPY
+-#define __P111	PAGE_COPY_X
+-
+-#define __S000	PAGE_NONE
+-#define __S001	PAGE_READONLY_X
+-#define __S010	PAGE_SHARED
+-#define __S011	PAGE_SHARED_X
+-#define __S100	PAGE_READONLY
+-#define __S101	PAGE_READONLY_X
+-#define __S110	PAGE_SHARED
+-#define __S111	PAGE_SHARED_X
+ 
+ #ifndef __ASSEMBLY__
+ /*
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index 952f35b335b2..68faf7d04faf 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -280,3 +280,44 @@ void * __ref zalloc_maybe_bootmem(size_t size, gfp_t mask)
+ 
+ 	return p;
+ }
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return PAGE_NONE;
++	case VM_READ:
++		return PAGE_READONLY_X;
++	case VM_WRITE:
++		return PAGE_COPY;
++	case VM_WRITE | VM_READ:
++		return PAGE_COPY_X;
++	case VM_EXEC:
++		return PAGE_READONLY;
++	case VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_EXEC | VM_WRITE:
++		return PAGE_COPY;
++	case VM_EXEC | VM_WRITE | VM_READ:
++		return PAGE_COPY_X;
++	case VM_SHARED:
++		return PAGE_NONE;
++	case VM_SHARED | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_WRITE | VM_READ:
++		return PAGE_SHARED_X;
++	case VM_SHARED | VM_EXEC:
++		return PAGE_READONLY;
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
++		return PAGE_SHARED_X;
++	default:
++		BUILD_BUG();
++	}
++}
++EXPORT_SYMBOL(vm_get_page_prot);
+-- 
+2.25.1
 
