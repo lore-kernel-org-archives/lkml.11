@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2727C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD47C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229595AbiBNUs7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:48:59 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58390 "EHLO
+        id S229706AbiBNUtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:49:01 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:58724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiBNUsw (ORCPT
+        with ESMTP id S229603AbiBNUsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:48:52 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBCA15FC87;
-        Mon, 14 Feb 2022 12:48:27 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21EI7w7w001562;
-        Mon, 14 Feb 2022 20:03:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=1pJI+ix99l7/rXF96NBURmzsCZLTmUmqrMwjJzasCG0=;
- b=C1bDcPyd47Ps/ucOG0vzZZpw5wLQNfRu9sAxsPUbwxdePlL5ZkHNCxdbhF+EIrTTAyQJ
- yvjHEpil9pDYbMXNK0cZRzdetM4rd0d0WqTJYQZYgYfGUgWIUNn4DitSdmVC5jcPuCt3
- OxXom30rXLMQmCjz0njRmfHtQejZNzpgdq1VR0l5vI34uMtRlAq4oNu5M4qlOW1p6GUP
- KFiAkN6grVpTsMIV9keh1B4OkGZhMe2HhuL3LncHVR1L5GjOTjUWJmCdYov0msVCFYvM
- nekfS6NIvX964JtQaR/gbFr3xVhNZwPAJ2YfudrIkq2ydrO6LxSX9kOwJbVZwmGxiYKr dw== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3e7cje8nr5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 20:03:39 +0000
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21EK1rxK027551;
-        Mon, 14 Feb 2022 20:03:38 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma03dal.us.ibm.com with ESMTP id 3e64hahga8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 20:03:38 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21EK3bML28377520
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 14 Feb 2022 20:03:37 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1738528058;
-        Mon, 14 Feb 2022 20:03:37 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E579E28060;
-        Mon, 14 Feb 2022 20:03:36 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 14 Feb 2022 20:03:36 +0000 (GMT)
-Message-ID: <ea619561-fe29-6864-0a07-a49dee8549ab@linux.ibm.com>
-Date:   Mon, 14 Feb 2022 15:03:36 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 1/8] ima: rename IMA_ACTION_FLAGS to
- IMA_NONACTION_FLAGS
-Content-Language: en-US
-To:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org
-Cc:     Eric Biggers <ebiggers@kernel.org>, linux-fscrypt@vger.kernel.org,
+        Mon, 14 Feb 2022 15:48:55 -0500
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06872160FEB;
+        Mon, 14 Feb 2022 12:48:36 -0800 (PST)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BC43B58058C;
+        Mon, 14 Feb 2022 15:38:10 -0500 (EST)
+Received: from imap49 ([10.202.2.99])
+  by compute2.internal (MEProxy); Mon, 14 Feb 2022 15:38:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        sladewatkins.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=Q01pPK0RylOLz/
+        loIWRd4huP7JsmsQKOr0+rNPvHdas=; b=Kv0nQMfRd/2+oEcXzhLECdnq4yPzPb
+        xrQa2w5Z2LSVjV6P3WEdjK7Rd/YJDlwzjCEMyxxwgilUML8Tx5Von6cw16TRGlBV
+        k8PXoOOYBT1W9Vmr8bbyOEIp4Poqd6LlcmhUCQNQBf+dNyK+s1Wy809abZ2UlSrX
+        knnH27O+7JcO6J5PKPEcnOoS1jA5BzXVB+QNkKuTb5XBOXy46eIvReKykdVBUrcZ
+        +Yu5s0WSqUTSCUIHLALQyVycZG3+qns+xbHvKpVYXnPFT/6WD1OYCWWqW6HEKuku
+        FjHn+OFCX1gAE04cLpuQ2a4K0TITb2cjfYxtO3hp/ZM2ncKebOMT1Cag==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=Q01pPK0RylOLz/loI
+        WRd4huP7JsmsQKOr0+rNPvHdas=; b=cEE5hKrIJbLCnIZIfUCO0MYmcRFNIH6ew
+        xnyNihCymEkoPpWS36u087tzsjQHZqJ0DxVRBWBU/LPcEI/S5PrW9aTt/eC59R1x
+        GwCXu6nc0MB4IYv93miuCDCYrQCKuN4nbZQ/idCO+ellzkDGvTgyoArCyequ7cqN
+        CycfTx6HJEfM0Y274ORKSs261plKHJwX8fFDu3/c4zImHlqTsVJM6P58DpHt23IJ
+        cqyMa1ru7ZKDZhnr+GC32+G8dQyozEeeylSzO0Yb7wzcsWQLgeT/1t1WuSljqM9Y
+        5HQlqNghPE88N2jVx2BZ/nZxPAsy/ndL3efnhxHMDSpRuqOWRfbcg==
+X-ME-Sender: <xms:sr0KYru2Uq7-MRcA4XTDSa3mF8NaheUPN1AYkYQ-Bk1US4C6e_0u8g>
+    <xme:sr0KYsfrvW-Mo2o70Y9WO1t5ptIF1uMqIEOwLp2qlH7p5mU-Fa986ro78oNhdbwYX
+    oNzAG5sVPqVWGPc6wU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrjedvgddufeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfulhgr
+    uggvucghrghtkhhinhhsfdcuoehslhgruggvsehslhgruggvfigrthhkihhnshdrtghomh
+    eqnecuggftrfgrthhtvghrnhepueeiffetjeeitefgveetleehveduheetiefhhfethedt
+    teelgeettddvvedvudegnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepshhlrgguvgesshhlrgguvgifrghtkhhinhhsrdgtohhm
+X-ME-Proxy: <xmx:sr0KYuyFhhpREV_CPAyQEUT_UoOKhTE2vSFSa1L9IPaJrQChiJavJA>
+    <xmx:sr0KYqN5DIq5Y9POrixdlUsWJVfLJTNF77Gp1bAVYl76oTfcAsvA-g>
+    <xmx:sr0KYr8AILUh5vQ0pt9Dk1RGy1jiH85DiKW0Yg2eVGeperf8JK6DeQ>
+    <xmx:sr0KYs1AFMSnIg8gUtZnzE3TNyChdUIQUM-LUR-pnj5vYdhOxs-V5On3emo>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 5120EF6007E; Mon, 14 Feb 2022 15:38:10 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4748-g31a5b5f50e-fm-cal2020-20220204.001-g31a5b5f5
+Mime-Version: 1.0
+Message-Id: <2ddda243-0c1c-4150-8981-dc06ab4b55f8@www.fastmail.com>
+In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
+References: <20220214092448.285381753@linuxfoundation.org>
+Date:   Mon, 14 Feb 2022 15:38:09 -0500
+From:   "Slade Watkins" <slade@sladewatkins.com>
+To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
- <20220211214310.119257-2-zohar@linux.ibm.com>
-From:   Stefan Berger <stefanb@linux.ibm.com>
-In-Reply-To: <20220211214310.119257-2-zohar@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: T4YCMHvcv5xJtau2XmjWltnHNOqfi_Jo
-X-Proofpoint-ORIG-GUID: T4YCMHvcv5xJtau2XmjWltnHNOqfi_Jo
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- suspectscore=0 mlxlogscore=999 mlxscore=0 priorityscore=1501 bulkscore=0
- malwarescore=0 lowpriorityscore=0 adultscore=0 impostorscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140116
+Cc:     stable@vger.kernel.org,
+        "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Guenter Roeck" <linux@roeck-us.net>, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org,
+        "Pavel Machek" <pavel@denx.de>,
+        "Jon Hunter" <jonathanh@nvidia.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Sudip Mukherjee" <sudipm.mukherjee@gmail.com>
+Subject: Re: [PATCH 4.19 00/49] 4.19.230-rc1 review
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 2/11/22 16:43, Mimi Zohar wrote:
-> Simple policy rule options, such as fowner, uid, or euid, can be checked
-> immediately, while other policy rule options, such as requiring a file
-> signature, need to be deferred.
+On Mon, Feb 14, 2022, at 4:25 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.19.230 release.
+> There are 49 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> The 'flags' field in the integrity_iint_cache struct contains the policy
-> action', 'subaction', and non action/subaction.
->
-> action: measure/measured, appraise/appraised, (collect)/collected,
->          audit/audited
-> subaction: appraise status for each hook (e.g. file, mmap, bprm, read,
->          creds)
-> non action/subaction: deferred policy rule options and state
->
-> Rename the IMA_ACTION_FLAGS to IMA_NONACTION_FLAGS.
->
-> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
+> Anything received after that time might be too late.
 
-Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+4.19.230-rc1 on my x86_64 test system compiled and booted with no errors or regressions.
 
+Tested-by: Slade Watkins <slade@sladewatkins.com>
 
+Thanks,
+Slade
