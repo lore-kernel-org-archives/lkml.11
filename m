@@ -2,109 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63638C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F43CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230458AbiBNVTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:19:42 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40246 "EHLO
+        id S230466AbiBNVVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:21:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230446AbiBNVTi (ORCPT
+        with ESMTP id S230213AbiBNVVT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:19:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AA6F1162AA
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:19:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644873567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iPJv+2s91+qxlbeq2Ny6bT4Ihe2WEyqS+/iM8RL4Bn0=;
-        b=TPRDGWJ+WyvUOpVqvPOd6lCb2GSivskACzjLLvnyQJiwDPdsM4XAdvW1ild2jB993ZGigB
-        c9+4t1hmpEYY6JEnAFkh3higuweaFZGko7+jeMPuW1NtDozcU/EOnSaVPGnIUZP+Uo8hOR
-        ukD03ByMoeDuzNJ2BoFkKXchLJuUo48=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-626-xIry2x51NpSAnPmKZCx4JA-1; Mon, 14 Feb 2022 15:07:34 -0500
-X-MC-Unique: xIry2x51NpSAnPmKZCx4JA-1
-Received: by mail-qk1-f199.google.com with SMTP id p23-20020a05620a15f700b00506d8ec3749so9963041qkm.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:07:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=iPJv+2s91+qxlbeq2Ny6bT4Ihe2WEyqS+/iM8RL4Bn0=;
-        b=EV2AwEYkLHwvsAQokmNZaVWGZBy0c1nsKbrst8wZ6zyofv4scQ10SMriacoZxxKKZX
-         T3rLYweeqVggXM/0f+d5NiPgKFvN0VCC4Oq3oZAF4Q7neua2eRehV7FCRqdpde4mPxbO
-         CGpnqi3RJxvRgtlLJ7ShgsbVFu/oOJ70tgGOeAxj1q2pjuaPaOjyofVL6oTwQn+c0BNn
-         j9Nj7SaQCry7+f8KoOW9GTOKZ1SdcFxHp3JdaEF/EQ3Gt88etUHUptjNY/P+8YzDbd2B
-         EvFj7YJ86j+zzTRKeb+Nc7voWHkdfJjanFpDRPn2JCxAIcFYMIMb4gTy8GHZqYoY2KGn
-         7j0w==
-X-Gm-Message-State: AOAM533FyctrWQ7zLTh2bl/6hlTE59aJtSqyXhPjp61orWlHgS6RtLqs
-        MiRm21tTDNjg3onDzDv9EwefhggQJGSfzAfBV3GgQtSVlip7To3oQS0PugN9q6gaxrQfMGBbt8t
-        QYMD5m1f1870qxzNgSd3SfU2u
-X-Received: by 2002:ac8:58c2:: with SMTP id u2mr440863qta.509.1644869253745;
-        Mon, 14 Feb 2022 12:07:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJziQ3LUbgpn5decE7UKkR4L9MWWc2+J8EzWdi5Gt9Je1G/dpGasfQR+cKCLqAzYrwsLSIfSRw==
-X-Received: by 2002:ac8:58c2:: with SMTP id u2mr440842qta.509.1644869253496;
-        Mon, 14 Feb 2022 12:07:33 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::35])
-        by smtp.gmail.com with ESMTPSA id c21sm18647378qte.68.2022.02.14.12.07.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Feb 2022 12:07:33 -0800 (PST)
-Date:   Mon, 14 Feb 2022 12:07:30 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Valdis =?utf-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Justin Forbes <jmforbes@linuxtx.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2] tools: Fix use-after-free for realloc(..., 0)
-Message-ID: <20220214200730.a3qz6ocy2ohwafrt@treble>
-References: <20220213182443.4037039-1-keescook@chromium.org>
+        Mon, 14 Feb 2022 16:21:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0927913C390;
+        Mon, 14 Feb 2022 13:21:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E93F6111F;
+        Mon, 14 Feb 2022 19:25:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8984C340F4;
+        Mon, 14 Feb 2022 19:25:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644866741;
+        bh=zLWY4rc6tKJzkfOHU66+tSLIxceIVdBozj8MWHl9tz8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dahbLYzx2Cck5kbI+J06pUjtONQgq4wac0B/zMHO2t8H4+atEXbbC3nQoEeMZmjvT
+         itq7QzJ+hcqJRhHre9S0Rv1ba7ESMo4l9io+gmxznvUC35vP0sSOIkYlCR+0otG3GN
+         tdNTUG6Qu0hKopOLGNe9r6lsk3LXktZTgdyM6DDF4qnI4CaboAovPMzaA5UAbOEp8B
+         APnMM/NoSUEX7k/TbfFZOMIAXqeOgVfYlaUUwS5IVx/KX2WaZSUcXBZdLbU9c3dXWc
+         B7yscltnO9vN4AE6rtNUxs37L8HmCFQQ4zLTncxcS+Y4byxc1hWLvKupRncU1kUVIh
+         Se79TuvvAK7PA==
+Received: by mail-wr1-f41.google.com with SMTP id e3so28621725wra.0;
+        Mon, 14 Feb 2022 11:25:41 -0800 (PST)
+X-Gm-Message-State: AOAM533lGBGdzQ2n4n/+tiFsDCW6M+1s0S1dxwkv7EnqcNwoNPD/D0To
+        g73TG23bEoHghzGuOFucaeUtVTcCMiOXD2j8fXA=
+X-Google-Smtp-Source: ABdhPJwrOpkav7UeztG9pweW7/OWsS+hZNYg7RZgUDmgoSoPSixwWLgUERuof4XivnroH6SdfUIEp08YoMpfbv7qa3w=
+X-Received: by 2002:a5d:5446:: with SMTP id w6mr422520wrv.12.1644866740020;
+ Mon, 14 Feb 2022 11:25:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220213182443.4037039-1-keescook@chromium.org>
+References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-8-arnd@kernel.org>
+ <YgqOLZbFK7/B2HJT@zeniv-ca.linux.org.uk>
+In-Reply-To: <YgqOLZbFK7/B2HJT@zeniv-ca.linux.org.uk>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 14 Feb 2022 20:25:24 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a36U35DK22UT6id=WawWaJa-2+_W9HFgmwdDJ_tVYE5NQ@mail.gmail.com>
+Message-ID: <CAK8P3a36U35DK22UT6id=WawWaJa-2+_W9HFgmwdDJ_tVYE5NQ@mail.gmail.com>
+Subject: Re: [PATCH 07/14] uaccess: generalize access_ok()
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Brian Cain <bcain@codeaurora.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Rich Felker <dalias@libc.org>,
+        David Miller <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        linux-ia64@vger.kernel.org,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 13, 2022 at 10:24:43AM -0800, Kees Cook wrote:
-> GCC 12 was correctly reporting a potential use-after-free condition in
-> the xrealloc helper. Fix the warning by avoiding an implicit "free(ptr)"
-> when size == 0:
-> 
-> In file included from help.c:12:
-> In function 'xrealloc',
->     inlined from 'add_cmdname' at help.c:24:2: subcmd-util.h:56:23: error: pointer may be used after 'realloc' [-Werror=use-after-free]
->    56 |                 ret = realloc(ptr, size);
->       |                       ^~~~~~~~~~~~~~~~~~
-> subcmd-util.h:52:21: note: call to 'realloc' here
->    52 |         void *ret = realloc(ptr, size);
->       |                     ^~~~~~~~~~~~~~~~~~
-> subcmd-util.h:58:31: error: pointer may be used after 'realloc' [-Werror=use-after-free]
->    58 |                         ret = realloc(ptr, 1);
->       |                               ^~~~~~~~~~~~~~~
-> subcmd-util.h:52:21: note: call to 'realloc' here
->    52 |         void *ret = realloc(ptr, size);
->       |                     ^~~~~~~~~~~~~~~~~~
-> 
-> Reported-by: "Valdis Klētnieks" <valdis.kletnieks@vt.edu>
-> Fixes: 2f4ce5ec1d44 ("perf tools: Finalize subcmd independence")
-> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
-> v1: https://lore.kernel.org/lkml/20220212181855.3460176-1-keescook@chromium.org/
-> v2: simplify logic (josh)
+On Mon, Feb 14, 2022 at 6:15 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>
+> On Mon, Feb 14, 2022 at 05:34:45PM +0100, Arnd Bergmann wrote:
+>
+> > diff --git a/arch/csky/kernel/signal.c b/arch/csky/kernel/signal.c
+> > index c7b763d2f526..8867ddf3e6c7 100644
+> > --- a/arch/csky/kernel/signal.c
+> > +++ b/arch/csky/kernel/signal.c
+> > @@ -136,7 +136,7 @@ static inline void __user *get_sigframe(struct ksignal *ksig,
+> >  static int
+> >  setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+> >  {
+> > -     struct rt_sigframe *frame;
+> > +     struct rt_sigframe __user *frame;
+> >       int err = 0;
+> >
+> >       frame = get_sigframe(ksig, regs, sizeof(*frame));
+>
+> Minor nit: might make sense to separate annotations (here, on nios2, etc.) from the rest...
 
-Thanks, running through testing now.
+Done.
 
--- 
-Josh
+> > -}
+> > -
+> > -static inline int access_ok(const void __user * addr, unsigned long size)
+> > -{
+> > -     return 1;
+> > -}
+> > +#define __range_not_ok(addr, size, limit) (!__access_ok(addr, size))
+>
+> is really wrong.  For sparc64, access_ok() should always be true.
+> This __range_not_ok() thing is used *only* for valid_user_frame() in
+> arch/sparc/kernel/perf_event.c - it's not a part of normal access_ok()
+> there.
+>
+> sparc64 has separate address spaces for kernel and for userland; access_ok()
+> had never been useful there.
 
+Ok, fixed as well now. I had the access_ok() bit right, the definition just
+moved around here so it comes before the #include, but I missed the
+bit about __range_not_ok(), which I have now reverted back to the
+correct version in my tree.
+
+        Arnd
