@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA01C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3791EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344066AbiBNJ7h (ORCPT
+        id S1344408AbiBNJ7k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:59:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34546 "EHLO
+        Mon, 14 Feb 2022 04:59:40 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343927AbiBNJy4 (ORCPT
+        with ESMTP id S1343967AbiBNJzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:54:56 -0500
+        Mon, 14 Feb 2022 04:55:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8318D6CA4C;
-        Mon, 14 Feb 2022 01:44:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581BA7D2B3;
+        Mon, 14 Feb 2022 01:44:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 201FDB80DC8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BE61B80DC4;
+        Mon, 14 Feb 2022 09:44:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 427DCC340E9;
         Mon, 14 Feb 2022 09:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E70AC340E9;
-        Mon, 14 Feb 2022 09:44:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831846;
-        bh=NitWR232jf/vibf+EtT9sXOWSCV/+FrFbFMPrdgzYNs=;
+        s=korg; t=1644831849;
+        bh=9vxZ2UxSC/BPL5u/hZd6/MrObK1934bk0SauZ5RvZs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgI9n5KdN0BQ9sCGvvPhnW17ohJfDta6mOI0GYm/MlR5PklrMz9wlp7juqlvIdY0R
-         39/FF42XmBU0g0WL5Zl7YwFJ5EGB2Rx+C5OyOFFbQlGND7KlSzOWehx5nZyyk0pJNB
-         IH7M2MfD0tp3+OKxN4MbCOTCiTUYBCGfWyGONgbU=
+        b=wxURlLd8WMuembnkRlROBZfSdg8UsGg/Fc0dmq+0Fbngum2Ipk8Clp6C4SNvGGJgk
+         EYoR3/HFqTVuG9EFH7THjM64rWb92QcuNZ8dM4qeDf06BuI305Iv3VIzBr6N5+s0sz
+         9aGwVmQ67MTBsuhMy5rFiR7s56PCJx7O0Mi54Cag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Vijayanand Jitta <quic_vjitta@quicinc.com>,
-        Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH 5.10 116/116] iommu: Fix potential use-after-free during probe
-Date:   Mon, 14 Feb 2022 10:26:55 +0100
-Message-Id: <20220214092502.801454775@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stephan Brunner <s.brunner@stephan-brunner.net>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 104/116] USB: serial: ch341: add support for GW Instek USB2.0-Serial devices
+Date:   Mon, 14 Feb 2022 10:26:43 +0100
+Message-Id: <20220214092502.378070617@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,144 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vijayanand Jitta <quic_vjitta@quicinc.com>
+From: Stephan Brunner <s.brunner@stephan-brunner.net>
 
-commit b54240ad494300ff0994c4539a531727874381f4 upstream.
+commit fa77ce201f7f2d823b07753575122d1ae5597fbe upstream.
 
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
+Programmable lab power supplies made by GW Instek, such as the
+GPP-2323, have a USB port exposing a serial port to control the device.
 
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
+Stringing the supplied Windows driver, references to the ch341 chip are
+found. Binding the existing ch341 driver to the VID/PID of the GPP-2323
+("GW Instek USB2.0-Serial" as per the USB product name) works out of the
+box, communication and control is now possible.
 
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
+This patch should work with any GPP series power supply due to
+similarities in the product line.
 
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
-
-Fix this by setting dev->iommu to NULL first and
-then freeing dev_iommu structure in dev_iommu_free
-function.
-
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
-Link: https://lore.kernel.org/r/1643613155-20215-1-git-send-email-quic_vjitta@quicinc.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Stephan Brunner <s.brunner@stephan-brunner.net>
+Link: https://lore.kernel.org/r/4a47b864-0816-6f6a-efee-aa20e74bcdc6@stephan-brunner.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/iommu.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/usb/serial/ch341.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -185,9 +185,14 @@ static struct dev_iommu *dev_iommu_get(s
- 
- static void dev_iommu_free(struct device *dev)
- {
--	iommu_fwspec_free(dev);
--	kfree(dev->iommu);
-+	struct dev_iommu *param = dev->iommu;
-+
- 	dev->iommu = NULL;
-+	if (param->fwspec) {
-+		fwnode_handle_put(param->fwspec->iommu_fwnode);
-+		kfree(param->fwspec);
-+	}
-+	kfree(param);
- }
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+--- a/drivers/usb/serial/ch341.c
++++ b/drivers/usb/serial/ch341.c
+@@ -85,6 +85,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(0x1a86, 0x5523) },
+ 	{ USB_DEVICE(0x1a86, 0x7522) },
+ 	{ USB_DEVICE(0x1a86, 0x7523) },
++	{ USB_DEVICE(0x2184, 0x0057) },
+ 	{ USB_DEVICE(0x4348, 0x5523) },
+ 	{ USB_DEVICE(0x9986, 0x7523) },
+ 	{ },
 
 
