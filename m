@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54158C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346069AbiBNKNw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:13:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44750 "EHLO
+        id S240496AbiBNKN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:13:56 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345720AbiBNKNN (ORCPT
+        with ESMTP id S1345925AbiBNKNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:13:13 -0500
+        Mon, 14 Feb 2022 05:13:09 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02385657A2;
-        Mon, 14 Feb 2022 01:51:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83F4652FF;
+        Mon, 14 Feb 2022 01:51:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B244AB80DBF;
-        Mon, 14 Feb 2022 09:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4883C340E9;
-        Mon, 14 Feb 2022 09:51:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EAF3B80DBF;
+        Mon, 14 Feb 2022 09:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F4EC340E9;
+        Mon, 14 Feb 2022 09:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832289;
-        bh=fv+WkH1spk8VErTFjZqgX1hkHlHoiWogpK/zEzaVGAA=;
+        s=korg; t=1644832276;
+        bh=7NkI57KdUooHsPfFBLSmpYBzUAiODq7o7Qw/s+3mQ6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OpEWnqmZWs4QS0/btKHD9RzqlJzlVd+Xs61yL/t62vUf91nNv+6COnZNLy67sx32I
-         K3bu9YYftXb+APOvJKGPhjlrHpSYGhAbOU81XWg1AapaH47P6TcWanDf1gpXYVSK4s
-         XJkSONw2VwIjUiP6zMJ14hvlDfj35pa7jjbAwB6Q=
+        b=pL2crrUhWhdLJBvkVbFEpuFOboJFnLkTyMcd7S0qzbavm+FCfqwM82NnuFMLWQLp8
+         X40T0E1yU11xp2Pge0BuAtoDvbSFgIW5Axd7BhzEcVYR91k8fOjt34C+9MwTZP4J7g
+         5rNYwEB2CLsT0WO+v3FLvDXy5Ko3dfRsKVuEB9BE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH 5.15 140/172] net: usb: ax88179_178a: Fix out-of-bounds accesses in RX fixup
-Date:   Mon, 14 Feb 2022 10:26:38 +0100
-Message-Id: <20220214092511.234695360@linuxfoundation.org>
+        stable@vger.kernel.org, Lutz Koschorreck <theleks@ko-hh.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 103/172] arm64: dts: meson-sm1-odroid: fix boot loop after reboot
+Date:   Mon, 14 Feb 2022 10:26:01 +0100
+Message-Id: <20220214092509.955632629@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,136 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Lutz Koschorreck <theleks@ko-hh.de>
 
-commit 57bc3d3ae8c14df3ceb4e17d26ddf9eeab304581 upstream.
+[ Upstream commit e6b03375132fefddc55cf700418cf794b3884e0c ]
 
-ax88179_rx_fixup() contains several out-of-bounds accesses that can be
-triggered by a malicious (or defective) USB device, in particular:
+Since the correct gpio pin is used for enabling tf-io regulator the
+system did not boot correctly after calling reboot.
 
- - The metadata array (hdr_off..hdr_off+2*pkt_cnt) can be out of bounds,
-   causing OOB reads and (on big-endian systems) OOB endianness flips.
- - A packet can overlap the metadata array, causing a later OOB
-   endianness flip to corrupt data used by a cloned SKB that has already
-   been handed off into the network stack.
- - A packet SKB can be constructed whose tail is far beyond its end,
-   causing out-of-bounds heap data to be considered part of the SKB's
-   data.
+[   36.862443] reboot: Restarting system
+bl31 reboot reason: 0xd
+bl31 reboot reason: 0x0
+system cmd  1.
+SM1:BL:511f6b:81ca2f;FEAT:A0F83180:20282000;POC:B;RCY:0;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:0;READ:0;0.0;CHK:0;
+bl2_stage_init 0x01
+bl2_stage_init 0x81
+hw id:
+SM1:BL:511f6b:81ca2f;FEAT:A0F83180:20282000;POC:B;RCY:0;SPINOR:0;CHK:1F;EMMC:800;NAND:81;SD?:0;SD:400;USB:8;LOOP:1;...
 
-I have tested that this can be used by a malicious USB device to send a
-bogus ICMPv6 Echo Request and receive an ICMPv6 Echo Reply in response
-that contains random kernel heap data.
-It's probably also possible to get OOB writes from this on a
-little-endian system somehow - maybe by triggering skb_cow() via IP
-options processing -, but I haven't tested that.
+Setting the gpio to open drain solves the issue.
 
-Fixes: e2ca90c276e1 ("ax88179_178a: ASIX AX88179_178A USB 3.0/2.0 to gigabit ethernet adapter driver")
-Cc: stable@kernel.org
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1f80a5cf74a6 ("arm64: dts: meson-sm1-odroid: add missing enable gpio and supply for tf_io regulator")
+Signed-off-by: Lutz Koschorreck <theleks@ko-hh.de>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+[narmstrong: reduced serial log & removed invalid character in commit message]
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20220128193150.GA1304381@odroid-VirtualBox
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/ax88179_178a.c |   68 +++++++++++++++++++++++------------------
- 1 file changed, 39 insertions(+), 29 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1467,58 +1467,68 @@ static int ax88179_rx_fixup(struct usbne
- 	u16 hdr_off;
- 	u32 *pkt_hdr;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+index 328f4adfaaa9d..76ad052fbf0c9 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+@@ -48,7 +48,7 @@ tf_io: gpio-regulator-tf_io {
+ 		regulator-max-microvolt = <3300000>;
+ 		vin-supply = <&vcc_5v>;
  
--	/* This check is no longer done by usbnet */
--	if (skb->len < dev->net->hard_header_len)
-+	/* At the end of the SKB, there's a header telling us how many packets
-+	 * are bundled into this buffer and where we can find an array of
-+	 * per-packet metadata (which contains elements encoded into u16).
-+	 */
-+	if (skb->len < 4)
- 		return 0;
--
- 	skb_trim(skb, skb->len - 4);
- 	rx_hdr = get_unaligned_le32(skb_tail_pointer(skb));
--
- 	pkt_cnt = (u16)rx_hdr;
- 	hdr_off = (u16)(rx_hdr >> 16);
-+
-+	if (pkt_cnt == 0)
-+		return 0;
-+
-+	/* Make sure that the bounds of the metadata array are inside the SKB
-+	 * (and in front of the counter at the end).
-+	 */
-+	if (pkt_cnt * 2 + hdr_off > skb->len)
-+		return 0;
- 	pkt_hdr = (u32 *)(skb->data + hdr_off);
+-		enable-gpio = <&gpio_ao GPIOE_2 GPIO_ACTIVE_HIGH>;
++		enable-gpio = <&gpio_ao GPIOE_2 GPIO_OPEN_DRAIN>;
+ 		enable-active-high;
+ 		regulator-always-on;
  
--	while (pkt_cnt--) {
-+	/* Packets must not overlap the metadata array */
-+	skb_trim(skb, hdr_off);
-+
-+	for (; ; pkt_cnt--, pkt_hdr++) {
- 		u16 pkt_len;
- 
- 		le32_to_cpus(pkt_hdr);
- 		pkt_len = (*pkt_hdr >> 16) & 0x1fff;
- 
--		/* Check CRC or runt packet */
--		if ((*pkt_hdr & AX_RXHDR_CRC_ERR) ||
--		    (*pkt_hdr & AX_RXHDR_DROP_ERR)) {
--			skb_pull(skb, (pkt_len + 7) & 0xFFF8);
--			pkt_hdr++;
--			continue;
--		}
--
--		if (pkt_cnt == 0) {
--			skb->len = pkt_len;
--			/* Skip IP alignment pseudo header */
--			skb_pull(skb, 2);
--			skb_set_tail_pointer(skb, skb->len);
--			skb->truesize = pkt_len + sizeof(struct sk_buff);
--			ax88179_rx_checksum(skb, pkt_hdr);
--			return 1;
--		}
-+		if (pkt_len > skb->len)
-+			return 0;
- 
--		ax_skb = skb_clone(skb, GFP_ATOMIC);
--		if (ax_skb) {
-+		/* Check CRC or runt packet */
-+		if (((*pkt_hdr & (AX_RXHDR_CRC_ERR | AX_RXHDR_DROP_ERR)) == 0) &&
-+		    pkt_len >= 2 + ETH_HLEN) {
-+			bool last = (pkt_cnt == 0);
-+
-+			if (last) {
-+				ax_skb = skb;
-+			} else {
-+				ax_skb = skb_clone(skb, GFP_ATOMIC);
-+				if (!ax_skb)
-+					return 0;
-+			}
- 			ax_skb->len = pkt_len;
- 			/* Skip IP alignment pseudo header */
- 			skb_pull(ax_skb, 2);
- 			skb_set_tail_pointer(ax_skb, ax_skb->len);
- 			ax_skb->truesize = pkt_len + sizeof(struct sk_buff);
- 			ax88179_rx_checksum(ax_skb, pkt_hdr);
-+
-+			if (last)
-+				return 1;
-+
- 			usbnet_skb_return(dev, ax_skb);
--		} else {
--			return 0;
- 		}
- 
--		skb_pull(skb, (pkt_len + 7) & 0xFFF8);
--		pkt_hdr++;
-+		/* Trim this packet away from the SKB */
-+		if (!skb_pull(skb, (pkt_len + 7) & 0xFFF8))
-+			return 0;
- 	}
--	return 1;
- }
- 
- static struct sk_buff *
+-- 
+2.34.1
+
 
 
