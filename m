@@ -2,255 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CBDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350350AbiBNLPo (ORCPT
+        id S1350308AbiBNLQD convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:15:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44266 "EHLO
+        Mon, 14 Feb 2022 06:16:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350378AbiBNLPJ (ORCPT
+        with ESMTP id S1350708AbiBNLPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:15:09 -0500
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121D8EFF93
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:23 -0800 (PST)
-Received: by mail-io1-f70.google.com with SMTP id ay26-20020a5d9d9a000000b006396dd81e4bso8722410iob.10
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:44:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=U/K75PKZ7oRwBSg0DraF4Jz5emwI9maCTepHYeXlOoM=;
-        b=5nPeS6AfG5m9MH4xF27jjV0tqmTgkR5lGKxhCtKow2ox6Nbea53BlP0sVqm/oD6+4M
-         RFNu2d8Z0VsZ6HFN5H8sLZ4BnfkV5Zbht1uBDDD0RuI+eQZVxDNn+SduZgcdwu+lhmI0
-         hbWq+f9YqLhFdlgihBdYTj4Ywb2yrUoMYVh8vashujqx7sl0u8lPRruDK+E1cjmJgvaQ
-         y4dQyAsMpPk2HdCe4LFgnRwzNFkGdl8mxdw0QNkb8FdYmBC/R8U6i0hqhhNVWPxlUzz7
-         /vrn6x3IuQ6DVJBE0ESk9iI4pmBf744rB14VLbnRCjy43hzyVCvBVVwtkLuhHz8VTgGX
-         EyxQ==
-X-Gm-Message-State: AOAM530JAoFgTYDW5k4retscajzcHlbc0dYudzwOEORtsPQtUvkvs1zC
-        cN12RF3Oa7s0qTpCct2gxjapp42Q8gR0YuUgls1n57oq41uD
-X-Google-Smtp-Source: ABdhPJxyUdi3Tb42Ir4UEK58TVXzU+k9ISfC3Jdy2Vc8F5tPwmm5O23GuYMKZpQy2tRDFj3A7smJGdWu2vJWursXva7qLI+JGyQN
+        Mon, 14 Feb 2022 06:15:51 -0500
+Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8C9D61ADAA
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 02:46:21 -0800 (PST)
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-279-ZudAjQ0CNHCf-dvDlDPUSw-1; Mon, 14 Feb 2022 05:46:17 -0500
+X-MC-Unique: ZudAjQ0CNHCf-dvDlDPUSw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3DF980573C;
+        Mon, 14 Feb 2022 10:46:14 +0000 (UTC)
+Received: from x1.com (unknown [10.22.16.130])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 374E126DFB;
+        Mon, 14 Feb 2022 10:46:06 +0000 (UTC)
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [RFC V2 03/21] rv/include: Add helper functions for deterministic automata
+Date:   Mon, 14 Feb 2022 11:44:54 +0100
+Message-Id: <43ef0d4b96c67af1a9f4b41cceae46ccbffd93ce.1644830251.git.bristot@kernel.org>
+In-Reply-To: <cover.1644830251.git.bristot@kernel.org>
+References: <cover.1644830251.git.bristot@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a02:a112:: with SMTP id f18mr7608688jag.51.1644835462375;
- Mon, 14 Feb 2022 02:44:22 -0800 (PST)
-Date:   Mon, 14 Feb 2022 02:44:22 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000072ef2c05d7f81950@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in __oom_reap_task_mm
-From:   syzbot <syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, brauner@kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Formally, a deterministic automaton, denoted by G, is defined as a
+quintuple:
 
-syzbot found the following issue on:
+  G = { X, E, f, x_0, X_m }
 
-HEAD commit:    e6251ab4551f Merge tag 'nfs-for-5.17-2' of git://git.linux..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1229b2f8700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=266de9da75c71a45
-dashboard link: https://syzkaller.appspot.com/bug?extid=2ccf63a4bd07cf39cab0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-userspace arch: i386
+where:
+	- X is the set of states;
+	- E is the finite set of events;
+	- x_0 is the initial state;
+	- X_m (subset of X) is the set of marked states.
+	- f : X x E -> X $ is the transition function. It defines the
+	  state transition in the occurrence of a event from E in
+	  the state X. In the special case of deterministic automata,
+	  the occurence of the event in E in a state in X has a
+	  deterministic next state from X.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+An automaton can also be represented using a graphical format of
+vertices (nodes) and edges. The open-source tool Graphviz can produce
+this graphic format using the (textual) DOT language as the source code.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+2ccf63a4bd07cf39cab0@syzkaller.appspotmail.com
+The dot2c tool presented in this paper:
 
-==================================================================
-BUG: KASAN: use-after-free in can_madv_lru_vma mm/internal.h:76 [inline]
-BUG: KASAN: use-after-free in __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
-Read of size 8 at addr ffff88807b868ba8 by task syz-executor.2/12778
+DE OLIVEIRA, Daniel Bristot; CUCINOTTA, Tommaso; DE OLIVEIRA, Romulo
+Silva. Efficient formal verification for the Linux kernel. In:
+International Conference on Software Engineering and Formal Methods.
+Springer, Cham, 2019. p. 315-332.
 
-CPU: 0 PID: 12778 Comm: syz-executor.2 Not tainted 5.17.0-rc3-syzkaller-00029-ge6251ab4551f #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description.constprop.0.cold+0x8d/0x336 mm/kasan/report.c:255
- __kasan_report mm/kasan/report.c:442 [inline]
- kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
- can_madv_lru_vma mm/internal.h:76 [inline]
- __oom_reap_task_mm+0x3a4/0x400 mm/oom_kill.c:529
- __do_sys_process_mrelease+0x3f2/0x450 mm/oom_kill.c:1196
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-RIP: 0023:0xf6e70549
-Code: 03 74 c0 01 10 05 03 74 b8 01 10 06 03 74 b4 01 10 07 03 74 b0 01 10 08 03 74 d8 01 00 00 00 00 00 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 8d b4 26 00 00 00 00 8d b4 26 00 00 00 00
-RSP: 002b:00000000f586a5cc EFLAGS: 00000296 ORIG_RAX: 00000000000001c0
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
+Translates a deterministic automaton in the DOT format into a C
+source code representation that to be used for monitoring.
 
-Allocated by task 12778:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
- kasan_slab_alloc include/linux/kasan.h:260 [inline]
- slab_post_alloc_hook mm/slab.h:732 [inline]
- slab_alloc_node mm/slub.c:3230 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
- vm_area_dup+0x88/0x2b0 kernel/fork.c:357
- dup_mmap kernel/fork.c:554 [inline]
- dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
- copy_mm kernel/fork.c:1503 [inline]
- copy_process+0x71f8/0x7300 kernel/fork.c:2164
- kernel_clone+0xe7/0xab0 kernel/fork.c:2555
- __do_compat_sys_ia32_clone+0xac/0xe0 arch/x86/kernel/sys_ia32.c:254
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+This header file implements helper functions to facilitate the usage
+of the C output from dot2c for monitoring.
 
-Freed by task 12780:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free+0x130/0x160 mm/kasan/common.c:328
- kasan_slab_free include/linux/kasan.h:236 [inline]
- slab_free_hook mm/slub.c:1728 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
- slab_free mm/slub.c:3509 [inline]
- kmem_cache_free+0xd8/0x340 mm/slub.c:3526
- remove_vma+0x135/0x170 mm/mmap.c:189
- exit_mmap+0x29a/0x670 mm/mmap.c:3186
- __mmput+0x122/0x4b0 kernel/fork.c:1114
- mmput+0x56/0x60 kernel/fork.c:1135
- exit_mm kernel/exit.c:507 [inline]
- do_exit+0xa3c/0x2a30 kernel/exit.c:793
- do_group_exit+0xd2/0x2f0 kernel/exit.c:935
- get_signal+0x4b0/0x28c0 kernel/signal.c:2862
- arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
- __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-The buggy address belongs to the object at ffff88807b868b58
- which belongs to the cache vm_area_struct of size 200
-The buggy address is located 80 bytes inside of
- 200-byte region [ffff88807b868b58, ffff88807b868c20)
-The buggy address belongs to the page:
-page:ffffea0001ee1a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7b868
-memcg:ffff88804fe94a01
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 dead000000000100 dead000000000122 ffff888140006a00
-raw: 0000000000000000 00000000000f000f 00000001ffffffff ffff88804fe94a01
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x112cc0(GFP_USER|__GFP_NOWARN|__GFP_NORETRY), pid 3175, ts 344170603641, free_ts 344164018467
- prep_new_page mm/page_alloc.c:2434 [inline]
- get_page_from_freelist+0xa72/0x2f50 mm/page_alloc.c:4165
- __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5389
- alloc_pages+0x1aa/0x310 mm/mempolicy.c:2271
- alloc_slab_page mm/slub.c:1799 [inline]
- allocate_slab mm/slub.c:1944 [inline]
- new_slab+0x28a/0x3b0 mm/slub.c:2004
- ___slab_alloc+0x87c/0xe90 mm/slub.c:3018
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
- slab_alloc_node mm/slub.c:3196 [inline]
- slab_alloc mm/slub.c:3238 [inline]
- kmem_cache_alloc+0x35c/0x3a0 mm/slub.c:3243
- vm_area_dup+0x88/0x2b0 kernel/fork.c:357
- dup_mmap kernel/fork.c:554 [inline]
- dup_mm+0x5fa/0x13e0 kernel/fork.c:1451
- copy_mm kernel/fork.c:1503 [inline]
- copy_process+0x71f8/0x7300 kernel/fork.c:2164
- kernel_clone+0xe7/0xab0 kernel/fork.c:2555
- __do_sys_clone+0xc8/0x110 kernel/fork.c:2672
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1352 [inline]
- free_pcp_prepare+0x374/0x870 mm/page_alloc.c:1404
- free_unref_page_prepare mm/page_alloc.c:3325 [inline]
- free_unref_page_list+0x1a9/0xfa0 mm/page_alloc.c:3441
- release_pages+0x317/0x1220 mm/swap.c:980
- tlb_batch_pages_flush mm/mmu_gather.c:50 [inline]
- tlb_flush_mmu_free mm/mmu_gather.c:243 [inline]
- tlb_flush_mmu mm/mmu_gather.c:250 [inline]
- tlb_finish_mmu+0x165/0x8c0 mm/mmu_gather.c:341
- exit_mmap+0x21b/0x670 mm/mmap.c:3180
- __mmput+0x122/0x4b0 kernel/fork.c:1114
- mmput+0x56/0x60 kernel/fork.c:1135
- exit_mm kernel/exit.c:507 [inline]
- do_exit+0xa3c/0x2a30 kernel/exit.c:793
- do_group_exit+0xd2/0x2f0 kernel/exit.c:935
- get_signal+0x4b0/0x28c0 kernel/signal.c:2862
- arch_do_signal_or_restart+0x2a9/0x1c40 arch/x86/kernel/signal.c:868
- handle_signal_work kernel/entry/common.c:148 [inline]
- exit_to_user_mode_loop kernel/entry/common.c:172 [inline]
- exit_to_user_mode_prepare+0x17d/0x290 kernel/entry/common.c:207
- __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
- syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
- __do_fast_syscall_32+0x72/0xf0 arch/x86/entry/common.c:181
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
-
-Memory state around the buggy address:
- ffff88807b868a80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88807b868b00: fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb fb
->ffff88807b868b80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                  ^
- ffff88807b868c00: fb fb fb fb fc fc fc fc fc fc fc fc fa fb fb fb
- ffff88807b868c80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
-----------------
-Code disassembly (best guess):
-   0:	03 74 c0 01          	add    0x1(%rax,%rax,8),%esi
-   4:	10 05 03 74 b8 01    	adc    %al,0x1b87403(%rip)        # 0x1b8740d
-   a:	10 06                	adc    %al,(%rsi)
-   c:	03 74 b4 01          	add    0x1(%rsp,%rsi,4),%esi
-  10:	10 07                	adc    %al,(%rdi)
-  12:	03 74 b0 01          	add    0x1(%rax,%rsi,4),%esi
-  16:	10 08                	adc    %cl,(%rax)
-  18:	03 74 d8 01          	add    0x1(%rax,%rbx,8),%esi
-  1c:	00 00                	add    %al,(%rax)
-  1e:	00 00                	add    %al,(%rax)
-  20:	00 51 52             	add    %dl,0x52(%rcx)
-  23:	55                   	push   %rbp
-  24:	89 e5                	mov    %esp,%ebp
-  26:	0f 34                	sysenter
-  28:	cd 80                	int    $0x80
-* 2a:	5d                   	pop    %rbp <-- trapping instruction
-  2b:	5a                   	pop    %rdx
-  2c:	59                   	pop    %rcx
-  2d:	c3                   	retq
-  2e:	90                   	nop
-  2f:	90                   	nop
-  30:	90                   	nop
-  31:	90                   	nop
-  32:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-  39:	8d b4 26 00 00 00 00 	lea    0x0(%rsi,%riz,1),%esi
-
-
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ include/rv/automata.h | 52 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+ create mode 100644 include/rv/automata.h
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/include/rv/automata.h b/include/rv/automata.h
+new file mode 100644
+index 000000000000..dfd0bbf0dc5c
+--- /dev/null
++++ b/include/rv/automata.h
+@@ -0,0 +1,52 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Deterministic automata helper functions, to be used with the automata
++ * models in C generated by the dot2k tool.
++ *
++ * The dot2k tool is available at https://gitlab.com/linux-rv-tools/dot2/.
++ *
++ * Copyright (C) 2019-2022 Daniel Bristot de Oliveira <bristot@kernel.org>
++ */
++
++#define DECLARE_AUTOMATA_HELPERS(name, type)					\
++										\
++static inline void *model_get_model_##name(void)				\
++{										\
++	return (void *) &automaton_##name;					\
++}										\
++										\
++char *model_get_state_name_##name(enum states_##name state)			\
++{										\
++	return automaton_##name.state_names[state];				\
++}										\
++										\
++char *model_get_event_name_##name(enum events_##name event)			\
++{										\
++	return automaton_##name.event_names[event];				\
++}										\
++										\
++static inline type model_get_init_state_##name(void)				\
++{										\
++	return automaton_##name.initial_state;					\
++}										\
++										\
++static inline type 								\
++model_get_next_state_##name(enum states_##name curr_state,			\
++			    enum events_##name event)				\
++{										\
++	if ((curr_state < 0) || (curr_state > state_max))			\
++		return -1;							\
++										\
++	if ((event < 0) || (event > event_max))					\
++		return -1;							\
++										\
++	return automaton_##name.function[curr_state][event];			\
++}										\
++										\
++static inline bool model_is_final_state_##name(enum states_##name state)	\
++{										\
++	if ((state < 0) || (state > state_max))					\
++		return 0;							\
++										\
++	return !!automaton_##name.final_states[state];				\
++}
+-- 
+2.33.1
+
