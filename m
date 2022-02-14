@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D94DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347480AbiBNKaP (ORCPT
+        id S1347618AbiBNKaW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:30:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34812 "EHLO
+        Mon, 14 Feb 2022 05:30:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347688AbiBNK3t (ORCPT
+        with ESMTP id S1347269AbiBNKaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:29:49 -0500
+        Mon, 14 Feb 2022 05:30:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870847091C;
-        Mon, 14 Feb 2022 01:58:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8E60DAC;
+        Mon, 14 Feb 2022 01:58:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C33B6B80DCF;
-        Mon, 14 Feb 2022 09:58:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0237DC340E9;
-        Mon, 14 Feb 2022 09:58:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E91A6B80DCD;
+        Mon, 14 Feb 2022 09:58:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B2DDC340E9;
+        Mon, 14 Feb 2022 09:58:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832721;
-        bh=Ps3oBb9b+xFWRMsLAGzbqJCxUR2gJJ6YgKqya6yTpKA=;
+        s=korg; t=1644832724;
+        bh=AyZf0eQelAtzwuOhkkU/LFwNm/bYKXJ0mqWK38zXre4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWHwhEOpv+T0IJcDx85mulKfXnFVrimojxrsu/WbQx5TQj6C1R/5xyLUrSMWIhH2b
-         +AvZ01EIC3oHUBWDpnnjMGERUEBr41nEcrGXL7AAvNkWzD2ktbM4mrEaxymjbmoNJm
-         DP59TWC3Vh3Rt6vtF4B2QU77tH03RY3WYMXrBb74=
+        b=i9bZ/CVI+gApC9YfV4cTGlXSP51K5vt6mOcRyBBeRyszwIVOiN8WRHfIlrsqBZLxh
+         qPZwwwV1RVgdjQmcTN/PZ6M6+JES287tbYFLTaw4sGcSSoVg3oWrD76IHLBGyABrVT
+         DbgvoOHM/lR+l0Kz/qJS/VdHkrLZyWn5JyrcQ1Zk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
         Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 102/203] phy: xilinx: zynqmp: Fix bus width setting for SGMII
-Date:   Mon, 14 Feb 2022 10:25:46 +0100
-Message-Id: <20220214092513.716954518@linuxfoundation.org>
+Subject: [PATCH 5.16 103/203] phy: stm32: fix a refcount leak in stm32_usbphyc_pll_enable()
+Date:   Mon, 14 Feb 2022 10:25:47 +0100
+Message-Id: <20220214092513.750298164@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,60 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 37291f60d0822f191748c2a54ce63b0bc669020f ]
+[ Upstream commit cfc826c88a79e22ba5d8001556eb2c7efd8a01b6 ]
 
-TX_PROT_BUS_WIDTH and RX_PROT_BUS_WIDTH are single registers with
-separate bit fields for each lane. The code in xpsgtr_phy_init_sgmii was
-not preserving the existing register value for other lanes, so enabling
-the PHY in SGMII mode on one lane zeroed out the settings for all other
-lanes, causing other PS-GTR peripherals such as USB3 to malfunction.
+This error path needs to decrement "usbphyc->n_pll_cons.counter" before
+returning.
 
-Use xpsgtr_clr_set to only manipulate the desired bits in the register.
-
-Fixes: 4a33bea00314 ("phy: zynqmp: Add PHY driver for the Xilinx ZynqMP Gigabit Transceiver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Acked-by: Michal Simek <michal.simek@xilinx.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Link: https://lore.kernel.org/r/20220126001600.1592218-1-robert.hancock@calian.com
+Fixes: 5b1af71280ab ("phy: stm32: rework PLL Lock detection")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220112111724.GB3019@kili
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/xilinx/phy-zynqmp.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/phy/st/phy-stm32-usbphyc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/xilinx/phy-zynqmp.c b/drivers/phy/xilinx/phy-zynqmp.c
-index f478d8a17115b..9be9535ad7ab7 100644
---- a/drivers/phy/xilinx/phy-zynqmp.c
-+++ b/drivers/phy/xilinx/phy-zynqmp.c
-@@ -134,7 +134,8 @@
- #define PROT_BUS_WIDTH_10		0x0
- #define PROT_BUS_WIDTH_20		0x1
- #define PROT_BUS_WIDTH_40		0x2
--#define PROT_BUS_WIDTH_SHIFT		2
-+#define PROT_BUS_WIDTH_SHIFT(n)		((n) * 2)
-+#define PROT_BUS_WIDTH_MASK(n)		GENMASK((n) * 2 + 1, (n) * 2)
+diff --git a/drivers/phy/st/phy-stm32-usbphyc.c b/drivers/phy/st/phy-stm32-usbphyc.c
+index e4f4a9be51320..1ecdc26689ce8 100644
+--- a/drivers/phy/st/phy-stm32-usbphyc.c
++++ b/drivers/phy/st/phy-stm32-usbphyc.c
+@@ -304,7 +304,7 @@ static int stm32_usbphyc_pll_enable(struct stm32_usbphyc *usbphyc)
  
- /* Number of GT lanes */
- #define NUM_LANES			4
-@@ -445,12 +446,12 @@ static void xpsgtr_phy_init_sata(struct xpsgtr_phy *gtr_phy)
- static void xpsgtr_phy_init_sgmii(struct xpsgtr_phy *gtr_phy)
- {
- 	struct xpsgtr_dev *gtr_dev = gtr_phy->dev;
-+	u32 mask = PROT_BUS_WIDTH_MASK(gtr_phy->lane);
-+	u32 val = PROT_BUS_WIDTH_10 << PROT_BUS_WIDTH_SHIFT(gtr_phy->lane);
+ 		ret = __stm32_usbphyc_pll_disable(usbphyc);
+ 		if (ret)
+-			return ret;
++			goto dec_n_pll_cons;
+ 	}
  
- 	/* Set SGMII protocol TX and RX bus width to 10 bits. */
--	xpsgtr_write(gtr_dev, TX_PROT_BUS_WIDTH,
--		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
--	xpsgtr_write(gtr_dev, RX_PROT_BUS_WIDTH,
--		     PROT_BUS_WIDTH_10 << (gtr_phy->lane * PROT_BUS_WIDTH_SHIFT));
-+	xpsgtr_clr_set(gtr_dev, TX_PROT_BUS_WIDTH, mask, val);
-+	xpsgtr_clr_set(gtr_dev, RX_PROT_BUS_WIDTH, mask, val);
- 
- 	xpsgtr_bypass_scrambler_8b10b(gtr_phy);
- }
+ 	ret = stm32_usbphyc_regulators_enable(usbphyc);
 -- 
 2.34.1
 
