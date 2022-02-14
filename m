@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245491AbiBNJuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43918 "EHLO
+        id S245548AbiBNJuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:20 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245297AbiBNJpw (ORCPT
+        with ESMTP id S245224AbiBNJpv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:45:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74B71706EB;
-        Mon, 14 Feb 2022 01:38:48 -0800 (PST)
+        Mon, 14 Feb 2022 04:45:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F378C706DF;
+        Mon, 14 Feb 2022 01:38:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B55AB80DA9;
-        Mon, 14 Feb 2022 09:38:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F2BC340E9;
-        Mon, 14 Feb 2022 09:38:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 710EC61193;
+        Mon, 14 Feb 2022 09:38:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F904C340F3;
+        Mon, 14 Feb 2022 09:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831526;
-        bh=N8+zS+N6U5N4Rskx4zsO6MBGL38cxoIYBPkT6iIX20Y=;
+        s=korg; t=1644831522;
+        bh=JBPKQ49itj41uadUEPuSatkximwIDIrG7Qjp9HSeSXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCOFxYdebSVGHDXKRo0jzGeb2TUjwQML1gJBG/OyBCjU8SWkCx97GLEtUltEr4wWx
-         ocNMpdRhuEPoyZiLKwbCtuSN17Y3AX8cLyxOcncXwF8xmSl0ALDNmDWy3l5lRQenrq
-         BA8Uy/s+jVmmfp55iprTrS4qboaQEGe5zn84WDOY=
+        b=x+fw2pH4yLAm6KOYAgb0y16uk99r8IxDWgy9meA0lAXnWYKDgS5QOsCj6N4rAGqy9
+         VS/hwaw8cmc8/5piJTs4tLo2Gpl9+cEOle53fdfHPC7l8V6j8c/DFWKozyxd4d9m10
+         OjSW3seKRI9ZTr/o23rpJrY+5fZoRBY1rzZDp9y8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 5.10 011/116] NFSD: Fix offset type in I/O trace points
-Date:   Mon, 14 Feb 2022 10:25:10 +0100
-Message-Id: <20220214092459.075602311@linuxfoundation.org>
+Subject: [PATCH 5.10 010/116] NFSD: Clamp WRITE offsets
+Date:   Mon, 14 Feb 2022 10:25:09 +0100
+Message-Id: <20220214092459.036735272@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,57 +49,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chuck Lever <chuck.lever@oracle.com>
 
-commit 6a4d333d540041d244b2fca29b8417bfde20af81 upstream.
+commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
 
-NFSv3 and NFSv4 use u64 offset values on the wire. Record these values
-verbatim without the implicit type case to loff_t.
+Ensure that a client cannot specify a WRITE range that falls in a
+byte range outside what the kernel's internal types (such as loff_t,
+which is signed) can represent. The kiocb iterators, invoked in
+nfsd_vfs_write(), should properly limit write operations to within
+the underlying file system's s_maxbytes.
 
+Cc: stable@vger.kernel.org
 Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/trace.h |   14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ fs/nfsd/nfs3proc.c |    5 +++++
+ fs/nfsd/nfs4proc.c |    5 +++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/fs/nfsd/trace.h
-+++ b/fs/nfsd/trace.h
-@@ -175,14 +175,14 @@ TRACE_EVENT(nfsd_export_update,
- DECLARE_EVENT_CLASS(nfsd_io_class,
- 	TP_PROTO(struct svc_rqst *rqstp,
- 		 struct svc_fh	*fhp,
--		 loff_t		offset,
--		 unsigned long	len),
-+		 u64		offset,
-+		 u32		len),
- 	TP_ARGS(rqstp, fhp, offset, len),
- 	TP_STRUCT__entry(
- 		__field(u32, xid)
- 		__field(u32, fh_hash)
--		__field(loff_t, offset)
--		__field(unsigned long, len)
-+		__field(u64, offset)
-+		__field(u32, len)
- 	),
- 	TP_fast_assign(
- 		__entry->xid = be32_to_cpu(rqstp->rq_xid);
-@@ -190,7 +190,7 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- 		__entry->offset = offset;
- 		__entry->len = len;
- 	),
--	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%lld len=%lu",
-+	TP_printk("xid=0x%08x fh_hash=0x%08x offset=%llu len=%u",
- 		  __entry->xid, __entry->fh_hash,
- 		  __entry->offset, __entry->len)
- )
-@@ -199,8 +199,8 @@ DECLARE_EVENT_CLASS(nfsd_io_class,
- DEFINE_EVENT(nfsd_io_class, nfsd_##name,	\
- 	TP_PROTO(struct svc_rqst *rqstp,	\
- 		 struct svc_fh	*fhp,		\
--		 loff_t		offset,		\
--		 unsigned long	len),		\
-+		 u64		offset,		\
-+		 u32		len),		\
- 	TP_ARGS(rqstp, fhp, offset, len))
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -183,6 +183,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
+ 				(unsigned long long) argp->offset,
+ 				argp->stable? " stable" : "");
  
- DEFINE_NFSD_IO_EVENT(read_start);
++	resp->status = nfserr_fbig;
++	if (argp->offset > (u64)OFFSET_MAX ||
++	    argp->offset + argp->len > (u64)OFFSET_MAX)
++		return rpc_success;
++
+ 	fh_copy(&resp->fh, &argp->fh);
+ 	resp->committed = argp->stable;
+ 	nvecs = svc_fill_write_vector(rqstp, rqstp->rq_arg.pages,
+--- a/fs/nfsd/nfs4proc.c
++++ b/fs/nfsd/nfs4proc.c
+@@ -1008,8 +1008,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
+ 	unsigned long cnt;
+ 	int nvecs;
+ 
+-	if (write->wr_offset >= OFFSET_MAX)
+-		return nfserr_inval;
++	if (write->wr_offset > (u64)OFFSET_MAX ||
++	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
++		return nfserr_fbig;
+ 
+ 	cnt = write->wr_buflen;
+ 	trace_nfsd_write_start(rqstp, &cstate->current_fh,
 
 
