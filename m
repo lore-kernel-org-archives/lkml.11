@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5F3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D99FEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344495AbiBNJvr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:51:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42976 "EHLO
+        id S245188AbiBNJwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:52:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245128AbiBNJsA (ORCPT
+        with ESMTP id S236346AbiBNJtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:48:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB68B869;
-        Mon, 14 Feb 2022 01:40:47 -0800 (PST)
+        Mon, 14 Feb 2022 04:49:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C5FBF78;
+        Mon, 14 Feb 2022 01:40:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0A0F6102D;
-        Mon, 14 Feb 2022 09:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D828FC340E9;
-        Mon, 14 Feb 2022 09:40:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61452B80DA9;
+        Mon, 14 Feb 2022 09:40:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF16C340E9;
+        Mon, 14 Feb 2022 09:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831646;
-        bh=5zy95j7ehPfyl58BAQJvIixLbBJORSFXPjlZPhC/VGk=;
+        s=korg; t=1644831655;
+        bh=orlmaubXj4wded+lvdCi4RRUq/I3rcbYbHBcl1NE3Pk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=13a6Ywy1gXtzYl0ZftCjg/9jvPZrUJ10wlzGA4K2BWrIT5vsNx/UIHWZSR7K4Scc6
-         xyM1fssd7bcoeIhVSEVV2SlE6B4tGWtvInVdNIt8O3MC4jBPJFl4GZeVDwR5QwKYz4
-         GfHs8ZcW071x2K/CeNRy9kjjEUnqxX1kG5WQMXa0=
+        b=SfpHevzLIxkVeDOuPhPbLRCBFPe2i52OOEY+HPZM+nWQZWY0SDmuosUSj50gE7y2L
+         sKG7Xx2/549d34ggHB9U7yfUOxRdRMIM7GVGbmMD9SOcUxXeJGkQrciQLBc1afEcQ4
+         GzQ+dUyesUkmJWeANtuEn/2eJmdeZ9XBrR265xvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jarkko Nikula <jarkko.nikula@bitmer.com>,
-        Tony Lindgren <tony@atomide.com>,
+        stable@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 050/116] ARM: dts: Fix timer regression for beagleboard revision c
-Date:   Mon, 14 Feb 2022 10:25:49 +0100
-Message-Id: <20220214092500.440131556@linuxfoundation.org>
+Subject: [PATCH 5.10 053/116] ARM: dts: meson8b: Fix the UART device-tree schema validation
+Date:   Mon, 14 Feb 2022 10:25:52 +0100
+Message-Id: <20220214092500.551912499@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -53,178 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 23885389dbbbbc698986e77a45c1fc44a6e3632e ]
+[ Upstream commit 3375aa77135f6aeb1107ed839a2050a4118444bc ]
 
-Commit e428e250fde6 ("ARM: dts: Configure system timers for omap3")
-caused a timer regression for beagleboard revision c where the system
-clockevent stops working if omap3isp module is unloaded.
+The dt-bindings for the UART controller only allow the following values
+for Meson8 SoCs:
+- "amlogic,meson8b-uart", "amlogic,meson-ao-uart"
+- "amlogic,meson8b-uart"
 
-Turns out we still have beagleboard revisions a-b4 capacitor c70 quirks
-applied that limit the usable timers for no good reason. This also affects
-the power management as we use the system clock instead of the 32k clock
-source.
+Use the correct fallback compatible string "amlogic,meson-ao-uart" for
+AO UART. Drop the "amlogic,meson-uart" compatible string from the EE
+domain UART controllers.
 
-Let's fix the issue by adding a new omap3-beagle-ab4.dts for the old timer
-quirks. This allows us to remove the timer quirks for later beagleboard
-revisions. We also need to update the related timer quirk check for the
-correct compatible property.
+Also update the order of the clocks to match the order defined in the
+yaml bindings.
 
-Fixes: e428e250fde6 ("ARM: dts: Configure system timers for omap3")
-Cc: linux-kernel@vger.kernel.org
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Rob Herring <robh+dt@kernel.org>
-Reported-by: Jarkko Nikula <jarkko.nikula@bitmer.com>
-Tested-by: Jarkko Nikula <jarkko.nikula@bitmer.com>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
+Fixes: b02d6e73f5fc96 ("ARM: dts: meson8b: use stable UART bindings with correct gate clock")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211227180026.4068352-4-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/arm/omap/omap.txt     |  3 ++
- arch/arm/boot/dts/Makefile                    |  1 +
- arch/arm/boot/dts/omap3-beagle-ab4.dts        | 47 +++++++++++++++++++
- arch/arm/boot/dts/omap3-beagle.dts            | 33 -------------
- drivers/clocksource/timer-ti-dm-systimer.c    |  2 +-
- 5 files changed, 52 insertions(+), 34 deletions(-)
- create mode 100644 arch/arm/boot/dts/omap3-beagle-ab4.dts
+ arch/arm/boot/dts/meson8b.dtsi | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/omap/omap.txt b/Documentation/devicetree/bindings/arm/omap/omap.txt
-index e77635c5422c6..fa8b31660cadd 100644
---- a/Documentation/devicetree/bindings/arm/omap/omap.txt
-+++ b/Documentation/devicetree/bindings/arm/omap/omap.txt
-@@ -119,6 +119,9 @@ Boards (incomplete list of examples):
- - OMAP3 BeagleBoard : Low cost community board
-   compatible = "ti,omap3-beagle", "ti,omap3430", "ti,omap3"
- 
-+- OMAP3 BeagleBoard A to B4 : Early BeagleBoard revisions A to B4 with a timer quirk
-+  compatible = "ti,omap3-beagle-ab4", "ti,omap3-beagle", "ti,omap3430", "ti,omap3"
-+
- - OMAP3 Tobi with Overo : Commercial expansion board with daughter board
-   compatible = "gumstix,omap3-overo-tobi", "gumstix,omap3-overo", "ti,omap3430", "ti,omap3"
- 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index ce66ffd5a1bbc..7e8151681597c 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -731,6 +731,7 @@ dtb-$(CONFIG_ARCH_OMAP3) += \
- 	logicpd-som-lv-37xx-devkit.dtb \
- 	omap3430-sdp.dtb \
- 	omap3-beagle.dtb \
-+	omap3-beagle-ab4.dtb \
- 	omap3-beagle-xm.dtb \
- 	omap3-beagle-xm-ab.dtb \
- 	omap3-cm-t3517.dtb \
-diff --git a/arch/arm/boot/dts/omap3-beagle-ab4.dts b/arch/arm/boot/dts/omap3-beagle-ab4.dts
-new file mode 100644
-index 0000000000000..990ff2d846868
---- /dev/null
-+++ b/arch/arm/boot/dts/omap3-beagle-ab4.dts
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/dts-v1/;
-+
-+#include "omap3-beagle.dts"
-+
-+/ {
-+	model = "TI OMAP3 BeagleBoard A to B4";
-+	compatible = "ti,omap3-beagle-ab4", "ti,omap3-beagle", "ti,omap3430", "ti,omap3";
-+};
-+
-+/*
-+ * Workaround for capacitor C70 issue, see "Boards revision A and < B5"
-+ * section at https://elinux.org/BeagleBoard_Community
-+ */
-+
-+/* Unusable as clocksource because of unreliable oscillator */
-+&counter32k {
-+	status = "disabled";
-+};
-+
-+/* Unusable as clockevent because of unreliable oscillator, allow to idle */
-+&timer1_target {
-+	/delete-property/ti,no-reset-on-init;
-+	/delete-property/ti,no-idle;
-+	timer@0 {
-+		/delete-property/ti,timer-alwon;
-+	};
-+};
-+
-+/* Preferred always-on timer for clocksource */
-+&timer12_target {
-+	ti,no-reset-on-init;
-+	ti,no-idle;
-+	timer@0 {
-+		/* Always clocked by secure_32k_fck */
-+	};
-+};
-+
-+/* Preferred timer for clockevent */
-+&timer2_target {
-+	ti,no-reset-on-init;
-+	ti,no-idle;
-+	timer@0 {
-+		assigned-clocks = <&gpt2_fck>;
-+		assigned-clock-parents = <&sys_ck>;
-+	};
-+};
-diff --git a/arch/arm/boot/dts/omap3-beagle.dts b/arch/arm/boot/dts/omap3-beagle.dts
-index f9f34b8458e91..0548b391334fd 100644
---- a/arch/arm/boot/dts/omap3-beagle.dts
-+++ b/arch/arm/boot/dts/omap3-beagle.dts
-@@ -304,39 +304,6 @@ &usbhsehci {
- 	phys = <0 &hsusb2_phy>;
+diff --git a/arch/arm/boot/dts/meson8b.dtsi b/arch/arm/boot/dts/meson8b.dtsi
+index 2401cdf5f7511..f6eb7c803174e 100644
+--- a/arch/arm/boot/dts/meson8b.dtsi
++++ b/arch/arm/boot/dts/meson8b.dtsi
+@@ -586,27 +586,27 @@ &timer_abcde {
  };
  
--/* Unusable as clocksource because of unreliable oscillator */
--&counter32k {
--	status = "disabled";
--};
--
--/* Unusable as clockevent because if unreliable oscillator, allow to idle */
--&timer1_target {
--	/delete-property/ti,no-reset-on-init;
--	/delete-property/ti,no-idle;
--	timer@0 {
--		/delete-property/ti,timer-alwon;
--	};
--};
--
--/* Preferred always-on timer for clocksource */
--&timer12_target {
--	ti,no-reset-on-init;
--	ti,no-idle;
--	timer@0 {
--		/* Always clocked by secure_32k_fck */
--	};
--};
--
--/* Preferred timer for clockevent */
--&timer2_target {
--	ti,no-reset-on-init;
--	ti,no-idle;
--	timer@0 {
--		assigned-clocks = <&gpt2_fck>;
--		assigned-clock-parents = <&sys_ck>;
--	};
--};
--
- &twl_gpio {
- 	ti,use-leds;
- 	/* pullups: BIT(1) */
-diff --git a/drivers/clocksource/timer-ti-dm-systimer.c b/drivers/clocksource/timer-ti-dm-systimer.c
-index b6f97960d8ee0..5c40ca1d4740e 100644
---- a/drivers/clocksource/timer-ti-dm-systimer.c
-+++ b/drivers/clocksource/timer-ti-dm-systimer.c
-@@ -241,7 +241,7 @@ static void __init dmtimer_systimer_assign_alwon(void)
- 	bool quirk_unreliable_oscillator = false;
+ &uart_AO {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_CLK81>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart", "amlogic,meson-ao-uart";
++	clocks = <&xtal>, <&clkc CLKID_CLK81>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
  
- 	/* Quirk unreliable 32 KiHz oscillator with incomplete dts */
--	if (of_machine_is_compatible("ti,omap3-beagle") ||
-+	if (of_machine_is_compatible("ti,omap3-beagle-ab4") ||
- 	    of_machine_is_compatible("timll,omap3-devkit8000")) {
- 		quirk_unreliable_oscillator = true;
- 		counter_32k = -ENODEV;
+ &uart_A {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART0>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &uart_B {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART1>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &uart_C {
+-	compatible = "amlogic,meson8b-uart", "amlogic,meson-uart";
+-	clocks = <&clkc CLKID_CLK81>, <&xtal>, <&clkc CLKID_UART2>;
+-	clock-names = "baud", "xtal", "pclk";
++	compatible = "amlogic,meson8b-uart";
++	clocks = <&xtal>, <&clkc CLKID_UART0>, <&clkc CLKID_CLK81>;
++	clock-names = "xtal", "pclk", "baud";
+ };
+ 
+ &usb0 {
 -- 
 2.34.1
 
