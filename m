@@ -2,90 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FBFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D33AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiBNUtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:49:50 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:35328 "EHLO
+        id S229714AbiBNUvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:51:49 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:46450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbiBNUto (ORCPT
+        with ESMTP id S229743AbiBNUvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:49:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8AC15F601
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:49:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5942610A1
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 19:28:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CF1C340EB;
-        Mon, 14 Feb 2022 19:28:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644866937;
-        bh=zRzXMCM9AhF3WBIJ4GuTK+ukLtut1AMLJ1G7ORC9iMo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=b+KNMhMmSRyY30RB495UofKiq8RCAoxZ29bKm99qeU5cyjakjYbzzcr74HtjwzIwr
-         cOurBuPKU/EahWT87CKDYhUaP0vAThxFcXXQN0i1qoFSAS+kofwPd2BIMA61cNJ9s5
-         aTTuDcblueQaenPKeRXnNbduZxc8vDKFXMtn2jBHsd0e90iktNhU0o+NblIF+KWrGo
-         PKL3ZV3PpwTq9euozbw7iLvsG/c0uxGER+GXMeGqOwh9LFUdOCPJ/ds1lwHHLJ9H0b
-         6FHu4YkEKEiBEgUy+gGS7/gxb8o68h17PuQVsqbZwjMZ2XiI8J7yK93/CXvIz5jiZV
-         B6c/tEaw3NlvQ==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] ftrace: Remove unused ftrace_startup_enable() stub
-Date:   Mon, 14 Feb 2022 12:28:47 -0700
-Message-Id: <20220214192847.488166-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 14 Feb 2022 15:51:46 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99C38DF4A0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:51:24 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id j2so50064360ybu.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:51:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=atishpatra.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fc6F8UmVPobantRNaLLTN28a7rasUnDLwQKG9SVLzq0=;
+        b=aH+paiSV3sgIYtrkaCwxKQbsjv6znZtteAiqoHHOb6AC3qgvXrFUWQj0XcZoTZMINW
+         XGUKwFueUMXH5XAOnIH7ou9f4U9hG/LV426XR5UXme06/t0rUorIkOZtPQyonJWN4BwT
+         5Ifzqabl/THZ4Om0V+h+tNsYSgSPCC7lN2+5I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fc6F8UmVPobantRNaLLTN28a7rasUnDLwQKG9SVLzq0=;
+        b=DsGrK1guDqNdHGO7Ybfxg+PoaUC3foU1h1OFaEglR5+ynSSmtJ/hMgGgPvZ2WpuaAF
+         aBVEX59ScwTeNE35KOQUp7Txub7gQmEZaqBpZ5xsZbSy4t36bb2le1z81e6zk9O+Ydy7
+         LJp3X+6o1rL2qok5fY2fM3NR2GLGNo6SOdIsVFPR3b2t9e9u7T+HS5wtgQEPd/7GGJKC
+         WfmFsyCtWPxpWP8NQ+ZfrdjnACHTS+TozNpsjGoy4+5I7Nk7v7Y+2W7voGuQhZKhQYzD
+         2fw9BcW7LiO4RbWfjZMDqFP3Ty1tveRxQBTOCVJ3dMzAST37zqO9bDSWFiNJnmsONMNO
+         8OLg==
+X-Gm-Message-State: AOAM532dNjcNYWdN/XXEaKs0op1Vn2dFdWl4kVN6AvJtdfj7hoRR58x5
+        sqdzgTsVnhezS3DtKpg9VqTQm6UjkApcPVcf3Xki7x7RNg==
+X-Google-Smtp-Source: ABdhPJyfD2IesL3G/kU5m4HDGWuI/SKkArsW+wmg8ZWWtd9oGt7ZFjsXIxQ2DmTeIpsuWYk9K0Ng0fGqp9UWtHIi2NA=
+X-Received: by 2002:a25:73d5:: with SMTP id o204mr818084ybc.472.1644869729891;
+ Mon, 14 Feb 2022 12:15:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220210214018.55739-1-atishp@rivosinc.com> <20220210214018.55739-6-atishp@rivosinc.com>
+ <877da2xu32.fsf@igel.home> <CAMuHMdX4P82B96ZbANyF6cWo9CnrW9hg5up6pCb0PZ99=sPZ_A@mail.gmail.com>
+In-Reply-To: <CAMuHMdX4P82B96ZbANyF6cWo9CnrW9hg5up6pCb0PZ99=sPZ_A@mail.gmail.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Mon, 14 Feb 2022 12:15:19 -0800
+Message-ID: <CAOnJCUKvE7Q2C+DOLdeQH_Qh44aUvdMydW9DUTrFQRxYWHGYgA@mail.gmail.com>
+Subject: Re: [PATCH v2 5/6] RISC-V: Do no continue isa string parsing without
+ correct XLEN
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andreas Schwab <schwab@linux-m68k.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When building with clang + CONFIG_DYNAMIC_FTRACE=n + W=1, there is a
-warning:
+On Fri, Feb 11, 2022 at 4:52 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Andreas,
+>
+> On Thu, Feb 10, 2022 at 11:00 PM Andreas Schwab <schwab@linux-m68k.org> wrote:
+> > On Feb 10 2022, Atish Patra wrote:
+> > > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> > > index 469b9739faf7..cca579bae8a0 100644
+> > > --- a/arch/riscv/kernel/cpufeature.c
+> > > +++ b/arch/riscv/kernel/cpufeature.c
+> > > @@ -84,6 +84,7 @@ void __init riscv_fill_hwcap(void)
+> > >       for_each_of_cpu_node(node) {
+> > >               unsigned long this_hwcap = 0;
+> > >               uint64_t this_isa = 0;
+> > > +             char *temp;
+> > >
+> > >               if (riscv_of_processor_hartid(node) < 0)
+> > >                       continue;
+> > > @@ -93,6 +94,7 @@ void __init riscv_fill_hwcap(void)
+> > >                       continue;
+> > >               }
+> > >
+> > > +             temp = (char *)isa;
+> >
+> > There should be no need for this cast.
+>
+> Indeed, but only if "temp" is changed to "const char *".
+>
 
-  kernel/trace/ftrace.c:7194:20: error: unused function 'ftrace_startup_enable' [-Werror,-Wunused-function]
-  static inline void ftrace_startup_enable(int command) { }
-                     ^
-  1 error generated.
+Yes. Fixed it in v3. Thanks.
 
-Clang warns on instances of static inline functions in .c files with W=1
-after commit 6863f5643dd7 ("kbuild: allow Clang to find unused static
-inline functions for W=1 build").
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
 
-The ftrace_startup_enable() stub has been unused since
-commit e1effa0144a1 ("ftrace: Annotate the ops operation on update"),
-where its use outside of the CONFIG_DYNAMIC_TRACE section was replaced
-by ftrace_startup_all().  Remove it to resolve the warning.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- kernel/trace/ftrace.c | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index f9feb197b2da..a4b462b6f944 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -7191,7 +7191,6 @@ static int __init ftrace_nodyn_init(void)
- core_initcall(ftrace_nodyn_init);
- 
- static inline int ftrace_init_dyn_tracefs(struct dentry *d_tracer) { return 0; }
--static inline void ftrace_startup_enable(int command) { }
- static inline void ftrace_startup_all(int command) { }
- 
- # define ftrace_startup_sysctl()	do { } while (0)
-
-base-commit: 754e0b0e35608ed5206d6a67a791563c631cec07
 -- 
-2.35.1
-
+Regards,
+Atish
