@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E238DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24471C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344373AbiBNKJi (ORCPT
+        id S1345441AbiBNKJl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:09:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55002 "EHLO
+        Mon, 14 Feb 2022 05:09:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345075AbiBNKFL (ORCPT
+        with ESMTP id S1345322AbiBNKGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:05:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD7CE674C0;
-        Mon, 14 Feb 2022 01:49:22 -0800 (PST)
+        Mon, 14 Feb 2022 05:06:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4679174630;
+        Mon, 14 Feb 2022 01:49:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59DE661238;
-        Mon, 14 Feb 2022 09:49:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BEE6C340E9;
-        Mon, 14 Feb 2022 09:49:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C148761284;
+        Mon, 14 Feb 2022 09:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 996D8C340E9;
+        Mon, 14 Feb 2022 09:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832161;
-        bh=//OuiyRbUkKtrhHbbvyACmB4XH0fLoBKNgJELnnmHHg=;
+        s=korg; t=1644832168;
+        bh=3epFaGK+vhe/wOw2uqSsd6GvhL9Cvq9qJdaq6ifWC2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vvBQHrnVhJ9HgTf6WsRzKLwdJhU4Tn1d1lI66Rvn2uzAm1U36XP1nYwT66swuog/4
-         Fe1WDRbW6tl4Z1uGH6w8f21x2FLJ5sDmRCCiwauukImxH1Z9h+jVgZDGPCvJdRYiUn
-         m9mzEpmHCA3LCnhLkFPQZ4euRoiiiTTY+FHEQ/q0=
+        b=c6WOvrnq3jkKNnPSHQEmKHYz+LebrnnDY6Afx5Uh8NYA51NwLb1oDEjJX3nBGPSlU
+         Udy3+cRvDu2t1CAGFosUfq3ZehN6iasoUcl0H1yWle3GDzh2xPc6AAWTZXiac7w2Oq
+         sMslRlLYzchA/H8Z33c+iqqlWvFiwHvLa6OKxLtw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aurelien Jarno <aurelien@aurel32.net>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
         Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 066/172] riscv: fix build with binutils 2.38
-Date:   Mon, 14 Feb 2022 10:25:24 +0100
-Message-Id: <20220214092508.680242400@linuxfoundation.org>
+Subject: [PATCH 5.15 068/172] riscv: eliminate unreliable __builtin_frame_address(1)
+Date:   Mon, 14 Feb 2022 10:25:26 +0100
+Message-Id: <20220214092508.750772172@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,50 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aurelien Jarno <aurelien@aurel32.net>
+From: Changbin Du <changbin.du@gmail.com>
 
-commit 6df2a016c0c8a3d0933ef33dd192ea6606b115e3 upstream.
+commit 6a00ef4493706a23120057fafbc62379bcde11ec upstream.
 
->From version 2.38, binutils default to ISA spec version 20191213. This
-means that the csr read/write (csrr*/csrw*) instructions and fence.i
-instruction has separated from the `I` extension, become two standalone
-extensions: Zicsr and Zifencei. As the kernel uses those instruction,
-this causes the following build failure:
+I tried different pieces of code which uses __builtin_frame_address(1)
+(with both gcc version 7.5.0 and 10.3.0) to verify whether it works as
+expected on riscv64. The result is negative.
 
-  CC      arch/riscv/kernel/vdso/vgettimeofday.o
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h: Assembler messages:
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
-  <<BUILDDIR>>/arch/riscv/include/asm/vdso/gettimeofday.h:71: Error: unrecognized opcode `csrr a5,0xc01'
+What the compiler had generated is as below:
+31                      fp = (unsigned long)__builtin_frame_address(1);
+   0xffffffff80006024 <+200>:   ld      s1,0(s0)
 
-The fix is to specify those extensions explicitely in -march. However as
-older binutils version do not support this, we first need to detect
-that.
+It takes '0(s0)' as the address of frame 1 (caller), but the actual address
+should be '-16(s0)'.
 
-Signed-off-by: Aurelien Jarno <aurelien@aurel32.net>
-Tested-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+          |       ...       | <-+
+          +-----------------+   |
+          | return address  |   |
+          | previous fp     |   |
+          | saved registers |   |
+          | local variables |   |
+  $fp --> |       ...       |   |
+          +-----------------+   |
+          | return address  |   |
+          | previous fp --------+
+          | saved registers |
+  $sp --> | local variables |
+          +-----------------+
+
+This leads the kernel can not dump the full stack trace on riscv.
+
+[    7.222126][    T1] Call Trace:
+[    7.222804][    T1] [<ffffffff80006058>] dump_backtrace+0x2c/0x3a
+
+This problem is not exposed on most riscv builds just because the '0(s0)'
+occasionally is the address frame 2 (caller's caller), if only ra and fp
+are stored in frame 1 (caller).
+
+          |       ...       | <-+
+          +-----------------+   |
+          | return address  |   |
+  $fp --> | previous fp     |   |
+          +-----------------+   |
+          | return address  |   |
+          | previous fp --------+
+          | saved registers |
+  $sp --> | local variables |
+          +-----------------+
+
+This could be a *bug* of gcc that should be fixed. But as noted in gcc
+manual "Calling this function with a nonzero argument can have
+unpredictable effects, including crashing the calling program.", let's
+remove the '__builtin_frame_address(1)' in backtrace code.
+
+With this fix now it can show full stack trace:
+[   10.444838][    T1] Call Trace:
+[   10.446199][    T1] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
+[   10.447711][    T1] [<ffffffff800060ac>] show_stack+0x32/0x3e
+[   10.448710][    T1] [<ffffffff80a005c0>] dump_stack_lvl+0x58/0x7a
+[   10.449941][    T1] [<ffffffff80a005f6>] dump_stack+0x14/0x1c
+[   10.450929][    T1] [<ffffffff804c04ee>] ubsan_epilogue+0x10/0x5a
+[   10.451869][    T1] [<ffffffff804c092e>] __ubsan_handle_load_invalid_value+0x6c/0x78
+[   10.453049][    T1] [<ffffffff8018f834>] __pagevec_release+0x62/0x64
+[   10.455476][    T1] [<ffffffff80190830>] truncate_inode_pages_range+0x132/0x5be
+[   10.456798][    T1] [<ffffffff80190ce0>] truncate_inode_pages+0x24/0x30
+[   10.457853][    T1] [<ffffffff8045bb04>] kill_bdev+0x32/0x3c
+...
+
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
+Fixes: eac2f3059e02 ("riscv: stacktrace: fix the riscv stacktrace when CONFIG_FRAME_POINTER enabled")
 Cc: stable@vger.kernel.org
 Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/Makefile |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/riscv/kernel/stacktrace.c |    9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/arch/riscv/Makefile
-+++ b/arch/riscv/Makefile
-@@ -52,6 +52,12 @@ riscv-march-$(CONFIG_ARCH_RV32I)	:= rv32
- riscv-march-$(CONFIG_ARCH_RV64I)	:= rv64ima
- riscv-march-$(CONFIG_FPU)		:= $(riscv-march-y)fd
- riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
-+
-+# Newer binutils versions default to ISA spec version 20191213 which moves some
-+# instructions from the I extension to the Zicsr and Zifencei extensions.
-+toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
-+riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
-+
- KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
- KBUILD_AFLAGS += -march=$(riscv-march-y)
+--- a/arch/riscv/kernel/stacktrace.c
++++ b/arch/riscv/kernel/stacktrace.c
+@@ -22,15 +22,16 @@ void notrace walk_stackframe(struct task
+ 			     bool (*fn)(void *, unsigned long), void *arg)
+ {
+ 	unsigned long fp, sp, pc;
++	int level = 0;
  
+ 	if (regs) {
+ 		fp = frame_pointer(regs);
+ 		sp = user_stack_pointer(regs);
+ 		pc = instruction_pointer(regs);
+ 	} else if (task == NULL || task == current) {
+-		fp = (unsigned long)__builtin_frame_address(1);
+-		sp = (unsigned long)__builtin_frame_address(0);
+-		pc = (unsigned long)__builtin_return_address(0);
++		fp = (unsigned long)__builtin_frame_address(0);
++		sp = sp_in_global;
++		pc = (unsigned long)walk_stackframe;
+ 	} else {
+ 		/* task blocked in __switch_to */
+ 		fp = task->thread.s[0];
+@@ -42,7 +43,7 @@ void notrace walk_stackframe(struct task
+ 		unsigned long low, high;
+ 		struct stackframe *frame;
+ 
+-		if (unlikely(!__kernel_text_address(pc) || !fn(arg, pc)))
++		if (unlikely(!__kernel_text_address(pc) || (level++ >= 1 && !fn(arg, pc))))
+ 			break;
+ 
+ 		/* Validate frame pointer */
 
 
