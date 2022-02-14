@@ -2,126 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC51AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231402AbiBNVit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:38:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54836 "EHLO
+        id S231503AbiBNVl3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:41:29 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231458AbiBNVii (ORCPT
+        with ESMTP id S231487AbiBNVl1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:38:38 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1361016BF86
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:38:30 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id l125so17094647ybl.4
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:38:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wCcd9F5bCRcs8XshngMDCvznDi+A9xGFahm7PcKzRHw=;
-        b=Q8tk/zjg2kqOdwrohQtL5HnJVRSrKfAgLL+jy3x6otXuFdoXukLtAuXrpILOoBc/pH
-         eYn8Y1slIrYHk8wE4T1MEJjUOXSbjtx1fiH5k9PGvLBVYZrenDTMFXKDV4T2hyL3atnb
-         lQnz/hhArXzUa2X8h/4u7szdBHYE0NUsiQn0JP/UqkahNcDaMHGNTjWfhRxwp54gzvaH
-         Xungy/wXWnrOlyjg4FCqYvSLJXeyyzMdomozlNAOTcbHujYtGNXsOWMQWyXAj3DwHWou
-         tJpdcDD4VDSx3eL+v2YFjObVBTco6OCIMrZO81yJFQvkgQ7T2LFueWoHnaNBa+emJFAe
-         1FLQ==
+        Mon, 14 Feb 2022 16:41:27 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31B621732D7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:41:19 -0800 (PST)
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 16B0E3F33A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 21:41:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1644874878;
+        bh=D4g4uyjwJpcXoUc2SbfFfY5PU28t1w1ZkaJouv3Cwjo=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Efw+woMdORGERdh/7KSVE4CVHndA+CrTiZlkd/UtVMPEqXdQFcInqmKzfUuaYzRN/
+         1UfH1CnVYUWSGB9+NFIhvNbC6LyGCnoBYgFftHdNY8xQ5x9PWDhjbxPBktVCa3S6rU
+         xZ2PvTpvj3K2IlTrHXEyuCZ5WEzXrwlDzscTqzUIxCwuPLGJRPWpshzoCu7amnGJZh
+         WiliS6HOyXDFgyNZ3wMfWiZ3KDdzsVtAy2zMolNWVimDGeQCmWPwiADg0+ydKdb+oH
+         tAnHqxIRNdm5GkbBdhu64Y7/jQ+cYAA12lroS20qOhgY7F4+qm5i2iZofUPrStVGTf
+         9JDxX5xXX3ZIQ==
+Received: by mail-ed1-f71.google.com with SMTP id l3-20020a50cbc3000000b0041083c11173so5748593edi.4
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:41:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wCcd9F5bCRcs8XshngMDCvznDi+A9xGFahm7PcKzRHw=;
-        b=GIvmOjaSCZ5Uw6klq1AM2XALIlp1Bm/m/A4O5ykcYvvhLocNRkWQ8igc7UpsqiEcll
-         oCxp5CYiprxNK7uHianMTeT1msb+d7kLxCRvTsVLOgOW7wz4D4lfq9UQjVnkrsur/SrY
-         8CklWRiWgxU2+VUGTIRIc+1X1Bgc/2rQzAaYTttH0u9zNEjDr4mrii6kB/CtaBBmahup
-         p5FALgLx41SqyaGwiweL7o5bvP9YFJPEupq6Z27PocEAewFfX2YBF2MpMW5gvuY9RjaN
-         2oCim8YRVvFG/3KI+cuKAjIXyFNkacAZwEDxzptiC9ptCufxPtIiDtH8WbaYNNXiBf26
-         F+Jg==
-X-Gm-Message-State: AOAM5301ssKv2mKodP050yQueROLXItfJtJkMJX2RFPFFUXwmOPwSsdE
-        Ro1eh2SYkIdThdPrS6w+Can51vX1s/lnplpFutvNEw==
-X-Google-Smtp-Source: ABdhPJxUccxxoP4bZt6GjNhxpXP1XmlvCj2MmIFZET4f3oQ6jVVeZCKHTeW2u+S3hajLTFMEx9E97COi27QNEfTmUws=
-X-Received: by 2002:a0d:ec48:: with SMTP id r8mr816930ywn.298.1644874709055;
- Mon, 14 Feb 2022 13:38:29 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=D4g4uyjwJpcXoUc2SbfFfY5PU28t1w1ZkaJouv3Cwjo=;
+        b=K3x1e1xp7qzweKQZBHwfVTBb1xYU2N+d9zMuX491T6C2ksQf4TncD+g5DmtvXP5ZUz
+         saHEmfQGGYzwGCr6j4Vca0r9P/HoBhmVRsRYkc+3QD6hbCWB6bBuPRbe13NX0nvAaSnf
+         hTgSbeGW7eSsf4A0xXqGUortm2ZCNCKqVU2GrjXO2mV/hq7kLaAbnn3kswgAwcdJUkSj
+         ufZvCwdvDMZH5yuHayIzF0TC1U7Be6SJuL/SDunpzexv3E9cm5XGB4D4902Vgp0ZZNT1
+         5b2JyS1LDKkNi7pN613mJghJ/ns3vkh2ZtjMy91l1WB+CnmR4S1f7NITOJ15bM8B6inR
+         F7Xw==
+X-Gm-Message-State: AOAM533sdDENZ31xrH/gKd36Ejm/QB8iUduf82BnJnV2raLk/HUoucxP
+        Z6Qgb5xluLKcLVhqlIyxlxUQ7d3NYUsFZ7m/Qz0Xa2Ogc/6Tan5cMmf+paQnR91wmv+dkMEVn55
+        RXgC+r52hrgFj7TrwS0PgsDB0sApnQail4+2dp+3gmQ==
+X-Received: by 2002:a05:6402:23a2:: with SMTP id j34mr877919eda.5.1644874877711;
+        Mon, 14 Feb 2022 13:41:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJysYArRm8bTpnwhgJNzUQ66tXM4Ay9eBAC+mx4aM8YJcNxRd6BkdPDXkiyh+B0XPzUUbIAzUw==
+X-Received: by 2002:a05:6402:23a2:: with SMTP id j34mr877841eda.5.1644874876553;
+        Mon, 14 Feb 2022 13:41:16 -0800 (PST)
+Received: from [192.168.0.106] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id t5sm5525750edd.7.2022.02.14.13.41.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 13:41:16 -0800 (PST)
+Message-ID: <1dff6f62-88dd-00e9-c9c0-bc148f4fb0b1@canonical.com>
+Date:   Mon, 14 Feb 2022 22:41:15 +0100
 MIME-Version: 1.0
-References: <20211122170301.764232470@infradead.org> <20211122170805.338489412@infradead.org>
- <6ebb0ab131c522f20c094294d49091fc@overdrivepizza.com> <202202081541.900F9E1B@keescook>
- <ad6c2633f39e39583bc5c5eaf7ccbe52@overdrivepizza.com> <202202082003.FA77867@keescook>
- <9ea50c51ee8db366430c9dc697a83923@overdrivepizza.com> <20220211133803.GV23216@worktop.programming.kicks-ass.net>
-In-Reply-To: <20220211133803.GV23216@worktop.programming.kicks-ass.net>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 14 Feb 2022 13:38:18 -0800
-Message-ID: <CABCJKuciRBnz4JxBDJC=+kuJn4pU2uBkWPBov7-VL2o2j0F4SA@mail.gmail.com>
-Subject: Re: [RFC][PATCH 6/6] objtool: Add IBT validation / fixups
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Joao Moreira <joao@overdrivepizza.com>,
-        Kees Cook <keescook@chromium.org>, X86 ML <x86@kernel.org>,
-        hjl.tools@gmail.com, Josh Poimboeuf <jpoimboe@redhat.com>,
-        andrew.cooper3@citrix.com, LKML <linux-kernel@vger.kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 2/4] dt-bindings:iio:frequency: add admv1014 binding
+Content-Language: en-US
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>
+References: <20220214073418.4528-1-antoniu.miclaus@analog.com>
+ <20220214073418.4528-2-antoniu.miclaus@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220214073418.4528-2-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 5:38 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> I think we'll end up with something related to KCFI, but with distinct
-> differences:
->
->  - 32bit immediates for smaller code
+On 14/02/2022 08:34, Antoniu Miclaus wrote:
+> Add device tree bindings for the ADMV1014 Upconverter.
 
-Sure, I don't see issues with that. Based on a quick test with
-defconfig, this reduces vmlinux size by 0.30%.
+Add spaces in subject after ':'.
 
->  - __kcfi_check_fail() is out for smaller code
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+> changes in v7:
+>  - add Reviewed-by tag
+>  .../bindings/iio/frequency/adi,admv1014.yaml  | 137 ++++++++++++++++++
+>  1 file changed, 137 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> new file mode 100644
+> index 000000000000..fe352c01dd94
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> @@ -0,0 +1,137 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/frequency/adi,admv1014.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ADMV1014 Microwave Downconverter
+> +
+> +maintainers:
+> +  - Antoniu Miclaus <antoniu.miclaus@analog.com>
+> +
+> +description: |
+> +   Wideband, microwave downconverter optimized for point to point microwave
+> +   radio designs operating in the 24 GHz to 44 GHz frequency range.
+> +
+> +   https://www.analog.com/en/products/admv1014.html
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,admv1014
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 1000000
+> +
+> +  clocks:
+> +    minItems: 1
 
-I'm fine with adding a trap mode that's used by default, but having
-more helpful diagnostics when something fails is useful even in
-production systems in my experience. This change results in a vmlinux
-that's another 0.92% smaller.
+maxItems: 1
+... or do you expect more clocks?
 
-> Which then yields:
->
-> caller:
->         cmpl    $0xdeadbeef, -0x4(%rax)         # 7 bytes
->         je      1f                              # 2 bytes
->         ud2                                     # 2 bytes
-> 1:      call    __x86_indirect_thunk_rax        # 5 bytes
+> +
+> +  clock-names:
+> +    items:
+> +      - const: lo_in
+> +    description:
+> +      External clock that provides the Local Oscilator input.
+> +
+> +  vcm-supply:
+> +    description:
+> +      Common-mode voltage regulator.
+> +
+> +  vcc-if-bb-supply:
+> +    description:
+> +      BB and IF supply voltage regulator.
+> +
+> +  vcc-vga-supply:
+> +    description:
+> +      RF Amplifier supply voltage regulator.
+> +
+> +  vcc-vva-supply:
+> +    description:
+> +      VVA Control Circuit supply voltage regulator.
+> +
+> +  vcc-lna-3p3-supply:
+> +    description:
+> +      Low Noise Amplifier 3.3V supply voltage regulator.
+> +
+> +  vcc-lna-1p5-supply:
+> +    description:
+> +      Low Noise Amplifier 1.5V supply voltage regulator.
+> +
+> +  vcc-bg-supply:
+> +    description:
+> +      Band Gap Circuit supply voltage regulator.
+> +
+> +  vcc-quad-supply:
+> +    description:
+> +      Quadruple supply voltage regulator.
+> +
+> +  vcc-mixer-supply:
+> +    description:
+> +      Mixer supply voltage regulator.
+> +
+> +  adi,input-mode:
+> +    description:
+> +      Select the input mode.
+> +      iq - in-phase quadrature (I/Q) input
+> +      if - complex intermediate frequency (IF) input
+> +    enum: [iq, if]
+> +
+> +  adi,detector-enable:
+> +    description:
+> +      Digital Rx Detector Enable. The Square Law Detector output is
+> +      available at output pin VDET.
+> +    type: boolean
+> +
+> +  adi,p1db-compensation-enable:
+> +    description:
+> +      Turn on bits to optimize P1dB.
+> +    type: boolean
+> +
+> +  adi,quad-se-mode:
+> +    description:
+> +      Switch the LO path from differential to single-ended operation.
+> +      se-neg - Single-Ended Mode, Negative Side Disabled.
+> +      se-pos - Single-Ended Mode, Positive Side Disabled.
+> +      diff - Differential Mode.
+> +    enum: [se-neg, se-pos, diff]
+> +
+> +  '#clock-cells':
+> +    const: 0
 
-Note that the compiler might not emit this *exact* sequence of
-instructions. For example, Clang generates this for events_sysfs_show
-with the modified KCFI patch:
+Is this really a clock provider?
 
-2274:       cmpl   $0x4d7bed9e,-0x4(%r11)
-227c:       jne    22c0 <events_sysfs_show+0x6c>
-227e:       call   2283 <events_sysfs_show+0x2f>
-                    227f: R_X86_64_PLT32    __x86_indirect_thunk_r11-0x4
-...
-22c0:       ud2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - vcm-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      admv1014@0{
 
-In this case the function has two indirect calls and Clang seems to
-prefer to emit just one ud2.
+Generic node name (see Devicetree spec), so a "converter"? "wifi"?
+"sensor"? "radio"?
 
->         .align 16
->         .byte 0xef, 0xbe, 0xad, 0xde            # 4 bytes
-> func:
->         endbr                                   # 4 bytes
+> +        compatible = "adi,admv1014";
+> +        reg = <0>;
+> +        spi-max-frequency = <1000000>;
+> +        clocks = <&admv1014_lo>;
+> +        clock-names = "lo_in";
+> +        vcm-supply = <&vcm>;
+> +        vcc-if-bb-supply = <&vcc_if_bb>;
+> +        vcc-vga-supply = <&vcc_vga>;
+> +        vcc-vva-supply = <&vcc_vva>;
+> +        vcc-lna-3p3-supply = <&vcc_lna_3p3>;
+> +        vcc-lna-1p5-supply = <&vcc_lna_1p5>;
+> +        vcc-bg-supply = <&vcc_bg>;
+> +        vcc-quad-supply = <&vcc_quad>;
+> +        vcc-mixer-supply = <&vcc_mixer>;
+> +        adi,quad-se-mode = "diff";
+> +        adi,detector-enable;
+> +        adi,p1db-compensation-enable;
+> +      };
+> +    };
+> +...
 
-Here func is no longer aligned to 16 bytes, in case that's important.
 
-> Further, Andrew put in the request for __attribute__((cfi_seed(blah)))
-> to allow distinguishing indirect functions with otherwise identical
-> signature; eg. cookie = hash32(blah##signature).
-
-Sounds reasonable.
-
-> Did I miss anything? Got anything wrong?
-
-How would you like to deal with the 4-byte hashes in objtool? We
-either need to annotate all function symbols in the kernel, or we need
-a way to distinguish the hashes from random instructions, so we can
-also have functions that don't have a type hash.
-
-Sami
+Best regards,
+Krzysztof
