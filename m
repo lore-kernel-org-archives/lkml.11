@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DADC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25F95C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230211AbiBNJd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:33:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42704 "EHLO
+        id S243928AbiBNJeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:34:01 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243633AbiBNJdZ (ORCPT
+        with ESMTP id S243812AbiBNJdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:33:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6FCAE48;
-        Mon, 14 Feb 2022 01:31:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F509BF6D;
+        Mon, 14 Feb 2022 01:31:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BB80B80DD1;
-        Mon, 14 Feb 2022 09:31:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6146C340E9;
-        Mon, 14 Feb 2022 09:31:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3E42B80DD1;
+        Mon, 14 Feb 2022 09:31:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B2FC340E9;
+        Mon, 14 Feb 2022 09:31:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831105;
-        bh=sjzPQJ4NRhqLJBSxXcRylQRoO81qn0Tb+LLValorUhw=;
+        s=korg; t=1644831108;
+        bh=am5yNQtyIYQDH+bydUQ02sPjeH53/Ufx0EW0u8104+8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zfxjdOOccVhIc+EM3Cte1nebIcjAkw++zL55XkfqoWetN5kPoIZxo6FCE5soK6R+w
-         o6Us5Xw2QL/JiX52q1EgZqR51HBLCY3HXnyvT6okDaFZ5AMyxh9OJwPrpINPGqwyB7
-         4Qmehca4hsO8rkMzSOVEHXAdkOpVsmfgNBEUiHqM=
+        b=eNjwSNQgPcfQK0GBYu0Ph1UXXsn3CoNd0Vp47mIVrw31MYjoyEYhMLsub/fzhcR/m
+         E8ALV95eP98XLeSE3TxZ/tUhXwuEnecmOqpvTlo30xom4HN02WeObcmDw16QUaQAia
+         rbsJqBaZ83hHlLLm9GsW1++yOBuYL1Dm1GWtL8qM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH 4.14 33/44] usb: ulpi: Call of_node_put correctly
-Date:   Mon, 14 Feb 2022 10:25:56 +0100
-Message-Id: <20220214092448.980656771@linuxfoundation.org>
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>
+Subject: [PATCH 4.14 34/44] usb: dwc3: gadget: Prevent core from processing stale TRBs
+Date:   Mon, 14 Feb 2022 10:25:57 +0100
+Message-Id: <20220214092449.011455274@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -49,46 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Anderson <sean.anderson@seco.com>
+From: Udipto Goswami <quic_ugoswami@quicinc.com>
 
-commit 0a907ee9d95e3ac35eb023d71f29eae0aaa52d1b upstream.
+commit 117b4e96c7f362eb6459543883fc07f77662472c upstream.
 
-of_node_put should always be called on device nodes gotten from
-of_get_*. Additionally, it should only be called after there are no
-remaining users. To address the first issue, call of_node_put if later
-steps in ulpi_register fail. To address the latter, call put_device if
-device_register fails, which will call ulpi_dev_release if necessary.
+With CPU re-ordering on write instructions, there might
+be a chance that the HWO is set before the TRB is updated
+with the new mapped buffer address.
+And in the case where core is processing a list of TRBs
+it is possible that it fetched the TRBs when the HWO is set
+but before the buffer address is updated.
+Prevent this by adding a memory barrier before the HWO
+is updated to ensure that the core always process the
+updated TRBs.
 
-Fixes: ef6a7bcfb01c ("usb: ulpi: Support device discovery via DT")
+Fixes: f6bafc6a1c9d ("usb: dwc3: convert TRBs into bitshifts")
 Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Link: https://lore.kernel.org/r/20220127190004.1446909-3-sean.anderson@seco.com
+Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
+Link: https://lore.kernel.org/r/1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/common/ulpi.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/gadget.c |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/usb/common/ulpi.c
-+++ b/drivers/usb/common/ulpi.c
-@@ -252,12 +252,16 @@ static int ulpi_register(struct device *
- 		return ret;
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -1004,6 +1004,19 @@ static void __dwc3_prepare_one_trb(struc
+ 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
+ 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(stream_id);
  
- 	ret = ulpi_read_id(ulpi);
--	if (ret)
-+	if (ret) {
-+		of_node_put(ulpi->dev.of_node);
- 		return ret;
-+	}
++	/*
++	 * As per data book 4.2.3.2TRB Control Bit Rules section
++	 *
++	 * The controller autonomously checks the HWO field of a TRB to determine if the
++	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
++	 * is valid before setting the HWO field to '1'. In most systems, this means that
++	 * software must update the fourth DWORD of a TRB last.
++	 *
++	 * However there is a possibility of CPU re-ordering here which can cause
++	 * controller to observe the HWO bit set prematurely.
++	 * Add a write memory barrier to prevent CPU re-ordering.
++	 */
++	wmb();
+ 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
  
- 	ret = device_register(&ulpi->dev);
--	if (ret)
-+	if (ret) {
-+		put_device(&ulpi->dev);
- 		return ret;
-+	}
- 
- 	dev_dbg(&ulpi->dev, "registered ULPI PHY: vendor %04x, product %04x\n",
- 		ulpi->id.vendor, ulpi->id.product);
+ 	dwc3_ep_inc_enq(dep);
 
 
