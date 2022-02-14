@@ -2,112 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6351CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5BDC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356907AbiBNRIJ (ORCPT
+        id S1356915AbiBNRKI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:08:09 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42770 "EHLO
+        Mon, 14 Feb 2022 12:10:08 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239676AbiBNRIG (ORCPT
+        with ESMTP id S239676AbiBNRKG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:08:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2531CE81;
-        Mon, 14 Feb 2022 09:07:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA47EB81240;
-        Mon, 14 Feb 2022 17:07:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19448C340E9;
-        Mon, 14 Feb 2022 17:07:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644858475;
-        bh=/jr8rd1DWDK7a9tvps14kfnBjFyrLKH0qTwPFZLYYrI=;
+        Mon, 14 Feb 2022 12:10:06 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF2B65171;
+        Mon, 14 Feb 2022 09:09:57 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6E51647F;
+        Mon, 14 Feb 2022 18:09:55 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1644858595;
+        bh=/YNaz0DsrRJeG+wyZcvue35MIts+tATZZO5yOnTvmJY=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MkzJunaXWHq0IrMdhiGzQrmnd8hllaMCV54iHDvFSxYNuarApVrKBdvfw5wItquhn
-         vzSmtJBV8BFhCiDXgN8Om/1Hik3zillKrgnGOiguF9RnShFoEBNnoe9ixp5m+oQf4E
-         J0Xc3r0g5xaEWjssYRpT0n7q6OrmpawbWYiJes930e8wlzr7vMy0y7P2X9uyHJX/GL
-         yoTfyyMZXVs0MpLa9W0YE06MGf1Wv1C//JkRTovTJMBZLSG97pwlHt0qTcTAv96hRU
-         U+145Cx73TCGM6g2/m1DDkztTQO51oUGV39E+O1wYNPQQOnB2E+MSsp94hz5lOTmnV
-         6m6lpNsADJoxw==
-Date:   Mon, 14 Feb 2022 17:07:50 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Chanwoo Choi <cw00.choi@samsung.com>, Pavel Machek <pavel@ucw.cz>,
+        b=OVPWru2lo/OxxUAbhYZ7ZzYSoNrelS85Ct9gfpER9HgH31TXus3Fzmf+xQSt5qK5R
+         NewjRiTNY2yFNUE7wzMFfp8UYOUVC4BDVu8DH+4mANw+gPv6Gpos3ms0zXx3i0g5R/
+         O67nQc/C419gxtXJDKShdgG4Fl1wNCzpmyr+GgSc=
+Date:   Mon, 14 Feb 2022 19:09:49 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-staging@lists.linux.dev,
+        Yong Deng <yong.deng@magewell.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] regulator: dt-bindings: maxim,max77693: convert
- to dtschema
-Message-ID: <YgqMZhNhMRgO0V8t@sirena.org.uk>
-References: <20220111175017.223966-1-krzysztof.kozlowski@canonical.com>
- <20220111175017.223966-4-krzysztof.kozlowski@canonical.com>
- <YgqGT999nsjUGp9Z@sirena.org.uk>
- <12c66ced-c4a4-3a4e-f84b-83edb9e3fc58@canonical.com>
- <YgqIiv8fZeqFFUHX@sirena.org.uk>
- <b0aaf1e6-c626-e68c-a0d2-4a7ff372b395@canonical.com>
+        Maxime Ripard <mripard@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Helen Koike <helen.koike@collabora.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH v2 61/66] dt-bindings: media: Add Allwinner A31 ISP
+ bindings documentation
+Message-ID: <YgqM3ZdMfEz+ZKo/@pendragon.ideasonboard.com>
+References: <20220205185429.2278860-1-paul.kocialkowski@bootlin.com>
+ <20220205185429.2278860-62-paul.kocialkowski@bootlin.com>
+ <YgE/+UmP4nJVxtRT@pendragon.ideasonboard.com>
+ <YgqAv2vLimYgRwDS@aptenodytes>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kVA94xP6DlMH9yMe"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <b0aaf1e6-c626-e68c-a0d2-4a7ff372b395@canonical.com>
-X-Cookie: Am I in GRADUATE SCHOOL yet?
+In-Reply-To: <YgqAv2vLimYgRwDS@aptenodytes>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Paul,
 
---kVA94xP6DlMH9yMe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Mon, Feb 14, 2022 at 05:18:07PM +0100, Paul Kocialkowski wrote:
+> On Mon 07 Feb 22, 17:51, Laurent Pinchart wrote:
+> > On Sat, Feb 05, 2022 at 07:54:24PM +0100, Paul Kocialkowski wrote:
+> > > This introduces YAML bindings documentation for the Allwinner A31 Image
+> > > Signal Processor (ISP).
+> > > 
+> > > Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > ---
+> > >  .../media/allwinner,sun6i-a31-isp.yaml        | 117 ++++++++++++++++++
+> > >  1 file changed, 117 insertions(+)
+> > >  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > new file mode 100644
+> > > index 000000000000..2d87022c43ce
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
+> > > @@ -0,0 +1,117 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
+> > > +
+> > > +maintainers:
+> > > +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    enum:
+> > > +      - allwinner,sun6i-a31-isp
+> > > +      - allwinner,sun8i-v3s-isp
+> > > +
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +
+> > > +  interrupts:
+> > > +    maxItems: 1
+> > > +
+> > > +  clocks:
+> > > +    items:
+> > > +      - description: Bus Clock
+> > > +      - description: Module Clock
+> > > +      - description: DRAM Clock
+> > 
+> > That's interesting, does the ISP have a dedicated DRAM ?
+> 
+> It doesn't, it actually uses the main DRAM with the "mbus" interconnect.
+> The clock is probably for the DMA engine.
+> 
+> > > +
+> > > +  clock-names:
+> > > +    items:
+> > > +      - const: bus
+> > > +      - const: mod
+> > > +      - const: ram
+> > > +
+> > > +  resets:
+> > > +    maxItems: 1
+> > > +
+> > > +  ports:
+> > > +    $ref: /schemas/graph.yaml#/properties/ports
+> > > +
+> > > +    properties:
+> > > +      port@0:
+> > > +        $ref: /schemas/graph.yaml#/$defs/port-base
+> > > +        description: CSI0 input port
+> > > +
+> > > +        properties:
+> > > +          reg:
+> > > +            const: 0
+> > > +
+> > > +          endpoint:
+> > > +            $ref: video-interfaces.yaml#
+> > > +            unevaluatedProperties: false
+> > 
+> > If no other property than remote-endpoint are allowed, I'd write
+> > 
+> >           endpoint:
+> >             $ref: video-interfaces.yaml#
+> > 	    remote-endpoint: true
+> >             additionalProperties: false
+> > 
+> > Same below.
+> > 
+> > > +
+> > > +        additionalProperties: false
+> > > +
+> > > +      port@1:
+> > > +        $ref: /schemas/graph.yaml#/$defs/port-base
+> > > +        description: CSI1 input port
+> > > +
+> > > +        properties:
+> > > +          reg:
+> > > +            const: 0
+> > 
+> > This should be 1.
+> 
+> Correct, thanks!
+> 
+> > > +
+> > > +          endpoint:
+> > > +            $ref: video-interfaces.yaml#
+> > > +            unevaluatedProperties: false
+> > > +
+> > > +        additionalProperties: false
+> > > +
+> > > +    anyOf:
+> > > +      - required:
+> > > +        - port@0
+> > > +      - required:
+> > > +        - port@1
+> > 
+> > As ports are an intrinsic property of the ISP, both should be required,
+> > but they don't have to be connected.
+> 
+> Well the ISP does have the ability to source from either CSI0 and CSI1
+> but I don't really get the point of declaring both ports when only one
+> of the two controllers is present.
 
-On Mon, Feb 14, 2022 at 06:01:17PM +0100, Krzysztof Kozlowski wrote:
+If it's within an SoC I don't mind too much. What I usually insist on is
+declaring all ports even when no external devices are connected on the
+board. It may however be easier to implement things on the driver side
+when all the ports are declared, even for internal devices. I won't
+insist either way here.
 
-> You mantioned new features - this approach does not change that. If you
-> add new properties to common schema, you already alter bindings. Just
-> because we use common part, it does not change the fact that it is a
-> bindings change. Adding new features in common schema is the same
-> binding change as adding new feature in the specific binding, except
-> more work.
+> > By the way, how do you select at runtime which CSI-2 RX the ISP gets its
+> > image stream from ? Is it configured through registers of the ISP ?
+> 
+> Actually what the ISP gets is fully dependent on what is received by the
+> CSI controller it is connected to (which can be the mipi csi-2 controller
+> or its direct parallel pins), so the configuration happens on the CSI side.
 
-> I guess you though that work in scaling, so yes, this scales worse. The
-> benefit is that this really restricts usage of regulator to what is
-> supported, so allows to detect wrongly configured DTS.
+OK, then how do you select at runtime which CSI the ISP gets its image
+stream from ? :-)
 
-We should have a way of specifying generic properties that doesn't
-require us to go through every single user of a binding and updating
-them all, then auditing by hand any new users to make sure they didn't
-forget one of the generic properties.  This is just error prone and
-miserable, especially when most of the checking is done by hand rather
-than automated.
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +  - interrupts
+> > > +  - clocks
+> > > +  - clock-names
+> > > +  - resets
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> > > +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
+> > > +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+> > > +
+> > > +    isp: isp@1cb8000 {
+> > > +        compatible = "allwinner,sun8i-v3s-isp";
+> > > +        reg = <0x01cb8000 0x1000>;
+> > > +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
+> > > +        clocks = <&ccu CLK_BUS_CSI>,
+> > > +             <&ccu CLK_CSI1_SCLK>,
+> > > +             <&ccu CLK_DRAM_CSI>;
+> > > +        clock-names = "bus", "mod", "ram";
+> > > +        resets = <&ccu RST_BUS_CSI>;
+> > > +
+> > > +        ports {
+> > > +            #address-cells = <1>;
+> > > +            #size-cells = <0>;
+> > > +
+> > > +            port@0 {
+> > > +                reg = <0>;
+> > > +
+> > > +                isp_in_csi0: endpoint {
+> > > +                    remote-endpoint = <&csi0_out_isp>;
+> > > +                };
+> > > +            };
+> > > +        };
+> > > +    };
+> > > +
+> > > +...
 
-> Once coupling (or any other feature) is supported, each of such
-> restricted regulator bindings should be independently revised, instead
-> of adding this new feature to everything.
+-- 
+Regards,
 
-Coupling is already supported - it doesn't require anything on the part
-of the driver, it's about defining the relationships between supplies
-rather than anything the driver or device does.
-
---kVA94xP6DlMH9yMe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIKjGUACgkQJNaLcl1U
-h9Crxwf+Lb8Rh23sPsLDiaGIIuNoLur++mpq/Djyf5Vozb8Zor6osxgyOiUS3F5t
-PSfStwAChTiw0KXn+3+n6wm1OS16tMt9wMuUNuEN+fdDYy8BO+Jl8O8dyKhX456g
-+e3KFJVkk8uqcCHNVCmnRn4rCnOqbWDxTWiaggH5wNaEKa0OC8w+t+5IgoeONr5F
-2FRSIN87jb73g7Y9RG1OS8F3nMqthsebChr0ryZfUp1PnsWKOYXlVyG/Lknv5LBP
-HL0wkQu7B394Mda2c6pg4/VxHkGzfz3VWZMpRlMNLbLVA48Wj77SxFjmCg+eG1BV
-XZsdz6WQp5E/kbhmA4y78UTlWuEqwA==
-=KX56
------END PGP SIGNATURE-----
-
---kVA94xP6DlMH9yMe--
+Laurent Pinchart
