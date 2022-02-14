@@ -2,127 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C807CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiBNLct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:32:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57326 "EHLO
+        id S243267AbiBNLcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:32:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351711AbiBNLaN (ORCPT
+        with ESMTP id S1352057AbiBNLbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:30:13 -0500
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67DDB40A01
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:11:53 -0800 (PST)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220214111151epoutp04f2337dcb6b52306508a8d1cfffe1c393~ToqNPoHYu1097310973epoutp04T
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:11:51 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220214111151epoutp04f2337dcb6b52306508a8d1cfffe1c393~ToqNPoHYu1097310973epoutp04T
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1644837111;
-        bh=vo5dCj6f0lE9XyHVfR1Uk+w8viUP5iroIa6Ar1pwTks=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=RBah/8tj4X4iaXWvaypPOgA2Na7+74kWd6EsiYMQTR8YTeGWTPxsyax4f4khCbtQN
-         EHUhijVzg1kAH3WQcJjVSnAN6hUogWZ3OItqEg6+/KR9wtnaDK7JnFyGZsQpNYS/Aw
-         C6I155ZT4h8qbpTe81YjDeL8yecUUOGOj3gOmzzk=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20220214111150epcas2p435d7e3c9bfb219d59ee36c1ae023f1f6~ToqML7M1F2326823268epcas2p4j;
-        Mon, 14 Feb 2022 11:11:50 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.36.97]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4Jy1kr5nLrz4x9QG; Mon, 14 Feb
-        2022 11:11:48 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        9B.3F.35137.5583A026; Mon, 14 Feb 2022 20:09:09 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b~ToqKfaxnx0748407484epcas2p3c;
-        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220214111148epsmtrp15721726d40d4abf09784118321c4bd7d~ToqKeuNEw1541015410epsmtrp1M;
-        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
-X-AuditID: b6c32a46-d8bff70000018941-f4-620a38552c01
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        60.78.08738.4F83A026; Mon, 14 Feb 2022 20:11:48 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220214111148epsmtip12a5e91e2420e4853ed0a3abb5f486336~ToqKQO9nN2598625986epsmtip1d;
-        Mon, 14 Feb 2022 11:11:48 +0000 (GMT)
-From:   Daehwan Jung <dh10.jung@samsung.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org (open list),
-        Daehwan Jung <dh10.jung@samsung.com>, quic_wcheng@quicinc.com,
-        quic_jackp@quicinc.com, Thinh.Nguyen@synopsys.com
-Subject: [PATCH v2 0/2] Fix ep command fail issue in dequeue
-Date:   Mon, 14 Feb 2022 20:08:51 +0900
-Message-Id: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBKsWRmVeSWpSXmKPExsWy7bCmmW6oBVeSQecWJYtjbU/YLe4smMZk
-        0bx4PZvF5V1z2CwWLWtlttj1bxGTxabdfawWqxYcYHfg8Ni0qpPNY//cNeweE/fUefRtWcXo
-        sWX/Z0aPz5vkAtiism0yUhNTUosUUvOS81My89JtlbyD453jTc0MDHUNLS3MlRTyEnNTbZVc
-        fAJ03TJzgO5RUihLzCkFCgUkFhcr6dvZFOWXlqQqZOQXl9gqpRak5BSYF+gVJ+YWl+al6+Wl
-        llgZGhgYmQIVJmRnvJl7nbGgnbWi/9Mk1gbGCSxdjBwcEgImEuueancxcnEICexglNj4/zUT
-        hPOJUaLr+1MWCOczo8TTlm+MXYycYB1rZ+6ASuxilFjU9ZEVwvnBKLHm7EV2kLlsAloS3xeC
-        NYgIhElMXLYPrIFZYC+jRNO+u6wgCWEBG4mey2eZQGwWAVWJxY9egtm8Am4Sez9PZIXYJidx
-        81wnM0izhMAudonDxw4zQSRcJPasPssMYQtLvDq+hR3ClpJ42d8GZRdL7PrUygTR3MAo0fjg
-        BFSDscSsZ+2MIJcyC2hKrN+lDwkMZYkjt1hAKpgF+CQ6Dv9lhwjzSnS0CUE0KktMvzwB6jRJ
-        iYOvz0EN9JBYu3M72L9CArES/VMuMk5glJ2FMH8BI+MqRrHUguLc9NRiowIjeCQl5+duYgQn
-        MS23HYxT3n7QO8TIxMF4iFGCg1lJhDfuLGeSEG9KYmVValF+fFFpTmrxIUZTYHhNZJYSTc4H
-        ptG8knhDE0sDEzMzQ3MjUwNzJXFer5QNiUIC6YklqdmpqQWpRTB9TBycUg1MXCqSAdMXFKz7
-        1rj04vW76492/uyZaTSjYnHZw/u7I/o7fk16vNtVrbGYoV8jv5f1UXteOH/f+7UVDo3m95bF
-        Tiv9/CWie8Xq4p1MkoeUjP5ZXlxzKUac4YTn0pNh/2+d/TT/McdXHx2VhYau030qpsgGT17G
-        UXSLR2XKvhX3ShgOzaiwXL5A1/terduio33rNkZdv9mrVFSe9VZd3aFAgvP2+R2/mlyuyVT8
-        X3Wn4Anf96Nx0571cfqKSjIqdWzfspPpzdmgdws7K6v/LVzQPqvuMXf8sRv7Z6fuCr8X1/jC
-        9YzjtPfbVovFHPNZkXY7jXv334fd37tP+zqrc3/kYbb5+kDz6Pd2Ne/pzzewzFJiKc5INNRi
-        LipOBAAihIVG6wMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupgluLIzCtJLcpLzFFi42LZdlhJTveLBVeSwY5jHBbH2p6wW9xZMI3J
-        onnxejaLy7vmsFksWtbKbLHr3yImi027+1gtVi04wO7A4bFpVSebx/65a9g9Ju6p8+jbsorR
-        Y8v+z4wenzfJBbBFcdmkpOZklqUW6dslcGW8mXudsaCdtaL/0yTWBsYJLF2MnBwSAiYSa2fu
-        ALK5OIQEdjBKtO2cyAaRkJRYOvcGO4QtLHG/5QgrRNE3Rom1d/YzdjFycLAJaEl8X8gIUiMi
-        ECbx79FFsEHMAocZJVre7gIbJCxgI9Fz+SwTiM0ioCqx+NFLMJtXwE1i7+eJrBAL5CRunutk
-        nsDIs4CRYRWjZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnBgaWntYNyz6oPeIUYmDsZD
-        jBIczEoivHFnOZOEeFMSK6tSi/Lji0pzUosPMUpzsCiJ817oOhkvJJCeWJKanZpakFoEk2Xi
-        4JRqYNK5HFHKt1uh0K3fLbsz955++Bbv8raMtE+OzCd51L67v1At2JgUfLt/2ettS9L879oL
-        tK6N3/9TMemL44Qjzp2Cglv9fc4EZR/1UbYzvP01P1R9j867XRI3ueWY4qKiH5jcz1DtKmpd
-        mDTpdJzYl+nO/boeyrma+5RznigY3Rc3ZtV13B6S927Vq4PLvglqK3UHlkgf+CX4mGlj1M0C
-        C74Twe/mu/hWrL9eMe+4SM73mOfWKT45RuWdNp92zLmi465+prXWzuK2dnlcrMiVDTnL/CbW
-        B/c7/1cI5OIKrBNuaZ4hk2r4uPzKapvdnWkVl7XvC3Hs/FGh1H7ryrJ+jsPlMRt9dzpUlewT
-        9VJiKc5INNRiLipOBAA19PfEmwIAAA==
-X-CMS-MailID: 20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b
-References: <CGME20220214111148epcas2p3fac143c7870c53ecadfb6b093fcf626b@epcas2p3.samsung.com>
+        Mon, 14 Feb 2022 06:31:13 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A6BAE76
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:15:06 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id bx31so21769972ljb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 03:15:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kempniu.pl; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=/gvyvLv0L7lIbtDKzPDBQ3PnEIpy4XvEbEZzW6NXC+g=;
+        b=AZV1BkAsEdGRrs9twRIwoaLNpw3pBbcqFotnGiE8hRUgcJbPChrSAN0nKtNUEg4p6G
+         F9ac4XIr3moL5HhS1MHGpcDLz3pflsjdb/wxp+26J72Y/YYqjX1oGhT6Ixl7mftAQ+SE
+         LWQbc3TITf0zfw6SA64Qru8GAYieTOTg02PoI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=/gvyvLv0L7lIbtDKzPDBQ3PnEIpy4XvEbEZzW6NXC+g=;
+        b=yBNcvSrAeklEODkLmNEFKnHuGfaSaJ/j7mMNtLwS8h9lh//cjKvxq6KvaePMzHDYe9
+         36SQopafA2Xg8JJ9wwnyxYaJ2t6I3BU8mEfcagB1AMIs+WxqpqyN4nuGk9kbewyRSWze
+         L/dqg+enRxRgCGx4NP0nTUR6xVoz66DHeTmQCA/iVpUjD8dJchFc2uBKg1f2lqE0m1W7
+         qz3VRaEHGI5sMnJtGkthWswYnv4BKn6lVdeiVezbNZwhg5aVeT8axA1vCpUZ6vlOuQXw
+         AKe/3ceWrNZl3/jrkOaF02bvNe5tjbfU19c44zJPcfZ47HgBry3s8rPrnRdAPbJ4Fka+
+         A6qg==
+X-Gm-Message-State: AOAM531opeiHnk5Cp6zii7vh9hSG/mG27rbUygajjhLfr6vqdFVbbf8n
+        fjVkvU71zmka54HdzgtY8AughiDc3cJTMQ==
+X-Google-Smtp-Source: ABdhPJxRoBE3cIUrCU9X1zU2YRXoewWnjgMuJxW4V+IlP2JD8glHc5xw6ubK/RupzjCRv9d8nhumbQ==
+X-Received: by 2002:a2e:9619:: with SMTP id v25mr6303279ljh.92.1644837305128;
+        Mon, 14 Feb 2022 03:15:05 -0800 (PST)
+Received: from larwa.hq.kempniu.pl ([2001:470:64df:111::e02])
+        by smtp.gmail.com with ESMTPSA id o14sm517491lfr.176.2022.02.14.03.15.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 03:15:04 -0800 (PST)
+Date:   Mon, 14 Feb 2022 12:15:02 +0100
+From:   =?utf-8?B?TWljaGHFgiBLxJlwaWXFhA==?= <kernel@kempniu.pl>
+To:     Richard Weinberger <richard@nod.at>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Boris Brezillon <boris.brezillon@collabora.com>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 4/4] mtdchar: add MEMREAD ioctl
+Message-ID: <Ygo5tta48poc0IOB@larwa.hq.kempniu.pl>
+References: <20220125104822.8420-1-kernel@kempniu.pl>
+ <20220125104822.8420-5-kernel@kempniu.pl>
+ <1173246756.12597.1643879936765.JavaMail.zimbra@nod.at>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1173246756.12597.1643879936765.JavaMail.zimbra@nod.at>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It always sets DWC3_EP_END_TRANSFER_PENDING in dwc3_stop_active_transfer
-even if dwc3_send_gadget_ep_cmd fails. It can cause some problems like
-skipping clear stall commmand or giveback from dequeue. It could cause
-hung task if ENDTRANSFER command should not be completed. It seems
-like HW(Controller) issue but SW can prevent it.
+Richard,
 
-Changes in v2:
-- fix coding rule
+Thank you for taking a look at this patch series.
 
-Daehwan Jung (2):
-  usb: dwc3: Not set DWC3_EP_END_TRANSFER_PENDING in ep cmd fails
-  usb: dwc3: Prevent cleanup cancelled requests at the same time.
+> > +	if (req.start + req.len > mtd->size) {
+> 
+> I think this can overflow since both req.start and req.len are u64.
+> So an evil-doer might bypass this check.
 
- drivers/usb/dwc3/gadget.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+You are right, thanks.  I adopted this check from mtd_check_oob_ops()
+and your comment made me think that maybe the MEMREADOOB64/MEMWRITEOOB64
+ioctls are affected as well, but it looks like 'len' is a 32-bit integer
+in those other cases, so they look safe to me.
+
+However, the MEMWRITE ioctl does seem to be affected by the same issue
+since commit f6562bca84d22525f792305e3106571f8714d057 ("mtdchar: prevent
+unbounded allocation in MEMWRITE ioctl"), see mtdchar_write_ioctl().
+
+Changing the 'len' and 'ooblen' fields of struct mtd_{read,write}_req to
+u32 would break userspace, so that is not an option.  Would truncating
+req.len to 32 bits (req.len &= 0xffffffff) early in the two relevant
+functions be the way to go?  I guess such a change should be reflected
+in include/uapi/mtd/mtd-abi.h, too.
 
 -- 
-2.31.1
-
+Best regards,
+Michał Kępień
