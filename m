@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB715C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC61C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346461AbiBNKPt (ORCPT
+        id S1346540AbiBNKPv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:15:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42340 "EHLO
+        Mon, 14 Feb 2022 05:15:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345883AbiBNKNH (ORCPT
+        with ESMTP id S1345971AbiBNKN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:13:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F401788B10;
-        Mon, 14 Feb 2022 01:51:07 -0800 (PST)
+        Mon, 14 Feb 2022 05:13:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF9D66FB5;
+        Mon, 14 Feb 2022 01:52:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CDE56126B;
-        Mon, 14 Feb 2022 09:51:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64756C340E9;
-        Mon, 14 Feb 2022 09:51:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF6F8B80DC6;
+        Mon, 14 Feb 2022 09:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA68C340E9;
+        Mon, 14 Feb 2022 09:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832267;
-        bh=wUT1mmXGo67XJdUTpxgcwIKvppAWwi5MpB+h0FS2/Wg=;
+        s=korg; t=1644832336;
+        bh=VurFU58a1cNgjY+xlro4xnBrTwWyCaOg886ucNWiblY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ppOla4qQu5fRitQPXZLb9glQ41Ihvcq5T6cz1QVbSZ9Sp+MGxB6md9UiC8Q71zP1M
-         Hlg7qcsrKsVMhyRBSxT4+94z/enwE787S/gfvM/nq4uF/v/PQ/JZlBfJARgUdD3McR
-         vfZt+lizul9gQEmi6J/C8kcNRMY8mdXcGjSG0aAQ=
+        b=1z2I4kvLt+bhur912CV43gcVS/6RZn8tjuz/UiQVaA1c5ayl2G1ccAzHdHHu+uFbV
+         GkxL582AF+ckGgN3hKF1w9eDCR1DaDlxlAEI+GAeWWPRP6YB43tkq0W0n6ttw1uJhU
+         XfDuvLQaXTNdzZ31FJMDVLMX3WBoo9fcpLGGuSNE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 100/172] arm64: dts: meson-g12b-odroid-n2: fix typo dio2133
-Date:   Mon, 14 Feb 2022 10:25:58 +0100
-Message-Id: <20220214092509.862020747@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>
+Subject: [PATCH 5.15 154/172] speakup-dectlk: Restore pitch setting
+Date:   Mon, 14 Feb 2022 10:26:52 +0100
+Message-Id: <20220214092511.714790216@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,47 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongjin Kim <tobetter@gmail.com>
+From: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
-[ Upstream commit bc41099f060ea74ac8d02c51bd0f5f46d969bedf ]
+commit bca828ccdd6548d24613d0cede04ada4dfb2f89c upstream.
 
-Typo in audio amplifier node, dioo2133 -> dio2133
+d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+introduced the inflection parameter, but happened to drop the pitch
+parameter from the dectlk driver. This restores it.
 
-Signed-off-by: Dongjin Kim <tobetter@gmail.com>
-Fixes: ef599f5f3e10 ("arm64: dts: meson: convert ODROID-N2 to dtsi")
-Fixes: 67d141c1f8e6 ("arm64: dts: meson: odroid-n2: add jack audio output support")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/YfKQJejh0bfGYvof@anyang
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: d97a9d7aea04 ("staging/speakup: Add inflection synth parameter")
+Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Link: https://lore.kernel.org/r/20220206015626.aesbhvvdkmqsrbaw@begin
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/accessibility/speakup/speakup_dectlk.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-index a84ed3578425e..d33e54b5e1969 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-@@ -17,7 +17,7 @@ aliases {
- 		rtc1 = &vrtc;
- 	};
- 
--	dioo2133: audio-amplifier-0 {
-+	dio2133: audio-amplifier-0 {
- 		compatible = "simple-audio-amplifier";
- 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
- 		VCC-supply = <&vcc_5v>;
-@@ -217,7 +217,7 @@ sound {
- 		audio-widgets = "Line", "Lineout";
- 		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&tdmin_a>,
- 				 <&tdmin_b>, <&tdmin_c>, <&tdmin_lb>,
--				 <&dioo2133>;
-+				 <&dio2133>;
- 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
- 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
- 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
--- 
-2.34.1
-
+--- a/drivers/accessibility/speakup/speakup_dectlk.c
++++ b/drivers/accessibility/speakup/speakup_dectlk.c
+@@ -44,6 +44,7 @@ static struct var_t vars[] = {
+ 	{ CAPS_START, .u.s = {"[:dv ap 160] " } },
+ 	{ CAPS_STOP, .u.s = {"[:dv ap 100 ] " } },
+ 	{ RATE, .u.n = {"[:ra %d] ", 180, 75, 650, 0, 0, NULL } },
++	{ PITCH, .u.n = {"[:dv ap %d] ", 122, 50, 350, 0, 0, NULL } },
+ 	{ INFLECTION, .u.n = {"[:dv pr %d] ", 100, 0, 10000, 0, 0, NULL } },
+ 	{ VOL, .u.n = {"[:dv g5 %d] ", 86, 60, 86, 0, 0, NULL } },
+ 	{ PUNCT, .u.n = {"[:pu %c] ", 0, 0, 2, 0, 0, "nsa" } },
 
 
