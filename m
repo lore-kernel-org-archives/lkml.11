@@ -2,149 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:11:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7ADC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 01:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352190AbiBNPLi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:11:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40820 "EHLO
+        id S238987AbiBNBSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 20:18:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352976AbiBNPLe (ORCPT
+        with ESMTP id S229532AbiBNBSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:11:34 -0500
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D36C40;
-        Mon, 14 Feb 2022 07:11:22 -0800 (PST)
-Received: from in01.mta.xmission.com ([166.70.13.51]:40898)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nJd0Z-00301D-RO; Mon, 14 Feb 2022 08:11:19 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:60176 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nJd0Y-00AMYl-HJ; Mon, 14 Feb 2022 08:11:19 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Solar Designer <solar@openwall.com>
-Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        Michal Koutn?? <mkoutny@suse.com>, stable@vger.kernel.org
-References: <87o83e2mbu.fsf@email.froward.int.ebiederm.org>
-        <20220211021324.4116773-3-ebiederm@xmission.com>
-        <20220212231701.GA29483@openwall.com>
-Date:   Mon, 14 Feb 2022 09:10:49 -0600
-In-Reply-To: <20220212231701.GA29483@openwall.com> (Solar Designer's message
-        of "Sun, 13 Feb 2022 00:17:01 +0100")
-Message-ID: <87ee45wkjq.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Sun, 13 Feb 2022 20:18:43 -0500
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C53E527D3;
+        Sun, 13 Feb 2022 17:18:35 -0800 (PST)
+HMM_SOURCE_IP: 10.64.8.43:40520.1301825991
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-114.242.206.180 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 2E9CA1001F0;
+        Mon, 14 Feb 2022 09:18:31 +0800 (CST)
+Received: from  ([114.242.206.180])
+        by gateway-151646-dep-b7fbf7d79-vjdjk with ESMTP id 750ecf3745c54b01ab0aef2812fb2f0d for joe@perches.com;
+        Mon, 14 Feb 2022 09:18:34 CST
+X-Transaction-ID: 750ecf3745c54b01ab0aef2812fb2f0d
+X-Real-From: 15330273260@189.cn
+X-Receive-IP: 114.242.206.180
+X-MEDUSA-Status: 0
+Sender: 15330273260@189.cn
+Message-ID: <dfc864fd-0918-9f0d-3e42-a9d363af3c48@189.cn>
+Date:   Mon, 14 Feb 2022 09:18:28 +0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nJd0Y-00AMYl-HJ;;;mid=<87ee45wkjq.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+ckuSLbOWMncQUqnAK4hiHBj/D3E9gRuw=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 3/8] ucounts: Fix and simplify RLIMIT_NPROC handling
- during setuid()+execve
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7 7/7] MAINTAINERS: add maintainers for DRM LSDC driver
+Content-Language: en-US
+References: <20220213141649.1115987-1-15330273260@189.cn>
+ <20220213141649.1115987-8-15330273260@189.cn>
+ <3141331e10cdbc7a3859887d5e8038eff777e3ad.camel@perches.com>
+From:   Sui Jingfeng <15330273260@189.cn>
+To:     undisclosed-recipients:;
+In-Reply-To: <3141331e10cdbc7a3859887d5e8038eff777e3ad.camel@perches.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Solar Designer <solar@openwall.com> writes:
 
-> On Thu, Feb 10, 2022 at 08:13:19PM -0600, Eric W. Biederman wrote:
->> As of commit 2863643fb8b9 ("set_user: add capability check when
->> rlimit(RLIMIT_NPROC) exceeds") setting the flag to see if execve
->> should check RLIMIT_NPROC is buggy, as it tests the capabilites from
->> before the credential change and not aftwards.
->> 
->> As of commit 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of
->> ucounts") examining the rlimit is buggy as cred->ucounts has not yet
->> been properly set in the new credential.
->> 
->> Make the code correct and more robust moving the test to see if
->> execve() needs to test RLIMIT_NPROC into commit_creds, and defer all
->> of the rest of the logic into execve() itself.
->> 
->> As the flag only indicateds that RLIMIT_NPROC should be checked
->> in execve rename it from PF_NPROC_EXCEEDED to PF_NPROC_CHECK.
->> 
->> Cc: stable@vger.kernel.org
->> Link: https://lkml.kernel.org/r/20220207121800.5079-2-mkoutny@suse.com
->> Link: https://lkml.kernel.org/r/20220207121800.5079-3-mkoutny@suse.com
->> Reported-by: Michal Koutn?? <mkoutny@suse.com>
->> Fixes: 2863643fb8b9 ("set_user: add capability check when rlimit(RLIMIT_NPROC) exceeds")
->> Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
->> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+On 2022/2/14 07:12, Joe Perches wrote:
+> On Sun, 2022-02-13 at 22:16 +0800, Sui Jingfeng wrote:
+>> From: suijingfeng <suijingfeng@loongson.cn>
+> []
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+> []
+>> @@ -6453,6 +6453,15 @@ T:	git git://anongit.freedesktop.org/drm/drm-misc
+>>   F:	drivers/gpu/drm/lima/
+>>   F:	include/uapi/drm/lima_drm.h
+>>   
+>> +DRM DRIVERS FOR LOONGSON
+>> +M:	Sui Jingfeng <suijingfeng@loongson.cn>
+>> +L:	dri-devel@lists.freedesktop.org
+>> +R:	Li Yi <liyi@loongson.cn>
+>> +S:	Maintained
+>> +W:	https://www.loongson.cn/
+>> +T:	git git://anongit.freedesktop.org/drm/drm-misc
+>> +F:	drivers/gpu/drm/lsdc/
+>> +
+> M then R then L please
 >
-> On one hand, this looks good.
+> DRM DRIVERS FOR LOONGSON
+> M:	Sui Jingfeng <suijingfeng@loongson.cn>
+> R:	Li Yi <liyi@loongson.cn>
+> L:	dri-devel@lists.freedesktop.org
 >
-> On the other, you asked about the Apache httpd suexec scenario in the
-> other thread, and here's what this means for it (per my code review):
 >
-> In that scenario, we have two execve(): first from httpd to suexec, then
-> from suexec to the CGI script.  Previously, the limit check only
-> occurred on the setuid() call by suexec, and its effect was deferred
-> until execve() of the script.  Now wouldn't it occur on both execve()
-> calls, because commit_creds() is also called on execve() (such as in
-> case the program is SUID, which suexec actually is)?
-
-Yes.  Moving the check into commit_creds means that the exec after a
-suid exec will perform an RLIMIT_NPROC check and could possibly fail.  I
-would call that a bug.  Anything happening in execve should be checked
-and handled in execve as execve can fail.
-
-It also points out that our permission checks for increasing
-RLIMIT_NPROC are highly inconsistent.
-
-One set of permissions in fork().
-Another set of permissions in set*id() and delayed until execve.
-No permission checks for the uid change in execve.
-
-Every time I look into the previous behavior of RLIMIT_NPROC I seem
-to find issues.  Currently I am planning a posting to linux-api
-so sorting out what when RLIMIT_NPROC should be enforced and how
-RLIMIT_NPROC gets accounted receives review.  I am also planning a
-feature branch to deal with the historical goofiness.
-
-I really like how cleanly this patch seems to be.  Unfortunately it is
-wrong.
-
-> Since the check is
-> kind of against real uid (not the euid=0 that suexec gains), it'd apply
-> the limit against httpd pseudo-user's process count.  While it could be
-> a reasonable kernel policy to impose this limit in more places, this is
-> a change of behavior for Apache httpd, and is not the intended behavior
-> there.  However, I think the answer to my question earlier in this
-> paragraph is actually a "no", the check wouldn't occur on the execve()
-> of suexec, because "new->user != old->user" would be false.  Right?
->
-> As an alternative, you could keep setting the (renamed and reused) flag
-> in set_user().  That would avoid the (non-)issue I described above - but
-> again, your patch is probably fine as-is.
->
-> I do see it's logical to have these two lines next to each other:
->
->>  		inc_rlimit_ucounts(new->ucounts, UCOUNT_RLIMIT_NPROC, 1);
->> +		task->flags |= PF_NPROC_CHECK;
->
-> Of course, someone would need to actually test this.
-
-That too.
-
-I am increasingly of the opinion that the process accounting should not
-be in cred.c at all.  That we just remember the who was charged with the
-process when we created it, and then at exec time we can update that
-charge, and verify that the new user is solid.  At exit time we can look
-up who was charged with the process and decrement the count.
-
-Of course at this point my opinion may change after I implement that.
-
-Eric
-
+oh, I will correct it at next version, thank you.
