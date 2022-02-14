@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A795BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347383AbiBNK2P (ORCPT
+        id S1347402AbiBNK2S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:28:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34332 "EHLO
+        Mon, 14 Feb 2022 05:28:18 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347483AbiBNK0D (ORCPT
+        with ESMTP id S1347728AbiBNK0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:26:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD97E6EF3C;
-        Mon, 14 Feb 2022 01:57:15 -0800 (PST)
+        Mon, 14 Feb 2022 05:26:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF3680217;
+        Mon, 14 Feb 2022 01:57:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6996B61465;
-        Mon, 14 Feb 2022 09:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F65C340E9;
-        Mon, 14 Feb 2022 09:57:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50921B80DD0;
+        Mon, 14 Feb 2022 09:57:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFAAC340E9;
+        Mon, 14 Feb 2022 09:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832634;
-        bh=zzMJxbPBiRG2Y2ZlNqrD/+LQlA64/tzHiQCZyC7me9Q=;
+        s=korg; t=1644832638;
+        bh=nDySB6UXuT3u6CrlRf1gGUS+olwtOzGHIaEFmYJVFJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jL1Klm9ny+b+h5CSfE84MwfZyUjgiKkxujM4+GvMvg8GT8kzCUqeiLVPvjVRjPcjd
-         odKAQ/z87gJsX/Df1ONhphQZ7Bq8iKa52Sm4EJg3/MfTzyl+AqaXn3HAOs188UQ0k5
-         rwzusAKDvlUvSwzw8zXf5Atd8gi/QMIUZTsd1+O4=
+        b=O0b74A6d+TRteVhPqDy/sT998Fl5IkQ7F68pT8P1KUQcFenxn9He9kp7A81oMfdDB
+         QWMOZ0etugR2T2yH7nuSmXHjOyfvi2idAcsH6XIISVXygMNaCHnyN19xR8ifKRAtvf
+         Pi/IPvNRFYMeI45QY7/lbv52SP/AQZldBOw1+UdE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Nilesh Javali <njavali@marvell.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 046/203] scsi: qedf: Fix refcount issue when LOGO is received during TMF
-Date:   Mon, 14 Feb 2022 10:24:50 +0100
-Message-Id: <20220214092511.779806186@linuxfoundation.org>
+Subject: [PATCH 5.16 047/203] scsi: qedf: Change context reset messages to ratelimited
+Date:   Mon, 14 Feb 2022 10:24:51 +0100
+Message-Id: <20220214092511.817031892@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -53,67 +53,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Saurav Kashyap <skashyap@marvell.com>
 
-[ Upstream commit 5239ab63f17cee643bd4bf6addfedebaa7d4f41e ]
+[ Upstream commit 64fd4af6274eb0f49d29772c228fffcf6bde1635 ]
 
-Hung task call trace was seen during LOGO processing.
+If FCoE is not configured, libfc/libfcoe keeps on retrying FLOGI and after
+3 retries driver does a context reset and tries fipvlan again.  This leads
+to context reset message flooding the logs. Hence ratelimit the message to
+prevent flooding the logs.
 
-[  974.309060] [0000:00:00.0]:[qedf_eh_device_reset:868]: 1:0:2:0: LUN RESET Issued...
-[  974.309065] [0000:00:00.0]:[qedf_initiate_tmf:2422]: tm_flags 0x10 sc_cmd 00000000c16b930f op = 0x2a target_id = 0x2 lun=0
-[  974.309178] [0000:00:00.0]:[qedf_initiate_tmf:2431]: portid=016900 tm_flags =LUN RESET
-[  974.309222] [0000:00:00.0]:[qedf_initiate_tmf:2438]: orig io_req = 00000000ec78df8f xid = 0x180 ref_cnt = 1.
-[  974.309625] host1: rport 016900: Received LOGO request while in state Ready
-[  974.309627] host1: rport 016900: Delete port
-[  974.309642] host1: rport 016900: work event 3
-[  974.309644] host1: rport 016900: lld callback ev 3
-[  974.313243] [0000:61:00.2]:[qedf_execute_tmf:2383]:1: fcport is uploading, not executing flush.
-[  974.313295] [0000:61:00.2]:[qedf_execute_tmf:2400]:1: task mgmt command success...
-[  984.031088] INFO: task jbd2/dm-15-8:7645 blocked for more than 120 seconds.
-[  984.031136]       Not tainted 4.18.0-305.el8.x86_64 #1
-
-[  984.031166] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-[  984.031209] jbd2/dm-15-8    D    0  7645      2 0x80004080
-[  984.031212] Call Trace:
-[  984.031222]  __schedule+0x2c4/0x700
-[  984.031230]  ? unfreeze_partials.isra.83+0x16e/0x1a0
-[  984.031233]  ? bit_wait_timeout+0x90/0x90
-[  984.031235]  schedule+0x38/0xa0
-[  984.031238]  io_schedule+0x12/0x40
-[  984.031240]  bit_wait_io+0xd/0x50
-[  984.031243]  __wait_on_bit+0x6c/0x80
-[  984.031248]  ? free_buffer_head+0x21/0x50
-[  984.031251]  out_of_line_wait_on_bit+0x91/0xb0
-[  984.031257]  ? init_wait_var_entry+0x50/0x50
-[  984.031268]  jbd2_journal_commit_transaction+0x112e/0x19f0 [jbd2]
-[  984.031280]  kjournald2+0xbd/0x270 [jbd2]
-[  984.031284]  ? finish_wait+0x80/0x80
-[  984.031291]  ? commit_timeout+0x10/0x10 [jbd2]
-[  984.031294]  kthread+0x116/0x130
-[  984.031300]  ? kthread_flush_work_fn+0x10/0x10
-[  984.031305]  ret_from_fork+0x1f/0x40
-
-There was a ref count issue when LOGO is received during TMF. This leads to
-one of the I/Os hanging with the driver. Fix the ref count.
-
-Link: https://lore.kernel.org/r/20220117135311.6256-3-njavali@marvell.com
+Link: https://lore.kernel.org/r/20220117135311.6256-4-njavali@marvell.com
 Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
 Signed-off-by: Nilesh Javali <njavali@marvell.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qedf/qedf_io.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/qedf/qedf_main.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/qedf/qedf_io.c b/drivers/scsi/qedf/qedf_io.c
-index 99a56ca1fb163..fab43dabe5b31 100644
---- a/drivers/scsi/qedf/qedf_io.c
-+++ b/drivers/scsi/qedf/qedf_io.c
-@@ -2250,6 +2250,7 @@ int qedf_initiate_cleanup(struct qedf_ioreq *io_req,
- 	    io_req->tm_flags == FCP_TMF_TGT_RESET) {
- 		clear_bit(QEDF_CMD_OUTSTANDING, &io_req->flags);
- 		io_req->sc_cmd = NULL;
-+		kref_put(&io_req->refcount, qedf_release_cmd);
- 		complete(&io_req->tm_done);
+diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
+index 6e367b40ecc96..e0e03443d7703 100644
+--- a/drivers/scsi/qedf/qedf_main.c
++++ b/drivers/scsi/qedf/qedf_main.c
+@@ -911,7 +911,7 @@ void qedf_ctx_soft_reset(struct fc_lport *lport)
+ 	struct qed_link_output if_link;
+ 
+ 	if (lport->vport) {
+-		QEDF_ERR(NULL, "Cannot issue host reset on NPIV port.\n");
++		printk_ratelimited("Cannot issue host reset on NPIV port.\n");
+ 		return;
  	}
+ 
+@@ -3979,7 +3979,9 @@ void qedf_stag_change_work(struct work_struct *work)
+ 	struct qedf_ctx *qedf =
+ 	    container_of(work, struct qedf_ctx, stag_work.work);
+ 
+-	QEDF_ERR(&qedf->dbg_ctx, "Performing software context reset.\n");
++	printk_ratelimited("[%s]:[%s:%d]:%d: Performing software context reset.",
++			dev_name(&qedf->pdev->dev), __func__, __LINE__,
++			qedf->dbg_ctx.host_no);
+ 	qedf_ctx_soft_reset(qedf->lport);
+ }
  
 -- 
 2.34.1
