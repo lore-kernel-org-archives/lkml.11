@@ -2,113 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D01CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353089AbiBNMVG (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:21:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51790 "EHLO
+        id S232370AbiBNMXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 07:23:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242410AbiBNMVF (ORCPT
+        with ESMTP id S231752AbiBNMXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:21:05 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C834926D;
-        Mon, 14 Feb 2022 04:20:57 -0800 (PST)
+        Mon, 14 Feb 2022 07:23:10 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10023488BC
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:23:00 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id d187so28884556pfa.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:23:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644841258; x=1676377258;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=MW9gwIUptsYLqIzS86VeUTXVM3BIYMlecniPn+jF7iU=;
-  b=IhyHrgbNd+6q3h9SB71owo7p7xlks/JUpnQKi+xdAPaTia/wR3LrLoRU
-   ViUq3eGTbaCS5xICTMz3DMsi85YFRQTktbVvaSGnXjWTB4VVsty+hn0Wh
-   isQD0tZhmNVAD5e6KYHeaIIkqrpcdkfMboRiJHiZkxb2cZEiNqVu5Uy/v
-   E=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 14 Feb 2022 04:20:57 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 04:20:56 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Feb 2022 04:20:56 -0800
-Received: from quicinc.com (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 14 Feb
- 2022 04:20:53 -0800
-From:   Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_ugoswami@quicinc.com>, Jung Daehwan <dh10.jung@samsung.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Subject: [PATCH v2] xhci: reduce xhci_handshake timeout in xhci_reset
-Date:   Mon, 14 Feb 2022 17:50:16 +0530
-Message-ID: <1644841216-1468-1-git-send-email-quic_pkondeti@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
-References: <1644836663-29220-1-git-send-email-quic_pkondeti@quicinc.com>
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/fKGi+aZQ8kJT7QB416GU61uDV70ufNvidZa81KvKic=;
+        b=vFo0Obd+cFUSjtmLDB9peVEXAhk0DLQBiiq4f52M15K/JE4k2KaeXTU4+2erbAs+M3
+         hQ+7O84f/waEaWBZc1z0oIFctBC3wtpjLUu/5Bz0N8cG6eWmFGx27Rb5v6oSDU5JC4lJ
+         qIryjPbQ90X4+yosO/XNkxGTh/NYC9DycZnWOl8PwsaIXG6gzF9l0QhE3FEMPtQ2DTa+
+         hQg1YpY+V6N5N56ivvxl2AUyBvLZ1fd2VzzcrMTYW+b070MtabsWPLxLE5jFTjzhHPUk
+         2QvKMqmIUXYknu1ZQzCRTWin6t6t+zSnZEOhrcjYEqKn/VObB3MJmPLjPrhV9hrJz5JB
+         SuMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/fKGi+aZQ8kJT7QB416GU61uDV70ufNvidZa81KvKic=;
+        b=E/8SuzWLkKQMJLFXdHiVx4mM0SplFJaCn9YiR0CC8J/eRb2y8siy70gzS+aG1OlmtN
+         E4xYKYwJlQexw1JiUdCxhnZQhGcdLNDHntQvQph0oORhD9j2mJ7m57+IqZzzuMcOeQJo
+         V+vICkU8hERQ2uSX4Q5/9UDmfY4yeNU0R/Z+N+DE7mSeN/TemX29Y6kM5dSvNRsjfdz7
+         wMcPTwIMKG9y0+QWdKp70e8UzxPaHIxHnw4hDFD9fqQ2dx1rM/LS7mSGo5aTydmTVHTK
+         JT4C1l8aqRlt3SPUy32J7XQ2NUxAOLroFLunywoFkCnWn4XWBWT496GnS/bx5UQR4qVZ
+         SqQA==
+X-Gm-Message-State: AOAM532x18C2DpL3VD4/FTj0BFewlsdaARibSfrNCxhy/dyRZ/+vrR0E
+        dZVSAY3fsOIrNXntqvkOSnoXN1UmyXLeEjgL5Dwggw==
+X-Google-Smtp-Source: ABdhPJxfIQjis1IV1rr41YtGuFAtEtzkv9eQMAqKqqEbZ7g0+Ak8gVF6z76sM07Thkhv3lDma6t3q6PxxQlOdEQ9t7k=
+X-Received: by 2002:a62:3605:: with SMTP id d5mr14076862pfa.68.1644841379524;
+ Mon, 14 Feb 2022 04:22:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220214090020.89984-1-yang.lee@linux.alibaba.com>
+In-Reply-To: <20220214090020.89984-1-yang.lee@linux.alibaba.com>
+From:   =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Date:   Mon, 14 Feb 2022 13:22:48 +0100
+Message-ID: <CAOtMz3O5ygQQDU_WNNdJGW4+6Vi02zDebhWLic9Sm7UGSpFyVQ@mail.gmail.com>
+Subject: Re: [PATCH -next v2] i2c: designware: remove unneeded semicolon
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daehwan Jung <dh10.jung@samsung.com>
+pon., 14 lut 2022 o 10:00 Yang Li <yang.lee@linux.alibaba.com> napisa=C5=82=
+(a):
+>
+> Eliminate the following coccicheck warning:
 
-xhci_reset() is called with interrupts disabled. Waiting 10 seconds for
-controller reset and controller ready operations can be fatal to the
-system when controller is timed out. Reduce the timeout to 1 second
-and print a error message when the time out happens.
+nit: warnings
 
-Fixes: 22ceac191211 ("xhci: Increase reset timeout for Renesas 720201 host.")
-Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
----
+> ./drivers/i2c/busses/i2c-designware-amdpsp.c:172:2-3: Unneeded semicolon
+> ./drivers/i2c/busses/i2c-designware-amdpsp.c:245:2-3: Unneeded semicolon
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-v2:
-- Add error print statements in the code that change log refers to
+Beside a nit above:
+Reviewed-by: Jan Dabros <jsd@semihalf.com>
 
- drivers/usb/host/xhci.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Best Regards,
+Jan
 
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index dc357ca..bb9ea3f 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -196,9 +196,11 @@ int xhci_reset(struct xhci_hcd *xhci)
- 		udelay(1000);
- 
- 	ret = xhci_handshake(&xhci->op_regs->command,
--			CMD_RESET, 0, 10 * 1000 * 1000);
--	if (ret)
-+			CMD_RESET, 0, 1 * 1000 * 1000);
-+	if (ret) {
-+		xhci_err(xhci, "Host controller reset timed out\n");
- 		return ret;
-+	}
- 
- 	if (xhci->quirks & XHCI_ASMEDIA_MODIFY_FLOWCONTROL)
- 		usb_asmedia_modifyflowcontrol(to_pci_dev(xhci_to_hcd(xhci)->self.controller));
-@@ -210,7 +212,11 @@ int xhci_reset(struct xhci_hcd *xhci)
- 	 * than status until the "Controller Not Ready" flag is cleared.
- 	 */
- 	ret = xhci_handshake(&xhci->op_regs->status,
--			STS_CNR, 0, 10 * 1000 * 1000);
-+			STS_CNR, 0, 1 * 1000 * 1000);
-+	if (ret) {
-+		xhci_err(xhci, "Host controller is not ready within timeout\n");
-+		return ret;
-+	}
- 
- 	xhci->usb2_rhub.bus_state.port_c_suspend = 0;
- 	xhci->usb2_rhub.bus_state.suspended_ports = 0;
--- 
-2.7.4
-
+> ---
+>
+> --Changes in v2:
+>   According to Jan's suggestion
+>   Fix the same problem in check_i2c_req_sts() function.
+>
+>  drivers/i2c/busses/i2c-designware-amdpsp.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/i2c/busses/i2c-designware-amdpsp.c b/drivers/i2c/bus=
+ses/i2c-designware-amdpsp.c
+> index 752e0024db03..9d37becbd846 100644
+> --- a/drivers/i2c/busses/i2c-designware-amdpsp.c
+> +++ b/drivers/i2c/busses/i2c-designware-amdpsp.c
+> @@ -172,7 +172,7 @@ static int check_i2c_req_sts(struct psp_i2c_req *req)
+>         case PSP_I2C_REQ_STS_INV_PARAM:
+>         default:
+>                 return -EIO;
+> -       };
+> +       }
+>  }
+>
+>  static int psp_send_check_i2c_req(struct psp_i2c_req *req)
+> @@ -245,7 +245,7 @@ static int psp_acquire_i2c_bus(void)
+>         if (psp_i2c_access_count) {
+>                 psp_i2c_access_count++;
+>                 goto cleanup;
+> -       };
+> +       }
+>
+>         status =3D psp_send_i2c_req(PSP_I2C_REQ_ACQUIRE);
+>         if (status) {
+> --
+> 2.20.1.7.g153144c
+>
