@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 959C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA483C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243418AbiBNJbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:31:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42660 "EHLO
+        id S243458AbiBNJbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:31:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243481AbiBNJau (ORCPT
+        with ESMTP id S243414AbiBNJbJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:30:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2724260ABC;
-        Mon, 14 Feb 2022 01:29:54 -0800 (PST)
+        Mon, 14 Feb 2022 04:31:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99773BF55;
+        Mon, 14 Feb 2022 01:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD59F60FE9;
-        Mon, 14 Feb 2022 09:29:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C9F1C340E9;
-        Mon, 14 Feb 2022 09:29:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1800460C8A;
+        Mon, 14 Feb 2022 09:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F355CC340E9;
+        Mon, 14 Feb 2022 09:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830993;
-        bh=GyoKvYHjJdZEdczGMaOTHA3l7hEsSGN7FAAdvH/xJRg=;
+        s=korg; t=1644831015;
+        bh=MCjR5djHfF6Jm7ho/tzh2m3oMgwvsFoWOd7hkghuuQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r9/RqCEoXb2n5WtaN+ad7aRF5IrhD5zXCAaWdgwmNFA2PcuxfymUGtX3A2eA+Xq6E
-         pRj4yBM/eYBB7Gn2RanBqKJ6cAjWQVSFw/lId1Sj1/eVHqGlpClFTZw1BXwZvJlusX
-         UBgVCyeVeQ19qHGAD0gdknAZDDW0OCy9G1Fda1Ig=
+        b=i5Jy/Wk9vqIz6K45BaUmcDSquB0nxzsJDnDg/QYr0lcD+V0cHahAvmfQ6blSS0eLy
+         WP9TGIlEuMft7DxISeTLWJPnUkahClVVYjHF23twRBGsJQLD7athaEboD3h1646+r0
+         asZuU0on/5cratcpxs69S21yqs5RNQVrbKq+aZHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rtm@csail.mit.edu,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 10/44] NFSv4.1: Fix uninitialised variable in devicenotify
-Date:   Mon, 14 Feb 2022 10:25:33 +0100
-Message-Id: <20220214092448.248364402@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Frank van der Linden <fllinden@amazon.com>
+Subject: [PATCH 4.14 17/44] bpf: Add kconfig knob for disabling unpriv bpf by default
+Date:   Mon, 14 Feb 2022 10:25:40 +0100
+Message-Id: <20220214092448.467759740@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -50,106 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit b05bf5c63b326ce1da84ef42498d8e0e292e694c ]
+commit 08389d888287c3823f80b0216766b71e17f0aba5 upstream.
 
-When decode_devicenotify_args() exits with no entries, we need to
-ensure that the struct cb_devicenotifyargs is initialised to
-{ 0, NULL } in order to avoid problems in
-nfs4_callback_devicenotify().
+Add a kconfig knob which allows for unprivileged bpf to be disabled by default.
+If set, the knob sets /proc/sys/kernel/unprivileged_bpf_disabled to value of 2.
 
-Reported-by: <rtm@csail.mit.edu>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This still allows a transition of 2 -> {0,1} through an admin. Similarly,
+this also still keeps 1 -> {1} behavior intact, so that once set to permanently
+disabled, it cannot be undone aside from a reboot.
+
+We've also added extra2 with max of 2 for the procfs handler, so that an admin
+still has a chance to toggle between 0 <-> 2.
+
+Either way, as an additional alternative, applications can make use of CAP_BPF
+that we added a while ago.
+
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/74ec548079189e4e4dffaeb42b8987bb3c852eee.1620765074.git.daniel@iogearbox.net
+[fllinden@amazon.com: backported to 4.14]
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfs/callback.h      |  2 +-
- fs/nfs/callback_proc.c |  2 +-
- fs/nfs/callback_xdr.c  | 18 +++++++++---------
- 3 files changed, 11 insertions(+), 11 deletions(-)
+ Documentation/sysctl/kernel.txt |   21 +++++++++++++++++++++
+ init/Kconfig                    |   10 ++++++++++
+ kernel/bpf/syscall.c            |    3 ++-
+ kernel/sysctl.c                 |   29 +++++++++++++++++++++++++----
+ 4 files changed, 58 insertions(+), 5 deletions(-)
 
-diff --git a/fs/nfs/callback.h b/fs/nfs/callback.h
-index a20a0bce40a48..80ad04abcf309 100644
---- a/fs/nfs/callback.h
-+++ b/fs/nfs/callback.h
-@@ -168,7 +168,7 @@ struct cb_devicenotifyitem {
- };
+--- a/Documentation/sysctl/kernel.txt
++++ b/Documentation/sysctl/kernel.txt
+@@ -91,6 +91,7 @@ show up in /proc/sys/kernel:
+ - sysctl_writes_strict
+ - tainted
+ - threads-max
++- unprivileged_bpf_disabled
+ - unknown_nmi_panic
+ - watchdog
+ - watchdog_thresh
+@@ -999,6 +1000,26 @@ available RAM pages threads-max is reduc
  
- struct cb_devicenotifyargs {
--	int				 ndevs;
-+	uint32_t			 ndevs;
- 	struct cb_devicenotifyitem	 *devs;
- };
+ ==============================================================
  
-diff --git a/fs/nfs/callback_proc.c b/fs/nfs/callback_proc.c
-index 440ff8e7082b6..3998b432e1b98 100644
---- a/fs/nfs/callback_proc.c
-+++ b/fs/nfs/callback_proc.c
-@@ -355,7 +355,7 @@ __be32 nfs4_callback_devicenotify(void *argp, void *resp,
- 				  struct cb_process_state *cps)
- {
- 	struct cb_devicenotifyargs *args = argp;
--	int i;
-+	uint32_t i;
- 	__be32 res = 0;
- 	struct nfs_client *clp = cps->clp;
- 	struct nfs_server *server = NULL;
-diff --git a/fs/nfs/callback_xdr.c b/fs/nfs/callback_xdr.c
-index 57de914630bc9..36c34be839d09 100644
---- a/fs/nfs/callback_xdr.c
-+++ b/fs/nfs/callback_xdr.c
-@@ -265,11 +265,9 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 				void *argp)
- {
- 	struct cb_devicenotifyargs *args = argp;
-+	uint32_t tmp, n, i;
- 	__be32 *p;
- 	__be32 status = 0;
--	u32 tmp;
--	int n, i;
--	args->ndevs = 0;
++unprivileged_bpf_disabled:
++
++Writing 1 to this entry will disable unprivileged calls to bpf();
++once disabled, calling bpf() without CAP_SYS_ADMIN will return
++-EPERM. Once set to 1, this can't be cleared from the running kernel
++anymore.
++
++Writing 2 to this entry will also disable unprivileged calls to bpf(),
++however, an admin can still change this setting later on, if needed, by
++writing 0 or 1 to this entry.
++
++If BPF_UNPRIV_DEFAULT_OFF is enabled in the kernel config, then this
++entry will default to 2 instead of 0.
++
++  0 - Unprivileged calls to bpf() are enabled
++  1 - Unprivileged calls to bpf() are disabled without recovery
++  2 - Unprivileged calls to bpf() are disabled
++
++==============================================================
++
+ unknown_nmi_panic:
  
- 	/* Num of device notifications */
- 	p = read_buf(xdr, sizeof(uint32_t));
-@@ -278,7 +276,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 		goto out;
- 	}
- 	n = ntohl(*p++);
--	if (n <= 0)
-+	if (n == 0)
- 		goto out;
- 	if (n > ULONG_MAX / sizeof(*args->devs)) {
- 		status = htonl(NFS4ERR_BADXDR);
-@@ -336,19 +334,21 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
- 			dev->cbd_immediate = 0;
- 		}
+ The value in this file affects behavior of handling NMI. When the
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1378,6 +1378,16 @@ config ADVISE_SYSCALLS
+ 	  applications use these syscalls, you can disable this option to save
+ 	  space.
  
--		args->ndevs++;
--
- 		dprintk("%s: type %d layout 0x%x immediate %d\n",
- 			__func__, dev->cbd_notify_type, dev->cbd_layout_type,
- 			dev->cbd_immediate);
- 	}
-+	args->ndevs = n;
-+	dprintk("%s: ndevs %d\n", __func__, args->ndevs);
-+	return 0;
-+err:
-+	kfree(args->devs);
- out:
-+	args->devs = NULL;
-+	args->ndevs = 0;
- 	dprintk("%s: status %d ndevs %d\n",
- 		__func__, ntohl(status), args->ndevs);
- 	return status;
--err:
--	kfree(args->devs);
--	goto out;
- }
++config BPF_UNPRIV_DEFAULT_OFF
++	bool "Disable unprivileged BPF by default"
++	depends on BPF_SYSCALL
++	help
++	  Disables unprivileged BPF by default by setting the corresponding
++	  /proc/sys/kernel/unprivileged_bpf_disabled knob to 2. An admin can
++	  still reenable it by setting it to 0 later on, or permanently
++	  disable it by setting it to 1 (from which no other transition to
++	  0 is possible anymore).
++
+ config USERFAULTFD
+ 	bool "Enable userfaultfd() system call"
+ 	select ANON_INODES
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -37,7 +37,8 @@ static DEFINE_SPINLOCK(prog_idr_lock);
+ static DEFINE_IDR(map_idr);
+ static DEFINE_SPINLOCK(map_idr_lock);
  
- static __be32 decode_sessionid(struct xdr_stream *xdr,
--- 
-2.34.1
-
+-int sysctl_unprivileged_bpf_disabled __read_mostly;
++int sysctl_unprivileged_bpf_disabled __read_mostly =
++	IS_BUILTIN(CONFIG_BPF_UNPRIV_DEFAULT_OFF) ? 2 : 0;
+ 
+ static const struct bpf_map_ops * const bpf_map_types[] = {
+ #define BPF_PROG_TYPE(_id, _ops)
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -242,6 +242,28 @@ static int sysrq_sysctl_handler(struct c
+ 
+ #endif
+ 
++#ifdef CONFIG_BPF_SYSCALL
++static int bpf_unpriv_handler(struct ctl_table *table, int write,
++                             void *buffer, size_t *lenp, loff_t *ppos)
++{
++	int ret, unpriv_enable = *(int *)table->data;
++	bool locked_state = unpriv_enable == 1;
++	struct ctl_table tmp = *table;
++
++	if (write && !capable(CAP_SYS_ADMIN))
++		return -EPERM;
++
++	tmp.data = &unpriv_enable;
++	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
++	if (write && !ret) {
++		if (locked_state && unpriv_enable != 1)
++			return -EPERM;
++		*(int *)table->data = unpriv_enable;
++	}
++	return ret;
++}
++#endif
++
+ static struct ctl_table kern_table[];
+ static struct ctl_table vm_table[];
+ static struct ctl_table fs_table[];
+@@ -1201,10 +1223,9 @@ static struct ctl_table kern_table[] = {
+ 		.data		= &sysctl_unprivileged_bpf_disabled,
+ 		.maxlen		= sizeof(sysctl_unprivileged_bpf_disabled),
+ 		.mode		= 0644,
+-		/* only handle a transition from default "0" to "1" */
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &one,
+-		.extra2		= &one,
++		.proc_handler	= bpf_unpriv_handler,
++		.extra1		= &zero,
++		.extra2		= &two,
+ 	},
+ #endif
+ #if defined(CONFIG_TREE_RCU) || defined(CONFIG_PREEMPT_RCU)
 
 
