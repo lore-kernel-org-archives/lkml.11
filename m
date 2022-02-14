@@ -2,162 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE68DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345358AbiBNNhY (ORCPT
+        id S1353266AbiBNNha (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:37:24 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50174 "EHLO
+        Mon, 14 Feb 2022 08:37:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245347AbiBNNhU (ORCPT
+        with ESMTP id S1348560AbiBNNh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:37:20 -0500
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156F825E89;
-        Mon, 14 Feb 2022 05:37:11 -0800 (PST)
-Received: from fsav116.sakura.ne.jp (fsav116.sakura.ne.jp [27.133.134.243])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 21EDax4h064843;
-        Mon, 14 Feb 2022 22:36:59 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav116.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp);
- Mon, 14 Feb 2022 22:36:59 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav116.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 21EDaxGx064835
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 14 Feb 2022 22:36:59 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <8ebd003c-f748-69b4-3a4f-fb80a3f39d36@I-love.SAKURA.ne.jp>
-Date:   Mon, 14 Feb 2022 22:36:57 +0900
+        Mon, 14 Feb 2022 08:37:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA3A4E39C;
+        Mon, 14 Feb 2022 05:37:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16921614EC;
+        Mon, 14 Feb 2022 13:37:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20AFC340E9;
+        Mon, 14 Feb 2022 13:37:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644845838;
+        bh=Oxsn32h7Ub8qAbBy4j6/5jsGWbDXxu1IwJ0TFbQG4Mc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ONb88kmbVsCjwLYnVQN7fyimKn4PW5jYGIgQp9B3El5czr7hq89ykSx0/9NkQmjT9
+         y3ZEr/oKkODfMeAHtHkbRHpArLA0nGtK1BtK1bQSnLR4gDFaKfXtZmPOAozVZpPWX4
+         gUu9W97fmAjB6K0PHkAlblLuyNeoM4eTHDmQXe20=
+Date:   Mon, 14 Feb 2022 14:37:15 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 04/14] driver core: platform: Add driver dma ownership
+ management
+Message-ID: <YgpbC1u6YFN4GefB@kroah.com>
+References: <20220104015644.2294354-1-baolu.lu@linux.intel.com>
+ <20220104015644.2294354-5-baolu.lu@linux.intel.com>
+ <YgooFjSWLTSapuIs@kroah.com>
+ <20220214131853.GY4160@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [syzbot] possible deadlock in worker_thread
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        syzbot <syzbot+831661966588c802aae9@syzkaller.appspotmail.com>,
-        jgg@ziepe.ca, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-References: <0000000000005975a605d7aef05e@google.com>
- <8ea57ddf-a09c-43f2-4285-4dfb908ad967@acm.org>
- <ccd04d8a-154b-543e-e1c3-84bc655508d1@I-love.SAKURA.ne.jp>
- <71d6f14e-46af-cc5a-bc70-af1cdc6de8d5@acm.org>
- <309c86b7-2a4c-1332-585f-7bcd59cfd762@I-love.SAKURA.ne.jp>
- <aa2bf24e-981a-a811-c5d8-a75f0b8f693a@acm.org>
- <2959649d-cfbc-bdf2-02ac-053b8e7af030@I-love.SAKURA.ne.jp>
- <YgnQGZWT/n3VAITX@slm.duckdns.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YgnQGZWT/n3VAITX@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214131853.GY4160@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/02/14 12:44, Tejun Heo wrote:
-> Hello,
+On Mon, Feb 14, 2022 at 09:18:53AM -0400, Jason Gunthorpe wrote:
+> On Mon, Feb 14, 2022 at 10:59:50AM +0100, Greg Kroah-Hartman wrote:
 > 
-> On Mon, Feb 14, 2022 at 10:08:00AM +0900, Tetsuo Handa wrote:
->> +	destroy_workqueue(srp_tl_err_wq);
->>
->> Then, we can call WARN_ON() if e.g. flush_workqueue() is called on system-wide workqueues.
+> > > +	if (ret && !drv->no_kernel_api_dma)
+> > > +		iommu_device_unuse_dma_api(dev);
+> > 
+> > So you are now going to call this for every platform driver _unless_
+> > they set this flag?
 > 
-> Yeah, this is the right thing to do. It makes no sense at all to call
-> flush_workqueue() on the shared workqueues as the caller has no idea what
-> it's gonna end up waiting for. It was on my todo list a long while ago but
-> slipped through the crack. If anyone wanna take a stab at it (including
-> scrubbing the existing users, of course), please be my guest.
-> 
-> Thanks.
-> 
+> Yes, it is necessary because VFIO supports platform devices as well
+> and needs to ensure security. Conflicting kernel driver attachements
+> must be blocked, just like for PCI.
 
-OK. Then, I propose below patch. If you are OK with this approach, I can
-keep this via my tree as a linux-next only experimental patch for one or
-two weeks, in order to see if someone complains.
+A platform device shouldn't be using VFIO, but ugh, oh well, that ship
+has sailed :(
 
-From 95a3aa8d46c8479c95672305645247ba70312113 Mon Sep 17 00:00:00 2001
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Date: Mon, 14 Feb 2022 22:28:21 +0900
-Subject: [PATCH] workqueue: Warn on flushing system-wide workqueues
+And stop it with the "security" mess, do not give people a false sense
+of it here please.
 
-syzbot found a circular locking dependency which is caused by flushing
-system_long_wq WQ [1]. Tejun Heo commented that it makes no sense at all
-to call flush_workqueue() on the shared workqueues as the caller has no
-idea what it's gonna end up waiting for.
+thanks,
 
-Although there is flush_scheduled_work() which flushes system_wq WQ with
-"Think twice before calling this function! It's very easy to get into
-trouble if you don't take great care." warning message, it will be too
-difficult to guarantee that all users safely flush system-wide WQs.
-
-Therefore, let's change the direction to that developers had better use
-their own WQs if flushing is inevitable. To give developers time to update
-their modules, for now just emit a warning message when flush_workqueue()
-is called on system-wide WQs. We will eventually convert this warning
-message into WARN_ON() and kill flush_scheduled_work().
-
-Link: https://syzkaller.appspot.com/bug?extid=831661966588c802aae9 [1]
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- kernel/workqueue.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
-
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 33f1106b4f99..5ef40b9a1842 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -2805,6 +2805,37 @@ static bool flush_workqueue_prep_pwqs(struct workqueue_struct *wq,
- 	return wait;
- }
- 
-+static void warn_if_flushing_global_workqueue(struct workqueue_struct *wq)
-+{
-+#ifdef CONFIG_PROVE_LOCKING
-+	static DEFINE_RATELIMIT_STATE(flush_warn_rs, 600 * HZ, 1);
-+	const char *name;
-+
-+	if (wq == system_wq)
-+		name = "system_wq";
-+	else if (wq == system_highpri_wq)
-+		name = "system_highpri_wq";
-+	else if (wq == system_long_wq)
-+		name = "system_long_wq";
-+	else if (wq == system_unbound_wq)
-+		name = "system_unbound_wq";
-+	else if (wq == system_freezable_wq)
-+		name = "system_freezable_wq";
-+	else if (wq == system_power_efficient_wq)
-+		name = "system_power_efficient_wq";
-+	else if (wq == system_freezable_power_efficient_wq)
-+		name = "system_freezable_power_efficient_wq";
-+	else
-+		return;
-+	ratelimit_set_flags(&flush_warn_rs, RATELIMIT_MSG_ON_RELEASE);
-+	if (!__ratelimit(&flush_warn_rs))
-+		return;
-+	pr_warn("Since system-wide WQ is shared, flushing system-wide WQ can introduce unexpected locking dependency. Please replace %s usage in your code with your local WQ.\n",
-+		name);
-+	dump_stack();
-+#endif
-+}
-+
- /**
-  * flush_workqueue - ensure that any scheduled work has run to completion.
-  * @wq: workqueue to flush
-@@ -2824,6 +2855,8 @@ void flush_workqueue(struct workqueue_struct *wq)
- 	if (WARN_ON(!wq_online))
- 		return;
- 
-+	warn_if_flushing_global_workqueue(wq);
-+
- 	lock_map_acquire(&wq->lockdep_map);
- 	lock_map_release(&wq->lockdep_map);
- 
--- 
-2.32.0
-
+greg k-h
