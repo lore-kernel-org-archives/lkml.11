@@ -2,81 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD52C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:42:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D9FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 18:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234397AbiBNSmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 13:42:55 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55500 "EHLO
+        id S236027AbiBNSnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 13:43:10 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:56896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235493AbiBNSms (ORCPT
+        with ESMTP id S238772AbiBNSnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 13:42:48 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551E76A025;
-        Mon, 14 Feb 2022 10:42:34 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 0F3981F410C0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1644864131;
-        bh=7u0HNDo3EDsgorjd5iMF9ffXgHW0CA+ygVimr7HCfN0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PkjQ083apuELxkrX2tqCWqBbzGPsy3ku+Oyj2FCniH85Ru06e9qLtuMs5Wvf7f3G2
-         I3Szy/v2wn2LE288W3CBqQZkn/gTSt95maP9Y/WdaOmrIR5lj+V51PqPR/tLggs5rJ
-         N3ST6Qd2kHz05y9Vr+a8sHAamE+qx+mdCsubn/NO+ZytUk5Wg2K69t9Che8/+YznZl
-         wvuvKl7C9YiQ2McRMk7WfM2kL+VrHSii+IpA2s2Lpbdmczx1jc6ixfg3eVqXT2blnG
-         rzpUzxLs0VVpt25peClCbZWO4u3fcDuoQIcHY1ZMl967I0N0M6DWo3QyJGwzbc+glY
-         967FnTylmzwcg==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Borislav Petkov <bp@suse.de>,
-        linux-sgx@vger.kernel.org (open list:INTEL SGX),
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        linux-kernel@vger.kernel.org (open list), David.Laight@ACULAB.COM
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, kernelci@groups.io
-Subject: [PATCH V2 0/2] selftests: sgx: Fix build of test_sgx
-Date:   Mon, 14 Feb 2022 23:41:07 +0500
-Message-Id: <20220214184109.3739179-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Mon, 14 Feb 2022 13:43:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF6B6AA6C
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 10:42:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3660360F45
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 18:42:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33092C340E9;
+        Mon, 14 Feb 2022 18:42:40 +0000 (UTC)
+Date:   Mon, 14 Feb 2022 13:42:38 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ftrace: ensure trace buffer is at least 4096 bytes
+ large
+Message-ID: <20220214134238.20255872@gandalf.local.home>
+In-Reply-To: <20220214134456.1751749-1-svens@linux.ibm.com>
+References: <20220214134456.1751749-1-svens@linux.ibm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CC can have multiple sub-strings like "ccache gcc". Build system of sgx
-selftest is unable to support this use case and test_sgx isn't built.
-Then rsync gives an erorr:
+On Mon, 14 Feb 2022 14:44:56 +0100
+Sven Schnelle <svens@linux.ibm.com> wrote:
 
-rsync: [sender] link_stat "//linux/build/kselftest/sgx/test_sgx" failed: No such file or directory (2)
-rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1333) [sender=3.2.3]
+> Booting the kernel with 'trace_buf_size=1' give a warning at
+> boot during the ftrace selftests:
+> 
+> [    0.892809] Running postponed tracer tests:
+> [    0.892893] Testing tracer function:
+> [    0.901899] Callback from call_rcu_tasks_trace() invoked.
+> [    0.983829] Callback from call_rcu_tasks_rude() invoked.
+> [    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+> [    1.091944] Callback from call_rcu_tasks() invoked.
+> [    1.097695] PASSED
+> [    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+> [    1.353474] ------------[ cut here ]------------
+> [    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
+> 
+> Therefore enforce a minimum of 4096 bytes to make the selftest pass.
+> 
+> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
 
-This can be fixed if CC is considered to have one string while passing to
-check_cc.sh script and inside this script, CC is expanded before execution.
+Thanks,
 
-Following build tests have been performed to confirm that these patches
-don't break anything else. The verification has also been done through
-KernelCI scripts locally as KernelCI has caught this bug:
-1) cd tools/testing/selftests && make
-2) make -C tools/testing/selftests
-3) make -C tools/testing/selftests O=build
-4) make -C tools/testing/selftests O=build CC="ccache gcc"
-5) ./kci_build make_kselftest
+I'll queue this up for the next merge window.
 
-Muhammad Usama Anjum (2):
-  selftests: x86: add validity check and allow field splitting
-  selftests: sgx: Treat CC as one argument
+-- Steve
 
- tools/testing/selftests/sgx/Makefile    | 2 +-
- tools/testing/selftests/x86/check_cc.sh | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
--- 
-2.30.2
+> ---
+>  kernel/trace/trace.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+> index 7c2578efde26..3050892d1812 100644
+> --- a/kernel/trace/trace.c
+> +++ b/kernel/trace/trace.c
+> @@ -1474,10 +1474,12 @@ static int __init set_buf_size(char *str)
+>  	if (!str)
+>  		return 0;
+>  	buf_size = memparse(str, &str);
+> -	/* nr_entries can not be zero */
+> -	if (buf_size == 0)
+> -		return 0;
+> -	trace_buf_size = buf_size;
+> +	/*
+> +	 * nr_entries can not be zero and the startup
+> +	 * tests require some buffer space. Therefore
+> +	 * ensure we have at least 4096 bytes of buffer.
+> +	 */
+> +	trace_buf_size = max(4096UL, buf_size);
+>  	return 1;
+>  }
+>  __setup("trace_buf_size=", set_buf_size);
 
