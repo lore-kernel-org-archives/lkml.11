@@ -2,142 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4890DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237449AbiBNKIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:08:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54704 "EHLO
+        id S232871AbiBNKIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:08:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344919AbiBNKDW (ORCPT
+        with ESMTP id S1344761AbiBNKEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:03:22 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453AA41993
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:48:48 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id be32so2925753ljb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:48:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YCvPx0LAxErtAf0GfhIq/50YVwjpT8qlAVAFyOV4q5s=;
-        b=PuHccwHrNCiz2jePG34br/PP18S87pJiYXywXU7SsUeJBQuaPUbIjyWANZz9nO3eNW
-         lj+45LSzwLr++WGj2aYqhMrjuDN/K7W8H4yLF9F51yxXNUP7va4DPwa5UpGhWJZ65KqD
-         CYgNUvJ9GtlD6EfUNaXhWe20EuwFsuBn4Gia7BRmMsLw6coSlbRz72F1mgVpGnumM1Q1
-         039A467iGxr80lnu8Ws+Iq5b/QrZ/3t8iJuVRLEGse7zuTwYsWh0G+cQBnqGyfNbbLtu
-         ISeZFmNmbAmbDuQ6Ub7s7XUOvlwtxWDjS79ZHPh3A6jwxkMX7u6aycX2ZCMrHmlrp9xi
-         Dgsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YCvPx0LAxErtAf0GfhIq/50YVwjpT8qlAVAFyOV4q5s=;
-        b=y0C/1ebgOtnxX4MHizcsIYAQKxlzsJvtke9T7i9Wk5obI78X58yxbL/tFoHL2mv4FG
-         PEQUEvTtmFe+OlBEVfg8EirCw5qSJN7Pp5ZKxFumRn/eQHRZrhlYL76bJ34NrnVfNOfa
-         r0goW2FgDV8fgN9QQfK4qwmLNJaO/6d+beLGVvx2bZSIHukPO6+RdfWCOl1190oVJXsQ
-         SdXgp4ux3bj9t+eODwtUqFjugJalDG8MMbDOPG+ih6LB8ODEYu1W9uMGbxYR2lH7jL9t
-         8M0RzpFc3CBAuyTVCwFHhHbkI20nppXY73a/QzD7xxn12uqG1KovaSAQT/gHRsjE4YuL
-         Zg0Q==
-X-Gm-Message-State: AOAM530tjMsuVXFQ5veN/hVKgRpmi8Gf8ZGUbJO5wAVFcSWN1yajiC4c
-        yaqz4J92SAcR+VBvoRCBhGiAdFpZ0hRlir4MaKzxVA==
-X-Google-Smtp-Source: ABdhPJzX3OhpOueMcJbOUslFH2RYWrTN41tcipLwbbYwoUBHn5mj5b9f9tzLu3SKULBfblWk+DSx69phQsKm54cF8vk=
-X-Received: by 2002:a05:651c:a0b:: with SMTP id k11mr8709410ljq.266.1644832126546;
- Mon, 14 Feb 2022 01:48:46 -0800 (PST)
+        Mon, 14 Feb 2022 05:04:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CF943496;
+        Mon, 14 Feb 2022 01:48:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D8E7B80D83;
+        Mon, 14 Feb 2022 09:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7443AC340EF;
+        Mon, 14 Feb 2022 09:48:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644832130;
+        bh=ZpMz6lI2fdG/Wzo5lXOmPabcTGrlBaNjRWX7oyNMaGQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HR/4zn7Zg0pHVOSEqWYeMgX5KSLO/qxQ44X662cD5ca31JWyF4No/7Hh0WPo3A3Nw
+         PssTq+JfF7sDZ4uEzQPWWkl0B5ErEahqzkWAeiacibV3/RU5EtYZy+tTOQsqC1nXI2
+         V5EoIWHPp6gML5NM1+qM1VRkg5gTWCtxIsUqKTTA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 088/172] phy: stm32: fix a refcount leak in stm32_usbphyc_pll_enable()
+Date:   Mon, 14 Feb 2022 10:25:46 +0100
+Message-Id: <20220214092509.450851928@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
+References: <20220214092506.354292783@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220208094334.16379-1-mgorman@techsingularity.net> <20220208094334.16379-2-mgorman@techsingularity.net>
-In-Reply-To: <20220208094334.16379-2-mgorman@techsingularity.net>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Mon, 14 Feb 2022 10:48:35 +0100
-Message-ID: <CAKfTPtB1CEdAFggK2OVzOkK6zTBV-eR8PgRRL5wCa1=Esv30Tg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] sched/fair: Improve consistency of allowed NUMA
- balance calculations
-To:     Mel Gorman <mgorman@techsingularity.net>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Valentin Schneider <Valentin.Schneider@arm.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Mike Galbraith <efault@gmx.de>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>,
-        Gautham Shenoy <gautham.shenoy@amd.com>,
-        K Prateek Nayak <kprateek.nayak@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 8 Feb 2022 at 10:43, Mel Gorman <mgorman@techsingularity.net> wrote:
->
-> There are inconsistencies when determining if a NUMA imbalance is allowed
-> that should be corrected.
->
-> o allow_numa_imbalance changes types and is not always examining
->   the destination group so both the type should be corrected as
->   well as the naming.
-> o find_idlest_group uses the sched_domain's weight instead of the
->   group weight which is different to find_busiest_group
-> o find_busiest_group uses the source group instead of the destination
->   which is different to task_numa_find_cpu
-> o Both find_idlest_group and find_busiest_group should account
->   for the number of running tasks if a move was allowed to be
->   consistent with task_numa_find_cpu
->
-> Fixes: 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA nodes")
-> Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+[ Upstream commit cfc826c88a79e22ba5d8001556eb2c7efd8a01b6 ]
 
-> ---
->  kernel/sched/fair.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
->
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 095b0aa378df..4592ccf82c34 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -9003,9 +9003,10 @@ static bool update_pick_idlest(struct sched_group *idlest,
->   * This is an approximation as the number of running tasks may not be
->   * related to the number of busy CPUs due to sched_setaffinity.
->   */
-> -static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
-> +static inline bool
-> +allow_numa_imbalance(unsigned int running, unsigned int weight)
->  {
-> -       return (dst_running < (dst_weight >> 2));
-> +       return (running < (weight >> 2));
->  }
->
->  /*
-> @@ -9139,12 +9140,13 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
->                                 return idlest;
->  #endif
->                         /*
-> -                        * Otherwise, keep the task on this node to stay close
-> -                        * its wakeup source and improve locality. If there is
-> -                        * a real need of migration, periodic load balance will
-> -                        * take care of it.
-> +                        * Otherwise, keep the task close to the wakeup source
-> +                        * and improve locality if the number of running tasks
-> +                        * would remain below threshold where an imbalance is
-> +                        * allowed. If there is a real need of migration,
-> +                        * periodic load balance will take care of it.
->                          */
-> -                       if (allow_numa_imbalance(local_sgs.sum_nr_running, sd->span_weight))
-> +                       if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
->                                 return NULL;
->                 }
->
-> @@ -9350,7 +9352,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
->                 /* Consider allowing a small imbalance between NUMA groups */
->                 if (env->sd->flags & SD_NUMA) {
->                         env->imbalance = adjust_numa_imbalance(env->imbalance,
-> -                               busiest->sum_nr_running, busiest->group_weight);
-> +                               local->sum_nr_running + 1, local->group_weight);
->                 }
->
->                 return;
-> --
-> 2.31.1
->
+This error path needs to decrement "usbphyc->n_pll_cons.counter" before
+returning.
+
+Fixes: 5b1af71280ab ("phy: stm32: rework PLL Lock detection")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/20220112111724.GB3019@kili
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/phy/st/phy-stm32-usbphyc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/phy/st/phy-stm32-usbphyc.c b/drivers/phy/st/phy-stm32-usbphyc.c
+index 937a14fa7448a..da05642d3bd4a 100644
+--- a/drivers/phy/st/phy-stm32-usbphyc.c
++++ b/drivers/phy/st/phy-stm32-usbphyc.c
+@@ -225,7 +225,7 @@ static int stm32_usbphyc_pll_enable(struct stm32_usbphyc *usbphyc)
+ 
+ 		ret = __stm32_usbphyc_pll_disable(usbphyc);
+ 		if (ret)
+-			return ret;
++			goto dec_n_pll_cons;
+ 	}
+ 
+ 	ret = stm32_usbphyc_regulators_enable(usbphyc);
+-- 
+2.34.1
+
+
+
