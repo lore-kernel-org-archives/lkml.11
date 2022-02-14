@@ -2,98 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D91C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B3AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:07:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352670AbiBNNGP (ORCPT
+        id S1353915AbiBNNHY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:06:15 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53754 "EHLO
+        Mon, 14 Feb 2022 08:07:24 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233758AbiBNNGL (ORCPT
+        with ESMTP id S233705AbiBNNHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:06:11 -0500
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16264EA3D;
-        Mon, 14 Feb 2022 05:06:03 -0800 (PST)
-Received: by mail-vs1-f44.google.com with SMTP id t22so18700657vsa.4;
-        Mon, 14 Feb 2022 05:06:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9c4MC5Xtn2gF/8NoLdQrBf3/Seq/IL9VP4ML3k/mjKo=;
-        b=6TI0wjSPhCVrxJsathLiQHlozLYagNJb0BrFkChvbOw+D5l9Q6uLSqmCtONregg+qT
-         NMIRQJl74zHqd359TvTg5OLHh90CqagiihGvgSJv94Bx85eFdjft9SPbszPt47lhlt+I
-         +SO1wMl0uZ308C+9oKLxQ38Sy6FFlNjcsPBWaPCSJ5345egXAsGsUFi6q7HAjxByiusn
-         w0t5rOZLW7/aYmkEVRm5xeEPY7B7nnQgfzFquqQPjmsuXZAGLoXUnxcRj23yuyVXwSex
-         0dK/uuTAFm+VXerPu3UfiFVuzXlHdAy2ncxsxF4Gu3+8VKjEWrq4RiDKZzftQNPtnJP9
-         up+w==
-X-Gm-Message-State: AOAM530B+cuWbWm8mz666k/8iz4KuFfTpd54VyaFGL0Q0ouchxm2kkRA
-        L5LMjemSG1zhjlnBNKyycmy6eeoXZDy7vw==
-X-Google-Smtp-Source: ABdhPJxVPw6Vwm4lpfA37lOzvBv8x3SYzHDyaX3IRJu78Vy+eB0auvuQa6SjE+6cMD4a4ImxCJc63Q==
-X-Received: by 2002:a67:ea08:: with SMTP id g8mr3580517vso.19.1644843962944;
-        Mon, 14 Feb 2022 05:06:02 -0800 (PST)
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
-        by smtp.gmail.com with ESMTPSA id m3sm2327094vso.0.2022.02.14.05.06.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 05:06:02 -0800 (PST)
-Received: by mail-vs1-f43.google.com with SMTP id w4so149511vsq.1;
-        Mon, 14 Feb 2022 05:06:02 -0800 (PST)
-X-Received: by 2002:a05:6102:440d:: with SMTP id df13mr1245927vsb.5.1644843962404;
- Mon, 14 Feb 2022 05:06:02 -0800 (PST)
+        Mon, 14 Feb 2022 08:07:22 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463AE4BFDF;
+        Mon, 14 Feb 2022 05:07:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644844029; x=1676380029;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=cmRpyW5YxpRg0c6HVe02t3+JA7Epz3P6WvJ1r9gZPiM=;
+  b=fwnRiMLdnK/rmaMb7i6Y8iHrmqfh05bm8jOVB+xUxzKzpjVXqo6YXCAM
+   tP2aebyqD3f2Kov0sU36MQ6VugzMbpZiEMB24R4mQW5D4p6Q4bxn3GfDp
+   nscKJRZ23130KaUivYRP5tWZ5Ya3gjKJbO06iV02TBtuUkfd73tGMQ+m3
+   UE1S1Asn0wFByk6osL1SwBfOOsjt/0GE9JsNRzY7vQipL6fH+9+VsVxm5
+   zaQ1QiDvgw5UHTQDJPk2ni2hKttiGdMi4A4mojvmuPoZ54Qx2pL93pLm0
+   25Ax/qAYIcc37W5kR3/VqctpXpcsJcOJhHnVVQCFRhrwMbITXA7s6Qf3q
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="230721425"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="230721425"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 05:07:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="543555384"
+Received: from stinkpipe.fi.intel.com (HELO stinkbox) ([10.237.72.151])
+  by orsmga008.jf.intel.com with SMTP; 14 Feb 2022 05:07:04 -0800
+Received: by stinkbox (sSMTP sendmail emulation); Mon, 14 Feb 2022 15:07:03 +0200
+Date:   Mon, 14 Feb 2022 15:07:03 +0200
+From:   Ville =?iso-8859-1?Q?Syrj=E4l=E4?= <ville.syrjala@linux.intel.com>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     linux-fbdev@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v4 1/6] drm/format-helper: Add
+ drm_fb_xrgb8888_to_gray8_line()
+Message-ID: <YgpT91j+WajkuqXm@intel.com>
+References: <4fa465d9-4fac-4199-9a04-d8e09d164308@redhat.com>
+ <YgZEuXvJ2ZiOyNS+@smile.fi.intel.com>
+ <7560cd10-0a7c-3fda-da83-9008833e3901@suse.de>
+ <87pmnt7gm3.fsf@intel.com>
+ <YgaDj6Wld4b7S6DF@smile.fi.intel.com>
+ <f87ce2fa-6b18-f985-eb86-506ce7103db3@suse.de>
+ <YgoxFBGNsrezVxmi@smile.fi.intel.com>
+ <5ee24960-7843-827a-2c47-b93a4b4798e3@suse.de>
+ <YgpPR/lObRWwkjNN@intel.com>
+ <65010c63-ef8a-4fff-00e4-73a9b6fd05b8@suse.de>
 MIME-Version: 1.0
-References: <6c08e98f-c7bb-9d95-5032-69022e43e39b@omp.ru>
-In-Reply-To: <6c08e98f-c7bb-9d95-5032-69022e43e39b@omp.ru>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Feb 2022 14:05:51 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXfieYjQCFgGJA79BtzTF2UD-9zx7V+g=pqVbqsjqOJeQ@mail.gmail.com>
-Message-ID: <CAMuHMdXfieYjQCFgGJA79BtzTF2UD-9zx7V+g=pqVbqsjqOJeQ@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: specify IRC channel for Renesas ARM64 port
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Magnus Damm <magnus.damm@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <65010c63-ef8a-4fff-00e4-73a9b6fd05b8@suse.de>
+X-Patchwork-Hint: comment
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sergey,
+On Mon, Feb 14, 2022 at 01:54:59PM +0100, Thomas Zimmermann wrote:
+> Hi
+> 
+> Am 14.02.22 um 13:47 schrieb Ville Syrjälä:
+> > On Mon, Feb 14, 2022 at 01:12:48PM +0100, Thomas Zimmermann wrote:
+> >> Hi
+> >>
+> >> Am 14.02.22 um 11:38 schrieb Andy Shevchenko:
+> >>> On Mon, Feb 14, 2022 at 10:03:53AM +0100, Thomas Zimmermann wrote:
+> >>>> Am 11.02.22 um 16:41 schrieb Andy Shevchenko:
+> >>>
+> >>> ...
+> >>>
+> >>>>>> IMO *always* prefer a for loop over while or do-while.
+> >>>>>>
+> >>>>>> The for (i = 0; i < N; i++) is such a strong paradigm in C. You
+> >>>>>> instantly know how many times you're going to loop, at a glance. Not so
+> >>>>>> with with the alternatives, which should be used sparingly.
+> >>>>>
+> >>>>> while () {}  _is_ a paradigm, for-loop is syntax sugar on top of it.
+> >>>>
+> >>>> Naw, that's not true.
+> >>>
+> >>> In the section 3.5 "Loops - While and For" in "The C Programming
+> >>> Language" 2nd by K&R, the authors said:
+> >>
+> >> Year of publication: 1988 . It's not the most up-to-date reference for C
+> >> programming.
+> >>
+> >>>
+> >>> 	The for statement ... is equivalent to ... while..."
+> >>>
+> >>> They said that for is equivalent to while, and not otherwise.
+> >>
+> >> Even leaving readability aside, it's not equivalent. You can declare
+> >> variables as part of the for statement. (I know it's not the kernel's
+> >> style.) Also, 'continue' statements are not well-suited in for loops,
+> >> because it's non-obvious if the loop's update statement is being
+> >> executed. (It isn't.)
+> > 
+> > It is.
+> > 
+> > 'continue' is just shorthand for 'goto end_of_loop_body'.
+> 
+> Well, indeed. lol
+> 
+> Fun fact: I actually had to look this up and still got it wrong. Let me 
+> just count it under proving-my-point: continue in a for statement is a 
+> bad idea and for isn't equivalent to while.
 
-On Thu, Feb 10, 2022 at 7:00 PM Sergey Shtylyov <s.shtylyov@omp.ru> wrote:
-> The Renesas ARM ports do have their own IRC channel #renesas-soc (initially
-> created on Freenode, then moved to Liberta.Chat).  Hopefully, adding it to
-> this file will attract more people... :-)
->
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Nah. We use 'continue' a *lot* in for loops in kms/atomic code.
+I'd be surprised if you can find many loops without a 'continue'.
 
-Thanks for your patch!
+Looking at the loc stats I was a bit surprised to see more 'break'
+but then I realized switch() is bloating up those numbers quite
+a bit.
 
-> --- renesas-devel.orig/MAINTAINERS
-> +++ renesas-devel/MAINTAINERS
-> @@ -2525,6 +2525,7 @@ ARM/RENESAS ARM64 ARCHITECTURE
->  M:     Geert Uytterhoeven <geert+renesas@glider.be>
->  M:     Magnus Damm <magnus.damm@gmail.com>
->  L:     linux-renesas-soc@vger.kernel.org
-> +C:     irc://irc.libera.chat/renesas-soc
-
-Should be inserted between Q and T below...
-
->  S:     Supported
->  Q:     http://patchwork.kernel.org/project/linux-renesas-soc/list/
->  T:     git git://git.kernel.org/pub/scm/linux/kernel/git/geert/renesas-devel.git next
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.18, with the above fixed.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+Ville Syrjälä
+Intel
