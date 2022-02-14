@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344452AbiBNKDh (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:03:37 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45140 "EHLO
+        id S236092AbiBNKDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:03:45 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344295AbiBNJ7A (ORCPT
+        with ESMTP id S236609AbiBNJ7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:59:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7D7217;
-        Mon, 14 Feb 2022 01:46:26 -0800 (PST)
+        Mon, 14 Feb 2022 04:59:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF4D272;
+        Mon, 14 Feb 2022 01:46:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2B83B80DC7;
-        Mon, 14 Feb 2022 09:46:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3774C340EF;
-        Mon, 14 Feb 2022 09:46:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7B06B80DC4;
+        Mon, 14 Feb 2022 09:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12048C340E9;
+        Mon, 14 Feb 2022 09:46:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831983;
-        bh=/T57QsHEXzWRyz9ngAgfSuXzq9rnlQ9xNPWF7J/q3zk=;
+        s=korg; t=1644831986;
+        bh=Y4I1XbzZkketrSB1+LOJA9GxTunIlw/Msl9gsyKUgh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F7yuAMHbFzqaGgcGQKjXi1QKPgpqfb3kF+XxNsuPLFmKH/3Mb49QyvjdaNC+PHD6M
-         4Re+e10qKk4mTAhQuoMAfSE+9XEIjpxiK0lqIpV1g+pDloONUEiFR/5xCPpR+GjSK6
-         9/+94TeE0pIyP9xnpRKVAq5ZywkrgzEtMdyklRwI=
+        b=nHFL0YwnssSATQpGEujREK9kmvnCv7TE24qg4u+hTAidMrgOuoIWt5fjY20svjcnj
+         1TEsdnzxKkiQKInLcUDS9o/hpZgOtLlnirla5NbkTllYPUoBPjoeLohTnHds8MjJlg
+         BdOoebF/menrS3pql/CfJfQkBX9BZIfmuclryxl4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ZouMingzhe <mingzhe.zou@easystack.cn>,
-        Mike Christie <michael.christie@oracle.com>,
+        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
+        Xiaoke Wang <xkernel.wang@foxmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 043/172] scsi: target: iscsi: Make sure the np under each tpg is unique
-Date:   Mon, 14 Feb 2022 10:25:01 +0100
-Message-Id: <20220214092507.879629726@linuxfoundation.org>
+Subject: [PATCH 5.15 044/172] scsi: ufs: ufshcd-pltfrm: Check the return value of devm_kstrdup()
+Date:   Mon, 14 Feb 2022 10:25:02 +0100
+Message-Id: <20220214092507.918636143@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,41 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ZouMingzhe <mingzhe.zou@easystack.cn>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit a861790afaa8b6369eee8a88c5d5d73f5799c0c6 ]
+[ Upstream commit a65b32748f4566f986ba2495a8236c141fa42a26 ]
 
-iscsit_tpg_check_network_portal() has nested for_each loops and is supposed
-to return true when a match is found. However, the tpg loop will still
-continue after existing the tpg_np loop. If this tpg_np is not the last the
-match value will be changed.
+devm_kstrdup() returns pointer to allocated string on success, NULL on
+failure. So it is better to check the return value of it.
 
-Break the outer loop after finding a match and make sure the np under each
-tpg is unique.
-
-Link: https://lore.kernel.org/r/20220111054742.19582-1-mingzhe.zou@easystack.cn
-Signed-off-by: ZouMingzhe <mingzhe.zou@easystack.cn>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Link: https://lore.kernel.org/r/tencent_4257E15D4A94FF9020DDCC4BB9B21C041408@qq.com
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/target/iscsi/iscsi_target_tpg.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/scsi/ufs/ufshcd-pltfrm.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/target/iscsi/iscsi_target_tpg.c b/drivers/target/iscsi/iscsi_target_tpg.c
-index 8075f60fd02c3..2d5cf1714ae05 100644
---- a/drivers/target/iscsi/iscsi_target_tpg.c
-+++ b/drivers/target/iscsi/iscsi_target_tpg.c
-@@ -443,6 +443,9 @@ static bool iscsit_tpg_check_network_portal(
- 				break;
- 		}
- 		spin_unlock(&tpg->tpg_np_lock);
+diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
+index 8b16bbbcb806c..87975d1a21c8b 100644
+--- a/drivers/scsi/ufs/ufshcd-pltfrm.c
++++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
+@@ -92,6 +92,11 @@ static int ufshcd_parse_clock_info(struct ufs_hba *hba)
+ 		clki->min_freq = clkfreq[i];
+ 		clki->max_freq = clkfreq[i+1];
+ 		clki->name = devm_kstrdup(dev, name, GFP_KERNEL);
++		if (!clki->name) {
++			ret = -ENOMEM;
++			goto out;
++		}
 +
-+		if (match)
-+			break;
- 	}
- 	spin_unlock(&tiqn->tiqn_tpg_lock);
+ 		if (!strcmp(name, "ref_clk"))
+ 			clki->keep_link_active = true;
+ 		dev_dbg(dev, "%s: min %u max %u name %s\n", "freq-table-hz",
+@@ -127,6 +132,8 @@ static int ufshcd_populate_vreg(struct device *dev, const char *name,
+ 		return -ENOMEM;
  
+ 	vreg->name = devm_kstrdup(dev, name, GFP_KERNEL);
++	if (!vreg->name)
++		return -ENOMEM;
+ 
+ 	snprintf(prop_name, MAX_PROP_SIZE, "%s-max-microamp", name);
+ 	if (of_property_read_u32(np, prop_name, &vreg->max_uA)) {
 -- 
 2.34.1
 
