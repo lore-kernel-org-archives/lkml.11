@@ -2,159 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D53C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24933C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 15:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355591AbiBNPGK (ORCPT
+        id S1355600AbiBNPGs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 10:06:10 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36664 "EHLO
+        Mon, 14 Feb 2022 10:06:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355579AbiBNPGG (ORCPT
+        with ESMTP id S1355579AbiBNPGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 10:06:06 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64AADB84F
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:05:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=KmR1+6vP0FVqfQDpbnK0oOnb37vqCIuXQisrkcgNytM=; b=jxgmpMk67pTM5hwrSwR7APewjp
-        B179ciCrgaJCyunLbJ6RzLTMRuYVpPJlsiZts0rtbz3SqWWR1BcEnWBO5EGgUaewvtVD48sF1/uNy
-        he2zmcwECLTSqcPreDBwLeS2gbfSANXDTbldXRWL3nj553ndWboaus1aOAovJxi89qGLgaQqJxo2d
-        n4kj5csOhGA9lZIkcfmzcAWi/oh/WL46qQ+PLdeCP1VQfstnoXsbZg14MQt0Hl9P6V4o4X2kp9u8P
-        r+M4AcLcUBt0zX9JvkYekQtchc+/qjCL2M9HstLwqbCCuCPG9zkIDInx+TiBYAIOv0EAo6cy9CaC0
-        /Rvk35GA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nJcvD-00D0e8-Ca; Mon, 14 Feb 2022 15:05:47 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4C034300470;
-        Mon, 14 Feb 2022 16:05:45 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 033EC2B397C73; Mon, 14 Feb 2022 16:05:44 +0100 (CET)
-Date:   Mon, 14 Feb 2022 16:05:44 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Huang Ying <ying.huang@intel.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Ingo Molnar <mingo@redhat.com>, Mel Gorman <mgorman@suse.de>,
-        Rik van Riel <riel@surriel.com>,
-        Srikar Dronamraju <srikar@linux.vnet.ibm.com>
-Subject: Re: [PATCH -V3 1/2] NUMA balancing: fix NUMA topology for systems
- with CPU-less nodes
-Message-ID: <YgpvyE7oV1lZDRQL@hirez.programming.kicks-ass.net>
-References: <20220214121553.582248-1-ying.huang@intel.com>
+        Mon, 14 Feb 2022 10:06:47 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5386249F9D
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:06:39 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id b35so14565973qkp.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 07:06:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=toxicpanda-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=DHTZ4X93EBgAXhQ+1KosV3ycLyMKWBkj8b7T4xLtbKw=;
+        b=kAbth2wJxr7bdox2Ck1J0RadJRt1M64cYFeZgPfW/4WTH7QLyENPaBM4m586XUHfQa
+         MjV9Kf0FoPQ1FwUZXlsWaUuhNbFvJtEcyg1CJLagf8ErMB3pycUTSO+3P8djes/k/zd9
+         FHLAsBdFpuRAD9s65ikGSM1CKfD5za6peJADsCBL37jdUlTpbqAEVa6lJmQVECu8kNTw
+         56z+Ee6Jv3jgdOb9Z8mW2olwiHL14QIuQUbEjCwXklCEDDzmjDzOGMtONCZ/rg0KV/7q
+         LVnRo8bdeWL/Ct2GKAVij+HMNK9B0cyoBKuSBcSpxgUmgWhwUP43XsCRZURnQWb4AyPC
+         a5vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=DHTZ4X93EBgAXhQ+1KosV3ycLyMKWBkj8b7T4xLtbKw=;
+        b=VC9qtOOsFluk9ARlh91U6ly5yMqaHUvnUFDlcrd5aBmclvRPmiXLgia7QHPgxUWglT
+         eNRPYQqNvWv+0/AU8yDkkXq0pzQzkOiMt1ioSdXhlkFa2OgjU89q0GJDuRdPh9u8viZE
+         D3IGqAjhgZbn2RYGKVELk4HOHpNAA99tuE52b/62tLme7+F6OE3msy/YP9F/UIpB+kjW
+         xdVO58gnECNsNsf3JjBkCo2SX+vVmq90o+ZjmPpM0CVJGWrc0XyHHhW645sgt4xBRXBq
+         GAq9OZkuyjtRqbH3pVTzAmq+eQpHBT9uxg5uQUHxB0+29geiUYPMZYgxMZv/1HrqJkaT
+         I+PQ==
+X-Gm-Message-State: AOAM533wLICorXfRyD++kVTnCb9OEB34YHdigdYc5lF0VzlPU0bua3gk
+        xhPfiZ7ceni/tkY9LoK6P0joBQ==
+X-Google-Smtp-Source: ABdhPJyUC7ntq4jGi+nWTHeLpc2WZfNOHawlPhZD8w/TgMkwvXUXzvgrdf1iuP6C+M+xqPnYq4bLsg==
+X-Received: by 2002:a37:9fcf:: with SMTP id i198mr29775qke.288.1644851198226;
+        Mon, 14 Feb 2022 07:06:38 -0800 (PST)
+Received: from localhost (cpe-174-109-172-136.nc.res.rr.com. [174.109.172.136])
+        by smtp.gmail.com with ESMTPSA id bi11sm15191055qkb.18.2022.02.14.07.06.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 07:06:37 -0800 (PST)
+Date:   Mon, 14 Feb 2022 10:06:36 -0500
+From:   Josef Bacik <josef@toxicpanda.com>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Chris Mason <clm@fb.com>, David Sterba <dsterba@suse.com>,
+        linux-btrfs@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: I/O errors only during shutdown and free space cache failures
+Message-ID: <Ygpv/GlozZD78qvR@localhost.localdomain>
+References: <404c5f3b-24c1-c442-9132-82d3212bf7f1@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220214121553.582248-1-ying.huang@intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <404c5f3b-24c1-c442-9132-82d3212bf7f1@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 08:15:52PM +0800, Huang Ying wrote:
+On Mon, Feb 14, 2022 at 10:11:18AM +0100, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> On an IBM S822LC with Ubuntu 21.10, only when shutting down the system there
+> are I/O errors hanging the system. I was able to capture some messages from
+> the end:
+> 
+> ```
+> [XXXXXXXXXXXX3] I/O error, dev sda, sector 1198060800 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 1 prio class 0
+> [223109.260842] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 3, rd 0,
+> flush 0, corrupt 0, gen 0
+> [223109.260878] sd 0:0:0:0: [sda] tag#15 timing out command, waited 180s
+> [223109.261026] I/O error, dev sda, sector 1198829952 op 0x1:(WRITE) flags
+> 0x104000 phys_seg 20 prio class 0
+> [223109.360562] sd 0:0:0:0: [sda] tag#28 timing out command, waited 180s
+> [223109.360615] I/O error, dev sda, sector 1198835072 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 17 prio class 0
+> [223109.360757] sd 0:0:0:0: [sda] tag#29 timing out command, waited 180s
+> [223109.360778] I/O error, dev sda, sector 1198832512 op 0x1:(WRITE) flags
+> 0x104000 phys_seg 20 prio class 0
+> [223109.360798] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 4, rd 0,
+> flush 0, corrupt 0, gen 0
+> [223179.108402] INFO: task kworker/0:2:651024 blocked for more than 120
+> seconds.
+> [223179.108481]       Not tainted 5.17.0-rc3+ #1
+> [223179.108580] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+> this message.
+> [223179.109311] INFO: task kworker/u321:7:652803 blocked for more than 120
+> seconds.
+> [223179.109357]       Not tainted 5.17.0-rc3+ #1
+> [223179.109370] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+> this message.
+> [223289.259960] sd 0:0:0:0: [sda] tag#24 timing out command, waited 180s
+> [223289.260169] I/O error, dev sda, sector 1197961728 op 0x0:(READ) flags
+> 0x0 phys_seg 1 prio class 0
+> [223289.260192] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 4, rd 1,
+> flush 0, corrupt 0, gen 0
+> [223289.363952] sd 0:0:0:0: [sda] tag#13 timing out command, waited 180s
+> [223289.363958] sd 0:0:0:0: [sda] tag#16 timing out command, waited 180s
+> [223289.364152] I/O error, dev sda, sector 1064447232 op 0x1:(WRITE) flags
+> 0x4800 phys_seg 20 prio class 0
+> [223289.364176] I/O error, dev sda, sector 1198837504 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 7 prio class 0
+> [223289.364182] sd 0:0:0:0: [sda] tag#14 timing out command, waited 180s
+> [223289.364198] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 5, rd 1,
+> flush 0, corrupt 0, gen 0
+> [223289.364364] I/O error, dev sda, sector 1064444672 op 0x1:(WRITE) flags
+> 0x4800 phys_seg 20 prio class 0
+> [223289.364377] sd 0:0:0:0: [sda] tag#17 timing out command, waited 180s
+> [223289.364388] sd 0:0:0:0: [sda] tag#15 timing out command,
+> [228549.050771442,5] IPMI: Soft shutdown requested
+> waited 180s
+> [223289.364417] I/O error, dev sda, sector 1198838528 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 2 prio class 0
+> [223289.364421] I/O error, dev sda, sector 1064452352 op 0x1:(WRITE) flags
+> 0x800 phys_seg 4 prio class 0
+> [223289.364438] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 6, rd 1,
+> flush 0, corrupt 0, gen 0
+> [223289.364466] sd 0:0:0:0: [sda] tag#19 timing out command, waited 180s
+> [223289.364498] I/O error, dev sda, sector 1064449792 op 0x1:(WRITE) flags
+> 0x4800 phys_seg 20 prio class 0
+> [223289.364520] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 7, rd 1,
+> flush 0, corrupt 0, gen 0
+> [223299.944147] INFO: task kworker/0:2:651024 blocked for more than 241
+> seconds.
+> [223299.944197]       Not tainted 5.17.0-rc3+ #1
+> [223299.944327] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+> this message.
+> [223299.945059] INFO: task kworker/u321:7:652803 blocked for more than 241
+> seconds.
+> [223299.945105]       Not tainted 5.17.0-rc3+ #1
+> [223299.945117] "echo 0 > /proc/sys/kernel/hun[228630.461459920,5] OPAL:
+> Shutdown request type 0x0...
+> g_task_timeout_secs" disables this message.
+> [223303.591904] sd 1:0:0:0: [sdb] tag#23 timing out command, waited 360s
+> [223303.592090] I/O error, dev sdb, sector 0 op 0x1:(WRITE) flags 0x800
+> phys_seg 0 prio class 0
+> [223420.771542] INFO: task kworker/35:2:1077 blocked for more than 120
+> seconds.
+> [223420.771680]       Not tainted 5.17.0-rc3+ #1
+> [223420.771722] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables
+> this message.
+> [223469.263372] sd 0:0:0:0: [sda] tag#31 timing out command, waited 180s
+> [223469.263480] I/O error, dev sda, sector 1197961728 op 0x0:(READ) flags
+> 0x0 phys_seg 1 prio class 0
+> [223469.263600] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 7, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367343] sd 0:0:0:0: [sda] tag#17 timing out command, waited 180s
+> [223469.367346] sd 0:0:0:0: [sda] tag#19 timing out command, waited 180s
+> [223469.367358] sd 0:0:0:0: [sda] tag#15 timing out command, waited 180s
+> [223469.367382] I/O error, dev sda, sector 1198836992 op 0x1:(WRITE) flags
+> 0x800 phys_seg 1 prio class 0
+> [223469.367390] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 8, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367401] I/O error, dev sda, sector 1198839168 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 1 prio class 0
+> [223469.367406] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 9, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367433] sd 0:0:0:0: [sda] tag#18 timing out command, waited 180s
+> [223469.367442] I/O error, dev sda, sector 1198839424 op 0x1:(WRITE) flags
+> 0x100000 phys_seg 6 prio class 0
+> [223469.367445] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 10, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367585] sd 0:0:0:0: [sda] tag#16 timing out command, waited 180s
+> [223469.367637] I/O error, dev sda, sector 480640 op 0x1:(WRITE) flags
+> 0x1800 phys_seg 1 prio class 0
+> [223469.367670] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 11, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367690] I/O error, dev sda, sector 1198834816 op 0x1:(WRITE) flags
+> 0x800 phys_seg 1 prio class 0
+> [223469.367798] sd 0:0:0:0: [sda] tag#20 timing out command, waited 180s
+> [223469.367845] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 12, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367888] sd 0:0:0:0: [sda] tag#21 timing out command, waited 180s
+> [223469.367929] I/O error, dev sda, sector 2577792 op 0x1:(WRITE) flags
+> 0x1800 phys_seg 1 prio class 0
+> [223469.367949] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 13, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.367949] I/O error, dev sda, sector 1198838272 op 0x1:(WRITE) flags
+> 0x800 phys_seg 1 prio class 0
+> [223469.367989] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 14, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.368018] sd 0:0:0:0: [sda] tag#22 timing out command, waited 180s
+> [223469.368046] I/O error, dev sda, sector 1198831360 op 0x1:(WRITE) flags
+> 0x800 phys_seg 1 prio class 0
+> [223469.368069] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 15, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.368105] sd 0:0:0:0: [sda] tag#23 timing out command, waited 180s
+> [223469.368132] I/O error, dev sda, sector 1198060800 op 0x1:(WRITE) flags
+> 0x800 phys_seg 1 prio class 0
+> [223469.368156] BTRFS error (device sda2): bdev /dev/sda2 errs: wr 16, rd 2,
+> flush 0, corrupt 0, gen 0
+> [223469.380930] reboot: Power down
+> ```
+> 
+> I had to power down the system manually. There are no messages when booting
+> (and mounting) the HDD, which is the system drive.
+> 
+> Checking the partition, checking the free space cache returns some failures:
+> 
+> ```
+> $ btrfs version
+> btrfs-progs v5.10.1
+> $ sudo btrfs check --readonly --force /dev/sda2
+> Opening filesystem to check...
+> WARNING: filesystem mounted, continuing because of --force
+> Checking filesystem on /dev/sda2
+> UUID: 2c3dd738-785a-469b-843e-9f0ba8b47b0d
+> [1/7] checking root items
+> [2/7] checking extents
+> [3/7] checking free space cache
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 29360128
+> btrfs: space cache generation (4119788) does not match inode (4119775)
+> failed to load free space cache for block group 741448089600
+> btrfs: space cache generation (4119786) does not match inode (4119782)
+> failed to load free space cache for block group 751111766016
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 795135180800
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 796208922624
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 803725115392
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 804798857216
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 808020082688
+> btrfs: space cache generation (4119788) does not match inode (4119782)
+> failed to load free space cache for block group 811241308160
+> [4/7] checking fs roots
+> [5/7] checking only csums items (without verifying data)
+> [6/7] checking root refs
+> [7/7] checking quota groups skipped (not enabled on this FS)
+> found 604326461440 bytes used, no error found
+> total csum bytes: 35109100
+> total tree bytes: 7996112896
+> total fs tree bytes: 7701987328
+> total extent tree bytes: 231276544
+> btree space waste bytes: 1615676149
+> file data blocks allocated: 818525175808
+>  referenced 724324974592
+> ```
+> 
+> Is that related? Is there a way to fix the system partition during runtime?
+> (Otherwise I’d need to boot some live system or take the drive out.)
+>
 
-> This isn't a practical problem now yet.  Because the PMEM nodes (node
-> 2 and node 3 in example system) are offlined by default during system
-> boot.  So init_numa_topology_type() called during system boot will
-> ignore them and set sched_numa_topology_type to NUMA_DIRECT.  And
-> init_numa_topology_type() is only called at runtime when a CPU of a
-> never-onlined-before node gets plugged in.  And there's no CPU in the
-> PMEM nodes.  But it appears better to fix this to make the code more
-> robust.
+These messages are just informational, so you know it's going to throw out the
+free space cache and re-create it from the extent tree.  These are common if
+there's an unclean shutdown.  Just as a general recommendation I'd suggest
+switching to -o space_cache=v2, which is the new default and better for
+performance in general.
 
-IIRC there are pre-existing issues with this; namely the distance_map is
-created for all nodes, online or not, therefore the levels and
-max_distance include the pmem stuff.
+That being said the disk is having trouble, I'd replace it.  The fs is fine so
+you should be good to get everything off of it.  Thanks,
 
-At the same time, the numa_topolog_type() uses those values, and the
-only reason it 'worked' is because the combination of arguments fails to
-hit any of the existing types and exits without setting a type,
-defaulting to NUMA_DIRECT by 'accident' of that being type 0 and
-bss/data being 0 initialized.
-
-Also, Power (and possibly other architectures) already have CPU-less
-nodes and are similarly suffering issues.
-
-Anyway, aside from this the patches look like they should do.
-
-There's a few niggles, like using READ_ONCE() on sched_max_numa_distance
-without using WRITE_ONCE() (see below) and having
-sched_domains_numa_distance and sched_domains_numa_masks separate RCU
-variables (that could go side-ways if there were a function using both,
-afaict there isn't and I couldn't be bothered changing that, but it's
-something to keep in mind).
-
-I'll go queue these, thanks!
-
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -1259,11 +1259,10 @@ static bool numa_is_active_node(int nid,
- 
- /* Handle placement on systems where not all nodes are directly connected. */
- static unsigned long score_nearby_nodes(struct task_struct *p, int nid,
--					int maxdist, bool task)
-+					int lim_dist, bool task)
- {
- 	unsigned long score = 0;
--	int node;
--	int sys_max_dist;
-+	int node, max_dist;
- 
- 	/*
- 	 * All nodes are directly connected, and the same distance
-@@ -1273,7 +1272,7 @@ static unsigned long score_nearby_nodes(
- 		return 0;
- 
- 	/* sched_max_numa_distance may be changed in parallel. */
--	sys_max_dist = READ_ONCE(sched_max_numa_distance);
-+	max_dist = READ_ONCE(sched_max_numa_distance);
- 	/*
- 	 * This code is called for each node, introducing N^2 complexity,
- 	 * which should be ok given the number of nodes rarely exceeds 8.
-@@ -1286,7 +1285,7 @@ static unsigned long score_nearby_nodes(
- 		 * The furthest away nodes in the system are not interesting
- 		 * for placement; nid was already counted.
- 		 */
--		if (dist >= sys_max_dist || node == nid)
-+		if (dist >= max_dist || node == nid)
- 			continue;
- 
- 		/*
-@@ -1296,8 +1295,7 @@ static unsigned long score_nearby_nodes(
- 		 * "hoplimit", only nodes closer by than "hoplimit" are part
- 		 * of each group. Skip other nodes.
- 		 */
--		if (sched_numa_topology_type == NUMA_BACKPLANE &&
--					dist >= maxdist)
-+		if (sched_numa_topology_type == NUMA_BACKPLANE && dist >= lim_dist)
- 			continue;
- 
- 		/* Add up the faults from nearby nodes. */
-@@ -1315,8 +1313,8 @@ static unsigned long score_nearby_nodes(
- 		 * This seems to result in good task placement.
- 		 */
- 		if (sched_numa_topology_type == NUMA_GLUELESS_MESH) {
--			faults *= (sys_max_dist - dist);
--			faults /= (sys_max_dist - LOCAL_DISTANCE);
-+			faults *= (max_dist - dist);
-+			faults /= (max_dist - LOCAL_DISTANCE);
- 		}
- 
- 		score += faults;
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -1927,7 +1927,7 @@ void sched_init_numa(int offline_node)
- 	sched_domain_topology = tl;
- 
- 	sched_domains_numa_levels = nr_levels;
--	sched_max_numa_distance = sched_domains_numa_distance[nr_levels - 1];
-+	WRITE_ONCE(sched_max_numa_distance, sched_domains_numa_distance[nr_levels - 1]);
- 
- 	init_numa_topology_type(offline_node);
- }
+Josef 
