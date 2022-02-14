@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C71C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 452FAC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344724AbiBNKA6 (ORCPT
+        id S1344698AbiBNKAz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:00:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43284 "EHLO
+        Mon, 14 Feb 2022 05:00:55 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343955AbiBNJ5H (ORCPT
+        with ESMTP id S1345589AbiBNJ47 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:57:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349A560D91;
-        Mon, 14 Feb 2022 01:45:49 -0800 (PST)
+        Mon, 14 Feb 2022 04:56:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B05A83036;
+        Mon, 14 Feb 2022 01:45:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE356B80DC4;
-        Mon, 14 Feb 2022 09:45:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB7DFC340EF;
-        Mon, 14 Feb 2022 09:45:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8A4D61237;
+        Mon, 14 Feb 2022 09:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0853C340E9;
+        Mon, 14 Feb 2022 09:45:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831946;
-        bh=FAOqEsMMUVuOXaN5cnfrSyFfLgufg71f4JFXjgvJIqU=;
+        s=korg; t=1644831940;
+        bh=c6PIy4SprYdVh444PBOUULKcNofHrxD6+9VvMSku1TU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=01a/fmc7NZIwi/4BCwbx81xcXb9Shh4sve8DtnmYaK00XXQddr098mP335Q+cvKSY
-         3dYIxILw/yMuj++pw7ge0jE6uocWw9HoxZka1aOQwlIJ4rOwCe/nE+IUgoFvGUYRpF
-         UPoeMXkh43InNvt7ymvhrU8TL4viBicfFqeUYmxE=
+        b=R0yMobZ+ie1sMnjaXbYNqkhJz//cSyajfhFvfV2Xdxo/qW0qnkxeWx3npptiGzNA7
+         JVv5TcIJB4VbOql8x+M0JhZg09dS8VS+H8xh7BPQR4WkcHrCrSS7Oe6UX4oga444gW
+         jHcJMMpSs8HYKoPrC+u/vzX5PCC0l/nbxtTniPFk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andrey Skvortsov <andrej.skvortzov@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.15 007/172] mmc: core: Wait for command setting Power Off Notification bit to complete
-Date:   Mon, 14 Feb 2022 10:24:25 +0100
-Message-Id: <20220214092506.609357198@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Berger <stefanb@linux.ibm.com>,
+        Christian Brauner <brauner@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.15 005/172] ima: Do not print policy rule with inactive LSM labels
+Date:   Mon, 14 Feb 2022 10:24:23 +0100
+Message-Id: <20220214092506.545330621@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,62 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+From: Stefan Berger <stefanb@linux.ibm.com>
 
-commit 379f56c24e698f14242f532b1d0a0f1747725e08 upstream.
+commit 89677197ae709eb1ab3646952c44f6a171c9e74c upstream.
 
-SD card is allowed to signal busy on DAT0 up to 1s after the
-CMD49. According to SD spec (version 6.0 section 5.8.1.3) first host
-waits until busy of CMD49 is released and only then polls Power
-Management Status register up to 1s until the card indicates ready to
-power off.
+Before printing a policy rule scan for inactive LSM labels in the policy
+rule. Inactive LSM labels are identified by args_p != NULL and
+rule == NULL.
 
-Without waiting for busy before polling status register sometimes card
-becomes unresponsive and system fails to suspend:
-
-  [  205.907459] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-  [  206.421274] sunxi-mmc 1c0f000.mmc: data error, sending stop command
-  [  206.421321] sunxi-mmc 1c0f000.mmc: send stop command failed
-  [  206.421347] mmc0: error -110 reading status reg of PM func
-  [  206.421366] PM: dpm_run_callback(): mmc_bus_suspend+0x0/0x74 returns -110
-  [  206.421402] mmcblk mmc0:aaaa: PM: failed to suspend async: error -110
-  [  206.437064] PM: Some devices failed to suspend, or early wake event detected
-
-Tested with Sandisk Extreme PRO A2 64GB on Allwinner A64 system.
-
-Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Fixes: 2c5d42769038 ("mmc: core: Add support for Power Off Notification for SD cards")
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220115121447.641524-1-andrej.skvortzov@gmail.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fixes: 483ec26eed42 ("ima: ima/lsm policy rule loading logic bug fixes")
+Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+Cc: <stable@vger.kernel.org> # v5.6+
+Acked-by: Christian Brauner <brauner@kernel.org>
+[zohar@linux.ibm.com: Updated "Fixes" tag]
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/sd.c |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ security/integrity/ima/ima_policy.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/mmc/core/sd.c
-+++ b/drivers/mmc/core/sd.c
-@@ -66,7 +66,7 @@ static const unsigned int sd_au_size[] =
- 		__res & __mask;						\
- 	})
+--- a/security/integrity/ima/ima_policy.c
++++ b/security/integrity/ima/ima_policy.c
+@@ -1852,6 +1852,14 @@ int ima_policy_show(struct seq_file *m,
  
--#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 2000
-+#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 1000
- #define SD_WRITE_EXTR_SINGLE_TIMEOUT_MS 1000
+ 	rcu_read_lock();
  
- struct sd_busy_data {
-@@ -1663,6 +1663,12 @@ static int sd_poweroff_notify(struct mmc
- 		goto out;
- 	}
- 
-+	/* Find out when the command is completed. */
-+	err = mmc_poll_for_busy(card, SD_WRITE_EXTR_SINGLE_TIMEOUT_MS, false,
-+				MMC_BUSY_EXTR_SINGLE);
-+	if (err)
-+		goto out;
++	/* Do not print rules with inactive LSM labels */
++	for (i = 0; i < MAX_LSM_RULES; i++) {
++		if (entry->lsm[i].args_p && !entry->lsm[i].rule) {
++			rcu_read_unlock();
++			return 0;
++		}
++	}
 +
- 	cb_data.card = card;
- 	cb_data.reg_buf = reg_buf;
- 	err = __mmc_poll_for_busy(card, SD_POWEROFF_NOTIFY_TIMEOUT_MS,
+ 	if (entry->action & MEASURE)
+ 		seq_puts(m, pt(Opt_measure));
+ 	if (entry->action & DONT_MEASURE)
 
 
