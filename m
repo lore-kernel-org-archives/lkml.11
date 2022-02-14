@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 812D4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8212C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232736AbiBNJeI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:34:08 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43072 "EHLO
+        id S244000AbiBNJeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:34:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243879AbiBNJdZ (ORCPT
+        with ESMTP id S243834AbiBNJd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:33:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6C4AE59;
-        Mon, 14 Feb 2022 01:31:57 -0800 (PST)
+        Mon, 14 Feb 2022 04:33:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C6FAE5E;
+        Mon, 14 Feb 2022 01:32:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A1060F8F;
-        Mon, 14 Feb 2022 09:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2385C36AE7;
-        Mon, 14 Feb 2022 09:31:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EE91B80A0A;
+        Mon, 14 Feb 2022 09:32:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3CA7C340E9;
+        Mon, 14 Feb 2022 09:31:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831116;
-        bh=2gge4O5EMd2sOxc5pLIMQF4jXVkp7Vr1+Gj3J7QqJiE=;
+        s=korg; t=1644831119;
+        bh=xzeq+EGNmCaiYAud31itFAruvzeWe7Bm7g4rLQpNoro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZkXePqPYSf4ZIjuG/DT201PtpffdMMm9kaPbXwEeCpuM2fgd5evC/K5CdzkPESZPC
-         +KlZ1nJFwFb+yky9z/9pBX2nf6zBXVayF5OwU0ZzKz+xQIR8EgBuiVUW3KznzGfQqB
-         gbbjY2yyng0qqfV0IJqSparKOS7kBRUMXY+keLbE=
+        b=v9Ua82wJW7PHGNdq170XkkxGo3X50ghDE/5dO2OfM6IbRCywae2e+CbxX+zObg6YZ
+         k16RK8dfVkU6pgddhYg9SJgEZ8WNDJYto3ZuGljn3/9/goaELUrrj68TAAQITXnw9l
+         qpjC6gx6jZqqnUb87iPmxuuKKQ37VZv6Taesx6RU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
-Subject: [PATCH 4.14 36/44] usb: gadget: rndis: check size of RNDIS_MSG_SET command
-Date:   Mon, 14 Feb 2022 10:25:59 +0100
-Message-Id: <20220214092449.076117393@linuxfoundation.org>
+        stable@vger.kernel.org, Cameron Williams <cang1@live.co.uk>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 37/44] USB: serial: ftdi_sio: add support for Brainboxes US-159/235/320
+Date:   Mon, 14 Feb 2022 10:26:00 +0100
+Message-Id: <20220214092449.107665232@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092447.897544753@linuxfoundation.org>
 References: <20220214092447.897544753@linuxfoundation.org>
@@ -48,43 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Cameron Williams <cang1@live.co.uk>
 
-commit 38ea1eac7d88072bbffb630e2b3db83ca649b826 upstream.
+commit fbb9b194e15a63c56c5664e76ccd0e85c6100cea upstream.
 
-Check the size of the RNDIS_MSG_SET command given to us before
-attempting to respond to an invalid message size.
+This patch adds support for the Brainboxes US-159, US-235 and US-320
+USB-to-Serial devices.
 
-Reported-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc: stable@kernel.org
-Tested-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/rndis.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/usb/serial/ftdi_sio.c     |    3 +++
+ drivers/usb/serial/ftdi_sio_ids.h |    3 +++
+ 2 files changed, 6 insertions(+)
 
---- a/drivers/usb/gadget/function/rndis.c
-+++ b/drivers/usb/gadget/function/rndis.c
-@@ -640,14 +640,17 @@ static int rndis_set_response(struct rnd
- 	rndis_set_cmplt_type *resp;
- 	rndis_resp_t *r;
- 
-+	BufLength = le32_to_cpu(buf->InformationBufferLength);
-+	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
-+	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
-+	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
-+		    return -EINVAL;
-+
- 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
- 	if (!r)
- 		return -ENOMEM;
- 	resp = (rndis_set_cmplt_type *)r->buf;
- 
--	BufLength = le32_to_cpu(buf->InformationBufferLength);
--	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
--
- #ifdef	VERBOSE_DEBUG
- 	pr_debug("%s: Length: %d\n", __func__, BufLength);
- 	pr_debug("%s: Offset: %d\n", __func__, BufOffset);
+--- a/drivers/usb/serial/ftdi_sio.c
++++ b/drivers/usb/serial/ftdi_sio.c
+@@ -964,6 +964,7 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_023_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_VX_034_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_101_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_159_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_3_PID) },
+@@ -972,12 +973,14 @@ static const struct usb_device_id id_tab
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_6_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_7_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_160_8_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_235_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_257_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_2_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_3_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_279_4_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_313_PID) },
++	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_320_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_324_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_1_PID) },
+ 	{ USB_DEVICE(BRAINBOXES_VID, BRAINBOXES_US_346_2_PID) },
+--- a/drivers/usb/serial/ftdi_sio_ids.h
++++ b/drivers/usb/serial/ftdi_sio_ids.h
+@@ -1506,6 +1506,9 @@
+ #define BRAINBOXES_VX_023_PID		0x1003 /* VX-023 ExpressCard 1 Port RS422/485 */
+ #define BRAINBOXES_VX_034_PID		0x1004 /* VX-034 ExpressCard 2 Port RS422/485 */
+ #define BRAINBOXES_US_101_PID		0x1011 /* US-101 1xRS232 */
++#define BRAINBOXES_US_159_PID		0x1021 /* US-159 1xRS232 */
++#define BRAINBOXES_US_235_PID		0x1017 /* US-235 1xRS232 */
++#define BRAINBOXES_US_320_PID		0x1019 /* US-320 1xRS422/485 */
+ #define BRAINBOXES_US_324_PID		0x1013 /* US-324 1xRS422/485 1Mbaud */
+ #define BRAINBOXES_US_606_1_PID		0x2001 /* US-606 6 Port RS232 Serial Port 1 and 2 */
+ #define BRAINBOXES_US_606_2_PID		0x2002 /* US-606 6 Port RS232 Serial Port 3 and 4 */
 
 
