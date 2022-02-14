@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B95AFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EECDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241253AbiBNJyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:54:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33178 "EHLO
+        id S1343599AbiBNJyJ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:54:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245617AbiBNJui (ORCPT
+        with ESMTP id S1343510AbiBNJur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:50:38 -0500
+        Mon, 14 Feb 2022 04:50:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F39652E8;
-        Mon, 14 Feb 2022 01:41:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0208654BE;
+        Mon, 14 Feb 2022 01:41:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2E1261172;
-        Mon, 14 Feb 2022 09:41:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98936C340E9;
-        Mon, 14 Feb 2022 09:41:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BE3461190;
+        Mon, 14 Feb 2022 09:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD5BC340E9;
+        Mon, 14 Feb 2022 09:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831688;
-        bh=OHldYB6mu4betx+t+BXF4bKjjju8Vk//4Z3uCKR9SHs=;
+        s=korg; t=1644831699;
+        bh=tvJGlZcKHMJrtQcp+CZ4xSeF/sEJb4vveouu65YICaw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U4+2cPBMAY3OJzwYbvlmJMmNe7vhZB7gxUJMbBxvCJmGHyNfjp6pNzxJtnXBPZHlB
-         ZlY8xbOs07u8+XqRA7jJEBQxf3ZGAquxGCA06hbJhs8dmtWsSaax6qG828mF3H3sNZ
-         dMVb219kiChVwd4jsskyhE/5VurqhWX4kG0eYyQ8=
+        b=yvD08sAeQ3rbnjEcNH0gFGCXkmieTb5O6S6703LJ2WMGY6JUV3R7snXFYHqPawQ+k
+         Qzy9I7Pro2WZ10DsONQE2eJy8bnkJaaBSW/60KR04Ew1Q+WyM54o6XCzvpHFz3ejXt
+         +ynAIJa8WZe4/zuj9l4Z3Yc70Sg2+hT0jbkExYMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dongjin Kim <tobetter@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 063/116] arm64: dts: meson-g12b-odroid-n2: fix typo dio2133
-Date:   Mon, 14 Feb 2022 10:26:02 +0100
-Message-Id: <20220214092500.928145195@linuxfoundation.org>
+Subject: [PATCH 5.10 066/116] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
+Date:   Mon, 14 Feb 2022 10:26:05 +0100
+Message-Id: <20220214092501.027060564@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,45 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongjin Kim <tobetter@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit bc41099f060ea74ac8d02c51bd0f5f46d969bedf ]
+[ Upstream commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc ]
 
-Typo in audio amplifier node, dioo2133 -> dio2133
+Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
+suspended to idle") made acpi_ec_dispatch_gpe() check
+pm_wakeup_pending(), but that is before canceling the SCI wakeup,
+so pm_wakeup_pending() is always true.  This causes the loop in
+acpi_ec_dispatch_gpe() to always terminate after one iteration which
+may not be correct.
 
-Signed-off-by: Dongjin Kim <tobetter@gmail.com>
-Fixes: ef599f5f3e10 ("arm64: dts: meson: convert ODROID-N2 to dtsi")
-Fixes: 67d141c1f8e6 ("arm64: dts: meson: odroid-n2: add jack audio output support")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/YfKQJejh0bfGYvof@anyang
+Address this issue by canceling the SCI wakeup earlier, from
+acpi_ec_dispatch_gpe() itself.
+
+Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/acpi/ec.c    | 10 ++++++++++
+ drivers/acpi/sleep.c | 14 ++++----------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-index b9b8cd4b5ba9d..87e8e64ad5cae 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
-@@ -15,7 +15,7 @@ aliases {
- 		ethernet0 = &ethmac;
- 	};
+diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
+index 3f2e5ea9ab6b7..8347eaee679c8 100644
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -2064,6 +2064,16 @@ bool acpi_ec_dispatch_gpe(void)
+ 	if (acpi_any_gpe_status_set(first_ec->gpe))
+ 		return true;
  
--	dioo2133: audio-amplifier-0 {
-+	dio2133: audio-amplifier-0 {
- 		compatible = "simple-audio-amplifier";
- 		enable-gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_HIGH>;
- 		VCC-supply = <&vcc_5v>;
-@@ -215,7 +215,7 @@ sound {
- 		audio-widgets = "Line", "Lineout";
- 		audio-aux-devs = <&tdmout_b>, <&tdmout_c>, <&tdmin_a>,
- 				 <&tdmin_b>, <&tdmin_c>, <&tdmin_lb>,
--				 <&dioo2133>;
-+				 <&dio2133>;
- 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
- 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
- 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
++	/*
++	 * Cancel the SCI wakeup and process all pending events in case there
++	 * are any wakeup ones in there.
++	 *
++	 * Note that if any non-EC GPEs are active at this point, the SCI will
++	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
++	 * should be missed by canceling the wakeup here.
++	 */
++	pm_system_cancel_wakeup();
++
+ 	/*
+ 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
+ 	 * to allow the caller to process events properly after that.
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 503935b1deeb1..e2614ea820bb8 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -1012,21 +1012,15 @@ static bool acpi_s2idle_wake(void)
+ 			return true;
+ 		}
+ 
+-		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
++		/*
++		 * Check non-EC GPE wakeups and if there are none, cancel the
++		 * SCI-related wakeup and dispatch the EC GPE.
++		 */
+ 		if (acpi_ec_dispatch_gpe()) {
+ 			pm_pr_dbg("ACPI non-EC GPE wakeup\n");
+ 			return true;
+ 		}
+ 
+-		/*
+-		 * Cancel the SCI wakeup and process all pending events in case
+-		 * there are any wakeup ones in there.
+-		 *
+-		 * Note that if any non-EC GPEs are active at this point, the
+-		 * SCI will retrigger after the rearming below, so no events
+-		 * should be missed by canceling the wakeup here.
+-		 */
+-		pm_system_cancel_wakeup();
+ 		acpi_os_wait_events_complete();
+ 
+ 		/*
 -- 
 2.34.1
 
