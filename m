@@ -2,86 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEED2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D414C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiBNVC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:02:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41834 "EHLO
+        id S230088AbiBNVDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:03:06 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiBNVCx (ORCPT
+        with ESMTP id S230083AbiBNVC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:02:53 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C0FB18A5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:02:44 -0800 (PST)
-Received: from mail-wm1-f46.google.com ([209.85.128.46]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MpD39-1o4YKc2XHj-00qiib for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022
- 20:13:29 +0100
-Received: by mail-wm1-f46.google.com with SMTP id i19so8759314wmq.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:13:29 -0800 (PST)
-X-Gm-Message-State: AOAM531Fmh+lmrrhR9lzWUPcnsoU9mOCFQfwhYEbYT1Z59tFDjHstobM
-        LEYJuS4Q9SgK42RA1KiY9WFbXLvTL/7lc+FmcXU=
-X-Google-Smtp-Source: ABdhPJyJlY94tBVkGpgY9F9Fep611CS7TPV4PO1eAfR5mWbxDC/4GiIdtTlhmZnlrcELAnMXaJ51at1SiHDsXIIGmao=
-X-Received: by 2002:a05:600c:2108:b0:34e:870:966e with SMTP id
- u8-20020a05600c210800b0034e0870966emr84692wml.173.1644866009298; Mon, 14 Feb
- 2022 11:13:29 -0800 (PST)
+        Mon, 14 Feb 2022 16:02:57 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17095D21EB;
+        Mon, 14 Feb 2022 13:02:47 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 719871F43907
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644869128;
+        bh=1uxuJpUNgwUp11TPN1NKA7OMJKeBwVw0ZqlthMDA3F0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dgCpr307YqBKISxEPPv8wm5ciiXYOnfRHSotaSu8avXJ+gv4zXKhvUIayUkFttVLP
+         ep4Nb0BaR5hda+XrvZQUeKxpuEyIx7L0lpMzuRxSLrk+qTk6o7gx6B3+2xKreJmaVK
+         Wio52gU7WsIdGBoqwAiZ0Yl3s1PeRYSUz1tHEuUUXOIGuYPlTK1rAZ5cL6KWbFATSh
+         MW9TDixQhqFuKt6rch0Z0ul1nfbzq7CKZ5aOYs3EBnrW10ssQv5fb7+Ica6EWBVAlo
+         wRAFjrJ9vB2c45YKkADeGEFcUfEmJPaJd3DeZYAX6Z4yMIB3Kc7k3HcxCc36pwj8ho
+         YYno4Uc8EVAiQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Robert Foss <robert.foss@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>
+Cc:     kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH v3] arm64: dts: mt8183: jacuzzi: Fix bus properties in anx's DSI endpoint
+Date:   Mon, 14 Feb 2022 15:05:07 -0500
+Message-Id: <20220214200507.2500693-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220207184652.1218447-1-michael@walle.cc> <YgpkCyoSMg5RYfkO@google.com>
- <YgpkQMbhWAJG6oCh@google.com> <CAK8P3a0UWO=h6K4NpzCVC2vbOvThJH28GM5ddm9U1crr1Su7vQ@mail.gmail.com>
- <YgqE/OvNDco5wEY3@google.com>
-In-Reply-To: <YgqE/OvNDco5wEY3@google.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 14 Feb 2022 20:13:13 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1aqcsD-fGBgAmsi0qf9Td_y3Ry+o32Z1fU8H3qmEn0GA@mail.gmail.com>
-Message-ID: <CAK8P3a1aqcsD-fGBgAmsi0qf9Td_y3Ry+o32Z1fU8H3qmEn0GA@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: add myself as a maintainer for the sl28cpld
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Michael Walle <michael@walle.cc>,
-        SoC Team <soc@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Olof Johansson <olof@lixom.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Ng+3bxaAbzBc0Zs4kN+g7FnCrLfcLMjKqnfFATWcrzLxvMre9JE
- 7E4ViqVNNT9AVrx0OQwVYEjIoKt8ffZiFAIV3V9gvLD+McWqPiVgh92gXJEF8sewnYAgVar
- PwC3j/8xPY7Y7Lueu0erkkbdHSuz9vQAXNJHk5YYTMOgLXhsRbRmXnKGFdughffGe5q9gM6
- OAknnDeqabR8/kxYurxFQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:K5Oyuej6exs=:5FF5EtVQ5c+Tc/ZcT8TVh6
- KJ3GzdE2ZHS9oZ7h4nc9Ua/8Z7chA7wpcUQ2aMV6TiI4jZbQUtyeQM2Nu790a62A/f+BmnBUH
- Wc4yMDk+EYkGPT2Jqx8YHGBhDHWPWWpGKxBnsexHAQLgCBq7ZeMaVnZft3kSsgw8W0n4TCKFb
- xSeRgcU7AVxPFiDmbGPRALVOjgRQbB3E9JtZMOoR53PeJArhGlXPIwpq63PRmgW3IOfYfNhlw
- ZMT1cwYqJEp1UU5qp3UKqUZKsefEtZGZMHSVDLd2SshAEDAgYpqwK1RpZb95EvlyBIWFHgGN3
- qTM9yvyaGH5xHjUUV0xDf/Y57KTUxWCVj6KTZ9bubjmb0rLw3qYDr3D4N/0ieXldPzJ29BAD/
- KvVtICwsJMdDgxsGqMZDDx8Qh7qiDQLgwTUdzBFjpKEtCNdAxLcMdF33ozdKGRGcHsovwSR9v
- 75urjBhekDNJXJ6WIaao3+OAT1U1WodPlEhZzzXgCgZlxCrS2N/4MAaBvVJSNkVKc+rC4J0sj
- JKbus9YNVRzKFFjDnBp4WbEsucp0QKra3QdrF8w8Vlqse3CiKt3dQmPHGfGwqO2m/FzcJ+DCi
- vez/asswHspuR6FLuzFj1KArJ3SmV8Sd5pqVG5ggmSCKEyaVOkcfy8r3qwjXrsxKrrzEHD54K
- fqCBzkGvoqFmN3/YbXl36Qhw88fTv2ZNpomqsMj2InAUqnBLH8aExZqy38zib50dnfMU=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 5:36 PM Lee Jones <lee.jones@linaro.org> wrote:
-> On Mon, 14 Feb 2022, Arnd Bergmann wrote:
-> > On Mon, Feb 14, 2022 at 3:16 PM Lee Jones <lee.jones@linaro.org> wrote:
-> > >
-> > > Hold on, you're not going to get many Acks if you don't send it to the
-> > > other subsystem maintainers. :)
-> >
-> > I've already applied this one through the soc tree.
->
-> You did?  I missed the acceptance email.
+mt8183-kukui-jacuzzi has an anx7625 bridge connected to the output of
+its DSI host. However, after commit fd0310b6fe7d ("drm/bridge: anx7625:
+add MIPI DPI input feature"), a bus-type property started being required
+in the endpoint node by the driver to indicate whether it is DSI or DPI.
 
-I see now that the automated mails only get sent the submitter and
-the list that is owned by patchwork. I completely missed how this
-was sent to multiple maintainers and just grabbed it from patchwork
-along with some other maintainer changes I picked up.
+Add the missing bus-type property and set it to 5
+(V4L2_FWNODE_BUS_TYPE_PARALLEL) so that the driver has its input
+configured to DSI and the display pipeline can probe correctly.
 
-> It would have been nice to give the other maintainers a chance to look
-> at it first, but I guess it's not a big deal in the great scheme.
+While at it, also set the data-lanes property that was also introduced
+in that same commit, so that we don't rely on the default value.
 
-Right, I need to find a better process to look at the actual emails
-when going through patchwork. Sorry about that.
+Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-         Arnd
+---
+v2: https://lore.kernel.org/all/20220201174643.843102-1-nfraprado@collabora.com
+v1: https://lore.kernel.org/all/20220120224204.773117-1-nfraprado@collabora.com
+
+Changes in v3:
+- Added missing Reviewed-by
+
+Changes in v2:
+- (thanks Rob) Use proper format when refering to commit in commit
+  message as pointed out by checkpatch
+
+ arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+index 8f7bf33f607d..e8f133dc96b9 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+@@ -171,6 +171,8 @@ port@0 {
+ 
+ 			anx7625_in: endpoint {
+ 				remote-endpoint = <&dsi_out>;
++				bus-type = <5>;
++				data-lanes = <0 1 2 3>;
+ 			};
+ 		};
+ 
+-- 
+2.35.1
+
