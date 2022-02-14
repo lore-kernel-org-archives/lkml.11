@@ -2,117 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6A8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B7CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 13:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348696AbiBNNzR (ORCPT
+        id S1349104AbiBNN4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 08:55:17 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35220 "EHLO
+        Mon, 14 Feb 2022 08:56:19 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242299AbiBNNzO (ORCPT
+        with ESMTP id S233881AbiBNN4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 08:55:14 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4D065A2;
-        Mon, 14 Feb 2022 05:55:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644846906; x=1676382906;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yguvRxMRnV5IB+hh/M/twMshNoTTuG75v2iSOANJTMY=;
-  b=Zqa4zMHVJSnp5exm5GP2FAV9TXs8EHVaGnzNEJYK+D14WfgWNaD39JHY
-   s6W8tnZwxdEfgxF8cqpJWNWgGC2C8pBjnrWKgsSV3nRJECpeaq4M4UpWA
-   TI+e6X0GOX2oLWWDt37zi5TlyDUDkHgpqJHFDYVLW8EXiZ1SrqJ8CgKVo
-   NhosWtR7D5R8tFKTKIzInFT8hkpy0X4rwFpS52Xsa5cKT4UQakpMb8D3F
-   Q4mrhc4cDHk5xUEGhjmM6mCQM23HIlLvmXNdL8x5jLPd7j77Qn29ynQiX
-   wKRgf0kf6ZxR7pHhyzRaEBojONtLptMYathi4vowR5Byz8WBTG371MWVn
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="247686644"
+        Mon, 14 Feb 2022 08:56:15 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7792065A2;
+        Mon, 14 Feb 2022 05:56:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1644846966; x=1676382966;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2adZHzbNbrqAYiiCJa+cCCwwilXc4/CtmowXbjAh+IU=;
+  b=AWzcwtBz3oV6BFPBTVu2fnRTUKg8ycO8eZHxvor2ZkOqR5j5xVuf7Yr7
+   T/F7PvmY5U4+9eyBuyWy+Ufl1yGhYsLJ5+sc4fqmyMx7EYOPS/V4AbgCd
+   8Q7NQkVWke98QdhFzLH/F/gmtrtpwGdcQqTvrKVKOgFOZZmGUEilgSGer
+   bOK1mV2LBxabBgBqqxO1ddmT0lpq1+pgY/GXQijdUJoTTe7d9wjo5n3FD
+   rGsOwvdBcnMJXnnez5jL8TTh60lz9lPhr2oHBBMwAwqqr5Y2S5fps2EIb
+   qvtFMCrh0kljVi/i1t5X/jUg1uA6toM3Qu9CDYIf74/PEfD7nrb6c1oju
+   w==;
+IronPort-SDR: 4TxOMrANn67xj1ALI0ajgUT2e4VduH1rcREVUcrtTcLCrC4S1myXJ+J/PA322ApiM1bIsPgoM/
+ VRkONhRHqzw4KrJjbi6I5HHSzj+E/fN4SxlXxtQ/QHVyN0eoHFR9gTKli3212vBAwCdO3DX/XC
+ XcufeG7L7gKvk9xEtHTIoX2zE6YdWQFm2+pJAi0o0UmGC1jwpXbN07lTJsxsTm7rNTufGFakU1
+ JzmPsaT4/A27DZCpbTHU3D9SNKUjBeJgT0xeNTJg/toi8MzQBRAS2nrPwgLc1xlwLlF00dGtP8
+ J8SX+m39W+Uo2QqeI7nI0drN
 X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="247686644"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 05:55:06 -0800
-X-IronPort-AV: E=Sophos;i="5.88,368,1635231600"; 
-   d="scan'208";a="587214685"
-Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.59])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 05:55:03 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nJbnr-004YcY-FU;
-        Mon, 14 Feb 2022 15:54:07 +0200
-Date:   Mon, 14 Feb 2022 15:54:07 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Miguel Ojeda <ojeda@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Gary Guo <gary@garyguo.net>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4 12/20] vsprintf: add new `%pA` format specifier
-Message-ID: <Ygpe/zalrTRFpNwg@smile.fi.intel.com>
-References: <20220212130410.6901-1-ojeda@kernel.org>
- <20220212130410.6901-13-ojeda@kernel.org>
- <YgosclY9ebD3t020@smile.fi.intel.com>
- <CANiq72mwkSo-W3QcyMnQ-o1COA5YJt1Ab9Xti7cdG6Krz3Sj7w@mail.gmail.com>
+   d="scan'208";a="85633717"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Feb 2022 06:56:05 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 14 Feb 2022 06:56:04 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Mon, 14 Feb 2022 06:55:58 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <brgl@bgdev.pl>, <robh+dt@kernel.org>,
+        <jassisinghbrar@gmail.com>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <geert@linux-m68k.org>,
+        <krzysztof.kozlowski@canonical.com>, <linux-gpio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>
+CC:     <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>
+Subject: [PATCH v7 00/11] Update the Icicle Kit device tree
+Date:   Mon, 14 Feb 2022 13:58:30 +0000
+Message-ID: <20220214135840.168236-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANiq72mwkSo-W3QcyMnQ-o1COA5YJt1Ab9Xti7cdG6Krz3Sj7w@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 01:27:48PM +0100, Miguel Ojeda wrote:
-> On Mon, Feb 14, 2022 at 11:19 AM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > Not sure I understand this...
-> >
-> > ...together with this in the current SoB chain.
-> 
-> From my reading of `Documentation/process/submitting-patches.rst`,
-> this is the case I have to use:
-> 
-> ```
-> Example of a patch submitted by a Co-developed-by: author::
-> 
->     From: From Author <from@author.example.org>
-> 
->     <changelog>
-> 
->     Co-developed-by: Random Co-Author <random@coauthor.example.org>
->     Signed-off-by: Random Co-Author <random@coauthor.example.org>
->     Signed-off-by: From Author <from@author.example.org>
->     Co-developed-by: Submitting Co-Author <sub@coauthor.example.org>
->     Signed-off-by: Submitting Co-Author <sub@coauthor.example.org>
-> ```
-> 
-> Do you think another case applies?
+From: Conor Dooley <conor.dooley@microchip.com>
 
-I see, thanks for elaboration!
+This series updates the Microchip Icicle Kit device tree by adding a
+host of peripherals, and some updates to the memory map. In addition,
+the device tree has been split into a third part, which contains "soft"
+peripherals that are in the fpga fabric.
 
-...
+Several of the entries are for peripherals that have not get had their
+drivers upstreamed, so in those cases the dt bindings are included where
+appropriate in order to avoid the many "DT compatible string <x> appears
+un-documented" errors.
 
-> > I'm wondering if you considered to use %pV.
-> 
-> Please see Rasmus' reply, i.e. we are using Rust's own formatting
-> machinery (the compiler validates the format string and creates an
-> object that represents the formatting to be done).
+Depends on mpfs clock driver binding (on clk/next) to provide 
+dt-bindings/clock/microchip,mpfs-clock.h for the device tree
+and on the other changes to the icicle/mpfs device tree from geert
+that are already in linux/riscv/for-next.
 
-Yes, I read that.
+Additionally, the interrupt-extended warnings on the plic/clint are 
+cleared by [1] & [2].
+
+[1] https://lore.kernel.org/linux-riscv/cover.1639744468.git.geert@linux-m68k.org/
+[2] https://lore.kernel.org/linux-riscv/cover.1639744106.git.geert@linux-m68k.org/
+
+Changes from v6:
+- Dropped i2c patch, as its in i2c-next
+- Added ack on gpio, reviewed-by on rtc
+- Dropped child nodes from sysctrl binding entirely, added a link to
+  the online documenation for the services the system controller can
+  provide
+- Dropped the #pwm-cells and replaced with a ref, a la Krzysztof's
+  series
+
+Changes from v5:
+- reworded the descriptions in the pwm binding to (hopefully) add
+  clarity
+- added -mask to the custom properties and made them 32 bit
+- renamed the i2c binding to corei2c, since it is not mpfs specific
+- removed the child nodes of the system controller in example/dts &
+  will create them in the driver.
+  @Rob, I assume keeping them documented is the correct thing to do?
+- removed the dependancy on the clock binding from the examples
+- reformatted rtc interrupts as per Rob's suggestion
+
+Changes from v4:
+- dont include icicle_kit_defconfig, accidentally added in v3
+- drop prescaler from mpfs-rtc & calculate the value instead
+- use corei2c as a fallback device for mpfs-i2c
+- drop spi dt-binding (on spi-next)
+  commit 2da187304e556ac59cf2dacb323cc78ded988169
+- drop usb dt-binding (on usb-next)
+
+Changes from v3:
+- drop "mailbox: change mailbox-mpfs compatible string", already upstream:
+  commit f10b1fc0161cd99e ("mailbox: change mailbox-mpfs compatible string")
+- fix copy paste error in microchip,mpfs-mailbox dt-binding
+- remove whitespace in syscontroller dt entry
+
+Changes from v2:
+- dropped plic int header & corresponding defines in dts{,i}
+- use $ref to drmode in mpfs-musb binding
+- split changes to dts{,i} again: functional changes to existing
+  elements now are in a new patch
+- drop num-cs property in mpfs-spi binding
+- dont make the system controller a simple-mfd
+- move the separate bindings for rng/generic system services into the 
+  system controller binding
+- added an instance corei2c as i2c2 in the fabric dtsi
+- add version numbering to corepwm and corei2c compat string (-rtl-vN)
+
+Conor Dooley (11):
+  dt-bindings: soc/microchip: update syscontroller compatibles
+  dt-bindings: soc/microchip: add info about services to mpfs sysctrl
+  dt-bindings: rtc: add bindings for microchip mpfs rtc
+  dt-bindings: gpio: add bindings for microchip mpfs gpio
+  dt-bindings: pwm: add microchip corepwm binding
+  riscv: dts: microchip: use clk defines for icicle kit
+  riscv: dts: microchip: add fpga fabric section to icicle kit
+  riscv: dts: microchip: refactor icicle kit device tree
+  riscv: dts: microchip: update peripherals in icicle kit device tree
+  riscv: dts: microchip: add new peripherals to icicle kit device tree
+  MAINTAINERS: update riscv/microchip entry
+
+ .../bindings/gpio/microchip,mpfs-gpio.yaml    |  79 ++++++
+ ...ilbox.yaml => microchip,mpfs-mailbox.yaml} |   6 +-
+ .../bindings/pwm/microchip,corepwm.yaml       |  81 ++++++
+ .../bindings/rtc/microchip,mfps-rtc.yaml      |  58 ++++
+ .../microchip,mpfs-sys-controller.yaml        |  40 +++
+ ...icrochip,polarfire-soc-sys-controller.yaml |  35 ---
+ MAINTAINERS                                   |   2 +
+ .../dts/microchip/microchip-mpfs-fabric.dtsi  |  25 ++
+ .../microchip/microchip-mpfs-icicle-kit.dts   | 115 ++++++--
+ .../boot/dts/microchip/microchip-mpfs.dtsi    | 254 ++++++++++++++----
+ 10 files changed, 591 insertions(+), 104 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
+ rename Documentation/devicetree/bindings/mailbox/{microchip,polarfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} (82%)
+ create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+ create mode 100644 Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
+ delete mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
