@@ -2,85 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C73CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36CE3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 12:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352433AbiBNME6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 07:04:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33968 "EHLO
+        id S244456AbiBNMGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 07:06:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352513AbiBNMEn (ORCPT
+        with ESMTP id S231465AbiBNMGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 07:04:43 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B40062ADA
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:04:27 -0800 (PST)
-Received: from fraeml739-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jy2vB2rsnz67bH2;
-        Mon, 14 Feb 2022 20:04:06 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml739-chm.china.huawei.com (10.206.15.220) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 14 Feb 2022 13:04:24 +0100
-Received: from [10.47.81.62] (10.47.81.62) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.21; Mon, 14 Feb
- 2022 12:04:24 +0000
-Message-ID: <1da1252e-59d0-77d1-0419-242528739392@huawei.com>
-Date:   Mon, 14 Feb 2022 12:04:25 +0000
+        Mon, 14 Feb 2022 07:06:01 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE15B2706
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 04:05:53 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 5BD531EC01A8;
+        Mon, 14 Feb 2022 13:05:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1644840348;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:in-reply-to:
+         references; bh=Q2WswK2aoG0dYxQGFY7WgUEOKE8aFownjry5ISfZCc4=;
+        b=k66/h/tJtagFjbu2XaQqtQ0jqiMPjqSy6JQQgxkw4Rhax2OR1lpeiTstV4ozpf3nZKTm5N
+        09YTwBNdCLBMLRXIgaef3mySZi4SsNybw7MXEUr+aFxSoxO8AVBmPuN0EXlSJyZgSM0uqE
+        um1zGHN6ttnFiPEJmL6nUJOra64wCkg=
+Date:   Mon, 14 Feb 2022 13:05:49 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Andy Lutomirski <luto@kernel.org>,
+        =?utf-8?B?THXDrXM=?= Ferreira <contact@lsferreira.net>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [PATCH] x86/ptrace: Fix xfpregs_set()'s incorrect xmm clearing
+Message-ID: <YgpFnZpF01WwR8wU@zn.tnic>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH 2/2] perf jevents: Add support for HiSilicon CPA PMU
- aliasing
-To:     Qi Liu <liuqi115@huawei.com>, "will@kernel.org" <will@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-CC:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Linuxarm <linuxarm@huawei.com>,
-        Zhangshaokun <zhangshaokun@hisilicon.com>
-References: <20220214114228.40859-1-liuqi115@huawei.com>
- <20220214114228.40859-3-liuqi115@huawei.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <20220214114228.40859-3-liuqi115@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.81.62]
-X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/02/2022 11:42, Qi Liu wrote:
-> Add support for HiSilicon CPA PMU aliasing.
-> 
-> The kernel driver is in drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
-> 
-> Signed-off-by: Qi Liu<liuqi115@huawei.com>
+Lemme send it out as Luto looks busy.
 
-You realy should cc the perf tool list and maintainers there also.
+If there are no complaints I'll queue it in a couple of days...
 
-Reviewed-by: John Garry <john.garry@huawei.com>
+Thx.
 
-> +	},
-> +	{
-> +		"MetricExpr": "(p0_wr_dat * 64 + p0_rd_dat_64b * 64 + p0_rd_dat_32b * 32) / cpa_cycles",
-> +		"BriefDescription": "Average bandwidth of CPA Port 0",
-> +		"MetricGroup": "CPA",
+---
+From: Andy Lutomirski <luto@kernel.org>
+Date: Mon, 31 Jan 2022 12:38:47 -0800
+Subject: [PATCH] x86/ptrace: Fix xfpregs_set()'s incorrect xmm clearing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-nit: maybe this should have a more distrinct name
+xfpregs_set() handles 32-bit REGSET_XFP and 64-bit REGSET_FP. The actual
+code treats these regsets as modern FX state (i.e. the beginning part of
+XSTATE). The declarations of the regsets thought they were the legacy
+i387 format. The code thought they were the 32-bit (no xmm8..15) variant
+of XSTATE and, for good measure, made the high bits disappear by zeroing
+the wrong part of the buffer. The latter broke ptrace, and everything
+else confused anyone trying to understand the code. In particular, the
+nonsense definitions of the regsets confused me when I wrote this code.
 
-> +		"MetricName": "p0_avg_bw",
-> +		"Compat": "0x00000030",
+Clean this all up. Change the declarations to match reality (which
+shouldn't change the generated code, let alone the ABI) and fix
+xfpregs_set() to clear the correct bits and to only do so for 32-bit
+callers.
 
-JFYI, I have a rewrite of the perf tool system pmu metric support that 
-will not require us to add the compat here.
+Fixes: 6164331d15f7 ("x86/fpu: Rewrite xfpregs_set()")
+Reported-by: Luís Ferreira <contact@lsferreira.net>
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215524
+---
+ arch/x86/kernel/fpu/regset.c | 9 ++++-----
+ arch/x86/kernel/ptrace.c     | 4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
-> +		"Unit": "hisi_sicl,cpa"
+diff --git a/arch/x86/kernel/fpu/regset.c b/arch/x86/kernel/fpu/regset.c
+index 437d7c930c0b..75ffaef8c299 100644
+--- a/arch/x86/kernel/fpu/regset.c
++++ b/arch/x86/kernel/fpu/regset.c
+@@ -91,11 +91,9 @@ int xfpregs_set(struct task_struct *target, const struct user_regset *regset,
+ 		const void *kbuf, const void __user *ubuf)
+ {
+ 	struct fpu *fpu = &target->thread.fpu;
+-	struct user32_fxsr_struct newstate;
++	struct fxregs_state newstate;
+ 	int ret;
+ 
+-	BUILD_BUG_ON(sizeof(newstate) != sizeof(struct fxregs_state));
+-
+ 	if (!cpu_feature_enabled(X86_FEATURE_FXSR))
+ 		return -ENODEV;
+ 
+@@ -116,9 +114,10 @@ int xfpregs_set(struct task_struct *target, const struct user_regset *regset,
+ 	/* Copy the state  */
+ 	memcpy(&fpu->fpstate->regs.fxsave, &newstate, sizeof(newstate));
+ 
+-	/* Clear xmm8..15 */
++	/* Clear xmm8..15 for 32-bit callers */
+ 	BUILD_BUG_ON(sizeof(fpu->__fpstate.regs.fxsave.xmm_space) != 16 * 16);
+-	memset(&fpu->fpstate->regs.fxsave.xmm_space[8], 0, 8 * 16);
++	if (in_ia32_syscall())
++		memset(&fpu->fpstate->regs.fxsave.xmm_space[8*4], 0, 8 * 16);
+ 
+ 	/* Mark FP and SSE as in use when XSAVE is enabled */
+ 	if (use_xsave())
+diff --git a/arch/x86/kernel/ptrace.c b/arch/x86/kernel/ptrace.c
+index 6d2244c94799..8d2f2f995539 100644
+--- a/arch/x86/kernel/ptrace.c
++++ b/arch/x86/kernel/ptrace.c
+@@ -1224,7 +1224,7 @@ static struct user_regset x86_64_regsets[] __ro_after_init = {
+ 	},
+ 	[REGSET_FP] = {
+ 		.core_note_type = NT_PRFPREG,
+-		.n = sizeof(struct user_i387_struct) / sizeof(long),
++		.n = sizeof(struct fxregs_state) / sizeof(long),
+ 		.size = sizeof(long), .align = sizeof(long),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
+@@ -1271,7 +1271,7 @@ static struct user_regset x86_32_regsets[] __ro_after_init = {
+ 	},
+ 	[REGSET_XFP] = {
+ 		.core_note_type = NT_PRXFPREG,
+-		.n = sizeof(struct user32_fxsr_struct) / sizeof(u32),
++		.n = sizeof(struct fxregs_state) / sizeof(u32),
+ 		.size = sizeof(u32), .align = sizeof(u32),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
+-- 
+2.29.2
 
-Thanks,
-John
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
