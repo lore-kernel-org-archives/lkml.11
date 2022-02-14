@@ -2,137 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A32C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 21:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230351AbiBNVP6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 16:15:58 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55886 "EHLO
+        id S230388AbiBNVQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 16:16:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230349AbiBNVPg (ORCPT
+        with ESMTP id S230319AbiBNVQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 16:15:36 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0916811ADFE
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:15:28 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id j12so27852127ybh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 13:15:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=koOwKzeH7/Gb78FEuOvCok9kPJwObv2S7DVJdDdOgNA=;
-        b=Pb5dbCHSbOY7B3ORjcQJ4tOqYQjm9jFUDuW4A8Uw3ddfl/KioQspJ7vPApWeypuuyQ
-         AbdlnFPPC52dg3yNb0beEJdpRbmFdEDeTuxJF39E+eg6ecEa/6ji0TduWQr0JYt33wqk
-         F00WTtwEQGRE8fkzuYE19P4BzBBNjs+GOqaHl31cAznCEZMsRqDikQkTwDJclPuKCvxV
-         kmxmrEI4FfjSSPAK5el+JyX7Hj1ZqafjYSIjdKPhGDhpAMZDyhpvvBv0wjDJRI2gXsaV
-         ekGOhI3vLetimUVdXqmZTzeAxc7HUExrhEQoRc2Vs4Ips6kQQ/pBnxkN2I0ZLJPdeW+t
-         EH2g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=koOwKzeH7/Gb78FEuOvCok9kPJwObv2S7DVJdDdOgNA=;
-        b=Axf7HjDv5cfjksAAypCKQcOy9oa79Uosc7QYq3HUy/UYL1XU8dm5UuN3Lh52TEDW/Q
-         fSXtwXsFJAnMPRRdbAMtC4WJW14FmN33n1AqoTyRYES52W/m0hEQSz3b7YUKWfCwD6ND
-         +GPURdLHrH/hU0tOXn5ti1PKKeLfThCDjjOT8ifIck9llLpfQy5sI6gbej47yQ4KZyCW
-         TfpJuLvtj9ZabZM/FZ+j28oFSta4Se7uSi5GGSXc0jXHu0MT4bcWbLVuMS9MNxs3YrdT
-         zRONnrIRV9xmH29wOoxgAuoXmiBpfIVRgoNS48qquzyOffquqqEVY+9hoIlcXeFyn5Kg
-         ZN1g==
-X-Gm-Message-State: AOAM533wsFGhmQ8o0HlV7DWZOl5nMBaOUIsQjwgZu6dTscLTztvsePsf
-        Msk/RyJ+i4o1sBY3boA3uX4aVtu3k6Gogcwvn9BCLA==
-X-Google-Smtp-Source: ABdhPJxYpCGSJ97h8+PYs4ql8r4Wi52kEXKqBk5pvfZj6f9b/g73lOi4fZfqGVy147NfKJkJXNKE6/edp4TkHfyblNY=
-X-Received: by 2002:a25:ad18:: with SMTP id y24mr1012325ybi.420.1644873327127;
- Mon, 14 Feb 2022 13:15:27 -0800 (PST)
+        Mon, 14 Feb 2022 16:16:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9581133C8;
+        Mon, 14 Feb 2022 13:16:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 778A16115B;
+        Mon, 14 Feb 2022 19:40:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FFAC340FD;
+        Mon, 14 Feb 2022 19:40:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644867624;
+        bh=5szbHF9etsKpvbwWwwc9H/Y1QakuvzjKYGUIBcYFA80=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=e8SkA3FlLGu70hI/WgHcE1Xcld6ahEqgd/8aP3tnN+Ui+6c+MZmJxArGum1LdtmAc
+         TVm8LqkWXJbpel0WqJluZlN0q2Rc8pObOFXCjWsE1d3haVSN1sOjQ5hKRVHWsZ71lN
+         9Hnj9zqBHSBBx6qUNlA6sc7rmD8pMbOGHJ9SDDCXuRY9FNQ7binWt4bsfA/Yof8Egb
+         Ksm8rfkNmn9T9/rsBeFI1yBap4xnb6nVmSKUusmotl5Q02Llm+mwF8WcKWget2RALt
+         X3B6AavEfyIeX6XUTomqUIV78jVQAYplU/28sKTs9My6dabsF705ywSdaO+p8h0D4l
+         JZS2fHyItMkuQ==
+Received: by mail-wm1-f54.google.com with SMTP id x3-20020a05600c21c300b0037c01ad715bso96481wmj.2;
+        Mon, 14 Feb 2022 11:40:24 -0800 (PST)
+X-Gm-Message-State: AOAM532dvZbtvOPm1OVJdRP6UdnKTYMjhyzK9noTSPV4d2TnlmwY4VjK
+        c6zphPR526O7Yd9rGGuLi8qjsl/2HmGocLZjIrU=
+X-Google-Smtp-Source: ABdhPJzTYqCeBLA8ZZTCXfIkkUBrupnk+RLzKXVQdywxm2I/SfNIqW0R0tvlKvR6EMssd+gXW/CMf7zH4TFa2LGJB14=
+X-Received: by 2002:a05:600c:1d27:b0:37c:74bb:2b4d with SMTP id
+ l39-20020a05600c1d2700b0037c74bb2b4dmr252362wms.82.1644867623104; Mon, 14 Feb
+ 2022 11:40:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20220211161831.3493782-1-tjmercier@google.com>
- <20220211161831.3493782-7-tjmercier@google.com> <Ygdfe3XSvN8iFuUc@kroah.com>
- <CAHRSSEwoJ67Sr_=gtSaP91cbpjJjZdOo57cfAhv3r-ye0da7PA@mail.gmail.com>
- <CAJuCfpHf=Ewm0e9kguY3MEGVHU_cyviVXByi0oQtq7kTtOOD=A@mail.gmail.com>
- <CAHRSSEzsn-EVKXTRfmpbPR9u0wNpdvdZoX64Tm_mB1DQMRSUPQ@mail.gmail.com> <CALAqxLVeLsv9ESCL2EoZQ8-tRgp0V+tmdYbkyakFetf=ewTH+A@mail.gmail.com>
-In-Reply-To: <CALAqxLVeLsv9ESCL2EoZQ8-tRgp0V+tmdYbkyakFetf=ewTH+A@mail.gmail.com>
-From:   Hridya Valsaraju <hridya@google.com>
-Date:   Mon, 14 Feb 2022 13:14:51 -0800
-Message-ID: <CA+wgaPM8AmQ4g6pDSwRABtc7hq11XMw+kH-rRkB8xNGJhM3OKA@mail.gmail.com>
-Subject: Re: [RFC v2 6/6] android: binder: Add a buffer flag to relinquish
- ownership of fds
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     Todd Kjos <tkjos@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "T.J. Mercier" <tjmercier@google.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Kalesh Singh <kaleshsingh@google.com>, Kenny.Ho@amd.com,
-        DRI mailing list <dri-devel@lists.freedesktop.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        "moderated list:DMA BUFFER SHARING FRAMEWORK" 
-        <linaro-mm-sig@lists.linaro.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>
+References: <20220214163452.1568807-1-arnd@kernel.org> <20220214163452.1568807-11-arnd@kernel.org>
+ <YgqL/NJ3YHEAhj4i@infradead.org>
+In-Reply-To: <YgqL/NJ3YHEAhj4i@infradead.org>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 14 Feb 2022 20:40:07 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3eOw=QpxWFnODE61EFt8oGPJ7dcusfbPSD1vdEsUmekQ@mail.gmail.com>
+Message-ID: <CAK8P3a3eOw=QpxWFnODE61EFt8oGPJ7dcusfbPSD1vdEsUmekQ@mail.gmail.com>
+Subject: Re: [PATCH 10/14] uaccess: remove most CONFIG_SET_FS users
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rich Felker <dalias@libc.org>, linux-ia64@vger.kernel.org,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Max Filippov <jcmvbkbc@gmail.com>, Guo Ren <guoren@kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        "open list:QUALCOMM HEXAGON..." <linux-hexagon@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Brian Cain <bcain@codeaurora.org>,
+        Helge Deller <deller@gmx.de>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        linux-csky@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        alpha <linux-alpha@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Openrisc <openrisc@lists.librecores.org>,
+        Greentime Hu <green.hu@gmail.com>,
+        Stafford Horne <shorne@gmail.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        Nick Hu <nickhu@andestech.com>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Richard Weinberger <richard@nod.at>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 12:37 PM John Stultz <john.stultz@linaro.org> wrote:
+On Mon, Feb 14, 2022 at 6:06 PM Christoph Hellwig <hch@infradead.org> wrote:
 >
-> On Mon, Feb 14, 2022 at 12:19 PM Todd Kjos <tkjos@google.com> wrote:
-> > On Mon, Feb 14, 2022 at 11:29 AM Suren Baghdasaryan <surenb@google.com> wrote:
-> > > On Mon, Feb 14, 2022 at 10:33 AM Todd Kjos <tkjos@google.com> wrote:
-> > > >
-> > > > Since we are creating a new gpu cgroup abstraction, couldn't this
-> > > > "transfer" be done in userspace by the target instead of in the kernel
-> > > > driver? Then this patch would reduce to just a flag on the buffer
-> > > > object.
-> > >
-> > > Are you suggesting to have a userspace accessible cgroup interface for
-> > > transferring buffer charges and the target process to use that
-> > > interface for requesting the buffer to be charged to its cgroup?
+> On Mon, Feb 14, 2022 at 05:34:48PM +0100, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
 > >
-> > Well, I'm asking why we need to do these cgroup-ish actions in the
-> > kernel when it seems more natural to do it in userspace.
-
-This was our plan originally i.e. to create a cgroup interface that
-userspace could use for explicit charge transfer. However, in our
-initial discussions with all interested parties and cgroup maintainers
-we reached a conclusion that an explicit charge transfer UAPI for the
-cgroup controller did not fit in with the current cgroup
-charge/uncharge mechanisms. Like John mentioned, the charge transfer
-during binder IPC was suggested by Daniel during LPC.
-
-Regards,
-Hridya
-
+> > On almost all architectures, there are no remaining callers
+> > of set_fs(), so CONFIG_SET_FS can be disabled, along with
+> > removing the thread_info field and any references to it.
 > >
+> > This turns access_ok() into a cheaper check against TASK_SIZE_MAX.
 >
-> In case its useful, some additional context from some of the Linux
-> Plumber's discussions last fall:
->
-> Daniel Stone outlines some concerns with the cgroup userland handling
-> for accounting:
->   https://youtu.be/3OqllZONTiQ?t=3430
->
-> And the binder ownership transfer bit was suggested here by Daniel Vetter:
->   https://youtu.be/3OqllZONTiQ?t=3730
->
-> thanks
-> -john
+> Wouldn't it make more sense to just merge this into the last patch?
+
+Yes, sounds good. I wasn't sure at first if there is enough buy-in to get
+all architectures cleaned up, and I hadn't done the ia64 patch, so it
+seemed more important to do this part early, but now it seems that it
+will all go in at the same time, so doing this as part of a big removal
+at the end makes sense.
+
+        Arnd
