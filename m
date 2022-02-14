@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5908C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994A1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348880AbiBNKkf (ORCPT
+        id S1348241AbiBNKkm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:40:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52212 "EHLO
+        Mon, 14 Feb 2022 05:40:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350286AbiBNKhB (ORCPT
+        with ESMTP id S1348374AbiBNKfH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:37:01 -0500
+        Mon, 14 Feb 2022 05:35:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F3CA74C8;
-        Mon, 14 Feb 2022 02:03:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CF0E0DA;
+        Mon, 14 Feb 2022 02:02:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3072260909;
-        Mon, 14 Feb 2022 10:03:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8E29C36AE7;
-        Mon, 14 Feb 2022 10:03:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B333060DD9;
+        Mon, 14 Feb 2022 10:02:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 832F0C340EF;
+        Mon, 14 Feb 2022 10:02:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832988;
-        bh=2BBZbbHHx50oBUEy83Jzex7N90VUJ1hapnj9wSM9Ri4=;
+        s=korg; t=1644832922;
+        bh=2bxlapIbZ7DOSdflx2EZloe76yIzRk8iWg3zk2A8E8w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y3FCBCQo8GOyAUE8T2z9g0B+FmxKQUCNFzf0FW9c4/vTrqvvjt1dmPq8IVBZ+SfNw
-         eT5MWc9sppkHj/OBNKV9DYUjNCkOyEVCezEH9LMlbe3QPHyjoqCUlF44zcvIdtnsuc
-         rpwbltlSxt5KWvGl6cu7GUA83wo86dY9qvgYEsM8=
+        b=CiLXei9GrM3w2SrHjf/ruxX4KE6zm/7WCFvLIy91mXNkkoseSK8Q9bsF9ndOC1bxk
+         Yen7mIpmunNUx+x8xOsLT9tC+I/xxP3IObtslAhJXU92gynJ5bCjsYt+kUvkiUDVFy
+         QvpiLc1or0c5eCtmZ9ra2qvFI2RbD8+oebPIGafM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Robert=20=C5=9Awi=C4=99cki?= <robert@swiecki.net>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH 5.16 189/203] signal: HANDLER_EXIT should clear SIGNAL_UNKILLABLE
-Date:   Mon, 14 Feb 2022 10:27:13 +0100
-Message-Id: <20220214092516.670049720@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        stable@kernel.org, Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH 5.16 167/203] Revert "usb: dwc2: drd: fix soft connect when gadget is unconfigured"
+Date:   Mon, 14 Feb 2022 10:26:51 +0100
+Message-Id: <20220214092515.921302103@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,40 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 5c72263ef2fbe99596848f03758ae2dc593adf2c upstream.
+commit 736e8d89044c1c330967fb938fa766cd9e0d8af0 upstream.
 
-Fatal SIGSYS signals (i.e. seccomp RET_KILL_* syscall filter actions)
-were not being delivered to ptraced pid namespace init processes. Make
-sure the SIGNAL_UNKILLABLE doesn't get set for these cases.
+This reverts commit 269cbcf7b72de6f0016806d4a0cec1d689b55a87.
 
-Reported-by: Robert Święcki <robert@swiecki.net>
-Suggested-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Fixes: 00b06da29cf9 ("signal: Add SA_IMMUTABLE to ensure forced siganls do not get changed")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
-Link: https://lore.kernel.org/lkml/878rui8u4a.fsf@email.froward.int.ebiederm.org
+It causes build errors as reported by the kernel test robot.
+
+Link: https://lore.kernel.org/r/202202112236.AwoOTtHO-lkp@intel.com
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 269cbcf7b72d ("usb: dwc2: drd: fix soft connect when gadget is unconfigured")
+Cc: stable@kernel.org
+Cc: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Cc: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/signal.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/dwc2/drd.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1339,9 +1339,10 @@ force_sig_info_to_task(struct kernel_sig
- 	}
- 	/*
- 	 * Don't clear SIGNAL_UNKILLABLE for traced tasks, users won't expect
--	 * debugging to leave init killable.
-+	 * debugging to leave init killable. But HANDLER_EXIT is always fatal.
- 	 */
--	if (action->sa.sa_handler == SIG_DFL && !t->ptrace)
-+	if (action->sa.sa_handler == SIG_DFL &&
-+	    (!t->ptrace || (handler == HANDLER_EXIT)))
- 		t->signal->flags &= ~SIGNAL_UNKILLABLE;
- 	ret = send_signal(sig, info, t, PIDTYPE_PID);
- 	spin_unlock_irqrestore(&t->sighand->siglock, flags);
+--- a/drivers/usb/dwc2/drd.c
++++ b/drivers/usb/dwc2/drd.c
+@@ -109,10 +109,8 @@ static int dwc2_drd_role_sw_set(struct u
+ 		already = dwc2_ovr_avalid(hsotg, true);
+ 	} else if (role == USB_ROLE_DEVICE) {
+ 		already = dwc2_ovr_bvalid(hsotg, true);
+-		if (hsotg->enabled) {
+-			/* This clear DCTL.SFTDISCON bit */
+-			dwc2_hsotg_core_connect(hsotg);
+-		}
++		/* This clear DCTL.SFTDISCON bit */
++		dwc2_hsotg_core_connect(hsotg);
+ 	} else {
+ 		if (dwc2_is_device_mode(hsotg)) {
+ 			if (!dwc2_ovr_bvalid(hsotg, false))
 
 
