@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36778C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4529C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345480AbiBNKJs (ORCPT
+        id S1345298AbiBNKJx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:09:48 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35976 "EHLO
+        Mon, 14 Feb 2022 05:09:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345594AbiBNKGa (ORCPT
+        with ESMTP id S1345807AbiBNKHC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:06:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2296474DCA;
-        Mon, 14 Feb 2022 01:49:32 -0800 (PST)
+        Mon, 14 Feb 2022 05:07:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086FF74DDA;
+        Mon, 14 Feb 2022 01:49:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B42F661238;
-        Mon, 14 Feb 2022 09:49:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A09D5C340EF;
-        Mon, 14 Feb 2022 09:49:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A6E761238;
+        Mon, 14 Feb 2022 09:49:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5AD6C340E9;
+        Mon, 14 Feb 2022 09:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832171;
-        bh=A4SdmNYLAnveL9cm0e3pqcw/lppUkfyaqYDwasfTHx4=;
+        s=korg; t=1644832174;
+        bh=Y1O2CIN5EafAGmWxHeytfPsnxX2uH0gjcXAlhd6vK4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X5nmCx4pIw69sw+P918zfDv8N1xUweMmkYOJP7AoEHNFNumTAZHEMbfVAg/FtPSOa
-         abbWvCXOaJXgWSp+kygb73l+r2ZOv0WMcom1Mz6/AOrWP6JX8m/9FY/L4AWYXUaVa7
-         hPPpnhD9x0dque9UqpHgHjOv4yKMg+8Wv/ExrEP0=
+        b=owcBfvfGBaHAsJSp8qFBRMCWJIUsVsaKzM6DmBeybiBbHkcomnpcd3X7/LumhaFBE
+         ZciFQQqMyaaDh34GetL4XEy1C1mIXB39E50gEc6JJNO+3ECnd4G/eaU09StHE5L4ni
+         gE0xq/JXM7edWBrU7VotBgFICXR9rVfapYYC53uA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bob Peterson <rpeterso@redhat.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>
-Subject: [PATCH 5.15 069/172] gfs2: Fix gfs2_release for non-writers regression
-Date:   Mon, 14 Feb 2022 10:25:27 +0100
-Message-Id: <20220214092508.782354238@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Hou Wenlong <houwenlong93@linux.alibaba.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 060/172] KVM: eventfd: Fix false positive RCU usage warning
+Date:   Mon, 14 Feb 2022 10:25:18 +0100
+Message-Id: <20220214092508.463725507@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -49,55 +51,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bob Peterson <rpeterso@redhat.com>
+From: Hou Wenlong <houwenlong93@linux.alibaba.com>
 
-commit d3add1a9519dcacd6e644ecac741c56cf18b67f5 upstream.
+[ Upstream commit 6a0c61703e3a5d67845a4b275e1d9d7bc1b5aad7 ]
 
-When a file is opened for writing, the vfs code (do_dentry_open)
-calls get_write_access for the inode, thus incrementing the inode's write
-count. That writer normally then creates a multi-block reservation for
-the inode (i_res) that can be re-used by other writers, which speeds up
-writes for applications that stupidly loop on open/write/close.
-When the writes are all done, the multi-block reservation should be
-deleted when the file is closed by the last "writer."
+Fix the following false positive warning:
+ =============================
+ WARNING: suspicious RCU usage
+ 5.16.0-rc4+ #57 Not tainted
+ -----------------------------
+ arch/x86/kvm/../../../virt/kvm/eventfd.c:484 RCU-list traversed in non-reader section!!
 
-Commit 0ec9b9ea4f83 broke that concept when it moved the call to
-gfs2_rs_delete before the check for FMODE_WRITE.  Non-writers have no
-business removing the multi-block reservations of writers. In fact, if
-someone opens and closes the file for RO while a writer has a
-multi-block reservation, the RO closer will delete the reservation
-midway through the write, and this results in:
+ other info that might help us debug this:
 
-kernel BUG at fs/gfs2/rgrp.c:677! (or thereabouts) which is:
-BUG_ON(rs->rs_requested); from function gfs2_rs_deltree.
+ rcu_scheduler_active = 2, debug_locks = 1
+ 3 locks held by fc_vcpu 0/330:
+  #0: ffff8884835fc0b0 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x88/0x6f0 [kvm]
+  #1: ffffc90004c0bb68 (&kvm->srcu){....}-{0:0}, at: vcpu_enter_guest+0x600/0x1860 [kvm]
+  #2: ffffc90004c0c1d0 (&kvm->irq_srcu){....}-{0:0}, at: kvm_notify_acked_irq+0x36/0x180 [kvm]
 
-This patch moves the check back inside the check for FMODE_WRITE.
+ stack backtrace:
+ CPU: 26 PID: 330 Comm: fc_vcpu 0 Not tainted 5.16.0-rc4+
+ Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x44/0x57
+  kvm_notify_acked_gsi+0x6b/0x70 [kvm]
+  kvm_notify_acked_irq+0x8d/0x180 [kvm]
+  kvm_ioapic_update_eoi+0x92/0x240 [kvm]
+  kvm_apic_set_eoi_accelerated+0x2a/0xe0 [kvm]
+  handle_apic_eoi_induced+0x3d/0x60 [kvm_intel]
+  vmx_handle_exit+0x19c/0x6a0 [kvm_intel]
+  vcpu_enter_guest+0x66e/0x1860 [kvm]
+  kvm_arch_vcpu_ioctl_run+0x438/0x7f0 [kvm]
+  kvm_vcpu_ioctl+0x38a/0x6f0 [kvm]
+  __x64_sys_ioctl+0x89/0xc0
+  do_syscall_64+0x3a/0x90
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 0ec9b9ea4f83 ("gfs2: Check for active reservation in gfs2_release")
-Cc: stable@vger.kernel.org # v5.12+
-Signed-off-by: Bob Peterson <rpeterso@redhat.com>
-Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Since kvm_unregister_irq_ack_notifier() does synchronize_srcu(&kvm->irq_srcu),
+kvm->irq_ack_notifier_list is protected by kvm->irq_srcu. In fact,
+kvm->irq_srcu SRCU read lock is held in kvm_notify_acked_irq(), making it
+a false positive warning. So use hlist_for_each_entry_srcu() instead of
+hlist_for_each_entry_rcu().
+
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Hou Wenlong <houwenlong93@linux.alibaba.com>
+Message-Id: <f98bac4f5052bad2c26df9ad50f7019e40434512.1643265976.git.houwenlong.hwl@antgroup.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/gfs2/file.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ virt/kvm/eventfd.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/fs/gfs2/file.c
-+++ b/fs/gfs2/file.c
-@@ -711,10 +711,11 @@ static int gfs2_release(struct inode *in
- 	kfree(file->private_data);
- 	file->private_data = NULL;
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index e996989cd580e..5b874e7ba36fd 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -456,8 +456,8 @@ bool kvm_irq_has_notifier(struct kvm *kvm, unsigned irqchip, unsigned pin)
+ 	idx = srcu_read_lock(&kvm->irq_srcu);
+ 	gsi = kvm_irq_map_chip_pin(kvm, irqchip, pin);
+ 	if (gsi != -1)
+-		hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+-					 link)
++		hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
++					  link, srcu_read_lock_held(&kvm->irq_srcu))
+ 			if (kian->gsi == gsi) {
+ 				srcu_read_unlock(&kvm->irq_srcu, idx);
+ 				return true;
+@@ -473,8 +473,8 @@ void kvm_notify_acked_gsi(struct kvm *kvm, int gsi)
+ {
+ 	struct kvm_irq_ack_notifier *kian;
  
--	if (gfs2_rs_active(&ip->i_res))
--		gfs2_rs_delete(ip, &inode->i_writecount);
--	if (file->f_mode & FMODE_WRITE)
-+	if (file->f_mode & FMODE_WRITE) {
-+		if (gfs2_rs_active(&ip->i_res))
-+			gfs2_rs_delete(ip, &inode->i_writecount);
- 		gfs2_qa_put(ip);
-+	}
- 	return 0;
+-	hlist_for_each_entry_rcu(kian, &kvm->irq_ack_notifier_list,
+-				 link)
++	hlist_for_each_entry_srcu(kian, &kvm->irq_ack_notifier_list,
++				  link, srcu_read_lock_held(&kvm->irq_srcu))
+ 		if (kian->gsi == gsi)
+ 			kian->irq_acked(kian);
  }
- 
+-- 
+2.34.1
+
 
 
