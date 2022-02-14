@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC857C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243087AbiBNJ25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:28:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41890 "EHLO
+        id S243114AbiBNJ3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:29:00 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243041AbiBNJ2m (ORCPT
+        with ESMTP id S243021AbiBNJ2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C2B60AB8;
-        Mon, 14 Feb 2022 01:28:34 -0800 (PST)
+        Mon, 14 Feb 2022 04:28:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B49B60D83;
+        Mon, 14 Feb 2022 01:28:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFE94B80DCE;
-        Mon, 14 Feb 2022 09:28:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A5F3C340E9;
-        Mon, 14 Feb 2022 09:28:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 284EC60F88;
+        Mon, 14 Feb 2022 09:28:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0978CC340E9;
+        Mon, 14 Feb 2022 09:28:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830911;
-        bh=wzTFj+0Mwr65hL4KdCPB/QhA7XSUNn1oZCkfP8JhOV4=;
+        s=korg; t=1644830914;
+        bh=r4loICwC/Ra3vZUKUUxcneuvZ23lklqWBJUiGClVREg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wkaLMHtl+KtWv2Ch+h/bTXQPTFoAV6FcLl0ZiQ53ps+dQ4Cx+l4c1DoXsxyjuh3bl
-         vzjqdhuqYpk1ZoWhaeoyKiWA8naQ+G7bjUU0quTCc4GtrKstOuKR9edbSt3YKSaE8w
-         t54M+49eqGiJA98ta77spd1ib5RRq4NB1OeMUa2E=
+        b=KDj/knm8TDrAM2IOPoLHG3/8h5PpDhTl586Otb+TUvgn1IJb2S/gqxuqyBtmtSNuM
+         /bVQP3lstFm1HKTIJpzrKepbr8JkcFDCAlgdlyAm1aDJsTqiDjnfR8Hu7PUtC021YE
+         YG1TD43OyUtTOgRvKdnUhFwFP/cHzGU0VJkZj/OQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>
-Subject: [PATCH 4.9 04/34] NFSD: Clamp WRITE offsets
-Date:   Mon, 14 Feb 2022 10:25:30 +0100
-Message-Id: <20220214092446.088940343@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Guillaume Bertholon <guillaume.bertholon@ens.fr>
+Subject: [PATCH 4.9 05/34] Input: i8042 - Fix misplaced backport of "add ASUS Zenbook Flip to noselftest list"
+Date:   Mon, 14 Feb 2022 10:25:31 +0100
+Message-Id: <20220214092446.126910108@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -47,51 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Guillaume Bertholon <guillaume.bertholon@ens.fr>
 
-commit 6260d9a56ab352b54891ec66ab0eced57d55abc6 upstream.
+The upstream commit b5d6e7ab7fe7 ("Input: i8042 - add ASUS Zenbook Flip to
+noselftest list") inserted a new entry in the `i8042_dmi_noselftest_table`
+table, further patched by commit daa58c8eec0a ("Input: i8042 - fix Pegatron
+C15B ID entry") to insert a missing separator.
 
-Ensure that a client cannot specify a WRITE range that falls in a
-byte range outside what the kernel's internal types (such as loff_t,
-which is signed) can represent. The kiocb iterators, invoked in
-nfsd_vfs_write(), should properly limit write operations to within
-the underlying file system's s_maxbytes.
+However, their backported version in stable (commit e9e8b3769099
+("Input: i8042 - add ASUS Zenbook Flip to noselftest list") and
+commit c551d20d487a ("Input: i8042 - fix Pegatron C15B ID entry"))
+inserted this entry in `i8042_dmi_forcemux_table` instead.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+This patch moves the entry back into `i8042_dmi_noselftest_table`.
+
+Fixes: e9e8b3769099 ("Input: i8042 - add ASUS Zenbook Flip to noselftest list")
+Signed-off-by: Guillaume Bertholon <guillaume.bertholon@ens.fr>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/nfsd/nfs3proc.c |    5 +++++
- fs/nfsd/nfs4proc.c |    5 +++--
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/input/serio/i8042-x86ia64io.h |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/fs/nfsd/nfs3proc.c
-+++ b/fs/nfsd/nfs3proc.c
-@@ -191,6 +191,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp,
- 				(unsigned long long) argp->offset,
- 				argp->stable? " stable" : "");
- 
-+	resp->status = nfserr_fbig;
-+	if (argp->offset > (u64)OFFSET_MAX ||
-+	    argp->offset + argp->len > (u64)OFFSET_MAX)
-+		return rpc_success;
-+
- 	fh_copy(&resp->fh, &argp->fh);
- 	resp->committed = argp->stable;
- 	nfserr = nfsd_write(rqstp, &resp->fh, NULL,
---- a/fs/nfsd/nfs4proc.c
-+++ b/fs/nfsd/nfs4proc.c
-@@ -982,8 +982,9 @@ nfsd4_write(struct svc_rqst *rqstp, stru
- 	unsigned long cnt;
- 	int nvecs;
- 
--	if (write->wr_offset >= OFFSET_MAX)
--		return nfserr_inval;
-+	if (write->wr_offset > (u64)OFFSET_MAX ||
-+	    write->wr_offset + write->wr_buflen > (u64)OFFSET_MAX)
-+		return nfserr_fbig;
- 
- 	status = nfs4_preprocess_stateid_op(rqstp, cstate, &cstate->current_fh,
- 						stateid, WR_STATE, &filp, NULL);
+--- a/drivers/input/serio/i8042-x86ia64io.h
++++ b/drivers/input/serio/i8042-x86ia64io.h
+@@ -586,11 +586,6 @@ static const struct dmi_system_id i8042_
+ 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-CS"),
+ 		},
+-	}, {
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
+-			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /* Convertible Notebook */
+-		},
+ 	},
+ 	{ }
+ };
+@@ -677,6 +672,12 @@ static const struct dmi_system_id i8042_
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Z450LA"),
+ 		},
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /* Convertible Notebook */
++		},
++	},
+ 	{ }
+ };
+ static const struct dmi_system_id __initconst i8042_dmi_reset_table[] = {
 
 
