@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E98C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F06D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245428AbiBNJxj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:53:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60950 "EHLO
+        id S237547AbiBNJxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:53:44 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237479AbiBNJua (ORCPT
+        with ESMTP id S245744AbiBNJuo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:50:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E45652D3;
-        Mon, 14 Feb 2022 01:41:26 -0800 (PST)
+        Mon, 14 Feb 2022 04:50:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDEFE654B0;
+        Mon, 14 Feb 2022 01:41:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D43AB60FA2;
-        Mon, 14 Feb 2022 09:41:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A5FAC340E9;
-        Mon, 14 Feb 2022 09:41:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AE6D6102D;
+        Mon, 14 Feb 2022 09:41:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5989BC340F0;
+        Mon, 14 Feb 2022 09:41:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831685;
-        bh=z40kFjQaiXx7f71JHu8jlvlA7hqgKZhlPEtCv+lCots=;
+        s=korg; t=1644831696;
+        bh=9TbKrEy59czhCycBrgr8TptrPB3LMyhS1KggHXhlAo0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QoBmwg6JQoJkjvvttTvAC4fSLSoIR9HMefalI8P6iIikYM9t9AvhalpaNPq8mYSNF
-         6xhSSSaXQXgDOeAPQDCJ/zAy3hym8ohJ3E4x9wh0JgB8gl0IQqORZGvMyh02FHCZJF
-         zUG2VX0mLBvE4dPbB0OtO0kJ42GZSpF+2TG1O37o=
+        b=CjU4KPB/YjfdHgtZfOE3gaCeDDfrNON3ivZmQUS/Ri05jJ4+qaUQYMJ905iGP2bVm
+         zZqCyLckySsQNeLr1sKwh03HKK6j/nZ8mgVcjlcDRZADk0ijbBOfKc0THSaOlOw+AV
+         hCw1V0s9+05tHGhMEma6N5MgbPrsYPt7HlvgyqNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pham Thanh Tuyen <phamtyn@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Marek Vasut <marex@denx.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 062/116] netfilter: ctnetlink: disable helper autoassign
-Date:   Mon, 14 Feb 2022 10:26:01 +0100
-Message-Id: <20220214092500.894610788@linuxfoundation.org>
+Subject: [PATCH 5.10 065/116] drm/panel: simple: Assign data from panel_dpi_probe() correctly
+Date:   Mon, 14 Feb 2022 10:26:04 +0100
+Message-Id: <20220214092500.993729326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -50,70 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 
-[ Upstream commit d1ca60efc53d665cf89ed847a14a510a81770b81 ]
+[ Upstream commit 6df4432a5eca101b5fd80fbee41d309f3d67928d ]
 
-When userspace, e.g. conntrackd, inserts an entry with a specified helper,
-its possible that the helper is lost immediately after its added:
+In the function panel_simple_probe() the pointer panel->desc is
+assigned to the passed pointer desc. If function panel_dpi_probe()
+is called panel->desc will be updated, but further on only desc
+will be evaluated. So update the desc pointer to be able to use
+the data from the function panel_dpi_probe().
 
-ctnetlink_create_conntrack
-  -> nf_ct_helper_ext_add + assign helper
-    -> ctnetlink_setup_nat
-      -> ctnetlink_parse_nat_setup
-         -> parse_nat_setup -> nfnetlink_parse_nat_setup
-	                       -> nf_nat_setup_info
-                                 -> nf_conntrack_alter_reply
-                                   -> __nf_ct_try_assign_helper
+Fixes: 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support")
 
-... and __nf_ct_try_assign_helper will zero the helper again.
-
-Set IPS_HELPER bit to bypass auto-assign logic, its unwanted, just like
-when helper is assigned via ruleset.
-
-Dropped old 'not strictly necessary' comment, it referred to use of
-rcu_assign_pointer() before it got replaced by RCU_INIT_POINTER().
-
-NB: Fixes tag intentionally incorrect, this extends the referenced commit,
-but this change won't build without IPS_HELPER introduced there.
-
-Fixes: 6714cf5465d280 ("netfilter: nf_conntrack: fix explicit helper attachment and NAT")
-Reported-by: Pham Thanh Tuyen <phamtyn@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+To: dri-devel@lists.freedesktop.org
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220201110153.3479-1-cniedermaier@dh-electronics.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/uapi/linux/netfilter/nf_conntrack_common.h | 2 +-
- net/netfilter/nf_conntrack_netlink.c               | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/panel/panel-simple.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/netfilter/nf_conntrack_common.h b/include/uapi/linux/netfilter/nf_conntrack_common.h
-index 4b3395082d15c..26071021e986f 100644
---- a/include/uapi/linux/netfilter/nf_conntrack_common.h
-+++ b/include/uapi/linux/netfilter/nf_conntrack_common.h
-@@ -106,7 +106,7 @@ enum ip_conntrack_status {
- 	IPS_NAT_CLASH = IPS_UNTRACKED,
- #endif
- 
--	/* Conntrack got a helper explicitly attached via CT target. */
-+	/* Conntrack got a helper explicitly attached (ruleset, ctnetlink). */
- 	IPS_HELPER_BIT = 13,
- 	IPS_HELPER = (1 << IPS_HELPER_BIT),
- 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index c6bcc28ae3387..eeeaa34b3e7b5 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -2283,7 +2283,8 @@ ctnetlink_create_conntrack(struct net *net,
- 			if (helper->from_nlattr)
- 				helper->from_nlattr(helpinfo, ct);
- 
--			/* not in hash table yet so not strictly necessary */
-+			/* disable helper auto-assignment for this entry */
-+			ct->status |= IPS_HELPER;
- 			RCU_INIT_POINTER(help->helper, helper);
- 		}
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 204674fccd646..7ffd2a04ab23a 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -557,6 +557,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
+ 		err = panel_dpi_probe(dev, panel);
+ 		if (err)
+ 			goto free_ddc;
++		desc = panel->desc;
  	} else {
+ 		if (!of_get_display_timing(dev->of_node, "panel-timing", &dt))
+ 			panel_simple_parse_panel_timing_node(dev, panel, &dt);
 -- 
 2.34.1
 
