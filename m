@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 150B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:38:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343616AbiBNKiT (ORCPT
+        id S1348381AbiBNKiW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:38:19 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41894 "EHLO
+        Mon, 14 Feb 2022 05:38:22 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348358AbiBNKet (ORCPT
+        with ESMTP id S1347716AbiBNKeY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:34:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3936178;
-        Mon, 14 Feb 2022 02:01:55 -0800 (PST)
+        Mon, 14 Feb 2022 05:34:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 867A0A2F18;
+        Mon, 14 Feb 2022 02:00:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D754FB80E0D;
-        Mon, 14 Feb 2022 10:01:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5F86C340F2;
-        Mon, 14 Feb 2022 10:01:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22FCD60C62;
+        Mon, 14 Feb 2022 10:00:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE731C340E9;
+        Mon, 14 Feb 2022 10:00:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832912;
-        bh=CZLhnC2bJWNiM3wvuHY9Uh4DOezRKY5x4zwTTBr13EM=;
+        s=korg; t=1644832849;
+        bh=qG8TxJIEufoTrtV8bFIDKUVwWO6LpLeVz8gYbFL9Sw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EeFf9k9GrUeEg7NlNCMvkr/XPpFPJnbpQlgK67GLzrALXvmce2zsj54fkAv6eDpYl
-         sNwrbCJfO+FHJY7lkrQJICA4oI375EzfjVF4Tctk/Tq6OYDEt9O+qxAGTmmABRXcST
-         rBmNrhqMmQ2HYPd94B9rhrmuzBVFvnxWvqPFCX5s=
+        b=JuhLnPxGi3lAvS2Q8MzXhPNea7moHse8J1nCGB5wOnhcTkWbXpXFOmUDLPb6QMzVV
+         ALxNuke9Hl8uH3YdFfHBi0H92w/yk+GUTZd90tuvb6z1B8IZ/ynehA+qHcTkzddoy3
+         lj7A43tOW2dV+awi1FqC4vZOVTnczs+3xWMwzYUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Subject: [PATCH 5.16 164/203] n_tty: wake up poll(POLLRDNORM) on receiving data
-Date:   Mon, 14 Feb 2022 10:26:48 +0100
-Message-Id: <20220214092515.810641912@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 113/203] drm/vc4: hdmi: Allow DBLCLK modes even if horz timing is odd.
+Date:   Mon, 14 Feb 2022 10:25:57 +0100
+Message-Id: <20220214092514.092096297@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -48,84 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
 
-commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
+[ Upstream commit 1d118965965f89948236ebe23072bb1fca5e7832 ]
 
-The poll man page says POLLRDNORM is equivalent to POLLIN when used as
-an event.
-$ man poll
-<snip>
-              POLLRDNORM
-                     Equivalent to POLLIN.
+The 2711 pixel valve can't produce odd horizontal timings, and
+checks were added to vc4_hdmi_encoder_atomic_check and
+vc4_hdmi_encoder_mode_valid to filter out/block selection of
+such modes.
 
-However, in n_tty driver, POLLRDNORM does not return until timeout even
-if there is terminal input, whereas POLLIN returns.
+Modes with DRM_MODE_FLAG_DBLCLK double all the horizontal timing
+values before programming them into the PV. The PV values,
+therefore, can not be odd, and so the modes can be supported.
 
-The following test program works until kernel-3.17, but the test stops
-in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
+Amend the filtering appropriately.
 
-[Steps to run test program]
-  $ cc -o test-pollrdnorm test-pollrdnorm.c
-  $ ./test-pollrdnorm
-  foo          <-- Type in something from the terminal followed by [RET].
-                   The string should be echoed back.
-
-  ------------------------< test-pollrdnorm.c >------------------------
-  #include <stdio.h>
-  #include <errno.h>
-  #include <poll.h>
-  #include <unistd.h>
-
-  void main(void)
-  {
-	int		n;
-	unsigned char	buf[8];
-	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
-
-	n = poll(fds, 1, -1);
-	if (n < 0)
-		perror("poll");
-	n = read(0, buf, 8);
-	if (n < 0)
-		perror("read");
-	if (n > 0)
-		write(1, buf, n);
-  }
-  ------------------------------------------------------------------------
-
-The attached patch fixes this problem.  Many calls to
-wake_up_interruptible_poll() in the kernel source code already specify
-"POLLIN | POLLRDNORM".
-
-Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
-Cc: stable@vger.kernel.org
-Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 57fb32e632be ("drm/vc4: hdmi: Block odd horizontal timings")
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220127135116.298278-1-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_tty.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1369,7 +1369,7 @@ handle_newline:
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 			return;
- 		}
- 	}
-@@ -1589,7 +1589,7 @@ static void __receive_buf(struct tty_str
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index c000946996edb..24f11c07bc3c7 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1090,6 +1090,7 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
+ 	unsigned long long tmds_rate;
  
- 	if (read_cnt(ldata)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 	}
- }
+ 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
++	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
+ 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
+ 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
+ 		return -EINVAL;
+@@ -1137,6 +1138,7 @@ vc4_hdmi_encoder_mode_valid(struct drm_encoder *encoder,
+ 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
  
+ 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
++	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
+ 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
+ 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
+ 		return MODE_H_ILLEGAL;
+-- 
+2.34.1
+
 
 
