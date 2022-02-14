@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20647C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECEEC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351679AbiBNLat (ORCPT
+        id S1351439AbiBNLcL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:30:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57478 "EHLO
+        Mon, 14 Feb 2022 06:32:11 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351608AbiBNLaF (ORCPT
+        with ESMTP id S1351543AbiBNL3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:30:05 -0500
+        Mon, 14 Feb 2022 06:29:51 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF534403CD;
-        Mon, 14 Feb 2022 03:10:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582991FA4C;
+        Mon, 14 Feb 2022 03:09:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644837036; x=1676373036;
+  t=1644836997; x=1676372997;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LMcqPNXnMe4ZfRX2pvOSR54SRmRLNEnmPESpB5J91po=;
-  b=iaCW/6D1BVgoXIxxfl0YnafhWCEGR4dzpRErpcfNNsKCkSrt0QXFO/BX
-   etIp04lnHoSeWjZ1FZo7hU1r9HebFZC6rAZH5L5nVldPKsmWggl2UrciA
-   vRcgx0dViooz70P3Eye79jxR44hHEyh2lwLp1FYYmvJ8qj3yitOE7WVnG
-   eQzmxUlHZVXw58pO8nWOTB4kXTMOh1nhTrzsLQcW0GSlPwfSRfgE80Ddt
-   69Ly4B8VMn2tQF2a2yGcZzaQqNvYwwX4RpgiSJyQO3Ch/uqvMMQtAHgMC
-   ZQjpUhlCD6YmTejPXn+9daV67RDaBJx/yjygi6HjauX1HNJDX8rSzNdKt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="233616257"
+  bh=qzIFEcHTgjf/FESZQyf2nVcqovhWBlnCGxTHyI8aBPk=;
+  b=dRBUiKP1UzjhZPWE3pX76P3MRjQLV8X8LRtBcxfuaNKXdS9oC/qoPOGT
+   F8TRooj0zElaMrFFtlct6iJ4E1+SgUrLRxEKJXCQpXS7VISmX4ng/RNfv
+   kMBsXFZP7ozFH1IF6UqG2LjLm4gwJMYpeE0Mp41MXEqFxF9zzFx9quxr5
+   8dh3uX6h3tyX8jrjRyFNWgOC8WFG/4UJY8P9ItbkzVDvPa6LMlnWWRizY
+   nRIPJ4KfRDdEzZTCNvqI3WUBZlSrB6iPTyIy+04oFOoczHAvuWdIhp+UO
+   9lYNh9W5YD61UFBydoGBoKPpt1GUYcGO4NLr7cCDHSzVoS1qMDtVDQtcP
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="233616169"
 X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="233616257"
+   d="scan'208";a="233616169"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:10:36 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 03:09:57 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
-   d="scan'208";a="635103897"
+   d="scan'208";a="635103545"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:10:30 -0800
+  by orsmga004.jf.intel.com with ESMTP; 14 Feb 2022 03:09:50 -0800
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Peter Zijlstra <peterz@infradead.org>
 Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
@@ -51,9 +51,9 @@ Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Mathieu Poirier <mathieu.poirier@linaro.org>,
         Suzuki K Poulose <suzuki.poulose@arm.com>,
         Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH V2 11/11] perf intel-pt: Add documentation for new clock IDs
-Date:   Mon, 14 Feb 2022 13:09:14 +0200
-Message-Id: <20220214110914.268126-12-adrian.hunter@intel.com>
+Subject: [PATCH V2 05/11] perf tools: Add API probes for new clock IDs
+Date:   Mon, 14 Feb 2022 13:09:08 +0200
+Message-Id: <20220214110914.268126-6-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220214110914.268126-1-adrian.hunter@intel.com>
 References: <20220214110914.268126-1-adrian.hunter@intel.com>
@@ -64,80 +64,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add brief documentation for new clock IDs CLOCK_PERF_HW_CLOCK and
-CLOCK_PERF_HW_CLOCK_NS, as well as new config variables
-intel-pt.max_nonturbo_ratio and intel-pt.tsc_art_ratio.
+Add ability to check whether the kernel supports new clock IDs
+CLOCK_PERF_HW_CLOCK and CLOCK_PERF_HW_CLOCK_NS.
+They will be used in a subsequent patch.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/Documentation/perf-intel-pt.txt | 47 ++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
+ tools/perf/util/perf_api_probe.c | 24 ++++++++++++++++++++++++
+ tools/perf/util/perf_api_probe.h |  2 ++
+ 2 files changed, 26 insertions(+)
 
-diff --git a/tools/perf/Documentation/perf-intel-pt.txt b/tools/perf/Documentation/perf-intel-pt.txt
-index ff58bd4c381b..45f750024e3d 100644
---- a/tools/perf/Documentation/perf-intel-pt.txt
-+++ b/tools/perf/Documentation/perf-intel-pt.txt
-@@ -509,6 +509,31 @@ notnt		Disable TNT packets.  Without TNT packets, it is not possible to walk
- 		"0" otherwise.
+diff --git a/tools/perf/util/perf_api_probe.c b/tools/perf/util/perf_api_probe.c
+index c28dd50bd571..33d3dd858ecc 100644
+--- a/tools/perf/util/perf_api_probe.c
++++ b/tools/perf/util/perf_api_probe.c
+@@ -109,6 +109,20 @@ static void perf_probe_cgroup(struct evsel *evsel)
+ 	evsel->core.attr.cgroup = 1;
+ }
  
++static void perf_probe_hw_clock(struct evsel *evsel)
++{
++	evsel->core.attr.use_clockid = 1;
++	evsel->core.attr.ns_clockid = 1;
++	evsel->core.attr.clockid = CLOCK_PERF_HW_CLOCK;
++}
++
++static void perf_probe_hw_clock_ns(struct evsel *evsel)
++{
++	evsel->core.attr.use_clockid = 1;
++	evsel->core.attr.ns_clockid = 1;
++	evsel->core.attr.clockid = CLOCK_PERF_HW_CLOCK_NS;
++}
++
+ bool perf_can_sample_identifier(void)
+ {
+ 	return perf_probe_api(perf_probe_sample_identifier);
+@@ -195,3 +209,13 @@ bool perf_can_record_cgroup(void)
+ {
+ 	return perf_probe_api(perf_probe_cgroup);
+ }
++
++bool perf_can_perf_clock_hw_clock(void)
++{
++	return perf_probe_api(perf_probe_hw_clock);
++}
++
++bool perf_can_perf_clock_hw_clock_ns(void)
++{
++	return perf_probe_api(perf_probe_hw_clock_ns);
++}
+diff --git a/tools/perf/util/perf_api_probe.h b/tools/perf/util/perf_api_probe.h
+index b104168efb15..5b30cbd260cf 100644
+--- a/tools/perf/util/perf_api_probe.h
++++ b/tools/perf/util/perf_api_probe.h
+@@ -13,5 +13,7 @@ bool perf_can_record_text_poke_events(void);
+ bool perf_can_sample_identifier(void);
+ bool perf_can_record_build_id(void);
+ bool perf_can_record_cgroup(void);
++bool perf_can_perf_clock_hw_clock(void);
++bool perf_can_perf_clock_hw_clock_ns(void);
  
-+perf event clock
-+~~~~~~~~~~~~~~~~
-+
-+Newer kernel and tools support 2 special clocks: CLOCK_PERF_HW_CLOCK which is
-+TSC and CLOCK_PERF_HW_CLOCK_NS which is TSC converted to nanoseconds.
-+CLOCK_PERF_HW_CLOCK_NS is the same as the default perf event clock, but it is
-+not subject to paravirtualization, so it still works with Intel PT in a VM
-+guest.  CLOCK_PERF_HW_CLOCK_NS is used by default if it is supported.
-+
-+To use TSC instead of nanoseconds, use the option:
-+
-+	--clockid CLOCK_PERF_HW_CLOCK
-+
-+Beware forgetting that the time stamp of events will show TSC ticks
-+(divided by 1,000,000,000) not seconds.
-+
-+To use the default perf event clock instead of CLOCK_PERF_HW_CLOCK_NS when
-+CLOCK_PERF_HW_CLOCK_NS is supported, use the option:
-+
-+	--no-clockid
-+
-+Other clocks are not supported for use with Intel PT because they cannot be
-+converted to/from TSC.
-+
-+
- AUX area sampling option
- ~~~~~~~~~~~~~~~~~~~~~~~~
- 
-@@ -1398,6 +1423,28 @@ There were none.
-           :17006 17006 [001] 11500.262869216:  ffffffff8220116e error_entry+0xe ([guest.kernel.kallsyms])               pushq  %rax
- 
- 
-+Tracing within a Virtual Machine
-+--------------------------------
-+
-+When supported, using Intel PT within a virtual machine does not support TSC
-+because the perf event clock is subject to paravirtualization.  That is
-+overcome by the new CLOCK_PERF_HW_CLOCK_NS clock - refer 'perf event clock'
-+above.  In addition, in a VM, the following might be zero:
-+
-+	/sys/bus/event_source/devices/intel_pt/max_nonturbo_ratio
-+	/sys/bus/event_source/devices/intel_pt/tsc_art_ratio
-+
-+The decoder needs this information to correctly interpret timing packets,
-+so the values can be provided by config variables in that case. Note in
-+the absence of VMCS TSC Scaling, this is probably the same as the host values.
-+The config variables are:
-+
-+	intel-pt.max_nonturbo_ratio
-+	intel-pt.tsc_art_ratio
-+
-+For more information about perf config variables, refer linkperf:perf-config[1]
-+
-+
- Event Trace
- -----------
- 
+ #endif // __PERF_API_PROBE_H
 -- 
 2.25.1
 
