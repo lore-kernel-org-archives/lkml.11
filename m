@@ -2,98 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1012C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356322AbiBNQXW (ORCPT
+        id S1356333AbiBNQ1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:23:22 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35040 "EHLO
+        Mon, 14 Feb 2022 11:27:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237864AbiBNQXR (ORCPT
+        with ESMTP id S236773AbiBNQ1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:23:17 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CE850B23
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:23:08 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nJe7f-0008Lp-1r; Mon, 14 Feb 2022 17:22:43 +0100
-Message-ID: <579eab10-594c-d6b2-0ddb-ea6ab8e02856@pengutronix.de>
-Date:   Mon, 14 Feb 2022 17:22:34 +0100
+        Mon, 14 Feb 2022 11:27:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C40C73;
+        Mon, 14 Feb 2022 08:27:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23DA361482;
+        Mon, 14 Feb 2022 16:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 418A5C340E9;
+        Mon, 14 Feb 2022 16:27:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644856048;
+        bh=4OKuG2LEadxl8fctPRW0BKh8+ifLIIssXuNLgxWqWro=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=uOtYrzcA/YsfJA6XweiY/nP1P/mXNGDAyZO/UTBB8rvuilPXUJSLKlAmnE8p6ICkh
+         RS7F2VIZiixaCuNIz5LUNgNKDvjWbtBrxrus2rAFWSBTR4gmSMN8X0xfYUl7Dhe8aI
+         UhY+nMa/WFlnU4ShMhzobZQmP2K+L86gpdnpFlbzWL1fVva94CAqv+Y1qniV4/2Zod
+         iocqggfX4q5RJgZSrY/52XdTaHLjOjkEMIV2IfhbNhOykBguVyTu7JZkjVWIhYD6b8
+         bZkwrL6b0T4pkZrTdtthkRGVE25eaphC0kxLd7AhohMTGEFxhrSAx93FkYdggP3kfT
+         1fEA2CPcdh+5Q==
+From:   Mark Brown <broonie@kernel.org>
+To:     lgirdwood@gmail.com, tiwai@suse.com, judyhsiao@chromium.org,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        perex@perex.cz,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, swboyd@chromium.org, bjorn.andersson@linaro.org,
+        linux-arm-msm@vger.kernel.org, srinivas.kandagatla@linaro.org,
+        devicetree@vger.kernel.org, quic_plai@quicinc.com,
+        robh+dt@kernel.org, bgoswami@codeaurora.org, rohitkr@codeaurora.org
+In-Reply-To: <1644668672-29790-1-git-send-email-quic_srivasam@quicinc.com>
+References: <1644668672-29790-1-git-send-email-quic_srivasam@quicinc.com>
+Subject: Re: [PATCH 0/2] Add Euro Headset support for wcd938x codec
+Message-Id: <164485604498.2890761.7849400676064736149.b4-ty@kernel.org>
+Date:   Mon, 14 Feb 2022 16:27:24 +0000
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [BUG] mtd: cfi_cmdset_0002: write regression since v4.17-rc1
-Content-Language: en-US
-To:     Tokunori Ikegami <ikegami.t@gmail.com>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        linux-mtd@lists.infradead.org, Joakim.Tjernlund@infinera.com,
-        miquel.raynal@bootlin.com, vigneshr@ti.com, richard@nod.at,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Cc:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Brian Norris <computersforpeace@gmail.com>,
-        David Woodhouse <dwmw2@infradead.org>, marek.vasut@gmail.com,
-        cyrille.pitchen@wedev4u.fr,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linuxppc-dev@lists.ozlabs.org
-References: <b687c259-6413-26c9-d4c9-b3afa69ea124@pengutronix.de>
- <dff2abcc-5813-2f2c-35ba-f03cd1f35ac3@leemhuis.info>
- <e11b76dc-5539-fb7e-da1c-a5005713d6b0@gmail.com>
- <3dbbcee5-81fc-cdf5-9f8b-b6ccb95beddc@pengutronix.de>
- <0f2cfcac-83ca-51a9-f92c-ff6495dca1d7@gmail.com>
- <b231b498-c8d2-28af-ce66-db8c168047f7@pengutronix.de>
- <66ee55d9-4f20-6722-6097-e53c2108ea07@gmail.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <66ee55d9-4f20-6722-6097-e53c2108ea07@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Tokunori-san,
-
-On 13.02.22 17:47, Tokunori Ikegami wrote:
-> Hi Ahmad-san,
+On Sat, 12 Feb 2022 17:54:30 +0530, Srinivasa Rao Mandadapu wrote:
+> This patch set is to add switch control for selecting CTIA/OMTP Headset
 > 
-> Thanks for your confirmations. Sorry for late to reply.
-
-No worries. I appreciate you taking the time.
-
-> Could you please try the patch attached to disable the chip_good() change as before?
-> I think this should work for S29GL964N since the chip_ready() is used and works as mentioned.
-
-yes, this resolves my issue:
-Tested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-
->>>> Doesn't seem to be a buffered write issue here though as the writes
->>>> did work fine before dfeae1073583. Any other ideas?
->>> At first I thought the issue is possible to be resolved by using the word write instead of the buffered writes.
->>> Now I am thinking to disable the changes dfeae1073583 partially with any condition if possible.
->> What seems to work for me is checking if chip_good or chip_ready
->> and map_word is equal to 0xFF. I can't justify why this is ok though.
->> (Worst case bus is floating at this point of time and Hi-Z is read
->> as 0xff on CPU data lines...)
+> Srinivasa Rao Mandadapu (2):
+>   ASoC: codec: wcd938x: Add switch control for selecting CTIA/OMTP
+>     Headset
+>   ASoC: dt-bindings: wcd938x: Add gpio property for selecting CTIA/OMTP
+>     headset
 > 
-> Sorry I am not sure about this.
-> I thought the chip_ready() itself is correct as implemented as the data sheet in the past.
-> But it did not work correctly so changed to use chip_good() instead as it is also correct.
+> [...]
 
-What exactly in the datasheet makes you believe chip_good is not appropriate?
+Applied to
 
-Cheers,
-Ahmad
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
+Thanks!
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+[1/2] ASoC: codec: wcd938x: Add switch control for selecting CTIA/OMTP Headset
+      commit: 013cc2aea0f62f864c8497b8497299bed4a248fb
+[2/2] ASoC: dt-bindings: wcd938x: Add gpio property for selecting CTIA/OMTP headset
+      commit: 20ea94bc5317475af70f003075e7988715457d66
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
