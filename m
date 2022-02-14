@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 974EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFD8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245620AbiBNJui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:50:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43386 "EHLO
+        id S245665AbiBNJum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:50:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245188AbiBNJot (ORCPT
+        with ESMTP id S245590AbiBNJqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:44:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B6E6A026;
-        Mon, 14 Feb 2022 01:38:23 -0800 (PST)
+        Mon, 14 Feb 2022 04:46:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F5787179A;
+        Mon, 14 Feb 2022 01:39:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AECFB80DC6;
-        Mon, 14 Feb 2022 09:38:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BDEDC340EF;
-        Mon, 14 Feb 2022 09:38:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7FBE6102D;
+        Mon, 14 Feb 2022 09:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA932C340E9;
+        Mon, 14 Feb 2022 09:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831500;
-        bh=iVVprejHhTHrKXydZFMArGB8nKpVGa/J/tekSOuOWgU=;
+        s=korg; t=1644831551;
+        bh=l/brSncTN6vdt2U5TbNasSHodgL5NGbj4Cmm4cRhARM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TaEEx2tkrA5QJk49m2ETgbooEsqJ+A89s3lK2PbjJqkK0Hpw6Nb5lLZX0VhU51YWt
-         3StPKZMHvsVFyD2HQhnBMwWXPN33IRPxY3a/0Wvz76l6TLaCFo3ehC0uuBe3hLaqP+
-         ViOkEy+1w9YEedgDO7E1rQF9vyClH4iZ5oBi0kik=
+        b=kV3aBEoNiFTuzgQn5wrJh3PzSFSc2QinnfGP2NoOBvyLOUeUmv9gbjQgOstydVuxN
+         DNyw+i9N6YJsAK6Kh2jBzRDApwF2kAJ8DUL4a2tTf4nWh+5H1c7kh/kSU5sbCkRx8C
+         J8Dmhpn+tDt9riA9Q4FyTQ1Za5ENG2dch4T9nWSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
-Subject: [PATCH 5.4 60/71] usb: gadget: rndis: check size of RNDIS_MSG_SET command
-Date:   Mon, 14 Feb 2022 10:26:28 +0100
-Message-Id: <20220214092454.058631155@linuxfoundation.org>
+        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 019/116] NFSv4 expose nfs_parse_server_name function
+Date:   Mon, 14 Feb 2022 10:25:18 +0100
+Message-Id: <20220214092459.342264804@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
+In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
+References: <20220214092458.668376521@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Olga Kornievskaia <kolga@netapp.com>
 
-commit 38ea1eac7d88072bbffb630e2b3db83ca649b826 upstream.
+[ Upstream commit f5b27cc6761e27ee6387a24df1a99ca77b360fea ]
 
-Check the size of the RNDIS_MSG_SET command given to us before
-attempting to respond to an invalid message size.
+Make nfs_parse_server_name available outside of nfs4namespace.c.
 
-Reported-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc: stable@kernel.org
-Tested-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/rndis.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/nfs/nfs4_fs.h       | 3 ++-
+ fs/nfs/nfs4namespace.c | 4 ++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/gadget/function/rndis.c
-+++ b/drivers/usb/gadget/function/rndis.c
-@@ -637,14 +637,17 @@ static int rndis_set_response(struct rnd
- 	rndis_set_cmplt_type *resp;
- 	rndis_resp_t *r;
- 
-+	BufLength = le32_to_cpu(buf->InformationBufferLength);
-+	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
-+	if ((BufLength > RNDIS_MAX_TOTAL_SIZE) ||
-+	    (BufOffset + 8 >= RNDIS_MAX_TOTAL_SIZE))
-+		    return -EINVAL;
-+
- 	r = rndis_add_response(params, sizeof(rndis_set_cmplt_type));
- 	if (!r)
- 		return -ENOMEM;
- 	resp = (rndis_set_cmplt_type *)r->buf;
- 
--	BufLength = le32_to_cpu(buf->InformationBufferLength);
--	BufOffset = le32_to_cpu(buf->InformationBufferOffset);
+diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
+index 3e344bec3647b..de71cf89a24ee 100644
+--- a/fs/nfs/nfs4_fs.h
++++ b/fs/nfs/nfs4_fs.h
+@@ -281,7 +281,8 @@ struct rpc_clnt *nfs4_negotiate_security(struct rpc_clnt *, struct inode *,
+ int nfs4_submount(struct fs_context *, struct nfs_server *);
+ int nfs4_replace_transport(struct nfs_server *server,
+ 				const struct nfs4_fs_locations *locations);
 -
- #ifdef	VERBOSE_DEBUG
- 	pr_debug("%s: Length: %d\n", __func__, BufLength);
- 	pr_debug("%s: Offset: %d\n", __func__, BufOffset);
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net);
+ /* nfs4proc.c */
+ extern int nfs4_handle_exception(struct nfs_server *, int, struct nfs4_exception *);
+ extern int nfs4_async_handle_error(struct rpc_task *task,
+diff --git a/fs/nfs/nfs4namespace.c b/fs/nfs/nfs4namespace.c
+index 873342308dc0d..f1ed4f60a7f33 100644
+--- a/fs/nfs/nfs4namespace.c
++++ b/fs/nfs/nfs4namespace.c
+@@ -164,8 +164,8 @@ static int nfs4_validate_fspath(struct dentry *dentry,
+ 	return 0;
+ }
+ 
+-static size_t nfs_parse_server_name(char *string, size_t len,
+-		struct sockaddr *sa, size_t salen, struct net *net)
++size_t nfs_parse_server_name(char *string, size_t len, struct sockaddr *sa,
++			     size_t salen, struct net *net)
+ {
+ 	ssize_t ret;
+ 
+-- 
+2.34.1
+
 
 
