@@ -2,118 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E39C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:45:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 549CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244687AbiBNJpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:45:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33310 "EHLO
+        id S244867AbiBNJpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:45:43 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245111AbiBNJoN (ORCPT
+        with ESMTP id S244824AbiBNJo1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:44:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F53C6D18E;
+        Mon, 14 Feb 2022 04:44:27 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B0DA6D19B;
+        Mon, 14 Feb 2022 01:38:12 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id v12so25826263wrv.2;
+        Mon, 14 Feb 2022 01:38:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FwbcItNcsm7dTxEvHbAh6CvI7B2XT+qjV62cTTFagwM=;
+        b=Wxl6CgXnSUYOyv/ar/mxtQlrXLh8EkeQAWWUad/KB2GpooYqEDig6Whv+L1vujQ/Cv
+         nXShHlHkx+nP6XkAZXx01VOX8xuWX6val0flPOygMlds+P99XX22X3o6aGuML35xA/y8
+         WnqMaTdVdUMVK/qdv+cAXfpO2fvbgkLWEIWlRTdKO7ziHnf0KWCRo4AEj0Jt9kjnAEZU
+         1JRIFGuL6+DQ2sUyq4+cmVdTPm2chhpHQRwYURsTqzVLOunL5ezIiEedzv7jKMogU+UL
+         Uzpqiji2BoveSh/Gwh0uTkyPSB7ovGn7tjtwZe4Xtf2ansjkSciYeJOuoccTm8nIsDPg
+         YlqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FwbcItNcsm7dTxEvHbAh6CvI7B2XT+qjV62cTTFagwM=;
+        b=gy7KkrniwE63igaSRUiBsK9QyTNFLOzrq2BJKqnZvU/Lo/5BqMeGCiawtsBVzTTohR
+         gFXbOhuc3bSFRH7Dmjcp38Hx7nprtCeLRhgF3bFrCZVlrxT17qQ9qQMXPc49bnCBmAcH
+         pHMXlKuzfl2XNt+kHYQgCvIssWqEksSOdN3tKHzRIlHHN4CZp6xKlWZqUKLHcnIrKFTB
+         3/ncfFs5m7ZnvKBDjdsjUu5idSuafB0ajdw73/gjruRlE8sQvrRxWQEDUdk+3p4iqAeb
+         sivm+m1R1KmbTsMEaHxulQ+XuJldp2T8att3ll9Z0X8MbV2a3H6mQo3nzewCDtbc6Jns
+         RkGQ==
+X-Gm-Message-State: AOAM5328AaivoWRvuDyZiyb7d5rqYD5yDzFW9XrPvtcuxLjX0P+A777N
+        h5Pw84YtV233Xoa7fPHbyHg=
+X-Google-Smtp-Source: ABdhPJxCUP1Y6OAuh3WjUMVMTHkWbPFYNV6VCirBHLjl5MEXY+oDXSnD8aIzgRd4bO8NRi3OukbljA==
+X-Received: by 2002:a5d:6888:: with SMTP id h8mr10351125wru.57.1644831491109;
         Mon, 14 Feb 2022 01:38:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4C7EB80DC4;
-        Mon, 14 Feb 2022 09:38:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 017F6C340E9;
-        Mon, 14 Feb 2022 09:38:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831488;
-        bh=ZSq3veFCTru8SYDIQac3U/vHQgYxxYNddu41EAVyz4A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k8gMYdluW3RMHK14cxzkVCKJYBmw7SUSWsEPX2Kjra+J4vhgZVz5y+XoEXKjHbuY9
-         70+3JdoS8OKPFhaX23zgh/HZNJF2zwCZYHGqF6IPlqfymRMVMhVRAF9ChHoxufNVm1
-         /wJ1MtzgHfQHBy+duo7SnOI25A4zCtfjWrCM04kM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.4 71/71] ACPI: PM: s2idle: Cancel wakeup before dispatching EC GPE
-Date:   Mon, 14 Feb 2022 10:26:39 +0100
-Message-Id: <20220214092454.423611860@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id t18sm30595213wri.34.2022.02.14.01.38.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Feb 2022 01:38:10 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] selftests: net: cmsg_sender: Fix spelling mistake "MONOTINIC" -> "MONOTONIC"
+Date:   Mon, 14 Feb 2022 09:38:10 +0000
+Message-Id: <20220214093810.44792-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+There is a spelling mistake in an error message. Fix it.
 
-commit dc0075ba7f387fe4c48a8c674b11ab6f374a6acc upstream.
-
-Commit 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while
-suspended to idle") made acpi_ec_dispatch_gpe() check
-pm_wakeup_pending(), but that is before canceling the SCI wakeup,
-so pm_wakeup_pending() is always true.  This causes the loop in
-acpi_ec_dispatch_gpe() to always terminate after one iteration which
-may not be correct.
-
-Address this issue by canceling the SCI wakeup earlier, from
-acpi_ec_dispatch_gpe() itself.
-
-Fixes: 4a9af6cac050 ("ACPI: EC: Rework flushing of EC work while suspended to idle")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/acpi/ec.c    |   10 ++++++++++
- drivers/acpi/sleep.c |   14 ++++----------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ tools/testing/selftests/net/cmsg_sender.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -2003,6 +2003,16 @@ bool acpi_ec_dispatch_gpe(void)
- 		return true;
+diff --git a/tools/testing/selftests/net/cmsg_sender.c b/tools/testing/selftests/net/cmsg_sender.c
+index 24444dc72543..efa617bd34e2 100644
+--- a/tools/testing/selftests/net/cmsg_sender.c
++++ b/tools/testing/selftests/net/cmsg_sender.c
+@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
+ 	if (clock_gettime(CLOCK_REALTIME, &time_start_real))
+ 		error(ERN_GETTIME, errno, "gettime REALTIME");
+ 	if (clock_gettime(CLOCK_MONOTONIC, &time_start_mono))
+-		error(ERN_GETTIME, errno, "gettime MONOTINIC");
++		error(ERN_GETTIME, errno, "gettime MONOTONIC");
  
- 	/*
-+	 * Cancel the SCI wakeup and process all pending events in case there
-+	 * are any wakeup ones in there.
-+	 *
-+	 * Note that if any non-EC GPEs are active at this point, the SCI will
-+	 * retrigger after the rearming in acpi_s2idle_wake(), so no events
-+	 * should be missed by canceling the wakeup here.
-+	 */
-+	pm_system_cancel_wakeup();
-+
-+	/*
- 	 * Dispatch the EC GPE in-band, but do not report wakeup in any case
- 	 * to allow the caller to process events properly after that.
- 	 */
---- a/drivers/acpi/sleep.c
-+++ b/drivers/acpi/sleep.c
-@@ -1003,19 +1003,13 @@ static bool acpi_s2idle_wake(void)
- 		if (acpi_check_wakeup_handlers())
- 			return true;
- 
--		/* Check non-EC GPE wakeups and dispatch the EC GPE. */
-+		/*
-+		 * Check non-EC GPE wakeups and if there are none, cancel the
-+		 * SCI-related wakeup and dispatch the EC GPE.
-+		 */
- 		if (acpi_ec_dispatch_gpe())
- 			return true;
- 
--		/*
--		 * Cancel the SCI wakeup and process all pending events in case
--		 * there are any wakeup ones in there.
--		 *
--		 * Note that if any non-EC GPEs are active at this point, the
--		 * SCI will retrigger after the rearming below, so no events
--		 * should be missed by canceling the wakeup here.
--		 */
--		pm_system_cancel_wakeup();
- 		acpi_os_wait_events_complete();
- 
- 		/*
-
+ 	iov[0].iov_base = buf;
+ 	iov[0].iov_len = sizeof(buf);
+-- 
+2.34.1
 
