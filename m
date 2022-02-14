@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC857C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243114AbiBNJ3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:29:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41930 "EHLO
+        id S241943AbiBNJ3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:29:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243021AbiBNJ2o (ORCPT
+        with ESMTP id S243037AbiBNJ2u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:28:44 -0500
+        Mon, 14 Feb 2022 04:28:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B49B60D83;
-        Mon, 14 Feb 2022 01:28:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DD760D8E;
+        Mon, 14 Feb 2022 01:28:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 284EC60F88;
-        Mon, 14 Feb 2022 09:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0978CC340E9;
-        Mon, 14 Feb 2022 09:28:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3154260F6F;
+        Mon, 14 Feb 2022 09:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15234C340E9;
+        Mon, 14 Feb 2022 09:28:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644830914;
-        bh=r4loICwC/Ra3vZUKUUxcneuvZ23lklqWBJUiGClVREg=;
+        s=korg; t=1644830920;
+        bh=4uuCJjkSrfPwVS+0znzdwJlAn7nz7c2ExeWvq/SGEMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KDj/knm8TDrAM2IOPoLHG3/8h5PpDhTl586Otb+TUvgn1IJb2S/gqxuqyBtmtSNuM
-         /bVQP3lstFm1HKTIJpzrKepbr8JkcFDCAlgdlyAm1aDJsTqiDjnfR8Hu7PUtC021YE
-         YG1TD43OyUtTOgRvKdnUhFwFP/cHzGU0VJkZj/OQ=
+        b=mwTf85Kt0sTJ1xqhXrc1RSnI3J5W9auYwjKc54oDca7wA6gpiQsoRx6kzfPi7Sb8I
+         U9ftMbh8kX2Xs7kVPUxNO4tGfDBHsQpSgsXv60i3YiqqlE8DtMJIsWhXXEUAOVybgj
+         Mb+V8G1T4tSwHNDQRtSCKRmfuJGwcJqO/bKECp3Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Guillaume Bertholon <guillaume.bertholon@ens.fr>
-Subject: [PATCH 4.9 05/34] Input: i8042 - Fix misplaced backport of "add ASUS Zenbook Flip to noselftest list"
-Date:   Mon, 14 Feb 2022 10:25:31 +0100
-Message-Id: <20220214092446.126910108@linuxfoundation.org>
+Subject: [PATCH 4.9 07/34] ALSA: line6: Fix misplaced backport of "Fix wrong altsetting for LINE6_PODHD500_1"
+Date:   Mon, 14 Feb 2022 10:25:33 +0100
+Message-Id: <20220214092446.188220247@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
 References: <20220214092445.946718557@linuxfoundation.org>
@@ -50,51 +50,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Guillaume Bertholon <guillaume.bertholon@ens.fr>
 
-The upstream commit b5d6e7ab7fe7 ("Input: i8042 - add ASUS Zenbook Flip to
-noselftest list") inserted a new entry in the `i8042_dmi_noselftest_table`
-table, further patched by commit daa58c8eec0a ("Input: i8042 - fix Pegatron
-C15B ID entry") to insert a missing separator.
+The upstream commit 70256b42caaf ("ALSA: line6: Fix wrong altsetting for
+LINE6_PODHD500_1") changed the .altsetting field of the LINE6_PODHD500_1
+entry in podhd_properties_table from 1 to 0.
 
-However, their backported version in stable (commit e9e8b3769099
-("Input: i8042 - add ASUS Zenbook Flip to noselftest list") and
-commit c551d20d487a ("Input: i8042 - fix Pegatron C15B ID entry"))
-inserted this entry in `i8042_dmi_forcemux_table` instead.
+However, its backported version in stable (commit ec565611f930 ("ALSA:
+line6: Fix wrong altsetting for LINE6_PODHD500_1")) change the
+.altsetting field of the LINE6_PODHD500_0 entry instead.
 
-This patch moves the entry back into `i8042_dmi_noselftest_table`.
+This patch resets the altsetting of LINE6_PODHD500_0 to 1, and sets the
+altsetting of LINE6_PODHD500_1 to 0, as wanted by the original fix.
 
-Fixes: e9e8b3769099 ("Input: i8042 - add ASUS Zenbook Flip to noselftest list")
+Fixes: ec565611f930 ("ALSA: line6: Fix wrong altsetting for LINE6_PODHD500_1")
 Signed-off-by: Guillaume Bertholon <guillaume.bertholon@ens.fr>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/input/serio/i8042-x86ia64io.h |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/usb/line6/podhd.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -586,11 +586,6 @@ static const struct dmi_system_id i8042_
- 			DMI_MATCH(DMI_SYS_VENDOR, "Sony Corporation"),
- 			DMI_MATCH(DMI_PRODUCT_NAME, "VGN-CS"),
- 		},
--	}, {
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
--			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /* Convertible Notebook */
--		},
- 	},
- 	{ }
- };
-@@ -677,6 +672,12 @@ static const struct dmi_system_id i8042_
- 			DMI_MATCH(DMI_PRODUCT_NAME, "Z450LA"),
- 		},
- 	},
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-+			DMI_MATCH(DMI_CHASSIS_TYPE, "31"), /* Convertible Notebook */
-+		},
-+	},
- 	{ }
- };
- static const struct dmi_system_id __initconst i8042_dmi_reset_table[] = {
+--- a/sound/usb/line6/podhd.c
++++ b/sound/usb/line6/podhd.c
+@@ -385,7 +385,7 @@ static const struct line6_properties pod
+ 		.name = "POD HD500",
+ 		.capabilities	= LINE6_CAP_PCM
+ 				| LINE6_CAP_HWMON,
+-		.altsetting = 0,
++		.altsetting = 1,
+ 		.ep_ctrl_r = 0x81,
+ 		.ep_ctrl_w = 0x01,
+ 		.ep_audio_r = 0x86,
+@@ -396,7 +396,7 @@ static const struct line6_properties pod
+ 		.name = "POD HD500",
+ 		.capabilities	= LINE6_CAP_PCM
+ 				| LINE6_CAP_HWMON,
+-		.altsetting = 1,
++		.altsetting = 0,
+ 		.ep_ctrl_r = 0x81,
+ 		.ep_ctrl_w = 0x01,
+ 		.ep_audio_r = 0x86,
 
 
