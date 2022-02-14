@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09569C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE39C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344873AbiBNKE5 (ORCPT
+        id S1344899AbiBNKFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:04:57 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44094 "EHLO
+        Mon, 14 Feb 2022 05:05:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344524AbiBNKAO (ORCPT
+        with ESMTP id S1344602AbiBNKAc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:00:14 -0500
+        Mon, 14 Feb 2022 05:00:32 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB57CC7;
-        Mon, 14 Feb 2022 01:47:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8272ECE1;
+        Mon, 14 Feb 2022 01:47:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62BE7B80DC4;
-        Mon, 14 Feb 2022 09:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BEDC36AF7;
-        Mon, 14 Feb 2022 09:47:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A70CB80DC6;
+        Mon, 14 Feb 2022 09:47:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8600BC340F0;
+        Mon, 14 Feb 2022 09:47:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832027;
-        bh=S8DU5iiK6+Nr/hYQ9QIHCfUbGnjUOsZwli6khqJsDYE=;
+        s=korg; t=1644832031;
+        bh=9fEcy+k844awQx5HWs3Ea+8qA0hdb+v6g3sC9jpOES4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EXAeQ0aV4qepfsr24MdgQ6FWst/IeLmiHIzOKTLNfQhqQWyWyA2U5ECvyyoSNq2/k
-         YfyTlAxpKsOM1N3dsTQtBS2oknUn2qK05Zns+wBCtEYjs+AEgE9rq35Dzqi/P1y7Q0
-         pKLUZc6Bm29On4TAO0Ok82/FPiWYDFCrjaf8sVaU=
+        b=f6UkMcHmYBIcgGycnDzHeTt3KflX/8wM54x2Rom8s9M8WzcS/fM+8DRh/Sl43pfhg
+         1AHbyWh6Z7DbX1vAIPGFC9tZ0zIBJs7JBnOd+Jw3fGtFJY88KgS9dT1vJjcqD2PHxL
+         Zi9vO2ToL6ENO0djc2MiplabXPaXIT+13w49Ugbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Olga Kornievskaia <kolga@netapp.com>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        stable@vger.kernel.org,
+        Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>,
+        James Clark <james.clark@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/172] NFSv4.1 query for fs_location attr on a new file system
-Date:   Mon, 14 Feb 2022 10:24:47 +0100
-Message-Id: <20220214092507.410555424@linuxfoundation.org>
+Subject: [PATCH 5.15 056/172] perf: Always wake the parent event
+Date:   Mon, 14 Feb 2022 10:25:14 +0100
+Message-Id: <20220214092508.328027753@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,243 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: James Clark <james.clark@arm.com>
 
-[ Upstream commit 1976b2b31462151403c9fc110204fcc2a77bdfd1 ]
+[ Upstream commit 961c39121759ad09a89598ec4ccdd34ae0468a19 ]
 
-Query the server for other possible trunkable locations for a given
-file system on a 4.1+ mount.
+When using per-process mode and event inheritance is set to true,
+forked processes will create a new perf events via inherit_event() ->
+perf_event_alloc(). But these events will not have ring buffers
+assigned to them. Any call to wakeup will be dropped if it's called on
+an event with no ring buffer assigned because that's the object that
+holds the wakeup list.
 
-v2:
--- added missing static to nfs4_discover_trunking,
-reported by the kernel test robot
+If the child event is disabled due to a call to
+perf_aux_output_begin() or perf_aux_output_end(), the wakeup is
+dropped leaving userspace hanging forever on the poll.
 
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+Normally the event is explicitly re-enabled by userspace after it
+wakes up to read the aux data, but in this case it does not get woken
+up so the event remains disabled.
+
+This can be reproduced when using Arm SPE and 'stress' which forks once
+before running the workload. By looking at the list of aux buffers read,
+it's apparent that they stop after the fork:
+
+  perf record -e arm_spe// -vvv -- stress -c 1
+
+With this patch applied they continue to be printed. This behaviour
+doesn't happen when using systemwide or per-cpu mode.
+
+Reported-by: Ruben Ayrapetyan <Ruben.Ayrapetyan@arm.com>
+Signed-off-by: James Clark <james.clark@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211206113840.130802-2-james.clark@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/client.c         |  7 ++++
- fs/nfs/nfs4_fs.h        |  9 ++---
- fs/nfs/nfs4proc.c       | 76 +++++++++++++++++++++++++++++++++++------
- fs/nfs/nfs4state.c      |  3 +-
- include/linux/nfs_xdr.h |  1 +
- 5 files changed, 81 insertions(+), 15 deletions(-)
+ kernel/events/core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/client.c b/fs/nfs/client.c
-index 551833862171f..090b16890e3d6 100644
---- a/fs/nfs/client.c
-+++ b/fs/nfs/client.c
-@@ -860,6 +860,13 @@ int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *mntfh, struct nfs
- 			server->namelen = pathinfo.max_namelen;
- 	}
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 69c70767b5dff..b2def55253bd4 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6004,6 +6004,8 @@ static void ring_buffer_attach(struct perf_event *event,
+ 	struct perf_buffer *old_rb = NULL;
+ 	unsigned long flags;
  
-+	if (clp->rpc_ops->discover_trunking != NULL &&
-+			(server->caps & NFS_CAP_FS_LOCATIONS)) {
-+		error = clp->rpc_ops->discover_trunking(server, mntfh);
-+		if (error < 0)
-+			return error;
-+	}
++	WARN_ON_ONCE(event->parent);
 +
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(nfs_probe_fsinfo);
-diff --git a/fs/nfs/nfs4_fs.h b/fs/nfs/nfs4_fs.h
-index ba78df4b13d94..1a048ee653a11 100644
---- a/fs/nfs/nfs4_fs.h
-+++ b/fs/nfs/nfs4_fs.h
-@@ -261,8 +261,8 @@ struct nfs4_state_maintenance_ops {
- };
- 
- struct nfs4_mig_recovery_ops {
--	int (*get_locations)(struct inode *, struct nfs4_fs_locations *,
--		struct page *, const struct cred *);
-+	int (*get_locations)(struct nfs_server *, struct nfs_fh *,
-+		struct nfs4_fs_locations *, struct page *, const struct cred *);
- 	int (*fsid_present)(struct inode *, const struct cred *);
- };
- 
-@@ -303,8 +303,9 @@ extern int nfs4_do_close(struct nfs4_state *state, gfp_t gfp_mask, int wait);
- extern int nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *fhandle);
- extern int nfs4_proc_fs_locations(struct rpc_clnt *, struct inode *, const struct qstr *,
- 				  struct nfs4_fs_locations *, struct page *);
--extern int nfs4_proc_get_locations(struct inode *, struct nfs4_fs_locations *,
--		struct page *page, const struct cred *);
-+extern int nfs4_proc_get_locations(struct nfs_server *, struct nfs_fh *,
-+				   struct nfs4_fs_locations *,
-+				   struct page *page, const struct cred *);
- extern int nfs4_proc_fsid_present(struct inode *, const struct cred *);
- extern struct rpc_clnt *nfs4_proc_lookup_mountpoint(struct inode *,
- 						    struct dentry *,
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index 367a1b99b7550..389fa72d4ca98 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -3952,6 +3952,60 @@ int nfs4_server_capabilities(struct nfs_server *server, struct nfs_fh *fhandle)
- 	return err;
- }
- 
-+static int _nfs4_discover_trunking(struct nfs_server *server,
-+				   struct nfs_fh *fhandle)
-+{
-+	struct nfs4_fs_locations *locations = NULL;
-+	struct page *page;
-+	const struct cred *cred;
-+	struct nfs_client *clp = server->nfs_client;
-+	const struct nfs4_state_maintenance_ops *ops =
-+		clp->cl_mvops->state_renewal_ops;
-+	int status = -ENOMEM;
-+
-+	cred = ops->get_state_renewal_cred(clp);
-+	if (cred == NULL) {
-+		cred = nfs4_get_clid_cred(clp);
-+		if (cred == NULL)
-+			return -ENOKEY;
-+	}
-+
-+	page = alloc_page(GFP_KERNEL);
-+	locations = kmalloc(sizeof(struct nfs4_fs_locations), GFP_KERNEL);
-+	if (page == NULL || locations == NULL)
-+		goto out;
-+
-+	status = nfs4_proc_get_locations(server, fhandle, locations, page,
-+					 cred);
-+	if (status)
-+		goto out;
-+out:
-+	if (page)
-+		__free_page(page);
-+	kfree(locations);
-+	return status;
-+}
-+
-+static int nfs4_discover_trunking(struct nfs_server *server,
-+				  struct nfs_fh *fhandle)
-+{
-+	struct nfs4_exception exception = {
-+		.interruptible = true,
-+	};
-+	struct nfs_client *clp = server->nfs_client;
-+	int err = 0;
-+
-+	if (!nfs4_has_session(clp))
-+		goto out;
-+	do {
-+		err = nfs4_handle_exception(server,
-+				_nfs4_discover_trunking(server, fhandle),
-+				&exception);
-+	} while (exception.retry);
-+out:
-+	return err;
-+}
-+
- static int _nfs4_lookup_root(struct nfs_server *server, struct nfs_fh *fhandle,
- 		struct nfs_fsinfo *info)
+ 	if (event->rb) {
+ 		/*
+ 		 * Should be impossible, we set this when removing
+@@ -6061,6 +6063,9 @@ static void ring_buffer_wakeup(struct perf_event *event)
  {
-@@ -7886,18 +7940,18 @@ int nfs4_proc_fs_locations(struct rpc_clnt *client, struct inode *dir,
-  * appended to this compound to identify the client ID which is
-  * performing recovery.
-  */
--static int _nfs40_proc_get_locations(struct inode *inode,
-+static int _nfs40_proc_get_locations(struct nfs_server *server,
-+				     struct nfs_fh *fhandle,
- 				     struct nfs4_fs_locations *locations,
- 				     struct page *page, const struct cred *cred)
+ 	struct perf_buffer *rb;
+ 
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6074,6 +6079,9 @@ struct perf_buffer *ring_buffer_get(struct perf_event *event)
  {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct rpc_clnt *clnt = server->client;
- 	u32 bitmask[2] = {
- 		[0] = FATTR4_WORD0_FSID | FATTR4_WORD0_FS_LOCATIONS,
- 	};
- 	struct nfs4_fs_locations_arg args = {
- 		.clientid	= server->nfs_client->cl_clientid,
--		.fh		= NFS_FH(inode),
-+		.fh		= fhandle,
- 		.page		= page,
- 		.bitmask	= bitmask,
- 		.migration	= 1,		/* skip LOOKUP */
-@@ -7943,17 +7997,17 @@ static int _nfs40_proc_get_locations(struct inode *inode,
-  * When the client supports GETATTR(fs_locations_info), it can
-  * be plumbed in here.
-  */
--static int _nfs41_proc_get_locations(struct inode *inode,
-+static int _nfs41_proc_get_locations(struct nfs_server *server,
-+				     struct nfs_fh *fhandle,
- 				     struct nfs4_fs_locations *locations,
- 				     struct page *page, const struct cred *cred)
- {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct rpc_clnt *clnt = server->client;
- 	u32 bitmask[2] = {
- 		[0] = FATTR4_WORD0_FSID | FATTR4_WORD0_FS_LOCATIONS,
- 	};
- 	struct nfs4_fs_locations_arg args = {
--		.fh		= NFS_FH(inode),
-+		.fh		= fhandle,
- 		.page		= page,
- 		.bitmask	= bitmask,
- 		.migration	= 1,		/* skip LOOKUP */
-@@ -8002,11 +8056,11 @@ static int _nfs41_proc_get_locations(struct inode *inode,
-  * -NFS4ERR_LEASE_MOVED is returned if the server still has leases
-  * from this client that require migration recovery.
-  */
--int nfs4_proc_get_locations(struct inode *inode,
-+int nfs4_proc_get_locations(struct nfs_server *server,
-+			    struct nfs_fh *fhandle,
- 			    struct nfs4_fs_locations *locations,
- 			    struct page *page, const struct cred *cred)
- {
--	struct nfs_server *server = NFS_SERVER(inode);
- 	struct nfs_client *clp = server->nfs_client;
- 	const struct nfs4_mig_recovery_ops *ops =
- 					clp->cl_mvops->mig_recovery_ops;
-@@ -8019,10 +8073,11 @@ int nfs4_proc_get_locations(struct inode *inode,
- 		(unsigned long long)server->fsid.major,
- 		(unsigned long long)server->fsid.minor,
- 		clp->cl_hostname);
--	nfs_display_fhandle(NFS_FH(inode), __func__);
-+	nfs_display_fhandle(fhandle, __func__);
+ 	struct perf_buffer *rb;
  
- 	do {
--		status = ops->get_locations(inode, locations, page, cred);
-+		status = ops->get_locations(server, fhandle, locations, page,
-+					    cred);
- 		if (status != -NFS4ERR_DELAY)
- 			break;
- 		nfs4_handle_exception(server, status, &exception);
-@@ -10516,6 +10571,7 @@ const struct nfs_rpc_ops nfs_v4_clientops = {
- 	.free_client	= nfs4_free_client,
- 	.create_server	= nfs4_create_server,
- 	.clone_server	= nfs_clone_server,
-+	.discover_trunking = nfs4_discover_trunking,
- };
++	if (event->parent)
++		event = event->parent;
++
+ 	rcu_read_lock();
+ 	rb = rcu_dereference(event->rb);
+ 	if (rb) {
+@@ -6772,7 +6780,7 @@ static unsigned long perf_prepare_sample_aux(struct perf_event *event,
+ 	if (WARN_ON_ONCE(READ_ONCE(sampler->oncpu) != smp_processor_id()))
+ 		goto out;
  
- static const struct xattr_handler nfs4_xattr_nfs4_acl_handler = {
-diff --git a/fs/nfs/nfs4state.c b/fs/nfs/nfs4state.c
-index acc1cd3e63a48..51f5cb41e87a4 100644
---- a/fs/nfs/nfs4state.c
-+++ b/fs/nfs/nfs4state.c
-@@ -2097,7 +2097,8 @@ static int nfs4_try_migration(struct nfs_server *server, const struct cred *cred
- 	}
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		goto out;
  
- 	inode = d_inode(server->super->s_root);
--	result = nfs4_proc_get_locations(inode, locations, page, cred);
-+	result = nfs4_proc_get_locations(server, NFS_FH(inode), locations,
-+					 page, cred);
- 	if (result) {
- 		dprintk("<-- %s: failed to retrieve fs_locations: %d\n",
- 			__func__, result);
-diff --git a/include/linux/nfs_xdr.h b/include/linux/nfs_xdr.h
-index e9698b6278a52..ecd74cc347974 100644
---- a/include/linux/nfs_xdr.h
-+++ b/include/linux/nfs_xdr.h
-@@ -1805,6 +1805,7 @@ struct nfs_rpc_ops {
- 	struct nfs_server *(*create_server)(struct fs_context *);
- 	struct nfs_server *(*clone_server)(struct nfs_server *, struct nfs_fh *,
- 					   struct nfs_fattr *, rpc_authflavor_t);
-+	int	(*discover_trunking)(struct nfs_server *, struct nfs_fh *);
- };
+@@ -6838,7 +6846,7 @@ static void perf_aux_sample_output(struct perf_event *event,
+ 	if (WARN_ON_ONCE(!sampler || !data->aux_size))
+ 		return;
  
- /*
+-	rb = ring_buffer_get(sampler->parent ? sampler->parent : sampler);
++	rb = ring_buffer_get(sampler);
+ 	if (!rb)
+ 		return;
+ 
 -- 
 2.34.1
 
