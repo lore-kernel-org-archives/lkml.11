@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D1C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244405AbiBNJji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:39:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51590 "EHLO
+        id S234259AbiBNJjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:39:41 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244611AbiBNJgE (ORCPT
+        with ESMTP id S244593AbiBNJgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:36:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2475A66F92;
-        Mon, 14 Feb 2022 01:33:58 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4AB1ADB1;
+        Mon, 14 Feb 2022 01:33:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EE71B80DC9;
-        Mon, 14 Feb 2022 09:33:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A18C36AF6;
-        Mon, 14 Feb 2022 09:33:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDAA6B80DCE;
+        Mon, 14 Feb 2022 09:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0967C340EF;
+        Mon, 14 Feb 2022 09:33:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831210;
-        bh=4dsyQEVEH2d0rKeGzvEUb/48O60vR5Q89DpGn4IrFmQ=;
+        s=korg; t=1644831234;
+        bh=Jn7SyqQMTieEnO8xObfW/Ak4+IPgh1fcbZ4OR9XFWTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sPVKIqDivZFJGcGJK16ghrkzn43bG2f7ng125OGxxzIcS6mdklgsBduGnsedFTdI+
-         Gfp/+cxna4OUsZWh/ITqAm4IFARBJIKsw880CDy24V4ZhVDVjrrXyUsOd/Zd9DQ6HI
-         8qeVhJ4NSZS/OpL/z4HPG6ilHT1nCqRS6hvKnHX8=
+        b=ZnFMgtQRFw34PM0MnywjkIbGuyoscJXSarXcMPi41BXH0TfO4Wga8g0nan8kbEa45
+         7ShDmapfzyiBZ8TRyH+6bXrFtgOSH0kZkj38RgmWm6tbGsxnJ5biJoodV4g3bCGlky
+         U0unXWtLb0vR352PpYOqST1hTCafOr79Wq5HbHdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 24/49] ARM: dts: imx6qdl-udoo: Properly describe the SD card detect
-Date:   Mon, 14 Feb 2022 10:25:50 +0100
-Message-Id: <20220214092449.092256660@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>, stable@kernel.org
+Subject: [PATCH 4.19 40/49] USB: gadget: validate interface OS descriptor requests
+Date:   Mon, 14 Feb 2022 10:26:06 +0100
+Message-Id: <20220214092449.627098545@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
 References: <20220214092448.285381753@linuxfoundation.org>
@@ -49,54 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabio Estevam <festevam@gmail.com>
+From: Szymon Heidrich <szymon.heidrich@gmail.com>
 
-[ Upstream commit 993d66140f8d1c1853a3b58b77b43b681eb64dee ]
+commit 75e5b4849b81e19e9efe1654b30d7f3151c33c2c upstream.
 
-GPIO7_IO00 is used as SD card detect.
+Stall the control endpoint in case provided index exceeds array size of
+MAX_CONFIG_INTERFACES or when the retrieved function pointer is null.
 
-Properly describe this in the devicetree.
-
-Fixes: 40cdaa542cf0 ("ARM: dts: imx6q-udoo: Add initial board support")
-Signed-off-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/imx6qdl-udoo.dtsi | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/usb/gadget/composite.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm/boot/dts/imx6qdl-udoo.dtsi b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-index 4cc9858f7ff80..ef63ea5873ed5 100644
---- a/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
-@@ -5,6 +5,8 @@
-  * Author: Fabio Estevam <fabio.estevam@freescale.com>
-  */
- 
-+#include <dt-bindings/gpio/gpio.h>
-+
- / {
- 	aliases {
- 		backlight = &backlight;
-@@ -210,6 +212,7 @@ MX6QDL_PAD_SD3_DAT0__SD3_DATA0		0x17059
- 				MX6QDL_PAD_SD3_DAT1__SD3_DATA1		0x17059
- 				MX6QDL_PAD_SD3_DAT2__SD3_DATA2		0x17059
- 				MX6QDL_PAD_SD3_DAT3__SD3_DATA3		0x17059
-+				MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
- 			>;
- 		};
- 
-@@ -276,7 +279,7 @@ &usbh1 {
- &usdhc3 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_usdhc3>;
--	non-removable;
-+	cd-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
- 	status = "okay";
- };
- 
--- 
-2.34.1
-
+--- a/drivers/usb/gadget/composite.c
++++ b/drivers/usb/gadget/composite.c
+@@ -1930,6 +1930,9 @@ unknown:
+ 				if (w_index != 0x5 || (w_value >> 8))
+ 					break;
+ 				interface = w_value & 0xFF;
++				if (interface >= MAX_CONFIG_INTERFACES ||
++				    !os_desc_cfg->interface[interface])
++					break;
+ 				buf[6] = w_index;
+ 				count = count_ext_prop(os_desc_cfg,
+ 					interface);
 
 
