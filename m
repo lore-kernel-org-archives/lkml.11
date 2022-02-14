@@ -2,97 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC64C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCAB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343859AbiBNJyr (ORCPT
+        id S1343874AbiBNJyv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:54:47 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60738 "EHLO
+        Mon, 14 Feb 2022 04:54:51 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344190AbiBNJve (ORCPT
+        with ESMTP id S1344187AbiBNJve (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:51:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA3A69481;
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED577ABE;
         Mon, 14 Feb 2022 01:42:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36D58B80DA9;
-        Mon, 14 Feb 2022 09:42:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA4BC340F0;
-        Mon, 14 Feb 2022 09:42:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831755;
-        bh=wtFwdW9jsRjiSqdfyCsgNjsrqeSzJXPvR8e564Zrr1g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vl4MQTyh644652cWTFXtffQjbokiwSC+Oncy1Au7ZJeWSyVoFYMMwDobLCWyBYu+1
-         V+MfkQT2MUyS3H/asTQhAEtc85KrCSHyo/Q5gsBUMkS40K2hUeHatGVg86Qh4AUCWF
-         4ZbQxjbA1Fpzamqs/qpESbnWAtctUUCV5zwHBiwY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Richter <rafael.richter@gin.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 086/116] net: dsa: mv88e6xxx: fix use-after-free in mv88e6xxx_mdios_unregister
-Date:   Mon, 14 Feb 2022 10:26:25 +0100
-Message-Id: <20220214092501.737937599@linuxfoundation.org>
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E48WXt002872;
+        Mon, 14 Feb 2022 04:42:34 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e7fsvgx13-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 04:42:34 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 21E9gXvK038650
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Feb 2022 04:42:33 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Feb
+ 2022 04:42:32 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 14 Feb 2022 04:42:32 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E9gM3W009467;
+        Mon, 14 Feb 2022 04:42:28 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v3 2/3] dt-bindings:iio:amplifiers: add ada4250 doc
+Date:   Mon, 14 Feb 2022 11:41:14 +0200
+Message-ID: <20220214094115.48548-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
-References: <20220214092458.668376521@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220214094115.48548-1-antoniu.miclaus@analog.com>
+References: <20220214094115.48548-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 6RlZK-2i1ZZ3z9OS8zEwMqGt-ZRyUtp3
+X-Proofpoint-ORIG-GUID: 6RlZK-2i1ZZ3z9OS8zEwMqGt-ZRyUtp3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_02,2022-02-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=928
+ suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202140058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Add device tree bindings for the ADA4250 driver.
 
-[ Upstream commit 51a04ebf21122d5c76a716ecd9bfc33ea44b2b39 ]
-
-Since struct mv88e6xxx_mdio_bus *mdio_bus is the bus->priv of something
-allocated with mdiobus_alloc_size(), this means that mdiobus_free(bus)
-will free the memory backing the mdio_bus as well. Therefore, the
-mdio_bus->list element is freed memory, but we continue to iterate
-through the list of MDIO buses using that list element.
-
-To fix this, use the proper list iterator that handles element deletion
-by keeping a copy of the list element next pointer.
-
-Fixes: f53a2ce893b2 ("net: dsa: mv88e6xxx: don't use devres for mdiobus")
-Reported-by: Rafael Richter <rafael.richter@gin.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220210174017.3271099-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../bindings/iio/amplifiers/adi,ada4250.yaml  | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 9b451b820d7a6..1992be77522ac 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3122,10 +3122,10 @@ static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
- static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
- 
- {
--	struct mv88e6xxx_mdio_bus *mdio_bus;
-+	struct mv88e6xxx_mdio_bus *mdio_bus, *p;
- 	struct mii_bus *bus;
- 
--	list_for_each_entry(mdio_bus, &chip->mdios, list) {
-+	list_for_each_entry_safe(mdio_bus, p, &chip->mdios, list) {
- 		bus = mdio_bus->bus;
- 
- 		if (!mdio_bus->external)
+diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+new file mode 100644
+index 000000000000..22283ab48903
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADA4250 Programmable Gain Instrumentation Amplifier
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
++
++properties:
++  compatible:
++    enum:
++      - adi,ada4250
++
++  reg:
++    maxItems: 1
++
++  avdd-supply: true
++
++  adi,refbuf-enable:
++    description:
++      Enable internal buffer to drive the reference pin.
++    type: boolean
++
++required:
++  - compatible
++  - reg
++  - avdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      ada4250@0{
++        compatible = "adi,ada4250";
++        reg = <0>;
++        avdd-supply = <&avdd>;
++      };
++    };
++...
 -- 
-2.34.1
-
-
+2.35.1
 
