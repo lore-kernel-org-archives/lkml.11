@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF6EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09823C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345612AbiBNKGb (ORCPT
+        id S1345562AbiBNKG0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:06:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55004 "EHLO
+        Mon, 14 Feb 2022 05:06:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345603AbiBNKBp (ORCPT
+        with ESMTP id S1345455AbiBNKBj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:01:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBE61C13C;
-        Mon, 14 Feb 2022 01:47:57 -0800 (PST)
+        Mon, 14 Feb 2022 05:01:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3633F193E3;
+        Mon, 14 Feb 2022 01:47:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C5D661284;
-        Mon, 14 Feb 2022 09:47:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04320C340E9;
-        Mon, 14 Feb 2022 09:47:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A85BEB80D83;
+        Mon, 14 Feb 2022 09:47:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD059C340E9;
+        Mon, 14 Feb 2022 09:47:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832076;
-        bh=I4fTghh8t62Mct8NDcrob1gP89ZwL1gZIENffU7Umzs=;
+        s=korg; t=1644832069;
+        bh=hG9jkos58WAdkn3Ip/Te7FXuqEYEgOqyyoE7Oxk6cmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqTUSEc55nQBODrxO/Xe4OYC/zU1MQpBbWCuVPVfT2tH7gsi14VNoZb9W9StbNY3U
-         YZCuXFr19Pgknu95GvN/yituhcQppx51Bt2xjMROQNX5MLXgARyWxV7QDjmGYhTJS9
-         LHcPN3JBMafBGd3d0m5f633xLEL1zwTATLpzYPZU=
+        b=Wx+/zjM4tkk+5etze377zscVjUbSgyQiy3Nmg+STxsKgtpzhNTe+Wy7/idgbwG+3e
+         HgnMEVdDBA3mKJCRp34mRcRtQMxi1AX3tg39My7tAt36JlVwRYUSCjxRVfMX1pr2pM
+         kuXZUz2jpDltlgZm4qhnjHb5S27pUzyr67zfnJPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH 5.15 072/172] ARM: socfpga: fix missing RESET_CONTROLLER
-Date:   Mon, 14 Feb 2022 10:25:30 +0100
-Message-Id: <20220214092508.892193177@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: [PATCH 5.15 070/172] ARM: dts: imx23-evk: Remove MX23_PAD_SSP1_DETECT from hog group
+Date:   Mon, 14 Feb 2022 10:25:28 +0100
+Message-Id: <20220214092508.815036399@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -50,46 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Fabio Estevam <festevam@gmail.com>
 
-commit 3037b174b1876aae6b2d1a27a878c681c78ccadc upstream.
+commit 42c9b28e6862d16db82a56f5667cf4d1f6658cf6 upstream.
 
-The SocFPGA machine since commit b3ca9888f35f ("reset: socfpga: add an
-early reset driver for SoCFPGA") uses reset controller, so it should
-select RESET_CONTROLLER explicitly.  Selecting ARCH_HAS_RESET_CONTROLLER
-is not enough because it affects only default choice still allowing a
-non-buildable configuration:
+Currently, SD card fails to mount due to the following pinctrl error:
 
-  /usr/bin/arm-linux-gnueabi-ld: arch/arm/mach-socfpga/socfpga.o: in function `socfpga_init_irq':
-  arch/arm/mach-socfpga/socfpga.c:56: undefined reference to `socfpga_reset_init'
+[   11.170000] imx23-pinctrl 80018000.pinctrl: pin SSP1_DETECT already requested by 80018000.pinctrl; cannot claim for 80010000.spi
+[   11.180000] imx23-pinctrl 80018000.pinctrl: pin-65 (80010000.spi) status -22
+[   11.190000] imx23-pinctrl 80018000.pinctrl: could not request pin 65 (SSP1_DETECT) from group mmc0-pins-fixup.0  on device 80018000.pinctrl
+[   11.200000] mxs-mmc 80010000.spi: Error applying setting, reverse things back
 
-Reported-by: kernel test robot <lkp@intel.com>
+Fix it by removing the MX23_PAD_SSP1_DETECT pin from the hog group as it
+is already been used by the mmc0-pins-fixup pinctrl group.
+
+With this change the rootfs can be mounted and the imx23-evk board can
+boot successfully.
+
 Cc: <stable@vger.kernel.org>
-Fixes: b3ca9888f35f ("reset: socfpga: add an early reset driver for SoCFPGA")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Fixes: bc3875f1a61e ("ARM: dts: mxs: modify mx23/mx28 dts files to use pinctrl headers")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/mach-socfpga/Kconfig |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/imx23-evk.dts |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/arm/mach-socfpga/Kconfig
-+++ b/arch/arm/mach-socfpga/Kconfig
-@@ -2,6 +2,7 @@
- menuconfig ARCH_INTEL_SOCFPGA
- 	bool "Altera SOCFPGA family"
- 	depends on ARCH_MULTI_V7
-+	select ARCH_HAS_RESET_CONTROLLER
- 	select ARCH_SUPPORTS_BIG_ENDIAN
- 	select ARM_AMBA
- 	select ARM_GIC
-@@ -18,6 +19,7 @@ menuconfig ARCH_INTEL_SOCFPGA
- 	select PL310_ERRATA_727915
- 	select PL310_ERRATA_753970 if PL310
- 	select PL310_ERRATA_769419
-+	select RESET_CONTROLLER
- 
- if ARCH_INTEL_SOCFPGA
- config SOCFPGA_SUSPEND
+--- a/arch/arm/boot/dts/imx23-evk.dts
++++ b/arch/arm/boot/dts/imx23-evk.dts
+@@ -79,7 +79,6 @@
+ 						MX23_PAD_LCD_RESET__GPIO_1_18
+ 						MX23_PAD_PWM3__GPIO_1_29
+ 						MX23_PAD_PWM4__GPIO_1_30
+-						MX23_PAD_SSP1_DETECT__SSP1_DETECT
+ 					>;
+ 					fsl,drive-strength = <MXS_DRIVE_4mA>;
+ 					fsl,voltage = <MXS_VOLTAGE_HIGH>;
 
 
