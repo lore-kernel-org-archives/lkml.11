@@ -2,130 +2,442 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 979EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C170C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiBNUpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:45:51 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:37990 "EHLO
+        id S229570AbiBNUqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:46:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:33448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiBNUp3 (ORCPT
+        with ESMTP id S229615AbiBNUpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:45:29 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2851524287C;
-        Mon, 14 Feb 2022 12:42:47 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id 2C98292009E; Mon, 14 Feb 2022 21:42:05 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id 221CC92009D;
-        Mon, 14 Feb 2022 20:42:05 +0000 (GMT)
-Date:   Mon, 14 Feb 2022 20:42:05 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Chris Zankel <chris@zankel.net>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] parport_pc: Also enable driver for PCI systems
-In-Reply-To: <624931c5da90387324a97be57745b13af4738bda.camel@linux.ibm.com>
-Message-ID: <alpine.DEB.2.21.2202142018060.34636@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2202122313460.34636@angie.orcam.me.uk>  <CAMuHMdW-utcFzCZTgqONjxs=U662nF0=aBQu7Zi7FBQouwiA3g@mail.gmail.com>  <alpine.DEB.2.21.2202140833290.34636@angie.orcam.me.uk>
- <624931c5da90387324a97be57745b13af4738bda.camel@linux.ibm.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Mon, 14 Feb 2022 15:45:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E2E41BBEF1
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:43:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644871321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CLTTADxDEQIE8GGZgYQSZNXiYggg7TuIqod+aNAtzDU=;
+        b=VlLfYSGyvxNv+pmbAr6MpJy7aekjTsbjThWgr0PC7gNXIvtga9I6xGwJ+fxxvIjp3C7P5+
+        t6peR2QrMccvH9AwDvi2DpsiPulTI0fPXC1tshXlh7cszKuj9gyVx1Aw7OtjD6qTAWznFH
+        kDGrdzLUsSamLQiLwAoYzauN08UJNXY=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-UAvq2_b0OruCp31WWwvkyQ-1; Mon, 14 Feb 2022 15:00:17 -0500
+X-MC-Unique: UAvq2_b0OruCp31WWwvkyQ-1
+Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso10925210edt.20
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 12:00:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CLTTADxDEQIE8GGZgYQSZNXiYggg7TuIqod+aNAtzDU=;
+        b=05QIdhZ2/fqhP3euM/mggclu2I7+UZIrOHutMKIaxo/bbllyPO3FjuC+FDpTlLhk6U
+         1tq9Cm4/u3df15Jn1haDrYCcjx0DaY98bkC+1AI7tKC88Wj0rewnW0YMSWSOOumEn7Uy
+         yLDQM7agiHDui0bb79qXJjOyQOuy1/G2HNx69gIAmz9cJ1GMPhLVnD4r6STs0ocZKqlx
+         zmJCDAh0RFNZfevtRFaNylwe1J70PCnHYLipIFjUCK0tGGzNID16rabc3rZA9qYF8jRs
+         zRkergu707jhsRcBT/kxRQJK98es05bEav+DmZVqYY+VyW2QmDFdtSksYVhmxj7Eda6A
+         KpMg==
+X-Gm-Message-State: AOAM531BW6StcYCuesJBQqT4GGYRsciyBdgdWX70OhySHTR4EQiH4chy
+        /99N9fa3a4M/S25NmxO3cU5Iocswp0+sFZxYWwQgx/8BZfs9DYAfyeAZu7ZI1S2D7K3fWuQIv7q
+        reOQUr4tMFLovfjmfkUdx4zgD
+X-Received: by 2002:a05:6402:cb8:: with SMTP id cn24mr447081edb.418.1644868816131;
+        Mon, 14 Feb 2022 12:00:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxjBrdBIf+NhQ/zDucnVLFObkfwAiiSRHsK7d+P9me2nFj80A+zEvUVQsstXcHen0+h/aXiww==
+X-Received: by 2002:a05:6402:cb8:: with SMTP id cn24mr447060edb.418.1644868815901;
+        Mon, 14 Feb 2022 12:00:15 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id c8sm2676296ede.34.2022.02.14.12.00.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 12:00:15 -0800 (PST)
+Message-ID: <16c77526-fd68-4eca-f9a8-bc15458bd04e@redhat.com>
+Date:   Mon, 14 Feb 2022 21:00:14 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH V7 3/3] selftests: sdsi: test sysfs setup
+Content-Language: en-US
+To:     david.e.box@linux.intel.com, gregkh@linuxfoundation.org,
+        andriy.shevchenko@linux.intel.com, srinivas.pandruvada@intel.com,
+        mgross@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org
+References: <20220212013252.1293396-1-david.e.box@linux.intel.com>
+ <20220212013252.1293396-4-david.e.box@linux.intel.com>
+ <b431a81f-a2c0-cdc5-208b-7e8adb03cf23@redhat.com>
+ <6f6c341360128e047216be632a9377860ecd1d0b.camel@linux.intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <6f6c341360128e047216be632a9377860ecd1d0b.camel@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 14 Feb 2022, Niklas Schnelle wrote:
+Hi,
 
-> > While older versions of the driver did have to be explicitly configured 
-> > for MMIO rather than port I/O, a feature added with commit e89a2cfb7d7b 
-> > ("[TC] defxx: TURBOchannel support"), the driver has been improved with 
-> > commit 795e272e5474 ("FDDI: defxx: Implement dynamic CSR I/O address space 
-> > selection") and the selection of the I/O space to use now fully automatic.
+On 2/14/22 19:57, David E. Box wrote:
+> On Mon, 2022-02-14 at 12:10 +0100, Hans de Goede wrote:
+>> Hi,
+>>
+>> On 2/12/22 02:32, David E. Box wrote:
+>>> Tests file configuration and error handling of the Intel Software
+>>> Defined Silicon sysfs ABI.
+>>>
+>>> Signed-off-by: David E. Box <david.e.box@linux.intel.com>
+>>> ---
+>>> V7
+>>>   - No changes.
+>>> V6
+>>>   - No changes.
+>>> V5
+>>>   - No changes.
+>>> V4
+>>>   - No changes.
+>>> V3
+>>>   - Add tests to check PCI device removal handling and to check for
+>>>     driver memory leaks.
+>>> V2
+>>>   - New patch.
+>>>
+>>>  MAINTAINERS                                   |   1 +
+>>>  tools/testing/selftests/drivers/sdsi/sdsi.sh  |  18 ++
+>>>  .../selftests/drivers/sdsi/sdsi_test.py       | 226 ++++++++++++++++++
+>>>  3 files changed, 245 insertions(+)
+>>>  create mode 100755 tools/testing/selftests/drivers/sdsi/sdsi.sh
+>>>  create mode 100644 tools/testing/selftests/drivers/sdsi/sdsi_test.py
+>>>
+>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>> index 80325cbde3bd..a05c6b40601a 100644
+>>> --- a/MAINTAINERS
+>>> +++ b/MAINTAINERS
+>>> @@ -9874,6 +9874,7 @@ M:        David E. Box <david.e.box@linux.intel.com>
+>>>  S:     Supported
+>>>  F:     drivers/platform/x86/intel/sdsi.c
+>>>  F:     tools/arch/x86/intel_sdsi/
+>>> +F:     tools/testing/selftests/drivers/sdsi/
+>>>  
+>>>  INTEL SKYLAKE INT3472 ACPI DEVICE DRIVER
+>>>  M:     Daniel Scally <djrscally@gmail.com>
+>>> diff --git a/tools/testing/selftests/drivers/sdsi/sdsi.sh
+>>> b/tools/testing/selftests/drivers/sdsi/sdsi.sh
+>>> new file mode 100755
+>>> index 000000000000..8db71961d164
+>>> --- /dev/null
+>>> +++ b/tools/testing/selftests/drivers/sdsi/sdsi.sh
+>>> @@ -0,0 +1,18 @@
+>>> +#!/bin/sh
+>>> +# SPDX-License-Identifier: GPL-2.0
+>>> +# Runs tests for the intel_sdsi driver
+>>> +
+>>> +if ! /sbin/modprobe -q -r intel_sdsi; then
+>>> +       echo "drivers/sdsi: [SKIP]"
+>>> +       exit 77
+>>> +fi
+>>
+>> You should also test that python3 and pytest are available and if not then
+>> also skip this test.
 > 
-> Very interesting and thanks for the input! On s390 we really only have
-> very few different PCI devices and I can only test another hand full
-> with my private x86 and ARM systems.
-
- Note that for TURBOchannel support, which is likewise MMIO only, the 
-driver has this:
-
-#if defined(CONFIG_EISA) || defined(CONFIG_PCI)
-#define dfx_use_mmio bp->mmio
-#else
-#define dfx_use_mmio true
-#endif
-
-so if your proposal to add HAS_IOPORT goes forward it'll be enough if we 
-update the condition to:
-
-#if defined(CONFIG_HAS_IOPORT)
-
-or maybe even rewrite the entire piece as:
-
-#define dfx_use_mmio (!IS_ENABLED(CONFIG_HAS_IOPORT) || bp->mmio)
-
-and all the port I/O stuff will be optimised away by the compiler.  The 
-only part of the driver that actually cannot do without port I/O is EISA 
-support, which uses the EISA slot port I/O space for BAR accesses even 
-if the actual CSR block has been set up to be decoded in the MMIO space.
-
-> >  Then what about the other FDDI driver there, SKFP?  It's not marked as
-> > LEGACY_PCI, although it's not selectable anyway due to the dependency of 
-> > FDDI on LEGACY_PCI.
-> > 
-> >  Niklas, what was the criterion for placing the LEGACY_PCI dependency?
+> Okay
 > 
-> Hmm, honestly I haven't really worked on this recently. There were some
-> open questions from Bjorn towards Arnd and I was waiting for his reply
-> but I guess he missed those. I think what you noticed was the main
-> problem, there wasn't really a clear set of criteria for LEGACY_PCI and
-> even for HAS_IOPORT we missed some uses if they were not compiled on
-> s390's allyesconfig due to other dependencies.
-
- A dynamic boolean variable might be good having for platforms which may 
-or may not have PCI port I/O available depending on the specific system 
-model in addition to a compile-time constant of HAS_IOPORT.  I looked 
-into it briefly in the context of the POWER9 system when I got it back 
-in 2020, but figured out it wasn't straightforward enough and decided I 
-could not afford the time for a proper investigation.
-
-> >  Also do you plan to post an updated series anytime soon?  I'm asking 
-> > because like with the m68k port also the MIPS one needs a more finegrained 
-> > approach and I suspect there may be other corner cases and I'd rather look 
-> > at the most recent version of your series.  Otherwise I'll have a look 
-> > through your original submission, but it may have to wait until the next 
-> > weekend due to my other commitments.
+>>
+>>> +
+>>> +if /sbin/modprobe -q intel_sdsi; then
+>>> +       python3 -m pytest sdsi_test.py
+>>
+>> You are ignoring the return value of the python script here, you probably want
+>> something like
+>> this instead:
+>>
+>> if /sbin/modprobe -q intel_sdsi && python3 -m pytest sdsi_test.py; then
+>>
+>>
+>>
+>>
+>>> +       /sbin/modprobe -q -r intel_sdsi
 > 
-> That sounds like you do see a need for something like HAS_IOPORT too,
-> correct? Maybe with some input what you need and possibly stripping the
-> LEGACY_PCI option it might make sense to do a new version. Rather than
-> possibly getting in your way could directly work in your input.
+> Okay
+> 
+>>
+>> Why? now you are leaving the system behind in a different state then it was
+>> before?
+> 
+> I assumed that the driver had to be installed to run the test, so I uninstall it
+> after. But it could have already been installed. Will change to match the
+> initial state. Thanks.
 
- Yes, it does seem to me like a good direction, but will surely require 
-some coordination from platform and driver maintainers, as it's not 
-always easy for someone not familiar with a specific piece what the 
-context is (such as with the defxx driver as I noted above).
+The initial:
 
-  Maciej
+if ! /sbin/modprobe -q -r intel_sdsi; then
+       echo "drivers/sdsi: [SKIP]"
+       exit 77
+fi
+
+Block checks if the driver is loaded before running the test and otherwise
+skips it, this is done this way to skip the test when it is run on hardware
+which does not use the driver.
+
+Regards,
+
+Hans
+
+
+
+> 
+> David
+> 
+>>
+>> Regards,
+>>
+>> Hans
+>>
+>>
+>>> +
+>>> +       echo "drivers/sdsi: ok"
+>>> +else
+>>> +       echo "drivers/sdsi: [FAIL]"
+>>> +       exit 1
+>>> +fi
+>>> diff --git a/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+>>> b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+>>> new file mode 100644
+>>> index 000000000000..4922edfe461f
+>>> --- /dev/null
+>>> +++ b/tools/testing/selftests/drivers/sdsi/sdsi_test.py
+>>> @@ -0,0 +1,226 @@
+>>> +#!/usr/bin/env python3
+>>> +# SPDX-License-Identifier: GPL-2.0
+>>> +
+>>> +from struct import pack
+>>> +from time import sleep
+>>> +
+>>> +import errno
+>>> +import glob
+>>> +import os
+>>> +import subprocess
+>>> +
+>>> +try:
+>>> +    import pytest
+>>> +except ImportError:
+>>> +    print("Unable to import pytest python module.")
+>>> +    print("\nIf not already installed, you may do so with:")
+>>> +    print("\t\tpip3 install pytest")
+>>> +    exit(1)
+>>> +
+>>> +SOCKETS = glob.glob('/sys/bus/auxiliary/devices/intel_vsec.sdsi.*')
+>>> +NUM_SOCKETS = len(SOCKETS)
+>>> +
+>>> +MODULE_NAME = 'sdsi'
+>>> +DEV_PREFIX = 'intel_vsec.sdsi'
+>>> +CLASS_DIR = '/sys/bus/auxiliary/devices'
+>>> +GUID = "0x6dd191"
+>>> +
+>>> +def read_bin_file(file):
+>>> +    with open(file, mode='rb') as f:
+>>> +        content = f.read()
+>>> +    return content
+>>> +
+>>> +def get_dev_file_path(socket, file):
+>>> +    return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/' + file
+>>> +
+>>> +def kmemleak_enabled():
+>>> +    kmemleak = "/sys/kernel/debug/kmemleak"
+>>> +    return os.path.isfile(kmemleak)
+>>> +
+>>> +class TestSDSiDriver:
+>>> +    def test_driver_loaded(self):
+>>> +        lsmod_p = subprocess.Popen(('lsmod'), stdout=subprocess.PIPE)
+>>> +        result = subprocess.check_output(('grep', '-q', MODULE_NAME),
+>>> stdin=lsmod_p.stdout)
+>>> +
+>>> +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+>>> +class TestSDSiFilesClass:
+>>> +
+>>> +    def read_value(self, file):
+>>> +        f = open(file, "r")
+>>> +        value = f.read().strip("\n")
+>>> +        return value
+>>> +
+>>> +    def get_dev_folder(self, socket):
+>>> +        return CLASS_DIR + '/' + DEV_PREFIX + '.' + str(socket) + '/'
+>>> +
+>>> +    def test_sysfs_files_exist(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +        print (folder)
+>>> +        assert os.path.isfile(folder + "guid") == True
+>>> +        assert os.path.isfile(folder + "provision_akc") == True
+>>> +        assert os.path.isfile(folder + "provision_cap") == True
+>>> +        assert os.path.isfile(folder + "state_certificate") == True
+>>> +        assert os.path.isfile(folder + "registers") == True
+>>> +
+>>> +    def test_sysfs_file_permissions(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +        mode = os.stat(folder + "guid").st_mode & 0o777
+>>> +        assert mode == 0o444    # Read all
+>>> +        mode = os.stat(folder + "registers").st_mode & 0o777
+>>> +        assert mode == 0o400    # Read owner
+>>> +        mode = os.stat(folder + "provision_akc").st_mode & 0o777
+>>> +        assert mode == 0o200    # Read owner
+>>> +        mode = os.stat(folder + "provision_cap").st_mode & 0o777
+>>> +        assert mode == 0o200    # Read owner
+>>> +        mode = os.stat(folder + "state_certificate").st_mode & 0o777
+>>> +        assert mode == 0o400    # Read owner
+>>> +
+>>> +    def test_sysfs_file_ownership(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +
+>>> +        st = os.stat(folder + "guid")
+>>> +        assert st.st_uid == 0
+>>> +        assert st.st_gid == 0
+>>> +
+>>> +        st = os.stat(folder + "registers")
+>>> +        assert st.st_uid == 0
+>>> +        assert st.st_gid == 0
+>>> +
+>>> +        st = os.stat(folder + "provision_akc")
+>>> +        assert st.st_uid == 0
+>>> +        assert st.st_gid == 0
+>>> +
+>>> +        st = os.stat(folder + "provision_cap")
+>>> +        assert st.st_uid == 0
+>>> +        assert st.st_gid == 0
+>>> +
+>>> +        st = os.stat(folder + "state_certificate")
+>>> +        assert st.st_uid == 0
+>>> +        assert st.st_gid == 0
+>>> +
+>>> +    def test_sysfs_file_sizes(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +
+>>> +        if self.read_value(folder + "guid") == GUID:
+>>> +            st = os.stat(folder + "registers")
+>>> +            assert st.st_size == 72
+>>> +
+>>> +        st = os.stat(folder + "provision_akc")
+>>> +        assert st.st_size == 1024
+>>> +
+>>> +        st = os.stat(folder + "provision_cap")
+>>> +        assert st.st_size == 1024
+>>> +
+>>> +        st = os.stat(folder + "state_certificate")
+>>> +        assert st.st_size == 4096
+>>> +
+>>> +    def test_no_seek_allowed(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +        rand_file = bytes(os.urandom(8))
+>>> +
+>>> +        f = open(folder + "provision_cap", "wb", 0)
+>>> +        f.seek(1)
+>>> +        with pytest.raises(OSError) as error:
+>>> +            f.write(rand_file)
+>>> +        assert error.value.errno == errno.ESPIPE
+>>> +        f.close()
+>>> +
+>>> +        f = open(folder + "provision_akc", "wb", 0)
+>>> +        f.seek(1)
+>>> +        with pytest.raises(OSError) as error:
+>>> +            f.write(rand_file)
+>>> +        assert error.value.errno == errno.ESPIPE
+>>> +        f.close()
+>>> +
+>>> +    def test_registers_seek(self, socket):
+>>> +        folder = self.get_dev_folder(socket)
+>>> +
+>>> +        # Check that the value read from an offset of the entire
+>>> +        # file is none-zero and the same as the value read
+>>> +        # from seeking to the same location
+>>> +        f = open(folder + "registers", "rb")
+>>> +        data = f.read()
+>>> +        f.seek(64)
+>>> +        id = f.read()
+>>> +        assert id != bytes(0)
+>>> +        assert data[64:] == id
+>>> +        f.close()
+>>> +
+>>> +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+>>> +class TestSDSiMailboxCmdsClass:
+>>> +    def test_provision_akc_eoverflow_1017_bytes(self, socket):
+>>> +
+>>> +        # The buffer for writes is 1k, of with 8 bytes must be
+>>> +        # reserved for the command, leaving 1016 bytes max.
+>>> +        # Check that we get an overflow error for 1017 bytes.
+>>> +        node = get_dev_file_path(socket, "provision_akc")
+>>> +        rand_file = bytes(os.urandom(1017))
+>>> +
+>>> +        f = open(node, 'wb', 0)
+>>> +        with pytest.raises(OSError) as error:
+>>> +            f.write(rand_file)
+>>> +        assert error.value.errno == errno.EOVERFLOW
+>>> +        f.close()
+>>> +
+>>> +@pytest.mark.parametrize('socket', range(0, NUM_SOCKETS))
+>>> +class TestSdsiDriverLocksClass:
+>>> +    def test_enodev_when_pci_device_removed(self, socket):
+>>> +        node = get_dev_file_path(socket, "provision_akc")
+>>> +        dev_name = DEV_PREFIX + '.' + str(socket)
+>>> +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
+>>> +        rand_file = bytes(os.urandom(8))
+>>> +
+>>> +        f = open(node, 'wb', 0)
+>>> +        g = open(node, 'wb', 0)
+>>> +
+>>> +        with open(driver_dir + 'unbind', 'w') as k:
+>>> +            print(dev_name, file = k)
+>>> +
+>>> +        with pytest.raises(OSError) as error:
+>>> +            f.write(rand_file)
+>>> +        assert error.value.errno == errno.ENODEV
+>>> +
+>>> +        with pytest.raises(OSError) as error:
+>>> +            g.write(rand_file)
+>>> +        assert error.value.errno == errno.ENODEV
+>>> +
+>>> +        f.close()
+>>> +        g.close()
+>>> +
+>>> +        # Short wait needed to allow file to close before pulling driver
+>>> +        sleep(1)
+>>> +
+>>> +        p = subprocess.Popen(('modprobe', '-r', 'intel_sdsi'))
+>>> +        p.wait()
+>>> +        p = subprocess.Popen(('modprobe', '-r', 'intel_vsec'))
+>>> +        p.wait()
+>>> +        p = subprocess.Popen(('modprobe', 'intel_vsec'))
+>>> +        p.wait()
+>>> +
+>>> +        # Short wait needed to allow driver time to get inserted
+>>> +        # before continuing tests
+>>> +        sleep(1)
+>>> +
+>>> +    def test_memory_leak(self, socket):
+>>> +        if not kmemleak_enabled:
+>>> +            pytest.skip("kmemleak not enabled in kernel")
+>>> +
+>>> +        dev_name = DEV_PREFIX + '.' + str(socket)
+>>> +        driver_dir = CLASS_DIR + '/' + dev_name + "/driver/"
+>>> +
+>>> +        with open(driver_dir + 'unbind', 'w') as k:
+>>> +            print(dev_name, file = k)
+>>> +
+>>> +        sleep(1)
+>>> +
+>>> +        subprocess.check_output(('modprobe', '-r', 'intel_sdsi'))
+>>> +        subprocess.check_output(('modprobe', '-r', 'intel_vsec'))
+>>> +
+>>> +        with open('/sys/kernel/debug/kmemleak', 'w') as f:
+>>> +            print('scan', file = f)
+>>> +        sleep(5)
+>>> +
+>>> +        assert os.stat('/sys/kernel/debug/kmemleak').st_size == 0
+>>> +
+>>> +        subprocess.check_output(('modprobe', 'intel_vsec'))
+>>> +        sleep(1)
+>>
+> 
+> 
+
