@@ -2,72 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C96C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 539D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242917AbiBNJ1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:27:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40556 "EHLO
+        id S242926AbiBNJ2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:28:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:40836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232064AbiBNJ1n (ORCPT
+        with ESMTP id S232064AbiBNJ2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:27:43 -0500
-Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EE260A8C
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:27:36 -0800 (PST)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4JxzQZ21l3z1r5Sf;
-        Mon, 14 Feb 2022 10:27:34 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4JxzQZ1HbSz1qqkD;
-        Mon, 14 Feb 2022 10:27:34 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id aNRyA1YptquK; Mon, 14 Feb 2022 10:27:33 +0100 (CET)
-X-Auth-Info: R0XjbQXb2+5gGB2bT5bpBZHuDOLFj/16nNUnBauej6c6LUkDgKfgDP03UTXie8CI
-Received: from igel.home (ppp-46-244-178-131.dynamic.mnet-online.de [46.244.178.131])
+        Mon, 14 Feb 2022 04:28:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148D760A8F;
+        Mon, 14 Feb 2022 01:27:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 14 Feb 2022 10:27:33 +0100 (CET)
-Received: by igel.home (Postfix, from userid 1000)
-        id D80442C39FF; Mon, 14 Feb 2022 10:27:32 +0100 (CET)
-From:   Andreas Schwab <schwab@linux-m68k.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     'Helge Deller' <deller@gmx.de>,
-        OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>
-Subject: Re: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
- case
-References: <YgmB01p+p45Cihhg@p100>
-        <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com>
-X-Yow:  YOU PICKED KARL MALDEN'S NOSE!!
-Date:   Mon, 14 Feb 2022 10:27:32 +0100
-In-Reply-To: <49a26b7a30254d9fb9653c2f815eaa28@AcuMS.aculab.com> (David
-        Laight's message of "Mon, 14 Feb 2022 09:12:01 +0000")
-Message-ID: <8735klx0fv.fsf@igel.home>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4BD160DFD;
+        Mon, 14 Feb 2022 09:27:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 726D8C340EF;
+        Mon, 14 Feb 2022 09:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644830878;
+        bh=0lxXy/jVMS9pYNsQkVICaXhZEM0lAPgI5MzlHy/N10E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w3Jc81cdiHJzM2eCqoR1ksaj/Kb0uP+DZ42hsT8ZO4eg2R3B3ysUEl0RvqW+6flqw
+         /D/np4M/18wJoBzGN6K1XWNMctRx6xbC9pSWpKY0myX+lUxnK5P7ighgSvS3qsKZAc
+         nCEWi7a6d+YfU2gUMii3KBdkC5Qb+9ZbHQXyWgHg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 4.9 01/34] integrity: check the return value of audit_log_start()
+Date:   Mon, 14 Feb 2022 10:25:27 +0100
+Message-Id: <20220214092445.995230860@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214092445.946718557@linuxfoundation.org>
+References: <20220214092445.946718557@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Feb 14 2022, David Laight wrote:
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-> The 'bug' is caused by put_user() trying to do:
-> 	__typeof__(ptr) __ptr = ptr;
-> where __typeof__ is returning char[n] not char *.
->
-> I've tried a few things but can't get __typeof__ to
-> generate a suitable type for both a simple type and array.
+commit 83230351c523b04ff8a029a4bdf97d881ecb96fc upstream.
 
-Does it work to use __typeof__(&*(ptr))?
+audit_log_start() returns audit_buffer pointer on success or NULL on
+error, so it is better to check the return value of it.
 
--- 
-Andreas Schwab, schwab@linux-m68k.org
-GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-"And now for something completely different."
+Fixes: 3323eec921ef ("integrity: IMA as an integrity service provider")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ security/integrity/integrity_audit.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+--- a/security/integrity/integrity_audit.c
++++ b/security/integrity/integrity_audit.c
+@@ -39,6 +39,8 @@ void integrity_audit_msg(int audit_msgno
+ 		return;
+ 
+ 	ab = audit_log_start(current->audit_context, GFP_KERNEL, audit_msgno);
++	if (!ab)
++		return;
+ 	audit_log_format(ab, "pid=%d uid=%u auid=%u ses=%u",
+ 			 task_pid_nr(current),
+ 			 from_kuid(&init_user_ns, current_cred()->uid),
+
+
