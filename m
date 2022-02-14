@@ -2,131 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA32C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3ADC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:41:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244561AbiBNJmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:42:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33454 "EHLO
+        id S244591AbiBNJmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:42:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244594AbiBNJkr (ORCPT
+        with ESMTP id S244595AbiBNJkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 04:40:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2327AB861;
-        Mon, 14 Feb 2022 01:36:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D77D560FA2;
-        Mon, 14 Feb 2022 09:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE396C340F0;
-        Mon, 14 Feb 2022 09:35:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831358;
-        bh=t6eXjYA4rKPNICg4rTTpI2MzLeemt627oblOFcmf4C0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xqRgVqTbrxiKNn+JbE7EutXLkoLcp3PSJd5Z/J+ks5+bj2+yJI1UId1t0kQ2n+noZ
-         LQImdmU5xxpLL40+7dAgJltiFXd8yYC3fcBFdDjZpayiSU+OK2KmWfq+jl0K5ZFMRz
-         s7V7i5FfLDBPczUky+ZeVSp/YUqj/3mPdDEPbu+w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Mimi Zohar <zohar@linux.ibm.com>
-Subject: [PATCH 5.4 03/71] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
-Date:   Mon, 14 Feb 2022 10:25:31 +0100
-Message-Id: <20220214092452.136339118@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
-References: <20220214092452.020713240@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54A1B85D;
+        Mon, 14 Feb 2022 01:35:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/kVIgFJ8ubFPieTzVWtZtI9HqscvRt6tDLYaMfGuR94=; b=r8H/h8Igq0GzYQRu9lX+4vZpkz
+        PZT8xyiFTwmYfH8zubh1ywbnAQuGsxBwPjrNNrXA/o5U2JjK2PG0V0xRX/sJIDHEu54dC9/6UiQmL
+        F+Y3JW1EqyYpAxhmND0M+vmbJxIzO/juCEX+l1Qxgp3yY0pks+vRezLo8UnjVQpQDnV21BZMIq5eU
+        cLBiNTmqSIIC6wmCTCn7UcAw94DlAlbMufV+uEMoQM32jv5F+3qmu69tvjWwB6IZXb47Xsbg77XjX
+        QWG7HLXHrI/r9z3omtqEEq49GOXiD1gj/PIcUnY9oVdJvwe1GhbBV1iVjaieum7WgA5MFUOuUx9Vo
+        TDY7Hsgw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nJXlV-00CkQY-Gv; Mon, 14 Feb 2022 09:35:25 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id CF6CF300472;
+        Mon, 14 Feb 2022 10:35:22 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 94416203C074A; Mon, 14 Feb 2022 10:35:22 +0100 (CET)
+Date:   Mon, 14 Feb 2022 10:35:22 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org, linux-mm@kvack.org,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jason Baron <jbaron@akamai.com>, rcu@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Zhouyi Zhou <zhouzhouyi@gmail.com>, christophe.leroy@csgroup.eu
+Subject: Re: BUG: sleeping function called from invalid context at
+ include/linux/sched/mm.h:256
+Message-ID: <YgoiWlNZvTusk1B9@hirez.programming.kicks-ass.net>
+References: <244218af-df6a-236e-0a52-268247dd8271@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <244218af-df6a-236e-0a52-268247dd8271@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roberto Sassu <roberto.sassu@huawei.com>
+On Sun, Feb 13, 2022 at 12:05:50AM +0100, Paul Menzel wrote:
 
-commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
+> [    0.012154][    T1] BUG: sleeping function called from invalid context at
 
-Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
-ima_template_fmt") introduced an additional check on the ima_template
-variable to avoid multiple template selection.
+> [    0.022443][    T1] [c0000000084837d0] [c000000000961aac] > dump_stack_lvl+0xa0/0xec (unreliable)
+> [    0.023356][    T1] [c000000008483820] [c00000000019b314] > __might_resched+0x2f4/0x310
+> [    0.024174][    T1] [c0000000084838b0] [c0000000004c0c70] > kmem_cache_alloc+0x220/0x4b0
+> [    0.025000][    T1] [c000000008483920] [c000000000448af4] > __pud_alloc+0x74/0x1d0
+> [    0.025772][    T1] [c000000008483970] [c00000000008fe3c] > hash__map_kernel_page+0x2cc/0x390
+> [    0.026643][    T1] [c000000008483a20] [c0000000000a9944] > do_patch_instruction+0x134/0x4a0
 
-Unfortunately, ima_template could be also set by the setup function of the
-ima_hash= parameter, when it calls ima_template_desc_current(). This causes
-attempts to choose a new template with ima_template= or with
-ima_template_fmt=, after ima_hash=, to be ignored.
+do_patch_instruction() rightfully disables IRQs, but then it goes and
+tries a memory alloc, which seems a bit daft.
 
-Achieve the goal of the commit mentioned with the new static variable
-template_setup_done, so that template selection requests after ima_hash=
-are not ignored.
-
-Finally, call ima_init_template_list(), if not already done, to initialize
-the list of templates before lookup_template_desc() is called.
-
-Reported-by: Guo Zihua <guozihua@huawei.com>
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-Cc: stable@vger.kernel.org
-Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- security/integrity/ima/ima_template.c |   10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
---- a/security/integrity/ima/ima_template.c
-+++ b/security/integrity/ima/ima_template.c
-@@ -29,6 +29,7 @@ static struct ima_template_desc builtin_
- 
- static LIST_HEAD(defined_templates);
- static DEFINE_SPINLOCK(template_list);
-+static int template_setup_done;
- 
- static const struct ima_template_field supported_fields[] = {
- 	{.field_id = "d", .field_init = ima_eventdigest_init,
-@@ -82,10 +83,11 @@ static int __init ima_template_setup(cha
- 	struct ima_template_desc *template_desc;
- 	int template_len = strlen(str);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
--	ima_init_template_list();
-+	if (!ima_template)
-+		ima_init_template_list();
- 
- 	/*
- 	 * Verify that a template with the supplied name exists.
-@@ -109,6 +111,7 @@ static int __init ima_template_setup(cha
- 	}
- 
- 	ima_template = template_desc;
-+	template_setup_done = 1;
- 	return 1;
- }
- __setup("ima_template=", ima_template_setup);
-@@ -117,7 +120,7 @@ static int __init ima_template_fmt_setup
- {
- 	int num_templates = ARRAY_SIZE(builtin_templates);
- 
--	if (ima_template)
-+	if (template_setup_done)
- 		return 1;
- 
- 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
-@@ -128,6 +131,7 @@ static int __init ima_template_fmt_setup
- 
- 	builtin_templates[num_templates - 1].fmt = str;
- 	ima_template = builtin_templates + num_templates - 1;
-+	template_setup_done = 1;
- 
- 	return 1;
- }
-
-
+I'm thinking Christophe might know more... he's recently been poking at
+Power text poking..
