@@ -2,103 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F199C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 19:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbiBNTI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 14:08:26 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44126 "EHLO
+        id S229753AbiBNTRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 14:17:04 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:39030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiBNTIR (ORCPT
+        with ESMTP id S229473AbiBNTRD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 14:08:17 -0500
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9439C1EC70
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:08:01 -0800 (PST)
-Received: by mail-pj1-f51.google.com with SMTP id n19-20020a17090ade9300b001b9892a7bf9so48708pjv.5
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 11:08:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=l8oDDwvFNImY/VPR1iI+PTzO8EFCV3s3KPhPnO2c9qA=;
-        b=rI4JOyp6IV6w3InslglP235o0EtoDitOmNELyKh8B2Up0oGYgaVOWRXqwKiX9TLfAz
-         N/2ys8LUy0o18leOKmEw5jJ3DEvqQYHy3xxsiT2o5zWvHUved3MSXP9mu3GborQQtXay
-         ISMq80DJ8Ou2f8/XmrMyr+/+LX4XC7wfhRYHA3Ja3a05N56J8PQ19wNBPzb0VM4rb6hU
-         P7mxRkcgf0GCQZOnt3HteIoUDNo5wKZ1rbAxOf1AuI0pDIFeOk/FlgLUM9SCZoKhrujm
-         yQxkuwheZRelQtdwNZ4htfATDkm299zk1VFn16AKkKHIRFeaDzwwkeeAQ+HmljxteeM1
-         t4hA==
+        Mon, 14 Feb 2022 14:17:03 -0500
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A16E38BE8;
+        Mon, 14 Feb 2022 11:16:47 -0800 (PST)
+Received: by mail-yb1-f182.google.com with SMTP id c6so49189552ybk.3;
+        Mon, 14 Feb 2022 11:16:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=l8oDDwvFNImY/VPR1iI+PTzO8EFCV3s3KPhPnO2c9qA=;
-        b=q7yczolk3C/TQei0o1QijetO8s7ft3GJoGv1M8+KpDZC8Px+nr0Qd/AFWGod6M69Uo
-         oaMCtvvyaWq+LDdSRqvht8DrNWptVLLdCxJdkrCaFd+kuf3x9Jiyze/6qMb4VI6rSYWu
-         nRez3xUbkApF7gKuUKlEG14uJKHC1G5P46R4NEp1hMOv0lG7d0K+ojpwsajAx7Vtxwzf
-         O1BDANelTR3bD59nhZAH7RmudRyP8E7Upwh4ua+QX1QakLRAcECNN++Idh9FtOvlhOD/
-         iz7PMIP4BDnKTVNGf+sPF4SGLTKGggnqiaQA8vdy8D5Xo9MAzz9WtfP27jRMo254EzWg
-         hVSw==
-X-Gm-Message-State: AOAM533+6kk1imQI0iPT2qV088lqJivnFsD/m4MX9SZ0//cd8/e2xtZV
-        MQcFvd3aDJqt8LMtTVmZouPP+g+9vyedJpRownRey7DHkrGV/rN6
-X-Google-Smtp-Source: ABdhPJwrV9PAaE833RQnSzliybCzTGC5tXIZJBODdZdXtN+MdiLtf7qksrvTJNixCwaxHomIyGnU/PinBMcVwG0/VPE=
-X-Received: by 2002:a67:7206:: with SMTP id n6mr51013vsc.21.1644864661852;
- Mon, 14 Feb 2022 10:51:01 -0800 (PST)
+        bh=vzrVMcjVHERtKSM0FYQPAihvxExHzZg8a0NX0dN9W9w=;
+        b=LzC9CpZJw5c/+sCSHlomBOlNFZex7aWXnBGiIv5HvRZvFwBmzv0fU1YaY8VuW5cS9a
+         kl8RCQg+q9bPskItICSprAaOJ1lDH2vcH6JkjsVzjbHeeCIJ/TqYLNcu6SHljpuz5hlG
+         2/Vxcze7DthyCnubaw2low8Kqqz4n1cB4RL8IcjZtbJFY7NrbP+CWfqbhNAsSbT0Br20
+         blNGU9DIcfQWCXKZB1CSEOR1rrJIA+gqpNmQRKtN7FEwEj4M2NMfMDfZuX1tkqhR2Cci
+         NaYoh9hSGkFwCIS89d5Ejdrn6lNtSqEop0izf1IrKs24GdnrsTlyuWJaCarKjJTI8iXr
+         kQXg==
+X-Gm-Message-State: AOAM5328lZ2Ulr+eqV/NjHKXdJQkyjPTBhApH1PSCrPF/zTDSnZqDJGs
+        xYNzR0WfsUnyAcpgQo4CFPu8S3Tx28NybG+2tRQ=
+X-Google-Smtp-Source: ABdhPJwHuusDjPsm1V25596Pa1nnl0uuNq2nUq1Q2KPf6t8ejUsf1/sI+e3wOa6pH5dhS69iAHuzDZULSkIaGapKRHg=
+X-Received: by 2002:a25:7e81:: with SMTP id z123mr523455ybc.466.1644865924393;
+ Mon, 14 Feb 2022 11:12:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20220214092448.285381753@linuxfoundation.org>
-In-Reply-To: <20220214092448.285381753@linuxfoundation.org>
-From:   Jeffrin Thalakkottoor <jeffrin@rajagiritech.edu.in>
-Date:   Mon, 14 Feb 2022 13:50:25 -0500
-Message-ID: <CAG=yYwm=7zS0k9VY+Oie18LtmN1jemV0AP778+s4+wR5jC6N+g@mail.gmail.com>
-Subject: Re: [PATCH 4.19 00/49] 4.19.230-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     lkml <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        torvalds@linux-foundation.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220211023008.3197397-1-wonchung@google.com>
+In-Reply-To: <20220211023008.3197397-1-wonchung@google.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 14 Feb 2022 20:11:53 +0100
+Message-ID: <CAJZ5v0gD4zs3uBAYv6M4_1gNpkZ-g9XKOywJnf5007e6GwoGVA@mail.gmail.com>
+Subject: Re: [PATCH v6] ACPI: device_sysfs: Add sysfs support for _PLD
+To:     Won Chung <wonchung@google.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Benson Leung <bleung@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 4:37 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Fri, Feb 11, 2022 at 3:30 AM Won Chung <wonchung@google.com> wrote:
 >
-> This is the start of the stable review cycle for the 4.19.230 release.
-> There are 49 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 16 Feb 2022 09:24:36 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.230-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
->
- hello,
+> When ACPI table includes _PLD fields for a device, create a new
+> directory (pld) in sysfs to share _PLD fields.
 
-Compiled and booted 4.19.230-rc1+  on  ...
-Processor Information
-    Socket Designation: FM2
-    Type: Central Processor
-    Family: A-Series
-    Manufacturer: AuthenticAMD
+This version of the patch loos better to me, but I'm not sure if it
+goes into the right direction overall.
 
-NO new regressions from dmesg.
+> Currently without PLD information, when there are multiple of same
+> devices, it is hard to distinguish which device corresponds to which
+> physical device in which location. For example, when there are two Type
+> C connectors, it is hard to find out which connector corresponds to the
+> Type C port on the left panel versus the Type C port on the right panel.
 
-Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+So I think that this is your primary use case and I'm wondering if
+this is the best way to address it.
 
--- 
-software engineer
-rajagiri school of engineering and technology  -  autonomous
+Namely, by exposing _PLD information under the ACPI device object,
+you'll make user space wanting to use that information depend on this
+interface, but the problem is not ACPI-specific (inevitably, it will
+appear on systems using DT, sooner or later) and making the user space
+interface related to it depend on ACPI doesn't look like a perfect
+choice.
+
+IOW, why don't you create a proper ABI for this in the Type C
+subsystem and expose the information needed by user space in a generic
+way that can be based on the _PLD information on systems with ACPI?
