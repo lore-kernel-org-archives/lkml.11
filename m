@@ -2,120 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75722C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02024C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 20:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiBNUFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 15:05:32 -0500
-Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:44830 "EHLO
+        id S229776AbiBNUHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 15:07:33 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:55130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiBNUF3 (ORCPT
+        with ESMTP id S229770AbiBNUHc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 15:05:29 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DBE1A3768;
-        Mon, 14 Feb 2022 12:05:10 -0800 (PST)
+        Mon, 14 Feb 2022 15:07:32 -0500
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25DB111ACE3;
+        Mon, 14 Feb 2022 12:07:17 -0800 (PST)
+Received: by mail-oi1-f178.google.com with SMTP id r27so18618073oiw.4;
+        Mon, 14 Feb 2022 12:07:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1644869110; x=1676405110;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GFe66AWLT+MQYAQ2dAVPVsypw1KVTvBSrIl/sWoPZfA=;
-  b=FyWJAbI+/JzzL7QCZC/oAPiCVqdFhDxMVbArs2ebLRfOLD5amJxN7E8I
-   co9/C9cCTdWj2JOZu7jaRObF+UT3rP+/iELXGdjV1qeMy2JB7WZvTVsGa
-   Rbz2YbVQDd356cyuxHIo/PxmGS/uLqqYLskBS7en0qwalS3D0K/K+JVBh
-   w=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Feb 2022 12:00:14 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 12:00:14 -0800
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 14 Feb 2022 12:00:13 -0800
-Received: from [10.216.29.10] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 14 Feb
- 2022 12:00:09 -0800
-Message-ID: <c02d28ce-bef4-0b71-e90a-991ef4fae9d3@quicinc.com>
-Date:   Tue, 15 Feb 2022 01:30:04 +0530
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p+qaLj5PeJFZmiJ725JeU6P2tttdbBuvpV2cQ0sO28w=;
+        b=HRaK5XDjfwgK07M+uIki6Hy3scx/ZNV3tSk5ugGAPnaWNgB1kcaO4X5LjC3AK3dGSB
+         /2YubVyCCs/QL8epvMOPDGhWDbdMAPZRegrNiwGo1aYBItCy+AbIzPD5+X9y92kTK9xN
+         mwzpDadGRImpO0OTvp64bqEr50T08Ms2LXw9vA1dVxjDVkcPhGh8Aw6y5ehK7cctyz4I
+         C+pEL+ScxlB4v6ZHkr7gMiGNxnppf68osRxiZVX0WMcXJPh6EitaScsXW4N12nYey9E+
+         /S73g9BaZhk9yZp17a1Q3Halqi4DT4U+dlEaTu/GP6zgv+3mgnFqaKlNBK2IArBSt6hv
+         YpRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p+qaLj5PeJFZmiJ725JeU6P2tttdbBuvpV2cQ0sO28w=;
+        b=2WtE20FljNJ7CCJIbycs3S+HKd4WKEmtepg68y3WC5wwhDGevjiePi1a8D2pcNqCAv
+         xQfNCrnmVTeshw93Hi747zzk6yS9Wtv8A0lxyyPiijI6cP8iu1qCe50q3xitJNZ3fzsT
+         JcTl5509nZBXYmvz38hFcfrFVz/SQvVt8HgAFKbolgRbhcX2zsDRz1tbXw/q1VvrhQNI
+         UfCVzuFM4OiNmgheZXYh94WqUWO9WvCZQTg1qSg5FVenqGqqbYbfKshGnLxfPrg6/aZB
+         KNEH6y1qLfvHO/WDA6ms0qyouAtNHaQjq3ne+JFvSdlbSBAm6s9bzEmYdrqETugDSeC2
+         C4LA==
+X-Gm-Message-State: AOAM533qFcZ81W6XTMTH3dx5RkHDgSrJ2prLWN1Oe4Vv7g5IiHWzh9sD
+        k7lDWocmkpk6cCMCwhSadsnp+hkwvhVHGI+/Dcb6qL/cHOA=
+X-Google-Smtp-Source: ABdhPJxkdJufelV5+Wulm+FPE68886UfKNvwL/u6QTOcUjhbFtvpANs+EwHHjny3HwHpiYb8Vh6woKOgUKLhncksRUI=
+X-Received: by 2002:a17:90b:1d84:b0:1b4:dc8e:2cc2 with SMTP id
+ pf4-20020a17090b1d8400b001b4dc8e2cc2mr192125pjb.122.1644866701752; Mon, 14
+ Feb 2022 11:25:01 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v5] drivers: thermal: clear all mitigation when thermal
- zone is disabled
-To:     Lukasz Luba <lukasz.luba@arm.com>
-CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        "Amit Kucheria" <amitk@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-References: <1643307093-22501-1-git-send-email-quic_manafm@quicinc.com>
- <4024218b-7938-e181-f456-bff4b3fb157a@arm.com>
-From:   Manaf Meethalavalappu Pallikunhi <quic_manafm@quicinc.com>
-In-Reply-To: <4024218b-7938-e181-f456-bff4b3fb157a@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+References: <20220201205534.1962784-1-haoluo@google.com> <20220201205534.1962784-6-haoluo@google.com>
+ <20220203180414.blk6ou3ccmod2qck@ast-mbp.dhcp.thefacebook.com>
+ <CA+khW7jkJbvQrTx4oPJAoBZ0EOCtr3C2PKbrzhxj-7euBK8ojg@mail.gmail.com>
+ <CAADnVQLZZ3SM2CDxnzgOnDgRtGU7+6wT9u5v4oFas5MnZF6DsQ@mail.gmail.com>
+ <CA+khW7i+TScwPZ6-rcFKiXtxMm8hiZYJGH-wYb=7jBvDWg8pJQ@mail.gmail.com>
+ <CAADnVQ+-29CS7nSXghKMgZjKte84L0nRDegUE0ObFm3d7E=eWw@mail.gmail.com>
+ <CA+khW7iWd5MzZW_mCfgqHESi8okjNRiRMr0TM=CQzLkMsa_a5g@mail.gmail.com>
+ <CAADnVQJcTAgcbwrOWO8EnbTdAcQ91HQmtpn7aKJGwHc=mEpJ1g@mail.gmail.com> <CA+khW7i46Rg8q=8goXdmuJuZ+NOuZ5AP6fSbSVzyqcU3C5iX4A@mail.gmail.com>
+In-Reply-To: <CA+khW7i46Rg8q=8goXdmuJuZ+NOuZ5AP6fSbSVzyqcU3C5iX4A@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 14 Feb 2022 11:24:50 -0800
+Message-ID: <CAADnVQK+Eh9qCuoBWZ1cRQ4h+fS5J+zy+GePEGXijZ_BD_5Q3w@mail.gmail.com>
+Subject: Re: [PATCH RFC bpf-next v2 5/5] selftests/bpf: test for pinning for
+ cgroup_view link
+To:     Hao Luo <haoluo@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>,
+        Joe Burton <jevburton.kernel@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 1/31/2022 12:55 PM, Lukasz Luba wrote:
-> Hi Manaf,
+On Mon, Feb 14, 2022 at 10:29 AM Hao Luo <haoluo@google.com> wrote:
+> Hi Alexei,
 >
-> On 1/27/22 6:11 PM, Manaf Meethalavalappu Pallikunhi wrote:
->> Whenever a thermal zone is in trip violated state, there is a chance
->> that the same thermal zone mode can be disabled either via
->> thermal core API or via thermal zone sysfs. Once it is disabled,
->> the framework bails out any re-evaluation of thermal zone. It leads
->> to a case where if it is already in mitigation state, it will stay
->> the same state forever.
->>
->> To avoid above mentioned issue, add support to bind/unbind
->> governor from thermal zone during thermal zone mode change request
->> and clear all existing throttling in governor unbind_from_tz()
->> callback.
->
-> I have one use case:
-> This would be a bit dangerous, e.g. to switch governors while there is a
-> high temperature. Although, sounds reasonable to left a 'default' state
-> for a next governor.
->
-I believe only way to change the governror via userspace at runtime.
+> Actually, I found this almost worked, except that the tracepoints
+> cgroup_mkdir and cgroup_rmdir are not sleepable. They are inside a
+> spinlock's critical section with irq off. I guess one solution is to
+> offload the sleepable part of the bpf prog into a thread context. We
+> may create a dedicated kernel thread or use workqueue for this. Do you
+> have any advice?
 
-Just re-evaluate thermal zone  (thermal_zone_device_update) immediately  
-after
-
-thermal_zone_device_set_policy()  in same policy_store() context, isn't 
-it good enough ?
-
-Not sure how a "default" state  can be reverted once governor change is 
-done.
-
-Re-evaluating thermal zone doesn't guarantee that it will recover previous
-
-set default state for all governors, right ?
-
->>
->> Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->> Signed-off-by: Manaf Meethalavalappu Pallikunhi 
->> <quic_manafm@quicinc.com>
->> ---
->>   drivers/thermal/gov_power_allocator.c |  3 +++
->>   drivers/thermal/gov_step_wise.c       | 26 ++++++++++++++++++++++++++
->>   drivers/thermal/thermal_core.c        | 31 
->> +++++++++++++++++++++++++++----
->>   3 files changed, 56 insertions(+), 4 deletions(-)
->
-> Why only two governors need that change and not all?
-> Because they don't have 'bind/unbind' callbacks, then maybe we should
-> change that as well to make it consistent?
-I will update other governors as well in v6
->
-> Regards,
-> Lukasz
+Are you referring to spin_lock in TRACE_CGROUP_PATH
+that protects global trace_cgroup_path[] buffer?
+That is fixable.
+Do you actually need the string path returned by cgroup_path() in bpf prog?
+Maybe prog can call cgroup_path() by itself when necessary.
+Parsing strings isn't great anyway. The bpf prog probably needs the last
+part of the dir only. So cgrp->kn->name would do it?
+The TRACE_CGROUP_PATH wasn't designed to be turned on 24/7.
+That global spin_lock is not great for production use.
+No need to delegate sleepable bpf to thread context.
+Let's refactor that tracepoint a bit.
