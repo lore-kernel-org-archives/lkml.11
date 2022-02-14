@@ -2,143 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40348C352A1
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 929AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356640AbiBNQhu (ORCPT
+        id S1356618AbiBNQhw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:37:50 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43224 "EHLO
+        Mon, 14 Feb 2022 11:37:52 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356578AbiBNQh2 (ORCPT
+        with ESMTP id S1356579AbiBNQh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 11:37:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76F536515C;
-        Mon, 14 Feb 2022 08:37:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11F4E61503;
-        Mon, 14 Feb 2022 16:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EC10C340F2;
-        Mon, 14 Feb 2022 16:37:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644856633;
-        bh=xPmHkcOVS/yITVJeEntOUBw+xw68iqOnYa2twIOtXYc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mrqn5vxFjvUagN2pKvxkJBJGliaoy6MP0jFoyX87gnr3XzjUW97zOF2byukzKb7wT
-         E7NJtDKT5zv31VRqv+qj0too8+wx5sD0RyH+MTT+msOF1jPOFyDDNvVoSgFUoy9QLD
-         t5Lsiozlst1R3n+nWulzcvj+OboDpu885ft5vvuvmiKpyr9q37jLxwtuRMARpqWsIO
-         GBpyEJ9KSTjS3eJz1YtPZ5AEx/LAzduOaPtX9npuQqJUzyrgXxlnqYD2lkogyB5K3z
-         8L8gKn2P4XZBENc6TnX7Y3RkjeTuj5E4MW+PVjIdx+wEaJHxpbaxGjuVjNKLr8MOwo
-         NPAYqCu6fVtxg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, arnd@arndb.de,
-        linux-kernel@vger.kernel.org
-Cc:     linux@armlinux.org.uk, will@kernel.org, guoren@kernel.org,
-        bcain@codeaurora.org, geert@linux-m68k.org, monstr@monstr.eu,
-        tsbogend@alpha.franken.de, nickhu@andestech.com,
-        green.hu@gmail.com, dinguyen@kernel.org, shorne@gmail.com,
-        deller@gmx.de, mpe@ellerman.id.au, peterz@infradead.org,
-        mingo@redhat.com, mark.rutland@arm.com, hca@linux.ibm.com,
-        dalias@libc.org, davem@davemloft.net, richard@nod.at,
-        x86@kernel.org, jcmvbkbc@gmail.com, ebiederm@xmission.com,
-        akpm@linux-foundation.org, ardb@kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-m68k@lists.linux-m68k.org, linux-mips@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org
-Subject: [PATCH 08/14] arm64: simplify access_ok()
-Date:   Mon, 14 Feb 2022 17:34:46 +0100
-Message-Id: <20220214163452.1568807-9-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220214163452.1568807-1-arnd@kernel.org>
-References: <20220214163452.1568807-1-arnd@kernel.org>
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213B46515B;
+        Mon, 14 Feb 2022 08:37:13 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: sre)
+        with ESMTPSA id 419021F43601
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1644856632;
+        bh=xtCoDMldrBj2wzxfrRVgsB4LaKOaG5qDFCWlCS3lxaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PHkGIZlzuLMY3au0OU09JwwwDc+7TtKA8yHhQ4RZwmqVZ1oVJXqWwVsfDy5n8K0jl
+         lhM0z+EW+Vpart5pM9pBdnT6Kl5o/mcS3KTjMxhwORH5YFXKsCNpNWTmPbiyPdrouu
+         ZG3Rs0vSNo8q4xtJyaBZjSLg7LrM7Gbbk21oeMSZPxlb4GvqTOqpeEEUzeFlPBr9D5
+         5qfh4l1895y2FdoeDFjEX9dtWRYt2mynMKNtfBIhKJFdjkcZgCneiIbvZo5aFobfuD
+         uZ2o4dzVwpPEVnzGHIEmQV7GcORMRP/wavoUgBFBkWRWqmvnTOnjyKySVMSjsvpJeL
+         2pj6E+trme9FQ==
+Received: by mercury (Postfix, from userid 1000)
+        id 6684510603FD; Mon, 14 Feb 2022 17:37:10 +0100 (CET)
+Date:   Mon, 14 Feb 2022 17:37:10 +0100
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 2/4] dt-bindings: power: supply: maxim,max14577:
+ convert to dtschema
+Message-ID: <20220214163710.g5brep7jkvwf44ih@mercury.elektranox.org>
+References: <20220111174337.223320-1-krzysztof.kozlowski@canonical.com>
+ <20220111174337.223320-3-krzysztof.kozlowski@canonical.com>
+ <20220112112905.n6zb36kwop2kfm2n@earth.universe>
+ <YgpkgSmxAWCNHW9l@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lbjfw46sz4tz7akt"
+Content-Disposition: inline
+In-Reply-To: <YgpkgSmxAWCNHW9l@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
 
-arm64 has an inline asm implementation of access_ok() that is derived from
-the 32-bit arm version and optimized for the case that both the limit and
-the size are variable. With set_fs() gone, the limit is always constant,
-and the size usually is as well, so just using the default implementation
-reduces the check into a comparison against a constant that can be
-scheduled by the compiler.
+--lbjfw46sz4tz7akt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On a defconfig build, this saves over 28KB of .text.
+Hi Lee,
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- arch/arm64/include/asm/uaccess.h | 28 +++++-----------------------
- 1 file changed, 5 insertions(+), 23 deletions(-)
+On Mon, Feb 14, 2022 at 02:17:37PM +0000, Lee Jones wrote:
+> On Wed, 12 Jan 2022, Sebastian Reichel wrote:
+> > On Tue, Jan 11, 2022 at 06:43:35PM +0100, Krzysztof Kozlowski wrote:
+> > > Convert the Charger bindings of Maxim MAX14577/MAX77836 MUIC to DT
+> > > schema format.  The existing bindings were defined in
+> > > ../bindings/mfd/max14577.txt.
+> > >=20
+> > > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > ---
+> >=20
+> > I expect this to be merged through MFD:
+> >=20
+> > Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+>=20
+> Do you need a PR?
 
-diff --git a/arch/arm64/include/asm/uaccess.h b/arch/arm64/include/asm/uaccess.h
-index 357f7bd9c981..e8dce0cc5eaa 100644
---- a/arch/arm64/include/asm/uaccess.h
-+++ b/arch/arm64/include/asm/uaccess.h
-@@ -26,6 +26,8 @@
- #include <asm/memory.h>
- #include <asm/extable.h>
- 
-+static inline int __access_ok(const void __user *ptr, unsigned long size);
-+
- /*
-  * Test whether a block of memory is a valid user space address.
-  * Returns 1 if the range is valid, 0 otherwise.
-@@ -33,10 +35,8 @@
-  * This is equivalent to the following test:
-  * (u65)addr + (u65)size <= (u65)TASK_SIZE_MAX
-  */
--static inline unsigned long __access_ok(const void __user *addr, unsigned long size)
-+static inline int access_ok(const void __user *addr, unsigned long size)
- {
--	unsigned long ret, limit = TASK_SIZE_MAX - 1;
--
- 	/*
- 	 * Asynchronous I/O running in a kernel thread does not have the
- 	 * TIF_TAGGED_ADDR flag of the process owning the mm, so always untag
-@@ -46,27 +46,9 @@ static inline unsigned long __access_ok(const void __user *addr, unsigned long s
- 	    (current->flags & PF_KTHREAD || test_thread_flag(TIF_TAGGED_ADDR)))
- 		addr = untagged_addr(addr);
- 
--	__chk_user_ptr(addr);
--	asm volatile(
--	// A + B <= C + 1 for all A,B,C, in four easy steps:
--	// 1: X = A + B; X' = X % 2^64
--	"	adds	%0, %3, %2\n"
--	// 2: Set C = 0 if X > 2^64, to guarantee X' > C in step 4
--	"	csel	%1, xzr, %1, hi\n"
--	// 3: Set X' = ~0 if X >= 2^64. For X == 2^64, this decrements X'
--	//    to compensate for the carry flag being set in step 4. For
--	//    X > 2^64, X' merely has to remain nonzero, which it does.
--	"	csinv	%0, %0, xzr, cc\n"
--	// 4: For X < 2^64, this gives us X' - C - 1 <= 0, where the -1
--	//    comes from the carry in being clear. Otherwise, we are
--	//    testing X' - C == 0, subject to the previous adjustments.
--	"	sbcs	xzr, %0, %1\n"
--	"	cset	%0, ls\n"
--	: "=&r" (ret), "+r" (limit) : "Ir" (size), "0" (addr) : "cc");
--
--	return ret;
-+	return likely(__access_ok(addr, size));
- }
--#define __access_ok __access_ok
-+#define access_ok access_ok
- 
- #include <asm-generic/access_ok.h>
- 
--- 
-2.29.2
+No, Not needed.
 
+-- Sebastian
+
+--lbjfw46sz4tz7akt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmIKhSIACgkQ2O7X88g7
++pq9MA/+JkCCsNVnqwkgph6JTIH9cztGiu1Jhcm6dR1hCLceMuXV1S3jVlaM9z2I
+yvzMmrh7IuIxSqEOlGrtZIxkemcg2v27VdkzNOooQXKEphKsV632WuaoGQr8N+sO
+jvg0al6n6PDPsUwb1MkphrRzQeHYhRJ58hZv1JgWeHMSvCwOAy6PT1NwruoSjjg/
+iG7QUwk6RaWOlYWqmVcLx0oFpjtHHQOjmZSgyBViK2cDo6DlNv4tjaCWe1Nys3Zj
+qmzgRWdh2VjAzFDLANzhZxoLa6h2HfiI4lohgGP+F8p16MxY1OJzMQm4fh3CHM7t
+vO2cd3P8910VDCk+6GtQHxzHgUQxRBNqwUqPIA1uwW3r/BOz50DRpG+oBvyWW8u2
+usglqyE53tUJD/m58C33fERAUsqoin2TGaM+2TqyR0HYFxuNQ/q+xVU6c/Uh+tDP
+mkQkVdfbJFgUf/O3v6+aQhLJd+kNQ/kRNO3M9aMeK4VQABmrEbMe0J800/UqFuas
+iSjFRKJcZNLIhmxpRnAfJxV4FqY+dDvOsdBFxYrHRdDDasn7n5R0+5N+p4vrpv8B
+1xcyRumGHzrnzV7Aq+H2dUsgd2wRQXgY+khi1Bnw/Zl+Wa5xHzmBI7PLvD8Q3Y7A
+Ap5IosC/AcUwb7hSwuGJaObVmOgogotgeoZ46fJputXcOdowthU=
+=yjeI
+-----END PGP SIGNATURE-----
+
+--lbjfw46sz4tz7akt--
