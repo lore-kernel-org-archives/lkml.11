@@ -2,142 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349536AbiBNKwL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:52:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41138 "EHLO
+        id S229684AbiBNKwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:52:16 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349976AbiBNKvD (ORCPT
+        with ESMTP id S1350378AbiBNKvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:51:03 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2080.outbound.protection.outlook.com [40.107.92.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B4A6D388;
-        Mon, 14 Feb 2022 02:15:15 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kXPHgB5sZytHiFM2lFabDRrZTs4sqUbIfcu8Gc7FkvlNeiupc4wMH3WevdJzgRxOfOsEASujw8fLHmnWwtOWhTvcgX9EWBRj2mtM0iGaqWmCDfbTpD4pZeH/jr1HZZ8X58UXpvlg5kJIUcNS7LUjL0vRHNdEM9oXkdSsoAwjBYSKhZ2xH+4DvDvPIcKj5l9cLExF0eA+YenAJO9x4PahADWbi6vaWO9oZnRFUGSP6PSidltivHQJx1xMTCXXLbq4sPtSuHYJWVFKO9HSbnEFXuymT6L3yE4FEffMq4SYznyT2gV4pZDC+O7uI7biHEvbfRxolff1fVVSpJYBFVYbZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5cArs/9AXZc1xBrfm7NS8nlyy3cwxYEYhYbGW2zn0Zg=;
- b=FoFFBqscV/msGwsRBbkGrOPpw7c1eKxRMIzQk02nkZmVH7kbOOOArYXuYFHVFYtkInhCizbqMIvJT/LvFtrfz53ba1Ze51PWvQwkNLANv4xLSK2HhOi5/fUKzbBjF1wf+vuTAADWlDXi2CGXjm4NOsyl3CxpCqkfgW+IaEQRhIDeoqyKg2gUXXoCQE2N34FcmgGX1ni1xYwOilq6+t7FUI+08qcazATv8iF1Ispl4iAn30sDnDIEQ9DjdggEaOYKvwb0BqhNjL5V/UhDs7kRESAyFWoovM6oxBFQrsRJSEK7sDSXDjZjQQFf4+lWGbBxpYAAch6tfBdDfCtGKMrNRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5cArs/9AXZc1xBrfm7NS8nlyy3cwxYEYhYbGW2zn0Zg=;
- b=nkFzBsxPOgWgqU+0P1cId1IAoIG3iAm1UaxJYZ2kiwkRqFrnPPoiI4I6+s2VQs7qYSUlX4HvL/vvzVgmSWVJlgZbFuPgN4gOqeIb8w8JzpoItmma+UD7gEeNI2QaND7Kq2JRx0oY4yIOXE7KcLJCBurkd89CONIN2dy7CIchbG4=
-Received: from DM6PR03CA0041.namprd03.prod.outlook.com (2603:10b6:5:100::18)
- by CH2PR12MB3880.namprd12.prod.outlook.com (2603:10b6:610:2b::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.12; Mon, 14 Feb
- 2022 10:15:12 +0000
-Received: from DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:100:cafe::20) by DM6PR03CA0041.outlook.office365.com
- (2603:10b6:5:100::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.11 via Frontend
- Transport; Mon, 14 Feb 2022 10:15:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT032.mail.protection.outlook.com (10.13.173.93) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4975.11 via Frontend Transport; Mon, 14 Feb 2022 10:15:11 +0000
-Received: from hr-amd.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 14 Feb
- 2022 04:15:06 -0600
-From:   Huang Rui <ray.huang@amd.com>
-To:     Borislav Petkov <bp@alien8.de>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        <linux-pm@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <x86@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Giovanni Gherdovich <ggherdovich@suse.cz>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Deepak Sharma" <deepak.sharma@amd.com>,
-        Jinzhou Su <Jinzhou.Su@amd.com>,
-        Perry Yuan <Perry.Yuan@amd.com>,
-        Jassmine Meng <li.meng@amd.com>, Huang Rui <ray.huang@amd.com>
-Subject: [PATCH 0/4] x86/acpi/cppc: Minor clean up for x86 CPPC implementation
-Date:   Mon, 14 Feb 2022 18:14:46 +0800
-Message-ID: <20220214101450.356047-1-ray.huang@amd.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 14 Feb 2022 05:51:16 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02CED77A8A;
+        Mon, 14 Feb 2022 02:15:47 -0800 (PST)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Jy0V924ftz1r86y;
+        Mon, 14 Feb 2022 11:15:45 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Jy0V90YlFz1qqkG;
+        Mon, 14 Feb 2022 11:15:45 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id ciTL-mIIXXIv; Mon, 14 Feb 2022 11:15:44 +0100 (CET)
+X-Auth-Info: k0w8anaaY5GOMTg9kubk4prPg/gPXdju+Qta5i8aIzT4i0LbN2ihZ0bcWJdLYcD/
+Received: from igel.home (ppp-46-244-178-131.dynamic.mnet-online.de [46.244.178.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Mon, 14 Feb 2022 11:15:44 +0100 (CET)
+Received: by igel.home (Postfix, from userid 1000)
+        id BF2382C394F; Mon, 14 Feb 2022 11:15:43 +0100 (CET)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Heinrich Schuchardt <xypron.glpk@gmx.de>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>, linux-efi@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Anup Patel <apatel@ventanamicro.com>, stable@vger.kernel.org,
+        Sunil V L <sunilvl@ventanamicro.com>
+Subject: Re: [PATCH] riscv/efi_stub: Fix get_boot_hartid_from_fdt() return
+ value
+References: <20220128045004.4843-1-sunilvl@ventanamicro.com>
+        <877d9xx14f.fsf@igel.home>
+        <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de>
+X-Yow:  The LOGARITHM of an ISOSCELES TRIANGLE is TUESDAY WELD!!
+Date:   Mon, 14 Feb 2022 11:15:43 +0100
+In-Reply-To: <9cd9f149-d2ea-eb55-b774-8d817b9b6cc9@gmx.de> (Heinrich
+        Schuchardt's message of "Mon, 14 Feb 2022 10:24:22 +0100")
+Message-ID: <87tud1vjn4.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c0ad941a-964b-4695-9e73-08d9efa2e260
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3880:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB388083FE99C1BBFFFB300B36EC339@CH2PR12MB3880.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: r9xPqZMRWd4elT15SLBg3ph67o9/gXsN1peFK66bIvQzMPouChDi40y9/61WTaXgk6lr6RDkZw+XJ8p+m/vz+LsxAfASolaG/mssj5zJnp/duMWthx/f/1hRQ3h0IjVw7X/vdE3XUeJWKk4VknQODFLghOWHrwUB22bxvJTAQc883IffEkrzp2fb9nPGSl3P35UbuUCZSbDFG7CkHaSTUupKnZU7JGF6cD1xo3GhLDUiPDE8FSIJVkiBidu/Z7V3ztn24vv6ZHSjv9rfj7ywP4dBLzbD6StM24l3GOw/1Bj3svmrGTLTqkqqVJMXA3LTnJTi3Xi0IrpRgN9zNqN1Z1X1BNMxKm2UtRqmw/QxgUysqjIG/CGDM89xF8oOpTKRJCr7xqz2xaCGfdN+UheD2eSBB3b/Qd04qGIKFJ26X9weEmqGzRvhFQWN10khNPm/wj7iSbCS5lnfreZy/pGYU2Ux+fusD6P+lYu7QUaMwPE43RQ3Xg8Qa7qgtsosHFZF3a1RhgxwFoxjmsuotRK5FOAlydiuRNmBo6sEoIuJJLPXvf3RslIn8Y6hqgx21ZyXNEUbhpLpOpIbXIzKAYkL4sV2Q8HFgjzSMEVEzCtK/wt1wB+G7I9V2wGbREtRN34OiLYBMt5xCrKjPVRVNXCC3LL6dJAt6ln+WyDkAtCeHngU6wnG758EoAiHudIhvXEoWtuKhcVATYBaCaCkGJXdv9+e12783le5veRVm4UOlHpXd60xqnRgSlvVwoCibRsxXss2iusOlN72PSHDPDnL48Ag0vLJjXzRCGmDZjjjaQw=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(8936002)(8676002)(4326008)(40460700003)(966005)(5660300002)(316002)(70586007)(2906002)(6666004)(70206006)(7696005)(81166007)(86362001)(110136005)(54906003)(356005)(83380400001)(47076005)(36860700001)(36756003)(26005)(508600001)(2616005)(1076003)(336012)(426003)(186003)(16526019)(82310400004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2022 10:15:11.0577
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0ad941a-964b-4695-9e73-08d9efa2e260
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3880
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Feb 14 2022, Heinrich Schuchardt wrote:
 
-While we were fixing the legacy issue below, we found the dependencies
-between smpboot and CPPC were not very good. But due to urgent fix for
-5.17-rc1, I didn't have much time to provide a complete solution.
+> set_boot_hartid() implies that the caller can change the boot hart ID.
+> As this is not a case this name obviously would be a misnomer.
 
-https://lore.kernel.org/lkml/YdeWDDCwBQAYnlKb@amd.com/
-
-In these series, I expand the scope of acpi/cppc_msr to acpi/cppc to cover
-the all the CPPC helper functions for x86 ACPI. And then clean up the
-smpboot and move CPPC related functions into the acpi/cppc.c. This design
-is more straightforward and more clear to handle the CPPC in x86 and
-resolve dependency issues between CPPC and smpboot.c.
-
-Thanks,
-Ray
-
-Huang Rui (4):
-  x86/acpi: Expand the CPPC MSR file to cover the whole CPPC
-    implementation
-  x86, sched: Move AMD maximum frequency ratio setting function into x86
-    CPPC
-  x86, sched: Expose init_freq_invariance to topology header
-  x86/acpi: Move init_freq_invariance_cppc into x86 CPPC
-
- arch/x86/include/asm/topology.h |  13 +++-
- arch/x86/kernel/acpi/Makefile   |   2 +-
- arch/x86/kernel/acpi/cppc.c     | 103 ++++++++++++++++++++++++++++++++
- arch/x86/kernel/acpi/cppc_msr.c |  49 ---------------
- arch/x86/kernel/smpboot.c       |  72 +---------------------
- 5 files changed, 118 insertions(+), 121 deletions(-)
- create mode 100644 arch/x86/kernel/acpi/cppc.c
- delete mode 100644 arch/x86/kernel/acpi/cppc_msr.c
+initialize_boot_hartid would fit better.
 
 -- 
-2.25.1
-
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
