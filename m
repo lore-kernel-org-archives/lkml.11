@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D79C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68BD8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244964AbiBNJop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:44:45 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33294 "EHLO
+        id S245086AbiBNJot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:44:49 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245414AbiBNJl0 (ORCPT
+        with ESMTP id S245483AbiBNJlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:41:26 -0500
+        Mon, 14 Feb 2022 04:41:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB1266F8A;
-        Mon, 14 Feb 2022 01:37:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0189A66F9B;
+        Mon, 14 Feb 2022 01:37:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69B86B80DC8;
-        Mon, 14 Feb 2022 09:37:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 970C9C36AE3;
-        Mon, 14 Feb 2022 09:37:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A28C4B80DC8;
+        Mon, 14 Feb 2022 09:37:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE252C340EF;
+        Mon, 14 Feb 2022 09:37:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831442;
-        bh=faZo9xrFecfMLijsvP0bmqVgrhkZwGbWLai8sP0FYK8=;
+        s=korg; t=1644831445;
+        bh=Hwp0gsDxpaxDqoHrkEftWoX7EaQWJjN/NlZeOUzuI3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TI0YPc+due7XWNdCvQ8Lcr2bNd/PmbUN0X3PItmPVtw3QuntHNMRZogIR5U32OOxq
-         dH6VuxMQ3ZYJRaU6Y9JbDQRGMsijX7Z/t8jq7RH/S+wj14Nyf16119uHKXvUB0e6if
-         7qT1FdjZ3L24GR9snzU/hT6hgDtxQlUMUs3h6gOg=
+        b=g8NuZU+0cPtoxTuSvtGCJigehBbRx1F88e1SUovc+xNvUyytQr7lgkx8U0Ikp2jBY
+         4xRI/3JHiQd171WWwS1+G5JVwX8RGRtuKRWG3Odzd3Yx7TXeuj5kMvrt0jIWf9I9rt
+         1P5L4wBwgtOBBn4v8vQp8J1/ojo4dY2XIals8UiU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 36/71] staging: fbtft: Fix error path in fbtft_driver_module_init()
-Date:   Mon, 14 Feb 2022 10:26:04 +0100
-Message-Id: <20220214092453.240557164@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 37/71] ARM: dts: imx6qdl-udoo: Properly describe the SD card detect
+Date:   Mon, 14 Feb 2022 10:26:05 +0100
+Message-Id: <20220214092453.274042442@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092452.020713240@linuxfoundation.org>
 References: <20220214092452.020713240@linuxfoundation.org>
@@ -49,38 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+From: Fabio Estevam <festevam@gmail.com>
 
-[ Upstream commit 426aca16e903b387a0b0001d62207a745c67cfd3 ]
+[ Upstream commit 993d66140f8d1c1853a3b58b77b43b681eb64dee ]
 
-If registering the platform driver fails, the function must not return
-without undoing the spi driver registration first.
+GPIO7_IO00 is used as SD card detect.
 
-Fixes: c296d5f9957c ("staging: fbtft: core support")
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220118181338.207943-1-u.kleine-koenig@pengutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Properly describe this in the devicetree.
+
+Fixes: 40cdaa542cf0 ("ARM: dts: imx6q-udoo: Add initial board support")
+Signed-off-by: Fabio Estevam <festevam@gmail.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/fbtft/fbtft.h | 5 ++++-
+ arch/arm/boot/dts/imx6qdl-udoo.dtsi | 5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
-index 9b6bdb62093d7..736cd4955b733 100644
---- a/drivers/staging/fbtft/fbtft.h
-+++ b/drivers/staging/fbtft/fbtft.h
-@@ -332,7 +332,10 @@ static int __init fbtft_driver_module_init(void)                           \
- 	ret = spi_register_driver(&fbtft_driver_spi_driver);               \
- 	if (ret < 0)                                                       \
- 		return ret;                                                \
--	return platform_driver_register(&fbtft_driver_platform_driver);    \
-+	ret = platform_driver_register(&fbtft_driver_platform_driver);     \
-+	if (ret < 0)                                                       \
-+		spi_unregister_driver(&fbtft_driver_spi_driver);           \
-+	return ret;                                                        \
- }                                                                          \
- 									   \
- static void __exit fbtft_driver_module_exit(void)                          \
+diff --git a/arch/arm/boot/dts/imx6qdl-udoo.dtsi b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
+index 16672cbada287..6c8da3f037335 100644
+--- a/arch/arm/boot/dts/imx6qdl-udoo.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-udoo.dtsi
+@@ -5,6 +5,8 @@
+  * Author: Fabio Estevam <fabio.estevam@freescale.com>
+  */
+ 
++#include <dt-bindings/gpio/gpio.h>
++
+ / {
+ 	aliases {
+ 		backlight = &backlight;
+@@ -218,6 +220,7 @@ MX6QDL_PAD_SD3_DAT0__SD3_DATA0		0x17059
+ 				MX6QDL_PAD_SD3_DAT1__SD3_DATA1		0x17059
+ 				MX6QDL_PAD_SD3_DAT2__SD3_DATA2		0x17059
+ 				MX6QDL_PAD_SD3_DAT3__SD3_DATA3		0x17059
++				MX6QDL_PAD_SD3_DAT5__GPIO7_IO00		0x1b0b0
+ 			>;
+ 		};
+ 
+@@ -290,7 +293,7 @@ &usbh1 {
+ &usdhc3 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_usdhc3>;
+-	non-removable;
++	cd-gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ };
+ 
 -- 
 2.34.1
 
