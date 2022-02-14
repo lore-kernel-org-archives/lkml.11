@@ -2,171 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6323CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0030C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352409AbiBNLpo (ORCPT
+        id S1352382AbiBNLsE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:45:44 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45262 "EHLO
+        Mon, 14 Feb 2022 06:48:04 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353084AbiBNLna (ORCPT
+        with ESMTP id S1351970AbiBNLjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 06:43:30 -0500
-X-Greylist: delayed 2169 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 03:35:27 PST
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CFFB5F49;
-        Mon, 14 Feb 2022 03:35:27 -0800 (PST)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nJZ4E-00080o-TO; Mon, 14 Feb 2022 11:58:50 +0100
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Anson Huang <anson.huang@nxp.com>,
-        Vijayakannan Ayyathurai <vijayakannan.ayyathurai@intel.com>,
-        Rahul Tanwar <rtanwar@maxlinear.com>,
-        Jeff LaBundy <jeff@labundy.com>,
-        Yash Shah <yash.shah@sifive.com>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Vignesh R <vigneshr@ti.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-riscv@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH 06/15] dt-bindings: pwm: rockchip: include generic pwm schema
-Date:   Mon, 14 Feb 2022 11:58:49 +0100
-Message-ID: <2270696.mDkAqzPR1c@diego>
-In-Reply-To: <20220214081605.161394-6-krzysztof.kozlowski@canonical.com>
-References: <20220214081605.161394-1-krzysztof.kozlowski@canonical.com> <20220214081605.161394-6-krzysztof.kozlowski@canonical.com>
+        Mon, 14 Feb 2022 06:39:40 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDD414086;
+        Mon, 14 Feb 2022 03:30:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1ADEECE130F;
+        Mon, 14 Feb 2022 11:30:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5D7C340E9;
+        Mon, 14 Feb 2022 11:30:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1644838235;
+        bh=h/tLqKI+kSgP4V2Ob7fIJ54EMGn25h4EBw9QAxLYA9I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MV9CfUo4SJgnR3hhU1XdAnESN3u1XnC6Ufn1cSDCy0OgfnG7r8o4b9gg9Q/JXvOjr
+         ZB4+Rpopl+Y4rrOQTuhciz3DRsrXterdGxLI6GmAkBPqb1BSir/MFCia1wJl89luIz
+         3P8EI0JNeI79zOWWRDn7XkCXzYjxMydF7EbgENnI=
+Date:   Mon, 14 Feb 2022 12:30:32 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Daehwan Jung <dh10.jung@samsung.com>
+Cc:     Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>,
+        quic_wcheng@quicinc.com, quic_jackp@quicinc.com,
+        Thinh.Nguyen@synopsys.com
+Subject: Re: [PATCH v2 2/2] usb: dwc3: Prevent cleanup cancelled requests at
+ the same time.
+Message-ID: <Ygo9WMCVRNp/4/Ry@kroah.com>
+References: <1644836933-141376-1-git-send-email-dh10.jung@samsung.com>
+ <CGME20220214111149epcas2p29b9e39b84d7203572422531beb3c39ed@epcas2p2.samsung.com>
+ <1644836933-141376-3-git-send-email-dh10.jung@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644836933-141376-3-git-send-email-dh10.jung@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Montag, 14. Februar 2022, 09:15:56 CET schrieb Krzysztof Kozlowski:
-> Include generic pwm.yaml schema, which enforces PWM node naming and
-> brings pwm-cells requirement.
+On Mon, Feb 14, 2022 at 08:08:53PM +0900, Daehwan Jung wrote:
+> We added cleanup cancelled requests when ep cmd timeout on ep dequeue
+> because there's no complete interrupt then. But, we find out new case
+> that complete interrupt comes up later. list_for_each_entry_safe is
+> used when cleanup cancelled requests and it has vulnerabilty on multi-core
+> environment. dwc3_gadget_giveback unlocks dwc->lock temporarily and other
+> core(ISR) can get lock and try to cleanup them again. It could cause
+> list_del corruption and we use DWC3_EP_END_TRANSFER_PENDING to prevent it.
 > 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-
+> 1. MTP server cancels -> ep dequeue -> ep cmd timeout(END_TRANSFER)
+> 	-> cleanup cancelled requests -> dwc3_gadget_giveback ->
+> 	list_del -> release lock temporarily
+> 2. Complete with END_TRANSFER -> ISR(dwc3_gadget_endpoint_command_complete)
+> 	gets lock -> cleanup cancelled requests -> dwc3_gadget_giveback
+> 	-> list_del
+> 3. MTP server process gets lock again
+> 	-> tries to access POISON list(list_del corruption)
+> 
+> [2: MtpServer: 5032] dwc3 10b00000.dwc3: request cancelled
+> 						with wrong reason:5
+> [2: MtpServer: 5032] list_del corruption,
+> 		ffffff88b6963968->next is LIST_POISON1 (dead000000000100)
+> 
+> Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
 > ---
->  .../devicetree/bindings/pwm/pwm-rockchip.yaml | 74 ++++++++++---------
->  1 file changed, 38 insertions(+), 36 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> index 81a54a4e8e3e..a336ff9364a9 100644
-> --- a/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> +++ b/Documentation/devicetree/bindings/pwm/pwm-rockchip.yaml
-> @@ -51,42 +51,44 @@ properties:
->  required:
->    - compatible
->    - reg
-> -  - "#pwm-cells"
-> -
-> -if:
-> -  properties:
-> -    compatible:
-> -      contains:
-> -        enum:
-> -          - rockchip,rk3328-pwm
-> -          - rockchip,rv1108-pwm
-> -
-> -then:
-> -  properties:
-> -    clocks:
-> -      items:
-> -        - description: Used to derive the functional clock for the device.
-> -        - description: Used as the APB bus clock.
-> -
-> -    clock-names:
-> -      items:
-> -        - const: pwm
-> -        - const: pclk
-> -
-> -  required:
-> -    - clocks
-> -    - clock-names
-> -
-> -else:
-> -  properties:
-> -    clocks:
-> -      maxItems: 1
-> -      description:
-> -        Used both to derive the functional clock
-> -        for the device and as the bus clock.
-> -
-> -  required:
-> -    - clocks
-> +
-> +allOf:
-> +  - $ref: pwm.yaml#
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - rockchip,rk3328-pwm
-> +              - rockchip,rv1108-pwm
-> +
-> +    then:
-> +      properties:
-> +        clocks:
-> +          items:
-> +            - description: Used to derive the functional clock for the device.
-> +            - description: Used as the APB bus clock.
-> +
-> +        clock-names:
-> +          items:
-> +            - const: pwm
-> +            - const: pclk
-> +
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +
-> +    else:
-> +      properties:
-> +        clocks:
-> +          maxItems: 1
-> +          description:
-> +            Used both to derive the functional clock
-> +            for the device and as the bus clock.
-> +
-> +      required:
-> +        - clocks
->  
->  additionalProperties: false
->  
-> 
+>  drivers/usb/dwc3/gadget.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
 
+What commit id does this fix?
 
+thanks,
 
-
+greg k-h
