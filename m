@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69254C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346456AbiBNKSi (ORCPT
+        id S1346091AbiBNKSs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:18:38 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43966 "EHLO
+        Mon, 14 Feb 2022 05:18:48 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:44740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347308AbiBNKQ0 (ORCPT
+        with ESMTP id S1347401AbiBNKQa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:16:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924616737E;
-        Mon, 14 Feb 2022 01:53:48 -0800 (PST)
+        Mon, 14 Feb 2022 05:16:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7576B6D970;
+        Mon, 14 Feb 2022 01:53:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86271B80D6D;
-        Mon, 14 Feb 2022 09:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F12C340E9;
-        Mon, 14 Feb 2022 09:53:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A209960F86;
+        Mon, 14 Feb 2022 09:53:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 828AFC340E9;
+        Mon, 14 Feb 2022 09:53:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832407;
-        bh=PWC4MiolHqPxzZqlrPZg8QnjhC1NnQ1cEiBb2jdkjgg=;
+        s=korg; t=1644832433;
+        bh=lyJPkVECiprsua+kfLo7vwcWYPr4vADc2/aJV5dQ37A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZAxzKeJXpI5Ln+GvSV+YC0iM+W1/SpnP/v+JT8rzYftzUYMrYrliDBaVDYQKrxyAd
-         pzhUxETNAdeCgtXIsT+XizU4T+3d2i+pcLXsDVN7lvZEUnO2v/zNqCSQVXavF/gatS
-         0TyVndTuo/vogkpFUG3H2GgtMj9RXg3WoaswjMLY=
+        b=B3gYunt78+C4R9JOOMSDo4c4XEVIRZcnD8Fv8HakgGQoDb5k6kfdlNEiruxpxq3cA
+         jSq2fwa6qL+nJjn18BeUDk+g2vnnmMq8Q5e677Ae6s6k6zZTr76LJUOjL/F7JARrCM
+         IX1V3yAHsY74iDzzfVZy7pRRC5S1AYyNxZ5EGLnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: [PATCH 5.15 170/172] arm64: dts: imx8mq: fix lcdif port node
-Date:   Mon, 14 Feb 2022 10:27:08 +0100
-Message-Id: <20220214092512.261642891@linuxfoundation.org>
+        stable@vger.kernel.org, Guo Zihua <guozihua@huawei.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Mimi Zohar <zohar@linux.ibm.com>
+Subject: [PATCH 5.16 005/203] ima: Allow template selection with ima_template[_fmt]= after ima_hash=
+Date:   Mon, 14 Feb 2022 10:24:09 +0100
+Message-Id: <20220214092510.404600708@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
-References: <20220214092506.354292783@linuxfoundation.org>
+In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
+References: <20220214092510.221474733@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-commit 91f6d5f181f6629dd74ab71759fe92d3f4eff966 upstream.
+commit bb8e52e4906f148c2faf6656b5106cf7233e9301 upstream.
 
-The port node does not have a unit-address, remove it.
-This fixes the warnings:
-lcd-controller@30320000: 'port' is a required property
-lcd-controller@30320000: 'port@0' does not match any of the regexes:
-'pinctrl-[0-9]+'
+Commit c2426d2ad5027 ("ima: added support for new kernel cmdline parameter
+ima_template_fmt") introduced an additional check on the ima_template
+variable to avoid multiple template selection.
 
-Fixes: commit d0081bd02a03 ("arm64: dts: imx8mq: Add NWL MIPI DSI controller")
-Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Unfortunately, ima_template could be also set by the setup function of the
+ima_hash= parameter, when it calls ima_template_desc_current(). This causes
+attempts to choose a new template with ima_template= or with
+ima_template_fmt=, after ima_hash=, to be ignored.
+
+Achieve the goal of the commit mentioned with the new static variable
+template_setup_done, so that template selection requests after ima_hash=
+are not ignored.
+
+Finally, call ima_init_template_list(), if not already done, to initialize
+the list of templates before lookup_template_desc() is called.
+
+Reported-by: Guo Zihua <guozihua@huawei.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Cc: stable@vger.kernel.org
+Fixes: c2426d2ad5027 ("ima: added support for new kernel cmdline parameter ima_template_fmt")
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mq.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ security/integrity/ima/ima_template.c |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/boot/dts/freescale/imx8mq.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq.dtsi
-@@ -526,7 +526,7 @@
- 				assigned-clock-rates = <0>, <0>, <0>, <594000000>;
- 				status = "disabled";
+--- a/security/integrity/ima/ima_template.c
++++ b/security/integrity/ima/ima_template.c
+@@ -29,6 +29,7 @@ static struct ima_template_desc builtin_
  
--				port@0 {
-+				port {
- 					lcdif_mipi_dsi: endpoint {
- 						remote-endpoint = <&mipi_dsi_lcdif_in>;
- 					};
+ static LIST_HEAD(defined_templates);
+ static DEFINE_SPINLOCK(template_list);
++static int template_setup_done;
+ 
+ static const struct ima_template_field supported_fields[] = {
+ 	{.field_id = "d", .field_init = ima_eventdigest_init,
+@@ -101,10 +102,11 @@ static int __init ima_template_setup(cha
+ 	struct ima_template_desc *template_desc;
+ 	int template_len = strlen(str);
+ 
+-	if (ima_template)
++	if (template_setup_done)
+ 		return 1;
+ 
+-	ima_init_template_list();
++	if (!ima_template)
++		ima_init_template_list();
+ 
+ 	/*
+ 	 * Verify that a template with the supplied name exists.
+@@ -128,6 +130,7 @@ static int __init ima_template_setup(cha
+ 	}
+ 
+ 	ima_template = template_desc;
++	template_setup_done = 1;
+ 	return 1;
+ }
+ __setup("ima_template=", ima_template_setup);
+@@ -136,7 +139,7 @@ static int __init ima_template_fmt_setup
+ {
+ 	int num_templates = ARRAY_SIZE(builtin_templates);
+ 
+-	if (ima_template)
++	if (template_setup_done)
+ 		return 1;
+ 
+ 	if (template_desc_init_fields(str, NULL, NULL) < 0) {
+@@ -147,6 +150,7 @@ static int __init ima_template_fmt_setup
+ 
+ 	builtin_templates[num_templates - 1].fmt = str;
+ 	ima_template = builtin_templates + num_templates - 1;
++	template_setup_done = 1;
+ 
+ 	return 1;
+ }
 
 
