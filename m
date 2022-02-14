@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0240BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE790C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiBNJz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:55:29 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33166 "EHLO
+        id S239918AbiBNJzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:55:36 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344722AbiBNJvz (ORCPT
+        with ESMTP id S1344756AbiBNJwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF616D39A;
-        Mon, 14 Feb 2022 01:43:10 -0800 (PST)
+        Mon, 14 Feb 2022 04:52:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C63E6D3A3;
+        Mon, 14 Feb 2022 01:43:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 969ABB80DC4;
-        Mon, 14 Feb 2022 09:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D028BC340F1;
-        Mon, 14 Feb 2022 09:43:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB360FA2;
+        Mon, 14 Feb 2022 09:43:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C35A9C340E9;
+        Mon, 14 Feb 2022 09:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831788;
-        bh=LzpzpbXuAXBVxXgaTfhdtBconWX5rylvXkzDq4epIPc=;
+        s=korg; t=1644831791;
+        bh=lrgQINDT48P+sKYwHswUTTKmWWrF21F0fKyR27zr+30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vTuk6Zz+najX446C0/4xDFjveNSiHEjRdtJ6R4+DOJeMebb6SGKvXcmcw4jfjvpRu
-         NTaFYe94UvwRWhKhRsHxqn5Zoo0PrWqXxskTjVo15oZ16ZVO2wzHKt7e8dtf2vULfy
-         9CVQfdk+ljp3c/h66PMIs/X7SSL4aoMzu2oSyYpY=
+        b=SfTZmarI9IqA+poNNZ8Na08LlTZ8M1qfknuSmWt7sG4VYdU+ln3Jrbl2/goC9atU8
+         w1gSCIhFzT3GU3xqXzzprgy8jknXv79V975qJiwIakOE6ZFVQQZG/M0PdtUCFQDSEV
+         XPK8UAh3iWo8E1TLEdJM2eO+6cijlvR4pjaHnqRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>
-Subject: [PATCH 5.10 096/116] usb: dwc3: gadget: Prevent core from processing stale TRBs
-Date:   Mon, 14 Feb 2022 10:26:35 +0100
-Message-Id: <20220214092502.091779498@linuxfoundation.org>
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Adam Ford <aford173@gmail.com>
+Subject: [PATCH 5.10 097/116] usb: gadget: udc: renesas_usb3: Fix host to USB_ROLE_NONE transition
+Date:   Mon, 14 Feb 2022 10:26:36 +0100
+Message-Id: <20220214092502.127742382@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -49,51 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Udipto Goswami <quic_ugoswami@quicinc.com>
+From: Adam Ford <aford173@gmail.com>
 
-commit 117b4e96c7f362eb6459543883fc07f77662472c upstream.
+commit 459702eea6132888b5c5b64c0e9c626da4ec2493 upstream.
 
-With CPU re-ordering on write instructions, there might
-be a chance that the HWO is set before the TRB is updated
-with the new mapped buffer address.
-And in the case where core is processing a list of TRBs
-it is possible that it fetched the TRBs when the HWO is set
-but before the buffer address is updated.
-Prevent this by adding a memory barrier before the HWO
-is updated to ensure that the core always process the
-updated TRBs.
+The support the external role switch a variety of situations were
+addressed, but the transition from USB_ROLE_HOST to USB_ROLE_NONE
+leaves the host up which can cause some error messages when
+switching from host to none, to gadget, to none, and then back
+to host again.
 
-Fixes: f6bafc6a1c9d ("usb: dwc3: convert TRBs into bitshifts")
+ xhci-hcd ee000000.usb: Abort failed to stop command ring: -110
+ xhci-hcd ee000000.usb: xHCI host controller not responding, assume dead
+ xhci-hcd ee000000.usb: HC died; cleaning up
+ usb 4-1: device not accepting address 6, error -108
+ usb usb4-port1: couldn't allocate usb_device
+
+After this happens it will not act as a host again.
+Fix this by releasing the host mode when transitioning to USB_ROLE_NONE.
+
+Fixes: 0604160d8c0b ("usb: gadget: udc: renesas_usb3: Enhance role switch support")
 Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Signed-off-by: Udipto Goswami <quic_ugoswami@quicinc.com>
-Link: https://lore.kernel.org/r/1644207958-18287-1-git-send-email-quic_ugoswami@quicinc.com
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Link: https://lore.kernel.org/r/20220128223603.2362621-1-aford173@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |   13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/usb/gadget/udc/renesas_usb3.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -1072,6 +1072,19 @@ static void __dwc3_prepare_one_trb(struc
- 	if (usb_endpoint_xfer_bulk(dep->endpoint.desc) && dep->stream_capable)
- 		trb->ctrl |= DWC3_TRB_CTRL_SID_SOFN(stream_id);
- 
-+	/*
-+	 * As per data book 4.2.3.2TRB Control Bit Rules section
-+	 *
-+	 * The controller autonomously checks the HWO field of a TRB to determine if the
-+	 * entire TRB is valid. Therefore, software must ensure that the rest of the TRB
-+	 * is valid before setting the HWO field to '1'. In most systems, this means that
-+	 * software must update the fourth DWORD of a TRB last.
-+	 *
-+	 * However there is a possibility of CPU re-ordering here which can cause
-+	 * controller to observe the HWO bit set prematurely.
-+	 * Add a write memory barrier to prevent CPU re-ordering.
-+	 */
-+	wmb();
- 	trb->ctrl |= DWC3_TRB_CTRL_HWO;
- 
- 	dwc3_ep_inc_enq(dep);
+--- a/drivers/usb/gadget/udc/renesas_usb3.c
++++ b/drivers/usb/gadget/udc/renesas_usb3.c
+@@ -2378,6 +2378,8 @@ static void handle_ext_role_switch_state
+ 	switch (role) {
+ 	case USB_ROLE_NONE:
+ 		usb3->connection_state = USB_ROLE_NONE;
++		if (cur_role == USB_ROLE_HOST)
++			device_release_driver(host);
+ 		if (usb3->driver)
+ 			usb3_disconnect(usb3);
+ 		usb3_vbus_out(usb3, false);
 
 
