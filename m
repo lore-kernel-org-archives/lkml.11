@@ -2,112 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B032C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 08:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240249AbiBNIGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 03:06:01 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37794 "EHLO
+        id S241560AbiBNIHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 03:07:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:38300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiBNIF6 (ORCPT
+        with ESMTP id S229908AbiBNIHA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 03:05:58 -0500
-Received: from twspam01.aspeedtech.com (twspam01.aspeedtech.com [211.20.114.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E4D5C378
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 00:05:50 -0800 (PST)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 21E7vG2C063896;
-        Mon, 14 Feb 2022 15:57:16 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 14 Feb
- 2022 16:05:44 +0800
-Message-ID: <f57759d5-9c2d-5113-3286-4fa03a2c11b2@aspeedtech.com>
-Date:   Mon, 14 Feb 2022 16:05:44 +0800
+        Mon, 14 Feb 2022 03:07:00 -0500
+X-Greylist: delayed 419 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 00:06:52 PST
+Received: from mail.parknet.co.jp (mail.parknet.co.jp [210.171.160.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 848B75F27B;
+        Mon, 14 Feb 2022 00:06:52 -0800 (PST)
+Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
+        by mail.parknet.co.jp (Postfix) with ESMTPSA id 5364915F93A;
+        Mon, 14 Feb 2022 16:59:52 +0900 (JST)
+Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
+        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 21E7xoRZ051364
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 16:59:51 +0900
+Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
+        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 21E7xoWK253761
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 16:59:50 +0900
+Received: (from hirofumi@localhost)
+        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 21E7xoEx253760;
+        Mon, 14 Feb 2022 16:59:50 +0900
+From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+To:     Helge Deller <deller@gmx.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-parisc@vger.kernel.org
+Subject: Re: [PATCH] fat: Use pointer to d_name[0] in put_user() for compat
+ case
+References: <YgmB01p+p45Cihhg@p100>
+Date:   Mon, 14 Feb 2022 16:59:50 +0900
+In-Reply-To: <YgmB01p+p45Cihhg@p100> (Helge Deller's message of "Sun, 13 Feb
+        2022 23:10:27 +0100")
+Message-ID: <87y22dho95.fsf@mail.parknet.co.jp>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] media: aspeed: Use of_device_get_match_data() helper
-Content-Language: en-US
-To:     Joel Stanley <joel@jms.id.au>
-CC:     Eddie James <eajames@linux.ibm.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220214032708.854-1-jammy_huang@aspeedtech.com>
- <CACPK8XcLJuWitefi8LTAxDrhzAVe3b88haQYAJRLX5M=ceDg5g@mail.gmail.com>
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-In-Reply-To: <CACPK8XcLJuWitefi8LTAxDrhzAVe3b88haQYAJRLX5M=ceDg5g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 21E7vG2C063896
+Content-Type: text/plain; charset=iso-2022-jp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Joel,
+Helge Deller <deller@gmx.de> writes:
 
-On 2022/2/14 下午 02:34, Joel Stanley wrote:
-> On Mon, 14 Feb 2022 at 03:27, Jammy Huang <jammy_huang@aspeedtech.com> wrote:
->> Use of_device_get_match_data() to simplify the code.
->>
->> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
->> ---
->>   drivers/media/platform/aspeed-video.c | 8 ++------
->>   1 file changed, 2 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
->> index 3904ded2052a..d4acf84cda9b 100644
->> --- a/drivers/media/platform/aspeed-video.c
->> +++ b/drivers/media/platform/aspeed-video.c
->> @@ -13,6 +13,7 @@
->>   #include <linux/module.h>
->>   #include <linux/mutex.h>
->>   #include <linux/of.h>
->> +#include <linux/of_device.h>
->>   #include <linux/of_irq.h>
->>   #include <linux/of_reserved_mem.h>
->>   #include <linux/platform_device.h>
->> @@ -2451,7 +2452,6 @@ MODULE_DEVICE_TABLE(of, aspeed_video_of_match);
->>   static int aspeed_video_probe(struct platform_device *pdev)
->>   {
->>          const struct aspeed_video_config *config;
->> -       const struct of_device_id *match;
->>          struct aspeed_video *video;
->>          int rc;
->>
->> @@ -2463,11 +2463,7 @@ static int aspeed_video_probe(struct platform_device *pdev)
->>          if (IS_ERR(video->base))
->>                  return PTR_ERR(video->base);
->>
->> -       match = of_match_node(aspeed_video_of_match, pdev->dev.of_node);
->> -       if (!match)
->> -               return -EINVAL;
->> -
->> -       config = match->data;
->> +       config = of_device_get_match_data(&pdev->dev);
-> While normally this driver won't have probed without matching on some
-> data, it would be sensible to add a check for a null pointer here.
+> The put_user(val,ptr) macro wants a pointer in the second parameter, but in
+> fat_ioctl_filldir() the d_name field references a whole "array of chars".
+> Usually the compiler automatically converts it and uses a pointer to that
+> array, but it's more clean to explicitly give the real pointer to where someting
+> is put, which is in this case the first character of the d_name[] array.
+>
+> I noticed that issue while trying to optimize the parisc put_user() macro
+> and used an intermediate variable to store the pointer. In that case I
+> got this error:
+>
+> In file included from include/linux/uaccess.h:11,
+>                  from include/linux/compat.h:17,
+>                  from fs/fat/dir.c:18:
+> fs/fat/dir.c: In function $B!F(Bfat_ioctl_filldir$B!G(B:
+> fs/fat/dir.c:725:33: error: invalid initializer
+>   725 |                 if (put_user(0, d2->d_name)                     ||         \
+>       |                                 ^~
+> include/asm/uaccess.h:152:33: note: in definition of macro $B!F(B__put_user$B!G(B
+>   152 |         __typeof__(ptr) __ptr = ptr;                            \
+>       |                                 ^~~
+> fs/fat/dir.c:759:1: note: in expansion of macro $B!F(BFAT_IOCTL_FILLDIR_FUNC$B!G(B
+>   759 | FAT_IOCTL_FILLDIR_FUNC(fat_ioctl_filldir, __fat_dirent)
+>
+> The patch below cleans it up.
+>
+> Signed-off-by: Helge Deller <deller@gmx.de>
 
-OK, I will have a updated patch for this later.
+Looks good.
 
-Thanks for the help.
+Acked-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
->>          video->version = config->version;
->>          video->jpeg_mode = config->jpeg_mode;
->>          video->comp_size_read = config->comp_size_read;
->> --
->> 2.25.1
->>
+> diff --git a/fs/fat/dir.c b/fs/fat/dir.c
+> index c4a274285858..249825017da7 100644
+> --- a/fs/fat/dir.c
+> +++ b/fs/fat/dir.c
+> @@ -722,7 +722,7 @@ static int func(struct dir_context *ctx, const char *name, int name_len,   \
+>  		if (name_len >= sizeof(d1->d_name))			   \
+>  			name_len = sizeof(d1->d_name) - 1;		   \
+>  									   \
+> -		if (put_user(0, d2->d_name)			||	   \
+> +		if (put_user(0, &d2->d_name[0])			||	   \
+>  		    put_user(0, &d2->d_reclen)			||	   \
+>  		    copy_to_user(d1->d_name, name, name_len)	||	   \
+>  		    put_user(0, d1->d_name + name_len)		||	   \
+
 -- 
-Best Regards
-Jammy
-
+OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
