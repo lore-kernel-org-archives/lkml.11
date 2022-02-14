@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4696AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347855AbiBNKbt (ORCPT
+        id S1347495AbiBNKbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:31:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:41278 "EHLO
+        Mon, 14 Feb 2022 05:31:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348307AbiBNKav (ORCPT
+        with ESMTP id S1348260AbiBNKau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 05:30:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CDC6A3AD;
-        Mon, 14 Feb 2022 01:59:27 -0800 (PST)
+        Mon, 14 Feb 2022 05:30:50 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 265909BF7C;
+        Mon, 14 Feb 2022 01:59:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85162B80DC4;
-        Mon, 14 Feb 2022 09:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4916C340E9;
-        Mon, 14 Feb 2022 09:59:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14237B80DCF;
+        Mon, 14 Feb 2022 09:59:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAE7C340F1;
+        Mon, 14 Feb 2022 09:59:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832763;
-        bh=8qqjLMYSvueRz7AGEphev8UfHG+Nq3FEAtl2P0/Vr4g=;
+        s=korg; t=1644832747;
+        bh=yh+Oo2C0NdYplnno+CZkh/DZsN/Zg/W1MtgKkWir/Qw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uSkfMK0LYLskW+DOkyn8TKLQUkhTMv1vZbMvuW6VIhlQ8mVflg1HgZWIHmdtBkh13
-         oGzCoTF/dMxp06I+IYPtIE6sFnjmLRVl35PU8qE885ezXMwr2U/CbPbG+XkcB0PNdl
-         ytSpr0qhc/fs7jcbfGFyGuwt3zao3J7LTGq9oMSc=
+        b=ndK5yA4MkOTdInS3Q49wpbr+lDOIN9ivUnbXzjx+vpvzwD+IrHvB0VMpFuTfhdUuy
+         EM5Y/48qENX6YUynIs5rK2eQLnzjVGj1/FtmRF+ww7aP6L2WLvSHS3Jx6cvWwLrIdk
+         qjJqjxOxWn0aoCX5lZSKZduqiSO7WsYozSu8j27g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pham Thanh Tuyen <phamtyn@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 117/203] netfilter: ctnetlink: disable helper autoassign
-Date:   Mon, 14 Feb 2022 10:26:01 +0100
-Message-Id: <20220214092514.230071345@linuxfoundation.org>
+        stable@vger.kernel.org, Joey Corleone <joey.corleone@mail.ru>,
+        Sergiu Deitsch <sergiu.deitsch@gmail.com>,
+        David Spencer <dspencer577@gmail.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 5.16 080/203] Revert "PCI/portdrv: Do not setup up IRQs if there are no users"
+Date:   Mon, 14 Feb 2022 10:25:24 +0100
+Message-Id: <20220214092512.997663857@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092510.221474733@linuxfoundation.org>
 References: <20220214092510.221474733@linuxfoundation.org>
@@ -51,72 +52,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[ Upstream commit d1ca60efc53d665cf89ed847a14a510a81770b81 ]
+commit 075b7d363c675ef7fa03918881caeca3458e2a96 upstream.
 
-When userspace, e.g. conntrackd, inserts an entry with a specified helper,
-its possible that the helper is lost immediately after its added:
+This reverts commit 0e8ae5a6ff5952253cd7cc0260df838ab4c21009.
 
-ctnetlink_create_conntrack
-  -> nf_ct_helper_ext_add + assign helper
-    -> ctnetlink_setup_nat
-      -> ctnetlink_parse_nat_setup
-         -> parse_nat_setup -> nfnetlink_parse_nat_setup
-	                       -> nf_nat_setup_info
-                                 -> nf_conntrack_alter_reply
-                                   -> __nf_ct_try_assign_helper
+0e8ae5a6ff59 ("PCI/portdrv: Do not setup up IRQs if there are no users")
+reduced usage of IRQs when we don't think we need them.  But Joey, Sergiu,
+and David reported choppy GUI rendering, systems that became unresponsive
+every few seconds, incorrect values reported by cpufreq, and high IRQ 16
+CPU usage.
 
-... and __nf_ct_try_assign_helper will zero the helper again.
+Joey bisected the issues to 0e8ae5a6ff59, so revert it until we figure out
+a better solution.
 
-Set IPS_HELPER bit to bypass auto-assign logic, its unwanted, just like
-when helper is assigned via ruleset.
-
-Dropped old 'not strictly necessary' comment, it referred to use of
-rcu_assign_pointer() before it got replaced by RCU_INIT_POINTER().
-
-NB: Fixes tag intentionally incorrect, this extends the referenced commit,
-but this change won't build without IPS_HELPER introduced there.
-
-Fixes: 6714cf5465d280 ("netfilter: nf_conntrack: fix explicit helper attachment and NAT")
-Reported-by: Pham Thanh Tuyen <phamtyn@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220210222717.GA658201@bhelgaas
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215533
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215546
+Reported-by: Joey Corleone <joey.corleone@mail.ru>
+Reported-by: Sergiu Deitsch <sergiu.deitsch@gmail.com>
+Reported-by: David Spencer <dspencer577@gmail.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org	# v5.16+
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/netfilter/nf_conntrack_common.h | 2 +-
- net/netfilter/nf_conntrack_netlink.c               | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/pci/pcie/portdrv_core.c |   47 ++++++++++++++--------------------------
+ 1 file changed, 17 insertions(+), 30 deletions(-)
 
-diff --git a/include/uapi/linux/netfilter/nf_conntrack_common.h b/include/uapi/linux/netfilter/nf_conntrack_common.h
-index 4b3395082d15c..26071021e986f 100644
---- a/include/uapi/linux/netfilter/nf_conntrack_common.h
-+++ b/include/uapi/linux/netfilter/nf_conntrack_common.h
-@@ -106,7 +106,7 @@ enum ip_conntrack_status {
- 	IPS_NAT_CLASH = IPS_UNTRACKED,
- #endif
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -166,6 +166,9 @@ static int pcie_init_service_irqs(struct
+ {
+ 	int ret, i;
  
--	/* Conntrack got a helper explicitly attached via CT target. */
-+	/* Conntrack got a helper explicitly attached (ruleset, ctnetlink). */
- 	IPS_HELPER_BIT = 13,
- 	IPS_HELPER = (1 << IPS_HELPER_BIT),
++	for (i = 0; i < PCIE_PORT_DEVICE_MAXSERVICES; i++)
++		irqs[i] = -1;
++
+ 	/*
+ 	 * If we support PME but can't use MSI/MSI-X for it, we have to
+ 	 * fall back to INTx or other interrupts, e.g., a system shared
+@@ -314,10 +317,8 @@ static int pcie_device_init(struct pci_d
+  */
+ int pcie_port_device_register(struct pci_dev *dev)
+ {
+-	int status, capabilities, irq_services, i, nr_service;
+-	int irqs[PCIE_PORT_DEVICE_MAXSERVICES] = {
+-		[0 ... PCIE_PORT_DEVICE_MAXSERVICES-1] = -1
+-	};
++	int status, capabilities, i, nr_service;
++	int irqs[PCIE_PORT_DEVICE_MAXSERVICES];
  
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index ec4164c32d270..2d7f63ad33604 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -2311,7 +2311,8 @@ ctnetlink_create_conntrack(struct net *net,
- 			if (helper->from_nlattr)
- 				helper->from_nlattr(helpinfo, ct);
+ 	/* Enable PCI Express port device */
+ 	status = pci_enable_device(dev);
+@@ -330,32 +331,18 @@ int pcie_port_device_register(struct pci
+ 		return 0;
  
--			/* not in hash table yet so not strictly necessary */
-+			/* disable helper auto-assignment for this entry */
-+			ct->status |= IPS_HELPER;
- 			RCU_INIT_POINTER(help->helper, helper);
- 		}
- 	} else {
--- 
-2.34.1
-
+ 	pci_set_master(dev);
+-
+-	irq_services = 0;
+-	if (IS_ENABLED(CONFIG_PCIE_PME))
+-		irq_services |= PCIE_PORT_SERVICE_PME;
+-	if (IS_ENABLED(CONFIG_PCIEAER))
+-		irq_services |= PCIE_PORT_SERVICE_AER;
+-	if (IS_ENABLED(CONFIG_HOTPLUG_PCI_PCIE))
+-		irq_services |= PCIE_PORT_SERVICE_HP;
+-	if (IS_ENABLED(CONFIG_PCIE_DPC))
+-		irq_services |= PCIE_PORT_SERVICE_DPC;
+-	irq_services &= capabilities;
+-
+-	if (irq_services) {
+-		/*
+-		 * Initialize service IRQs. Don't use service devices that
+-		 * require interrupts if there is no way to generate them.
+-		 * However, some drivers may have a polling mode (e.g.
+-		 * pciehp_poll_mode) that can be used in the absence of IRQs.
+-		 * Allow them to determine if that is to be used.
+-		 */
+-		status = pcie_init_service_irqs(dev, irqs, irq_services);
+-		if (status) {
+-			irq_services &= PCIE_PORT_SERVICE_HP;
+-			if (!irq_services)
+-				goto error_disable;
+-		}
++	/*
++	 * Initialize service irqs. Don't use service devices that
++	 * require interrupts if there is no way to generate them.
++	 * However, some drivers may have a polling mode (e.g. pciehp_poll_mode)
++	 * that can be used in the absence of irqs.  Allow them to determine
++	 * if that is to be used.
++	 */
++	status = pcie_init_service_irqs(dev, irqs, capabilities);
++	if (status) {
++		capabilities &= PCIE_PORT_SERVICE_HP;
++		if (!capabilities)
++			goto error_disable;
+ 	}
+ 
+ 	/* Allocate child services if any */
 
 
