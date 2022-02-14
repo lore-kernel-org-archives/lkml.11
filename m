@@ -2,93 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E94C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242616AbiBNJJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:09:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:57892 "EHLO
+        id S242646AbiBNJJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:09:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234743AbiBNJI6 (ORCPT
+        with ESMTP id S231482AbiBNJJL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:08:58 -0500
-X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 01:08:50 PST
-Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD41E59A72;
-        Mon, 14 Feb 2022 01:08:50 -0800 (PST)
-Received: from [167.98.27.226] (helo=rainbowdash)
-        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
-        id 1nJWcK-0000ZS-DI; Mon, 14 Feb 2022 08:21:52 +0000
-Received: from ben by rainbowdash with local (Exim 4.95)
-        (envelope-from <ben@rainbowdash>)
-        id 1nJWcG-004vz6-3u;
-        Mon, 14 Feb 2022 08:21:48 +0000
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-To:     linux-kernel@vger.kernel.org, bhelgaas@google.comv,
-        linux-pci@vger.kernel.org
-Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
-        david.abdurachmanov@gmail.com,
-        Ben Dooks <ben.dooks@codethink.co.uk>
-Subject: [PATCH 2/2] PCI: fu740: Force gen1 for initial device probe
-Date:   Mon, 14 Feb 2022 08:21:44 +0000
-Message-Id: <20220214082144.1176084-3-ben.dooks@codethink.co.uk>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
-References: <20220214082144.1176084-1-ben.dooks@codethink.co.uk>
+        Mon, 14 Feb 2022 04:09:11 -0500
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id 2597D5FF3A
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 01:09:04 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1644829744; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=0IElTyYDBIfvi2zer1ahdbOZj2DmTRQFW8xbpLmh/s8=;
+ b=p3iTfhY7Lz+8WOKwRNYabAC1feAty1MmEF2jJi/9MHDZnaVJuZzTJwLg5W1KzzPlzefh21Uj
+ RSnnOdDH9TAhHj9kJVUXM/0nsbsmuzrK1vueo3f1SmFFL17mm54jo4pKePt5KwWMMigR+3CA
+ hfe9BgBRplyFMV0EjkSJ+L05A+o=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 620a1c2e3047cf1c0a528733 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 14 Feb 2022 09:09:02
+ GMT
+Sender: zijuhu=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 713F0C4360C; Mon, 14 Feb 2022 09:09:01 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: zijuhu)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A4C18C4338F;
+        Mon, 14 Feb 2022 09:09:00 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 14 Feb 2022 17:09:00 +0800
+From:   zijuhu@codeaurora.org
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, c-hbandi@codeaurora.org,
+        hemantg@codeaurora.org, rjliao@codeaurora.org,
+        tjiang@codeaurora.org, Zijun Hu <quic_zijuhu@quicinc.com>
+Subject: Re: [PATCH v2] Bluetooth: btusb: Improve stability for QCA devices
+In-Reply-To: <59F65F10-0988-4E50-8956-69C601F05434@holtmann.org>
+References: <1644566620-16748-1-git-send-email-zijuhu@codeaurora.org>
+ <59F65F10-0988-4E50-8956-69C601F05434@holtmann.org>
+Message-ID: <d7fa066f93e5869d955da46c43f6b142@codeaurora.org>
+X-Sender: zijuhu@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The fu740 dw pcie core does not probe devices without this fix from
-U-boot. The fix claims to set the link-speed to gen1 to get the probe
-to work. As this is a copy from U-boot, the commentary is assumed to
-be correct.
+On 2022-02-12 00:22, Marcel Holtmann wrote:
+> Hi Zijun,
+> 
+>> Controller will reset after NVM is downloaded for QCA
+>> device, so wait a moment for reset Done then go ahead
+>> to improve stability.
+>> 
+>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+>> ---
+>> drivers/bluetooth/btusb.c | 5 +++++
+>> 1 file changed, 5 insertions(+)
+>> 
+>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+>> index e03dfbd92fcc..20e36f53d2e7 100644
+>> --- a/drivers/bluetooth/btusb.c
+>> +++ b/drivers/bluetooth/btusb.c
+>> @@ -2994,6 +2994,7 @@ static int btusb_set_bdaddr_wcn6855(struct 
+>> hci_dev *hdev,
+>> #define QCA_PATCH_UPDATED	0x80
+>> #define QCA_DFU_TIMEOUT		3000
+>> #define QCA_FLAG_MULTI_NVM      0x80
+>> +#define QCA_BT_RESET_WAIT_MS    100
+>> 
+>> #define WCN6855_2_0_RAM_VERSION_GF 0x400c1200
+>> #define WCN6855_2_1_RAM_VERSION_GF 0x400c1211
+>> @@ -3320,6 +3321,10 @@ static int btusb_setup_qca(struct hci_dev 
+>> *hdev)
+>> 		err = btusb_setup_qca_load_nvm(hdev, &ver, info);
+>> 		if (err < 0)
+>> 			return err;
+>> +		/* Controller will reset after NVM is downloaded, so wait a moment
+>> +		 * for reset Done, it will improve stability.
+>> +		 */
+>> +		msleep(QCA_BT_RESET_WAIT_MS);
+> 
+> how hard is to just grab the data sheet and figure out the appropriate
+> time to wait? I will be all documented and then reference the
+> documentation.
+> 
 
-Without this in, and without U-boot starting the PCIe the Unmatched
-board does not show any PCIe devices after the DW root port.
+let me explain more for this patch:
+a BT enable failure issue is reported for WCN6855 2.1 chip, the root
+cause located is that HCI command is sent before controller reset is 
+Done.
+100ms delay is suggested by firmware team and it is a appropriate 
+interval
+based on verification. so these info is not available from data sheet 
+currently.
 
-Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
----
- drivers/pci/controller/dwc/pcie-fu740.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+> I really dislike this "add a sleep here and sleep there". It might
+> just work for now. The next hardware generation comes around or if
+> placed on a different board just behaves a little bit different. And
+> at some point we are at 10 seconds sleep and you start complaining why
+> the controller initialization takes so long. Stop guessing and
+> reference the data sheet.
+> 
 
-diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
-index 842b7202b96e..19501ec8c487 100644
---- a/drivers/pci/controller/dwc/pcie-fu740.c
-+++ b/drivers/pci/controller/dwc/pcie-fu740.c
-@@ -177,11 +177,30 @@ static void fu740_pcie_init_phy(struct fu740_pcie *afp)
- 	fu740_phyregwrite(1, PCIEX8MGMT_PHY_LANE3_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
- }
- 
-+/* This is copied from u-boot. Force system to gen1 otherwise nothing probes
-+ * as found on the SiFive Unmatched board.
-+ */
-+static void fu740_pcie_force_gen1(struct dw_pcie *dw, struct fu740_pcie *afp )
-+{
-+	unsigned val;
-+
-+	dw_pcie_dbi_ro_wr_en(dw);
-+
-+	val = dw_pcie_readl_dbi(dw, 0x70 + PCI_EXP_LNKCAP);
-+	pr_info("%s: link-cap was %08x\n", __func__, val);
-+	dw_pcie_writel_dbi(dw, 0x70 + PCI_EXP_LNKCAP, val | 0xf);
-+
-+	dw_pcie_dbi_ro_wr_dis(dw);
-+}
-+
- static int fu740_pcie_start_link(struct dw_pcie *pci)
- {
- 	struct device *dev = pci->dev;
- 	struct fu740_pcie *afp = dev_get_drvdata(dev);
- 
-+	/* Force PCIe gen1 otherwise Unmatched board does not probe */
-+	fu740_pcie_force_gen1(pci, afp);
-+
- 	/* Enable LTSSM */
- 	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
- 	return 0;
--- 
-2.34.1
+you are right.
+i will only restrict that delay to WCN6855 2.1 chip this issue is 
+reported for.
 
+> Regards
+> 
+> Marcel
