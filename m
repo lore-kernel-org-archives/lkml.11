@@ -2,188 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F976C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1018C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 17:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352049AbiBNRm4 (ORCPT
+        id S1352308AbiBNRnq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 12:42:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33864 "EHLO
+        Mon, 14 Feb 2022 12:43:46 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230214AbiBNRmx (ORCPT
+        with ESMTP id S229787AbiBNRnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 12:42:53 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9479765411
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:42:45 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id l19so24657653pfu.2
-        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:42:45 -0800 (PST)
+        Mon, 14 Feb 2022 12:43:45 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F419652F2
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:43:37 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id y17so26229682edd.10
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:43:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W0jC+BI1XleZWb4xYM6y8STFaTPRsXHACPClwjtx+Ds=;
-        b=DAAiKeKy6fnmfv72KiGxiZKt4u2fNPLKP2MFLt/3RJ926upPT/BaGK6gUmWp+BGAwK
-         +uaRG1r2hvSEU5yJptA629iQmmZyT2i929+7BWp6g6IdkGYH9hhQx/R4z2MjjcO5N4qh
-         KXuFVRrOk8spFMUYk8TJJKW3/gJPd5m9Dr9HbbqSFf7zMoChbpe/6uECjqsYxitj8dQa
-         5GbIwEjGH8qFPQQIGm2oiP5N8vC/vCCBRx/vyFh81/L/fpy+fSk9IiV+sVUNxhMCCeXe
-         XkJmB85rXQQSzor4ivkwNC/4HQ5jVMX+gVeuIRWSBRBinJ0XGmLundj/BS512UkfEUeJ
-         cLhw==
+         :cc;
+        bh=hl2tx2/b0j1as4iPc8br7ak6VbssTN3Lkaa01qKImp4=;
+        b=B3+89vMVlD+t/jr4Ir3J5heCAGLy+8O/Bfqv5DSjHS7vGRacFAUCCs0TF2tOD5+IOJ
+         DARHbhMwmXg8IKTGNN5wyW1UIWJ3dy3zDkUXnMSy6euD4EH/SAawjrYbWaSs+0JtxWja
+         ZBOb3OkzZ9V/CSYGxjkJVHb89skxzNvZve0yg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W0jC+BI1XleZWb4xYM6y8STFaTPRsXHACPClwjtx+Ds=;
-        b=vgEf81eu37o3I03HdvGTAaTQACBervGUz8K24n1YkfY/n/aLW3YvStjvH/uT2k0Qq7
-         yfvfBDi/I1MJU4Hruz2sQoytAcpkSApihFSdpmf6kvJJjJj9nyEXO2JWoF4po0rQx2u3
-         8/pWx1QzNOV2+Ta6bLlDX2FEv/JC68/j8rvE5eaLrTYT//1BLejFHzcnkwgkF56SnGv6
-         IovBsu9urYN1fWxdPtsY9yCVcg9hd340f/tqVVrjfkimOhGyoe6IQGpBwuzwEvVjOemF
-         FFkcRm1xKuCllrk0TtWe4vUv80pxLz3xOt5nBro5Uppu79M7WZY5z/IbgSLIvecyFEQE
-         Bkew==
-X-Gm-Message-State: AOAM5319dICyXHTcZfpctN9zAT3DJMXfjJ/hMaVwUMV2C4BbuypJ91BX
-        aBCl7tElIZUJQEd9VPqAtWfaWikudM1lxAdSyrCS1A==
-X-Google-Smtp-Source: ABdhPJwJiJpYzgpABDBFyLzMhQvo1iBEVDu6iPYEDxL43BvO/78jc0M4fPXPbozpzpwQudr9dC9Z9wsmnPvKbX3AgvQ=
-X-Received: by 2002:a05:6a00:804:: with SMTP id m4mr636142pfk.45.1644860564881;
- Mon, 14 Feb 2022 09:42:44 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=hl2tx2/b0j1as4iPc8br7ak6VbssTN3Lkaa01qKImp4=;
+        b=zpvY1hwkZTsI3kvRqsVb7j093XTNO0qs9VDJL7Ce/Kgf2aWE0M0O+OweL36PN0K721
+         G0HbV6OviQFhRolr6eYxYtzLNVGtKV71/p/etlxHCL40DfhfCUHw07WC89DBeXY2wxQx
+         jg8HHftMIlAhAqTlN+ctheVR2VtRrQ642rRdzP1NzSQ8VIvP5+a911dTONNYO2gQuepV
+         Y8CVW5IewFZOBmCKOUtwQt1H2vGh8XlQ1R0tyle3BwY05cedfKs/qzkZ8gJYFyMRvlVq
+         FFn1oc00ENlZf2mziN/VqJvNJi8pBa9xYTbg+0y+e77tyKtnL4kh85cwm+i3Uyma+9WG
+         2SxA==
+X-Gm-Message-State: AOAM533W8ySlptx75KbJg++F+jRl6XHi51zSteYPDUQ1PtEdAb9BaDIL
+        OnFSqHMrSJOBhEr7xfEOBTKpxJEB7nE07DmGCjo=
+X-Google-Smtp-Source: ABdhPJxljk/51G5lVHINNS09lkE9Vymateeo2UtJwxn76MXyqhuc7wX7CQmQyAub3+km3P91cikZxQ==
+X-Received: by 2002:a05:6402:518e:: with SMTP id q14mr744968edd.155.1644860615590;
+        Mon, 14 Feb 2022 09:43:35 -0800 (PST)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id ew6sm3264661ejc.217.2022.02.14.09.43.35
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Feb 2022 09:43:35 -0800 (PST)
+Received: by mail-wr1-f50.google.com with SMTP id d27so28119630wrc.6
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 09:43:35 -0800 (PST)
+X-Received: by 2002:a19:4302:: with SMTP id q2mr49672lfa.449.1644860131952;
+ Mon, 14 Feb 2022 09:35:31 -0800 (PST)
 MIME-Version: 1.0
-References: <1644395873-3937-1-git-send-email-wangqing@vivo.com>
- <20220213175940.1066f5a8@jic23-huawei> <9e5ed543-cd45-85db-50b5-52c2afd54c55@wanadoo.fr>
- <29e74800-1c3f-e043-97e6-d83f7a53fafb@wanadoo.fr> <20220214110119.00006347@Huawei.com>
-In-Reply-To: <20220214110119.00006347@Huawei.com>
-From:   Jyoti Bhayana <jbhayana@google.com>
-Date:   Mon, 14 Feb 2022 09:42:33 -0800
-Message-ID: <CA+=V6c31+BvssWX-eG=LdeC8o4mE7e1whnT74jbQWRY2w5Zbqg@mail.gmail.com>
-Subject: Re: [PATCH] iio: use div64_u64() instead of do_div()
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Qing Wang <wangqing@vivo.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220214163452.1568807-1-arnd@kernel.org>
+In-Reply-To: <20220214163452.1568807-1-arnd@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 14 Feb 2022 09:35:15 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whXYWoP6of7js=f4zov62on97mNFRSVRWhY75WoGM6CoQ@mail.gmail.com>
+Message-ID: <CAHk-=whXYWoP6of7js=f4zov62on97mNFRSVRWhY75WoGM6CoQ@mail.gmail.com>
+Subject: Re: [PATCH 00/14] clean up asm/uaccess.h, kill set_fs for good
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Brian Cain <bcain@codeaurora.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Rich Felker <dalias@libc.org>,
+        David Miller <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        alpha <linux-alpha@vger.kernel.org>,
+        "open list:SYNOPSYS ARC ARCHITECTURE" 
+        <linux-snps-arc@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-hexagon <linux-hexagon@vger.kernel.org>,
+        linux-ia64@vger.kernel.org,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        openrisc@lists.librecores.org,
+        linux-parisc <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-sparc <sparclinux@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-xtensa@linux-xtensa.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-yes, this is wrong. Also, the logic would be broken as the two apis
-do_div() and div64_u64 return values are completely different.
-Thanks,
-Jyoti
+On Mon, Feb 14, 2022 at 8:35 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> I did a patch for microblaze at some point, which turned out to be fairly
+> generic, and now ported it to most other architectures, using new generic
+> implementations of access_ok() and __{get,put}_kernel_nocheck().
 
+Thanks for doing this.
 
-On Mon, Feb 14, 2022 at 3:01 AM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
->
-> On Sun, 13 Feb 2022 19:54:01 +0100
-> Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
->
-> > Le 13/02/2022 =C3=A0 19:50, Christophe JAILLET a =C3=A9crit :
-> > > Le 13/02/2022 =C3=A0 18:59, Jonathan Cameron a =C3=A9crit :
-> > >> On Wed,  9 Feb 2022 00:37:53 -0800
-> > >> Qing Wang <wangqing-DGpbCiVdSXo@public.gmane.org> wrote:
-> > >>
-> > >>> From: Wang Qing <wangqing-DGpbCiVdSXo@public.gmane.org>
-> > >>>
-> > >>> do_div() does a 64-by-32 division.
-> > >>> When the divisor is u64, do_div() truncates it to 32 bits, this mea=
-ns it
-> > >>> can test non-zero and be truncated to zero for division.
-> > >>>
-> > >>> fix do_div.cocci warning:
-> > >>> do_div() does a 64-by-32 division, please consider using div64_u64
-> > >>> instead.
-> > >>>
-> > >>> Signed-off-by: Wang Qing <wangqing-DGpbCiVdSXo@public.gmane.org>
-> > >> These look correct to me.  Jyoti, please could give these a sanity c=
-heck?
-> > >>
-> > >
-> > > This is wrong.
-> > >
-> > > See [1].
-> > >
-> > > CJ
-> > >
-> > > [1]:
-> > > https://lore.kernel.org/linux-kernel/20211117112559.jix3hmx7uwqmuryg-=
-bIcnvbaLZ9MEGnE8C9+IrQ@public.gmane.org/
-> >
-> > Broken link, sorry:
-> >
-> > [1]
-> > https://lore.kernel.org/linux-kernel/20211117112559.jix3hmx7uwqmuryg@pe=
-ngutronix.de/
-> >
-> oops.  Thanks for the heads up. I'd forgotten the slightly odd convention
-> around do_div
->
-> Jonathan
->
->
-> > >
-> > >
-> > >> Thanks,
-> > >>
-> > >> Jonathan
-> > >>
-> > >>> ---
-> > >>>   drivers/iio/common/scmi_sensors/scmi_iio.c | 10 +++++-----
-> > >>>   1 file changed, 5 insertions(+), 5 deletions(-)
-> > >>>
-> > >>> diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c
-> > >>> b/drivers/iio/common/scmi_sensors/scmi_iio.c
-> > >>> index d538bf3..d6df5da
-> > >>> --- a/drivers/iio/common/scmi_sensors/scmi_iio.c
-> > >>> +++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
-> > >>> @@ -160,7 +160,7 @@ static int scmi_iio_set_odr_val(struct iio_dev
-> > >>> *iio_dev, int val, int val2)
-> > >>>       mult =3D scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
-> > >>>       sec =3D int_pow(10, mult) * UHZ_PER_HZ;
-> > >>> -    do_div(sec, uHz);
-> > >>> +    div64_u64(sec, uHz);
-> > >>>       if (sec =3D=3D 0) {
-> > >>>           dev_err(&iio_dev->dev,
-> > >>>               "Trying to set invalid sensor update value for sensor=
- %s",
-> > >>> @@ -237,10 +237,10 @@ static void convert_ns_to_freq(u64 interval_n=
-s,
-> > >>> u64 *hz, u64 *uhz)
-> > >>>       u64 rem, freq;
-> > >>>       freq =3D NSEC_PER_SEC;
-> > >>> -    rem =3D do_div(freq, interval_ns);
-> > >>> +    rem =3D div64_u64(freq, interval_ns);
-> > >>>       *hz =3D freq;
-> > >>>       *uhz =3D rem * 1000000UL;
-> > >>> -    do_div(*uhz, interval_ns);
-> > >>> +    div64_u64(*uhz, interval_ns);
-> > >>>   }
-> > >>>   static int scmi_iio_get_odr_val(struct iio_dev *iio_dev, int *val=
-,
-> > >>> int *val2)
-> > >>> @@ -266,7 +266,7 @@ static int scmi_iio_get_odr_val(struct iio_dev
-> > >>> *iio_dev, int *val, int *val2)
-> > >>>       mult =3D SCMI_SENS_CFG_GET_UPDATE_EXP(sensor_config);
-> > >>>       if (mult < 0) {
-> > >>>           sensor_interval_mult =3D int_pow(10, abs(mult));
-> > >>> -        do_div(sensor_update_interval, sensor_interval_mult);
-> > >>> +        div64_u64(sensor_update_interval, sensor_interval_mult);
-> > >>>       } else {
-> > >>>           sensor_interval_mult =3D int_pow(10, mult);
-> > >>>           sensor_update_interval =3D
-> > >>> @@ -500,7 +500,7 @@ static u64 scmi_iio_convert_interval_to_ns(u32 =
-val)
-> > >>>       mult =3D SCMI_SENS_INTVL_GET_EXP(val);
-> > >>>       if (mult < 0) {
-> > >>>           sensor_interval_mult =3D int_pow(10, abs(mult));
-> > >>> -        do_div(sensor_update_interval, sensor_interval_mult);
-> > >>> +        div64_u64(sensor_update_interval, sensor_interval_mult);
-> > >>>       } else {
-> > >>>           sensor_interval_mult =3D int_pow(10, mult);
-> > >>>           sensor_update_interval =3D
-> > >>
-> > >>
-> > >
-> > >
-> >
->
+Apart from the sparc64 issue with completely separate address spaces
+(so access_ok() should always return true like Al pointed out), this
+looks excellent to me.
+
+Somebody should check that there aren't other cases like sparc64, but
+let's merge this asap other than that.
+
+              Linus
