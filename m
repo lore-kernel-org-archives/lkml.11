@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B27C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 16:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356292AbiBNQUj (ORCPT
+        id S1356331AbiBNQVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 11:20:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33266 "EHLO
+        Mon, 14 Feb 2022 11:21:02 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241001AbiBNQUh (ORCPT
+        with ESMTP id S1356296AbiBNQUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 11:20:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42B34DF73;
-        Mon, 14 Feb 2022 08:20:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62DBF614BA;
-        Mon, 14 Feb 2022 16:20:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6933C340F6;
-        Mon, 14 Feb 2022 16:20:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644855628;
-        bh=0diHmmQT77HOp7spZ5bl7kXENb4/oqBcrfTkEBf0+KE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ltnHtQW8UODVcbRMxfeH0pjfsB6mZbvTWWp0n7uBuix6juCh0Dt0mG4fJgneXn6ds
-         77tKZK1oEZvOOmrVURM5yLRhobYSeQPo5wq96H1tG4B1571TaxHXSZ0d8F2H1sByUw
-         RqLQc83ug3nKZXLFI3YoHS4PA/VDGtc7OKardneIRkHN5nmYjb2X+6URwyKsyFQa5a
-         crNzw9+0hV9u9bJOtQjlyTjzmniJgUNwxR5H0fLaqgMXQ29EIccEYyw+MBI/91Qdnm
-         P/DqXod7LbLQk+vzwufsUfX70l3T1TbBpgs/eYwZy9Hbw2E8vXRN4RL8RlUhhQ3/PE
-         le+orCl5zwOLA==
-Received: by mail-wm1-f51.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so167157wmb.1;
-        Mon, 14 Feb 2022 08:20:28 -0800 (PST)
-X-Gm-Message-State: AOAM531pGuwcK+uBOrzklt8WDW/pwjT69zZUw3i3vEDZ0TN/AK5ObHrq
-        snuovgCjCev0zsgbf7q5/DhrspVb1xuF60sQceY=
-X-Google-Smtp-Source: ABdhPJyENkLzu+Qtrc7oNRQvqGS80bfLRIWmUVIZL+pKQ64wDWBb3eizCDmR6JXlU3zwQSpe/2+UZg/mJM5QYn92Gj0=
-X-Received: by 2002:a05:600c:19c7:: with SMTP id u7mr9492360wmq.82.1644855626961;
- Mon, 14 Feb 2022 08:20:26 -0800 (PST)
-MIME-Version: 1.0
-References: <CAK8P3a0eAv168eepvdZQbYDstTQHc-Hb2_PMS3bseV3caB4oAA@mail.gmail.com>
- <YgoJvSFFTSb6apGl@infradead.org>
-In-Reply-To: <YgoJvSFFTSb6apGl@infradead.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 14 Feb 2022 17:20:10 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3WC3dWdXNQPaU4J0EyhUZ6hmvCzO14HdUAQyq5j3s4ww@mail.gmail.com>
-Message-ID: <CAK8P3a3WC3dWdXNQPaU4J0EyhUZ6hmvCzO14HdUAQyq5j3s4ww@mail.gmail.com>
-Subject: Re: [PATCH] microblaze: remove CONFIG_SET_FS
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Stafford Horne <shorne@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        Mon, 14 Feb 2022 11:20:44 -0500
+X-Greylist: delayed 1390 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 14 Feb 2022 08:20:36 PST
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D1942EE7
+        for <linux-kernel@vger.kernel.org>; Mon, 14 Feb 2022 08:20:36 -0800 (PST)
+Received: from pps.filterd (m0134425.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21EFuV8X020516;
+        Mon, 14 Feb 2022 15:57:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=P++DMPCoLYeSHVVEkYGtT1XsH/0G6lrbTxQxRb5m1lM=;
+ b=Mu5uAhGJsIb1XoS0DqT65OJI+V90s9tMan0lAcMloYeeDXEQ4vjGiReG/21ZTrQIhkhT
+ n4PGWs5O790Ra/WvNnXjC1xbIdweIl4Y8+XcZnwdX36oeDlmh7iz/2p/EXd7uzMGyws+
+ K2AUp+PhGQEGVUFSDwewINoyziyeoCYhlmYOQDsuu1UL4Jg8xm6X8VeCwa578xdmeNHp
+ n/3K0VqSsgfGMNqA2k2x2izWcd03WREPn7u2TVixkyDfZ0V1AkQXJbsd178wTGnRxnyT
+ v5WKlfqC+Hlr8aCG6H0lCOfcXG3n0Wjf1/+lXqXTIbH1SiCzDyykSS+xh2lqUzM77egx 0Q== 
+Received: from g2t2353.austin.hpe.com (g2t2353.austin.hpe.com [15.233.44.26])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3e7kkrup4q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 15:57:12 +0000
+Received: from g2t2360.austin.hpecorp.net (g2t2360.austin.hpecorp.net [16.196.225.135])
+        by g2t2353.austin.hpe.com (Postfix) with ESMTP id 95DCC82;
+        Mon, 14 Feb 2022 15:57:11 +0000 (UTC)
+Received: from hpe.com (unknown [10.207.195.135])
+        by g2t2360.austin.hpecorp.net (Postfix) with ESMTP id 029D93B;
+        Mon, 14 Feb 2022 15:57:09 +0000 (UTC)
+Date:   Mon, 14 Feb 2022 09:57:09 -0600
+From:   Dimitri Sivanich <sivanich@hpe.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Xiyu Yang <xiyuyang19@fudan.edu.cn>, linux-kernel@vger.kernel.org,
+        Dimitri Sivanich <dimitri.sivanich@hpe.com>,
         Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v1 1/1] misc: sgi-gru: Don't cast parameter in bit
+ operations
+Message-ID: <20220214155709.GA3858@hpe.com>
+References: <20220214153958.9721-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214153958.9721-1-andriy.shevchenko@linux.intel.com>
+X-Proofpoint-GUID: Kw-w50yEarRKtWNI7JFKQJIVTpsUiG3R
+X-Proofpoint-ORIG-GUID: Kw-w50yEarRKtWNI7JFKQJIVTpsUiG3R
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_07,2022-02-14_03,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 bulkscore=0 mlxlogscore=999 clxscore=1011
+ lowpriorityscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ mlxscore=0 spamscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202140097
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 8:50 AM Christoph Hellwig <hch@infradead.org> wrote:
->
-> I like the series a lot.
->
-> Superficial comments:
->
-> for nds32 is there any good reason why __get_user / __set_user check
-> the address limit directly?  Maybe we should unify this and make it work
-> like the other architectures.
+Acked-by: Dimitri Sivanich <sivanich@hpe.com>
 
-I've done that now, and am glad I did, because I uncovered that
-put_user() was actually missing the check that got added to __get_user()
-by accident.
-
-> With "uaccess: add generic __{get,put}_kernel_nofault" we should be able
-> to remove HAVE_GET_KERNEL_NOFAULT entirely and just check if the helpers
-> are already defined in linux/uaccess.h.
-
-Good idea, changed now as well.
-
-> The new generic __access_ok, and the 3 fixed up version early on
-> have a whole lot of superflous braces.
-
-I'd prefer to leave those in, the logic is complex enough that I'd
-rather make sure this is completely obvious to readers.
-
-I got a few built bot reports about missing __user annotations that were
-uncovered by the added type checking in access_ok, fixed those
-as well.
-
-I'm doing another test build after the last changes, will send it out in a bit
-if there are no further regressions.
-
-        Arnd
+On Mon, Feb 14, 2022 at 05:39:58PM +0200, Andy Shevchenko wrote:
+> While in this particular case (*) it would not be an issue,
+> the pattern itself is bad and error prone in case somebody
+> blindly copies to their code.
+> 
+> Don't cast parameter to unsigned long pointer in the bit
+> operations. Note, new compilers might warn on this line for
+> potential outbound access.
+> 
+> *) it seems a dead code, so remove it all for good
+> 
+> Fixes: 13d19498b044 ("GRU Driver: driver internal header files")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/misc/sgi-gru/grutables.h | 6 ------
+>  1 file changed, 6 deletions(-)
+> 
+> diff --git a/drivers/misc/sgi-gru/grutables.h b/drivers/misc/sgi-gru/grutables.h
+> index e4c067c61251..5efc869fe59a 100644
+> --- a/drivers/misc/sgi-gru/grutables.h
+> +++ b/drivers/misc/sgi-gru/grutables.h
+> @@ -530,12 +530,6 @@ struct gru_blade_state {
+>  		for ((i) = (k)*GRU_CBR_AU_SIZE;				\
+>  				(i) < ((k) + 1) * GRU_CBR_AU_SIZE; (i)++)
+>  
+> -/* Scan each DSR in a DSR bitmap. Note: multiple DSRs in an allocation unit */
+> -#define for_each_dsr_in_allocation_map(i, map, k)			\
+> -	for_each_set_bit((k), (const unsigned long *)(map), GRU_DSR_AU)	\
+> -		for ((i) = (k) * GRU_DSR_AU_CL;				\
+> -				(i) < ((k) + 1) * GRU_DSR_AU_CL; (i)++)
+> -
+>  #define gseg_physical_address(gru, ctxnum)				\
+>  		((gru)->gs_gru_base_paddr + ctxnum * GRU_GSEG_STRIDE)
+>  #define gseg_virtual_address(gru, ctxnum)				\
+> -- 
+> 2.34.1
