@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FABBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 09:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343921AbiBNJy4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:54:56 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:60850 "EHLO
+        id S238598AbiBNJzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 14 Feb 2022 04:55:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344375AbiBNJvn (ORCPT
+        with ESMTP id S1344441AbiBNJvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 14 Feb 2022 04:51:43 -0500
+        Mon, 14 Feb 2022 04:51:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B1966FA5;
-        Mon, 14 Feb 2022 01:42:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 403E0794DF;
+        Mon, 14 Feb 2022 01:42:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E50D061172;
-        Mon, 14 Feb 2022 09:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1599C340E9;
-        Mon, 14 Feb 2022 09:42:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D122461239;
+        Mon, 14 Feb 2022 09:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99EBBC340E9;
+        Mon, 14 Feb 2022 09:42:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644831767;
-        bh=EmdIkX7A7iEE+I7vI3N50D/Fv19L8KBxC1mzjgrtM7k=;
+        s=korg; t=1644831770;
+        bh=wDqnvc6CLUgfoEy20HXPoeHFbVA62YBNGu44nsE+AWA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uYnhzYfqAZeEb7IU2ih068+W4CJL/GYGHL5PEE4fi6UCIQOBXjcI8TEq7mdtYcWCv
-         Q4Mr/y3ebxuFb3quFj25vKWGR7FH+yYCy8b68n13iJh5vZhq277Pf7X/lNeMpxt4H/
-         JhyqiOZ0Myj6TTlHs00lyC4LsP/kjYFtpQvxCLCg=
+        b=DyvMPSDw2FmU+zct8Fk2TdjWxvPozzm1hWOwFtOzbIc2SoNuhzWnhBFw0Uc2hsDrv
+         DQXc7I0qGJ1hw2ybmjpg8KYgoYaj0NHF2mMex3VGsmVg83zbQlzo0a+OUPViKZXYdu
+         ALXFE+exImhduWmD1CY1keUsgSrqApHuUwB47ODw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Subject: [PATCH 5.10 089/116] n_tty: wake up poll(POLLRDNORM) on receiving data
-Date:   Mon, 14 Feb 2022 10:26:28 +0100
-Message-Id: <20220214092501.842412778@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jonas Malaco <jonas@protocubo.io>
+Subject: [PATCH 5.10 090/116] eeprom: ee1004: limit i2c reads to I2C_SMBUS_BLOCK_MAX
+Date:   Mon, 14 Feb 2022 10:26:29 +0100
+Message-Id: <20220214092501.877811635@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092458.668376521@linuxfoundation.org>
 References: <20220214092458.668376521@linuxfoundation.org>
@@ -48,84 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: TATSUKAWA KOSUKE (立川 江介) <tatsu-ab1@nec.com>
+From: Jonas Malaco <jonas@protocubo.io>
 
-commit c816b2e65b0e86b95011418cad334f0524fc33b8 upstream.
+commit c0689e46be23160d925dca95dfc411f1a0462708 upstream.
 
-The poll man page says POLLRDNORM is equivalent to POLLIN when used as
-an event.
-$ man poll
-<snip>
-              POLLRDNORM
-                     Equivalent to POLLIN.
+Commit effa453168a7 ("i2c: i801: Don't silently correct invalid transfer
+size") revealed that ee1004_eeprom_read() did not properly limit how
+many bytes to read at once.
 
-However, in n_tty driver, POLLRDNORM does not return until timeout even
-if there is terminal input, whereas POLLIN returns.
+In particular, i2c_smbus_read_i2c_block_data_or_emulated() takes the
+length to read as an u8.  If count == 256 after taking into account the
+offset and page boundary, the cast to u8 overflows.  And this is common
+when user space tries to read the entire EEPROM at once.
 
-The following test program works until kernel-3.17, but the test stops
-in poll() after commit 57087d515441 ("tty: Fix spurious poll() wakeups").
+To fix it, limit each read to I2C_SMBUS_BLOCK_MAX (32) bytes, already
+the maximum length i2c_smbus_read_i2c_block_data_or_emulated() allows.
 
-[Steps to run test program]
-  $ cc -o test-pollrdnorm test-pollrdnorm.c
-  $ ./test-pollrdnorm
-  foo          <-- Type in something from the terminal followed by [RET].
-                   The string should be echoed back.
-
-  ------------------------< test-pollrdnorm.c >------------------------
-  #include <stdio.h>
-  #include <errno.h>
-  #include <poll.h>
-  #include <unistd.h>
-
-  void main(void)
-  {
-	int		n;
-	unsigned char	buf[8];
-	struct pollfd	fds[1] = {{ 0, POLLRDNORM, 0 }};
-
-	n = poll(fds, 1, -1);
-	if (n < 0)
-		perror("poll");
-	n = read(0, buf, 8);
-	if (n < 0)
-		perror("read");
-	if (n > 0)
-		write(1, buf, n);
-  }
-  ------------------------------------------------------------------------
-
-The attached patch fixes this problem.  Many calls to
-wake_up_interruptible_poll() in the kernel source code already specify
-"POLLIN | POLLRDNORM".
-
-Fixes: 57087d515441 ("tty: Fix spurious poll() wakeups")
+Fixes: effa453168a7 ("i2c: i801: Don't silently correct invalid transfer size")
 Cc: stable@vger.kernel.org
-Signed-off-by: Kosuke Tatsukawa <tatsu-ab1@nec.com>
-Link: https://lore.kernel.org/r/TYCPR01MB81901C0F932203D30E452B3EA5209@TYCPR01MB8190.jpnprd01.prod.outlook.com
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Jonas Malaco <jonas@protocubo.io>
+Link: https://lore.kernel.org/r/20220203165024.47767-1-jonas@protocubo.io
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_tty.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/eeprom/ee1004.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/tty/n_tty.c
-+++ b/drivers/tty/n_tty.c
-@@ -1372,7 +1372,7 @@ handle_newline:
- 			put_tty_queue(c, ldata);
- 			smp_store_release(&ldata->canon_head, ldata->read_head);
- 			kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+			wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 			return 0;
- 		}
- 	}
-@@ -1653,7 +1653,7 @@ static void __receive_buf(struct tty_str
+--- a/drivers/misc/eeprom/ee1004.c
++++ b/drivers/misc/eeprom/ee1004.c
+@@ -82,6 +82,9 @@ static ssize_t ee1004_eeprom_read(struct
+ 	if (unlikely(offset + count > EE1004_PAGE_SIZE))
+ 		count = EE1004_PAGE_SIZE - offset;
  
- 	if (read_cnt(ldata)) {
- 		kill_fasync(&tty->fasync, SIGIO, POLL_IN);
--		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN);
-+		wake_up_interruptible_poll(&tty->read_wait, EPOLLIN | EPOLLRDNORM);
- 	}
- }
- 
++	if (count > I2C_SMBUS_BLOCK_MAX)
++		count = I2C_SMBUS_BLOCK_MAX;
++
+ 	status = i2c_smbus_read_i2c_block_data_or_emulated(client, offset,
+ 							   count, buf);
+ 	dev_dbg(&client->dev, "read %zu@%d --> %d\n", count, offset, status);
 
 
