@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C212C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 427A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 10:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344672AbiBNKKA (ORCPT
+        id S1345116AbiBNKKD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 05:10:00 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36230 "EHLO
+        Mon, 14 Feb 2022 05:10:03 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345841AbiBNKHF (ORCPT
+        with ESMTP id S1345851AbiBNKHF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 05:07:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CB874DDF;
-        Mon, 14 Feb 2022 01:49:38 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F6E74DE4;
+        Mon, 14 Feb 2022 01:49:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D6F161291;
-        Mon, 14 Feb 2022 09:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25556C340E9;
-        Mon, 14 Feb 2022 09:49:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E94161238;
+        Mon, 14 Feb 2022 09:49:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 649E0C340E9;
+        Mon, 14 Feb 2022 09:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1644832177;
-        bh=vORUuYiT5WoDNpghQfBIA5NS9bGKaidEpPRJMV74JMs=;
+        s=korg; t=1644832181;
+        bh=5IU/2Rkm7fO5A9wkV5Una3P/EvDC8prg70sABLS3KJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LxyOhMtzJ9/dipHaoo9i6UE0OWGr2419tsMSrULOskFKF0j+SgM8VFbRyQjGMeKS8
-         awZHc5JrA9nHlLMYI9CaMSBGapP54EXH9UBz0zEFNmpWDXTWAn0RCYIpvaV7qEt4E1
-         mBEz6h6QYKY155djJfPQEhhtNCgzTJ9xDp5WzHWw=
+        b=1gywfdbHB++L5WvpkFR1fkbBkma0rcQAm2/PVY7pikZoe8664rykNs1QV62bMWDnQ
+         6dKV7FlR3JGxF7oxjckE07alMiutglxrrEnZB+fJNQy/R3zs+Us2aFLO6oXF1ssmIg
+         uLNTUifMGHLcvbNTbIRZpVqPi9xvz0MGX2ZhglDA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Marek Vasut <marex@denx.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/172] drm/vc4: hdmi: Allow DBLCLK modes even if horz timing is odd.
-Date:   Mon, 14 Feb 2022 10:25:54 +0100
-Message-Id: <20220214092509.722721872@linuxfoundation.org>
+Subject: [PATCH 5.15 105/172] drm/panel: simple: Assign data from panel_dpi_probe() correctly
+Date:   Mon, 14 Feb 2022 10:26:03 +0100
+Message-Id: <20220214092510.026118532@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214092506.354292783@linuxfoundation.org>
 References: <20220214092506.354292783@linuxfoundation.org>
@@ -51,50 +55,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+From: Christoph Niedermaier <cniedermaier@dh-electronics.com>
 
-[ Upstream commit 1d118965965f89948236ebe23072bb1fca5e7832 ]
+[ Upstream commit 6df4432a5eca101b5fd80fbee41d309f3d67928d ]
 
-The 2711 pixel valve can't produce odd horizontal timings, and
-checks were added to vc4_hdmi_encoder_atomic_check and
-vc4_hdmi_encoder_mode_valid to filter out/block selection of
-such modes.
+In the function panel_simple_probe() the pointer panel->desc is
+assigned to the passed pointer desc. If function panel_dpi_probe()
+is called panel->desc will be updated, but further on only desc
+will be evaluated. So update the desc pointer to be able to use
+the data from the function panel_dpi_probe().
 
-Modes with DRM_MODE_FLAG_DBLCLK double all the horizontal timing
-values before programming them into the PV. The PV values,
-therefore, can not be odd, and so the modes can be supported.
+Fixes: 4a1d0dbc8332 ("drm/panel: simple: add panel-dpi support")
 
-Amend the filtering appropriately.
-
-Fixes: 57fb32e632be ("drm/vc4: hdmi: Block odd horizontal timings")
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220127135116.298278-1-maxime@cerno.tech
+Signed-off-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Marek Vasut <marex@denx.de>
+Cc: Thierry Reding <thierry.reding@gmail.com>
+Cc: Sam Ravnborg <sam@ravnborg.org>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+To: dri-devel@lists.freedesktop.org
+Reviewed-by: Sam Ravnborg <sam@ravnborg.org>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220201110153.3479-1-cniedermaier@dh-electronics.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/panel/panel-simple.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index e880bdd8dcfd2..9170d948b4483 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1090,6 +1090,7 @@ static int vc4_hdmi_encoder_atomic_check(struct drm_encoder *encoder,
- 	unsigned long long tmds_rate;
- 
- 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
-+	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
- 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
- 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
- 		return -EINVAL;
-@@ -1137,6 +1138,7 @@ vc4_hdmi_encoder_mode_valid(struct drm_encoder *encoder,
- 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
- 
- 	if (vc4_hdmi->variant->unsupported_odd_h_timings &&
-+	    !(mode->flags & DRM_MODE_FLAG_DBLCLK) &&
- 	    ((mode->hdisplay % 2) || (mode->hsync_start % 2) ||
- 	     (mode->hsync_end % 2) || (mode->htotal % 2)))
- 		return MODE_H_ILLEGAL;
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 9b6c4e6c38a1b..b7b654f2dfd90 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -721,6 +721,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc,
+ 		err = panel_dpi_probe(dev, panel);
+ 		if (err)
+ 			goto free_ddc;
++		desc = panel->desc;
+ 	} else {
+ 		if (!of_get_display_timing(dev->of_node, "panel-timing", &dt))
+ 			panel_simple_parse_panel_timing_node(dev, panel, &dt);
 -- 
 2.34.1
 
