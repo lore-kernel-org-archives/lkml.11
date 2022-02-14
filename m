@@ -2,383 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A34BCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C358C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 02:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239765AbiBNCeL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 13 Feb 2022 21:34:11 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45728 "EHLO
+        id S233817AbiBNCim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 13 Feb 2022 21:38:42 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239582AbiBNCdf (ORCPT
+        with ESMTP id S231686AbiBNCil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 13 Feb 2022 21:33:35 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8665E60A9D;
-        Sun, 13 Feb 2022 18:32:33 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEBA21474;
-        Sun, 13 Feb 2022 18:32:32 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.47.15])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D69533F718;
-        Sun, 13 Feb 2022 18:32:30 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch@vger.kernel.org
-Subject: [PATCH 30/30] mm/mmap: Drop ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Mon, 14 Feb 2022 08:00:53 +0530
-Message-Id: <1644805853-21338-31-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
-References: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
+        Sun, 13 Feb 2022 21:38:41 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9174219288
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 18:38:34 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id i62so18345056ioa.1
+        for <linux-kernel@vger.kernel.org>; Sun, 13 Feb 2022 18:38:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fhTIyjQrks8YWYHGKpnJ4cPHVuWtXADAbz/+ltcbh1A=;
+        b=LA6BJe7r2AxyUTpA9+4vDIumOI8DEq/578pErvLSQ25QixnhCo64ib7ECk3zNNpCu/
+         CCc5d5l9rVlINhmb38kQ2+N58wJ1aCNLvWi8b7twh276IzxQ/FZkhSeN7c6WndeLm7bs
+         SLXT4tqkD8Y5i2KpqhbQxibHff22H/uAu3wbVqVIEVeWfws3T2lxnkLOXKUub7ZiH4sG
+         RKxvnvkeK8oxJ6dOyvVTG+A0Lvm007O1g33FBEyA9nJf64KatYVNaU6KdlN4fQ9VXZcA
+         cBGtYTKppalPV4Jdux/nTdUjKWrOk3dhQ88AkkK6OlxLjfr+VljT9g/nPdqL+ZGCY5Xd
+         2rQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fhTIyjQrks8YWYHGKpnJ4cPHVuWtXADAbz/+ltcbh1A=;
+        b=aLtDfOSkWNwkelT5Slr8tY/5f5CKF9JOn1VMXJn04gR7nJp59srNdDb7WkiQNhnZbz
+         fLyEEl5Q4yeqR8P1DKTEHaIQI6hUzzfHtjujkBsOiLjBG+wKx/6Kbt9hwDNiG3UyxJhW
+         C5vjV7vPJFZlxxDUWLCl0TYxduv5BGyNcnNdliGlHHgnoJ6q3Y7FrEec9qq5+W547E33
+         V2ZMVsxWqgX71vTE+0NsGkUYEOwWmsBuunYdhSvUgpiv8+RafJXSE63hzwISzIVQuzPq
+         XuLAYyXhKSZhZUPvpP2gM1+N2fxjBil3ZpbKKx1C5AuvIlJxX4ZInow4P4/TU3wGhOVu
+         kkUw==
+X-Gm-Message-State: AOAM533Bfa3IkytIB264lknzgyipIOlHnovMUD0iJUDcpuLgp18ewQWk
+        ms6ME08QBxqrd9aYyGzaa+qtQtPkWulvwFqSYGF0Th0=
+X-Google-Smtp-Source: ABdhPJyBbWmL8660Hetk2PGEYDWi2fCeOCo3RF0+NkL6Y4PDXeID9C2NZCchB5mBK7PntThAulqm9uZrpnqIoJoQSvE=
+X-Received: by 2002:a5e:d610:: with SMTP id w16mr6092572iom.87.1644806313873;
+ Sun, 13 Feb 2022 18:38:33 -0800 (PST)
+MIME-Version: 1.0
+References: <20220127090215.32000-1-kernelfans@gmail.com>
+In-Reply-To: <20220127090215.32000-1-kernelfans@gmail.com>
+From:   Pingfan Liu <kernelfans@gmail.com>
+Date:   Mon, 14 Feb 2022 10:38:22 +0800
+Message-ID: <CAFgQCTsVyH5mctKeYpBJY3GvmODDMq3xmqT+z0C0pOZNjjPXxw@mail.gmail.com>
+Subject: Re: [PATCHv2] kexec: disable cpu hotplug until the rebooting cpu is stable
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Baokun Li <libaokun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Kexec Mailing List <kexec@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All platforms now define their own vm_get_page_prot() and also there is no
-generic version left to fallback on. Hence drop ARCH_HAS_GET_PAGE_PROT.
+Gently ping, maintainers, could you share your opinions?
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/alpha/Kconfig      | 1 -
- arch/arc/Kconfig        | 1 -
- arch/arm/Kconfig        | 1 -
- arch/arm64/Kconfig      | 1 -
- arch/csky/Kconfig       | 1 -
- arch/hexagon/Kconfig    | 1 -
- arch/ia64/Kconfig       | 1 -
- arch/m68k/Kconfig       | 1 -
- arch/microblaze/Kconfig | 1 -
- arch/mips/Kconfig       | 1 -
- arch/nds32/Kconfig      | 1 -
- arch/nios2/Kconfig      | 1 -
- arch/openrisc/Kconfig   | 1 -
- arch/parisc/Kconfig     | 1 -
- arch/powerpc/Kconfig    | 1 -
- arch/riscv/Kconfig      | 1 -
- arch/s390/Kconfig       | 1 -
- arch/sh/Kconfig         | 1 -
- arch/sparc/Kconfig      | 2 --
- arch/um/Kconfig         | 1 -
- arch/x86/Kconfig        | 1 -
- arch/xtensa/Kconfig     | 1 -
- mm/Kconfig              | 3 ---
- mm/mmap.c               | 3 ---
- 24 files changed, 29 deletions(-)
 
-diff --git a/arch/alpha/Kconfig b/arch/alpha/Kconfig
-index 73e82fe5c770..4e87783c90ad 100644
---- a/arch/alpha/Kconfig
-+++ b/arch/alpha/Kconfig
-@@ -2,7 +2,6 @@
- config ALPHA
- 	bool
- 	default y
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_32BIT_USTAT_F_TINODE
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index 78ff0644b343..3c2a4753d09b 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -13,7 +13,6 @@ config ARC
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_SUPPORTS_ATOMIC_RMW if ARC_HAS_LLSC
- 	select ARCH_32BIT_OFF_T
- 	select BUILDTIME_TABLE_SORT
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 87b2e89ef3d6..4c97cb40eebb 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -23,7 +23,6 @@ config ARM
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU if SWIOTLB || !MMU
- 	select ARCH_HAS_TEARDOWN_DMA_OPS if MMU
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAVE_CUSTOM_GPIO_H
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG if CPU_V7 || CPU_V7M || CPU_V6K
- 	select ARCH_HAS_GCOV_PROFILE_ALL
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 7e36bb32351e..675bf245c85e 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -43,7 +43,6 @@ config ARM64
- 	select ARCH_HAS_SYSCALL_WRAPPER
- 	select ARCH_HAS_TEARDOWN_DMA_OPS if IOMMU_SUPPORT
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAS_ZONE_DMA_SET if EXPERT
- 	select ARCH_HAVE_ELF_PROT
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-diff --git a/arch/csky/Kconfig b/arch/csky/Kconfig
-index 209dac5686dd..132f43f12dd8 100644
---- a/arch/csky/Kconfig
-+++ b/arch/csky/Kconfig
-@@ -6,7 +6,6 @@ config CSKY
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_USE_BUILTIN_BSWAP
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_FRAME_POINTERS if !CPU_CK610 && $(cc-option,-mbacktrace)
-diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
-index cdc5df32a1e3..15dd8f38b698 100644
---- a/arch/hexagon/Kconfig
-+++ b/arch/hexagon/Kconfig
-@@ -6,7 +6,6 @@ config HEXAGON
- 	def_bool y
- 	select ARCH_32BIT_OFF_T
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_NO_PREEMPT
- 	select DMA_GLOBAL_POOL
- 	# Other pending projects/to-do items.
-diff --git a/arch/ia64/Kconfig b/arch/ia64/Kconfig
-index 0ab15e8d5783..a7e01573abd8 100644
---- a/arch/ia64/Kconfig
-+++ b/arch/ia64/Kconfig
-@@ -11,7 +11,6 @@ config IA64
- 	select ARCH_HAS_DMA_MARK_CLEAN
- 	select ARCH_HAS_STRNCPY_FROM_USER
- 	select ARCH_HAS_STRNLEN_USER
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_MIGHT_HAVE_PC_SERIO
- 	select ACPI
-diff --git a/arch/m68k/Kconfig b/arch/m68k/Kconfig
-index 114e65164692..936e1803c7c7 100644
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -11,7 +11,6 @@ config M68K
- 	select ARCH_NO_PREEMPT if !COLDFIRE
- 	select ARCH_USE_MEMTEST if MMU_MOTOROLA
- 	select ARCH_WANT_IPC_PARSE_VERSION
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select BINFMT_FLAT_ARGVP_ENVP_ON_STACK
- 	select DMA_DIRECT_REMAP if HAS_DMA && MMU && !COLDFIRE
- 	select GENERIC_ATOMIC64
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index f2c25ba8621e..59798e43cdb0 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -7,7 +7,6 @@ config MICROBLAZE
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_WANT_IPC_PARSE_VERSION
- 	select BUILDTIME_TABLE_SORT
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index fcbfc52a1567..058446f01487 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -13,7 +13,6 @@ config MIPS
- 	select ARCH_HAS_STRNLEN_USER
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_KEEP_MEMBLOCK
- 	select ARCH_SUPPORTS_UPROBES
-diff --git a/arch/nds32/Kconfig b/arch/nds32/Kconfig
-index 576e05479925..4d1421b18734 100644
---- a/arch/nds32/Kconfig
-+++ b/arch/nds32/Kconfig
-@@ -10,7 +10,6 @@ config NDS32
- 	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_WANT_FRAME_POINTERS if FTRACE
- 	select CLKSRC_MMIO
- 	select CLONE_BACKWARDS
-diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
-index 85a58a357a3b..33fd06f5fa41 100644
---- a/arch/nios2/Kconfig
-+++ b/arch/nios2/Kconfig
-@@ -6,7 +6,6 @@ config NIOS2
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_HAS_DMA_SET_UNCACHED
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_NO_SWAP
- 	select COMMON_CLK
- 	select TIMER_OF
-diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-index 842a61426816..f724b3f1aeed 100644
---- a/arch/openrisc/Kconfig
-+++ b/arch/openrisc/Kconfig
-@@ -10,7 +10,6 @@ config OPENRISC
- 	select ARCH_HAS_DMA_SET_UNCACHED
- 	select ARCH_HAS_DMA_CLEAR_UNCACHED
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select COMMON_CLK
- 	select OF
- 	select OF_EARLY_FLATTREE
-diff --git a/arch/parisc/Kconfig b/arch/parisc/Kconfig
-index de512f120b50..43c1c880def6 100644
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -10,7 +10,6 @@ config PARISC
- 	select ARCH_HAS_ELF_RANDOMIZE
- 	select ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_NO_SG_CHAIN
- 	select ARCH_SUPPORTS_HUGETLBFS if PA20
- 	select ARCH_SUPPORTS_MEMORY_FAILURE
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index ddb4a3687c05..b779603978e1 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -135,7 +135,6 @@ config PPC
- 	select ARCH_HAS_TICK_BROADCAST		if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_UACCESS_FLUSHCACHE
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select ARCH_KEEP_MEMBLOCK
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 9391742f9286..5adcbd9b5e88 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -31,7 +31,6 @@ config RISCV
- 	select ARCH_HAS_STRICT_MODULE_RWX if MMU && !XIP_KERNEL
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_OPTIONAL_KERNEL_RWX if ARCH_HAS_STRICT_KERNEL_RWX
- 	select ARCH_OPTIONAL_KERNEL_RWX_DEFAULT
- 	select ARCH_STACKWALK
-diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
-index cb1b487e8201..be9f39fd06df 100644
---- a/arch/s390/Kconfig
-+++ b/arch/s390/Kconfig
-@@ -78,7 +78,6 @@ config S390
- 	select ARCH_HAS_SYSCALL_WRAPPER
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
- 	select ARCH_HAS_VDSO_DATA
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select ARCH_INLINE_READ_LOCK
- 	select ARCH_INLINE_READ_LOCK_BH
-diff --git a/arch/sh/Kconfig b/arch/sh/Kconfig
-index f3fcd1c5e002..2474a04ceac4 100644
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -11,7 +11,6 @@ config SUPERH
- 	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_PTE_SPECIAL
- 	select ARCH_HAS_TICK_BROADCAST if GENERIC_CLOCKEVENTS_BROADCAST
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HIBERNATION_POSSIBLE if MMU
- 	select ARCH_MIGHT_HAVE_PC_PARPORT
- 	select ARCH_WANT_IPC_PARSE_VERSION
-diff --git a/arch/sparc/Kconfig b/arch/sparc/Kconfig
-index ff29156f2380..1cab1b284f1a 100644
---- a/arch/sparc/Kconfig
-+++ b/arch/sparc/Kconfig
-@@ -59,7 +59,6 @@ config SPARC32
- 	select HAVE_UID16
- 	select OLD_SIGACTION
- 	select ZONE_DMA
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 
- config SPARC64
- 	def_bool 64BIT
-@@ -85,7 +84,6 @@ config SPARC64
- 	select PERF_USE_VMALLOC
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
- 	select HAVE_C_RECORDMCOUNT
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select ARCH_SUPPORTS_ATOMIC_RMW
- 	select ARCH_SUPPORTS_DEBUG_PAGEALLOC
-diff --git a/arch/um/Kconfig b/arch/um/Kconfig
-index 5836296868a8..4d398b80aea8 100644
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -9,7 +9,6 @@ config UML
- 	select ARCH_HAS_KCOV
- 	select ARCH_HAS_STRNCPY_FROM_USER
- 	select ARCH_HAS_STRNLEN_USER
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_NO_PREEMPT
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select HAVE_ARCH_SECCOMP_FILTER
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index b2ea06c87708..013d8d6179e5 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -93,7 +93,6 @@ config X86
- 	select ARCH_HAS_SYNC_CORE_BEFORE_USERMODE
- 	select ARCH_HAS_SYSCALL_WRAPPER
- 	select ARCH_HAS_UBSAN_SANITIZE_ALL
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_HAS_DEBUG_WX
- 	select ARCH_HAS_ZONE_DMA_SET if EXPERT
- 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 1608f7517546..8ac599aa6d99 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -9,7 +9,6 @@ config XTENSA
- 	select ARCH_HAS_DMA_SET_UNCACHED if MMU
- 	select ARCH_HAS_STRNCPY_FROM_USER if !KASAN
- 	select ARCH_HAS_STRNLEN_USER
--	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_USE_MEMTEST
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_USE_QUEUED_SPINLOCKS
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 212fb6e1ddaa..3326ee3903f3 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -744,9 +744,6 @@ config IDLE_PAGE_TRACKING
- config ARCH_HAS_CACHE_LINE_SIZE
- 	bool
- 
--config ARCH_HAS_VM_GET_PAGE_PROT
--	bool
--
- config ARCH_HAS_PTE_DEVMAP
- 	bool
- 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index 368bc8aee45b..8c1396c3f0d6 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -81,7 +81,6 @@ static void unmap_region(struct mm_struct *mm,
- 		struct vm_area_struct *vma, struct vm_area_struct *prev,
- 		unsigned long start, unsigned long end);
- 
--#ifndef CONFIG_ARCH_HAS_VM_GET_PAGE_PROT
- /* description of effects of mapping type and prot in current implementation.
-  * this is due to the limited x86 page protection hardware.  The expected
-  * behavior is in parens:
-@@ -102,8 +101,6 @@ static void unmap_region(struct mm_struct *mm,
-  *								w: (no) no
-  *								x: (yes) yes
-  */
--#endif	/* CONFIG_ARCH_HAS_VM_GET_PAGE_PROT */
--
- static pgprot_t vm_pgprot_modify(pgprot_t oldprot, unsigned long vm_flags)
- {
- 	return pgprot_modify(oldprot, vm_get_page_prot(vm_flags));
--- 
-2.25.1
+Thanks
 
+On Thu, Jan 27, 2022 at 5:02 PM Pingfan Liu <kernelfans@gmail.com> wrote:
+>
+> The following identical code piece appears in both
+> migrate_to_reboot_cpu() and smp_shutdown_nonboot_cpus():
+>
+>         if (!cpu_online(primary_cpu))
+>                 primary_cpu = cpumask_first(cpu_online_mask);
+>
+> This is due to a breakage like the following:
+>    migrate_to_reboot_cpu();
+>    cpu_hotplug_enable();
+>                           --> comes a cpu_down(this_cpu) on other cpu
+>    machine_shutdown();
+>
+> Although the kexec-reboot task can get through a cpu_down() on its cpu,
+> this code looks a little confusing.
+>
+> Make things straight forward by keeping cpu hotplug disabled until
+> smp_shutdown_nonboot_cpus() holds cpu_add_remove_lock. By this way, the
+> breakage is squashed out and the rebooting cpu can keep unchanged.
+>
+> Note: this patch only affects the kexec-reboot on arches, which rely on
+> cpu hotplug mechanism.
+>
+> Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+> Cc: Eric Biederman <ebiederm@xmission.com>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: Vincent Donnefort <vincent.donnefort@arm.com>
+> Cc: Ingo Molnar <mingo@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: YueHaibing <yuehaibing@huawei.com>
+> Cc: Baokun Li <libaokun1@huawei.com>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Valentin Schneider <valentin.schneider@arm.com>
+> Cc: kexec@lists.infradead.org
+> To: linux-kernel@vger.kernel.org
+> ---
+> v1 -> v2:
+>  improve commit log
+>
+>  kernel/cpu.c        | 16 ++++++++++------
+>  kernel/kexec_core.c | 10 ++++------
+>  2 files changed, 14 insertions(+), 12 deletions(-)
+>
+> diff --git a/kernel/cpu.c b/kernel/cpu.c
+> index 9c92147f0812..87bdf21de950 100644
+> --- a/kernel/cpu.c
+> +++ b/kernel/cpu.c
+> @@ -1240,20 +1240,24 @@ int remove_cpu(unsigned int cpu)
+>  }
+>  EXPORT_SYMBOL_GPL(remove_cpu);
+>
+> +/* primary_cpu keeps unchanged after migrate_to_reboot_cpu() */
+>  void smp_shutdown_nonboot_cpus(unsigned int primary_cpu)
+>  {
+>         unsigned int cpu;
+>         int error;
+>
+> +       /*
+> +        * Block other cpu hotplug event, so primary_cpu is always online if
+> +        * it is not touched by us
+> +        */
+>         cpu_maps_update_begin();
+> -
+>         /*
+> -        * Make certain the cpu I'm about to reboot on is online.
+> -        *
+> -        * This is inline to what migrate_to_reboot_cpu() already do.
+> +        * migrate_to_reboot_cpu() disables CPU hotplug assuming that
+> +        * no further code needs to use CPU hotplug (which is true in
+> +        * the reboot case). However, the kexec path depends on using
+> +        * CPU hotplug again; so re-enable it here.
+>          */
+> -       if (!cpu_online(primary_cpu))
+> -               primary_cpu = cpumask_first(cpu_online_mask);
+> +       __cpu_hotplug_enable();
+>
+>         for_each_online_cpu(cpu) {
+>                 if (cpu == primary_cpu)
+> diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+> index 68480f731192..db4fa6b174e3 100644
+> --- a/kernel/kexec_core.c
+> +++ b/kernel/kexec_core.c
+> @@ -1168,14 +1168,12 @@ int kernel_kexec(void)
+>                 kexec_in_progress = true;
+>                 kernel_restart_prepare("kexec reboot");
+>                 migrate_to_reboot_cpu();
+> -
+>                 /*
+> -                * migrate_to_reboot_cpu() disables CPU hotplug assuming that
+> -                * no further code needs to use CPU hotplug (which is true in
+> -                * the reboot case). However, the kexec path depends on using
+> -                * CPU hotplug again; so re-enable it here.
+> +                * migrate_to_reboot_cpu() disables CPU hotplug. If an arch
+> +                * relies on the cpu teardown to achieve reboot, it needs to
+> +                * re-enable CPU hotplug there.
+>                  */
+> -               cpu_hotplug_enable();
+> +
+>                 pr_notice("Starting new kernel\n");
+>                 machine_shutdown();
+>         }
+> --
+> 2.31.1
+>
