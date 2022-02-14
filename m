@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:02:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14241C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 14 Feb 2022 11:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349922AbiBNLCv (ORCPT
+        id S1349976AbiBNLCx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:02:51 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34396 "EHLO
+        Mon, 14 Feb 2022 06:02:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:36254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349874AbiBNLCk (ORCPT
+        with ESMTP id S244261AbiBNLCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 14 Feb 2022 06:02:40 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14306A393;
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7516A390;
         Mon, 14 Feb 2022 02:30:22 -0800 (PST)
-Date:   Mon, 14 Feb 2022 10:30:20 -0000
+Date:   Mon, 14 Feb 2022 10:30:18 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1644834621;
+        s=2020; t=1644834620;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BQZWcHVIUV3ERfcLHn+wIKBsjkEWR6/yq3ljYM6Ph3A=;
-        b=vROLgV4lGHMOen91K6jh2CCwL7tec0lgPiMMrG4kapvgrkcqSsxuxe7fHeB6ItRF8n5DJ+
-        hRpf5oSje1tzVvr3PnLCiKyIx1qTfyOZecbnbLEerFxzxfWXBN2kXFfrWohEJmpy+DVxkn
-        OIRNOQ1bgf9uftOIydqa38NA0nrVSplxl8bBeQdNUYlZA9NjyPbu1cxwZ6czWskF3SsDBS
-        RuawwoH55pt+5nm6uy+uzuWZ4YQQ+xA78a0XkMhUc7iJStwpnnwLAQy3SwVh1CouoA0hn0
-        vXcQasx0YtD7QZ2yAsD5oD/cUEsG3tKPtYWGsuSFOrhj2T1IPx4TlmjKBbuqGA==
+        bh=DelFAPYS08hotY5TMjlHYO1W8U22bXH6IEEThYbb/hg=;
+        b=TpUMfS57K6D83ldetsDZoVvHm5TW3nA5laTkvLIJx8yIAOIlXnMHNwklb+J9Klh12KQFcs
+        nvYnd43kYa/w7Tmhf9DaBojTvBnQ4e8OIEMRgQcuLHhzqtWBns71z2G6kul5A9Et7oEWGJ
+        JEAXOZQ8DT27f/2mmwDl+ji5I1b9TOevHfb6iO0gEDqs+NnlLm5TregkrsJCNkYYb5sAi0
+        JZBEraXe60Ab+p5DTnOcW5JYjRIpK2gvI6XDjuGsMuWdXpjB8sreid9lfWjRy52ti6+edX
+        LR0uBgsDJSS/JihiKztRBEoluUtthbTNtdFKZPB7GeR9M6A0dXXx/SnT4JMIlA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1644834621;
+        s=2020e; t=1644834620;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BQZWcHVIUV3ERfcLHn+wIKBsjkEWR6/yq3ljYM6Ph3A=;
-        b=1M7gWZMkgQ1Ey3OTYSFsvhRdFvAlHROZ0JI7iJdi5Oyq6aVQPNOTcv5nIX9Mgt6aF9ks82
-        5vbsVebbCGkX/jAA==
-From:   "tip-bot2 for Mel Gorman" <tip-bot2@linutronix.de>
+        bh=DelFAPYS08hotY5TMjlHYO1W8U22bXH6IEEThYbb/hg=;
+        b=IEqyiLNlHgck0Mji8evFF20Ahhdbc0gCHJHiQJbxO7A/u8dXoVV66GsZx8mJyFtmPhdfgQ
+        GXoOs1KwB5Ma3jDw==
+From:   "tip-bot2 for Huang Ying" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/fair: Improve consistency of allowed NUMA
- balance calculations
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
+Subject: [tip: sched/core] sched/numa-balancing: Move some document to make it
+ consistent with the code
+Cc:     "Huang, Ying" <ying.huang@intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        "Gautham R. Shenoy" <gautham.shenoy@amd.com>, x86@kernel.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Mel Gorman <mgorman@techsingularity.net>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220208094334.16379-2-mgorman@techsingularity.net>
-References: <20220208094334.16379-2-mgorman@techsingularity.net>
+In-Reply-To: <20220210052514.3038279-1-ying.huang@intel.com>
+References: <20220210052514.3038279-1-ying.huang@intel.com>
 MIME-Version: 1.0
-Message-ID: <164483462018.16921.16665181001915806595.tip-bot2@tip-bot2>
+Message-ID: <164483461838.16921.3762073853345319823.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -64,80 +65,166 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     2cfb7a1b031b0e816af7a6ee0c6ab83b0acdf05a
-Gitweb:        https://git.kernel.org/tip/2cfb7a1b031b0e816af7a6ee0c6ab83b0acdf05a
-Author:        Mel Gorman <mgorman@techsingularity.net>
-AuthorDate:    Tue, 08 Feb 2022 09:43:33 
+Commit-ID:     3624ba7b5e2acc02b01301ea5fd3534971eb9896
+Gitweb:        https://git.kernel.org/tip/3624ba7b5e2acc02b01301ea5fd3534971eb9896
+Author:        Huang Ying <ying.huang@intel.com>
+AuthorDate:    Thu, 10 Feb 2022 13:25:14 +08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
 CommitterDate: Fri, 11 Feb 2022 23:30:08 +01:00
 
-sched/fair: Improve consistency of allowed NUMA balance calculations
+sched/numa-balancing: Move some document to make it consistent with the code
 
-There are inconsistencies when determining if a NUMA imbalance is allowed
-that should be corrected.
+After commit 8a99b6833c88 ("sched: Move SCHED_DEBUG sysctl to
+debugfs"), some NUMA balancing sysctls enclosed with SCHED_DEBUG has
+been moved to debugfs.  This patch move the document for these
+sysctls from
 
-o allow_numa_imbalance changes types and is not always examining
-  the destination group so both the type should be corrected as
-  well as the naming.
-o find_idlest_group uses the sched_domain's weight instead of the
-  group weight which is different to find_busiest_group
-o find_busiest_group uses the source group instead of the destination
-  which is different to task_numa_find_cpu
-o Both find_idlest_group and find_busiest_group should account
-  for the number of running tasks if a move was allowed to be
-  consistent with task_numa_find_cpu
+  Documentation/admin-guide/sysctl/kernel.rst
 
-Fixes: 7d2b5dd0bcc4 ("sched/numa: Allow a floating imbalance between NUMA nodes")
-Signed-off-by: Mel Gorman <mgorman@techsingularity.net>
+to
+
+  Documentation/scheduler/sched-debug.rst
+
+to make the document consistent with the code.
+
+Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
-Link: https://lore.kernel.org/r/20220208094334.16379-2-mgorman@techsingularity.net
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
+Link: https://lkml.kernel.org/r/20220210052514.3038279-1-ying.huang@intel.com
 ---
- kernel/sched/fair.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ Documentation/admin-guide/sysctl/kernel.rst | 46 +-----------------
+ Documentation/scheduler/index.rst           |  1 +-
+ Documentation/scheduler/sched-debug.rst     | 54 ++++++++++++++++++++-
+ 3 files changed, 56 insertions(+), 45 deletions(-)
+ create mode 100644 Documentation/scheduler/sched-debug.rst
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index 5dca13f..ea71016 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -9005,9 +9005,10 @@ static bool update_pick_idlest(struct sched_group *idlest,
-  * This is an approximation as the number of running tasks may not be
-  * related to the number of busy CPUs due to sched_setaffinity.
-  */
--static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
-+static inline bool
-+allow_numa_imbalance(unsigned int running, unsigned int weight)
- {
--	return (dst_running < (dst_weight >> 2));
-+	return (running < (weight >> 2));
- }
+diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
+index d359bcf..8551aec 100644
+--- a/Documentation/admin-guide/sysctl/kernel.rst
++++ b/Documentation/admin-guide/sysctl/kernel.rst
+@@ -609,51 +609,7 @@ be migrated to a local memory node.
+ The unmapping of pages and trapping faults incur additional overhead that
+ ideally is offset by improved memory locality but there is no universal
+ guarantee. If the target workload is already bound to NUMA nodes then this
+-feature should be disabled. Otherwise, if the system overhead from the
+-feature is too high then the rate the kernel samples for NUMA hinting
+-faults may be controlled by the `numa_balancing_scan_period_min_ms,
+-numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms,
+-numa_balancing_scan_size_mb`_, and numa_balancing_settle_count sysctls.
+-
+-
+-numa_balancing_scan_period_min_ms, numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms, numa_balancing_scan_size_mb
+-===============================================================================================================================
+-
+-
+-Automatic NUMA balancing scans tasks address space and unmaps pages to
+-detect if pages are properly placed or if the data should be migrated to a
+-memory node local to where the task is running.  Every "scan delay" the task
+-scans the next "scan size" number of pages in its address space. When the
+-end of the address space is reached the scanner restarts from the beginning.
+-
+-In combination, the "scan delay" and "scan size" determine the scan rate.
+-When "scan delay" decreases, the scan rate increases.  The scan delay and
+-hence the scan rate of every task is adaptive and depends on historical
+-behaviour. If pages are properly placed then the scan delay increases,
+-otherwise the scan delay decreases.  The "scan size" is not adaptive but
+-the higher the "scan size", the higher the scan rate.
+-
+-Higher scan rates incur higher system overhead as page faults must be
+-trapped and potentially data must be migrated. However, the higher the scan
+-rate, the more quickly a tasks memory is migrated to a local node if the
+-workload pattern changes and minimises performance impact due to remote
+-memory accesses. These sysctls control the thresholds for scan delays and
+-the number of pages scanned.
+-
+-``numa_balancing_scan_period_min_ms`` is the minimum time in milliseconds to
+-scan a tasks virtual memory. It effectively controls the maximum scanning
+-rate for each task.
+-
+-``numa_balancing_scan_delay_ms`` is the starting "scan delay" used for a task
+-when it initially forks.
+-
+-``numa_balancing_scan_period_max_ms`` is the maximum time in milliseconds to
+-scan a tasks virtual memory. It effectively controls the minimum scanning
+-rate for each task.
+-
+-``numa_balancing_scan_size_mb`` is how many megabytes worth of pages are
+-scanned for a given scan.
+-
++feature should be disabled.
  
- /*
-@@ -9141,12 +9142,13 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
- 				return idlest;
- #endif
- 			/*
--			 * Otherwise, keep the task on this node to stay close
--			 * its wakeup source and improve locality. If there is
--			 * a real need of migration, periodic load balance will
--			 * take care of it.
-+			 * Otherwise, keep the task close to the wakeup source
-+			 * and improve locality if the number of running tasks
-+			 * would remain below threshold where an imbalance is
-+			 * allowed. If there is a real need of migration,
-+			 * periodic load balance will take care of it.
- 			 */
--			if (allow_numa_imbalance(local_sgs.sum_nr_running, sd->span_weight))
-+			if (allow_numa_imbalance(local_sgs.sum_nr_running + 1, local_sgs.group_weight))
- 				return NULL;
- 		}
+ oops_all_cpu_backtrace
+ ======================
+diff --git a/Documentation/scheduler/index.rst b/Documentation/scheduler/index.rst
+index 88900aa..30cca8a 100644
+--- a/Documentation/scheduler/index.rst
++++ b/Documentation/scheduler/index.rst
+@@ -17,6 +17,7 @@ Linux Scheduler
+     sched-nice-design
+     sched-rt-group
+     sched-stats
++    sched-debug
  
-@@ -9352,7 +9354,7 @@ static inline void calculate_imbalance(struct lb_env *env, struct sd_lb_stats *s
- 		/* Consider allowing a small imbalance between NUMA groups */
- 		if (env->sd->flags & SD_NUMA) {
- 			env->imbalance = adjust_numa_imbalance(env->imbalance,
--				busiest->sum_nr_running, busiest->group_weight);
-+				local->sum_nr_running + 1, local->group_weight);
- 		}
+     text_files
  
- 		return;
+diff --git a/Documentation/scheduler/sched-debug.rst b/Documentation/scheduler/sched-debug.rst
+new file mode 100644
+index 0000000..4d3d24f
+--- /dev/null
++++ b/Documentation/scheduler/sched-debug.rst
+@@ -0,0 +1,54 @@
++=================
++Scheduler debugfs
++=================
++
++Booting a kernel with CONFIG_SCHED_DEBUG=y will give access to
++scheduler specific debug files under /sys/kernel/debug/sched. Some of
++those files are described below.
++
++numa_balancing
++==============
++
++`numa_balancing` directory is used to hold files to control NUMA
++balancing feature.  If the system overhead from the feature is too
++high then the rate the kernel samples for NUMA hinting faults may be
++controlled by the `scan_period_min_ms, scan_delay_ms,
++scan_period_max_ms, scan_size_mb` files.
++
++
++scan_period_min_ms, scan_delay_ms, scan_period_max_ms, scan_size_mb
++-------------------------------------------------------------------
++
++Automatic NUMA balancing scans tasks address space and unmaps pages to
++detect if pages are properly placed or if the data should be migrated to a
++memory node local to where the task is running.  Every "scan delay" the task
++scans the next "scan size" number of pages in its address space. When the
++end of the address space is reached the scanner restarts from the beginning.
++
++In combination, the "scan delay" and "scan size" determine the scan rate.
++When "scan delay" decreases, the scan rate increases.  The scan delay and
++hence the scan rate of every task is adaptive and depends on historical
++behaviour. If pages are properly placed then the scan delay increases,
++otherwise the scan delay decreases.  The "scan size" is not adaptive but
++the higher the "scan size", the higher the scan rate.
++
++Higher scan rates incur higher system overhead as page faults must be
++trapped and potentially data must be migrated. However, the higher the scan
++rate, the more quickly a tasks memory is migrated to a local node if the
++workload pattern changes and minimises performance impact due to remote
++memory accesses. These files control the thresholds for scan delays and
++the number of pages scanned.
++
++``scan_period_min_ms`` is the minimum time in milliseconds to scan a
++tasks virtual memory. It effectively controls the maximum scanning
++rate for each task.
++
++``scan_delay_ms`` is the starting "scan delay" used for a task when it
++initially forks.
++
++``scan_period_max_ms`` is the maximum time in milliseconds to scan a
++tasks virtual memory. It effectively controls the minimum scanning
++rate for each task.
++
++``scan_size_mb`` is how many megabytes worth of pages are scanned for
++a given scan.
